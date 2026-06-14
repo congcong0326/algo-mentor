@@ -1,12 +1,19 @@
 MAVEN := mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository
 NPM := npm --cache ./.npm --prefix frontend
+COMPOSE := docker compose -f deploy/docker/docker-compose.yml
 STATIC_DIR := backend/mentor-api/src/main/resources/static
 
-.PHONY: build package backend-build backend-test backend-dev frontend-install frontend-build frontend-test frontend-dev sync-frontend clean
+.PHONY: build package up down backend-build backend-test backend-dev frontend-install frontend-build frontend-test frontend-dev sync-frontend clean
 
 build: backend-build frontend-build
 
 package: frontend-build sync-frontend backend-build
+
+up: package
+	$(COMPOSE) up -d --build
+
+down:
+	$(COMPOSE) down
 
 backend-build:
 	$(MAVEN) package
@@ -37,4 +44,3 @@ sync-frontend:
 clean:
 	$(MAVEN) clean
 	rm -rf frontend/dist frontend/build
-
