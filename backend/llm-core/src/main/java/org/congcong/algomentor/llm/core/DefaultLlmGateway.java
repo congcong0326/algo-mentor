@@ -77,7 +77,7 @@ public class DefaultLlmGateway implements LlmGateway {
     return new ResolvedRequest(
         provider,
         descriptor,
-        request.withModelSelector(LlmModelSelector.of(provider.id(), modelId)));
+        request.withModelSelector(request.modelSelector().withResolvedModel(provider.id(), modelId)));
   }
 
   private Set<LlmCapability> requiredCapabilities(LlmCompletionRequest request, boolean streaming) {

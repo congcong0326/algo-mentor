@@ -40,6 +40,9 @@ public class OpenAiLlmProperties {
   }
 
   public void setBaseUrl(URI baseUrl) {
+    if (baseUrl == null) {
+      throw new IllegalArgumentException("OpenAI base URL must not be null");
+    }
     this.baseUrl = baseUrl;
   }
 
@@ -48,7 +51,10 @@ public class OpenAiLlmProperties {
   }
 
   public void setModel(String model) {
-    this.model = model;
+    if (model == null || model.isBlank()) {
+      throw new IllegalArgumentException("OpenAI model must not be blank");
+    }
+    this.model = model.trim();
   }
 
   public Duration getTimeout() {
@@ -56,6 +62,9 @@ public class OpenAiLlmProperties {
   }
 
   public void setTimeout(Duration timeout) {
+    if (timeout == null || timeout.isZero() || timeout.isNegative()) {
+      throw new IllegalArgumentException("OpenAI timeout must be positive");
+    }
     this.timeout = timeout;
   }
 
@@ -64,6 +73,9 @@ public class OpenAiLlmProperties {
   }
 
   public void setMaxRetries(int maxRetries) {
+    if (maxRetries < 0) {
+      throw new IllegalArgumentException("OpenAI max retries must not be negative");
+    }
     this.maxRetries = maxRetries;
   }
 }

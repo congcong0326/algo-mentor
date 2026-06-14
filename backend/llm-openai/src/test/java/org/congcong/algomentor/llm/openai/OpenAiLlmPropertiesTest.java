@@ -6,8 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
+import java.util.Set;
 import org.congcong.algomentor.llm.core.LlmCapability;
 import org.congcong.algomentor.llm.core.LlmCompletionRequest;
+import org.congcong.algomentor.llm.core.LlmErrorCode;
+import org.congcong.algomentor.llm.core.LlmException;
 import org.congcong.algomentor.llm.core.LlmMessage;
 import org.congcong.algomentor.llm.core.LlmModelId;
 import org.congcong.algomentor.llm.core.LlmModelSelector;
@@ -60,8 +63,13 @@ class OpenAiLlmPropertiesTest {
     OpenAiLlmClient client = new OpenAiLlmClient(new OpenAiLlmProperties());
 
     assertThatThrownBy(() -> client.complete(completionRequest()))
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessage("OpenAI LLM provider is disabled");
+        .isInstanceOfSatisfying(LlmException.class, exception -> {
+          assertThat(exception.code()).isEqualTo(LlmErrorCode.PROVIDER_UNAVAILABLE);
+          assertThat(exception.provider()).isEqualTo(LlmProviderId.of("openai"));
+          assertThat(exception.model()).isEqualTo(LlmModelId.of("gpt-5.2"));
+          assertThat(exception.retryable()).isFalse();
+          assertThat(exception).hasMessage("OpenAI LLM provider is disabled");
+        });
   }
 
   @Test
@@ -69,8 +77,13 @@ class OpenAiLlmPropertiesTest {
     OpenAiLlmClient client = new OpenAiLlmClient(new OpenAiLlmProperties());
 
     assertThatThrownBy(() -> client.stream(completionRequest()))
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessage("OpenAI LLM provider is disabled");
+        .isInstanceOfSatisfying(LlmException.class, exception -> {
+          assertThat(exception.code()).isEqualTo(LlmErrorCode.PROVIDER_UNAVAILABLE);
+          assertThat(exception.provider()).isEqualTo(LlmProviderId.of("openai"));
+          assertThat(exception.model()).isEqualTo(LlmModelId.of("gpt-5.2"));
+          assertThat(exception.retryable()).isFalse();
+          assertThat(exception).hasMessage("OpenAI LLM provider is disabled");
+        });
   }
 
   @Test
@@ -80,8 +93,29 @@ class OpenAiLlmPropertiesTest {
     OpenAiLlmClient client = new OpenAiLlmClient(properties);
 
     assertThatThrownBy(() -> client.complete(completionRequest()))
-        .isInstanceOf(UnsupportedOperationException.class)
-        .hasMessage("OpenAI completion wiring is not implemented yet");
+        .isInstanceOfSatisfying(LlmException.class, exception -> {
+          assertThat(exception.code()).isEqualTo(LlmErrorCode.PROVIDER_UNAVAILABLE);
+          assertThat(exception.provider()).isEqualTo(LlmProviderId.of("openai"));
+          assertThat(exception.model()).isEqualTo(LlmModelId.of("gpt-5.2"));
+          assertThat(exception.retryable()).isFalse();
+          assertThat(exception).hasMessage("OpenAI completion wiring is not implemented yet");
+        });
+  }
+
+  @Test
+  void enabledProviderStreamThrowsUnimplementedException() {
+    OpenAiLlmProperties properties = new OpenAiLlmProperties();
+    properties.setEnabled(true);
+    OpenAiLlmClient client = new OpenAiLlmClient(properties);
+
+    assertThatThrownBy(() -> client.stream(completionRequest()))
+        .isInstanceOfSatisfying(LlmException.class, exception -> {
+          assertThat(exception.code()).isEqualTo(LlmErrorCode.PROVIDER_UNAVAILABLE);
+          assertThat(exception.provider()).isEqualTo(LlmProviderId.of("openai"));
+          assertThat(exception.model()).isEqualTo(LlmModelId.of("gpt-5.2"));
+          assertThat(exception.retryable()).isFalse();
+          assertThat(exception).hasMessage("OpenAI streaming wiring is not implemented yet");
+        });
   }
 
   @Test
@@ -89,8 +123,13 @@ class OpenAiLlmPropertiesTest {
     OpenAiLlmClient client = new OpenAiLlmClient(new OpenAiLlmProperties());
 
     assertThatThrownBy(() -> client.complete(LlmRequest.userPrompt("gpt-5.2", "hello")))
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessage("OpenAI LLM provider is disabled");
+        .isInstanceOfSatisfying(LlmException.class, exception -> {
+          assertThat(exception.code()).isEqualTo(LlmErrorCode.PROVIDER_UNAVAILABLE);
+          assertThat(exception.provider()).isEqualTo(LlmProviderId.of("openai"));
+          assertThat(exception.model()).isEqualTo(LlmModelId.of("gpt-5.2"));
+          assertThat(exception.retryable()).isFalse();
+          assertThat(exception).hasMessage("OpenAI LLM provider is disabled");
+        });
   }
 
   @Test
@@ -101,8 +140,99 @@ class OpenAiLlmPropertiesTest {
     client.stream(LlmRequest.userPrompt("gpt-5.2", "hello"), handler);
 
     assertThat(handler.error)
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessage("OpenAI LLM provider is disabled");
+        .isInstanceOfSatisfying(LlmException.class, exception -> {
+          assertThat(exception.code()).isEqualTo(LlmErrorCode.PROVIDER_UNAVAILABLE);
+          assertThat(exception.provider()).isEqualTo(LlmProviderId.of("openai"));
+          assertThat(exception.model()).isEqualTo(LlmModelId.of("gpt-5.2"));
+          assertThat(exception.retryable()).isFalse();
+          assertThat(exception).hasMessage("OpenAI LLM provider is disabled");
+        });
+  }
+
+  @Test
+  void legacyStreamReportsUnimplementedProviderErrorToHandler() {
+    OpenAiLlmProperties properties = new OpenAiLlmProperties();
+    properties.setEnabled(true);
+    OpenAiLlmClient client = new OpenAiLlmClient(properties);
+    RecordingStreamHandler handler = new RecordingStreamHandler();
+
+    client.stream(LlmRequest.userPrompt("gpt-5.2", "hello"), handler);
+
+    assertThat(handler.error)
+        .isInstanceOfSatisfying(LlmException.class, exception -> {
+          assertThat(exception.code()).isEqualTo(LlmErrorCode.PROVIDER_UNAVAILABLE);
+          assertThat(exception.provider()).isEqualTo(LlmProviderId.of("openai"));
+          assertThat(exception.model()).isEqualTo(LlmModelId.of("gpt-5.2"));
+          assertThat(exception.retryable()).isFalse();
+          assertThat(exception).hasMessage("OpenAI streaming wiring is not implemented yet");
+        });
+  }
+
+  @Test
+  void completeUsesConfiguredModelWhenRequestSelectorDoesNotSpecifyModel() {
+    OpenAiLlmProperties properties = new OpenAiLlmProperties();
+    properties.setModel("gpt-configured");
+    OpenAiLlmClient client = new OpenAiLlmClient(properties);
+    LlmCompletionRequest request = LlmCompletionRequest.builder()
+        .modelSelector(LlmModelSelector.requiring(Set.of(LlmCapability.CHAT_COMPLETION)))
+        .messages(List.of(LlmMessage.user("hello")))
+        .build();
+
+    assertThatThrownBy(() -> client.complete(request))
+        .isInstanceOfSatisfying(LlmException.class, exception -> {
+          assertThat(exception.provider()).isEqualTo(LlmProviderId.of("openai"));
+          assertThat(exception.model()).isEqualTo(LlmModelId.of("gpt-configured"));
+          assertThat(exception).hasMessage("OpenAI LLM provider is disabled");
+        });
+  }
+
+  @Test
+  void validatesBaseUrlIsNotNull() {
+    OpenAiLlmProperties properties = new OpenAiLlmProperties();
+
+    assertThatThrownBy(() -> properties.setBaseUrl(null))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("OpenAI base URL must not be null");
+  }
+
+  @Test
+  void validatesModelIsNotBlankAndTrimsValue() {
+    OpenAiLlmProperties properties = new OpenAiLlmProperties();
+
+    assertThatThrownBy(() -> properties.setModel(null))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("OpenAI model must not be blank");
+    assertThatThrownBy(() -> properties.setModel(" "))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("OpenAI model must not be blank");
+
+    properties.setModel(" gpt-5.2-mini ");
+
+    assertThat(properties.getModel()).isEqualTo("gpt-5.2-mini");
+  }
+
+  @Test
+  void validatesTimeoutIsPositive() {
+    OpenAiLlmProperties properties = new OpenAiLlmProperties();
+
+    assertThatThrownBy(() -> properties.setTimeout(null))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("OpenAI timeout must be positive");
+    assertThatThrownBy(() -> properties.setTimeout(Duration.ZERO))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("OpenAI timeout must be positive");
+    assertThatThrownBy(() -> properties.setTimeout(Duration.ofMillis(-1)))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("OpenAI timeout must be positive");
+  }
+
+  @Test
+  void validatesMaxRetriesIsNotNegative() {
+    OpenAiLlmProperties properties = new OpenAiLlmProperties();
+
+    assertThatThrownBy(() -> properties.setMaxRetries(-1))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("OpenAI max retries must not be negative");
   }
 
   private static LlmCompletionRequest completionRequest() {

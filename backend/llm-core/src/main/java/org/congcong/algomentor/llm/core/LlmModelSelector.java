@@ -30,6 +30,10 @@ public final class LlmModelSelector {
     return new LlmModelSelector(null, null, capabilities, null);
   }
 
+  public LlmModelSelector withResolvedModel(LlmProviderId providerId, LlmModelId modelId) {
+    return new LlmModelSelector(providerId, modelId, requiredCapabilities, purpose);
+  }
+
   public Optional<LlmProviderId> providerId() {
     return Optional.ofNullable(providerId);
   }

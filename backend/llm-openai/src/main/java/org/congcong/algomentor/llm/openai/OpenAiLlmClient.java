@@ -8,6 +8,8 @@ import org.congcong.algomentor.llm.core.LlmClient;
 import org.congcong.algomentor.llm.core.LlmCapability;
 import org.congcong.algomentor.llm.core.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.LlmCompletionResult;
+import org.congcong.algomentor.llm.core.LlmErrorCode;
+import org.congcong.algomentor.llm.core.LlmException;
 import org.congcong.algomentor.llm.core.LlmGenerationOptions;
 import org.congcong.algomentor.llm.core.LlmModelDescriptor;
 import org.congcong.algomentor.llm.core.LlmModelId;
@@ -64,17 +66,17 @@ public class OpenAiLlmClient implements LlmClient, LlmProvider {
   @Override
   public LlmCompletionResult complete(LlmCompletionRequest request) {
     if (!properties.isEnabled()) {
-      throw new IllegalStateException("OpenAI LLM provider is disabled");
+      throw unavailable("OpenAI LLM provider is disabled", request);
     }
-    throw new UnsupportedOperationException("OpenAI completion wiring is not implemented yet");
+    throw unavailable("OpenAI completion wiring is not implemented yet", request);
   }
 
   @Override
   public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
     if (!properties.isEnabled()) {
-      throw new IllegalStateException("OpenAI LLM provider is disabled");
+      throw unavailable("OpenAI LLM provider is disabled", request);
     }
-    throw new UnsupportedOperationException("OpenAI streaming wiring is not implemented yet");
+    throw unavailable("OpenAI streaming wiring is not implemented yet", request);
   }
 
   @Override
@@ -85,10 +87,27 @@ public class OpenAiLlmClient implements LlmClient, LlmProvider {
 
   @Override
   public void stream(LlmRequest request, LlmStreamHandler handler) {
-    if (!properties.isEnabled()) {
-      handler.onError(new IllegalStateException("OpenAI LLM provider is disabled"));
-      return;
+    String message = properties.isEnabled()
+        ? "OpenAI streaming wiring is not implemented yet"
+        : "OpenAI LLM provider is disabled";
+    handler.onError(unavailable(message, request.toCompletionRequest(PROVIDER_ID)));
+  }
+
+  private LlmException unavailable(String message, LlmCompletionRequest request) {
+    return new LlmException(
+        LlmErrorCode.PROVIDER_UNAVAILABLE,
+        message,
+        PROVIDER_ID,
+        modelId(request),
+        false,
+        Map.of(),
+        null);
+  }
+
+  private LlmModelId modelId(LlmCompletionRequest request) {
+    if (request != null) {
+      return request.modelSelector().modelId().orElseGet(() -> LlmModelId.of(properties.getModel()));
     }
-    handler.onError(new UnsupportedOperationException("OpenAI streaming wiring is not implemented yet"));
+    return LlmModelId.of(properties.getModel());
   }
 }

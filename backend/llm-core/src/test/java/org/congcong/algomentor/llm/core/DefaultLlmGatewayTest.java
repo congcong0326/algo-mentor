@@ -34,6 +34,26 @@ class DefaultLlmGatewayTest {
   }
 
   @Test
+  void preservesSelectorContextWhenResolvingDefaultProviderAndModel() {
+    FakeProvider provider = new FakeProvider(
+        OPENAI,
+        Set.of(LlmCapability.CHAT_COMPLETION, LlmCapability.TOKEN_USAGE));
+    DefaultLlmGateway gateway = new DefaultLlmGateway(List.of(provider), OPENAI, GPT_5_2);
+    LlmCompletionRequest request = LlmCompletionRequest.builder()
+        .modelSelector(new LlmModelSelector(null, null, Set.of(LlmCapability.TOKEN_USAGE), "practice-review"))
+        .messages(List.of(LlmMessage.user("hello")))
+        .build();
+
+    gateway.complete(request);
+
+    LlmModelSelector selector = provider.lastRequest().modelSelector();
+    assertThat(selector.providerId()).contains(OPENAI);
+    assertThat(selector.modelId()).contains(GPT_5_2);
+    assertThat(selector.requiredCapabilities()).containsExactly(LlmCapability.TOKEN_USAGE);
+    assertThat(selector.purpose()).isEqualTo("practice-review");
+  }
+
+  @Test
   void rejectsUnsupportedToolCallingCapabilityBeforeProviderCall() {
     FakeProvider provider = new FakeProvider(OPENAI, Set.of(LlmCapability.CHAT_COMPLETION));
     DefaultLlmGateway gateway = new DefaultLlmGateway(List.of(provider), OPENAI, GPT_5_2);
