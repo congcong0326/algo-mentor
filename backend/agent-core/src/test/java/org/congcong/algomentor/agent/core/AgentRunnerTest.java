@@ -55,7 +55,7 @@ class AgentRunnerTest {
 
     @Override
     public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
-      throw new UnsupportedOperationException("Streaming is not used by this test");
+      throw new UnsupportedOperationException("stream should not be called by AgentRunner");
     }
   }
 }

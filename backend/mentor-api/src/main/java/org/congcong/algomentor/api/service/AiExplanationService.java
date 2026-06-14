@@ -1,7 +1,5 @@
 package org.congcong.algomentor.api.service;
 
-import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
 import org.congcong.algomentor.mentor.application.ExplainTopicUseCase;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -10,39 +8,26 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class AiExplanationService {
 
   private final ExplainTopicUseCase explainTopicUseCase;
+  private final LlmStreamSseMapper sseMapper;
 
-  public AiExplanationService(ExplainTopicUseCase explainTopicUseCase) {
+  public AiExplanationService(ExplainTopicUseCase explainTopicUseCase, LlmStreamSseMapper sseMapper) {
     this.explainTopicUseCase = explainTopicUseCase;
+    this.sseMapper = sseMapper;
   }
 
   public SseEmitter streamExplanation(String topic) {
     SseEmitter emitter = new SseEmitter(30_000L);
+    SseLlmStreamSubscriber subscriber = new SseLlmStreamSubscriber(emitter, sseMapper);
 
-    CompletableFuture.runAsync(() -> {
-      try {
-        String explanation = explainTopicUseCase.explain(topic);
-        emitter.send(SseEmitter.event()
-            .name("explanation")
-            .data(explanation));
-        emitter.complete();
-      } catch (IOException ex) {
-        emitter.completeWithError(ex);
-      } catch (RuntimeException ex) {
-        sendError(emitter, ex);
-      }
-    });
+    emitter.onCompletion(subscriber::cancel);
+    emitter.onTimeout(subscriber::cancel);
+    emitter.onError(ignored -> subscriber.cancel());
 
-    return emitter;
-  }
-
-  private void sendError(SseEmitter emitter, RuntimeException ex) {
     try {
-      emitter.send(SseEmitter.event()
-          .name("error")
-          .data(ex.getMessage()));
-      emitter.complete();
-    } catch (IOException sendFailure) {
-      emitter.completeWithError(sendFailure);
+      explainTopicUseCase.stream(topic).subscribe(subscriber);
+    } catch (RuntimeException ex) {
+      subscriber.onError(ex);
     }
+    return emitter;
   }
 }

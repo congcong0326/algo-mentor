@@ -3,6 +3,7 @@ package org.congcong.algomentor.api.config;
 import java.util.List;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentRunner;
+import org.congcong.algomentor.agent.core.StreamingAgentRunner;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.DefaultLlmGateway;
@@ -42,8 +43,17 @@ public class MentorAiConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public ExplainTopicUseCase explainTopicUseCase(AgentRunner agentRunner) {
-    return new ExplainTopicUseCase(agentRunner);
+  public StreamingAgentRunner streamingAgentRunner(LlmGateway llmGateway, OpenAiLlmProperties openAiProperties) {
+    return new StreamingAgentRunner(llmGateway, openAiProperties.getModel());
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ExplainTopicUseCase explainTopicUseCase(
+      AgentRunner agentRunner,
+      StreamingAgentRunner streamingAgentRunner
+  ) {
+    return new ExplainTopicUseCase(agentRunner, streamingAgentRunner);
   }
 
   private static final class UnconfiguredLlmGateway implements LlmGateway {
