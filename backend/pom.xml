@@ -23,6 +23,7 @@
     <module>common</module>
     <module>domain</module>
     <module>llm-core</module>
+    <module>llm-openai</module>
     <module>agent-core</module>
     <module>mentor-api</module>
   </modules>
