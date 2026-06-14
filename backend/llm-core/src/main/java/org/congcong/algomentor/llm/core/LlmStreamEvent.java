@@ -1,6 +1,5 @@
 package org.congcong.algomentor.llm.core;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Map;
 
 public sealed interface LlmStreamEvent
@@ -36,10 +35,13 @@ public sealed interface LlmStreamEvent
     }
   }
 
-  record ToolCallDelta(String id, JsonNode argumentsDelta) implements LlmStreamEvent {
+  record ToolCallDelta(String id, String argumentsDelta) implements LlmStreamEvent {
     public ToolCallDelta {
       if (id == null || id.isBlank()) {
         throw new IllegalArgumentException("LLM stream tool call id must not be blank");
+      }
+      if (argumentsDelta == null) {
+        throw new IllegalArgumentException("LLM stream tool call arguments delta must not be null");
       }
     }
   }

@@ -96,6 +96,27 @@ class DefaultLlmGatewayTest {
   }
 
   @Test
+  void rejectsUnsupportedFileCapabilityBeforeProviderCall() {
+    FakeProvider provider = new FakeProvider(OPENAI, Set.of(LlmCapability.CHAT_COMPLETION));
+    DefaultLlmGateway gateway = new DefaultLlmGateway(List.of(provider), OPENAI, GPT_5_2);
+    LlmCompletionRequest request = LlmCompletionRequest.builder()
+        .modelSelector(LlmModelSelector.of(OPENAI, GPT_5_2))
+        .messages(List.of(new LlmMessage(
+            LlmMessage.Role.USER,
+            List.of(new LlmContentPart.File("file-1", "notes.txt", "text/plain")),
+            null,
+            null,
+            Map.of())))
+        .build();
+
+    assertThatThrownBy(() -> gateway.complete(request))
+        .isInstanceOf(LlmException.class)
+        .extracting("code")
+        .isEqualTo(LlmErrorCode.UNSUPPORTED_CAPABILITY);
+    assertThat(provider.callCount()).isZero();
+  }
+
+  @Test
   void rejectsUnsupportedStreamingCapabilityBeforeProviderCall() {
     FakeProvider provider = new FakeProvider(OPENAI, Set.of(LlmCapability.CHAT_COMPLETION));
     DefaultLlmGateway gateway = new DefaultLlmGateway(List.of(provider), OPENAI, GPT_5_2);
@@ -112,10 +133,87 @@ class DefaultLlmGatewayTest {
   }
 
   @Test
+  void rejectsUnknownDefaultProviderAtConstruction() {
+    LlmProviderId unknownProvider = LlmProviderId.of("missing");
+    FakeProvider provider = new FakeProvider(OPENAI, Set.of(LlmCapability.CHAT_COMPLETION));
+
+    assertThatThrownBy(() -> new DefaultLlmGateway(List.of(provider), unknownProvider, GPT_5_2))
+        .isInstanceOfSatisfying(LlmException.class, exception -> {
+          assertThat(exception.code()).isEqualTo(LlmErrorCode.INVALID_REQUEST);
+          assertThat(exception.provider()).isEqualTo(unknownProvider);
+          assertThat(exception.model()).isEqualTo(GPT_5_2);
+          assertThat(exception).hasMessage("Unknown default LLM provider: missing");
+        });
+  }
+
+  @Test
+  void rejectsUnknownDefaultModelAtConstruction() {
+    LlmModelId unknownModel = LlmModelId.of("gpt-missing");
+    FakeProvider provider = new FakeProvider(OPENAI, Set.of(LlmCapability.CHAT_COMPLETION));
+
+    assertThatThrownBy(() -> new DefaultLlmGateway(List.of(provider), OPENAI, unknownModel))
+        .isInstanceOfSatisfying(LlmException.class, exception -> {
+          assertThat(exception.code()).isEqualTo(LlmErrorCode.INVALID_REQUEST);
+          assertThat(exception.provider()).isEqualTo(OPENAI);
+          assertThat(exception.model()).isEqualTo(unknownModel);
+          assertThat(exception).hasMessage("Unknown default LLM model: gpt-missing");
+        });
+  }
+
+  @Test
+  void rejectsUnknownRequestedProviderWithContext() {
+    LlmProviderId unknownProvider = LlmProviderId.of("missing");
+    FakeProvider provider = new FakeProvider(OPENAI, Set.of(LlmCapability.CHAT_COMPLETION));
+    DefaultLlmGateway gateway = new DefaultLlmGateway(List.of(provider), OPENAI, GPT_5_2);
+    LlmCompletionRequest request = LlmCompletionRequest.builder()
+        .modelSelector(LlmModelSelector.of(unknownProvider, GPT_5_2))
+        .messages(List.of(LlmMessage.user("hello")))
+        .build();
+
+    assertThatThrownBy(() -> gateway.complete(request))
+        .isInstanceOfSatisfying(LlmException.class, exception -> {
+          assertThat(exception.code()).isEqualTo(LlmErrorCode.INVALID_REQUEST);
+          assertThat(exception.provider()).isEqualTo(unknownProvider);
+          assertThat(exception.model()).isEqualTo(GPT_5_2);
+          assertThat(exception).hasMessage("Unknown LLM provider: missing");
+        });
+  }
+
+  @Test
+  void rejectsUnknownRequestedModelWithContext() {
+    LlmModelId unknownModel = LlmModelId.of("gpt-missing");
+    FakeProvider provider = new FakeProvider(OPENAI, Set.of(LlmCapability.CHAT_COMPLETION));
+    DefaultLlmGateway gateway = new DefaultLlmGateway(List.of(provider), OPENAI, GPT_5_2);
+    LlmCompletionRequest request = LlmCompletionRequest.builder()
+        .modelSelector(LlmModelSelector.of(OPENAI, unknownModel))
+        .messages(List.of(LlmMessage.user("hello")))
+        .build();
+
+    assertThatThrownBy(() -> gateway.complete(request))
+        .isInstanceOfSatisfying(LlmException.class, exception -> {
+          assertThat(exception.code()).isEqualTo(LlmErrorCode.INVALID_REQUEST);
+          assertThat(exception.provider()).isEqualTo(OPENAI);
+          assertThat(exception.model()).isEqualTo(unknownModel);
+          assertThat(exception).hasMessage("Unknown LLM model: gpt-missing");
+        });
+  }
+
+  @Test
   void streamEventsValidateAndDefaultFields() {
     assertThatThrownBy(() -> new LlmStreamEvent.ContentDelta(null))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("LLM stream content delta must not be null");
+
+    LlmStreamEvent.ToolCallDelta partialDelta = new LlmStreamEvent.ToolCallDelta("call-1", "{\"a");
+    assertThat(partialDelta.argumentsDelta()).isEqualTo("{\"a");
+
+    assertThatThrownBy(() -> new LlmStreamEvent.ToolCallDelta(" ", "{}"))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("LLM stream tool call id must not be blank");
+
+    assertThatThrownBy(() -> new LlmStreamEvent.ToolCallDelta("call-1", null))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("LLM stream tool call arguments delta must not be null");
 
     LlmStreamEvent.MessageEnd messageEnd = new LlmStreamEvent.MessageEnd(null, null);
     assertThat(messageEnd.finishReason()).isEqualTo(LlmFinishReason.UNKNOWN);

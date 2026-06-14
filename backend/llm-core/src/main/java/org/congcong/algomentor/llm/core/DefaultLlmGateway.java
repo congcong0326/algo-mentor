@@ -29,6 +29,7 @@ public class DefaultLlmGateway implements LlmGateway {
         .collect(Collectors.toUnmodifiableMap(LlmProvider::id, Function.identity()));
     this.defaultProviderId = defaultProviderId;
     this.defaultModelId = defaultModelId;
+    validateDefaultSelection();
   }
 
   @Override
@@ -94,10 +95,37 @@ public class DefaultLlmGateway implements LlmGateway {
     if (requiresVisionInput(request)) {
       capabilities.add(LlmCapability.VISION_INPUT);
     }
+    if (requiresFileInput(request)) {
+      capabilities.add(LlmCapability.FILE_INPUT);
+    }
     if (streaming) {
       capabilities.add(LlmCapability.STREAMING);
     }
     return Set.copyOf(capabilities);
+  }
+
+  private void validateDefaultSelection() {
+    LlmProvider provider = providers.get(defaultProviderId);
+    if (provider == null) {
+      throw new LlmException(
+          LlmErrorCode.INVALID_REQUEST,
+          "Unknown default LLM provider: " + defaultProviderId.value(),
+          defaultProviderId,
+          defaultModelId,
+          false,
+          Map.of(),
+          null);
+    }
+    if (!provider.capabilities().models().containsKey(defaultModelId.value())) {
+      throw new LlmException(
+          LlmErrorCode.INVALID_REQUEST,
+          "Unknown default LLM model: " + defaultModelId.value(),
+          defaultProviderId,
+          defaultModelId,
+          false,
+          Map.of(),
+          null);
+    }
   }
 
   private boolean requiresToolCalling(LlmCompletionRequest request) {
@@ -110,6 +138,12 @@ public class DefaultLlmGateway implements LlmGateway {
     return request.messages().stream()
         .flatMap(message -> message.content().stream())
         .anyMatch(LlmContentPart.Image.class::isInstance);
+  }
+
+  private boolean requiresFileInput(LlmCompletionRequest request) {
+    return request.messages().stream()
+        .flatMap(message -> message.content().stream())
+        .anyMatch(LlmContentPart.File.class::isInstance);
   }
 
   private void ensureSupported(LlmModelDescriptor descriptor, Set<LlmCapability> requiredCapabilities) {
