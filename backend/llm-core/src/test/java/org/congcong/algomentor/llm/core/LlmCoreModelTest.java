@@ -68,6 +68,18 @@ class LlmCoreModelTest {
   }
 
   @Test
+  void rejectsNonToolMessageWithBlankToolCallId() {
+    assertThatThrownBy(() -> new LlmMessage(
+        LlmMessage.Role.USER,
+        java.util.List.of(new LlmContentPart.Text("x")),
+        null,
+        " ",
+        java.util.Map.of()))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("LLM non-tool message must not include tool call id");
+  }
+
+  @Test
   void createsToolSpecAndSpecificToolChoice() {
     com.fasterxml.jackson.databind.JsonNode schema =
         com.fasterxml.jackson.databind.node.JsonNodeFactory.instance.objectNode().put("type", "object");

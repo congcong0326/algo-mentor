@@ -23,7 +23,7 @@ public record LlmMessage(
     if (role == Role.TOOL && (toolCallId == null || toolCallId.isBlank())) {
       throw new IllegalArgumentException("LLM tool message must include tool call id");
     }
-    if (role != Role.TOOL && toolCallId != null && !toolCallId.isBlank()) {
+    if (role != Role.TOOL && toolCallId != null) {
       throw new IllegalArgumentException("LLM non-tool message must not include tool call id");
     }
     content = List.copyOf(content);
