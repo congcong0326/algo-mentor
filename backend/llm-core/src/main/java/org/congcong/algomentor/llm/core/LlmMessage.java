@@ -20,6 +20,12 @@ public record LlmMessage(
     if (content == null || content.isEmpty()) {
       throw new IllegalArgumentException("LLM message content must not be empty");
     }
+    if (role == Role.TOOL && (toolCallId == null || toolCallId.isBlank())) {
+      throw new IllegalArgumentException("LLM tool message must include tool call id");
+    }
+    if (role != Role.TOOL && toolCallId != null && !toolCallId.isBlank()) {
+      throw new IllegalArgumentException("LLM non-tool message must not include tool call id");
+    }
     content = List.copyOf(content);
     metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
   }

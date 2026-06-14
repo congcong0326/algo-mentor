@@ -2,6 +2,10 @@ package org.congcong.algomentor.llm.core;
 
 import java.util.List;
 
+/**
+ * Compatibility API retained during migration to the provider/gateway completion contract.
+ */
+@Deprecated(forRemoval = false)
 public record LlmRequest(String model, List<LlmMessage> messages) {
 
   public LlmRequest {
