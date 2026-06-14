@@ -24,12 +24,35 @@ public record LlmCompletionRequest(
     options = options == null ? LlmGenerationOptions.defaults() : options;
     tools = tools == null ? List.of() : List.copyOf(tools);
     toolChoice = toolChoice == null ? LlmToolChoice.auto() : toolChoice;
+    validateToolChoice(tools, toolChoice);
     responseFormat = responseFormat == null ? new LlmResponseFormat.Text() : responseFormat;
     metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
   }
 
   public static Builder builder() {
     return new Builder();
+  }
+
+  public LlmCompletionRequest withModelSelector(LlmModelSelector modelSelector) {
+    return new LlmCompletionRequest(
+        modelSelector,
+        messages,
+        options,
+        tools,
+        toolChoice,
+        responseFormat,
+        metadata);
+  }
+
+  private static void validateToolChoice(List<LlmToolSpec> tools, LlmToolChoice toolChoice) {
+    if ((toolChoice.mode() == LlmToolChoice.Mode.REQUIRED || toolChoice.mode() == LlmToolChoice.Mode.SPECIFIC)
+        && tools.isEmpty()) {
+      throw new IllegalArgumentException("LLM tool choice requires at least one tool");
+    }
+    if (toolChoice.mode() == LlmToolChoice.Mode.SPECIFIC
+        && tools.stream().noneMatch(tool -> tool.name().equals(toolChoice.toolName()))) {
+      throw new IllegalArgumentException("LLM specific tool choice must match a declared tool");
+    }
   }
 
   public static final class Builder {

@@ -17,7 +17,7 @@ public record LlmMessage(
     if (role == null) {
       throw new IllegalArgumentException("LLM message role must not be null");
     }
-    if (content == null || content.isEmpty()) {
+    if (content == null || (content.isEmpty() && role != Role.ASSISTANT)) {
       throw new IllegalArgumentException("LLM message content must not be empty");
     }
     if (role == Role.TOOL && (toolCallId == null || toolCallId.isBlank())) {
@@ -44,6 +44,10 @@ public record LlmMessage(
 
   public static LlmMessage assistant(String text) {
     return new LlmMessage(Role.ASSISTANT, text);
+  }
+
+  public static LlmMessage assistant() {
+    return new LlmMessage(Role.ASSISTANT, List.of(), null, null, Map.of());
   }
 
   public static LlmMessage toolResult(String toolCallId, JsonNode result) {
