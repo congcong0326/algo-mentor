@@ -17,6 +17,17 @@ class LlmRequestTest {
   }
 
   @Test
+  void convertsLegacyRequestToCompletionRequest() {
+    LlmRequest legacy = LlmRequest.userPrompt("gpt-test", "Explain binary search");
+
+    LlmCompletionRequest request = legacy.toCompletionRequest(LlmProviderId.of("openai"));
+
+    assertThat(request.modelSelector().providerId()).contains(LlmProviderId.of("openai"));
+    assertThat(request.modelSelector().modelId()).contains(LlmModelId.of("gpt-test"));
+    assertThat(request.messages()).containsExactly(LlmMessage.user("Explain binary search"));
+  }
+
+  @Test
   void rejectsRequestWithoutMessages() {
     assertThatThrownBy(() -> new LlmRequest("gpt-test", java.util.List.of()))
         .isInstanceOf(IllegalArgumentException.class)

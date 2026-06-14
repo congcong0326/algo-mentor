@@ -21,4 +21,11 @@ public record LlmRequest(String model, List<LlmMessage> messages) {
   public static LlmRequest userPrompt(String model, String prompt) {
     return new LlmRequest(model, List.of(LlmMessage.user(prompt)));
   }
+
+  public LlmCompletionRequest toCompletionRequest(LlmProviderId providerId) {
+    return LlmCompletionRequest.builder()
+        .modelSelector(LlmModelSelector.of(providerId, LlmModelId.of(model)))
+        .messages(messages)
+        .build();
+  }
 }
