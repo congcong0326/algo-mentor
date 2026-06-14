@@ -92,4 +92,39 @@ class LlmCoreModelTest {
     assertThat(choice.mode()).isEqualTo(LlmToolChoice.Mode.SPECIFIC);
     assertThat(choice.toolName()).isEqualTo("search_problem");
   }
+
+  @Test
+  void createsCompletionRequestWithJsonSchemaFormat() {
+    com.fasterxml.jackson.databind.JsonNode schema =
+        com.fasterxml.jackson.databind.node.JsonNodeFactory.instance.objectNode().put("type", "object");
+
+    LlmCompletionRequest request = LlmCompletionRequest.builder()
+        .modelSelector(LlmModelSelector.of(LlmProviderId.of("openai"), LlmModelId.of("gpt-5.2")))
+        .messages(java.util.List.of(LlmMessage.user("Create a plan")))
+        .responseFormat(new LlmResponseFormat.JsonSchema("plan", schema, true))
+        .build();
+
+    assertThat(request.modelSelector().providerId()).contains(LlmProviderId.of("openai"));
+    assertThat(request.responseFormat()).isInstanceOf(LlmResponseFormat.JsonSchema.class);
+    assertThat(request.toolChoice().mode()).isEqualTo(LlmToolChoice.Mode.AUTO);
+  }
+
+  @Test
+  void createsCompletionResultWithStructuredOutput() {
+    com.fasterxml.jackson.databind.JsonNode output =
+        com.fasterxml.jackson.databind.node.JsonNodeFactory.instance.objectNode().put("title", "Binary Search");
+
+    LlmCompletionResult result = new LlmCompletionResult(
+        LlmMessage.assistant("done"),
+        java.util.List.of(),
+        output,
+        LlmFinishReason.STOP,
+        LlmUsage.empty(),
+        LlmProviderId.of("openai"),
+        LlmModelId.of("gpt-5.2"),
+        java.util.Map.of("requestId", "req-1"));
+
+    assertThat(result.structuredOutput()).isEqualTo(output);
+    assertThat(result.metadata()).containsEntry("requestId", "req-1");
+  }
 }
