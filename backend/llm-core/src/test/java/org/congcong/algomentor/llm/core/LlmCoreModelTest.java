@@ -31,4 +31,29 @@ class LlmCoreModelTest {
     assertThat(usage.cachedTokens()).isEqualTo(3);
     assertThat(usage.reasoningTokens()).isEqualTo(2);
   }
+
+  @Test
+  void createsTextAndToolResultMessages() {
+    LlmMessage user = LlmMessage.user("Explain binary search");
+    LlmMessage tool = LlmMessage.toolResult("call-1", com.fasterxml.jackson.databind.node.JsonNodeFactory.instance.objectNode().put("ok", true));
+
+    assertThat(user.role()).isEqualTo(LlmMessage.Role.USER);
+    assertThat(user.text()).isEqualTo("Explain binary search");
+    assertThat(tool.role()).isEqualTo(LlmMessage.Role.TOOL);
+    assertThat(tool.toolCallId()).isEqualTo("call-1");
+  }
+
+  @Test
+  void createsToolSpecAndSpecificToolChoice() {
+    com.fasterxml.jackson.databind.JsonNode schema =
+        com.fasterxml.jackson.databind.node.JsonNodeFactory.instance.objectNode().put("type", "object");
+
+    LlmToolSpec spec = new LlmToolSpec("search_problem", "Search an algorithm problem", schema, true);
+    LlmToolChoice choice = LlmToolChoice.specific("search_problem");
+
+    assertThat(spec.name()).isEqualTo("search_problem");
+    assertThat(spec.strict()).isTrue();
+    assertThat(choice.mode()).isEqualTo(LlmToolChoice.Mode.SPECIFIC);
+    assertThat(choice.toolName()).isEqualTo("search_problem");
+  }
 }
