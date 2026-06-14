@@ -1,22 +1,20 @@
-package org.congcong.algomentor.api.config;
+package org.congcong.algomentor.llm.openai;
 
 import java.net.URI;
 import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * OpenAI provider 的 Spring 配置模型。
+ */
 @ConfigurationProperties(prefix = "algo-mentor.ai.openai")
-public class AiProviderProperties {
+public class OpenAiLlmProperties {
 
   private boolean enabled;
-
   private String apiKey = "";
-
   private URI baseUrl = URI.create("https://api.openai.com/v1");
-
   private String model = "gpt-5.2";
-
   private Duration timeout = Duration.ofSeconds(30);
-
   private int maxRetries = 2;
 
   public boolean isEnabled() {
@@ -32,7 +30,7 @@ public class AiProviderProperties {
   }
 
   public void setApiKey(String apiKey) {
-    this.apiKey = apiKey;
+    this.apiKey = apiKey == null ? "" : apiKey;
   }
 
   public URI getBaseUrl() {
@@ -66,5 +64,22 @@ public class AiProviderProperties {
   public void setMaxRetries(int maxRetries) {
     this.maxRetries = maxRetries;
   }
-}
 
+  public void validate() {
+    if (model == null || model.isBlank()) {
+      throw new IllegalArgumentException("OpenAI model must not be blank");
+    }
+    if (baseUrl == null) {
+      throw new IllegalArgumentException("OpenAI base URL must not be null");
+    }
+    if (timeout == null || timeout.isZero() || timeout.isNegative()) {
+      throw new IllegalArgumentException("OpenAI timeout must be positive");
+    }
+    if (maxRetries < 0) {
+      throw new IllegalArgumentException("OpenAI max retries must not be negative");
+    }
+    if (enabled && (apiKey == null || apiKey.isBlank())) {
+      throw new IllegalArgumentException("OpenAI API key must not be blank when provider is enabled");
+    }
+  }
+}
