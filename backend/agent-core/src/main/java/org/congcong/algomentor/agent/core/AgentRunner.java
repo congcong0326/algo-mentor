@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
-import org.congcong.algomentor.llm.core.LlmCompletionRequest;
-import org.congcong.algomentor.llm.core.LlmGateway;
-import org.congcong.algomentor.llm.core.LlmMessage;
-import org.congcong.algomentor.llm.core.LlmModelId;
-import org.congcong.algomentor.llm.core.LlmModelSelector;
+import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
+import org.congcong.algomentor.llm.core.gateway.LlmGateway;
+import org.congcong.algomentor.llm.core.request.LlmMessage;
+import org.congcong.algomentor.llm.core.model.LlmModelId;
+import org.congcong.algomentor.llm.core.model.LlmModelSelector;
 
 public class AgentRunner {
 

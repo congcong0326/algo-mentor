@@ -6,15 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.domain.learning.LearningTopic;
-import org.congcong.algomentor.llm.core.LlmCompletionRequest;
-import org.congcong.algomentor.llm.core.LlmCompletionResult;
-import org.congcong.algomentor.llm.core.LlmFinishReason;
-import org.congcong.algomentor.llm.core.LlmGateway;
-import org.congcong.algomentor.llm.core.LlmMessage;
-import org.congcong.algomentor.llm.core.LlmModelId;
-import org.congcong.algomentor.llm.core.LlmProviderId;
-import org.congcong.algomentor.llm.core.LlmStreamEvent;
-import org.congcong.algomentor.llm.core.LlmUsage;
+import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
+import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
+import org.congcong.algomentor.llm.core.response.LlmFinishReason;
+import org.congcong.algomentor.llm.core.gateway.LlmGateway;
+import org.congcong.algomentor.llm.core.request.LlmMessage;
+import org.congcong.algomentor.llm.core.model.LlmModelId;
+import org.congcong.algomentor.llm.core.provider.LlmProviderId;
+import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.junit.jupiter.api.Test;
 
 class AgentRunnerTest {

@@ -1,0 +1,19 @@
+package org.congcong.algomentor.llm.core.exception;
+
+/**
+ * 由大语言模型（LLM）提供商及网关验证返回的标准错误类别。
+ */
+public enum LlmErrorCode {
+  INVALID_REQUEST,
+  UNSUPPORTED_CAPABILITY,
+  AUTHENTICATION_FAILED,
+  PERMISSION_DENIED,
+  RATE_LIMITED,
+  TIMEOUT,
+  PROVIDER_UNAVAILABLE,
+  CONTENT_FILTERED,
+  TOOL_CALL_INVALID,
+  RESPONSE_PARSE_FAILED,
+  CANCELLED,
+  UNKNOWN
+}
