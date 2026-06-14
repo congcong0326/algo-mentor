@@ -1,6 +1,7 @@
 package org.congcong.algomentor.llm.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Map;
 
 public sealed interface LlmStreamEvent
     permits LlmStreamEvent.MessageStart,
@@ -16,25 +17,62 @@ public sealed interface LlmStreamEvent
   record MessageStart(LlmProviderId provider, LlmModelId model) implements LlmStreamEvent {
   }
 
-  record ContentDelta(String text) implements LlmStreamEvent {
+  record ContentDelta(String content) implements LlmStreamEvent {
+    public ContentDelta {
+      if (content == null) {
+        throw new IllegalArgumentException("LLM stream content delta must not be null");
+      }
+    }
   }
 
   record ToolCallStart(String id, String name) implements LlmStreamEvent {
+    public ToolCallStart {
+      if (id == null || id.isBlank()) {
+        throw new IllegalArgumentException("LLM stream tool call id must not be blank");
+      }
+      if (name == null || name.isBlank()) {
+        throw new IllegalArgumentException("LLM stream tool call name must not be blank");
+      }
+    }
   }
 
   record ToolCallDelta(String id, JsonNode argumentsDelta) implements LlmStreamEvent {
+    public ToolCallDelta {
+      if (id == null || id.isBlank()) {
+        throw new IllegalArgumentException("LLM stream tool call id must not be blank");
+      }
+    }
   }
 
   record ToolCallEnd(LlmToolCall toolCall) implements LlmStreamEvent {
+    public ToolCallEnd {
+      if (toolCall == null) {
+        throw new IllegalArgumentException("LLM stream tool call must not be null");
+      }
+    }
   }
 
-  record MessageEnd(LlmFinishReason finishReason) implements LlmStreamEvent {
+  record MessageEnd(LlmFinishReason finishReason, Map<String, Object> metadata) implements LlmStreamEvent {
+    public MessageEnd {
+      finishReason = finishReason == null ? LlmFinishReason.UNKNOWN : finishReason;
+      metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
+    }
   }
 
   record Usage(LlmUsage usage) implements LlmStreamEvent {
+    public Usage {
+      if (usage == null) {
+        throw new IllegalArgumentException("LLM stream usage must not be null");
+      }
+    }
   }
 
-  record Error(LlmErrorCode code, String message) implements LlmStreamEvent {
+  record Error(LlmException error) implements LlmStreamEvent {
+    public Error {
+      if (error == null) {
+        throw new IllegalArgumentException("LLM stream error must not be null");
+      }
+    }
   }
 
   record Heartbeat() implements LlmStreamEvent {

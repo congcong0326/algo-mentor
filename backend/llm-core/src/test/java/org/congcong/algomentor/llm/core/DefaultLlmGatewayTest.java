@@ -53,10 +53,108 @@ class DefaultLlmGatewayTest {
     assertThat(provider.callCount()).isZero();
   }
 
+  @Test
+  void rejectsUnsupportedJsonSchemaCapabilityBeforeProviderCall() {
+    FakeProvider provider = new FakeProvider(OPENAI, Set.of(LlmCapability.CHAT_COMPLETION));
+    DefaultLlmGateway gateway = new DefaultLlmGateway(List.of(provider), OPENAI, GPT_5_2);
+    LlmCompletionRequest request = LlmCompletionRequest.builder()
+        .modelSelector(LlmModelSelector.of(OPENAI, GPT_5_2))
+        .messages(List.of(LlmMessage.user("hello")))
+        .responseFormat(new LlmResponseFormat.JsonSchema(
+            "answer",
+            JsonNodeFactory.instance.objectNode().put("type", "object"),
+            true))
+        .build();
+
+    assertThatThrownBy(() -> gateway.complete(request))
+        .isInstanceOf(LlmException.class)
+        .extracting("code")
+        .isEqualTo(LlmErrorCode.UNSUPPORTED_CAPABILITY);
+    assertThat(provider.callCount()).isZero();
+  }
+
+  @Test
+  void rejectsUnsupportedVisionCapabilityBeforeProviderCall() {
+    FakeProvider provider = new FakeProvider(OPENAI, Set.of(LlmCapability.CHAT_COMPLETION));
+    DefaultLlmGateway gateway = new DefaultLlmGateway(List.of(provider), OPENAI, GPT_5_2);
+    LlmCompletionRequest request = LlmCompletionRequest.builder()
+        .modelSelector(LlmModelSelector.of(OPENAI, GPT_5_2))
+        .messages(List.of(new LlmMessage(
+            LlmMessage.Role.USER,
+            List.of(new LlmContentPart.Image("https://example.com/a.png", null, "image/png")),
+            null,
+            null,
+            Map.of())))
+        .build();
+
+    assertThatThrownBy(() -> gateway.complete(request))
+        .isInstanceOf(LlmException.class)
+        .extracting("code")
+        .isEqualTo(LlmErrorCode.UNSUPPORTED_CAPABILITY);
+    assertThat(provider.callCount()).isZero();
+  }
+
+  @Test
+  void rejectsUnsupportedStreamingCapabilityBeforeProviderCall() {
+    FakeProvider provider = new FakeProvider(OPENAI, Set.of(LlmCapability.CHAT_COMPLETION));
+    DefaultLlmGateway gateway = new DefaultLlmGateway(List.of(provider), OPENAI, GPT_5_2);
+    LlmCompletionRequest request = LlmCompletionRequest.builder()
+        .modelSelector(LlmModelSelector.of(OPENAI, GPT_5_2))
+        .messages(List.of(LlmMessage.user("hello")))
+        .build();
+
+    assertThatThrownBy(() -> gateway.stream(request))
+        .isInstanceOf(LlmException.class)
+        .extracting("code")
+        .isEqualTo(LlmErrorCode.UNSUPPORTED_CAPABILITY);
+    assertThat(provider.streamCount()).isZero();
+  }
+
+  @Test
+  void streamEventsValidateAndDefaultFields() {
+    assertThatThrownBy(() -> new LlmStreamEvent.ContentDelta(null))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("LLM stream content delta must not be null");
+
+    LlmStreamEvent.MessageEnd messageEnd = new LlmStreamEvent.MessageEnd(null, null);
+    assertThat(messageEnd.finishReason()).isEqualTo(LlmFinishReason.UNKNOWN);
+    assertThat(messageEnd.metadata()).isEmpty();
+
+    assertThatThrownBy(() -> new LlmStreamEvent.Error(null))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("LLM stream error must not be null");
+  }
+
+  @Test
+  void llmExceptionCarriesContext() {
+    RuntimeException cause = new RuntimeException("transport failed");
+    Map<String, Object> metadata = Map.of("requestId", "req-123");
+
+    LlmException exception = new LlmException(
+        LlmErrorCode.RATE_LIMITED,
+        "rate limited",
+        OPENAI,
+        GPT_5_2,
+        true,
+        metadata,
+        cause);
+
+    assertThat(exception.code()).isEqualTo(LlmErrorCode.RATE_LIMITED);
+    assertThat(exception.getCode()).isEqualTo(LlmErrorCode.RATE_LIMITED);
+    assertThat(exception.provider()).isEqualTo(OPENAI);
+    assertThat(exception.model()).isEqualTo(GPT_5_2);
+    assertThat(exception.retryable()).isTrue();
+    assertThat(exception.metadata()).containsEntry("requestId", "req-123");
+    assertThat(exception.getCause()).isSameAs(cause);
+    assertThatThrownBy(() -> exception.metadata().put("other", "value"))
+        .isInstanceOf(UnsupportedOperationException.class);
+  }
+
   private static final class FakeProvider implements LlmProvider {
     private final LlmProviderId id;
     private final LlmProviderCapabilities capabilities;
     private int callCount;
+    private int streamCount;
     private LlmCompletionRequest lastRequest;
 
     private FakeProvider(LlmProviderId id, Set<LlmCapability> supportedCapabilities) {
@@ -101,6 +199,7 @@ class DefaultLlmGatewayTest {
 
     @Override
     public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
+      streamCount++;
       throw new UnsupportedOperationException("stream not implemented");
     }
 
@@ -110,6 +209,10 @@ class DefaultLlmGatewayTest {
 
     private LlmCompletionRequest lastRequest() {
       return lastRequest;
+    }
+
+    private int streamCount() {
+      return streamCount;
     }
   }
 }

@@ -53,11 +53,25 @@ public class DefaultLlmGateway implements LlmGateway {
     LlmModelId modelId = request.modelSelector().modelId().orElse(defaultModelId);
     LlmProvider provider = providers.get(providerId);
     if (provider == null) {
-      throw new LlmException(LlmErrorCode.INVALID_REQUEST, "Unknown LLM provider: " + providerId.value());
+      throw new LlmException(
+          LlmErrorCode.INVALID_REQUEST,
+          "Unknown LLM provider: " + providerId.value(),
+          providerId,
+          modelId,
+          false,
+          Map.of(),
+          null);
     }
     LlmModelDescriptor descriptor = provider.capabilities().models().get(modelId.value());
     if (descriptor == null) {
-      throw new LlmException(LlmErrorCode.INVALID_REQUEST, "Unknown LLM model: " + modelId.value());
+      throw new LlmException(
+          LlmErrorCode.INVALID_REQUEST,
+          "Unknown LLM model: " + modelId.value(),
+          providerId,
+          modelId,
+          false,
+          Map.of(),
+          null);
     }
     return new ResolvedRequest(
         provider,
@@ -71,6 +85,15 @@ public class DefaultLlmGateway implements LlmGateway {
     if (requiresToolCalling(request)) {
       capabilities.add(LlmCapability.TOOL_CALLING);
     }
+    if (request.responseFormat() instanceof LlmResponseFormat.JsonObject) {
+      capabilities.add(LlmCapability.STRUCTURED_OUTPUT);
+    }
+    if (request.responseFormat() instanceof LlmResponseFormat.JsonSchema) {
+      capabilities.add(LlmCapability.JSON_SCHEMA_OUTPUT);
+    }
+    if (requiresVisionInput(request)) {
+      capabilities.add(LlmCapability.VISION_INPUT);
+    }
     if (streaming) {
       capabilities.add(LlmCapability.STREAMING);
     }
@@ -83,17 +106,24 @@ public class DefaultLlmGateway implements LlmGateway {
         || request.toolChoice().mode() == LlmToolChoice.Mode.SPECIFIC;
   }
 
+  private boolean requiresVisionInput(LlmCompletionRequest request) {
+    return request.messages().stream()
+        .flatMap(message -> message.content().stream())
+        .anyMatch(LlmContentPart.Image.class::isInstance);
+  }
+
   private void ensureSupported(LlmModelDescriptor descriptor, Set<LlmCapability> requiredCapabilities) {
     Set<LlmCapability> supportedCapabilities = descriptor.supportedCapabilities();
     Set<LlmCapability> unsupportedCapabilities = requiredCapabilities.stream()
         .filter(capability -> !supportedCapabilities.contains(capability))
         .collect(Collectors.toUnmodifiableSet());
     if (!unsupportedCapabilities.isEmpty()) {
-      throw new LlmException(
-          LlmErrorCode.UNSUPPORTED_CAPABILITY,
+      throw LlmException.unsupportedCapability(
           "LLM model %s does not support capabilities: %s".formatted(
               descriptor.modelId().value(),
-              unsupportedCapabilities));
+              unsupportedCapabilities),
+          descriptor.providerId(),
+          descriptor.modelId());
     }
   }
 
