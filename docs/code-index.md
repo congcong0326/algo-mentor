@@ -3,6 +3,7 @@
 ## 根目录
 
 - `Makefile`：统一构建、测试、本地运行和前端静态资源同步入口。
+- `pom.xml`：仓库级 Maven 聚合入口，引入 `backend` 多模块工程。
 - `.env.example`：本地开发环境变量样例，不包含真实密钥。
 - `deploy/docker/docker-compose.yml`：本地 PostgreSQL 服务。
 
@@ -10,9 +11,11 @@
 
 - `backend/pom.xml`：Maven 多模块根，统一 Java 17、Spring Boot 与 `openai-java` 版本。
 - `backend/common`：跨模块公共模型、DTO 和工具。
+- `backend/domain`：业务领域模型，例如算法学习主题、题目、学习计划、会话等。
 - `backend/llm-core`：项目内 LLM 抽象契约，定义 provider/gateway、请求响应、消息内容 part、工具调用、结构化输出、流式事件、能力发现、用量和统一错误模型。
 - `backend/llm-openai`：OpenAI provider 适配模块，隔离 `openai-java` SDK、OpenAI 配置、provider 能力描述和后续请求/响应映射。
 - `backend/agent-core`：Agent 核心编排模型，面向 `LlmGateway` 组织模型调用和后续工具执行流程。
+- `backend/mentor-application`：算法学习业务应用层，用 use case 组织 Agent 调用和领域对象。
 - `backend/mentor-api`：Spring MVC API 应用。
 - `backend/mentor-api/src/main/resources/application.yml`：默认应用配置，默认不强制连接数据库。
 - `backend/mentor-api/src/main/resources/application-local.yml`：本地 PostgreSQL 与 Flyway 配置。

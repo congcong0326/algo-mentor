@@ -25,6 +25,7 @@
     <module>llm-core</module>
     <module>llm-openai</module>
     <module>agent-core</module>
+    <module>mentor-application</module>
     <module>mentor-api</module>
   </modules>
 
