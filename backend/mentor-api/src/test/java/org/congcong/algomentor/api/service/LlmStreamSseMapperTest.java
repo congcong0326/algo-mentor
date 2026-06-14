@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
+import org.congcong.algomentor.agent.core.AgentErrorCode;
+import org.congcong.algomentor.agent.core.AgentException;
+import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
@@ -24,7 +27,8 @@ class LlmStreamSseMapperTest {
 
   @Test
   void mapsContentDeltaToNamedJsonEvent() throws Exception {
-    SseEmitter.SseEventBuilder event = mapper.toSseEvent(new LlmStreamEvent.ContentDelta("hello"));
+    SseEmitter.SseEventBuilder event = mapper.toSseEvent(
+        AgentStreamEvent.fromLlm(new LlmStreamEvent.ContentDelta("hello")));
 
     assertThat(sseText(event)).contains("event:content_delta");
     assertThat(serializedData(event)).contains("\"content\":\"hello\"");
@@ -32,10 +36,12 @@ class LlmStreamSseMapperTest {
 
   @Test
   void mapsToolCallEventsToNamedJsonEvents() throws Exception {
-    SseEmitter.SseEventBuilder start = mapper.toSseEvent(new LlmStreamEvent.ToolCallStart("call_1", "search"));
-    SseEmitter.SseEventBuilder delta = mapper.toSseEvent(new LlmStreamEvent.ToolCallDelta("call_1", "{\"q\""));
+    SseEmitter.SseEventBuilder start = mapper.toSseEvent(
+        AgentStreamEvent.fromLlm(new LlmStreamEvent.ToolCallStart("call_1", "search")));
+    SseEmitter.SseEventBuilder delta = mapper.toSseEvent(
+        AgentStreamEvent.fromLlm(new LlmStreamEvent.ToolCallDelta("call_1", "{\"q\"")));
     LlmToolCall toolCall = new LlmToolCall("call_1", "search", objectMapper.readTree("{\"q\":\"binary\"}"));
-    SseEmitter.SseEventBuilder end = mapper.toSseEvent(new LlmStreamEvent.ToolCallEnd(toolCall));
+    SseEmitter.SseEventBuilder end = mapper.toSseEvent(AgentStreamEvent.fromLlm(new LlmStreamEvent.ToolCallEnd(toolCall)));
 
     assertThat(sseText(start)).contains("event:tool_call_start");
     assertThat(serializedData(start)).contains("\"id\":\"call_1\"", "\"name\":\"search\"");
@@ -48,12 +54,12 @@ class LlmStreamSseMapperTest {
   @Test
   void mapsTerminalAndAccountingEventsToNamedJsonEvents() throws Exception {
     SseEmitter.SseEventBuilder start = mapper.toSseEvent(
-        new LlmStreamEvent.MessageStart(LlmProviderId.of("openai"), LlmModelId.of("gpt-test")));
+        AgentStreamEvent.fromLlm(new LlmStreamEvent.MessageStart(LlmProviderId.of("openai"), LlmModelId.of("gpt-test"))));
     SseEmitter.SseEventBuilder usage = mapper.toSseEvent(
-        new LlmStreamEvent.Usage(new LlmUsage(2, 3, 1, 0, 5)));
+        AgentStreamEvent.fromLlm(new LlmStreamEvent.Usage(new LlmUsage(2, 3, 1, 0, 5))));
     SseEmitter.SseEventBuilder end = mapper.toSseEvent(
-        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of("responseId", "resp_1")));
-    SseEmitter.SseEventBuilder heartbeat = mapper.toSseEvent(new LlmStreamEvent.Heartbeat());
+        AgentStreamEvent.fromLlm(new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of("responseId", "resp_1"))));
+    SseEmitter.SseEventBuilder heartbeat = mapper.toSseEvent(AgentStreamEvent.fromLlm(new LlmStreamEvent.Heartbeat()));
 
     assertThat(sseText(start)).contains("event:message_start");
     assertThat(serializedData(start)).contains("\"provider\":\"openai\"", "\"model\":\"gpt-test\"");
@@ -76,7 +82,7 @@ class LlmStreamSseMapperTest {
         Map.of("requestId", "req_1"),
         null);
 
-    SseEmitter.SseEventBuilder event = mapper.toSseEvent(new LlmStreamEvent.Error(exception));
+    SseEmitter.SseEventBuilder event = mapper.toSseEvent(AgentStreamEvent.fromLlm(new LlmStreamEvent.Error(exception)));
 
     assertThat(sseText(event)).contains("event:error");
     assertThat(serializedData(event))
@@ -86,6 +92,42 @@ class LlmStreamSseMapperTest {
         .contains("\"provider\":\"openai\"")
         .contains("\"model\":\"gpt-test\"")
         .contains("\"requestId\":\"req_1\"");
+  }
+
+  @Test
+  void mapsAgentLifecycleEventsToNamedJsonEvents() throws Exception {
+    SseEmitter.SseEventBuilder runStart = mapper.toSseEvent(
+        new AgentStreamEvent.AgentRunStart("run_1", "two pointers", 4));
+    SseEmitter.SseEventBuilder stepStart = mapper.toSseEvent(
+        new AgentStreamEvent.AgentStepStart("run_1", 1));
+    SseEmitter.SseEventBuilder runEnd = mapper.toSseEvent(
+        new AgentStreamEvent.AgentRunEnd("run_1", 1, LlmFinishReason.STOP, Map.of()));
+
+    assertThat(sseText(runStart)).contains("event:agent_run_start");
+    assertThat(serializedData(runStart)).contains("\"runId\":\"run_1\"", "\"topic\":\"two pointers\"", "\"maxSteps\":4");
+    assertThat(sseText(stepStart)).contains("event:agent_step_start");
+    assertThat(serializedData(stepStart)).contains("\"stepIndex\":1");
+    assertThat(sseText(runEnd)).contains("event:agent_run_end");
+    assertThat(serializedData(runEnd)).contains("\"finishReason\":\"STOP\"");
+  }
+
+  @Test
+  void mapsAgentErrorsWithoutSecrets() throws Exception {
+    AgentException exception = new AgentException(
+        AgentErrorCode.UNKNOWN_TOOL,
+        "Unknown agent tool: search",
+        false,
+        Map.of("toolName", "search"),
+        null);
+
+    SseEmitter.SseEventBuilder event = mapper.toSseEvent(new AgentStreamEvent.AgentError("run_1", exception));
+
+    assertThat(sseText(event)).contains("event:agent_error");
+    assertThat(serializedData(event))
+        .contains("\"code\":\"UNKNOWN_TOOL\"")
+        .contains("\"message\":\"Unknown agent tool: search\"")
+        .contains("\"retryable\":false")
+        .contains("\"toolName\":\"search\"");
   }
 
   private String sseText(SseEmitter.SseEventBuilder event) {

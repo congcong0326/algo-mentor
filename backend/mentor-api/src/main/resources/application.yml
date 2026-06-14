@@ -28,6 +28,8 @@ management:
       application: ${spring.application.name}
 
 algo-mentor:
+  agent:
+    max-steps: ${AGENT_MAX_STEPS:4}
   ai:
     openai:
       enabled: ${OPENAI_ENABLED:false}

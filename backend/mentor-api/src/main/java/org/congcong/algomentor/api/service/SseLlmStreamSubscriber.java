@@ -3,13 +3,13 @@ package org.congcong.algomentor.api.service;
 import java.io.IOException;
 import java.util.concurrent.Flow;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
-import org.congcong.algomentor.llm.core.exception.LlmException;
+import org.congcong.algomentor.agent.core.AgentErrorCode;
+import org.congcong.algomentor.agent.core.AgentException;
+import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
-import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-class SseLlmStreamSubscriber implements Flow.Subscriber<LlmStreamEvent> {
+class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent> {
 
   private final SseEmitter emitter;
   private final LlmStreamSseMapper mapper;
@@ -28,7 +28,7 @@ class SseLlmStreamSubscriber implements Flow.Subscriber<LlmStreamEvent> {
   }
 
   @Override
-  public void onNext(LlmStreamEvent event) {
+  public void onNext(AgentStreamEvent event) {
     try {
       emitter.send(mapper.toSseEvent(event));
       if (isTerminalEvent(event)) {
@@ -48,7 +48,7 @@ class SseLlmStreamSubscriber implements Flow.Subscriber<LlmStreamEvent> {
   public void onError(Throwable throwable) {
     if (terminalEventSent.compareAndSet(false, true)) {
       try {
-        emitter.send(mapper.toSseEvent(new LlmStreamEvent.Error(toLlmException(throwable))));
+        emitter.send(mapper.toSseEvent(new AgentStreamEvent.AgentError("unknown", toAgentException(throwable))));
         emitter.complete();
       } catch (IOException | RuntimeException sendFailure) {
         emitter.completeWithError(sendFailure);
@@ -60,7 +60,11 @@ class SseLlmStreamSubscriber implements Flow.Subscriber<LlmStreamEvent> {
   public void onComplete() {
     if (terminalEventSent.compareAndSet(false, true)) {
       try {
-        emitter.send(mapper.toSseEvent(new LlmStreamEvent.MessageEnd(LlmFinishReason.UNKNOWN, null)));
+        emitter.send(mapper.toSseEvent(new AgentStreamEvent.AgentRunEnd(
+            "unknown",
+            1,
+            LlmFinishReason.UNKNOWN,
+            null)));
         emitter.complete();
       } catch (IOException | RuntimeException sendFailure) {
         emitter.completeWithError(sendFailure);
@@ -74,15 +78,15 @@ class SseLlmStreamSubscriber implements Flow.Subscriber<LlmStreamEvent> {
     }
   }
 
-  private boolean isTerminalEvent(LlmStreamEvent event) {
-    return event instanceof LlmStreamEvent.MessageEnd || event instanceof LlmStreamEvent.Error;
+  private boolean isTerminalEvent(AgentStreamEvent event) {
+    return event instanceof AgentStreamEvent.AgentRunEnd || event instanceof AgentStreamEvent.AgentError;
   }
 
-  private LlmException toLlmException(Throwable throwable) {
-    if (throwable instanceof LlmException llmException) {
-      return llmException;
+  private AgentException toAgentException(Throwable throwable) {
+    if (throwable instanceof AgentException agentException) {
+      return agentException;
     }
-    String message = throwable.getMessage() == null ? "LLM stream failed" : throwable.getMessage();
-    return new LlmException(LlmErrorCode.UNKNOWN, message, throwable);
+    String message = throwable.getMessage() == null ? "Agent stream failed" : throwable.getMessage();
+    return new AgentException(AgentErrorCode.UNKNOWN, message, false, null, throwable);
   }
 }

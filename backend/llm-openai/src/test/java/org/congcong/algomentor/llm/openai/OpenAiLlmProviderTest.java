@@ -12,7 +12,9 @@ import com.openai.models.responses.Response;
 import com.openai.models.responses.ResponseCompletedEvent;
 import com.openai.models.responses.ResponseCreateParams;
 import com.openai.models.responses.ResponseCreatedEvent;
+import com.openai.models.responses.ResponseFunctionToolCall;
 import com.openai.models.responses.ResponseFormatTextJsonSchemaConfig;
+import com.openai.models.responses.ResponseOutputItem;
 import com.openai.models.responses.ResponseOutputMessage;
 import com.openai.models.responses.ResponseOutputText;
 import com.openai.models.responses.ResponseStatus;
@@ -109,6 +111,20 @@ class OpenAiLlmProviderTest {
         .extracting(ToolChoiceFunction::name)
         .isEqualTo("search_problem");
   }
+
+  @Test
+  void mapsToolCallResponseToToolCallsFinishReason() {
+    FakeResponsesClient client = new FakeResponsesClient(toolCallResponse());
+    OpenAiLlmProvider provider = new OpenAiLlmProvider(enabledProperties(), client);
+
+    LlmCompletionResult result = provider.complete(textRequest());
+
+    assertThat(result.finishReason()).isEqualTo(LlmFinishReason.TOOL_CALLS);
+    assertThat(result.toolCalls()).hasSize(1);
+    assertThat(result.toolCalls().get(0).name()).isEqualTo("fake_lookup");
+    assertThat(result.toolCalls().get(0).arguments().get("topic").asText()).isEqualTo("two pointers");
+  }
+
 
   @Test
   void mapsJsonResponseFormats() {
@@ -231,6 +247,17 @@ class OpenAiLlmProviderTest {
                 .annotations(List.of())
                 .build())
             .build())
+        .build();
+  }
+
+  private static Response toolCallResponse() {
+    return response("")
+        .toBuilder()
+        .output(List.of(ResponseOutputItem.ofFunctionCall(ResponseFunctionToolCall.builder()
+            .callId("call_1")
+            .name("fake_lookup")
+            .arguments("{\"topic\":\"two pointers\"}")
+            .build())))
         .build();
   }
 

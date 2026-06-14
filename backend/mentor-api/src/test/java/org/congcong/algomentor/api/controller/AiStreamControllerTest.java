@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.mentor.application.ExplainTopicUseCase;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
@@ -41,7 +42,7 @@ class AiStreamControllerTest {
 
   @Test
   void streamExplanationSendsLlmStreamEventsAsSseEvents() throws Exception {
-    SubmissionPublisher<LlmStreamEvent> publisher = new SubmissionPublisher<>();
+    SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
     when(explainTopicUseCase.stream("two pointers")).thenReturn(publisher);
 
     MvcResult result = mockMvc.perform(get("/api/ai/explanations/stream")
@@ -49,16 +50,24 @@ class AiStreamControllerTest {
         .andExpect(request().asyncStarted())
         .andReturn();
 
-    publisher.submit(new LlmStreamEvent.MessageStart(LlmProviderId.of("openai"), LlmModelId.of("gpt-test")));
-    publisher.submit(new LlmStreamEvent.ContentDelta("Use two "));
-    publisher.submit(new LlmStreamEvent.ContentDelta("indices."));
-    publisher.submit(new LlmStreamEvent.Usage(new LlmUsage(3, 5, 0, 0, 8)));
-    publisher.submit(new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of("responseId", "resp_123")));
+    publisher.submit(new AgentStreamEvent.AgentRunStart("run_1", "two pointers", 4));
+    publisher.submit(new AgentStreamEvent.AgentStepStart("run_1", 1));
+    publisher.submit(AgentStreamEvent.fromLlm(
+        new LlmStreamEvent.MessageStart(LlmProviderId.of("openai"), LlmModelId.of("gpt-test"))));
+    publisher.submit(AgentStreamEvent.fromLlm(new LlmStreamEvent.ContentDelta("Use two ")));
+    publisher.submit(AgentStreamEvent.fromLlm(new LlmStreamEvent.ContentDelta("indices.")));
+    publisher.submit(AgentStreamEvent.fromLlm(new LlmStreamEvent.Usage(new LlmUsage(3, 5, 0, 0, 8))));
+    publisher.submit(AgentStreamEvent.fromLlm(
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of("responseId", "resp_123"))));
+    publisher.submit(new AgentStreamEvent.AgentRunEnd("run_1", 1, LlmFinishReason.STOP, Map.of()));
     publisher.close();
 
     mockMvc.perform(asyncDispatch(result))
         .andExpect(status().isOk())
         .andExpect(header().string(HttpHeaders.CONTENT_TYPE, containsString(MediaType.TEXT_EVENT_STREAM_VALUE)))
+        .andExpect(content().string(containsString("event:agent_run_start")))
+        .andExpect(content().string(containsString("\"runId\":\"run_1\"")))
+        .andExpect(content().string(containsString("event:agent_step_start")))
         .andExpect(content().string(containsString("event:message_start")))
         .andExpect(content().string(containsString("\"provider\":\"openai\"")))
         .andExpect(content().string(containsString("event:content_delta")))
@@ -67,7 +76,8 @@ class AiStreamControllerTest {
         .andExpect(content().string(containsString("event:usage")))
         .andExpect(content().string(containsString("\"totalTokens\":8")))
         .andExpect(content().string(containsString("event:message_end")))
-        .andExpect(content().string(containsString("\"finishReason\":\"STOP\"")));
+        .andExpect(content().string(containsString("\"finishReason\":\"STOP\"")))
+        .andExpect(content().string(containsString("event:agent_run_end")));
 
     verify(explainTopicUseCase).stream("two pointers");
   }

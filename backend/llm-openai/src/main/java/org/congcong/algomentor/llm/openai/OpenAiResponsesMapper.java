@@ -84,7 +84,7 @@ final class OpenAiResponsesMapper {
         text.isEmpty() ? LlmMessage.assistant() : LlmMessage.assistant(text),
         toolCalls,
         structuredOutput,
-        finishReason(response),
+        finishReason(response, toolCalls),
         toUsage(response.usage().orElse(null)),
         providerId,
         modelId,
@@ -108,6 +108,13 @@ final class OpenAiResponsesMapper {
   }
 
   LlmFinishReason finishReason(Response response) {
+    return finishReason(response, extractToolCalls(response));
+  }
+
+  LlmFinishReason finishReason(Response response, List<LlmToolCall> toolCalls) {
+    if (toolCalls != null && !toolCalls.isEmpty()) {
+      return LlmFinishReason.TOOL_CALLS;
+    }
     return response.status()
         .map(this::finishReason)
         .orElse(LlmFinishReason.UNKNOWN);
