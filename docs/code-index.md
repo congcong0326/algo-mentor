@@ -10,6 +10,9 @@
 
 - `backend/pom.xml`：Maven 多模块根，统一 Java 17、Spring Boot 与 `openai-java` 版本。
 - `backend/common`：跨模块公共模型、DTO 和工具。
+- `backend/llm-core`：项目内 LLM 抽象契约，定义 provider/gateway、请求响应、消息内容 part、工具调用、结构化输出、流式事件、能力发现、用量和统一错误模型。
+- `backend/llm-openai`：OpenAI provider 适配模块，隔离 `openai-java` SDK、OpenAI 配置、provider 能力描述和后续请求/响应映射。
+- `backend/agent-core`：Agent 核心编排模型，面向 `LlmGateway` 组织模型调用和后续工具执行流程。
 - `backend/mentor-api`：Spring MVC API 应用。
 - `backend/mentor-api/src/main/resources/application.yml`：默认应用配置，默认不强制连接数据库。
 - `backend/mentor-api/src/main/resources/application-local.yml`：本地 PostgreSQL 与 Flyway 配置。
