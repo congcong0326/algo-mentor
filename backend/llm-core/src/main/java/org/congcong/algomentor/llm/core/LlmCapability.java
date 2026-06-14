@@ -1,0 +1,15 @@
+package org.congcong.algomentor.llm.core;
+
+public enum LlmCapability {
+  CHAT_COMPLETION,
+  STREAMING,
+  TOOL_CALLING,
+  STRUCTURED_OUTPUT,
+  JSON_SCHEMA_OUTPUT,
+  VISION_INPUT,
+  FILE_INPUT,
+  REASONING_EFFORT,
+  TOKEN_USAGE,
+  CACHED_TOKEN_USAGE,
+  EMBEDDING
+}
