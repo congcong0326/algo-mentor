@@ -1,0 +1,9 @@
+spring:
+  autoconfigure:
+    exclude: []
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:algo_mentor}
+    username: ${POSTGRES_USER:algo_mentor}
+    password: ${POSTGRES_PASSWORD:algo_mentor_dev}
+  flyway:
+    enabled: true

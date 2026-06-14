@@ -1,0 +1,38 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: algo-mentor-api
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
+  jackson:
+    default-property-inclusion: non_null
+    time-zone: UTC
+  flyway:
+    enabled: ${FLYWAY_ENABLED:false}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+algo-mentor:
+  ai:
+    openai:
+      enabled: ${OPENAI_ENABLED:false}
+      api-key: ${OPENAI_API_KEY:}
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+      model: ${OPENAI_MODEL:gpt-5.2}
+      timeout: ${OPENAI_TIMEOUT:30s}
+      max-retries: ${OPENAI_MAX_RETRIES:2}
