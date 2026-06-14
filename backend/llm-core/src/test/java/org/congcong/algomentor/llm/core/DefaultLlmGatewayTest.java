@@ -27,6 +27,7 @@ class DefaultLlmGatewayTest {
     LlmCompletionResult result = gateway.complete(request);
 
     assertThat(result.message().text()).isEqualTo("ok");
+    assertThat(provider.models()).hasSize(1);
     assertThat(provider.callCount()).isOne();
     assertThat(provider.lastRequest().modelSelector().providerId()).contains(OPENAI);
     assertThat(provider.lastRequest().modelSelector().modelId()).contains(GPT_5_2);
@@ -180,6 +181,11 @@ class DefaultLlmGatewayTest {
     @Override
     public LlmProviderCapabilities capabilities() {
       return capabilities;
+    }
+
+    @Override
+    public List<LlmModelDescriptor> models() {
+      return List.copyOf(capabilities.models().values());
     }
 
     @Override
