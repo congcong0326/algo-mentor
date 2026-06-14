@@ -15,6 +15,6 @@ public record LlmRequest(String model, List<LlmMessage> messages) {
   }
 
   public static LlmRequest userPrompt(String model, String prompt) {
-    return new LlmRequest(model, List.of(new LlmMessage(LlmMessage.Role.USER, prompt)));
+    return new LlmRequest(model, List.of(LlmMessage.user(prompt)));
   }
 }
