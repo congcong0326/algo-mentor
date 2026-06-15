@@ -1,148 +1,412 @@
 import {
-  BookOpenCheck,
-  Brain,
-  CalendarDays,
-  ChartNoAxesCombined,
-  CircleCheck,
-  ClipboardList,
-  Flame,
-  MessageSquareText,
+  Activity,
+  AlertTriangle,
+  CircleStop,
+  Play,
+  Radio,
   RotateCcw,
-  Search,
-  Timer,
+  Server,
 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
-const practiceItems = [
-  { title: '两数之和变体', difficulty: 'Easy', state: '待练习', accent: 'green' },
-  { title: '滑动窗口最大值', difficulty: 'Hard', state: '重点复盘', accent: 'red' },
-  { title: '最长递增子序列', difficulty: 'Medium', state: '进行中', accent: 'amber' },
-];
+type ConnectionState = 'idle' | 'connecting' | 'open' | 'stopped' | 'error' | 'done';
 
-const reviewItems = [
-  { title: '边界条件遗漏', count: 6 },
-  { title: '复杂度估算偏差', count: 3 },
-  { title: '状态转移不完整', count: 4 },
-];
+type SseEventName =
+  | 'agent_run_start'
+  | 'agent_step_start'
+  | 'agent_tool_start'
+  | 'agent_tool_end'
+  | 'agent_step_end'
+  | 'agent_run_end'
+  | 'message_start'
+  | 'content_delta'
+  | 'tool_call_start'
+  | 'tool_call_delta'
+  | 'tool_call_end'
+  | 'usage'
+  | 'message_end'
+  | 'heartbeat'
+  | 'error'
+  | 'agent_error';
 
-export default function App() {
-  return (
-    <div className="app-shell">
-      <aside className="sidebar" aria-label="主导航">
-        <div className="brand">
-          <Brain aria-hidden="true" />
-          <span>Algo Mentor</span>
-        </div>
-        <nav className="nav-list">
-          <button className="nav-item active" title="今日训练" aria-label="今日训练">
-            <Flame aria-hidden="true" />
-          </button>
-          <button className="nav-item" title="题库" aria-label="题库">
-            <ClipboardList aria-hidden="true" />
-          </button>
-          <button className="nav-item" title="AI 讲解" aria-label="AI 讲解">
-            <MessageSquareText aria-hidden="true" />
-          </button>
-          <button className="nav-item" title="错题复盘" aria-label="错题复盘">
-            <RotateCcw aria-hidden="true" />
-          </button>
-        </nav>
-      </aside>
-
-      <main className="workspace">
-        <header className="topbar">
-          <div>
-            <p className="eyebrow">学习工作台</p>
-            <h1>今日训练</h1>
-          </div>
-          <div className="search-box">
-            <Search aria-hidden="true" />
-            <input aria-label="搜索题目" placeholder="搜索题目" />
-          </div>
-        </header>
-
-        <section className="metrics" aria-label="学习指标">
-          <article className="metric-card">
-            <CalendarDays aria-hidden="true" />
-            <div>
-              <span>连续学习</span>
-              <strong>12 天</strong>
-            </div>
-          </article>
-          <article className="metric-card">
-            <Timer aria-hidden="true" />
-            <div>
-              <span>今日投入</span>
-              <strong>48 分钟</strong>
-            </div>
-          </article>
-          <article className="metric-card">
-            <ChartNoAxesCombined aria-hidden="true" />
-            <div>
-              <span>掌握率</span>
-              <strong>76%</strong>
-            </div>
-          </article>
-        </section>
-
-        <div className="content-grid">
-          <section className="panel practice-panel" aria-labelledby="practice-title">
-            <div className="panel-header">
-              <div>
-                <p className="eyebrow">队列</p>
-                <h2 id="practice-title">题目列表</h2>
-              </div>
-              <button className="icon-button" title="完成当前题" aria-label="完成当前题">
-                <CircleCheck aria-hidden="true" />
-              </button>
-            </div>
-            <div className="problem-list">
-              {practiceItems.map((item) => (
-                <article className="problem-card" key={item.title}>
-                  <span className={`status-dot ${item.accent}`} aria-hidden="true" />
-                  <div>
-                    <h3>{item.title}</h3>
-                    <p>{item.difficulty}</p>
-                  </div>
-                  <span className="state-label">{item.state}</span>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className="panel ai-panel" aria-labelledby="ai-title">
-            <div className="panel-header">
-              <div>
-                <p className="eyebrow">助手</p>
-                <h2 id="ai-title">AI 讲解</h2>
-              </div>
-              <BookOpenCheck aria-hidden="true" />
-            </div>
-            <div className="explain-box">
-              <p>双指针适合在有序区间内维护两个移动边界。</p>
-              <button>生成讲解</button>
-            </div>
-          </section>
-
-          <section className="panel review-panel" aria-labelledby="review-title">
-            <div className="panel-header">
-              <div>
-                <p className="eyebrow">复盘</p>
-                <h2 id="review-title">错题复盘</h2>
-              </div>
-              <RotateCcw aria-hidden="true" />
-            </div>
-            <div className="review-list">
-              {reviewItems.map((item) => (
-                <article className="review-row" key={item.title}>
-                  <span>{item.title}</span>
-                  <strong>{item.count}</strong>
-                </article>
-              ))}
-            </div>
-          </section>
-        </div>
-      </main>
-    </div>
-  );
+interface StreamLogEntry {
+  id: number;
+  eventName: SseEventName | 'connection_open' | 'connection_stopped' | 'connection_error';
+  timestamp: string;
+  data: unknown;
 }
 
+interface MessageStartData {
+  provider?: string;
+  model?: string;
+}
+
+interface ContentDeltaData {
+  content?: string;
+}
+
+interface UsageData {
+  usage?: {
+    inputTokens?: number;
+    outputTokens?: number;
+    reasoningTokens?: number;
+    cachedInputTokens?: number;
+    totalTokens?: number;
+  };
+}
+
+interface MessageEndData {
+  finishReason?: string;
+}
+
+const streamEvents: SseEventName[] = [
+  'agent_run_start',
+  'agent_step_start',
+  'agent_tool_start',
+  'agent_tool_end',
+  'agent_step_end',
+  'agent_run_end',
+  'message_start',
+  'content_delta',
+  'tool_call_start',
+  'tool_call_delta',
+  'tool_call_end',
+  'usage',
+  'message_end',
+  'heartbeat',
+  'error',
+  'agent_error',
+];
+
+function parseEventData(rawData: string): unknown {
+  if (!rawData) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(rawData);
+  } catch {
+    return rawData;
+  }
+}
+
+function formatJson(data: unknown): string {
+  if (typeof data === 'string') {
+    return data;
+  }
+
+  return JSON.stringify(data, null, 2);
+}
+
+function nowTime(): string {
+  return new Intl.DateTimeFormat('zh-CN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    fractionalSecondDigits: 3,
+  }).format(new Date());
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function readMessageStart(data: unknown): MessageStartData {
+  return isObject(data) ? data : {};
+}
+
+function readContentDelta(data: unknown): ContentDeltaData {
+  return isObject(data) ? data : {};
+}
+
+function readUsage(data: unknown): UsageData {
+  return isObject(data) ? data : {};
+}
+
+function readMessageEnd(data: unknown): MessageEndData {
+  return isObject(data) ? data : {};
+}
+
+function mergeContentDeltaData(previousData: unknown, nextData: unknown): unknown {
+  if (!isObject(previousData) || !isObject(nextData)) {
+    return nextData;
+  }
+
+  const previousContent = readContentDelta(previousData).content ?? '';
+  const nextContent = readContentDelta(nextData).content ?? '';
+
+  return {
+    ...previousData,
+    ...nextData,
+    content: previousContent + nextContent,
+  };
+}
+
+function statusLabel(state: ConnectionState): string {
+  const labels: Record<ConnectionState, string> = {
+    idle: 'idle',
+    connecting: 'connecting',
+    open: 'open',
+    stopped: 'stopped',
+    error: 'error',
+    done: 'done',
+  };
+
+  return labels[state];
+}
+
+export default function App() {
+  const [topic, setTopic] = useState('two pointers');
+  const [connectionState, setConnectionState] = useState<ConnectionState>('idle');
+  const [logs, setLogs] = useState<StreamLogEntry[]>([]);
+  const [output, setOutput] = useState('');
+  const [provider, setProvider] = useState('-');
+  const [model, setModel] = useState('-');
+  const [finishReason, setFinishReason] = useState('-');
+  const [usage, setUsage] = useState<UsageData['usage']>();
+  const eventSourceRef = useRef<EventSource | null>(null);
+  const logIdRef = useRef(0);
+
+  useEffect(() => {
+    return () => {
+      eventSourceRef.current?.close();
+    };
+  }, []);
+
+  function addLog(eventName: StreamLogEntry['eventName'], data: unknown) {
+    const entry: StreamLogEntry = {
+      id: logIdRef.current,
+      eventName,
+      timestamp: nowTime(),
+      data,
+    };
+
+    setLogs((current) => {
+      const lastLog = current.at(-1);
+      if (eventName === 'content_delta' && lastLog?.eventName === 'content_delta') {
+        return [
+          ...current.slice(0, -1),
+          {
+            ...lastLog,
+            timestamp: entry.timestamp,
+            data: mergeContentDeltaData(lastLog.data, data),
+          },
+        ];
+      }
+
+      logIdRef.current += 1;
+      return [...current, entry];
+    });
+  }
+
+  function resetStreamState() {
+    logIdRef.current = 0;
+    setLogs([]);
+    setOutput('');
+    setProvider('-');
+    setModel('-');
+    setFinishReason('-');
+    setUsage(undefined);
+  }
+
+  function closeCurrentSource(nextState: ConnectionState) {
+    eventSourceRef.current?.close();
+    eventSourceRef.current = null;
+    setConnectionState(nextState);
+  }
+
+  function handleEvent(eventName: SseEventName, event: MessageEvent<string>) {
+    const data = parseEventData(event.data);
+    addLog(eventName, data);
+
+    if (eventName === 'message_start') {
+      const messageStart = readMessageStart(data);
+      setProvider(messageStart.provider ?? '-');
+      setModel(messageStart.model ?? '-');
+      setConnectionState('open');
+    }
+
+    if (eventName === 'content_delta') {
+      const delta = readContentDelta(data);
+      setOutput((current) => current + (delta.content ?? ''));
+    }
+
+    if (eventName === 'usage') {
+      setUsage(readUsage(data).usage);
+    }
+
+    if (eventName === 'message_end') {
+      setFinishReason(readMessageEnd(data).finishReason ?? '-');
+    }
+
+    if (eventName === 'agent_run_end') {
+      closeCurrentSource('done');
+    }
+
+    if (eventName === 'error' || eventName === 'agent_error') {
+      setConnectionState('error');
+    }
+  }
+
+  function startStream() {
+    const trimmedTopic = topic.trim();
+    if (!trimmedTopic) {
+      return;
+    }
+
+    eventSourceRef.current?.close();
+    resetStreamState();
+    setConnectionState('connecting');
+
+    const source = new EventSource(`/api/ai/explanations/stream?topic=${encodeURIComponent(trimmedTopic)}`);
+    eventSourceRef.current = source;
+
+    source.onopen = () => {
+      setConnectionState('open');
+      addLog('connection_open', { message: 'EventSource connection opened.' });
+    };
+
+    source.onerror = () => {
+      addLog('connection_error', { message: 'EventSource connection error or closed by server.' });
+      closeCurrentSource('error');
+    };
+
+    streamEvents.forEach((eventName) => {
+      source.addEventListener(eventName, (event) => {
+        handleEvent(eventName, event as MessageEvent<string>);
+      });
+    });
+  }
+
+  function stopStream() {
+    addLog('connection_stopped', { message: 'Connection stopped by user.' });
+    closeCurrentSource('stopped');
+  }
+
+  function clearLogs() {
+    resetStreamState();
+    if (!eventSourceRef.current) {
+      setConnectionState('idle');
+    }
+  }
+
+  const isStreaming = connectionState === 'connecting' || connectionState === 'open';
+  const requestUrl = `/api/ai/explanations/stream?topic=${encodeURIComponent(topic.trim() || 'two pointers')}`;
+
+  return (
+    <main className="test-shell">
+      <section className="test-header" aria-labelledby="page-title">
+        <div>
+          <p className="eyebrow">SSE TEST CLIENT</p>
+          <h1 id="page-title">AI SSE 测试台</h1>
+        </div>
+        <div className={`status-pill ${connectionState}`}>
+          <Radio aria-hidden="true" />
+          <span>{statusLabel(connectionState)}</span>
+        </div>
+      </section>
+
+      <section className="control-panel" aria-label="SSE 请求控制">
+        <label className="topic-field">
+          <span>Topic</span>
+          <input
+            aria-label="Topic"
+            disabled={isStreaming}
+            onChange={(event) => setTopic(event.target.value)}
+            placeholder="输入任意测试 topic"
+            value={topic}
+          />
+        </label>
+        <div className="button-row">
+          <button className="primary-button" disabled={isStreaming || !topic.trim()} onClick={startStream} type="button">
+            <Play aria-hidden="true" />
+            <span>Start</span>
+          </button>
+          <button className="secondary-button" disabled={!isStreaming} onClick={stopStream} type="button">
+            <CircleStop aria-hidden="true" />
+            <span>Stop</span>
+          </button>
+          <button className="secondary-button" disabled={isStreaming} onClick={clearLogs} type="button">
+            <RotateCcw aria-hidden="true" />
+            <span>Clear</span>
+          </button>
+        </div>
+        <div className="request-url">
+          <Server aria-hidden="true" />
+          <code>{requestUrl}</code>
+        </div>
+      </section>
+
+      <section className="summary-grid" aria-label="流式请求摘要">
+        <article className="summary-card">
+          <span>Provider</span>
+          <strong>{provider}</strong>
+        </article>
+        <article className="summary-card">
+          <span>Model</span>
+          <strong>{model}</strong>
+        </article>
+        <article className="summary-card">
+          <span>Finish</span>
+          <strong>{finishReason}</strong>
+        </article>
+        <article className="summary-card">
+          <span>Tokens</span>
+          <strong>{usage?.totalTokens ?? '-'}</strong>
+        </article>
+      </section>
+
+      <section className="stream-grid">
+        <article className="output-panel" aria-labelledby="output-title">
+          <div className="panel-title">
+            <Activity aria-hidden="true" />
+            <h2 id="output-title">模型输出</h2>
+          </div>
+          <pre className="model-output">{output || '等待 content_delta 事件...'}</pre>
+          {usage && (
+            <dl className="usage-row" aria-label="Token usage">
+              <div>
+                <dt>input</dt>
+                <dd>{usage.inputTokens ?? '-'}</dd>
+              </div>
+              <div>
+                <dt>output</dt>
+                <dd>{usage.outputTokens ?? '-'}</dd>
+              </div>
+              <div>
+                <dt>reasoning</dt>
+                <dd>{usage.reasoningTokens ?? '-'}</dd>
+              </div>
+              <div>
+                <dt>cached</dt>
+                <dd>{usage.cachedInputTokens ?? '-'}</dd>
+              </div>
+            </dl>
+          )}
+        </article>
+
+        <article className="log-panel" aria-labelledby="log-title">
+          <div className="panel-title">
+            <AlertTriangle aria-hidden="true" />
+            <h2 id="log-title">事件日志</h2>
+          </div>
+          <div className="event-list">
+            {logs.length === 0 ? (
+              <p className="empty-log">等待 SSE 事件...</p>
+            ) : (
+              logs.map((log) => (
+                <article className="event-row" key={log.id}>
+                  <div className="event-row-header">
+                    <span className={`event-name ${log.eventName}`}>{log.eventName}</span>
+                    <time>{log.timestamp}</time>
+                  </div>
+                  <pre>{formatJson(log.data)}</pre>
+                </article>
+              ))
+            )}
+          </div>
+        </article>
+      </section>
+    </main>
+  );
+}
