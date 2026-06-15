@@ -2,6 +2,7 @@ package org.congcong.algomentor.mentor.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Set;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
@@ -11,6 +12,8 @@ import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
+import org.congcong.algomentor.llm.core.model.LlmModelId;
+import org.congcong.algomentor.llm.core.model.LlmModelSelector;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
@@ -56,7 +59,11 @@ class ExplainTopicUseCaseTest {
     private AgentRequest lastStreamRequest;
 
     private StubAgentLoopRunner() {
-      super(new UnusedGateway(), "gpt-test", AgentToolRegistry.empty(), 1);
+      super(
+          new UnusedGateway(),
+          new LlmModelSelector(null, LlmModelId.of("gpt-test"), Set.of(), null),
+          AgentToolRegistry.empty(),
+          1);
     }
 
     @Override

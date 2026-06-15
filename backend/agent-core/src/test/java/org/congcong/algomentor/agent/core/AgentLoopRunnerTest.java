@@ -7,12 +7,14 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
 import org.congcong.algomentor.domain.learning.LearningTopic;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
+import org.congcong.algomentor.llm.core.model.LlmModelSelector;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
@@ -34,7 +36,15 @@ class AgentLoopRunnerTest {
         new LlmStreamEvent.ContentDelta("Use two indices."),
         new LlmStreamEvent.Usage(LlmUsage.empty()),
         new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
-    AgentLoopRunner runner = new AgentLoopRunner(gateway, "gpt-test", AgentToolRegistry.empty(), 4);
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        new LlmModelSelector(
+            LlmProviderId.of("test-provider"),
+            LlmModelId.of("gpt-test"),
+            Set.of(),
+            null),
+        AgentToolRegistry.empty(),
+        4);
 
     List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(LearningTopic.of("two pointers"))));
 
@@ -52,6 +62,11 @@ class AgentLoopRunnerTest {
     assertThat(gateway.requests).hasSize(1);
     assertThat(gateway.requests.get(0).tools()).isEmpty();
     assertThat(gateway.requests.get(0).messages().get(0).text()).contains("two pointers");
+    assertThat(gateway.requests.get(0).modelSelector().providerId())
+        .hasValue(LlmProviderId.of("test-provider"));
+    assertThat(gateway.requests.get(0).modelSelector().modelId())
+        .hasValue(LlmModelId.of("gpt-test"));
+    assertThat(gateway.requests.get(0).modelSelector().purpose()).isEqualTo("topic-explanation");
   }
 
   @Test
@@ -102,7 +117,11 @@ class AgentLoopRunnerTest {
         new LlmStreamEvent.ToolCallEnd(
             new LlmToolCall("call_1", "missing_tool", JsonNodeFactory.instance.objectNode())),
         new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
-    AgentLoopRunner runner = new AgentLoopRunner(gateway, "gpt-test", AgentToolRegistry.empty(), 4);
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        new LlmModelSelector(null, LlmModelId.of("gpt-test"), Set.of(), null),
+        AgentToolRegistry.empty(),
+        4);
 
     List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(LearningTopic.of("two pointers"))));
 

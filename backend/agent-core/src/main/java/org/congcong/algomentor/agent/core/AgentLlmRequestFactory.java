@@ -15,7 +15,11 @@ final class AgentLlmRequestFactory {
   }
 
   static LlmCompletionRequest build(String model, AgentRequest request) {
-    return build(model, initialMessages(request), List.of());
+    return build(selectorFromModel(model), request);
+  }
+
+  static LlmCompletionRequest build(LlmModelSelector modelSelector, AgentRequest request) {
+    return build(modelSelector, initialMessages(request), List.of());
   }
 
   static List<LlmMessage> initialMessages(AgentRequest request) {
@@ -24,11 +28,33 @@ final class AgentLlmRequestFactory {
   }
 
   static LlmCompletionRequest build(String model, List<LlmMessage> messages, List<LlmToolSpec> tools) {
+    return build(selectorFromModel(model), messages, tools);
+  }
+
+  static LlmCompletionRequest build(LlmModelSelector modelSelector, List<LlmMessage> messages, List<LlmToolSpec> tools) {
     return LlmCompletionRequest.builder()
-        .modelSelector(new LlmModelSelector(null, LlmModelId.of(model), Set.of(), "topic-explanation"))
+        .modelSelector(selectorForTopicExplanation(modelSelector))
         .messages(messages)
         .tools(tools)
         .toolChoice(tools == null || tools.isEmpty() ? LlmToolChoice.none() : LlmToolChoice.auto())
         .build();
+  }
+
+  static LlmModelSelector selectorFromModel(String model) {
+    if (model == null || model.isBlank()) {
+      throw new IllegalArgumentException("Agent LLM model must not be blank");
+    }
+    return new LlmModelSelector(null, LlmModelId.of(model), Set.of(), "topic-explanation");
+  }
+
+  private static LlmModelSelector selectorForTopicExplanation(LlmModelSelector selector) {
+    if (selector == null) {
+      throw new IllegalArgumentException("Agent LLM model selector must not be null");
+    }
+    return new LlmModelSelector(
+        selector.providerId().orElse(null),
+        selector.modelId().orElse(null),
+        selector.requiredCapabilities(),
+        "topic-explanation");
   }
 }

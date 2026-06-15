@@ -31,6 +31,9 @@ algo-mentor:
   agent:
     max-steps: ${AGENT_MAX_STEPS:4}
   ai:
+    gateway:
+      default-provider: ${AI_GATEWAY_DEFAULT_PROVIDER:openai}
+      default-model: ${AI_GATEWAY_DEFAULT_MODEL:${OPENAI_MODEL:gpt-5.2}}
     openai:
       enabled: ${OPENAI_ENABLED:false}
       api-key: ${OPENAI_API_KEY:}

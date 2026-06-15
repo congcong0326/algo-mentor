@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow;
@@ -11,6 +12,8 @@ import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.atomic.AtomicReference;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
+import org.congcong.algomentor.llm.core.model.LlmModelId;
+import org.congcong.algomentor.llm.core.model.LlmModelSelector;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
@@ -21,19 +24,26 @@ import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
 public class AgentLoopRunner {
 
   private final LlmGateway llmGateway;
-  private final String model;
+  private final LlmModelSelector modelSelector;
   private final AgentToolRegistry toolRegistry;
   private final int maxSteps;
 
+  @Deprecated(forRemoval = false)
   public AgentLoopRunner(LlmGateway llmGateway, String model, AgentToolRegistry toolRegistry, int maxSteps) {
-    if (model == null || model.isBlank()) {
-      throw new IllegalArgumentException("Agent loop model must not be blank");
-    }
+    this(llmGateway, selectorFromModel(model), toolRegistry, maxSteps);
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
+      LlmModelSelector modelSelector,
+      AgentToolRegistry toolRegistry,
+      int maxSteps
+  ) {
     if (maxSteps < 1) {
       throw new IllegalArgumentException("Agent loop max steps must be positive");
     }
     this.llmGateway = Objects.requireNonNull(llmGateway, "llmGateway must not be null");
-    this.model = model;
+    this.modelSelector = Objects.requireNonNull(modelSelector, "modelSelector must not be null");
     this.toolRegistry = toolRegistry == null ? AgentToolRegistry.empty() : toolRegistry;
     this.maxSteps = maxSteps;
   }
@@ -131,7 +141,7 @@ public class AgentLoopRunner {
       SubmissionPublisher<AgentStreamEvent> publisher
   ) {
     publisher.submit(new AgentStreamEvent.AgentStepStart(runId, stepIndex));
-    LlmCompletionRequest llmRequest = AgentLlmRequestFactory.build(model, messages, toolRegistry.specs());
+    LlmCompletionRequest llmRequest = AgentLlmRequestFactory.build(modelSelector, messages, toolRegistry.specs());
     StepCollector collector = new StepCollector(publisher);
     try {
       llmGateway.stream(llmRequest).subscribe(collector);
@@ -149,6 +159,13 @@ public class AgentLoopRunner {
         result.finishReason(),
         result.toolCalls().size()));
     return result;
+  }
+
+  private static LlmModelSelector selectorFromModel(String model) {
+    if (model == null || model.isBlank()) {
+      throw new IllegalArgumentException("Agent loop model must not be blank");
+    }
+    return new LlmModelSelector(null, LlmModelId.of(model), Set.of(), "topic-explanation");
   }
 
   private AgentException toAgentException(Throwable throwable) {
