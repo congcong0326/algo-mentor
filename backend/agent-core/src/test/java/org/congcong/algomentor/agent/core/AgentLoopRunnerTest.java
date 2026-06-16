@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,9 @@ import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
+import org.congcong.algomentor.llm.core.request.LlmContentPart;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
+import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
@@ -199,12 +202,242 @@ class AgentLoopRunnerTest {
     assertThat(error.error().metadata()).containsEntry("toolName", "fake_lookup");
   }
 
+  @Test
+  void notifiesObserverInLifecycleOrderAndKeepsStreamEventContract() {
+    FakeGateway gateway = new FakeGateway();
+    LlmToolCall toolCall = new LlmToolCall(
+        "call_1",
+        "fake_lookup",
+        JsonNodeFactory.instance.objectNode());
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.MessageStart(LlmProviderId.of("test"), LlmModelId.of("gpt-test")),
+        new LlmStreamEvent.ToolCallEnd(toolCall),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("done"),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    List<String> observed = new ArrayList<>();
+    AgentLoopObserver observer = new AgentLoopObserver() {
+      @Override
+      public void onRunStart(AgentLoopContext context) {
+        observed.add("run-start");
+      }
+
+      @Override
+      public void onStepStart(AgentLoopContext context, int stepIndex) {
+        observed.add("step-start-" + stepIndex);
+      }
+
+      @Override
+      public void onLlmEvent(AgentLoopContext context, int stepIndex, LlmStreamEvent event) {
+        observed.add("llm-" + stepIndex + "-" + event.getClass().getSimpleName());
+      }
+
+      @Override
+      public void onStepEnd(AgentLoopContext context, int stepIndex, AgentStepResult result) {
+        observed.add("step-end-" + stepIndex + "-" + result.finishReason());
+      }
+
+      @Override
+      public void onToolStart(AgentLoopContext context, int stepIndex, LlmToolCall toolCall) {
+        observed.add("tool-start-" + toolCall.name());
+      }
+
+      @Override
+      public void onToolEnd(AgentLoopContext context, int stepIndex, LlmToolCall toolCall, JsonNode result) {
+        observed.add("tool-end-" + result.get("summary").asText());
+      }
+
+      @Override
+      public void onRunEnd(AgentLoopContext context, AgentRunResult result) {
+        observed.add("run-end-" + result.steps());
+      }
+    };
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.of(List.of(new FakeTool(
+            "fake_lookup",
+            JsonNodeFactory.instance.objectNode().put("summary", "tool data")))),
+        LlmToolChoice.auto(),
+        4,
+        List.of(observer),
+        List.of());
+
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(LearningTopic.of("two pointers"))));
+
+    assertThat(events)
+        .extracting(AgentStreamEvent::name)
+        .containsExactly(
+            "agent_run_start",
+            "agent_step_start",
+            "message_start",
+            "tool_call_end",
+            "message_end",
+            "agent_step_end",
+            "agent_tool_start",
+            "agent_tool_end",
+            "agent_step_start",
+            "content_delta",
+            "message_end",
+            "agent_step_end",
+            "agent_run_end");
+    assertThat(observed).containsExactly(
+        "run-start",
+        "step-start-1",
+        "llm-1-MessageStart",
+        "llm-1-ToolCallEnd",
+        "llm-1-MessageEnd",
+        "step-end-1-TOOL_CALLS",
+        "tool-start-fake_lookup",
+        "tool-end-tool data",
+        "step-start-2",
+        "llm-2-ContentDelta",
+        "llm-2-MessageEnd",
+        "step-end-2-STOP",
+        "run-end-2");
+  }
+
+  @Test
+  void observerFailureDoesNotFailRun() {
+    FakeGateway gateway = new FakeGateway();
+    gateway.steps.add(List.of(new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    AgentLoopObserver failingObserver = new AgentLoopObserver() {
+      @Override
+      public void onStepStart(AgentLoopContext context, int stepIndex) {
+        throw new IllegalStateException("observer failed");
+      }
+    };
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        LlmToolChoice.auto(),
+        4,
+        List.of(failingObserver),
+        List.of());
+
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(LearningTopic.of("two pointers"))));
+
+    assertThat(events).extracting(AgentStreamEvent::name).endsWith("agent_run_end");
+  }
+
+  @Test
+  void interceptorsCanRewriteLlmRequestToolCallAndToolResultInOrder() {
+    FakeGateway gateway = new FakeGateway();
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ToolCallEnd(
+            new LlmToolCall("call_1", "original_tool", JsonNodeFactory.instance.objectNode().put("value", "raw"))),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
+    gateway.steps.add(List.of(new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    FakeTool tool = new FakeTool("rewritten_tool", JsonNodeFactory.instance.objectNode().put("summary", "raw result"));
+    AgentLoopInterceptor interceptor = new AgentLoopInterceptor() {
+      @Override
+      public LlmCompletionRequest beforeLlmRequest(
+          AgentLoopContext context,
+          int stepIndex,
+          LlmCompletionRequest request
+      ) {
+        return new LlmCompletionRequest(
+            request.modelSelector(),
+            request.messages(),
+            new LlmGenerationOptions(0.2, null, null, List.of(), null, null),
+            request.tools(),
+            request.toolChoice(),
+            request.responseFormat(),
+            Map.of("step", stepIndex));
+      }
+
+      @Override
+      public LlmToolCall beforeToolCall(AgentLoopContext context, int stepIndex, LlmToolCall toolCall) {
+        ObjectNode arguments = JsonNodeFactory.instance.objectNode();
+        arguments.put("value", toolCall.arguments().get("value").asText());
+        arguments.put("approved", true);
+        return new LlmToolCall(toolCall.id(), "rewritten_tool", arguments);
+      }
+
+      @Override
+      public JsonNode afterToolCall(
+          AgentLoopContext context,
+          int stepIndex,
+          LlmToolCall toolCall,
+          JsonNode result
+      ) {
+        return JsonNodeFactory.instance.objectNode()
+            .put("summary", result.get("summary").asText())
+            .put("source", "interceptor");
+      }
+    };
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.of(List.of(tool)),
+        LlmToolChoice.auto(),
+        4,
+        List.of(),
+        List.of(interceptor));
+
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(LearningTopic.of("two pointers"))));
+
+    assertThat(gateway.requests.get(0).options().temperature()).isEqualTo(0.2);
+    assertThat(gateway.requests.get(0).metadata()).containsEntry("step", 1);
+    assertThat(tool.executedArguments.get("approved").asBoolean()).isTrue();
+    assertThat(gateway.requests.get(1).messages().get(1).toolCalls().get(0).name()).isEqualTo("rewritten_tool");
+    LlmContentPart.ToolResult toolResult =
+        (LlmContentPart.ToolResult) gateway.requests.get(1).messages().get(2).content().get(0);
+    assertThat(toolResult.result().get("source").asText()).isEqualTo("interceptor");
+    AgentStreamEvent.AgentToolEnd toolEnd = events.stream()
+        .filter(AgentStreamEvent.AgentToolEnd.class::isInstance)
+        .map(AgentStreamEvent.AgentToolEnd.class::cast)
+        .findFirst()
+        .orElseThrow();
+    assertThat(toolEnd.toolName()).isEqualTo("rewritten_tool");
+    assertThat(toolEnd.result().get("source").asText()).isEqualTo("interceptor");
+  }
+
+  @Test
+  void interceptorFailureEmitsAgentErrorAndStopsRun() {
+    FakeGateway gateway = new FakeGateway();
+    AgentLoopInterceptor interceptor = new AgentLoopInterceptor() {
+      @Override
+      public LlmCompletionRequest beforeLlmRequest(
+          AgentLoopContext context,
+          int stepIndex,
+          LlmCompletionRequest request
+      ) {
+        throw new AgentException(AgentErrorCode.UNKNOWN, "blocked by interceptor");
+      }
+    };
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        LlmToolChoice.auto(),
+        4,
+        List.of(),
+        List.of(interceptor));
+
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(LearningTopic.of("two pointers"))));
+
+    assertThat(gateway.requests).isEmpty();
+    assertThat(events).extracting(AgentStreamEvent::name).containsExactly(
+        "agent_run_start",
+        "agent_step_start",
+        "agent_error");
+    AgentStreamEvent.AgentError error = (AgentStreamEvent.AgentError) events.get(2);
+    assertThat(error.error().getMessage()).isEqualTo("blocked by interceptor");
+  }
+
   private List<AgentStreamEvent> collect(Flow.Publisher<AgentStreamEvent> publisher) {
     CollectingSubscriber subscriber = new CollectingSubscriber();
     publisher.subscribe(subscriber);
     subscriber.await();
     assertThat(subscriber.error).isNull();
     return subscriber.events;
+  }
+
+  private static LlmModelSelector testModelSelector() {
+    return new LlmModelSelector(null, LlmModelId.of("gpt-test"), Set.of(), null);
   }
 
   private static final class CollectingSubscriber implements Flow.Subscriber<AgentStreamEvent> {

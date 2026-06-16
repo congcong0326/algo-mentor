@@ -28,6 +28,8 @@ public class AgentLoopRunner {
   private final AgentToolRegistry toolRegistry;
   private final LlmToolChoice toolChoice;
   private final int maxSteps;
+  private final List<AgentLoopObserver> observers;
+  private final List<AgentLoopInterceptor> interceptors;
 
   @Deprecated(forRemoval = false)
   public AgentLoopRunner(LlmGateway llmGateway, String model, AgentToolRegistry toolRegistry, int maxSteps) {
@@ -50,6 +52,18 @@ public class AgentLoopRunner {
       LlmToolChoice toolChoice,
       int maxSteps
   ) {
+    this(llmGateway, modelSelector, toolRegistry, toolChoice, maxSteps, List.of(), List.of());
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
+      LlmModelSelector modelSelector,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps,
+      List<AgentLoopObserver> observers,
+      List<AgentLoopInterceptor> interceptors
+  ) {
     if (maxSteps < 1) {
       throw new IllegalArgumentException("Agent loop max steps must be positive");
     }
@@ -58,6 +72,8 @@ public class AgentLoopRunner {
     this.toolRegistry = toolRegistry == null ? AgentToolRegistry.empty() : toolRegistry;
     this.toolChoice = toolChoice == null ? LlmToolChoice.auto() : toolChoice;
     this.maxSteps = maxSteps;
+    this.observers = observers == null ? List.of() : List.copyOf(observers);
+    this.interceptors = interceptors == null ? List.of() : List.copyOf(interceptors);
   }
 
   public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
@@ -72,23 +88,27 @@ public class AgentLoopRunner {
   }
 
   private void runLoop(AgentRequest request, SubmissionPublisher<AgentStreamEvent> publisher) {
-    String runId = UUID.randomUUID().toString();
+    AgentLoopContext context = new AgentLoopContext(UUID.randomUUID().toString(), request, maxSteps, Map.of());
+    AgentLoopLifecycle lifecycle = new AgentLoopLifecycle(publisher, observers, interceptors);
     List<LlmMessage> messages = new ArrayList<>(AgentLlmRequestFactory.initialMessages(request));
-    publisher.submit(new AgentStreamEvent.AgentRunStart(runId, request.topic().title(), maxSteps));
+    lifecycle.runStarted(context);
     try {
       for (int stepIndex = 1; stepIndex <= maxSteps; stepIndex++) {
-        StepResult stepResult = runStep(runId, stepIndex, request, messages, publisher);
+        AgentStepResult stepResult = runStep(context, stepIndex, messages, lifecycle);
         if (!stepResult.requiresTools()) {
-          publisher.submit(new AgentStreamEvent.AgentRunEnd(
-              runId,
+          lifecycle.runEnded(context, new AgentRunResult(
               stepIndex,
               stepResult.finishReason(),
               Map.of()));
           publisher.close();
           return;
         }
-        messages.add(LlmMessage.assistantToolCalls(stepResult.toolCalls()));
+        List<LlmToolCall> effectiveToolCalls = new ArrayList<>();
         for (LlmToolCall toolCall : stepResult.toolCalls()) {
+          effectiveToolCalls.add(lifecycle.beforeToolCall(context, stepIndex, toolCall));
+        }
+        messages.add(LlmMessage.assistantToolCalls(effectiveToolCalls));
+        for (LlmToolCall toolCall : effectiveToolCalls) {
           AgentTool tool = toolRegistry.find(toolCall.name())
               .orElseThrow(() -> new AgentException(
                   AgentErrorCode.UNKNOWN_TOOL,
@@ -96,43 +116,39 @@ public class AgentLoopRunner {
                   false,
                   Map.of("toolName", toolCall.name(), "toolCallId", toolCall.id()),
                   null));
-          publisher.submit(new AgentStreamEvent.AgentToolStart(runId, stepIndex, toolCall.id(), toolCall.name()));
-          var result = executeTool(runId, stepIndex, request, toolCall, tool);
-          publisher.submit(new AgentStreamEvent.AgentToolEnd(runId, stepIndex, toolCall.id(), toolCall.name(), result));
+          lifecycle.toolStarted(context, stepIndex, toolCall);
+          var result = executeTool(context, stepIndex, toolCall, tool);
+          result = lifecycle.afterToolCall(context, stepIndex, toolCall, result);
+          lifecycle.toolEnded(context, stepIndex, toolCall, result);
           messages.add(LlmMessage.toolResult(toolCall.id(), result));
         }
       }
-      publisher.submit(new AgentStreamEvent.AgentError(
-          runId,
-          new AgentException(
-              AgentErrorCode.MAX_STEPS_EXCEEDED,
-              "Agent loop exceeded max steps",
-              false,
-              Map.of("maxSteps", maxSteps),
-              null)));
+      lifecycle.error(context, new AgentException(
+          AgentErrorCode.MAX_STEPS_EXCEEDED,
+          "Agent loop exceeded max steps",
+          false,
+          Map.of("maxSteps", maxSteps),
+          null));
       publisher.close();
     } catch (AgentException ex) {
-      publisher.submit(new AgentStreamEvent.AgentError(runId, ex));
+      lifecycle.error(context, ex);
       publisher.close();
     } catch (RuntimeException ex) {
-      publisher.submit(new AgentStreamEvent.AgentError(
-          runId,
-          new AgentException(AgentErrorCode.UNKNOWN, "Agent loop failed", false, Map.of(), ex)));
+      lifecycle.error(context, new AgentException(AgentErrorCode.UNKNOWN, "Agent loop failed", false, Map.of(), ex));
       publisher.close();
     }
   }
 
   private com.fasterxml.jackson.databind.JsonNode executeTool(
-      String runId,
+      AgentLoopContext context,
       int stepIndex,
-      AgentRequest request,
       LlmToolCall toolCall,
       AgentTool tool
   ) {
     try {
       return tool.execute(
           toolCall.arguments(),
-          new AgentExecutionContext(runId, stepIndex, request.topic(), false));
+          new AgentExecutionContext(context.runId(), stepIndex, context.request().topic(), false));
     } catch (AgentException ex) {
       throw ex;
     } catch (RuntimeException ex) {
@@ -145,20 +161,19 @@ public class AgentLoopRunner {
     }
   }
 
-  private StepResult runStep(
-      String runId,
+  private AgentStepResult runStep(
+      AgentLoopContext context,
       int stepIndex,
-      AgentRequest request,
       List<LlmMessage> messages,
-      SubmissionPublisher<AgentStreamEvent> publisher
+      AgentLoopLifecycle lifecycle
   ) {
-    publisher.submit(new AgentStreamEvent.AgentStepStart(runId, stepIndex));
-    LlmCompletionRequest llmRequest = AgentLlmRequestFactory.build(
+    lifecycle.stepStarted(context, stepIndex);
+    LlmCompletionRequest llmRequest = lifecycle.beforeLlmRequest(context, stepIndex, AgentLlmRequestFactory.build(
         modelSelector,
         messages,
         toolRegistry.specs(),
-        toolChoice);
-    StepCollector collector = new StepCollector(publisher);
+        toolChoice));
+    StepCollector collector = new StepCollector(context, stepIndex, lifecycle);
     try {
       llmGateway.stream(llmRequest).subscribe(collector);
       collector.await();
@@ -168,12 +183,8 @@ public class AgentLoopRunner {
     if (collector.error.get() != null) {
       throw toAgentException(collector.error.get());
     }
-    StepResult result = collector.result();
-    publisher.submit(new AgentStreamEvent.AgentStepEnd(
-        runId,
-        stepIndex,
-        result.finishReason(),
-        result.toolCalls().size()));
+    AgentStepResult result = collector.result();
+    lifecycle.stepEnded(context, stepIndex, result);
     return result;
   }
 
@@ -199,26 +210,19 @@ public class AgentLoopRunner {
     return new AgentException(AgentErrorCode.UNKNOWN, "Agent loop failed", false, Map.of(), throwable);
   }
 
-  private record StepResult(List<LlmToolCall> toolCalls, LlmFinishReason finishReason) {
-    private StepResult {
-      toolCalls = toolCalls == null ? List.of() : List.copyOf(toolCalls);
-      finishReason = finishReason == null ? LlmFinishReason.UNKNOWN : finishReason;
-    }
-
-    private boolean requiresTools() {
-      return finishReason == LlmFinishReason.TOOL_CALLS && !toolCalls.isEmpty();
-    }
-  }
-
   private static final class StepCollector implements Flow.Subscriber<LlmStreamEvent> {
-    private final SubmissionPublisher<AgentStreamEvent> publisher;
+    private final AgentLoopContext context;
+    private final int stepIndex;
+    private final AgentLoopLifecycle lifecycle;
     private final CountDownLatch done = new CountDownLatch(1);
     private final List<LlmToolCall> toolCalls = new ArrayList<>();
     private final AtomicReference<Throwable> error = new AtomicReference<>();
     private LlmFinishReason finishReason = LlmFinishReason.UNKNOWN;
 
-    private StepCollector(SubmissionPublisher<AgentStreamEvent> publisher) {
-      this.publisher = publisher;
+    private StepCollector(AgentLoopContext context, int stepIndex, AgentLoopLifecycle lifecycle) {
+      this.context = context;
+      this.stepIndex = stepIndex;
+      this.lifecycle = lifecycle;
     }
 
     @Override
@@ -228,7 +232,7 @@ public class AgentLoopRunner {
 
     @Override
     public void onNext(LlmStreamEvent item) {
-      publisher.submit(AgentStreamEvent.fromLlm(item));
+      lifecycle.llmEvent(context, stepIndex, item);
       if (item instanceof LlmStreamEvent.ToolCallEnd toolCallEnd) {
         toolCalls.add(toolCallEnd.toolCall());
       }
@@ -260,8 +264,8 @@ public class AgentLoopRunner {
       }
     }
 
-    private StepResult result() {
-      return new StepResult(toolCalls, finishReason);
+    private AgentStepResult result() {
+      return new AgentStepResult(toolCalls, finishReason);
     }
   }
 }
