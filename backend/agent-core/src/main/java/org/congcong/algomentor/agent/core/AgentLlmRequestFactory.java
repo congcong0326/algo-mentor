@@ -32,11 +32,20 @@ final class AgentLlmRequestFactory {
   }
 
   static LlmCompletionRequest build(LlmModelSelector modelSelector, List<LlmMessage> messages, List<LlmToolSpec> tools) {
+    return build(modelSelector, messages, tools, defaultToolChoice(tools));
+  }
+
+  static LlmCompletionRequest build(
+      LlmModelSelector modelSelector,
+      List<LlmMessage> messages,
+      List<LlmToolSpec> tools,
+      LlmToolChoice toolChoice
+  ) {
     return LlmCompletionRequest.builder()
         .modelSelector(selectorForTopicExplanation(modelSelector))
         .messages(messages)
         .tools(tools)
-        .toolChoice(tools == null || tools.isEmpty() ? LlmToolChoice.none() : LlmToolChoice.auto())
+        .toolChoice(tools == null || tools.isEmpty() ? LlmToolChoice.none() : toolChoice)
         .build();
   }
 
@@ -56,5 +65,9 @@ final class AgentLlmRequestFactory {
         selector.modelId().orElse(null),
         selector.requiredCapabilities(),
         "topic-explanation");
+  }
+
+  private static LlmToolChoice defaultToolChoice(List<LlmToolSpec> tools) {
+    return tools == null || tools.isEmpty() ? LlmToolChoice.none() : LlmToolChoice.auto();
   }
 }

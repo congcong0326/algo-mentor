@@ -1,9 +1,0 @@
-algo-mentor:
-  ai:
-    openai:
-      enabled: ${OPENAI_ENABLED:true}
-      api-key: ${OPENAI_API_KEY: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}
-      base-url: ${OPENAI_BASE_URL:http://my-ai.com/v1}
-      model: ${OPENAI_MODEL:gpt-5.5}
-      timeout: ${OPENAI_TIMEOUT:30s}
-      max-retries: ${OPENAI_MAX_RETRIES:2}

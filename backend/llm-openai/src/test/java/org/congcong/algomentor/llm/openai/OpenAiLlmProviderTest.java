@@ -40,6 +40,7 @@ import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 import org.junit.jupiter.api.Test;
@@ -123,6 +124,35 @@ class OpenAiLlmProviderTest {
     assertThat(result.toolCalls()).hasSize(1);
     assertThat(result.toolCalls().get(0).name()).isEqualTo("fake_lookup");
     assertThat(result.toolCalls().get(0).arguments().get("topic").asText()).isEqualTo("two pointers");
+  }
+
+  @Test
+  void mapsAssistantToolCallsAndToolResultsToContinuationInputItems() {
+    FakeResponsesClient client = new FakeResponsesClient(response("done"));
+    OpenAiLlmProvider provider = new OpenAiLlmProvider(enabledProperties(), client);
+    LlmToolCall toolCall = new LlmToolCall(
+        "call_1",
+        "calculator",
+        JsonNodeFactory.instance.objectNode().put("expression", "66 * 66 + 66 * 1236"));
+
+    provider.complete(LlmCompletionRequest.builder()
+        .modelSelector(LlmModelSelector.of(OpenAiLlmProvider.PROVIDER_ID, LlmModelId.of("gpt-5.2")))
+        .messages(List.of(
+            LlmMessage.user("calculate"),
+            LlmMessage.assistantToolCalls(List.of(toolCall)),
+            LlmMessage.toolResult("call_1", JsonNodeFactory.instance.objectNode().put("value", "85932"))))
+        .build());
+
+    List<com.openai.models.responses.ResponseInputItem> input = client.lastParams.input()
+        .orElseThrow()
+        .asResponse()
+        .stream()
+        .toList();
+    assertThat(input).hasSize(3);
+    assertThat(input.get(1).asFunctionCall().callId()).isEqualTo("call_1");
+    assertThat(input.get(1).asFunctionCall().arguments()).isEqualTo("{\"expression\":\"66 * 66 + 66 * 1236\"}");
+    assertThat(input.get(2).asFunctionCallOutput().callId()).isEqualTo("call_1");
+    assertThat(input.get(2).asFunctionCallOutput().output().asString()).isEqualTo("{\"value\":\"85932\"}");
   }
 
 

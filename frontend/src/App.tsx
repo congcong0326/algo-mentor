@@ -45,6 +45,11 @@ interface ContentDeltaData {
   content?: string;
 }
 
+interface ToolCallDeltaData {
+  id?: string;
+  argumentsDelta?: string;
+}
+
 interface UsageData {
   usage?: {
     inputTokens?: number;
@@ -119,6 +124,10 @@ function readContentDelta(data: unknown): ContentDeltaData {
   return isObject(data) ? data : {};
 }
 
+function readToolCallDelta(data: unknown): ToolCallDeltaData {
+  return isObject(data) ? data : {};
+}
+
 function readUsage(data: unknown): UsageData {
   return isObject(data) ? data : {};
 }
@@ -139,6 +148,25 @@ function mergeContentDeltaData(previousData: unknown, nextData: unknown): unknow
     ...previousData,
     ...nextData,
     content: previousContent + nextContent,
+  };
+}
+
+function mergeToolCallDeltaData(previousData: unknown, nextData: unknown): unknown {
+  if (!isObject(previousData) || !isObject(nextData)) {
+    return nextData;
+  }
+
+  const previousDelta = readToolCallDelta(previousData);
+  const nextDelta = readToolCallDelta(nextData);
+
+  if (previousDelta.id !== nextDelta.id) {
+    return nextData;
+  }
+
+  return {
+    ...previousData,
+    ...nextData,
+    argumentsDelta: (previousDelta.argumentsDelta ?? '') + (nextDelta.argumentsDelta ?? ''),
   };
 }
 
@@ -192,6 +220,21 @@ export default function App() {
             data: mergeContentDeltaData(lastLog.data, data),
           },
         ];
+      }
+
+      if (eventName === 'tool_call_delta' && lastLog?.eventName === 'tool_call_delta') {
+        const mergedData = mergeToolCallDeltaData(lastLog.data, data);
+
+        if (mergedData !== data) {
+          return [
+            ...current.slice(0, -1),
+            {
+              ...lastLog,
+              timestamp: entry.timestamp,
+              data: mergedData,
+            },
+          ];
+        }
       }
 
       logIdRef.current += 1;

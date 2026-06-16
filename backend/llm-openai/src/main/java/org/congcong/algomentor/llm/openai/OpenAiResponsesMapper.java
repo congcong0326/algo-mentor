@@ -142,8 +142,13 @@ final class OpenAiResponsesMapper {
       if (message.role() == LlmMessage.Role.TOOL) {
         items.add(ResponseInputItem.ofFunctionCallOutput(ResponseInputItem.FunctionCallOutput.builder()
             .callId(message.toolCallId())
-            .output(message.text())
+            .output(toText(message))
             .build()));
+      } else if (message.role() == LlmMessage.Role.ASSISTANT && !message.toolCalls().isEmpty()) {
+        message.toolCalls().stream()
+            .map(this::toFunctionCallInput)
+            .map(ResponseInputItem::ofFunctionCall)
+            .forEach(items::add);
       } else {
         items.add(ResponseInputItem.ofEasyInputMessage(EasyInputMessage.builder()
             .role(toOpenAiRole(message.role()))
@@ -152,6 +157,14 @@ final class OpenAiResponsesMapper {
       }
     }
     return items;
+  }
+
+  private ResponseFunctionToolCall toFunctionCallInput(LlmToolCall toolCall) {
+    return ResponseFunctionToolCall.builder()
+        .callId(toolCall.id())
+        .name(toolCall.name())
+        .arguments(toolCall.arguments().toString())
+        .build();
   }
 
   private String toText(LlmMessage message) {

@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentRunner;
+import org.congcong.algomentor.agent.core.AgentToolRegistry;
+import org.congcong.algomentor.agent.core.tool.CalculatorTool;
 import org.congcong.algomentor.domain.learning.LearningTopic;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
@@ -82,6 +84,28 @@ class MentorAiConfigurationTest {
                 "AI provider is not configured. Enable a provider and configure credentials to use explanations.");
           });
     });
+  }
+
+  @Test
+  void registersCalculatorToolByDefault() {
+    contextRunner.run(context -> {
+      AgentToolRegistry registry = context.getBean(AgentToolRegistry.class);
+
+      assertThat(context).hasSingleBean(CalculatorTool.class);
+      assertThat(registry.specs()).extracting(spec -> spec.name()).contains("calculator");
+    });
+  }
+
+  @Test
+  void allowsDisablingCalculatorTool() {
+    contextRunner
+        .withPropertyValues("algo-mentor.agent.tools.calculator.enabled=false")
+        .run(context -> {
+          AgentToolRegistry registry = context.getBean(AgentToolRegistry.class);
+
+          assertThat(context).doesNotHaveBean(CalculatorTool.class);
+          assertThat(registry.specs()).isEmpty();
+        });
   }
 
   @Configuration(proxyBeanMethods = false)

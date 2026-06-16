@@ -26,6 +26,7 @@ public class AgentLoopRunner {
   private final LlmGateway llmGateway;
   private final LlmModelSelector modelSelector;
   private final AgentToolRegistry toolRegistry;
+  private final LlmToolChoice toolChoice;
   private final int maxSteps;
 
   @Deprecated(forRemoval = false)
@@ -39,12 +40,23 @@ public class AgentLoopRunner {
       AgentToolRegistry toolRegistry,
       int maxSteps
   ) {
+    this(llmGateway, modelSelector, toolRegistry, null, maxSteps);
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
+      LlmModelSelector modelSelector,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps
+  ) {
     if (maxSteps < 1) {
       throw new IllegalArgumentException("Agent loop max steps must be positive");
     }
     this.llmGateway = Objects.requireNonNull(llmGateway, "llmGateway must not be null");
     this.modelSelector = Objects.requireNonNull(modelSelector, "modelSelector must not be null");
     this.toolRegistry = toolRegistry == null ? AgentToolRegistry.empty() : toolRegistry;
+    this.toolChoice = toolChoice == null ? LlmToolChoice.auto() : toolChoice;
     this.maxSteps = maxSteps;
   }
 
@@ -75,7 +87,7 @@ public class AgentLoopRunner {
           publisher.close();
           return;
         }
-        messages.add(LlmMessage.assistant());
+        messages.add(LlmMessage.assistantToolCalls(stepResult.toolCalls()));
         for (LlmToolCall toolCall : stepResult.toolCalls()) {
           AgentTool tool = toolRegistry.find(toolCall.name())
               .orElseThrow(() -> new AgentException(
@@ -141,7 +153,11 @@ public class AgentLoopRunner {
       SubmissionPublisher<AgentStreamEvent> publisher
   ) {
     publisher.submit(new AgentStreamEvent.AgentStepStart(runId, stepIndex));
-    LlmCompletionRequest llmRequest = AgentLlmRequestFactory.build(modelSelector, messages, toolRegistry.specs());
+    LlmCompletionRequest llmRequest = AgentLlmRequestFactory.build(
+        modelSelector,
+        messages,
+        toolRegistry.specs(),
+        toolChoice);
     StepCollector collector = new StepCollector(publisher);
     try {
       llmGateway.stream(llmRequest).subscribe(collector);

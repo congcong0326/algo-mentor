@@ -23,6 +23,7 @@ import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
+import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 import org.junit.jupiter.api.Test;
 
@@ -105,9 +106,30 @@ class AgentLoopRunnerTest {
     assertThat(gateway.requests).hasSize(2);
     assertThat(gateway.requests.get(0).tools()).extracting(LlmToolSpec::name).containsExactly("fake_lookup");
     assertThat(gateway.requests.get(1).messages().get(1).role()).isEqualTo(LlmMessage.Role.ASSISTANT);
+    assertThat(gateway.requests.get(1).messages().get(1).toolCalls()).containsExactly(toolCall);
     assertThat(gateway.requests.get(1).messages().get(2).role()).isEqualTo(LlmMessage.Role.TOOL);
     assertThat(gateway.requests.get(1).messages().get(2).toolCallId()).isEqualTo("call_1");
     assertThat(tool.executedArguments).isEqualTo(toolCall.arguments());
+  }
+
+  @Test
+  void forwardsConfiguredToolChoiceToLlmRequest() {
+    FakeGateway gateway = new FakeGateway();
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    FakeTool tool = new FakeTool("calculator", JsonNodeFactory.instance.objectNode().put("value", "3"));
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        new LlmModelSelector(null, LlmModelId.of("gpt-test"), Set.of(), null),
+        AgentToolRegistry.of(List.of(tool)),
+        LlmToolChoice.specific("calculator"),
+        4);
+
+    collect(runner.stream(new AgentRequest(LearningTopic.of("calculate 1 + 2"))));
+
+    assertThat(gateway.requests.get(0).tools()).extracting(LlmToolSpec::name).containsExactly("calculator");
+    assertThat(gateway.requests.get(0).toolChoice().mode()).isEqualTo(LlmToolChoice.Mode.SPECIFIC);
+    assertThat(gateway.requests.get(0).toolChoice().toolName()).isEqualTo("calculator");
   }
 
   @Test

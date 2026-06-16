@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 
 /**
  * 与大语言模型（LLM）交互的聊天消息，包含角色、内容片段及工具关联。
@@ -15,6 +16,8 @@ public record LlmMessage(
     String toolCallId,
     Map<String, Object> metadata
 ) {
+
+  private static final String TOOL_CALLS_METADATA_KEY = "toolCalls";
 
   public LlmMessage {
     if (role == null) {
@@ -53,6 +56,18 @@ public record LlmMessage(
     return new LlmMessage(Role.ASSISTANT, List.of(), null, null, Map.of());
   }
 
+  public static LlmMessage assistantToolCalls(List<LlmToolCall> toolCalls) {
+    if (toolCalls == null || toolCalls.isEmpty()) {
+      throw new IllegalArgumentException("LLM assistant tool calls must not be empty");
+    }
+    return new LlmMessage(
+        Role.ASSISTANT,
+        List.of(),
+        null,
+        null,
+        Map.of(TOOL_CALLS_METADATA_KEY, List.copyOf(toolCalls)));
+  }
+
   public static LlmMessage toolResult(String toolCallId, JsonNode result) {
     if (toolCallId == null || toolCallId.isBlank()) {
       throw new IllegalArgumentException("LLM tool call id must not be blank");
@@ -66,6 +81,17 @@ public record LlmMessage(
         .map(LlmContentPart.Text.class::cast)
         .map(LlmContentPart.Text::text)
         .collect(Collectors.joining());
+  }
+
+  public List<LlmToolCall> toolCalls() {
+    Object value = metadata.get(TOOL_CALLS_METADATA_KEY);
+    if (!(value instanceof List<?> items)) {
+      return List.of();
+    }
+    return items.stream()
+        .filter(LlmToolCall.class::isInstance)
+        .map(LlmToolCall.class::cast)
+        .toList();
   }
 
   /**

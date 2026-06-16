@@ -65,6 +65,20 @@ class LlmCoreModelTest {
   }
 
   @Test
+  void createsAssistantToolCallMessage() {
+    LlmToolCall toolCall = new LlmToolCall(
+        "call-1",
+        "calculator",
+        com.fasterxml.jackson.databind.node.JsonNodeFactory.instance.objectNode().put("expression", "1 + 2"));
+
+    LlmMessage assistant = LlmMessage.assistantToolCalls(List.of(toolCall));
+
+    assertThat(assistant.role()).isEqualTo(LlmMessage.Role.ASSISTANT);
+    assertThat(assistant.content()).isEmpty();
+    assertThat(assistant.toolCalls()).containsExactly(toolCall);
+  }
+
+  @Test
   void rejectsToolMessageWithoutToolCallId() {
     assertThatThrownBy(() -> new LlmMessage(
         LlmMessage.Role.TOOL,

@@ -30,12 +30,19 @@ management:
 algo-mentor:
   agent:
     max-steps: ${AGENT_MAX_STEPS:4}
+    tool-choice: ${AGENT_TOOL_CHOICE:auto}
+    specific-tool-name: ${AGENT_SPECIFIC_TOOL_NAME:}
+    tools:
+      calculator:
+        enabled: ${AGENT_CALCULATOR_TOOL_ENABLED:true}
   ai:
     gateway:
       default-provider: ${AI_GATEWAY_DEFAULT_PROVIDER:openai}
       default-model: ${AI_GATEWAY_DEFAULT_MODEL:${OPENAI_MODEL:gpt-5.2}}
     openai:
       enabled: ${OPENAI_ENABLED:false}
+      # 测试 key 占位说明：只有已吊销、无计费权限或无外部访问权限的测试 key，泄露后才不会产生实际影响。
+      # 真实 OpenAI key 不要写入配置文件，请通过 OPENAI_API_KEY 环境变量注入。
       api-key: ${OPENAI_API_KEY:}
       base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
       model: ${OPENAI_MODEL:gpt-5.2}

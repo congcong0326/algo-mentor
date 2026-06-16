@@ -6,6 +6,7 @@ import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
+import org.congcong.algomentor.agent.core.tool.CalculatorTool;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.DefaultLlmGatewayFactory;
@@ -15,6 +16,7 @@ import org.congcong.algomentor.llm.core.provider.LlmProvider;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
 import org.congcong.algomentor.mentor.application.ExplainTopicUseCase;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -58,17 +60,31 @@ public class MentorAiConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean(name = "calculatorTool")
+  @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+      prefix = "algo-mentor.agent.tools.calculator",
+      name = "enabled",
+      havingValue = "true",
+      matchIfMissing = true)
+  public CalculatorTool calculatorTool() {
+    return new CalculatorTool();
+  }
+
+  @Bean
   @ConditionalOnMissingBean
   public AgentLoopRunner agentLoopRunner(
       LlmGateway llmGateway,
       LlmGatewayProperties gatewayProperties,
       AgentToolRegistry agentToolRegistry,
+      @Value("${algo-mentor.agent.tool-choice:auto}") String toolChoice,
+      @Value("${algo-mentor.agent.specific-tool-name:}") String specificToolName,
       @Value("${algo-mentor.agent.max-steps:4}") int maxSteps
   ) {
     return new AgentLoopRunner(
         llmGateway,
         gatewayProperties.defaultSelector("topic-explanation"),
         agentToolRegistry,
+        toToolChoice(toolChoice, specificToolName),
         maxSteps);
   }
 
@@ -79,6 +95,17 @@ public class MentorAiConfiguration {
       AgentLoopRunner agentLoopRunner
   ) {
     return new ExplainTopicUseCase(agentRunner, agentLoopRunner);
+  }
+
+  private LlmToolChoice toToolChoice(String value, String specificToolName) {
+    String normalized = value == null ? "auto" : value.trim().toLowerCase();
+    return switch (normalized) {
+      case "auto" -> LlmToolChoice.auto();
+      case "none" -> LlmToolChoice.none();
+      case "required" -> LlmToolChoice.required();
+      case "specific" -> LlmToolChoice.specific(specificToolName);
+      default -> throw new IllegalArgumentException("Unsupported agent tool choice: " + value);
+    };
   }
 
   private static final class UnconfiguredLlmGateway implements LlmGateway {
