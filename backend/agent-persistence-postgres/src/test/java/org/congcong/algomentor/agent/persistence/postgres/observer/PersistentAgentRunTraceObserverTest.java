@@ -21,6 +21,7 @@ import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunStepEr
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunStepStartRow;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallEndUpdate;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallErrorUpdate;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallStorageUpdate;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallStartRow;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
@@ -83,6 +84,7 @@ class PersistentAgentRunTraceObserverTest {
     assertThat(mapper.toolEnd.resultJson().get("password").asText()).isEqualTo("[REDACTED]");
     assertThat(mapper.toolEnd.durationMillis()).isZero();
     assertThat(mapper.toolEnd.resultCharCount()).isPositive();
+    assertThat(mapper.toolEnd.resultLineCount()).isNull();
     assertThat(mapper.stepEnd.provider()).isEqualTo("openai");
     assertThat(mapper.stepEnd.model()).isEqualTo("gpt-test");
     assertThat(mapper.stepEnd.finishReason()).isEqualTo("TOOL_CALLS");
@@ -177,6 +179,21 @@ class PersistentAgentRunTraceObserverTest {
     public int markToolFailed(ToolCallErrorUpdate update) {
       toolError = update;
       return 1;
+    }
+
+    @Override
+    public Long findToolCallDbId(long runId, int stepIndex, String toolCallId) {
+      return 101L;
+    }
+
+    @Override
+    public int updateToolResultStorage(ToolCallStorageUpdate update) {
+      return 1;
+    }
+
+    @Override
+    public Long findRunIdByResultBlobId(long blobId) {
+      return 31L;
     }
   }
 }

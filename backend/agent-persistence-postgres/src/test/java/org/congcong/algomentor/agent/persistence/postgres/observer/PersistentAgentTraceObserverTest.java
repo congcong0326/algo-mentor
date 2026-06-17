@@ -20,6 +20,7 @@ import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunStepEr
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunStepStartRow;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallEndUpdate;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallErrorUpdate;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallStorageUpdate;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallStartRow;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
@@ -135,6 +136,21 @@ class PersistentAgentTraceObserverTest {
     @Override
     public int markToolFailed(ToolCallErrorUpdate update) {
       return 0;
+    }
+
+    @Override
+    public Long findToolCallDbId(long runId, int stepIndex, String toolCallId) {
+      return null;
+    }
+
+    @Override
+    public int updateToolResultStorage(ToolCallStorageUpdate update) {
+      return 0;
+    }
+
+    @Override
+    public Long findRunIdByResultBlobId(long blobId) {
+      return null;
     }
   }
 

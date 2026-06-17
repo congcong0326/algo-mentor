@@ -8,6 +8,7 @@ import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunStepEr
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunStepStartRow;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallEndUpdate;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallErrorUpdate;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallStorageUpdate;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallStartRow;
 
 @Mapper
@@ -30,4 +31,14 @@ public interface AgentRunTraceMapper {
   int markToolSucceeded(ToolCallEndUpdate update);
 
   int markToolFailed(ToolCallErrorUpdate update);
+
+  Long findToolCallDbId(
+      @Param("runId") long runId,
+      @Param("stepIndex") int stepIndex,
+      @Param("toolCallId") String toolCallId
+  );
+
+  int updateToolResultStorage(ToolCallStorageUpdate update);
+
+  Long findRunIdByResultBlobId(@Param("blobId") long blobId);
 }

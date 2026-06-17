@@ -35,6 +35,20 @@ algo-mentor:
     max-steps: ${AGENT_MAX_STEPS:4}
     tool-choice: ${AGENT_TOOL_CHOICE:auto}
     specific-tool-name: ${AGENT_SPECIFIC_TOOL_NAME:}
+    compaction:
+      inline-max-chars: ${AGENT_TOOL_RESULT_INLINE_MAX_CHARS:12000}
+      preview-max-chars: ${AGENT_TOOL_RESULT_PREVIEW_MAX_CHARS:2000}
+      range-read-max-chars: ${AGENT_TOOL_RESULT_RANGE_READ_MAX_CHARS:8000}
+      blob-enabled: ${AGENT_TOOL_RESULT_BLOB_ENABLED:true}
+      tool-results-total-max-chars: ${AGENT_RUN_CONTEXT_TOOL_RESULTS_TOTAL_MAX_CHARS:60000}
+      keep-recent-tool-results: ${AGENT_RUN_CONTEXT_KEEP_RECENT_TOOL_RESULTS:3}
+      compact-old-tool-results: ${AGENT_RUN_CONTEXT_COMPACT_OLD_TOOL_RESULTS:true}
+      input-token-budget: ${AGENT_RUN_CONTEXT_INPUT_TOKEN_BUDGET:120000}
+      max-message-groups: ${AGENT_RUN_CONTEXT_MAX_MESSAGE_GROUPS:80}
+      snip-keep-head-groups: ${AGENT_RUN_CONTEXT_SNIP_KEEP_HEAD_GROUPS:2}
+      snip-keep-tail-groups: ${AGENT_RUN_CONTEXT_SNIP_KEEP_TAIL_GROUPS:24}
+      group-aware-snip-enabled: ${AGENT_RUN_CONTEXT_GROUP_AWARE_SNIP_ENABLED:true}
+      llm-compact-enabled: ${AGENT_RUN_CONTEXT_LLM_COMPACT_ENABLED:false}
     tools:
       calculator:
         enabled: ${AGENT_CALCULATOR_TOOL_ENABLED:true}

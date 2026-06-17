@@ -1,23 +1,16 @@
 package org.congcong.algomentor.agent.persistence.postgres.mapper.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.time.Instant;
 
-public record ToolCallEndUpdate(
+public record ToolCallStorageUpdate(
     long runId,
     int stepIndex,
     String toolCallId,
-    String status,
-    JsonNode resultJson,
-    Long durationMillis,
-    Integer resultCharCount,
-    Integer resultTokenEstimate,
-    Integer resultLineCount,
-    String resultSha256,
     String resultStorageMode,
     Long resultBlobId,
     JsonNode resultPreviewJson,
     String resultRef,
-    Instant endedAt
+    Integer resultLineCount,
+    String resultSha256
 ) {
 }

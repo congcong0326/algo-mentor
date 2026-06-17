@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContentBlobMapper">
+
+  <resultMap id="ContentBlobMap" type="org.congcong.algomentor.agent.persistence.postgres.mapper.model.ContentBlobRow">
+    <constructor>
+      <arg column="id" javaType="java.lang.Long"/>
+      <arg column="scope_type" javaType="java.lang.String"/>
+      <arg column="scope_id" javaType="java.lang.Long"/>
+      <arg column="content_type" javaType="java.lang.String"/>
+      <arg column="storage_mode" javaType="java.lang.String"/>
+      <arg column="content_text" javaType="java.lang.String"/>
+      <arg column="content_bytes" javaType="byte[]"/>
+      <arg column="uri" javaType="java.lang.String"/>
+      <arg column="sha256" javaType="java.lang.String"/>
+      <arg column="char_count" javaType="java.lang.Integer"/>
+      <arg column="byte_count" javaType="java.lang.Long"/>
+      <arg column="line_count" javaType="java.lang.Integer"/>
+      <arg column="redaction_policy_version" javaType="java.lang.String"/>
+      <arg column="metadata" javaType="com.fasterxml.jackson.databind.JsonNode"
+           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <select id="insertBlob" resultType="java.lang.Long" affectData="true">
+    INSERT INTO agent_content_blob (
+      scope_type,
+      scope_id,
+      content_type,
+      storage_mode,
+      content_text,
+      content_bytes,
+      uri,
+      sha256,
+      char_count,
+      byte_count,
+      line_count,
+      redaction_policy_version,
+      metadata,
+      created_at
+    )
+    VALUES (
+      #{scopeType},
+      #{scopeId},
+      #{contentType},
+      #{storageMode},
+      #{contentText},
+      #{contentBytes},
+      #{uri},
+      #{sha256},
+      #{charCount},
+      #{byteCount},
+      #{lineCount},
+      #{redactionPolicyVersion},
+      #{metadata,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{createdAt}
+    )
+    ON CONFLICT (scope_type, scope_id, sha256) DO UPDATE
+    SET metadata = EXCLUDED.metadata
+    RETURNING id
+  </select>
+
+  <select id="findById" resultMap="ContentBlobMap">
+    SELECT
+      id,
+      scope_type,
+      scope_id,
+      content_type,
+      storage_mode,
+      content_text,
+      content_bytes,
+      uri,
+      sha256,
+      char_count,
+      byte_count,
+      line_count,
+      redaction_policy_version,
+      metadata,
+      created_at
+    FROM agent_content_blob
+    WHERE id = #{id}
+  </select>
+</mapper>

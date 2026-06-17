@@ -6,9 +6,11 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.agent.persistence.postgres.json.AgentMessageRoleTypeHandler;
 import org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentArtifactMapper;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContentBlobMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContextSnapshotMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentConversationMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunMapper;
@@ -17,6 +19,7 @@ import org.congcong.algomentor.agent.persistence.postgres.observer.PersistentAge
 import org.congcong.algomentor.agent.persistence.postgres.observer.PersistentAgentRunTraceObserver;
 import org.congcong.algomentor.agent.persistence.postgres.observer.PersistentAgentTraceObserver;
 import org.congcong.algomentor.agent.persistence.postgres.repository.PostgresAgentConversationRepository;
+import org.congcong.algomentor.agent.persistence.postgres.repository.PostgresToolResultStore;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -93,10 +96,28 @@ public class AgentPostgresPersistenceConfiguration {
   }
 
   @Bean
+  @ConditionalOnBean(SqlSessionTemplate.class)
+  @ConditionalOnMissingBean
+  public AgentContentBlobMapper agentContentBlobMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(AgentContentBlobMapper.class);
+  }
+
+  @Bean
   @ConditionalOnBean(AgentConversationMapper.class)
   @ConditionalOnMissingBean
   public AgentConversationRepository agentConversationRepository(AgentConversationMapper conversationMapper) {
     return new PostgresAgentConversationRepository(conversationMapper);
+  }
+
+  @Bean
+  @ConditionalOnBean({AgentContentBlobMapper.class, AgentRunTraceMapper.class})
+  @ConditionalOnMissingBean
+  public ToolResultStore toolResultStore(
+      AgentContentBlobMapper blobMapper,
+      AgentRunTraceMapper runTraceMapper,
+      ObjectMapper objectMapper
+  ) {
+    return new PostgresToolResultStore(blobMapper, runTraceMapper, objectMapper);
   }
 
   @Bean

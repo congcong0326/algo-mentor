@@ -102,6 +102,12 @@
         duration_millis = #{durationMillis},
         result_char_count = #{resultCharCount},
         result_token_estimate = #{resultTokenEstimate},
+        result_line_count = COALESCE(result_line_count, #{resultLineCount}),
+        result_sha256 = COALESCE(result_sha256, #{resultSha256}),
+        result_storage_mode = COALESCE(result_storage_mode, #{resultStorageMode}),
+        result_blob_id = COALESCE(result_blob_id, #{resultBlobId}),
+        result_preview_json = COALESCE(result_preview_json, #{resultPreviewJson,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler}),
+        result_ref = COALESCE(result_ref, #{resultRef}),
         ended_at = #{endedAt}
     WHERE run_id = #{runId}
       AND step_index = #{stepIndex}
@@ -118,4 +124,31 @@
       AND step_index = #{stepIndex}
       AND tool_call_id = #{toolCallId}
   </update>
+
+  <select id="findToolCallDbId" resultType="java.lang.Long">
+    SELECT id
+    FROM agent_tool_call
+    WHERE run_id = #{runId}
+      AND step_index = #{stepIndex}
+      AND tool_call_id = #{toolCallId}
+  </select>
+
+  <update id="updateToolResultStorage">
+    UPDATE agent_tool_call
+    SET result_storage_mode = #{resultStorageMode},
+        result_blob_id = #{resultBlobId},
+        result_preview_json = #{resultPreviewJson,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        result_ref = #{resultRef},
+        result_line_count = #{resultLineCount},
+        result_sha256 = #{resultSha256}
+    WHERE run_id = #{runId}
+      AND step_index = #{stepIndex}
+      AND tool_call_id = #{toolCallId}
+  </update>
+
+  <select id="findRunIdByResultBlobId" resultType="java.lang.Long">
+    SELECT run_id
+    FROM agent_tool_call
+    WHERE result_blob_id = #{blobId}
+  </select>
 </mapper>

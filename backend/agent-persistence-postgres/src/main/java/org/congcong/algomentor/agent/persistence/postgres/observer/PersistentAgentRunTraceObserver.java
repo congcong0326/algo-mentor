@@ -141,6 +141,7 @@ public class PersistentAgentRunTraceObserver implements AgentLoopObserver {
     }
     Instant endedAt = clock.instant();
     JsonNode redactedResult = redactor.redact(result);
+    ToolStorageMetadata storageMetadata = storageMetadata(redactedResult);
     runTraceMapper.markToolSucceeded(new ToolCallEndUpdate(
         runDbId,
         stepIndex,
@@ -150,6 +151,12 @@ public class PersistentAgentRunTraceObserver implements AgentLoopObserver {
         durationMillis(context, stepIndex, toolCall.id(), endedAt),
         charCount(redactedResult),
         tokenEstimate(redactedResult),
+        storageMetadata.resultLineCount(),
+        storageMetadata.resultSha256(),
+        storageMetadata.resultStorageMode(),
+        storageMetadata.resultBlobId(),
+        storageMetadata.resultPreviewJson(),
+        storageMetadata.resultRef(),
         endedAt));
   }
 
@@ -263,6 +270,44 @@ public class PersistentAgentRunTraceObserver implements AgentLoopObserver {
     return Math.max(1, charCount(node) / 4);
   }
 
+  private ToolStorageMetadata storageMetadata(JsonNode result) {
+    if (result == null || !result.isObject()) {
+      return ToolStorageMetadata.empty();
+    }
+    if (!"tool_result_preview".equals(textField(result, "type"))) {
+      return ToolStorageMetadata.empty();
+    }
+    Long blobId = blobId(textField(result, "resultRef"));
+    return new ToolStorageMetadata(
+        "blob",
+        blobId,
+        result,
+        textField(result, "resultRef"),
+        intField(result, "lineCount"),
+        null);
+  }
+
+  private Long blobId(String resultRef) {
+    if (resultRef == null || !resultRef.startsWith("tool-result:")) {
+      return null;
+    }
+    try {
+      return Long.parseLong(resultRef.substring("tool-result:".length()));
+    } catch (NumberFormatException ex) {
+      return null;
+    }
+  }
+
+  private String textField(JsonNode node, String fieldName) {
+    JsonNode value = node.get(fieldName);
+    return value == null || !value.isTextual() ? null : value.asText();
+  }
+
+  private Integer intField(JsonNode node, String fieldName) {
+    JsonNode value = node.get(fieldName);
+    return value == null || !value.canConvertToInt() ? null : value.asInt();
+  }
+
   private String canonicalJson(JsonNode node) {
     try {
       return objectMapper.writeValueAsString(node);
@@ -280,5 +325,19 @@ public class PersistentAgentRunTraceObserver implements AgentLoopObserver {
     private LlmUsage usage;
     private String provider;
     private String model;
+  }
+
+  private record ToolStorageMetadata(
+      String resultStorageMode,
+      Long resultBlobId,
+      JsonNode resultPreviewJson,
+      String resultRef,
+      Integer resultLineCount,
+      String resultSha256
+  ) {
+
+    private static ToolStorageMetadata empty() {
+      return new ToolStorageMetadata(null, null, null, null, null, null);
+    }
   }
 }

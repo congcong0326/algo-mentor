@@ -1,5 +1,6 @@
 package org.congcong.algomentor.agent.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.atomic.AtomicReference;
+import org.congcong.algomentor.agent.core.compaction.RunMessageCompactionResult;
+import org.congcong.algomentor.agent.core.compaction.RunMessageCompactor;
+import org.congcong.algomentor.agent.core.compaction.ToolResultCompaction;
+import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
+import org.congcong.algomentor.agent.core.compaction.ToolResultCompactor;
+import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
@@ -30,6 +38,8 @@ public class AgentLoopRunner {
   private final int maxSteps;
   private final List<AgentLoopObserver> observers;
   private final List<AgentLoopInterceptor> interceptors;
+  private final ToolResultCompactor toolResultCompactor;
+  private final RunMessageCompactor runMessageCompactor;
 
   @Deprecated(forRemoval = false)
   public AgentLoopRunner(LlmGateway llmGateway, String model, AgentToolRegistry toolRegistry, int maxSteps) {
@@ -64,6 +74,31 @@ public class AgentLoopRunner {
       List<AgentLoopObserver> observers,
       List<AgentLoopInterceptor> interceptors
   ) {
+    this(
+        llmGateway,
+        modelSelector,
+        toolRegistry,
+        toolChoice,
+        maxSteps,
+        observers,
+        interceptors,
+        ToolResultCompactionPolicy.defaults(),
+        new InMemoryToolResultStore(),
+        new ObjectMapper());
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
+      LlmModelSelector modelSelector,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps,
+      List<AgentLoopObserver> observers,
+      List<AgentLoopInterceptor> interceptors,
+      ToolResultCompactionPolicy toolResultPolicy,
+      ToolResultStore toolResultStore,
+      ObjectMapper objectMapper
+  ) {
     if (maxSteps < 1) {
       throw new IllegalArgumentException("Agent loop max steps must be positive");
     }
@@ -74,6 +109,11 @@ public class AgentLoopRunner {
     this.maxSteps = maxSteps;
     this.observers = observers == null ? List.of() : List.copyOf(observers);
     this.interceptors = interceptors == null ? List.of() : List.copyOf(interceptors);
+    ObjectMapper mapper = objectMapper == null ? new ObjectMapper() : objectMapper;
+    ToolResultStore store = toolResultStore == null ? new InMemoryToolResultStore() : toolResultStore;
+    ToolResultCompactionPolicy policy = toolResultPolicy == null ? ToolResultCompactionPolicy.defaults() : toolResultPolicy;
+    this.toolResultCompactor = new ToolResultCompactor(mapper, policy, store);
+    this.runMessageCompactor = new RunMessageCompactor(mapper, toolResultCompactor);
   }
 
   public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
@@ -124,7 +164,8 @@ public class AgentLoopRunner {
           var result = executeTool(context, stepIndex, toolCall, tool, lifecycle);
           result = lifecycle.afterToolCall(context, stepIndex, toolCall, result);
           lifecycle.toolEnded(context, stepIndex, toolCall, result);
-          messages.add(LlmMessage.toolResult(toolCall.id(), result));
+          ToolResultCompaction compaction = toolResultCompactor.compactForModel(context, stepIndex, toolCall, result);
+          messages.add(LlmMessage.toolResult(toolCall.id(), compaction.visibleResult()));
         }
       }
       lifecycle.error(context, new AgentException(
@@ -176,12 +217,16 @@ public class AgentLoopRunner {
       AgentLoopLifecycle lifecycle
   ) {
     lifecycle.stepStarted(context, stepIndex);
+    RunMessageCompactionResult compaction = runMessageCompactor.compactBeforeRequest(context, stepIndex, messages);
+    messages.clear();
+    messages.addAll(compaction.messages());
+    Map<String, Object> requestMetadata = mergedMetadata(context.request().metadata(), compaction.metadata());
     LlmCompletionRequest llmRequest = lifecycle.beforeLlmRequest(context, stepIndex, AgentLlmRequestFactory.build(
         modelSelector,
         messages,
         toolRegistry.specs(),
         toolChoice,
-        context.request().metadata()));
+        requestMetadata));
     lifecycle.llmRequestReady(context, stepIndex, llmRequest);
     StepCollector collector = new StepCollector(context, stepIndex, lifecycle);
     try {
@@ -203,6 +248,18 @@ public class AgentLoopRunner {
       throw new IllegalArgumentException("Agent loop model must not be blank");
     }
     return new LlmModelSelector(null, LlmModelId.of(model), Set.of(), "topic-explanation");
+  }
+
+  private Map<String, Object> mergedMetadata(Map<String, Object> base, Map<String, Object> additions) {
+    if (additions == null || additions.isEmpty()) {
+      return base == null ? Map.of() : base;
+    }
+    Map<String, Object> merged = new java.util.LinkedHashMap<>();
+    if (base != null) {
+      merged.putAll(base);
+    }
+    merged.putAll(additions);
+    return Map.copyOf(merged);
   }
 
   private AgentException toAgentException(Throwable throwable) {

@@ -1,5 +1,6 @@
 package org.congcong.algomentor.api.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentLoopObserver;
@@ -7,8 +8,11 @@ import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
+import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
+import org.congcong.algomentor.agent.core.tool.ReadToolResultTool;
 import org.congcong.algomentor.agent.core.tool.CalculatorTool;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.mentor.application.ExplainTopicUseCase;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
@@ -27,8 +31,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(LlmGatewayProperties.class)
+@EnableConfigurationProperties({LlmGatewayProperties.class, AgentCompactionProperties.class})
 public class MentorAiConfiguration {
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ObjectMapper objectMapper() {
+    return new ObjectMapper();
+  }
 
   @Bean
   @ConditionalOnMissingBean
@@ -62,6 +72,22 @@ public class MentorAiConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean
+  public ToolResultCompactionPolicy toolResultCompactionPolicy(AgentCompactionProperties properties) {
+    return properties.toPolicy();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(name = "readToolResultTool")
+  @org.springframework.boot.autoconfigure.condition.ConditionalOnBean(ToolResultStore.class)
+  public ReadToolResultTool readToolResultTool(
+      ToolResultStore toolResultStore,
+      ToolResultCompactionPolicy policy
+  ) {
+    return new ReadToolResultTool(toolResultStore, policy);
+  }
+
+  @Bean
   @ConditionalOnMissingBean(name = "calculatorTool")
   @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
       prefix = "algo-mentor.agent.tools.calculator",
@@ -81,7 +107,10 @@ public class MentorAiConfiguration {
       List<AgentLoopObserver> observers,
       @Value("${algo-mentor.agent.tool-choice:auto}") String toolChoice,
       @Value("${algo-mentor.agent.specific-tool-name:}") String specificToolName,
-      @Value("${algo-mentor.agent.max-steps:4}") int maxSteps
+      @Value("${algo-mentor.agent.max-steps:4}") int maxSteps,
+      ToolResultCompactionPolicy toolResultPolicy,
+      org.springframework.beans.factory.ObjectProvider<ToolResultStore> toolResultStore,
+      ObjectMapper objectMapper
   ) {
     return new AgentLoopRunner(
         llmGateway,
@@ -90,7 +119,10 @@ public class MentorAiConfiguration {
         toToolChoice(toolChoice, specificToolName),
         maxSteps,
         observers,
-        List.of());
+        List.of(),
+        toolResultPolicy,
+        toolResultStore.getIfAvailable(),
+        objectMapper);
   }
 
   @Bean

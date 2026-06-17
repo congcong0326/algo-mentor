@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
+import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
+import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
@@ -112,6 +114,41 @@ class AgentLoopRunnerTest {
     assertThat(gateway.requests.get(1).messages().get(2).role()).isEqualTo(LlmMessage.Role.TOOL);
     assertThat(gateway.requests.get(1).messages().get(2).toolCallId()).isEqualTo("call_1");
     assertThat(tool.executedArguments).isEqualTo(toolCall.arguments());
+  }
+
+  @Test
+  void sendsPreviewInsteadOfLargeToolResultToNextLlmRequest() {
+    FakeGateway gateway = new FakeGateway();
+    LlmToolCall toolCall = new LlmToolCall(
+        "call_1",
+        "fake_lookup",
+        JsonNodeFactory.instance.objectNode());
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ToolCallEnd(toolCall),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
+    gateway.steps.add(List.of(new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    String largePayload = "abcdefghijklmnopqrstuvwxyz";
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.of(List.of(new FakeTool(
+            "fake_lookup",
+            JsonNodeFactory.instance.objectNode().put("payload", largePayload)))),
+        LlmToolChoice.auto(),
+        4,
+        List.of(),
+        List.of(),
+        new ToolResultCompactionPolicy(10, 8, 100, true, 1_000, 3, true, 1_000, 80, 2, 24, true, false),
+        new InMemoryToolResultStore(),
+        new com.fasterxml.jackson.databind.ObjectMapper());
+
+    collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
+
+    LlmContentPart.ToolResult toolResult =
+        (LlmContentPart.ToolResult) gateway.requests.get(1).messages().get(2).content().get(0);
+    assertThat(toolResult.result().get("type").asText()).isEqualTo("tool_result_preview");
+    assertThat(toolResult.result().get("preview").asText()).hasSize(8);
+    assertThat(toolResult.result().toString()).doesNotContain(largePayload);
   }
 
   @Test
