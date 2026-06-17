@@ -2,6 +2,10 @@ import type {
   AgentConversationStreamRequest,
   ApiResponse,
   HealthStatus,
+  ProblemDetail,
+  ProblemListItem,
+  ProblemListQuery,
+  ProblemPage,
   SseEventName,
   SseStreamEvent,
 } from '../types/api';
@@ -20,6 +24,50 @@ export async function getHealth(): Promise<ApiResponse<HealthStatus>> {
   }
 
   return response.json();
+}
+
+export async function getProblems(
+  query: ProblemListQuery = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<ProblemPage<ProblemListItem>>> {
+  const response = await fetch(`/api/problems${toQueryString(query)}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Problems request failed with status ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function getProblemDetail(
+  slug: string,
+  signal?: AbortSignal,
+): Promise<ApiResponse<ProblemDetail>> {
+  const response = await fetch(`/api/problems/${encodeURIComponent(slug)}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Problem detail request failed with status ${response.status}`);
+  }
+
+  return response.json();
+}
+
+function toQueryString(query: ProblemListQuery): string {
+  const params = new URLSearchParams();
+  Object.entries(query).forEach(([key, value]) => {
+    if (value === undefined || value === '') {
+      return;
+    }
+    params.set(key, String(value));
+  });
+  const serialized = params.toString();
+  return serialized ? `?${serialized}` : '';
 }
 
 export interface StreamAgentConversationOptions {

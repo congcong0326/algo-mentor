@@ -14,6 +14,42 @@ export interface HealthStatus {
   status: 'UP' | 'DOWN';
 }
 
+export type ProblemDifficulty = 'EASY' | 'MEDIUM' | 'HARD';
+
+export interface ProblemListQuery {
+  keyword?: string;
+  difficulty?: ProblemDifficulty | '';
+  tag?: string;
+  category?: string;
+  sort?: 'frontend_id_asc' | 'frontend_id_desc' | 'title_asc' | 'updated_desc';
+  page?: number;
+  pageSize?: number;
+}
+
+export interface ProblemListItem {
+  slug: string;
+  frontendId?: number;
+  title: string;
+  titleCn?: string;
+  difficulty?: ProblemDifficulty;
+  tags: string[];
+}
+
+export interface ProblemDetail extends ProblemListItem {
+  contentMarkdown: string;
+  leetcodeUrl?: string;
+  sampleTestCase?: string;
+  python3Template?: string;
+  sourceCommit?: string;
+}
+
+export interface ProblemPage<T> {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
 export type SseEventName =
   | 'agent_run_start'
   | 'agent_step_start'

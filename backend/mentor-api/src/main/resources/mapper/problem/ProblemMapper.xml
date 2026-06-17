@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.problem.mapper.ProblemMapper">
+
+  <resultMap id="ProblemRowMap" type="org.congcong.algomentor.api.problem.mapper.model.ProblemRow">
+    <constructor>
+      <arg column="id" javaType="java.lang.Long"/>
+      <arg column="slug" javaType="string"/>
+      <arg column="frontend_id" javaType="java.lang.Integer"/>
+      <arg column="title" javaType="string"/>
+      <arg column="title_cn" javaType="string"/>
+      <arg column="difficulty" javaType="string"/>
+      <arg column="tags_text" javaType="string"/>
+      <arg column="content_markdown" javaType="string"/>
+      <arg column="leetcode_url" javaType="string"/>
+      <arg column="sample_test_case" javaType="string"/>
+      <arg column="python3_template" javaType="string"/>
+      <arg column="source_commit" javaType="string"/>
+    </constructor>
+  </resultMap>
+
+  <sql id="ProblemColumns">
+    p.id,
+    p.slug,
+    p.frontend_id,
+    p.title,
+    p.title_cn,
+    p.difficulty,
+    COALESCE(array_to_string(p.tags, E'\n'), '') AS tags_text,
+    p.content_markdown,
+    p.leetcode_url,
+    p.sample_test_case,
+    p.python3_template,
+    p.source_commit
+  </sql>
+
+  <sql id="ProblemFilters">
+    <where>
+      <if test="keyword != null and keyword != ''">
+        AND (
+          p.title ILIKE CONCAT('%', #{keyword}, '%')
+          OR p.title_cn ILIKE CONCAT('%', #{keyword}, '%')
+          OR p.slug ILIKE CONCAT('%', #{keyword}, '%')
+          OR CAST(p.frontend_id AS TEXT) = #{keyword}
+        )
+      </if>
+      <if test="difficulty != null and difficulty != ''">
+        AND p.difficulty = #{difficulty}
+      </if>
+      <if test="tag != null and tag != ''">
+        AND #{tag} = ANY(p.tags)
+      </if>
+      <if test="category != null and category != ''">
+        AND EXISTS (
+          SELECT 1
+          FROM problem_category_item pci
+          JOIN problem_category pc ON pc.id = pci.category_id
+          WHERE pci.problem_id = p.id
+            AND (pc.slug = #{category} OR pc.name = #{category})
+        )
+      </if>
+    </where>
+  </sql>
+
+  <select id="countProblems" resultType="_long">
+    SELECT COUNT(*)
+    FROM problem p
+    <include refid="ProblemFilters"/>
+  </select>
+
+  <select id="findProblems" resultMap="ProblemRowMap">
+    SELECT
+      <include refid="ProblemColumns"/>
+    FROM problem p
+    <include refid="ProblemFilters"/>
+    <choose>
+      <when test="sort == 'FRONTEND_ID_DESC'">
+        ORDER BY p.frontend_id DESC NULLS LAST, p.id DESC
+      </when>
+      <when test="sort == 'TITLE_ASC'">
+        ORDER BY p.title ASC, p.frontend_id ASC NULLS LAST, p.id ASC
+      </when>
+      <when test="sort == 'UPDATED_DESC'">
+        ORDER BY p.updated_at DESC, p.id DESC
+      </when>
+      <otherwise>
+        ORDER BY p.frontend_id ASC NULLS LAST, p.id ASC
+      </otherwise>
+    </choose>
+    LIMIT #{limit}
+    OFFSET #{offset}
+  </select>
+
+  <select id="findProblemBySlug" resultMap="ProblemRowMap">
+    SELECT
+      <include refid="ProblemColumns"/>
+    FROM problem p
+    WHERE p.slug = #{slug}
+  </select>
+
+  <insert id="upsertProblem">
+    INSERT INTO problem (
+      slug,
+      frontend_id,
+      title,
+      title_cn,
+      difficulty,
+      tags,
+      content_markdown,
+      leetcode_url,
+      sample_test_case,
+      python3_template,
+      source_commit,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{slug},
+      #{frontendId},
+      #{title},
+      #{titleCn},
+      #{difficulty},
+      #{tags},
+      #{contentMarkdown},
+      #{leetcodeUrl},
+      #{sampleTestCase},
+      #{python3Template},
+      #{sourceCommit},
+      NOW(),
+      NOW()
+    )
+    ON CONFLICT (slug) DO UPDATE
+    SET frontend_id = EXCLUDED.frontend_id,
+        title = EXCLUDED.title,
+        title_cn = EXCLUDED.title_cn,
+        difficulty = EXCLUDED.difficulty,
+        tags = EXCLUDED.tags,
+        content_markdown = EXCLUDED.content_markdown,
+        leetcode_url = EXCLUDED.leetcode_url,
+        sample_test_case = EXCLUDED.sample_test_case,
+        python3_template = EXCLUDED.python3_template,
+        source_commit = EXCLUDED.source_commit,
+        updated_at = NOW()
+  </insert>
+</mapper>

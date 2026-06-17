@@ -9,6 +9,7 @@ import {
   Server,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import ProblemLibrary from './ProblemLibrary';
 import { streamAgentConversation } from './services/api';
 import type {
   AgentConversationStreamRequest,
@@ -22,6 +23,7 @@ import type {
 import { generateClientId } from './utils/id';
 
 type ConnectionState = 'idle' | 'connecting' | 'open' | 'stopped' | 'error' | 'done';
+type AppView = 'debug' | 'problems';
 
 interface StreamLogEntry {
   id: number;
@@ -129,6 +131,7 @@ function parseOptionalPositiveNumber(value: string): number | undefined {
 }
 
 export default function App() {
+  const [activeView, setActiveView] = useState<AppView>('debug');
   const [message, setMessage] = useState('Explain two pointers with a concrete example.');
   const [taskId, setTaskId] = useState('');
   const [userId, setUserId] = useState('');
@@ -312,14 +315,37 @@ export default function App() {
     <main className="test-shell">
       <section className="test-header" aria-labelledby="page-title">
         <div>
-          <p className="eyebrow">SSE TEST CLIENT</p>
-          <h1 id="page-title">AI SSE 测试台</h1>
+          <p className="eyebrow">ALGO MENTOR</p>
+          <h1 id="page-title">{activeView === 'debug' ? 'AI SSE 测试台' : '题库'}</h1>
         </div>
-        <div className={`status-pill ${connectionState}`}>
-          <Radio aria-hidden="true" />
-          <span>{statusLabel(connectionState)}</span>
+        <div className="header-actions">
+          <div className="view-tabs" aria-label="视图切换">
+            <button
+              aria-pressed={activeView === 'debug'}
+              onClick={() => setActiveView('debug')}
+              type="button"
+            >
+              AI 调试
+            </button>
+            <button
+              aria-pressed={activeView === 'problems'}
+              onClick={() => setActiveView('problems')}
+              type="button"
+            >
+              题库
+            </button>
+          </div>
+          {activeView === 'debug' && (
+            <div className={`status-pill ${connectionState}`}>
+              <Radio aria-hidden="true" />
+              <span>{statusLabel(connectionState)}</span>
+            </div>
+          )}
         </div>
       </section>
+
+      {activeView === 'problems' ? <ProblemLibrary /> : (
+        <>
 
       <section className="control-panel" aria-label="SSE 请求控制">
         <label className="topic-field">
@@ -465,6 +491,8 @@ export default function App() {
           </div>
         </article>
       </section>
+        </>
+      )}
     </main>
   );
 }

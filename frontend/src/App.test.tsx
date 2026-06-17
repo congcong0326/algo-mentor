@@ -32,6 +32,8 @@ describe('App', () => {
     render(<App />);
 
     expect(screen.getByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'AI 调试' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('textbox', { name: 'Message' })).toHaveValue(
       'Explain two pointers with a concrete example.',
     );
@@ -145,4 +147,116 @@ describe('App', () => {
     expect(screen.getByText('stopped')).toBeInTheDocument();
     expect(screen.getByText('connection_stopped')).toBeInTheDocument();
   });
+
+  it('loads problem list and detail in problem library view', async () => {
+    const fetchMock = mockProblemFetch();
+    vi.stubGlobal('fetch', fetchMock);
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: '题库' }));
+
+    expect(await screen.findByRole('heading', { name: '题库' })).toBeInTheDocument();
+    expect(await screen.findByText('两数之和')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '两数之和' })).toBeInTheDocument();
+    expect(screen.getByText('# Two Sum')).toBeInTheDocument();
+    expect(screen.getByText(/class Solution:/)).toBeInTheDocument();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/problems?sort=frontend_id_asc&page=1&pageSize=20',
+      expect.objectContaining({ headers: { Accept: 'application/json' } }),
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/problems/two-sum',
+      expect.objectContaining({ headers: { Accept: 'application/json' } }),
+    );
+  });
+
+  it('requests filtered problem list and paginates', async () => {
+    const fetchMock = mockProblemFetch(40);
+    vi.stubGlobal('fetch', fetchMock);
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: '题库' }));
+    await screen.findByText('两数之和');
+
+    fireEvent.change(screen.getByRole('textbox', { name: '搜索题目' }), {
+      target: { value: 'tree' },
+    });
+    fireEvent.change(screen.getByRole('combobox', { name: '难度筛选' }), {
+      target: { value: 'HARD' },
+    });
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      '/api/problems?keyword=tree&difficulty=HARD&sort=frontend_id_asc&page=1&pageSize=20',
+      expect.any(Object),
+    ));
+
+    fireEvent.click(screen.getByRole('button', { name: '下一页' }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      '/api/problems?keyword=tree&difficulty=HARD&sort=frontend_id_asc&page=2&pageSize=20',
+      expect.any(Object),
+    ));
+  });
+
+  it('shows problem library error state', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network failed')));
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: '题库' }));
+
+    expect(await screen.findByText('network failed')).toBeInTheDocument();
+  });
 });
+
+function mockProblemFetch(total = 1) {
+  return vi.fn((url: string) => {
+    if (url.startsWith('/api/problems/two-sum')) {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: {
+          slug: 'two-sum',
+          frontendId: 1,
+          title: 'Two Sum',
+          titleCn: '两数之和',
+          difficulty: 'EASY',
+          tags: ['Array', 'Hash Table'],
+          contentMarkdown: '# Two Sum',
+          leetcodeUrl: 'https://leetcode.com/problems/two-sum/',
+          sampleTestCase: '[2,7,11,15]\n9',
+          python3Template: 'class Solution:\n    pass',
+        },
+        timestamp: '2026-06-17T00:00:00Z',
+      }));
+    }
+
+    if (url.startsWith('/api/problems')) {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: {
+          items: [{
+            slug: 'two-sum',
+            frontendId: 1,
+            title: 'Two Sum',
+            titleCn: '两数之和',
+            difficulty: 'EASY',
+            tags: ['Array'],
+          }],
+          total,
+          page: Number(new URL(`http://localhost${url}`).searchParams.get('page') ?? '1'),
+          pageSize: 20,
+        },
+        timestamp: '2026-06-17T00:00:00Z',
+      }));
+    }
+
+    return Promise.reject(new Error(`Unexpected URL: ${url}`));
+  });
+}
+
+function jsonResponse(body: unknown): Response {
+  return new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}

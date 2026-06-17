@@ -31,6 +31,11 @@ public final class ApiContractConstants {
   public static final String HEALTH_PATH = "/api/health";
 
   /**
+   * 题库接口根路径。
+   */
+  public static final String PROBLEMS_BASE_PATH = "/api/problems";
+
+  /**
    * 主题讲解请求参数名。
    */
   public static final String TOPIC_PARAM = "topic";
