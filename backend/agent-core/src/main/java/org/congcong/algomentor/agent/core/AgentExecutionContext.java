@@ -1,11 +1,11 @@
 package org.congcong.algomentor.agent.core;
 
-import org.congcong.algomentor.domain.learning.LearningTopic;
+import java.util.Map;
 
 public record AgentExecutionContext(
     String runId,
     int stepIndex,
-    LearningTopic topic,
+    Map<String, Object> requestMetadata,
     boolean cancelled
 ) {
 
@@ -16,8 +16,6 @@ public record AgentExecutionContext(
     if (stepIndex < 1) {
       throw new IllegalArgumentException("Agent execution step index must be positive");
     }
-    if (topic == null) {
-      throw new IllegalArgumentException("Agent execution topic must not be null");
-    }
+    requestMetadata = requestMetadata == null ? Map.of() : Map.copyOf(requestMetadata);
   }
 }

@@ -4,95 +4,29 @@ import {
   CircleStop,
   Play,
   Radio,
+  RefreshCw,
   RotateCcw,
   Server,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { streamAgentConversation } from './services/api';
+import type {
+  AgentConversationStreamRequest,
+  ContentDeltaData,
+  MessageEndData,
+  MessageStartData,
+  SseEventName,
+  ToolCallDeltaData,
+  UsageData,
+} from './types/api';
 
 type ConnectionState = 'idle' | 'connecting' | 'open' | 'stopped' | 'error' | 'done';
-
-type SseEventName =
-  | 'agent_run_start'
-  | 'agent_step_start'
-  | 'agent_tool_start'
-  | 'agent_tool_end'
-  | 'agent_step_end'
-  | 'agent_run_end'
-  | 'message_start'
-  | 'content_delta'
-  | 'tool_call_start'
-  | 'tool_call_delta'
-  | 'tool_call_end'
-  | 'usage'
-  | 'message_end'
-  | 'heartbeat'
-  | 'error'
-  | 'agent_error';
 
 interface StreamLogEntry {
   id: number;
   eventName: SseEventName | 'connection_open' | 'connection_stopped' | 'connection_error';
   timestamp: string;
   data: unknown;
-}
-
-interface MessageStartData {
-  provider?: string;
-  model?: string;
-}
-
-interface ContentDeltaData {
-  content?: string;
-}
-
-interface ToolCallDeltaData {
-  id?: string;
-  argumentsDelta?: string;
-}
-
-interface UsageData {
-  usage?: {
-    inputTokens?: number;
-    outputTokens?: number;
-    reasoningTokens?: number;
-    cachedInputTokens?: number;
-    totalTokens?: number;
-  };
-}
-
-interface MessageEndData {
-  finishReason?: string;
-}
-
-const streamEvents: SseEventName[] = [
-  'agent_run_start',
-  'agent_step_start',
-  'agent_tool_start',
-  'agent_tool_end',
-  'agent_step_end',
-  'agent_run_end',
-  'message_start',
-  'content_delta',
-  'tool_call_start',
-  'tool_call_delta',
-  'tool_call_end',
-  'usage',
-  'message_end',
-  'heartbeat',
-  'error',
-  'agent_error',
-];
-
-function parseEventData(rawData: string): unknown {
-  if (!rawData) {
-    return {};
-  }
-
-  try {
-    return JSON.parse(rawData);
-  } catch {
-    return rawData;
-  }
 }
 
 function formatJson(data: unknown): string {
@@ -183,8 +117,21 @@ function statusLabel(state: ConnectionState): string {
   return labels[state];
 }
 
+function parseOptionalPositiveNumber(value: string): number | undefined {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+
+  const parsed = Number(trimmed);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
+
 export default function App() {
-  const [topic, setTopic] = useState('two pointers');
+  const [message, setMessage] = useState('Explain two pointers with a concrete example.');
+  const [taskId, setTaskId] = useState('');
+  const [userId, setUserId] = useState('');
+  const [idempotencyKey, setIdempotencyKey] = useState<string>(() => crypto.randomUUID());
   const [connectionState, setConnectionState] = useState<ConnectionState>('idle');
   const [logs, setLogs] = useState<StreamLogEntry[]>([]);
   const [output, setOutput] = useState('');
@@ -192,12 +139,12 @@ export default function App() {
   const [model, setModel] = useState('-');
   const [finishReason, setFinishReason] = useState('-');
   const [usage, setUsage] = useState<UsageData['usage']>();
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const logIdRef = useRef(0);
 
   useEffect(() => {
     return () => {
-      eventSourceRef.current?.close();
+      abortControllerRef.current?.abort();
     };
   }, []);
 
@@ -252,14 +199,13 @@ export default function App() {
     setUsage(undefined);
   }
 
-  function closeCurrentSource(nextState: ConnectionState) {
-    eventSourceRef.current?.close();
-    eventSourceRef.current = null;
+  function closeCurrentStream(nextState: ConnectionState) {
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
     setConnectionState(nextState);
   }
 
-  function handleEvent(eventName: SseEventName, event: MessageEvent<string>) {
-    const data = parseEventData(event.data);
+  function handleEvent(eventName: SseEventName, data: unknown) {
     addLog(eventName, data);
 
     if (eventName === 'message_start') {
@@ -283,7 +229,8 @@ export default function App() {
     }
 
     if (eventName === 'agent_run_end') {
-      closeCurrentSource('done');
+      abortControllerRef.current = null;
+      setConnectionState('done');
     }
 
     if (eventName === 'error' || eventName === 'agent_error') {
@@ -291,50 +238,74 @@ export default function App() {
     }
   }
 
-  function startStream() {
-    const trimmedTopic = topic.trim();
-    if (!trimmedTopic) {
+  async function startStream() {
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage) {
       return;
     }
 
-    eventSourceRef.current?.close();
+    abortControllerRef.current?.abort();
     resetStreamState();
     setConnectionState('connecting');
 
-    const source = new EventSource(`/api/ai/explanations/stream?topic=${encodeURIComponent(trimmedTopic)}`);
-    eventSourceRef.current = source;
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    const effectiveIdempotencyKey = idempotencyKey.trim() || crypto.randomUUID();
+    setIdempotencyKey(effectiveIdempotencyKey);
 
-    source.onopen = () => {
-      setConnectionState('open');
-      addLog('connection_open', { message: 'EventSource connection opened.' });
-    };
-
-    source.onerror = () => {
-      addLog('connection_error', { message: 'EventSource connection error or closed by server.' });
-      closeCurrentSource('error');
-    };
-
-    streamEvents.forEach((eventName) => {
-      source.addEventListener(eventName, (event) => {
-        handleEvent(eventName, event as MessageEvent<string>);
+    try {
+      await streamAgentConversation(buildRequestBody(trimmedMessage), {
+        idempotencyKey: effectiveIdempotencyKey,
+        signal: controller.signal,
+        onOpen: () => {
+          setConnectionState('open');
+          addLog('connection_open', { message: 'POST SSE connection opened.' });
+        },
+        onEvent: ({ eventName, data }) => handleEvent(eventName, data),
       });
-    });
+
+      if (abortControllerRef.current === controller) {
+        abortControllerRef.current = null;
+        setConnectionState((current) => (current === 'open' || current === 'connecting' ? 'done' : current));
+      }
+    } catch (error) {
+      if (controller.signal.aborted) {
+        return;
+      }
+      abortControllerRef.current = null;
+      addLog('connection_error', {
+        message: error instanceof Error ? error.message : 'Conversation stream failed.',
+      });
+      setConnectionState('error');
+    }
   }
 
   function stopStream() {
     addLog('connection_stopped', { message: 'Connection stopped by user.' });
-    closeCurrentSource('stopped');
+    closeCurrentStream('stopped');
   }
 
   function clearLogs() {
     resetStreamState();
-    if (!eventSourceRef.current) {
+    if (!abortControllerRef.current) {
       setConnectionState('idle');
     }
   }
 
+  function regenerateIdempotencyKey() {
+    setIdempotencyKey(crypto.randomUUID());
+  }
+
+  function buildRequestBody(trimmedMessage = message.trim()): AgentConversationStreamRequest {
+    return {
+      ...(parseOptionalPositiveNumber(taskId) === undefined ? {} : { taskId: parseOptionalPositiveNumber(taskId) }),
+      ...(parseOptionalPositiveNumber(userId) === undefined ? {} : { userId: parseOptionalPositiveNumber(userId) }),
+      message: trimmedMessage,
+    };
+  }
+
   const isStreaming = connectionState === 'connecting' || connectionState === 'open';
-  const requestUrl = `/api/ai/explanations/stream?topic=${encodeURIComponent(topic.trim() || 'two pointers')}`;
+  const requestBody = buildRequestBody();
 
   return (
     <main className="test-shell">
@@ -351,17 +322,51 @@ export default function App() {
 
       <section className="control-panel" aria-label="SSE 请求控制">
         <label className="topic-field">
-          <span>Topic</span>
-          <input
-            aria-label="Topic"
+          <span>Message</span>
+          <textarea
+            aria-label="Message"
             disabled={isStreaming}
-            onChange={(event) => setTopic(event.target.value)}
-            placeholder="输入任意测试 topic"
-            value={topic}
+            onChange={(event) => setMessage(event.target.value)}
+            placeholder="输入本轮用户消息"
+            rows={4}
+            value={message}
           />
         </label>
+        <div className="field-grid">
+          <label className="topic-field">
+            <span>Task ID</span>
+            <input
+              aria-label="Task ID"
+              disabled={isStreaming}
+              inputMode="numeric"
+              onChange={(event) => setTaskId(event.target.value)}
+              placeholder="首轮可留空"
+              value={taskId}
+            />
+          </label>
+          <label className="topic-field">
+            <span>User ID</span>
+            <input
+              aria-label="User ID"
+              disabled={isStreaming}
+              inputMode="numeric"
+              onChange={(event) => setUserId(event.target.value)}
+              placeholder="可选"
+              value={userId}
+            />
+          </label>
+          <label className="topic-field key-field">
+            <span>Idempotency Key</span>
+            <input
+              aria-label="Idempotency Key"
+              disabled={isStreaming}
+              onChange={(event) => setIdempotencyKey(event.target.value)}
+              value={idempotencyKey}
+            />
+          </label>
+        </div>
         <div className="button-row">
-          <button className="primary-button" disabled={isStreaming || !topic.trim()} onClick={startStream} type="button">
+          <button className="primary-button" disabled={isStreaming || !message.trim()} onClick={startStream} type="button">
             <Play aria-hidden="true" />
             <span>Start</span>
           </button>
@@ -373,10 +378,19 @@ export default function App() {
             <RotateCcw aria-hidden="true" />
             <span>Clear</span>
           </button>
+          <button className="secondary-button" disabled={isStreaming} onClick={regenerateIdempotencyKey} type="button">
+            <RefreshCw aria-hidden="true" />
+            <span>Key</span>
+          </button>
         </div>
         <div className="request-url">
           <Server aria-hidden="true" />
-          <code>{requestUrl}</code>
+          <code>POST /api/agent/conversations/stream</code>
+        </div>
+        <pre className="request-body">{formatJson(requestBody)}</pre>
+        <div className="request-url">
+          <Server aria-hidden="true" />
+          <code>Idempotency-Key: {idempotencyKey || '(auto)'}</code>
         </div>
       </section>
 

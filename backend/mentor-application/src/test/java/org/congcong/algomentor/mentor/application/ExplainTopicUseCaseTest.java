@@ -15,6 +15,7 @@ import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
+import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,8 @@ class ExplainTopicUseCaseTest {
     Flow.Publisher<AgentStreamEvent> publisher = useCase.stream("binary search");
 
     assertThat(publisher).isSameAs(streamingRunner.publisher);
-    assertThat(streamingRunner.lastStreamRequest.topic().title()).isEqualTo("binary search");
+    assertThat(streamingRunner.lastStreamRequest.metadata()).containsEntry("topicTitle", "binary search");
+    assertThat(streamingRunner.lastStreamRequest.messages().get(0).text()).contains("binary search");
   }
 
   private static final class StubAgentRunner extends AgentRunner {
@@ -49,7 +51,7 @@ class ExplainTopicUseCaseTest {
 
     @Override
     public AgentResponse run(AgentRequest request) {
-      return new AgentResponse("Explain " + request.topic().title() + " with invariants.");
+      return new AgentResponse("Explain " + request.metadata().get("topicTitle") + " with invariants.");
     }
   }
 

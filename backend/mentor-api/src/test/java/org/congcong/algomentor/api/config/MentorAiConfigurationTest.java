@@ -11,7 +11,6 @@ import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.agent.core.tool.CalculatorTool;
-import org.congcong.algomentor.domain.learning.LearningTopic;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
@@ -60,7 +59,7 @@ class MentorAiConfigurationTest {
           assertThat(result.model()).isEqualTo(TEST_MODEL);
 
           AgentRunner agentRunner = context.getBean(AgentRunner.class);
-          agentRunner.run(new AgentRequest(LearningTopic.of("binary search")));
+          agentRunner.run(new AgentRequest(List.of(LlmMessage.user("binary search"))));
 
           FakeProvider provider = context.getBean(FakeProvider.class);
           assertThat(provider.lastRequest.modelSelector().providerId()).contains(TEST_PROVIDER);

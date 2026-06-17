@@ -9,14 +9,14 @@ import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent> {
+public class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent> {
 
   private final SseEmitter emitter;
   private final LlmStreamSseMapper mapper;
   private final AtomicBoolean terminalEventSent = new AtomicBoolean(false);
   private Flow.Subscription subscription;
 
-  SseLlmStreamSubscriber(SseEmitter emitter, LlmStreamSseMapper mapper) {
+  public SseLlmStreamSubscriber(SseEmitter emitter, LlmStreamSseMapper mapper) {
     this.emitter = emitter;
     this.mapper = mapper;
   }
@@ -72,7 +72,7 @@ class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent> {
     }
   }
 
-  void cancel() {
+  public void cancel() {
     if (subscription != null) {
       subscription.cancel();
     }

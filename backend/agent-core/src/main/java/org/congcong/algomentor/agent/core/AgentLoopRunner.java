@@ -88,7 +88,11 @@ public class AgentLoopRunner {
   }
 
   private void runLoop(AgentRequest request, SubmissionPublisher<AgentStreamEvent> publisher) {
-    AgentLoopContext context = new AgentLoopContext(UUID.randomUUID().toString(), request, maxSteps, Map.of());
+    AgentLoopContext context = new AgentLoopContext(
+        request.runId() == null ? UUID.randomUUID().toString() : request.runId(),
+        request,
+        maxSteps,
+        request.metadata());
     AgentLoopLifecycle lifecycle = new AgentLoopLifecycle(publisher, observers, interceptors);
     List<LlmMessage> messages = new ArrayList<>(AgentLlmRequestFactory.initialMessages(request));
     lifecycle.runStarted(context);
@@ -148,7 +152,7 @@ public class AgentLoopRunner {
     try {
       return tool.execute(
           toolCall.arguments(),
-          new AgentExecutionContext(context.runId(), stepIndex, context.request().topic(), false));
+          new AgentExecutionContext(context.runId(), stepIndex, context.request().metadata(), false));
     } catch (AgentException ex) {
       throw ex;
     } catch (RuntimeException ex) {
@@ -172,7 +176,9 @@ public class AgentLoopRunner {
         modelSelector,
         messages,
         toolRegistry.specs(),
-        toolChoice));
+        toolChoice,
+        context.request().metadata()));
+    lifecycle.llmRequestReady(context, stepIndex, llmRequest);
     StepCollector collector = new StepCollector(context, stepIndex, lifecycle);
     try {
       llmGateway.stream(llmRequest).subscribe(collector);

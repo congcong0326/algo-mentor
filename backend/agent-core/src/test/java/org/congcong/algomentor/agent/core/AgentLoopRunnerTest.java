@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
-import org.congcong.algomentor.domain.learning.LearningTopic;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
@@ -50,7 +49,7 @@ class AgentLoopRunnerTest {
         AgentToolRegistry.empty(),
         4);
 
-    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(LearningTopic.of("two pointers"))));
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
 
     assertThat(events)
         .extracting(AgentStreamEvent::name)
@@ -70,7 +69,7 @@ class AgentLoopRunnerTest {
         .hasValue(LlmProviderId.of("test-provider"));
     assertThat(gateway.requests.get(0).modelSelector().modelId())
         .hasValue(LlmModelId.of("gpt-test"));
-    assertThat(gateway.requests.get(0).modelSelector().purpose()).isEqualTo("topic-explanation");
+    assertThat(gateway.requests.get(0).modelSelector().purpose()).isNull();
   }
 
   @Test
@@ -96,7 +95,7 @@ class AgentLoopRunnerTest {
         AgentToolRegistry.of(List.of(tool)),
         4);
 
-    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(LearningTopic.of("two pointers"))));
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
 
     assertThat(events)
         .extracting(AgentStreamEvent::name)
@@ -128,7 +127,7 @@ class AgentLoopRunnerTest {
         LlmToolChoice.specific("calculator"),
         4);
 
-    collect(runner.stream(new AgentRequest(LearningTopic.of("calculate 1 + 2"))));
+    collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("calculate 1 + 2")))));
 
     assertThat(gateway.requests.get(0).tools()).extracting(LlmToolSpec::name).containsExactly("calculator");
     assertThat(gateway.requests.get(0).toolChoice().mode()).isEqualTo(LlmToolChoice.Mode.SPECIFIC);
@@ -148,7 +147,7 @@ class AgentLoopRunnerTest {
         AgentToolRegistry.empty(),
         4);
 
-    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(LearningTopic.of("two pointers"))));
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
 
     assertThat(events.get(events.size() - 1)).isInstanceOf(AgentStreamEvent.AgentError.class);
     AgentStreamEvent.AgentError error = (AgentStreamEvent.AgentError) events.get(events.size() - 1);
@@ -173,7 +172,7 @@ class AgentLoopRunnerTest {
         AgentToolRegistry.of(List.of(new FakeTool("fake_lookup", JsonNodeFactory.instance.objectNode()))),
         1);
 
-    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(LearningTopic.of("two pointers"))));
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
 
     assertThat(events.get(events.size() - 1)).isInstanceOf(AgentStreamEvent.AgentError.class);
     AgentStreamEvent.AgentError error = (AgentStreamEvent.AgentError) events.get(events.size() - 1);
@@ -194,7 +193,7 @@ class AgentLoopRunnerTest {
         AgentToolRegistry.of(List.of(new FailingTool("fake_lookup"))),
         4);
 
-    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(LearningTopic.of("two pointers"))));
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
 
     assertThat(events.get(events.size() - 1)).isInstanceOf(AgentStreamEvent.AgentError.class);
     AgentStreamEvent.AgentError error = (AgentStreamEvent.AgentError) events.get(events.size() - 1);
@@ -226,6 +225,11 @@ class AgentLoopRunnerTest {
       @Override
       public void onStepStart(AgentLoopContext context, int stepIndex) {
         observed.add("step-start-" + stepIndex);
+      }
+
+      @Override
+      public void onLlmRequestReady(AgentLoopContext context, int stepIndex, LlmCompletionRequest request) {
+        observed.add("request-ready-" + stepIndex + "-" + request.messages().size());
       }
 
       @Override
@@ -264,7 +268,7 @@ class AgentLoopRunnerTest {
         List.of(observer),
         List.of());
 
-    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(LearningTopic.of("two pointers"))));
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
 
     assertThat(events)
         .extracting(AgentStreamEvent::name)
@@ -285,6 +289,7 @@ class AgentLoopRunnerTest {
     assertThat(observed).containsExactly(
         "run-start",
         "step-start-1",
+        "request-ready-1-1",
         "llm-1-MessageStart",
         "llm-1-ToolCallEnd",
         "llm-1-MessageEnd",
@@ -292,10 +297,59 @@ class AgentLoopRunnerTest {
         "tool-start-fake_lookup",
         "tool-end-tool data",
         "step-start-2",
+        "request-ready-2-3",
         "llm-2-ContentDelta",
         "llm-2-MessageEnd",
         "step-end-2-STOP",
         "run-end-2");
+  }
+
+  @Test
+  void notifiesFinalLlmRequestAfterInterceptorsAndBeforeGatewayCall() {
+    FakeGateway gateway = new FakeGateway();
+    gateway.steps.add(List.of(new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    List<String> order = new ArrayList<>();
+    List<LlmCompletionRequest> observedRequests = new ArrayList<>();
+    AgentLoopInterceptor interceptor = new AgentLoopInterceptor() {
+      @Override
+      public LlmCompletionRequest beforeLlmRequest(
+          AgentLoopContext context,
+          int stepIndex,
+          LlmCompletionRequest request
+      ) {
+        order.add("interceptor");
+        return new LlmCompletionRequest(
+            request.modelSelector(),
+            request.messages(),
+            request.options(),
+            request.tools(),
+            request.toolChoice(),
+            request.responseFormat(),
+            Map.of("afterInterceptor", true));
+      }
+    };
+    AgentLoopObserver observer = new AgentLoopObserver() {
+      @Override
+      public void onLlmRequestReady(AgentLoopContext context, int stepIndex, LlmCompletionRequest request) {
+        order.add("observer");
+        observedRequests.add(request);
+      }
+    };
+    gateway.beforeStream = () -> order.add("gateway");
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        LlmToolChoice.auto(),
+        4,
+        List.of(observer),
+        List.of(interceptor));
+
+    collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
+
+    assertThat(order).containsSubsequence("interceptor", "observer", "gateway");
+    assertThat(observedRequests).hasSize(1);
+    assertThat(observedRequests.get(0).metadata()).containsEntry("afterInterceptor", true);
   }
 
   @Test
@@ -317,7 +371,7 @@ class AgentLoopRunnerTest {
         List.of(failingObserver),
         List.of());
 
-    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(LearningTopic.of("two pointers"))));
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
 
     assertThat(events).extracting(AgentStreamEvent::name).endsWith("agent_run_end");
   }
@@ -377,7 +431,7 @@ class AgentLoopRunnerTest {
         List.of(),
         List.of(interceptor));
 
-    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(LearningTopic.of("two pointers"))));
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
 
     assertThat(gateway.requests.get(0).options().temperature()).isEqualTo(0.2);
     assertThat(gateway.requests.get(0).metadata()).containsEntry("step", 1);
@@ -417,7 +471,7 @@ class AgentLoopRunnerTest {
         List.of(),
         List.of(interceptor));
 
-    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(LearningTopic.of("two pointers"))));
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
 
     assertThat(gateway.requests).isEmpty();
     assertThat(events).extracting(AgentStreamEvent::name).containsExactly(
@@ -479,6 +533,7 @@ class AgentLoopRunnerTest {
   private static final class FakeGateway implements LlmGateway {
     private final List<LlmCompletionRequest> requests = new ArrayList<>();
     private final List<List<LlmStreamEvent>> steps = new ArrayList<>();
+    private Runnable beforeStream = () -> {};
 
     @Override
     public LlmCompletionResult complete(LlmCompletionRequest request) {
@@ -487,6 +542,7 @@ class AgentLoopRunnerTest {
 
     @Override
     public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
+      beforeStream.run();
       requests.add(request);
       List<LlmStreamEvent> events = steps.remove(0);
       return subscriber -> {

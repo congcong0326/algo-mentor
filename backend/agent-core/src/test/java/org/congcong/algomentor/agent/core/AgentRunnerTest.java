@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Flow;
-import org.congcong.algomentor.domain.learning.LearningTopic;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
@@ -28,7 +27,7 @@ class AgentRunnerTest {
         gateway,
         new LlmModelSelector(null, LlmModelId.of("gpt-test"), Set.of(), null));
 
-    AgentResponse response = runner.run(new AgentRequest(LearningTopic.of("binary search")));
+    AgentResponse response = runner.run(new AgentRequest(List.of(LlmMessage.user("binary search"))));
 
     assertThat(response.content()).isEqualTo("Binary search explanation");
     assertThat(gateway.lastRequest.messages().get(0).text())
@@ -36,7 +35,7 @@ class AgentRunnerTest {
     assertThat(gateway.lastRequest.modelSelector().modelId())
         .hasValue(LlmModelId.of("gpt-test"));
     assertThat(gateway.lastRequest.modelSelector().purpose())
-        .isEqualTo("topic-explanation");
+        .isNull();
   }
 
   @Test
@@ -50,14 +49,14 @@ class AgentRunnerTest {
             Set.of(),
             null));
 
-    runner.run(new AgentRequest(LearningTopic.of("binary search")));
+    runner.run(new AgentRequest(List.of(LlmMessage.user("binary search"))));
 
     assertThat(gateway.lastRequest.modelSelector().providerId())
         .hasValue(LlmProviderId.of("test-provider"));
     assertThat(gateway.lastRequest.modelSelector().modelId())
         .hasValue(LlmModelId.of("test-model"));
     assertThat(gateway.lastRequest.modelSelector().purpose())
-        .isEqualTo("topic-explanation");
+        .isNull();
   }
 
   private static final class FakeGateway implements LlmGateway {

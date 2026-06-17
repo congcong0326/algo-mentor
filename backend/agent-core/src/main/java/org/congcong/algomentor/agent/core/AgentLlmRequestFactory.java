@@ -1,6 +1,7 @@
 package org.congcong.algomentor.agent.core;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
@@ -19,12 +20,11 @@ final class AgentLlmRequestFactory {
   }
 
   static LlmCompletionRequest build(LlmModelSelector modelSelector, AgentRequest request) {
-    return build(modelSelector, initialMessages(request), List.of());
+    return build(modelSelector, initialMessages(request), List.of(), null, request.metadata());
   }
 
   static List<LlmMessage> initialMessages(AgentRequest request) {
-    String prompt = "Explain the learning topic for an algorithm student: " + request.topic().title();
-    return List.of(LlmMessage.user(prompt));
+    return request.messages();
   }
 
   static LlmCompletionRequest build(String model, List<LlmMessage> messages, List<LlmToolSpec> tools) {
@@ -41,11 +41,22 @@ final class AgentLlmRequestFactory {
       List<LlmToolSpec> tools,
       LlmToolChoice toolChoice
   ) {
+    return build(modelSelector, messages, tools, toolChoice, Map.of());
+  }
+
+  static LlmCompletionRequest build(
+      LlmModelSelector modelSelector,
+      List<LlmMessage> messages,
+      List<LlmToolSpec> tools,
+      LlmToolChoice toolChoice,
+      Map<String, Object> metadata
+  ) {
     return LlmCompletionRequest.builder()
-        .modelSelector(selectorForTopicExplanation(modelSelector))
+        .modelSelector(validatedSelector(modelSelector))
         .messages(messages)
         .tools(tools)
         .toolChoice(tools == null || tools.isEmpty() ? LlmToolChoice.none() : toolChoice)
+        .metadata(metadata)
         .build();
   }
 
@@ -53,18 +64,14 @@ final class AgentLlmRequestFactory {
     if (model == null || model.isBlank()) {
       throw new IllegalArgumentException("Agent LLM model must not be blank");
     }
-    return new LlmModelSelector(null, LlmModelId.of(model), Set.of(), "topic-explanation");
+    return new LlmModelSelector(null, LlmModelId.of(model), Set.of(), null);
   }
 
-  private static LlmModelSelector selectorForTopicExplanation(LlmModelSelector selector) {
+  private static LlmModelSelector validatedSelector(LlmModelSelector selector) {
     if (selector == null) {
       throw new IllegalArgumentException("Agent LLM model selector must not be null");
     }
-    return new LlmModelSelector(
-        selector.providerId().orElse(null),
-        selector.modelId().orElse(null),
-        selector.requiredCapabilities(),
-        "topic-explanation");
+    return selector;
   }
 
   private static LlmToolChoice defaultToolChoice(List<LlmToolSpec> tools) {

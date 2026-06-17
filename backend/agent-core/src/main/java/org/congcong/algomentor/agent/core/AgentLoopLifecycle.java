@@ -32,7 +32,7 @@ public final class AgentLoopLifecycle {
     notifyObserver(observer -> observer.onRunStart(context), "onRunStart");
     publisher.submit(new AgentStreamEvent.AgentRunStart(
         context.runId(),
-        context.request().topic().title(),
+        context.request().displayTitle(),
         context.maxSteps()));
   }
 
@@ -53,6 +53,14 @@ public final class AgentLoopLifecycle {
           "Agent loop interceptor returned null LLM request");
     }
     return effectiveRequest;
+  }
+
+  public void llmRequestReady(
+      AgentLoopContext context,
+      int stepIndex,
+      LlmCompletionRequest request
+  ) {
+    notifyObserver(observer -> observer.onLlmRequestReady(context, stepIndex, request), "onLlmRequestReady");
   }
 
   public void llmEvent(AgentLoopContext context, int stepIndex, LlmStreamEvent event) {

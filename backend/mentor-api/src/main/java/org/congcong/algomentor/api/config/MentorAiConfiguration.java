@@ -1,7 +1,9 @@
 package org.congcong.algomentor.api.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.concurrent.Flow;
+import org.congcong.algomentor.agent.core.AgentLoopObserver;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentTool;
@@ -17,12 +19,22 @@ import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
+import org.congcong.algomentor.api.service.PersistentAgentTraceObserver;
+import org.congcong.algomentor.api.service.PersistentAgentRunObserver;
+import org.congcong.algomentor.api.repository.JdbcConversationRepository;
+import org.congcong.algomentor.api.controller.AgentConversationController;
+import org.congcong.algomentor.api.service.LlmStreamSseMapper;
+import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
+import org.congcong.algomentor.mentor.application.conversation.ContextAssembler;
+import org.congcong.algomentor.mentor.application.conversation.ConversationRepository;
 import org.congcong.algomentor.mentor.application.ExplainTopicUseCase;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcOperations;
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(LlmGatewayProperties.class)
@@ -76,6 +88,7 @@ public class MentorAiConfiguration {
       LlmGateway llmGateway,
       LlmGatewayProperties gatewayProperties,
       AgentToolRegistry agentToolRegistry,
+      List<AgentLoopObserver> observers,
       @Value("${algo-mentor.agent.tool-choice:auto}") String toolChoice,
       @Value("${algo-mentor.agent.specific-tool-name:}") String specificToolName,
       @Value("${algo-mentor.agent.max-steps:4}") int maxSteps
@@ -85,7 +98,63 @@ public class MentorAiConfiguration {
         gatewayProperties.defaultSelector("topic-explanation"),
         agentToolRegistry,
         toToolChoice(toolChoice, specificToolName),
-        maxSteps);
+        maxSteps,
+        observers,
+        List.of());
+  }
+
+  @Bean
+  @ConditionalOnBean(JdbcOperations.class)
+  @ConditionalOnMissingBean
+  public PersistentAgentTraceObserver persistentAgentTraceObserver(
+      JdbcOperations jdbcOperations,
+      ObjectMapper objectMapper
+  ) {
+    return new PersistentAgentTraceObserver(jdbcOperations, objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnBean(JdbcOperations.class)
+  @ConditionalOnMissingBean
+  public PersistentAgentRunObserver persistentAgentRunObserver(
+      JdbcOperations jdbcOperations,
+      ObjectMapper objectMapper
+  ) {
+    return new PersistentAgentRunObserver(jdbcOperations, objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ContextAssembler contextAssembler() {
+    return new ContextAssembler();
+  }
+
+  @Bean
+  @ConditionalOnBean(JdbcOperations.class)
+  @ConditionalOnMissingBean
+  public ConversationRepository conversationRepository(JdbcOperations jdbcOperations) {
+    return new JdbcConversationRepository(jdbcOperations);
+  }
+
+  @Bean
+  @ConditionalOnBean(ConversationRepository.class)
+  @ConditionalOnMissingBean
+  public AgentConversationService agentConversationService(
+      ConversationRepository conversationRepository,
+      ContextAssembler contextAssembler
+  ) {
+    return new AgentConversationService(conversationRepository, contextAssembler);
+  }
+
+  @Bean
+  @ConditionalOnBean(AgentConversationService.class)
+  @ConditionalOnMissingBean
+  public AgentConversationController agentConversationController(
+      AgentConversationService conversationService,
+      AgentLoopRunner agentLoopRunner,
+      LlmStreamSseMapper sseMapper
+  ) {
+    return new AgentConversationController(conversationService, agentLoopRunner, sseMapper);
   }
 
   @Bean

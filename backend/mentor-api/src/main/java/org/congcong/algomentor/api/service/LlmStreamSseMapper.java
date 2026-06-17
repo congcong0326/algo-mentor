@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Component
-class LlmStreamSseMapper {
+public class LlmStreamSseMapper {
 
-  SseEmitter.SseEventBuilder toSseEvent(AgentStreamEvent event) {
+  public SseEmitter.SseEventBuilder toSseEvent(AgentStreamEvent event) {
     if (event instanceof AgentStreamEvent.AgentRunStart start) {
       return event("agent_run_start", new AgentRunStartData(start.runId(), start.topic(), start.maxSteps()));
     }

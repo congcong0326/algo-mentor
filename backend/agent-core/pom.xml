@@ -16,11 +16,6 @@
   <dependencies>
     <dependency>
       <groupId>org.congcong.algomentor</groupId>
-      <artifactId>domain</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.congcong.algomentor</groupId>
       <artifactId>llm-core</artifactId>
       <version>${project.version}</version>
     </dependency>

@@ -6,7 +6,11 @@ import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.domain.learning.LearningTopic;
+import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class ExplainTopicUseCase {
@@ -20,10 +24,22 @@ public class ExplainTopicUseCase {
   }
 
   public String explain(String topic) {
-    return agentRunner.run(new AgentRequest(LearningTopic.of(topic))).content();
+    return agentRunner.run(toAgentRequest(LearningTopic.of(topic))).content();
   }
 
   public Flow.Publisher<AgentStreamEvent> stream(String topic) {
-    return agentLoopRunner.stream(new AgentRequest(LearningTopic.of(topic)));
+    return agentLoopRunner.stream(toAgentRequest(LearningTopic.of(topic)));
+  }
+
+  private AgentRequest toAgentRequest(LearningTopic topic) {
+    String prompt = "Explain the learning topic for an algorithm student: " + topic.title();
+    return new AgentRequest(
+        null,
+        null,
+        List.of(LlmMessage.user(prompt)),
+        Map.of(
+            "title", topic.title(),
+            "topicTitle", topic.title(),
+            "adapter", "topic-explanation"));
   }
 }
