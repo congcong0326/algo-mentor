@@ -1,8 +1,8 @@
-package org.congcong.algomentor.mentor.application.conversation;
+package org.congcong.algomentor.agent.core.runtime.model;
 
 import java.util.Map;
 
-public record ConversationDraft(
+public record PreparedAgentRun(
     long taskId,
     long turnId,
     long runId,
@@ -13,7 +13,7 @@ public record ConversationDraft(
     Map<String, Object> metadata
 ) {
 
-  public ConversationDraft {
+  public PreparedAgentRun {
     if (taskId < 1 || turnId < 1 || runId < 1) {
       throw new IllegalArgumentException("Conversation draft ids must be positive");
     }

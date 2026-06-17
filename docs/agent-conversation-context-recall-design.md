@@ -503,7 +503,7 @@ tool_result_message
 
 ## 上下文组装流程
 
-新增 application 层组件 `AgentConversationService` 和 `ContextAssembler`。推荐流程：
+当前实现中，mentor application 层保留 `AgentConversationService` 作为业务编排入口；通用 `ContextAssembler`、运行态模型和 repository 端口归属 `agent-core.runtime`，PostgreSQL 实现和持久化 observer 归属 `agent-persistence-postgres`。推荐流程：
 
 ```text
 用户发起请求
@@ -512,14 +512,14 @@ tool_result_message
   -> 首次请求写入 user agent_message，重试或重新生成不重复写入
   -> 创建或读取 agent_run attempt，写入 attempt_no / idempotency_key / trigger_type
   -> 更新 agent_turn.current_run_id
-  -> ContextAssembler 组装候选上下文和 source refs
+  -> agent-core runtime ContextAssembler 组装候选上下文和 source refs
   -> 构造通用 AgentRequest / CoreAgentRequest
   -> 调用 AgentLoopRunner.stream(...)
   -> AgentLoopRunner 每个 step 构造 LlmCompletionRequest
   -> request interceptor 处理最终 request
-  -> 保存 final request snapshot 到 agent_context_snapshot
+  -> agent-persistence-postgres 的 trace observer 保存 final request snapshot 到 agent_context_snapshot
   -> 调用 llmGateway.stream(...)
-  -> AgentLoopObserver 持久化 run / step / tool / assistant message
+  -> agent-persistence-postgres 的 AgentLoopObserver 持久化 run / step / tool / assistant message
   -> run 结束后更新 turn、task summary 或派发异步压缩任务
 ```
 
@@ -755,11 +755,15 @@ active summary / task state: 10% - 20%
 ```text
 mentor-application
   AgentConversationService
-    -> ContextAssembler
-    -> ConversationRepository
+    -> agent-core runtime ContextAssembler
+    -> agent-core runtime AgentConversationRepository port
     -> ArtifactService
     -> AgentLoopRunner
-    -> AgentLoopObserver 持久化运行轨迹
+
+agent-persistence-postgres
+  PostgresAgentConversationRepository
+  PersistentAgentRunObserver
+  PersistentAgentTraceObserver
 ```
 
 原因：

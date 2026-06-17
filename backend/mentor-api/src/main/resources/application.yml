@@ -13,6 +13,9 @@ spring:
     time-zone: UTC
   flyway:
     enabled: ${FLYWAY_ENABLED:false}
+    locations:
+      - classpath:db/migration
+      - classpath:db/migration/agent
 
 management:
   endpoints:

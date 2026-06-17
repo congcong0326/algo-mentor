@@ -1,4 +1,4 @@
-package org.congcong.algomentor.mentor.application.conversation;
+package org.congcong.algomentor.agent.core.runtime.context;
 
 public record ContextAssemblyPolicy(
     int recentTurns,

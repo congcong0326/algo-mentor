@@ -1,10 +1,12 @@
-package org.congcong.algomentor.mentor.application.conversation;
+package org.congcong.algomentor.agent.core.runtime.context;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 
 public class ContextAssembler {
@@ -22,7 +24,7 @@ public class ContextAssembler {
   public AssembledContext assemble(
       String systemPrompt,
       String activeSummary,
-      List<ConversationMessage> history,
+      List<AgentMessage> history,
       String currentUserMessage
   ) {
     return assemble(systemPrompt, activeSummary, history, currentUserMessage, defaultPolicy);
@@ -31,7 +33,7 @@ public class ContextAssembler {
   public AssembledContext assemble(
       String systemPrompt,
       String activeSummary,
-      List<ConversationMessage> history,
+      List<AgentMessage> history,
       String currentUserMessage,
       ContextAssemblyPolicy policy
   ) {
@@ -52,26 +54,26 @@ public class ContextAssembler {
 
     int tokenEstimate = estimateTokens(messages);
     Map<String, Object> metadata = new HashMap<>();
-    metadata.put("contextPolicy", effectivePolicy.policyName());
-    metadata.put("contextPolicyVersion", effectivePolicy.policyVersion());
-    metadata.put("tokenBudget", effectivePolicy.tokenBudget());
-    metadata.put("tokenEstimate", tokenEstimate);
+    metadata.put(AgentRuntimeMetadataKeys.CONTEXT_POLICY, effectivePolicy.policyName());
+    metadata.put(AgentRuntimeMetadataKeys.CONTEXT_POLICY_VERSION, effectivePolicy.policyVersion());
+    metadata.put(AgentRuntimeMetadataKeys.TOKEN_BUDGET, effectivePolicy.tokenBudget());
+    metadata.put(AgentRuntimeMetadataKeys.TOKEN_ESTIMATE, tokenEstimate);
     return new AssembledContext(messages, metadata, tokenEstimate);
   }
 
-  private List<ConversationMessage> recentMessages(List<ConversationMessage> history, int recentTurns) {
+  private List<AgentMessage> recentMessages(List<AgentMessage> history, int recentTurns) {
     if (history == null || history.isEmpty()) {
       return List.of();
     }
     int messageLimit = recentTurns * 2;
-    List<ConversationMessage> sorted = history.stream()
-        .sorted(Comparator.comparingLong(ConversationMessage::sequenceNo))
+    List<AgentMessage> sorted = history.stream()
+        .sorted(Comparator.comparingLong(AgentMessage::sequenceNo))
         .toList();
     int fromIndex = Math.max(0, sorted.size() - messageLimit);
     return sorted.subList(fromIndex, sorted.size());
   }
 
-  private LlmMessage toLlmMessage(ConversationMessage message) {
+  private LlmMessage toLlmMessage(AgentMessage message) {
     return switch (message.role()) {
       case USER -> LlmMessage.user(message.content());
       case ASSISTANT -> LlmMessage.assistant(message.content());

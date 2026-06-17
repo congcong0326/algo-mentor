@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContextSnapshotMapper">
+
+  <insert id="insertSnapshot">
+    INSERT INTO agent_context_snapshot (
+      task_id,
+      run_id,
+      step_index,
+      request_id,
+      provider,
+      model,
+      model_selector,
+      policy_name,
+      policy_version,
+      token_budget,
+      token_estimate,
+      reserved_output_tokens,
+      snapshot_storage_mode,
+      request_snapshot_json,
+      messages_json,
+      tools_json,
+      tool_choice_json,
+      generation_options,
+      request_hash,
+      redaction_policy_version,
+      metadata,
+      created_at
+    )
+    VALUES (
+      #{taskId},
+      #{runId},
+      #{stepIndex},
+      #{requestId},
+      #{provider},
+      #{model},
+      #{modelSelector},
+      #{policyName},
+      #{policyVersion},
+      #{tokenBudget},
+      #{tokenEstimate},
+      #{reservedOutputTokens},
+      #{snapshotStorageMode},
+      #{requestSnapshotJson,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{messagesJson,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{toolsJson,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{toolChoiceJson,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{generationOptions,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{requestHash},
+      #{redactionPolicyVersion},
+      #{metadata,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{createdAt}
+    )
+  </insert>
+</mapper>

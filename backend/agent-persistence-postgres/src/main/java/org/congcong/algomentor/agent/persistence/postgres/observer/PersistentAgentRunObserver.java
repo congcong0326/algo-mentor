@@ -1,9 +1,9 @@
-package org.congcong.algomentor.api.service;
+package org.congcong.algomentor.agent.persistence.postgres.observer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.sql.Timestamp;
 import java.time.Clock;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,38 +11,39 @@ import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentLoopContext;
 import org.congcong.algomentor.agent.core.AgentLoopObserver;
 import org.congcong.algomentor.agent.core.AgentRunResult;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunMapper;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunErrorUpdate;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunStartUpdate;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunSuccessUpdate;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
-import org.springframework.jdbc.core.JdbcOperations;
 
 public class PersistentAgentRunObserver implements AgentLoopObserver {
 
-  private final JdbcOperations jdbcOperations;
+  private final AgentRunMapper runMapper;
   private final ObjectMapper objectMapper;
   private final Clock clock;
   private final Map<String, RunBuffer> buffers = new ConcurrentHashMap<>();
 
-  public PersistentAgentRunObserver(JdbcOperations jdbcOperations, ObjectMapper objectMapper) {
-    this(jdbcOperations, objectMapper, Clock.systemUTC());
+  public PersistentAgentRunObserver(AgentRunMapper runMapper, ObjectMapper objectMapper) {
+    this(runMapper, objectMapper, Clock.systemUTC());
   }
 
-  PersistentAgentRunObserver(JdbcOperations jdbcOperations, ObjectMapper objectMapper, Clock clock) {
-    this.jdbcOperations = jdbcOperations;
+  public PersistentAgentRunObserver(AgentRunMapper runMapper, ObjectMapper objectMapper, Clock clock) {
+    this.runMapper = runMapper;
     this.objectMapper = objectMapper;
     this.clock = clock;
   }
 
   @Override
   public void onRunStart(AgentLoopContext context) {
-    if (runDbId(context) == null) {
+    Long runDbId = runDbId(context);
+    if (runDbId == null) {
       return;
     }
     buffers.put(context.runId(), new RunBuffer());
-    jdbcOperations.update("""
-        UPDATE agent_run
-        SET status = 'running', started_at = COALESCE(started_at, ?), max_steps = ?
-        WHERE id = ?
-        """, Timestamp.from(clock.instant()), context.maxSteps(), runDbId(context));
+    runMapper.markRunStarted(new RunStartUpdate(runDbId, context.maxSteps(), clock.instant()));
   }
 
   @Override
@@ -65,45 +66,35 @@ public class PersistentAgentRunObserver implements AgentLoopObserver {
 
   @Override
   public void onRunEnd(AgentLoopContext context, AgentRunResult result) {
-    Long taskId = longMetadata(context, "taskId");
-    Long turnId = longMetadata(context, "turnId");
+    Long taskId = longMetadata(context, AgentRuntimeMetadataKeys.TASK_ID);
+    Long turnId = longMetadata(context, AgentRuntimeMetadataKeys.TURN_ID);
     Long runDbId = runDbId(context);
     if (taskId == null || turnId == null || runDbId == null) {
       return;
     }
+
     RunBuffer buffer = buffers.remove(context.runId());
+    Instant now = clock.instant();
     String content = buffer == null ? "" : buffer.content.toString();
-    Long assistantMessageId = content.isBlank() ? null : insertAssistantMessage(taskId, turnId, runDbId, content);
-    jdbcOperations.update("""
-        UPDATE agent_run
-        SET status = 'succeeded',
-            provider = ?,
-            model = ?,
-            finish_reason = ?,
-            usage = ?::jsonb,
-            ended_at = ?
-        WHERE id = ?
-        """,
+    Long assistantMessageId = content.isBlank()
+        ? null
+        : runMapper.insertAssistantMessage(
+            taskId,
+            turnId,
+            runDbId,
+            content,
+            estimateTokens(content),
+            now,
+            now);
+
+    runMapper.markRunSucceeded(new RunSuccessUpdate(
+        runDbId,
         buffer == null ? null : buffer.provider,
         buffer == null ? null : buffer.model,
         result.finishReason().name(),
-        toJson(usageMap(buffer == null ? null : buffer.usage)),
-        Timestamp.from(clock.instant()),
-        runDbId);
-    jdbcOperations.update("""
-        UPDATE agent_turn
-        SET status = 'succeeded',
-            assistant_message_id = COALESCE(?, assistant_message_id),
-            accepted_run_id = ?,
-            current_run_id = ?,
-            updated_at = ?
-        WHERE id = ?
-        """,
-        assistantMessageId,
-        runDbId,
-        runDbId,
-        Timestamp.from(clock.instant()),
-        turnId);
+        jsonNode(usageMap(buffer == null ? null : buffer.usage)),
+        now));
+    runMapper.markTurnSucceeded(turnId, assistantMessageId, runDbId, now);
   }
 
   @Override
@@ -113,49 +104,19 @@ public class PersistentAgentRunObserver implements AgentLoopObserver {
       return;
     }
     buffers.remove(context.runId());
-    jdbcOperations.update("""
-        UPDATE agent_run
-        SET status = 'failed',
-            error = ?::jsonb,
-            ended_at = ?
-        WHERE id = ?
-        """,
-        toJson(Map.of(
+    Instant now = clock.instant();
+    runMapper.markRunFailed(new RunErrorUpdate(
+        runDbId,
+        jsonNode(Map.of(
             "code", error.code().name(),
             "message", error.getMessage(),
             "retryable", error.retryable(),
             "metadata", error.metadata())),
-        Timestamp.from(clock.instant()),
-        runDbId);
-    Long turnId = longMetadata(context, "turnId");
+        now));
+    Long turnId = longMetadata(context, AgentRuntimeMetadataKeys.TURN_ID);
     if (turnId != null) {
-      jdbcOperations.update("""
-          UPDATE agent_turn
-          SET status = 'failed', updated_at = ?
-          WHERE id = ?
-          """, Timestamp.from(clock.instant()), turnId);
+      runMapper.markTurnFailed(turnId, now);
     }
-  }
-
-  private Long insertAssistantMessage(long taskId, long turnId, long runId, String content) {
-    Long sequenceNo = jdbcOperations.queryForObject(
-        "SELECT COALESCE(MAX(sequence_no), 0) + 1 FROM agent_message WHERE task_id = ?",
-        Long.class,
-        taskId);
-    return jdbcOperations.queryForObject("""
-        INSERT INTO agent_message (task_id, turn_id, run_id, role, content, sequence_no, status, token_estimate, created_at, updated_at)
-        VALUES (?, ?, ?, 'assistant', ?, ?, 'active', ?, ?, ?)
-        RETURNING id
-        """,
-        Long.class,
-        taskId,
-        turnId,
-        runId,
-        content,
-        sequenceNo,
-        Math.max(1, content.length() / 4),
-        Timestamp.from(clock.instant()),
-        Timestamp.from(clock.instant()));
   }
 
   private Map<String, Object> usageMap(LlmUsage usage) {
@@ -171,16 +132,12 @@ public class PersistentAgentRunObserver implements AgentLoopObserver {
     return values;
   }
 
-  private String toJson(Object value) {
-    try {
-      return objectMapper.writeValueAsString(value);
-    } catch (JsonProcessingException ex) {
-      throw new IllegalStateException("Failed to serialize agent run JSON", ex);
-    }
+  private JsonNode jsonNode(Object value) {
+    return objectMapper.valueToTree(value);
   }
 
   private Long runDbId(AgentLoopContext context) {
-    return longMetadata(context, "runDbId");
+    return longMetadata(context, AgentRuntimeMetadataKeys.RUN_DB_ID);
   }
 
   private Long longMetadata(AgentLoopContext context, String key) {
@@ -192,6 +149,10 @@ public class PersistentAgentRunObserver implements AgentLoopObserver {
       return Long.parseLong(text);
     }
     return null;
+  }
+
+  private int estimateTokens(String content) {
+    return Math.max(1, content.length() / 4);
   }
 
   private static final class RunBuffer {

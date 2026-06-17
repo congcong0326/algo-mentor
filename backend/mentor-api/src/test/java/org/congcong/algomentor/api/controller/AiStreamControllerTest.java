@@ -1,8 +1,6 @@
 package org.congcong.algomentor.api.controller;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -10,8 +8,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Map;
+import java.util.concurrent.SubmissionPublisher;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
-import org.congcong.algomentor.mentor.application.ExplainTopicUseCase;
+import org.congcong.algomentor.api.service.AiExplanationService;
+import org.congcong.algomentor.api.service.LlmStreamSseMapper;
+import org.congcong.algomentor.api.service.SseLlmStreamSubscriber;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
@@ -21,14 +23,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import java.util.Map;
-import java.util.concurrent.SubmissionPublisher;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -37,13 +39,13 @@ class AiStreamControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-  @MockitoBean
-  private ExplainTopicUseCase explainTopicUseCase;
+  @Autowired
+  private StubAiExplanationService aiExplanationService;
 
   @Test
   void streamExplanationSendsLlmStreamEventsAsSseEvents() throws Exception {
     SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
-    when(explainTopicUseCase.stream("two pointers")).thenReturn(publisher);
+    aiExplanationService.publisher = publisher;
 
     MvcResult result = mockMvc.perform(get("/api/ai/explanations/stream")
             .param("topic", "two pointers"))
@@ -79,6 +81,40 @@ class AiStreamControllerTest {
         .andExpect(content().string(containsString("\"finishReason\":\"STOP\"")))
         .andExpect(content().string(containsString("event:agent_run_end")));
 
-    verify(explainTopicUseCase).stream("two pointers");
+    org.assertj.core.api.Assertions.assertThat(aiExplanationService.lastTopic).isEqualTo("two pointers");
+  }
+
+  @TestConfiguration(proxyBeanMethods = false)
+  static class TestConfig {
+
+    @Bean
+    @Primary
+    StubAiExplanationService stubAiExplanationService(LlmStreamSseMapper sseMapper) {
+      return new StubAiExplanationService(sseMapper);
+    }
+  }
+
+  static class StubAiExplanationService extends AiExplanationService {
+
+    private final LlmStreamSseMapper sseMapper;
+    private SubmissionPublisher<AgentStreamEvent> publisher;
+    private String lastTopic;
+
+    StubAiExplanationService(LlmStreamSseMapper sseMapper) {
+      super(null, sseMapper);
+      this.sseMapper = sseMapper;
+    }
+
+    @Override
+    public SseEmitter streamExplanation(String topic) {
+      lastTopic = topic;
+      SseEmitter emitter = new SseEmitter(30_000L);
+      SseLlmStreamSubscriber subscriber = new SseLlmStreamSubscriber(emitter, sseMapper);
+      emitter.onCompletion(subscriber::cancel);
+      emitter.onTimeout(subscriber::cancel);
+      emitter.onError(ignored -> subscriber.cancel());
+      publisher.subscribe(subscriber);
+      return emitter;
+    }
   }
 }

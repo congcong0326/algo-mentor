@@ -19,6 +19,7 @@ import type {
   ToolCallDeltaData,
   UsageData,
 } from './types/api';
+import { generateClientId } from './utils/id';
 
 type ConnectionState = 'idle' | 'connecting' | 'open' | 'stopped' | 'error' | 'done';
 
@@ -131,7 +132,7 @@ export default function App() {
   const [message, setMessage] = useState('Explain two pointers with a concrete example.');
   const [taskId, setTaskId] = useState('');
   const [userId, setUserId] = useState('');
-  const [idempotencyKey, setIdempotencyKey] = useState<string>(() => crypto.randomUUID());
+  const [idempotencyKey, setIdempotencyKey] = useState<string>(() => generateClientId());
   const [connectionState, setConnectionState] = useState<ConnectionState>('idle');
   const [logs, setLogs] = useState<StreamLogEntry[]>([]);
   const [output, setOutput] = useState('');
@@ -250,7 +251,7 @@ export default function App() {
 
     const controller = new AbortController();
     abortControllerRef.current = controller;
-    const effectiveIdempotencyKey = idempotencyKey.trim() || crypto.randomUUID();
+    const effectiveIdempotencyKey = idempotencyKey.trim() || generateClientId();
     setIdempotencyKey(effectiveIdempotencyKey);
 
     try {
@@ -293,7 +294,7 @@ export default function App() {
   }
 
   function regenerateIdempotencyKey() {
-    setIdempotencyKey(crypto.randomUUID());
+    setIdempotencyKey(generateClientId());
   }
 
   function buildRequestBody(trimmedMessage = message.trim()): AgentConversationStreamRequest {

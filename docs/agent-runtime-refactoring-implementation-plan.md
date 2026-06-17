@@ -188,6 +188,21 @@ backend/agent-persistence-postgres/src/main/resources/
 
 ## 分阶段实施
 
+## 当前落地状态
+
+截至 2026-06-17，阶段 0-4 已完成落地，阶段 5-6 的边界清理已完成当前代码范围内可收敛部分：
+
+- 通用运行态模型、上下文组装策略、metadata key 和 conversation repository 端口已迁入 `agent-core/src/main/java/org/congcong/algomentor/agent/core/runtime`。
+- 新增 `agent-persistence-postgres` Maven 模块，承载 `PostgresAgentConversationRepository`、MyBatis mapper interface/XML、JSONB type handler、`PersistentAgentRunObserver`、`PersistentAgentTraceObserver` 和 agent runtime migration。
+- `mentor-api` 通过依赖 `agent-persistence-postgres` 和 auto-configuration 获取持久化 bean，不再直接声明 JDBC repository 或持久化 observer。
+- `V2__agent_conversation_context.sql` 已移动到 `agent-persistence-postgres/src/main/resources/db/migration/agent`，`mentor-api` 的 Flyway locations 已包含 `classpath:db/migration` 与 `classpath:db/migration/agent`。
+- `mentor-application` 的 conversation 包保留 `AgentConversationCommand`、`AgentConversationRun`、`AgentConversationService`，默认 mentor prompt 和业务命令到 core 准备请求的映射位于 application 层。
+- 已补充回归测试覆盖 prepare run、创建 task/turn/user message/run、idempotency key 复用、recent messages、run 成功写 assistant message、run 失败写 error、final request snapshot 保存、JSONB type handler、时间字段、枚举大小写和 mapper XML 解析。
+- 阶段 4 已将 Spring JDBC 实现替换为 PostgreSQL + MyBatis XML Mapper；`PostgresAgentConversationRepository` 只组合 mapper，两个 persistent observer 不再持有 agent runtime SQL。
+- 新增 `V3__agent_runtime_sequence_counters.sql`，不修改历史 `V2`，通过 `agent_task`/`agent_turn` 计数器和 PostgreSQL 触发器原子分配 turn sequence、message sequence、run attempt；同一 idempotency key 准备 run 时使用 PostgreSQL transaction advisory lock 降低并发重复创建风险。
+
+阶段 7 的 artifact、上下文压缩和长期记忆尚未启动。
+
 ### 阶段 0：建立重构基线
 
 目标：确认现有行为和未提交改动边界，避免重构时混入功能变化。
@@ -306,6 +321,8 @@ spring:
 - 若需要拆分大脚本，优先在新库验证；对已运行库使用追加 migration。
 
 ### 阶段 4：将 JDBC 实现替换为 MyBatis XML Mapper
+
+状态：已完成。当前实现位于 `agent-persistence-postgres`，SQL 集中在 `src/main/resources/mapper/agent/*.xml`，JSONB 通过 `JsonbTypeHandler` 绑定，message role 通过 type handler 映射数据库小写值与 core 枚举。并发序号风险通过新增 `V3__agent_runtime_sequence_counters.sql` 的数据库计数器/触发器处理，未修改已存在的 `V2` migration。
 
 目标：完成你倾向的 PostgreSQL + MyBatis XML Mapper 实现，同时保持 core 端口不变。
 

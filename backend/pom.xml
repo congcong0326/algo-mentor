@@ -25,6 +25,7 @@
     <module>llm-core</module>
     <module>llm-openai</module>
     <module>agent-core</module>
+    <module>agent-persistence-postgres</module>
     <module>mentor-application</module>
     <module>mentor-api</module>
   </modules>
@@ -33,10 +34,22 @@
     <java.version>17</java.version>
     <maven.compiler.release>17</maven.compiler.release>
     <openai-java.version>4.39.1</openai-java.version>
+    <mybatis.version>3.5.19</mybatis.version>
+    <mybatis-spring.version>3.0.5</mybatis-spring.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis</artifactId>
+        <version>${mybatis.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis-spring</artifactId>
+        <version>${mybatis-spring.version}</version>
+      </dependency>
       <dependency>
         <groupId>com.openai</groupId>
         <artifactId>openai-java</artifactId>

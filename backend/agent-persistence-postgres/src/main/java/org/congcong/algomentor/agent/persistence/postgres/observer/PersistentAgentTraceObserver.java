@@ -1,4 +1,4 @@
-package org.congcong.algomentor.api.service;
+package org.congcong.algomentor.agent.persistence.postgres.observer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Timestamp;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.HexFormat;
@@ -17,10 +16,12 @@ import java.util.Locale;
 import java.util.Map;
 import org.congcong.algomentor.agent.core.AgentLoopContext;
 import org.congcong.algomentor.agent.core.AgentLoopObserver;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContextSnapshotMapper;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ContextSnapshotRow;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
-import org.springframework.jdbc.core.JdbcOperations;
 
 public class PersistentAgentTraceObserver implements AgentLoopObserver {
 
@@ -28,63 +29,41 @@ public class PersistentAgentTraceObserver implements AgentLoopObserver {
   private static final String SNAPSHOT_POLICY_NAME = "final-request-snapshot";
   private static final String SNAPSHOT_POLICY_VERSION = "v1";
 
-  private final JdbcOperations jdbcOperations;
+  private final AgentContextSnapshotMapper snapshotMapper;
   private final ObjectMapper objectMapper;
   private final Clock clock;
 
-  public PersistentAgentTraceObserver(JdbcOperations jdbcOperations, ObjectMapper objectMapper) {
-    this(jdbcOperations, objectMapper, Clock.systemUTC());
+  public PersistentAgentTraceObserver(AgentContextSnapshotMapper snapshotMapper, ObjectMapper objectMapper) {
+    this(snapshotMapper, objectMapper, Clock.systemUTC());
   }
 
-  PersistentAgentTraceObserver(JdbcOperations jdbcOperations, ObjectMapper objectMapper, Clock clock) {
-    this.jdbcOperations = jdbcOperations;
+  public PersistentAgentTraceObserver(
+      AgentContextSnapshotMapper snapshotMapper,
+      ObjectMapper objectMapper,
+      Clock clock
+  ) {
+    this.snapshotMapper = snapshotMapper;
     this.objectMapper = objectMapper;
     this.clock = clock;
   }
 
   @Override
   public void onLlmRequestReady(AgentLoopContext context, int stepIndex, LlmCompletionRequest request) {
-    Long taskId = longMetadata(context, "taskId");
-    Long runDbId = longMetadata(context, "runDbId");
+    Long taskId = longMetadata(context, AgentRuntimeMetadataKeys.TASK_ID);
+    Long runDbId = longMetadata(context, AgentRuntimeMetadataKeys.RUN_DB_ID);
     if (taskId == null || runDbId == null) {
       return;
     }
 
-    JsonNode requestSnapshot = redact(objectMapper.valueToTree(request));
     JsonNode messages = redact(objectMapper.valueToTree(request.messages()));
     JsonNode tools = redact(objectMapper.valueToTree(request.tools()));
     JsonNode toolChoice = redact(objectMapper.valueToTree(request.toolChoice()));
     JsonNode generationOptions = redact(objectMapper.valueToTree(request.options()));
+    JsonNode requestSnapshot = redact(requestSnapshot(request, messages, tools, toolChoice, generationOptions));
     String requestHash = sha256Hex(canonicalJson(requestSnapshot));
     Instant now = clock.instant();
 
-    jdbcOperations.update("""
-        INSERT INTO agent_context_snapshot (
-          task_id,
-          run_id,
-          step_index,
-          request_id,
-          provider,
-          model,
-          model_selector,
-          policy_name,
-          policy_version,
-          token_budget,
-          token_estimate,
-          reserved_output_tokens,
-          snapshot_storage_mode,
-          request_snapshot_json,
-          messages_json,
-          tools_json,
-          tool_choice_json,
-          generation_options,
-          request_hash,
-          redaction_policy_version,
-          metadata,
-          created_at
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?::jsonb, ?::jsonb, ?::jsonb, ?::jsonb, ?::jsonb, ?, ?, ?::jsonb, ?)
-        """,
+    snapshotMapper.insertSnapshot(new ContextSnapshotRow(
         taskId,
         runDbId,
         stepIndex,
@@ -94,21 +73,21 @@ public class PersistentAgentTraceObserver implements AgentLoopObserver {
         request.modelSelector().purpose(),
         SNAPSHOT_POLICY_NAME,
         SNAPSHOT_POLICY_VERSION,
-        intMetadata(context, "tokenBudget", 0),
+        intMetadata(context, AgentRuntimeMetadataKeys.TOKEN_BUDGET, 0),
         estimateTokens(messages),
         reservedOutputTokens(request),
         "inline",
-        canonicalJson(requestSnapshot),
-        canonicalJson(messages),
-        canonicalJson(tools),
-        canonicalJson(toolChoice),
-        canonicalJson(generationOptions),
+        requestSnapshot,
+        messages,
+        tools,
+        toolChoice,
+        generationOptions,
         requestHash,
         REDACTION_POLICY_VERSION,
-        canonicalJson(redact(objectMapper.valueToTree(Map.of(
+        redact(objectMapper.valueToTree(Map.of(
             "agentRunId", context.runId(),
-            "requestMetadata", context.request().metadata())))),
-        Timestamp.from(now));
+            "requestMetadata", context.request().metadata()))),
+        now));
   }
 
   private JsonNode redact(JsonNode node) {
@@ -116,11 +95,38 @@ public class PersistentAgentTraceObserver implements AgentLoopObserver {
       return objectMapper.nullNode();
     }
     JsonNode copy = node.deepCopy();
-    redactInPlace(copy, "");
+    redactInPlace(copy);
     return copy;
   }
 
-  private void redactInPlace(JsonNode node, String fieldName) {
+  private JsonNode requestSnapshot(
+      LlmCompletionRequest request,
+      JsonNode messages,
+      JsonNode tools,
+      JsonNode toolChoice,
+      JsonNode generationOptions
+  ) {
+    ObjectNode snapshot = objectMapper.createObjectNode();
+    ObjectNode modelSelector = snapshot.putObject("modelSelector");
+    request.modelSelector().providerId().map(LlmProviderId::value).ifPresent(value -> modelSelector.put("providerId", value));
+    request.modelSelector().modelId().map(LlmModelId::value).ifPresent(value -> modelSelector.put("modelId", value));
+    modelSelector.put("purpose", request.modelSelector().purpose());
+    ArrayNode capabilities = modelSelector.putArray("requiredCapabilities");
+    request.modelSelector().requiredCapabilities().stream()
+        .map(Enum::name)
+        .sorted()
+        .forEach(capabilities::add);
+
+    snapshot.set("messages", messages);
+    snapshot.set("tools", tools);
+    snapshot.set("toolChoice", toolChoice);
+    snapshot.set("generationOptions", generationOptions);
+    snapshot.set("responseFormat", objectMapper.valueToTree(request.responseFormat()));
+    snapshot.set("metadata", objectMapper.valueToTree(request.metadata()));
+    return snapshot;
+  }
+
+  private void redactInPlace(JsonNode node) {
     if (node == null || node.isNull()) {
       return;
     }
@@ -132,7 +138,7 @@ public class PersistentAgentTraceObserver implements AgentLoopObserver {
         if (isSensitiveField(field.getKey())) {
           object.put(field.getKey(), "[REDACTED]");
         } else {
-          redactInPlace(field.getValue(), field.getKey());
+          redactInPlace(field.getValue());
         }
       }
       return;
@@ -140,7 +146,7 @@ public class PersistentAgentTraceObserver implements AgentLoopObserver {
     if (node.isArray()) {
       ArrayNode array = (ArrayNode) node;
       for (JsonNode item : array) {
-        redactInPlace(item, fieldName);
+        redactInPlace(item);
       }
     }
   }

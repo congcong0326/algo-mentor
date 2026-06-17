@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunMapper">
+
+  <update id="markRunStarted">
+    UPDATE agent_run
+    SET status = 'running',
+        started_at = COALESCE(started_at, #{startedAt}),
+        max_steps = #{maxSteps}
+    WHERE id = #{runId}
+  </update>
+
+  <select id="insertAssistantMessage" resultType="long">
+    INSERT INTO agent_message (
+      task_id,
+      turn_id,
+      run_id,
+      role,
+      content,
+      sequence_no,
+      status,
+      token_estimate,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{taskId},
+      #{turnId},
+      #{runId},
+      'assistant',
+      #{content},
+      DEFAULT,
+      'active',
+      #{tokenEstimate},
+      #{createdAt},
+      #{updatedAt}
+    )
+    RETURNING id
+  </select>
+
+  <update id="markRunSucceeded">
+    UPDATE agent_run
+    SET status = 'succeeded',
+        provider = #{provider},
+        model = #{model},
+        finish_reason = #{finishReason},
+        usage = #{usage,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        ended_at = #{endedAt}
+    WHERE id = #{runId}
+  </update>
+
+  <update id="markTurnSucceeded">
+    UPDATE agent_turn
+    SET status = 'succeeded',
+        assistant_message_id = COALESCE(#{assistantMessageId}, assistant_message_id),
+        accepted_run_id = #{runId},
+        current_run_id = #{runId},
+        updated_at = #{updatedAt}
+    WHERE id = #{turnId}
+  </update>
+
+  <update id="markRunFailed">
+    UPDATE agent_run
+    SET status = 'failed',
+        error = #{error,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        ended_at = #{endedAt}
+    WHERE id = #{runId}
+  </update>
+
+  <update id="markTurnFailed">
+    UPDATE agent_turn
+    SET status = 'failed',
+        updated_at = #{updatedAt}
+    WHERE id = #{turnId}
+  </update>
+</mapper>

@@ -42,6 +42,15 @@ describe('App', () => {
     expect(screen.getByText('POST /api/agent/conversations/stream')).toBeInTheDocument();
   });
 
+  it('renders when crypto.randomUUID is unavailable', () => {
+    vi.stubGlobal('crypto', {});
+
+    render(<App />);
+
+    expect(screen.getByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(screen.getByRole<HTMLInputElement>('textbox', { name: 'Idempotency Key' }).value).toMatch(/^client-/);
+  });
+
   it('posts conversation stream request with body and idempotency key', async () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response(sseStream([
       sseEvent('agent_run_end', { runId: 'run_1' }),

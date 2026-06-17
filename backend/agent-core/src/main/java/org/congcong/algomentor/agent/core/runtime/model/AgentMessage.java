@@ -1,8 +1,8 @@
-package org.congcong.algomentor.mentor.application.conversation;
+package org.congcong.algomentor.agent.core.runtime.model;
 
 import java.time.Instant;
 
-public record ConversationMessage(
+public record AgentMessage(
     long id,
     long taskId,
     long sequenceNo,
@@ -11,7 +11,7 @@ public record ConversationMessage(
     Instant createdAt
 ) {
 
-  public ConversationMessage {
+  public AgentMessage {
     if (id < 1) {
       throw new IllegalArgumentException("Conversation message id must be positive");
     }
