@@ -121,7 +121,7 @@ public class AgentLoopRunner {
                   Map.of("toolName", toolCall.name(), "toolCallId", toolCall.id()),
                   null));
           lifecycle.toolStarted(context, stepIndex, toolCall);
-          var result = executeTool(context, stepIndex, toolCall, tool);
+          var result = executeTool(context, stepIndex, toolCall, tool, lifecycle);
           result = lifecycle.afterToolCall(context, stepIndex, toolCall, result);
           lifecycle.toolEnded(context, stepIndex, toolCall, result);
           messages.add(LlmMessage.toolResult(toolCall.id(), result));
@@ -147,21 +147,25 @@ public class AgentLoopRunner {
       AgentLoopContext context,
       int stepIndex,
       LlmToolCall toolCall,
-      AgentTool tool
+      AgentTool tool,
+      AgentLoopLifecycle lifecycle
   ) {
     try {
       return tool.execute(
           toolCall.arguments(),
           new AgentExecutionContext(context.runId(), stepIndex, context.request().metadata(), false));
     } catch (AgentException ex) {
+      lifecycle.toolErrored(context, stepIndex, toolCall, ex);
       throw ex;
     } catch (RuntimeException ex) {
-      throw new AgentException(
+      AgentException error = new AgentException(
           AgentErrorCode.TOOL_EXECUTION_FAILED,
           "Agent tool execution failed: " + toolCall.name(),
           false,
           Map.of("toolName", toolCall.name(), "toolCallId", toolCall.id()),
           ex);
+      lifecycle.toolErrored(context, stepIndex, toolCall, error);
+      throw error;
     }
   }
 

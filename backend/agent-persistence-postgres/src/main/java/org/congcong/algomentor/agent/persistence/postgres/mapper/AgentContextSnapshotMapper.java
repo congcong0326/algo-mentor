@@ -6,5 +6,5 @@ import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ContextSn
 @Mapper
 public interface AgentContextSnapshotMapper {
 
-  int insertSnapshot(ContextSnapshotRow row);
+  long insertSnapshot(ContextSnapshotRow row);
 }

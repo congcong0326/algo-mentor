@@ -523,6 +523,71 @@ tool_result_message
   -> run 结束后更新 turn、task summary 或派发异步压缩任务
 ```
 
+### `/api/agent/conversations/stream` 表交互时序
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor Client
+  participant API as AgentConversationController
+  participant App as AgentConversationService
+  participant Repo as AgentConversationRepository
+  participant Task as agent_task
+  participant Turn as agent_turn
+  participant Msg as agent_message
+  participant Run as agent_run
+  participant Core as AgentLoopRunner
+  participant Obs as persistence observers
+  participant Snap as agent_context_snapshot
+  participant Artifact as agent_artifact(可选)
+  participant LLM as llmGateway
+
+  Client->>API: POST /api/agent/conversations/stream
+  API->>App: prepareRun(taskId, message, idempotencyKey)
+  App->>Repo: createOrReuseRun(...)
+  Repo->>Run: 按 idempotency_key 查询
+  alt 幂等命中
+    Run-->>Repo: 返回已有 run
+    Repo->>Task: 读取 system_prompt
+  else 新建执行
+    opt 未传 taskId
+      Repo->>Task: INSERT task
+    end
+    Repo->>Turn: INSERT turn(status=running)
+    Repo->>Msg: INSERT user message
+    Repo->>Run: INSERT run(status=running)
+    Repo->>Turn: UPDATE user_message_id/current_run_id
+  end
+  Repo->>Msg: SELECT 最近消息
+  App-->>API: AgentRequest(taskId/turnId/runId)
+  API->>Core: stream(AgentRequest)
+  Core->>Obs: onRunStart
+  Obs->>Run: UPDATE started_at/status
+  loop 每个 LLM step
+    Core->>Obs: onLlmRequestReady(final request)
+    Obs->>Snap: INSERT request snapshot
+    Core->>LLM: stream(request)
+    LLM-->>API: LLM stream events
+    API-->>Client: SSE events
+  end
+  alt run 成功
+    Core->>Obs: onRunEnd
+    Obs->>Msg: INSERT assistant message(run_id)
+    Obs->>Run: UPDATE status/provider/model/usage
+    Obs->>Turn: UPDATE assistant_message_id/accepted_run_id
+    opt 达到摘要或压缩阈值
+      Obs->>Artifact: INSERT/UPDATE conversation_summary
+      Obs->>Task: UPDATE active_summary_artifact_id
+    end
+  else run 失败
+    Core->>Obs: onError
+    Obs->>Run: UPDATE status=failed,error
+    Obs->>Turn: UPDATE status=failed
+  end
+```
+
+图中保留主链路表交互。`agent_run_step`、`agent_tool_call`、`agent_context_snapshot_item` 属于后续精细 trace，落地后可挂在 `persistence observers` 与对应表之间，不改变 API 主流程。
+
 application 层可以在 `ContextAssembler` 之后保存候选上下文、source refs、预算决策或策略降级结果，供后续分析使用。但这类记录只能视为 `candidate_context` 或策略 trace，不能替代 final request snapshot。final request snapshot 应由 `agent-core` 暴露的生命周期观测点或 mandatory observer 保存。若第一阶段尚未落 `agent_run_step` 表，可先用 `agent_context_snapshot.run_id + step_index` 定位；第二阶段引入 step 表后，再通过 `agent_run_step.request_snapshot_id` 建立显式关联。
 
 重试与重新生成流程应复用同一个 `agent_turn`：

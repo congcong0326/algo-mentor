@@ -8,6 +8,7 @@
 - `deploy/docker/docker-compose.yml`：本地 PostgreSQL 服务。
 - `docs/agent-loop-lifecycle-design.md`：Agent loop 生命周期扩展设计，说明 observer、interceptor、lifecycle 与 SSE 边界。
 - `docs/agent-conversation-context-recall-design.md`：Agent 多轮上下文召回与压缩研发设计，说明会话存储、运行轨迹、压缩策略和上下文快照。
+- `docs/agent-run-tool-result-compaction-design.md`：Agent run 内工具结果压缩设计，说明大结果预览、blob 引用、范围读取工具和 run-local 上下文预算。
 - `docs/agent-runtime-refactoring-implementation-plan.md`：Agent 运行态模块拆分分阶段实施计划，说明模块边界、迁移步骤、验收标准和风险点。
 
 ## 后端

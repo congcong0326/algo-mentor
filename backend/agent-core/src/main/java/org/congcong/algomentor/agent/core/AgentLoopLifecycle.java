@@ -130,6 +130,15 @@ public final class AgentLoopLifecycle {
         result));
   }
 
+  public void toolErrored(
+      AgentLoopContext context,
+      int stepIndex,
+      LlmToolCall toolCall,
+      AgentException error
+  ) {
+    notifyObserver(observer -> observer.onToolError(context, stepIndex, toolCall, error), "onToolError");
+  }
+
   public void runEnded(AgentLoopContext context, AgentRunResult result) {
     notifyObserver(observer -> observer.onRunEnd(context, result), "onRunEnd");
     publisher.submit(new AgentStreamEvent.AgentRunEnd(

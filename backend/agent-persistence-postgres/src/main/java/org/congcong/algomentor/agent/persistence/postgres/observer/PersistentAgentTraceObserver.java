@@ -11,13 +11,12 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.HexFormat;
-import java.util.Iterator;
-import java.util.Locale;
 import java.util.Map;
 import org.congcong.algomentor.agent.core.AgentLoopContext;
 import org.congcong.algomentor.agent.core.AgentLoopObserver;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContextSnapshotMapper;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunTraceMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ContextSnapshotRow;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
@@ -25,16 +24,18 @@ import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 
 public class PersistentAgentTraceObserver implements AgentLoopObserver {
 
-  static final String REDACTION_POLICY_VERSION = "agent-trace-redaction-v1";
+  static final String REDACTION_POLICY_VERSION = AgentTraceRedactor.POLICY_VERSION;
   private static final String SNAPSHOT_POLICY_NAME = "final-request-snapshot";
   private static final String SNAPSHOT_POLICY_VERSION = "v1";
 
   private final AgentContextSnapshotMapper snapshotMapper;
+  private final AgentRunTraceMapper runTraceMapper;
   private final ObjectMapper objectMapper;
+  private final AgentTraceRedactor redactor;
   private final Clock clock;
 
   public PersistentAgentTraceObserver(AgentContextSnapshotMapper snapshotMapper, ObjectMapper objectMapper) {
-    this(snapshotMapper, objectMapper, Clock.systemUTC());
+    this(snapshotMapper, null, objectMapper, Clock.systemUTC());
   }
 
   public PersistentAgentTraceObserver(
@@ -42,8 +43,19 @@ public class PersistentAgentTraceObserver implements AgentLoopObserver {
       ObjectMapper objectMapper,
       Clock clock
   ) {
+    this(snapshotMapper, null, objectMapper, clock);
+  }
+
+  public PersistentAgentTraceObserver(
+      AgentContextSnapshotMapper snapshotMapper,
+      AgentRunTraceMapper runTraceMapper,
+      ObjectMapper objectMapper,
+      Clock clock
+  ) {
     this.snapshotMapper = snapshotMapper;
+    this.runTraceMapper = runTraceMapper;
     this.objectMapper = objectMapper;
+    this.redactor = new AgentTraceRedactor(objectMapper);
     this.clock = clock;
   }
 
@@ -63,7 +75,7 @@ public class PersistentAgentTraceObserver implements AgentLoopObserver {
     String requestHash = sha256Hex(canonicalJson(requestSnapshot));
     Instant now = clock.instant();
 
-    snapshotMapper.insertSnapshot(new ContextSnapshotRow(
+    long snapshotId = snapshotMapper.insertSnapshot(new ContextSnapshotRow(
         taskId,
         runDbId,
         stepIndex,
@@ -88,15 +100,13 @@ public class PersistentAgentTraceObserver implements AgentLoopObserver {
             "agentRunId", context.runId(),
             "requestMetadata", context.request().metadata()))),
         now));
+    if (runTraceMapper != null) {
+      runTraceMapper.attachRequestSnapshot(runDbId, stepIndex, snapshotId);
+    }
   }
 
   private JsonNode redact(JsonNode node) {
-    if (node == null || node.isNull()) {
-      return objectMapper.nullNode();
-    }
-    JsonNode copy = node.deepCopy();
-    redactInPlace(copy);
-    return copy;
+    return redactor.redact(node);
   }
 
   private JsonNode requestSnapshot(
@@ -124,43 +134,6 @@ public class PersistentAgentTraceObserver implements AgentLoopObserver {
     snapshot.set("responseFormat", objectMapper.valueToTree(request.responseFormat()));
     snapshot.set("metadata", objectMapper.valueToTree(request.metadata()));
     return snapshot;
-  }
-
-  private void redactInPlace(JsonNode node) {
-    if (node == null || node.isNull()) {
-      return;
-    }
-    if (node.isObject()) {
-      ObjectNode object = (ObjectNode) node;
-      Iterator<Map.Entry<String, JsonNode>> fields = object.fields();
-      while (fields.hasNext()) {
-        Map.Entry<String, JsonNode> field = fields.next();
-        if (isSensitiveField(field.getKey())) {
-          object.put(field.getKey(), "[REDACTED]");
-        } else {
-          redactInPlace(field.getValue());
-        }
-      }
-      return;
-    }
-    if (node.isArray()) {
-      ArrayNode array = (ArrayNode) node;
-      for (JsonNode item : array) {
-        redactInPlace(item);
-      }
-    }
-  }
-
-  private boolean isSensitiveField(String fieldName) {
-    String normalized = fieldName.toLowerCase(Locale.ROOT);
-    return normalized.contains("apikey")
-        || normalized.contains("api_key")
-        || normalized.contains("authorization")
-        || normalized.contains("cookie")
-        || normalized.contains("jwt")
-        || normalized.contains("token")
-        || normalized.contains("password")
-        || normalized.contains("secret");
   }
 
   private String canonicalJson(JsonNode node) {

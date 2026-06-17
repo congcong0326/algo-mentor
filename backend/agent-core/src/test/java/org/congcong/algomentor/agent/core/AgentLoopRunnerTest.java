@@ -202,6 +202,39 @@ class AgentLoopRunnerTest {
   }
 
   @Test
+  void notifiesObserverWhenToolExecutionFails() {
+    FakeGateway gateway = new FakeGateway();
+    LlmToolCall toolCall = new LlmToolCall("call_1", "fake_lookup", JsonNodeFactory.instance.objectNode());
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ToolCallEnd(toolCall),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
+    List<String> observed = new ArrayList<>();
+    AgentLoopObserver observer = new AgentLoopObserver() {
+      @Override
+      public void onToolError(
+          AgentLoopContext context,
+          int stepIndex,
+          LlmToolCall toolCall,
+          AgentException error
+      ) {
+        observed.add(stepIndex + ":" + toolCall.id() + ":" + error.code());
+      }
+    };
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.of(List.of(new FailingTool("fake_lookup"))),
+        LlmToolChoice.auto(),
+        4,
+        List.of(observer),
+        List.of());
+
+    collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
+
+    assertThat(observed).containsExactly("1:call_1:TOOL_EXECUTION_FAILED");
+  }
+
+  @Test
   void notifiesObserverInLifecycleOrderAndKeepsStreamEventContract() {
     FakeGateway gateway = new FakeGateway();
     LlmToolCall toolCall = new LlmToolCall(

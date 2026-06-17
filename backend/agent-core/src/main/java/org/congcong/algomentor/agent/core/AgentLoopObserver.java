@@ -26,6 +26,13 @@ public interface AgentLoopObserver {
       JsonNode result
   ) {}
 
+  default void onToolError(
+      AgentLoopContext context,
+      int stepIndex,
+      LlmToolCall toolCall,
+      AgentException error
+  ) {}
+
   default void onRunEnd(AgentLoopContext context, AgentRunResult result) {}
 
   default void onError(AgentLoopContext context, AgentException error) {}

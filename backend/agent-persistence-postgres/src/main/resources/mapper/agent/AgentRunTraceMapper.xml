@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunTraceMapper">
+
+  <insert id="insertStepStart">
+    INSERT INTO agent_run_step (
+      task_id,
+      run_id,
+      step_index,
+      status,
+      metadata,
+      started_at
+    )
+    VALUES (
+      #{taskId},
+      #{runId},
+      #{stepIndex},
+      #{status},
+      #{metadata,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{startedAt}
+    )
+    ON CONFLICT (run_id, step_index) DO UPDATE
+    SET status = EXCLUDED.status,
+        started_at = EXCLUDED.started_at,
+        metadata = EXCLUDED.metadata
+  </insert>
+
+  <update id="attachRequestSnapshot">
+    UPDATE agent_run_step
+    SET request_snapshot_id = #{requestSnapshotId}
+    WHERE run_id = #{runId}
+      AND step_index = #{stepIndex}
+  </update>
+
+  <update id="markStepSucceeded">
+    UPDATE agent_run_step
+    SET status = #{status},
+        provider = COALESCE(#{provider}, provider),
+        model = COALESCE(#{model}, model),
+        finish_reason = #{finishReason},
+        usage = #{usage,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        ended_at = #{endedAt}
+    WHERE run_id = #{runId}
+      AND step_index = #{stepIndex}
+  </update>
+
+  <update id="markStepFailed">
+    UPDATE agent_run_step
+    SET status = #{status},
+        error = #{error,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        ended_at = #{endedAt}
+    WHERE run_id = #{runId}
+      AND step_index = #{stepIndex}
+  </update>
+
+  <insert id="insertToolStart">
+    INSERT INTO agent_tool_call (
+      task_id,
+      run_id,
+      step_index,
+      tool_call_id,
+      tool_name,
+      arguments_json,
+      status,
+      argument_char_count,
+      argument_token_estimate,
+      redaction_policy_version,
+      metadata,
+      started_at
+    )
+    VALUES (
+      #{taskId},
+      #{runId},
+      #{stepIndex},
+      #{toolCallId},
+      #{toolName},
+      #{argumentsJson,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{status},
+      #{argumentCharCount},
+      #{argumentTokenEstimate},
+      #{redactionPolicyVersion},
+      #{metadata,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{startedAt}
+    )
+    ON CONFLICT (run_id, step_index, tool_call_id) DO UPDATE
+    SET tool_name = EXCLUDED.tool_name,
+        arguments_json = EXCLUDED.arguments_json,
+        status = EXCLUDED.status,
+        argument_char_count = EXCLUDED.argument_char_count,
+        argument_token_estimate = EXCLUDED.argument_token_estimate,
+        redaction_policy_version = EXCLUDED.redaction_policy_version,
+        metadata = EXCLUDED.metadata,
+        started_at = EXCLUDED.started_at
+  </insert>
+
+  <update id="markToolSucceeded">
+    UPDATE agent_tool_call
+    SET status = #{status},
+        result_json = #{resultJson,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        duration_millis = #{durationMillis},
+        result_char_count = #{resultCharCount},
+        result_token_estimate = #{resultTokenEstimate},
+        ended_at = #{endedAt}
+    WHERE run_id = #{runId}
+      AND step_index = #{stepIndex}
+      AND tool_call_id = #{toolCallId}
+  </update>
+
+  <update id="markToolFailed">
+    UPDATE agent_tool_call
+    SET status = #{status},
+        error = #{error,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        duration_millis = #{durationMillis},
+        ended_at = #{endedAt}
+    WHERE run_id = #{runId}
+      AND step_index = #{stepIndex}
+      AND tool_call_id = #{toolCallId}
+  </update>
+</mapper>

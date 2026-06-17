@@ -13,7 +13,14 @@ import org.congcong.algomentor.agent.core.AgentLoopContext;
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContextSnapshotMapper;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunTraceMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ContextSnapshotRow;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunStepEndUpdate;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunStepErrorUpdate;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunStepStartRow;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallEndUpdate;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallErrorUpdate;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallStartRow;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
@@ -26,8 +33,10 @@ class PersistentAgentTraceObserverTest {
   private static final Instant NOW = Instant.parse("2026-01-01T00:00:00Z");
 
   private final FakeSnapshotMapper mapper = new FakeSnapshotMapper();
+  private final FakeRunTraceMapper runTraceMapper = new FakeRunTraceMapper();
   private final PersistentAgentTraceObserver observer = new PersistentAgentTraceObserver(
       mapper,
+      runTraceMapper,
       new ObjectMapper(),
       Clock.fixed(NOW, ZoneOffset.UTC));
 
@@ -76,15 +85,59 @@ class PersistentAgentTraceObserverTest {
     assertThat(row.redactionPolicyVersion()).isEqualTo(PersistentAgentTraceObserver.REDACTION_POLICY_VERSION);
     assertThat(row.metadata().toString()).contains("[REDACTED]");
     assertThat(row.createdAt()).isEqualTo(NOW);
+    assertThat(runTraceMapper.attachedSnapshot).isEqualTo(new AttachedSnapshot(31L, 1, 51L));
   }
 
   private static final class FakeSnapshotMapper implements AgentContextSnapshotMapper {
     private ContextSnapshotRow row;
 
     @Override
-    public int insertSnapshot(ContextSnapshotRow row) {
+    public long insertSnapshot(ContextSnapshotRow row) {
       this.row = row;
+      return 51L;
+    }
+  }
+
+  private static final class FakeRunTraceMapper implements AgentRunTraceMapper {
+    private AttachedSnapshot attachedSnapshot;
+
+    @Override
+    public int insertStepStart(RunStepStartRow row) {
+      return 0;
+    }
+
+    @Override
+    public int attachRequestSnapshot(long runId, int stepIndex, long requestSnapshotId) {
+      attachedSnapshot = new AttachedSnapshot(runId, stepIndex, requestSnapshotId);
       return 1;
     }
+
+    @Override
+    public int markStepSucceeded(RunStepEndUpdate update) {
+      return 0;
+    }
+
+    @Override
+    public int markStepFailed(RunStepErrorUpdate update) {
+      return 0;
+    }
+
+    @Override
+    public int insertToolStart(ToolCallStartRow row) {
+      return 0;
+    }
+
+    @Override
+    public int markToolSucceeded(ToolCallEndUpdate update) {
+      return 0;
+    }
+
+    @Override
+    public int markToolFailed(ToolCallErrorUpdate update) {
+      return 0;
+    }
+  }
+
+  private record AttachedSnapshot(long runId, int stepIndex, long snapshotId) {
   }
 }

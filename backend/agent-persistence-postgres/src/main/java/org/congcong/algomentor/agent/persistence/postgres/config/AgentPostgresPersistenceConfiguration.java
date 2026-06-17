@@ -12,7 +12,9 @@ import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentArtifactMa
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContextSnapshotMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentConversationMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunMapper;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunTraceMapper;
 import org.congcong.algomentor.agent.persistence.postgres.observer.PersistentAgentRunObserver;
+import org.congcong.algomentor.agent.persistence.postgres.observer.PersistentAgentRunTraceObserver;
 import org.congcong.algomentor.agent.persistence.postgres.observer.PersistentAgentTraceObserver;
 import org.congcong.algomentor.agent.persistence.postgres.repository.PostgresAgentConversationRepository;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -79,6 +81,13 @@ public class AgentPostgresPersistenceConfiguration {
   @Bean
   @ConditionalOnBean(SqlSessionTemplate.class)
   @ConditionalOnMissingBean
+  public AgentRunTraceMapper agentRunTraceMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(AgentRunTraceMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnBean(SqlSessionTemplate.class)
+  @ConditionalOnMissingBean
   public AgentArtifactMapper agentArtifactMapper(SqlSessionTemplate sqlSessionTemplate) {
     return sqlSessionTemplate.getMapper(AgentArtifactMapper.class);
   }
@@ -95,9 +104,10 @@ public class AgentPostgresPersistenceConfiguration {
   @ConditionalOnMissingBean
   public PersistentAgentTraceObserver persistentAgentTraceObserver(
       AgentContextSnapshotMapper snapshotMapper,
+      AgentRunTraceMapper runTraceMapper,
       ObjectMapper objectMapper
   ) {
-    return new PersistentAgentTraceObserver(snapshotMapper, objectMapper);
+    return new PersistentAgentTraceObserver(snapshotMapper, runTraceMapper, objectMapper, java.time.Clock.systemUTC());
   }
 
   @Bean
@@ -108,5 +118,15 @@ public class AgentPostgresPersistenceConfiguration {
       ObjectMapper objectMapper
   ) {
     return new PersistentAgentRunObserver(runMapper, objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnBean(AgentRunTraceMapper.class)
+  @ConditionalOnMissingBean
+  public PersistentAgentRunTraceObserver persistentAgentRunTraceObserver(
+      AgentRunTraceMapper runTraceMapper,
+      ObjectMapper objectMapper
+  ) {
+    return new PersistentAgentRunTraceObserver(runTraceMapper, objectMapper);
   }
 }

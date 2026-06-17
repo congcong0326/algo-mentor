@@ -33,6 +33,8 @@ class AgentMapperXmlTest {
         "org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunMapper.markRunFailed")).isTrue();
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContextSnapshotMapper.insertSnapshot")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunTraceMapper.insertToolStart")).isTrue();
     boolean hasPrimitiveLongConstructorArg = configuration.getResultMap(
             "org.congcong.algomentor.agent.persistence.postgres.mapper.AgentConversationMapper.AgentMessageMap")
         .getConstructorResultMappings()
@@ -46,6 +48,7 @@ class AgentMapperXmlTest {
     return List.of(
         "mapper/agent/AgentConversationMapper.xml",
         "mapper/agent/AgentRunMapper.xml",
+        "mapper/agent/AgentRunTraceMapper.xml",
         "mapper/agent/AgentContextSnapshotMapper.xml",
         "mapper/agent/AgentArtifactMapper.xml");
   }
