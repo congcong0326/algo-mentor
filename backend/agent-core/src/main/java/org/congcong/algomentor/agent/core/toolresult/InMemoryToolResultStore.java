@@ -28,7 +28,7 @@ public final class InMemoryToolResultStore implements ToolResultStore {
       String redactionPolicyVersion
   ) {
     String text = serializedResult == null ? "" : serializedResult;
-    String resultRef = "tool-result:" + sequence.incrementAndGet();
+    String resultRef = ToolResultRefs.PREFIX + sequence.incrementAndGet();
     StoredToolResult stored = new StoredToolResult(
         resultRef,
         contentType,

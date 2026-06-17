@@ -13,13 +13,19 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import org.congcong.algomentor.agent.core.AgentLoopContext;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultJsonKeys;
+import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultTypes;
 import org.congcong.algomentor.llm.core.request.LlmContentPart;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 
 public final class RunMessageCompactor {
 
-  private static final String COMPACTION_METADATA_KEY = "runContextCompaction";
+  private static final String RUN_CONTEXT_SNIP_TYPE = "run_context_snip";
+  private static final String SNIPPED_GROUP_COUNT = "snippedGroupCount";
+  private static final String SOURCE = "source";
+  private static final String TO_STEP_INDEX = "toStepIndex";
 
   private final ObjectMapper objectMapper;
   private final ToolResultCompactor toolResultCompactor;
@@ -43,23 +49,23 @@ public final class RunMessageCompactor {
     Map<String, Object> metadata = new LinkedHashMap<>();
     int beforeChars = visibleCharCount(compacted);
     List<RunMessageGroup> groups = parseGroups(compacted);
-    metadata.put("policyVersion", ToolResultCompactionPolicy.POLICY_VERSION);
-    metadata.put("beforeCharCount", beforeChars);
-    metadata.put("beforeGroupCount", groups.size());
+    metadata.put(AgentRuntimeMetadataKeys.POLICY_VERSION, ToolResultCompactionPolicy.POLICY_VERSION);
+    metadata.put(AgentRuntimeMetadataKeys.BEFORE_CHAR_COUNT, beforeChars);
+    metadata.put(AgentRuntimeMetadataKeys.BEFORE_GROUP_COUNT, groups.size());
 
     int compactedToolResults = compactOldToolResults(compacted, metadata);
     groups = parseGroups(compacted);
     int snippedGroups = snipGroupsIfNeeded(context, stepIndex, compacted, groups, metadata);
     int afterChars = visibleCharCount(compacted);
 
-    metadata.put("afterCharCount", afterChars);
-    metadata.put("afterGroupCount", parseGroups(compacted).size());
-    metadata.put("compactedToolResults", compactedToolResults);
-    metadata.put("snippedGroups", snippedGroups);
+    metadata.put(AgentRuntimeMetadataKeys.AFTER_CHAR_COUNT, afterChars);
+    metadata.put(AgentRuntimeMetadataKeys.AFTER_GROUP_COUNT, parseGroups(compacted).size());
+    metadata.put(AgentRuntimeMetadataKeys.COMPACTED_TOOL_RESULTS, compactedToolResults);
+    metadata.put(AgentRuntimeMetadataKeys.SNIPPED_GROUPS, snippedGroups);
     if (compactedToolResults == 0 && snippedGroups == 0) {
       return new RunMessageCompactionResult(compacted, Map.of());
     }
-    return new RunMessageCompactionResult(compacted, Map.of(COMPACTION_METADATA_KEY, metadata));
+    return new RunMessageCompactionResult(compacted, Map.of(AgentRuntimeMetadataKeys.RUN_CONTEXT_COMPACTION, metadata));
   }
 
   List<RunMessageGroup> parseGroups(List<LlmMessage> messages) {
@@ -120,7 +126,7 @@ public final class RunMessageCompactor {
     }
     int total = toolIndexes.stream().mapToInt(index -> messageCharCount(messages.get(index))).sum();
     if (total <= policy.toolResultsTotalMaxChars()) {
-      metadata.put("toolResultCharCount", total);
+      metadata.put(AgentRuntimeMetadataKeys.TOOL_RESULT_CHAR_COUNT, total);
       return 0;
     }
     int keepFrom = Math.max(0, toolIndexes.size() - policy.keepRecentToolResults());
@@ -133,8 +139,8 @@ public final class RunMessageCompactor {
       if (result == null || isCompactedToolResult(result)) {
         continue;
       }
-      String resultRef = textField(result, "resultRef");
-      String toolName = textField(result, "toolName");
+      String resultRef = textField(result, AgentToolResultJsonKeys.RESULT_REF);
+      String toolName = textField(result, AgentToolResultJsonKeys.TOOL_NAME);
       JsonNode placeholder = toolResultCompactor.compactedPlaceholder(message.toolCallId(), toolName, resultRef);
       LlmMessage compactedMessage = LlmMessage.toolResult(message.toolCallId(), placeholder);
       total -= messageCharCount(message);
@@ -143,8 +149,8 @@ public final class RunMessageCompactor {
       compacted++;
       compactedToolCallIds.add(message.toolCallId());
     }
-    metadata.put("toolResultCharCount", total);
-    metadata.put("compactedToolCallIds", compactedToolCallIds);
+    metadata.put(AgentRuntimeMetadataKeys.TOOL_RESULT_CHAR_COUNT, total);
+    metadata.put(AgentRuntimeMetadataKeys.COMPACTED_TOOL_CALL_IDS, compactedToolCallIds);
     return compacted;
   }
 
@@ -170,7 +176,7 @@ public final class RunMessageCompactor {
         .sorted(Comparator.comparingInt(RunMessageGroup::startIndex))
         .toList();
     if (candidates.isEmpty()) {
-      metadata.put("snipSkipped", true);
+      metadata.put(AgentRuntimeMetadataKeys.SNIP_SKIPPED, true);
       return 0;
     }
 
@@ -179,13 +185,13 @@ public final class RunMessageCompactor {
       rebuilt.add(messages.get(i));
     }
     ObjectNode marker = objectMapper.createObjectNode();
-    marker.put("type", "run_context_snip");
-    marker.put("snippedGroupCount", candidates.size());
-    marker.put("message", "Earlier run context was snipped after tool results were compacted.");
+    marker.put(AgentToolResultJsonKeys.TYPE, RUN_CONTEXT_SNIP_TYPE);
+    marker.put(SNIPPED_GROUP_COUNT, candidates.size());
+    marker.put(AgentToolResultJsonKeys.MESSAGE, "Earlier run context was snipped after tool results were compacted.");
     ObjectNode source = objectMapper.createObjectNode();
-    source.put("runId", context.runId());
-    source.put("toStepIndex", stepIndex);
-    marker.set("source", source);
+    source.put(AgentRuntimeMetadataKeys.AGENT_RUN_ID, context.runId());
+    source.put(TO_STEP_INDEX, stepIndex);
+    marker.set(SOURCE, source);
     rebuilt.add(LlmMessage.assistant(marker.toString()));
     for (int i = groups.get(keepTailStart).startIndex(); i < messages.size(); i++) {
       rebuilt.add(messages.get(i));
@@ -196,7 +202,7 @@ public final class RunMessageCompactor {
   }
 
   private boolean isCompactMarker(LlmMessage message) {
-    return message.role() == LlmMessage.Role.ASSISTANT && message.text().contains("run_context_snip");
+    return message.role() == LlmMessage.Role.ASSISTANT && message.text().contains(RUN_CONTEXT_SNIP_TYPE);
   }
 
   private JsonNode toolResult(LlmMessage message) {
@@ -211,7 +217,8 @@ public final class RunMessageCompactor {
   }
 
   private boolean isCompactedToolResult(JsonNode result) {
-    return result.isObject() && "tool_result_compacted".equals(textField(result, "type"));
+    return result.isObject()
+        && AgentToolResultTypes.COMPACTED.equals(textField(result, AgentToolResultJsonKeys.TYPE));
   }
 
   private String textField(JsonNode node, String fieldName) {

@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
+import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
@@ -78,8 +79,8 @@ final class OpenAiResponsesMapper {
     List<LlmToolCall> toolCalls = extractToolCalls(response);
     JsonNode structuredOutput = parseStructuredOutput(text);
     Map<String, Object> metadata = new LinkedHashMap<>();
-    metadata.put("responseId", response.id());
-    response.status().ifPresent(status -> metadata.put("status", status.asString()));
+    metadata.put(LlmMetadataKeys.RESPONSE_ID, response.id());
+    response.status().ifPresent(status -> metadata.put(LlmMetadataKeys.STATUS, status.asString()));
     return new LlmCompletionResult(
         text.isEmpty() ? LlmMessage.assistant() : LlmMessage.assistant(text),
         toolCalls,

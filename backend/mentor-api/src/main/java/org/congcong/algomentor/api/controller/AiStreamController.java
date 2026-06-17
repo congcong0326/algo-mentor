@@ -1,6 +1,7 @@
 package org.congcong.algomentor.api.controller;
 
 import jakarta.validation.constraints.NotBlank;
+import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.service.AiExplanationService;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -12,7 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Validated
 @RestController
-@RequestMapping("/api/ai")
+@RequestMapping(ApiContractConstants.AI_API_BASE_PATH)
 public class AiStreamController {
 
   private final AiExplanationService aiExplanationService;
@@ -21,9 +22,8 @@ public class AiStreamController {
     this.aiExplanationService = aiExplanationService;
   }
 
-  @GetMapping(value = "/explanations/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public SseEmitter streamExplanation(@RequestParam @NotBlank String topic) {
+  @GetMapping(value = ApiContractConstants.AI_EXPLANATIONS_STREAM_PATH, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public SseEmitter streamExplanation(@RequestParam(ApiContractConstants.TOPIC_PARAM) @NotBlank String topic) {
     return aiExplanationService.streamExplanation(topic);
   }
 }
-

@@ -62,7 +62,7 @@ public class MentorAiConfiguration {
   @Bean
   @ConditionalOnMissingBean
   public AgentRunner agentRunner(LlmGateway llmGateway, LlmGatewayProperties gatewayProperties) {
-    return new AgentRunner(llmGateway, gatewayProperties.defaultSelector("topic-explanation"));
+    return new AgentRunner(llmGateway, gatewayProperties.defaultSelector(MentorPurposes.TOPIC_EXPLANATION));
   }
 
   @Bean
@@ -90,9 +90,9 @@ public class MentorAiConfiguration {
   @Bean
   @ConditionalOnMissingBean(name = "calculatorTool")
   @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
-      prefix = "algo-mentor.agent.tools.calculator",
-      name = "enabled",
-      havingValue = "true",
+      prefix = MentorConfigurationKeys.CALCULATOR_TOOL_PREFIX,
+      name = MentorConfigurationKeys.ENABLED,
+      havingValue = MentorConfigurationKeys.TRUE,
       matchIfMissing = true)
   public CalculatorTool calculatorTool() {
     return new CalculatorTool();
@@ -105,16 +105,16 @@ public class MentorAiConfiguration {
       LlmGatewayProperties gatewayProperties,
       AgentToolRegistry agentToolRegistry,
       List<AgentLoopObserver> observers,
-      @Value("${algo-mentor.agent.tool-choice:auto}") String toolChoice,
-      @Value("${algo-mentor.agent.specific-tool-name:}") String specificToolName,
-      @Value("${algo-mentor.agent.max-steps:4}") int maxSteps,
+      @Value("${" + MentorConfigurationKeys.AGENT_TOOL_CHOICE + ":auto}") String toolChoice,
+      @Value("${" + MentorConfigurationKeys.AGENT_SPECIFIC_TOOL_NAME + ":}") String specificToolName,
+      @Value("${" + MentorConfigurationKeys.AGENT_MAX_STEPS + ":4}") int maxSteps,
       ToolResultCompactionPolicy toolResultPolicy,
       org.springframework.beans.factory.ObjectProvider<ToolResultStore> toolResultStore,
       ObjectMapper objectMapper
   ) {
     return new AgentLoopRunner(
         llmGateway,
-        gatewayProperties.defaultSelector("topic-explanation"),
+        gatewayProperties.defaultSelector(MentorPurposes.TOPIC_EXPLANATION),
         agentToolRegistry,
         toToolChoice(toolChoice, specificToolName),
         maxSteps,

@@ -11,6 +11,7 @@ import java.util.Optional;
 import org.congcong.algomentor.agent.core.AgentLoopContext;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.toolresult.StoredToolResult;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultRefs;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContentBlobMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunTraceMapper;
@@ -21,7 +22,9 @@ import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 
 public class PostgresToolResultStore implements ToolResultStore {
 
-  private static final String REF_PREFIX = "tool-result:";
+  private static final String BLOB_SCOPE_TYPE_TOOL_RESULT = "tool_result";
+  private static final String BLOB_STORAGE_MODE_POSTGRES_TEXT = "postgres_text";
+  private static final String RESULT_STORAGE_MODE_BLOB = "blob";
 
   private final AgentContentBlobMapper blobMapper;
   private final AgentRunTraceMapper traceMapper;
@@ -70,10 +73,10 @@ public class PostgresToolResultStore implements ToolResultStore {
     String sha256 = sha256(text);
     ContentBlobInsertRow row = new ContentBlobInsertRow(
         null,
-        "tool_result",
+        BLOB_SCOPE_TYPE_TOOL_RESULT,
         toolCallDbId,
         contentType,
-        "postgres_text",
+        BLOB_STORAGE_MODE_POSTGRES_TEXT,
         text,
         null,
         null,
@@ -83,13 +86,13 @@ public class PostgresToolResultStore implements ToolResultStore {
         lineCount(text),
         redactionPolicyVersion,
         objectMapper.valueToTree(java.util.Map.of(
-            "agentRunId", context.runId(),
+            AgentRuntimeMetadataKeys.AGENT_RUN_ID, context.runId(),
             "stepIndex", stepIndex,
-            "toolCallId", toolCall.id(),
-            "toolName", toolCall.name())),
+            AgentRuntimeMetadataKeys.TOOL_CALL_ID, toolCall.id(),
+            AgentRuntimeMetadataKeys.TOOL_NAME, toolCall.name())),
         clock.instant());
     Long blobId = blobMapper.insertBlob(row);
-    String resultRef = REF_PREFIX + blobId;
+    String resultRef = ToolResultRefs.PREFIX + blobId;
     StoredToolResult stored = new StoredToolResult(
         resultRef,
         contentType,
@@ -103,7 +106,7 @@ public class PostgresToolResultStore implements ToolResultStore {
         runDbId,
         stepIndex,
         toolCall.id(),
-        "blob",
+        RESULT_STORAGE_MODE_BLOB,
         blobId,
         null,
         resultRef,
@@ -130,7 +133,7 @@ public class PostgresToolResultStore implements ToolResultStore {
 
   private StoredToolResult toStored(ContentBlobRow row) {
     return new StoredToolResult(
-        REF_PREFIX + row.id(),
+        ToolResultRefs.PREFIX + row.id(),
         row.contentType(),
         row.contentText() == null ? "" : row.contentText(),
         row.sha256(),
@@ -143,7 +146,7 @@ public class PostgresToolResultStore implements ToolResultStore {
   private StoredToolResult fallback(String serializedResult, String contentType) {
     String text = serializedResult == null ? "" : serializedResult;
     return new StoredToolResult(
-        REF_PREFIX + sha256(text).substring(0, 24),
+        ToolResultRefs.PREFIX + sha256(text).substring(0, 24),
         contentType,
         text,
         sha256(text),
@@ -154,11 +157,11 @@ public class PostgresToolResultStore implements ToolResultStore {
   }
 
   private Long parseBlobId(String resultRef) {
-    if (resultRef == null || !resultRef.startsWith(REF_PREFIX)) {
+    if (resultRef == null || !resultRef.startsWith(ToolResultRefs.PREFIX)) {
       return null;
     }
     try {
-      return Long.parseLong(resultRef.substring(REF_PREFIX.length()));
+      return Long.parseLong(resultRef.substring(ToolResultRefs.PREFIX.length()));
     } catch (NumberFormatException ex) {
       return null;
     }

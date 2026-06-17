@@ -11,7 +11,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.Objects;
 import org.congcong.algomentor.agent.core.AgentLoopContext;
+import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultJsonKeys;
+import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultTypes;
 import org.congcong.algomentor.agent.core.toolresult.StoredToolResult;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultRefs;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 
@@ -96,20 +99,20 @@ public final class ToolResultCompactor {
     int previewMax = Math.min(policy.previewMaxChars(), stored.contentText().length());
     String preview = stored.contentText().substring(0, previewMax);
     ObjectNode visible = objectMapper.createObjectNode();
-    visible.put("type", "tool_result_preview");
-    visible.put("resultRef", stored.resultRef());
-    visible.put("toolCallId", toolCall.id());
-    visible.put("toolName", toolCall.name());
-    visible.put("contentType", stored.contentType());
-    visible.put("charCount", stored.charCount());
-    visible.put("lineCount", stored.lineCount());
-    visible.put("preview", preview);
-    visible.put("truncated", true);
+    visible.put(AgentToolResultJsonKeys.TYPE, AgentToolResultTypes.PREVIEW);
+    visible.put(AgentToolResultJsonKeys.RESULT_REF, stored.resultRef());
+    visible.put(AgentToolResultJsonKeys.TOOL_CALL_ID, toolCall.id());
+    visible.put(AgentToolResultJsonKeys.TOOL_NAME, toolCall.name());
+    visible.put(AgentToolResultJsonKeys.CONTENT_TYPE, stored.contentType());
+    visible.put(AgentToolResultJsonKeys.CHAR_COUNT, stored.charCount());
+    visible.put(AgentToolResultJsonKeys.LINE_COUNT, stored.lineCount());
+    visible.put(AgentToolResultJsonKeys.PREVIEW, preview);
+    visible.put(AgentToolResultJsonKeys.TRUNCATED, true);
     addShape(visible, redactedResult);
     // readHint 是给模型看的操作提示。它把“为什么只看到 preview”和“如何继续读取”编码进上下文，
     // 减少模型在大结果场景下直接猜测缺失内容的概率。
     visible.put(
-        "readHint",
+        AgentToolResultJsonKeys.READ_HINT,
         "Use read_tool_result with resultRef and offset/limit or line range if more detail is needed.");
     return new ToolResultCompaction(
         visible,
@@ -136,18 +139,18 @@ public final class ToolResultCompactor {
    */
   public JsonNode compactedPlaceholder(String toolCallId, String toolName, String resultRef) {
     ObjectNode node = objectMapper.createObjectNode();
-    node.put("type", "tool_result_compacted");
+    node.put(AgentToolResultJsonKeys.TYPE, AgentToolResultTypes.COMPACTED);
     if (resultRef != null && !resultRef.isBlank()) {
-      node.put("resultRef", resultRef);
+      node.put(AgentToolResultJsonKeys.RESULT_REF, resultRef);
     }
     if (toolCallId != null && !toolCallId.isBlank()) {
-      node.put("toolCallId", toolCallId);
+      node.put(AgentToolResultJsonKeys.TOOL_CALL_ID, toolCallId);
     }
     if (toolName != null && !toolName.isBlank()) {
-      node.put("toolName", toolName);
+      node.put(AgentToolResultJsonKeys.TOOL_NAME, toolName);
     }
-    node.put("message", "Earlier tool result compacted. Re-read a range if needed.");
-    node.put("truncated", true);
+    node.put(AgentToolResultJsonKeys.MESSAGE, "Earlier tool result compacted. Re-read a range if needed.");
+    node.put(AgentToolResultJsonKeys.TRUNCATED, true);
     return node;
   }
 
@@ -181,7 +184,7 @@ public final class ToolResultCompactor {
           CONTENT_TYPE_JSON,
           ToolResultCompactionPolicy.POLICY_VERSION);
     }
-    String fallbackRef = "tool-result:" + sha256(serialized).substring(0, 24);
+    String fallbackRef = ToolResultRefs.PREFIX + sha256(serialized).substring(0, 24);
     return new StoredToolResult(
         fallbackRef,
         CONTENT_TYPE_JSON,
@@ -203,11 +206,11 @@ public final class ToolResultCompactor {
     if (result.isObject()) {
       ArrayNode keys = objectMapper.createArrayNode();
       result.fieldNames().forEachRemaining(keys::add);
-      visible.set("topLevelKeys", keys);
+      visible.set(AgentToolResultJsonKeys.TOP_LEVEL_KEYS, keys);
       return;
     }
     if (result.isArray()) {
-      visible.put("arrayLength", result.size());
+      visible.put(AgentToolResultJsonKeys.ARRAY_LENGTH, result.size());
     }
   }
 

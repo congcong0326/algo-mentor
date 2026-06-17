@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * 应用层选择默认 LLM provider/model 的配置。
  */
-@ConfigurationProperties(prefix = "algo-mentor.ai.gateway")
+@ConfigurationProperties(prefix = MentorConfigurationKeys.AI_GATEWAY_PREFIX)
 public class LlmGatewayProperties {
 
   private String defaultProvider = "openai";

@@ -2,6 +2,8 @@ package org.congcong.algomentor.agent.core.compaction;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultJsonKeys;
 
 public record ToolResultCompactionMetadata(
     String storageMode,
@@ -19,15 +21,15 @@ public record ToolResultCompactionMetadata(
   public Map<String, Object> asMap() {
     Map<String, Object> values = new LinkedHashMap<>();
     put(values, "storageMode", storageMode);
-    put(values, "resultRef", resultRef);
+    put(values, AgentToolResultJsonKeys.RESULT_REF, resultRef);
     put(values, "blobId", blobId);
     put(values, "previewCharCount", previewCharCount);
     put(values, "resultCharCount", resultCharCount);
     put(values, "resultLineCount", resultLineCount);
     put(values, "resultSha256", resultSha256);
-    put(values, "contentType", contentType);
-    values.put("truncated", truncated);
-    put(values, "policyVersion", policyVersion);
+    put(values, AgentToolResultJsonKeys.CONTENT_TYPE, contentType);
+    values.put(AgentToolResultJsonKeys.TRUNCATED, truncated);
+    put(values, AgentRuntimeMetadataKeys.POLICY_VERSION, policyVersion);
     return values;
   }
 

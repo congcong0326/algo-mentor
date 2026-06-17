@@ -16,6 +16,7 @@ import org.congcong.algomentor.agent.core.compaction.RunMessageCompactor;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompaction;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactor;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.llm.core.exception.LlmException;
@@ -38,6 +39,8 @@ import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
  * 可以复用同一套 Agent loop 语义。</p>
  */
 public class AgentLoopRunner {
+
+  private static final String DEFAULT_PURPOSE = "topic-explanation";
 
   private final LlmGateway llmGateway;
   private final LlmModelSelector modelSelector;
@@ -209,7 +212,9 @@ public class AgentLoopRunner {
                   AgentErrorCode.UNKNOWN_TOOL,
                   "Unknown agent tool: " + toolCall.name(),
                   false,
-                  Map.of("toolName", toolCall.name(), "toolCallId", toolCall.id()),
+                  Map.of(
+                      AgentRuntimeMetadataKeys.TOOL_NAME, toolCall.name(),
+                      AgentRuntimeMetadataKeys.TOOL_CALL_ID, toolCall.id()),
                   null));
           lifecycle.toolStarted(context, stepIndex, toolCall);
           var result = executeTool(context, stepIndex, toolCall, tool, lifecycle);
@@ -226,7 +231,7 @@ public class AgentLoopRunner {
           AgentErrorCode.MAX_STEPS_EXCEEDED,
           "Agent loop exceeded max steps",
           false,
-          Map.of("maxSteps", maxSteps),
+          Map.of(AgentRuntimeMetadataKeys.MAX_STEPS, maxSteps),
           null));
       publisher.close();
     } catch (AgentException ex) {
@@ -263,7 +268,9 @@ public class AgentLoopRunner {
           AgentErrorCode.TOOL_EXECUTION_FAILED,
           "Agent tool execution failed: " + toolCall.name(),
           false,
-          Map.of("toolName", toolCall.name(), "toolCallId", toolCall.id()),
+          Map.of(
+              AgentRuntimeMetadataKeys.TOOL_NAME, toolCall.name(),
+              AgentRuntimeMetadataKeys.TOOL_CALL_ID, toolCall.id()),
           ex);
       lifecycle.toolErrored(context, stepIndex, toolCall, error);
       throw error;
@@ -323,7 +330,7 @@ public class AgentLoopRunner {
     if (model == null || model.isBlank()) {
       throw new IllegalArgumentException("Agent loop model must not be blank");
     }
-    return new LlmModelSelector(null, LlmModelId.of(model), Set.of(), "topic-explanation");
+    return new LlmModelSelector(null, LlmModelId.of(model), Set.of(), DEFAULT_PURPOSE);
   }
 
   /**

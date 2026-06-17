@@ -11,6 +11,7 @@ import org.congcong.algomentor.agent.core.AgentErrorCode;
 import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentExecutionContext;
 import org.congcong.algomentor.agent.core.AgentTool;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 
 /**
@@ -75,7 +76,7 @@ public final class CalculatorTool implements AgentTool {
         AgentErrorCode.TOOL_EXECUTION_FAILED,
         message,
         false,
-        Map.of("toolName", NAME),
+        Map.of(AgentRuntimeMetadataKeys.TOOL_NAME, NAME),
         null);
   }
 

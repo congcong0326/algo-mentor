@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
+import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 
@@ -29,7 +30,7 @@ final class OpenAiLlmExceptionMapper {
           providerId,
           modelId,
           true,
-          Map.of("provider", "openai"),
+          Map.of(LlmMetadataKeys.PROVIDER, providerId.value()),
           error);
     }
     return new LlmException(
@@ -38,7 +39,7 @@ final class OpenAiLlmExceptionMapper {
         providerId,
         modelId,
         false,
-        Map.of("provider", "openai"),
+        Map.of(LlmMetadataKeys.PROVIDER, providerId.value()),
         error);
   }
 
@@ -68,11 +69,11 @@ final class OpenAiLlmExceptionMapper {
     };
     boolean retryable = statusCode == 408 || statusCode == 429 || statusCode >= 500;
     Map<String, Object> metadata = new LinkedHashMap<>();
-    metadata.put("provider", "openai");
-    metadata.put("statusCode", statusCode);
-    error.code().ifPresent(value -> metadata.put("errorCode", value));
-    error.type().ifPresent(value -> metadata.put("errorType", value));
-    error.param().ifPresent(value -> metadata.put("errorParam", value));
+    metadata.put(LlmMetadataKeys.PROVIDER, providerId.value());
+    metadata.put(LlmMetadataKeys.STATUS_CODE, statusCode);
+    error.code().ifPresent(value -> metadata.put(LlmMetadataKeys.ERROR_CODE, value));
+    error.type().ifPresent(value -> metadata.put(LlmMetadataKeys.ERROR_TYPE, value));
+    error.param().ifPresent(value -> metadata.put(LlmMetadataKeys.ERROR_PARAM, value));
     return new LlmException(code, safeMessage(error), providerId, modelId, retryable, metadata, error);
   }
 

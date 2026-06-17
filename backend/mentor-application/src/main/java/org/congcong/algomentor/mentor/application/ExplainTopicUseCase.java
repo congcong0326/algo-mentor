@@ -5,6 +5,7 @@ import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.domain.learning.LearningTopic;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.springframework.stereotype.Service;
@@ -38,8 +39,8 @@ public class ExplainTopicUseCase {
         null,
         List.of(LlmMessage.user(prompt)),
         Map.of(
-            "title", topic.title(),
-            "topicTitle", topic.title(),
-            "adapter", "topic-explanation"));
+            AgentRuntimeMetadataKeys.TITLE, topic.title(),
+            AgentRuntimeMetadataKeys.TOPIC_TITLE, topic.title(),
+            AgentRuntimeMetadataKeys.ADAPTER, MentorApplicationConstants.TOPIC_EXPLANATION));
   }
 }

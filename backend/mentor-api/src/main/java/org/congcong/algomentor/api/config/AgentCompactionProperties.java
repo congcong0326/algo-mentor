@@ -3,7 +3,7 @@ package org.congcong.algomentor.api.config;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "algo-mentor.agent.compaction")
+@ConfigurationProperties(prefix = MentorConfigurationKeys.AGENT_COMPACTION_PREFIX)
 public class AgentCompactionProperties {
 
   private int inlineMaxChars = 12_000;

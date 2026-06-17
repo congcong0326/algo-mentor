@@ -16,6 +16,7 @@ import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunErrorUpdate;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunStartUpdate;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunSuccessUpdate;
+import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 
@@ -108,7 +109,7 @@ public class PersistentAgentRunObserver implements AgentLoopObserver {
     runMapper.markRunFailed(new RunErrorUpdate(
         runDbId,
         jsonNode(Map.of(
-            "code", error.code().name(),
+            LlmMetadataKeys.CODE, error.code().name(),
             "message", error.getMessage(),
             "retryable", error.retryable(),
             "metadata", error.metadata())),
@@ -124,11 +125,11 @@ public class PersistentAgentRunObserver implements AgentLoopObserver {
       return Map.of();
     }
     Map<String, Object> values = new HashMap<>();
-    values.put("inputTokens", usage.inputTokens());
-    values.put("outputTokens", usage.outputTokens());
-    values.put("cachedTokens", usage.cachedTokens());
-    values.put("reasoningTokens", usage.reasoningTokens());
-    values.put("totalTokens", usage.totalTokens());
+    values.put(LlmMetadataKeys.INPUT_TOKENS, usage.inputTokens());
+    values.put(LlmMetadataKeys.OUTPUT_TOKENS, usage.outputTokens());
+    values.put(LlmMetadataKeys.CACHED_TOKENS, usage.cachedTokens());
+    values.put(LlmMetadataKeys.REASONING_TOKENS, usage.reasoningTokens());
+    values.put(LlmMetadataKeys.TOTAL_TOKENS, usage.totalTokens());
     return values;
   }
 

@@ -16,31 +16,31 @@ public class LlmStreamSseMapper {
 
   public SseEmitter.SseEventBuilder toSseEvent(AgentStreamEvent event) {
     if (event instanceof AgentStreamEvent.AgentRunStart start) {
-      return event("agent_run_start", new AgentRunStartData(start.runId(), start.topic(), start.maxSteps()));
+      return event(SseEventNames.AGENT_RUN_START, new AgentRunStartData(start.runId(), start.topic(), start.maxSteps()));
     }
     if (event instanceof AgentStreamEvent.AgentStepStart start) {
-      return event("agent_step_start", new AgentStepStartData(start.runId(), start.stepIndex()));
+      return event(SseEventNames.AGENT_STEP_START, new AgentStepStartData(start.runId(), start.stepIndex()));
     }
     if (event instanceof AgentStreamEvent.AgentToolStart start) {
       return event(
-          "agent_tool_start",
+          SseEventNames.AGENT_TOOL_START,
           new AgentToolStartData(start.runId(), start.stepIndex(), start.toolCallId(), start.toolName()));
     }
     if (event instanceof AgentStreamEvent.AgentToolEnd end) {
       return event(
-          "agent_tool_end",
+          SseEventNames.AGENT_TOOL_END,
           new AgentToolEndData(end.runId(), end.stepIndex(), end.toolCallId(), end.toolName(), end.result()));
     }
     if (event instanceof AgentStreamEvent.AgentStepEnd end) {
       return event(
-          "agent_step_end",
+          SseEventNames.AGENT_STEP_END,
           new AgentStepEndData(end.runId(), end.stepIndex(), end.finishReason(), end.toolCallCount()));
     }
     if (event instanceof AgentStreamEvent.AgentRunEnd end) {
-      return event("agent_run_end", new AgentRunEndData(end.runId(), end.steps(), end.finishReason(), end.metadata()));
+      return event(SseEventNames.AGENT_RUN_END, new AgentRunEndData(end.runId(), end.steps(), end.finishReason(), end.metadata()));
     }
     if (event instanceof AgentStreamEvent.AgentError error) {
-      return event("agent_error", AgentErrorData.from(error.error()));
+      return event(SseEventNames.AGENT_ERROR, AgentErrorData.from(error.error()));
     }
     if (event instanceof AgentStreamEvent.Llm llm) {
       return toLlmSseEvent(llm.event());
@@ -50,31 +50,31 @@ public class LlmStreamSseMapper {
 
   private SseEmitter.SseEventBuilder toLlmSseEvent(LlmStreamEvent event) {
     if (event instanceof LlmStreamEvent.MessageStart start) {
-      return event("message_start", new MessageStartData(start.provider().value(), start.model().value()));
+      return event(SseEventNames.MESSAGE_START, new MessageStartData(start.provider().value(), start.model().value()));
     }
     if (event instanceof LlmStreamEvent.ContentDelta delta) {
-      return event("content_delta", new ContentDeltaData(delta.content()));
+      return event(SseEventNames.CONTENT_DELTA, new ContentDeltaData(delta.content()));
     }
     if (event instanceof LlmStreamEvent.ToolCallStart start) {
-      return event("tool_call_start", new ToolCallStartData(start.id(), start.name()));
+      return event(SseEventNames.TOOL_CALL_START, new ToolCallStartData(start.id(), start.name()));
     }
     if (event instanceof LlmStreamEvent.ToolCallDelta delta) {
-      return event("tool_call_delta", new ToolCallDeltaData(delta.id(), delta.argumentsDelta()));
+      return event(SseEventNames.TOOL_CALL_DELTA, new ToolCallDeltaData(delta.id(), delta.argumentsDelta()));
     }
     if (event instanceof LlmStreamEvent.ToolCallEnd end) {
-      return event("tool_call_end", new ToolCallEndData(end.toolCall()));
+      return event(SseEventNames.TOOL_CALL_END, new ToolCallEndData(end.toolCall()));
     }
     if (event instanceof LlmStreamEvent.Usage usage) {
-      return event("usage", new UsageData(usage.usage()));
+      return event(SseEventNames.USAGE, new UsageData(usage.usage()));
     }
     if (event instanceof LlmStreamEvent.MessageEnd end) {
-      return event("message_end", new MessageEndData(end.finishReason(), end.metadata()));
+      return event(SseEventNames.MESSAGE_END, new MessageEndData(end.finishReason(), end.metadata()));
     }
     if (event instanceof LlmStreamEvent.Error error) {
-      return event("error", ErrorData.from(error.error()));
+      return event(SseEventNames.ERROR, ErrorData.from(error.error()));
     }
     if (event instanceof LlmStreamEvent.Heartbeat) {
-      return event("heartbeat", Map.of());
+      return event(SseEventNames.HEARTBEAT, Map.of());
     }
     throw new IllegalArgumentException("Unsupported LLM stream event: " + event.getClass().getName());
   }

@@ -1,12 +1,13 @@
 package org.congcong.algomentor.api.controller;
 
+import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/health")
+@RequestMapping(ApiContractConstants.HEALTH_PATH)
 public class HealthController {
 
   @GetMapping
@@ -17,4 +18,3 @@ public class HealthController {
   public record HealthStatus(String status) {
   }
 }
-

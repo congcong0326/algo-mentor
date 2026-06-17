@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import java.util.UUID;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
+import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.api.service.SseLlmStreamSubscriber;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationCommand;
@@ -22,7 +23,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Validated
 @RestController
-@RequestMapping("/api/agent/conversations")
+@RequestMapping(ApiContractConstants.AGENT_CONVERSATIONS_BASE_PATH)
 @ConditionalOnBean(AgentConversationService.class)
 public class AgentConversationController {
 
@@ -40,9 +41,9 @@ public class AgentConversationController {
     this.sseMapper = sseMapper;
   }
 
-  @PostMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  @PostMapping(value = ApiContractConstants.STREAM_PATH, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public SseEmitter stream(
-      @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey,
+      @RequestHeader(name = ApiContractConstants.IDEMPOTENCY_KEY_HEADER, required = false) String idempotencyKey,
       @Valid @RequestBody ConversationStreamRequest request
   ) {
     String effectiveKey = idempotencyKey == null || idempotencyKey.isBlank()

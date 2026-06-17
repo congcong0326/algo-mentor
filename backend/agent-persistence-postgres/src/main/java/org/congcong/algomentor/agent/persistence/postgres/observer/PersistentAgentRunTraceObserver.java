@@ -15,6 +15,10 @@ import org.congcong.algomentor.agent.core.AgentLoopObserver;
 import org.congcong.algomentor.agent.core.AgentRunResult;
 import org.congcong.algomentor.agent.core.AgentStepResult;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultJsonKeys;
+import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultTypes;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultRefs;
+import org.congcong.algomentor.agent.persistence.postgres.AgentPersistenceStatuses;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunTraceMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunStepEndUpdate;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunStepErrorUpdate;
@@ -22,6 +26,7 @@ import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunStepSt
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallEndUpdate;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallErrorUpdate;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallStartRow;
+import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
@@ -69,8 +74,8 @@ public class PersistentAgentRunTraceObserver implements AgentLoopObserver {
         taskId,
         runDbId,
         stepIndex,
-        "running",
-        redactedJson(Map.of("agentRunId", context.runId())),
+        AgentPersistenceStatuses.RUNNING,
+        redactedJson(Map.of(AgentRuntimeMetadataKeys.AGENT_RUN_ID, context.runId())),
         clock.instant()));
   }
 
@@ -100,7 +105,7 @@ public class PersistentAgentRunTraceObserver implements AgentLoopObserver {
     runTraceMapper.markStepSucceeded(new RunStepEndUpdate(
         runDbId,
         stepIndex,
-        "succeeded",
+        AgentPersistenceStatuses.SUCCEEDED,
         stepBuffer.provider,
         stepBuffer.model,
         result.finishReason().name(),
@@ -125,11 +130,11 @@ public class PersistentAgentRunTraceObserver implements AgentLoopObserver {
         toolCall.id(),
         toolCall.name(),
         arguments,
-        "running",
+        AgentPersistenceStatuses.RUNNING,
         charCount(arguments),
         tokenEstimate(arguments),
         AgentTraceRedactor.POLICY_VERSION,
-        redactedJson(Map.of("agentRunId", context.runId())),
+        redactedJson(Map.of(AgentRuntimeMetadataKeys.AGENT_RUN_ID, context.runId())),
         now));
   }
 
@@ -146,7 +151,7 @@ public class PersistentAgentRunTraceObserver implements AgentLoopObserver {
         runDbId,
         stepIndex,
         toolCall.id(),
-        "succeeded",
+        AgentPersistenceStatuses.SUCCEEDED,
         redactedResult,
         durationMillis(context, stepIndex, toolCall.id(), endedAt),
         charCount(redactedResult),
@@ -171,7 +176,7 @@ public class PersistentAgentRunTraceObserver implements AgentLoopObserver {
         runDbId,
         stepIndex,
         toolCall.id(),
-        "failed",
+        AgentPersistenceStatuses.FAILED,
         redactedJson(errorMap(error)),
         durationMillis(context, stepIndex, toolCall.id(), endedAt),
         endedAt));
@@ -191,7 +196,7 @@ public class PersistentAgentRunTraceObserver implements AgentLoopObserver {
     runTraceMapper.markStepFailed(new RunStepErrorUpdate(
         runDbId,
         latestStep,
-        "failed",
+        AgentPersistenceStatuses.FAILED,
         redactedJson(errorMap(error)),
         clock.instant()));
   }
@@ -237,17 +242,17 @@ public class PersistentAgentRunTraceObserver implements AgentLoopObserver {
       return Map.of();
     }
     Map<String, Object> values = new HashMap<>();
-    values.put("inputTokens", usage.inputTokens());
-    values.put("outputTokens", usage.outputTokens());
-    values.put("cachedTokens", usage.cachedTokens());
-    values.put("reasoningTokens", usage.reasoningTokens());
-    values.put("totalTokens", usage.totalTokens());
+    values.put(LlmMetadataKeys.INPUT_TOKENS, usage.inputTokens());
+    values.put(LlmMetadataKeys.OUTPUT_TOKENS, usage.outputTokens());
+    values.put(LlmMetadataKeys.CACHED_TOKENS, usage.cachedTokens());
+    values.put(LlmMetadataKeys.REASONING_TOKENS, usage.reasoningTokens());
+    values.put(LlmMetadataKeys.TOTAL_TOKENS, usage.totalTokens());
     return values;
   }
 
   private Map<String, Object> errorMap(AgentException error) {
     return Map.of(
-        "code", error.code().name(),
+        LlmMetadataKeys.CODE, error.code().name(),
         "message", error.getMessage(),
         "retryable", error.retryable(),
         "metadata", error.metadata());
@@ -274,25 +279,25 @@ public class PersistentAgentRunTraceObserver implements AgentLoopObserver {
     if (result == null || !result.isObject()) {
       return ToolStorageMetadata.empty();
     }
-    if (!"tool_result_preview".equals(textField(result, "type"))) {
+    if (!AgentToolResultTypes.PREVIEW.equals(textField(result, AgentToolResultJsonKeys.TYPE))) {
       return ToolStorageMetadata.empty();
     }
-    Long blobId = blobId(textField(result, "resultRef"));
+    Long blobId = blobId(textField(result, AgentToolResultJsonKeys.RESULT_REF));
     return new ToolStorageMetadata(
         "blob",
         blobId,
         result,
-        textField(result, "resultRef"),
-        intField(result, "lineCount"),
+        textField(result, AgentToolResultJsonKeys.RESULT_REF),
+        intField(result, AgentToolResultJsonKeys.LINE_COUNT),
         null);
   }
 
   private Long blobId(String resultRef) {
-    if (resultRef == null || !resultRef.startsWith("tool-result:")) {
+    if (resultRef == null || !resultRef.startsWith(ToolResultRefs.PREFIX)) {
       return null;
     }
     try {
-      return Long.parseLong(resultRef.substring("tool-result:".length()));
+      return Long.parseLong(resultRef.substring(ToolResultRefs.PREFIX.length()));
     } catch (NumberFormatException ex) {
       return null;
     }

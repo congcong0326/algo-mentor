@@ -9,6 +9,8 @@ import org.congcong.algomentor.agent.core.AgentLoopContext;
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
+import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultJsonKeys;
+import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultTypes;
 import org.congcong.algomentor.agent.core.toolresult.StoredToolResult;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
@@ -29,27 +31,33 @@ public final class ReadToolResultTool implements AgentTool {
   @Override
   public LlmToolSpec spec() {
     ObjectNode schema = JsonNodeFactory.instance.objectNode();
-    schema.put("type", "object");
+    schema.put(AgentToolResultJsonKeys.TYPE, "object");
     ObjectNode properties = schema.putObject("properties");
-    properties.putObject("resultRef").put("type", "string");
-    properties.putObject("offset").put("type", "integer").put("minimum", 0);
-    properties.putObject("limit").put("type", "integer").put("minimum", 1);
-    properties.putObject("lineStart").put("type", "integer").put("minimum", 1);
-    properties.putObject("lineEnd").put("type", "integer").put("minimum", 1);
-    schema.putArray("required").add("resultRef");
+    properties.putObject(AgentToolResultJsonKeys.RESULT_REF).put(AgentToolResultJsonKeys.TYPE, "string");
+    properties.putObject(AgentToolResultJsonKeys.OFFSET).put(AgentToolResultJsonKeys.TYPE, "integer").put("minimum", 0);
+    properties.putObject(AgentToolResultJsonKeys.LIMIT).put(AgentToolResultJsonKeys.TYPE, "integer").put("minimum", 1);
+    properties.putObject(AgentToolResultJsonKeys.LINE_START).put(AgentToolResultJsonKeys.TYPE, "integer").put("minimum", 1);
+    properties.putObject(AgentToolResultJsonKeys.LINE_END).put(AgentToolResultJsonKeys.TYPE, "integer").put("minimum", 1);
+    schema.putArray("required").add(AgentToolResultJsonKeys.RESULT_REF);
     schema.put("additionalProperties", false);
     return new LlmToolSpec(NAME, "Read a bounded range from a large prior tool result.", schema, true);
   }
 
   @Override
   public JsonNode execute(JsonNode arguments, AgentExecutionContext context) {
-    String resultRef = requiredText(arguments, "resultRef");
+    String resultRef = requiredText(arguments, AgentToolResultJsonKeys.RESULT_REF);
     StoredToolResult stored = resultStore.findByResultRef(loopContext(context), resultRef)
         .orElseThrow(() -> new IllegalArgumentException("Tool result reference was not found or is not readable"));
-    if (has(arguments, "lineStart") || has(arguments, "lineEnd")) {
-      return readLineRange(stored, intValue(arguments, "lineStart", 1), intValue(arguments, "lineEnd", 1));
+    if (has(arguments, AgentToolResultJsonKeys.LINE_START) || has(arguments, AgentToolResultJsonKeys.LINE_END)) {
+      return readLineRange(
+          stored,
+          intValue(arguments, AgentToolResultJsonKeys.LINE_START, 1),
+          intValue(arguments, AgentToolResultJsonKeys.LINE_END, 1));
     }
-    return readOffsetRange(stored, intValue(arguments, "offset", 0), intValue(arguments, "limit", policy.rangeReadMaxChars()));
+    return readOffsetRange(
+        stored,
+        intValue(arguments, AgentToolResultJsonKeys.OFFSET, 0),
+        intValue(arguments, AgentToolResultJsonKeys.LIMIT, policy.rangeReadMaxChars()));
   }
 
   private AgentLoopContext loopContext(AgentExecutionContext context) {
@@ -69,8 +77,8 @@ public final class ReadToolResultTool implements AgentTool {
     int limit = Math.max(1, Math.min(requestedLimit, policy.rangeReadMaxChars()));
     int end = Math.min(stored.contentText().length(), start + limit);
     ObjectNode range = JsonNodeFactory.instance.objectNode();
-    range.put("offset", start);
-    range.put("limit", end - start);
+    range.put(AgentToolResultJsonKeys.OFFSET, start);
+    range.put(AgentToolResultJsonKeys.LIMIT, end - start);
     return output(stored, range, stored.contentText().substring(start, end), start > 0, end < stored.contentText().length());
   }
 
@@ -90,8 +98,8 @@ public final class ReadToolResultTool implements AgentTool {
       }
     }
     ObjectNode range = JsonNodeFactory.instance.objectNode();
-    range.put("lineStart", fromLine);
-    range.put("lineEnd", Math.min(toLine, lines.length));
+    range.put(AgentToolResultJsonKeys.LINE_START, fromLine);
+    range.put(AgentToolResultJsonKeys.LINE_END, Math.min(toLine, lines.length));
     return output(stored, range, content.toString(), fromLine > 1, toLine < lines.length);
   }
 
@@ -103,14 +111,14 @@ public final class ReadToolResultTool implements AgentTool {
       boolean hasMoreAfter
   ) {
     ObjectNode output = JsonNodeFactory.instance.objectNode();
-    output.put("type", "tool_result_range");
-    output.put("resultRef", stored.resultRef());
-    output.put("contentType", stored.contentType());
-    output.set("range", range);
-    output.put("content", content);
-    output.put("charCount", content.length());
-    output.put("hasMoreBefore", hasMoreBefore);
-    output.put("hasMoreAfter", hasMoreAfter);
+    output.put(AgentToolResultJsonKeys.TYPE, AgentToolResultTypes.RANGE);
+    output.put(AgentToolResultJsonKeys.RESULT_REF, stored.resultRef());
+    output.put(AgentToolResultJsonKeys.CONTENT_TYPE, stored.contentType());
+    output.set(AgentToolResultJsonKeys.RANGE, range);
+    output.put(AgentToolResultJsonKeys.CONTENT, content);
+    output.put(AgentToolResultJsonKeys.CHAR_COUNT, content.length());
+    output.put(AgentToolResultJsonKeys.HAS_MORE_BEFORE, hasMoreBefore);
+    output.put(AgentToolResultJsonKeys.HAS_MORE_AFTER, hasMoreAfter);
     return output;
   }
 

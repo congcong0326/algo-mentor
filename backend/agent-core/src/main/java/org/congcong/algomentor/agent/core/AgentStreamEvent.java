@@ -32,7 +32,7 @@ public sealed interface AgentStreamEvent
 
     @Override
     public String name() {
-      return "agent_run_start";
+      return AgentStreamEventNames.AGENT_RUN_START;
     }
   }
 
@@ -44,7 +44,7 @@ public sealed interface AgentStreamEvent
 
     @Override
     public String name() {
-      return "agent_step_start";
+      return AgentStreamEventNames.AGENT_STEP_START;
     }
   }
 
@@ -57,7 +57,7 @@ public sealed interface AgentStreamEvent
 
     @Override
     public String name() {
-      return "agent_tool_start";
+      return AgentStreamEventNames.AGENT_TOOL_START;
     }
   }
 
@@ -79,7 +79,7 @@ public sealed interface AgentStreamEvent
 
     @Override
     public String name() {
-      return "agent_tool_end";
+      return AgentStreamEventNames.AGENT_TOOL_END;
     }
   }
 
@@ -100,7 +100,7 @@ public sealed interface AgentStreamEvent
 
     @Override
     public String name() {
-      return "agent_step_end";
+      return AgentStreamEventNames.AGENT_STEP_END;
     }
   }
 
@@ -117,7 +117,7 @@ public sealed interface AgentStreamEvent
 
     @Override
     public String name() {
-      return "agent_run_end";
+      return AgentStreamEventNames.AGENT_RUN_END;
     }
   }
 
@@ -131,7 +131,7 @@ public sealed interface AgentStreamEvent
 
     @Override
     public String name() {
-      return "agent_error";
+      return AgentStreamEventNames.AGENT_ERROR;
     }
   }
 
@@ -145,31 +145,31 @@ public sealed interface AgentStreamEvent
     @Override
     public String name() {
       if (event instanceof LlmStreamEvent.MessageStart) {
-        return "message_start";
+        return AgentStreamEventNames.MESSAGE_START;
       }
       if (event instanceof LlmStreamEvent.ContentDelta) {
-        return "content_delta";
+        return AgentStreamEventNames.CONTENT_DELTA;
       }
       if (event instanceof LlmStreamEvent.ToolCallStart) {
-        return "tool_call_start";
+        return AgentStreamEventNames.TOOL_CALL_START;
       }
       if (event instanceof LlmStreamEvent.ToolCallDelta) {
-        return "tool_call_delta";
+        return AgentStreamEventNames.TOOL_CALL_DELTA;
       }
       if (event instanceof LlmStreamEvent.ToolCallEnd) {
-        return "tool_call_end";
+        return AgentStreamEventNames.TOOL_CALL_END;
       }
       if (event instanceof LlmStreamEvent.MessageEnd) {
-        return "message_end";
+        return AgentStreamEventNames.MESSAGE_END;
       }
       if (event instanceof LlmStreamEvent.Usage) {
-        return "usage";
+        return AgentStreamEventNames.USAGE;
       }
       if (event instanceof LlmStreamEvent.Error) {
-        return "error";
+        return AgentStreamEventNames.ERROR;
       }
       if (event instanceof LlmStreamEvent.Heartbeat) {
-        return "heartbeat";
+        return AgentStreamEventNames.HEARTBEAT;
       }
       throw new IllegalArgumentException("Unsupported LLM stream event: " + event.getClass().getName());
     }

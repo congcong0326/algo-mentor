@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
+import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
 import org.congcong.algomentor.llm.core.model.LlmModelDescriptor;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmCapability;
@@ -96,7 +97,7 @@ public class OpenAiLlmProvider implements LlmProvider {
         0,
         0,
         LlmGenerationOptions.defaults(),
-        Map.of("api", "responses"));
+        Map.of(LlmMetadataKeys.API, "responses"));
   }
 
   private LlmModelId resolvedModel(LlmCompletionRequest request) {
@@ -115,7 +116,7 @@ public class OpenAiLlmProvider implements LlmProvider {
           PROVIDER_ID,
           modelId(),
           false,
-          Map.of("provider", "openai"),
+          Map.of(LlmMetadataKeys.PROVIDER, PROVIDER_ID.value()),
           null);
     }
   }

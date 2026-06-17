@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentConversationMapper;
@@ -76,7 +77,7 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
         record.idempotencyKey(),
         record.systemPrompt(),
         null,
-        Map.of("idempotentReplay", true));
+        Map.of(AgentRuntimeMetadataKeys.IDEMPOTENT_REPLAY, true));
   }
 
   private long createTask(AgentRunPreparationRequest request) {

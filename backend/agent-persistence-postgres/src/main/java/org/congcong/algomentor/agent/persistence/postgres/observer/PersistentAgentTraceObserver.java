@@ -15,6 +15,7 @@ import java.util.Map;
 import org.congcong.algomentor.agent.core.AgentLoopContext;
 import org.congcong.algomentor.agent.core.AgentLoopObserver;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.agent.core.runtime.model.AgentTraceJsonKeys;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContextSnapshotMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunTraceMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ContextSnapshotRow;
@@ -97,8 +98,8 @@ public class PersistentAgentTraceObserver implements AgentLoopObserver {
         requestHash,
         REDACTION_POLICY_VERSION,
         redact(objectMapper.valueToTree(Map.of(
-            "agentRunId", context.runId(),
-            "requestMetadata", context.request().metadata()))),
+            AgentRuntimeMetadataKeys.AGENT_RUN_ID, context.runId(),
+            AgentRuntimeMetadataKeys.REQUEST_METADATA, context.request().metadata()))),
         now));
     if (runTraceMapper != null) {
       runTraceMapper.attachRequestSnapshot(runDbId, stepIndex, snapshotId);
@@ -117,22 +118,24 @@ public class PersistentAgentTraceObserver implements AgentLoopObserver {
       JsonNode generationOptions
   ) {
     ObjectNode snapshot = objectMapper.createObjectNode();
-    ObjectNode modelSelector = snapshot.putObject("modelSelector");
-    request.modelSelector().providerId().map(LlmProviderId::value).ifPresent(value -> modelSelector.put("providerId", value));
-    request.modelSelector().modelId().map(LlmModelId::value).ifPresent(value -> modelSelector.put("modelId", value));
-    modelSelector.put("purpose", request.modelSelector().purpose());
-    ArrayNode capabilities = modelSelector.putArray("requiredCapabilities");
+    ObjectNode modelSelector = snapshot.putObject(AgentTraceJsonKeys.MODEL_SELECTOR);
+    request.modelSelector().providerId().map(LlmProviderId::value)
+        .ifPresent(value -> modelSelector.put(AgentTraceJsonKeys.PROVIDER_ID, value));
+    request.modelSelector().modelId().map(LlmModelId::value)
+        .ifPresent(value -> modelSelector.put(AgentTraceJsonKeys.MODEL_ID, value));
+    modelSelector.put(AgentTraceJsonKeys.PURPOSE, request.modelSelector().purpose());
+    ArrayNode capabilities = modelSelector.putArray(AgentTraceJsonKeys.REQUIRED_CAPABILITIES);
     request.modelSelector().requiredCapabilities().stream()
         .map(Enum::name)
         .sorted()
         .forEach(capabilities::add);
 
-    snapshot.set("messages", messages);
-    snapshot.set("tools", tools);
-    snapshot.set("toolChoice", toolChoice);
-    snapshot.set("generationOptions", generationOptions);
-    snapshot.set("responseFormat", objectMapper.valueToTree(request.responseFormat()));
-    snapshot.set("metadata", objectMapper.valueToTree(request.metadata()));
+    snapshot.set(AgentTraceJsonKeys.MESSAGES, messages);
+    snapshot.set(AgentTraceJsonKeys.TOOLS, tools);
+    snapshot.set(AgentTraceJsonKeys.TOOL_CHOICE, toolChoice);
+    snapshot.set(AgentTraceJsonKeys.GENERATION_OPTIONS, generationOptions);
+    snapshot.set(AgentTraceJsonKeys.RESPONSE_FORMAT, objectMapper.valueToTree(request.responseFormat()));
+    snapshot.set(AgentTraceJsonKeys.METADATA, objectMapper.valueToTree(request.metadata()));
     return snapshot;
   }
 

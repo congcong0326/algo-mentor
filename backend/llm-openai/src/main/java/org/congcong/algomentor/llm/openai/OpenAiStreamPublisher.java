@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
+import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
@@ -82,17 +83,17 @@ final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
     if (event.isCompleted()) {
       var response = event.asCompleted().response();
       response.usage().map(mapper::toUsage).ifPresent(usage -> submit(new LlmStreamEvent.Usage(usage)));
-      submit(new LlmStreamEvent.MessageEnd(mapper.finishReason(response), Map.of("responseId", response.id())));
+      submit(new LlmStreamEvent.MessageEnd(mapper.finishReason(response), Map.of(LlmMetadataKeys.RESPONSE_ID, response.id())));
       return;
     }
     if (event.isIncomplete()) {
       var response = event.asIncomplete().response();
-      submit(new LlmStreamEvent.MessageEnd(LlmFinishReason.LENGTH, Map.of("responseId", response.id())));
+      submit(new LlmStreamEvent.MessageEnd(LlmFinishReason.LENGTH, Map.of(LlmMetadataKeys.RESPONSE_ID, response.id())));
       return;
     }
     if (event.isFailed()) {
       var response = event.asFailed().response();
-      submit(new LlmStreamEvent.MessageEnd(LlmFinishReason.ERROR, Map.of("responseId", response.id())));
+      submit(new LlmStreamEvent.MessageEnd(LlmFinishReason.ERROR, Map.of(LlmMetadataKeys.RESPONSE_ID, response.id())));
       return;
     }
     if (event.isError()) {
@@ -101,7 +102,9 @@ final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
           error.message(),
           providerId,
           modelId,
-          Map.of("provider", "openai", "sequenceNumber", error.sequenceNumber()))));
+          Map.of(
+              LlmMetadataKeys.PROVIDER, providerId.value(),
+              LlmMetadataKeys.SEQUENCE_NUMBER, error.sequenceNumber()))));
     }
   }
 
