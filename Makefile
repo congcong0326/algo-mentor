@@ -1,3 +1,8 @@
+ifneq (,$(wildcard .env))
+include .env
+export
+endif
+
 MAVEN := mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository
 NPM := npm --cache ./.npm --prefix frontend
 COMPOSE := docker compose -f deploy/docker/docker-compose.yml

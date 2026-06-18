@@ -2,6 +2,7 @@ package org.congcong.algomentor.api.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,11 @@ import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.agent.core.tool.CalculatorTool;
+import org.congcong.algomentor.api.problem.service.ProblemService;
+import org.congcong.algomentor.api.problem.tool.GetProblemStatementTool;
+import org.congcong.algomentor.api.problem.tool.ListProblemFiltersTool;
+import org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames;
+import org.congcong.algomentor.api.problem.tool.SearchProblemsTool;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
@@ -125,6 +131,45 @@ class MentorAiConfigurationTest {
         });
   }
 
+  @Test
+  void registersProblemToolsByDefaultWhenProblemServiceExists() {
+    problemToolContextRunner()
+        .run(context -> {
+          AgentToolRegistry registry = context.getBean(AgentToolRegistry.class);
+
+          assertThat(context).hasSingleBean(ListProblemFiltersTool.class);
+          assertThat(context).hasSingleBean(SearchProblemsTool.class);
+          assertThat(context).hasSingleBean(GetProblemStatementTool.class);
+          assertThat(registry.specs()).extracting(spec -> spec.name())
+              .contains(
+                  ProblemAgentToolNames.LIST_PROBLEM_FILTERS,
+                  ProblemAgentToolNames.SEARCH_PROBLEMS,
+                  ProblemAgentToolNames.GET_PROBLEM_STATEMENT);
+        });
+  }
+
+  @Test
+  void allowsDisablingIndividualProblemTools() {
+    problemToolContextRunner()
+        .withPropertyValues("algo-mentor.agent.tools.problem-search.enabled=false")
+        .run(context -> {
+          AgentToolRegistry registry = context.getBean(AgentToolRegistry.class);
+
+          assertThat(context).hasSingleBean(ListProblemFiltersTool.class);
+          assertThat(context).doesNotHaveBean(SearchProblemsTool.class);
+          assertThat(context).hasSingleBean(GetProblemStatementTool.class);
+          assertThat(registry.specs()).extracting(spec -> spec.name())
+              .contains(ProblemAgentToolNames.LIST_PROBLEM_FILTERS)
+              .doesNotContain(ProblemAgentToolNames.SEARCH_PROBLEMS);
+        });
+  }
+
+  private ApplicationContextRunner problemToolContextRunner() {
+    return new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+        .withUserConfiguration(FakeProblemToolConfig.class, MentorAiConfiguration.class);
+  }
+
   @Configuration(proxyBeanMethods = false)
   static class FakeProviderConfig {
 
@@ -183,6 +228,15 @@ class MentorAiConfigurationTest {
           0,
           LlmGenerationOptions.defaults(),
           Map.of());
+    }
+  }
+
+  @Configuration(proxyBeanMethods = false)
+  static class FakeProblemToolConfig {
+
+    @Bean
+    ProblemService problemService() {
+      return mock(ProblemService.class);
     }
   }
 }

@@ -235,7 +235,44 @@ class AgentLoopRunnerTest {
     assertThat(events.get(events.size() - 1)).isInstanceOf(AgentStreamEvent.AgentError.class);
     AgentStreamEvent.AgentError error = (AgentStreamEvent.AgentError) events.get(events.size() - 1);
     assertThat(error.error().code()).isEqualTo(AgentErrorCode.TOOL_EXECUTION_FAILED);
-    assertThat(error.error().metadata()).containsEntry("toolName", "fake_lookup");
+    assertThat(error.error().metadata())
+        .containsEntry("toolName", "fake_lookup")
+        .containsEntry("toolCallId", "call_1")
+        .containsEntry("errorType", IllegalStateException.class.getName())
+        .containsEntry("errorMessage", "tool failed")
+        .containsEntry("rootCauseType", IllegalStateException.class.getName())
+        .containsEntry("rootCauseMessage", "tool failed");
+  }
+
+  @Test
+  void enrichesAgentToolErrorsWithCauseMetadata() {
+    FakeGateway gateway = new FakeGateway();
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ToolCallEnd(
+            new LlmToolCall("call_1", "fake_lookup", JsonNodeFactory.instance.objectNode())),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        "gpt-test",
+        AgentToolRegistry.of(List.of(new AgentFailingTool("fake_lookup"))),
+        4);
+
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
+
+    assertThat(events.get(events.size() - 1)).isInstanceOf(AgentStreamEvent.AgentError.class);
+    AgentStreamEvent.AgentError error = (AgentStreamEvent.AgentError) events.get(events.size() - 1);
+    assertThat(error.error().code()).isEqualTo(AgentErrorCode.TOOL_EXECUTION_FAILED);
+    assertThat(error.error().getMessage()).isEqualTo("wrapped tool failure");
+    assertThat(error.error().metadata())
+        .containsEntry("toolName", "fake_lookup")
+        .containsEntry("toolCallId", "call_1")
+        .containsEntry("errorType", AgentException.class.getName())
+        .containsEntry("errorMessage", "wrapped tool failure")
+        .containsEntry("causeType", IllegalStateException.class.getName())
+        .containsEntry("causeMessage", "repository failed")
+        .containsEntry("rootCauseType", IllegalArgumentException.class.getName())
+        .containsEntry("rootCauseMessage", "database rejected query")
+        .containsEntry("businessKey", "kept");
   }
 
   @Test
@@ -661,6 +698,29 @@ class AgentLoopRunnerTest {
     @Override
     public JsonNode execute(JsonNode arguments, AgentExecutionContext context) {
       throw new IllegalStateException("tool failed");
+    }
+  }
+
+  private static final class AgentFailingTool implements AgentTool {
+    private final String name;
+
+    private AgentFailingTool(String name) {
+      this.name = name;
+    }
+
+    @Override
+    public LlmToolSpec spec() {
+      return new LlmToolSpec(name, "Agent failing lookup", JsonNodeFactory.instance.objectNode(), true);
+    }
+
+    @Override
+    public JsonNode execute(JsonNode arguments, AgentExecutionContext context) {
+      throw new AgentException(
+          AgentErrorCode.TOOL_EXECUTION_FAILED,
+          "wrapped tool failure",
+          false,
+          Map.of("businessKey", "kept"),
+          new IllegalStateException("repository failed", new IllegalArgumentException("database rejected query")));
     }
   }
 }

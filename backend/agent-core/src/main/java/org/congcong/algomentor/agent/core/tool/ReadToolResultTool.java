@@ -20,6 +20,15 @@ public final class ReadToolResultTool implements AgentTool {
 
   public static final String NAME = "read_tool_result";
 
+  private static final String PROPERTIES = "properties";
+  private static final String REQUIRED = "required";
+  private static final String ADDITIONAL_PROPERTIES = "additionalProperties";
+  private static final String OBJECT_TYPE = "object";
+  private static final String STRING_TYPE = "string";
+  private static final String INTEGER_TYPE = "integer";
+  private static final String NULL_TYPE = "null";
+  private static final String MINIMUM = "minimum";
+
   private final ToolResultStore resultStore;
   private final ToolResultCompactionPolicy policy;
 
@@ -31,15 +40,20 @@ public final class ReadToolResultTool implements AgentTool {
   @Override
   public LlmToolSpec spec() {
     ObjectNode schema = JsonNodeFactory.instance.objectNode();
-    schema.put(AgentToolResultJsonKeys.TYPE, "object");
-    ObjectNode properties = schema.putObject("properties");
-    properties.putObject(AgentToolResultJsonKeys.RESULT_REF).put(AgentToolResultJsonKeys.TYPE, "string");
-    properties.putObject(AgentToolResultJsonKeys.OFFSET).put(AgentToolResultJsonKeys.TYPE, "integer").put("minimum", 0);
-    properties.putObject(AgentToolResultJsonKeys.LIMIT).put(AgentToolResultJsonKeys.TYPE, "integer").put("minimum", 1);
-    properties.putObject(AgentToolResultJsonKeys.LINE_START).put(AgentToolResultJsonKeys.TYPE, "integer").put("minimum", 1);
-    properties.putObject(AgentToolResultJsonKeys.LINE_END).put(AgentToolResultJsonKeys.TYPE, "integer").put("minimum", 1);
-    schema.putArray("required").add(AgentToolResultJsonKeys.RESULT_REF);
-    schema.put("additionalProperties", false);
+    schema.put(AgentToolResultJsonKeys.TYPE, OBJECT_TYPE);
+    ObjectNode properties = schema.putObject(PROPERTIES);
+    properties.putObject(AgentToolResultJsonKeys.RESULT_REF).put(AgentToolResultJsonKeys.TYPE, STRING_TYPE);
+    properties.set(AgentToolResultJsonKeys.OFFSET, nullableIntegerProperty(0));
+    properties.set(AgentToolResultJsonKeys.LIMIT, nullableIntegerProperty(1));
+    properties.set(AgentToolResultJsonKeys.LINE_START, nullableIntegerProperty(1));
+    properties.set(AgentToolResultJsonKeys.LINE_END, nullableIntegerProperty(1));
+    schema.putArray(REQUIRED)
+        .add(AgentToolResultJsonKeys.RESULT_REF)
+        .add(AgentToolResultJsonKeys.OFFSET)
+        .add(AgentToolResultJsonKeys.LIMIT)
+        .add(AgentToolResultJsonKeys.LINE_START)
+        .add(AgentToolResultJsonKeys.LINE_END);
+    schema.put(ADDITIONAL_PROPERTIES, false);
     return new LlmToolSpec(NAME, "Read a bounded range from a large prior tool result.", schema, true);
   }
 
@@ -137,5 +151,11 @@ public final class ReadToolResultTool implements AgentTool {
   private int intValue(JsonNode arguments, String fieldName, int defaultValue) {
     JsonNode value = arguments == null ? null : arguments.get(fieldName);
     return value == null || !value.canConvertToInt() ? defaultValue : value.asInt();
+  }
+
+  private ObjectNode nullableIntegerProperty(int minimum) {
+    ObjectNode property = JsonNodeFactory.instance.objectNode().put(MINIMUM, minimum);
+    property.putArray(AgentToolResultJsonKeys.TYPE).add(INTEGER_TYPE).add(NULL_TYPE);
+    return property;
   }
 }

@@ -52,6 +52,12 @@ algo-mentor:
     tools:
       calculator:
         enabled: ${AGENT_CALCULATOR_TOOL_ENABLED:true}
+      problem-filters:
+        enabled: ${AGENT_PROBLEM_FILTERS_TOOL_ENABLED:true}
+      problem-search:
+        enabled: ${AGENT_PROBLEM_SEARCH_TOOL_ENABLED:true}
+      problem-statement:
+        enabled: ${AGENT_PROBLEM_STATEMENT_TOOL_ENABLED:true}
   ai:
     gateway:
       default-provider: ${AI_GATEWAY_DEFAULT_PROVIDER:openai}

@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.congcong.algomentor.api.problem.model.ProblemDetail;
+import org.congcong.algomentor.api.problem.model.ProblemFilters;
 import org.congcong.algomentor.api.problem.model.ProblemListItem;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
 import org.congcong.algomentor.api.problem.model.ProblemPage;
@@ -53,6 +54,11 @@ class ProblemSeedImporterTest {
     @Override
     public Optional<ProblemDetail> findProblemBySlug(String slug) {
       return Optional.empty();
+    }
+
+    @Override
+    public ProblemFilters findProblemFilters() {
+      return new ProblemFilters(0, java.util.List.of(), java.util.List.of(), java.util.List.of());
     }
 
     @Override

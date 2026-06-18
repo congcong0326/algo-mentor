@@ -68,6 +68,36 @@ public final class AgentRuntimeMetadataKeys {
   public static final String TOOL_NAME = "toolName";
 
   /**
+   * 直接抛出异常的 Java 类型，用于工具失败诊断。
+   */
+  public static final String ERROR_TYPE = "errorType";
+
+  /**
+   * 直接抛出异常的错误消息，用于工具失败诊断。
+   */
+  public static final String ERROR_MESSAGE = "errorMessage";
+
+  /**
+   * 直接 cause 的 Java 类型，用于工具失败诊断。
+   */
+  public static final String CAUSE_TYPE = "causeType";
+
+  /**
+   * 直接 cause 的错误消息，用于工具失败诊断。
+   */
+  public static final String CAUSE_MESSAGE = "causeMessage";
+
+  /**
+   * 异常链最底层根因的 Java 类型，用于工具失败诊断。
+   */
+  public static final String ROOT_CAUSE_TYPE = "rootCauseType";
+
+  /**
+   * 异常链最底层根因的错误消息，用于工具失败诊断。
+   */
+  public static final String ROOT_CAUSE_MESSAGE = "rootCauseMessage";
+
+  /**
    * 幂等键命中已有 run 时的 replay 标记。
    */
   public static final String IDEMPOTENT_REPLAY = "idempotentReplay";

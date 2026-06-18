@@ -21,6 +21,23 @@
     </constructor>
   </resultMap>
 
+  <resultMap id="ProblemFilterCountRowMap"
+      type="org.congcong.algomentor.api.problem.mapper.model.ProblemFilterCountRow">
+    <constructor>
+      <arg column="value" javaType="string"/>
+      <arg column="problem_count" javaType="java.lang.Long"/>
+    </constructor>
+  </resultMap>
+
+  <resultMap id="ProblemCategoryFilterRowMap"
+      type="org.congcong.algomentor.api.problem.mapper.model.ProblemCategoryFilterRow">
+    <constructor>
+      <arg column="slug" javaType="string"/>
+      <arg column="name" javaType="string"/>
+      <arg column="problem_count" javaType="java.lang.Long"/>
+    </constructor>
+  </resultMap>
+
   <sql id="ProblemColumns">
     p.id,
     p.slug,
@@ -98,6 +115,45 @@
       <include refid="ProblemColumns"/>
     FROM problem p
     WHERE p.slug = #{slug}
+  </select>
+
+  <select id="countAllProblems" resultType="_long">
+    SELECT COUNT(*)
+    FROM problem
+  </select>
+
+  <select id="countProblemsByDifficulty" resultMap="ProblemFilterCountRowMap">
+    SELECT
+      p.difficulty AS value,
+      COUNT(*) AS problem_count
+    FROM problem p
+    WHERE p.difficulty IS NOT NULL
+      AND p.difficulty != ''
+    GROUP BY p.difficulty
+    ORDER BY p.difficulty ASC
+  </select>
+
+  <select id="countProblemsByTag" resultMap="ProblemFilterCountRowMap">
+    SELECT
+      t.tag AS value,
+      COUNT(*) AS problem_count
+    FROM problem p
+    CROSS JOIN LATERAL unnest(p.tags) AS t(tag)
+    WHERE t.tag IS NOT NULL
+      AND t.tag != ''
+    GROUP BY t.tag
+    ORDER BY t.tag ASC
+  </select>
+
+  <select id="countProblemCategories" resultMap="ProblemCategoryFilterRowMap">
+    SELECT
+      pc.slug,
+      pc.name,
+      COUNT(pci.problem_id) AS problem_count
+    FROM problem_category pc
+    LEFT JOIN problem_category_item pci ON pci.category_id = pc.id
+    GROUP BY pc.id, pc.slug, pc.name
+    ORDER BY pc.name ASC, pc.slug ASC
   </select>
 
   <insert id="upsertProblem">

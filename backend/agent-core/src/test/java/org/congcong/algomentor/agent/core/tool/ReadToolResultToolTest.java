@@ -2,7 +2,10 @@ package org.congcong.algomentor.agent.core.tool;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.congcong.algomentor.agent.core.AgentExecutionContext;
 import org.congcong.algomentor.agent.core.AgentLoopContext;
@@ -14,6 +17,24 @@ import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 import org.junit.jupiter.api.Test;
 
 class ReadToolResultToolTest {
+
+  @Test
+  void exposesStrictSchemaRequiringAllProperties() {
+    ReadToolResultTool tool = new ReadToolResultTool(new InMemoryToolResultStore(), policy(5));
+
+    JsonNode schema = tool.spec().inputSchema();
+
+    assertThat(tool.spec().strict()).isTrue();
+    assertThat(schema.path("additionalProperties").asBoolean()).isFalse();
+    List<String> properties = new ArrayList<>();
+    schema.path("properties").fieldNames().forEachRemaining(properties::add);
+    List<String> required = new ArrayList<>();
+    schema.path("required").forEach(node -> required.add(node.asText()));
+    assertThat(required).containsExactlyElementsOf(properties);
+    JsonNode offsetType = schema.path("properties").path("offset").path("type");
+    assertThat(offsetType.get(0).asText()).isEqualTo("integer");
+    assertThat(offsetType.get(1).asText()).isEqualTo("null");
+  }
 
   @Test
   void readsBoundedOffsetRange() {

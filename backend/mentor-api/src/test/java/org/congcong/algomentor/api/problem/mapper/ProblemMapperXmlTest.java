@@ -28,6 +28,14 @@ class ProblemMapperXmlTest {
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.problem.mapper.ProblemMapper.findProblemBySlug")).isTrue();
     assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemMapper.countAllProblems")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemMapper.countProblemsByDifficulty")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemMapper.countProblemsByTag")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemMapper.countProblemCategories")).isTrue();
+    assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.problem.mapper.ProblemMapper.upsertProblem")).isTrue();
   }
 }

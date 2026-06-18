@@ -13,6 +13,10 @@ import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.agent.core.tool.ReadToolResultTool;
 import org.congcong.algomentor.agent.core.tool.CalculatorTool;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
+import org.congcong.algomentor.api.problem.service.ProblemService;
+import org.congcong.algomentor.api.problem.tool.GetProblemStatementTool;
+import org.congcong.algomentor.api.problem.tool.ListProblemFiltersTool;
+import org.congcong.algomentor.api.problem.tool.SearchProblemsTool;
 import org.congcong.algomentor.mentor.application.ExplainTopicUseCase;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
@@ -100,6 +104,42 @@ public class MentorAiConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean(name = "listProblemFiltersTool")
+  @org.springframework.boot.autoconfigure.condition.ConditionalOnBean(ProblemService.class)
+  @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+      prefix = MentorConfigurationKeys.PROBLEM_FILTERS_TOOL_PREFIX,
+      name = MentorConfigurationKeys.ENABLED,
+      havingValue = MentorConfigurationKeys.TRUE,
+      matchIfMissing = true)
+  public ListProblemFiltersTool listProblemFiltersTool(ProblemService problemService) {
+    return new ListProblemFiltersTool(problemService);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(name = "searchProblemsTool")
+  @org.springframework.boot.autoconfigure.condition.ConditionalOnBean(ProblemService.class)
+  @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+      prefix = MentorConfigurationKeys.PROBLEM_SEARCH_TOOL_PREFIX,
+      name = MentorConfigurationKeys.ENABLED,
+      havingValue = MentorConfigurationKeys.TRUE,
+      matchIfMissing = true)
+  public SearchProblemsTool searchProblemsTool(ProblemService problemService) {
+    return new SearchProblemsTool(problemService);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(name = "getProblemStatementTool")
+  @org.springframework.boot.autoconfigure.condition.ConditionalOnBean(ProblemService.class)
+  @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+      prefix = MentorConfigurationKeys.PROBLEM_STATEMENT_TOOL_PREFIX,
+      name = MentorConfigurationKeys.ENABLED,
+      havingValue = MentorConfigurationKeys.TRUE,
+      matchIfMissing = true)
+  public GetProblemStatementTool getProblemStatementTool(ProblemService problemService) {
+    return new GetProblemStatementTool(problemService);
+  }
+
+  @Bean
   @ConditionalOnMissingBean
   public AgentLoopRunner agentLoopRunner(
       LlmGateway llmGateway,
@@ -108,7 +148,7 @@ public class MentorAiConfiguration {
       List<AgentLoopObserver> observers,
       @Value("${" + MentorConfigurationKeys.AGENT_TOOL_CHOICE + ":auto}") String toolChoice,
       @Value("${" + MentorConfigurationKeys.AGENT_SPECIFIC_TOOL_NAME + ":}") String specificToolName,
-      @Value("${" + MentorConfigurationKeys.AGENT_MAX_STEPS + ":4}") int maxSteps,
+      @Value("${" + MentorConfigurationKeys.AGENT_MAX_STEPS + ":20}") int maxSteps,
       ToolResultCompactionPolicy toolResultPolicy,
       org.springframework.beans.factory.ObjectProvider<ToolResultStore> toolResultStore,
       ObjectMapper objectMapper

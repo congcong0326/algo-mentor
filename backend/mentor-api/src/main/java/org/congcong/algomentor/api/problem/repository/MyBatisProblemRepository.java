@@ -5,13 +5,20 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
+import org.congcong.algomentor.api.problem.mapper.model.ProblemCategoryFilterRow;
+import org.congcong.algomentor.api.problem.mapper.model.ProblemFilterCountRow;
 import org.congcong.algomentor.api.problem.mapper.ProblemMapper;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemRow;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemUpsertRow;
+import org.congcong.algomentor.api.problem.model.ProblemCategoryFilterOption;
 import org.congcong.algomentor.api.problem.model.ProblemDetail;
 import org.congcong.algomentor.api.problem.model.ProblemDifficulty;
+import org.congcong.algomentor.api.problem.model.ProblemFilterOption;
+import org.congcong.algomentor.api.problem.model.ProblemFilters;
 import org.congcong.algomentor.api.problem.model.ProblemListItem;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
 import org.congcong.algomentor.api.problem.model.ProblemPage;
@@ -49,6 +56,24 @@ public class MyBatisProblemRepository implements ProblemRepository {
   @Override
   public Optional<ProblemDetail> findProblemBySlug(String slug) {
     return Optional.ofNullable(mapper.findProblemBySlug(slug)).map(this::toDetail);
+  }
+
+  @Override
+  public ProblemFilters findProblemFilters() {
+    Map<String, Long> difficultyCounts = mapper.countProblemsByDifficulty().stream()
+        .collect(Collectors.toMap(ProblemFilterCountRow::value, row -> count(row.problemCount())));
+    List<ProblemFilterOption> difficulties = Arrays.stream(ProblemDifficulty.values())
+        .map(difficulty -> new ProblemFilterOption(
+            difficulty.name(),
+            difficultyCounts.getOrDefault(difficulty.name(), 0L)))
+        .toList();
+    List<ProblemFilterOption> tags = mapper.countProblemsByTag().stream()
+        .map(row -> new ProblemFilterOption(row.value(), count(row.problemCount())))
+        .toList();
+    List<ProblemCategoryFilterOption> categories = mapper.countProblemCategories().stream()
+        .map(this::toCategoryFilterOption)
+        .toList();
+    return new ProblemFilters(mapper.countAllProblems(), difficulties, tags, categories);
   }
 
   @Override
@@ -106,6 +131,14 @@ public class MyBatisProblemRepository implements ProblemRepository {
         row.sampleTestCase(),
         row.python3Template(),
         row.sourceCommit());
+  }
+
+  private ProblemCategoryFilterOption toCategoryFilterOption(ProblemCategoryFilterRow row) {
+    return new ProblemCategoryFilterOption(row.slug(), row.name(), count(row.problemCount()));
+  }
+
+  private long count(Long value) {
+    return value == null ? 0L : value;
   }
 
   private ProblemDifficulty parseDifficulty(String difficulty) {

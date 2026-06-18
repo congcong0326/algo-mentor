@@ -2,6 +2,7 @@ package org.congcong.algomentor.api.problem.service;
 
 import java.util.Optional;
 import org.congcong.algomentor.api.problem.model.ProblemDetail;
+import org.congcong.algomentor.api.problem.model.ProblemFilters;
 import org.congcong.algomentor.api.problem.model.ProblemListItem;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
 import org.congcong.algomentor.api.problem.model.ProblemPage;
@@ -24,6 +25,10 @@ public class ProblemService {
 
   public Optional<ProblemDetail> findProblemBySlug(String slug) {
     return repository().findProblemBySlug(slug);
+  }
+
+  public ProblemFilters findProblemFilters() {
+    return repository().findProblemFilters();
   }
 
   private ProblemRepository repository() {

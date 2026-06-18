@@ -261,20 +261,64 @@ public class AgentLoopRunner {
           toolCall.arguments(),
           new AgentExecutionContext(context.runId(), stepIndex, context.request().metadata(), false));
     } catch (AgentException ex) {
-      lifecycle.toolErrored(context, stepIndex, toolCall, ex);
-      throw ex;
+      AgentException error = enrichToolError(toolCall, ex);
+      lifecycle.toolErrored(context, stepIndex, toolCall, error);
+      throw error;
     } catch (RuntimeException ex) {
       AgentException error = new AgentException(
           AgentErrorCode.TOOL_EXECUTION_FAILED,
           "Agent tool execution failed: " + toolCall.name(),
           false,
-          Map.of(
-              AgentRuntimeMetadataKeys.TOOL_NAME, toolCall.name(),
-              AgentRuntimeMetadataKeys.TOOL_CALL_ID, toolCall.id()),
+          toolErrorMetadata(toolCall, ex, Map.of()),
           ex);
       lifecycle.toolErrored(context, stepIndex, toolCall, error);
       throw error;
     }
+  }
+
+  private AgentException enrichToolError(LlmToolCall toolCall, AgentException error) {
+    Map<String, Object> metadata = toolErrorMetadata(toolCall, error, error.metadata());
+    if (metadata.equals(error.metadata())) {
+      return error;
+    }
+    return new AgentException(error.code(), error.getMessage(), error.retryable(), metadata, error.getCause());
+  }
+
+  private Map<String, Object> toolErrorMetadata(
+      LlmToolCall toolCall,
+      Throwable error,
+      Map<String, Object> existingMetadata
+  ) {
+    Map<String, Object> metadata = new java.util.LinkedHashMap<>();
+    if (existingMetadata != null) {
+      metadata.putAll(existingMetadata);
+    }
+    metadata.putIfAbsent(AgentRuntimeMetadataKeys.TOOL_NAME, toolCall.name());
+    metadata.putIfAbsent(AgentRuntimeMetadataKeys.TOOL_CALL_ID, toolCall.id());
+    putIfAbsent(metadata, AgentRuntimeMetadataKeys.ERROR_TYPE, error.getClass().getName());
+    putIfAbsent(metadata, AgentRuntimeMetadataKeys.ERROR_MESSAGE, error.getMessage());
+    if (error.getCause() != null) {
+      putIfAbsent(metadata, AgentRuntimeMetadataKeys.CAUSE_TYPE, error.getCause().getClass().getName());
+      putIfAbsent(metadata, AgentRuntimeMetadataKeys.CAUSE_MESSAGE, error.getCause().getMessage());
+    }
+    Throwable rootCause = rootCause(error);
+    putIfAbsent(metadata, AgentRuntimeMetadataKeys.ROOT_CAUSE_TYPE, rootCause.getClass().getName());
+    putIfAbsent(metadata, AgentRuntimeMetadataKeys.ROOT_CAUSE_MESSAGE, rootCause.getMessage());
+    return Map.copyOf(metadata);
+  }
+
+  private void putIfAbsent(Map<String, Object> metadata, String key, String value) {
+    if (value != null && !value.isBlank()) {
+      metadata.putIfAbsent(key, value);
+    }
+  }
+
+  private Throwable rootCause(Throwable throwable) {
+    Throwable current = throwable;
+    while (current.getCause() != null) {
+      current = current.getCause();
+    }
+    return current;
   }
 
   /**

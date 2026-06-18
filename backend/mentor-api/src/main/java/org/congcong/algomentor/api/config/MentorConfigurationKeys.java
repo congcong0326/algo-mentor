@@ -26,6 +26,21 @@ public final class MentorConfigurationKeys {
   public static final String CALCULATOR_TOOL_PREFIX = "algo-mentor.agent.tools.calculator";
 
   /**
+   * 题库过滤项发现工具配置前缀。
+   */
+  public static final String PROBLEM_FILTERS_TOOL_PREFIX = "algo-mentor.agent.tools.problem-filters";
+
+  /**
+   * 题库搜索工具配置前缀。
+   */
+  public static final String PROBLEM_SEARCH_TOOL_PREFIX = "algo-mentor.agent.tools.problem-search";
+
+  /**
+   * 题面读取工具配置前缀。
+   */
+  public static final String PROBLEM_STATEMENT_TOOL_PREFIX = "algo-mentor.agent.tools.problem-statement";
+
+  /**
    * Agent 工具选择模式配置 key。
    */
   public static final String AGENT_TOOL_CHOICE = "algo-mentor.agent.tool-choice";
