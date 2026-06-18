@@ -44,8 +44,9 @@ export default function ProblemLibrary() {
         if (!response.success || !response.data) {
           throw new Error(response.error?.message ?? '题库列表加载失败');
         }
-        setProblemPage(response.data);
-        setSelectedSlug((current) => current ?? response.data.items[0]?.slug);
+        const nextProblemPage = response.data;
+        setProblemPage(nextProblemPage);
+        setSelectedSlug((current) => current ?? nextProblemPage.items[0]?.slug);
       })
       .catch((error) => {
         if (!controller.signal.aborted) {

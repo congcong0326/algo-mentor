@@ -3,10 +3,13 @@ package org.congcong.algomentor.api.config;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Flow;
+import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
@@ -29,6 +32,8 @@ import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +44,7 @@ class MentorAiConfigurationTest {
   private static final LlmModelId TEST_MODEL = LlmModelId.of("test-model");
 
   private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+      .withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
       .withUserConfiguration(MentorAiConfiguration.class);
 
   @Test
@@ -92,6 +98,18 @@ class MentorAiConfigurationTest {
 
       assertThat(context).hasSingleBean(CalculatorTool.class);
       assertThat(registry.specs()).extracting(spec -> spec.name()).contains("calculator");
+    });
+  }
+
+  @Test
+  void objectMapperSerializesApiResponseTimestamp() {
+    contextRunner.run(context -> {
+      ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
+
+      JsonNode json = objectMapper.valueToTree(ApiResponse.success("ready"));
+
+      assertThat(json.path("timestamp").isTextual()).isTrue();
+      assertThat(json.path("timestamp").asText()).endsWith("Z");
     });
   }
 

@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({LlmGatewayProperties.class, AgentCompactionProperties.class})
@@ -36,8 +37,8 @@ public class MentorAiConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public ObjectMapper objectMapper() {
-    return new ObjectMapper();
+  public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
+    return builder.build();
   }
 
   @Bean

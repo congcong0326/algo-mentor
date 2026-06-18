@@ -16,12 +16,8 @@ import org.congcong.algomentor.api.problem.model.ProblemListItem;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
 import org.congcong.algomentor.api.problem.model.ProblemPage;
 import org.congcong.algomentor.api.problem.model.ProblemSeedRecord;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.stereotype.Repository;
 
-@Repository
-@ConditionalOnBean(ProblemMapper.class)
 public class MyBatisProblemRepository implements ProblemRepository {
 
   private final ProblemMapper mapper;

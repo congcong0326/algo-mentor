@@ -1,22 +1,56 @@
 MAVEN := mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository
 NPM := npm --cache ./.npm --prefix frontend
 COMPOSE := docker compose -f deploy/docker/docker-compose.yml
+SERVER_PORT ?= 8080
+POSTGRES_VERSION ?= 16
+POSTGRES_HOST ?= localhost
+POSTGRES_PORT ?= 5432
+POSTGRES_DB ?= algo_mentor
+POSTGRES_USER ?= algo_mentor
+POSTGRES_PASSWORD ?= algo_mentor_dev
 PROBLEM_SOURCE_REPO := https://github.com/fishjar/leetcode-problemset
 PROBLEM_SOURCE_DIR := data/sources/leetcode-problemset
 PROBLEM_SEED_DIR := data/seed
-DB_SEED_URL := jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:algo_mentor}
-DB_SEED_USER := ${POSTGRES_USER:algo_mentor}
-DB_SEED_PASSWORD := ${POSTGRES_PASSWORD:algo_mentor_dev}
+PROBLEM_SEED_ABS_DIR := $(abspath $(PROBLEM_SEED_DIR))
+DB_SEED_URL := jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
+DB_SEED_USER := $(POSTGRES_USER)
+DB_SEED_PASSWORD := $(POSTGRES_PASSWORD)
 STATIC_DIR := backend/mentor-api/src/main/resources/static
 
-.PHONY: build package up down backend-build backend-test backend-dev frontend-install frontend-build frontend-test frontend-dev sync-frontend problem-source problem-seed db-seed clean
+.PHONY: build package up down backend-build backend-test backend-dev frontend-install frontend-build frontend-test frontend-dev sync-frontend problem-source problem-seed db-install db-seed clean
 
 build: backend-build frontend-build
 
 package: frontend-build sync-frontend backend-build
 
 up: package
-	$(COMPOSE) up -d --build
+	@if [ -f /.dockerenv ] || [ -f /run/.containerenv ] || grep -qaE '(docker|containerd|kubepods|libpod)' /proc/1/cgroup 2>/dev/null; then \
+		if ! command -v psql >/dev/null 2>&1; then \
+			echo "psql is not installed. Run 'make db-install' once before 'make up' in a development container." >&2; \
+			exit 1; \
+		fi; \
+		if ! PGPASSWORD="$(POSTGRES_PASSWORD)" psql -h "$(POSTGRES_HOST)" -p "$(POSTGRES_PORT)" -U "$(POSTGRES_USER)" -d "$(POSTGRES_DB)" -v ON_ERROR_STOP=1 -c "SELECT 1;" >/dev/null 2>&1; then \
+			echo "Cannot connect to PostgreSQL at $(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB). Run 'make db-install' once or start the local database." >&2; \
+			exit 1; \
+		fi; \
+		api_jar="$$(find backend/mentor-api/target -maxdepth 1 -type f -name 'mentor-api-*.jar' ! -name '*.original' | sort | tail -n 1)"; \
+		if [ -z "$$api_jar" ]; then \
+			echo "Cannot find packaged mentor-api jar under backend/mentor-api/target." >&2; \
+			exit 1; \
+		fi; \
+		echo "Detected container environment. Starting $$api_jar with local PostgreSQL at $(POSTGRES_HOST):$(POSTGRES_PORT)."; \
+		exec env \
+			SERVER_PORT="$(SERVER_PORT)" \
+			SPRING_PROFILES_ACTIVE=local \
+			POSTGRES_HOST="$(POSTGRES_HOST)" \
+			POSTGRES_PORT="$(POSTGRES_PORT)" \
+			POSTGRES_DB="$(POSTGRES_DB)" \
+			POSTGRES_USER="$(POSTGRES_USER)" \
+			POSTGRES_PASSWORD="$(POSTGRES_PASSWORD)" \
+			java -jar "$$api_jar"; \
+	else \
+		$(COMPOSE) up -d --build; \
+	fi
 
 down:
 	$(COMPOSE) down
@@ -53,9 +87,82 @@ problem-source:
 problem-seed:
 	python3 -m tools.problem_seed.prepare_seed --source-dir "$(PROBLEM_SOURCE_DIR)" --output-dir "$(PROBLEM_SEED_DIR)"
 
+db-install:
+	@if [ "$$(id -u)" -ne 0 ]; then \
+		echo "db-install requires root in the development container." >&2; \
+		exit 1; \
+	fi; \
+	if [ ! -r /etc/os-release ]; then \
+		echo "Cannot detect OS: /etc/os-release is missing." >&2; \
+		exit 1; \
+	fi; \
+	. /etc/os-release; \
+	if ! command -v apt-get >/dev/null 2>&1; then \
+		echo "db-install currently supports Debian/Ubuntu containers with apt-get only." >&2; \
+		exit 1; \
+	fi; \
+	if [ "$${ID:-}" != "debian" ] && [ "$${ID:-}" != "ubuntu" ] && ! printf '%s\n' "$${ID_LIKE:-}" | grep -Eq '(^| )debian( |$$)'; then \
+		echo "db-install currently supports Debian/Ubuntu containers only." >&2; \
+		exit 1; \
+	fi; \
+	set -eu; \
+	export DEBIAN_FRONTEND=noninteractive; \
+	apt-get update; \
+	if ! apt-cache policy "postgresql-$(POSTGRES_VERSION)" | awk '/Candidate:/ && $$2 != "(none)" { found = 1 } END { exit !found }'; then \
+		apt-get install -y ca-certificates curl gnupg; \
+		codename="$${VERSION_CODENAME:-$${UBUNTU_CODENAME:-}}"; \
+		if [ -z "$$codename" ]; then \
+			echo "Cannot detect Debian/Ubuntu codename for PostgreSQL apt repository." >&2; \
+			exit 1; \
+		fi; \
+		install -d -m 0755 /usr/share/postgresql-common/pgdg; \
+		rm -f /usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg; \
+		curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg; \
+		echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg] https://apt.postgresql.org/pub/repos/apt $$codename-pgdg main" > /etc/apt/sources.list.d/pgdg.list; \
+		apt-get update; \
+	fi; \
+	apt-get install -y "postgresql-$(POSTGRES_VERSION)" "postgresql-client-$(POSTGRES_VERSION)"; \
+	if command -v pg_lsclusters >/dev/null 2>&1 && ! pg_lsclusters | awk '$$1 == "$(POSTGRES_VERSION)" && $$2 == "main" { found = 1 } END { exit !found }'; then \
+		pg_createcluster "$(POSTGRES_VERSION)" main; \
+	fi; \
+	postgresql_conf="/etc/postgresql/$(POSTGRES_VERSION)/main/postgresql.conf"; \
+	if [ -f "$$postgresql_conf" ]; then \
+		sed -i "s/^#\?port = .*/port = $(POSTGRES_PORT)/" "$$postgresql_conf"; \
+		sed -i "s/^#\?listen_addresses = .*/listen_addresses = 'localhost'/" "$$postgresql_conf"; \
+	fi; \
+	if command -v pg_ctlcluster >/dev/null 2>&1; then \
+		if pg_ctlcluster "$(POSTGRES_VERSION)" main status >/dev/null 2>&1; then \
+			pg_ctlcluster "$(POSTGRES_VERSION)" main restart; \
+		else \
+			pg_ctlcluster "$(POSTGRES_VERSION)" main start; \
+		fi; \
+	else \
+		service postgresql start; \
+	fi; \
+	sql_literal() { printf '%s' "$$1" | sed "s/'/''/g"; }; \
+	sql_identifier() { printf '%s' "$$1" | sed 's/"/""/g'; }; \
+	app_user_lit="$$(sql_literal "$(POSTGRES_USER)")"; \
+	app_user_ident="$$(sql_identifier "$(POSTGRES_USER)")"; \
+	app_password_lit="$$(sql_literal "$(POSTGRES_PASSWORD)")"; \
+	app_db_lit="$$(sql_literal "$(POSTGRES_DB)")"; \
+	app_db_ident="$$(sql_identifier "$(POSTGRES_DB)")"; \
+	if ! runuser -u postgres -- psql -tAc "SELECT 1 FROM pg_roles WHERE rolname = '$$app_user_lit'" | grep -q 1; then \
+		runuser -u postgres -- psql -v ON_ERROR_STOP=1 -c "CREATE ROLE \"$$app_user_ident\" LOGIN PASSWORD '$$app_password_lit'"; \
+	else \
+		runuser -u postgres -- psql -v ON_ERROR_STOP=1 -c "ALTER ROLE \"$$app_user_ident\" WITH LOGIN PASSWORD '$$app_password_lit'"; \
+	fi; \
+	if ! runuser -u postgres -- psql -tAc "SELECT 1 FROM pg_database WHERE datname = '$$app_db_lit'" | grep -q 1; then \
+		runuser -u postgres -- psql -v ON_ERROR_STOP=1 -c "CREATE DATABASE \"$$app_db_ident\" OWNER \"$$app_user_ident\""; \
+	else \
+		runuser -u postgres -- psql -v ON_ERROR_STOP=1 -c "ALTER DATABASE \"$$app_db_ident\" OWNER TO \"$$app_user_ident\""; \
+	fi; \
+	runuser -u postgres -- psql -v ON_ERROR_STOP=1 -d "$(POSTGRES_DB)" -c "ALTER SCHEMA public OWNER TO \"$$app_user_ident\"; GRANT ALL ON SCHEMA public TO \"$$app_user_ident\";" >/dev/null; \
+	PGPASSWORD="$(POSTGRES_PASSWORD)" psql -h localhost -p "$(POSTGRES_PORT)" -U "$(POSTGRES_USER)" -d "$(POSTGRES_DB)" -v ON_ERROR_STOP=1 -c "SELECT 1;" >/dev/null; \
+	echo "PostgreSQL $(POSTGRES_VERSION) is ready at localhost:$(POSTGRES_PORT)/$(POSTGRES_DB)."
+
 db-seed:
 	$(MAVEN) -pl mentor-api -am -DskipTests spring-boot:run \
-		-Dspring-boot.run.arguments="--algo-mentor.problem.seed.enabled=true --algo-mentor.problem.seed.path=$(PROBLEM_SEED_DIR) --spring.datasource.url=$(DB_SEED_URL) --spring.datasource.username=$(DB_SEED_USER) --spring.datasource.password=$(DB_SEED_PASSWORD) --spring.flyway.enabled=true" \
+		-Dspring-boot.run.arguments="--algo-mentor.problem.seed.enabled=true --algo-mentor.problem.seed.path=$(PROBLEM_SEED_ABS_DIR) --spring.datasource.url=$(DB_SEED_URL) --spring.datasource.username=$(DB_SEED_USER) --spring.datasource.password=$(DB_SEED_PASSWORD) --spring.flyway.enabled=true" \
 		-Dspring-boot.run.profiles=local
 
 sync-frontend:

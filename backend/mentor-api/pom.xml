@@ -94,6 +94,8 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
+          <mainClass>org.congcong.algomentor.api.MentorApiApplication</mainClass>
+          <skip>false</skip>
           <excludes>
             <exclude>
               <groupId>org.projectlombok</groupId>

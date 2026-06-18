@@ -13,9 +13,9 @@ spring:
     time-zone: UTC
   flyway:
     enabled: ${FLYWAY_ENABLED:false}
+    # db/migration 会递归扫描依赖模块下的子目录，新增 V 版本号必须跨模块唯一。
     locations:
       - classpath:db/migration
-      - classpath:db/migration/agent
 
 management:
   endpoints:
