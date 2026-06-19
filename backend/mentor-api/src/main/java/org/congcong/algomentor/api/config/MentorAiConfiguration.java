@@ -9,6 +9,11 @@ import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockOwnerProvider;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockReleaseObserver;
+import org.congcong.algomentor.agent.core.runlock.InMemoryAgentRunLockManager;
+import org.congcong.algomentor.agent.core.runlock.LocalAgentRunLockOwnerProvider;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.agent.core.tool.ReadToolResultTool;
 import org.congcong.algomentor.agent.core.tool.CalculatorTool;
@@ -74,6 +79,24 @@ public class MentorAiConfiguration {
   @ConditionalOnMissingBean
   public AgentToolRegistry agentToolRegistry(List<AgentTool> tools) {
     return AgentToolRegistry.of(tools);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public AgentRunLockManager agentRunLockManager() {
+    return new InMemoryAgentRunLockManager();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public AgentRunLockOwnerProvider agentRunLockOwnerProvider() {
+    return new LocalAgentRunLockOwnerProvider();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public AgentRunLockReleaseObserver agentRunLockReleaseObserver(AgentRunLockManager lockManager) {
+    return new AgentRunLockReleaseObserver(lockManager);
   }
 
   @Bean

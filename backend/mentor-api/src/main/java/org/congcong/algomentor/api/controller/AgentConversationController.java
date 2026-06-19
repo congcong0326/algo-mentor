@@ -4,13 +4,13 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import java.util.UUID;
-import org.congcong.algomentor.agent.core.AgentLoopRunner;
+import java.util.concurrent.Flow;
+import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.api.service.SseLlmStreamSubscriber;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationCommand;
-import org.congcong.algomentor.mentor.application.conversation.AgentConversationRun;
-import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
+import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunCoordinator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -24,20 +24,17 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @Validated
 @RestController
 @RequestMapping(ApiContractConstants.AGENT_CONVERSATIONS_BASE_PATH)
-@ConditionalOnBean(AgentConversationService.class)
+@ConditionalOnBean(AgentConversationRunCoordinator.class)
 public class AgentConversationController {
 
-  private final AgentConversationService conversationService;
-  private final AgentLoopRunner agentLoopRunner;
+  private final AgentConversationRunCoordinator runCoordinator;
   private final LlmStreamSseMapper sseMapper;
 
   public AgentConversationController(
-      AgentConversationService conversationService,
-      AgentLoopRunner agentLoopRunner,
+      AgentConversationRunCoordinator runCoordinator,
       LlmStreamSseMapper sseMapper
   ) {
-    this.conversationService = conversationService;
-    this.agentLoopRunner = agentLoopRunner;
+    this.runCoordinator = runCoordinator;
     this.sseMapper = sseMapper;
   }
 
@@ -49,7 +46,7 @@ public class AgentConversationController {
     String effectiveKey = idempotencyKey == null || idempotencyKey.isBlank()
         ? UUID.randomUUID().toString()
         : idempotencyKey;
-    AgentConversationRun run = conversationService.prepareRun(new AgentConversationCommand(
+    Flow.Publisher<AgentStreamEvent> publisher = runCoordinator.stream(new AgentConversationCommand(
         request.taskId(),
         request.userId(),
         request.message(),
@@ -62,7 +59,7 @@ public class AgentConversationController {
     emitter.onError(ignored -> subscriber.cancel());
 
     try {
-      agentLoopRunner.stream(run.agentRequest()).subscribe(subscriber);
+      publisher.subscribe(subscriber);
     } catch (RuntimeException ex) {
       subscriber.onError(ex);
     }

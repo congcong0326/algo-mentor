@@ -80,7 +80,7 @@ describe('App', () => {
       expect.objectContaining({
         method: 'POST',
         headers: expect.objectContaining({
-          Accept: 'text/event-stream',
+          Accept: 'text/event-stream, application/json',
           'Content-Type': 'application/json',
           'Idempotency-Key': 'idem-1',
         }),
@@ -146,6 +146,25 @@ describe('App', () => {
     expect(capturedSignal?.aborted).toBe(true);
     expect(screen.getByText('stopped')).toBeInTheDocument();
     expect(screen.getByText('connection_stopped')).toBeInTheDocument();
+  });
+
+  it('keeps sending disabled when backend reports an active run', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({
+      success: false,
+      error: {
+        code: 'AGENT_RUN_IN_PROGRESS',
+        message: '当前会话正在生成回答',
+        metadata: { taskId: 42 },
+      },
+      timestamp: '2026-06-19T00:00:00Z',
+    }, 409)));
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+
+    expect(await screen.findByText('blocked')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Start' })).toBeDisabled();
+    expect(screen.getByText(/AGENT_RUN_IN_PROGRESS/)).toBeInTheDocument();
   });
 
   it('loads problem list and detail in problem library view', async () => {
@@ -254,9 +273,9 @@ function mockProblemFetch(total = 1) {
   });
 }
 
-function jsonResponse(body: unknown): Response {
+function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
-    status: 200,
+    status,
     headers: { 'Content-Type': 'application/json' },
   });
 }

@@ -144,6 +144,12 @@ h2 {
   color: #8a5a00;
 }
 
+.status-pill.blocked {
+  border-color: #e7bd6b;
+  background: #fff7df;
+  color: #805100;
+}
+
 .status-pill.error {
   border-color: #f1a4a4;
   background: #fff0f0;

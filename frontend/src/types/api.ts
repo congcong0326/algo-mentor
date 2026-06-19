@@ -1,6 +1,7 @@
 export interface ApiError {
   code: string;
   message: string;
+  metadata?: Record<string, unknown>;
 }
 
 export interface ApiResponse<T> {
@@ -73,6 +74,8 @@ export interface AgentConversationStreamRequest {
   userId?: number;
   message: string;
 }
+
+export const AGENT_RUN_IN_PROGRESS_CODE = 'AGENT_RUN_IN_PROGRESS';
 
 export interface SseStreamEvent {
   eventName: SseEventName;

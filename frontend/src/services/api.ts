@@ -14,6 +14,20 @@ const jsonHeaders = {
   Accept: 'application/json',
 };
 
+export class ApiRequestError extends Error {
+  readonly status: number;
+  readonly code?: string;
+  readonly metadata?: Record<string, unknown>;
+
+  constructor(status: number, message: string, code?: string, metadata?: Record<string, unknown>) {
+    super(message);
+    this.name = 'ApiRequestError';
+    this.status = status;
+    this.code = code;
+    this.metadata = metadata;
+  }
+}
+
 export async function getHealth(): Promise<ApiResponse<HealthStatus>> {
   const response = await fetch('/api/health', {
     headers: jsonHeaders,
@@ -84,7 +98,7 @@ export async function streamAgentConversation(
   const response = await fetch('/api/agent/conversations/stream', {
     method: 'POST',
     headers: {
-      Accept: 'text/event-stream',
+      Accept: 'text/event-stream, application/json',
       'Content-Type': 'application/json',
       'Idempotency-Key': options.idempotencyKey,
     },
@@ -93,7 +107,7 @@ export async function streamAgentConversation(
   });
 
   if (!response.ok) {
-    throw new Error(`Conversation stream failed with status ${response.status}`);
+    throw await toApiRequestError(response, 'Conversation stream failed');
   }
   if (!response.body) {
     throw new Error('Conversation stream response does not include a readable body');
@@ -101,6 +115,20 @@ export async function streamAgentConversation(
 
   options.onOpen?.();
   await readEventStream(response.body, options.onEvent);
+}
+
+async function toApiRequestError(response: Response, fallbackMessage: string): Promise<ApiRequestError> {
+  try {
+    const body = await response.json() as ApiResponse<unknown>;
+    return new ApiRequestError(
+      response.status,
+      body.error?.message ?? `${fallbackMessage} with status ${response.status}`,
+      body.error?.code,
+      body.error?.metadata,
+    );
+  } catch {
+    return new ApiRequestError(response.status, `${fallbackMessage} with status ${response.status}`);
+  }
 }
 
 function compactRequest(request: AgentConversationStreamRequest): AgentConversationStreamRequest {

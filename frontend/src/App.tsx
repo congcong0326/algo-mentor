@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import ProblemLibrary from './ProblemLibrary';
-import { streamAgentConversation } from './services/api';
+import { ApiRequestError, streamAgentConversation } from './services/api';
 import type {
   AgentConversationStreamRequest,
   ContentDeltaData,
@@ -20,9 +20,10 @@ import type {
   ToolCallDeltaData,
   UsageData,
 } from './types/api';
+import { AGENT_RUN_IN_PROGRESS_CODE } from './types/api';
 import { generateClientId } from './utils/id';
 
-type ConnectionState = 'idle' | 'connecting' | 'open' | 'stopped' | 'error' | 'done';
+type ConnectionState = 'idle' | 'connecting' | 'open' | 'blocked' | 'stopped' | 'error' | 'done';
 type AppView = 'debug' | 'problems';
 
 interface StreamLogEntry {
@@ -112,6 +113,7 @@ function statusLabel(state: ConnectionState): string {
     idle: 'idle',
     connecting: 'connecting',
     open: 'open',
+    blocked: 'blocked',
     stopped: 'stopped',
     error: 'error',
     done: 'done',
@@ -277,10 +279,18 @@ export default function App() {
         return;
       }
       abortControllerRef.current = null;
+      const message = error instanceof Error ? error.message : 'Conversation stream failed.';
       addLog('connection_error', {
-        message: error instanceof Error ? error.message : 'Conversation stream failed.',
+        message,
+        ...(error instanceof ApiRequestError ? {
+          status: error.status,
+          code: error.code,
+          metadata: error.metadata,
+        } : {}),
       });
-      setConnectionState('error');
+      setConnectionState(error instanceof ApiRequestError && error.code === AGENT_RUN_IN_PROGRESS_CODE
+        ? 'blocked'
+        : 'error');
     }
   }
 
@@ -309,6 +319,7 @@ export default function App() {
   }
 
   const isStreaming = connectionState === 'connecting' || connectionState === 'open';
+  const sendDisabled = isStreaming || connectionState === 'blocked';
   const requestBody = buildRequestBody();
 
   return (
@@ -393,7 +404,7 @@ export default function App() {
           </label>
         </div>
         <div className="button-row">
-          <button className="primary-button" disabled={isStreaming || !message.trim()} onClick={startStream} type="button">
+          <button className="primary-button" disabled={sendDisabled || !message.trim()} onClick={startStream} type="button">
             <Play aria-hidden="true" />
             <span>Start</span>
           </button>

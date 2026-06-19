@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -17,6 +18,10 @@ import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockConstants;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockRequest;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockToken;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest;
 import org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun;
@@ -25,6 +30,7 @@ import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -50,6 +56,25 @@ class AgentConversationControllerTest {
   @Autowired
   private StubAgentLoopRunner agentLoopRunner;
 
+  @Autowired
+  private AgentRunLockManager lockManager;
+
+  @AfterEach
+  void releaseCapturedLock() {
+    try {
+      if (agentLoopRunner.lastRequest == null) {
+        return;
+      }
+      Object token = agentLoopRunner.lastRequest.metadata().get(AgentRunLockConstants.LOCK_TOKEN_METADATA_KEY);
+      if (token instanceof AgentRunLockToken lockToken) {
+        lockManager.release(lockToken);
+      }
+    } finally {
+      agentLoopRunner.lastRequest = null;
+      conversationRepository.lastRequest = null;
+    }
+  }
+
   @Test
   void streamConversationRouteIsRegisteredWhenRepositoryBeanExists() throws Exception {
     MvcResult result = mockMvc.perform(post("/api/agent/conversations/stream")
@@ -70,6 +95,34 @@ class AgentConversationControllerTest {
     org.assertj.core.api.Assertions.assertThat(conversationRepository.lastRequest.userMessage())
         .isEqualTo("Explain two pointers.");
     org.assertj.core.api.Assertions.assertThat(agentLoopRunner.lastRequest.runId()).isEqualTo("run-1");
+    org.assertj.core.api.Assertions.assertThat(agentLoopRunner.lastRequest.metadata())
+        .containsKey(AgentRunLockConstants.LOCK_TOKEN_METADATA_KEY);
+  }
+
+  @Test
+  void streamConversationReturnsConflictWhenTaskLockIsHeld() throws Exception {
+    AgentRunLockToken token = lockManager.tryAcquire(new AgentRunLockRequest(
+        AgentRunLockConstants.TASK_LOCK_KEY_PREFIX + 1,
+        "test-owner",
+        null,
+        Map.of("taskId", 1L))).token();
+
+    try {
+      mockMvc.perform(post("/api/agent/conversations/stream")
+              .contentType(MediaType.APPLICATION_JSON)
+              .accept(MediaType.TEXT_EVENT_STREAM)
+              .header("Idempotency-Key", "idem-2")
+              .content("{\"taskId\":1,\"message\":\"Explain sliding window.\"}"))
+          .andExpect(status().isConflict())
+          .andExpect(jsonPath("$.success").value(false))
+          .andExpect(jsonPath("$.error.code").value("AGENT_RUN_IN_PROGRESS"))
+          .andExpect(jsonPath("$.error.metadata.taskId").value(1));
+
+      org.assertj.core.api.Assertions.assertThat(agentLoopRunner.lastRequest).isNull();
+      org.assertj.core.api.Assertions.assertThat(conversationRepository.lastRequest).isNull();
+    } finally {
+      lockManager.release(token);
+    }
   }
 
   @TestConfiguration(proxyBeanMethods = false)

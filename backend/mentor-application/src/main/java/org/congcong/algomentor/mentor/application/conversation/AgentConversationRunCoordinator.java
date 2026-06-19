@@ -1,0 +1,127 @@
+package org.congcong.algomentor.mentor.application.conversation;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Flow;
+import org.congcong.algomentor.agent.core.AgentLoopRunner;
+import org.congcong.algomentor.agent.core.AgentRequest;
+import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockAcquireResult;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockConstants;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockOwnerProvider;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockRequest;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockToken;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+
+/**
+ * Agent 会话流式 run 的应用层编排入口。
+ *
+ * <p>这里负责把会话 prepareRun、task 级互斥锁和通用 {@link AgentLoopRunner} 串起来。锁获取需要依赖
+ * mentor 会话的 taskId/runId 语义，因此放在 application 边界；异步 run 的正常释放则通过
+ * {@code AgentRunLockReleaseObserver} 在 Agent loop 终态回调中完成。</p>
+ */
+public class AgentConversationRunCoordinator {
+
+  private final AgentConversationService conversationService;
+  private final AgentLoopRunner agentLoopRunner;
+  private final AgentRunLockManager lockManager;
+  private final AgentRunLockOwnerProvider lockOwnerProvider;
+
+  public AgentConversationRunCoordinator(
+      AgentConversationService conversationService,
+      AgentLoopRunner agentLoopRunner,
+      AgentRunLockManager lockManager,
+      AgentRunLockOwnerProvider lockOwnerProvider
+  ) {
+    if (conversationService == null) {
+      throw new IllegalArgumentException("Agent conversation service must not be null");
+    }
+    if (agentLoopRunner == null) {
+      throw new IllegalArgumentException("Agent loop runner must not be null");
+    }
+    if (lockManager == null) {
+      throw new IllegalArgumentException("Agent run lock manager must not be null");
+    }
+    if (lockOwnerProvider == null) {
+      throw new IllegalArgumentException("Agent run lock owner provider must not be null");
+    }
+    this.conversationService = conversationService;
+    this.agentLoopRunner = agentLoopRunner;
+    this.lockManager = lockManager;
+    this.lockOwnerProvider = lockOwnerProvider;
+  }
+
+  public Flow.Publisher<AgentStreamEvent> stream(AgentConversationCommand command) {
+    if (command == null) {
+      throw new IllegalArgumentException("Agent conversation command must not be null");
+    }
+    AgentRunLockToken lockToken = null;
+    if (command.taskId() != null) {
+      lockToken = acquireLock(command.taskId(), preRunLockMetadata(command.taskId(), command.idempotencyKey()));
+    }
+    try {
+      AgentConversationRun run = conversationService.prepareRun(command);
+      if (lockToken == null) {
+        lockToken = acquireLock(run.taskId(), lockMetadata(run, command.idempotencyKey()));
+      }
+      return new LockedAgentStreamPublisher(
+          agentLoopRunner.stream(withLockToken(run.agentRequest(), lockToken)),
+          lockManager,
+          lockToken);
+    } catch (RuntimeException ex) {
+      lockManager.release(lockToken);
+      throw ex;
+    }
+  }
+
+  private AgentRunLockToken acquireLock(long taskId, Map<String, Object> metadata) {
+    AgentRunLockAcquireResult lockResult = lockManager.tryAcquire(new AgentRunLockRequest(
+        AgentRunLockConstants.TASK_LOCK_KEY_PREFIX + taskId,
+        lockOwnerProvider.ownerId(),
+        null,
+        metadata));
+    if (!lockResult.acquired()) {
+      throw new AgentConversationRunInProgressException(taskId);
+    }
+    return lockResult.token();
+  }
+
+  private Map<String, Object> preRunLockMetadata(long taskId, String idempotencyKey) {
+    return Map.of(
+        AgentRuntimeMetadataKeys.TASK_ID, taskId,
+        AgentRunLockConstants.IDEMPOTENCY_KEY_METADATA_KEY, idempotencyKey);
+  }
+
+  private Map<String, Object> lockMetadata(AgentConversationRun run, String idempotencyKey) {
+    return Map.of(
+        AgentRuntimeMetadataKeys.TASK_ID, run.taskId(),
+        AgentRuntimeMetadataKeys.RUN_DB_ID, run.runId(),
+        AgentRunLockConstants.RUN_UUID_METADATA_KEY, run.runUuid(),
+        AgentRunLockConstants.IDEMPOTENCY_KEY_METADATA_KEY, idempotencyKey);
+  }
+
+  private AgentRequest withLockToken(AgentRequest request, Object lockToken) {
+    Map<String, Object> metadata = new HashMap<>(request.metadata());
+    metadata.put(AgentRunLockConstants.LOCK_TOKEN_METADATA_KEY, lockToken);
+    return new AgentRequest(request.runId(), request.requestId(), request.messages(), metadata);
+  }
+
+  private record LockedAgentStreamPublisher(
+      Flow.Publisher<AgentStreamEvent> delegate,
+      AgentRunLockManager lockManager,
+      AgentRunLockToken lockToken
+  ) implements Flow.Publisher<AgentStreamEvent> {
+
+    @Override
+    public void subscribe(Flow.Subscriber<? super AgentStreamEvent> subscriber) {
+      try {
+        delegate.subscribe(subscriber);
+      } catch (RuntimeException ex) {
+        // 只处理启动/订阅阶段的同步失败；异步 run 结束由 AgentLoopObserver 释放锁。
+        lockManager.release(lockToken);
+        throw ex;
+      }
+    }
+  }
+}
