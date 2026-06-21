@@ -138,9 +138,11 @@ public class AgentLoopRunner {
     Objects.requireNonNull(request, "request must not be null");
     return subscriber -> {
       SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
-      publisher.subscribe(subscriber);
-      Thread worker = new Thread(() -> runLoop(request, publisher), "agent-loop-stream");
+      AgentCancellationToken cancellationToken = new AgentCancellationToken();
+      publisher.subscribe(new CancellableForwardingSubscriber(subscriber, cancellationToken));
+      Thread worker = new Thread(() -> runLoop(request, publisher, cancellationToken), "agent-loop-stream");
       worker.setDaemon(true);
+      cancellationToken.worker(worker);
       worker.start();
     };
   }
@@ -169,20 +171,27 @@ public class AgentLoopRunner {
    *   <li>无论成功、业务错误还是未知运行时异常，方法都会提交终态事件后关闭 publisher，保证 SSE 客户端不会悬挂等待。</li>
    * </ul>
    */
-  private void runLoop(AgentRequest request, SubmissionPublisher<AgentStreamEvent> publisher) {
+  private void runLoop(
+      AgentRequest request,
+      SubmissionPublisher<AgentStreamEvent> publisher,
+      AgentCancellationToken cancellationToken
+  ) {
     // runId 由上游传入时用于恢复/串联已有会话，否则本地生成，保证每个流式事件都有稳定关联键。
     AgentLoopContext context = new AgentLoopContext(
         request.runId() == null ? UUID.randomUUID().toString() : request.runId(),
         request,
         maxSteps,
-        request.metadata());
+        request.metadata(),
+        cancellationToken);
     AgentLoopLifecycle lifecycle = new AgentLoopLifecycle(publisher, observers, interceptors);
     // messages 是本次 run 内的可变工作上下文：初始用户/系统消息、assistant tool_calls、tool result 都按顺序追加。
     List<LlmMessage> messages = new ArrayList<>(AgentLlmRequestFactory.initialMessages(request));
     lifecycle.runStarted(context);
     try {
       for (int stepIndex = 1; stepIndex <= maxSteps; stepIndex++) {
+        throwIfCancelled(context);
         AgentStepResult stepResult = runStep(context, stepIndex, messages, lifecycle);
+        throwIfCancelled(context);
         if (!stepResult.requiresTools()) {
           // 无工具调用表示模型已经给出最终输出；正文 token 已在 runStep 中作为流式事件透传给客户端。
           lifecycle.runEnded(context, new AgentRunResult(
@@ -194,6 +203,7 @@ public class AgentLoopRunner {
         }
         List<LlmToolCall> effectiveToolCalls = new ArrayList<>();
         for (LlmToolCall toolCall : stepResult.toolCalls()) {
+          throwIfCancelled(context);
           effectiveToolCalls.add(lifecycle.beforeToolCall(context, stepIndex, toolCall));
         }
         // 必须记录改写后的 assistant tool_calls。LLM tool-calling 协议要求后续 tool message 能通过
@@ -207,6 +217,7 @@ public class AgentLoopRunner {
         //  对应到上面的案例，这里其实是向message里添加 我需要调用工具 fake_lookup，参数是 {...}
         messages.add(LlmMessage.assistantToolCalls(effectiveToolCalls));
         for (LlmToolCall toolCall : effectiveToolCalls) {
+          throwIfCancelled(context);
           AgentTool tool = toolRegistry.find(toolCall.name())
               .orElseThrow(() -> new AgentException(
                   AgentErrorCode.UNKNOWN_TOOL,
@@ -218,6 +229,7 @@ public class AgentLoopRunner {
                   null));
           lifecycle.toolStarted(context, stepIndex, toolCall);
           var result = executeTool(context, stepIndex, toolCall, tool, lifecycle);
+          throwIfCancelled(context);
           result = lifecycle.afterToolCall(context, stepIndex, toolCall, result);
           lifecycle.toolEnded(context, stepIndex, toolCall, result);
           ToolResultCompaction compaction = toolResultCompactor.compactForModel(context, stepIndex, toolCall, result);
@@ -243,6 +255,18 @@ public class AgentLoopRunner {
     }
   }
 
+  private void throwIfCancelled(AgentLoopContext context) {
+    if (context.cancelled() || Thread.currentThread().isInterrupted()) {
+      Thread.currentThread().interrupt();
+      throw new AgentException(
+          AgentErrorCode.CANCELLED,
+          "Agent run was cancelled",
+          false,
+          Map.of(AgentRuntimeMetadataKeys.CANCELLATION_REASON, "stream_cancelled"),
+          null);
+    }
+  }
+
   /**
    * 执行单个工具并把异常统一映射为 Agent 语义。
    *
@@ -259,7 +283,7 @@ public class AgentLoopRunner {
     try {
       return tool.execute(
           toolCall.arguments(),
-          new AgentExecutionContext(context.runId(), stepIndex, context.request().metadata(), false));
+          new AgentExecutionContext(context.runId(), stepIndex, context.request().metadata(), context.cancelled()));
     } catch (AgentException ex) {
       AgentException error = enrichToolError(toolCall, ex);
       lifecycle.toolErrored(context, stepIndex, toolCall, error);
@@ -356,6 +380,7 @@ public class AgentLoopRunner {
     } catch (RuntimeException ex) {
       throw toAgentException(ex);
     }
+    throwIfCancelled(context);
     if (collector.error.get() != null) {
       throw toAgentException(collector.error.get());
     }
@@ -423,6 +448,52 @@ public class AgentLoopRunner {
    * 因此 collector 在 {@link #onNext(LlmStreamEvent)} 中同步转发生命周期事件，并只保留驱动下一步所需的最小状态：
    * 工具调用列表、结束原因和错误引用。</p>
    */
+  private static final class CancellableForwardingSubscriber implements Flow.Subscriber<AgentStreamEvent> {
+    private final Flow.Subscriber<? super AgentStreamEvent> delegate;
+    private final AgentCancellationToken cancellationToken;
+
+    private CancellableForwardingSubscriber(
+        Flow.Subscriber<? super AgentStreamEvent> delegate,
+        AgentCancellationToken cancellationToken
+    ) {
+      this.delegate = delegate;
+      this.cancellationToken = cancellationToken;
+    }
+
+    @Override
+    public void onSubscribe(Flow.Subscription subscription) {
+      delegate.onSubscribe(new Flow.Subscription() {
+        @Override
+        public void request(long n) {
+          subscription.request(n);
+        }
+
+        @Override
+        public void cancel() {
+          cancellationToken.cancel();
+          subscription.cancel();
+        }
+      });
+    }
+
+    @Override
+    public void onNext(AgentStreamEvent item) {
+      if (!cancellationToken.isCancelled()) {
+        delegate.onNext(item);
+      }
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+      delegate.onError(throwable);
+    }
+
+    @Override
+    public void onComplete() {
+      delegate.onComplete();
+    }
+  }
+
   private static final class StepCollector implements Flow.Subscriber<LlmStreamEvent> {
     private final AgentLoopContext context;
     private final int stepIndex;
@@ -430,6 +501,7 @@ public class AgentLoopRunner {
     private final CountDownLatch done = new CountDownLatch(1);
     private final List<LlmToolCall> toolCalls = new ArrayList<>();
     private final AtomicReference<Throwable> error = new AtomicReference<>();
+    private Flow.Subscription subscription;
     private LlmFinishReason finishReason = LlmFinishReason.UNKNOWN;
 
     private StepCollector(AgentLoopContext context, int stepIndex, AgentLoopLifecycle lifecycle) {
@@ -441,11 +513,16 @@ public class AgentLoopRunner {
     @Override
     public void onSubscribe(Flow.Subscription subscription) {
       // LLM 输出通常由 provider 控制节奏，这里一次性请求全部事件，避免本地 backpressure 让 SSE token 转发变得复杂。
+      this.subscription = subscription;
+      context.cancellationToken().llmSubscription(subscription);
       subscription.request(Long.MAX_VALUE);
     }
 
     @Override
     public void onNext(LlmStreamEvent item) {
+      if (context.cancelled()) {
+        return;
+      }
       lifecycle.llmEvent(context, stepIndex, item);
       if (item instanceof LlmStreamEvent.ToolCallEnd toolCallEnd) {
         toolCalls.add(toolCallEnd.toolCall());
@@ -460,12 +537,14 @@ public class AgentLoopRunner {
 
     @Override
     public void onError(Throwable throwable) {
+      context.cancellationToken().clearLlmSubscription(subscription);
       error.compareAndSet(null, throwable);
       done.countDown();
     }
 
     @Override
     public void onComplete() {
+      context.cancellationToken().clearLlmSubscription(subscription);
       done.countDown();
     }
 
@@ -481,7 +560,12 @@ public class AgentLoopRunner {
         done.await();
       } catch (InterruptedException ex) {
         Thread.currentThread().interrupt();
-        throw new AgentException(AgentErrorCode.CANCELLED, "Agent loop was interrupted", false, Map.of(), ex);
+        throw new AgentException(
+            AgentErrorCode.CANCELLED,
+            "Agent run was cancelled",
+            false,
+            Map.of(AgentRuntimeMetadataKeys.CANCELLATION_REASON, "stream_cancelled"),
+            ex);
       }
     }
 

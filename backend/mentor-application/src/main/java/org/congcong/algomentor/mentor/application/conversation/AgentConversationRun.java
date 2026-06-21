@@ -1,6 +1,7 @@
 package org.congcong.algomentor.mentor.application.conversation;
 
 import org.congcong.algomentor.agent.core.AgentRequest;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 
 public record AgentConversationRun(
     long taskId,
@@ -20,5 +21,9 @@ public record AgentConversationRun(
     if (agentRequest == null) {
       throw new IllegalArgumentException("Conversation agent request must not be null");
     }
+  }
+
+  public boolean idempotentReplay() {
+    return Boolean.TRUE.equals(agentRequest.metadata().get(AgentRuntimeMetadataKeys.IDEMPOTENT_REPLAY));
   }
 }

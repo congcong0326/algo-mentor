@@ -17,7 +17,13 @@ public sealed interface AgentStreamEvent
 
   String name();
 
-  record AgentRunStart(String runId, String topic, int maxSteps) implements AgentStreamEvent {
+  record AgentRunStart(String runId, String topic, int maxSteps, Map<String, Object> metadata)
+      implements AgentStreamEvent {
+
+    public AgentRunStart(String runId, String topic, int maxSteps) {
+      this(runId, topic, maxSteps, Map.of());
+    }
+
     public AgentRunStart {
       if (runId == null || runId.isBlank()) {
         throw new IllegalArgumentException("Agent run id must not be blank");
@@ -28,6 +34,7 @@ public sealed interface AgentStreamEvent
       if (maxSteps < 1) {
         throw new IllegalArgumentException("Agent max steps must be positive");
       }
+      metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
     }
 
     @Override

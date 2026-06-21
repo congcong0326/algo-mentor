@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
@@ -20,6 +21,9 @@ final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
   private final LlmProviderId providerId;
   private final LlmModelId modelId;
   private final Map<String, StringBuilder> toolArgumentDeltas = new HashMap<>();
+  private final AtomicBoolean started = new AtomicBoolean(false);
+  private final AtomicBoolean cancelled = new AtomicBoolean(false);
+  private volatile Thread worker;
 
   OpenAiStreamPublisher(
       StreamResponse<ResponseStreamEvent> stream,
@@ -35,22 +39,42 @@ final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
 
   @Override
   public void subscribe(Flow.Subscriber<? super LlmStreamEvent> subscriber) {
-    super.subscribe(subscriber);
+    super.subscribe(new CloseOnCancelSubscriber(subscriber));
     start();
   }
 
   private void start() {
+    if (!started.compareAndSet(false, true)) {
+      return;
+    }
     Thread worker = new Thread(() -> {
       try (stream) {
-        stream.stream().forEach(this::publishEvent);
+        stream.stream()
+            .takeWhile(ignored -> !cancelled.get())
+            .forEach(this::publishEvent);
         close();
       } catch (Throwable error) {
+        if (cancelled.get()) {
+          close();
+          return;
+        }
         submit(new LlmStreamEvent.Error(OpenAiLlmExceptionMapper.map(error, providerId, modelId)));
         closeExceptionally(error);
       }
     }, "openai-llm-stream");
+    this.worker = worker;
     worker.setDaemon(true);
     worker.start();
+  }
+
+  private void cancelStream(Flow.Subscription subscription) {
+    cancelled.set(true);
+    subscription.cancel();
+    stream.close();
+    Thread thread = worker;
+    if (thread != null) {
+      thread.interrupt();
+    }
   }
 
   private void publishEvent(ResponseStreamEvent event) {
@@ -117,5 +141,45 @@ final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
       return call;
     }
     return call.toBuilder().arguments(arguments.toString()).build();
+  }
+
+  private final class CloseOnCancelSubscriber implements Flow.Subscriber<LlmStreamEvent> {
+    private final Flow.Subscriber<? super LlmStreamEvent> delegate;
+
+    private CloseOnCancelSubscriber(Flow.Subscriber<? super LlmStreamEvent> delegate) {
+      this.delegate = delegate;
+    }
+
+    @Override
+    public void onSubscribe(Flow.Subscription subscription) {
+      delegate.onSubscribe(new Flow.Subscription() {
+        @Override
+        public void request(long n) {
+          subscription.request(n);
+        }
+
+        @Override
+        public void cancel() {
+          cancelStream(subscription);
+        }
+      });
+    }
+
+    @Override
+    public void onNext(LlmStreamEvent item) {
+      if (!cancelled.get()) {
+        delegate.onNext(item);
+      }
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+      delegate.onError(throwable);
+    }
+
+    @Override
+    public void onComplete() {
+      delegate.onComplete();
+    }
   }
 }

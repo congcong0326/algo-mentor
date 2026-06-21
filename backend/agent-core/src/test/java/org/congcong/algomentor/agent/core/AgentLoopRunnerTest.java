@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
 import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
@@ -589,6 +591,38 @@ class AgentLoopRunnerTest {
     assertThat(error.error().getMessage()).isEqualTo("blocked by interceptor");
   }
 
+  @Test
+  void downstreamCancelCancelsCurrentLlmStreamAndMarksRunCancelled() {
+    BlockingGateway gateway = new BlockingGateway();
+    List<AgentErrorCode> observedErrors = new ArrayList<>();
+    CountDownLatch errorObserved = new CountDownLatch(1);
+    AgentLoopObserver observer = new AgentLoopObserver() {
+      @Override
+      public void onError(AgentLoopContext context, AgentException error) {
+        observedErrors.add(error.code());
+        errorObserved.countDown();
+      }
+    };
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        LlmToolChoice.auto(),
+        4,
+        List.of(observer),
+        List.of());
+    CancellingSubscriber subscriber = new CancellingSubscriber();
+
+    runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))).subscribe(subscriber);
+
+    subscriber.awaitStepStart();
+    subscriber.subscription.cancel();
+    await(errorObserved);
+
+    assertThat(gateway.cancelled).isTrue();
+    assertThat(observedErrors).containsExactly(AgentErrorCode.CANCELLED);
+  }
+
   private List<AgentStreamEvent> collect(Flow.Publisher<AgentStreamEvent> publisher) {
     CollectingSubscriber subscriber = new CollectingSubscriber();
     publisher.subscribe(subscriber);
@@ -599,6 +633,15 @@ class AgentLoopRunnerTest {
 
   private static LlmModelSelector testModelSelector() {
     return new LlmModelSelector(null, LlmModelId.of("gpt-test"), Set.of(), null);
+  }
+
+  private void await(CountDownLatch latch) {
+    try {
+      assertThat(latch.await(5, TimeUnit.SECONDS)).isTrue();
+    } catch (InterruptedException ex) {
+      Thread.currentThread().interrupt();
+      throw new AssertionError(ex);
+    }
   }
 
   private static final class CollectingSubscriber implements Flow.Subscriber<AgentStreamEvent> {
@@ -637,6 +680,43 @@ class AgentLoopRunnerTest {
     }
   }
 
+  private static final class CancellingSubscriber implements Flow.Subscriber<AgentStreamEvent> {
+    private final List<AgentStreamEvent> events = new ArrayList<>();
+    private final CountDownLatch stepStarted = new CountDownLatch(1);
+    private Flow.Subscription subscription;
+
+    @Override
+    public void onSubscribe(Flow.Subscription subscription) {
+      this.subscription = subscription;
+      subscription.request(Long.MAX_VALUE);
+    }
+
+    @Override
+    public void onNext(AgentStreamEvent item) {
+      events.add(item);
+      if (item instanceof AgentStreamEvent.AgentStepStart) {
+        stepStarted.countDown();
+      }
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+    }
+
+    @Override
+    public void onComplete() {
+    }
+
+    private void awaitStepStart() {
+      try {
+        assertThat(stepStarted.await(5, TimeUnit.SECONDS)).isTrue();
+      } catch (InterruptedException ex) {
+        Thread.currentThread().interrupt();
+        throw new AssertionError(ex);
+      }
+    }
+  }
+
   private static final class FakeGateway implements LlmGateway {
     private final List<LlmCompletionRequest> requests = new ArrayList<>();
     private final List<List<LlmStreamEvent>> steps = new ArrayList<>();
@@ -658,6 +738,29 @@ class AgentLoopRunnerTest {
         events.forEach(publisher::submit);
         publisher.close();
       };
+    }
+  }
+
+  private static final class BlockingGateway implements LlmGateway {
+    private final AtomicBoolean cancelled = new AtomicBoolean(false);
+
+    @Override
+    public LlmCompletionResult complete(LlmCompletionRequest request) {
+      throw new UnsupportedOperationException("Agent loop should use stream calls internally");
+    }
+
+    @Override
+    public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
+      return subscriber -> subscriber.onSubscribe(new Flow.Subscription() {
+        @Override
+        public void request(long n) {
+        }
+
+        @Override
+        public void cancel() {
+          cancelled.set(true);
+        }
+      });
     }
   }
 

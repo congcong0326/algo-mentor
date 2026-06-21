@@ -3,6 +3,7 @@ package org.congcong.algomentor.api.service;
 import java.util.Map;
 import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
@@ -16,7 +17,14 @@ public class LlmStreamSseMapper {
 
   public SseEmitter.SseEventBuilder toSseEvent(AgentStreamEvent event) {
     if (event instanceof AgentStreamEvent.AgentRunStart start) {
-      return event(SseEventNames.AGENT_RUN_START, new AgentRunStartData(start.runId(), start.topic(), start.maxSteps()));
+      return event(SseEventNames.AGENT_RUN_START, new AgentRunStartData(
+          start.runId(),
+          start.topic(),
+          start.maxSteps(),
+          longValue(start.metadata(), AgentRuntimeMetadataKeys.TASK_ID),
+          longValue(start.metadata(), AgentRuntimeMetadataKeys.TURN_ID),
+          longValue(start.metadata(), AgentRuntimeMetadataKeys.RUN_DB_ID),
+          start.metadata()));
     }
     if (event instanceof AgentStreamEvent.AgentStepStart start) {
       return event(SseEventNames.AGENT_STEP_START, new AgentStepStartData(start.runId(), start.stepIndex()));
@@ -89,7 +97,29 @@ public class LlmStreamSseMapper {
   private record ContentDeltaData(String content) {
   }
 
-  private record AgentRunStartData(String runId, String topic, int maxSteps) {
+  private Long longValue(Map<String, Object> metadata, String key) {
+    if (metadata == null) {
+      return null;
+    }
+    Object value = metadata.get(key);
+    if (value instanceof Number number) {
+      return number.longValue();
+    }
+    if (value instanceof String text && !text.isBlank()) {
+      return Long.parseLong(text);
+    }
+    return null;
+  }
+
+  private record AgentRunStartData(
+      String runId,
+      String topic,
+      int maxSteps,
+      Long taskId,
+      Long turnId,
+      Long runDbId,
+      Map<String, Object> metadata
+  ) {
   }
 
   private record AgentStepStartData(String runId, int stepIndex) {

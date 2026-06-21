@@ -3,6 +3,7 @@ package org.congcong.algomentor.agent.persistence.postgres.repository;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest;
@@ -58,6 +59,16 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
         request.systemPrompt(),
         null,
         request.metadata());
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Optional<PreparedAgentRun> findRunByIdempotencyKey(String idempotencyKey) {
+    if (idempotencyKey == null || idempotencyKey.isBlank()) {
+      throw new IllegalArgumentException("Agent run idempotency key must not be blank");
+    }
+    Long runId = conversationMapper.findRunIdByIdempotencyKey(idempotencyKey);
+    return runId == null ? Optional.empty() : Optional.of(existingDraft(runId));
   }
 
   @Override

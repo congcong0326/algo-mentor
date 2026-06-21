@@ -63,7 +63,7 @@
 
   <update id="markRunFailed">
     UPDATE agent_run
-    SET status = 'failed',
+    SET status = #{status},
         error = #{error,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
         ended_at = #{endedAt}
     WHERE id = #{runId}

@@ -218,6 +218,30 @@ class OpenAiLlmProviderTest {
     assertThat(client.lastParams.input()).isPresent();
   }
 
+  @Test
+  void cancellingOpenAiStreamClosesSdkStreamResponse() throws Exception {
+    FakeResponsesClient client = new FakeResponsesClient(response("done"), List.of(
+        ResponseStreamEvent.ofCreated(ResponseCreatedEvent.builder()
+            .response(response(""))
+            .sequenceNumber(1)
+            .build()),
+        ResponseStreamEvent.ofOutputTextDelta(ResponseTextDeltaEvent.builder()
+            .contentIndex(0)
+            .delta("hel")
+            .itemId("msg_123")
+            .logprobs(List.of())
+            .outputIndex(0)
+            .sequenceNumber(2)
+            .build())));
+    OpenAiLlmProvider provider = new OpenAiLlmProvider(enabledProperties(), client);
+    CancellingTestSubscriber subscriber = new CancellingTestSubscriber();
+
+    provider.stream(textRequest()).subscribe(subscriber);
+
+    assertThat(subscriber.cancelled.await(2, TimeUnit.SECONDS)).isTrue();
+    assertThat(client.lastStreamResponse.closed).isTrue();
+  }
+
   private static LlmCompletionRequest textRequest() {
     return LlmCompletionRequest.builder()
         .modelSelector(LlmModelSelector.of(OpenAiLlmProvider.PROVIDER_ID, LlmModelId.of("gpt-5.2")))
@@ -295,6 +319,7 @@ class OpenAiLlmProviderTest {
     private final Response response;
     private final List<ResponseStreamEvent> streamEvents;
     private ResponseCreateParams lastParams;
+    private ListStreamResponse lastStreamResponse;
 
     private FakeResponsesClient(Response response) {
       this(response, List.of());
@@ -314,12 +339,14 @@ class OpenAiLlmProviderTest {
     @Override
     public StreamResponse<ResponseStreamEvent> createStreaming(ResponseCreateParams params) {
       this.lastParams = params;
-      return new ListStreamResponse(streamEvents);
+      this.lastStreamResponse = new ListStreamResponse(streamEvents);
+      return lastStreamResponse;
     }
   }
 
   private static final class ListStreamResponse implements StreamResponse<ResponseStreamEvent> {
     private final List<ResponseStreamEvent> events;
+    private volatile boolean closed;
 
     private ListStreamResponse(List<ResponseStreamEvent> events) {
       this.events = events;
@@ -332,6 +359,7 @@ class OpenAiLlmProviderTest {
 
     @Override
     public void close() {
+      closed = true;
     }
   }
 
@@ -360,6 +388,33 @@ class OpenAiLlmProviderTest {
     @Override
     public void onComplete() {
       finished.countDown();
+    }
+  }
+
+  private static final class CancellingTestSubscriber implements java.util.concurrent.Flow.Subscriber<LlmStreamEvent> {
+    private final CountDownLatch cancelled = new CountDownLatch(1);
+    private java.util.concurrent.Flow.Subscription subscription;
+
+    @Override
+    public void onSubscribe(java.util.concurrent.Flow.Subscription subscription) {
+      this.subscription = subscription;
+      subscription.request(Long.MAX_VALUE);
+    }
+
+    @Override
+    public void onNext(LlmStreamEvent item) {
+      subscription.cancel();
+      cancelled.countDown();
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+      cancelled.countDown();
+    }
+
+    @Override
+    public void onComplete() {
+      cancelled.countDown();
     }
   }
 }

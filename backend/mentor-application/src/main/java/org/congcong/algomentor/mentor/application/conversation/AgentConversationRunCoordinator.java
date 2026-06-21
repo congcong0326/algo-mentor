@@ -8,11 +8,13 @@ import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockAcquireResult;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockConstants;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockConflict;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockOwnerProvider;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockRequest;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockToken;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 
 /**
  * Agent 会话流式 run 的应用层编排入口。
@@ -58,10 +60,26 @@ public class AgentConversationRunCoordinator {
     }
     AgentRunLockToken lockToken = null;
     if (command.taskId() != null) {
-      lockToken = acquireLock(command.taskId(), preRunLockMetadata(command.taskId(), command.idempotencyKey()));
+      AgentRunLockAcquireResult lockResult = tryAcquireLock(
+          command.taskId(),
+          preRunLockMetadata(command.taskId(), command.idempotencyKey()));
+      if (lockResult.acquired()) {
+        lockToken = lockResult.token();
+      } else if (sameIdempotencyKey(lockResult.conflict(), command.idempotencyKey())) {
+        AgentConversationRun replay = conversationService
+            .findRunByIdempotencyKey(command.idempotencyKey(), command.userMessage())
+            .orElseThrow(() -> new AgentConversationRunInProgressException(command.taskId()));
+        return replayPublisher(replay);
+      } else {
+        throw new AgentConversationRunInProgressException(command.taskId());
+      }
     }
     try {
       AgentConversationRun run = conversationService.prepareRun(command);
+      if (run.idempotentReplay()) {
+        lockManager.release(lockToken);
+        return replayPublisher(run);
+      }
       if (lockToken == null) {
         lockToken = acquireLock(run.taskId(), lockMetadata(run, command.idempotencyKey()));
       }
@@ -76,15 +94,19 @@ public class AgentConversationRunCoordinator {
   }
 
   private AgentRunLockToken acquireLock(long taskId, Map<String, Object> metadata) {
-    AgentRunLockAcquireResult lockResult = lockManager.tryAcquire(new AgentRunLockRequest(
-        AgentRunLockConstants.TASK_LOCK_KEY_PREFIX + taskId,
-        lockOwnerProvider.ownerId(),
-        null,
-        metadata));
+    AgentRunLockAcquireResult lockResult = tryAcquireLock(taskId, metadata);
     if (!lockResult.acquired()) {
       throw new AgentConversationRunInProgressException(taskId);
     }
     return lockResult.token();
+  }
+
+  private AgentRunLockAcquireResult tryAcquireLock(long taskId, Map<String, Object> metadata) {
+    return lockManager.tryAcquire(new AgentRunLockRequest(
+        AgentRunLockConstants.TASK_LOCK_KEY_PREFIX + taskId,
+        lockOwnerProvider.ownerId(),
+        null,
+        metadata));
   }
 
   private Map<String, Object> preRunLockMetadata(long taskId, String idempotencyKey) {
@@ -105,6 +127,50 @@ public class AgentConversationRunCoordinator {
     Map<String, Object> metadata = new HashMap<>(request.metadata());
     metadata.put(AgentRunLockConstants.LOCK_TOKEN_METADATA_KEY, lockToken);
     return new AgentRequest(request.runId(), request.requestId(), request.messages(), metadata);
+  }
+
+  private boolean sameIdempotencyKey(AgentRunLockConflict conflict, String idempotencyKey) {
+    if (conflict == null || idempotencyKey == null) {
+      return false;
+    }
+    Object lockedKey = conflict.metadata().get(AgentRunLockConstants.IDEMPOTENCY_KEY_METADATA_KEY);
+    return idempotencyKey.equals(lockedKey);
+  }
+
+  private Flow.Publisher<AgentStreamEvent> replayPublisher(AgentConversationRun run) {
+    return subscriber -> subscriber.onSubscribe(new Flow.Subscription() {
+      private boolean completed;
+
+      @Override
+      public void request(long n) {
+        if (completed || n <= 0) {
+          return;
+        }
+        completed = true;
+        subscriber.onNext(new AgentStreamEvent.AgentRunStart(
+            run.runUuid(),
+            run.agentRequest().displayTitle(),
+            1,
+            run.agentRequest().metadata()));
+        subscriber.onNext(new AgentStreamEvent.AgentRunEnd(
+            run.runUuid(),
+            1,
+            LlmFinishReason.UNKNOWN,
+            replayMetadata(run)));
+        subscriber.onComplete();
+      }
+
+      @Override
+      public void cancel() {
+        completed = true;
+      }
+    });
+  }
+
+  private Map<String, Object> replayMetadata(AgentConversationRun run) {
+    Map<String, Object> metadata = new HashMap<>(run.agentRequest().metadata());
+    metadata.put(AgentRuntimeMetadataKeys.IDEMPOTENT_REPLAY, true);
+    return Map.copyOf(metadata);
   }
 
   private record LockedAgentStreamPublisher(

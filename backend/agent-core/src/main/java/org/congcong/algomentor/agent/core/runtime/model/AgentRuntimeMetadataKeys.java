@@ -103,6 +103,11 @@ public final class AgentRuntimeMetadataKeys {
   public static final String IDEMPOTENT_REPLAY = "idempotentReplay";
 
   /**
+   * Agent run 被取消时记录的取消来源。
+   */
+  public static final String CANCELLATION_REASON = "cancellationReason";
+
+  /**
    * 请求 metadata 在 trace 快照中的字段名。
    */
   public static final String REQUEST_METADATA = "requestMetadata";

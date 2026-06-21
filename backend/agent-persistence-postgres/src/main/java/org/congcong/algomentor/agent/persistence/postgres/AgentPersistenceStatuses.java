@@ -21,6 +21,11 @@ public final class AgentPersistenceStatuses {
   public static final String FAILED = "failed";
 
   /**
+   * run 被用户或连接生命周期主动取消。
+   */
+  public static final String CANCELLED = "cancelled";
+
+  /**
    * 活跃消息状态。
    */
   public static final String ACTIVE = "active";

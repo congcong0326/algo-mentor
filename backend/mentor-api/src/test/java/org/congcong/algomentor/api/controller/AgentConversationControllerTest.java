@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
@@ -88,6 +89,10 @@ class AgentConversationControllerTest {
     mockMvc.perform(asyncDispatch(result))
         .andExpect(status().isOk())
         .andExpect(header().string(HttpHeaders.CONTENT_TYPE, containsString(MediaType.TEXT_EVENT_STREAM_VALUE)))
+        .andExpect(content().string(containsString("event:agent_run_start")))
+        .andExpect(content().string(containsString("\"taskId\":1")))
+        .andExpect(content().string(containsString("\"turnId\":2")))
+        .andExpect(content().string(containsString("\"runDbId\":3")))
         .andExpect(content().string(containsString("event:content_delta")))
         .andExpect(content().string(containsString("\"content\":\"ok\"")));
 
@@ -158,6 +163,11 @@ class AgentConversationControllerTest {
     }
 
     @Override
+    public Optional<PreparedAgentRun> findRunByIdempotencyKey(String idempotencyKey) {
+      return Optional.empty();
+    }
+
+    @Override
     public List<AgentMessage> recentMessages(long taskId, int messageLimit) {
       return List.of();
     }
@@ -176,6 +186,11 @@ class AgentConversationControllerTest {
       return subscriber -> {
         SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
         publisher.subscribe(subscriber);
+        publisher.submit(new AgentStreamEvent.AgentRunStart(
+            request.runId(),
+            request.displayTitle(),
+            1,
+            request.metadata()));
         publisher.submit(AgentStreamEvent.fromLlm(new LlmStreamEvent.ContentDelta("ok")));
         publisher.close();
       };

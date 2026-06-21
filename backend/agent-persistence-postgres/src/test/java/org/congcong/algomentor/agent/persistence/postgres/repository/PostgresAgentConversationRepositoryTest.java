@@ -81,6 +81,26 @@ class PostgresAgentConversationRepositoryTest {
   }
 
   @Test
+  void findsExistingRunByIdempotencyKeyWithoutPreparingNewRun() {
+    mapper.existingRunId = 401L;
+    mapper.existingRunRecord = new AgentRunRecord(
+        401L,
+        101L,
+        201L,
+        "run-uuid-401",
+        "idem-1",
+        "system prompt");
+
+    PreparedAgentRun run = repository.findRunByIdempotencyKey("idem-1").orElseThrow();
+
+    assertThat(run.runId()).isEqualTo(401);
+    assertThat(run.metadata()).containsEntry("idempotentReplay", true);
+    assertThat(mapper.calls).containsExactly(
+        "findRunIdByIdempotencyKey:idem-1",
+        "findRunRecord:401");
+  }
+
+  @Test
   void recentMessagesReturnsChronologicalMessages() {
     mapper.recentMessages = List.of(
         new AgentMessage(2L, 101L, 2L, AgentMessage.Role.ASSISTANT, "answer", Instant.parse("2026-01-01T00:01:00Z")),

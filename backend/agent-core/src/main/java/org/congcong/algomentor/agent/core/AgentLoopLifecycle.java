@@ -33,7 +33,8 @@ public final class AgentLoopLifecycle {
     publisher.submit(new AgentStreamEvent.AgentRunStart(
         context.runId(),
         context.request().displayTitle(),
-        context.maxSteps()));
+        context.maxSteps(),
+        context.metadata()));
   }
 
   public void stepStarted(AgentLoopContext context, int stepIndex) {

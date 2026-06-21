@@ -7,6 +7,7 @@ import java.util.Map;
 import org.congcong.algomentor.agent.core.AgentErrorCode;
 import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
@@ -97,14 +98,23 @@ class LlmStreamSseMapperTest {
   @Test
   void mapsAgentLifecycleEventsToNamedJsonEvents() throws Exception {
     SseEmitter.SseEventBuilder runStart = mapper.toSseEvent(
-        new AgentStreamEvent.AgentRunStart("run_1", "two pointers", 4));
+        new AgentStreamEvent.AgentRunStart("run_1", "two pointers", 4, Map.of(
+            AgentRuntimeMetadataKeys.TASK_ID, 11L,
+            AgentRuntimeMetadataKeys.TURN_ID, 21L,
+            AgentRuntimeMetadataKeys.RUN_DB_ID, 31L)));
     SseEmitter.SseEventBuilder stepStart = mapper.toSseEvent(
         new AgentStreamEvent.AgentStepStart("run_1", 1));
     SseEmitter.SseEventBuilder runEnd = mapper.toSseEvent(
         new AgentStreamEvent.AgentRunEnd("run_1", 1, LlmFinishReason.STOP, Map.of()));
 
     assertThat(sseText(runStart)).contains("event:agent_run_start");
-    assertThat(serializedData(runStart)).contains("\"runId\":\"run_1\"", "\"topic\":\"two pointers\"", "\"maxSteps\":4");
+    assertThat(serializedData(runStart)).contains(
+        "\"runId\":\"run_1\"",
+        "\"topic\":\"two pointers\"",
+        "\"maxSteps\":4",
+        "\"taskId\":11",
+        "\"turnId\":21",
+        "\"runDbId\":31");
     assertThat(sseText(stepStart)).contains("event:agent_step_start");
     assertThat(serializedData(stepStart)).contains("\"stepIndex\":1");
     assertThat(sseText(runEnd)).contains("event:agent_run_end");

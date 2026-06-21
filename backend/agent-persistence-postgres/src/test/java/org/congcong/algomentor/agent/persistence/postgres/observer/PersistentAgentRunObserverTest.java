@@ -82,6 +82,7 @@ class PersistentAgentRunObserverTest {
         null));
 
     assertThat(mapper.errorUpdate.runId()).isEqualTo(31L);
+    assertThat(mapper.errorUpdate.status()).isEqualTo("failed");
     assertThat(mapper.errorUpdate.endedAt()).isEqualTo(NOW);
     assertThat(mapper.errorUpdate.error().get("code").asText()).isEqualTo("LLM_STREAM_FAILED");
     assertThat(mapper.errorUpdate.error().get("message").asText()).isEqualTo("stream failed");
@@ -92,6 +93,24 @@ class PersistentAgentRunObserverTest {
         "markRunStarted",
         "markRunFailed",
         "markTurnFailed");
+  }
+
+  @Test
+  void marksRunCancelledWhenAgentRunIsCancelled() {
+    AgentLoopContext context = context();
+
+    observer.onRunStart(context);
+    observer.onError(context, new AgentException(
+        AgentErrorCode.CANCELLED,
+        "Agent run was cancelled",
+        false,
+        Map.of(),
+        null));
+
+    assertThat(mapper.errorUpdate.runId()).isEqualTo(31L);
+    assertThat(mapper.errorUpdate.status()).isEqualTo("cancelled");
+    assertThat(mapper.errorUpdate.error().get("code").asText()).isEqualTo("CANCELLED");
+    assertThat(mapper.turnFailed).isEqualTo(new TurnFailed(21L, NOW));
   }
 
   private AgentLoopContext context() {

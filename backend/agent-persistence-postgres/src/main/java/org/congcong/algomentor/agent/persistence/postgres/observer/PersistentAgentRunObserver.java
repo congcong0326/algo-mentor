@@ -7,11 +7,13 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.congcong.algomentor.agent.core.AgentErrorCode;
 import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentLoopContext;
 import org.congcong.algomentor.agent.core.AgentLoopObserver;
 import org.congcong.algomentor.agent.core.AgentRunResult;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.agent.persistence.postgres.AgentPersistenceStatuses;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunErrorUpdate;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunStartUpdate;
@@ -108,6 +110,9 @@ public class PersistentAgentRunObserver implements AgentLoopObserver {
     Instant now = clock.instant();
     runMapper.markRunFailed(new RunErrorUpdate(
         runDbId,
+        error.code() == AgentErrorCode.CANCELLED
+            ? AgentPersistenceStatuses.CANCELLED
+            : AgentPersistenceStatuses.FAILED,
         jsonNode(Map.of(
             LlmMetadataKeys.CODE, error.code().name(),
             "message", error.getMessage(),

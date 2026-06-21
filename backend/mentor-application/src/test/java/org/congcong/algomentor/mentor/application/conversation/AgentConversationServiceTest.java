@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest;
@@ -69,6 +70,22 @@ class AgentConversationServiceTest {
             LlmMessage.Role.USER);
   }
 
+  @Test
+  void findsExistingRunByIdempotencyKeyWithReplayMetadata() {
+    CapturingRepository repository = new CapturingRepository();
+    AgentConversationService service = new AgentConversationService(repository, new ContextAssembler());
+
+    AgentConversationRun run = service.findRunByIdempotencyKey("idem-1", "请讲滑动窗口").orElseThrow();
+
+    assertThat(run.idempotentReplay()).isTrue();
+    assertThat(run.taskId()).isEqualTo(11);
+    assertThat(run.agentRequest().metadata())
+        .containsEntry(AgentRuntimeMetadataKeys.TASK_ID, 11L)
+        .containsEntry(AgentRuntimeMetadataKeys.TURN_ID, 21L)
+        .containsEntry(AgentRuntimeMetadataKeys.RUN_DB_ID, 31L)
+        .containsEntry(AgentRuntimeMetadataKeys.IDEMPOTENT_REPLAY, true);
+  }
+
   private static final class CapturingRepository implements AgentConversationRepository {
 
     private final List<AgentMessage> messages = new ArrayList<>();
@@ -86,6 +103,19 @@ class AgentConversationServiceTest {
           request.systemPrompt(),
           null,
           Map.of("repositoryMetadata", true));
+    }
+
+    @Override
+    public Optional<PreparedAgentRun> findRunByIdempotencyKey(String idempotencyKey) {
+      return Optional.of(new PreparedAgentRun(
+          11,
+          21,
+          31,
+          "run-uuid-31",
+          idempotencyKey,
+          "system",
+          null,
+          Map.of(AgentRuntimeMetadataKeys.IDEMPOTENT_REPLAY, true)));
     }
 
     @Override

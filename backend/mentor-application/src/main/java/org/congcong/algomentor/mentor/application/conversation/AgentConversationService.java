@@ -2,6 +2,7 @@ package org.congcong.algomentor.mentor.application.conversation;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.runtime.context.AssembledContext;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
@@ -39,11 +40,20 @@ public class AgentConversationService {
 
   public AgentConversationRun prepareRun(AgentConversationCommand command) {
     PreparedAgentRun draft = conversationRepository.createOrReuseRun(toPreparationRequest(command));
+    return toConversationRun(draft, command.userMessage());
+  }
+
+  public Optional<AgentConversationRun> findRunByIdempotencyKey(String idempotencyKey, String userMessage) {
+    return conversationRepository.findRunByIdempotencyKey(idempotencyKey)
+        .map(draft -> toConversationRun(draft, userMessage));
+  }
+
+  private AgentConversationRun toConversationRun(PreparedAgentRun draft, String userMessage) {
     AssembledContext context = contextAssembler.assemble(
         draft.systemPrompt(),
         draft.activeSummary(),
         conversationRepository.recentMessages(draft.taskId(), contextPolicy.recentTurns() * 2),
-        command.userMessage(),
+        userMessage,
         contextPolicy);
 
     Map<String, Object> metadata = new HashMap<>(draft.metadata());
@@ -51,7 +61,8 @@ public class AgentConversationService {
     metadata.put(AgentRuntimeMetadataKeys.TASK_ID, draft.taskId());
     metadata.put(AgentRuntimeMetadataKeys.TURN_ID, draft.turnId());
     metadata.put(AgentRuntimeMetadataKeys.RUN_DB_ID, draft.runId());
-    metadata.put("title", "task-" + draft.taskId());
+    metadata.put(AgentRuntimeMetadataKeys.AGENT_RUN_ID, draft.runUuid());
+    metadata.put(AgentRuntimeMetadataKeys.TITLE, "task-" + draft.taskId());
 
     AgentRequest request = new AgentRequest(
         draft.runUuid(),
