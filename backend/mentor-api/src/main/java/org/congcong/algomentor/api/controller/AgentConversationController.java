@@ -51,14 +51,37 @@ public class AgentConversationController {
         request.userId(),
         request.message(),
         effectiveKey));
+    /*
+     * 本接口使用 Spring MVC 的 SseEmitter 把 Agent 的异步事件流桥接成 HTTP SSE：
+     *
+     * 1. runCoordinator.stream(...) 返回 Flow.Publisher<AgentStreamEvent>。Publisher 是“事件源”，
+     *    它背后会启动 Agent loop，并陆续发布 run start、LLM token、工具调用、run end/error 等事件。
+     * 2. SseEmitter 是 Spring MVC 提供的“长连接响应句柄”。Controller 返回它以后，HTTP 响应不会立刻结束，
+     *    后续可以在其他线程中持续调用 emitter.send(...) 向浏览器写入 text/event-stream 数据。
+     * 3. SseLlmStreamSubscriber 是本项目的桥接订阅者：它订阅 Publisher，收到 AgentStreamEvent 后先通过
+     *    LlmStreamSseMapper 映射成 SSE 的 event/data，再写入 SseEmitter。
+     *
+     * 简化链路：
+     *   前端 POST /stream
+     *     -> Controller 创建 Publisher + SseEmitter + Subscriber
+     *     -> publisher.subscribe(subscriber)
+     *     -> Agent loop 发布事件
+     *     -> subscriber.onNext(...) 调用 emitter.send(...)
+     *     -> 浏览器 EventSource/fetch stream 按 SSE 事件名消费数据
+     */
     SseEmitter emitter = new SseEmitter(30_000L);
     SseLlmStreamSubscriber subscriber = new SseLlmStreamSubscriber(emitter, sseMapper);
 
+    /*
+     * 客户端断开、SSE 超时或写响应失败时，需要取消订阅。
+     * 取消后上游 Publisher/Agent loop 可以停止继续生产 token 和工具事件，避免后台任务无意义运行。
+     */
     emitter.onCompletion(subscriber::cancel);
     emitter.onTimeout(subscriber::cancel);
     emitter.onError(ignored -> subscriber.cancel());
 
     try {
+      // subscribe 是整个流式链路的启动点；之后由 Subscriber 的回调方法接收并转发事件。
       publisher.subscribe(subscriber);
     } catch (RuntimeException ex) {
       subscriber.onError(ex);
