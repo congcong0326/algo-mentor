@@ -13,6 +13,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.congcong.algomentor.auth.model.AuthUserStatus;
+import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanConfirmResult;
@@ -30,6 +32,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatu
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -37,6 +40,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = LearningPlanController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @Import(LearningPlanExceptionHandler.class)
 class LearningPlanControllerTest {
 
@@ -54,7 +58,7 @@ class LearningPlanControllerTest {
 
   @Test
   void createDraftUsesCurrentUserAndReturnsGeneratedDraft() throws Exception {
-    when(currentUserIdProvider.currentUserId()).thenReturn(Optional.of(42L));
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     when(draftService.createDraft(eq(42L), any())).thenReturn(new LearningPlanDraftResult(
         100L,
         LearningPlanDraftStatus.GENERATED,
@@ -92,7 +96,7 @@ class LearningPlanControllerTest {
 
   @Test
   void continueDraftReturnsAssistantQuestion() throws Exception {
-    when(currentUserIdProvider.currentUserId()).thenReturn(Optional.of(42L));
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     when(draftService.continueDraft(42L, 100L, "想练数组")).thenReturn(new LearningPlanDraftResult(
         100L,
         LearningPlanDraftStatus.COLLECTING,
@@ -111,7 +115,7 @@ class LearningPlanControllerTest {
 
   @Test
   void confirmDraftReturnsPlanSummary() throws Exception {
-    when(currentUserIdProvider.currentUserId()).thenReturn(Optional.of(42L));
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     when(draftService.confirmDraft(42L, 100L)).thenReturn(new LearningPlanConfirmResult(
         900L,
         "四周 Java 算法面试冲刺计划",
@@ -126,7 +130,7 @@ class LearningPlanControllerTest {
 
   @Test
   void listAndDetailUseCurrentUser() throws Exception {
-    when(currentUserIdProvider.currentUserId()).thenReturn(Optional.of(42L));
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     LearningPlan plan = new LearningPlan(900L, 42L, LearningPlanStatus.ACTIVE, draftPlan(), Instant.now(), Instant.now());
     when(planService.listPlans(42L)).thenReturn(List.of(plan));
     when(planService.getPlan(42L, 900L)).thenReturn(plan);
@@ -144,11 +148,21 @@ class LearningPlanControllerTest {
 
   @Test
   void unauthenticatedRequestReturns401() throws Exception {
-    when(currentUserIdProvider.currentUserId()).thenReturn(Optional.empty());
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.empty());
 
     mockMvc.perform(get("/api/learning-plans"))
         .andExpect(status().isUnauthorized())
         .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"));
+  }
+
+  private AuthenticatedUserPrincipal currentUser() {
+    return new AuthenticatedUserPrincipal(
+        42L,
+        "learner@example.com",
+        "Learner",
+        null,
+        List.of(),
+        AuthUserStatus.ACTIVE);
   }
 
   private LearningPlanDraftPlan draftPlan() {

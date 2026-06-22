@@ -17,7 +17,7 @@
 - Create: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/learningplan/*`
 - Create: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/learningplan/*`
 - Create: `backend/mentor-api/src/main/resources/mapper/learningplan/LearningPlanMapper.xml`
-- Create: `backend/mentor-api/src/main/resources/db/migration/V8__learning_plan_schema.sql`
+- Create: `backend/mentor-api/src/main/resources/db/migration/V9__learning_plan_schema.sql`
 - Create: `backend/mentor-api/src/test/java/org/congcong/algomentor/api/controller/learningplan/*`
 - Modify: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/ApiContractConstants.java`
 - Modify: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/MentorApiMyBatisConfiguration.java`

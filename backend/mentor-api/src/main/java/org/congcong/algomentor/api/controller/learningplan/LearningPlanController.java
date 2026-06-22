@@ -9,6 +9,7 @@ import org.congcong.algomentor.api.learningplan.model.LearningPlanDraftResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanMessageRequest;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanResponseMapper;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanSummaryResponse;
+import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
@@ -76,7 +77,8 @@ public class LearningPlanController {
   }
 
   private long requireCurrentUserId() {
-    return currentUserIdProvider.currentUserId()
+    return currentUserIdProvider.currentUser()
+        .map(AuthenticatedUserPrincipal::userId)
         .orElseThrow(() -> new LearningPlanUnauthenticatedException("当前请求未登录或无法解析当前用户。"));
   }
 }
