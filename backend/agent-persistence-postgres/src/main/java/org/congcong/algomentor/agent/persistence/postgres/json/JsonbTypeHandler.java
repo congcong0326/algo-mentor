@@ -19,6 +19,10 @@ public class JsonbTypeHandler extends BaseTypeHandler<JsonNode> {
 
   private final ObjectMapper objectMapper;
 
+  public JsonbTypeHandler() {
+    this(new ObjectMapper());
+  }
+
   public JsonbTypeHandler(ObjectMapper objectMapper) {
     this.objectMapper = objectMapper;
   }

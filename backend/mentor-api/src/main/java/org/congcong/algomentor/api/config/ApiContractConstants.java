@@ -36,6 +36,26 @@ public final class ApiContractConstants {
   public static final String PROBLEMS_BASE_PATH = "/api/problems";
 
   /**
+   * 学习计划接口根路径。
+   */
+  public static final String LEARNING_PLANS_BASE_PATH = "/api/learning-plans";
+
+  /**
+   * 学习计划草案集合路径。
+   */
+  public static final String LEARNING_PLAN_DRAFTS_PATH = "/drafts";
+
+  /**
+   * 学习计划草案消息路径。
+   */
+  public static final String LEARNING_PLAN_DRAFT_MESSAGES_PATH = "/{draftId}/messages";
+
+  /**
+   * 学习计划草案确认路径。
+   */
+  public static final String LEARNING_PLAN_DRAFT_CONFIRM_PATH = "/{draftId}/confirm";
+
+  /**
    * 主题讲解请求参数名。
    */
   public static final String TOPIC_PARAM = "topic";

@@ -1,7 +1,8 @@
 package org.congcong.algomentor.api.problem.service;
 
 import java.nio.file.Path;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -10,10 +11,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 @ConditionalOnProperty(prefix = "algo-mentor.problem.seed", name = "enabled", havingValue = "true")
 public class ProblemSeedRunner implements ApplicationRunner {
+
+  private static final Logger log = LoggerFactory.getLogger(ProblemSeedRunner.class);
 
   private final ProblemSeedImporter importer;
   private final ConfigurableApplicationContext applicationContext;

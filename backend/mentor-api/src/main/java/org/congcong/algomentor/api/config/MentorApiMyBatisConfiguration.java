@@ -3,11 +3,15 @@ package org.congcong.algomentor.api.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.sql.DataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
+import org.congcong.algomentor.api.learningplan.repository.MyBatisLearningPlanRepository;
 import org.congcong.algomentor.api.problem.mapper.ProblemMapper;
 import org.congcong.algomentor.api.problem.repository.MyBatisProblemRepository;
 import org.congcong.algomentor.api.problem.repository.ProblemRepository;
 import org.congcong.algomentor.agent.persistence.postgres.json.AgentMessageRoleTypeHandler;
 import org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -52,8 +56,22 @@ public class MentorApiMyBatisConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanMapper learningPlanMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(LearningPlanMapper.class);
+  }
+
+  @Bean
   @ConditionalOnMissingBean(ProblemRepository.class)
   public ProblemRepository problemRepository(ProblemMapper problemMapper, DataSource dataSource) {
     return new MyBatisProblemRepository(problemMapper, dataSource);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean({LearningPlanDraftRepository.class, LearningPlanRepository.class})
+  public MyBatisLearningPlanRepository learningPlanRepository(
+      LearningPlanMapper learningPlanMapper,
+      ObjectMapper objectMapper) {
+    return new MyBatisLearningPlanRepository(learningPlanMapper, objectMapper);
   }
 }

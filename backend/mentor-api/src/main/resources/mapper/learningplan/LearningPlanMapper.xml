@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper">
+
+  <resultMap id="LearningPlanDraftRowMap"
+      type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRow">
+    <constructor>
+      <arg column="id" javaType="java.lang.Long"/>
+      <arg column="user_id" javaType="java.lang.Long"/>
+      <arg column="status" javaType="string"/>
+      <arg column="command_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="messages_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="missing_fields_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="assistant_message" javaType="string"/>
+      <arg column="draft_plan_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="confirmed_plan_id" javaType="java.lang.Long"/>
+      <arg column="expires_at" javaType="java.time.Instant"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <resultMap id="LearningPlanRowMap"
+      type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanRow">
+    <constructor>
+      <arg column="id" javaType="java.lang.Long"/>
+      <arg column="user_id" javaType="java.lang.Long"/>
+      <arg column="status" javaType="string"/>
+      <arg column="title" javaType="string"/>
+      <arg column="plan_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <insert id="insertDraft" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO learning_plan_draft (
+      user_id,
+      status,
+      command_json,
+      messages_json,
+      missing_fields_json,
+      assistant_message,
+      draft_plan_json,
+      confirmed_plan_id,
+      expires_at,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{userId},
+      #{status},
+      #{commandJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{messagesJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{missingFieldsJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{assistantMessage},
+      #{draftPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{confirmedPlanId},
+      #{expiresAt},
+      #{createdAt},
+      #{updatedAt}
+    )
+  </insert>
+
+  <update id="updateDraft">
+    UPDATE learning_plan_draft
+    SET status = #{status},
+        command_json = #{commandJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        messages_json = #{messagesJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        missing_fields_json = #{missingFieldsJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        assistant_message = #{assistantMessage},
+        draft_plan_json = #{draftPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        confirmed_plan_id = #{confirmedPlanId},
+        expires_at = #{expiresAt},
+        updated_at = #{updatedAt}
+    WHERE id = #{id}
+      AND user_id = #{userId}
+  </update>
+
+  <select id="findDraftByIdForUser" resultMap="LearningPlanDraftRowMap">
+    SELECT
+      id,
+      user_id,
+      status,
+      command_json,
+      messages_json,
+      missing_fields_json,
+      assistant_message,
+      draft_plan_json,
+      confirmed_plan_id,
+      expires_at,
+      created_at,
+      updated_at
+    FROM learning_plan_draft
+    WHERE id = #{id}
+      AND user_id = #{userId}
+  </select>
+
+  <insert id="insertPlan" useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO learning_plan (
+      user_id,
+      status,
+      title,
+      plan_json,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{userId},
+      #{status},
+      #{title},
+      #{planJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{createdAt},
+      #{updatedAt}
+    )
+  </insert>
+
+  <update id="updatePlanSnapshot">
+    UPDATE learning_plan
+    SET status = #{status},
+        title = #{title},
+        plan_json = #{planJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        updated_at = #{updatedAt}
+    WHERE id = #{id}
+      AND user_id = #{userId}
+  </update>
+
+  <delete id="deletePlanPhases">
+    DELETE FROM learning_plan_phase
+    WHERE plan_id = #{planId}
+  </delete>
+
+  <insert id="insertPlanPhase">
+    INSERT INTO learning_plan_phase (
+      plan_id,
+      phase_index,
+      title,
+      duration_weeks,
+      focus
+    )
+    VALUES (
+      #{planId},
+      #{phaseIndex},
+      #{title},
+      #{durationWeeks},
+      #{focus}
+    )
+  </insert>
+
+  <insert id="insertPlanProblem">
+    INSERT INTO learning_plan_recommended_problem (
+      phase_id,
+      slug,
+      frontend_id,
+      title,
+      title_cn,
+      difficulty,
+      reason,
+      sort_order
+    )
+    SELECT
+      phase.id,
+      #{slug},
+      #{frontendId},
+      #{title},
+      #{titleCn},
+      #{difficulty},
+      #{reason},
+      #{sortOrder}
+    FROM learning_plan_phase phase
+    WHERE phase.plan_id = #{planId}
+      AND phase.phase_index = #{phaseIndex}
+  </insert>
+
+  <select id="findPlansByUserId" resultMap="LearningPlanRowMap">
+    SELECT
+      id,
+      user_id,
+      status,
+      title,
+      plan_json,
+      created_at,
+      updated_at
+    FROM learning_plan
+    WHERE user_id = #{userId}
+    ORDER BY created_at DESC, id DESC
+  </select>
+
+  <select id="findPlanByIdForUser" resultMap="LearningPlanRowMap">
+    SELECT
+      id,
+      user_id,
+      status,
+      title,
+      plan_json,
+      created_at,
+      updated_at
+    FROM learning_plan
+    WHERE id = #{id}
+      AND user_id = #{userId}
+  </select>
+</mapper>

@@ -20,6 +20,7 @@ body {
 
 button,
 input,
+select,
 textarea {
   font: inherit;
 }
@@ -30,6 +31,7 @@ button {
 
 button:disabled,
 input:disabled,
+select:disabled,
 textarea:disabled {
   cursor: not-allowed;
   opacity: 0.58;
@@ -88,7 +90,7 @@ pre {
 
 .view-tabs {
   display: inline-grid;
-  grid-template-columns: repeat(2, minmax(92px, 1fr));
+  grid-template-columns: repeat(3, minmax(92px, 1fr));
   min-height: 40px;
   padding: 3px;
   border: 1px solid #d4dee5;
@@ -215,6 +217,7 @@ h2 {
 }
 
 .topic-field input,
+.topic-field select,
 .topic-field textarea {
   width: 100%;
   min-height: 44px;
@@ -233,6 +236,7 @@ h2 {
 }
 
 .topic-field input:focus,
+.topic-field select:focus,
 .topic-field textarea:focus {
   border-color: #0f8f7f;
   box-shadow: 0 0 0 3px #d9f3ee;
@@ -284,6 +288,10 @@ h2 {
   border: 1px solid #cfd9e0;
   background: #ffffff;
   color: #26323a;
+}
+
+.full-width {
+  width: 100%;
 }
 
 .request-url {
@@ -776,6 +784,173 @@ h2 {
   font-weight: 700;
 }
 
+.learning-shell {
+  min-height: 0;
+}
+
+.learning-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
+  gap: 18px;
+}
+
+.learning-sidebar,
+.learning-main,
+.learning-panel,
+.learning-form {
+  display: grid;
+  gap: 14px;
+}
+
+.learning-sidebar,
+.learning-panel {
+  border: 1px solid #d7e1e7;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.learning-sidebar {
+  align-content: start;
+  padding: 16px;
+}
+
+.learning-panel {
+  padding: 18px;
+}
+
+.learning-list {
+  display: grid;
+  gap: 8px;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.plan-row {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 10px;
+  width: 100%;
+  min-height: 58px;
+  padding: 10px;
+  border: 1px solid #dce5eb;
+  border-radius: 8px;
+  background: #fbfcfd;
+  color: #24313a;
+  text-align: left;
+}
+
+.plan-row svg {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  color: #0f8f7f;
+}
+
+.plan-row span,
+.plan-row strong,
+.plan-row small {
+  min-width: 0;
+}
+
+.plan-row strong,
+.plan-row small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.plan-row small {
+  margin-top: 4px;
+  color: #637481;
+}
+
+.learning-form {
+  padding-top: 12px;
+  border-top: 1px solid #e4ebf0;
+}
+
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #3e4b55;
+  font-weight: 800;
+}
+
+.checkbox-row input {
+  width: 18px;
+  height: 18px;
+}
+
+.plan-preview {
+  display: grid;
+  gap: 14px;
+}
+
+.compact-summary .summary-card {
+  min-height: 68px;
+  padding: 12px;
+}
+
+.compact-summary .summary-card strong {
+  font-size: 16px;
+}
+
+.phase-block {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #dfe8ee;
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.phase-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.phase-heading h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.phase-heading span,
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: #e8f8f3;
+  color: #08745f;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.phase-block p {
+  margin-bottom: 0;
+  color: #4f5d68;
+}
+
+.compact-problems {
+  gap: 8px;
+}
+
+.compact-problems .problem-row {
+  color: inherit;
+  text-decoration: none;
+}
+
 @media (max-width: 980px) {
   .test-shell {
     padding: 20px;
@@ -785,7 +960,8 @@ h2 {
   .stream-grid,
   .summary-grid,
   .problem-layout,
-  .problem-toolbar {
+  .problem-toolbar,
+  .learning-layout {
     grid-template-columns: 1fr;
   }
 
@@ -844,5 +1020,9 @@ h2 {
 
   .detail-heading {
     flex-direction: column;
+  }
+
+  .mini-grid {
+    grid-template-columns: 1fr;
   }
 }
