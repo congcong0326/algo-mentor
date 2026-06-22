@@ -154,23 +154,39 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
   const [usage, setUsage] = useState<UsageData['usage']>();
   const abortControllerRef = useRef<AbortController | null>(null);
   const logIdRef = useRef(0);
-
-  useEffect(() => {
-    return () => {
-      abortControllerRef.current?.abort();
-    };
-  }, []);
+  const mountedRef = useRef(true);
 
   function setAndReportConnectionState(nextState: ConnectionState) {
     setConnectionState(nextState);
     onConnectionStateChange?.(nextState);
   }
 
+  function abortStreamAndResetState(updateLocalState = true) {
+    const controller = abortControllerRef.current;
+    if (!controller) {
+      return;
+    }
+
+    abortControllerRef.current = null;
+    controller.abort();
+    if (updateLocalState) {
+      setAndReportConnectionState('idle');
+      return;
+    }
+
+    onConnectionStateChange?.('idle');
+  }
+
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      abortStreamAndResetState(false);
+    };
+  }, []);
+
   useImperativeHandle(ref, () => ({
     stopStreamForLogout: () => {
-      abortControllerRef.current?.abort();
-      abortControllerRef.current = null;
-      setAndReportConnectionState('idle');
+      abortStreamAndResetState();
     },
   }));
 
@@ -284,10 +300,18 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
         idempotencyKey: effectiveIdempotencyKey,
         signal: controller.signal,
         onOpen: () => {
+          if (!mountedRef.current || abortControllerRef.current !== controller) {
+            return;
+          }
           setAndReportConnectionState('open');
           addLog('connection_open', { message: 'POST SSE connection opened.' });
         },
-        onEvent: ({ eventName, data }) => handleEvent(eventName, data),
+        onEvent: ({ eventName, data }) => {
+          if (!mountedRef.current || abortControllerRef.current !== controller) {
+            return;
+          }
+          handleEvent(eventName, data);
+        },
       });
 
       if (abortControllerRef.current === controller) {

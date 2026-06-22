@@ -370,6 +370,44 @@ describe('App', () => {
     expect(screen.queryByRole('heading', { name: 'AI SSE 测试台' })).not.toBeInTheDocument();
   });
 
+  it('aborts and resets debug status when navigating away from an active stream', async () => {
+    let capturedSignal: AbortSignal | undefined;
+    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(authenticatedUserResponse());
+      }
+      if (url === '/api/learning-plans') {
+        return Promise.resolve(jsonResponse({ success: true, data: [], timestamp: '2026-06-22T00:00:00Z' }));
+      }
+      if (url === '/api/agent/conversations/stream') {
+        capturedSignal = init?.signal ?? undefined;
+        return new Promise<Response>(() => {});
+      }
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/debug');
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+
+    await waitFor(() => expect(capturedSignal).toBeDefined());
+    expect(screen.getByText('connecting')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '学习计划' }));
+
+    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+    expect(capturedSignal?.aborted).toBe(true);
+
+    fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
+
+    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(screen.getByText('idle')).toBeInTheDocument();
+    expect(screen.queryByText('connecting')).not.toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'Message' })).toBeEnabled();
+  });
+
   it('keeps sending disabled when backend reports an active run', async () => {
     vi.stubGlobal('fetch', vi.fn((url: string) => {
       if (url === '/api/auth/me') {
