@@ -157,6 +157,46 @@ describe('App', () => {
       }),
     ));
     expect(await screen.findByRole('link', { name: '使用 Google 登录' })).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/login');
+  });
+
+  it('keeps login page normalized when history changes after logout', async () => {
+    const fetchMock = vi.fn((url: string) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(authenticatedUserResponse());
+      }
+      if (url === '/api/learning-plans') {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: [],
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
+      }
+      if (url === '/api/auth/logout') {
+        return Promise.resolve(jsonResponse({ success: true, timestamp: '2026-06-22T00:00:00Z' }));
+      }
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
+    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '退出登录' }));
+
+    expect(await screen.findByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/login');
+
+    window.history.pushState({}, '', '/debug');
+    fireEvent(window, new PopStateEvent('popstate'));
+
+    await waitFor(() => expect(window.location.pathname).toBe('/login'));
+    expect(screen.getByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
   });
 
   it('posts conversation stream request with body and idempotency key', async () => {
@@ -274,12 +314,15 @@ describe('App', () => {
 
   it('aborts the current stream when logging out', async () => {
     let capturedSignal: AbortSignal | undefined;
+    let resolveLogout: ((response: Response) => void) | undefined;
     const fetchMock = vi.fn((url: string, init?: RequestInit) => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
       }
       if (url === '/api/auth/logout') {
-        return Promise.resolve(jsonResponse({ success: true, timestamp: '2026-06-22T00:00:00Z' }));
+        return new Promise<Response>((resolve) => {
+          resolveLogout = resolve;
+        });
       }
       capturedSignal = init?.signal ?? undefined;
       return new Promise<Response>(() => {});
@@ -292,8 +335,13 @@ describe('App', () => {
     await waitFor(() => expect(capturedSignal).toBeDefined());
     fireEvent.click(screen.getByRole('button', { name: '退出登录' }));
 
-    await screen.findByRole('link', { name: '使用 Google 登录' });
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      '/api/auth/logout',
+      expect.objectContaining({ method: 'POST' }),
+    ));
     expect(capturedSignal?.aborted).toBe(true);
+    resolveLogout?.(jsonResponse({ success: true, timestamp: '2026-06-22T00:00:00Z' }));
+    await screen.findByRole('link', { name: '使用 Google 登录' });
   });
 
   it('keeps sending disabled when backend reports an active run', async () => {

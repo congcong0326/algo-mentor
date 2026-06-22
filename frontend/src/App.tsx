@@ -219,6 +219,21 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, [currentUser]);
 
+  useEffect(() => {
+    if (currentUser || !authChecked) {
+      return undefined;
+    }
+
+    function handlePopState() {
+      if (window.location.pathname !== APP_ROUTES.login) {
+        window.history.replaceState({}, '', APP_ROUTES.login);
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [authChecked, currentUser]);
+
   function addLog(eventName: StreamLogEntry['eventName'], data: unknown) {
     const entry: StreamLogEntry = {
       id: logIdRef.current,
@@ -389,13 +404,14 @@ export default function App() {
 
   async function handleLogout() {
     setLogoutError('');
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+    setConnectionState('idle');
+
     try {
       await logout();
-      abortControllerRef.current?.abort();
-      abortControllerRef.current = null;
-      setConnectionState('idle');
       setCurrentUser(undefined);
-      window.history.pushState({}, '', APP_ROUTES.login);
+      window.history.replaceState({}, '', APP_ROUTES.login);
     } catch (error) {
       setLogoutError(error instanceof Error ? error.message : '退出登录失败');
     }
