@@ -17,8 +17,10 @@ interface LearningPlanWizardProps {
 const steps = ['目标', '时间与水平', '主题偏好', '生成与确认'] as const;
 
 function splitTags(value: string): string[] {
+  const separator = /[,，]/.test(value) ? /[,，]+/ : /\s+/;
+
   return value
-    .split(/[,，\s]+/)
+    .split(separator)
     .map((tag) => tag.trim())
     .filter(Boolean);
 }
@@ -36,7 +38,8 @@ export default function LearningPlanWizard({ loading, onCancel, onSubmit }: Lear
   const [topicInput, setTopicInput] = useState('');
   const [topicPreferences, setTopicPreferences] = useState<string[]>(['Array', 'Hash Table']);
 
-  const numericValid = durationWeeks > 0 && weeklyHours > 0;
+  const numericValid = Number.isInteger(durationWeeks) && durationWeeks > 0
+    && Number.isInteger(weeklyHours) && weeklyHours > 0;
   const canGoNext = useMemo(() => {
     if (stepIndex === 0) {
       return goal.trim().length > 0;
@@ -125,7 +128,7 @@ export default function LearningPlanWizard({ loading, onCancel, onSubmit }: Lear
 
       {stepIndex === 1 && (
         <section className="wizard-step">
-          {!numericValid && <p className="error-text">周期和每周小时数必须大于 0。</p>}
+          {!numericValid && <p className="error-text">周期和每周小时数必须是正整数。</p>}
           <div className="mini-grid">
             <label className="topic-field">
               <span>周期</span>
@@ -219,8 +222,16 @@ export default function LearningPlanWizard({ loading, onCancel, onSubmit }: Lear
           </button>
           <div className="tag-row">
             {topicPreferences.map((topic) => (
-              <button className="tag-pill removable" disabled={loading} key={topic} onClick={() => removeTopic(topic)} type="button">
-                {topic}
+              <button
+                aria-label={`移除主题 ${topic}`}
+                className="tag-pill removable"
+                disabled={loading}
+                key={topic}
+                onClick={() => removeTopic(topic)}
+                type="button"
+              >
+                <span>{topic}</span>
+                <X aria-hidden="true" />
               </button>
             ))}
           </div>
