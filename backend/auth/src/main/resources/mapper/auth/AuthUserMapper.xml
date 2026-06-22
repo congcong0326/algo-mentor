@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper">
+  <resultMap id="AuthUserRowMap" type="org.congcong.algomentor.auth.repository.mybatis.model.AuthUserRow">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Long"/>
+      <arg column="email" javaType="java.lang.String"/>
+      <arg column="email_normalized" javaType="java.lang.String"/>
+      <arg column="display_name" javaType="java.lang.String"/>
+      <arg column="avatar_url" javaType="java.lang.String"/>
+      <arg column="status" javaType="java.lang.String"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+      <arg column="last_login_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <resultMap id="OAuthAccountRowMap" type="org.congcong.algomentor.auth.repository.mybatis.model.OAuthAccountRow">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Long"/>
+      <arg column="user_id" javaType="java.lang.Long"/>
+      <arg column="provider" javaType="java.lang.String"/>
+      <arg column="provider_subject" javaType="java.lang.String"/>
+      <arg column="email_at_provider" javaType="java.lang.String"/>
+      <arg column="display_name_at_provider" javaType="java.lang.String"/>
+      <arg column="avatar_url_at_provider" javaType="java.lang.String"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <select id="findOAuthAccount" resultMap="OAuthAccountRowMap">
+    select id,
+           user_id,
+           provider,
+           provider_subject,
+           email_at_provider,
+           display_name_at_provider,
+           avatar_url_at_provider,
+           created_at,
+           updated_at
+    from auth_oauth_accounts
+    where provider = #{provider}
+      and provider_subject = #{providerSubject}
+  </select>
+
+  <select id="findUserById" resultMap="AuthUserRowMap">
+    select id,
+           email,
+           email_normalized,
+           display_name,
+           avatar_url,
+           status,
+           created_at,
+           updated_at,
+           last_login_at
+    from auth_users
+    where id = #{userId}
+  </select>
+
+  <insert id="insertUser"
+          parameterType="org.congcong.algomentor.auth.repository.mybatis.model.AuthUserRow"
+          useGeneratedKeys="true"
+          keyProperty="id">
+    insert into auth_users (
+      email,
+      email_normalized,
+      display_name,
+      avatar_url,
+      status,
+      created_at,
+      updated_at,
+      last_login_at
+    ) values (
+      #{email},
+      #{emailNormalized},
+      #{displayName},
+      #{avatarUrl},
+      #{status},
+      #{createdAt},
+      #{updatedAt},
+      #{lastLoginAt}
+    )
+  </insert>
+
+  <insert id="insertUserRole">
+    insert into auth_user_roles (user_id, role, created_at)
+    values (#{userId}, #{role}, #{createdAt})
+    on conflict (user_id, role) do nothing
+  </insert>
+
+  <select id="findRoles" resultType="java.lang.String">
+    select role
+    from auth_user_roles
+    where user_id = #{userId}
+    order by role
+  </select>
+
+  <insert id="insertOAuthAccount"
+          parameterType="org.congcong.algomentor.auth.repository.mybatis.model.OAuthAccountRow"
+          useGeneratedKeys="true"
+          keyProperty="id">
+    insert into auth_oauth_accounts (
+      user_id,
+      provider,
+      provider_subject,
+      email_at_provider,
+      display_name_at_provider,
+      avatar_url_at_provider,
+      created_at,
+      updated_at
+    ) values (
+      #{userId},
+      #{provider},
+      #{providerSubject},
+      #{emailAtProvider},
+      #{displayNameAtProvider},
+      #{avatarUrlAtProvider},
+      #{createdAt},
+      #{updatedAt}
+    )
+  </insert>
+
+  <update id="updateOAuthAccountProfile">
+    update auth_oauth_accounts
+    set email_at_provider = #{emailAtProvider},
+        display_name_at_provider = #{displayNameAtProvider},
+        avatar_url_at_provider = #{avatarUrlAtProvider},
+        updated_at = #{updatedAt}
+    where id = #{accountId}
+  </update>
+
+  <update id="updateLastLoginAt">
+    update auth_users
+    set last_login_at = #{lastLoginAt},
+        updated_at = #{lastLoginAt}
+    where id = #{userId}
+  </update>
+</mapper>

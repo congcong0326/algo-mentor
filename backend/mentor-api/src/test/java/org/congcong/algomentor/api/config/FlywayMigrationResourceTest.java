@@ -53,5 +53,8 @@ class FlywayMigrationResourceTest {
         .as("Flyway scans migration locations as one version namespace: %s",
             Arrays.toString(MIGRATION_RESOURCE_PATTERNS.toArray()))
         .isEmpty();
+    assertThat(migrationsByVersion)
+        .as("auth module migration V8 must be discoverable from classpath*:db/migration/**/*.sql")
+        .containsKey("8");
   }
 }

@@ -21,8 +21,14 @@ public class CurrentUserController {
 
   @GetMapping(AuthApiContractConstants.ME_PATH)
   public ResponseEntity<ApiResponse<CurrentUserResponse>> me() {
-    return currentUserIdProvider.currentUserId()
-        .map(userId -> ResponseEntity.ok(ApiResponse.success(new CurrentUserResponse(userId))))
+    return currentUserIdProvider.currentUser()
+        .map(principal -> ResponseEntity.ok(ApiResponse.success(new CurrentUserResponse(
+            principal.userId(),
+            principal.email(),
+            principal.displayName(),
+            principal.avatarUrl(),
+            principal.roles(),
+            principal.status()))))
         .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(ApiResponse.failure(
                 AuthApiContractConstants.AUTH_UNAUTHENTICATED_CODE,

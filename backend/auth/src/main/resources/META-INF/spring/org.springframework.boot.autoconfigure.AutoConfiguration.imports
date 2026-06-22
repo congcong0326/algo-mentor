@@ -1,1 +1,2 @@
 org.congcong.algomentor.auth.autoconfigure.AuthApiAutoConfiguration
+org.congcong.algomentor.auth.config.AuthSecurityAutoConfiguration

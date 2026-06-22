@@ -1,6 +1,7 @@
 import type {
   AgentConversationStreamRequest,
   ApiResponse,
+  CurrentUser,
   HealthStatus,
   ProblemDetail,
   ProblemListItem,
@@ -13,6 +14,9 @@ import type {
 const jsonHeaders = {
   Accept: 'application/json',
 };
+
+const xsrfCookieName = 'XSRF-TOKEN';
+const xsrfHeaderName = 'X-XSRF-TOKEN';
 
 export class ApiRequestError extends Error {
   readonly status: number;
@@ -31,6 +35,7 @@ export class ApiRequestError extends Error {
 export async function getHealth(): Promise<ApiResponse<HealthStatus>> {
   const response = await fetch('/api/health', {
     headers: jsonHeaders,
+    credentials: 'same-origin',
   });
 
   if (!response.ok) {
@@ -40,12 +45,40 @@ export async function getHealth(): Promise<ApiResponse<HealthStatus>> {
   return response.json();
 }
 
+export async function getCurrentUser(): Promise<CurrentUser | undefined> {
+  const response = await fetch('/api/auth/me', {
+    headers: jsonHeaders,
+    credentials: 'same-origin',
+  });
+
+  if (response.status === 401) {
+    return undefined;
+  }
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Current user request failed');
+  }
+
+  const body = await response.json() as ApiResponse<CurrentUser>;
+  return body.data;
+}
+
+export async function logout(): Promise<void> {
+  const response = await apiFetch('/api/auth/logout', {
+    method: 'POST',
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Logout request failed');
+  }
+}
+
 export async function getProblems(
   query: ProblemListQuery = {},
   signal?: AbortSignal,
 ): Promise<ApiResponse<ProblemPage<ProblemListItem>>> {
   const response = await fetch(`/api/problems${toQueryString(query)}`, {
     headers: jsonHeaders,
+    credentials: 'same-origin',
     signal,
   });
 
@@ -62,6 +95,7 @@ export async function getProblemDetail(
 ): Promise<ApiResponse<ProblemDetail>> {
   const response = await fetch(`/api/problems/${encodeURIComponent(slug)}`, {
     headers: jsonHeaders,
+    credentials: 'same-origin',
     signal,
   });
 
@@ -95,7 +129,7 @@ export async function streamAgentConversation(
   request: AgentConversationStreamRequest,
   options: StreamAgentConversationOptions,
 ): Promise<void> {
-  const response = await fetch('/api/agent/conversations/stream', {
+  const response = await apiFetch('/api/agent/conversations/stream', {
     method: 'POST',
     headers: {
       Accept: 'text/event-stream, application/json',
@@ -115,6 +149,31 @@ export async function streamAgentConversation(
 
   options.onOpen?.();
   await readEventStream(response.body, options.onEvent);
+}
+
+function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
+  const method = (init.method ?? 'GET').toUpperCase();
+  const headers = new Headers(init.headers);
+  const csrfToken = readCookie(xsrfCookieName);
+
+  if (csrfToken && method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS') {
+    headers.set(xsrfHeaderName, csrfToken);
+  }
+
+  return fetch(input, {
+    ...init,
+    credentials: init.credentials ?? 'same-origin',
+    headers,
+  });
+}
+
+function readCookie(name: string): string | undefined {
+  const prefix = `${encodeURIComponent(name)}=`;
+  return document.cookie
+    .split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(prefix))
+    ?.slice(prefix.length);
 }
 
 async function toApiRequestError(response: Response, fallbackMessage: string): Promise<ApiRequestError> {

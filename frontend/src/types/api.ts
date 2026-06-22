@@ -15,6 +15,18 @@ export interface HealthStatus {
   status: 'UP' | 'DOWN';
 }
 
+export type AuthRole = 'USER' | 'ADMIN';
+export type AuthUserStatus = 'ACTIVE' | 'DISABLED';
+
+export interface CurrentUser {
+  id: number;
+  email?: string;
+  displayName?: string;
+  avatarUrl?: string;
+  roles: AuthRole[];
+  status: AuthUserStatus;
+}
+
 export type ProblemDifficulty = 'EASY' | 'MEDIUM' | 'HARD';
 
 export interface ProblemListQuery {

@@ -21,6 +21,11 @@ describe('App', () => {
     vi.stubGlobal('crypto', {
       randomUUID: vi.fn(() => 'generated-key'),
     });
+    Object.defineProperty(document, 'cookie', {
+      configurable: true,
+      writable: true,
+      value: 'XSRF-TOKEN=csrf-token',
+    });
   });
 
   afterEach(() => {
@@ -28,10 +33,15 @@ describe('App', () => {
     vi.unstubAllGlobals();
   });
 
-  it('renders the conversation stream test client shell', () => {
+  it('renders the conversation stream test client shell', async () => {
+    vi.stubGlobal('fetch', mockUnauthenticatedFetch());
     render(<App />);
 
     expect(screen.getByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Google 登录' })).toHaveAttribute(
+      'href',
+      '/oauth2/authorization/google',
+    );
     expect(screen.getByRole('button', { name: 'AI 调试' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('textbox', { name: 'Message' })).toHaveValue(
@@ -46,6 +56,7 @@ describe('App', () => {
 
   it('renders when crypto.randomUUID is unavailable', () => {
     vi.stubGlobal('crypto', {});
+    vi.stubGlobal('fetch', mockUnauthenticatedFetch());
 
     render(<App />);
 
@@ -53,10 +64,61 @@ describe('App', () => {
     expect(screen.getByRole<HTMLInputElement>('textbox', { name: 'Idempotency Key' }).value).toMatch(/^client-/);
   });
 
+  it('loads authenticated user and logs out with csrf token', async () => {
+    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: {
+            id: 42,
+            email: 'user@example.com',
+            displayName: 'User Name',
+            avatarUrl: 'https://example.com/avatar.png',
+            roles: ['USER'],
+            status: 'ACTIVE',
+          },
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
+      }
+      if (url === '/api/auth/logout') {
+        expect(init?.method).toBe('POST');
+        expect(init?.credentials).toBe('same-origin');
+        expect(new Headers(init?.headers).get('X-XSRF-TOKEN')).toBe('csrf-token');
+        return Promise.resolve(jsonResponse({ success: true, timestamp: '2026-06-22T00:00:00Z' }));
+      }
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(<App />);
+
+    expect(await screen.findByText('User Name')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '退出登录' }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      '/api/auth/logout',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+      }),
+    ));
+    expect(await screen.findByRole('link', { name: 'Google 登录' })).toBeInTheDocument();
+  });
+
   it('posts conversation stream request with body and idempotency key', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(new Response(sseStream([
-      sseEvent('agent_run_end', { runId: 'run_1' }),
-    ]), { status: 200 }));
+    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(unauthenticatedResponse());
+      }
+      if (url === '/api/agent/conversations/stream') {
+        expect(init?.credentials).toBe('same-origin');
+        expect(new Headers(init?.headers).get('X-XSRF-TOKEN')).toBe('csrf-token');
+        return Promise.resolve(new Response(sseStream([
+          sseEvent('agent_run_end', { runId: 'run_1' }),
+        ]), { status: 200 }));
+      }
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
     vi.stubGlobal('fetch', fetchMock);
     render(<App />);
 
@@ -75,30 +137,29 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
-    expect(fetchMock).toHaveBeenCalledWith(
-      '/api/agent/conversations/stream',
-      expect.objectContaining({
-        method: 'POST',
-        headers: expect.objectContaining({
-          Accept: 'text/event-stream, application/json',
-          'Content-Type': 'application/json',
-          'Idempotency-Key': 'idem-1',
-        }),
-        body: JSON.stringify({
-          taskId: 42,
-          userId: 7,
-          message: 'Continue with boundary cases.',
-        }),
+    const streamCall = fetchMock.mock.calls.find(([url]) => url === '/api/agent/conversations/stream');
+    expect(streamCall).toBeDefined();
+    const [, streamInit] = streamCall as [string, RequestInit];
+    const streamHeaders = new Headers(streamInit.headers);
+    expect(streamInit).toEqual(expect.objectContaining({
+      method: 'POST',
+      body: JSON.stringify({
+        taskId: 42,
+        userId: 7,
+        message: 'Continue with boundary cases.',
       }),
-    );
+    }));
+    expect(streamHeaders.get('Accept')).toBe('text/event-stream, application/json');
+    expect(streamHeaders.get('Content-Type')).toBe('application/json');
+    expect(streamHeaders.get('Idempotency-Key')).toBe('idem-1');
   });
 
   it('merges consecutive content_delta logs into one event row', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(sseStream([
+    vi.stubGlobal('fetch', mockStreamFetch([
       sseEvent('content_delta', { content: 'Hello' }),
       sseEvent('content_delta', { content: ' world' }),
       sseEvent('agent_run_end', { runId: 'run_1' }),
-    ]), { status: 200 })));
+    ]));
     render(<App />);
 
     await act(async () => {
@@ -114,12 +175,12 @@ describe('App', () => {
   });
 
   it('starts a new content_delta log after another event type', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(sseStream([
+    vi.stubGlobal('fetch', mockStreamFetch([
       sseEvent('content_delta', { content: 'first' }),
       sseEvent('usage', { usage: { totalTokens: 3 } }),
       sseEvent('content_delta', { content: 'second' }),
       sseEvent('agent_run_end', { runId: 'run_1' }),
-    ]), { status: 200 })));
+    ]));
     render(<App />);
 
     await act(async () => {
@@ -133,8 +194,11 @@ describe('App', () => {
 
   it('aborts the current stream when stopped', async () => {
     let capturedSignal: AbortSignal | undefined;
-    vi.stubGlobal('fetch', vi.fn((_url, init) => {
-      capturedSignal = (init as RequestInit).signal ?? undefined;
+    vi.stubGlobal('fetch', vi.fn((url: string, init?: RequestInit) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(unauthenticatedResponse());
+      }
+      capturedSignal = init?.signal ?? undefined;
       return new Promise<Response>(() => {});
     }));
     render(<App />);
@@ -149,15 +213,20 @@ describe('App', () => {
   });
 
   it('keeps sending disabled when backend reports an active run', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({
-      success: false,
-      error: {
-        code: 'AGENT_RUN_IN_PROGRESS',
-        message: '当前会话正在生成回答',
-        metadata: { taskId: 42 },
-      },
-      timestamp: '2026-06-19T00:00:00Z',
-    }, 409)));
+    vi.stubGlobal('fetch', vi.fn((url: string) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(unauthenticatedResponse());
+      }
+      return Promise.resolve(jsonResponse({
+        success: false,
+        error: {
+          code: 'AGENT_RUN_IN_PROGRESS',
+          message: '当前会话正在生成回答',
+          metadata: { taskId: 42 },
+        },
+        timestamp: '2026-06-19T00:00:00Z',
+      }, 409));
+    }));
     render(<App />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
@@ -230,6 +299,9 @@ describe('App', () => {
 
 function mockProblemFetch(total = 1) {
   return vi.fn((url: string) => {
+    if (url === '/api/auth/me') {
+      return Promise.resolve(unauthenticatedResponse());
+    }
     if (url.startsWith('/api/problems/two-sum')) {
       return Promise.resolve(jsonResponse({
         success: true,
@@ -277,5 +349,31 @@ function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+function unauthenticatedResponse(): Response {
+  return jsonResponse({
+    success: false,
+    error: { code: 'AUTH_UNAUTHENTICATED', message: 'unauthenticated' },
+    timestamp: '2026-06-22T00:00:00Z',
+  }, 401);
+}
+
+function mockUnauthenticatedFetch() {
+  return vi.fn((url: string) => {
+    if (url === '/api/auth/me') {
+      return Promise.resolve(unauthenticatedResponse());
+    }
+    return Promise.reject(new Error(`Unexpected URL: ${url}`));
+  });
+}
+
+function mockStreamFetch(chunks: string[]) {
+  return vi.fn((url: string) => {
+    if (url === '/api/auth/me') {
+      return Promise.resolve(unauthenticatedResponse());
+    }
+    return Promise.resolve(new Response(sseStream(chunks), { status: 200 }));
   });
 }

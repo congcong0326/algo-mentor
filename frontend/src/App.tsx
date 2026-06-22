@@ -2,6 +2,7 @@ import {
   Activity,
   AlertTriangle,
   CircleStop,
+  LogOut,
   Play,
   Radio,
   RefreshCw,
@@ -10,10 +11,11 @@ import {
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import ProblemLibrary from './ProblemLibrary';
-import { ApiRequestError, streamAgentConversation } from './services/api';
+import { ApiRequestError, getCurrentUser, logout, streamAgentConversation } from './services/api';
 import type {
   AgentConversationStreamRequest,
   ContentDeltaData,
+  CurrentUser,
   MessageEndData,
   MessageStartData,
   SseEventName,
@@ -134,6 +136,7 @@ function parseOptionalPositiveNumber(value: string): number | undefined {
 
 export default function App() {
   const [activeView, setActiveView] = useState<AppView>('debug');
+  const [currentUser, setCurrentUser] = useState<CurrentUser>();
   const [message, setMessage] = useState('Explain two pointers with a concrete example.');
   const [taskId, setTaskId] = useState('');
   const [userId, setUserId] = useState('');
@@ -149,7 +152,21 @@ export default function App() {
   const logIdRef = useRef(0);
 
   useEffect(() => {
+    let active = true;
+    getCurrentUser()
+      .then((user) => {
+        if (active) {
+          setCurrentUser(user);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setCurrentUser(undefined);
+        }
+      });
+
     return () => {
+      active = false;
       abortControllerRef.current?.abort();
     };
   }, []);
@@ -310,6 +327,11 @@ export default function App() {
     setIdempotencyKey(generateClientId());
   }
 
+  async function handleLogout() {
+    await logout();
+    setCurrentUser(undefined);
+  }
+
   function buildRequestBody(trimmedMessage = message.trim()): AgentConversationStreamRequest {
     return {
       ...(parseOptionalPositiveNumber(taskId) === undefined ? {} : { taskId: parseOptionalPositiveNumber(taskId) }),
@@ -330,6 +352,19 @@ export default function App() {
           <h1 id="page-title">{activeView === 'debug' ? 'AI SSE 测试台' : '题库'}</h1>
         </div>
         <div className="header-actions">
+          <div className="auth-status" aria-label="登录状态">
+            {currentUser ? (
+              <>
+                <span>{currentUser.displayName || currentUser.email || `User #${currentUser.id}`}</span>
+                <button className="secondary-button compact" onClick={handleLogout} type="button">
+                  <LogOut aria-hidden="true" />
+                  <span>退出登录</span>
+                </button>
+              </>
+            ) : (
+              <a className="login-link" href="/oauth2/authorization/google">Google 登录</a>
+            )}
+          </div>
           <div className="view-tabs" aria-label="视图切换">
             <button
               aria-pressed={activeView === 'debug'}

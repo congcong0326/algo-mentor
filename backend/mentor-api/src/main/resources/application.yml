@@ -16,6 +16,21 @@ spring:
     # db/migration 会递归扫描依赖模块下的子目录，新增 V 版本号必须跨模块唯一。
     locations:
       - classpath:db/migration
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:}
+            client-secret: ${GOOGLE_CLIENT_SECRET:}
+            scope:
+              - openid
+              - profile
+              - email
+  session:
+    timeout: ${AUTH_SESSION_TIMEOUT:7d}
+    jdbc:
+      initialize-schema: never
 
 management:
   endpoints:
@@ -31,6 +46,12 @@ management:
       application: ${spring.application.name}
 
 algo-mentor:
+  auth:
+    login-success-url: ${AUTH_LOGIN_SUCCESS_URL:/}
+    logout-success-url: ${AUTH_LOGOUT_SUCCESS_URL:/}
+    session-timeout: ${AUTH_SESSION_TIMEOUT:7d}
+    cookie-secure: ${AUTH_COOKIE_SECURE:false}
+    cookie-same-site: ${AUTH_COOKIE_SAME_SITE:Lax}
   agent:
     max-steps: ${AGENT_MAX_STEPS:4}
     tool-choice: ${AGENT_TOOL_CHOICE:auto}
