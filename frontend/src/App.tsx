@@ -1,8 +1,12 @@
 import { Radio } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import LearningPlans from './LearningPlans';
 import ProblemLibrary from './ProblemLibrary';
-import AiDebugConsole, { debugStatusLabel, type ConnectionState } from './ai-debug/AiDebugConsole';
+import AiDebugConsole, {
+  debugStatusLabel,
+  type AiDebugConsoleHandle,
+  type ConnectionState,
+} from './ai-debug/AiDebugConsole';
 import AppShell from './app/AppShell';
 import LoginPage from './app/LoginPage';
 import { APP_ROUTES, pathForView, type AppView, viewFromPath } from './app/navigation';
@@ -29,6 +33,7 @@ export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
   const [logoutError, setLogoutError] = useState('');
   const [debugConnectionState, setDebugConnectionState] = useState<ConnectionState>('idle');
+  const debugConsoleRef = useRef<AiDebugConsoleHandle | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -108,6 +113,7 @@ export default function App() {
 
   async function handleLogout() {
     setLogoutError('');
+    debugConsoleRef.current?.stopStreamForLogout();
     setDebugConnectionState('idle');
 
     try {
@@ -150,7 +156,7 @@ export default function App() {
         ? <ProblemLibrary />
         : activeView === 'learningPlans'
           ? <LearningPlans />
-          : <AiDebugConsole onConnectionStateChange={setDebugConnectionState} />}
+          : <AiDebugConsole ref={debugConsoleRef} onConnectionStateChange={setDebugConnectionState} />}
     </AppShell>
   );
 }

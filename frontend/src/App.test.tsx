@@ -364,11 +364,10 @@ describe('App', () => {
       '/api/auth/logout',
       expect.objectContaining({ method: 'POST' }),
     ));
-    expect(capturedSignal?.aborted).toBe(false);
+    expect(capturedSignal?.aborted).toBe(true);
     resolveLogout?.(jsonResponse({ success: true, timestamp: '2026-06-22T00:00:00Z' }));
     await screen.findByRole('link', { name: '使用 Google 登录' });
     expect(screen.queryByRole('heading', { name: 'AI SSE 测试台' })).not.toBeInTheDocument();
-    expect(capturedSignal?.aborted).toBe(true);
   });
 
   it('keeps sending disabled when backend reports an active run', async () => {

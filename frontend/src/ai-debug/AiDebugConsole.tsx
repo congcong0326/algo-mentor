@@ -7,7 +7,7 @@ import {
   RotateCcw,
   Server,
 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ApiRequestError, streamAgentConversation } from '../services/api';
 import type {
   AgentConversationStreamRequest,
@@ -32,6 +32,10 @@ interface StreamLogEntry {
 
 export interface AiDebugConsoleProps {
   onConnectionStateChange?: (state: ConnectionState) => void;
+}
+
+export interface AiDebugConsoleHandle {
+  stopStreamForLogout: () => void;
 }
 
 export function debugStatusLabel(state: ConnectionState): string {
@@ -133,7 +137,10 @@ function parseOptionalPositiveNumber(value: string): number | undefined {
   return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
 }
 
-export default function AiDebugConsole({ onConnectionStateChange }: AiDebugConsoleProps) {
+const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(function AiDebugConsole(
+  { onConnectionStateChange },
+  ref,
+) {
   const [message, setMessage] = useState('Explain two pointers with a concrete example.');
   const [taskId, setTaskId] = useState('');
   const [userId, setUserId] = useState('');
@@ -158,6 +165,14 @@ export default function AiDebugConsole({ onConnectionStateChange }: AiDebugConso
     setConnectionState(nextState);
     onConnectionStateChange?.(nextState);
   }
+
+  useImperativeHandle(ref, () => ({
+    stopStreamForLogout: () => {
+      abortControllerRef.current?.abort();
+      abortControllerRef.current = null;
+      setAndReportConnectionState('idle');
+    },
+  }));
 
   function addLog(eventName: StreamLogEntry['eventName'], data: unknown) {
     const entry: StreamLogEntry = {
@@ -479,4 +494,6 @@ export default function AiDebugConsole({ onConnectionStateChange }: AiDebugConso
       </section>
     </>
   );
-}
+});
+
+export default AiDebugConsole;
