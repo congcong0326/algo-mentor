@@ -2,6 +2,12 @@ import type {
   AgentConversationStreamRequest,
   ApiResponse,
   HealthStatus,
+  LearningPlanConfirmResponse,
+  LearningPlanCreateDraftRequest,
+  LearningPlanDetailResponse,
+  LearningPlanDraftResponse,
+  LearningPlanMessageRequest,
+  LearningPlanSummaryResponse,
   ProblemDetail,
   ProblemListItem,
   ProblemListQuery,
@@ -67,6 +73,91 @@ export async function getProblemDetail(
 
   if (!response.ok) {
     throw new Error(`Problem detail request failed with status ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function getLearningPlans(
+  signal?: AbortSignal,
+): Promise<ApiResponse<LearningPlanSummaryResponse[]>> {
+  const response = await fetch('/api/learning-plans', {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plans request failed');
+  }
+
+  return response.json();
+}
+
+export async function getLearningPlanDetail(
+  planId: number,
+  signal?: AbortSignal,
+): Promise<ApiResponse<LearningPlanDetailResponse>> {
+  const response = await fetch(`/api/learning-plans/${planId}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan detail request failed');
+  }
+
+  return response.json();
+}
+
+export async function createLearningPlanDraft(
+  request: LearningPlanCreateDraftRequest,
+): Promise<ApiResponse<LearningPlanDraftResponse>> {
+  const response = await fetch('/api/learning-plans/drafts', {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan draft request failed');
+  }
+
+  return response.json();
+}
+
+export async function sendLearningPlanDraftMessage(
+  draftId: number,
+  request: LearningPlanMessageRequest,
+): Promise<ApiResponse<LearningPlanDraftResponse>> {
+  const response = await fetch(`/api/learning-plans/drafts/${draftId}/messages`, {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan draft message request failed');
+  }
+
+  return response.json();
+}
+
+export async function confirmLearningPlanDraft(
+  draftId: number,
+): Promise<ApiResponse<LearningPlanConfirmResponse>> {
+  const response = await fetch(`/api/learning-plans/drafts/${draftId}/confirm`, {
+    method: 'POST',
+    headers: jsonHeaders,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan confirm request failed');
   }
 
   return response.json();

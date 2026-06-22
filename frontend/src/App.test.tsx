@@ -226,6 +226,46 @@ describe('App', () => {
 
     expect(await screen.findByText('network failed')).toBeInTheDocument();
   });
+
+  it('creates learning plan draft, answers clarification, confirms, and shows detail', async () => {
+    const fetchMock = mockLearningPlanFetch();
+    vi.stubGlobal('fetch', fetchMock);
+    render(<App />);
+
+    fireEvent.click(screen.getByRole('button', { name: '学习计划' }));
+
+    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+    expect(await screen.findAllByText('四周 Java 算法面试冲刺计划')).not.toHaveLength(0);
+
+    fireEvent.change(screen.getByRole('textbox', { name: '学习目标' }), {
+      target: { value: '准备 Java 后端算法面试' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '生成草案' }));
+
+    expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plans/drafts',
+      expect.objectContaining({ method: 'POST' }),
+    );
+
+    fireEvent.change(screen.getByRole('textbox', { name: '补充回答' }), {
+      target: { value: '数组和哈希表' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送补充' }));
+
+    expect(await screen.findByRole('heading', { name: '草案预览' })).toBeInTheDocument();
+    expect(screen.getByText('基础题型恢复')).toBeInTheDocument();
+    expect(screen.getByText('两数之和')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '确认保存' }));
+
+    expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
+    expect(screen.getByText('ACTIVE')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plans/drafts/100/confirm',
+      expect.objectContaining({ method: 'POST' }),
+    );
+  });
 });
 
 function mockProblemFetch(total = 1) {
@@ -278,4 +318,120 @@ function jsonResponse(body: unknown, status = 200): Response {
     status,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+function mockLearningPlanFetch() {
+  let messagePosted = false;
+  return vi.fn((url: string, init?: RequestInit) => {
+    if (url === '/api/learning-plans' && (!init || init.method === undefined)) {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: [{
+          id: 900,
+          title: '四周 Java 算法面试冲刺计划',
+          intent: 'INTERVIEW_SPRINT',
+          goal: '准备 Java 后端算法面试',
+          durationWeeks: 4,
+          level: 'INTERMEDIATE',
+          weeklyHours: 6,
+          status: 'ACTIVE',
+          createdAt: '2026-06-22T00:00:00Z',
+        }],
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/900') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: learningPlanDetail(),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/drafts') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: {
+          draftId: 100,
+          status: 'COLLECTING',
+          assistantMessage: '请补充目标主题。',
+          missingFields: ['topicPreferences'],
+          draftPlan: null,
+        },
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/drafts/100/messages') {
+      messagePosted = true;
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: {
+          draftId: 100,
+          status: 'GENERATED',
+          assistantMessage: '已生成学习计划草案。',
+          missingFields: [],
+          draftPlan: learningPlanDetail(),
+        },
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/drafts/100/confirm' && messagePosted) {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: {
+          planId: 900,
+          title: '四周 Java 算法面试冲刺计划',
+          status: 'ACTIVE',
+        },
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    return Promise.reject(new Error(`Unexpected URL: ${url}`));
+  });
+}
+
+function learningPlanDetail() {
+  return {
+    id: 900,
+    title: '四周 Java 算法面试冲刺计划',
+    summary: '围绕数组和哈希表建立高频题型能力。',
+    intent: 'INTERVIEW_SPRINT',
+    goal: '准备 Java 后端算法面试',
+    durationWeeks: 4,
+    level: 'INTERMEDIATE',
+    weeklyHours: 6,
+    programmingLanguage: 'Java',
+    difficultyPreference: 'MEDIUM',
+    interviewOriented: true,
+    topicPreferences: ['Array', 'Hash Table'],
+    profileSummary: '中级，每周 6 小时。',
+    status: 'ACTIVE',
+    phases: [{
+      phaseIndex: 1,
+      title: '基础题型恢复',
+      durationWeeks: 1,
+      focus: '数组和哈希表',
+      objectives: ['恢复基础题型手感'],
+      recommendedTags: ['Array', 'Hash Table'],
+      acceptanceCriteria: ['能说明哈希表查找边界'],
+      reviewAdvice: '整理错误原因。',
+      problems: [{
+        slug: 'two-sum',
+        frontendId: 1,
+        title: 'Two Sum',
+        titleCn: '两数之和',
+        difficulty: 'EASY',
+        tags: ['Array', 'Hash Table'],
+        reason: '恢复哈希表查找。',
+        sortOrder: 1,
+      }],
+    }],
+    metadata: { problemRecommendationIncomplete: false },
+    createdAt: '2026-06-22T00:00:00Z',
+    updatedAt: '2026-06-22T00:00:00Z',
+  };
 }

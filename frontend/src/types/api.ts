@@ -51,6 +51,108 @@ export interface ProblemPage<T> {
   pageSize: number;
 }
 
+export type LearningPlanIntent =
+  | 'PRACTICE_GOAL'
+  | 'ABILITY_DIAGNOSIS'
+  | 'INTERVIEW_SPRINT'
+  | 'TOPIC_BREAKTHROUGH'
+  | 'MISTAKE_REVIEW'
+  | 'LONG_TERM_LEARNING';
+
+export type LearningPlanLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+export type LearningPlanDifficultyPreference = 'EASY' | 'MEDIUM' | 'HARD' | 'MIXED';
+export type LearningPlanDraftStatus = 'COLLECTING' | 'GENERATED' | 'CONFIRMED' | 'GENERATION_FAILED' | 'EXPIRED';
+export type LearningPlanStatus = 'ACTIVE' | 'ARCHIVED';
+
+export interface LearningPlanCreateDraftRequest {
+  intent?: LearningPlanIntent;
+  goal: string;
+  durationWeeks?: number;
+  level?: LearningPlanLevel;
+  weeklyHours?: number;
+  programmingLanguage?: string;
+  difficultyPreference?: LearningPlanDifficultyPreference;
+  interviewOriented?: boolean;
+  topicPreferences: string[];
+}
+
+export interface LearningPlanMessageRequest {
+  message: string;
+}
+
+export interface LearningPlanProblemDraft {
+  slug: string;
+  frontendId?: number;
+  title: string;
+  titleCn?: string;
+  difficulty?: ProblemDifficulty | string;
+  tags: string[];
+  reason: string;
+  sortOrder: number;
+}
+
+export interface LearningPlanPhaseDraft {
+  phaseIndex: number;
+  title: string;
+  durationWeeks: number;
+  focus: string;
+  objectives: string[];
+  recommendedTags: string[];
+  acceptanceCriteria: string[];
+  reviewAdvice: string;
+  problems: LearningPlanProblemDraft[];
+}
+
+export interface LearningPlanDraftPlan {
+  title: string;
+  summary: string;
+  intent: LearningPlanIntent;
+  goal: string;
+  durationWeeks: number;
+  level: LearningPlanLevel;
+  weeklyHours: number;
+  programmingLanguage?: string;
+  difficultyPreference?: LearningPlanDifficultyPreference;
+  interviewOriented: boolean;
+  topicPreferences: string[];
+  profileSummary: string;
+  phases: LearningPlanPhaseDraft[];
+  metadata: Record<string, unknown>;
+}
+
+export interface LearningPlanDraftResponse {
+  draftId: number;
+  status: LearningPlanDraftStatus;
+  assistantMessage?: string;
+  missingFields: string[];
+  draftPlan?: LearningPlanDraftPlan | null;
+}
+
+export interface LearningPlanConfirmResponse {
+  planId: number;
+  title: string;
+  status: LearningPlanStatus;
+}
+
+export interface LearningPlanSummaryResponse {
+  id: number;
+  title: string;
+  intent: LearningPlanIntent;
+  goal: string;
+  durationWeeks: number;
+  level: LearningPlanLevel;
+  weeklyHours: number;
+  status: LearningPlanStatus;
+  createdAt: string;
+}
+
+export interface LearningPlanDetailResponse extends LearningPlanDraftPlan {
+  id: number;
+  status: LearningPlanStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type SseEventName =
   | 'agent_run_start'
   | 'agent_step_start'

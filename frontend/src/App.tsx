@@ -9,6 +9,7 @@ import {
   Server,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import LearningPlans from './LearningPlans';
 import ProblemLibrary from './ProblemLibrary';
 import { ApiRequestError, streamAgentConversation } from './services/api';
 import type {
@@ -24,7 +25,7 @@ import { AGENT_RUN_IN_PROGRESS_CODE } from './types/api';
 import { generateClientId } from './utils/id';
 
 type ConnectionState = 'idle' | 'connecting' | 'open' | 'blocked' | 'stopped' | 'error' | 'done';
-type AppView = 'debug' | 'problems';
+type AppView = 'debug' | 'problems' | 'learningPlans';
 
 interface StreamLogEntry {
   id: number;
@@ -120,6 +121,16 @@ function statusLabel(state: ConnectionState): string {
   };
 
   return labels[state];
+}
+
+function viewTitle(view: AppView): string {
+  if (view === 'problems') {
+    return '题库';
+  }
+  if (view === 'learningPlans') {
+    return '学习计划';
+  }
+  return 'AI SSE 测试台';
 }
 
 function parseOptionalPositiveNumber(value: string): number | undefined {
@@ -327,7 +338,7 @@ export default function App() {
       <section className="test-header" aria-labelledby="page-title">
         <div>
           <p className="eyebrow">ALGO MENTOR</p>
-          <h1 id="page-title">{activeView === 'debug' ? 'AI SSE 测试台' : '题库'}</h1>
+          <h1 id="page-title">{viewTitle(activeView)}</h1>
         </div>
         <div className="header-actions">
           <div className="view-tabs" aria-label="视图切换">
@@ -345,6 +356,13 @@ export default function App() {
             >
               题库
             </button>
+            <button
+              aria-pressed={activeView === 'learningPlans'}
+              onClick={() => setActiveView('learningPlans')}
+              type="button"
+            >
+              学习计划
+            </button>
           </div>
           {activeView === 'debug' && (
             <div className={`status-pill ${connectionState}`}>
@@ -355,7 +373,7 @@ export default function App() {
         </div>
       </section>
 
-      {activeView === 'problems' ? <ProblemLibrary /> : (
+      {activeView === 'problems' ? <ProblemLibrary /> : activeView === 'learningPlans' ? <LearningPlans /> : (
         <>
 
       <section className="control-panel" aria-label="SSE 请求控制">
