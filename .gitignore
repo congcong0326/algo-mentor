@@ -8,6 +8,8 @@ Thumbs.db
 .m2/
 .npm/
 .superpowers/
+.worktrees
+.worktrees/
 data/sources/
 data/seed/
 
