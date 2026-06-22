@@ -2,7 +2,6 @@ import {
   Activity,
   AlertTriangle,
   CircleStop,
-  LogOut,
   Play,
   Radio,
   RefreshCw,
@@ -12,6 +11,9 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import LearningPlans from './LearningPlans';
 import ProblemLibrary from './ProblemLibrary';
+import AppShell from './app/AppShell';
+import LoginPage from './app/LoginPage';
+import { APP_ROUTES, pathForView, type AppView, viewFromPath } from './app/navigation';
 import { ApiRequestError, getCurrentUser, logout, streamAgentConversation } from './services/api';
 import type {
   AgentConversationStreamRequest,
@@ -27,7 +29,6 @@ import { AGENT_RUN_IN_PROGRESS_CODE } from './types/api';
 import { generateClientId } from './utils/id';
 
 type ConnectionState = 'idle' | 'connecting' | 'open' | 'blocked' | 'stopped' | 'error' | 'done';
-type AppView = 'debug' | 'problems' | 'learningPlans';
 
 interface StreamLogEntry {
   id: number;
@@ -146,8 +147,10 @@ function parseOptionalPositiveNumber(value: string): number | undefined {
 }
 
 export default function App() {
-  const [activeView, setActiveView] = useState<AppView>('debug');
+  const [activeView, setActiveView] = useState<AppView>(() => viewFromPath(window.location.pathname) ?? 'learningPlans');
   const [currentUser, setCurrentUser] = useState<CurrentUser>();
+  const [authChecked, setAuthChecked] = useState(false);
+  const [logoutError, setLogoutError] = useState('');
   const [message, setMessage] = useState('Explain two pointers with a concrete example.');
   const [taskId, setTaskId] = useState('');
   const [userId, setUserId] = useState('');
@@ -166,13 +169,26 @@ export default function App() {
     let active = true;
     getCurrentUser()
       .then((user) => {
-        if (active) {
-          setCurrentUser(user);
+        if (!active) {
+          return;
+        }
+        setCurrentUser(user);
+        setAuthChecked(true);
+        if (user) {
+          const nextView = viewFromPath(window.location.pathname) ?? 'learningPlans';
+          setActiveView(nextView);
+          if (window.location.pathname === '/' || window.location.pathname === APP_ROUTES.login) {
+            window.history.replaceState({}, '', pathForView(nextView));
+          }
+        } else if (window.location.pathname !== APP_ROUTES.login) {
+          window.history.replaceState({}, '', APP_ROUTES.login);
         }
       })
       .catch(() => {
         if (active) {
           setCurrentUser(undefined);
+          setAuthChecked(true);
+          window.history.replaceState({}, '', APP_ROUTES.login);
         }
       });
 
@@ -338,9 +354,20 @@ export default function App() {
     setIdempotencyKey(generateClientId());
   }
 
+  function navigateToView(view: AppView) {
+    setActiveView(view);
+    window.history.pushState({}, '', pathForView(view));
+  }
+
   async function handleLogout() {
-    await logout();
-    setCurrentUser(undefined);
+    setLogoutError('');
+    try {
+      await logout();
+      setCurrentUser(undefined);
+      window.history.pushState({}, '', APP_ROUTES.login);
+    } catch (error) {
+      setLogoutError(error instanceof Error ? error.message : '退出登录失败');
+    }
   }
 
   function buildRequestBody(trimmedMessage = message.trim()): AgentConversationStreamRequest {
@@ -355,59 +382,33 @@ export default function App() {
   const sendDisabled = isStreaming || connectionState === 'blocked';
   const requestBody = buildRequestBody();
 
-  return (
-    <main className="test-shell">
-      <section className="test-header" aria-labelledby="page-title">
-        <div>
-          <p className="eyebrow">ALGO MENTOR</p>
-          <h1 id="page-title">{viewTitle(activeView)}</h1>
-        </div>
-        <div className="header-actions">
-          <div className="auth-status" aria-label="登录状态">
-            {currentUser ? (
-              <>
-                <span>{currentUser.displayName || currentUser.email || `User #${currentUser.id}`}</span>
-                <button className="secondary-button compact" onClick={handleLogout} type="button">
-                  <LogOut aria-hidden="true" />
-                  <span>退出登录</span>
-                </button>
-              </>
-            ) : (
-              <a className="login-link" href="/oauth2/authorization/google">Google 登录</a>
-            )}
-          </div>
-          <div className="view-tabs" aria-label="视图切换">
-            <button
-              aria-pressed={activeView === 'debug'}
-              onClick={() => setActiveView('debug')}
-              type="button"
-            >
-              AI 调试
-            </button>
-            <button
-              aria-pressed={activeView === 'problems'}
-              onClick={() => setActiveView('problems')}
-              type="button"
-            >
-              题库
-            </button>
-            <button
-              aria-pressed={activeView === 'learningPlans'}
-              onClick={() => setActiveView('learningPlans')}
-              type="button"
-            >
-              学习计划
-            </button>
-          </div>
-          {activeView === 'debug' && (
-            <div className={`status-pill ${connectionState}`}>
-              <Radio aria-hidden="true" />
-              <span>{statusLabel(connectionState)}</span>
-            </div>
-          )}
-        </div>
-      </section>
+  if (!authChecked) {
+    return (
+      <main className="login-page" aria-label="加载中">
+        正在加载...
+      </main>
+    );
+  }
 
+  if (!currentUser) {
+    return <LoginPage authFailed={new URLSearchParams(window.location.search).get('auth') === 'failed'} />;
+  }
+
+  return (
+    <AppShell
+      activeView={activeView}
+      currentUser={currentUser}
+      debugStatus={activeView === 'debug' ? (
+        <div className={`status-pill ${connectionState}`}>
+          <Radio aria-hidden="true" />
+          <span>{statusLabel(connectionState)}</span>
+        </div>
+      ) : undefined}
+      logoutError={logoutError}
+      onLogout={() => void handleLogout()}
+      onNavigate={navigateToView}
+    >
+      <h1 id="page-title">{viewTitle(activeView)}</h1>
       {activeView === 'problems' ? <ProblemLibrary /> : activeView === 'learningPlans' ? <LearningPlans /> : (
         <>
 
@@ -557,6 +558,6 @@ export default function App() {
       </section>
         </>
       )}
-    </main>
+    </AppShell>
   );
 }

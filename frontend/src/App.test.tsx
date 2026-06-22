@@ -18,6 +18,7 @@ function sseEvent(eventName: string, data: unknown): string {
 
 describe('App', () => {
   beforeEach(() => {
+    window.history.replaceState({}, '', '/');
     vi.stubGlobal('crypto', {
       randomUUID: vi.fn(() => 'generated-key'),
     });
@@ -33,15 +34,40 @@ describe('App', () => {
     vi.unstubAllGlobals();
   });
 
-  it('renders the conversation stream test client shell', async () => {
+  it('shows the standalone login page when unauthenticated', async () => {
     vi.stubGlobal('fetch', mockUnauthenticatedFetch());
+    window.history.replaceState({}, '', '/learning-plans');
+
     render(<App />);
 
-    expect(screen.getByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
-    expect(await screen.findByRole('link', { name: 'Google 登录' })).toHaveAttribute(
+    expect(await screen.findByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '使用 Google 登录' })).toHaveAttribute(
       'href',
       '/oauth2/authorization/google',
     );
+    expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
+  });
+
+  it('defaults authenticated users to learning plans', async () => {
+    vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
+    window.history.replaceState({}, '', '/');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '学习计划' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByText('User Name')).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/learning-plans');
+  });
+
+  it('renders the conversation stream test client shell', async () => {
+    vi.stubGlobal('fetch', mockAuthenticatedDebugFetch());
+    window.history.replaceState({}, '', '/debug');
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(screen.getByText('User Name')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'AI 调试' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('textbox', { name: 'Message' })).toHaveValue(
@@ -54,14 +80,16 @@ describe('App', () => {
     expect(screen.getByText('POST /api/agent/conversations/stream')).toBeInTheDocument();
   });
 
-  it('renders when crypto.randomUUID is unavailable', () => {
+  it('renders when crypto.randomUUID is unavailable', async () => {
     vi.stubGlobal('crypto', {});
-    vi.stubGlobal('fetch', mockUnauthenticatedFetch());
+    vi.stubGlobal('fetch', mockAuthenticatedDebugFetch());
+    window.history.replaceState({}, '', '/debug');
 
     render(<App />);
 
-    expect(screen.getByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
-    expect(screen.getByRole<HTMLInputElement>('textbox', { name: 'Idempotency Key' }).value).toMatch(/^client-/);
+    expect((await screen.findByRole<HTMLInputElement>('textbox', { name: 'Idempotency Key' })).value).toMatch(
+      /^client-/,
+    );
   });
 
   it('loads authenticated user and logs out with csrf token', async () => {
@@ -89,6 +117,7 @@ describe('App', () => {
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
     vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/debug');
 
     render(<App />);
 
@@ -102,13 +131,13 @@ describe('App', () => {
         credentials: 'same-origin',
       }),
     ));
-    expect(await screen.findByRole('link', { name: 'Google 登录' })).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: '使用 Google 登录' })).toBeInTheDocument();
   });
 
   it('posts conversation stream request with body and idempotency key', async () => {
     const fetchMock = vi.fn((url: string, init?: RequestInit) => {
       if (url === '/api/auth/me') {
-        return Promise.resolve(unauthenticatedResponse());
+        return Promise.resolve(authenticatedUserResponse());
       }
       if (url === '/api/agent/conversations/stream') {
         expect(init?.credentials).toBe('same-origin');
@@ -120,9 +149,10 @@ describe('App', () => {
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
     vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'Message' }), {
+    fireEvent.change(await screen.findByRole('textbox', { name: 'Message' }), {
       target: { value: 'Continue with boundary cases.' },
     });
     fireEvent.change(screen.getByRole('textbox', { name: 'Task ID' }), {
@@ -160,10 +190,12 @@ describe('App', () => {
       sseEvent('content_delta', { content: ' world' }),
       sseEvent('agent_run_end', { runId: 'run_1' }),
     ]));
+    window.history.replaceState({}, '', '/debug');
     render(<App />);
 
+    const startButton = await screen.findByRole('button', { name: 'Start' });
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+      fireEvent.click(startButton);
     });
 
     expect(await screen.findByText('Hello world')).toBeInTheDocument();
@@ -181,10 +213,12 @@ describe('App', () => {
       sseEvent('content_delta', { content: 'second' }),
       sseEvent('agent_run_end', { runId: 'run_1' }),
     ]));
+    window.history.replaceState({}, '', '/debug');
     render(<App />);
 
+    const startButton = await screen.findByRole('button', { name: 'Start' });
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+      fireEvent.click(startButton);
     });
 
     expect(screen.getAllByText('content_delta')).toHaveLength(2);
@@ -196,14 +230,15 @@ describe('App', () => {
     let capturedSignal: AbortSignal | undefined;
     vi.stubGlobal('fetch', vi.fn((url: string, init?: RequestInit) => {
       if (url === '/api/auth/me') {
-        return Promise.resolve(unauthenticatedResponse());
+        return Promise.resolve(authenticatedUserResponse());
       }
       capturedSignal = init?.signal ?? undefined;
       return new Promise<Response>(() => {});
     }));
+    window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Start' }));
     await waitFor(() => expect(capturedSignal).toBeDefined());
     fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
 
@@ -215,7 +250,7 @@ describe('App', () => {
   it('keeps sending disabled when backend reports an active run', async () => {
     vi.stubGlobal('fetch', vi.fn((url: string) => {
       if (url === '/api/auth/me') {
-        return Promise.resolve(unauthenticatedResponse());
+        return Promise.resolve(authenticatedUserResponse());
       }
       return Promise.resolve(jsonResponse({
         success: false,
@@ -227,9 +262,10 @@ describe('App', () => {
         timestamp: '2026-06-19T00:00:00Z',
       }, 409));
     }));
+    window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Start' }));
 
     expect(await screen.findByText('blocked')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Start' })).toBeDisabled();
@@ -239,9 +275,8 @@ describe('App', () => {
   it('loads problem list and detail in problem library view', async () => {
     const fetchMock = mockProblemFetch();
     vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/problems');
     render(<App />);
-
-    fireEvent.click(screen.getByRole('button', { name: '题库' }));
 
     expect(await screen.findByRole('heading', { name: '题库' })).toBeInTheDocument();
     expect(await screen.findByText('两数之和')).toBeInTheDocument();
@@ -262,9 +297,9 @@ describe('App', () => {
   it('requests filtered problem list and paginates', async () => {
     const fetchMock = mockProblemFetch(40);
     vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/problems');
     render(<App />);
 
-    fireEvent.click(screen.getByRole('button', { name: '题库' }));
     await screen.findByText('两数之和');
 
     fireEvent.change(screen.getByRole('textbox', { name: '搜索题目' }), {
@@ -288,10 +323,14 @@ describe('App', () => {
   });
 
   it('shows problem library error state', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network failed')));
+    vi.stubGlobal('fetch', vi.fn((url: string) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(authenticatedUserResponse());
+      }
+      return Promise.reject(new Error('network failed'));
+    }));
+    window.history.replaceState({}, '', '/problems');
     render(<App />);
-
-    fireEvent.click(screen.getByRole('button', { name: '题库' }));
 
     expect(await screen.findByText('network failed')).toBeInTheDocument();
   });
@@ -299,9 +338,8 @@ describe('App', () => {
   it('creates learning plan draft, answers clarification, confirms, and shows detail', async () => {
     const fetchMock = mockLearningPlanFetch();
     vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
     render(<App />);
-
-    fireEvent.click(screen.getByRole('button', { name: '学习计划' }));
 
     expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
     expect(await screen.findAllByText('四周 Java 算法面试冲刺计划')).not.toHaveLength(0);
@@ -340,7 +378,7 @@ describe('App', () => {
 function mockProblemFetch(total = 1) {
   return vi.fn((url: string) => {
     if (url === '/api/auth/me') {
-      return Promise.resolve(unauthenticatedResponse());
+      return Promise.resolve(authenticatedUserResponse());
     }
     if (url.startsWith('/api/problems/two-sum')) {
       return Promise.resolve(jsonResponse({
@@ -400,6 +438,21 @@ function unauthenticatedResponse(): Response {
   }, 401);
 }
 
+function authenticatedUserResponse(): Response {
+  return jsonResponse({
+    success: true,
+    data: {
+      id: 42,
+      email: 'user@example.com',
+      displayName: 'User Name',
+      avatarUrl: 'https://example.com/avatar.png',
+      roles: ['USER'],
+      status: 'ACTIVE',
+    },
+    timestamp: '2026-06-22T00:00:00Z',
+  });
+}
+
 function mockUnauthenticatedFetch() {
   return vi.fn((url: string) => {
     if (url === '/api/auth/me') {
@@ -409,11 +462,36 @@ function mockUnauthenticatedFetch() {
   });
 }
 
+function mockAuthenticatedAppFetch() {
+  return vi.fn((url: string) => {
+    if (url === '/api/auth/me') {
+      return Promise.resolve(authenticatedUserResponse());
+    }
+    if (url === '/api/learning-plans') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: [],
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+    return Promise.reject(new Error(`Unexpected URL: ${url}`));
+  });
+}
+
+function mockAuthenticatedDebugFetch() {
+  return vi.fn((url: string) => {
+    if (url === '/api/auth/me') {
+      return Promise.resolve(authenticatedUserResponse());
+    }
+    return Promise.reject(new Error(`Unexpected URL: ${url}`));
+  });
+}
+
 function mockLearningPlanFetch() {
   let messagePosted = false;
   return vi.fn((url: string, init?: RequestInit) => {
     if (url === '/api/auth/me') {
-      return Promise.resolve(unauthenticatedResponse());
+      return Promise.resolve(authenticatedUserResponse());
     }
 
     if (url === '/api/learning-plans' && (!init || init.method === undefined)) {
@@ -490,7 +568,7 @@ function mockLearningPlanFetch() {
 function mockStreamFetch(chunks: string[]) {
   return vi.fn((url: string) => {
     if (url === '/api/auth/me') {
-      return Promise.resolve(unauthenticatedResponse());
+      return Promise.resolve(authenticatedUserResponse());
     }
     return Promise.resolve(new Response(sseStream(chunks), { status: 200 }));
   });
