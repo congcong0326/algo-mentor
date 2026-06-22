@@ -568,6 +568,78 @@ describe('App', () => {
       expect.objectContaining({ method: 'POST' }),
     );
   });
+
+  it('keeps clarification panel and typed answer when follow-up submission fails', async () => {
+    const fetchMock = mockLearningPlanFollowUpFailureFetch();
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    await createCollectingLearningPlanDraft();
+    fireEvent.change(screen.getByRole('textbox', { name: '补充回答' }), {
+      target: { value: '数组和哈希表' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送补充' }));
+
+    expect(await screen.findByText('追问失败')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Agent 追问' })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: '补充回答' })).toHaveValue('数组和哈希表');
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plans/drafts/100/messages',
+      expect.objectContaining({ method: 'POST' }),
+    );
+  });
+
+  it('restores the previously selected plan when wizard creation is cancelled', async () => {
+    vi.stubGlobal('fetch', mockMultipleLearningPlanFetch());
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /六周动态规划突破计划/ }));
+
+    expect(await screen.findByRole('heading', { name: '六周动态规划突破计划' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
+    expect(await screen.findByRole('heading', { name: '目标' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '取消' }));
+
+    expect(await screen.findByRole('heading', { name: '六周动态规划突破计划' })).toBeInTheDocument();
+  });
+
+  it('clears confirmed draft preview when refresh fails after confirmation', async () => {
+    vi.stubGlobal('fetch', mockLearningPlanConfirmRefreshFailureFetch());
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    await createCollectingLearningPlanDraft();
+    fireEvent.change(screen.getByRole('textbox', { name: '补充回答' }), {
+      target: { value: '数组和哈希表' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送补充' }));
+
+    expect(await screen.findByRole('heading', { name: '草案预览' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '确认保存' }));
+
+    expect(await screen.findByText('学习计划列表刷新失败')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '确认保存' })).not.toBeInTheDocument();
+  });
+
+  it('renders one learning plan page heading and one empty-state create action', async () => {
+    vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+    expect(document.querySelectorAll('h1')).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: '新建计划' })).toHaveLength(1);
+  });
 });
 
 function mockProblemFetch(total = 1) {
@@ -810,6 +882,166 @@ function mockLearningPlanFetch() {
   });
 }
 
+function mockLearningPlanFollowUpFailureFetch() {
+  return vi.fn((url: string, init?: RequestInit) => {
+    if (url === '/api/auth/me') {
+      return Promise.resolve(authenticatedUserResponse());
+    }
+
+    if (url === '/api/learning-plans' && (!init || init.method === undefined)) {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: [learningPlanSummary()],
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/900') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: learningPlanDetail(),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/drafts') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: collectingLearningPlanDraft(),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/drafts/100/messages') {
+      return Promise.resolve(jsonResponse({
+        success: false,
+        error: { code: 'DRAFT_MESSAGE_FAILED', message: '追问失败' },
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    return Promise.reject(new Error(`Unexpected URL: ${url}`));
+  });
+}
+
+function mockMultipleLearningPlanFetch() {
+  return vi.fn((url: string) => {
+    if (url === '/api/auth/me') {
+      return Promise.resolve(authenticatedUserResponse());
+    }
+
+    if (url === '/api/learning-plans') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: [
+          learningPlanSummary(),
+          learningPlanSummary({
+            id: 901,
+            title: '六周动态规划突破计划',
+            goal: '系统掌握动态规划',
+            durationWeeks: 6,
+            weeklyHours: 8,
+          }),
+        ],
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/900') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: learningPlanDetail(),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/901') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: learningPlanDetail({
+          id: 901,
+          title: '六周动态规划突破计划',
+          summary: '围绕动态规划建立状态设计能力。',
+          goal: '系统掌握动态规划',
+          durationWeeks: 6,
+          weeklyHours: 8,
+          topicPreferences: ['Dynamic Programming'],
+        }),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    return Promise.reject(new Error(`Unexpected URL: ${url}`));
+  });
+}
+
+function mockLearningPlanConfirmRefreshFailureFetch() {
+  let messagePosted = false;
+  let confirmed = false;
+
+  return vi.fn((url: string, init?: RequestInit) => {
+    if (url === '/api/auth/me') {
+      return Promise.resolve(authenticatedUserResponse());
+    }
+
+    if (url === '/api/learning-plans' && (!init || init.method === undefined)) {
+      if (confirmed) {
+        return Promise.resolve(jsonResponse({
+          success: false,
+          error: { code: 'LEARNING_PLAN_REFRESH_FAILED', message: '学习计划列表刷新失败' },
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
+      }
+
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: [learningPlanSummary()],
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/900') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: learningPlanDetail(),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/drafts') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: collectingLearningPlanDraft(),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/drafts/100/messages') {
+      messagePosted = true;
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: generatedLearningPlanDraft(),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/drafts/100/confirm' && messagePosted) {
+      confirmed = true;
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: {
+          planId: 900,
+          title: '四周 Java 算法面试冲刺计划',
+          status: 'ACTIVE',
+        },
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    return Promise.reject(new Error(`Unexpected URL: ${url}`));
+  });
+}
+
 function mockStreamFetch(chunks: string[]) {
   return vi.fn((url: string) => {
     if (url === '/api/auth/me') {
@@ -826,7 +1058,69 @@ function mockStreamFetch(chunks: string[]) {
   });
 }
 
-function learningPlanDetail() {
+async function createCollectingLearningPlanDraft() {
+  expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
+  fireEvent.change(screen.getByRole('textbox', { name: '学习目标' }), {
+    target: { value: '准备 Java 后端算法面试' },
+  });
+  fireEvent.click(screen.getByRole('button', { name: '下一步' }));
+  fireEvent.click(screen.getByRole('button', { name: '下一步' }));
+  fireEvent.click(screen.getByRole('button', { name: '下一步' }));
+  fireEvent.click(screen.getByRole('button', { name: '生成草案' }));
+
+  expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();
+}
+
+function collectingLearningPlanDraft() {
+  return {
+    draftId: 100,
+    status: 'COLLECTING',
+    assistantMessage: '请补充目标主题。',
+    missingFields: ['topicPreferences'],
+    draftPlan: null,
+  };
+}
+
+function generatedLearningPlanDraft() {
+  return {
+    draftId: 100,
+    status: 'GENERATED',
+    assistantMessage: '已生成学习计划草案。',
+    missingFields: [],
+    draftPlan: learningPlanDetail(),
+  };
+}
+
+function learningPlanSummary(overrides: Partial<ReturnType<typeof baseLearningPlanSummary>> = {}) {
+  return {
+    ...baseLearningPlanSummary(),
+    ...overrides,
+  };
+}
+
+function baseLearningPlanSummary() {
+  return {
+    id: 900,
+    title: '四周 Java 算法面试冲刺计划',
+    intent: 'INTERVIEW_SPRINT',
+    goal: '准备 Java 后端算法面试',
+    durationWeeks: 4,
+    level: 'INTERMEDIATE',
+    weeklyHours: 6,
+    status: 'ACTIVE',
+    createdAt: '2026-06-22T00:00:00Z',
+  };
+}
+
+function learningPlanDetail(overrides: Partial<ReturnType<typeof baseLearningPlanDetail>> = {}) {
+  return {
+    ...baseLearningPlanDetail(),
+    ...overrides,
+  };
+}
+
+function baseLearningPlanDetail() {
   return {
     id: 900,
     title: '四周 Java 算法面试冲刺计划',

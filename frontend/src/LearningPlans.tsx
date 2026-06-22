@@ -29,6 +29,7 @@ function apiData<T>(response: { success: boolean; data?: T; error?: { message: s
 export default function LearningPlans() {
   const [plans, setPlans] = useState<LearningPlanSummaryResponse[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<LearningPlanDetailResponse>();
+  const [restorePlanId, setRestorePlanId] = useState<number>();
   const [draft, setDraft] = useState<LearningPlanDraftResponse>();
   const [flowState, setFlowState] = useState<LearningPlanFlowState>('idle');
   const [error, setError] = useState('');
@@ -65,6 +66,7 @@ export default function LearningPlans() {
       const nextDraft = apiData(await createLearningPlanDraft(request), '学习计划草案创建失败');
       setDraft(nextDraft);
       setSelectedPlan(undefined);
+      setRestorePlanId(undefined);
       setFlowState(nextDraft.status === 'COLLECTING' ? 'collecting' : 'previewing');
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : '学习计划草案创建失败');
@@ -74,7 +76,7 @@ export default function LearningPlans() {
 
   async function sendFollowUp(message: string) {
     if (!draft || !message.trim()) {
-      return;
+      return false;
     }
     setFlowState('generating');
     setError('');
@@ -85,9 +87,11 @@ export default function LearningPlans() {
       );
       setDraft(nextDraft);
       setFlowState(nextDraft.status === 'COLLECTING' ? 'collecting' : 'previewing');
+      return true;
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : '学习计划追问提交失败');
       setFlowState('collecting');
+      return false;
     }
   }
 
@@ -99,9 +103,14 @@ export default function LearningPlans() {
     setError('');
     try {
       const confirmed = apiData(await confirmLearningPlanDraft(draft.draftId), '学习计划确认失败');
-      await refreshPlans(confirmed.planId);
       setDraft(undefined);
+      setRestorePlanId(undefined);
       setFlowState('idle');
+      try {
+        await refreshPlans(confirmed.planId);
+      } catch (refreshError) {
+        setError(refreshError instanceof Error ? refreshError.message : '学习计划列表加载失败');
+      }
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : '学习计划确认失败');
       setFlowState('previewing');
@@ -117,6 +126,7 @@ export default function LearningPlans() {
   }
 
   function startCreating() {
+    setRestorePlanId(selectedPlan?.id);
     setDraft(undefined);
     setSelectedPlan(undefined);
     setError('');
@@ -124,11 +134,13 @@ export default function LearningPlans() {
   }
 
   function cancelCreating() {
+    const planIdToRestore = restorePlanId ?? plans[0]?.id;
     setDraft(undefined);
+    setRestorePlanId(undefined);
     setError('');
     setFlowState('idle');
-    if (!selectedPlan && plans[0]) {
-      void loadPlan(plans[0].id);
+    if (planIdToRestore) {
+      void loadPlan(planIdToRestore);
     }
   }
 
@@ -137,7 +149,6 @@ export default function LearningPlans() {
       <div className="learning-page-heading">
         <div>
           <p className="eyebrow">LEARNING PLANS</p>
-          <h1 aria-hidden="true">学习计划</h1>
         </div>
         <button className="primary-button" onClick={startCreating} type="button">
           <Plus aria-hidden="true" />
@@ -162,6 +173,7 @@ export default function LearningPlans() {
                 key={plan.id}
                 onClick={() => {
                   setDraft(undefined);
+                  setRestorePlanId(undefined);
                   setFlowState('idle');
                   void loadPlan(plan.id);
                 }}
@@ -178,18 +190,18 @@ export default function LearningPlans() {
         </aside>
 
         <div className="learning-main">
-          {flowState === 'creating' || flowState === 'generating' ? (
-            <LearningPlanWizard
-              loading={flowState === 'generating'}
-              onCancel={cancelCreating}
-              onSubmit={submitDraft}
-            />
-          ) : draft ? (
+          {draft ? (
             <LearningPlanDraftPanel
               draft={draft}
               loading={flowState === 'generating' || flowState === 'confirming'}
               onConfirm={confirmDraft}
               onSendFollowUp={sendFollowUp}
+            />
+          ) : flowState === 'creating' || flowState === 'generating' ? (
+            <LearningPlanWizard
+              loading={flowState === 'generating'}
+              onCancel={cancelCreating}
+              onSubmit={submitDraft}
             />
           ) : selectedPlan ? (
             <LearningPlanDetail plan={selectedPlan} />
@@ -197,10 +209,6 @@ export default function LearningPlans() {
             <article className="learning-panel empty-plan-panel">
               <h2>还没有学习计划</h2>
               <p>创建一个计划后，系统会在这里展示阶段、推荐题目和复盘建议。</p>
-              <button className="primary-button" onClick={startCreating} type="button">
-                <Plus aria-hidden="true" />
-                <span>新建计划</span>
-              </button>
             </article>
           )}
         </div>

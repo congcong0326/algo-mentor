@@ -7,7 +7,7 @@ interface LearningPlanDraftPanelProps {
   draft: LearningPlanDraftResponse;
   loading: boolean;
   onConfirm: () => void;
-  onSendFollowUp: (message: string) => void;
+  onSendFollowUp: (message: string) => Promise<boolean>;
 }
 
 export default function LearningPlanDraftPanel({
@@ -41,8 +41,11 @@ export default function LearningPlanDraftPanel({
           className="primary-button"
           disabled={loading || !followUp.trim()}
           onClick={() => {
-            onSendFollowUp(followUp.trim());
-            setFollowUp('');
+            void onSendFollowUp(followUp.trim()).then((sent) => {
+              if (sent) {
+                setFollowUp('');
+              }
+            });
           }}
           type="button"
         >
