@@ -1270,3 +1270,35 @@ h2 {
 .tag-pill.removable {
   border: 0;
 }
+
+@media (max-width: 980px) {
+  .app-shell {
+    padding: 16px;
+  }
+
+  .app-header-actions {
+    justify-content: space-between;
+  }
+
+  .learning-page-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .wizard-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .wizard-actions {
+    flex-direction: column-reverse;
+  }
+
+  .wizard-actions .primary-button,
+  .wizard-actions .secondary-button {
+    width: 100%;
+  }
+
+  .wizard-review {
+    grid-template-columns: 1fr;
+  }
+}

@@ -43,7 +43,7 @@ describe('LearningPlanDraftPanel', () => {
   };
 
   it('submits clarification answers for collecting drafts', () => {
-    const onSendFollowUp = vi.fn();
+    const onSendFollowUp = vi.fn(() => Promise.resolve(true));
 
     render(
       <LearningPlanDraftPanel
@@ -84,7 +84,7 @@ describe('LearningPlanDraftPanel', () => {
         draft={draft}
         loading={false}
         onConfirm={onConfirm}
-        onSendFollowUp={vi.fn()}
+        onSendFollowUp={vi.fn(() => Promise.resolve(true))}
       />,
     );
 
@@ -107,7 +107,7 @@ describe('LearningPlanDraftPanel', () => {
         }}
         loading={false}
         onConfirm={vi.fn()}
-        onSendFollowUp={vi.fn()}
+        onSendFollowUp={vi.fn(() => Promise.resolve(true))}
       />,
     );
 
@@ -128,7 +128,7 @@ describe('LearningPlanDraftPanel', () => {
         }}
         loading={false}
         onConfirm={vi.fn()}
-        onSendFollowUp={vi.fn()}
+        onSendFollowUp={vi.fn(() => Promise.resolve(true))}
       />,
     );
 
