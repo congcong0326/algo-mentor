@@ -26,6 +26,7 @@
     <module>llm-openai</module>
     <module>agent-core</module>
     <module>agent-persistence-postgres</module>
+    <module>auth</module>
     <module>mentor-application</module>
     <module>mentor-api</module>
   </modules>

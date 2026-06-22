@@ -86,6 +86,14 @@ LONG_TERM_LEARNING  长期学习
 
 API 路径统一放在 `/api/learning-plans` 下，公共路径、请求头和固定字段名应放入已有 API contract 常量类或学习计划专用常量类。
 
+认证侧已新增最小用户身份接口：
+
+```http
+GET /api/auth/me
+```
+
+该接口返回当前登录用户 ID，响应 `data.id` 即后端业务使用的本地 `userId`。学习计划 API 不再接收客户端传入的 `userId`，所有草案、正式计划、列表和详情的用户归属都从当前请求的认证上下文解析。前端如需判断登录状态或调试当前用户，可先调用 `/api/auth/me`；业务请求本身不携带 `userId`。
+
 ### 创建草案
 
 ```http
@@ -94,7 +102,6 @@ POST /api/learning-plans/drafts
 
 请求字段：
 
-- `userId`
 - `intent`
 - `goal`
 - `durationWeeks`
@@ -147,7 +154,7 @@ POST /api/learning-plans/drafts/{draftId}/confirm
 GET /api/learning-plans
 ```
 
-第一版还没有完整认证体系时，列表接口通过 `userId` 查询参数过滤；后续接入认证后改为从当前登录用户解析。
+列表接口按当前登录用户过滤，不接收 `userId` 查询参数。
 
 列表项字段：
 
@@ -167,7 +174,7 @@ GET /api/learning-plans
 GET /api/learning-plans/{planId}
 ```
 
-返回正式计划基础信息、阶段列表和每阶段推荐题目。第一版没有完整认证体系时，详情接口同样校验请求用户只能读取自己的计划。
+返回正式计划基础信息、阶段列表和每阶段推荐题目。详情接口必须用当前登录用户校验计划归属，只允许读取自己的计划。
 
 ## 数据模型
 
