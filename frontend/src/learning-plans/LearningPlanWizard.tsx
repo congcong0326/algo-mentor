@@ -17,10 +17,8 @@ interface LearningPlanWizardProps {
 const steps = ['目标', '时间与水平', '主题偏好', '生成与确认'] as const;
 
 function splitTags(value: string): string[] {
-  const separator = /[,，]/.test(value) ? /[,，]+/ : /\s+/;
-
   return value
-    .split(separator)
+    .split(/[,，\s]+/)
     .map((tag) => tag.trim())
     .filter(Boolean);
 }

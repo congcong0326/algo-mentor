@@ -1,6 +1,8 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import LearningPlanWizard from './LearningPlanWizard';
+
+afterEach(cleanup);
 
 describe('LearningPlanWizard', () => {
   it('walks through steps and submits a structured draft request', () => {
@@ -40,7 +42,8 @@ describe('LearningPlanWizard', () => {
     });
     fireEvent.keyDown(screen.getByRole('textbox', { name: '添加主题' }), { key: 'Enter' });
     expect(screen.getByText('Array')).toBeInTheDocument();
-    expect(screen.getByText('Hash Table')).toBeInTheDocument();
+    expect(screen.getByText('Hash')).toBeInTheDocument();
+    expect(screen.getByText('Table')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '下一步' }));
 
     expect(screen.getByRole('heading', { name: '生成与确认' })).toBeInTheDocument();
@@ -55,8 +58,31 @@ describe('LearningPlanWizard', () => {
       programmingLanguage: 'Java',
       difficultyPreference: 'MEDIUM',
       interviewOriented: true,
-      topicPreferences: ['Array', 'Hash Table'],
+      topicPreferences: ['Array', 'Hash Table', 'Hash', 'Table'],
     });
+  });
+
+  it('splits topics by comma, Chinese comma, and whitespace together', () => {
+    const onSubmit = vi.fn();
+
+    render(<LearningPlanWizard loading={false} onCancel={vi.fn()} onSubmit={onSubmit} />);
+
+    fireEvent.change(screen.getByRole('textbox', { name: '学习目标' }), {
+      target: { value: '补齐图论和动态规划' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '下一步' }));
+    fireEvent.click(screen.getByRole('button', { name: '下一步' }));
+
+    fireEvent.change(screen.getByRole('textbox', { name: '添加主题' }), {
+      target: { value: 'Array, Tree DP，Graph' },
+    });
+    fireEvent.keyDown(screen.getByRole('textbox', { name: '添加主题' }), { key: 'Enter' });
+    fireEvent.click(screen.getByRole('button', { name: '下一步' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成草案' }));
+
+    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({
+      topicPreferences: ['Array', 'Hash Table', 'Tree', 'DP', 'Graph'],
+    }));
   });
 
   it('prevents moving past invalid numeric values', () => {
