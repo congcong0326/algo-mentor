@@ -51,7 +51,7 @@ describe('AppShell', () => {
       </AppShell>,
     );
 
-    expect(screen.getByText('退出登录失败')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('退出登录失败');
     expect(screen.getByText('AI debug page')).toBeInTheDocument();
   });
 });

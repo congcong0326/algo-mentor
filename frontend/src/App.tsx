@@ -146,6 +146,10 @@ function parseOptionalPositiveNumber(value: string): number | undefined {
   return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
 }
 
+function normalizeAuthenticatedView(pathname: string): AppView {
+  return viewFromPath(pathname) ?? 'learningPlans';
+}
+
 export default function App() {
   const [activeView, setActiveView] = useState<AppView>(() => viewFromPath(window.location.pathname) ?? 'learningPlans');
   const [currentUser, setCurrentUser] = useState<CurrentUser>();
@@ -175,9 +179,9 @@ export default function App() {
         setCurrentUser(user);
         setAuthChecked(true);
         if (user) {
-          const nextView = viewFromPath(window.location.pathname) ?? 'learningPlans';
+          const nextView = normalizeAuthenticatedView(window.location.pathname);
           setActiveView(nextView);
-          if (window.location.pathname === '/' || window.location.pathname === APP_ROUTES.login) {
+          if (pathForView(nextView) !== window.location.pathname) {
             window.history.replaceState({}, '', pathForView(nextView));
           }
         } else if (window.location.pathname !== APP_ROUTES.login) {
@@ -197,6 +201,23 @@ export default function App() {
       abortControllerRef.current?.abort();
     };
   }, []);
+
+  useEffect(() => {
+    if (!currentUser) {
+      return undefined;
+    }
+
+    function handlePopState() {
+      const nextView = normalizeAuthenticatedView(window.location.pathname);
+      setActiveView(nextView);
+      if (pathForView(nextView) !== window.location.pathname) {
+        window.history.replaceState({}, '', pathForView(nextView));
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [currentUser]);
 
   function addLog(eventName: StreamLogEntry['eventName'], data: unknown) {
     const entry: StreamLogEntry = {
@@ -355,14 +376,24 @@ export default function App() {
   }
 
   function navigateToView(view: AppView) {
+    const nextPath = pathForView(view);
+    if (activeView === view && window.location.pathname === nextPath) {
+      return;
+    }
+
     setActiveView(view);
-    window.history.pushState({}, '', pathForView(view));
+    if (window.location.pathname !== nextPath) {
+      window.history.pushState({}, '', nextPath);
+    }
   }
 
   async function handleLogout() {
     setLogoutError('');
     try {
       await logout();
+      abortControllerRef.current?.abort();
+      abortControllerRef.current = null;
+      setConnectionState('idle');
       setCurrentUser(undefined);
       window.history.pushState({}, '', APP_ROUTES.login);
     } catch (error) {

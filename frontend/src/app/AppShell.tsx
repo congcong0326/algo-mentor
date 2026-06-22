@@ -59,7 +59,7 @@ export default function AppShell({
           </div>
         </div>
       </header>
-      {logoutError && <p className="error-text app-error">{logoutError}</p>}
+      {logoutError && <p className="error-text app-error" role="alert">{logoutError}</p>}
       <section className="app-content">{children}</section>
     </main>
   );

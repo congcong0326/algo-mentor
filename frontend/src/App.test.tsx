@@ -61,6 +61,31 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/learning-plans');
   });
 
+  it('syncs active view when browser history changes', async () => {
+    vi.stubGlobal('fetch', mockLearningPlanAndProblemFetch());
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '题库' }));
+
+    expect(await screen.findByRole('heading', { name: '题库' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'true');
+    expect(window.location.pathname).toBe('/problems');
+
+    window.history.back();
+    await waitFor(() => expect(window.location.pathname).toBe('/learning-plans'));
+    fireEvent(window, new PopStateEvent('popstate'));
+
+    await waitFor(() => expect(screen.getByRole('button', { name: '学习计划' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    ));
+    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+  });
+
   it('renders the conversation stream test client shell', async () => {
     vi.stubGlobal('fetch', mockAuthenticatedDebugFetch());
     window.history.replaceState({}, '', '/debug');
@@ -245,6 +270,30 @@ describe('App', () => {
     expect(capturedSignal?.aborted).toBe(true);
     expect(screen.getByText('stopped')).toBeInTheDocument();
     expect(screen.getByText('connection_stopped')).toBeInTheDocument();
+  });
+
+  it('aborts the current stream when logging out', async () => {
+    let capturedSignal: AbortSignal | undefined;
+    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(authenticatedUserResponse());
+      }
+      if (url === '/api/auth/logout') {
+        return Promise.resolve(jsonResponse({ success: true, timestamp: '2026-06-22T00:00:00Z' }));
+      }
+      capturedSignal = init?.signal ?? undefined;
+      return new Promise<Response>(() => {});
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/debug');
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Start' }));
+    await waitFor(() => expect(capturedSignal).toBeDefined());
+    fireEvent.click(screen.getByRole('button', { name: '退出登录' }));
+
+    await screen.findByRole('link', { name: '使用 Google 登录' });
+    expect(capturedSignal?.aborted).toBe(true);
   });
 
   it('keeps sending disabled when backend reports an active run', async () => {
@@ -482,6 +531,56 @@ function mockAuthenticatedDebugFetch() {
   return vi.fn((url: string) => {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
+    }
+    return Promise.reject(new Error(`Unexpected URL: ${url}`));
+  });
+}
+
+function mockLearningPlanAndProblemFetch() {
+  return vi.fn((url: string) => {
+    if (url === '/api/auth/me') {
+      return Promise.resolve(authenticatedUserResponse());
+    }
+    if (url === '/api/learning-plans') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: [],
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+    if (url.startsWith('/api/problems/two-sum')) {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: {
+          slug: 'two-sum',
+          frontendId: 1,
+          title: 'Two Sum',
+          titleCn: '两数之和',
+          difficulty: 'EASY',
+          tags: ['Array', 'Hash Table'],
+          contentMarkdown: '# Two Sum',
+        },
+        timestamp: '2026-06-17T00:00:00Z',
+      }));
+    }
+    if (url.startsWith('/api/problems')) {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: {
+          items: [{
+            slug: 'two-sum',
+            frontendId: 1,
+            title: 'Two Sum',
+            titleCn: '两数之和',
+            difficulty: 'EASY',
+            tags: ['Array'],
+          }],
+          total: 1,
+          page: 1,
+          pageSize: 20,
+        },
+        timestamp: '2026-06-17T00:00:00Z',
+      }));
     }
     return Promise.reject(new Error(`Unexpected URL: ${url}`));
   });

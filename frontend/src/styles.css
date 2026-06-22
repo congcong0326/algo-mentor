@@ -1059,6 +1059,30 @@ h2 {
 }
 
 @media (max-width: 980px) {
+  .app-shell {
+    padding: 20px;
+  }
+
+  .app-header {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .app-nav {
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .app-nav-button {
+    flex: 0 0 auto;
+  }
+
+  .app-header-actions {
+    align-items: stretch;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
   .test-shell {
     padding: 20px;
   }
