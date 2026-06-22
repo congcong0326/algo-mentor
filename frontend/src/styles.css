@@ -895,10 +895,22 @@ h2 {
   min-height: 0;
 }
 
+.learning-page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
 .learning-layout {
   display: grid;
   grid-template-columns: minmax(320px, 380px) minmax(0, 1fr);
   gap: 18px;
+}
+
+.learning-layout.redesigned {
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
 }
 
 .learning-sidebar,
@@ -972,9 +984,23 @@ h2 {
   color: #637481;
 }
 
+.plan-row.selected {
+  border-color: #0f8f7f;
+  background: #eefaf7;
+}
+
 .learning-form {
   padding-top: 12px;
   border-top: 1px solid #e4ebf0;
+}
+
+.empty-plan-panel {
+  align-content: center;
+  min-height: 360px;
+}
+
+.empty-plan-panel p {
+  color: #4f5d68;
 }
 
 .mini-grid {

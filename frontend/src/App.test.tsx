@@ -525,18 +525,23 @@ describe('App', () => {
     expect(await screen.findByText('network failed')).toBeInTheDocument();
   });
 
-  it('creates learning plan draft, answers clarification, confirms, and shows detail', async () => {
+  it('creates learning plan draft through wizard, answers clarification, confirms, and shows detail', async () => {
     const fetchMock = mockLearningPlanFetch();
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
+
     render(<App />);
 
     expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
     expect(await screen.findAllByText('四周 Java 算法面试冲刺计划')).not.toHaveLength(0);
 
+    fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
     fireEvent.change(screen.getByRole('textbox', { name: '学习目标' }), {
       target: { value: '准备 Java 后端算法面试' },
     });
+    fireEvent.click(screen.getByRole('button', { name: '下一步' }));
+    fireEvent.click(screen.getByRole('button', { name: '下一步' }));
+    fireEvent.click(screen.getByRole('button', { name: '下一步' }));
     fireEvent.click(screen.getByRole('button', { name: '生成草案' }));
 
     expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();
