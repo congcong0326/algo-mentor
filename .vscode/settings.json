@@ -1,4 +1,8 @@
 {
     "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.hover.javadoc.enabled": true,
+    "java.implementationCodeLens": "all",
+    "java.referencesCodeLens.enabled": true,
+    "mybatis-boost.useDefinitionProvider": false
 }
