@@ -1,9 +1,47 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import LearningPlanDraftPanel from './LearningPlanDraftPanel';
 import type { LearningPlanDraftResponse } from '../types/api';
 
+afterEach(cleanup);
+
 describe('LearningPlanDraftPanel', () => {
+  const draftPlan: NonNullable<LearningPlanDraftResponse['draftPlan']> = {
+    title: '四周 Java 算法面试冲刺计划',
+    summary: '围绕数组和哈希表建立高频题型能力。',
+    intent: 'INTERVIEW_SPRINT',
+    goal: '准备 Java 后端算法面试',
+    durationWeeks: 4,
+    level: 'INTERMEDIATE',
+    weeklyHours: 6,
+    programmingLanguage: 'Java',
+    difficultyPreference: 'MEDIUM',
+    interviewOriented: true,
+    topicPreferences: ['Array', 'Hash Table'],
+    profileSummary: '中级，每周 6 小时。',
+    phases: [{
+      phaseIndex: 1,
+      title: '基础题型恢复',
+      durationWeeks: 1,
+      focus: '数组和哈希表',
+      objectives: ['恢复基础题型手感'],
+      recommendedTags: ['Array', 'Hash Table'],
+      acceptanceCriteria: ['能说明哈希表查找边界'],
+      reviewAdvice: '整理错误原因。',
+      problems: [{
+        slug: 'two-sum',
+        frontendId: 1,
+        title: 'Two Sum',
+        titleCn: '两数之和',
+        difficulty: 'EASY',
+        tags: ['Array', 'Hash Table'],
+        reason: '恢复哈希表查找。',
+        sortOrder: 1,
+      }],
+    }],
+    metadata: {},
+  };
+
   it('submits clarification answers for collecting drafts', () => {
     const onSendFollowUp = vi.fn();
 
@@ -38,41 +76,7 @@ describe('LearningPlanDraftPanel', () => {
       status: 'GENERATED',
       assistantMessage: '已生成学习计划草案。',
       missingFields: [],
-      draftPlan: {
-        title: '四周 Java 算法面试冲刺计划',
-        summary: '围绕数组和哈希表建立高频题型能力。',
-        intent: 'INTERVIEW_SPRINT',
-        goal: '准备 Java 后端算法面试',
-        durationWeeks: 4,
-        level: 'INTERMEDIATE',
-        weeklyHours: 6,
-        programmingLanguage: 'Java',
-        difficultyPreference: 'MEDIUM',
-        interviewOriented: true,
-        topicPreferences: ['Array', 'Hash Table'],
-        profileSummary: '中级，每周 6 小时。',
-        phases: [{
-          phaseIndex: 1,
-          title: '基础题型恢复',
-          durationWeeks: 1,
-          focus: '数组和哈希表',
-          objectives: ['恢复基础题型手感'],
-          recommendedTags: ['Array', 'Hash Table'],
-          acceptanceCriteria: ['能说明哈希表查找边界'],
-          reviewAdvice: '整理错误原因。',
-          problems: [{
-            slug: 'two-sum',
-            frontendId: 1,
-            title: 'Two Sum',
-            titleCn: '两数之和',
-            difficulty: 'EASY',
-            tags: ['Array', 'Hash Table'],
-            reason: '恢复哈希表查找。',
-            sortOrder: 1,
-          }],
-        }],
-        metadata: {},
-      },
+      draftPlan,
     };
 
     render(
@@ -89,5 +93,47 @@ describe('LearningPlanDraftPanel', () => {
     fireEvent.click(screen.getByRole('button', { name: '确认保存' }));
 
     expect(onConfirm).toHaveBeenCalled();
+  });
+
+  it('does not allow confirmation for failed drafts even when a stale plan exists', () => {
+    render(
+      <LearningPlanDraftPanel
+        draft={{
+          draftId: 100,
+          status: 'GENERATION_FAILED',
+          assistantMessage: '生成失败。',
+          missingFields: [],
+          draftPlan,
+        }}
+        loading={false}
+        onConfirm={vi.fn()}
+        onSendFollowUp={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('草案生成失败或已过期，请返回向导调整后重新生成。')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '草案预览' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '确认保存' })).not.toBeInTheDocument();
+  });
+
+  it('does not allow confirmation for expired drafts even when a stale plan exists', () => {
+    render(
+      <LearningPlanDraftPanel
+        draft={{
+          draftId: 100,
+          status: 'EXPIRED',
+          assistantMessage: '草案已过期。',
+          missingFields: [],
+          draftPlan,
+        }}
+        loading={false}
+        onConfirm={vi.fn()}
+        onSendFollowUp={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText('草案生成失败或已过期，请返回向导调整后重新生成。')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '草案预览' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '确认保存' })).not.toBeInTheDocument();
   });
 });

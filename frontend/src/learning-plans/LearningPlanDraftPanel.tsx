@@ -17,6 +17,7 @@ export default function LearningPlanDraftPanel({
   onSendFollowUp,
 }: LearningPlanDraftPanelProps) {
   const [followUp, setFollowUp] = useState('');
+  const followUpId = `learning-plan-draft-${draft.draftId}-follow-up`;
 
   if (draft.status === 'COLLECTING') {
     return (
@@ -26,11 +27,11 @@ export default function LearningPlanDraftPanel({
           <h2>Agent 追问</h2>
         </div>
         <p>{draft.assistantMessage}</p>
-        <label className="topic-field">
-          <span>回答</span>
+        <label className="topic-field" htmlFor={followUpId}>
+          <span>补充回答</span>
           <textarea
-            aria-label="补充回答"
             disabled={loading}
+            id={followUpId}
             onChange={(event) => setFollowUp(event.target.value)}
             rows={3}
             value={followUp}
@@ -52,7 +53,7 @@ export default function LearningPlanDraftPanel({
     );
   }
 
-  if (draft.draftPlan) {
+  if (draft.status === 'GENERATED' && draft.draftPlan) {
     return (
       <article className="learning-panel">
         <div className="panel-title">
@@ -64,6 +65,14 @@ export default function LearningPlanDraftPanel({
           <Check aria-hidden="true" />
           <span>确认保存</span>
         </button>
+      </article>
+    );
+  }
+
+  if (draft.status === 'GENERATION_FAILED' || draft.status === 'EXPIRED') {
+    return (
+      <article className="learning-panel">
+        <p className="empty-log">草案生成失败或已过期，请返回向导调整后重新生成。</p>
       </article>
     );
   }
