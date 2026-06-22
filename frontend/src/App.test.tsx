@@ -1,5 +1,6 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { debugStatusLabel } from './ai-debug/AiDebugConsole';
 import App from './App';
 
 function sseStream(chunks: string[]): ReadableStream<Uint8Array> {
@@ -105,6 +106,16 @@ describe('App', () => {
     expect(screen.getByText('POST /api/agent/conversations/stream')).toBeInTheDocument();
   });
 
+  it('exposes debug status labels for the app shell', () => {
+    expect(debugStatusLabel('idle')).toBe('idle');
+    expect(debugStatusLabel('connecting')).toBe('connecting');
+    expect(debugStatusLabel('open')).toBe('open');
+    expect(debugStatusLabel('blocked')).toBe('blocked');
+    expect(debugStatusLabel('stopped')).toBe('stopped');
+    expect(debugStatusLabel('error')).toBe('error');
+    expect(debugStatusLabel('done')).toBe('done');
+  });
+
   it('renders when crypto.randomUUID is unavailable', async () => {
     vi.stubGlobal('crypto', {});
     vi.stubGlobal('fetch', mockAuthenticatedDebugFetch());
@@ -204,6 +215,9 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
       }
+      if (url === '/api/learning-plans') {
+        return Promise.resolve(jsonResponse({ success: true, data: [], timestamp: '2026-06-22T00:00:00Z' }));
+      }
       if (url === '/api/agent/conversations/stream') {
         expect(init?.credentials).toBe('same-origin');
         expect(new Headers(init?.headers).get('X-XSRF-TOKEN')).toBe('csrf-token');
@@ -217,7 +231,8 @@ describe('App', () => {
     window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    fireEvent.change(await screen.findByRole('textbox', { name: 'Message' }), {
+    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    fireEvent.change(screen.getByRole('textbox', { name: 'Message' }), {
       target: { value: 'Continue with boundary cases.' },
     });
     fireEvent.change(screen.getByRole('textbox', { name: 'Task ID' }), {
@@ -258,7 +273,8 @@ describe('App', () => {
     window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    const startButton = await screen.findByRole('button', { name: 'Start' });
+    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    const startButton = screen.getByRole('button', { name: 'Start' });
     await act(async () => {
       fireEvent.click(startButton);
     });
@@ -281,7 +297,8 @@ describe('App', () => {
     window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    const startButton = await screen.findByRole('button', { name: 'Start' });
+    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    const startButton = screen.getByRole('button', { name: 'Start' });
     await act(async () => {
       fireEvent.click(startButton);
     });
@@ -297,13 +314,17 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
       }
+      if (url === '/api/learning-plans') {
+        return Promise.resolve(jsonResponse({ success: true, data: [], timestamp: '2026-06-22T00:00:00Z' }));
+      }
       capturedSignal = init?.signal ?? undefined;
       return new Promise<Response>(() => {});
     }));
     window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Start' }));
+    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
     await waitFor(() => expect(capturedSignal).toBeDefined());
     fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
 
@@ -319,6 +340,9 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
       }
+      if (url === '/api/learning-plans') {
+        return Promise.resolve(jsonResponse({ success: true, data: [], timestamp: '2026-06-22T00:00:00Z' }));
+      }
       if (url === '/api/auth/logout') {
         return new Promise<Response>((resolve) => {
           resolveLogout = resolve;
@@ -331,7 +355,8 @@ describe('App', () => {
     window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Start' }));
+    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
     await waitFor(() => expect(capturedSignal).toBeDefined());
     fireEvent.click(screen.getByRole('button', { name: '退出登录' }));
 
@@ -339,15 +364,20 @@ describe('App', () => {
       '/api/auth/logout',
       expect.objectContaining({ method: 'POST' }),
     ));
-    expect(capturedSignal?.aborted).toBe(true);
+    expect(capturedSignal?.aborted).toBe(false);
     resolveLogout?.(jsonResponse({ success: true, timestamp: '2026-06-22T00:00:00Z' }));
     await screen.findByRole('link', { name: '使用 Google 登录' });
+    expect(screen.queryByRole('heading', { name: 'AI SSE 测试台' })).not.toBeInTheDocument();
+    expect(capturedSignal?.aborted).toBe(true);
   });
 
   it('keeps sending disabled when backend reports an active run', async () => {
     vi.stubGlobal('fetch', vi.fn((url: string) => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
+      }
+      if (url === '/api/learning-plans') {
+        return Promise.resolve(jsonResponse({ success: true, data: [], timestamp: '2026-06-22T00:00:00Z' }));
       }
       return Promise.resolve(jsonResponse({
         success: false,
@@ -362,7 +392,8 @@ describe('App', () => {
     window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Start' }));
+    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
     expect(await screen.findByText('blocked')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Start' })).toBeDisabled();
@@ -716,6 +747,13 @@ function mockStreamFetch(chunks: string[]) {
   return vi.fn((url: string) => {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
+    }
+    if (url === '/api/learning-plans') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: [],
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
     }
     return Promise.resolve(new Response(sseStream(chunks), { status: 200 }));
   });
