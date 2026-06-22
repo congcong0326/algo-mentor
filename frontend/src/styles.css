@@ -1157,3 +1157,90 @@ h2 {
     grid-template-columns: 1fr;
   }
 }
+
+.wizard-panel {
+  gap: 18px;
+}
+
+.wizard-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.wizard-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wizard-steps li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  min-height: 42px;
+  padding: 8px;
+  border: 1px solid #dfe8ee;
+  border-radius: 8px;
+  background: #fbfcfd;
+  color: #53616c;
+}
+
+.wizard-steps li span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: #edf2f5;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.wizard-steps li.active {
+  border-color: #0f8f7f;
+  background: #eefaf7;
+  color: #123c45;
+}
+
+.wizard-steps li.done span,
+.wizard-steps li.active span {
+  background: #123c45;
+  color: #ffffff;
+}
+
+.wizard-step {
+  display: grid;
+  gap: 14px;
+}
+
+.wizard-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.wizard-review {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 10px 14px;
+  padding: 14px;
+  border: 1px solid #dfe8ee;
+  border-radius: 8px;
+  background: #fbfcfd;
+}
+
+.wizard-review span {
+  color: #5f6f7a;
+  font-weight: 800;
+}
+
+.tag-pill.removable {
+  border: 0;
+}
