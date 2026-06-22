@@ -51,6 +51,39 @@ pre {
   padding: 28px;
 }
 
+.login-page {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 24px;
+  background: #f3f6f8;
+}
+
+.login-panel {
+  display: grid;
+  gap: 18px;
+  width: min(460px, 100%);
+  padding: 32px;
+  border: 1px solid #d7e1e7;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.login-panel h1 {
+  font-size: 34px;
+}
+
+.login-subtitle {
+  margin: 0;
+  color: #4f5d68;
+  line-height: 1.6;
+}
+
+.login-oauth-link {
+  width: 100%;
+  text-decoration: none;
+}
+
 .test-header {
   display: flex;
   align-items: center;
