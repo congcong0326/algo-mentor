@@ -163,12 +163,11 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
 
   function abortStreamAndResetState(updateLocalState = true) {
     const controller = abortControllerRef.current;
-    if (!controller) {
-      return;
+    if (controller) {
+      abortControllerRef.current = null;
+      controller.abort();
     }
 
-    abortControllerRef.current = null;
-    controller.abort();
     if (updateLocalState) {
       setAndReportConnectionState('idle');
       return;

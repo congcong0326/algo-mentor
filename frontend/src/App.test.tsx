@@ -408,6 +408,31 @@ describe('App', () => {
     expect(screen.getByRole('textbox', { name: 'Message' })).toBeEnabled();
   });
 
+  it('resets terminal debug status when navigating away after stream completion', async () => {
+    vi.stubGlobal('fetch', mockStreamFetch([
+      sseEvent('agent_run_end', { runId: 'run_1' }),
+    ]));
+    window.history.replaceState({}, '', '/debug');
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+    });
+
+    expect(await screen.findByText('done')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '学习计划' }));
+
+    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
+
+    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(screen.getByText('idle')).toBeInTheDocument();
+    expect(screen.queryByText('done')).not.toBeInTheDocument();
+  });
+
   it('keeps sending disabled when backend reports an active run', async () => {
     vi.stubGlobal('fetch', vi.fn((url: string) => {
       if (url === '/api/auth/me') {
