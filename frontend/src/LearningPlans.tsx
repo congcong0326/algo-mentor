@@ -32,6 +32,7 @@ export default function LearningPlans() {
   const [restorePlanId, setRestorePlanId] = useState<number>();
   const [draft, setDraft] = useState<LearningPlanDraftResponse>();
   const [flowState, setFlowState] = useState<LearningPlanFlowState>('idle');
+  const [wizardResetStepSignal, setWizardResetStepSignal] = useState(0);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -144,6 +145,15 @@ export default function LearningPlans() {
     }
   }
 
+  function returnToWizard() {
+    setDraft(undefined);
+    setError('');
+    setFlowState('creating');
+    setWizardResetStepSignal((current) => current + 1);
+  }
+
+  const shouldKeepWizardMounted = flowState === 'creating' || flowState === 'generating' || draft !== undefined;
+
   return (
     <section className="learning-shell" aria-label="学习计划">
       <div className="learning-page-heading">
@@ -190,27 +200,32 @@ export default function LearningPlans() {
         </aside>
 
         <div className="learning-main">
+          {shouldKeepWizardMounted && (
+            <div hidden={draft !== undefined}>
+              <LearningPlanWizard
+                loading={draft === undefined && flowState === 'generating'}
+                onCancel={cancelCreating}
+                onSubmit={submitDraft}
+                resetStepSignal={wizardResetStepSignal}
+              />
+            </div>
+          )}
           {draft ? (
             <LearningPlanDraftPanel
               draft={draft}
               loading={flowState === 'generating' || flowState === 'confirming'}
               onConfirm={confirmDraft}
+              onReturnToWizard={returnToWizard}
               onSendFollowUp={sendFollowUp}
             />
-          ) : flowState === 'creating' || flowState === 'generating' ? (
-            <LearningPlanWizard
-              loading={flowState === 'generating'}
-              onCancel={cancelCreating}
-              onSubmit={submitDraft}
-            />
-          ) : selectedPlan ? (
+          ) : !shouldKeepWizardMounted && selectedPlan ? (
             <LearningPlanDetail plan={selectedPlan} />
-          ) : (
+          ) : !shouldKeepWizardMounted ? (
             <article className="learning-panel empty-plan-panel">
               <h2>还没有学习计划</h2>
               <p>创建一个计划后，系统会在这里展示阶段、推荐题目和复盘建议。</p>
             </article>
-          )}
+          ) : null}
         </div>
       </div>
     </section>

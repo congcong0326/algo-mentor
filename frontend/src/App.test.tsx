@@ -49,6 +49,18 @@ describe('App', () => {
     expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
   });
 
+  it('preserves authentication failure query when redirecting to login', async () => {
+    vi.stubGlobal('fetch', mockUnauthenticatedFetch());
+    window.history.replaceState({}, '', '/?auth=failed');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
+    expect(screen.getByText('登录失败，请重新尝试。')).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/login');
+    expect(window.location.search).toBe('?auth=failed');
+  });
+
   it('defaults authenticated users to learning plans', async () => {
     vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
     window.history.replaceState({}, '', '/');
@@ -547,15 +559,22 @@ describe('App', () => {
     expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/learning-plans/drafts',
-      expect.objectContaining({ method: 'POST' }),
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+      }),
     );
+    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts');
 
     fireEvent.change(screen.getByRole('textbox', { name: '补充回答' }), {
       target: { value: '数组和哈希表' },
     });
     fireEvent.click(screen.getByRole('button', { name: '发送补充' }));
+    await screen.findByRole('heading', { name: '草案预览' });
+    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/messages');
 
-    expect(await screen.findByRole('heading', { name: '草案预览' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '草案预览' })).toBeInTheDocument();
     expect(screen.getByText('基础题型恢复')).toBeInTheDocument();
     expect(screen.getByText('两数之和')).toBeInTheDocument();
 
@@ -565,8 +584,13 @@ describe('App', () => {
     expect(screen.getByText('ACTIVE')).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/learning-plans/drafts/100/confirm',
-      expect.objectContaining({ method: 'POST' }),
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+      }),
     );
+    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/confirm');
   });
 
   it('keeps clarification panel and typed answer when follow-up submission fails', async () => {
@@ -587,8 +611,36 @@ describe('App', () => {
     expect(screen.getByRole('textbox', { name: '补充回答' })).toHaveValue('数组和哈希表');
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/learning-plans/drafts/100/messages',
-      expect.objectContaining({ method: 'POST' }),
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+      }),
     );
+    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/messages');
+  });
+
+  it('can return to the populated wizard when draft generation expires', async () => {
+    vi.stubGlobal('fetch', mockExpiredLearningPlanDraftFetch());
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
+    fireEvent.change(screen.getByRole('textbox', { name: '学习目标' }), {
+      target: { value: '准备 Java 后端算法面试' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '下一步' }));
+    fireEvent.click(screen.getByRole('button', { name: '下一步' }));
+    fireEvent.click(screen.getByRole('button', { name: '下一步' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成草案' }));
+
+    expect(await screen.findByText('草案生成失败或已过期，请返回向导调整后重新生成。')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '返回向导' }));
+
+    expect(await screen.findByRole('heading', { name: '目标' })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: '学习目标' })).toHaveValue('准备 Java 后端算法面试');
   });
 
   it('restores the previously selected plan when wizard creation is cancelled', async () => {
@@ -924,6 +976,46 @@ function mockLearningPlanFollowUpFailureFetch() {
   });
 }
 
+function mockExpiredLearningPlanDraftFetch() {
+  return vi.fn((url: string, init?: RequestInit) => {
+    if (url === '/api/auth/me') {
+      return Promise.resolve(authenticatedUserResponse());
+    }
+
+    if (url === '/api/learning-plans' && (!init || init.method === undefined)) {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: [learningPlanSummary()],
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/900') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: learningPlanDetail(),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/drafts') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: {
+          draftId: 100,
+          status: 'EXPIRED',
+          assistantMessage: '草案已过期。',
+          missingFields: [],
+          draftPlan: null,
+        },
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    return Promise.reject(new Error(`Unexpected URL: ${url}`));
+  });
+}
+
 function mockMultipleLearningPlanFetch() {
   return vi.fn((url: string) => {
     if (url === '/api/auth/me') {
@@ -1056,6 +1148,13 @@ function mockStreamFetch(chunks: string[]) {
     }
     return Promise.resolve(new Response(sseStream(chunks), { status: 200 }));
   });
+}
+
+function expectCsrfHeader(fetchMock: ReturnType<typeof vi.fn>, url: string) {
+  const call = fetchMock.mock.calls.find(([calledUrl]) => calledUrl === url);
+  expect(call).toBeDefined();
+  const [, init] = call as [string, RequestInit];
+  expect(new Headers(init.headers).get('X-XSRF-TOKEN')).toBe('csrf-token');
 }
 
 async function createCollectingLearningPlanDraft() {

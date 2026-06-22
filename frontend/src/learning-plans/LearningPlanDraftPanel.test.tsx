@@ -56,6 +56,7 @@ describe('LearningPlanDraftPanel', () => {
         }}
         loading={false}
         onConfirm={vi.fn()}
+        onReturnToWizard={vi.fn()}
         onSendFollowUp={onSendFollowUp}
       />,
     );
@@ -84,6 +85,7 @@ describe('LearningPlanDraftPanel', () => {
         draft={draft}
         loading={false}
         onConfirm={onConfirm}
+        onReturnToWizard={vi.fn()}
         onSendFollowUp={vi.fn(() => Promise.resolve(true))}
       />,
     );
@@ -107,6 +109,7 @@ describe('LearningPlanDraftPanel', () => {
         }}
         loading={false}
         onConfirm={vi.fn()}
+        onReturnToWizard={vi.fn()}
         onSendFollowUp={vi.fn(() => Promise.resolve(true))}
       />,
     );
@@ -114,9 +117,12 @@ describe('LearningPlanDraftPanel', () => {
     expect(screen.getByText('草案生成失败或已过期，请返回向导调整后重新生成。')).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: '草案预览' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '确认保存' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '返回向导' })).toBeInTheDocument();
   });
 
   it('does not allow confirmation for expired drafts even when a stale plan exists', () => {
+    const onReturnToWizard = vi.fn();
+
     render(
       <LearningPlanDraftPanel
         draft={{
@@ -128,6 +134,7 @@ describe('LearningPlanDraftPanel', () => {
         }}
         loading={false}
         onConfirm={vi.fn()}
+        onReturnToWizard={onReturnToWizard}
         onSendFollowUp={vi.fn(() => Promise.resolve(true))}
       />,
     );
@@ -135,5 +142,8 @@ describe('LearningPlanDraftPanel', () => {
     expect(screen.getByText('草案生成失败或已过期，请返回向导调整后重新生成。')).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: '草案预览' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '确认保存' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '返回向导' }));
+
+    expect(onReturnToWizard).toHaveBeenCalled();
   });
 });

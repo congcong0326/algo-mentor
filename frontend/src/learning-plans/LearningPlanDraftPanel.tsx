@@ -7,6 +7,7 @@ interface LearningPlanDraftPanelProps {
   draft: LearningPlanDraftResponse;
   loading: boolean;
   onConfirm: () => void;
+  onReturnToWizard: () => void;
   onSendFollowUp: (message: string) => Promise<boolean>;
 }
 
@@ -14,6 +15,7 @@ export default function LearningPlanDraftPanel({
   draft,
   loading,
   onConfirm,
+  onReturnToWizard,
   onSendFollowUp,
 }: LearningPlanDraftPanelProps) {
   const [followUp, setFollowUp] = useState('');
@@ -76,6 +78,9 @@ export default function LearningPlanDraftPanel({
     return (
       <article className="learning-panel">
         <p className="empty-log">草案生成失败或已过期，请返回向导调整后重新生成。</p>
+        <button className="secondary-button" disabled={loading} onClick={onReturnToWizard} type="button">
+          返回向导
+        </button>
       </article>
     );
   }
@@ -83,6 +88,9 @@ export default function LearningPlanDraftPanel({
   return (
     <article className="learning-panel">
       <p className="empty-log">草案暂不可预览，请返回向导调整后重新生成。</p>
+      <button className="secondary-button" disabled={loading} onClick={onReturnToWizard} type="button">
+        返回向导
+      </button>
     </article>
   );
 }

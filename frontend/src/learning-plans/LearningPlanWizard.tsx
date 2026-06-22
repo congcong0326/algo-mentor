@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowRight, Plus, Sparkles, X } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type {
   LearningPlanCreateDraftRequest,
   LearningPlanDifficultyPreference,
@@ -12,6 +12,7 @@ interface LearningPlanWizardProps {
   loading: boolean;
   onCancel: () => void;
   onSubmit: (request: LearningPlanCreateDraftRequest) => void;
+  resetStepSignal?: number;
 }
 
 const steps = ['目标', '时间与水平', '主题偏好', '生成与确认'] as const;
@@ -25,7 +26,12 @@ function splitTags(value: string): string[] {
     .filter(Boolean);
 }
 
-export default function LearningPlanWizard({ loading, onCancel, onSubmit }: LearningPlanWizardProps) {
+export default function LearningPlanWizard({
+  loading,
+  onCancel,
+  onSubmit,
+  resetStepSignal = 0,
+}: LearningPlanWizardProps) {
   const [stepIndex, setStepIndex] = useState(0);
   const [goal, setGoal] = useState('');
   const [intent, setIntent] = useState<LearningPlanIntent>('INTERVIEW_SPRINT');
@@ -37,6 +43,12 @@ export default function LearningPlanWizard({ loading, onCancel, onSubmit }: Lear
   const [interviewOriented, setInterviewOriented] = useState(true);
   const [topicInput, setTopicInput] = useState('');
   const [topicPreferences, setTopicPreferences] = useState<string[]>(['Array', 'Hash Table']);
+
+  useEffect(() => {
+    if (resetStepSignal > 0) {
+      setStepIndex(0);
+    }
+  }, [resetStepSignal]);
 
   const numericValid = Number.isInteger(durationWeeks) && durationWeeks > 0
     && Number.isInteger(weeklyHours) && weeklyHours > 0;

@@ -51,14 +51,14 @@ export default function App() {
             window.history.replaceState({}, '', pathForView(nextView));
           }
         } else if (window.location.pathname !== APP_ROUTES.login) {
-          window.history.replaceState({}, '', APP_ROUTES.login);
+          window.history.replaceState({}, '', `${APP_ROUTES.login}${window.location.search}`);
         }
       })
       .catch(() => {
         if (active) {
           setCurrentUser(undefined);
           setAuthChecked(true);
-          window.history.replaceState({}, '', APP_ROUTES.login);
+          window.history.replaceState({}, '', `${APP_ROUTES.login}${window.location.search}`);
         }
       });
 
@@ -91,7 +91,7 @@ export default function App() {
 
     function handlePopState() {
       if (window.location.pathname !== APP_ROUTES.login) {
-        window.history.replaceState({}, '', APP_ROUTES.login);
+        window.history.replaceState({}, '', `${APP_ROUTES.login}${window.location.search}`);
       }
     }
 

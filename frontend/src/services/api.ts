@@ -146,7 +146,7 @@ export async function getLearningPlanDetail(
 export async function createLearningPlanDraft(
   request: LearningPlanCreateDraftRequest,
 ): Promise<ApiResponse<LearningPlanDraftResponse>> {
-  const response = await fetch('/api/learning-plans/drafts', {
+  const response = await apiFetch('/api/learning-plans/drafts', {
     method: 'POST',
     headers: {
       ...jsonHeaders,
@@ -166,7 +166,7 @@ export async function sendLearningPlanDraftMessage(
   draftId: number,
   request: LearningPlanMessageRequest,
 ): Promise<ApiResponse<LearningPlanDraftResponse>> {
-  const response = await fetch(`/api/learning-plans/drafts/${draftId}/messages`, {
+  const response = await apiFetch(`/api/learning-plans/drafts/${draftId}/messages`, {
     method: 'POST',
     headers: {
       ...jsonHeaders,
@@ -185,7 +185,7 @@ export async function sendLearningPlanDraftMessage(
 export async function confirmLearningPlanDraft(
   draftId: number,
 ): Promise<ApiResponse<LearningPlanConfirmResponse>> {
-  const response = await fetch(`/api/learning-plans/drafts/${draftId}/confirm`, {
+  const response = await apiFetch(`/api/learning-plans/drafts/${draftId}/confirm`, {
     method: 'POST',
     headers: jsonHeaders,
   });
