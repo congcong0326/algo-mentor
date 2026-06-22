@@ -8,11 +8,16 @@ public record AgentRequest(
     String runId,
     String requestId,
     List<LlmMessage> messages,
-    Map<String, Object> metadata
+    Map<String, Object> metadata,
+    AgentExecutionOptions executionOptions
 ) {
 
   public AgentRequest(List<LlmMessage> messages) {
     this(null, null, messages, Map.of());
+  }
+
+  public AgentRequest(String runId, String requestId, List<LlmMessage> messages, Map<String, Object> metadata) {
+    this(runId, requestId, messages, metadata, AgentExecutionOptions.defaults());
   }
 
   public AgentRequest {
@@ -27,6 +32,7 @@ public record AgentRequest(
     }
     messages = List.copyOf(messages);
     metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
+    executionOptions = executionOptions == null ? AgentExecutionOptions.defaults() : executionOptions;
   }
 
   public String displayTitle() {

@@ -172,6 +172,31 @@ public final class AgentRuntimeMetadataKeys {
    */
   public static final String MAX_STEPS = "maxSteps";
 
+  /**
+   * 结构化输出 schema 名称。
+   */
+  public static final String SCHEMA_NAME = "schemaName";
+
+  /**
+   * 结构化输出 schema 版本。
+   */
+  public static final String SCHEMA_VERSION = "schemaVersion";
+
+  /**
+   * 最终输出解析策略。
+   */
+  public static final String STRUCTURED_OUTPUT_STRATEGY = "structuredOutputStrategy";
+
+  /**
+   * 最终输出字符数。
+   */
+  public static final String OUTPUT_CHAR_COUNT = "outputCharCount";
+
+  /**
+   * 结构化输出 JSON 解析错误消息。
+   */
+  public static final String PARSE_ERROR = "parseError";
+
   private AgentRuntimeMetadataKeys() {
   }
 }

@@ -1,7 +1,10 @@
 package org.congcong.algomentor.agent.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,6 +28,7 @@ import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
+import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
@@ -51,6 +55,7 @@ public class AgentLoopRunner {
   private final List<AgentLoopInterceptor> interceptors;
   private final ToolResultCompactor toolResultCompactor;
   private final RunMessageCompactor runMessageCompactor;
+  private final ObjectMapper objectMapper;
 
   @Deprecated(forRemoval = false)
   public AgentLoopRunner(LlmGateway llmGateway, String model, AgentToolRegistry toolRegistry, int maxSteps) {
@@ -125,6 +130,7 @@ public class AgentLoopRunner {
     ToolResultCompactionPolicy policy = toolResultPolicy == null ? ToolResultCompactionPolicy.defaults() : toolResultPolicy;
     this.toolResultCompactor = new ToolResultCompactor(mapper, policy, store);
     this.runMessageCompactor = new RunMessageCompactor(mapper, toolResultCompactor);
+    this.objectMapper = mapper;
   }
 
   /**
@@ -194,9 +200,12 @@ public class AgentLoopRunner {
         throwIfCancelled(context);
         if (!stepResult.requiresTools()) {
           // 无工具调用表示模型已经给出最终输出；正文 token 已在 runStep 中作为流式事件透传给客户端。
+          AgentOutput output = buildFinalOutput(request, stepResult.content());
+          lifecycle.finalOutput(context, output);
           lifecycle.runEnded(context, new AgentRunResult(
               stepIndex,
               stepResult.finishReason(),
+              output,
               Map.of()));
           publisher.close();
           return;
@@ -368,6 +377,7 @@ public class AgentLoopRunner {
     Map<String, Object> requestMetadata = mergedMetadata(context.request().metadata(), compaction.metadata());
     LlmCompletionRequest llmRequest = lifecycle.beforeLlmRequest(context, stepIndex, AgentLlmRequestFactory.build(
         modelSelector,
+        context.request(),
         messages,
         toolRegistry.specs(),
         toolChoice,
@@ -441,6 +451,57 @@ public class AgentLoopRunner {
     return new AgentException(AgentErrorCode.UNKNOWN, "Agent loop failed", false, Map.of(), throwable);
   }
 
+  private AgentOutput buildFinalOutput(AgentRequest request, String finalContent) {
+    AgentExecutionOptions executionOptions = request.executionOptions();
+    AgentStructuredOutputOptions structuredOutput = executionOptions.structuredOutput();
+    Map<String, Object> outputMetadata = new LinkedHashMap<>();
+    outputMetadata.put(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_STRATEGY, structuredOutput.strategy().name());
+    outputMetadata.put(AgentRuntimeMetadataKeys.OUTPUT_CHAR_COUNT, finalContent == null ? 0 : finalContent.length());
+    JsonNode structured = null;
+    if (isJsonResponseFormat(executionOptions.responseFormat())) {
+      try {
+        structured = objectMapper.readTree(finalContent);
+      } catch (JsonProcessingException ex) {
+        if (structuredOutput.required()) {
+          throw new AgentException(
+              AgentErrorCode.STRUCTURED_OUTPUT_INVALID,
+              "Agent structured output is not valid JSON",
+              false,
+              structuredOutputErrorMetadata(structuredOutput, ex),
+              ex);
+        }
+        outputMetadata.put(AgentRuntimeMetadataKeys.PARSE_ERROR, ex.getOriginalMessage());
+      }
+    }
+    return new AgentOutput(
+        finalContent,
+        structured,
+        structuredOutput.schemaName(),
+        structuredOutput.schemaVersion(),
+        outputMetadata);
+  }
+
+  private boolean isJsonResponseFormat(LlmResponseFormat responseFormat) {
+    return responseFormat instanceof LlmResponseFormat.JsonObject
+        || responseFormat instanceof LlmResponseFormat.JsonSchema;
+  }
+
+  private Map<String, Object> structuredOutputErrorMetadata(
+      AgentStructuredOutputOptions structuredOutput,
+      JsonProcessingException error
+  ) {
+    Map<String, Object> metadata = new LinkedHashMap<>();
+    if (structuredOutput.schemaName() != null) {
+      metadata.put(AgentRuntimeMetadataKeys.SCHEMA_NAME, structuredOutput.schemaName());
+    }
+    if (structuredOutput.schemaVersion() != null) {
+      metadata.put(AgentRuntimeMetadataKeys.SCHEMA_VERSION, structuredOutput.schemaVersion());
+    }
+    metadata.put(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_STRATEGY, structuredOutput.strategy().name());
+    metadata.put(AgentRuntimeMetadataKeys.PARSE_ERROR, error.getOriginalMessage());
+    return Map.copyOf(metadata);
+  }
+
   /**
    * 单个 LLM step 的流式事件收集器。
    *
@@ -500,6 +561,7 @@ public class AgentLoopRunner {
     private final AgentLoopLifecycle lifecycle;
     private final CountDownLatch done = new CountDownLatch(1);
     private final List<LlmToolCall> toolCalls = new ArrayList<>();
+    private final StringBuilder content = new StringBuilder();
     private final AtomicReference<Throwable> error = new AtomicReference<>();
     private Flow.Subscription subscription;
     private LlmFinishReason finishReason = LlmFinishReason.UNKNOWN;
@@ -524,6 +586,9 @@ public class AgentLoopRunner {
         return;
       }
       lifecycle.llmEvent(context, stepIndex, item);
+      if (item instanceof LlmStreamEvent.ContentDelta delta) {
+        content.append(delta.content());
+      }
       if (item instanceof LlmStreamEvent.ToolCallEnd toolCallEnd) {
         toolCalls.add(toolCallEnd.toolCall());
       }
@@ -572,11 +637,11 @@ public class AgentLoopRunner {
     /**
      * 生成当前 step 的决策结果。
      *
-     * <p>这里只返回工具调用和 finish reason；文本内容已经作为流式事件发出，不再在 runner 内聚合，
-     * 避免同时维护“完整回答缓存”和“SSE 增量输出”两套状态。</p>
+     * <p>这里只返回驱动下一步和最终输出捕获所需的最小状态。只有不再需要工具调用的 step
+     * content 才会被外层 runner 作为最终 assistant 输出。</p>
      */
     private AgentStepResult result() {
-      return new AgentStepResult(toolCalls, finishReason);
+      return new AgentStepResult(toolCalls, finishReason, content.toString());
     }
   }
 }

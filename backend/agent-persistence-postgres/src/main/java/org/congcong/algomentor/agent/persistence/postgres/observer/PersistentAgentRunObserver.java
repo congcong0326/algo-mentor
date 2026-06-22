@@ -11,6 +11,7 @@ import org.congcong.algomentor.agent.core.AgentErrorCode;
 import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentLoopContext;
 import org.congcong.algomentor.agent.core.AgentLoopObserver;
+import org.congcong.algomentor.agent.core.AgentOutput;
 import org.congcong.algomentor.agent.core.AgentRunResult;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.persistence.postgres.AgentPersistenceStatuses;
@@ -55,9 +56,6 @@ public class PersistentAgentRunObserver implements AgentLoopObserver {
     if (buffer == null) {
       return;
     }
-    if (event instanceof LlmStreamEvent.ContentDelta delta) {
-      buffer.content.append(delta.content());
-    }
     if (event instanceof LlmStreamEvent.Usage usage) {
       buffer.usage = usage.usage();
     }
@@ -65,6 +63,30 @@ public class PersistentAgentRunObserver implements AgentLoopObserver {
       buffer.provider = start.provider() == null ? null : start.provider().value();
       buffer.model = start.model() == null ? null : start.model().value();
     }
+  }
+
+  @Override
+  public void onFinalOutput(AgentLoopContext context, AgentOutput output) {
+    Long taskId = longMetadata(context, AgentRuntimeMetadataKeys.TASK_ID);
+    Long turnId = longMetadata(context, AgentRuntimeMetadataKeys.TURN_ID);
+    Long runDbId = runDbId(context);
+    RunBuffer buffer = buffers.get(context.runId());
+    if (taskId == null || turnId == null || runDbId == null || buffer == null || output == null) {
+      return;
+    }
+    String content = output.text();
+    if (content.isBlank()) {
+      return;
+    }
+    Instant now = clock.instant();
+    buffer.assistantMessageId = runMapper.insertAssistantMessage(
+        taskId,
+        turnId,
+        runDbId,
+        content,
+        estimateTokens(content),
+        now,
+        now);
   }
 
   @Override
@@ -78,17 +100,6 @@ public class PersistentAgentRunObserver implements AgentLoopObserver {
 
     RunBuffer buffer = buffers.remove(context.runId());
     Instant now = clock.instant();
-    String content = buffer == null ? "" : buffer.content.toString();
-    Long assistantMessageId = content.isBlank()
-        ? null
-        : runMapper.insertAssistantMessage(
-            taskId,
-            turnId,
-            runDbId,
-            content,
-            estimateTokens(content),
-            now,
-            now);
 
     runMapper.markRunSucceeded(new RunSuccessUpdate(
         runDbId,
@@ -97,7 +108,7 @@ public class PersistentAgentRunObserver implements AgentLoopObserver {
         result.finishReason().name(),
         jsonNode(usageMap(buffer == null ? null : buffer.usage)),
         now));
-    runMapper.markTurnSucceeded(turnId, assistantMessageId, runDbId, now);
+    runMapper.markTurnSucceeded(turnId, buffer == null ? null : buffer.assistantMessageId, runDbId, now);
   }
 
   @Override
@@ -162,9 +173,9 @@ public class PersistentAgentRunObserver implements AgentLoopObserver {
   }
 
   private static final class RunBuffer {
-    private final StringBuilder content = new StringBuilder();
     private LlmUsage usage;
     private String provider;
     private String model;
+    private Long assistantMessageId;
   }
 }

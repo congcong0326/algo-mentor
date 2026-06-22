@@ -12,6 +12,7 @@ import java.util.Map;
 import org.congcong.algomentor.agent.core.AgentErrorCode;
 import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentLoopContext;
+import org.congcong.algomentor.agent.core.AgentOutput;
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentRunResult;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
@@ -47,11 +48,13 @@ class PersistentAgentRunObserverTest {
     observer.onLlmEvent(context, 1, new LlmStreamEvent.MessageStart(LlmProviderId.of("openai"), LlmModelId.of("gpt-test")));
     observer.onLlmEvent(context, 1, new LlmStreamEvent.ContentDelta("answer"));
     observer.onLlmEvent(context, 1, new LlmStreamEvent.Usage(new LlmUsage(10, 5, 0, 0, 15)));
-    observer.onRunEnd(context, new AgentRunResult(1, LlmFinishReason.STOP, Map.of()));
+    AgentOutput output = new AgentOutput("final answer", null, null, null, Map.of());
+    observer.onFinalOutput(context, output);
+    observer.onRunEnd(context, new AgentRunResult(1, LlmFinishReason.STOP, output, Map.of()));
 
     assertThat(mapper.startUpdate).isEqualTo(new RunStartUpdate(31L, 4, NOW));
     assertThat(mapper.insertedAssistantMessage)
-        .isEqualTo(new InsertedAssistantMessage(11L, 21L, 31L, "answer", 1, NOW, NOW));
+        .isEqualTo(new InsertedAssistantMessage(11L, 21L, 31L, "final answer", 3, NOW, NOW));
     assertThat(mapper.successUpdate.runId()).isEqualTo(31L);
     assertThat(mapper.successUpdate.provider()).isEqualTo("openai");
     assertThat(mapper.successUpdate.model()).isEqualTo("gpt-test");
@@ -65,6 +68,38 @@ class PersistentAgentRunObserverTest {
     assertThat(mapper.calls).containsExactly(
         "markRunStarted",
         "insertAssistantMessage",
+        "markRunSucceeded",
+        "markTurnSucceeded");
+  }
+
+  @Test
+  void persistsOnlyFinalOutputWhenEarlierStepsStreamContent() {
+    AgentLoopContext context = context();
+    mapper.nextAssistantMessageId = 42L;
+    AgentOutput output = new AgentOutput("final answer", null, null, null, Map.of());
+
+    observer.onRunStart(context);
+    observer.onLlmEvent(context, 1, new LlmStreamEvent.ContentDelta("intermediate tool explanation"));
+    observer.onLlmEvent(context, 2, new LlmStreamEvent.ContentDelta("final answer"));
+    observer.onFinalOutput(context, output);
+    observer.onRunEnd(context, new AgentRunResult(2, LlmFinishReason.STOP, output, Map.of()));
+
+    assertThat(mapper.insertedAssistantMessage.content()).isEqualTo("final answer");
+    assertThat(mapper.turnSucceeded).isEqualTo(new TurnSucceeded(21L, 42L, 31L, NOW));
+  }
+
+  @Test
+  void runEndDoesNotInsertAssistantMessageWithoutFinalOutput() {
+    AgentLoopContext context = context();
+
+    observer.onRunStart(context);
+    observer.onLlmEvent(context, 1, new LlmStreamEvent.ContentDelta("token-only answer"));
+    observer.onRunEnd(context, new AgentRunResult(1, LlmFinishReason.STOP, null, Map.of()));
+
+    assertThat(mapper.insertedAssistantMessage).isNull();
+    assertThat(mapper.turnSucceeded).isEqualTo(new TurnSucceeded(21L, null, 31L, NOW));
+    assertThat(mapper.calls).containsExactly(
+        "markRunStarted",
         "markRunSucceeded",
         "markTurnSucceeded");
   }

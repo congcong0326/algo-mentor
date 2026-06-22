@@ -6,8 +6,13 @@ import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 public record AgentRunResult(
     int steps,
     LlmFinishReason finishReason,
+    AgentOutput output,
     Map<String, Object> metadata
 ) {
+
+  public AgentRunResult(int steps, LlmFinishReason finishReason, Map<String, Object> metadata) {
+    this(steps, finishReason, null, metadata);
+  }
 
   public AgentRunResult {
     if (steps < 1) {

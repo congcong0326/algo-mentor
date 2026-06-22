@@ -24,6 +24,7 @@ import org.congcong.algomentor.llm.core.request.LlmContentPart;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
+import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
@@ -171,6 +172,167 @@ class AgentLoopRunnerTest {
     assertThat(gateway.requests.get(0).tools()).extracting(LlmToolSpec::name).containsExactly("calculator");
     assertThat(gateway.requests.get(0).toolChoice().mode()).isEqualTo(LlmToolChoice.Mode.SPECIFIC);
     assertThat(gateway.requests.get(0).toolChoice().toolName()).isEqualTo("calculator");
+  }
+
+  @Test
+  void capturesFinalTextOutputAndExposesItBeforeRunEnd() {
+    FakeGateway gateway = new FakeGateway();
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("Use "),
+        new LlmStreamEvent.ContentDelta("two indices."),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    List<String> observed = new ArrayList<>();
+    List<AgentOutput> outputs = new ArrayList<>();
+    AgentLoopObserver observer = new AgentLoopObserver() {
+      @Override
+      public void onFinalOutput(AgentLoopContext context, AgentOutput output) {
+        observed.add("final-output:" + output.text());
+        outputs.add(output);
+      }
+
+      @Override
+      public void onRunEnd(AgentLoopContext context, AgentRunResult result) {
+        observed.add("run-end:" + result.output().text());
+      }
+    };
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        LlmToolChoice.auto(),
+        4,
+        List.of(observer),
+        List.of());
+
+    collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
+
+    assertThat(outputs).hasSize(1);
+    assertThat(outputs.get(0).text()).isEqualTo("Use two indices.");
+    assertThat(outputs.get(0).hasStructuredOutput()).isFalse();
+    assertThat(observed).containsExactly(
+        "final-output:Use two indices.",
+        "run-end:Use two indices.");
+  }
+
+  @Test
+  void parsesJsonFinalOutputForProviderNativeResponseFormat() {
+    FakeGateway gateway = new FakeGateway();
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("{\"days\":7,\"title\":\"Plan\"}"),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    List<AgentOutput> outputs = new ArrayList<>();
+    AgentLoopObserver observer = new AgentLoopObserver() {
+      @Override
+      public void onFinalOutput(AgentLoopContext context, AgentOutput output) {
+        outputs.add(output);
+      }
+    };
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        LlmToolChoice.auto(),
+        4,
+        List.of(observer),
+        List.of());
+    AgentRequest request = new AgentRequest(
+        "run-1",
+        "request-1",
+        List.of(LlmMessage.user("create plan")),
+        Map.of(),
+        new AgentExecutionOptions(
+            null,
+            new LlmResponseFormat.JsonSchema(
+                "learning_plan_draft",
+                JsonNodeFactory.instance.objectNode().put("type", "object"),
+                true),
+            new AgentStructuredOutputOptions(
+                StructuredOutputStrategy.PROVIDER_NATIVE,
+                "learning_plan_draft",
+                "v1",
+                true)));
+
+    collect(runner.stream(request));
+
+    assertThat(outputs).hasSize(1);
+    AgentOutput output = outputs.get(0);
+    assertThat(output.text()).isEqualTo("{\"days\":7,\"title\":\"Plan\"}");
+    assertThat(output.hasStructuredOutput()).isTrue();
+    assertThat(output.structured().get("days").asInt()).isEqualTo(7);
+    assertThat(output.schemaName()).isEqualTo("learning_plan_draft");
+    assertThat(output.schemaVersion()).isEqualTo("v1");
+  }
+
+  @Test
+  void emitsAgentErrorWhenRequiredStructuredOutputIsInvalidJson() {
+    FakeGateway gateway = new FakeGateway();
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("not-json"),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        LlmToolChoice.auto(),
+        4,
+        List.of(),
+        List.of());
+    AgentRequest request = new AgentRequest(
+        "run-1",
+        "request-1",
+        List.of(LlmMessage.user("create plan")),
+        Map.of(),
+        new AgentExecutionOptions(
+            null,
+            new LlmResponseFormat.JsonObject(),
+            new AgentStructuredOutputOptions(
+                StructuredOutputStrategy.PROVIDER_NATIVE,
+                "learning_plan_draft",
+                "v1",
+                true)));
+
+    List<AgentStreamEvent> events = collect(runner.stream(request));
+
+    assertThat(events).extracting(AgentStreamEvent::name).doesNotContain("agent_run_end");
+    assertThat(events.get(events.size() - 1)).isInstanceOf(AgentStreamEvent.AgentError.class);
+    AgentStreamEvent.AgentError error = (AgentStreamEvent.AgentError) events.get(events.size() - 1);
+    assertThat(error.error().code()).isEqualTo(AgentErrorCode.STRUCTURED_OUTPUT_INVALID);
+    assertThat(error.error().metadata()).containsEntry("schemaName", "learning_plan_draft");
+  }
+
+  @Test
+  void ignoresToolCallStepContentWhenCapturingFinalOutput() {
+    FakeGateway gateway = new FakeGateway();
+    LlmToolCall toolCall = new LlmToolCall(
+        "call_1",
+        "fake_lookup",
+        JsonNodeFactory.instance.objectNode());
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("I will call a tool. "),
+        new LlmStreamEvent.ToolCallEnd(toolCall),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("Final answer."),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    List<AgentOutput> outputs = new ArrayList<>();
+    AgentLoopObserver observer = new AgentLoopObserver() {
+      @Override
+      public void onFinalOutput(AgentLoopContext context, AgentOutput output) {
+        outputs.add(output);
+      }
+    };
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.of(List.of(new FakeTool("fake_lookup", JsonNodeFactory.instance.objectNode()))),
+        LlmToolChoice.auto(),
+        4,
+        List.of(observer),
+        List.of());
+
+    collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
+
+    assertThat(outputs).singleElement().extracting(AgentOutput::text).isEqualTo("Final answer.");
   }
 
   @Test
@@ -352,6 +514,11 @@ class AgentLoopRunnerTest {
       }
 
       @Override
+      public void onFinalOutput(AgentLoopContext context, AgentOutput output) {
+        observed.add("final-output-" + output.text());
+      }
+
+      @Override
       public void onToolStart(AgentLoopContext context, int stepIndex, LlmToolCall toolCall) {
         observed.add("tool-start-" + toolCall.name());
       }
@@ -410,6 +577,7 @@ class AgentLoopRunnerTest {
         "llm-2-ContentDelta",
         "llm-2-MessageEnd",
         "step-end-2-STOP",
+        "final-output-done",
         "run-end-2");
   }
 

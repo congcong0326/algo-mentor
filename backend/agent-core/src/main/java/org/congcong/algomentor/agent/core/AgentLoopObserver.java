@@ -17,6 +17,8 @@ public interface AgentLoopObserver {
 
   default void onStepEnd(AgentLoopContext context, int stepIndex, AgentStepResult result) {}
 
+  default void onFinalOutput(AgentLoopContext context, AgentOutput output) {}
+
   default void onToolStart(AgentLoopContext context, int stepIndex, LlmToolCall toolCall) {}
 
   default void onToolEnd(

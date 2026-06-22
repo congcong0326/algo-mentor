@@ -1,8 +1,10 @@
 package org.congcong.algomentor.agent.core;
 
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
@@ -20,7 +22,7 @@ final class AgentLlmRequestFactory {
   }
 
   static LlmCompletionRequest build(LlmModelSelector modelSelector, AgentRequest request) {
-    return build(modelSelector, initialMessages(request), List.of(), null, request.metadata());
+    return build(modelSelector, request, initialMessages(request), List.of(), null, request.metadata());
   }
 
   static List<LlmMessage> initialMessages(AgentRequest request) {
@@ -58,6 +60,44 @@ final class AgentLlmRequestFactory {
         .toolChoice(tools == null || tools.isEmpty() ? LlmToolChoice.none() : toolChoice)
         .metadata(metadata)
         .build();
+  }
+
+  static LlmCompletionRequest build(
+      LlmModelSelector modelSelector,
+      AgentRequest request,
+      List<LlmMessage> messages,
+      List<LlmToolSpec> tools,
+      LlmToolChoice toolChoice,
+      Map<String, Object> metadata
+  ) {
+    AgentExecutionOptions executionOptions = request.executionOptions();
+    return LlmCompletionRequest.builder()
+        .modelSelector(validatedSelector(modelSelector))
+        .messages(messages)
+        .options(executionOptions.generationOptions())
+        .tools(tools)
+        .toolChoice(tools == null || tools.isEmpty() ? LlmToolChoice.none() : toolChoice)
+        .responseFormat(executionOptions.responseFormat())
+        .metadata(executionMetadata(metadata, executionOptions.structuredOutput()))
+        .build();
+  }
+
+  private static Map<String, Object> executionMetadata(
+      Map<String, Object> metadata,
+      AgentStructuredOutputOptions structuredOutput
+  ) {
+    Map<String, Object> values = new LinkedHashMap<>();
+    if (metadata != null) {
+      values.putAll(metadata);
+    }
+    values.put(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_STRATEGY, structuredOutput.strategy().name());
+    if (structuredOutput.schemaName() != null && !structuredOutput.schemaName().isBlank()) {
+      values.put(AgentRuntimeMetadataKeys.SCHEMA_NAME, structuredOutput.schemaName());
+    }
+    if (structuredOutput.schemaVersion() != null && !structuredOutput.schemaVersion().isBlank()) {
+      values.put(AgentRuntimeMetadataKeys.SCHEMA_VERSION, structuredOutput.schemaVersion());
+    }
+    return Map.copyOf(values);
   }
 
   static LlmModelSelector selectorFromModel(String model) {

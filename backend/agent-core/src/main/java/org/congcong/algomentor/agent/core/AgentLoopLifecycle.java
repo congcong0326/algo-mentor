@@ -78,6 +78,10 @@ public final class AgentLoopLifecycle {
         result.toolCalls().size()));
   }
 
+  public void finalOutput(AgentLoopContext context, AgentOutput output) {
+    notifyObserver(observer -> observer.onFinalOutput(context, output), "onFinalOutput");
+  }
+
   public LlmToolCall beforeToolCall(
       AgentLoopContext context,
       int stepIndex,
