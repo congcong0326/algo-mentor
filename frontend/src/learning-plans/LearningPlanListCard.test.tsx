@@ -48,6 +48,7 @@ describe('LearningPlanListCard', () => {
 
     const selectedRow = screen.getByTestId('learning-plan-row-900');
     expect(selectedRow).toHaveClass('selected');
+    expect(selectedRow.querySelector('.plan-row-main')).toHaveAttribute('aria-current', 'true');
 
     fireEvent.click(screen.getByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' }));
     expect(onSelect).toHaveBeenCalledWith(900);

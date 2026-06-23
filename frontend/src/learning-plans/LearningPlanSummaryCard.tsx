@@ -18,7 +18,16 @@ function formatDate(value?: string | null): string {
     return '暂无计划';
   }
 
-  return date.toISOString().slice(0, 10);
+  const parts = new Intl.DateTimeFormat('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date).reduce<Record<string, string>>((result, part) => {
+    result[part.type] = part.value;
+    return result;
+  }, {});
+
+  return `${parts.year}-${parts.month}-${parts.day}`;
 }
 
 export default function LearningPlanSummaryCard({

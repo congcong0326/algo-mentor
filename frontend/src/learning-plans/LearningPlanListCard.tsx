@@ -43,7 +43,12 @@ export default function LearningPlanListCard({
               data-testid={`learning-plan-row-${plan.id}`}
               key={plan.id}
             >
-              <button className="plan-row-main" onClick={() => onSelect(plan.id)} type="button">
+              <button
+                aria-current={selectedPlanId === plan.id ? 'true' : undefined}
+                className="plan-row-main"
+                onClick={() => onSelect(plan.id)}
+                type="button"
+              >
                 <strong>{plan.title}</strong>
                 <span>{plan.goal}</span>
                 <small>{meta}</small>

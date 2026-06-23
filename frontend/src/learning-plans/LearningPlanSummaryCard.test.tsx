@@ -2,7 +2,12 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import LearningPlanSummaryCard from './LearningPlanSummaryCard';
 
-afterEach(cleanup);
+const originalTimeZone = process.env.TZ;
+
+afterEach(() => {
+  cleanup();
+  process.env.TZ = originalTimeZone;
+});
 
 describe('LearningPlanSummaryCard', () => {
   it('shows aggregate counts, latest created date, and the create action', () => {
@@ -29,6 +34,22 @@ describe('LearningPlanSummaryCard', () => {
     fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
 
     expect(onCreate).toHaveBeenCalledTimes(1);
+  });
+
+  it('formats latest-created date with the local calendar date', () => {
+    process.env.TZ = 'Asia/Shanghai';
+
+    render(
+      <LearningPlanSummaryCard
+        activeCount={1}
+        archivedCount={0}
+        latestCreatedAt="2026-06-22T23:30:00Z"
+        onCreate={vi.fn()}
+        total={1}
+      />,
+    );
+
+    expect(screen.getByText('2026-06-23')).toBeInTheDocument();
   });
 
   it('shows the empty latest-created state when there are no plans', () => {
