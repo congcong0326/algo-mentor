@@ -11,6 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Map;
 import java.util.concurrent.SubmissionPublisher;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
+import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
+import org.congcong.algomentor.ai.governance.model.AiRunContext;
 import org.congcong.algomentor.api.service.AiExplanationService;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.api.service.SseLlmStreamSubscriber;
@@ -92,6 +95,16 @@ class AiStreamControllerTest {
     StubAiExplanationService stubAiExplanationService(LlmStreamSseMapper sseMapper) {
       return new StubAiExplanationService(sseMapper);
     }
+
+    @Bean
+    AiRunAdmissionService aiRunAdmissionService() {
+      return new AiRunAdmissionService(null, null, null, null, null) {
+        @Override
+        public AiRunAdmission admit(AiRunContext context) {
+          throw new UnsupportedOperationException("StubAiExplanationService bypasses governance admission");
+        }
+      };
+    }
   }
 
   static class StubAiExplanationService extends AiExplanationService {
@@ -101,7 +114,7 @@ class AiStreamControllerTest {
     private String lastTopic;
 
     StubAiExplanationService(LlmStreamSseMapper sseMapper) {
-      super(null, sseMapper);
+      super(null, sseMapper, null, null);
       this.sseMapper = sseMapper;
     }
 
