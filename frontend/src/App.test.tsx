@@ -701,6 +701,42 @@ describe('App', () => {
     expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/confirm');
   });
 
+  it('sends the edited goal regeneration prefix when regenerating a generated draft', async () => {
+    const fetchMock = mockLearningPlanFetch();
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    expect(await screen.findByText('当前共有 1 个计划')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
+    fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成计划草案' }));
+    expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole('textbox', { name: '补充回答' }), {
+      target: { value: '数组和哈希表' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送补充' }));
+    await screen.findByRole('heading', { name: '草案预览' });
+
+    fireEvent.click(screen.getByRole('button', { name: '编辑目标摘要' }));
+    fireEvent.change(screen.getByRole('textbox', { name: '目标摘要' }), {
+      target: { value: '三周内集中突破动态规划面试题' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '按新目标重新生成' }));
+
+    await waitFor(() => {
+      const messageCalls = fetchMock.mock.calls.filter(([url]) => url === '/api/learning-plans/drafts/100/messages');
+      expect(messageCalls).toHaveLength(2);
+      expect(JSON.parse(messageCalls[1][1]?.body as string)).toEqual({
+        message: '请按新的目标摘要重新生成学习计划：三周内集中突破动态规划面试题',
+      });
+    });
+    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/messages');
+  });
+
   it('keeps clarification panel and typed answer when follow-up submission fails', async () => {
     const fetchMock = mockLearningPlanFollowUpFailureFetch();
     vi.stubGlobal('fetch', fetchMock);

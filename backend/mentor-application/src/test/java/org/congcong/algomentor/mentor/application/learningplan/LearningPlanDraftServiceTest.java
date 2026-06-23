@@ -81,6 +81,25 @@ class LearningPlanDraftServiceTest {
   }
 
   @Test
+  void continueDraftRegeneratesPlanFromEditedGoalPrefix() {
+    LearningPlanDraftResult original = service.createDraft(7L, completeCommand(4));
+
+    LearningPlanDraftResult regenerated = service.continueDraft(
+        7L,
+        original.draftId(),
+        "请按新的目标摘要重新生成学习计划：三周内集中突破动态规划面试题");
+
+    assertThat(regenerated.status()).isEqualTo(LearningPlanDraftStatus.GENERATED);
+    assertThat(regenerated.draftPlan()).isNotNull();
+    assertThat(regenerated.draftPlan().goal()).isEqualTo("三周内集中突破动态规划面试题");
+    assertThat(regenerated.draftPlan().summary()).contains("三周内集中突破动态规划面试题");
+    assertThat(regenerated.draftPlan().phases())
+        .flatExtracting(LearningPlanPhaseDraft::problems)
+        .extracting(LearningPlanProblemDraft::reason)
+        .allSatisfy(reason -> assertThat(reason).contains("三周内集中突破动态规划面试题"));
+  }
+
+  @Test
   void confirmDraftIsIdempotent() {
     LearningPlanDraftResult generated = service.createDraft(7L, completeCommand(8));
 
