@@ -1,12 +1,25 @@
 package org.congcong.algomentor.api.controller;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
+import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
+import org.congcong.algomentor.ai.governance.model.AiActor;
+import org.congcong.algomentor.ai.governance.model.AiPurpose;
+import org.congcong.algomentor.ai.governance.model.AiRunContext;
+import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.api.config.ApiContractConstants;
+import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.api.service.SseLlmStreamSubscriber;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationCommand;
@@ -29,13 +42,19 @@ public class AgentConversationController {
 
   private final AgentConversationRunCoordinator runCoordinator;
   private final LlmStreamSseMapper sseMapper;
+  private final AiActorResolver actorResolver;
+  private final AiRunAdmissionService admissionService;
 
   public AgentConversationController(
       AgentConversationRunCoordinator runCoordinator,
-      LlmStreamSseMapper sseMapper
+      LlmStreamSseMapper sseMapper,
+      AiActorResolver actorResolver,
+      AiRunAdmissionService admissionService
   ) {
     this.runCoordinator = runCoordinator;
     this.sseMapper = sseMapper;
+    this.actorResolver = actorResolver;
+    this.admissionService = admissionService;
   }
 
   @PostMapping(value = ApiContractConstants.STREAM_PATH, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -46,11 +65,27 @@ public class AgentConversationController {
     String effectiveKey = idempotencyKey == null || idempotencyKey.isBlank()
         ? UUID.randomUUID().toString()
         : idempotencyKey;
+    AiActor actor = actorResolver.currentActor();
+    Map<String, Object> requestMetadata = new HashMap<>();
+    if (request.taskId() != null) {
+      requestMetadata.put(AgentRuntimeMetadataKeys.TASK_ID, request.taskId());
+    }
+    AiRunAdmission admission = admissionService.admit(new AiRunContext(
+        UUID.randomUUID().toString(),
+        actor,
+        AiPurpose.LEARNING_CHAT,
+        AiRunSource.LEARNING_CHAT,
+        effectiveKey,
+        request.message().getBytes(StandardCharsets.UTF_8).length,
+        true,
+        requestMetadata,
+        Instant.now()));
     Flow.Publisher<AgentStreamEvent> publisher = runCoordinator.stream(new AgentConversationCommand(
         request.taskId(),
-        request.userId(),
+        actor.userId(),
         request.message(),
-        effectiveKey));
+        effectiveKey,
+        admission.metadata()));
     /*
      * 本接口使用 Spring MVC 的 SseEmitter 把 Agent 的异步事件流桥接成 HTTP SSE：
      *
@@ -89,9 +124,9 @@ public class AgentConversationController {
     return emitter;
   }
 
+  @JsonIgnoreProperties(ignoreUnknown = true)
   public record ConversationStreamRequest(
       @Positive Long taskId,
-      @Positive Long userId,
       @NotBlank String message
   ) {
   }

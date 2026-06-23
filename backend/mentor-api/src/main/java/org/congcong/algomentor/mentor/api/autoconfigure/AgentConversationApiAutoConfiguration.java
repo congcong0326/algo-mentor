@@ -6,7 +6,9 @@ import org.congcong.algomentor.agent.core.runlock.AgentRunLockOwnerProvider;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.persistence.postgres.config.AgentPostgresPersistenceConfiguration;
+import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
 import org.congcong.algomentor.api.controller.AgentConversationController;
+import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunCoordinator;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
@@ -50,12 +52,19 @@ public class AgentConversationApiAutoConfiguration {
   }
 
   @Bean
-  @ConditionalOnBean({AgentConversationRunCoordinator.class, LlmStreamSseMapper.class})
+  @ConditionalOnBean({
+      AgentConversationRunCoordinator.class,
+      LlmStreamSseMapper.class,
+      AiActorResolver.class,
+      AiRunAdmissionService.class
+  })
   @ConditionalOnMissingBean
   public AgentConversationController agentConversationController(
       AgentConversationRunCoordinator runCoordinator,
-      LlmStreamSseMapper sseMapper
+      LlmStreamSseMapper sseMapper,
+      AiActorResolver actorResolver,
+      AiRunAdmissionService admissionService
   ) {
-    return new AgentConversationController(runCoordinator, sseMapper);
+    return new AgentConversationController(runCoordinator, sseMapper, actorResolver, admissionService);
   }
 }

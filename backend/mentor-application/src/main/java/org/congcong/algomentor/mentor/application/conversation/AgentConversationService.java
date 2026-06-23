@@ -40,20 +40,20 @@ public class AgentConversationService {
 
   public AgentConversationRun prepareRun(AgentConversationCommand command) {
     PreparedAgentRun draft = conversationRepository.createOrReuseRun(toPreparationRequest(command));
-    return toConversationRun(draft, command.userMessage());
+    return toConversationRun(draft, command);
   }
 
   public Optional<AgentConversationRun> findRunByIdempotencyKey(String idempotencyKey, String userMessage) {
     return conversationRepository.findRunByIdempotencyKey(idempotencyKey)
-        .map(draft -> toConversationRun(draft, userMessage));
+        .map(draft -> toConversationRun(draft, new AgentConversationCommand(null, 1L, userMessage, idempotencyKey)));
   }
 
-  private AgentConversationRun toConversationRun(PreparedAgentRun draft, String userMessage) {
+  private AgentConversationRun toConversationRun(PreparedAgentRun draft, AgentConversationCommand command) {
     AssembledContext context = contextAssembler.assemble(
         draft.systemPrompt(),
         draft.activeSummary(),
         conversationRepository.recentMessages(draft.taskId(), contextPolicy.recentTurns() * 2),
-        userMessage,
+        command.userMessage(),
         contextPolicy);
 
     Map<String, Object> metadata = new HashMap<>(draft.metadata());
@@ -63,6 +63,7 @@ public class AgentConversationService {
     metadata.put(AgentRuntimeMetadataKeys.RUN_DB_ID, draft.runId());
     metadata.put(AgentRuntimeMetadataKeys.AGENT_RUN_ID, draft.runUuid());
     metadata.put(AgentRuntimeMetadataKeys.TITLE, "task-" + draft.taskId());
+    metadata.putAll(command.governanceMetadata());
 
     AgentRequest request = new AgentRequest(
         draft.runUuid(),

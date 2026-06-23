@@ -1,11 +1,18 @@
 package org.congcong.algomentor.mentor.application.conversation;
 
+import java.util.Map;
+
 public record AgentConversationCommand(
     Long taskId,
     Long userId,
     String userMessage,
-    String idempotencyKey
+    String idempotencyKey,
+    Map<String, Object> governanceMetadata
 ) {
+
+  public AgentConversationCommand(Long taskId, Long userId, String userMessage, String idempotencyKey) {
+    this(taskId, userId, userMessage, idempotencyKey, Map.of());
+  }
 
   public AgentConversationCommand {
     if (userMessage == null || userMessage.isBlank()) {
@@ -17,8 +24,9 @@ public record AgentConversationCommand(
     if (taskId != null && taskId < 1) {
       throw new IllegalArgumentException("Conversation task id must be positive");
     }
-    if (userId != null && userId < 1) {
+    if (userId == null || userId < 1) {
       throw new IllegalArgumentException("Conversation user id must be positive");
     }
+    governanceMetadata = governanceMetadata == null ? Map.of() : Map.copyOf(governanceMetadata);
   }
 }
