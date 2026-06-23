@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class InMemoryAgentRunLockManager implements AgentRunLockManager {
 
@@ -14,17 +15,26 @@ public class InMemoryAgentRunLockManager implements AgentRunLockManager {
     if (request == null) {
       throw new IllegalArgumentException("Agent run lock request must not be null");
     }
+    Instant now = Instant.now();
     String tokenId = UUID.randomUUID().toString();
-    Instant expiresAt = request.ttl() == null ? null : Instant.now().plus(request.ttl());
+    Instant expiresAt = request.ttl() == null ? null : now.plus(request.ttl());
     LockEntry newEntry = new LockEntry(request.ownerId(), tokenId, expiresAt, request.metadata());
-    LockEntry existing = locks.putIfAbsent(request.lockKey(), newEntry);
-    if (existing == null) {
+    AtomicReference<LockEntry> conflict = new AtomicReference<>();
+    locks.compute(request.lockKey(), (ignored, existing) -> {
+      if (existing == null || existing.expiredAt(now)) {
+        return newEntry;
+      }
+      conflict.set(existing);
+      return existing;
+    });
+    if (conflict.get() == null) {
       return AgentRunLockAcquireResult.acquired(new AgentRunLockToken(
           request.lockKey(),
           request.ownerId(),
           tokenId,
           expiresAt));
     }
+    LockEntry existing = conflict.get();
     return AgentRunLockAcquireResult.conflicted(new AgentRunLockConflict(
         request.lockKey(),
         existing.ownerId(),
@@ -63,6 +73,10 @@ public class InMemoryAgentRunLockManager implements AgentRunLockManager {
 
     private boolean matches(AgentRunLockToken token) {
       return ownerId.equals(token.ownerId()) && tokenId.equals(token.tokenId());
+    }
+
+    private boolean expiredAt(Instant now) {
+      return expiresAt != null && !expiresAt.isAfter(now);
     }
   }
 }

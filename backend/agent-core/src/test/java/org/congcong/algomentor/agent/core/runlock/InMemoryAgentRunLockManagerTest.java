@@ -2,6 +2,8 @@ package org.congcong.algomentor.agent.core.runlock;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
@@ -40,5 +42,28 @@ class InMemoryAgentRunLockManagerTest {
         "owner-a",
         "token-a",
         null))).isFalse();
+  }
+
+  @Test
+  void replacesExpiredLockOnNextAcquire() throws InterruptedException {
+    InMemoryAgentRunLockManager manager = new InMemoryAgentRunLockManager();
+    AgentRunLockRequest request = new AgentRunLockRequest(
+        "user:7:ai:all",
+        "owner-1",
+        Duration.ofMillis(1),
+        Map.of("runId", "old"));
+
+    AgentRunLockToken oldToken = manager.tryAcquire(request).token();
+    Thread.sleep(10);
+    assertThat(Instant.now()).isAfter(oldToken.expiresAt());
+
+    AgentRunLockAcquireResult result = manager.tryAcquire(new AgentRunLockRequest(
+        "user:7:ai:all",
+        "owner-2",
+        Duration.ofMinutes(30),
+        Map.of("runId", "new")));
+
+    assertThat(result.acquired()).isTrue();
+    assertThat(result.token().ownerId()).isEqualTo("owner-2");
   }
 }
