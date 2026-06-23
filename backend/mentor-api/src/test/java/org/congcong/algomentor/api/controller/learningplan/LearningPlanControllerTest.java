@@ -3,6 +3,7 @@ package org.congcong.algomentor.api.controller.learningplan;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,6 +14,20 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockToken;
+import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
+import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
+import org.congcong.algomentor.ai.governance.admission.AiRunLifecycleService;
+import org.congcong.algomentor.ai.governance.model.AiActor;
+import org.congcong.algomentor.ai.governance.model.AiGovernanceMetadataKeys;
+import org.congcong.algomentor.ai.governance.model.AiPurpose;
+import org.congcong.algomentor.ai.governance.model.AiRunContext;
+import org.congcong.algomentor.ai.governance.model.AiRunSource;
+import org.congcong.algomentor.ai.governance.model.AiRunStatus;
+import org.congcong.algomentor.ai.governance.policy.AiPurposePolicy;
+import org.congcong.algomentor.api.controller.AiGovernanceExceptionHandler;
+import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.auth.model.AuthUserStatus;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
@@ -23,6 +38,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
@@ -41,7 +57,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = LearningPlanController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import(LearningPlanExceptionHandler.class)
+@Import({LearningPlanExceptionHandler.class, AiGovernanceExceptionHandler.class})
 class LearningPlanControllerTest {
 
   @Autowired
@@ -56,9 +72,20 @@ class LearningPlanControllerTest {
   @MockBean
   private CurrentUserIdProvider currentUserIdProvider;
 
+  @MockBean
+  private AiActorResolver actorResolver;
+
+  @MockBean
+  private AiRunAdmissionService admissionService;
+
+  @MockBean
+  private AiRunLifecycleService lifecycleService;
+
   @Test
   void createDraftUsesCurrentUserAndReturnsGeneratedDraft() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
+    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
     when(draftService.createDraft(eq(42L), any())).thenReturn(new LearningPlanDraftResult(
         100L,
         LearningPlanDraftStatus.GENERATED,
@@ -92,11 +119,22 @@ class LearningPlanControllerTest {
         ArgumentCaptor.forClass(org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand.class);
     verify(draftService).createDraft(eq(42L), captor.capture());
     org.assertj.core.api.Assertions.assertThat(captor.getValue().goal()).isEqualTo("准备 Java 后端算法面试");
+    ArgumentCaptor<AiRunContext> governanceCaptor = ArgumentCaptor.forClass(AiRunContext.class);
+    verify(admissionService).admit(governanceCaptor.capture());
+    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().actor().userId()).isEqualTo(42L);
+    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().purpose()).isEqualTo(AiPurpose.LEARNING_PLAN);
+    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().source())
+        .isEqualTo(AiRunSource.LEARNING_PLAN_DRAFT);
+    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().streaming()).isFalse();
+    verify(lifecycleService).markRunning(any(AiRunAdmission.class), eq(null), eq(null));
+    verify(lifecycleService).markCompleted(any(AiRunAdmission.class), any(), eq(null), eq(null));
   }
 
   @Test
   void continueDraftReturnsAssistantQuestion() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
+    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
     when(draftService.continueDraft(42L, 100L, "想练数组")).thenReturn(new LearningPlanDraftResult(
         100L,
         LearningPlanDraftStatus.COLLECTING,
@@ -111,6 +149,33 @@ class LearningPlanControllerTest {
         .andExpect(jsonPath("$.data.status").value("COLLECTING"))
         .andExpect(jsonPath("$.data.assistantMessage").value("你每周可以投入几小时？"))
         .andExpect(jsonPath("$.data.missingFields[0]").value("weeklyHours"));
+    verify(admissionService).admit(any(AiRunContext.class));
+    verify(lifecycleService).markCompleted(any(AiRunAdmission.class), any(), eq(null), eq(null));
+  }
+
+  @Test
+  void createDraftMarksGovernanceFailedWhenDraftGenerationFails() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
+    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
+    when(draftService.createDraft(eq(42L), any()))
+        .thenThrow(new LearningPlanException("LEARNING_PLAN_GENERATION_FAILED", "学习计划生成失败。"));
+
+    mockMvc.perform(post("/api/learning-plans/drafts")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "goal": "准备 Java 后端算法面试",
+                  "durationWeeks": 4,
+                  "level": "INTERMEDIATE",
+                  "weeklyHours": 6
+                }
+                """))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.code").value("LEARNING_PLAN_GENERATION_FAILED"));
+
+    verify(lifecycleService).markRunning(any(AiRunAdmission.class), eq(null), eq(null));
+    verify(lifecycleService).markFailed(any(AiRunAdmission.class), any(), any(), eq(null), eq(null));
   }
 
   @Test
@@ -126,6 +191,7 @@ class LearningPlanControllerTest {
         .andExpect(jsonPath("$.data.planId").value(900))
         .andExpect(jsonPath("$.data.title").value("四周 Java 算法面试冲刺计划"))
         .andExpect(jsonPath("$.data.status").value("ACTIVE"));
+    verifyNoInteractions(admissionService, lifecycleService);
   }
 
   @Test
@@ -163,6 +229,27 @@ class LearningPlanControllerTest {
         null,
         List.of(),
         AuthUserStatus.ACTIVE);
+  }
+
+  private AiRunAdmission admitted(AiRunContext context) {
+    AiPurposePolicy policy = new AiPurposePolicy(
+        true, 50, 1, 16384, 2048, 8, true, true, false, false,
+        null, null, "learning-plan-p0");
+    return new AiRunAdmission(
+        1L,
+        context.runId(),
+        context.actor().userId(),
+        context.purpose(),
+        context.source(),
+        AiRunStatus.ADMITTED,
+        "ALL",
+        new AgentRunLockToken("user:42:ai:all", "node-1", "token-1", null),
+        policy,
+        Map.of(
+            AiGovernanceMetadataKeys.RUN_ID, context.runId(),
+            AiGovernanceMetadataKeys.PURPOSE, context.purpose().name(),
+            AiGovernanceMetadataKeys.SOURCE, context.source().name()),
+        Instant.now());
   }
 
   private LearningPlanDraftPlan draftPlan() {
