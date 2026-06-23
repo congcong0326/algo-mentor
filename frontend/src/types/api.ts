@@ -158,6 +158,23 @@ export interface LearningPlanSummaryResponse {
   createdAt: string;
 }
 
+export interface LearningPlanListQuery {
+  page?: number;
+  pageSize?: number;
+}
+
+export interface LearningPlanPageResponse {
+  items: LearningPlanSummaryResponse[];
+  total: number;
+  page: number;
+  pageSize: number;
+  activeCount: number;
+  archivedCount: number;
+  latestCreatedAt?: string | null;
+}
+
+export type DifficultyDistributionLevel = 'INTRODUCTORY' | 'BALANCED' | 'SPRINT';
+
 export interface LearningPlanDetailResponse extends LearningPlanDraftPlan {
   id: number;
   status: LearningPlanStatus;
