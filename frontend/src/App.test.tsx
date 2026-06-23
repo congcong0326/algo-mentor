@@ -742,7 +742,7 @@ describe('App', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('草案已过期，请调整问卷后重试。');
   });
 
-  it('deletes a learning plan and refreshes the current page', async () => {
+  it('deletes a selected learning plan and loads the next available plan', async () => {
     const fetchMock = mockLearningPlanDeleteFetch();
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
@@ -750,6 +750,7 @@ describe('App', () => {
     render(<App />);
 
     expect(await screen.findAllByText('四周 Java 算法面试冲刺计划')).not.toHaveLength(0);
+    expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     fireEvent.click(screen.getByRole('button', { name: '删除 四周 Java 算法面试冲刺计划' }));
 
@@ -758,6 +759,24 @@ describe('App', () => {
       expect.objectContaining({ method: 'DELETE' }),
     ));
     expectCsrfHeader(fetchMock, '/api/learning-plans/900', 'DELETE');
+    expect(await screen.findByRole('heading', { name: '八周动态规划复盘计划' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).not.toBeInTheDocument();
+    expect(screen.getByTestId('learning-plan-row-901')).toHaveClass('selected');
+  });
+
+  it('loads the first plan from the new page when changing learning plan pages', async () => {
+    const fetchMock = mockLearningPlanPaginationFetch();
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: '第一页计划' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '下一页' }));
+
+    expect(await screen.findByRole('heading', { name: '第二页计划' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '第一页计划' })).not.toBeInTheDocument();
+    expect(screen.getByTestId('learning-plan-row-902')).toHaveClass('selected');
   });
 
   it('clears confirmed draft preview when refresh fails after confirmation', async () => {
@@ -1109,7 +1128,13 @@ function mockLearningPlanDeleteFetch() {
     if (isLearningPlanListUrl(url)) {
       return Promise.resolve(jsonResponse({
         success: true,
-        data: learningPlanPage(deleted ? [] : [learningPlanSummary()]),
+        data: learningPlanPage(deleted ? [
+          learningPlanSummary({
+            id: 901,
+            title: '八周动态规划复盘计划',
+            goal: '系统复盘动态规划题型',
+          }),
+        ] : [learningPlanSummary()]),
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
@@ -1127,6 +1152,76 @@ function mockLearningPlanDeleteFetch() {
       return Promise.resolve(jsonResponse({
         success: true,
         data: learningPlanDetail(),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/901') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: learningPlanDetail({
+          id: 901,
+          title: '八周动态规划复盘计划',
+          goal: '系统复盘动态规划题型',
+          summary: '围绕动态规划建立复盘节奏。',
+        }),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    return Promise.reject(new Error(`Unexpected URL: ${url}`));
+  });
+}
+
+function mockLearningPlanPaginationFetch() {
+  return vi.fn((url: string) => {
+    if (url === '/api/auth/me') {
+      return Promise.resolve(authenticatedUserResponse());
+    }
+
+    if (isLearningPlanListUrl(url)) {
+      const page = Number(new URL(`http://localhost${url}`).searchParams.get('page') ?? '1');
+      const item = page === 2
+        ? learningPlanSummary({
+          id: 902,
+          title: '第二页计划',
+          goal: '第二页目标',
+        })
+        : learningPlanSummary({
+          id: 901,
+          title: '第一页计划',
+          goal: '第一页目标',
+        });
+
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: learningPlanPage([item], { page, total: 20 }),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/901') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: learningPlanDetail({
+          id: 901,
+          title: '第一页计划',
+          goal: '第一页目标',
+          summary: '第一页详情。',
+        }),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/902') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: learningPlanDetail({
+          id: 902,
+          title: '第二页计划',
+          goal: '第二页目标',
+          summary: '第二页详情。',
+        }),
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }

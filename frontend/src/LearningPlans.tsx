@@ -20,6 +20,7 @@ import type {
 } from './types/api';
 
 type LearningPlanFlowState = 'idle' | 'creating' | 'generating' | 'collecting' | 'previewing' | 'confirming';
+type SelectionRefreshMode = 'keep-current' | 'select-first';
 
 const INITIAL_PLANS_PAGE: LearningPlanPageResponse = {
   items: [],
@@ -66,7 +67,12 @@ export default function LearningPlans() {
     setSelectedPlan(apiData(response, '学习计划详情加载失败'));
   }
 
-  async function refreshPlans(nextPage = page, selectedId?: number, signal?: AbortSignal) {
+  async function refreshPlans(
+    nextPage = page,
+    selectedId?: number,
+    signal?: AbortSignal,
+    selectionMode: SelectionRefreshMode = 'keep-current',
+  ) {
     const nextPlans = apiData(
       await getLearningPlans({ page: nextPage, pageSize: plansPage.pageSize }, signal),
       '学习计划列表加载失败',
@@ -79,8 +85,29 @@ export default function LearningPlans() {
       return;
     }
 
-    if (!selectedPlan && nextPlans.items[0]) {
+    if (selectionMode === 'select-first') {
+      const firstPlan = nextPlans.items[0];
+      if (firstPlan) {
+        await loadPlan(firstPlan.id, signal);
+      } else {
+        setSelectedPlan(undefined);
+      }
+      return;
+    }
+
+    const currentSelectedId = selectedPlan?.id;
+    const currentSelectionStillVisible = currentSelectedId
+      ? nextPlans.items.some((item) => item.id === currentSelectedId)
+      : false;
+
+    if (currentSelectionStillVisible) {
+      return;
+    }
+
+    if (nextPlans.items[0]) {
       await loadPlan(nextPlans.items[0].id, signal);
+    } else {
+      setSelectedPlan(undefined);
     }
   }
 
@@ -157,8 +184,11 @@ export default function LearningPlans() {
       await deleteLearningPlan(planId);
       const shouldStepBack = plansPage.items.length === 1 && page > 1;
       const nextPage = shouldStepBack ? page - 1 : page;
-      setSelectedPlan((current) => (current?.id === planId ? undefined : current));
-      await refreshPlans(nextPage);
+      const removedSelectedPlan = selectedPlan?.id === planId;
+      if (removedSelectedPlan) {
+        setSelectedPlan(undefined);
+      }
+      await refreshPlans(nextPage, undefined, undefined, removedSelectedPlan ? 'select-first' : 'keep-current');
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : '学习计划删除失败');
     } finally {
@@ -171,6 +201,12 @@ export default function LearningPlans() {
     setCreateModalKey((current) => current + 1);
     setCreateModalOpen(true);
     setFlowState('creating');
+  }
+
+  function retryCreateDraft() {
+    setDraft(undefined);
+    setError('');
+    openCreateModal();
   }
 
   return (
@@ -190,7 +226,10 @@ export default function LearningPlans() {
         onDelete={removePlan}
         onPageChange={(nextPage) => {
           setPage(nextPage);
-          void refreshPlans(nextPage);
+          setSelectedPlan(undefined);
+          setDraft(undefined);
+          setFlowState('idle');
+          void refreshPlans(nextPage, undefined, undefined, 'select-first');
         }}
         onSelect={(planId) => {
           setDraft(undefined);
@@ -208,7 +247,7 @@ export default function LearningPlans() {
             loading={flowState === 'generating' || flowState === 'confirming'}
             onConfirm={confirmDraft}
             onRegenerateGoal={regenerateFromGoal}
-            onReturnToWizard={openCreateModal}
+            onRetryCreate={retryCreateDraft}
             onSendFollowUp={sendFollowUp}
           />
         ) : selectedPlan ? (
