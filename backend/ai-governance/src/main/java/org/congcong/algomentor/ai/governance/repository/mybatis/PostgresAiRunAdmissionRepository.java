@@ -41,8 +41,7 @@ public class PostgresAiRunAdmissionRepository {
         terminal(status) ? Instant.now() : null,
         null,
         null);
-    mapper.insertAdmission(row);
-    return row.id();
+    return mapper.insertAdmission(row);
   }
 
   public Long insertRejected(
@@ -76,8 +75,7 @@ public class PostgresAiRunAdmissionRepository {
         Instant.now(),
         null,
         null);
-    mapper.insertAdmission(row);
-    return row.id();
+    return mapper.insertAdmission(row);
   }
 
   public void updateStatus(

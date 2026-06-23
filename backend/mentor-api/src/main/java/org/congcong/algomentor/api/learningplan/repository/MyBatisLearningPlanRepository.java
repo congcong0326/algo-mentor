@@ -41,12 +41,13 @@ public class MyBatisLearningPlanRepository implements LearningPlanDraftRepositor
   @Transactional
   public LearningPlanDraft save(LearningPlanDraft draft) {
     LearningPlanDraftRow row = toDraftRow(draft);
+    long draftId = row.id() == null ? 0 : row.id();
     if (draft.id() == null) {
-      mapper.insertDraft(row);
+      draftId = mapper.insertDraft(row);
     } else {
       mapper.updateDraft(row);
     }
-    return toDraft(mapper.findDraftByIdForUser(row.id(), draft.userId()));
+    return toDraft(mapper.findDraftByIdForUser(draftId, draft.userId()));
   }
 
   @Override
@@ -58,13 +59,14 @@ public class MyBatisLearningPlanRepository implements LearningPlanDraftRepositor
   @Transactional
   public LearningPlan save(LearningPlan plan) {
     LearningPlanRow row = toPlanRow(plan);
+    long planId = row.id() == null ? 0 : row.id();
     if (plan.id() == null) {
-      mapper.insertPlan(row);
+      planId = mapper.insertPlan(row);
     } else {
       mapper.updatePlanSnapshot(row);
     }
-    replacePlanDetails(row.id(), plan.plan());
-    return toPlan(mapper.findPlanByIdForUser(row.id(), plan.userId()));
+    replacePlanDetails(planId, plan.plan());
+    return toPlan(mapper.findPlanByIdForUser(planId, plan.userId()));
   }
 
   @Override

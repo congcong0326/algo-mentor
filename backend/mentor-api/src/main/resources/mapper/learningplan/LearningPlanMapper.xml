@@ -40,7 +40,7 @@
     </constructor>
   </resultMap>
 
-  <insert id="insertDraft" useGeneratedKeys="true" keyProperty="id">
+  <select id="insertDraft" resultType="java.lang.Long" affectData="true">
     INSERT INTO learning_plan_draft (
       user_id,
       status,
@@ -67,7 +67,8 @@
       #{createdAt},
       #{updatedAt}
     )
-  </insert>
+    RETURNING id
+  </select>
 
   <update id="updateDraft">
     UPDATE learning_plan_draft
@@ -103,7 +104,7 @@
       AND user_id = #{userId}
   </select>
 
-  <insert id="insertPlan" useGeneratedKeys="true" keyProperty="id">
+  <select id="insertPlan" resultType="java.lang.Long" affectData="true">
     INSERT INTO learning_plan (
       user_id,
       status,
@@ -120,7 +121,8 @@
       #{createdAt},
       #{updatedAt}
     )
-  </insert>
+    RETURNING id
+  </select>
 
   <update id="updatePlanSnapshot">
     UPDATE learning_plan

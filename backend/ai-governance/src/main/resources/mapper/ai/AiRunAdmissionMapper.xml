@@ -31,8 +31,10 @@
     </constructor>
   </resultMap>
 
-  <insert id="insertAdmission" parameterType="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiRunAdmissionRow"
-      useGeneratedKeys="true" keyProperty="id">
+  <select id="insertAdmission"
+      parameterType="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiRunAdmissionRow"
+      resultType="java.lang.Long"
+      affectData="true">
     INSERT INTO ai_run_admissions (
       run_id, user_id, purpose, source, status, idempotency_key, request_size,
       rejection_code, error_code, provider, model, input_tokens, output_tokens,
@@ -43,7 +45,8 @@
       #{rejectionCode}, #{errorCode}, #{provider}, #{model}, #{inputTokens}, #{outputTokens},
       #{cachedTokens}, #{reasoningTokens}, #{totalTokens}, #{startedAt}, #{completedAt}
     )
-  </insert>
+    RETURNING id
+  </select>
 
   <update id="updateStatus" parameterType="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiRunStatusUpdate">
     UPDATE ai_run_admissions

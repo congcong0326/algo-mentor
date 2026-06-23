@@ -10,13 +10,13 @@ import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanRow;
 @Mapper
 public interface LearningPlanMapper {
 
-  int insertDraft(LearningPlanDraftRow row);
+  long insertDraft(LearningPlanDraftRow row);
 
   int updateDraft(LearningPlanDraftRow row);
 
   LearningPlanDraftRow findDraftByIdForUser(@Param("id") long id, @Param("userId") long userId);
 
-  int insertPlan(LearningPlanRow row);
+  long insertPlan(LearningPlanRow row);
 
   int updatePlanSnapshot(LearningPlanRow row);
 
