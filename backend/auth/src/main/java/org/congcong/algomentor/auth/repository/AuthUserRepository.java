@@ -15,6 +15,8 @@ public interface AuthUserRepository {
 
   Optional<AuthUser> findUserById(long userId);
 
+  Optional<AuthUser> findUserByEmailNormalized(String emailNormalized);
+
   AuthUser createUser(
       String email,
       String emailNormalized,

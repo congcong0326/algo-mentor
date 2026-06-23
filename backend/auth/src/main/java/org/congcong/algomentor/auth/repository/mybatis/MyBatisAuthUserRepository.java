@@ -33,6 +33,14 @@ public class MyBatisAuthUserRepository implements AuthUserRepository {
   }
 
   @Override
+  public Optional<AuthUser> findUserByEmailNormalized(String emailNormalized) {
+    if (emailNormalized == null || emailNormalized.isBlank()) {
+      return Optional.empty();
+    }
+    return Optional.ofNullable(mapper.findUserByEmailNormalized(emailNormalized)).map(AuthUserRow::toDomain);
+  }
+
+  @Override
   public AuthUser createUser(
       String email,
       String emailNormalized,

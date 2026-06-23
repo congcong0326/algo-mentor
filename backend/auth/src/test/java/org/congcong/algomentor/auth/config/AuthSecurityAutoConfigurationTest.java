@@ -10,11 +10,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import jakarta.servlet.SessionCookieConfig;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import org.congcong.algomentor.auth.autoconfigure.AuthApiAutoConfiguration;
 import org.congcong.algomentor.auth.model.AuthRole;
 import org.congcong.algomentor.auth.model.AuthUserStatus;
 import org.congcong.algomentor.auth.security.AuthAuthorities;
+import org.congcong.algomentor.auth.security.AuthenticatedOidcUser;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Test;
@@ -34,8 +41,15 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.ClassUtils;
+import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,6 +73,9 @@ class AuthSecurityAutoConfigurationTest {
   @Autowired
   private CookieSameSiteSupplier authSessionCookieSameSiteSupplier;
 
+  @Autowired
+  private ConversionService springSessionConversionService;
+
   @Test
   void permitsHealthEndpoint() throws Exception {
     mockMvc.perform(get("/api/health"))
@@ -79,6 +96,15 @@ class AuthSecurityAutoConfigurationTest {
     mockMvc.perform(get("/oauth2/authorization/google"))
         .andExpect(status().is3xxRedirection())
         .andExpect(header().string("Location", startsWith("https://accounts.google.com/o/oauth2/v2/auth")));
+  }
+
+  @Test
+  void oidcJwtDecoderIsAvailableForGoogleLogin() {
+    assertThat(ClassUtils.isPresent(
+        "org.springframework.security.oauth2.jwt.JwtDecoder",
+        getClass().getClassLoader()))
+        .as("Google OAuth2 Login requests openid scope, so Spring Security must be able to validate id_token")
+        .isTrue();
   }
 
   @Test
@@ -116,6 +142,23 @@ class AuthSecurityAutoConfigurationTest {
     assertThat(authSessionCookieSameSiteSupplier.getSameSite(otherCookie)).isNull();
   }
 
+  @Test
+  void springSessionConversionServiceSerializesSecurityContext() {
+    SecurityContextImpl securityContext = securityContext();
+
+    byte[] serialized = springSessionConversionService.convert(securityContext, byte[].class);
+    Object deserialized = springSessionConversionService.convert(serialized, Object.class);
+
+    assertThat(deserialized).isInstanceOf(SecurityContextImpl.class);
+  }
+
+  @Test
+  void oauth2SecurityContextIsJavaSerializable() throws Exception {
+    Object deserialized = deserialize(serialize(securityContext()));
+
+    assertThat(deserialized).isInstanceOf(SecurityContextImpl.class);
+  }
+
   private static UsernamePasswordAuthenticationToken authenticationToken() {
     AuthenticatedUserPrincipal principal = new AuthenticatedUserPrincipal(
         42L,
@@ -128,6 +171,46 @@ class AuthSecurityAutoConfigurationTest {
         principal,
         "n/a",
         AuthAuthorities.fromRoles(principal.roles()));
+  }
+
+  private static SecurityContextImpl securityContext() {
+    AuthenticatedUserPrincipal principal = new AuthenticatedUserPrincipal(
+        42L,
+        "user@example.com",
+        "User Name",
+        "https://example.com/avatar.png",
+        List.of(AuthRole.USER),
+        AuthUserStatus.ACTIVE);
+    Instant issuedAt = Instant.parse("2026-06-23T00:00:00Z");
+    OidcIdToken idToken = new OidcIdToken(
+        "id-token",
+        issuedAt,
+        issuedAt.plusSeconds(3600),
+        Map.of(IdTokenClaimNames.SUB, "google-sub"));
+    DefaultOidcUser oidcUser = new DefaultOidcUser(AuthAuthorities.fromRoles(principal.roles()), idToken);
+    AuthenticatedOidcUser authenticatedOidcUser = new AuthenticatedOidcUser(
+        principal,
+        oidcUser,
+        AuthAuthorities.fromRoles(principal.roles()));
+    OAuth2AuthenticationToken authentication = new OAuth2AuthenticationToken(
+        authenticatedOidcUser,
+        AuthAuthorities.fromRoles(principal.roles()),
+        "google");
+    return new SecurityContextImpl(authentication);
+  }
+
+  private static byte[] serialize(Object object) throws Exception {
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    try (ObjectOutputStream output = new ObjectOutputStream(bytes)) {
+      output.writeObject(object);
+    }
+    return bytes.toByteArray();
+  }
+
+  private static Object deserialize(byte[] bytes) throws Exception {
+    try (ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
+      return input.readObject();
+    }
   }
 
   @SpringBootConfiguration

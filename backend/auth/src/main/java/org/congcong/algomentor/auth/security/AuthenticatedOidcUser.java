@@ -10,6 +10,8 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 public class AuthenticatedOidcUser extends AuthenticatedOAuth2User implements OidcUser {
 
+  private static final long serialVersionUID = 1L;
+
   private final OidcUser delegate;
   private final List<GrantedAuthority> authorities;
 

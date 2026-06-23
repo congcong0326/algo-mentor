@@ -90,6 +90,33 @@ public class OAuth2LoginUserServiceTest {
   }
 
   @Test
+  void firstGoogleLoginReusesExistingUserWithSameEmailWhenBindingIsMissing() {
+    AuthUser user = repository.createUser(
+        "0326congcong@gmail.com",
+        "0326congcong@gmail.com",
+        "Existing User",
+        "old-avatar",
+        AuthUserStatus.ACTIVE,
+        NOW.minusSeconds(3600));
+    repository.addRole(user.id(), AuthRole.USER);
+
+    AuthenticatedUserPrincipal principal = service.syncGoogleUser(googleAttributes(
+        "google-sub-recovered",
+        "0326CONGCONG@gmail.com",
+        "Google User",
+        "google-avatar"));
+
+    assertThat(principal.userId()).isEqualTo(user.id());
+    assertThat(repository.createUserCalls).isEqualTo(1);
+    assertThat(repository.oauthAccountsByKey)
+        .containsKey(OAuthProvider.GOOGLE.value() + ":google-sub-recovered");
+    OAuthAccount account = repository.oauthAccountsByKey.get(
+        OAuthProvider.GOOGLE.value() + ":google-sub-recovered");
+    assertThat(account.userId()).isEqualTo(user.id());
+    assertThat(repository.users.get(user.id()).lastLoginAt()).isEqualTo(NOW);
+  }
+
+  @Test
   void disabledUserCannotLogin() {
     AuthUser user = repository.createUser(
         "disabled@example.com",
@@ -149,6 +176,14 @@ public class OAuth2LoginUserServiceTest {
     @Override
     public Optional<AuthUser> findUserById(long userId) {
       return Optional.ofNullable(users.get(userId));
+    }
+
+    @Override
+    public Optional<AuthUser> findUserByEmailNormalized(String emailNormalized) {
+      return users.values()
+          .stream()
+          .filter(user -> emailNormalized.equals(user.emailNormalized()))
+          .findFirst();
     }
 
     @Override

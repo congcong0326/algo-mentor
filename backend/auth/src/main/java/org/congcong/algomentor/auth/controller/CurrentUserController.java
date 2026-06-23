@@ -1,8 +1,12 @@
 package org.congcong.algomentor.auth.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.congcong.algomentor.auth.model.CurrentUserResponse;
+import org.congcong.algomentor.auth.security.AuthDiagnosticSupport;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.common.api.ApiResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(AuthApiContractConstants.AUTH_API_BASE_PATH)
 public class CurrentUserController {
 
+  private static final Logger log = LoggerFactory.getLogger(CurrentUserController.class);
+
   private final CurrentUserIdProvider currentUserIdProvider;
 
   public CurrentUserController(CurrentUserIdProvider currentUserIdProvider) {
@@ -20,18 +26,25 @@ public class CurrentUserController {
   }
 
   @GetMapping(AuthApiContractConstants.ME_PATH)
-  public ResponseEntity<ApiResponse<CurrentUserResponse>> me() {
+  public ResponseEntity<ApiResponse<CurrentUserResponse>> me(HttpServletRequest request) {
+    log.info("Current user endpoint called. {}", AuthDiagnosticSupport.requestSummary(request));
     return currentUserIdProvider.currentUser()
-        .map(principal -> ResponseEntity.ok(ApiResponse.success(new CurrentUserResponse(
-            principal.userId(),
-            principal.email(),
-            principal.displayName(),
-            principal.avatarUrl(),
-            principal.roles(),
-            principal.status()))))
-        .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-            .body(ApiResponse.failure(
-                AuthApiContractConstants.AUTH_UNAUTHENTICATED_CODE,
-                "当前请求未登录或无法解析当前用户。")));
+        .map(principal -> {
+          log.info("Current user endpoint returning authenticated user. userId={}", principal.userId());
+          return ResponseEntity.ok(ApiResponse.success(new CurrentUserResponse(
+              principal.userId(),
+              principal.email(),
+              principal.displayName(),
+              principal.avatarUrl(),
+              principal.roles(),
+              principal.status())));
+        })
+        .orElseGet(() -> {
+          log.info("Current user endpoint returning unauthenticated response.");
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+              .body(ApiResponse.failure(
+                  AuthApiContractConstants.AUTH_UNAUTHENTICATED_CODE,
+                  "当前请求未登录或无法解析当前用户。"));
+        });
   }
 }

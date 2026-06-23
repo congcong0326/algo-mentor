@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import org.congcong.algomentor.auth.model.AuthRole;
 import org.congcong.algomentor.auth.model.AuthUser;
 import org.congcong.algomentor.auth.model.AuthUserStatus;
@@ -12,10 +13,15 @@ import org.congcong.algomentor.auth.model.OAuthAccount;
 import org.congcong.algomentor.auth.model.OAuthProvider;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.transaction.annotation.Transactional;
 
 public class OAuth2LoginUserService {
+
+  private static final Logger log = LoggerFactory.getLogger(OAuth2LoginUserService.class);
 
   public static final String AUTH_USER_DISABLED_CODE = "auth_user_disabled";
   public static final String MISSING_SUBJECT_CODE = "missing_provider_subject";
@@ -28,15 +34,19 @@ public class OAuth2LoginUserService {
     this.clock = clock;
   }
 
+  @Transactional
   public AuthenticatedUserPrincipal syncGoogleUser(Map<String, Object> attributes) {
     String subject = requiredString(attributes, "sub", MISSING_SUBJECT_CODE);
     String email = stringAttribute(attributes, "email");
+    String emailNormalized = normalizeEmail(email);
     String displayName = stringAttribute(attributes, "name");
     String avatarUrl = stringAttribute(attributes, "picture");
     Instant now = Instant.now(clock);
 
-    OAuthAccount account = repository.findOAuthAccount(OAuthProvider.GOOGLE, subject)
-        .orElseGet(() -> createGoogleAccount(subject, email, displayName, avatarUrl, now));
+    Optional<OAuthAccount> existingAccount = repository.findOAuthAccount(OAuthProvider.GOOGLE, subject);
+    boolean createdAccount = existingAccount.isEmpty();
+    OAuthAccount account = existingAccount
+        .orElseGet(() -> createGoogleAccount(subject, email, emailNormalized, displayName, avatarUrl, now));
 
     AuthUser user = repository.findUserById(account.userId())
         .orElseThrow(() -> authenticationException("auth_user_missing", "Authenticated user does not exist."));
@@ -47,24 +57,38 @@ public class OAuth2LoginUserService {
     }
     AuthUser updatedUser = repository.updateLastLoginAt(user.id(), now);
     List<AuthRole> roles = repository.findRoles(updatedUser.id());
-    return toPrincipal(updatedUser, roles.isEmpty() ? List.of(AuthRole.USER) : roles);
+    List<AuthRole> effectiveRoles = roles.isEmpty() ? List.of(AuthRole.USER) : roles;
+    log.info(
+        "Google OAuth user synchronized. userId={} createdAccount={} emailPresent={} displayNamePresent={} avatarPresent={} roles={}",
+        updatedUser.id(),
+        createdAccount,
+        email != null,
+        displayName != null,
+        avatarUrl != null,
+        effectiveRoles);
+    return toPrincipal(updatedUser, effectiveRoles);
   }
 
   private OAuthAccount createGoogleAccount(
       String subject,
       String email,
+      String emailNormalized,
       String displayName,
       String avatarUrl,
       Instant now
   ) {
-    AuthUser user = repository.createUser(
-        email,
-        normalizeEmail(email),
-        displayName,
-        avatarUrl,
-        AuthUserStatus.ACTIVE,
-        now);
-    repository.addRole(user.id(), AuthRole.USER);
+    Optional<AuthUser> userByEmail = repository.findUserByEmailNormalized(emailNormalized);
+    AuthUser user = userByEmail
+        .orElseGet(() -> repository.createUser(
+            email,
+            emailNormalized,
+            displayName,
+            avatarUrl,
+            AuthUserStatus.ACTIVE,
+            now));
+    if (userByEmail.isEmpty()) {
+      repository.addRole(user.id(), AuthRole.USER);
+    }
     return repository.createOAuthAccount(new OAuthAccount(
         null,
         user.id(),

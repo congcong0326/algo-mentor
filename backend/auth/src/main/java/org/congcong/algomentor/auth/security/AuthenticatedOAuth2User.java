@@ -1,12 +1,15 @@
 package org.congcong.algomentor.auth.security;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-public class AuthenticatedOAuth2User implements OAuth2User {
+public class AuthenticatedOAuth2User implements OAuth2User, Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   private final AuthenticatedUserPrincipal authenticatedUserPrincipal;
   private final Map<String, Object> attributes;

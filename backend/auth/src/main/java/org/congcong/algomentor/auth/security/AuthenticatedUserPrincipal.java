@@ -1,5 +1,6 @@
 package org.congcong.algomentor.auth.security;
 
+import java.io.Serializable;
 import java.util.List;
 import org.congcong.algomentor.auth.model.AuthRole;
 import org.congcong.algomentor.auth.model.AuthUserStatus;
@@ -11,7 +12,9 @@ public record AuthenticatedUserPrincipal(
     String avatarUrl,
     List<AuthRole> roles,
     AuthUserStatus status
-) {
+) implements Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   public AuthenticatedUserPrincipal {
     if (userId == null || userId < 1) {

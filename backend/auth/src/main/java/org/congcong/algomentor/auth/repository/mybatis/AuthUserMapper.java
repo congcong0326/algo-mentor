@@ -14,6 +14,8 @@ public interface AuthUserMapper {
 
   AuthUserRow findUserById(@Param("userId") long userId);
 
+  AuthUserRow findUserByEmailNormalized(@Param("emailNormalized") String emailNormalized);
+
   int insertUser(AuthUserRow user);
 
   int insertUserRole(

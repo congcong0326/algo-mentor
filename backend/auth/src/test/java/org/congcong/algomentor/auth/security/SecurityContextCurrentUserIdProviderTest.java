@@ -10,6 +10,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 
 class SecurityContextCurrentUserIdProviderTest {
 
@@ -43,6 +46,24 @@ class SecurityContextCurrentUserIdProviderTest {
         Map.of("sub", "google-sub"),
         AuthAuthorities.fromRoles(principal.roles()));
     TestingAuthenticationToken authentication = new TestingAuthenticationToken(oauth2User, null);
+    authentication.setAuthenticated(true);
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+
+    assertThat(provider.currentUser()).contains(principal);
+  }
+
+  @Test
+  void returnsAuthenticatedPrincipalFromOidcWrapper() {
+    OidcIdToken idToken = new OidcIdToken(
+        "token",
+        java.time.Instant.parse("2026-06-23T00:00:00Z"),
+        java.time.Instant.parse("2026-06-23T01:00:00Z"),
+        Map.of(IdTokenClaimNames.SUB, "google-sub"));
+    AuthenticatedOidcUser oidcUser = new AuthenticatedOidcUser(
+        principal,
+        new DefaultOidcUser(List.of(), idToken),
+        AuthAuthorities.fromRoles(principal.roles()));
+    TestingAuthenticationToken authentication = new TestingAuthenticationToken(oidcUser, null);
     authentication.setAuthenticated(true);
     SecurityContextHolder.getContext().setAuthentication(authentication);
 

@@ -60,6 +60,20 @@
     where id = #{userId}
   </select>
 
+  <select id="findUserByEmailNormalized" resultMap="AuthUserRowMap">
+    select id,
+           email,
+           email_normalized,
+           display_name,
+           avatar_url,
+           status,
+           created_at,
+           updated_at,
+           last_login_at
+    from auth_users
+    where email_normalized = #{emailNormalized}
+  </select>
+
   <insert id="insertUser"
           parameterType="org.congcong.algomentor.auth.repository.mybatis.model.AuthUserRow"
           useGeneratedKeys="true"

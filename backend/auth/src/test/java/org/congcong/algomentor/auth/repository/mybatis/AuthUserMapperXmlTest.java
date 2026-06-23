@@ -28,6 +28,8 @@ class AuthUserMapperXmlTest {
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper.insertUser")).isTrue();
     assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper.findUserByEmailNormalized")).isTrue();
+    assertThat(configuration.hasStatement(
         "org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper.insertOAuthAccount")).isTrue();
   }
 }
