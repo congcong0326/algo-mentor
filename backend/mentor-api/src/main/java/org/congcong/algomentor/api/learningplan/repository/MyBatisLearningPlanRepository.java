@@ -104,6 +104,13 @@ public class MyBatisLearningPlanRepository implements LearningPlanDraftRepositor
     return mapper.deletePlanByIdForUser(planId, userId) > 0;
   }
 
+  @Override
+  @Transactional
+  public boolean deletePlanAndClearReferences(long userId, long planId) {
+    mapper.clearConfirmedPlanReferences(userId, planId);
+    return mapper.deletePlanByIdForUser(planId, userId) > 0;
+  }
+
   private void replacePlanDetails(long planId, LearningPlanDraftPlan plan) {
     mapper.deletePlanPhases(planId);
     for (LearningPlanPhaseDraft phase : plan.phases()) {

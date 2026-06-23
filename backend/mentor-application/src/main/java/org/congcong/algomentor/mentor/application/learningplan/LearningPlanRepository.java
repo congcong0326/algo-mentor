@@ -22,4 +22,8 @@ public interface LearningPlanRepository {
   default boolean deletePlanByIdForUser(long planId, long userId) {
     throw new LearningPlanRepositoryUnavailableException();
   }
+
+  default boolean deletePlanAndClearReferences(long userId, long planId) {
+    throw new LearningPlanRepositoryUnavailableException();
+  }
 }

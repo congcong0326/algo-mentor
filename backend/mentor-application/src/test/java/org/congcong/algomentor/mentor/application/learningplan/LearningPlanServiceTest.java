@@ -57,6 +57,19 @@ class LearningPlanServiceTest {
     assertThat(planRepository.deletedPlans).isEmpty();
   }
 
+  @Test
+  void deletePlanThrowsWhenCombinedDeleteReturnsFalseAfterPlanLookup() {
+    planRepository.plans.put(900L, plan(900L, 42L));
+    planRepository.deleteResult = false;
+
+    assertThatThrownBy(() -> service.deletePlan(42L, 900L))
+        .isInstanceOf(LearningPlanException.class)
+        .hasMessage("学习计划不存在。");
+
+    assertThat(planRepository.clearedReferences).containsExactly("42:900");
+    assertThat(planRepository.deletedPlans).containsExactly("42:900");
+  }
+
   private static LearningPlan plan(long planId, long userId) {
     Instant now = Instant.parse("2026-06-23T00:00:00Z");
     return new LearningPlan(planId, userId, LearningPlanStatus.ACTIVE, null, now, now);
@@ -71,6 +84,7 @@ class LearningPlanServiceTest {
     private long lastPageUserId;
     private int lastPage;
     private int lastPageSize;
+    private boolean deleteResult = true;
 
     @Override
     public LearningPlan save(LearningPlan plan) {
@@ -106,6 +120,16 @@ class LearningPlanServiceTest {
     @Override
     public boolean deletePlanByIdForUser(long planId, long userId) {
       deletedPlans.add(userId + ":" + planId);
+      return plans.remove(planId) != null;
+    }
+
+    @Override
+    public boolean deletePlanAndClearReferences(long userId, long planId) {
+      clearConfirmedPlanReferences(userId, planId);
+      deletedPlans.add(userId + ":" + planId);
+      if (!deleteResult) {
+        return false;
+      }
       return plans.remove(planId) != null;
     }
   }

@@ -51,6 +51,11 @@ public class UnavailableLearningPlanRepository implements LearningPlanDraftRepos
     throw unavailable();
   }
 
+  @Override
+  public boolean deletePlanAndClearReferences(long userId, long planId) {
+    throw unavailable();
+  }
+
   private LearningPlanRepositoryUnavailableException unavailable() {
     return new LearningPlanRepositoryUnavailableException();
   }

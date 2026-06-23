@@ -33,8 +33,7 @@ public class LearningPlanService {
 
   public void deletePlan(long userId, long planId) {
     getPlan(userId, planId);
-    planRepository.clearConfirmedPlanReferences(userId, planId);
-    boolean deleted = planRepository.deletePlanByIdForUser(planId, userId);
+    boolean deleted = planRepository.deletePlanAndClearReferences(userId, planId);
     if (!deleted) {
       throw new LearningPlanException("LEARNING_PLAN_NOT_FOUND", "学习计划不存在。");
     }
