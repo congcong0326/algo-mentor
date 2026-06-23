@@ -27,6 +27,7 @@
     <module>agent-core</module>
     <module>agent-persistence-postgres</module>
     <module>auth</module>
+    <module>ai-governance</module>
     <module>mentor-application</module>
     <module>mentor-api</module>
   </modules>
