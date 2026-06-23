@@ -11,7 +11,7 @@
 - `mentor-application` 与 `mentor-api` 已承载学习计划 Agent、题目工具、SSE 和业务 API。
 - `auth` 已提供登录态、当前用户解析和角色模型。
 
-下一阶段准备面向 5-20 个真实登录用户开放 AI 能力：学习计划生成、题目讲解、受限学习对话。当前缺口不在于再新增一个具体 AI 业务功能，而在于所有 AI 调用缺少统一上线治理层：用户归属、准入、配额、并发、审计、完整内容访问控制、指标和稳定错误映射还容易散落在 controller、application service、agent metadata 或 observer 中。
+下一阶段准备面向 5-20 个真实登录用户开放 AI 能力：学习计划生成、题目讲解、受限学习对话。当前缺口不在于再新增一个具体 AI 业务功能，而在于所有 AI 调用缺少统一上线治理层：用户归属、准入、配额、并发、完整内容访问控制、指标和稳定错误映射还容易散落在 controller、application service、agent metadata 或 observer 中。
 
 本设计从已确认的试用需求反推底层平台能力，目标是在不污染 `llm-core`、`agent-core` 和业务模块边界的前提下，新增一个独立 `ai-governance` 模块，作为所有真实用户 AI 调用的统一治理入口。
 
@@ -24,7 +24,6 @@
 - 每个用户同一时间最多 1 个 active AI run。
 - 完整 prompt/response 可以留存用于排查，但 API key、Authorization、OAuth token、数据库密码等凭据必须强制脱敏。
 - 只有管理员可以查看完整 AI 会话和 trace 内容。
-- 管理员读取完整 trace 需要写访问审计。
 - 每日用量 P0 必须落 PostgreSQL，服务重启不丢计数。
 - active run 并发控制 P0 先复用现有本地内存锁，不引入分布式锁或数据库锁。
 - 新增一个 `backend/ai-governance` Maven 模块，内部按包分层，不在 P0 拆成多个 governance 子模块。
@@ -34,8 +33,8 @@
 - 为所有真实用户 AI 调用提供统一的强类型运行上下文。
 - 支持按 AI 场景解析策略，例如默认模型、输出 token 上限、最大 step、是否允许工具、是否允许流式。
 - 在调用 LLM 或 Agent 前完成准入判断：认证、角色、功能开关、配额、并发、请求大小和 purpose 合法性。
-- 使用 PostgreSQL 持久化每日用量、run admission 记录和 trace 访问审计。
-- 将完整内容留存与完整内容读取分开治理：可以写入脱敏后的完整 trace，但读取完整内容需要管理员权限并写审计。
+- 使用 PostgreSQL 持久化每日用量和 run admission 记录。
+- 将完整内容留存与完整内容读取分开治理：可以写入脱敏后的完整 trace，但读取完整内容需要管理员权限。
 - 通过 observer 或等价生命周期扩展统一记录指标、usage、失败、取消和 active run 释放。
 - 为 API 层提供稳定错误码，避免 provider、agent、配额和权限错误以不一致格式泄露到前端。
 - 保持现有 `llm-core`、`agent-core`、`agent-persistence-postgres` 的职责边界清晰。
@@ -72,7 +71,7 @@ org.congcong.algomentor.ai.governance.*
 - `admission`：准入服务、准入结果、失败原因。
 - `usage`：每日 AI 用量接口与 PostgreSQL 实现。
 - `runlock`：active run 锁适配，P0 复用 `agent-core` 现有本地内存锁实现。
-- `audit`：trace 访问策略和访问审计。
+- `trace`：trace 访问策略和脱敏策略适配。
 - `metrics`：AI run 指标 observer。
 - `repository.mybatis`：MyBatis mapper、row model 和 XML。
 - `autoconfigure`：Spring Boot 自动装配。
@@ -108,7 +107,7 @@ PROBLEM_EXPLANATION    题目讲解
 LEARNING_CHAT          受限学习对话
 ```
 
-purpose 是治理层的稳定契约，用于策略解析、配额记录、指标标签、审计和错误排查。它不等同于业务 intent。例如学习计划内部的 `INTERVIEW_SPRINT`、`TOPIC_BREAKTHROUGH` 仍属于 `LEARNING_PLAN` purpose。
+purpose 是治理层的稳定契约，用于策略解析、配额记录、指标标签和错误排查。它不等同于业务 intent。例如学习计划内部的 `INTERVIEW_SPRINT`、`TOPIC_BREAKTHROUGH` 仍属于 `LEARNING_PLAN` purpose。
 
 ### `AiRunSource`
 
@@ -121,7 +120,7 @@ LEARNING_CHAT
 AI_DEBUG
 ```
 
-source 描述触发入口，粒度比 purpose 更接近产品入口。它主要用于观测、审计、排查、默认文案和后续细粒度策略，不用于替代业务路由。
+source 描述触发入口，粒度比 purpose 更接近产品入口。它主要用于观测、排查、默认文案和后续细粒度策略，不用于替代业务路由。
 
 例如 `PROBLEM_EXPLANATION` purpose 可能同时来自题目详情页、错题复盘页或学习计划阶段页。purpose 决定治理大类，source 帮助回答“这次调用从哪里触发”。P0 不需要为每个 source 配独立配额，但指标和 admission 记录应保留 source，方便后续判断哪个入口消耗最多或错误最多。
 
@@ -329,26 +328,6 @@ P0 不新增 `ai_active_run_locks` 表，不引入分布式锁。当前代码库
 
 `InMemoryAgentRunLockManager` 当前不会主动清理过期锁，因此 P0 要么在使用时避免依赖 TTL 自动清理，要么先增强现有内存锁的过期清理语义。这个改动属于 run lock 基础能力增强，不需要引入数据库锁。
 
-### `ai_trace_access_audits`
-
-记录管理员读取完整 trace 的访问审计。
-
-这张表不是 AI run 执行路径的必需表，它只服务一个管理能力：当管理员通过后台、调试接口或运维工具查看完整 prompt/response、request snapshot、tool result 等敏感内容时，系统必须留下“谁在什么时候看了哪个 run，为什么看”的记录。
-
-如果 P0 暂时没有管理后台或完整 trace 读取接口，可以先不落这张表；但一旦提供完整内容读取能力，就必须同步提供访问权限校验和审计写入。否则“完整内容可留存”会变成无访问记录的敏感数据暴露面。
-
-建议字段：
-
-- `id`
-- `admin_user_id`
-- `target_user_id`
-- `run_id`
-- `purpose`
-- `reason`
-- `created_at`
-
-P0 `reason` 可以固定为 `DEBUG`，接口仍保留字段，便于后续要求管理员填写排查原因。
-
 ## Trace 与内容留存
 
 现有 `agent-persistence-postgres` 继续负责 request snapshot、tool result、conversation message 和 run trace。`ai-governance` 不重复保存完整 prompt/response，但负责定义读取规则：
@@ -357,7 +336,6 @@ P0 `reason` 可以固定为 `DEBUG`，接口仍保留字段，便于后续要求
 - 脱敏策略必须有版本号，写入 trace 时记录。
 - 管理员读取完整 trace 前必须调用 `AiTraceAccessPolicy`。
 - 非管理员不能读取完整 trace，即使读取自己的 trace 也不在 P0 开放。
-- 每次读取完整 trace 必须写 `ai_trace_access_audits`。
 
 如果现有 `AgentTraceRedactor` 只覆盖部分字段，P0 实施时应扩充或在 `ai-governance` 中提供统一 redaction policy，供 trace observer 复用。
 
@@ -449,7 +427,6 @@ P0 用户可见文案应简短明确，例如：
 - `PostgresAiDailyUsageStore`：同一天共享 50 次、跨天重置、并发递增不越限、run 结束后累加 token usage。
 - active run 锁：复用 `InMemoryAgentRunLockManager`，覆盖同用户 active run 冲突、终态释放；如增强 TTL，再覆盖过期清理。
 - `AiTraceAccessPolicy`：非管理员拒绝、管理员允许。
-- `AiTraceAccessAuditLogger`：管理员读取完整 trace 时写审计。
 - `AiRunMetricsObserver`：成功、失败、取消、usage 指标被记录。
 - API controller 接入测试：请求体传 `userId` 的旧入口迁移后不再信任客户端用户 ID。
 
@@ -475,7 +452,7 @@ mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository -pl ai-govern
 4. 接入现有 `AgentRunLockManager`，实现用户维度 active run 准入和终态释放。
 5. 接入 Agent lifecycle observer，完成状态更新、usage 记录和锁释放。
 6. 增加 metrics observer。
-7. 增加 trace access policy；如果提供完整 trace 读取接口，同步落访问审计。
+7. 增加 trace access policy，限制完整 trace 读取权限。
 8. 迁移 AI 调试会话接口，不再接收客户端 `userId`，并限制管理员访问。
 9. 将学习计划、题目讲解、受限学习对话接入 governance。
 
@@ -483,7 +460,7 @@ mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository -pl ai-govern
 
 - 准入成功即扣减请求次数，可能让用户取消流式任务后仍消耗一次配额；P0 接受该语义，用简单规则换取一致性。
 - active run 锁 P0 是单实例内存锁，只适合当前小范围试用和单实例部署；多实例部署前必须升级为 PostgreSQL 或 Redis 分布式锁。
-- 完整内容留存提高排查能力，也提高隐私风险；P0 必须先保证凭据脱敏、管理员访问控制和访问审计。
+- 完整内容留存提高排查能力，也提高隐私风险；P0 必须先保证凭据脱敏和管理员访问控制。
 - Flyway 版本号在多模块共享同一版本空间，新增迁移前必须检查现有最大版本号。
 - 指标标签不能包含 prompt、response、用户输入或高基数字段，避免泄露和指标爆炸。
 
@@ -494,7 +471,7 @@ mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository -pl ai-govern
 - 单用户每日所有 AI 功能共享 50 次请求上限。
 - 单用户同一时间最多 1 个 active AI run。
 - 成功、失败、取消都会更新 admission 状态并释放 active run 锁。
-- 管理员读取完整 trace 会写访问审计，普通用户不能读取完整 trace。
+- 管理员可以读取完整 trace，普通用户不能读取完整 trace。
 - 日志和 trace 脱敏策略不会输出 API key、Authorization、OAuth token、数据库密码等凭据。
 - AI run 关键指标可通过 Micrometer 暴露。
 - `llm-core` 和 `agent-core` 不新增用户、配额、管理员权限等业务治理语义。
