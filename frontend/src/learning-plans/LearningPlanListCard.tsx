@@ -5,7 +5,7 @@ interface LearningPlanListCardProps {
   page: LearningPlanPageResponse;
   selectedPlanId?: number;
   deletingPlanId?: number;
-  onSelect: (planId: number) => void;
+  onSelect?: (planId: number) => void;
   onDelete: (planId: number) => void;
   onPageChange: (page: number) => void;
 }
@@ -43,27 +43,27 @@ export default function LearningPlanListCard({
               data-testid={`learning-plan-row-${plan.id}`}
               key={plan.id}
             >
-              <button
+              <div
                 aria-current={selectedPlanId === plan.id ? 'true' : undefined}
                 className="plan-row-main"
-                onClick={() => onSelect(plan.id)}
-                type="button"
               >
                 <strong>{plan.title}</strong>
                 <span>{plan.goal}</span>
                 <small>{meta}</small>
-              </button>
+              </div>
               <div className="plan-row-actions">
                 <span className="status-badge">{plan.status}</span>
-                <button
-                  aria-label={`查看 ${plan.title}`}
-                  className="secondary-button compact"
-                  onClick={() => onSelect(plan.id)}
-                  type="button"
-                >
-                  <Eye aria-hidden="true" />
-                  <span>查看</span>
-                </button>
+                {onSelect && (
+                  <button
+                    aria-label={`查看 ${plan.title}`}
+                    className="secondary-button compact"
+                    onClick={() => onSelect(plan.id)}
+                    type="button"
+                  >
+                    <Eye aria-hidden="true" />
+                    <span>查看</span>
+                  </button>
+                )}
                 <button
                   aria-label={`删除 ${plan.title}`}
                   className="danger-button compact"

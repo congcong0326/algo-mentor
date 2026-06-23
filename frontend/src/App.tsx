@@ -18,6 +18,10 @@ function normalizeAuthenticatedView(pathname: string): AppView {
   return viewFromPath(pathname) ?? 'home';
 }
 
+function normalizeAuthenticatedPath(pathname: string): string {
+  return viewFromPath(pathname) ? pathname : APP_ROUTES.home;
+}
+
 function isLoginRoute(pathname: string): boolean {
   return pathname === APP_ROUTES.login;
 }
@@ -65,6 +69,7 @@ function AppLoadingShell({ activeView }: { activeView: AppView }) {
 
 export default function App() {
   const [activeView, setActiveView] = useState<AppView>(() => viewFromPath(window.location.pathname) ?? 'home');
+  const [pathname, setPathname] = useState(() => normalizeAuthenticatedPath(window.location.pathname));
   const [currentUser, setCurrentUser] = useState<CurrentUser>();
   const [authChecked, setAuthChecked] = useState(false);
   const [authError, setAuthError] = useState(false);
@@ -88,10 +93,12 @@ export default function App() {
     }
 
     function handlePopState() {
-      const nextView = normalizeAuthenticatedView(window.location.pathname);
+      const nextPath = normalizeAuthenticatedPath(window.location.pathname);
+      const nextView = normalizeAuthenticatedView(nextPath);
       setActiveView(nextView);
-      if (pathForView(nextView) !== window.location.pathname) {
-        window.history.replaceState({}, '', pathForView(nextView));
+      setPathname(nextPath);
+      if (nextPath !== window.location.pathname) {
+        window.history.replaceState({}, '', nextPath);
       }
     }
 
@@ -121,9 +128,25 @@ export default function App() {
     }
 
     setActiveView(view);
+    setPathname(nextPath);
     if (window.location.pathname !== nextPath) {
       window.history.pushState({}, '', nextPath);
     }
+  }
+
+  function navigateToPath(nextPath: string, options: { replace?: boolean } = {}) {
+    const normalizedPath = normalizeAuthenticatedPath(nextPath);
+    const nextView = normalizeAuthenticatedView(normalizedPath);
+    setActiveView(nextView);
+    setPathname(normalizedPath);
+    if (window.location.pathname === normalizedPath) {
+      return;
+    }
+    if (options.replace) {
+      window.history.replaceState({}, '', normalizedPath);
+      return;
+    }
+    window.history.pushState({}, '', normalizedPath);
   }
 
   async function checkAuthentication(isActive: () => boolean = () => true) {
@@ -139,10 +162,12 @@ export default function App() {
       setCurrentUser(user);
       setAuthChecked(true);
       if (user) {
-        const nextView = normalizeAuthenticatedView(window.location.pathname);
+        const nextPath = normalizeAuthenticatedPath(window.location.pathname);
+        const nextView = normalizeAuthenticatedView(nextPath);
         setActiveView(nextView);
-        if (pathForView(nextView) !== window.location.pathname) {
-          window.history.replaceState({}, '', pathForView(nextView));
+        setPathname(nextPath);
+        if (nextPath !== window.location.pathname) {
+          window.history.replaceState({}, '', nextPath);
         }
       } else if (window.location.pathname !== APP_ROUTES.login) {
         window.history.replaceState({}, '', `${APP_ROUTES.login}${window.location.search}`);
@@ -234,7 +259,7 @@ export default function App() {
         : activeView === 'problems'
         ? <ProblemLibrary />
         : activeView === 'learningPlans'
-          ? <LearningPlans />
+          ? <LearningPlans onNavigate={navigateToPath} pathname={pathname} />
           : <AiDebugConsole ref={debugConsoleRef} onConnectionStateChange={setDebugConnectionState} />}
     </AppShell>
   );

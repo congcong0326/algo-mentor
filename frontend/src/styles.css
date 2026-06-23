@@ -1230,13 +1230,18 @@ a {
   gap: 10px;
 }
 
+.plan-list-card {
+  min-height: min(620px, calc(100vh - 280px));
+}
+
 .plan-list-row {
   align-items: center;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 14px;
   justify-content: space-between;
   min-width: 0;
-  padding: 12px;
+  padding: 16px;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-control);
   background: var(--surface-card);
@@ -1255,12 +1260,8 @@ a {
 
 .plan-row-main {
   display: grid;
-  flex: 1 1 auto;
   gap: 5px;
   min-width: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
   color: inherit;
   text-align: left;
 }
@@ -1317,6 +1318,22 @@ a {
 
 .pagination-row {
   flex-wrap: wrap;
+}
+
+.learning-create-shell {
+  align-content: start;
+}
+
+.learning-create-heading {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  justify-content: flex-start;
+}
+
+.create-plan-page-panel {
+  width: min(900px, 100%);
+  justify-self: center;
 }
 
 .modal-backdrop {
@@ -2027,14 +2044,20 @@ a {
   .plan-summary-card,
   .plan-list-row,
   .plan-row-actions,
-  .modal-actions {
+  .modal-actions,
+  .learning-create-heading {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .plan-list-row {
+    grid-template-columns: 1fr;
   }
 
   .plan-summary-card .primary-button,
   .modal-actions .primary-button,
   .modal-actions .secondary-button,
+  .learning-create-heading .secondary-button,
   .plan-row-actions .secondary-button,
   .plan-row-actions .danger-button {
     width: 100%;

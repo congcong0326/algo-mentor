@@ -75,7 +75,7 @@ export default function LearningPlanDraftPanel({
       <article className="learning-panel">
         <div className="panel-title">
           <FileText aria-hidden="true" />
-          <h2>草案预览</h2>
+          <h2>计划方案</h2>
         </div>
         {editingGoal ? (
           <div className="goal-editor">
@@ -116,7 +116,7 @@ export default function LearningPlanDraftPanel({
         <PlanPreview plan={draft.draftPlan} />
         <button className="primary-button" disabled={loading} onClick={onConfirm} type="button">
           <Check aria-hidden="true" />
-          <span>确认保存</span>
+          <span>保存计划</span>
         </button>
       </article>
     );

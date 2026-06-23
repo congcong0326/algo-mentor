@@ -5,6 +5,7 @@ export const APP_ROUTES = {
   login: '/login',
   home: '/',
   learningPlans: '/learning-plans',
+  learningPlanNew: '/learning-plans/new',
   problems: '/problems',
   debug: '/debug',
 } as const;
@@ -55,7 +56,7 @@ export function viewFromPath(pathname: string): AppView | undefined {
   if (pathname === APP_ROUTES.debug) {
     return 'debug';
   }
-  if (pathname === APP_ROUTES.learningPlans) {
+  if (pathname === APP_ROUTES.learningPlans || pathname === APP_ROUTES.learningPlanNew) {
     return 'learningPlans';
   }
   return undefined;

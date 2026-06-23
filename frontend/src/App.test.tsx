@@ -649,7 +649,7 @@ describe('App', () => {
     expect(await screen.findByText('network failed')).toBeInTheDocument();
   });
 
-  it('creates learning plan draft through modal, answers clarification, confirms, and shows detail', async () => {
+  it('creates learning plan draft on a standalone page, answers clarification, saves, and returns to list', async () => {
     const fetchMock = mockLearningPlanFetch();
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
@@ -660,9 +660,11 @@ describe('App', () => {
     expect(await screen.findAllByText('四周 Java 算法面试冲刺计划')).not.toHaveLength(0);
 
     fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
+    expect(window.location.pathname).toBe('/learning-plans/new');
+    expect(await screen.findByRole('button', { name: '返回计划页' })).toBeInTheDocument();
     expect(screen.queryByRole('textbox', { name: '学习目标' })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
-    fireEvent.click(screen.getByRole('button', { name: '生成计划草案' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成计划方案' }));
 
     expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
@@ -679,16 +681,18 @@ describe('App', () => {
       target: { value: '数组和哈希表' },
     });
     fireEvent.click(screen.getByRole('button', { name: '发送补充' }));
-    await screen.findByRole('heading', { name: '草案预览' });
+    await screen.findByRole('heading', { name: '计划方案' });
     expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/messages');
 
-    expect(screen.getByRole('heading', { name: '草案预览' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '计划方案' })).toBeInTheDocument();
     expect(screen.getByText('基础题型恢复')).toBeInTheDocument();
     expect(screen.getByText('两数之和')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '确认保存' }));
+    fireEvent.click(screen.getByRole('button', { name: '保存计划' }));
 
-    expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/learning-plans');
+    expect(screen.getAllByText('四周 Java 算法面试冲刺计划')).not.toHaveLength(0);
     expect(screen.getAllByText('ACTIVE')).not.toHaveLength(0);
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/learning-plans/drafts/100/confirm',
@@ -712,14 +716,14 @@ describe('App', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
     fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
-    fireEvent.click(screen.getByRole('button', { name: '生成计划草案' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成计划方案' }));
     expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();
 
     fireEvent.change(screen.getByRole('textbox', { name: '补充回答' }), {
       target: { value: '数组和哈希表' },
     });
     fireEvent.click(screen.getByRole('button', { name: '发送补充' }));
-    await screen.findByRole('heading', { name: '草案预览' });
+    await screen.findByRole('heading', { name: '计划方案' });
 
     fireEvent.click(screen.getByRole('button', { name: '编辑目标摘要' }));
     fireEvent.change(screen.getByRole('textbox', { name: '目标摘要' }), {
@@ -764,7 +768,7 @@ describe('App', () => {
     expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/messages');
   });
 
-  it('keeps the create modal open with an error when draft generation fails', async () => {
+  it('keeps the create page open with an error when draft generation fails', async () => {
     vi.stubGlobal('fetch', mockExpiredLearningPlanDraftFetch());
     window.history.replaceState({}, '', '/learning-plans');
 
@@ -772,13 +776,14 @@ describe('App', () => {
 
     expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
-    fireEvent.click(screen.getByRole('button', { name: '生成计划草案' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成计划方案' }));
 
-    expect(await screen.findByRole('dialog', { name: '新建学习计划' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '返回计划页' })).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/learning-plans/new');
     expect(screen.getByRole('alert')).toHaveTextContent('草案已过期，请调整问卷后重试。');
   });
 
-  it('deletes a selected learning plan and loads the next available plan', async () => {
+  it('deletes a learning plan and keeps the list flat', async () => {
     const fetchMock = mockLearningPlanDeleteFetch();
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
@@ -786,7 +791,7 @@ describe('App', () => {
     render(<App />);
 
     expect(await screen.findAllByText('四周 Java 算法面试冲刺计划')).not.toHaveLength(0);
-    expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).not.toBeInTheDocument();
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     fireEvent.click(screen.getByRole('button', { name: '删除 四周 Java 算法面试冲刺计划' }));
 
@@ -795,27 +800,27 @@ describe('App', () => {
       expect.objectContaining({ method: 'DELETE' }),
     ));
     expectCsrfHeader(fetchMock, '/api/learning-plans/900', 'DELETE');
-    expect(await screen.findByRole('heading', { name: '八周动态规划复盘计划' })).toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).not.toBeInTheDocument();
-    expect(screen.getByTestId('learning-plan-row-901')).toHaveClass('selected');
+    expect(await screen.findByText('八周动态规划复盘计划')).toBeInTheDocument();
+    expect(screen.queryByText('四周 Java 算法面试冲刺计划')).not.toBeInTheDocument();
+    expect(screen.getByTestId('learning-plan-row-901')).toBeInTheDocument();
   });
 
-  it('loads the first plan from the new page when changing learning plan pages', async () => {
+  it('paginates the flat learning plan list', async () => {
     const fetchMock = mockLearningPlanPaginationFetch();
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '第一页计划' })).toBeInTheDocument();
+    expect(await screen.findByText('第一页计划')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '下一页' }));
 
-    expect(await screen.findByRole('heading', { name: '第二页计划' })).toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: '第一页计划' })).not.toBeInTheDocument();
-    expect(screen.getByTestId('learning-plan-row-902')).toHaveClass('selected');
+    expect(await screen.findByText('第二页计划')).toBeInTheDocument();
+    expect(screen.queryByText('第一页计划')).not.toBeInTheDocument();
+    expect(screen.getByTestId('learning-plan-row-902')).toBeInTheDocument();
   });
 
-  it('clears confirmed draft preview when refresh fails after confirmation', async () => {
+  it('returns to the list page after saving even when refresh fails', async () => {
     vi.stubGlobal('fetch', mockLearningPlanConfirmRefreshFailureFetch());
     window.history.replaceState({}, '', '/learning-plans');
 
@@ -827,12 +832,13 @@ describe('App', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: '发送补充' }));
 
-    expect(await screen.findByRole('heading', { name: '草案预览' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '计划方案' })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '确认保存' }));
+    fireEvent.click(screen.getByRole('button', { name: '保存计划' }));
 
     expect(await screen.findByText('学习计划列表刷新失败')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '确认保存' })).not.toBeInTheDocument();
+    expect(window.location.pathname).toBe('/learning-plans');
+    expect(screen.queryByRole('button', { name: '保存计划' })).not.toBeInTheDocument();
   });
 
   it('does not render an extra learning plan page title and keeps one create action', async () => {
@@ -1365,7 +1371,8 @@ function isLearningPlanListUrl(url: string): boolean {
 async function createCollectingLearningPlanDraft() {
   expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
-  fireEvent.click(screen.getByRole('button', { name: '生成计划草案' }));
+  expect(await screen.findByRole('button', { name: '返回计划页' })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '生成计划方案' }));
 
   expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();
 }
