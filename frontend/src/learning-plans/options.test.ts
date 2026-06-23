@@ -22,7 +22,7 @@ describe('learning plan options', () => {
   });
 
   it('builds a goal from questionnaire fields and optional notes', () => {
-    expect(buildLearningPlanGoal({
+    const goal = buildLearningPlanGoal({
       intentLabel: '面试冲刺',
       durationWeeks: 4,
       weeklyHours: 6,
@@ -32,8 +32,12 @@ describe('learning plan options', () => {
       easyPercent: 25,
       mediumPercent: 55,
       hardPercent: 20,
-      topics: ['Array', 'Hash Table'],
+      topics: [' Array ', '', 'Hash Table'],
       additionalThoughts: '希望每周留一天复盘。',
-    })).toContain('补充想法：希望每周留一天复盘。');
+    });
+
+    expect(goal).toContain('难度分布：均衡（简单 25%，中等 55%，困难 20%）');
+    expect(goal).toContain('主题偏好：Array, Hash Table');
+    expect(goal).toContain('补充想法：希望每周留一天复盘。');
   });
 });

@@ -97,14 +97,16 @@ export interface BuildGoalInput {
 }
 
 export function buildLearningPlanGoal(input: BuildGoalInput): string {
+  const topics = input.topics.map((topic) => topic.trim()).filter(Boolean);
+
   return [
     `计划场景：${input.intentLabel}`,
     `周期：${input.durationWeeks} 周`,
     `每周投入：${input.weeklyHours} 小时`,
     `当前水平：${input.levelLabel}`,
     `编程语言：${input.programmingLanguage}`,
-    `难度分布：简单 ${input.easyPercent}%，中等 ${input.mediumPercent}%，困难 ${input.hardPercent}%`,
-    input.topics.length > 0 ? `主题偏好：${input.topics.join(', ')}` : '主题偏好：由系统根据计划场景安排',
+    `难度分布：${input.difficultyLabel}（简单 ${input.easyPercent}%，中等 ${input.mediumPercent}%，困难 ${input.hardPercent}%）`,
+    topics.length > 0 ? `主题偏好：${topics.join(', ')}` : '主题偏好：由系统根据计划场景安排',
     input.additionalThoughts.trim() ? `补充想法：${input.additionalThoughts.trim()}` : undefined,
   ].filter(Boolean).join('\n');
 }
