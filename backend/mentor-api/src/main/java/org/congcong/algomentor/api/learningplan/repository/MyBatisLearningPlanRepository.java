@@ -17,6 +17,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
@@ -72,8 +73,42 @@ public class MyBatisLearningPlanRepository implements LearningPlanDraftRepositor
   }
 
   @Override
+  public LearningPlanPage findPageByUserId(long userId, int page, int pageSize) {
+    int offset = (page - 1) * pageSize;
+    List<LearningPlan> items = mapper.findPlansByUserIdPage(userId, pageSize, offset).stream()
+        .map(this::toPlan)
+        .toList();
+    return new LearningPlanPage(
+        items,
+        mapper.countPlansByUserId(userId),
+        page,
+        pageSize,
+        mapper.countPlansByUserIdAndStatus(userId, LearningPlanStatus.ACTIVE.name()),
+        mapper.countPlansByUserIdAndStatus(userId, LearningPlanStatus.ARCHIVED.name()),
+        mapper.findLatestPlanCreatedAtByUserId(userId));
+  }
+
+  @Override
   public Optional<LearningPlan> findPlanByIdForUser(long planId, long userId) {
     return Optional.ofNullable(mapper.findPlanByIdForUser(planId, userId)).map(this::toPlan);
+  }
+
+  @Override
+  public void clearConfirmedPlanReferences(long userId, long planId) {
+    mapper.clearConfirmedPlanReferences(userId, planId);
+  }
+
+  @Override
+  @Transactional
+  public boolean deletePlanByIdForUser(long planId, long userId) {
+    return mapper.deletePlanByIdForUser(planId, userId) > 0;
+  }
+
+  @Override
+  @Transactional
+  public boolean deletePlanAndClearReferences(long userId, long planId) {
+    mapper.clearConfirmedPlanReferences(userId, planId);
+    return mapper.deletePlanByIdForUser(planId, userId) > 0;
   }
 
   private void replacePlanDetails(long planId, LearningPlanDraftPlan plan) {

@@ -8,6 +8,8 @@ import java.util.List;
 
 public class LearningPlanDraftService {
 
+  private static final String REGENERATE_WITH_GOAL_PREFIX = "请按新的目标摘要重新生成学习计划：";
+
   private final LearningPlanDraftRepository draftRepository;
   private final LearningPlanRepository planRepository;
   private final LearningPlanAgentService agentService;
@@ -58,7 +60,10 @@ public class LearningPlanDraftService {
       messages.add(normalizedMessage);
     }
     LearningPlanDraftCommand command = draft.command();
-    if (command.goal() == null && !normalizedMessage.isEmpty()) {
+    String regeneratedGoal = extractRegeneratedGoal(normalizedMessage);
+    if (regeneratedGoal != null) {
+      command = command.withGoal(regeneratedGoal);
+    } else if (command.goal() == null && !normalizedMessage.isEmpty()) {
       command = command.withGoal(normalizedMessage);
     }
     LearningPlanDraft updated = draftRepository.save(draft.withCommandAndMessages(command, messages, clock.instant()));
@@ -115,5 +120,13 @@ public class LearningPlanDraftService {
           null,
           now));
     }
+  }
+
+  private String extractRegeneratedGoal(String normalizedMessage) {
+    if (!normalizedMessage.startsWith(REGENERATE_WITH_GOAL_PREFIX)) {
+      return null;
+    }
+    String regeneratedGoal = normalizedMessage.substring(REGENERATE_WITH_GOAL_PREFIX.length()).trim();
+    return regeneratedGoal.isEmpty() ? null : regeneratedGoal;
   }
 }

@@ -1,5 +1,6 @@
 package org.congcong.algomentor.api.learningplan.mapper;
 
+import java.time.Instant;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -43,5 +44,20 @@ public interface LearningPlanMapper {
 
   List<LearningPlanRow> findPlansByUserId(@Param("userId") long userId);
 
+  List<LearningPlanRow> findPlansByUserIdPage(
+      @Param("userId") long userId,
+      @Param("limit") int limit,
+      @Param("offset") int offset);
+
+  long countPlansByUserId(@Param("userId") long userId);
+
+  long countPlansByUserIdAndStatus(@Param("userId") long userId, @Param("status") String status);
+
+  Instant findLatestPlanCreatedAtByUserId(@Param("userId") long userId);
+
   LearningPlanRow findPlanByIdForUser(@Param("id") long id, @Param("userId") long userId);
+
+  int clearConfirmedPlanReferences(@Param("userId") long userId, @Param("planId") long planId);
+
+  int deletePlanByIdForUser(@Param("id") long id, @Param("userId") long userId);
 }

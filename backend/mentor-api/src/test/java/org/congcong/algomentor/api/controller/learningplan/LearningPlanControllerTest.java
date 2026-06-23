@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -41,6 +42,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
@@ -198,18 +200,42 @@ class LearningPlanControllerTest {
   void listAndDetailUseCurrentUser() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     LearningPlan plan = new LearningPlan(900L, 42L, LearningPlanStatus.ACTIVE, draftPlan(), Instant.now(), Instant.now());
-    when(planService.listPlans(42L)).thenReturn(List.of(plan));
+    when(planService.listPlans(42L, 2, 5)).thenReturn(new LearningPlanPage(
+        List.of(plan),
+        12,
+        2,
+        5,
+        8,
+        4,
+        Instant.parse("2026-06-22T00:00:00Z")));
     when(planService.getPlan(42L, 900L)).thenReturn(plan);
 
-    mockMvc.perform(get("/api/learning-plans"))
+    mockMvc.perform(get("/api/learning-plans?page=2&pageSize=5"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.data[0].id").value(900))
-        .andExpect(jsonPath("$.data[0].title").value("四周 Java 算法面试冲刺计划"));
+        .andExpect(jsonPath("$.data.items[0].id").value(900))
+        .andExpect(jsonPath("$.data.items[0].title").value("四周 Java 算法面试冲刺计划"))
+        .andExpect(jsonPath("$.data.total").value(12))
+        .andExpect(jsonPath("$.data.page").value(2))
+        .andExpect(jsonPath("$.data.pageSize").value(5))
+        .andExpect(jsonPath("$.data.activeCount").value(8))
+        .andExpect(jsonPath("$.data.archivedCount").value(4))
+        .andExpect(jsonPath("$.data.latestCreatedAt").value("2026-06-22T00:00:00Z"));
 
     mockMvc.perform(get("/api/learning-plans/900"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.id").value(900))
         .andExpect(jsonPath("$.data.phases[0].title").value("基础题型恢复"));
+  }
+
+  @Test
+  void deletePlanUsesCurrentUser() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+
+    mockMvc.perform(delete("/api/learning-plans/900"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true));
+
+    verify(planService).deletePlan(42L, 900L);
   }
 
   @Test

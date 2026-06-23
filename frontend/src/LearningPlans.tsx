@@ -1,11 +1,13 @@
-import { FileText, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import LearningPlanCreateModal from './learning-plans/LearningPlanCreateModal';
 import LearningPlanDetail from './learning-plans/LearningPlanDetail';
 import LearningPlanDraftPanel from './learning-plans/LearningPlanDraftPanel';
-import LearningPlanWizard from './learning-plans/LearningPlanWizard';
+import LearningPlanListCard from './learning-plans/LearningPlanListCard';
+import LearningPlanSummaryCard from './learning-plans/LearningPlanSummaryCard';
 import {
   confirmLearningPlanDraft,
   createLearningPlanDraft,
+  deleteLearningPlan,
   getLearningPlanDetail,
   getLearningPlans,
   sendLearningPlanDraftMessage,
@@ -14,10 +16,21 @@ import type {
   LearningPlanCreateDraftRequest,
   LearningPlanDetailResponse,
   LearningPlanDraftResponse,
-  LearningPlanSummaryResponse,
+  LearningPlanPageResponse,
 } from './types/api';
 
 type LearningPlanFlowState = 'idle' | 'creating' | 'generating' | 'collecting' | 'previewing' | 'confirming';
+type SelectionRefreshMode = 'keep-current' | 'select-first';
+
+const INITIAL_PLANS_PAGE: LearningPlanPageResponse = {
+  items: [],
+  total: 0,
+  page: 1,
+  pageSize: 10,
+  activeCount: 0,
+  archivedCount: 0,
+  latestCreatedAt: null,
+};
 
 function apiData<T>(response: { success: boolean; data?: T; error?: { message: string } }, fallback: string): T {
   if (!response.success || response.data === undefined) {
@@ -27,30 +40,24 @@ function apiData<T>(response: { success: boolean; data?: T; error?: { message: s
 }
 
 export default function LearningPlans() {
-  const [plans, setPlans] = useState<LearningPlanSummaryResponse[]>([]);
+  const [plansPage, setPlansPage] = useState<LearningPlanPageResponse>(INITIAL_PLANS_PAGE);
+  const [page, setPage] = useState(1);
   const [selectedPlan, setSelectedPlan] = useState<LearningPlanDetailResponse>();
-  const [restorePlanId, setRestorePlanId] = useState<number>();
   const [draft, setDraft] = useState<LearningPlanDraftResponse>();
   const [flowState, setFlowState] = useState<LearningPlanFlowState>('idle');
-  const [wizardResetStepSignal, setWizardResetStepSignal] = useState(0);
+  const [isCreateModalOpen, setCreateModalOpen] = useState(false);
+  const [createModalKey, setCreateModalKey] = useState(0);
+  const [modalError, setModalError] = useState('');
+  const [deletingPlanId, setDeletingPlanId] = useState<number>();
   const [error, setError] = useState('');
 
   useEffect(() => {
     const controller = new AbortController();
-    getLearningPlans(controller.signal)
-      .then((response) => {
-        const nextPlans = apiData(response, '学习计划列表加载失败');
-        setPlans(nextPlans);
-        if (nextPlans[0]) {
-          return loadPlan(nextPlans[0].id, controller.signal);
-        }
-        return undefined;
-      })
-      .catch((nextError) => {
-        if (!controller.signal.aborted) {
-          setError(nextError instanceof Error ? nextError.message : '学习计划列表加载失败');
-        }
-      });
+    refreshPlans(1, undefined, controller.signal).catch((nextError) => {
+      if (!controller.signal.aborted) {
+        setError(nextError instanceof Error ? nextError.message : '学习计划列表加载失败');
+      }
+    });
 
     return () => controller.abort();
   }, []);
@@ -60,17 +67,62 @@ export default function LearningPlans() {
     setSelectedPlan(apiData(response, '学习计划详情加载失败'));
   }
 
+  async function refreshPlans(
+    nextPage = page,
+    selectedId?: number,
+    signal?: AbortSignal,
+    selectionMode: SelectionRefreshMode = 'keep-current',
+  ) {
+    const nextPlans = apiData(
+      await getLearningPlans({ page: nextPage, pageSize: plansPage.pageSize }, signal),
+      '学习计划列表加载失败',
+    );
+    setPlansPage(nextPlans);
+    setPage(nextPlans.page);
+
+    if (selectedId) {
+      await loadPlan(selectedId, signal);
+      return;
+    }
+
+    if (selectionMode === 'select-first') {
+      const firstPlan = nextPlans.items[0];
+      if (firstPlan) {
+        await loadPlan(firstPlan.id, signal);
+      } else {
+        setSelectedPlan(undefined);
+      }
+      return;
+    }
+
+    const currentSelectedId = selectedPlan?.id;
+    const currentSelectionStillVisible = currentSelectedId
+      ? nextPlans.items.some((item) => item.id === currentSelectedId)
+      : false;
+
+    if (currentSelectionStillVisible) {
+      return;
+    }
+
+    if (nextPlans.items[0]) {
+      await loadPlan(nextPlans.items[0].id, signal);
+    } else {
+      setSelectedPlan(undefined);
+    }
+  }
+
   async function submitDraft(request: LearningPlanCreateDraftRequest) {
     setFlowState('generating');
+    setModalError('');
     setError('');
     try {
       const nextDraft = apiData(await createLearningPlanDraft(request), '学习计划草案创建失败');
       setDraft(nextDraft);
       setSelectedPlan(undefined);
-      setRestorePlanId(undefined);
+      setCreateModalOpen(false);
       setFlowState(nextDraft.status === 'COLLECTING' ? 'collecting' : 'previewing');
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : '学习计划草案创建失败');
+      setModalError(nextError instanceof Error ? nextError.message : '学习计划草案创建失败');
       setFlowState('creating');
     }
   }
@@ -96,6 +148,10 @@ export default function LearningPlans() {
     }
   }
 
+  async function regenerateFromGoal(goal: string) {
+    return sendFollowUp(`请按新的目标摘要重新生成学习计划：${goal}`);
+  }
+
   async function confirmDraft() {
     if (!draft) {
       return;
@@ -105,10 +161,9 @@ export default function LearningPlans() {
     try {
       const confirmed = apiData(await confirmLearningPlanDraft(draft.draftId), '学习计划确认失败');
       setDraft(undefined);
-      setRestorePlanId(undefined);
       setFlowState('idle');
       try {
-        await refreshPlans(confirmed.planId);
+        await refreshPlans(1, confirmed.planId);
       } catch (refreshError) {
         setError(refreshError instanceof Error ? refreshError.message : '学习计划列表加载失败');
       }
@@ -118,113 +173,104 @@ export default function LearningPlans() {
     }
   }
 
-  async function refreshPlans(selectedId?: number) {
-    const nextPlans = apiData(await getLearningPlans(), '学习计划列表加载失败');
-    setPlans(nextPlans);
-    if (selectedId) {
-      await loadPlan(selectedId);
+  async function removePlan(planId: number) {
+    if (!window.confirm('确认删除这个学习计划？')) {
+      return;
+    }
+
+    setDeletingPlanId(planId);
+    setError('');
+    try {
+      await deleteLearningPlan(planId);
+      const shouldStepBack = plansPage.items.length === 1 && page > 1;
+      const nextPage = shouldStepBack ? page - 1 : page;
+      const removedSelectedPlan = selectedPlan?.id === planId;
+      if (removedSelectedPlan) {
+        setSelectedPlan(undefined);
+      }
+      await refreshPlans(nextPage, undefined, undefined, removedSelectedPlan ? 'select-first' : 'keep-current');
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : '学习计划删除失败');
+    } finally {
+      setDeletingPlanId(undefined);
     }
   }
 
-  function startCreating() {
-    setRestorePlanId(selectedPlan?.id);
-    setDraft(undefined);
-    setSelectedPlan(undefined);
-    setError('');
+  function openCreateModal() {
+    setModalError('');
+    setCreateModalKey((current) => current + 1);
+    setCreateModalOpen(true);
     setFlowState('creating');
   }
 
-  function cancelCreating() {
-    const planIdToRestore = restorePlanId ?? plans[0]?.id;
-    setDraft(undefined);
-    setRestorePlanId(undefined);
-    setError('');
-    setFlowState('idle');
-    if (planIdToRestore) {
-      void loadPlan(planIdToRestore);
-    }
-  }
-
-  function returnToWizard() {
+  function retryCreateDraft() {
     setDraft(undefined);
     setError('');
-    setFlowState('creating');
-    setWizardResetStepSignal((current) => current + 1);
+    openCreateModal();
   }
-
-  const shouldKeepWizardMounted = flowState === 'creating' || flowState === 'generating' || draft !== undefined;
 
   return (
     <section className="learning-shell" aria-label="学习计划">
-      <div className="learning-page-heading">
-        <button className="primary-button" onClick={startCreating} type="button">
-          <Plus aria-hidden="true" />
-          <span>新建计划</span>
-        </button>
-      </div>
+      <LearningPlanSummaryCard
+        activeCount={plansPage.activeCount}
+        archivedCount={plansPage.archivedCount}
+        latestCreatedAt={plansPage.latestCreatedAt}
+        onCreate={openCreateModal}
+        total={plansPage.total}
+      />
 
       {error && <p className="error-text">{error}</p>}
 
-      <div className="learning-layout redesigned">
-        <aside className="learning-sidebar">
-          <div className="panel-title compact-title">
-            <h2>正式计划</h2>
-            <span>{plans.length} 个</span>
-          </div>
-          <div className="learning-list">
-            {plans.length === 0 ? (
-              <p className="empty-log">暂无正式计划，先新建一个学习计划。</p>
-            ) : plans.map((plan) => (
-              <button
-                className={`plan-row ${selectedPlan?.id === plan.id ? 'selected' : ''}`}
-                key={plan.id}
-                onClick={() => {
-                  setDraft(undefined);
-                  setRestorePlanId(undefined);
-                  setFlowState('idle');
-                  void loadPlan(plan.id);
-                }}
-                type="button"
-              >
-                <FileText aria-hidden="true" />
-                <span>
-                  <strong>{plan.title}</strong>
-                  <small>{plan.durationWeeks} 周 · {plan.weeklyHours} 小时/周</small>
-                </span>
-              </button>
-            ))}
-          </div>
-        </aside>
+      <LearningPlanListCard
+        deletingPlanId={deletingPlanId}
+        onDelete={removePlan}
+        onPageChange={(nextPage) => {
+          setPage(nextPage);
+          setSelectedPlan(undefined);
+          setDraft(undefined);
+          setFlowState('idle');
+          void refreshPlans(nextPage, undefined, undefined, 'select-first');
+        }}
+        onSelect={(planId) => {
+          setDraft(undefined);
+          setFlowState('idle');
+          void loadPlan(planId);
+        }}
+        page={plansPage}
+        selectedPlanId={selectedPlan?.id}
+      />
 
-        <div className="learning-main">
-          {shouldKeepWizardMounted && (
-            <div hidden={draft !== undefined}>
-              <LearningPlanWizard
-                loading={draft === undefined && flowState === 'generating'}
-                onCancel={cancelCreating}
-                onSubmit={submitDraft}
-                resetStepSignal={wizardResetStepSignal}
-              />
-            </div>
-          )}
-          {draft ? (
-            <LearningPlanDraftPanel
-              draft={draft}
-              loading={flowState === 'generating' || flowState === 'confirming'}
-              onConfirm={confirmDraft}
-              onReturnToWizard={returnToWizard}
-              onSendFollowUp={sendFollowUp}
-            />
-          ) : !shouldKeepWizardMounted && selectedPlan ? (
-            <LearningPlanDetail plan={selectedPlan} />
-          ) : !shouldKeepWizardMounted ? (
-            <article className="learning-panel empty-plan-panel">
-              <h2>还没有学习计划</h2>
-              <p>创建一个计划后，系统会在这里展示阶段、推荐题目和复盘建议。</p>
-            </article>
-          ) : null}
-        </div>
+      <div className="learning-detail-area">
+        {draft ? (
+          <LearningPlanDraftPanel
+            draft={draft}
+            loading={flowState === 'generating' || flowState === 'confirming'}
+            onConfirm={confirmDraft}
+            onRegenerateGoal={regenerateFromGoal}
+            onRetryCreate={retryCreateDraft}
+            onSendFollowUp={sendFollowUp}
+          />
+        ) : selectedPlan ? (
+          <LearningPlanDetail plan={selectedPlan} />
+        ) : (
+          <article className="learning-panel empty-plan-panel">
+            <h2>还没有学习计划</h2>
+            <p>创建一个计划后，系统会在这里展示阶段、推荐题目和复盘建议。</p>
+          </article>
+        )}
       </div>
+
+      <LearningPlanCreateModal
+        error={modalError}
+        key={createModalKey}
+        loading={flowState === 'generating'}
+        onClose={() => {
+          setCreateModalOpen(false);
+          setFlowState('idle');
+        }}
+        onSubmit={submitDraft}
+        open={isCreateModalOpen}
+      />
     </section>
   );
 }

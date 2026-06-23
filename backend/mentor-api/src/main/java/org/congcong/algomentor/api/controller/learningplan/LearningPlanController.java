@@ -2,29 +2,28 @@ package org.congcong.algomentor.api.controller.learningplan;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Supplier;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
+import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionException;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
 import org.congcong.algomentor.ai.governance.admission.AiRunLifecycleService;
-import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionException;
 import org.congcong.algomentor.ai.governance.model.AiActor;
 import org.congcong.algomentor.ai.governance.model.AiGovernanceErrorCode;
 import org.congcong.algomentor.ai.governance.model.AiPurpose;
 import org.congcong.algomentor.ai.governance.model.AiRunContext;
 import org.congcong.algomentor.ai.governance.model.AiRunSource;
-import org.congcong.algomentor.ai.governance.model.AiUsage;
 import org.congcong.algomentor.ai.governance.model.AiRunStatus;
+import org.congcong.algomentor.ai.governance.model.AiUsage;
 import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanConfirmResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanCreateDraftRequest;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanDetailResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanDraftResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanMessageRequest;
+import org.congcong.algomentor.api.learningplan.model.LearningPlanPageResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanResponseMapper;
-import org.congcong.algomentor.api.learningplan.model.LearningPlanSummaryResponse;
 import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
@@ -34,11 +33,13 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -96,17 +97,24 @@ public class LearningPlanController {
   }
 
   @GetMapping
-  public ApiResponse<List<LearningPlanSummaryResponse>> listPlans() {
+  public ApiResponse<LearningPlanPageResponse> listPlans(
+      @RequestParam(required = false) Integer page,
+      @RequestParam(required = false) Integer pageSize) {
     long userId = requireCurrentUserId();
-    return ApiResponse.success(planService.listPlans(userId).stream()
-        .map(LearningPlanResponseMapper::toSummaryResponse)
-        .toList());
+    return ApiResponse.success(LearningPlanResponseMapper.toPageResponse(planService.listPlans(userId, page, pageSize)));
   }
 
   @GetMapping("/{planId}")
   public ApiResponse<LearningPlanDetailResponse> getPlan(@PathVariable long planId) {
     long userId = requireCurrentUserId();
     return ApiResponse.success(LearningPlanResponseMapper.toDetailResponse(planService.getPlan(userId, planId)));
+  }
+
+  @DeleteMapping("/{planId}")
+  public ApiResponse<Void> deletePlan(@PathVariable long planId) {
+    long userId = requireCurrentUserId();
+    planService.deletePlan(userId, planId);
+    return ApiResponse.success(null);
   }
 
   private long requireCurrentUserId() {

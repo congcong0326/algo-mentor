@@ -7,8 +7,9 @@ import type {
   LearningPlanCreateDraftRequest,
   LearningPlanDetailResponse,
   LearningPlanDraftResponse,
+  LearningPlanListQuery,
   LearningPlanMessageRequest,
-  LearningPlanSummaryResponse,
+  LearningPlanPageResponse,
   ProblemDetail,
   ProblemListItem,
   ProblemListQuery,
@@ -113,15 +114,29 @@ export async function getProblemDetail(
 }
 
 export async function getLearningPlans(
+  query: LearningPlanListQuery = {},
   signal?: AbortSignal,
-): Promise<ApiResponse<LearningPlanSummaryResponse[]>> {
-  const response = await fetch('/api/learning-plans', {
+): Promise<ApiResponse<LearningPlanPageResponse>> {
+  const response = await fetch(`/api/learning-plans${toQueryString(query)}`, {
     headers: jsonHeaders,
     signal,
   });
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Learning plans request failed');
+  }
+
+  return response.json();
+}
+
+export async function deleteLearningPlan(planId: number): Promise<ApiResponse<void>> {
+  const response = await apiFetch(`/api/learning-plans/${planId}`, {
+    method: 'DELETE',
+    headers: jsonHeaders,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan delete request failed');
   }
 
   return response.json();
@@ -197,7 +212,7 @@ export async function confirmLearningPlanDraft(
   return response.json();
 }
 
-function toQueryString(query: ProblemListQuery): string {
+function toQueryString(query: ProblemListQuery | LearningPlanListQuery): string {
   const params = new URLSearchParams();
   Object.entries(query).forEach(([key, value]) => {
     if (value === undefined || value === '') {

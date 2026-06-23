@@ -1180,6 +1180,251 @@ a {
   border-top: 1px solid var(--border-subtle);
 }
 
+.plan-summary-card {
+  align-items: center;
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.plan-summary-content {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.summary-metric-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.summary-metric-row span {
+  align-items: baseline;
+  display: inline-flex;
+  gap: 6px;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+  background: var(--surface-muted);
+  color: var(--text-primary);
+}
+
+.summary-metric-row small {
+  color: var(--text-muted);
+  font-weight: 650;
+}
+
+.plan-list-card,
+.plan-list,
+.goal-editor,
+.goal-summary,
+.learning-detail-area {
+  display: grid;
+  gap: 14px;
+}
+
+.plan-list {
+  align-content: start;
+  gap: 10px;
+}
+
+.plan-list-row {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+  background: var(--surface-card);
+  transition: background 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.plan-list-row:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-muted);
+}
+
+.plan-list-row.selected {
+  border-color: var(--text-primary);
+  box-shadow: inset 0 0 0 1px rgb(15 23 42 / 12%);
+}
+
+.plan-row-main {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 5px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.plan-row-main strong,
+.plan-row-main span,
+.plan-row-main small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.plan-row-main span,
+.plan-row-main small {
+  color: var(--text-muted);
+}
+
+.plan-row-main small {
+  font-weight: 650;
+}
+
+.plan-row-actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.danger-button {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid color-mix(in srgb, var(--danger) 26%, white);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  color: var(--danger);
+  font-weight: 650;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.danger-button:hover:not(:disabled) {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.danger-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pagination-row {
+  flex-wrap: wrap;
+}
+
+.modal-backdrop {
+  position: fixed;
+  z-index: 120;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgb(15 23 42 / 42%);
+}
+
+.create-plan-modal {
+  display: grid;
+  gap: 16px;
+  width: min(760px, 100%);
+  max-height: min(760px, calc(100vh - 40px));
+  overflow: auto;
+  padding: 20px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  background: var(--surface-card);
+  box-shadow: 0 24px 80px rgb(15 23 42 / 26%);
+}
+
+.modal-heading,
+.modal-actions {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.modal-form,
+.question-block,
+.difficulty-control {
+  display: grid;
+  gap: 16px;
+}
+
+.question-block {
+  gap: 10px;
+}
+
+.question-block > strong {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.segmented-grid,
+.topic-option-grid,
+.difficulty-ratio-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.segmented-grid button,
+.topic-option-grid button {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-weight: 650;
+}
+
+.segmented-grid button:hover:not(:disabled),
+.topic-option-grid button:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background: var(--surface-muted);
+}
+
+.segmented-grid button.selected,
+.topic-option-grid button.selected {
+  border-color: var(--action-primary);
+  background: var(--accent-warm-soft);
+  color: var(--action-ink);
+}
+
+.difficulty-control input[type="range"] {
+  accent-color: var(--action-primary);
+}
+
+.difficulty-ratio-row span {
+  min-height: 32px;
+  padding: 6px 9px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.goal-summary {
+  align-items: start;
+}
+
+.goal-summary p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
 .empty-plan-panel {
   align-content: center;
   min-height: 360px;
@@ -1778,6 +2023,38 @@ a {
   }
 }
 
+@media (max-width: 720px) {
+  .plan-summary-card,
+  .plan-list-row,
+  .plan-row-actions,
+  .modal-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .plan-summary-card .primary-button,
+  .modal-actions .primary-button,
+  .modal-actions .secondary-button,
+  .plan-row-actions .secondary-button,
+  .plan-row-actions .danger-button {
+    width: 100%;
+  }
+
+  .plan-row-actions {
+    width: 100%;
+  }
+
+  .plan-row-main strong,
+  .plan-row-main span,
+  .plan-row-main small {
+    white-space: normal;
+  }
+
+  .create-plan-modal {
+    max-height: calc(100vh - 24px);
+  }
+}
+
 @media (max-width: 640px) {
   .test-header {
     align-items: flex-start;
@@ -1847,6 +2124,38 @@ a {
   .output-panel,
   .log-panel {
     padding: 16px;
+  }
+
+  .plan-summary-card {
+    gap: 16px;
+  }
+
+  .summary-metric-row span {
+    flex: 1 1 132px;
+  }
+
+  .modal-backdrop {
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  .create-plan-modal {
+    padding: 16px;
+    border-radius: var(--radius-control);
+  }
+
+  .modal-heading {
+    align-items: flex-start;
+  }
+
+  .segmented-grid button,
+  .topic-option-grid button,
+  .difficulty-ratio-row span {
+    flex: 1 1 132px;
+  }
+
+  .pagination-row .secondary-button {
+    flex: 1 1 132px;
   }
 
   .problem-row {

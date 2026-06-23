@@ -97,6 +97,86 @@ describe('LearningPlanDraftPanel', () => {
     expect(onConfirm).toHaveBeenCalled();
   });
 
+  it('allows editing the goal summary and asks for regeneration', () => {
+    const onRegenerate = vi.fn();
+    const draft: LearningPlanDraftResponse = {
+      draftId: 100,
+      status: 'GENERATED',
+      assistantMessage: '已生成学习计划草案。',
+      missingFields: [],
+      draftPlan,
+    };
+
+    render(
+      <LearningPlanDraftPanel
+        draft={draft}
+        loading={false}
+        onConfirm={vi.fn()}
+        onRegenerateGoal={onRegenerate}
+        onReturnToWizard={vi.fn()}
+        onSendFollowUp={vi.fn(() => Promise.resolve(true))}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '编辑目标摘要' }));
+    fireEvent.change(screen.getByRole('textbox', { name: '目标摘要' }), {
+      target: { value: '改成动态规划冲刺目标。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '按新目标重新生成' }));
+
+    expect(onRegenerate).toHaveBeenCalledWith('改成动态规划冲刺目标。');
+  });
+
+  it('resets goal editing state when a regenerated draft arrives', () => {
+    const onRegenerate = vi.fn();
+    const draft: LearningPlanDraftResponse = {
+      draftId: 100,
+      status: 'GENERATED',
+      assistantMessage: '已生成学习计划草案。',
+      missingFields: [],
+      draftPlan,
+    };
+    const { rerender } = render(
+      <LearningPlanDraftPanel
+        draft={draft}
+        loading={false}
+        onConfirm={vi.fn()}
+        onRegenerateGoal={onRegenerate}
+        onReturnToWizard={vi.fn()}
+        onSendFollowUp={vi.fn(() => Promise.resolve(true))}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '编辑目标摘要' }));
+    fireEvent.change(screen.getByRole('textbox', { name: '目标摘要' }), {
+      target: { value: '仍然停留在旧输入里的目标。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '按新目标重新生成' }));
+
+    rerender(
+      <LearningPlanDraftPanel
+        draft={{
+          ...draft,
+          draftId: 101,
+          draftPlan: {
+            ...draftPlan,
+            goal: '新的动态规划冲刺目标',
+            title: '动态规划冲刺计划',
+          },
+        }}
+        loading={false}
+        onConfirm={vi.fn()}
+        onRegenerateGoal={onRegenerate}
+        onReturnToWizard={vi.fn()}
+        onSendFollowUp={vi.fn(() => Promise.resolve(true))}
+      />,
+    );
+
+    expect(screen.getByText('新的动态规划冲刺目标')).toBeInTheDocument();
+    expect(screen.queryByRole('textbox', { name: '目标摘要' })).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue('仍然停留在旧输入里的目标。')).not.toBeInTheDocument();
+  });
+
   it('does not allow confirmation for failed drafts even when a stale plan exists', () => {
     render(
       <LearningPlanDraftPanel
@@ -114,14 +194,14 @@ describe('LearningPlanDraftPanel', () => {
       />,
     );
 
-    expect(screen.getByText('草案生成失败或已过期，请返回向导调整后重新生成。')).toBeInTheDocument();
+    expect(screen.getByText('草案生成失败或已过期，请重新填写问卷后生成。')).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: '草案预览' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '确认保存' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '返回向导' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '重新填写问卷' })).toBeInTheDocument();
   });
 
-  it('does not allow confirmation for expired drafts even when a stale plan exists', () => {
-    const onReturnToWizard = vi.fn();
+  it('does not allow confirmation for expired drafts and requests a clean retry', () => {
+    const onRetryCreate = vi.fn();
 
     render(
       <LearningPlanDraftPanel
@@ -134,16 +214,16 @@ describe('LearningPlanDraftPanel', () => {
         }}
         loading={false}
         onConfirm={vi.fn()}
-        onReturnToWizard={onReturnToWizard}
+        onRetryCreate={onRetryCreate}
         onSendFollowUp={vi.fn(() => Promise.resolve(true))}
       />,
     );
 
-    expect(screen.getByText('草案生成失败或已过期，请返回向导调整后重新生成。')).toBeInTheDocument();
+    expect(screen.getByText('草案生成失败或已过期，请重新填写问卷后生成。')).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: '草案预览' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '确认保存' })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: '返回向导' }));
+    fireEvent.click(screen.getByRole('button', { name: '重新填写问卷' }));
 
-    expect(onReturnToWizard).toHaveBeenCalled();
+    expect(onRetryCreate).toHaveBeenCalled();
   });
 });
