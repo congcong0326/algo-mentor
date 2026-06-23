@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type {
   DifficultyDistributionLevel,
   LearningPlanCreateDraftRequest,
@@ -25,6 +25,13 @@ interface LearningPlanCreateModalProps {
   onSubmit: (request: LearningPlanCreateDraftRequest) => void;
 }
 
+const DEFAULT_INTENT: LearningPlanIntent = 'INTERVIEW_SPRINT';
+const DEFAULT_DURATION_WEEKS = 4;
+const DEFAULT_WEEKLY_HOURS = 6;
+const DEFAULT_LEVEL: LearningPlanLevel = 'INTERMEDIATE';
+const DEFAULT_PROGRAMMING_LANGUAGE = 'Java';
+const DEFAULT_DIFFICULTY_LEVEL: DifficultyDistributionLevel = 'BALANCED';
+
 export default function LearningPlanCreateModal({
   open,
   loading,
@@ -32,15 +39,33 @@ export default function LearningPlanCreateModal({
   onClose,
   onSubmit,
 }: LearningPlanCreateModalProps) {
-  const [intent, setIntent] = useState<LearningPlanIntent>('INTERVIEW_SPRINT');
-  const [durationWeeks, setDurationWeeks] = useState(4);
-  const [weeklyHours, setWeeklyHours] = useState(6);
-  const [level, setLevel] = useState<LearningPlanLevel>('INTERMEDIATE');
-  const [programmingLanguage, setProgrammingLanguage] = useState('Java');
-  const [difficultyLevel, setDifficultyLevel] = useState<DifficultyDistributionLevel>('BALANCED');
+  const [intent, setIntent] = useState<LearningPlanIntent>(DEFAULT_INTENT);
+  const [durationWeeks, setDurationWeeks] = useState(DEFAULT_DURATION_WEEKS);
+  const [weeklyHours, setWeeklyHours] = useState(DEFAULT_WEEKLY_HOURS);
+  const [level, setLevel] = useState<LearningPlanLevel>(DEFAULT_LEVEL);
+  const [programmingLanguage, setProgrammingLanguage] = useState(DEFAULT_PROGRAMMING_LANGUAGE);
+  const [difficultyLevel, setDifficultyLevel] = useState<DifficultyDistributionLevel>(DEFAULT_DIFFICULTY_LEVEL);
   const [topicPreferences, setTopicPreferences] = useState<string[]>([]);
   const [additionalThoughts, setAdditionalThoughts] = useState('');
   const [validationError, setValidationError] = useState('');
+
+  function resetForm() {
+    setIntent(DEFAULT_INTENT);
+    setDurationWeeks(DEFAULT_DURATION_WEEKS);
+    setWeeklyHours(DEFAULT_WEEKLY_HOURS);
+    setLevel(DEFAULT_LEVEL);
+    setProgrammingLanguage(DEFAULT_PROGRAMMING_LANGUAGE);
+    setDifficultyLevel(DEFAULT_DIFFICULTY_LEVEL);
+    setTopicPreferences([]);
+    setAdditionalThoughts('');
+    setValidationError('');
+  }
+
+  useEffect(() => {
+    if (open) {
+      resetForm();
+    }
+  }, [open]);
 
   const numericValid = Number.isInteger(durationWeeks) && durationWeeks > 0
     && Number.isInteger(weeklyHours) && weeklyHours > 0;
@@ -51,12 +76,12 @@ export default function LearningPlanCreateModal({
   const difficultyPreference: LearningPlanDifficultyPreference = selectedDifficulty.preference;
 
   const hasUnsavedInput = useMemo(
-    () => intent !== 'INTERVIEW_SPRINT'
-      || durationWeeks !== 4
-      || weeklyHours !== 6
-      || level !== 'INTERMEDIATE'
-      || programmingLanguage !== 'Java'
-      || difficultyLevel !== 'BALANCED'
+    () => intent !== DEFAULT_INTENT
+      || durationWeeks !== DEFAULT_DURATION_WEEKS
+      || weeklyHours !== DEFAULT_WEEKLY_HOURS
+      || level !== DEFAULT_LEVEL
+      || programmingLanguage !== DEFAULT_PROGRAMMING_LANGUAGE
+      || difficultyLevel !== DEFAULT_DIFFICULTY_LEVEL
       || topicPreferences.length > 0
       || additionalThoughts.trim().length > 0,
     [
@@ -82,6 +107,7 @@ export default function LearningPlanCreateModal({
     if (hasUnsavedInput && !window.confirm('放弃当前填写的计划问卷？')) {
       return;
     }
+    resetForm();
     onClose();
   }
 
@@ -128,8 +154,13 @@ export default function LearningPlanCreateModal({
   }
 
   return (
-    <div aria-modal="true" className="modal-backdrop" role="dialog">
-      <section aria-labelledby="create-plan-title" className="create-plan-modal">
+    <div className="modal-backdrop">
+      <section
+        aria-labelledby="create-plan-title"
+        aria-modal="true"
+        className="create-plan-modal"
+        role="dialog"
+      >
         <div className="modal-heading">
           <div>
             <p className="eyebrow">新建计划</p>
@@ -148,6 +179,7 @@ export default function LearningPlanCreateModal({
             <div className="segmented-grid">
               {planScenarioOptions.map((option) => (
                 <button
+                  aria-pressed={intent === option.value}
                   className={intent === option.value ? 'selected' : ''}
                   disabled={loading}
                   key={option.value}
@@ -217,6 +249,7 @@ export default function LearningPlanCreateModal({
             <div className="topic-option-grid">
               {topicOptions.map((option) => (
                 <button
+                  aria-pressed={topicPreferences.includes(option.value)}
                   className={topicPreferences.includes(option.value) ? 'selected' : ''}
                   disabled={loading}
                   key={option.value}

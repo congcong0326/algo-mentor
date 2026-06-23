@@ -13,8 +13,22 @@ describe('DifficultyDistributionControl', () => {
     expect(screen.getByText('简单 25%')).toBeInTheDocument();
     expect(screen.getByText('中等 55%')).toBeInTheDocument();
     expect(screen.getByText('困难 20%')).toBeInTheDocument();
+    expect(screen.getByRole('slider', { name: '难度分布' })).toHaveAttribute(
+      'aria-valuetext',
+      '均衡：简单 25%，中等 55%，困难 20%',
+    );
 
     fireEvent.change(screen.getByRole('slider', { name: '难度分布' }), { target: { value: '2' } });
+
+    expect(onChange).toHaveBeenCalledWith('SPRINT');
+  });
+
+  it('clamps out-of-range slider values before emitting changes', () => {
+    const onChange = vi.fn();
+
+    render(<DifficultyDistributionControl disabled={false} onChange={onChange} value="BALANCED" />);
+
+    fireEvent.change(screen.getByRole('slider', { name: '难度分布' }), { target: { value: '99' } });
 
     expect(onChange).toHaveBeenCalledWith('SPRINT');
   });
