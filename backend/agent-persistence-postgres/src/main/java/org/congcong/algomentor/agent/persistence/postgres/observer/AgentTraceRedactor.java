@@ -54,13 +54,21 @@ final class AgentTraceRedactor {
 
   private boolean isSensitiveField(String fieldName) {
     String normalized = fieldName.toLowerCase(Locale.ROOT);
+    String compact = normalized.replace("_", "").replace("-", "");
     return normalized.contains("apikey")
         || normalized.contains("api_key")
+        || normalized.contains("api-key")
         || normalized.contains("authorization")
         || normalized.contains("cookie")
+        || normalized.contains("set-cookie")
         || normalized.contains("jwt")
+        || normalized.contains("bearer")
         || normalized.contains("token")
+        || normalized.contains("access_token")
+        || normalized.contains("refresh_token")
+        || normalized.contains("oauth")
         || normalized.contains("password")
+        || normalized.contains("passwd")
         || normalized.contains("secret");
   }
 }
