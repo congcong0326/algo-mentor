@@ -1091,12 +1091,8 @@ a {
 .learning-page-heading {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 16px;
-}
-
-.learning-page-heading .eyebrow {
-  margin: 0;
 }
 
 .learning-layout {

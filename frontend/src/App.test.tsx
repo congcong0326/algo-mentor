@@ -50,8 +50,8 @@ describe('App', () => {
     render(<App />);
 
     expect(screen.getByRole('navigation', { name: '主导航' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '学习计划' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getAllByText('学习计划')).toHaveLength(2);
+    expect(screen.getByRole('button', { name: '计划' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.queryByText('学习计划')).not.toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent('正在检查登录状态...');
     expect(screen.queryByRole('link', { name: '使用 Google 登录' })).not.toBeInTheDocument();
   });
@@ -124,7 +124,7 @@ describe('App', () => {
 
     expect(await screen.findByRole('heading', { name: '把算法练习变成可复盘的学习系统' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '学习计划' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: '计划' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '生成学习计划' })).toBeInTheDocument();
     expect(screen.getByText('User Name')).toBeInTheDocument();
@@ -139,15 +139,15 @@ describe('App', () => {
 
     expect(await screen.findByRole('heading', { name: '把算法练习变成可复盘的学习系统' })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '学习计划' }));
+    fireEvent.click(screen.getByRole('button', { name: '计划' }));
 
-    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '学习计划' })).toHaveAttribute('aria-pressed', 'true');
+    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '计划' })).toHaveAttribute('aria-pressed', 'true');
     expect(window.location.pathname).toBe('/learning-plans');
 
     fireEvent.click(screen.getByRole('button', { name: '题库' }));
 
-    expect(await screen.findByRole('heading', { name: '题库' })).toBeInTheDocument();
+    expect(await screen.findByRole('textbox', { name: '搜索题目' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'true');
     expect(window.location.pathname).toBe('/problems');
 
@@ -155,11 +155,11 @@ describe('App', () => {
     await waitFor(() => expect(window.location.pathname).toBe('/learning-plans'));
     fireEvent(window, new PopStateEvent('popstate'));
 
-    await waitFor(() => expect(screen.getByRole('button', { name: '学习计划' })).toHaveAttribute(
+    await waitFor(() => expect(screen.getByRole('button', { name: '计划' })).toHaveAttribute(
       'aria-pressed',
       'true',
     ));
-    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
   });
 
   it('renders the conversation stream test client shell', async () => {
@@ -167,7 +167,7 @@ describe('App', () => {
     window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     expect(screen.getByText('User Name')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'AI 调试' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
@@ -297,9 +297,9 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
-    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '退出登录' }));
 
@@ -335,7 +335,7 @@ describe('App', () => {
     window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     fireEvent.change(screen.getByRole('textbox', { name: 'Message' }), {
       target: { value: 'Continue with boundary cases.' },
     });
@@ -377,7 +377,7 @@ describe('App', () => {
     window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     const startButton = screen.getByRole('button', { name: 'Start' });
     await act(async () => {
       fireEvent.click(startButton);
@@ -401,7 +401,7 @@ describe('App', () => {
     window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     const startButton = screen.getByRole('button', { name: 'Start' });
     await act(async () => {
       fireEvent.click(startButton);
@@ -427,7 +427,7 @@ describe('App', () => {
     window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
     await waitFor(() => expect(capturedSignal).toBeDefined());
     fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
@@ -459,7 +459,7 @@ describe('App', () => {
     window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
     await waitFor(() => expect(capturedSignal).toBeDefined());
     fireEvent.click(screen.getByRole('button', { name: '退出登录' }));
@@ -471,7 +471,7 @@ describe('App', () => {
     expect(capturedSignal?.aborted).toBe(true);
     resolveLogout?.(jsonResponse({ success: true, timestamp: '2026-06-22T00:00:00Z' }));
     await screen.findByRole('link', { name: '使用 Google 登录' });
-    expect(screen.queryByRole('heading', { name: 'AI SSE 测试台' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('textbox', { name: 'Message' })).not.toBeInTheDocument();
   });
 
   it('aborts and resets debug status when navigating away from an active stream', async () => {
@@ -493,20 +493,20 @@ describe('App', () => {
     window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
     await waitFor(() => expect(capturedSignal).toBeDefined());
     expect(screen.getByText('connecting')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '学习计划' }));
+    fireEvent.click(screen.getByRole('button', { name: '计划' }));
 
-    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
     expect(capturedSignal?.aborted).toBe(true);
 
     fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
 
-    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     expect(screen.getByText('idle')).toBeInTheDocument();
     expect(screen.queryByText('connecting')).not.toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'Message' })).toBeEnabled();
@@ -519,20 +519,20 @@ describe('App', () => {
     window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Start' }));
     });
 
     expect(await screen.findByText('done')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '学习计划' }));
+    fireEvent.click(screen.getByRole('button', { name: '计划' }));
 
-    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
 
-    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     expect(screen.getByText('idle')).toBeInTheDocument();
     expect(screen.queryByText('done')).not.toBeInTheDocument();
   });
@@ -558,7 +558,7 @@ describe('App', () => {
     window.history.replaceState({}, '', '/debug');
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: 'AI SSE 测试台' })).toBeInTheDocument();
+    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
     expect(await screen.findByText('blocked')).toBeInTheDocument();
@@ -572,7 +572,7 @@ describe('App', () => {
     window.history.replaceState({}, '', '/problems');
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '题库' })).toBeInTheDocument();
+    expect(await screen.findByRole('textbox', { name: '搜索题目' })).toBeInTheDocument();
     expect(await screen.findByText('两数之和')).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: '两数之和' })).toBeInTheDocument();
     expect(screen.getByText('# Two Sum')).toBeInTheDocument();
@@ -636,7 +636,7 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
     expect(await screen.findAllByText('四周 Java 算法面试冲刺计划')).not.toHaveLength(0);
 
     fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
@@ -718,7 +718,7 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
     fireEvent.change(screen.getByRole('textbox', { name: '学习目标' }), {
       target: { value: '准备 Java 后端算法面试' },
@@ -774,14 +774,14 @@ describe('App', () => {
     expect(screen.queryByRole('button', { name: '确认保存' })).not.toBeInTheDocument();
   });
 
-  it('renders one learning plan page heading and one empty-state create action', async () => {
+  it('does not render an extra learning plan page title and keeps one create action', async () => {
     vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
     window.history.replaceState({}, '', '/learning-plans');
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
-    expect(document.querySelectorAll('h1')).toHaveLength(1);
+    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
+    expect(document.querySelectorAll('h1')).toHaveLength(0);
     expect(screen.getAllByRole('button', { name: '新建计划' })).toHaveLength(1);
   });
 });
@@ -1250,7 +1250,7 @@ function expectCsrfHeader(fetchMock: ReturnType<typeof vi.fn>, url: string) {
 }
 
 async function createCollectingLearningPlanDraft() {
-  expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+  expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
   fireEvent.change(screen.getByRole('textbox', { name: '学习目标' }), {
     target: { value: '准备 Java 后端算法面试' },

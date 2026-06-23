@@ -157,9 +157,6 @@ export default function LearningPlans() {
   return (
     <section className="learning-shell" aria-label="学习计划">
       <div className="learning-page-heading">
-        <div>
-          <p className="eyebrow">LEARNING PLANS</p>
-        </div>
         <button className="primary-button" onClick={startCreating} type="button">
           <Plus aria-hidden="true" />
           <span>新建计划</span>

@@ -14,19 +14,6 @@ import { APP_ROUTES, pathForView, type AppView, viewFromPath } from './app/navig
 import { getCurrentUser, logout } from './services/api';
 import type { CurrentUser } from './types/api';
 
-function viewTitle(view: AppView): string {
-  if (view === 'home') {
-    return '首页';
-  }
-  if (view === 'problems') {
-    return '题库';
-  }
-  if (view === 'learningPlans') {
-    return '学习计划';
-  }
-  return 'AI SSE 测试台';
-}
-
 function normalizeAuthenticatedView(pathname: string): AppView {
   return viewFromPath(pathname) ?? 'home';
 }
@@ -46,7 +33,7 @@ function AppLoadingShell({ activeView }: { activeView: AppView }) {
         <nav className="app-nav" aria-label="主导航">
           {[
             ['home', '首页'],
-            ['learningPlans', '学习计划'],
+            ['learningPlans', '计划'],
             ['problems', '题库'],
             ['debug', 'AI 调试'],
           ].map(([view, label]) => (
@@ -68,7 +55,6 @@ function AppLoadingShell({ activeView }: { activeView: AppView }) {
         </div>
       </header>
       <section className="app-content" aria-busy="true">
-        {activeView !== 'home' && <div className="loading-page-title">{viewTitle(activeView)}</div>}
         <div className="loading-panel" role="status">
           正在检查登录状态...
         </div>
@@ -243,7 +229,6 @@ export default function App() {
       onLogout={() => void handleLogout()}
       onNavigate={navigateToView}
     >
-      {activeView !== 'home' && <h1 id="page-title">{viewTitle(activeView)}</h1>}
       {activeView === 'home'
         ? <HomeDashboard onNavigate={navigateToView} />
         : activeView === 'problems'
