@@ -9,12 +9,14 @@ import java.util.function.Supplier;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
 import org.congcong.algomentor.ai.governance.admission.AiRunLifecycleService;
+import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionException;
 import org.congcong.algomentor.ai.governance.model.AiActor;
 import org.congcong.algomentor.ai.governance.model.AiGovernanceErrorCode;
 import org.congcong.algomentor.ai.governance.model.AiPurpose;
 import org.congcong.algomentor.ai.governance.model.AiRunContext;
 import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.ai.governance.model.AiUsage;
+import org.congcong.algomentor.ai.governance.model.AiRunStatus;
 import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanConfirmResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanCreateDraftRequest;
@@ -30,6 +32,8 @@ import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,22 +49,22 @@ public class LearningPlanController {
   private final LearningPlanService planService;
   private final CurrentUserIdProvider currentUserIdProvider;
   private final AiActorResolver actorResolver;
-  private final AiRunAdmissionService admissionService;
-  private final AiRunLifecycleService lifecycleService;
+  private final ObjectProvider<AiRunAdmissionService> admissionServiceProvider;
+  private final ObjectProvider<AiRunLifecycleService> lifecycleServiceProvider;
 
   public LearningPlanController(
       LearningPlanDraftService draftService,
       LearningPlanService planService,
       CurrentUserIdProvider currentUserIdProvider,
       AiActorResolver actorResolver,
-      AiRunAdmissionService admissionService,
-      AiRunLifecycleService lifecycleService) {
+      ObjectProvider<AiRunAdmissionService> admissionServiceProvider,
+      ObjectProvider<AiRunLifecycleService> lifecycleServiceProvider) {
     this.draftService = draftService;
     this.planService = planService;
     this.currentUserIdProvider = currentUserIdProvider;
     this.actorResolver = actorResolver;
-    this.admissionService = admissionService;
-    this.lifecycleService = lifecycleService;
+    this.admissionServiceProvider = admissionServiceProvider;
+    this.lifecycleServiceProvider = lifecycleServiceProvider;
   }
 
   @PostMapping(ApiContractConstants.LEARNING_PLAN_DRAFTS_PATH)
@@ -116,6 +120,8 @@ public class LearningPlanController {
       int requestSize,
       Supplier<LearningPlanDraftResult> action) {
     AiActor actor = actorResolver.currentActor();
+    AiRunAdmissionService admissionService = requiredAdmissionService();
+    AiRunLifecycleService lifecycleService = requiredLifecycleService();
     AiRunAdmission admission = admissionService.admit(new AiRunContext(
         runId,
         actor,
@@ -152,5 +158,26 @@ public class LearningPlanController {
           .sum();
     }
     return size;
+  }
+
+  private AiRunAdmissionService requiredAdmissionService() {
+    return admissionServiceProvider.getIfAvailable(() -> {
+      throw unavailableGovernance();
+    });
+  }
+
+  private AiRunLifecycleService requiredLifecycleService() {
+    return lifecycleServiceProvider.getIfAvailable(() -> {
+      throw unavailableGovernance();
+    });
+  }
+
+  private AiRunAdmissionException unavailableGovernance() {
+    return new AiRunAdmissionException(
+        AiGovernanceErrorCode.AI_PROVIDER_UNAVAILABLE,
+        AiRunStatus.REJECTED_DISABLED,
+        "AI 治理服务暂不可用。",
+        HttpStatus.SERVICE_UNAVAILABLE,
+        Map.of());
   }
 }

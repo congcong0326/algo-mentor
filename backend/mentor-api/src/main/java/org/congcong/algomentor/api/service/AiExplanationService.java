@@ -10,10 +10,12 @@ import org.congcong.algomentor.ai.governance.model.AiPurpose;
 import org.congcong.algomentor.ai.governance.model.AiRunContext;
 import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.mentor.application.ExplainTopicUseCase;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Service
+@ConditionalOnBean(AiRunAdmissionService.class)
 public class AiExplanationService {
 
   private final ExplainTopicUseCase explainTopicUseCase;
