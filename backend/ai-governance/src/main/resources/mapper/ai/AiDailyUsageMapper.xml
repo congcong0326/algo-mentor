@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.ai.governance.repository.mybatis.AiDailyUsageMapper">
+
+  <insert id="insertIfAbsent">
+    INSERT INTO ai_daily_usage (user_id, quota_date, scope, limit_count)
+    VALUES (#{userId}, #{quotaDate}, #{scope}, #{limitCount})
+    ON CONFLICT (user_id, quota_date, scope) DO NOTHING
+  </insert>
+
+  <update id="incrementRequestIfWithinLimit">
+    UPDATE ai_daily_usage
+    SET request_count = request_count + 1,
+        limit_count = #{limitCount},
+        updated_at = now()
+    WHERE user_id = #{userId}
+      AND quota_date = #{quotaDate}
+      AND scope = #{scope}
+      AND request_count &lt; #{limitCount}
+  </update>
+
+  <update id="addUsage">
+    UPDATE ai_daily_usage
+    SET input_tokens = input_tokens + #{usage.inputTokens},
+        output_tokens = output_tokens + #{usage.outputTokens},
+        cached_tokens = cached_tokens + #{usage.cachedTokens},
+        reasoning_tokens = reasoning_tokens + #{usage.reasoningTokens},
+        total_tokens = total_tokens + #{usage.totalTokens},
+        updated_at = now()
+    WHERE user_id = #{userId}
+      AND quota_date = #{quotaDate}
+      AND scope = #{scope}
+  </update>
+</mapper>

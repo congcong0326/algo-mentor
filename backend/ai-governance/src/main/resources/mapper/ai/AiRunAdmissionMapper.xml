@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.ai.governance.repository.mybatis.AiRunAdmissionMapper">
+
+  <resultMap id="AiRunAdmissionRowMap"
+      type="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiRunAdmissionRow">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Long"/>
+      <arg column="run_id" javaType="java.lang.String"/>
+      <arg column="user_id" javaType="java.lang.Long"/>
+      <arg column="purpose" javaType="org.congcong.algomentor.ai.governance.model.AiPurpose"/>
+      <arg column="source" javaType="org.congcong.algomentor.ai.governance.model.AiRunSource"/>
+      <arg column="status" javaType="org.congcong.algomentor.ai.governance.model.AiRunStatus"/>
+      <arg column="idempotency_key" javaType="java.lang.String"/>
+      <arg column="request_size" javaType="_int"/>
+      <arg column="rejection_code" javaType="java.lang.String"/>
+      <arg column="error_code" javaType="java.lang.String"/>
+      <arg column="provider" javaType="java.lang.String"/>
+      <arg column="model" javaType="java.lang.String"/>
+      <arg column="input_tokens" javaType="_long"/>
+      <arg column="output_tokens" javaType="_long"/>
+      <arg column="cached_tokens" javaType="_long"/>
+      <arg column="reasoning_tokens" javaType="_long"/>
+      <arg column="total_tokens" javaType="_long"/>
+      <arg column="started_at" javaType="java.time.Instant"/>
+      <arg column="completed_at" javaType="java.time.Instant"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <insert id="insertAdmission" parameterType="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiRunAdmissionRow"
+      useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO ai_run_admissions (
+      run_id, user_id, purpose, source, status, idempotency_key, request_size,
+      rejection_code, error_code, provider, model, input_tokens, output_tokens,
+      cached_tokens, reasoning_tokens, total_tokens, started_at, completed_at
+    )
+    VALUES (
+      #{runId}, #{userId}, #{purpose}, #{source}, #{status}, #{idempotencyKey}, #{requestSize},
+      #{rejectionCode}, #{errorCode}, #{provider}, #{model}, #{inputTokens}, #{outputTokens},
+      #{cachedTokens}, #{reasoningTokens}, #{totalTokens}, #{startedAt}, #{completedAt}
+    )
+  </insert>
+
+  <update id="updateStatus" parameterType="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiRunStatusUpdate">
+    UPDATE ai_run_admissions
+    SET status = #{status},
+        error_code = #{errorCode},
+        provider = #{provider},
+        model = #{model},
+        input_tokens = input_tokens + #{usage.inputTokens},
+        output_tokens = output_tokens + #{usage.outputTokens},
+        cached_tokens = cached_tokens + #{usage.cachedTokens},
+        reasoning_tokens = reasoning_tokens + #{usage.reasoningTokens},
+        total_tokens = total_tokens + #{usage.totalTokens},
+        completed_at = #{completedAt},
+        updated_at = now()
+    WHERE
+    <choose>
+      <when test="admissionId != null">
+        id = #{admissionId}
+      </when>
+      <otherwise>
+        run_id = #{runId}
+      </otherwise>
+    </choose>
+  </update>
+
+  <select id="findByRunId" resultMap="AiRunAdmissionRowMap">
+    SELECT id, run_id, user_id, purpose, source, status, idempotency_key, request_size,
+           rejection_code, error_code, provider, model, input_tokens, output_tokens,
+           cached_tokens, reasoning_tokens, total_tokens, started_at, completed_at,
+           created_at, updated_at
+    FROM ai_run_admissions
+    WHERE run_id = #{runId}
+  </select>
+</mapper>
