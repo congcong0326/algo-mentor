@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepositoryUnavailableException;
 
@@ -31,7 +32,22 @@ public class UnavailableLearningPlanRepository implements LearningPlanDraftRepos
   }
 
   @Override
+  public LearningPlanPage findPageByUserId(long userId, int page, int pageSize) {
+    throw unavailable();
+  }
+
+  @Override
   public Optional<LearningPlan> findPlanByIdForUser(long planId, long userId) {
+    throw unavailable();
+  }
+
+  @Override
+  public void clearConfirmedPlanReferences(long userId, long planId) {
+    throw unavailable();
+  }
+
+  @Override
+  public boolean deletePlanByIdForUser(long planId, long userId) {
     throw unavailable();
   }
 

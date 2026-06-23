@@ -4,6 +4,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanConfirmResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
 
 public final class LearningPlanResponseMapper {
 
@@ -35,6 +36,17 @@ public final class LearningPlanResponseMapper {
         snapshot.weeklyHours(),
         plan.status(),
         plan.createdAt());
+  }
+
+  public static LearningPlanPageResponse toPageResponse(LearningPlanPage page) {
+    return new LearningPlanPageResponse(
+        page.items().stream().map(LearningPlanResponseMapper::toSummaryResponse).toList(),
+        page.total(),
+        page.page(),
+        page.pageSize(),
+        page.activeCount(),
+        page.archivedCount(),
+        page.latestCreatedAt());
   }
 
   public static LearningPlanDetailResponse toDetailResponse(LearningPlan plan) {
