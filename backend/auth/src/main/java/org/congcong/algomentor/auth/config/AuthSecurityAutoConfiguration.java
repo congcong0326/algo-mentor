@@ -5,8 +5,10 @@ import java.util.Locale;
 import org.congcong.algomentor.auth.security.ApiAuthenticationEntryPoint;
 import org.congcong.algomentor.auth.security.AuthenticatedOAuth2UserService;
 import org.congcong.algomentor.auth.security.AuthenticatedOidcUserService;
+import org.congcong.algomentor.auth.security.CsrfTokenCookieFilter;
 import org.congcong.algomentor.auth.security.OAuth2AuthenticationFailureHandler;
 import org.congcong.algomentor.auth.security.OAuth2AuthenticationSuccessHandler;
+import org.congcong.algomentor.auth.security.SpaCsrfTokenRequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -27,6 +29,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
@@ -85,7 +88,10 @@ public class AuthSecurityAutoConfiguration {
     logGoogleRegistration(registrations);
 
     http
-        .csrf(csrf -> csrf.csrfTokenRepository(csrfTokenRepository))
+        .csrf(csrf -> csrf
+            .csrfTokenRepository(csrfTokenRepository)
+            .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler()))
+        .addFilterAfter(new CsrfTokenCookieFilter(), CsrfFilter.class)
         .exceptionHandling(exceptions -> exceptions
             .defaultAuthenticationEntryPointFor(
                 new ApiAuthenticationEntryPoint(objectMapper),

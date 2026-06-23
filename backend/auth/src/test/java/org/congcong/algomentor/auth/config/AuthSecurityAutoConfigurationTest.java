@@ -5,11 +5,13 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import jakarta.servlet.SessionCookieConfig;
+import jakarta.servlet.http.Cookie;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -134,8 +136,26 @@ class AuthSecurityAutoConfigurationTest {
   void authenticatedCurrentUserEndpointReturnsPrincipal() throws Exception {
     mockMvc.perform(get("/api/auth/me").with(authentication(authenticationToken())))
         .andExpect(status().isOk())
+        .andExpect(cookie().exists("XSRF-TOKEN"))
+        .andExpect(cookie().httpOnly("XSRF-TOKEN", false))
         .andExpect(jsonPath("$.data.email").value("user@example.com"))
         .andExpect(jsonPath("$.data.roles[0]").value("USER"));
+  }
+
+  @Test
+  void logoutAcceptsCookieCsrfTokenIssuedByCurrentUserEndpoint() throws Exception {
+    String csrfToken = mockMvc.perform(get("/api/auth/me").with(authentication(authenticationToken())))
+        .andExpect(status().isOk())
+        .andReturn()
+        .getResponse()
+        .getCookie("XSRF-TOKEN")
+        .getValue();
+
+    mockMvc.perform(post(AuthSecurityPaths.AUTH_LOGOUT_PATH)
+            .cookie(new Cookie("XSRF-TOKEN", csrfToken))
+            .header("X-XSRF-TOKEN", csrfToken)
+            .with(authentication(authenticationToken())))
+        .andExpect(status().is3xxRedirection());
   }
 
   @Test
