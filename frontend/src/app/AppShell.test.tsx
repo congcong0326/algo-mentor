@@ -18,7 +18,7 @@ describe('AppShell', () => {
 
     render(
       <AppShell
-        activeView="learningPlans"
+        activeView="home"
         currentUser={user}
         onLogout={vi.fn()}
         onNavigate={onNavigate}
@@ -28,7 +28,8 @@ describe('AppShell', () => {
     );
 
     expect(screen.getByRole('banner')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '学习计划' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '学习计划' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByText('User Name')).toBeInTheDocument();
     expect(screen.getByText('Current page')).toBeInTheDocument();

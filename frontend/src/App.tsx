@@ -1,5 +1,6 @@
 import { Radio } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import HomeDashboard from './HomeDashboard';
 import LearningPlans from './LearningPlans';
 import ProblemLibrary from './ProblemLibrary';
 import AiDebugConsole, {
@@ -14,6 +15,9 @@ import { getCurrentUser, logout } from './services/api';
 import type { CurrentUser } from './types/api';
 
 function viewTitle(view: AppView): string {
+  if (view === 'home') {
+    return '首页';
+  }
   if (view === 'problems') {
     return '题库';
   }
@@ -24,11 +28,11 @@ function viewTitle(view: AppView): string {
 }
 
 function normalizeAuthenticatedView(pathname: string): AppView {
-  return viewFromPath(pathname) ?? 'learningPlans';
+  return viewFromPath(pathname) ?? 'home';
 }
 
 export default function App() {
-  const [activeView, setActiveView] = useState<AppView>(() => viewFromPath(window.location.pathname) ?? 'learningPlans');
+  const [activeView, setActiveView] = useState<AppView>(() => viewFromPath(window.location.pathname) ?? 'home');
   const [currentUser, setCurrentUser] = useState<CurrentUser>();
   const [authChecked, setAuthChecked] = useState(false);
   const [logoutError, setLogoutError] = useState('');
@@ -151,8 +155,10 @@ export default function App() {
       onLogout={() => void handleLogout()}
       onNavigate={navigateToView}
     >
-      <h1 id="page-title">{viewTitle(activeView)}</h1>
-      {activeView === 'problems'
+      {activeView !== 'home' && <h1 id="page-title">{viewTitle(activeView)}</h1>}
+      {activeView === 'home'
+        ? <HomeDashboard onNavigate={navigateToView} />
+        : activeView === 'problems'
         ? <ProblemLibrary />
         : activeView === 'learningPlans'
           ? <LearningPlans />

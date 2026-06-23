@@ -61,26 +61,34 @@ describe('App', () => {
     expect(window.location.search).toBe('?auth=failed');
   });
 
-  it('defaults authenticated users to learning plans', async () => {
+  it('defaults authenticated users to the home page', async () => {
     vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
     window.history.replaceState({}, '', '/');
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '学习计划' })).toHaveAttribute('aria-pressed', 'true');
+    expect(await screen.findByRole('heading', { name: '把算法练习变成可复盘的学习系统' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '学习计划' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: '生成学习计划' })).toBeInTheDocument();
     expect(screen.getByText('User Name')).toBeInTheDocument();
-    expect(window.location.pathname).toBe('/learning-plans');
+    expect(window.location.pathname).toBe('/');
   });
 
   it('syncs active view when browser history changes', async () => {
     vi.stubGlobal('fetch', mockLearningPlanAndProblemFetch());
-    window.history.replaceState({}, '', '/learning-plans');
+    window.history.replaceState({}, '', '/');
 
     render(<App />);
 
+    expect(await screen.findByRole('heading', { name: '把算法练习变成可复盘的学习系统' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '学习计划' }));
+
     expect(await screen.findByRole('heading', { name: '学习计划' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '学习计划' })).toHaveAttribute('aria-pressed', 'true');
+    expect(window.location.pathname).toBe('/learning-plans');
 
     fireEvent.click(screen.getByRole('button', { name: '题库' }));
 

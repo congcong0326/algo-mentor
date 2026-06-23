@@ -1,14 +1,15 @@
 import type { LucideIcon } from 'lucide-react';
-import { Bot, ClipboardList, Library } from 'lucide-react';
+import { Bot, ClipboardList, Home, Library } from 'lucide-react';
 
 export const APP_ROUTES = {
   login: '/login',
+  home: '/',
   learningPlans: '/learning-plans',
   problems: '/problems',
   debug: '/debug',
 } as const;
 
-export type AppView = 'learningPlans' | 'problems' | 'debug';
+export type AppView = 'home' | 'learningPlans' | 'problems' | 'debug';
 
 export interface NavigationItem {
   view: AppView;
@@ -18,6 +19,12 @@ export interface NavigationItem {
 }
 
 export const NAVIGATION_ITEMS: NavigationItem[] = [
+  {
+    view: 'home',
+    label: '首页',
+    path: APP_ROUTES.home,
+    icon: Home,
+  },
   {
     view: 'learningPlans',
     label: '学习计划',
@@ -39,20 +46,23 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
 ];
 
 export function viewFromPath(pathname: string): AppView | undefined {
+  if (pathname === APP_ROUTES.home) {
+    return 'home';
+  }
   if (pathname === APP_ROUTES.problems) {
     return 'problems';
   }
   if (pathname === APP_ROUTES.debug) {
     return 'debug';
   }
-  if (pathname === APP_ROUTES.learningPlans || pathname === '/') {
+  if (pathname === APP_ROUTES.learningPlans) {
     return 'learningPlans';
   }
   return undefined;
 }
 
 export function pathForView(view: AppView): string {
-  return NAVIGATION_ITEMS.find((item) => item.view === view)?.path ?? APP_ROUTES.learningPlans;
+  return NAVIGATION_ITEMS.find((item) => item.view === view)?.path ?? APP_ROUTES.home;
 }
 
 export function isLoginPath(pathname: string): boolean {
