@@ -47,7 +47,71 @@ describe('LearningPlanCreateModal', () => {
     fireEvent.click(screen.getByRole('button', { name: '生成计划草案' }));
 
     expect(screen.getByText('专项突破需要至少选择一个主题。')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('专项突破需要至少选择一个主题。');
     expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('moves focus to the close button when opened', async () => {
+    render(<LearningPlanCreateModal loading={false} open onClose={vi.fn()} onSubmit={vi.fn()} />);
+
+    expect(await screen.findByRole('button', { name: '关闭' })).toHaveFocus();
+  });
+
+  it('restores focus to the previously focused element after closing', () => {
+    const opener = document.createElement('button');
+    opener.textContent = '打开计划弹窗';
+    document.body.appendChild(opener);
+    opener.focus();
+
+    const onClose = vi.fn();
+
+    render(<LearningPlanCreateModal loading={false} open onClose={onClose} onSubmit={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole('button', { name: '关闭' }));
+
+    expect(onClose).toHaveBeenCalled();
+    expect(opener).toHaveFocus();
+
+    opener.remove();
+  });
+
+  it('wraps tab focus within the dialog', () => {
+    render(<LearningPlanCreateModal loading={false} open onClose={vi.fn()} onSubmit={vi.fn()} />);
+
+    const closeButton = screen.getByRole('button', { name: '关闭' });
+    const submitButton = screen.getByRole('button', { name: '生成计划草案' });
+    closeButton.focus();
+
+    fireEvent.keyDown(screen.getByRole('dialog', { name: '新建学习计划' }), {
+      key: 'Tab',
+      shiftKey: true,
+    });
+
+    expect(submitButton).toHaveFocus();
+
+    fireEvent.keyDown(screen.getByRole('dialog', { name: '新建学习计划' }), { key: 'Tab' });
+
+    expect(closeButton).toHaveFocus();
+  });
+
+  it('closes with Escape when not loading', () => {
+    const onClose = vi.fn();
+
+    render(<LearningPlanCreateModal loading={false} open onClose={onClose} onSubmit={vi.fn()} />);
+
+    fireEvent.keyDown(screen.getByRole('dialog', { name: '新建学习计划' }), { key: 'Escape' });
+
+    expect(onClose).toHaveBeenCalled();
+  });
+
+  it('does not close with Escape while loading', () => {
+    const onClose = vi.fn();
+
+    render(<LearningPlanCreateModal loading open onClose={onClose} onSubmit={vi.fn()} />);
+
+    fireEvent.keyDown(screen.getByRole('dialog', { name: '新建学习计划' }), { key: 'Escape' });
+
+    expect(onClose).not.toHaveBeenCalled();
   });
 
   it('resets form fields and validation errors when reopened', () => {

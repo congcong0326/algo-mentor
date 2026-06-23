@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import type { KeyboardEvent } from 'react';
 import type {
   DifficultyDistributionLevel,
   LearningPlanCreateDraftRequest,
@@ -31,6 +32,14 @@ const DEFAULT_WEEKLY_HOURS = 6;
 const DEFAULT_LEVEL: LearningPlanLevel = 'INTERMEDIATE';
 const DEFAULT_PROGRAMMING_LANGUAGE = 'Java';
 const DEFAULT_DIFFICULTY_LEVEL: DifficultyDistributionLevel = 'BALANCED';
+const FOCUSABLE_SELECTOR = [
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  'a[href]',
+  '[tabindex]:not([tabindex="-1"]):not([disabled])',
+].join(',');
 
 export default function LearningPlanCreateModal({
   open,
@@ -48,6 +57,9 @@ export default function LearningPlanCreateModal({
   const [topicPreferences, setTopicPreferences] = useState<string[]>([]);
   const [additionalThoughts, setAdditionalThoughts] = useState('');
   const [validationError, setValidationError] = useState('');
+  const dialogRef = useRef<HTMLElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
 
   function resetForm() {
     setIntent(DEFAULT_INTENT);
@@ -61,9 +73,28 @@ export default function LearningPlanCreateModal({
     setValidationError('');
   }
 
+  function getFocusableElements() {
+    return Array.from(dialogRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR) ?? [])
+      .filter((element) => !element.hasAttribute('disabled') && element.tabIndex >= 0);
+  }
+
+  function focusInitialControl() {
+    if (closeButtonRef.current && !closeButtonRef.current.disabled) {
+      closeButtonRef.current.focus();
+      return;
+    }
+
+    const [firstElement] = getFocusableElements();
+    (firstElement ?? dialogRef.current)?.focus();
+  }
+
   useEffect(() => {
     if (open) {
+      previouslyFocusedElementRef.current = document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
       resetForm();
+      focusInitialControl();
     }
   }, [open]);
 
@@ -100,6 +131,15 @@ export default function LearningPlanCreateModal({
     return null;
   }
 
+  function restorePreviousFocus() {
+    const previous = previouslyFocusedElementRef.current;
+
+    if (previous?.isConnected) {
+      previous.focus();
+    }
+    previouslyFocusedElementRef.current = null;
+  }
+
   function close() {
     if (loading) {
       return;
@@ -109,6 +149,41 @@ export default function LearningPlanCreateModal({
     }
     resetForm();
     onClose();
+    restorePreviousFocus();
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLElement>) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      close();
+      return;
+    }
+
+    if (event.key !== 'Tab') {
+      return;
+    }
+
+    const focusableElements = getFocusableElements();
+    if (focusableElements.length === 0) {
+      event.preventDefault();
+      dialogRef.current?.focus();
+      return;
+    }
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    const activeElement = document.activeElement;
+
+    if (event.shiftKey && (activeElement === firstElement || !dialogRef.current?.contains(activeElement))) {
+      event.preventDefault();
+      lastElement.focus();
+      return;
+    }
+
+    if (!event.shiftKey && activeElement === lastElement) {
+      event.preventDefault();
+      firstElement.focus();
+    }
   }
 
   function toggleTopic(value: string) {
@@ -159,19 +234,29 @@ export default function LearningPlanCreateModal({
         aria-labelledby="create-plan-title"
         aria-modal="true"
         className="create-plan-modal"
+        onKeyDown={handleKeyDown}
+        ref={dialogRef}
         role="dialog"
+        tabIndex={-1}
       >
         <div className="modal-heading">
           <div>
             <p className="eyebrow">新建计划</p>
             <h2 id="create-plan-title">新建学习计划</h2>
           </div>
-          <button aria-label="关闭" className="icon-button" disabled={loading} onClick={close} type="button">
+          <button
+            aria-label="关闭"
+            className="icon-button"
+            disabled={loading}
+            onClick={close}
+            ref={closeButtonRef}
+            type="button"
+          >
             <X aria-hidden="true" />
           </button>
         </div>
 
-        {(error || validationError) && <p className="error-text">{validationError || error}</p>}
+        {(error || validationError) && <p className="error-text" role="alert">{validationError || error}</p>}
 
         <div className="modal-form">
           <section className="question-block">
