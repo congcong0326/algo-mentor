@@ -14,7 +14,7 @@ public record LearningPlanDraftResult(
     missingFields = missingFields == null ? List.of() : List.copyOf(missingFields);
   }
 
-  static LearningPlanDraftResult fromDraft(LearningPlanDraft draft) {
+  public static LearningPlanDraftResult fromDraft(LearningPlanDraft draft) {
     return new LearningPlanDraftResult(
         draft.id(),
         draft.status(),

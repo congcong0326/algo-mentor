@@ -2,14 +2,18 @@ import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import {
   confirmLearningPlanDraft,
-  createLearningPlanDraft,
   sendLearningPlanDraftMessage,
+  streamLearningPlanDraft,
 } from '../services/api';
 import type {
+  AgentWorkStatusEvent,
   LearningPlanConfirmResponse,
   LearningPlanCreateDraftRequest,
+  LearningPlanDraftErrorEvent,
   LearningPlanDraftResponse,
+  SseStreamEvent,
 } from '../types/api';
+import AgentWorkIndicator from './AgentWorkIndicator';
 import LearningPlanCreateForm from './LearningPlanCreateForm';
 import LearningPlanDraftPanel from './LearningPlanDraftPanel';
 
@@ -30,18 +34,43 @@ function apiData<T>(response: { success: boolean; data?: T; error?: { message: s
 export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: LearningPlanCreatePageProps) {
   const [formKey, setFormKey] = useState(0);
   const [draft, setDraft] = useState<LearningPlanDraftResponse>();
+  const [workEvent, setWorkEvent] = useState<AgentWorkStatusEvent>();
   const [flowState, setFlowState] = useState<LearningPlanCreateState>('editing');
   const [error, setError] = useState('');
 
   async function submitDraft(request: LearningPlanCreateDraftRequest) {
     setFlowState('generating');
     setError('');
+    setDraft(undefined);
+    setWorkEvent({ message: '开始生成学习计划' });
     try {
-      const nextDraft = apiData(await createLearningPlanDraft(request), '学习计划方案生成失败');
-      setDraft(nextDraft);
-      setFlowState(nextDraft.status === 'COLLECTING' ? 'collecting' : 'previewing');
+      await streamLearningPlanDraft(request, {
+        onEvent: handleDraftStreamEvent,
+      });
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : '学习计划方案生成失败');
+      setFlowState('editing');
+    }
+  }
+
+  function handleDraftStreamEvent(event: SseStreamEvent) {
+    if (event.eventName.startsWith('work_')) {
+      const nextWorkEvent = event.data as AgentWorkStatusEvent;
+      setWorkEvent(nextWorkEvent);
+      if (event.eventName === 'work_error') {
+        setError(nextWorkEvent.message || '学习计划方案生成失败');
+      }
+      return;
+    }
+    if (event.eventName === 'draft_ready') {
+      const nextDraft = event.data as LearningPlanDraftResponse;
+      setDraft(nextDraft);
+      setFlowState(nextDraft.status === 'COLLECTING' ? 'collecting' : 'previewing');
+      return;
+    }
+    if (event.eventName === 'draft_error') {
+      const draftError = event.data as LearningPlanDraftErrorEvent;
+      setError(draftError.message || '学习计划方案生成失败');
       setFlowState('editing');
     }
   }
@@ -89,6 +118,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
 
   function retryCreateDraft() {
     setDraft(undefined);
+    setWorkEvent(undefined);
     setError('');
     setFlowState('editing');
     setFormKey((current) => current + 1);
@@ -122,6 +152,9 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
         </>
       ) : (
         <article className="learning-panel create-plan-page-panel">
+          {flowState === 'generating' && (
+            <AgentWorkIndicator active event={workEvent} error={error} />
+          )}
           <LearningPlanCreateForm
             error={error}
             key={formKey}

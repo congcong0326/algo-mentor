@@ -1,6 +1,8 @@
 package org.congcong.algomentor.api.learningplan.config;
 
 import java.time.Clock;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.api.learningplan.repository.UnavailableLearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanAgentService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
@@ -9,6 +11,8 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftPromptBuilder;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +47,32 @@ public class LearningPlanConfiguration {
       LearningPlanDraftValidator validator,
       Clock learningPlanClock) {
     return new LearningPlanDraftService(draftRepository, planRepository, agentService, validator, learningPlanClock);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanDraftPromptBuilder learningPlanDraftPromptBuilder() {
+    return new LearningPlanDraftPromptBuilder();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanDraftStreamService learningPlanDraftStreamService(
+      LearningPlanDraftRepository draftRepository,
+      LearningPlanDraftValidator validator,
+      AgentLoopRunner agentLoopRunner,
+      LearningPlanDraftPromptBuilder promptBuilder,
+      ObjectMapper objectMapper,
+      LearningPlanProblemCatalog problemCatalog,
+      Clock learningPlanClock) {
+    return new LearningPlanDraftStreamService(
+        draftRepository,
+        validator,
+        agentLoopRunner,
+        promptBuilder,
+        objectMapper,
+        problemCatalog,
+        learningPlanClock);
   }
 
   @Bean

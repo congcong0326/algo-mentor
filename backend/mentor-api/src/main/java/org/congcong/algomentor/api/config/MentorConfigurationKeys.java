@@ -16,6 +16,11 @@ public final class MentorConfigurationKeys {
   public static final String AGENT_COMPACTION_PREFIX = "algo-mentor.agent.compaction";
 
   /**
+   * API SSE 连接配置前缀。
+   */
+  public static final String API_SSE_PREFIX = "algo-mentor.api.sse";
+
+  /**
    * OpenAI provider 配置前缀。
    */
   public static final String OPENAI_PREFIX = "algo-mentor.ai.openai";

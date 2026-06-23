@@ -24,6 +24,12 @@ public interface OpenAiResponsesClient {
         .timeout(properties.getTimeout())
         .maxRetries(properties.getMaxRetries())
         .build();
-    return new SdkOpenAiResponsesClient(client);
+    OpenAIClient streamingClient = OpenAIOkHttpClient.builder()
+        .apiKey(properties.getApiKey())
+        .baseUrl(properties.getBaseUrl().toString())
+        .timeout(properties.getStreamTimeout())
+        .maxRetries(properties.getMaxRetries())
+        .build();
+    return new SdkOpenAiResponsesClient(client, streamingClient);
   }
 }

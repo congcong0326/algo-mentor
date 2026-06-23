@@ -46,6 +46,11 @@ public final class ApiContractConstants {
   public static final String LEARNING_PLAN_DRAFTS_PATH = "/drafts";
 
   /**
+   * 学习计划草案流式创建路径。
+   */
+  public static final String LEARNING_PLAN_DRAFTS_STREAM_PATH = "/drafts/stream";
+
+  /**
    * 学习计划草案消息路径。
    */
   public static final String LEARNING_PLAN_DRAFT_MESSAGES_PATH = "/{draftId}/messages";

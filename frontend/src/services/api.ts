@@ -177,6 +177,37 @@ export async function createLearningPlanDraft(
   return response.json();
 }
 
+export interface StreamLearningPlanDraftOptions {
+  signal?: AbortSignal;
+  onOpen?: () => void;
+  onEvent: (event: SseStreamEvent) => void;
+}
+
+export async function streamLearningPlanDraft(
+  request: LearningPlanCreateDraftRequest,
+  options: StreamLearningPlanDraftOptions,
+): Promise<void> {
+  const response = await apiFetch('/api/learning-plans/drafts/stream', {
+    method: 'POST',
+    headers: {
+      Accept: 'text/event-stream, application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+    signal: options.signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan draft stream failed');
+  }
+  if (!response.body) {
+    throw new Error('Learning plan draft stream response does not include a readable body');
+  }
+
+  options.onOpen?.();
+  await readEventStream(response.body, options.onEvent);
+}
+
 export async function sendLearningPlanDraftMessage(
   draftId: number,
   request: LearningPlanMessageRequest,

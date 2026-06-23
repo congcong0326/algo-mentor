@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Flow;
+import java.util.concurrent.SubmissionPublisher;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockToken;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
@@ -27,6 +30,7 @@ import org.congcong.algomentor.ai.governance.model.AiRunContext;
 import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.ai.governance.model.AiRunStatus;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicy;
+import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.controller.AiGovernanceExceptionHandler;
 import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.auth.model.AuthUserStatus;
@@ -47,6 +51,9 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhase
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftEvent;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamEvent;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +63,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 @WebMvcTest(controllers = LearningPlanController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -82,6 +90,12 @@ class LearningPlanControllerTest {
 
   @MockBean
   private AiRunLifecycleService lifecycleService;
+
+  @MockBean
+  private LearningPlanDraftStreamService draftStreamService;
+
+  @MockBean
+  private ApiSseProperties sseProperties;
 
   @Test
   void createDraftUsesCurrentUserAndReturnsGeneratedDraft() throws Exception {
@@ -152,6 +166,50 @@ class LearningPlanControllerTest {
         .andExpect(jsonPath("$.data.assistantMessage").value("你每周可以投入几小时？"))
         .andExpect(jsonPath("$.data.missingFields[0]").value("weeklyHours"));
     verify(admissionService).admit(any(AiRunContext.class));
+    verify(lifecycleService).markCompleted(any(AiRunAdmission.class), any(), eq(null), eq(null));
+  }
+
+  @Test
+  void streamDraftReturnsSseAndUsesStreamingGovernance() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
+    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
+    when(sseProperties.learningPlanDraftTimeoutMillis()).thenReturn(360_000L);
+    when(draftStreamService.stream(eq(42L), any(), any(), any())).thenReturn(streamPublisher(new LearningPlanDraftResult(
+        100L,
+        LearningPlanDraftStatus.GENERATED,
+        "已生成学习计划草案。",
+        List.of(),
+        draftPlan())));
+
+    MvcResult result = mockMvc.perform(post("/api/learning-plans/drafts/stream")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .content("""
+                {
+                  "intent": "INTERVIEW_SPRINT",
+                  "goal": "准备 Java 后端算法面试",
+                  "durationWeeks": 4,
+                  "level": "INTERMEDIATE",
+                  "weeklyHours": 6,
+                  "programmingLanguage": "Java",
+                  "difficultyPreference": "MEDIUM",
+                  "interviewOriented": true,
+                  "topicPreferences": ["Array", "Hash Table"]
+                }
+                """))
+        .andReturn();
+
+    mockMvc.perform(asyncDispatch(result))
+        .andExpect(status().isOk())
+        .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
+            .string(org.hamcrest.Matchers.containsString("event:draft_ready")));
+
+    ArgumentCaptor<AiRunContext> governanceCaptor = ArgumentCaptor.forClass(AiRunContext.class);
+    verify(admissionService).admit(governanceCaptor.capture());
+    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().streaming()).isTrue();
+    verify(sseProperties).learningPlanDraftTimeoutMillis();
+    verify(lifecycleService).markRunning(any(AiRunAdmission.class), eq(null), eq(null));
     verify(lifecycleService).markCompleted(any(AiRunAdmission.class), any(), eq(null), eq(null));
   }
 
@@ -276,6 +334,15 @@ class LearningPlanControllerTest {
             AiGovernanceMetadataKeys.PURPOSE, context.purpose().name(),
             AiGovernanceMetadataKeys.SOURCE, context.source().name()),
         Instant.now());
+  }
+
+  private Flow.Publisher<LearningPlanDraftStreamEvent> streamPublisher(LearningPlanDraftResult result) {
+    return subscriber -> {
+      SubmissionPublisher<LearningPlanDraftStreamEvent> publisher = new SubmissionPublisher<>();
+      publisher.subscribe(subscriber);
+      publisher.submit(new LearningPlanDraftStreamEvent.Draft(new LearningPlanDraftEvent.DraftReady(result)));
+      publisher.close();
+    };
   }
 
   private LearningPlanDraftPlan draftPlan() {

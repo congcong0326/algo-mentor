@@ -21,12 +21,14 @@ class OpenAiLlmAutoConfigurationTest {
     contextRunner
         .withPropertyValues(
             "algo-mentor.ai.openai.model=gpt-test",
-            "algo-mentor.ai.openai.timeout=20s")
+            "algo-mentor.ai.openai.timeout=20s",
+            "algo-mentor.ai.openai.stream-timeout=2m")
         .run(context -> {
           OpenAiLlmProperties properties = context.getBean(OpenAiLlmProperties.class);
 
           assertThat(properties.getModel()).isEqualTo("gpt-test");
           assertThat(properties.getTimeout()).hasToString("PT20S");
+          assertThat(properties.getStreamTimeout()).hasToString("PT2M");
           assertThat(context).doesNotHaveBean(OpenAiResponsesClient.class);
           assertThat(context).doesNotHaveBean(OpenAiLlmProvider.class);
         });

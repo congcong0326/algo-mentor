@@ -198,7 +198,15 @@ export type SseEventName =
   | 'message_end'
   | 'heartbeat'
   | 'error'
-  | 'agent_error';
+  | 'agent_error'
+  | 'work_start'
+  | 'work_progress'
+  | 'work_tool_start'
+  | 'work_tool_end'
+  | 'work_done'
+  | 'work_error'
+  | 'draft_ready'
+  | 'draft_error';
 
 export interface AgentConversationStreamRequest {
   taskId?: number;
@@ -211,6 +219,22 @@ export const AGENT_RUN_IN_PROGRESS_CODE = 'AGENT_RUN_IN_PROGRESS';
 export interface SseStreamEvent {
   eventName: SseEventName;
   data: unknown;
+}
+
+export interface AgentWorkStatusEvent {
+  runId?: string;
+  scenario?: string;
+  message?: string;
+  preview?: string;
+  toolName?: string;
+  code?: string;
+  retryable?: boolean;
+}
+
+export interface LearningPlanDraftErrorEvent {
+  code?: string;
+  message?: string;
+  retryable?: boolean;
 }
 
 export interface AgentStreamStartData {

@@ -59,7 +59,7 @@ final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
           return;
         }
         submit(new LlmStreamEvent.Error(OpenAiLlmExceptionMapper.map(error, providerId, modelId)));
-        closeExceptionally(error);
+        close();
       }
     }, "openai-llm-stream");
     this.worker = worker;

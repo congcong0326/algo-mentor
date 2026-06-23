@@ -17,7 +17,11 @@ public record LearningPlanProblemDraft(
     tags = tags == null ? List.of() : List.copyOf(tags);
   }
 
-  static LearningPlanProblemDraft fromCandidate(LearningPlanProblemCandidate candidate, int sortOrder, String reason) {
+  public static LearningPlanProblemDraft fromCandidate(
+      LearningPlanProblemCandidate candidate,
+      int sortOrder,
+      String reason
+  ) {
     return new LearningPlanProblemDraft(
         candidate.slug(),
         candidate.frontendId(),

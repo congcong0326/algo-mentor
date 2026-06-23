@@ -16,6 +16,7 @@ import org.congcong.algomentor.ai.governance.model.AiRunContext;
 import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.ai.governance.model.AiRunStatus;
 import org.congcong.algomentor.ai.governance.model.AiUsage;
+import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanConfirmResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanCreateDraftRequest;
@@ -24,6 +25,8 @@ import org.congcong.algomentor.api.learningplan.model.LearningPlanDraftResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanMessageRequest;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanPageResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanResponseMapper;
+import org.congcong.algomentor.api.learningplan.service.LearningPlanDraftStreamSseMapper;
+import org.congcong.algomentor.api.learningplan.service.SseLearningPlanDraftStreamSubscriber;
 import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
@@ -31,8 +34,10 @@ import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +46,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequestMapping(ApiContractConstants.LEARNING_PLANS_BASE_PATH)
@@ -52,6 +58,9 @@ public class LearningPlanController {
   private final AiActorResolver actorResolver;
   private final ObjectProvider<AiRunAdmissionService> admissionServiceProvider;
   private final ObjectProvider<AiRunLifecycleService> lifecycleServiceProvider;
+  private final ObjectProvider<LearningPlanDraftStreamService> draftStreamServiceProvider;
+  private final LearningPlanDraftStreamSseMapper draftStreamSseMapper;
+  private final ApiSseProperties sseProperties;
 
   public LearningPlanController(
       LearningPlanDraftService draftService,
@@ -59,13 +68,18 @@ public class LearningPlanController {
       CurrentUserIdProvider currentUserIdProvider,
       AiActorResolver actorResolver,
       ObjectProvider<AiRunAdmissionService> admissionServiceProvider,
-      ObjectProvider<AiRunLifecycleService> lifecycleServiceProvider) {
+      ObjectProvider<AiRunLifecycleService> lifecycleServiceProvider,
+      ObjectProvider<LearningPlanDraftStreamService> draftStreamServiceProvider,
+      ApiSseProperties sseProperties) {
     this.draftService = draftService;
     this.planService = planService;
     this.currentUserIdProvider = currentUserIdProvider;
     this.actorResolver = actorResolver;
     this.admissionServiceProvider = admissionServiceProvider;
     this.lifecycleServiceProvider = lifecycleServiceProvider;
+    this.draftStreamServiceProvider = draftStreamServiceProvider;
+    this.draftStreamSseMapper = new LearningPlanDraftStreamSseMapper();
+    this.sseProperties = sseProperties;
   }
 
   @PostMapping(ApiContractConstants.LEARNING_PLAN_DRAFTS_PATH)
@@ -75,6 +89,45 @@ public class LearningPlanController {
         UUID.randomUUID().toString(),
         requestSize(request),
         () -> draftService.createDraft(userId, request.toCommand()));
+  }
+
+  @PostMapping(value = ApiContractConstants.LEARNING_PLAN_DRAFTS_STREAM_PATH,
+      produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public SseEmitter streamDraft(@RequestBody LearningPlanCreateDraftRequest request) {
+    long userId = requireCurrentUserId();
+    String runId = UUID.randomUUID().toString();
+    AiActor actor = actorResolver.currentActor();
+    AiRunAdmission admission = requiredAdmissionService().admit(new AiRunContext(
+        runId,
+        actor,
+        AiPurpose.LEARNING_PLAN,
+        AiRunSource.LEARNING_PLAN_DRAFT,
+        runId,
+        requestSize(request),
+        true,
+        Map.of(),
+        Instant.now()));
+    AiRunLifecycleService lifecycleService = requiredLifecycleService();
+    lifecycleService.markRunning(admission, null, null);
+
+    SseEmitter emitter = new SseEmitter(sseProperties.learningPlanDraftTimeoutMillis());
+    SseLearningPlanDraftStreamSubscriber subscriber = new SseLearningPlanDraftStreamSubscriber(
+        emitter,
+        draftStreamSseMapper,
+        lifecycleService,
+        admission);
+    emitter.onCompletion(subscriber::cancel);
+    emitter.onTimeout(subscriber::cancel);
+    emitter.onError(ignored -> subscriber.cancel());
+
+    try {
+      requiredDraftStreamService()
+          .stream(userId, request.toCommand(), runId, admission.metadata())
+          .subscribe(subscriber);
+    } catch (RuntimeException exception) {
+      subscriber.onError(exception);
+    }
+    return emitter;
   }
 
   @PostMapping(ApiContractConstants.LEARNING_PLAN_DRAFTS_PATH
@@ -176,6 +229,12 @@ public class LearningPlanController {
 
   private AiRunLifecycleService requiredLifecycleService() {
     return lifecycleServiceProvider.getIfAvailable(() -> {
+      throw unavailableGovernance();
+    });
+  }
+
+  private LearningPlanDraftStreamService requiredDraftStreamService() {
+    return draftStreamServiceProvider.getIfAvailable(() -> {
       throw unavailableGovernance();
     });
   }

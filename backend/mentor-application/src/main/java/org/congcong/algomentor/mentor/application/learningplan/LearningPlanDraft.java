@@ -39,7 +39,7 @@ public record LearningPlanDraft(
         updatedAt);
   }
 
-  LearningPlanDraft withState(
+  public LearningPlanDraft withState(
       LearningPlanDraftStatus nextStatus,
       List<String> nextMissingFields,
       String nextAssistantMessage,

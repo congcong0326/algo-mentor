@@ -10,9 +10,15 @@ import java.util.Objects;
 final class SdkOpenAiResponsesClient implements OpenAiResponsesClient {
 
   private final OpenAIClient client;
+  private final OpenAIClient streamingClient;
 
   SdkOpenAiResponsesClient(OpenAIClient client) {
+    this(client, client);
+  }
+
+  SdkOpenAiResponsesClient(OpenAIClient client, OpenAIClient streamingClient) {
     this.client = Objects.requireNonNull(client, "client must not be null");
+    this.streamingClient = Objects.requireNonNull(streamingClient, "streamingClient must not be null");
   }
 
   @Override
@@ -22,6 +28,6 @@ final class SdkOpenAiResponsesClient implements OpenAiResponsesClient {
 
   @Override
   public StreamResponse<ResponseStreamEvent> createStreaming(ResponseCreateParams params) {
-    return client.responses().createStreaming(params);
+    return streamingClient.responses().createStreaming(params);
   }
 }

@@ -41,7 +41,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties({LlmGatewayProperties.class, AgentCompactionProperties.class})
+@EnableConfigurationProperties({LlmGatewayProperties.class, AgentCompactionProperties.class, ApiSseProperties.class})
 public class MentorAiConfiguration {
 
   @Bean

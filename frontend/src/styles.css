@@ -755,6 +755,51 @@ a {
   line-height: 1.6;
 }
 
+.agent-work-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  margin-bottom: 16px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.agent-work-indicator svg {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+}
+
+.agent-work-indicator.done {
+  border-color: rgb(22 163 74 / 24%);
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.agent-work-indicator.error {
+  border-color: rgb(220 38 38 / 24%);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.spin-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .event-row {
   display: grid;
   gap: 8px;

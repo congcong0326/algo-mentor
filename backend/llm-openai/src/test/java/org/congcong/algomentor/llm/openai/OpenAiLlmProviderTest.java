@@ -5,6 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.openai.core.JsonField;
+import com.openai.core.http.Headers;
+import com.openai.errors.SseException;
+import com.openai.models.ErrorObject;
 import com.openai.core.http.StreamResponse;
 import com.openai.models.ResponseFormatJsonObject;
 import com.openai.models.responses.FunctionTool;
@@ -239,7 +242,39 @@ class OpenAiLlmProviderTest {
     provider.stream(textRequest()).subscribe(subscriber);
 
     assertThat(subscriber.cancelled.await(2, TimeUnit.SECONDS)).isTrue();
-    assertThat(client.lastStreamResponse.closed).isTrue();
+    assertThat(((ListStreamResponse) client.lastStreamResponse).closed).isTrue();
+  }
+
+  @Test
+  void mapsSseOverloadFailureToRetryableStreamError() throws Exception {
+    FakeResponsesClient client = new FakeResponsesClient(
+        response("unused"),
+        new ThrowingStreamResponse(SseException.builder()
+            .statusCode(200)
+            .headers(Headers.builder().build())
+            .error(ErrorObject.builder()
+                .message("Our servers are currently overloaded. Please try again later.")
+                .type("server_error")
+                .code("overloaded")
+                .param(Optional.empty())
+                .build())
+            .build()));
+    OpenAiLlmProvider provider = new OpenAiLlmProvider(enabledProperties(), client);
+    TestSubscriber subscriber = new TestSubscriber();
+
+    provider.stream(textRequest()).subscribe(subscriber);
+
+    assertThat(subscriber.finished.await(2, TimeUnit.SECONDS)).isTrue();
+    assertThat(subscriber.error).isNull();
+    assertThat(subscriber.events)
+        .filteredOn(LlmStreamEvent.Error.class::isInstance)
+        .singleElement()
+        .satisfies(event -> {
+          LlmException error = ((LlmStreamEvent.Error) event).error();
+          assertThat(error.code()).isEqualTo(LlmErrorCode.PROVIDER_UNAVAILABLE);
+          assertThat(error.retryable()).isTrue();
+          assertThat(error.getMessage()).contains("currently overloaded");
+        });
   }
 
   private static LlmCompletionRequest textRequest() {
@@ -318,8 +353,9 @@ class OpenAiLlmProviderTest {
   private static final class FakeResponsesClient implements OpenAiResponsesClient {
     private final Response response;
     private final List<ResponseStreamEvent> streamEvents;
+    private final StreamResponse<ResponseStreamEvent> streamResponse;
     private ResponseCreateParams lastParams;
-    private ListStreamResponse lastStreamResponse;
+    private StreamResponse<ResponseStreamEvent> lastStreamResponse;
 
     private FakeResponsesClient(Response response) {
       this(response, List.of());
@@ -328,6 +364,13 @@ class OpenAiLlmProviderTest {
     private FakeResponsesClient(Response response, List<ResponseStreamEvent> streamEvents) {
       this.response = response;
       this.streamEvents = streamEvents;
+      this.streamResponse = null;
+    }
+
+    private FakeResponsesClient(Response response, StreamResponse<ResponseStreamEvent> streamResponse) {
+      this.response = response;
+      this.streamEvents = List.of();
+      this.streamResponse = streamResponse;
     }
 
     @Override
@@ -339,7 +382,7 @@ class OpenAiLlmProviderTest {
     @Override
     public StreamResponse<ResponseStreamEvent> createStreaming(ResponseCreateParams params) {
       this.lastParams = params;
-      this.lastStreamResponse = new ListStreamResponse(streamEvents);
+      this.lastStreamResponse = streamResponse == null ? new ListStreamResponse(streamEvents) : streamResponse;
       return lastStreamResponse;
     }
   }
@@ -363,9 +406,29 @@ class OpenAiLlmProviderTest {
     }
   }
 
+  private static final class ThrowingStreamResponse implements StreamResponse<ResponseStreamEvent> {
+    private final RuntimeException error;
+
+    private ThrowingStreamResponse(RuntimeException error) {
+      this.error = error;
+    }
+
+    @Override
+    public java.util.stream.Stream<ResponseStreamEvent> stream() {
+      return java.util.stream.Stream.generate(() -> {
+        throw error;
+      });
+    }
+
+    @Override
+    public void close() {
+    }
+  }
+
   private static final class TestSubscriber implements java.util.concurrent.Flow.Subscriber<LlmStreamEvent> {
     private final List<LlmStreamEvent> events = new java.util.concurrent.CopyOnWriteArrayList<>();
     private final CountDownLatch finished = new CountDownLatch(1);
+    private volatile Throwable error;
 
     @Override
     public void onSubscribe(java.util.concurrent.Flow.Subscription subscription) {
@@ -382,6 +445,7 @@ class OpenAiLlmProviderTest {
 
     @Override
     public void onError(Throwable throwable) {
+      error = throwable;
       finished.countDown();
     }
 

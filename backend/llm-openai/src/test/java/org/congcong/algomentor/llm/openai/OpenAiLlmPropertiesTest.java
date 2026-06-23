@@ -21,6 +21,7 @@ class OpenAiLlmPropertiesTest {
     assertThat(properties.getBaseUrl()).isEqualTo(URI.create("https://api.openai.com/v1"));
     assertThat(properties.getModel()).isEqualTo("gpt-5.2");
     assertThat(properties.getTimeout()).isEqualTo(Duration.ofSeconds(30));
+    assertThat(properties.getStreamTimeout()).isEqualTo(Duration.ofMinutes(5));
     assertThat(properties.getMaxRetries()).isEqualTo(2);
     properties.validate();
   }
@@ -45,6 +46,12 @@ class OpenAiLlmPropertiesTest {
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("OpenAI timeout must be positive");
 
+    OpenAiLlmProperties badStreamTimeout = new OpenAiLlmProperties();
+    badStreamTimeout.setStreamTimeout(Duration.ZERO);
+    assertThatThrownBy(badStreamTimeout::validate)
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("OpenAI stream timeout must be positive");
+
     OpenAiLlmProperties negativeRetries = new OpenAiLlmProperties();
     negativeRetries.setMaxRetries(-1);
     assertThatThrownBy(negativeRetries::validate)
@@ -62,6 +69,7 @@ class OpenAiLlmPropertiesTest {
             "algo-mentor.ai.openai.base-url=https://example.test/v1",
             "algo-mentor.ai.openai.model=gpt-test",
             "algo-mentor.ai.openai.timeout=45s",
+            "algo-mentor.ai.openai.stream-timeout=4m",
             "algo-mentor.ai.openai.max-retries=3")
         .run(context -> {
           OpenAiLlmProperties properties = context.getBean(OpenAiLlmProperties.class);
@@ -71,6 +79,7 @@ class OpenAiLlmPropertiesTest {
           assertThat(properties.getBaseUrl()).hasToString("https://example.test/v1");
           assertThat(properties.getModel()).isEqualTo("gpt-test");
           assertThat(properties.getTimeout()).isEqualTo(Duration.ofSeconds(45));
+          assertThat(properties.getStreamTimeout()).isEqualTo(Duration.ofMinutes(4));
           assertThat(properties.getMaxRetries()).isEqualTo(3);
         });
   }

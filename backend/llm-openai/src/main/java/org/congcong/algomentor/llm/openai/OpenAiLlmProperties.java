@@ -15,6 +15,7 @@ public class OpenAiLlmProperties {
   private URI baseUrl = URI.create("https://api.openai.com/v1");
   private String model = "gpt-5.2";
   private Duration timeout = Duration.ofSeconds(30);
+  private Duration streamTimeout = Duration.ofMinutes(5);
   private int maxRetries = 2;
 
   public boolean isEnabled() {
@@ -57,6 +58,14 @@ public class OpenAiLlmProperties {
     this.timeout = timeout;
   }
 
+  public Duration getStreamTimeout() {
+    return streamTimeout;
+  }
+
+  public void setStreamTimeout(Duration streamTimeout) {
+    this.streamTimeout = streamTimeout;
+  }
+
   public int getMaxRetries() {
     return maxRetries;
   }
@@ -74,6 +83,9 @@ public class OpenAiLlmProperties {
     }
     if (timeout == null || timeout.isZero() || timeout.isNegative()) {
       throw new IllegalArgumentException("OpenAI timeout must be positive");
+    }
+    if (streamTimeout == null || streamTimeout.isZero() || streamTimeout.isNegative()) {
+      throw new IllegalArgumentException("OpenAI stream timeout must be positive");
     }
     if (maxRetries < 0) {
       throw new IllegalArgumentException("OpenAI max retries must not be negative");
