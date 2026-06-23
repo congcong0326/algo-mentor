@@ -97,6 +97,36 @@ describe('LearningPlanDraftPanel', () => {
     expect(onConfirm).toHaveBeenCalled();
   });
 
+  it('allows editing the goal summary and asks for regeneration', () => {
+    const onRegenerate = vi.fn();
+    const draft: LearningPlanDraftResponse = {
+      draftId: 100,
+      status: 'GENERATED',
+      assistantMessage: '已生成学习计划草案。',
+      missingFields: [],
+      draftPlan,
+    };
+
+    render(
+      <LearningPlanDraftPanel
+        draft={draft}
+        loading={false}
+        onConfirm={vi.fn()}
+        onRegenerateGoal={onRegenerate}
+        onReturnToWizard={vi.fn()}
+        onSendFollowUp={vi.fn(() => Promise.resolve(true))}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '编辑目标摘要' }));
+    fireEvent.change(screen.getByRole('textbox', { name: '目标摘要' }), {
+      target: { value: '改成动态规划冲刺目标。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '按新目标重新生成' }));
+
+    expect(onRegenerate).toHaveBeenCalledWith('改成动态规划冲刺目标。');
+  });
+
   it('does not allow confirmation for failed drafts even when a stale plan exists', () => {
     render(
       <LearningPlanDraftPanel

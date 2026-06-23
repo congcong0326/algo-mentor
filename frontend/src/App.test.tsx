@@ -94,10 +94,10 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
       }
-      if (url === '/api/learning-plans') {
+      if (isLearningPlanListUrl(url)) {
         return Promise.resolve(jsonResponse({
           success: true,
-          data: [],
+          data: learningPlanPage([]),
           timestamp: '2026-06-22T00:00:00Z',
         }));
       }
@@ -141,7 +141,7 @@ describe('App', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '计划' }));
 
-    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '计划' })).toHaveAttribute('aria-pressed', 'true');
     expect(window.location.pathname).toBe('/learning-plans');
 
@@ -159,7 +159,7 @@ describe('App', () => {
       'aria-pressed',
       'true',
     ));
-    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
   });
 
   it('renders the conversation stream test client shell', async () => {
@@ -280,10 +280,10 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
       }
-      if (url === '/api/learning-plans') {
+      if (isLearningPlanListUrl(url)) {
         return Promise.resolve(jsonResponse({
           success: true,
-          data: [],
+          data: learningPlanPage([]),
           timestamp: '2026-06-22T00:00:00Z',
         }));
       }
@@ -297,7 +297,7 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
     expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
 
@@ -319,8 +319,12 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
       }
-      if (url === '/api/learning-plans') {
-        return Promise.resolve(jsonResponse({ success: true, data: [], timestamp: '2026-06-22T00:00:00Z' }));
+      if (isLearningPlanListUrl(url)) {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: learningPlanPage([]),
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
       }
       if (url === '/api/agent/conversations/stream') {
         expect(init?.credentials).toBe('same-origin');
@@ -418,8 +422,12 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
       }
-      if (url === '/api/learning-plans') {
-        return Promise.resolve(jsonResponse({ success: true, data: [], timestamp: '2026-06-22T00:00:00Z' }));
+      if (isLearningPlanListUrl(url)) {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: learningPlanPage([]),
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
       }
       capturedSignal = init?.signal ?? undefined;
       return new Promise<Response>(() => {});
@@ -444,8 +452,12 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
       }
-      if (url === '/api/learning-plans') {
-        return Promise.resolve(jsonResponse({ success: true, data: [], timestamp: '2026-06-22T00:00:00Z' }));
+      if (isLearningPlanListUrl(url)) {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: learningPlanPage([]),
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
       }
       if (url === '/api/auth/logout') {
         return new Promise<Response>((resolve) => {
@@ -480,8 +492,12 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
       }
-      if (url === '/api/learning-plans') {
-        return Promise.resolve(jsonResponse({ success: true, data: [], timestamp: '2026-06-22T00:00:00Z' }));
+      if (isLearningPlanListUrl(url)) {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: learningPlanPage([]),
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
       }
       if (url === '/api/agent/conversations/stream') {
         capturedSignal = init?.signal ?? undefined;
@@ -501,7 +517,7 @@ describe('App', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '计划' }));
 
-    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
     expect(capturedSignal?.aborted).toBe(true);
 
     fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
@@ -528,7 +544,7 @@ describe('App', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '计划' }));
 
-    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
 
@@ -542,8 +558,12 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
       }
-      if (url === '/api/learning-plans') {
-        return Promise.resolve(jsonResponse({ success: true, data: [], timestamp: '2026-06-22T00:00:00Z' }));
+      if (isLearningPlanListUrl(url)) {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: learningPlanPage([]),
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
       }
       return Promise.resolve(jsonResponse({
         success: false,
@@ -629,24 +649,20 @@ describe('App', () => {
     expect(await screen.findByText('network failed')).toBeInTheDocument();
   });
 
-  it('creates learning plan draft through wizard, answers clarification, confirms, and shows detail', async () => {
+  it('creates learning plan draft through modal, answers clarification, confirms, and shows detail', async () => {
     const fetchMock = mockLearningPlanFetch();
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
+    expect(await screen.findByText('当前共有 1 个计划')).toBeInTheDocument();
     expect(await screen.findAllByText('四周 Java 算法面试冲刺计划')).not.toHaveLength(0);
 
     fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
-    fireEvent.change(screen.getByRole('textbox', { name: '学习目标' }), {
-      target: { value: '准备 Java 后端算法面试' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: '下一步' }));
-    fireEvent.click(screen.getByRole('button', { name: '下一步' }));
-    fireEvent.click(screen.getByRole('button', { name: '下一步' }));
-    fireEvent.click(screen.getByRole('button', { name: '生成草案' }));
+    expect(screen.queryByRole('textbox', { name: '学习目标' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成计划草案' }));
 
     expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
@@ -673,7 +689,7 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: '确认保存' }));
 
     expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
-    expect(screen.getByText('ACTIVE')).toBeInTheDocument();
+    expect(screen.getAllByText('ACTIVE')).not.toHaveLength(0);
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/learning-plans/drafts/100/confirm',
       expect.objectContaining({
@@ -712,46 +728,36 @@ describe('App', () => {
     expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/messages');
   });
 
-  it('can return to the populated wizard when draft generation expires', async () => {
+  it('keeps the create modal open with an error when draft generation fails', async () => {
     vi.stubGlobal('fetch', mockExpiredLearningPlanDraftFetch());
     window.history.replaceState({}, '', '/learning-plans');
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
-    fireEvent.change(screen.getByRole('textbox', { name: '学习目标' }), {
-      target: { value: '准备 Java 后端算法面试' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: '下一步' }));
-    fireEvent.click(screen.getByRole('button', { name: '下一步' }));
-    fireEvent.click(screen.getByRole('button', { name: '下一步' }));
-    fireEvent.click(screen.getByRole('button', { name: '生成草案' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成计划草案' }));
 
-    expect(await screen.findByText('草案生成失败或已过期，请返回向导调整后重新生成。')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: '返回向导' }));
-
-    expect(await screen.findByRole('heading', { name: '目标' })).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: '学习目标' })).toHaveValue('准备 Java 后端算法面试');
+    expect(await screen.findByRole('dialog', { name: '新建学习计划' })).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('草案已过期，请调整问卷后重试。');
   });
 
-  it('restores the previously selected plan when wizard creation is cancelled', async () => {
-    vi.stubGlobal('fetch', mockMultipleLearningPlanFetch());
+  it('deletes a learning plan and refreshes the current page', async () => {
+    const fetchMock = mockLearningPlanDeleteFetch();
+    vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /六周动态规划突破计划/ }));
+    expect(await screen.findAllByText('四周 Java 算法面试冲刺计划')).not.toHaveLength(0);
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    fireEvent.click(screen.getByRole('button', { name: '删除 四周 Java 算法面试冲刺计划' }));
 
-    expect(await screen.findByRole('heading', { name: '六周动态规划突破计划' })).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
-    expect(await screen.findByRole('heading', { name: '目标' })).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: '取消' }));
-
-    expect(await screen.findByRole('heading', { name: '六周动态规划突破计划' })).toBeInTheDocument();
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plans/900',
+      expect.objectContaining({ method: 'DELETE' }),
+    ));
+    expectCsrfHeader(fetchMock, '/api/learning-plans/900', 'DELETE');
   });
 
   it('clears confirmed draft preview when refresh fails after confirmation', async () => {
@@ -780,7 +786,7 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
     expect(document.querySelectorAll('h1')).toHaveLength(0);
     expect(screen.getAllByRole('button', { name: '新建计划' })).toHaveLength(1);
   });
@@ -878,10 +884,10 @@ function mockAuthenticatedAppFetch() {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
     }
-    if (url === '/api/learning-plans') {
+    if (isLearningPlanListUrl(url)) {
       return Promise.resolve(jsonResponse({
         success: true,
-        data: [],
+        data: learningPlanPage([]),
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
@@ -903,10 +909,10 @@ function mockLearningPlanAndProblemFetch() {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
     }
-    if (url === '/api/learning-plans') {
+    if (isLearningPlanListUrl(url)) {
       return Promise.resolve(jsonResponse({
         success: true,
-        data: [],
+        data: learningPlanPage([]),
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
@@ -955,20 +961,10 @@ function mockLearningPlanFetch() {
       return Promise.resolve(authenticatedUserResponse());
     }
 
-    if (url === '/api/learning-plans' && (!init || init.method === undefined)) {
+    if (isLearningPlanListUrl(url) && (!init || init.method === undefined)) {
       return Promise.resolve(jsonResponse({
         success: true,
-        data: [{
-          id: 900,
-          title: '四周 Java 算法面试冲刺计划',
-          intent: 'INTERVIEW_SPRINT',
-          goal: '准备 Java 后端算法面试',
-          durationWeeks: 4,
-          level: 'INTERMEDIATE',
-          weeklyHours: 6,
-          status: 'ACTIVE',
-          createdAt: '2026-06-22T00:00:00Z',
-        }],
+        data: learningPlanPage([learningPlanSummary()]),
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
@@ -1032,10 +1028,10 @@ function mockLearningPlanFollowUpFailureFetch() {
       return Promise.resolve(authenticatedUserResponse());
     }
 
-    if (url === '/api/learning-plans' && (!init || init.method === undefined)) {
+    if (isLearningPlanListUrl(url) && (!init || init.method === undefined)) {
       return Promise.resolve(jsonResponse({
         success: true,
-        data: [learningPlanSummary()],
+        data: learningPlanPage([learningPlanSummary()]),
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
@@ -1074,10 +1070,10 @@ function mockExpiredLearningPlanDraftFetch() {
       return Promise.resolve(authenticatedUserResponse());
     }
 
-    if (url === '/api/learning-plans' && (!init || init.method === undefined)) {
+    if (isLearningPlanListUrl(url) && (!init || init.method === undefined)) {
       return Promise.resolve(jsonResponse({
         success: true,
-        data: [learningPlanSummary()],
+        data: learningPlanPage([learningPlanSummary()]),
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
@@ -1092,14 +1088,8 @@ function mockExpiredLearningPlanDraftFetch() {
 
     if (url === '/api/learning-plans/drafts') {
       return Promise.resolve(jsonResponse({
-        success: true,
-        data: {
-          draftId: 100,
-          status: 'EXPIRED',
-          assistantMessage: '草案已过期。',
-          missingFields: [],
-          draftPlan: null,
-        },
+        success: false,
+        error: { code: 'DRAFT_EXPIRED', message: '草案已过期，请调整问卷后重试。' },
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
@@ -1108,49 +1098,35 @@ function mockExpiredLearningPlanDraftFetch() {
   });
 }
 
-function mockMultipleLearningPlanFetch() {
-  return vi.fn((url: string) => {
+function mockLearningPlanDeleteFetch() {
+  let deleted = false;
+
+  return vi.fn((url: string, init?: RequestInit) => {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
     }
 
-    if (url === '/api/learning-plans') {
+    if (isLearningPlanListUrl(url)) {
       return Promise.resolve(jsonResponse({
         success: true,
-        data: [
-          learningPlanSummary(),
-          learningPlanSummary({
-            id: 901,
-            title: '六周动态规划突破计划',
-            goal: '系统掌握动态规划',
-            durationWeeks: 6,
-            weeklyHours: 8,
-          }),
-        ],
+        data: learningPlanPage(deleted ? [] : [learningPlanSummary()]),
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
 
     if (url === '/api/learning-plans/900') {
+      if (init?.method === 'DELETE') {
+        deleted = true;
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: null,
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
+      }
+
       return Promise.resolve(jsonResponse({
         success: true,
         data: learningPlanDetail(),
-        timestamp: '2026-06-22T00:00:00Z',
-      }));
-    }
-
-    if (url === '/api/learning-plans/901') {
-      return Promise.resolve(jsonResponse({
-        success: true,
-        data: learningPlanDetail({
-          id: 901,
-          title: '六周动态规划突破计划',
-          summary: '围绕动态规划建立状态设计能力。',
-          goal: '系统掌握动态规划',
-          durationWeeks: 6,
-          weeklyHours: 8,
-          topicPreferences: ['Dynamic Programming'],
-        }),
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
@@ -1168,7 +1144,7 @@ function mockLearningPlanConfirmRefreshFailureFetch() {
       return Promise.resolve(authenticatedUserResponse());
     }
 
-    if (url === '/api/learning-plans' && (!init || init.method === undefined)) {
+    if (isLearningPlanListUrl(url) && (!init || init.method === undefined)) {
       if (confirmed) {
         return Promise.resolve(jsonResponse({
           success: false,
@@ -1179,7 +1155,7 @@ function mockLearningPlanConfirmRefreshFailureFetch() {
 
       return Promise.resolve(jsonResponse({
         success: true,
-        data: [learningPlanSummary()],
+        data: learningPlanPage([learningPlanSummary()]),
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
@@ -1231,10 +1207,10 @@ function mockStreamFetch(chunks: string[]) {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
     }
-    if (url === '/api/learning-plans') {
+    if (isLearningPlanListUrl(url)) {
       return Promise.resolve(jsonResponse({
         success: true,
-        data: [],
+        data: learningPlanPage([]),
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
@@ -1242,23 +1218,23 @@ function mockStreamFetch(chunks: string[]) {
   });
 }
 
-function expectCsrfHeader(fetchMock: ReturnType<typeof vi.fn>, url: string) {
-  const call = fetchMock.mock.calls.find(([calledUrl]) => calledUrl === url);
+function expectCsrfHeader(fetchMock: ReturnType<typeof vi.fn>, url: string, method?: string) {
+  const call = fetchMock.mock.calls.find(([calledUrl, init]) => (
+    calledUrl === url && (!method || (init as RequestInit | undefined)?.method === method)
+  ));
   expect(call).toBeDefined();
   const [, init] = call as [string, RequestInit];
   expect(new Headers(init.headers).get('X-XSRF-TOKEN')).toBe('csrf-token');
 }
 
+function isLearningPlanListUrl(url: string): boolean {
+  return url === '/api/learning-plans' || url.startsWith('/api/learning-plans?');
+}
+
 async function createCollectingLearningPlanDraft() {
-  expect(await screen.findByRole('heading', { name: '正式计划' })).toBeInTheDocument();
+  expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
-  fireEvent.change(screen.getByRole('textbox', { name: '学习目标' }), {
-    target: { value: '准备 Java 后端算法面试' },
-  });
-  fireEvent.click(screen.getByRole('button', { name: '下一步' }));
-  fireEvent.click(screen.getByRole('button', { name: '下一步' }));
-  fireEvent.click(screen.getByRole('button', { name: '下一步' }));
-  fireEvent.click(screen.getByRole('button', { name: '生成草案' }));
+  fireEvent.click(screen.getByRole('button', { name: '生成计划草案' }));
 
   expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();
 }
@@ -1287,6 +1263,28 @@ function learningPlanSummary(overrides: Partial<ReturnType<typeof baseLearningPl
   return {
     ...baseLearningPlanSummary(),
     ...overrides,
+  };
+}
+
+function learningPlanPage(
+  items = [learningPlanSummary()],
+  overrides: Partial<ReturnType<typeof baseLearningPlanPage>> = {},
+) {
+  return {
+    ...baseLearningPlanPage(items),
+    ...overrides,
+  };
+}
+
+function baseLearningPlanPage(items: ReturnType<typeof learningPlanSummary>[]) {
+  return {
+    items,
+    total: items.length,
+    page: 1,
+    pageSize: 10,
+    activeCount: items.filter((item) => item.status === 'ACTIVE').length,
+    archivedCount: items.filter((item) => item.status === 'ARCHIVED').length,
+    latestCreatedAt: items[0]?.createdAt ?? null,
   };
 }
 
