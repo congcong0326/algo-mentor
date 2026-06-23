@@ -75,6 +75,25 @@ describe('LearningPlanCreateModal', () => {
     opener.remove();
   });
 
+  it('restores focus when the parent closes the modal', () => {
+    const opener = document.createElement('button');
+    opener.textContent = '打开计划弹窗';
+    document.body.appendChild(opener);
+    opener.focus();
+
+    const { rerender } = render(
+      <LearningPlanCreateModal loading={false} open onClose={vi.fn()} onSubmit={vi.fn()} />,
+    );
+
+    expect(screen.getByRole('button', { name: '关闭' })).toHaveFocus();
+
+    rerender(<LearningPlanCreateModal loading={false} open={false} onClose={vi.fn()} onSubmit={vi.fn()} />);
+
+    expect(opener).toHaveFocus();
+
+    opener.remove();
+  });
+
   it('wraps tab focus within the dialog', () => {
     render(<LearningPlanCreateModal loading={false} open onClose={vi.fn()} onSubmit={vi.fn()} />);
 

@@ -60,6 +60,7 @@ export default function LearningPlanCreateModal({
   const dialogRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
+  const wasOpenRef = useRef(false);
 
   function resetForm() {
     setIntent(DEFAULT_INTENT);
@@ -88,14 +89,36 @@ export default function LearningPlanCreateModal({
     (firstElement ?? dialogRef.current)?.focus();
   }
 
+  function restorePreviousFocus() {
+    const previous = previouslyFocusedElementRef.current;
+
+    if (previous?.isConnected) {
+      previous.focus();
+    }
+    previouslyFocusedElementRef.current = null;
+  }
+
   useEffect(() => {
-    if (open) {
+    if (open && !wasOpenRef.current) {
       previouslyFocusedElementRef.current = document.activeElement instanceof HTMLElement
         ? document.activeElement
         : null;
       resetForm();
       focusInitialControl();
     }
+
+    if (!open && wasOpenRef.current) {
+      restorePreviousFocus();
+    }
+
+    wasOpenRef.current = open;
+
+    return () => {
+      if (wasOpenRef.current) {
+        restorePreviousFocus();
+        wasOpenRef.current = false;
+      }
+    };
   }, [open]);
 
   const numericValid = Number.isInteger(durationWeeks) && durationWeeks > 0
@@ -129,15 +152,6 @@ export default function LearningPlanCreateModal({
 
   if (!open) {
     return null;
-  }
-
-  function restorePreviousFocus() {
-    const previous = previouslyFocusedElementRef.current;
-
-    if (previous?.isConnected) {
-      previous.focus();
-    }
-    previouslyFocusedElementRef.current = null;
   }
 
   function close() {
