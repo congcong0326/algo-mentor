@@ -43,4 +43,19 @@ describe('LearningPlanCreateModal', () => {
     expect(screen.getByText('专项突破需要至少选择一个主题。')).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
+
+  it('confirms before closing after changing only the programming language', () => {
+    const onClose = vi.fn();
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+
+    render(<LearningPlanCreateModal loading={false} open onClose={onClose} onSubmit={vi.fn()} />);
+
+    fireEvent.change(screen.getByRole('combobox', { name: '编程语言' }), { target: { value: 'Python3' } });
+    fireEvent.click(screen.getByRole('button', { name: '关闭' }));
+
+    expect(confirm).toHaveBeenCalledWith('放弃当前填写的计划问卷？');
+    expect(onClose).not.toHaveBeenCalled();
+
+    confirm.mockRestore();
+  });
 });

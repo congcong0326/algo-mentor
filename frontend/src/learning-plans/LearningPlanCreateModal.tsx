@@ -51,8 +51,24 @@ export default function LearningPlanCreateModal({
   const difficultyPreference: LearningPlanDifficultyPreference = selectedDifficulty.preference;
 
   const hasUnsavedInput = useMemo(
-    () => additionalThoughts.trim().length > 0 || topicPreferences.length > 0 || durationWeeks !== 4 || weeklyHours !== 6,
-    [additionalThoughts, durationWeeks, topicPreferences.length, weeklyHours],
+    () => intent !== 'INTERVIEW_SPRINT'
+      || durationWeeks !== 4
+      || weeklyHours !== 6
+      || level !== 'INTERMEDIATE'
+      || programmingLanguage !== 'Java'
+      || difficultyLevel !== 'BALANCED'
+      || topicPreferences.length > 0
+      || additionalThoughts.trim().length > 0,
+    [
+      additionalThoughts,
+      difficultyLevel,
+      durationWeeks,
+      intent,
+      level,
+      programmingLanguage,
+      topicPreferences.length,
+      weeklyHours,
+    ],
   );
 
   if (!open) {
