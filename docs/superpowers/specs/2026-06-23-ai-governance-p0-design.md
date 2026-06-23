@@ -25,7 +25,8 @@
 - 完整 prompt/response 可以留存用于排查，但 API key、Authorization、OAuth token、数据库密码等凭据必须强制脱敏。
 - 只有管理员可以查看完整 AI 会话和 trace 内容。
 - 管理员读取完整 trace 需要写访问审计。
-- 配额和 active run 状态 P0 必须落 PostgreSQL，服务重启不丢状态。
+- 每日用量 P0 必须落 PostgreSQL，服务重启不丢计数。
+- active run 并发控制 P0 先复用现有本地内存锁，不引入分布式锁或数据库锁。
 - 新增一个 `backend/ai-governance` Maven 模块，内部按包分层，不在 P0 拆成多个 governance 子模块。
 
 ## 目标
@@ -33,7 +34,7 @@
 - 为所有真实用户 AI 调用提供统一的强类型运行上下文。
 - 支持按 AI 场景解析策略，例如默认模型、输出 token 上限、最大 step、是否允许工具、是否允许流式。
 - 在调用 LLM 或 Agent 前完成准入判断：认证、角色、功能开关、配额、并发、请求大小和 purpose 合法性。
-- 使用 PostgreSQL 持久化每日请求配额、active run 锁、run admission 记录和 trace 访问审计。
+- 使用 PostgreSQL 持久化每日用量、run admission 记录和 trace 访问审计。
 - 将完整内容留存与完整内容读取分开治理：可以写入脱敏后的完整 trace，但读取完整内容需要管理员权限并写审计。
 - 通过 observer 或等价生命周期扩展统一记录指标、usage、失败、取消和 active run 释放。
 - 为 API 层提供稳定错误码，避免 provider、agent、配额和权限错误以不一致格式泄露到前端。
@@ -69,8 +70,8 @@ org.congcong.algomentor.ai.governance.*
 - `model`：强类型运行上下文、actor、purpose、source、状态和错误码。
 - `policy`：场景策略、配置属性、策略解析器。
 - `admission`：准入服务、准入结果、失败原因。
-- `quota`：每日请求配额接口与 PostgreSQL 实现。
-- `runlock`：active run 锁接口与 PostgreSQL 实现。
+- `usage`：每日 AI 用量接口与 PostgreSQL 实现。
+- `runlock`：active run 锁适配，P0 复用 `agent-core` 现有本地内存锁实现。
 - `audit`：trace 访问策略和访问审计。
 - `metrics`：AI run 指标 observer。
 - `repository.mybatis`：MyBatis mapper、row model 和 XML。
@@ -120,7 +121,11 @@ LEARNING_CHAT
 AI_DEBUG
 ```
 
-source 描述触发入口，粒度比 purpose 更接近产品入口。`AI_DEBUG` 只能本地或管理员使用，不面向普通用户开放。
+source 描述触发入口，粒度比 purpose 更接近产品入口。它主要用于观测、审计、排查、默认文案和后续细粒度策略，不用于替代业务路由。
+
+例如 `PROBLEM_EXPLANATION` purpose 可能同时来自题目详情页、错题复盘页或学习计划阶段页。purpose 决定治理大类，source 帮助回答“这次调用从哪里触发”。P0 不需要为每个 source 配独立配额，但指标和 admission 记录应保留 source，方便后续判断哪个入口消耗最多或错误最多。
+
+`AI_DEBUG` 只能本地或管理员使用，不面向普通用户开放。
 
 ### `AiActor`
 
@@ -275,9 +280,11 @@ backend/ai-governance/src/main/resources/db/migration/ai
 - `(purpose, created_at)`
 - `(status, created_at)`
 
-### `ai_daily_quotas`
+### `ai_daily_usage`
 
-记录每日共享请求配额。
+记录每日共享 AI 用量。P0 先按请求次数限制，后续应能扩展为 token 维度限制。
+
+按请求次数限制的优点是实现简单、用户容易理解，也足以支撑 5-20 人试用。token 限制更接近真实成本，但需要稳定拿到 usage、处理流式取消、provider 未返回 usage、tool 多轮调用和跨 provider token 口径差异。P0 表结构应预留 token 字段，治理策略可以先只启用 `request_count` 上限。
 
 建议字段：
 
@@ -286,7 +293,13 @@ backend/ai-governance/src/main/resources/db/migration/ai
 - `quota_date`
 - `scope`
 - `request_count`
+- `input_tokens`
+- `output_tokens`
+- `cached_tokens`
+- `reasoning_tokens`
+- `total_tokens`
 - `limit_count`
+- `token_limit`
 - `created_at`
 - `updated_at`
 
@@ -296,35 +309,33 @@ P0 `scope` 固定为 `ALL`。后续可扩展为 purpose 名称。
 
 - `(user_id, quota_date, scope)`
 
-准入时在事务内原子递增。超过 `limit_count` 时拒绝，不创建 active run 锁。
+准入时在事务内原子递增 `request_count`。超过 `limit_count` 时拒绝，不创建 active run 锁。run 完成后再把 LLM usage 累加到 token 字段。后续如果要改为 token limit，可以使用 `total_tokens` 和 `token_limit` 实施软硬限制。
 
-### `ai_active_run_locks`
+### Active run 锁
 
-记录 active run 锁。
+P0 不新增 `ai_active_run_locks` 表，不引入分布式锁。当前代码库已有 `agent-core` 的 `AgentRunLockManager` 和 `InMemoryAgentRunLockManager`，`mentor-api` 默认也在使用本地内存锁。AI Governance 的 active run 并发控制应先复用这套能力。
 
-建议字段：
+建议锁 key：
 
-- `id`
-- `lock_key`
-- `user_id`
-- `run_id`
-- `purpose_scope`
-- `owner_id`
-- `expires_at`
-- `created_at`
-- `updated_at`
+- `user:{userId}:ai:all`
 
-P0 `purpose_scope` 固定为 `ALL`，表示每用户所有 AI 功能最多一个 active run。`lock_key` 可取 `user:{userId}:ai:all`。
+语义：
 
-唯一约束：
+- P0 `purpose_scope` 固定为 `ALL`，表示每用户所有 AI 功能最多一个 active run。
+- 准入时通过 `AgentRunLockManager.tryAcquire(...)` 获取锁。
+- 准入返回的 lock token 写入 AgentRequest metadata。
+- 终态 observer 在 `COMPLETED`、`FAILED`、`CANCELLED` 时释放锁。
+- 本地内存锁只保证单实例并发控制；如果后续部署多实例，再设计 PostgreSQL 或 Redis 分布式锁。
 
-- `lock_key`
-
-准入时先清理当前用户已过期锁，再尝试插入新锁。终态 observer 在 `COMPLETED`、`FAILED`、`CANCELLED` 时释放锁。TTL 用于进程崩溃兜底。
+`InMemoryAgentRunLockManager` 当前不会主动清理过期锁，因此 P0 要么在使用时避免依赖 TTL 自动清理，要么先增强现有内存锁的过期清理语义。这个改动属于 run lock 基础能力增强，不需要引入数据库锁。
 
 ### `ai_trace_access_audits`
 
 记录管理员读取完整 trace 的访问审计。
+
+这张表不是 AI run 执行路径的必需表，它只服务一个管理能力：当管理员通过后台、调试接口或运维工具查看完整 prompt/response、request snapshot、tool result 等敏感内容时，系统必须留下“谁在什么时候看了哪个 run，为什么看”的记录。
+
+如果 P0 暂时没有管理后台或完整 trace 读取接口，可以先不落这张表；但一旦提供完整内容读取能力，就必须同步提供访问权限校验和审计写入。否则“完整内容可留存”会变成无访问记录的敏感数据暴露面。
 
 建议字段：
 
@@ -435,8 +446,8 @@ P0 用户可见文案应简短明确，例如：
 后端测试重点：
 
 - `AiRunAdmissionService`：认证失败、管理员限定、purpose disabled、配额耗尽、并发冲突、请求过大、准入成功。
-- `PostgresAiQuotaStore`：同一天共享 50 次、跨天重置、并发递增不越限。
-- `PostgresAiRunLockManager`：同用户 active run 冲突、TTL 过期清理、终态释放。
+- `PostgresAiDailyUsageStore`：同一天共享 50 次、跨天重置、并发递增不越限、run 结束后累加 token usage。
+- active run 锁：复用 `InMemoryAgentRunLockManager`，覆盖同用户 active run 冲突、终态释放；如增强 TTL，再覆盖过期清理。
 - `AiTraceAccessPolicy`：非管理员拒绝、管理员允许。
 - `AiTraceAccessAuditLogger`：管理员读取完整 trace 时写审计。
 - `AiRunMetricsObserver`：成功、失败、取消、usage 指标被记录。
@@ -459,18 +470,19 @@ mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository -pl ai-govern
 建议后续实施按以下顺序拆分：
 
 1. 新建 `ai-governance` 模块与核心模型，不接入业务。
-2. 落 PostgreSQL migration、quota store、active run lock、admission repository。
+2. 落 PostgreSQL migration、daily usage store、admission repository。
 3. 实现 `AiRunAdmissionService` 和策略配置。
-4. 接入 Agent lifecycle observer，完成状态更新、usage 记录和锁释放。
-5. 增加 metrics observer。
-6. 增加 trace access policy 与审计。
-7. 迁移 AI 调试会话接口，不再接收客户端 `userId`，并限制管理员访问。
-8. 将学习计划、题目讲解、受限学习对话接入 governance。
+4. 接入现有 `AgentRunLockManager`，实现用户维度 active run 准入和终态释放。
+5. 接入 Agent lifecycle observer，完成状态更新、usage 记录和锁释放。
+6. 增加 metrics observer。
+7. 增加 trace access policy；如果提供完整 trace 读取接口，同步落访问审计。
+8. 迁移 AI 调试会话接口，不再接收客户端 `userId`，并限制管理员访问。
+9. 将学习计划、题目讲解、受限学习对话接入 governance。
 
 ## 风险与约束
 
 - 准入成功即扣减请求次数，可能让用户取消流式任务后仍消耗一次配额；P0 接受该语义，用简单规则换取一致性。
-- active run 锁依赖终态 observer 释放；必须设置 TTL 兜底，避免进程崩溃后长期占锁。
+- active run 锁 P0 是单实例内存锁，只适合当前小范围试用和单实例部署；多实例部署前必须升级为 PostgreSQL 或 Redis 分布式锁。
 - 完整内容留存提高排查能力，也提高隐私风险；P0 必须先保证凭据脱敏、管理员访问控制和访问审计。
 - Flyway 版本号在多模块共享同一版本空间，新增迁移前必须检查现有最大版本号。
 - 指标标签不能包含 prompt、response、用户输入或高基数字段，避免泄露和指标爆炸。
