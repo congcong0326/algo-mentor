@@ -109,6 +109,7 @@ public class AuthSecurityAutoConfiguration {
             .requestMatchers(new AntPathRequestMatcher(AuthSecurityPaths.API_PATTERN)).authenticated()
             .anyRequest().permitAll())
         .oauth2Login(oauth2 -> oauth2
+            .loginPage("/login")
             .userInfoEndpoint(userInfo -> {
               authenticatedOAuth2UserService.ifAvailable(userInfo::userService);
               authenticatedOidcUserService.ifAvailable(userInfo::oidcUserService);

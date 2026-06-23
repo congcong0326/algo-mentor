@@ -291,6 +291,35 @@ a {
   font-size: clamp(30px, 4vw, 44px);
 }
 
+.loading-shell .app-nav-button:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+.loading-page-title {
+  justify-self: center;
+  padding: 16px 0 0;
+  color: var(--text-primary);
+  text-align: center;
+  font-size: clamp(30px, 4vw, 44px);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.loading-panel {
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  background:
+    linear-gradient(90deg, transparent, rgb(255 255 255 / 55%), transparent),
+    var(--surface-card);
+  color: var(--text-secondary);
+  font-weight: 650;
+  box-shadow: var(--shadow-subtle);
+}
+
 .app-error {
   width: 100%;
 }

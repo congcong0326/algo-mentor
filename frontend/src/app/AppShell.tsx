@@ -9,6 +9,7 @@ interface AppShellProps {
   currentUser: CurrentUser;
   debugStatus?: ReactNode;
   logoutError?: string;
+  logoutPending?: boolean;
   onLogout: () => void;
   onNavigate: (view: AppView) => void;
 }
@@ -19,6 +20,7 @@ export default function AppShell({
   currentUser,
   debugStatus,
   logoutError,
+  logoutPending = false,
   onLogout,
   onNavigate,
 }: AppShellProps) {
@@ -52,9 +54,14 @@ export default function AppShell({
           {debugStatus}
           <div className="auth-status" aria-label="登录状态">
             <span>{userLabel}</span>
-            <button className="secondary-button compact" onClick={onLogout} type="button">
+            <button
+              className="secondary-button compact"
+              disabled={logoutPending}
+              onClick={onLogout}
+              type="button"
+            >
               <LogOut aria-hidden="true" />
-              <span>退出登录</span>
+              <span>{logoutPending ? '退出中' : '退出登录'}</span>
             </button>
           </div>
         </div>

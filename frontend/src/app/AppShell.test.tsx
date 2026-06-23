@@ -55,4 +55,20 @@ describe('AppShell', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('退出登录失败');
     expect(screen.getByText('AI debug page')).toBeInTheDocument();
   });
+
+  it('disables logout button while logout is pending', () => {
+    render(
+      <AppShell
+        activeView="debug"
+        currentUser={user}
+        logoutPending
+        onLogout={vi.fn()}
+        onNavigate={vi.fn()}
+      >
+        <div>AI debug page</div>
+      </AppShell>,
+    );
+
+    expect(screen.getByRole('button', { name: '退出中' })).toBeDisabled();
+  });
 });

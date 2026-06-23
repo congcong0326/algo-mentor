@@ -35,6 +35,27 @@ describe('App', () => {
     vi.unstubAllGlobals();
   });
 
+  it('shows an accessible loading state while checking authentication', () => {
+    vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>(() => undefined)));
+
+    render(<App />);
+
+    expect(screen.getByRole('status')).toHaveTextContent('正在检查登录状态...');
+  });
+
+  it('keeps the app shell shape while refreshing an authenticated route', () => {
+    vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>(() => undefined)));
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    expect(screen.getByRole('navigation', { name: '主导航' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '学习计划' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getAllByText('学习计划')).toHaveLength(2);
+    expect(screen.getByRole('status')).toHaveTextContent('正在检查登录状态...');
+    expect(screen.queryByRole('link', { name: '使用 Google 登录' })).not.toBeInTheDocument();
+  });
+
   it('shows the standalone login page when unauthenticated', async () => {
     vi.stubGlobal('fetch', mockUnauthenticatedFetch());
     window.history.replaceState({}, '', '/learning-plans');
@@ -59,6 +80,40 @@ describe('App', () => {
     expect(screen.getByText('登录失败，请重新尝试。')).toBeInTheDocument();
     expect(window.location.pathname).toBe('/login');
     expect(window.location.search).toBe('?auth=failed');
+  });
+
+  it('shows a retryable authentication check error for non-401 failures', async () => {
+    const fetchMock = vi.fn((url: string) => {
+      if (url === '/api/auth/me' && fetchMock.mock.calls.length === 1) {
+        return Promise.resolve(jsonResponse({
+          success: false,
+          error: { code: 'SERVER_ERROR', message: 'temporary outage' },
+          timestamp: '2026-06-22T00:00:00Z',
+        }, 503));
+      }
+      if (url === '/api/auth/me') {
+        return Promise.resolve(authenticatedUserResponse());
+      }
+      if (url === '/api/learning-plans') {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: [],
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
+      }
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(<App />);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('登录状态检查失败，请稍后重试。');
+    fireEvent.click(screen.getByRole('button', { name: '重试' }));
+
+    expect(await screen.findByText('User Name')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith('/api/auth/me', expect.objectContaining({
+      credentials: 'same-origin',
+    }));
   });
 
   it('defaults authenticated users to the home page', async () => {
@@ -189,6 +244,35 @@ describe('App', () => {
     ));
     expect(await screen.findByRole('link', { name: '使用 Google 登录' })).toBeInTheDocument();
     expect(window.location.pathname).toBe('/login');
+  });
+
+  it('disables logout while the request is pending', async () => {
+    let resolveLogout: (value: Response) => void = () => undefined;
+    const fetchMock = vi.fn((url: string) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(authenticatedUserResponse());
+      }
+      if (url === '/api/auth/logout') {
+        return new Promise<Response>((resolve) => {
+          resolveLogout = resolve;
+        });
+      }
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/debug');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '退出登录' }));
+
+    expect(screen.getByRole('button', { name: '退出中' })).toBeDisabled();
+
+    await act(async () => {
+      resolveLogout(jsonResponse({ success: true, timestamp: '2026-06-22T00:00:00Z' }));
+    });
+
+    expect(await screen.findByRole('link', { name: '使用 Google 登录' })).toBeInTheDocument();
   });
 
   it('keeps login page normalized when history changes after logout', async () => {

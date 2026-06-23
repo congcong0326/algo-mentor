@@ -20,6 +20,7 @@ import java.util.Map;
 import org.congcong.algomentor.auth.autoconfigure.AuthApiAutoConfiguration;
 import org.congcong.algomentor.auth.model.AuthRole;
 import org.congcong.algomentor.auth.model.AuthUserStatus;
+import org.congcong.algomentor.auth.security.OAuth2AuthenticationFailureHandler;
 import org.congcong.algomentor.auth.security.AuthAuthorities;
 import org.congcong.algomentor.auth.security.AuthenticatedOidcUser;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
@@ -47,9 +48,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.ClassUtils;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -89,6 +94,24 @@ class AuthSecurityAutoConfigurationTest {
         .andExpect(status().isUnauthorized())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"));
+  }
+
+  @Test
+  void loginPathIsReservedForFrontend() throws Exception {
+    mockMvc.perform(get("/login"))
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void oauth2FailureRedirectsToFrontendLoginPage() throws Exception {
+    MockHttpServletResponse response = new MockHttpServletResponse();
+
+    new OAuth2AuthenticationFailureHandler().onAuthenticationFailure(
+        new MockHttpServletRequest(),
+        response,
+        new OAuth2AuthenticationException(new OAuth2Error("invalid_request")));
+
+    assertThat(response.getRedirectedUrl()).isEqualTo("/login?auth=failed");
   }
 
   @Test

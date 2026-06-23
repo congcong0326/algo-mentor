@@ -16,7 +16,7 @@ public class OAuth2AuthenticationFailureHandler implements AuthenticationFailure
   private static final Logger log = LoggerFactory.getLogger(OAuth2AuthenticationFailureHandler.class);
 
   private final SimpleUrlAuthenticationFailureHandler delegate =
-      new SimpleUrlAuthenticationFailureHandler("/?auth=failed");
+      new SimpleUrlAuthenticationFailureHandler("/login?auth=failed");
 
   @Override
   public void onAuthenticationFailure(
