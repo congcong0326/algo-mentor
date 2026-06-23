@@ -2,11 +2,11 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import LearningPlanSummaryCard from './LearningPlanSummaryCard';
 
-const originalTimeZone = process.env.TZ;
+const OriginalDateTimeFormat = Intl.DateTimeFormat;
 
 afterEach(() => {
   cleanup();
-  process.env.TZ = originalTimeZone;
+  vi.unstubAllGlobals();
 });
 
 describe('LearningPlanSummaryCard', () => {
@@ -37,7 +37,22 @@ describe('LearningPlanSummaryCard', () => {
   });
 
   it('formats latest-created date with the local calendar date', () => {
-    process.env.TZ = 'Asia/Shanghai';
+    function MockDateTimeFormat() {
+      return {
+        formatToParts: () => [
+          { type: 'year', value: '2026' },
+          { type: 'literal', value: '/' },
+          { type: 'month', value: '06' },
+          { type: 'literal', value: '/' },
+          { type: 'day', value: '23' },
+        ],
+      };
+    }
+
+    vi.stubGlobal('Intl', {
+      ...Intl,
+      DateTimeFormat: MockDateTimeFormat as unknown as typeof OriginalDateTimeFormat,
+    });
 
     render(
       <LearningPlanSummaryCard
