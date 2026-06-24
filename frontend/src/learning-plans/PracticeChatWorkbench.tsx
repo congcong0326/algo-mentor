@@ -118,6 +118,7 @@ export default function PracticeChatWorkbench({
     setSessionResponse(undefined);
     setMessages([]);
     setError('');
+    setCompletionUpdating(false);
     setStatus('loading');
 
     createOrReusePracticeSession(plan.id, phaseIndex, problemSlug, locale, controller.signal)

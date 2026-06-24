@@ -1073,6 +1073,90 @@ describe('App', () => {
     });
   });
 
+  it('resets pending completion state when switching practice sessions', async () => {
+    let resolveProgressUpdate: (value: Response) => void = () => undefined;
+    const fetchMock = vi.fn((url: string) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(authenticatedUserResponse());
+      }
+      if (isLearningPlanListUrl(url)) {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: learningPlanPage([learningPlanSummary()]),
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
+      }
+      if (url === '/api/learning-plans/900') {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: learningPlanDetailWithTwoPracticeProblems(),
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
+      }
+      if (url === '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=zh-CN') {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: practiceSessionResponse(),
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
+      }
+      if (url === '/api/learning-plans/900/phases/1/problems/three-sum/practice-session?locale=zh-CN') {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: practiceSessionResponse({
+            session: {
+              ...basePracticeSessionResponse().session,
+              id: 51,
+              problemSlug: 'three-sum',
+            },
+            problem: {
+              ...basePracticeSessionResponse().problem,
+              slug: 'three-sum',
+              frontendId: 15,
+              title: '3Sum',
+              titleCn: '三数之和',
+            },
+          }),
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
+      }
+      if (url === '/api/practice-sessions/50/progress-status') {
+        return new Promise<Response>((resolve) => {
+          resolveProgressUpdate = resolve;
+        });
+      }
+
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' }));
+    fireEvent.click(await screen.findByRole('button', { name: /两数之和/ }));
+    fireEvent.click(await screen.findByRole('button', { name: '标记完成' }));
+
+    expect(screen.getByRole('button', { name: '标记完成' })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole('button', { name: '返回方案' }));
+    fireEvent.click(await screen.findByRole('button', { name: /三数之和/ }));
+
+    expect(await screen.findByRole('heading', { level: 2, name: '15. 三数之和' })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('button', { name: '标记完成' })).not.toBeDisabled());
+
+    await act(async () => {
+      resolveProgressUpdate(jsonResponse({
+        success: false,
+        error: { code: 'PROGRESS_FAILED', message: 'old progress failed' },
+        timestamp: '2026-06-22T00:00:00Z',
+      }, 500));
+    });
+
+    expect(screen.queryByText('old progress failed')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '标记完成' })).not.toBeDisabled();
+  });
+
   it('shows a disabled LeetCode action when the practice session has no LeetCode URL', async () => {
     const fetchMock = mockLearningPlanFetch({ omitLeetCodeUrl: true });
     vi.stubGlobal('fetch', fetchMock);
@@ -1914,6 +1998,33 @@ function learningPlanDetail(overrides: Partial<ReturnType<typeof baseLearningPla
   return {
     ...baseLearningPlanDetail(),
     ...overrides,
+  };
+}
+
+function learningPlanDetailWithTwoPracticeProblems() {
+  const detail = baseLearningPlanDetail();
+  return {
+    ...detail,
+    phases: detail.phases.map((phase) => (
+      phase.phaseIndex === 1
+        ? {
+            ...phase,
+            problems: [
+              ...phase.problems,
+              {
+                slug: 'three-sum',
+                frontendId: 15,
+                title: '3Sum',
+                titleCn: '三数之和',
+                difficulty: 'MEDIUM',
+                tags: ['Array', 'Two Pointers'],
+                reason: '练习排序和双指针。',
+                sortOrder: 2,
+              },
+            ],
+          }
+        : phase
+    )),
   };
 }
 
