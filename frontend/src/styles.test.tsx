@@ -21,6 +21,7 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toContain('--border-subtle: #263447');
     expect(styles).toContain('--text-primary: #f8fafc');
     expect(styles).toContain('--accent-warm-soft: rgb(255 192 30 / 14%)');
+    expect(styles).toContain('--accent-warm-text: #ffd166');
     expect(styles).toContain('--success-soft: rgb(20 184 166 / 15%)');
     expect(styles).toContain('--danger-soft: rgb(248 113 113 / 14%)');
   });
