@@ -1946,6 +1946,16 @@ a {
   background: var(--accent-warm-soft);
 }
 
+.practice-message:has(.practice-message-failed) {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.practice-message-failed {
+  color: var(--danger);
+  font-weight: 700;
+}
+
 .practice-error {
   margin: 0;
 }

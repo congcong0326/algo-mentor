@@ -961,6 +961,7 @@ describe('App', () => {
     });
 
     expect(await screen.findByRole('alert')).toHaveTextContent('消息发送失败，请稍后重试。');
+    expect(screen.getByText('回复失败，请重试。')).toHaveClass('practice-message-failed');
     const composer = screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' });
     expect(composer).not.toBeDisabled();
     fireEvent.change(composer, {
@@ -969,6 +970,29 @@ describe('App', () => {
     expect(composer).toHaveValue('我补充一个新的尝试。');
     expect(screen.getByRole('button', { name: '发送' })).not.toBeDisabled();
     expect(fetchMock.mock.calls.some(([url]) => url === '/api/practice-sessions/50/progress-status')).toBe(false);
+  });
+
+  it('marks the pending practice assistant message failed on stream errors', async () => {
+    const fetchMock = mockLearningPlanFetch({
+      practiceMessageStream: sseStream([
+        sseEvent('agent_error', { message: 'provider failed' }),
+      ]),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' }));
+    fireEvent.click(await screen.findByRole('button', { name: /两数之和/ }));
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '检查失败路径。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('消息发送失败，请稍后重试。');
+    expect(screen.getByText('回复失败，请重试。')).toHaveClass('practice-message-failed');
   });
 
   it('blocks duplicate practice messages when an agent run is already in progress', async () => {

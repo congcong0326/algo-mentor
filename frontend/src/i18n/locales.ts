@@ -219,6 +219,7 @@ export interface LocaleResources {
     skipped: string;
     markCompleted: string;
     organizingThoughts: string;
+    replyFailed: string;
     practiceSessionLoadFailed: string;
     practiceMessageFailed: string;
     practiceMessageBlocked: string;
@@ -481,6 +482,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       skipped: '已跳过',
       markCompleted: '标记完成',
       organizingThoughts: '正在整理思路...',
+      replyFailed: '回复失败，请重试。',
       practiceSessionLoadFailed: '训练会话加载失败',
       practiceMessageFailed: '消息发送失败，请稍后重试。',
       practiceMessageBlocked: '当前回复仍在生成中，请稍后再试。',
@@ -786,6 +788,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       skipped: 'Skipped',
       markCompleted: 'Mark completed',
       organizingThoughts: 'Organizing thoughts...',
+      replyFailed: 'Reply failed. Please retry.',
       practiceSessionLoadFailed: 'Failed to load practice session',
       practiceMessageFailed: 'Failed to send message. Try again later.',
       practiceMessageBlocked: 'The current response is still being generated. Try again later.',

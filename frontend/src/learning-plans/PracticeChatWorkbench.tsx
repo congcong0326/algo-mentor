@@ -1,5 +1,5 @@
 import { ArrowLeft, CheckCircle2, ClipboardList, ExternalLink, Info } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import MarkdownView from '../components/MarkdownView';
 import { formatDifficulty, formatProblemTitle } from '../i18n/formatters';
@@ -26,6 +26,7 @@ const LEETCODE_HOST_BY_LOCALE: Record<SupportedLocale, string> = {
 };
 
 const LEETCODE_HOSTS = new Set(['leetcode.cn', 'www.leetcode.cn', 'leetcode.com', 'www.leetcode.com']);
+const AUTO_SCROLL_THRESHOLD_PX = 96;
 
 function problemLabel(problem: LearningPlanProblemDraft | undefined, locale: SupportedLocale, fallback: string): string {
   if (!problem) {
@@ -105,6 +106,8 @@ export default function PracticeChatWorkbench({
   const localMessageIdRef = useRef(-1);
   const streamControllerRef = useRef<AbortController | null>(null);
   const activeSessionIdRef = useRef<number | undefined>(undefined);
+  const messageListRef = useRef<HTMLElement | null>(null);
+  const shouldAutoScrollRef = useRef(true);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -146,6 +149,38 @@ export default function PracticeChatWorkbench({
   const canMarkCompleted = Boolean(sessionId) && progressStatus !== 'COMPLETED' && status !== 'streaming';
   const composerInputDisabled = !sessionId || status === 'loading';
   const sendDisabled = !sessionId || status === 'loading' || status === 'streaming' || status === 'blocked' || !composerValue.trim();
+
+  useLayoutEffect(() => {
+    const messageList = messageListRef.current;
+    if (messageList && shouldAutoScrollRef.current) {
+      messageList.scrollTop = messageList.scrollHeight;
+    }
+  }, [messages, error, reviewHistoryOpen, status]);
+
+  function updateAutoScrollState() {
+    const messageList = messageListRef.current;
+    if (!messageList) {
+      return;
+    }
+
+    shouldAutoScrollRef.current = messageList.scrollHeight - messageList.scrollTop - messageList.clientHeight
+      < AUTO_SCROLL_THRESHOLD_PX;
+  }
+
+  function markAssistantMessageFailed(
+    assistantMessageId: number,
+    contentMarkdown = resources.learningPlans.replyFailed,
+  ) {
+    setMessages((current) => current.map((message) => (
+      message.id === assistantMessageId
+        ? {
+            ...message,
+            contentMarkdown,
+            messageType: 'CHAT',
+          }
+        : message
+    )));
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -219,6 +254,7 @@ export default function PracticeChatWorkbench({
 
           if (event.eventName === 'error' || event.eventName === 'agent_error') {
             setError(resources.learningPlans.practiceMessageFailed);
+            markAssistantMessageFailed(assistantMessageId);
             setStatus('error');
           }
         },
@@ -232,17 +268,20 @@ export default function PracticeChatWorkbench({
         setStatus('idle');
       } else {
         setError(resources.learningPlans.practiceMessageFailed);
+        markAssistantMessageFailed(assistantMessageId);
         setStatus('error');
       }
     } catch (error) {
       if (!controller.signal.aborted) {
         if (error instanceof ApiRequestError && error.code === AGENT_RUN_IN_PROGRESS_CODE) {
           setError(resources.learningPlans.practiceMessageBlocked);
+          markAssistantMessageFailed(assistantMessageId, resources.learningPlans.practiceMessageBlocked);
           setStatus('blocked');
           return;
         }
 
         setError(error instanceof Error ? error.message : resources.learningPlans.practiceMessageFailed);
+        markAssistantMessageFailed(assistantMessageId);
         setStatus('error');
       }
     } finally {
@@ -364,7 +403,12 @@ export default function PracticeChatWorkbench({
         </div>
       </header>
 
-      <section className="practice-message-list" aria-label={resources.learningPlans.chatMessages}>
+      <section
+        className="practice-message-list"
+        aria-label={resources.learningPlans.chatMessages}
+        onScroll={updateAutoScrollState}
+        ref={messageListRef}
+      >
         {reviewHistoryOpen && (
           <aside className="practice-review-panel">
             <h3>{resources.learningPlans.reviewHistory}</h3>
@@ -390,7 +434,12 @@ export default function PracticeChatWorkbench({
             key={message.id}
           >
             <span>{message.role === 'USER' ? resources.learningPlans.you : resources.learningPlans.coach}</span>
-            <MarkdownView content={message.contentMarkdown || resources.learningPlans.organizingThoughts} />
+            {message.contentMarkdown === resources.learningPlans.replyFailed
+            || message.contentMarkdown === resources.learningPlans.practiceMessageBlocked ? (
+              <p className="practice-message-failed">{message.contentMarkdown}</p>
+            ) : (
+              <MarkdownView content={message.contentMarkdown || resources.learningPlans.organizingThoughts} />
+            )}
           </article>
         ))}
       </section>
