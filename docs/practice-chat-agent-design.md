@@ -2,35 +2,53 @@
 
 ## 背景
 
-`practice-chat-workbench-design.md` 已经定义了题目聊天工作台的页面闭环、题目状态和训练会话方向。本设计继续细化题目聊天框的 AI 侧实现，重点解决三个问题：
+`practice-chat-workbench-design.md` 已定义题目聊天工作台、题目状态和训练会话方向。`practice-chat-system-prompt-assembly-design.md` 已进一步把题目聊天 prompt 从专用 `PracticePromptBuilder` 调整为通用 Prompt Assembly 底座，并且阶段 2 到阶段 3 的部分能力已经落到 `agent-core` 与 `mentor-application/practice`。
 
-- 系统提示词和题目上下文如何组装。
-- 第一条确定性题面消息在 UI、存储和模型上下文中分别使用什么角色。
-- SSE 流式回复在聊天界面里如何展示，避免把产品体验做成调试台。
+本设计重新收敛题目聊天 Agent 的产品闭环，目标是把“学习计划中的某一道题”打通为稳定的聊天训练线程：
+
+- `practice_session` 是题目聊天的产品入口。
+- `learning_plan_problem_progress` 是计划题目进度事实。
+- `agent_task`、`agent_turn`、`agent_message`、`agent_run` 继续作为底层 Agent runtime。
+- Prompt Assembly 负责模型上下文，不再新增独立 practice prompt builder。
 
 第一版题目聊天仍定位为 LeetCode 外部做题的 AI 教练空间，不做内置 IDE、在线评测、结构化代码 Review 或跨题推荐。
 
 ## 目标
 
 - 用户从学习计划题目进入聊天页时，自动创建或复用训练会话。
-- 后端确定性写入第一条题面消息，避免额外模型成本和题面幻觉。
+- 后端确定性写入第一条题面 seed 消息，避免额外模型成本和题面幻觉。
 - 用户可以输入思路、问题、代码片段或 LeetCode 反馈，AI 通过 SSE 流式回复。
 - AI 回复围绕当前题和当前学习计划阶段，不主动发散到其他题。
 - 默认采用教练式引导；当用户明确要求答案或代码时，直接给完整思路、复杂度和 Java 代码。
 - 聊天页展示轻量流式状态，而不是完整 agent/tool 调试事件。
+- 前端通过 practice session 专用 API 完成创建、恢复、发送消息和标记完成。
 
 ## 已确认决策
 
-### Prompt 组装
+### 产品入口
 
-模型请求按以下顺序组装：
+题目聊天的产品入口是 practice session 专用 API，不让前端直接使用通用 `/api/agent/conversations/stream` 承载题目训练。
 
 ```text
-system: 稳定教学规则
-system: 当前题目和学习计划上下文
-system: 可选 active summary
-history: 最近普通聊天消息
-user: 当前用户消息
+POST /api/learning-plans/{planId}/phases/{phaseIndex}/problems/{slug}/practice-session
+GET  /api/practice-sessions/{sessionId}
+POST /api/practice-sessions/{sessionId}/messages/stream
+PATCH /api/practice-sessions/{sessionId}/progress-status
+```
+
+通用 `AgentConversationService`、`AgentConversationRunCoordinator` 和 `AgentLoopRunner` 作为底层运行能力复用；practice session 负责产品校验、题目上下文、进度和消息恢复。
+
+### Prompt 组装
+
+题目聊天直接使用 Prompt Assembly profile，模型请求按以下 canonical 顺序组装：
+
+```text
+system: STATIC_INSTRUCTION    平台与安全基线
+system: SCENARIO_POLICY       题目聊天教学策略
+system: RUNTIME_CONTEXT       当前训练上下文
+system: MEMORY_SUMMARY        可选 active summary
+history: HISTORY              最近普通聊天消息
+user: CURRENT_USER_MESSAGE    当前用户消息
 ```
 
 原因：
@@ -38,6 +56,7 @@ user: 当前用户消息
 - 稳定规则和业务上下文分离，便于调试和后续版本迭代。
 - 题目上下文不伪装成用户发言，也不伪装成模型历史输出。
 - 历史聊天只保留真实 user/assistant 讨论，避免第一条题面 seed 影响模型判断。
+- Prompt profile、section version、token estimate、裁剪记录和 content hash 写入 `AgentRequest.metadata()`。
 
 ### 第一条题面消息角色
 
@@ -47,14 +66,14 @@ user: 当前用户消息
 UI 展示       assistant 气泡，标签为“教练”
 数据库存储    agent_message.role = assistant
 消息类型      agent_message.metadata.messageType = "PROBLEM_STATEMENT"
-模型上下文    独立 system 上下文块，不作为 assistant 历史消息传入
+模型上下文    独立 RUNTIME_CONTEXT system 片段，不作为 assistant 历史消息传入
 ```
 
 这样既能让用户看到“教练先给出题面”的自然体验，又不会让模型误以为自己上一轮已经完成了某个回答。
 
 ### 工具调用范围
 
-题目聊天 v1 开放题库工具给模型，一般模型也不需要调用因为题目内容一般在模型的训练数据里都有。
+题目聊天 v1 不开放题库工具给模型。当前题目、学习计划阶段和题面由后端服务端校验后注入 prompt。后续如果增加读取当前题、查相似题或读取历史复盘工具，应通过 `TOOL_RESULT` 片段接入 Prompt Assembly。
 
 ### 回复语言
 
@@ -64,41 +83,37 @@ UI 展示       assistant 气泡，标签为“教练”
 
 会话详情首版返回最近 50 条消息，不做分页。后续长会话再增加 `beforeMessageId` 和 `pageSize`。
 
-## 系统提示词设计
+## Prompt Assembly 接入
 
-`PracticePromptBuilder` 负责构造题目聊天提示词。稳定系统提示词建议如下：
+### Profile 与片段
 
-```text
-你是 algo-mentor 的算法刷题教练，正在帮助用户围绕当前 LeetCode 题目训练。
+practice chat 使用 `PRACTICE_CHAT_V1` profile。片段来源位于 `mentor-application` 的 practice 包，底层结构和算法位于 `agent-core`。
 
-核心规则：
-1. 只围绕当前题目、当前学习计划阶段、算法思路、复杂度、代码实现和 LeetCode 反馈进行回答。
-2. 默认先引导用户理解关键观察、状态定义、边界条件和复杂度，不要一上来展开完整题解。
-3. 如果用户明确要求“直接给答案”“给完整代码”“给 Java 解法”，直接给完整思路、复杂度和 Java 代码，不要再追问确认。
-4. 不要编造题面、样例、约束、隐藏条件或 LeetCode 结果；如果上下文没有提供，就说明无法确认。
-5. 用户粘贴代码时，先指出关键问题和最小修改建议，再给必要的修正版。
-6. 用户粘贴 LeetCode 错误、WA/TLE/编译错误时，优先帮助定位原因，必要时给可执行的修复步骤。
-7. 默认使用界面语言回复；如果用户明显使用另一种语言提问，则跟随用户语言。
-8. 输出 Markdown，代码块标注语言；复杂度用 Big-O 表达。
-```
+核心片段：
 
-该提示词属于跨请求公共契约，落地时应放到 practice 模块的 prompt builder 或常量类中，不在 controller 中硬编码。
+- `practice.base.identity`：平台与安全基线，`STATIC_INSTRUCTION`，`SYSTEM_STATIC`。
+- `practice.strategy.coach`：教练式教学策略，`SCENARIO_POLICY`，`SYSTEM_STATIC`。
+- `practice.context.problem`：学习计划、阶段、题目和题面，`RUNTIME_CONTEXT`，`SERVER_VALIDATED`。
+- `practice.memory.active-summary`：可选会话摘要，`MEMORY_SUMMARY`，`MODEL_GENERATED`。
+- `practice.history.*`：普通聊天历史，`HISTORY`，保持原 user/assistant 角色。
+- `practice.current-user-message`：当前用户消息，`CURRENT_USER_MESSAGE`，最后一条 user message。
 
-## 题目上下文块
+### 当前训练上下文
 
-第二条 system message 只承载当前业务上下文，建议格式：
+`RUNTIME_CONTEXT` 只使用后端已校验的数据源，建议渲染格式：
 
 ```text
-当前训练上下文：
-
 学习计划：
 - planId: 12
 - goal: 4 周内用 Java 准备后端算法面试
 - level: INTERMEDIATE
 - programmingLanguage: Java
+- locale: zh-CN
+
+阶段：
 - phaseIndex: 1
-- phaseTitle: 哈希表基础
-- phaseFocus: 建立哈希查找和频次统计模式
+- title: 哈希表基础
+- focus: 建立哈希查找和频次统计模式
 
 题目：
 - slug: two-sum
@@ -109,19 +124,28 @@ UI 展示       assistant 气泡，标签为“教练”
 - tags: Array, Hash Table
 - leetcodeUrl: https://leetcode.com/problems/two-sum/
 
-题面 Markdown：
----
+题面：
+<problem_statement>
 # Two Sum
 ...
----
+</problem_statement>
 ```
 
-上下文块要求：
+要求：
 
-- 来自后端已校验的数据源，不能由前端提交任意题面。
 - 题面为空时写入明确空态，例如 `题库暂未提供题面 Markdown。`
+- 题面和结构化字段分开渲染，避免大段题面覆盖题号、难度、标签等关键事实。
 - 不包含 API key、Authorization、用户隐私内容或完整 LeetCode 提交历史。
-- 后续如果题面过长，再加入截断策略和 metadata 标识；v1 先完整注入当前题面。
+- 用户输入中的伪 `system:`、XML 闭合标签、Markdown fence escape 只能作为文本处理。
+
+### 历史过滤
+
+模型历史只包含普通聊天消息：
+
+- 排除 `messageType = PROBLEM_STATEMENT` 的题面 seed。
+- 保留 `messageType = CHAT` 的 user/assistant 消息。
+- 按 sequenceNo 排序后取最近 N 条。
+- 当前用户消息不从 history 重复注入，必须作为最后一条 `CURRENT_USER_MESSAGE`。
 
 ## 后端设计
 
@@ -129,21 +153,16 @@ UI 展示       assistant 气泡，标签为“教练”
 
 #### 表职责边界
 
-`learning_plan_problem_progress` 是题目进度事实表。它回答的是“某个用户在某个学习计划的某个阶段里，这道题当前做到什么状态”。方案详情页、完成率统计、阶段复盘、后续错题推荐都应该读取这张表。它不关心聊天内容，也不依赖是否已经创建聊天会话；例如用户未来在方案详情页直接把题目标记为跳过或完成，也只需要更新这张表。
+`learning_plan_problem_progress` 是题目进度事实表。它回答的是“某个用户在某个学习计划的某个阶段里，这道题当前做到什么状态”。方案详情页、完成率统计、阶段复盘、后续错题推荐都应该读取这张表。它不关心聊天内容，也不依赖是否已经创建聊天会话。
 
-`practice_session` 是题目训练聊天线程锚点表。它回答的是“这个用户围绕这道计划题的聊天线程是哪一个”。聊天记录本身继续存放在现有 Agent runtime 的 `agent_message` 中，模型运行轨迹继续存放在 `agent_run` 和 trace 表中；`practice_session` 只负责把学习计划题目和 `agent_task_id` 关联起来，并记录题面 seed 消息、最后消息时间和会话状态。
-
-两张表不合并，是因为进度和聊天生命周期不同：
-
-- 进度是学习计划的稳定业务事实，可以独立于聊天存在。
-- 聊天是围绕题目的交互线程，负责上下文恢复、消息历史和 SSE 运行关联。
-- 后续即使增加“方案详情页直接跳过题目”“归档某次聊天线程”“重建聊天上下文”等能力，也不会让进度状态和聊天运行态互相污染。
+`practice_session` 是题目训练聊天线程锚点表。它回答的是“这个用户围绕这道计划题的聊天线程是哪一个”。聊天记录本身继续存放在 Agent runtime 的 `agent_message` 中，模型运行轨迹继续存放在 `agent_run` 和 trace 表中；`practice_session` 只负责把学习计划题目和 `agent_task_id` 关联起来，并记录题面 seed 消息、最后消息时间和会话状态。
 
 简化理解：
 
 ```text
 learning_plan_problem_progress = 这道题做没做、做到哪一步
 practice_session               = 这道题的聊天会话是哪一个
+agent_task                     = 底层 Agent runtime 线程
 ```
 
 新增 `learning_plan_problem_progress`：
@@ -183,6 +202,10 @@ UNIQUE (agent_task_id),
 CHECK (status IN ('ACTIVE', 'ARCHIVED'))
 ```
 
+迁移脚本放在 `backend/mentor-api/src/main/resources/db/migration`，版本号使用当前 Flyway 全局序列的下一个版本，例如 `V12__practice_session_schema.sql`。
+
+### Metadata 契约
+
 `agent_task.metadata` 写入 practice 关联信息：
 
 ```json
@@ -199,7 +222,12 @@ CHECK (status IN ('ACTIVE', 'ARCHIVED'))
 
 ```json
 {
-  "messageType": "PROBLEM_STATEMENT"
+  "messageType": "PROBLEM_STATEMENT",
+  "scenario": "PRACTICE_CHAT",
+  "practiceSessionId": 100,
+  "planId": 12,
+  "phaseIndex": 1,
+  "problemSlug": "two-sum"
 }
 ```
 
@@ -207,18 +235,56 @@ CHECK (status IN ('ACTIVE', 'ARCHIVED'))
 
 ```json
 {
-  "messageType": "CHAT"
+  "messageType": "CHAT",
+  "scenario": "PRACTICE_CHAT",
+  "practiceSessionId": 100,
+  "planId": 12,
+  "phaseIndex": 1,
+  "problemSlug": "two-sum"
 }
 ```
 
 这些字符串应放入常量类或枚举中，避免散落在 SQL、service 和前端 mapper 中。
 
-### API 契约
+### Repository 与端口
 
-创建或复用题目会话：
+practice 业务不直接写 `agent_*` 表。建议新增 practice repository 管理业务表，并新增或拆分 Agent runtime 端口管理 task/message：
+
+```java
+public interface PracticeSessionRepository {
+  PracticeSession upsertAndLockSession(...);
+  PracticeProgress upsertAndAdvanceProgress(...);
+  Optional<PracticeSession> findSessionForUser(...);
+  PracticeSession attachAgentTask(...);
+  PracticeSession attachProblemStatementMessage(...);
+  PracticeProgress updateProgressStatus(...);
+  void touchLastMessageAt(...);
+}
+```
+
+```java
+public interface AgentTaskMessageRepository {
+  AgentTaskRef createTask(AgentTaskCreationRequest request);
+  AgentMessage createAssistantSeedMessage(AgentAssistantSeedMessageRequest request);
+  List<AgentMessage> messages(long taskId, int messageLimit);
+}
+```
+
+也需要扩展现有 run preparation 能力：
+
+- 为指定 `agent_task_id` 创建 user turn/message/run。
+- user message 支持写入 metadata。
+- 幂等键重放时不重复写 user message。
+- running run 冲突时返回 `AGENT_RUN_IN_PROGRESS`。
+
+SQL 仍留在 `agent-persistence-postgres`，`mentor-api` 不直接拥有 agent runtime SQL。
+
+## API 契约
+
+### 创建或复用题目会话
 
 ```text
-POST /api/learning-plans/{planId}/phases/{phaseIndex}/problems/{slug}/practice-session
+POST /api/learning-plans/{planId}/phases/{phaseIndex}/problems/{slug}/practice-session?locale=zh-CN
 ```
 
 响应：
@@ -256,13 +322,15 @@ POST /api/learning-plans/{planId}/phases/{phaseIndex}/problems/{slug}/practice-s
 }
 ```
 
-刷新会话：
+### 刷新会话
 
 ```text
 GET /api/practice-sessions/{sessionId}
 ```
 
-发送消息并流式回复：
+返回同 `PracticeSessionResponse`，方便前端创建后渲染和刷新恢复复用同一套 mapper。
+
+### 发送消息并流式回复
 
 ```text
 POST /api/practice-sessions/{sessionId}/messages/stream
@@ -274,7 +342,7 @@ Content-Type: application/json
 }
 ```
 
-更新进度：
+### 更新进度
 
 ```text
 PATCH /api/practice-sessions/{sessionId}/progress-status
@@ -286,6 +354,8 @@ PATCH /api/practice-sessions/{sessionId}/progress-status
 
 v1 聊天页只暴露 `COMPLETED` 操作；方案详情页如果需要跳过题目，可另设计划题目维度接口。
 
+## 服务流程
+
 ### 创建会话流程
 
 ```text
@@ -295,23 +365,32 @@ POST create-or-reuse
   -> 校验 phaseIndex + slug 存在于 plan snapshot
   -> 读取题库 ProblemDetail
   -> upsert learning_plan_problem_progress
-  -> upsert practice_session
-  -> 创建或复用 agent_task
-  -> 如无题面 seed，创建 seed turn + assistant PROBLEM_STATEMENT message
+  -> upsert practice_session 并锁定业务键
+  -> 如 session 无 agent_task_id，创建 agent_task 并回写
+  -> 如 session 无题面 seed，创建 seed turn + assistant PROBLEM_STATEMENT message 并回写
   -> NOT_STARTED/SKIPPED 更新为 IN_PROGRESS，COMPLETED 不回退
   -> 返回 session、problem、progress、最近 50 条 messages
 ```
 
-该流程必须在事务内保证幂等。并发打开两个标签页时，唯一约束应保证只生成一个 session、一个 progress 记录和一条题面 seed。
+该流程必须在事务内保证幂等。并发打开两个标签页时，唯一约束和锁定策略应保证只生成一个 session、一个 progress 记录、一条 `agent_task` 绑定和一条题面 seed。
+
+seed 内容要求：
+
+- 使用后端已校验的题面 Markdown。
+- 题面为空时写 `题库暂未提供题面 Markdown。`
+- 作为 assistant 气泡展示。
+- 不进入模型 assistant history。
 
 ### 发送消息流程
 
 ```text
 POST messages/stream
-  -> 校验 session 属于当前用户
-  -> 校验同一 task 没有运行中 run，或同一 Idempotency-Key 复用已有 run
+  -> 解析当前登录用户
+  -> 查询并锁定 practice_session，确认属于当前用户且 ACTIVE
+  -> 读取 progress、plan、phase、problem detail，重建 PracticeChatContext
+  -> 校验同一 agent_task 没有运行中 run，或同一 Idempotency-Key 复用已有 run
   -> 写入 user agent_message，messageType = CHAT
-  -> 用 PracticePromptBuilder 组装 system 规则和题目上下文
+  -> 用 PromptAssembler + PRACTICE_CHAT_V1 profile 组装上下文
   -> 读取最近普通聊天历史，排除 PROBLEM_STATEMENT
   -> 调用 AgentLoopRunner stream
   -> SSE 转发 content_delta/message_end/agent_run_end/error
@@ -319,11 +398,11 @@ POST messages/stream
   -> 更新 practice_session.last_message_at
 ```
 
-当前 `AgentConversationService` 的 `ContextAssembler` 只有 `system + summary + history + current user`。实现 practice 时需要扩展上下文组装能力，或新增 practice 专用 assembler，以支持额外的题目上下文 system message 和消息类型过滤。
+建议新增 `PracticeMessageStreamService` 承接产品校验、上下文构建、AI governance 和 `practiceSessionId` metadata。它可以复用底层 run coordinator，但不要让通用 `AgentConversationService` 反向依赖 practice session。
 
 ### AI 治理
 
-`purpose` 继续使用 `AiPurpose.LEARNING_CHAT`，减少治理配置扩散。`source` 使用新增或专用值 `PRACTICE_CHAT`，并在 admission metadata 中写入：
+`purpose` 继续使用 `AiPurpose.LEARNING_CHAT`，减少治理配置扩散。`source` 使用专用 `PRACTICE_CHAT`，并在 admission metadata 中写入：
 
 ```json
 {
@@ -374,7 +453,7 @@ scrollHeight - scrollTop - clientHeight < 96px
 输入框使用多行 textarea，支持粘贴代码和 LeetCode 反馈。发送中：
 
 - 禁用重复发送。
-- 保留停止按钮或取消行为。
+- 首版可以用 AbortController 断开前端流；服务端取消和续跑能力后续补强。
 - 如果用户刷新页面，已写入的 user message 仍通过会话详情恢复。
 
 ### 工具栏
@@ -384,15 +463,29 @@ scrollHeight - scrollTop - clientHeight < 96px
 - 返回方案。
 - 题号、题名、难度。
 - 当前进度状态。
-- Review 记录占位。
 - LeetCode 外链。
 - 题目已完成按钮。
 
 点击完成后调用 progress status API。重复点击应返回当前 `COMPLETED` 状态，不报错。
 
-## 前端类型
+## 前端设计
 
-新增类型建议集中在 `frontend/src/types/api.ts`：
+### 加载流程
+
+`PracticeChatWorkbench` 从题面展示页升级为真正聊天页：
+
+```text
+进入 /learning-plans/{planId}/phases/{phaseIndex}/problems/{slug}/chat
+  -> POST createOrReusePracticeSession
+  -> 渲染 toolbar/session/problem/progress/messages
+  -> composer 启用
+```
+
+前端不要再单独调用 `getProblemDetail` 来构造题面气泡。题面由 create/get session 返回，确保 UI 展示和模型上下文来自同一份后端校验数据。
+
+### 前端类型
+
+新增类型集中在 `frontend/src/types/api.ts`：
 
 ```ts
 export type PracticeProgressStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'SKIPPED';
@@ -415,6 +508,25 @@ API 封装放在 `frontend/src/services/api.ts`：
 
 `streamPracticeMessage` 可复用现有 `readEventStream`，但路径和请求体使用 practice 专用契约。
 
+### 前端状态
+
+```text
+idle        可输入
+loading     创建/刷新 session
+streaming   已发送，等待或接收 assistant 流
+error       session 加载或发送失败
+blocked     AGENT_RUN_IN_PROGRESS
+```
+
+发送消息时：
+
+- 立即乐观追加 user `CHAT` 气泡。
+- 创建 pending assistant 气泡。
+- `content_delta` 持续追加到 pending assistant content。
+- `message_end` 标记生成完成。
+- `agent_run_end` 释放输入框。
+- 错误时 pending assistant 显示失败状态和重试入口。
+
 ## 边界与错误处理
 
 - plan 不存在或不属于当前用户：返回业务错误，不暴露其他用户资源信息。
@@ -427,20 +539,21 @@ API 封装放在 `frontend/src/services/api.ts`：
 
 ## 测试计划
 
-后端单元测试：
+### 后端单元测试
 
-- `PracticePromptBuilderTest`：验证系统规则、题目上下文、语言和计划字段。
 - `PracticeSessionServiceTest`：验证会话创建幂等、题面 seed 只写一次、状态流转正确。
 - `PracticeMessageStreamServiceTest`：验证发送消息写入 user message、排除 `PROBLEM_STATEMENT` 历史、构造 agent request metadata。
 - `PracticeProgressServiceTest`：验证完成操作可重复。
+- `PracticeChatPromptSectionProviderTest`：验证稳定片段、题目上下文、语言、intent 和题面空态。
 
-后端 mapper/集成测试：
+### 后端 mapper/集成测试
 
 - practice 表唯一约束和 upsert 行为。
 - `agent_message.metadata.messageType` 读写。
 - 最近 50 条消息排序和过滤。
+- `PracticeSessionController` 创建、读取、发送和完成接口。
 
-前端测试：
+### 前端测试
 
 - 进入聊天页调用创建会话接口并渲染题面 seed。
 - 发送消息后乐观展示用户气泡。
@@ -455,6 +568,14 @@ API 封装放在 `frontend/src/services/api.ts`：
 make backend-test
 make frontend-test
 ```
+
+## 实施顺序
+
+1. 新增 practice 数据迁移、repository 和 Agent runtime task/message 端口。
+2. 实现 create/get practice session API。
+3. 实现 practice message stream API，接入 AI governance 与 Prompt Assembly。
+4. 前端 `PracticeChatWorkbench` 接入专用 API 和 SSE 状态。
+5. 补齐后端、前端测试并运行最小相关验证。
 
 ## 后续演进
 
