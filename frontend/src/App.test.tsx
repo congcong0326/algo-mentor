@@ -906,6 +906,7 @@ describe('App', () => {
     expect(new Headers(streamInit.headers).get('Idempotency-Key')).toBe('generated-key');
     expectCsrfHeader(fetchMock, '/api/practice-sessions/50/messages/stream', 'POST');
     expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
+    expect(screen.queryByRole('button', { name: '标记完成' })).not.toBeInTheDocument();
 
     await act(async () => {
       practiceStream.enqueue(sseEvent('agent_run_end', { runId: 'run_1' }));
@@ -924,8 +925,12 @@ describe('App', () => {
     expect(fetchMock.mock.calls.some(([url]) => url === '/api/agent/conversations/stream')).toBe(false);
   });
 
-  it('sends a practice chat message with practice context and renders streamed response', async () => {
-    const fetchMock = mockLearningPlanFetch();
+  it('keeps the practice composer failed when the stream closes before agent_run_end', async () => {
+    const practiceStream = controlledSseStream([
+      sseEvent('content_delta', { content: '先检查边界。' }),
+      sseEvent('message_end', { finishReason: 'stop' }),
+    ]);
+    const fetchMock = mockLearningPlanFetch({ practiceMessageStream: practiceStream.stream });
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
 
@@ -935,30 +940,23 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /两数之和/ }));
-
     expect(await screen.findByRole('heading', { level: 2, name: '1. 两数之和' })).toBeInTheDocument();
-    const composer = await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' });
 
-    fireEvent.change(composer, { target: { value: '我想先要一个提示' } });
-    expect(composer).toHaveValue('我想先要一个提示');
-
+    fireEvent.change(screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '边界条件怎么处理？' },
+    });
     fireEvent.click(screen.getByRole('button', { name: '发送' }));
 
-    expect(await screen.findByText('可以先从哈希表记录已访问数字入手。')).toBeInTheDocument();
-    const streamCall = fetchMock.mock.calls.find(([url]) => url === '/api/agent/conversations/stream');
-    expect(streamCall).toBeDefined();
-    const [, streamInit] = streamCall as [string, RequestInit];
-    expect(streamInit.body).toBe(JSON.stringify({
-      message: '我想先要一个提示',
-      practice: {
-        planId: 900,
-        phaseIndex: 1,
-        problemSlug: 'two-sum',
-        locale: 'zh-CN',
-      },
-    }));
-    expect(new Headers(streamInit.headers).get('Idempotency-Key')).toBe('generated-key');
-    expectCsrfHeader(fetchMock, '/api/agent/conversations/stream');
+    expect(await screen.findByText('先检查边界。')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
+
+    await act(async () => {
+      practiceStream.close();
+    });
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('消息发送失败，请稍后重试。');
+    expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
+    expect(fetchMock.mock.calls.some(([url]) => url === '/api/practice-sessions/50/progress-status')).toBe(false);
   });
 
   it('uses the global LeetCode domain in an English practice chat workbench', async () => {

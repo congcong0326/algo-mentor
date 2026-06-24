@@ -101,6 +101,7 @@ export default function PracticeChatWorkbench({
   const [completionUpdating, setCompletionUpdating] = useState(false);
   const localMessageIdRef = useRef(-1);
   const streamControllerRef = useRef<AbortController | null>(null);
+  const activeSessionIdRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -135,16 +136,18 @@ export default function PracticeChatWorkbench({
   }, [locale, phaseIndex, plan.id, problemSlug, resources.learningPlans.practiceSessionLoadFailed]);
 
   const sessionId = sessionResponse?.session.id;
+  activeSessionIdRef.current = sessionId;
   const progressStatus = sessionResponse?.session.progressStatus;
   const leetcodeUrl = localizedLeetCodeUrl(sessionResponse?.problem.leetcodeUrl, locale);
   const difficulty = sessionResponse?.problem.difficulty ?? problem?.difficulty;
-  const canMarkCompleted = Boolean(sessionId) && progressStatus !== 'COMPLETED';
+  const canMarkCompleted = Boolean(sessionId) && progressStatus !== 'COMPLETED' && status !== 'streaming';
+  const composerDisabled = !sessionId || status !== 'idle';
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const text = composerValue.trim();
 
-    if (!text || !sessionId || status === 'streaming') {
+    if (!text || !sessionId || status !== 'idle') {
       return;
     }
 
@@ -178,6 +181,8 @@ export default function PracticeChatWorkbench({
       },
     ]);
 
+    let agentRunEnded = false;
+
     try {
       await streamPracticeMessage(sessionId, { message: text }, {
         idempotencyKey: nextIdempotencyKey(),
@@ -204,6 +209,7 @@ export default function PracticeChatWorkbench({
           }
 
           if (event.eventName === 'agent_run_end') {
+            agentRunEnded = true;
             setStatus('idle');
           }
 
@@ -214,8 +220,15 @@ export default function PracticeChatWorkbench({
         },
       });
 
-      if (!controller.signal.aborted) {
+      if (controller.signal.aborted) {
+        return;
+      }
+
+      if (agentRunEnded) {
         setStatus('idle');
+      } else {
+        setError(resources.learningPlans.practiceMessageFailed);
+        setStatus('error');
       }
     } catch (error) {
       if (!controller.signal.aborted) {
@@ -230,14 +243,18 @@ export default function PracticeChatWorkbench({
   }
 
   async function handleMarkCompleted() {
-    if (!sessionId || completionUpdating || progressStatus === 'COMPLETED') {
+    if (!sessionId || completionUpdating || progressStatus === 'COMPLETED' || status === 'streaming') {
       return;
     }
 
+    const activeSessionId = sessionId;
     setCompletionUpdating(true);
     setError('');
     try {
       const response = await updatePracticeProgressStatus(sessionId, 'COMPLETED');
+      if (activeSessionIdRef.current !== activeSessionId) {
+        return;
+      }
       if (!response.success) {
         throw new Error(response.error?.message ?? resources.learningPlans.progressUpdateFailed);
       }
@@ -349,12 +366,12 @@ export default function PracticeChatWorkbench({
       <form className="practice-composer" aria-label={resources.learningPlans.sendMessage} onSubmit={handleSubmit}>
         <input
           aria-label={resources.learningPlans.composerLabel}
-          disabled={!sessionId || status === 'loading' || status === 'streaming'}
+          disabled={composerDisabled}
           onChange={(event) => setComposerValue(event.target.value)}
           placeholder={resources.learningPlans.composerPlaceholder}
           value={composerValue}
         />
-        <button className="primary-button compact" disabled={!sessionId || status === 'loading' || status === 'streaming'} type="submit">
+        <button className="primary-button compact" disabled={composerDisabled} type="submit">
           {resources.learningPlans.send}
         </button>
       </form>
