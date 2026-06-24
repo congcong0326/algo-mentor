@@ -995,6 +995,25 @@ describe('App', () => {
     expect(screen.getByText('回复失败，请重试。')).toHaveClass('practice-message-failed');
   });
 
+  it('marks the pending practice assistant message failed when the stream request fails', async () => {
+    const fetchMock = mockLearningPlanFetch({ failPracticeMessage: true });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' }));
+    fireEvent.click(await screen.findByRole('button', { name: /两数之和/ }));
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '这次请求会失败。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('stream failed');
+    expect(screen.getByText('回复失败，请重试。')).toHaveClass('practice-message-failed');
+  });
+
   it('blocks duplicate practice messages when an agent run is already in progress', async () => {
     const fetchMock = mockLearningPlanFetch({ blockPracticeMessage: true });
     vi.stubGlobal('fetch', fetchMock);
@@ -1370,6 +1389,7 @@ function mockLearningPlanAndProblemFetch() {
 
 function mockLearningPlanFetch(options: {
   blockPracticeMessage?: boolean;
+  failPracticeMessage?: boolean;
   omitLeetCodeUrl?: boolean;
   practiceMessageStream?: ReadableStream<Uint8Array>;
 } = {}) {
@@ -1410,6 +1430,14 @@ function mockLearningPlanFetch(options: {
     }
 
     if (url === '/api/practice-sessions/50/messages/stream') {
+      if (options.failPracticeMessage) {
+        return Promise.resolve(jsonResponse({
+          success: false,
+          error: { code: 'PRACTICE_STREAM_FAILED', message: 'stream failed' },
+          timestamp: '2026-06-22T00:00:00Z',
+        }, 500));
+      }
+
       if (options.blockPracticeMessage) {
         return Promise.resolve(jsonResponse({
           success: false,
