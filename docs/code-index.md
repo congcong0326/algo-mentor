@@ -35,12 +35,18 @@
 - `backend/agent-persistence-postgres/src/main/java/org/congcong/algomentor/agent/persistence/postgres/json`：PostgreSQL JSONB 与 agent message role 的 MyBatis type handler。
 - `backend/agent-persistence-postgres/src/main/resources/mapper/agent`：agent runtime MyBatis XML mapper 目录，SQL 只保存在 persistence 模块。
 - `backend/agent-persistence-postgres/src/main/resources/db/migration/agent`：agent runtime Flyway 迁移脚本目录，随 `classpath:db/migration` 被 API 应用递归扫描；这些目录共享同一个 Flyway 版本空间，新增 `V` 版本号需要跨模块唯一；`V3__agent_runtime_sequence_counters.sql` 使用数据库计数器/触发器分配 turn、message sequence 和 run attempt。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice`：题目训练会话应用层，包含 `PracticeSessionService`、`PracticeMessageStreamService`、prompt assembly 片段 provider、题面 catalog 端口和训练进度/消息领域模型。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/practice/PracticeSessionController.java`：题目训练会话 API，提供创建/读取 session、更新题目进度和专用 SSE 聊天入口。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/practice/repository/MyBatisPracticeSessionRepository.java`：practice session 的 PostgreSQL/MyBatis repository 实现，负责会话、进度和 agent message 映射。
+- `backend/mentor-api/src/main/resources/mapper/practice/PracticeSessionMapper.xml`：practice session SQL mapper，包含会话 upsert、进度更新和消息读取。
+- `backend/mentor-api/src/main/resources/db/migration/V12__practice_session_schema.sql`：题目训练会话和学习计划题目进度表迁移。
 
 ## 前端
 
 - `frontend/src/App.tsx`：学习工作台首屏。
 - `frontend/src/services/api.ts`：前端 API 调用封装。
 - `frontend/src/types/api.ts`：前后端共享契约的 TypeScript 表示。
+- `frontend/src/learning-plans/PracticeChatWorkbench.tsx`：题目训练聊天工作台，使用 practice session 专用 API 渲染题面 seed、流式 AI 回复、Review 占位入口、LeetCode 外链和题目完成状态。
 - `frontend/package.json`：React 19、TypeScript 6、Vite 8、Vitest 4 依赖与脚本。
 - `frontend/vite.config.ts`：Vite、React 插件和 Vitest 配置。
 
