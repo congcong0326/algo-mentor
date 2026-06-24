@@ -42,6 +42,27 @@ function sseStream(chunks: string[]): ReadableStream<Uint8Array> {
   });
 }
 
+function controlledSseStream(initialChunks: string[] = []) {
+  const encoder = new TextEncoder();
+  let streamController: ReadableStreamDefaultController<Uint8Array> | undefined;
+  const stream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      streamController = controller;
+      initialChunks.forEach((chunk) => controller.enqueue(encoder.encode(chunk)));
+    },
+  });
+
+  return {
+    stream,
+    enqueue(chunk: string) {
+      streamController?.enqueue(encoder.encode(chunk));
+    },
+    close() {
+      streamController?.close();
+    },
+  };
+}
+
 function sseEvent(eventName: string, data: unknown): string {
   return `event:${eventName}\ndata:${JSON.stringify(data)}\n\n`;
 }
@@ -824,7 +845,12 @@ describe('App', () => {
   });
 
   it('opens the practice chat workbench when selecting a problem from a plan detail page', async () => {
-    const fetchMock = mockLearningPlanFetch();
+    const practiceStream = controlledSseStream([
+      sseEvent('content_delta', { content: '可以' }),
+      sseEvent('content_delta', { content: '先用哈希表记录已经见过的数字。' }),
+      sseEvent('message_end', { finishReason: 'stop' }),
+    ]);
+    const fetchMock = mockLearningPlanFetch({ practiceMessageStream: practiceStream.stream });
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
 
@@ -879,6 +905,14 @@ describe('App', () => {
     }));
     expect(new Headers(streamInit.headers).get('Idempotency-Key')).toBe('generated-key');
     expectCsrfHeader(fetchMock, '/api/practice-sessions/50/messages/stream', 'POST');
+    expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
+
+    await act(async () => {
+      practiceStream.enqueue(sseEvent('agent_run_end', { runId: 'run_1' }));
+      practiceStream.close();
+    });
+
+    await waitFor(() => expect(screen.getByRole('button', { name: '发送' })).not.toBeDisabled());
 
     fireEvent.click(screen.getByRole('button', { name: '标记完成' }));
 
@@ -1255,7 +1289,7 @@ function mockLearningPlanAndProblemFetch() {
   });
 }
 
-function mockLearningPlanFetch() {
+function mockLearningPlanFetch(options: { practiceMessageStream?: ReadableStream<Uint8Array> } = {}) {
   let messagePosted = false;
   return vi.fn((url: string, init?: RequestInit) => {
     if (url === '/api/auth/me') {
@@ -1288,11 +1322,13 @@ function mockLearningPlanFetch() {
     }
 
     if (url === '/api/practice-sessions/50/messages/stream') {
-      return Promise.resolve(new Response(sseStream([
+      const stream = options.practiceMessageStream ?? sseStream([
         sseEvent('content_delta', { content: '可以' }),
         sseEvent('content_delta', { content: '先用哈希表记录已经见过的数字。' }),
         sseEvent('message_end', { finishReason: 'stop' }),
-      ]), { status: 200 }));
+        sseEvent('agent_run_end', { runId: 'run_1' }),
+      ]);
+      return Promise.resolve(new Response(stream, { status: 200 }));
     }
 
     if (url === '/api/practice-sessions/50/progress-status') {

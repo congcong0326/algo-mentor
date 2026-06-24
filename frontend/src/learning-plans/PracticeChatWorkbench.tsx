@@ -203,7 +203,7 @@ export default function PracticeChatWorkbench({
             }));
           }
 
-          if (event.eventName === 'agent_run_end' || event.eventName === 'message_end') {
+          if (event.eventName === 'agent_run_end') {
             setStatus('idle');
           }
 
