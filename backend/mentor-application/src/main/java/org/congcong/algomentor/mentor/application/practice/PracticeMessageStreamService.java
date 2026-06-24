@@ -7,12 +7,15 @@ import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationCommand;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunCoordinator;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 题目训练会话消息流式编排服务。
  */
 public class PracticeMessageStreamService {
 
+  private static final Logger log = LoggerFactory.getLogger(PracticeMessageStreamService.class);
   private static final String DEFAULT_LOCALE = "zh-CN";
 
   private final PracticeSessionRepository sessionRepository;
@@ -95,10 +98,14 @@ public class PracticeMessageStreamService {
 
         @Override
         public void onNext(AgentStreamEvent item) {
-          if (item instanceof AgentStreamEvent.AgentRunEnd) {
-            sessionRepository.touchLastMessageAt(sessionId);
-          }
           subscriber.onNext(item);
+          if (item instanceof AgentStreamEvent.AgentRunEnd) {
+            try {
+              sessionRepository.touchLastMessageAt(sessionId);
+            } catch (RuntimeException exception) {
+              log.warn("Failed to touch practice session last message time. sessionId={}", sessionId, exception);
+            }
+          }
         }
 
         @Override

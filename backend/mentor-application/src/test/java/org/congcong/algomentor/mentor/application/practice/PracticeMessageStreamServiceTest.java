@@ -102,6 +102,26 @@ class PracticeMessageStreamServiceTest {
   }
 
   @Test
+  void touchFailureDoesNotBreakRunEndOrCompletion() {
+    InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
+    sessionRepository.touchFailure = new IllegalStateException("touch failed");
+    CapturingCoordinator coordinator = new CapturingCoordinator(new AgentStreamEvent.AgentRunEnd(
+        "run-1",
+        1,
+        LlmFinishReason.STOP,
+        Map.of()));
+    PracticeMessageStreamService service = new PracticeMessageStreamService(sessionRepository, coordinator);
+
+    CollectingSubscriber subscriber = new CollectingSubscriber();
+    service.stream(7, 50, "hint", "idem-1", null, null).subscribe(subscriber);
+
+    assertThat(subscriber.events).singleElement().isInstanceOf(AgentStreamEvent.AgentRunEnd.class);
+    assertThat(subscriber.completed).isTrue();
+    assertThat(subscriber.error).isNull();
+    assertThat(sessionRepository.touchedSessionIds).containsExactly(50L);
+  }
+
+  @Test
   void rejectsMissingSession() {
     InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
     PracticeMessageStreamService service = new PracticeMessageStreamService(
@@ -155,6 +175,7 @@ class PracticeMessageStreamServiceTest {
 
     private PracticeSession session = session(PracticeSessionStatus.ACTIVE, 100L, "zh-CN");
     private final List<Long> touchedSessionIds = new ArrayList<>();
+    private RuntimeException touchFailure;
 
     @Override
     public PracticeProgress upsertAndAdvanceProgress(long userId, long planId, int phaseIndex, String problemSlug) {
@@ -196,6 +217,9 @@ class PracticeMessageStreamServiceTest {
     @Override
     public void touchLastMessageAt(long sessionId) {
       touchedSessionIds.add(sessionId);
+      if (touchFailure != null) {
+        throw touchFailure;
+      }
     }
 
     private PracticeSession session(PracticeSessionStatus status, Long agentTaskId, String locale) {
@@ -264,6 +288,7 @@ class PracticeMessageStreamServiceTest {
 
     private final List<AgentStreamEvent> events = new ArrayList<>();
     private Throwable error;
+    private boolean completed;
 
     @Override
     public void onSubscribe(Flow.Subscription subscription) {
@@ -282,6 +307,7 @@ class PracticeMessageStreamServiceTest {
 
     @Override
     public void onComplete() {
+      completed = true;
     }
   }
 
