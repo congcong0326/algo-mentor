@@ -17,6 +17,7 @@ afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
   document.documentElement.lang = '';
+  document.documentElement.removeAttribute('data-theme');
 });
 
 describe('AppShell', () => {
@@ -29,6 +30,8 @@ describe('AppShell', () => {
         currentUser={user}
         onLogout={vi.fn()}
         onNavigate={onNavigate}
+        onToggleTheme={vi.fn()}
+        theme="light"
       >
         <div>Current page</div>
       </AppShell>,
@@ -65,6 +68,8 @@ describe('AppShell', () => {
             currentUser={user}
             onLogout={vi.fn()}
             onNavigate={vi.fn()}
+            onToggleTheme={vi.fn()}
+            theme="light"
           >
             <div>Current page</div>
           </AppShell>
@@ -96,6 +101,8 @@ describe('AppShell', () => {
         logoutError="退出登录失败"
         onLogout={vi.fn()}
         onNavigate={vi.fn()}
+        onToggleTheme={vi.fn()}
+        theme="light"
       >
         <div>AI debug page</div>
       </AppShell>,
@@ -113,11 +120,51 @@ describe('AppShell', () => {
         logoutPending
         onLogout={vi.fn()}
         onNavigate={vi.fn()}
+        onToggleTheme={vi.fn()}
+        theme="light"
       >
         <div>AI debug page</div>
       </AppShell>,
     );
 
     expect(screen.getByRole('button', { name: '退出中' })).toBeDisabled();
+  });
+
+  it('renders the theme toggle with the next theme label', () => {
+    const onToggleTheme = vi.fn();
+
+    render(
+      <AppShell
+        activeView="home"
+        currentUser={user}
+        onLogout={vi.fn()}
+        onNavigate={vi.fn()}
+        onToggleTheme={onToggleTheme}
+        theme="light"
+      >
+        <div>Current page</div>
+      </AppShell>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '切换为深色模式' }));
+
+    expect(onToggleTheme).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders the light mode label when the current theme is dark', () => {
+    render(
+      <AppShell
+        activeView="home"
+        currentUser={user}
+        onLogout={vi.fn()}
+        onNavigate={vi.fn()}
+        onToggleTheme={vi.fn()}
+        theme="dark"
+      >
+        <div>Current page</div>
+      </AppShell>,
+    );
+
+    expect(screen.getByRole('button', { name: '切换为浅色模式' })).toBeInTheDocument();
   });
 });

@@ -11,6 +11,7 @@ import AiDebugConsole, {
 import AppShell from './app/AppShell';
 import LoginPage from './app/LoginPage';
 import { APP_ROUTES, pathForView, type AppView, viewFromPath } from './app/navigation';
+import { applyTheme, nextTheme, readStoredTheme, storeTheme, type AppTheme } from './app/theme';
 import { useI18n } from './i18n/I18nProvider';
 import { getCurrentUser, logout } from './services/api';
 import type { CurrentUser } from './types/api';
@@ -81,6 +82,7 @@ export default function App() {
   const [logoutPending, setLogoutPending] = useState(false);
   const [debugConnectionState, setDebugConnectionState] = useState<ConnectionState>('idle');
   const debugConsoleRef = useRef<AiDebugConsoleHandle | null>(null);
+  const [theme, setTheme] = useState<AppTheme>(() => readStoredTheme());
 
   useEffect(() => {
     let active = true;
@@ -90,6 +92,10 @@ export default function App() {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
 
   useEffect(() => {
     if (!currentUser) {
@@ -208,6 +214,14 @@ export default function App() {
     }
   }
 
+  function handleToggleTheme() {
+    setTheme((currentTheme) => {
+      const updatedTheme = nextTheme(currentTheme);
+      storeTheme(updatedTheme);
+      return updatedTheme;
+    });
+  }
+
   if (!authChecked) {
     if (!isLoginRoute(window.location.pathname)) {
       return <AppLoadingShell activeView={activeView} />;
@@ -257,6 +271,8 @@ export default function App() {
       logoutPending={logoutPending}
       onLogout={() => void handleLogout()}
       onNavigate={navigateToView}
+      onToggleTheme={handleToggleTheme}
+      theme={theme}
     >
       {activeView === 'home'
         ? <HomeDashboard onNavigate={navigateToView} />

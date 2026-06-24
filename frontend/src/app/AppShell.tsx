@@ -1,6 +1,7 @@
-import { LogOut } from 'lucide-react';
+import { LogOut, Moon, Sun } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { NAVIGATION_ITEMS, type AppView } from './navigation';
+import type { AppTheme } from './theme';
 import type { CurrentUser } from '../types/api';
 import LanguageSelector from '../i18n/LanguageSelector';
 import { useI18n } from '../i18n/I18nProvider';
@@ -14,6 +15,8 @@ interface AppShellProps {
   logoutPending?: boolean;
   onLogout: () => void;
   onNavigate: (view: AppView) => void;
+  onToggleTheme: () => void;
+  theme: AppTheme;
 }
 
 export default function AppShell({
@@ -25,9 +28,13 @@ export default function AppShell({
   logoutPending = false,
   onLogout,
   onNavigate,
+  onToggleTheme,
+  theme,
 }: AppShellProps) {
   const { resources } = useI18n();
   const userLabel = currentUser.displayName || currentUser.email || resources.app.unknownUser(currentUser.id);
+  const ThemeIcon = theme === 'light' ? Moon : Sun;
+  const themeLabel = theme === 'light' ? resources.app.switchToDarkMode : resources.app.switchToLightMode;
 
   return (
     <main className="app-shell">
@@ -55,6 +62,15 @@ export default function AppShell({
         </nav>
         <div className="app-header-actions">
           {debugStatus}
+          <button
+            aria-label={themeLabel}
+            className="icon-button theme-toggle-button"
+            onClick={onToggleTheme}
+            title={themeLabel}
+            type="button"
+          >
+            <ThemeIcon aria-hidden="true" />
+          </button>
           <LanguageSelector />
           <div className="auth-status" aria-label={resources.app.loginStatus}>
             <span>{userLabel}</span>
