@@ -1,4 +1,4 @@
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Info } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import MarkdownView from '../components/MarkdownView';
 import { formatDifficulty, formatProblemTitle } from '../i18n/formatters';
@@ -7,12 +7,37 @@ import type { SupportedLocale } from '../i18n/locales';
 import { getProblemDetail } from '../services/api';
 import type { LearningPlanDetailResponse, LearningPlanProblemDraft, ProblemDetail } from '../types/api';
 
+const LEETCODE_HOST_BY_LOCALE: Record<SupportedLocale, string> = {
+  'zh-CN': 'leetcode.cn',
+  'en-US': 'leetcode.com',
+};
+
+const LEETCODE_HOSTS = new Set(['leetcode.cn', 'www.leetcode.cn', 'leetcode.com', 'www.leetcode.com']);
+
 function problemLabel(problem: LearningPlanProblemDraft | undefined, locale: SupportedLocale, fallback: string): string {
   if (!problem) {
     return fallback;
   }
   const id = problem.frontendId ? `${problem.frontendId}. ` : '';
   return `${id}${formatProblemTitle(problem, locale)}`;
+}
+
+function localizedLeetCodeUrl(leetcodeUrl: string | undefined, locale: SupportedLocale): string | undefined {
+  if (!leetcodeUrl) {
+    return undefined;
+  }
+
+  try {
+    const url = new URL(leetcodeUrl);
+    if (!LEETCODE_HOSTS.has(url.hostname)) {
+      return leetcodeUrl;
+    }
+    url.protocol = 'https:';
+    url.hostname = LEETCODE_HOST_BY_LOCALE[locale];
+    return url.toString();
+  } catch {
+    return leetcodeUrl;
+  }
 }
 
 export default function PracticeChatWorkbench({
@@ -54,6 +79,7 @@ export default function PracticeChatWorkbench({
   }, [locale, problemSlug, resources.learningPlans.detailLoadProblemFailed]);
 
   const statement = problemDetail?.contentMarkdown.trim() || resources.learningPlans.statementUnavailable;
+  const leetcodeUrl = localizedLeetCodeUrl(problemDetail?.leetcodeUrl, locale);
 
   return (
     <article className="practice-workbench" aria-labelledby="practice-workbench-title">
@@ -75,6 +101,29 @@ export default function PracticeChatWorkbench({
             {formatDifficulty(problem?.difficulty, resources)}
           </span>
           <span className="status-badge">{resources.learningPlans.notStarted}</span>
+          {leetcodeUrl && (
+            <>
+              <span
+                aria-label={resources.learningPlans.practiceLeetCodeGuidance}
+                className="icon-button practice-guidance-icon"
+                role="img"
+                tabIndex={0}
+                title={resources.learningPlans.practiceLeetCodeGuidance}
+              >
+                <Info aria-hidden="true" />
+              </span>
+              <a
+                aria-label={resources.learningPlans.openLeetCode}
+                className="icon-button practice-leetcode-link"
+                href={leetcodeUrl}
+                rel="noreferrer"
+                target="_blank"
+                title={resources.learningPlans.openLeetCode}
+              >
+                <ExternalLink aria-hidden="true" />
+              </a>
+            </>
+          )}
         </div>
       </header>
 

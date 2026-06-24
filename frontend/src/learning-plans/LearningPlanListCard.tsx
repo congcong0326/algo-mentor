@@ -128,7 +128,6 @@ export default function LearningPlanListCard({
                           <strong>{plan.title}</strong>
                           <span className="status-badge">{formatPlanStatus(plan.status, resources)}</span>
                         </div>
-                        <p>{plan.goal}</p>
                         <div className="plan-meta-row" aria-label={resources.learningPlans.planParameters}>
                           <span>{inferProgrammingLanguage(plan, resources.learningPlans.unspecified)}</span>
                           <span>{formatPlanLevel(plan.level, resources)}</span>

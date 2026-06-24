@@ -1461,8 +1461,9 @@ a {
 .plan-list-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
   gap: 14px;
-  min-height: 112px;
+  min-height: 82px;
   padding: 14px;
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
@@ -1489,7 +1490,7 @@ a {
 
 .plan-title-line {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
   min-width: 0;
@@ -1504,17 +1505,6 @@ a {
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.plan-row-content p {
-  display: -webkit-box;
-  margin: 0;
-  overflow: hidden;
-  color: var(--text-secondary);
-  font-size: 13px;
-  line-height: 1.55;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
 }
 
 .plan-meta-row {
@@ -1541,6 +1531,7 @@ a {
   flex: 0 0 auto;
   gap: 8px;
   justify-content: flex-end;
+  align-self: start;
 }
 
 .plan-row-actions .icon-button {
@@ -1911,6 +1902,22 @@ a {
 .practice-toolbar h2 {
   margin: 2px 0 0;
   font-size: 18px;
+}
+
+.practice-leetcode-link {
+  flex: 0 0 auto;
+}
+
+.practice-guidance-icon {
+  flex: 0 0 auto;
+  color: var(--text-secondary);
+  cursor: help;
+}
+
+.practice-guidance-icon:hover,
+.practice-guidance-icon:focus-visible {
+  background: var(--surface-soft);
+  color: var(--text-primary);
 }
 
 .practice-message-list {

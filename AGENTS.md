@@ -50,6 +50,7 @@
 - TypeScript/React 使用 2 空格缩进；组件与文件使用 PascalCase，hooks 以 `use` 前缀；保持命名导出一致。
 - 学习工具类页面应优先服务高频操作：题目列表、练习状态、AI 讲解、错题复盘、学习计划和进度看板应信息密度适中、操作路径短。
 - 前端 API 类型应与后端 DTO 保持同步；复杂请求/响应建议在 `frontend/src/types` 和 `frontend/src/services` 中集中维护。
+- 修改或新增前端代码后，默认不要主动启动 Vite/前端开发服务器；用户习惯自行执行 `make up` 查看效果。仅在用户明确要求时才运行 `make frontend-dev`、`npm run dev` 或其他会启动 Vite 的命令。
 
 ## 测试指引
 - 后端单元测试使用 Maven Surefire；跨模块或依赖真实外部组件的测试使用 Failsafe，并以 `*IT.java` 命名。

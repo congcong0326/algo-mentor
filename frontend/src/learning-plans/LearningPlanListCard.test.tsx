@@ -47,7 +47,7 @@ describe('LearningPlanListCard', () => {
     expect(screen.getByRole('heading', { name: '训练方案' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '方案库' })).toBeInTheDocument();
     expect(screen.getByText('四周 Java 算法面试冲刺计划')).toBeInTheDocument();
-    expect(screen.getByText('准备 Java 后端算法面试')).toBeInTheDocument();
+    expect(screen.queryByText('准备 Java 后端算法面试')).not.toBeInTheDocument();
     expect(screen.queryByText('4 周 · 6 小时/周 · INTERVIEW_SPRINT · INTERMEDIATE')).not.toBeInTheDocument();
     expect(screen.getByText('Java')).toBeInTheDocument();
     expect(screen.getByText('中级')).toBeInTheDocument();
