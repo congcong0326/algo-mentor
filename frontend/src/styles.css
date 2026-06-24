@@ -1950,6 +1950,29 @@ a {
   margin: 0;
 }
 
+.practice-review-panel {
+  display: grid;
+  gap: 6px;
+  max-width: 840px;
+  padding: 14px 16px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 12px;
+  background: var(--surface-card);
+}
+
+.practice-review-panel h3,
+.practice-review-panel p {
+  margin: 0;
+}
+
+.practice-review-panel h3 {
+  font-size: 15px;
+}
+
+.practice-review-panel p {
+  color: var(--text-secondary);
+}
+
 .practice-message > span {
   color: var(--text-muted);
   font-size: 12px;
@@ -2076,13 +2099,16 @@ a {
   background: var(--surface-card);
 }
 
-.practice-composer input {
+.practice-composer textarea {
   width: 100%;
-  min-height: 42px;
-  padding: 0 12px;
+  min-height: 84px;
+  max-height: 220px;
+  padding: 10px 12px;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-control);
   background: var(--surface-muted);
+  line-height: 1.5;
+  resize: vertical;
 }
 
 .wizard-panel {

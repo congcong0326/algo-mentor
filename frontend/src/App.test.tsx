@@ -867,7 +867,7 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { level: 1, name: 'Two Sum' })).toBeInTheDocument();
     expect(screen.getByText('返回两个数的下标。').closest('li')).toBeInTheDocument();
     expect(await screen.findByText(/给定一个整数数组/)).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: /下方题目内容由 AI 自动生成/ })).toHaveAttribute(
+    expect(screen.getByRole('img', { name: /题面来自已校验题库/ })).toHaveAttribute(
       'title',
       expect.stringContaining('代码测试推荐在 LeetCode 上完成'),
     );
@@ -887,6 +887,10 @@ describe('App', () => {
       }),
     );
     expectCsrfHeader(fetchMock, '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=zh-CN');
+    expect(fetchMock.mock.calls.some(([url]) => String(url).startsWith('/api/problems/two-sum'))).toBe(false);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Review 记录' }));
+    expect(screen.getByText('代码 Review 记录暂未开放。')).toBeInTheDocument();
 
     fireEvent.change(screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
       target: { value: '我想用哈希表。' },
@@ -906,6 +910,7 @@ describe('App', () => {
     expect(new Headers(streamInit.headers).get('Idempotency-Key')).toBe('generated-key');
     expectCsrfHeader(fetchMock, '/api/practice-sessions/50/messages/stream', 'POST');
     expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
+    expect(screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' })).not.toBeDisabled();
     expect(screen.queryByRole('button', { name: '标记完成' })).not.toBeInTheDocument();
 
     await act(async () => {
@@ -913,7 +918,8 @@ describe('App', () => {
       practiceStream.close();
     });
 
-    await waitFor(() => expect(screen.getByRole('button', { name: '发送' })).not.toBeDisabled());
+    await waitFor(() => expect(screen.getByRole('button', { name: '标记完成' })).toBeInTheDocument());
+    expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
 
     fireEvent.click(screen.getByRole('button', { name: '标记完成' }));
 
@@ -955,8 +961,59 @@ describe('App', () => {
     });
 
     expect(await screen.findByRole('alert')).toHaveTextContent('消息发送失败，请稍后重试。');
-    expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
+    const composer = screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' });
+    expect(composer).not.toBeDisabled();
+    fireEvent.change(composer, {
+      target: { value: '我补充一个新的尝试。' },
+    });
+    expect(composer).toHaveValue('我补充一个新的尝试。');
+    expect(screen.getByRole('button', { name: '发送' })).not.toBeDisabled();
     expect(fetchMock.mock.calls.some(([url]) => url === '/api/practice-sessions/50/progress-status')).toBe(false);
+  });
+
+  it('blocks duplicate practice messages when an agent run is already in progress', async () => {
+    const fetchMock = mockLearningPlanFetch({ blockPracticeMessage: true });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' }));
+    expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /两数之和/ }));
+    expect(await screen.findByRole('heading', { level: 2, name: '1. 两数之和' })).toBeInTheDocument();
+
+    const composer = screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' });
+    fireEvent.change(composer, {
+      target: { value: '再解释一下。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('当前回复仍在生成中，请稍后再试。');
+    expect(composer).not.toBeDisabled();
+    expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
+  });
+
+  it('shows a disabled LeetCode action when the practice session has no LeetCode URL', async () => {
+    const fetchMock = mockLearningPlanFetch({ omitLeetCodeUrl: true });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' }));
+    expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /两数之和/ }));
+
+    expect(await screen.findByRole('heading', { level: 2, name: '1. 两数之和' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '打开 LeetCode 题目' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'LeetCode 链接暂不可用' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'LeetCode 链接暂不可用' })).toHaveAttribute(
+      'title',
+      'LeetCode 链接暂不可用',
+    );
   });
 
   it('uses the global LeetCode domain in an English practice chat workbench', async () => {
@@ -979,7 +1036,7 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/learning-plans/900/phases/1/problems/two-sum/chat');
     expect(await screen.findByRole('heading', { level: 2, name: '1. Two Sum' })).toBeInTheDocument();
     expect(await screen.findByRole('heading', { level: 1, name: 'Two Sum' })).toBeInTheDocument();
-    expect(screen.getByRole('img', { name: /generated by AI/ })).toHaveAttribute(
+    expect(screen.getByRole('img', { name: /verified problem library/ })).toHaveAttribute(
       'title',
       expect.stringContaining('Run code tests on LeetCode'),
     );
@@ -1287,7 +1344,11 @@ function mockLearningPlanAndProblemFetch() {
   });
 }
 
-function mockLearningPlanFetch(options: { practiceMessageStream?: ReadableStream<Uint8Array> } = {}) {
+function mockLearningPlanFetch(options: {
+  blockPracticeMessage?: boolean;
+  omitLeetCodeUrl?: boolean;
+  practiceMessageStream?: ReadableStream<Uint8Array>;
+} = {}) {
   let messagePosted = false;
   return vi.fn((url: string, init?: RequestInit) => {
     if (url === '/api/auth/me') {
@@ -1314,12 +1375,25 @@ function mockLearningPlanFetch(options: { practiceMessageStream?: ReadableStream
       || url === '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=en-US') {
       return Promise.resolve(jsonResponse({
         success: true,
-        data: practiceSessionResponse(),
+        data: practiceSessionResponse({
+          problem: {
+            ...basePracticeSessionResponse().problem,
+            ...(options.omitLeetCodeUrl ? { leetcodeUrl: undefined } : {}),
+          },
+        }),
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
 
     if (url === '/api/practice-sessions/50/messages/stream') {
+      if (options.blockPracticeMessage) {
+        return Promise.resolve(jsonResponse({
+          success: false,
+          error: { code: 'AGENT_RUN_IN_PROGRESS', message: 'agent run in progress' },
+          timestamp: '2026-06-22T00:00:00Z',
+        }, 409));
+      }
+
       const stream = options.practiceMessageStream ?? sseStream([
         sseEvent('content_delta', { content: '可以' }),
         sseEvent('content_delta', { content: '先用哈希表记录已经见过的数字。' }),
@@ -1357,23 +1431,6 @@ function mockLearningPlanFetch(options: { practiceMessageStream?: ReadableStream
         }),
         timestamp: '2026-06-22T00:00:00Z',
       }));
-    }
-
-    if (url.startsWith('/api/problems/two-sum')) {
-      return Promise.resolve(jsonResponse({
-        success: true,
-        data: problemDetail({
-          contentMarkdown: '# Two Sum\n\n给定一个整数数组 nums 和一个整数目标值 target。\n\n- 返回两个数的下标。\n\n```text\n输入：nums = [2,7,11,15], target = 9\n输出：[0,1]\n```\n\n<pre>给定 nums = [2, 7, 11, 15], target = 9\n\n因为 nums[<strong>0</strong>] + nums[<strong>1</strong>] = 2 + 7 = 9\n所以返回 [<strong>0, 1</strong>]\n</pre>\n\n<script>alert(\"xss\")</script>',
-        }),
-        timestamp: '2026-06-22T00:00:00Z',
-      }));
-    }
-
-    if (url === '/api/agent/conversations/stream') {
-      return Promise.resolve(new Response(sseStream([
-        sseEvent('content_delta', { content: '可以先从哈希表记录已访问数字入手。' }),
-        sseEvent('agent_run_end', { runId: 'run_practice' }),
-      ]), { status: 200 }));
     }
 
     if (url === '/api/learning-plans/drafts/stream') {
