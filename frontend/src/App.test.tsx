@@ -809,6 +809,7 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
     expect(screen.getByText('基础题型恢复')).toBeInTheDocument();
     expect(screen.getByText('两数之和')).toBeInTheDocument();
+    expect(screen.queryByText('进行中')).not.toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/learning-plans/900',
       expect.objectContaining({ headers: { Accept: 'application/json' } }),

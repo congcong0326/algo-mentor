@@ -1,5 +1,5 @@
 import { ArrowLeft } from 'lucide-react';
-import { formatPlanIntent, formatPlanStatus } from '../i18n/formatters';
+import { formatPlanIntent } from '../i18n/formatters';
 import { useI18n } from '../i18n/I18nProvider';
 import type { LearningPlanDetailResponse } from '../types/api';
 import PlanPreview from './PlanPreview';
@@ -27,7 +27,6 @@ export default function LearningPlanDetail({
           <h2>{plan.title}</h2>
           <p>{plan.summary}</p>
         </div>
-        <span className="status-badge">{formatPlanStatus(plan.status, resources)}</span>
       </div>
       <PlanPreview onProblemSelect={onProblemSelect} plan={plan} />
     </article>
