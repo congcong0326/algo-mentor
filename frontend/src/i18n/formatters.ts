@@ -1,4 +1,5 @@
 import type {
+  LearningPlanProblemDraft,
   LearningPlanDifficultyPreference,
   LearningPlanIntent,
   LearningPlanLevel,
@@ -8,7 +9,7 @@ import type {
 } from '../types/api';
 import type { LocaleResources, SupportedLocale } from './locales';
 
-type ProblemLike = Pick<ProblemListItem, 'title' | 'titleCn'>;
+type ProblemLike = Pick<ProblemListItem, 'title'> | Pick<LearningPlanProblemDraft, 'title' | 'titleCn'>;
 
 export function formatDate(value: string, locale: SupportedLocale, options?: Intl.DateTimeFormatOptions): string {
   const date = new Date(value);
@@ -40,7 +41,8 @@ export function formatTime(value: Date, locale: SupportedLocale): string {
 }
 
 export function formatProblemTitle(problem: ProblemLike, locale: SupportedLocale): string {
-  return locale === 'zh-CN' ? (problem.titleCn || problem.title) : problem.title;
+  const titleCn = 'titleCn' in problem ? problem.titleCn : undefined;
+  return locale === 'zh-CN' ? (titleCn || problem.title) : problem.title;
 }
 
 export function formatTopicTag(tag: string, resources: LocaleResources): string {

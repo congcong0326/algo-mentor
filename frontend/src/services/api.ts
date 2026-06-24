@@ -98,9 +98,10 @@ export async function getProblems(
 
 export async function getProblemDetail(
   slug: string,
+  locale?: ProblemListQuery['locale'],
   signal?: AbortSignal,
 ): Promise<ApiResponse<ProblemDetail>> {
-  const response = await fetch(`/api/problems/${encodeURIComponent(slug)}`, {
+  const response = await fetch(`/api/problems/${encodeURIComponent(slug)}${toQueryString({ locale })}`, {
     headers: jsonHeaders,
     credentials: 'same-origin',
     signal,

@@ -6,8 +6,11 @@ public record ProblemListItem(
     String slug,
     Integer frontendId,
     String title,
-    String titleCn,
     ProblemDifficulty difficulty,
-    List<String> tags
+    List<ProblemTag> tags
 ) {
+
+  public ProblemListItem {
+    tags = tags == null ? List.of() : List.copyOf(tags);
+  }
 }

@@ -3,6 +3,7 @@ package org.congcong.algomentor.api.controller.problem;
 import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.problem.model.ProblemDetail;
 import org.congcong.algomentor.api.problem.model.ProblemDifficulty;
+import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.api.problem.model.ProblemListItem;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
 import org.congcong.algomentor.api.problem.model.ProblemPage;
@@ -34,9 +35,11 @@ public class ProblemController {
       @RequestParam(required = false) String tag,
       @RequestParam(required = false) String category,
       @RequestParam(required = false) String sort,
+      @RequestParam(name = ApiContractConstants.PROBLEM_LOCALE_PARAM, required = false) String locale,
       @RequestParam(defaultValue = "1") int page,
       @RequestParam(defaultValue = "20") int pageSize
   ) {
+    ProblemLocale problemLocale = ProblemLocale.parse(locale);
     ProblemListRequest request = new ProblemListRequest(
         keyword,
         ProblemDifficulty.parse(difficulty),
@@ -44,13 +47,17 @@ public class ProblemController {
         category,
         ProblemSort.parse(sort),
         page,
-        pageSize);
+        pageSize,
+        problemLocale);
     return ApiResponse.success(problemService.findProblems(request));
   }
 
   @GetMapping("/{slug}")
-  public ApiResponse<ProblemDetail> getProblem(@PathVariable String slug) {
-    return problemService.findProblemBySlug(slug)
+  public ApiResponse<ProblemDetail> getProblem(
+      @PathVariable String slug,
+      @RequestParam(name = ApiContractConstants.PROBLEM_LOCALE_PARAM, required = false) String locale
+  ) {
+    return problemService.findProblemBySlug(slug, ProblemLocale.parse(locale))
         .map(ApiResponse::success)
         .orElseThrow(() -> new ProblemNotFoundException(slug));
   }

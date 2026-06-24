@@ -684,15 +684,17 @@ describe('App', () => {
     expect(await screen.findByRole('textbox', { name: '搜索题目' })).toBeInTheDocument();
     expect(await screen.findByText('两数之和')).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: '两数之和' })).toBeInTheDocument();
-    expect(screen.getByText('# Two Sum')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Two Sum' })).toBeInTheDocument();
+    expect(screen.getByText('注意：').closest('strong')).toBeInTheDocument();
+    expect(screen.queryByText('**注意：**')).not.toBeInTheDocument();
     expect(screen.getByText(/class Solution:/)).toBeInTheDocument();
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/problems?sort=frontend_id_asc&page=1&pageSize=20',
+      '/api/problems?sort=frontend_id_asc&locale=zh-CN&page=1&pageSize=20',
       expect.objectContaining({ headers: { Accept: 'application/json' } }),
     );
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/problems/two-sum',
+      '/api/problems/two-sum?locale=zh-CN',
       expect.objectContaining({ headers: { Accept: 'application/json' } }),
     );
   });
@@ -713,14 +715,14 @@ describe('App', () => {
     });
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
-      '/api/problems?keyword=tree&difficulty=HARD&sort=frontend_id_asc&page=1&pageSize=20',
+      '/api/problems?keyword=tree&difficulty=HARD&sort=frontend_id_asc&locale=zh-CN&page=1&pageSize=20',
       expect.any(Object),
     ));
 
     fireEvent.click(screen.getByRole('button', { name: '下一页' }));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
-      '/api/problems?keyword=tree&difficulty=HARD&sort=frontend_id_asc&page=2&pageSize=20',
+      '/api/problems?keyword=tree&difficulty=HARD&sort=frontend_id_asc&locale=zh-CN&page=2&pageSize=20',
       expect.any(Object),
     ));
   });
@@ -841,7 +843,7 @@ describe('App', () => {
     expect(screen.getByText('0').closest('strong')).toBeInTheDocument();
     expect(document.querySelector('script')).not.toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/problems/two-sum',
+      '/api/problems/two-sum?locale=zh-CN',
       expect.objectContaining({ headers: { Accept: 'application/json' } }),
     );
   });
@@ -1014,10 +1016,9 @@ function mockProblemFetch(total = 1) {
           items: [{
             slug: 'two-sum',
             frontendId: 1,
-            title: 'Two Sum',
-            titleCn: '两数之和',
+            title: '两数之和',
             difficulty: 'EASY',
-            tags: ['Array'],
+            tags: [{ value: 'array', label: '数组' }],
           }],
           total,
           page: Number(new URL(`http://localhost${url}`).searchParams.get('page') ?? '1'),
@@ -1121,10 +1122,9 @@ function mockLearningPlanAndProblemFetch() {
           items: [{
             slug: 'two-sum',
             frontendId: 1,
-            title: 'Two Sum',
-            titleCn: '两数之和',
+            title: '两数之和',
             difficulty: 'EASY',
-            tags: ['Array'],
+            tags: [{ value: 'array', label: '数组' }],
           }],
           total: 1,
           page: 1,
@@ -1160,7 +1160,7 @@ function mockLearningPlanFetch() {
       }));
     }
 
-    if (url === '/api/problems/two-sum') {
+    if (url.startsWith('/api/problems/two-sum')) {
       return Promise.resolve(jsonResponse({
         success: true,
         data: problemDetail({
@@ -1578,11 +1578,10 @@ function baseProblemDetail() {
   return {
     slug: 'two-sum',
     frontendId: 1,
-    title: 'Two Sum',
-    titleCn: '两数之和',
+    title: '两数之和',
     difficulty: 'EASY',
-    tags: ['Array', 'Hash Table'],
-    contentMarkdown: '# Two Sum',
+    tags: [{ value: 'array', label: '数组' }, { value: 'hash-table', label: '哈希表' }],
+    contentMarkdown: '# Two Sum\n\n**注意：**请返回下标而不是数值。',
     leetcodeUrl: 'https://leetcode.com/problems/two-sum/',
     sampleTestCase: '[2,7,11,15]\n9',
     python3Template: 'class Solution:\n    pass',

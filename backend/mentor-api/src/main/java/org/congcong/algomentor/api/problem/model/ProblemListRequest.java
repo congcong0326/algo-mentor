@@ -7,7 +7,8 @@ public record ProblemListRequest(
     String category,
     ProblemSort sort,
     int page,
-    int pageSize
+    int pageSize,
+    ProblemLocale locale
 ) {
 
   public static final int DEFAULT_PAGE = 1;
@@ -18,6 +19,7 @@ public record ProblemListRequest(
     page = Math.max(DEFAULT_PAGE, page);
     pageSize = Math.max(1, Math.min(MAX_PAGE_SIZE, pageSize));
     sort = sort == null ? ProblemSort.DEFAULT : sort;
+    locale = locale == null ? ProblemLocale.DEFAULT : locale;
     keyword = blankToNull(keyword);
     tag = blankToNull(tag);
     category = blankToNull(category);

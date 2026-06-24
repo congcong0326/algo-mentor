@@ -1,6 +1,7 @@
 package org.congcong.algomentor.api.controller.problem;
 
 import org.congcong.algomentor.common.api.ApiResponse;
+import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ProblemExceptionHandler {
 
   public static final String PROBLEM_NOT_FOUND_CODE = "PROBLEM_NOT_FOUND";
+  public static final String UNSUPPORTED_PROBLEM_LOCALE_CODE = "UNSUPPORTED_PROBLEM_LOCALE";
 
   @ExceptionHandler(ProblemController.ProblemNotFoundException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -22,5 +24,11 @@ public class ProblemExceptionHandler {
   @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
   public ApiResponse<Void> repositoryUnavailable(ProblemService.ProblemRepositoryUnavailableException exception) {
     return ApiResponse.failure("PROBLEM_REPOSITORY_UNAVAILABLE", exception.getMessage());
+  }
+
+  @ExceptionHandler(ProblemLocale.UnsupportedProblemLocaleException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ApiResponse<Void> unsupportedLocale(ProblemLocale.UnsupportedProblemLocaleException exception) {
+    return ApiResponse.failure(UNSUPPORTED_PROBLEM_LOCALE_CODE, exception.getMessage());
   }
 }

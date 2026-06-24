@@ -27,8 +27,8 @@ class ProblemSeedImporterTest {
   @Test
   void importSeedUpsertsJsonlRows() throws Exception {
     Files.writeString(tempDir.resolve("problems.jsonl"), """
-        {"slug":"two-sum","frontendId":1,"title":"Two Sum","difficulty":"EASY","tags":["Array"],"contentMarkdown":"old"}
-        {"slug":"two-sum","frontendId":1,"title":"Two Sum Updated","difficulty":"EASY","tags":["Array","Hash Table"],"contentMarkdown":"new"}
+        {"slug":"two-sum","frontendId":1,"titleEn":"Two Sum","titleZh":"两数之和","difficulty":"EASY","tagValues":["array"],"tagLabelsEn":["Array"],"tagLabelsZh":["数组"],"contentMarkdownEn":"old","contentMarkdownZh":"旧"}
+        {"slug":"two-sum","frontendId":1,"titleEn":"Two Sum Updated","titleZh":"两数之和更新","difficulty":"EASY","tagValues":["array","hash-table"],"tagLabelsEn":["Array","Hash Table"],"tagLabelsZh":["数组","哈希表"],"contentMarkdownEn":"new","contentMarkdownZh":"新"}
         """);
     InMemoryProblemRepository repository = new InMemoryProblemRepository();
     ProblemSeedImporter importer = new ProblemSeedImporter(new StaticObjectProvider<>(repository), new ObjectMapper());
@@ -38,8 +38,8 @@ class ProblemSeedImporterTest {
     assertThat(imported).isEqualTo(2);
     assertThat(repository.upsertCalls).isEqualTo(2);
     assertThat(repository.records).hasSize(1);
-    assertThat(repository.records.get("two-sum").title()).isEqualTo("Two Sum Updated");
-    assertThat(repository.records.get("two-sum").tags()).containsExactly("Array", "Hash Table");
+    assertThat(repository.records.get("two-sum").titleEn()).isEqualTo("Two Sum Updated");
+    assertThat(repository.records.get("two-sum").tagValues()).containsExactly("array", "hash-table");
   }
 
   static class InMemoryProblemRepository implements ProblemRepository {

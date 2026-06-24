@@ -5,6 +5,8 @@ import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.DIF
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.FRONTEND_ID;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.ITEMS;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.KEYWORD;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.LABEL;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.LOCALE;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.PAGE;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.PAGE_SIZE;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.SEARCH_PROBLEMS;
@@ -13,8 +15,8 @@ import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.SOR
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.TAG;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.TAGS;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.TITLE;
-import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.TITLE_CN;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.TOTAL;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.VALUE;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -28,10 +30,12 @@ import org.congcong.algomentor.agent.core.AgentExecutionContext;
 import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.api.problem.model.ProblemDifficulty;
 import org.congcong.algomentor.api.problem.model.ProblemFilterOption;
+import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.api.problem.model.ProblemListItem;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
 import org.congcong.algomentor.api.problem.model.ProblemPage;
 import org.congcong.algomentor.api.problem.model.ProblemSort;
+import org.congcong.algomentor.api.problem.model.ProblemTag;
 import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 
@@ -58,7 +62,7 @@ public final class SearchProblemsTool implements AgentTool {
   public JsonNode execute(JsonNode arguments, AgentExecutionContext context) {
     try {
       ProblemListRequest request = request(arguments);
-      validateTag(request.tag());
+      validateTag(request.tag(), request.locale());
       ProblemPage<ProblemListItem> page = problemService.findProblems(request);
       return output(page, request);
     } catch (AgentException exception) {
@@ -88,7 +92,8 @@ public final class SearchProblemsTool implements AgentTool {
         PAGE_SIZE,
         ProblemListRequest.DEFAULT_PAGE_SIZE,
         SEARCH_PROBLEMS);
-    return new ProblemListRequest(keyword, difficulty, tag, null, sort, page, pageSize);
+    ProblemLocale locale = locale(arguments);
+    return new ProblemListRequest(keyword, difficulty, tag, null, sort, page, pageSize, locale);
   }
 
   private ProblemDifficulty difficulty(String raw) {
@@ -119,11 +124,19 @@ public final class SearchProblemsTool implements AgentTool {
     }
   }
 
-  private void validateTag(String tag) {
+  private ProblemLocale locale(JsonNode arguments) {
+    try {
+      return ProblemLocale.parse(ProblemAgentToolSupport.optionalText(arguments, LOCALE, SEARCH_PROBLEMS));
+    } catch (ProblemLocale.UnsupportedProblemLocaleException exception) {
+      throw ProblemAgentToolSupport.toolFailure(SEARCH_PROBLEMS, exception.getMessage(), exception);
+    }
+  }
+
+  private void validateTag(String tag, ProblemLocale locale) {
     if (tag == null) {
       return;
     }
-    Set<String> tags = problemService.findProblemFilters().tags().stream()
+    Set<String> tags = problemService.findProblemFilters(locale).tags().stream()
         .map(ProblemFilterOption::value)
         .collect(Collectors.toUnmodifiableSet());
     if (!tags.contains(tag)) {
@@ -155,11 +168,12 @@ public final class SearchProblemsTool implements AgentTool {
         node.put(FRONTEND_ID, item.frontendId());
       }
       ProblemAgentToolSupport.putNullable(node, TITLE, item.title());
-      ProblemAgentToolSupport.putNullable(node, TITLE_CN, item.titleCn());
       node.put(DIFFICULTY, item.difficulty() == null ? null : item.difficulty().name());
       ArrayNode tags = node.putArray(TAGS);
-      for (String tag : item.tags()) {
-        tags.add(tag);
+      for (ProblemTag tag : item.tags()) {
+        ObjectNode tagNode = tags.addObject();
+        tagNode.put(VALUE, tag.value());
+        tagNode.put(LABEL, tag.label());
       }
       nodes.add(node);
     }
@@ -174,6 +188,7 @@ public final class SearchProblemsTool implements AgentTool {
     node.put(SORT, request.sort().name());
     node.put(PAGE, request.page());
     node.put(PAGE_SIZE, request.pageSize());
+    node.put(LOCALE, request.locale().value());
     return node;
   }
 
@@ -205,6 +220,10 @@ public final class SearchProblemsTool implements AgentTool {
         "Items per page. Use null for the default page size.",
         1,
         ProblemListRequest.MAX_PAGE_SIZE));
+    ObjectNode locale = ProblemAgentToolSupport.nullableStringProperty(
+        "Problem content locale. Use zh-CN/zh for Chinese, en-US/en for English, or null for zh-CN.");
+    locale.putArray(ProblemAgentToolSupport.ENUM).add("zh-CN").add("zh").add("en-US").add("en").addNull();
+    properties.set(LOCALE, locale);
     ProblemAgentToolSupport.requireAllProperties(schema);
     return schema;
   }

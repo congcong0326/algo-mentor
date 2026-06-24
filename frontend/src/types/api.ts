@@ -35,17 +35,22 @@ export interface ProblemListQuery {
   tag?: string;
   category?: string;
   sort?: 'frontend_id_asc' | 'frontend_id_desc' | 'title_asc' | 'updated_desc';
+  locale?: 'zh-CN' | 'en-US';
   page?: number;
   pageSize?: number;
+}
+
+export interface ProblemTag {
+  value: string;
+  label: string;
 }
 
 export interface ProblemListItem {
   slug: string;
   frontendId?: number;
   title: string;
-  titleCn?: string;
   difficulty?: ProblemDifficulty;
-  tags: string[];
+  tags: ProblemTag[];
 }
 
 export interface ProblemDetail extends ProblemListItem {

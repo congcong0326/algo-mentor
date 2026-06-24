@@ -3,7 +3,9 @@ package org.congcong.algomentor.api.problem.tool;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.CATEGORIES;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.DIFFICULTIES;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.INCLUDE_COUNTS;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.LABEL;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.LIST_PROBLEM_FILTERS;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.LOCALE;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.NAME;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.NOTES;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.PROBLEM_COUNT;
@@ -22,6 +24,7 @@ import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.api.problem.model.ProblemCategoryFilterOption;
 import org.congcong.algomentor.api.problem.model.ProblemFilterOption;
 import org.congcong.algomentor.api.problem.model.ProblemFilters;
+import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.api.problem.model.ProblemSort;
 import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
@@ -53,7 +56,8 @@ public final class ListProblemFiltersTool implements AgentTool {
           INCLUDE_COUNTS,
           true,
           LIST_PROBLEM_FILTERS);
-      ProblemFilters filters = problemService.findProblemFilters();
+      ProblemLocale locale = locale(arguments);
+      ProblemFilters filters = problemService.findProblemFilters(locale);
       return output(filters, includeCounts);
     } catch (AgentException exception) {
       throw exception;
@@ -83,6 +87,7 @@ public final class ListProblemFiltersTool implements AgentTool {
     for (ProblemFilterOption option : options) {
       ObjectNode node = JsonNodeFactory.instance.objectNode();
       node.put(VALUE, option.value());
+      node.put(LABEL, option.label());
       if (includeCounts) {
         node.put(PROBLEM_COUNT, option.problemCount());
       }
@@ -127,7 +132,19 @@ public final class ListProblemFiltersTool implements AgentTool {
     ObjectNode properties = schema.putObject(ProblemAgentToolSupport.PROPERTIES);
     properties.set(INCLUDE_COUNTS, ProblemAgentToolSupport.nullableBooleanProperty(
         "Whether to include problem counts for each returned filter value. Use null to apply the default true."));
+    ObjectNode locale = ProblemAgentToolSupport.nullableStringProperty(
+        "Problem content locale. Use zh-CN/zh for Chinese, en-US/en for English, or null for zh-CN.");
+    locale.putArray(ProblemAgentToolSupport.ENUM).add("zh-CN").add("zh").add("en-US").add("en").addNull();
+    properties.set(LOCALE, locale);
     ProblemAgentToolSupport.requireAllProperties(schema);
     return schema;
+  }
+
+  private ProblemLocale locale(JsonNode arguments) {
+    try {
+      return ProblemLocale.parse(ProblemAgentToolSupport.optionalText(arguments, LOCALE, LIST_PROBLEM_FILTERS));
+    } catch (ProblemLocale.UnsupportedProblemLocaleException exception) {
+      throw ProblemAgentToolSupport.toolFailure(LIST_PROBLEM_FILTERS, exception.getMessage(), exception);
+    }
   }
 }

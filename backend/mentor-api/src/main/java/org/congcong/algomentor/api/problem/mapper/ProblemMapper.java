@@ -24,6 +24,7 @@ public interface ProblemMapper {
       @Param("tag") String tag,
       @Param("category") String category,
       @Param("sort") String sort,
+      @Param("locale") String locale,
       @Param("limit") int limit,
       @Param("offset") int offset
   );
@@ -34,7 +35,7 @@ public interface ProblemMapper {
 
   List<ProblemFilterCountRow> countProblemsByDifficulty();
 
-  List<ProblemFilterCountRow> countProblemsByTag();
+  List<ProblemFilterCountRow> countProblemsByTag(@Param("locale") String locale);
 
   List<ProblemCategoryFilterRow> countProblemCategories();
 

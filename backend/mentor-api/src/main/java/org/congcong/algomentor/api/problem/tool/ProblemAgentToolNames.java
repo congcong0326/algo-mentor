@@ -61,6 +61,16 @@ public final class ProblemAgentToolNames {
   public static final String VALUE = "value";
 
   /**
+   * 当前语言展示名称。
+   */
+  public static final String LABEL = "label";
+
+  /**
+   * 题库内容语言。
+   */
+  public static final String LOCALE = "locale";
+
+  /**
    * 题目稳定标识。
    */
   public static final String SLUG = "slug";
@@ -84,11 +94,6 @@ public final class ProblemAgentToolNames {
    * 英文题名。
    */
   public static final String TITLE = "title";
-
-  /**
-   * 中文题名。
-   */
-  public static final String TITLE_CN = "titleCn";
 
   /**
    * 题目难度。

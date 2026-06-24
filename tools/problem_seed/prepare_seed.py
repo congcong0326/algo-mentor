@@ -9,6 +9,7 @@ import re
 import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -21,11 +22,14 @@ DEFAULT_SOURCE_REPOSITORY = "fishjar/leetcode-problemset"
 class SeedProblem:
     slug: str
     frontend_id: int | None
-    title: str
-    title_cn: str | None
+    title_en: str
+    title_zh: str
     difficulty: str | None
-    tags: list[str]
-    content_markdown: str
+    tag_values: list[str]
+    tag_labels_en: list[str]
+    tag_labels_zh: list[str]
+    content_markdown_en: str
+    content_markdown_zh: str
     leetcode_url: str | None
     sample_test_case: str | None
     python3_template: str | None
@@ -45,7 +49,7 @@ def main() -> None:
 
 
 def build_seed(source_dir: Path) -> list[SeedProblem]:
-    metadata_by_key = load_problem_metadata(source_dir / "problemset")
+    metadata_by_key = load_problem_metadata(source_dir)
     markdown_dir = source_dir / "problemset_md"
     commit = source_commit(source_dir)
     problems: list[SeedProblem] = []
@@ -64,12 +68,12 @@ def build_seed(source_dir: Path) -> list[SeedProblem]:
     return dedupe_by_slug(problems)
 
 
-def load_problem_metadata(problemset_dir: Path) -> dict[str, dict[str, Any]]:
-    if not problemset_dir.exists():
+def load_problem_metadata(source_dir: Path) -> dict[str, dict[str, Any]]:
+    if not source_dir.exists():
         return {}
 
     metadata: dict[str, dict[str, Any]] = {}
-    for path in sorted(problemset_dir.rglob("*.json")):
+    for path in sorted(source_dir.rglob("*.json")):
         try:
             raw = json.loads(path.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, UnicodeDecodeError):
@@ -78,13 +82,18 @@ def load_problem_metadata(problemset_dir: Path) -> dict[str, dict[str, Any]]:
         for item in flatten_problem_records(raw):
             keys = metadata_keys(item, path)
             for key in keys:
-                metadata.setdefault(key, item)
+                existing = metadata.get(key)
+                if existing is None or metadata_score(item) > metadata_score(existing):
+                    metadata[key] = item
 
     return metadata
 
 
 def flatten_problem_records(raw: Any) -> Iterable[dict[str, Any]]:
     if isinstance(raw, dict):
+        if isinstance(raw.get("question"), dict):
+            yield raw["question"]
+            return
         if "stat" in raw or "questionFrontendId" in raw or "titleSlug" in raw:
             yield raw
             return
@@ -125,20 +134,27 @@ def parse_problem(
     metadata: dict[str, Any],
     commit: str | None,
 ) -> SeedProblem | None:
-    content_markdown = strip_solution(markdown).strip()
-    title = read_title(content_markdown, metadata)
-    slug = read_slug(markdown_file, metadata, title)
-    if not slug or not title or not content_markdown:
+    fallback_markdown = strip_solution(markdown).strip()
+    title_en = read_title(fallback_markdown, metadata)
+    title_zh = read_title_zh(metadata, title_en)
+    slug = read_slug(markdown_file, metadata, title_en)
+    content_markdown_en = read_content_markdown_en(fallback_markdown, metadata, title_en)
+    content_markdown_zh = read_content_markdown_zh(fallback_markdown, metadata, title_zh, title_en)
+    tag_values, tag_labels_en, tag_labels_zh = read_tags(metadata)
+    if not slug or not title_en or not title_zh or not content_markdown_en or not content_markdown_zh:
         return None
 
     return SeedProblem(
         slug=slug,
         frontend_id=read_frontend_id(markdown_file, metadata),
-        title=title,
-        title_cn=read_title_cn(metadata),
+        title_en=title_en,
+        title_zh=title_zh,
         difficulty=read_difficulty(metadata),
-        tags=read_tags(metadata),
-        content_markdown=content_markdown,
+        tag_values=tag_values,
+        tag_labels_en=tag_labels_en,
+        tag_labels_zh=tag_labels_zh,
+        content_markdown_en=content_markdown_en,
+        content_markdown_zh=content_markdown_zh,
         leetcode_url=read_leetcode_url(slug, metadata),
         sample_test_case=as_optional_string(metadata.get("sampleTestCase") or metadata.get("sample_test_case")),
         python3_template=read_python3_template(metadata),
@@ -175,11 +191,14 @@ def problem_to_dict(problem: SeedProblem) -> dict[str, Any]:
     return {
         "slug": problem.slug,
         "frontendId": problem.frontend_id,
-        "title": problem.title,
-        "titleCn": problem.title_cn,
+        "titleEn": problem.title_en,
+        "titleZh": problem.title_zh,
         "difficulty": problem.difficulty,
-        "tags": problem.tags,
-        "contentMarkdown": problem.content_markdown,
+        "tagValues": problem.tag_values,
+        "tagLabelsEn": problem.tag_labels_en,
+        "tagLabelsZh": problem.tag_labels_zh,
+        "contentMarkdownEn": problem.content_markdown_en,
+        "contentMarkdownZh": problem.content_markdown_zh,
         "leetcodeUrl": problem.leetcode_url,
         "sampleTestCase": problem.sample_test_case,
         "python3Template": problem.python3_template,
@@ -240,12 +259,13 @@ def read_frontend_id(markdown_file: Path, metadata: dict[str, Any]) -> int | Non
         return None
 
 
-def read_title_cn(metadata: dict[str, Any]) -> str | None:
+def read_title_zh(metadata: dict[str, Any], title_en: str | None) -> str | None:
     return as_optional_string(first_non_empty(
         metadata.get("translatedTitle"),
         metadata.get("translated_title"),
         metadata.get("titleCn"),
         metadata.get("title_cn"),
+        title_en,
     ))
 
 
@@ -267,20 +287,57 @@ def read_difficulty(metadata: dict[str, Any]) -> str | None:
     }.get(value, value)
 
 
-def read_tags(metadata: dict[str, Any]) -> list[str]:
+def read_content_markdown_en(markdown: str, metadata: dict[str, Any], title_en: str | None) -> str:
+    content = as_optional_string(first_non_empty(metadata.get("content"), metadata.get("content_en")))
+    if content and title_en:
+        return markdown_with_title(title_en, html_to_markdown(content))
+    english, _ = split_markdown_translation(markdown)
+    return english
+
+
+def read_content_markdown_zh(
+    markdown: str,
+    metadata: dict[str, Any],
+    title_zh: str | None,
+    title_en: str | None,
+) -> str:
+    content = as_optional_string(first_non_empty(
+        metadata.get("translatedContent"),
+        metadata.get("translated_content"),
+        metadata.get("content_zh"),
+    ))
+    if content and title_zh:
+        return markdown_with_title(title_zh, html_to_markdown(content))
+    _, translated = split_markdown_translation(markdown)
+    if translated and title_zh:
+        return markdown_with_title(title_zh, translated)
+    return markdown_with_title(title_zh or title_en or "", strip_heading(markdown))
+
+
+def read_tags(metadata: dict[str, Any]) -> tuple[list[str], list[str], list[str]]:
     raw = first_non_empty(metadata.get("topicTags"), metadata.get("topic_tags"), metadata.get("tags"))
     if not isinstance(raw, list):
-        return []
+        return [], [], []
 
-    tags: list[str] = []
+    tags: dict[str, tuple[str, str]] = {}
     for item in raw:
         if isinstance(item, dict):
-            tag = first_non_empty(item.get("name"), item.get("slug"), item.get("translatedName"))
+            slug = as_optional_string(first_non_empty(item.get("slug"), item.get("value"), item.get("name")))
+            label_en = as_optional_string(first_non_empty(item.get("name"), slug))
+            label_zh = as_optional_string(first_non_empty(
+                item.get("translatedName"),
+                item.get("translated_name"),
+                label_en,
+            ))
         else:
-            tag = item
-        if tag:
-            tags.append(str(tag).strip())
-    return sorted(set(tags))
+            label_en = as_optional_string(item)
+            label_zh = label_en
+            slug = normalize_slug(label_en or "")
+        if slug and label_en:
+            tags.setdefault(slug, (label_en, label_zh or label_en))
+
+    values = sorted(tags)
+    return values, [tags[value][0] for value in values], [tags[value][1] for value in values]
 
 
 def read_leetcode_url(slug: str, metadata: dict[str, Any]) -> str | None:
@@ -327,6 +384,130 @@ def dedupe_by_slug(problems: list[SeedProblem]) -> list[SeedProblem]:
     for problem in problems:
         deduped.setdefault(problem.slug, problem)
     return list(deduped.values())
+
+
+def metadata_score(item: dict[str, Any]) -> int:
+    score = 0
+    for key in ("content", "translatedContent", "codeSnippets", "topicTags", "sampleTestCase"):
+        if item.get(key):
+            score += 1
+    return score
+
+
+def split_markdown_translation(markdown: str) -> tuple[str, str | None]:
+    match = re.search(r"(?im)^##\s*翻译\b.*$", markdown)
+    if not match:
+        return markdown.strip(), None
+    english = markdown[:match.start()].strip()
+    translated = markdown[match.end():].strip()
+    return english, translated or None
+
+
+def strip_heading(markdown: str) -> str:
+    lines = markdown.strip().splitlines()
+    if lines and lines[0].startswith("# "):
+        return "\n".join(lines[1:]).strip()
+    return markdown.strip()
+
+
+def markdown_with_title(title: str, body: str) -> str:
+    return f"# {title.strip()}\n\n{strip_heading(body).strip()}".strip()
+
+
+class SimpleHtmlMarkdownParser(HTMLParser):
+
+    BLOCK_TAGS = {"div", "p", "section", "article", "blockquote"}
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.parts: list[str] = []
+        self.in_pre = False
+        self.in_inline_code = False
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag in self.BLOCK_TAGS:
+            self.ensure_blank_line()
+        elif tag == "br":
+            self.write("\n")
+        elif tag == "pre":
+            self.ensure_blank_line()
+            self.write("```text\n")
+            self.in_pre = True
+        elif tag == "code" and not self.in_pre:
+            self.write("`")
+            self.in_inline_code = True
+        elif tag in {"strong", "b"} and not self.in_pre:
+            self.write("**")
+        elif tag in {"em", "i"} and not self.in_pre:
+            self.write("_")
+        elif tag in {"ul", "ol"}:
+            self.ensure_blank_line()
+        elif tag == "li":
+            self.ensure_line_start()
+            self.write("- ")
+        elif tag == "sup":
+            self.write("<sup>")
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in self.BLOCK_TAGS:
+            self.ensure_blank_line()
+        elif tag == "pre":
+            self.in_pre = False
+            self.write("\n```\n")
+            self.ensure_blank_line()
+        elif tag == "code" and self.in_inline_code and not self.in_pre:
+            self.write("`")
+            self.in_inline_code = False
+        elif tag in {"strong", "b"} and not self.in_pre:
+            self.write("**")
+        elif tag in {"em", "i"} and not self.in_pre:
+            self.write("_")
+        elif tag in {"ul", "ol"}:
+            self.ensure_blank_line()
+        elif tag == "li":
+            self.write("\n")
+        elif tag == "sup":
+            self.write("</sup>")
+
+    def handle_data(self, data: str) -> None:
+        if not data:
+            return
+        text = data.replace("\xa0", " ")
+        if not self.in_pre:
+            text = re.sub(r"[ \t\r\n]+", " ", text)
+        self.write(text)
+
+    def markdown(self) -> str:
+        text = "".join(self.parts)
+        text = re.sub(r"[ \t]+\n", "\n", text)
+        text = re.sub(r"\n{3,}", "\n\n", text)
+        return text.strip()
+
+    def write(self, text: str) -> None:
+        self.parts.append(text)
+
+    def ensure_blank_line(self) -> None:
+        current = "".join(self.parts)
+        if not current:
+            return
+        if current.endswith("\n\n"):
+            return
+        if current.endswith("\n"):
+            self.write("\n")
+        else:
+            self.write("\n\n")
+
+    def ensure_line_start(self) -> None:
+        current = "".join(self.parts)
+        if current and not current.endswith("\n"):
+            self.write("\n")
+
+
+def html_to_markdown(html: str) -> str:
+    parser = SimpleHtmlMarkdownParser()
+    parser.feed(html)
+    parser.close()
+    return parser.markdown()
 
 
 def normalize_slug(value: str) -> str | None:

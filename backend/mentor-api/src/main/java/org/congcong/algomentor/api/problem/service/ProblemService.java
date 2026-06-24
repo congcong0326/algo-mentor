@@ -3,6 +3,7 @@ package org.congcong.algomentor.api.problem.service;
 import java.util.Optional;
 import org.congcong.algomentor.api.problem.model.ProblemDetail;
 import org.congcong.algomentor.api.problem.model.ProblemFilters;
+import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.api.problem.model.ProblemListItem;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
 import org.congcong.algomentor.api.problem.model.ProblemPage;
@@ -27,8 +28,16 @@ public class ProblemService {
     return repository().findProblemBySlug(slug);
   }
 
+  public Optional<ProblemDetail> findProblemBySlug(String slug, ProblemLocale locale) {
+    return repository().findProblemBySlug(slug, locale);
+  }
+
   public ProblemFilters findProblemFilters() {
     return repository().findProblemFilters();
+  }
+
+  public ProblemFilters findProblemFilters(ProblemLocale locale) {
+    return repository().findProblemFilters(locale);
   }
 
   private ProblemRepository repository() {

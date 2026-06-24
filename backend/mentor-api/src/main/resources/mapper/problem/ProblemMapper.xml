@@ -9,11 +9,14 @@
       <arg column="id" javaType="java.lang.Long"/>
       <arg column="slug" javaType="string"/>
       <arg column="frontend_id" javaType="java.lang.Integer"/>
-      <arg column="title" javaType="string"/>
-      <arg column="title_cn" javaType="string"/>
+      <arg column="title_en" javaType="string"/>
+      <arg column="title_zh" javaType="string"/>
       <arg column="difficulty" javaType="string"/>
-      <arg column="tags_text" javaType="string"/>
-      <arg column="content_markdown" javaType="string"/>
+      <arg column="tag_values_text" javaType="string"/>
+      <arg column="tag_labels_en_text" javaType="string"/>
+      <arg column="tag_labels_zh_text" javaType="string"/>
+      <arg column="content_markdown_en" javaType="string"/>
+      <arg column="content_markdown_zh" javaType="string"/>
       <arg column="leetcode_url" javaType="string"/>
       <arg column="sample_test_case" javaType="string"/>
       <arg column="python3_template" javaType="string"/>
@@ -25,6 +28,7 @@
       type="org.congcong.algomentor.api.problem.mapper.model.ProblemFilterCountRow">
     <constructor>
       <arg column="value" javaType="string"/>
+      <arg column="label" javaType="string"/>
       <arg column="problem_count" javaType="java.lang.Long"/>
     </constructor>
   </resultMap>
@@ -42,11 +46,14 @@
     p.id,
     p.slug,
     p.frontend_id,
-    p.title,
-    p.title_cn,
+    p.title_en,
+    p.title_zh,
     p.difficulty,
-    COALESCE(array_to_string(p.tags, E'\n'), '') AS tags_text,
-    p.content_markdown,
+    COALESCE(array_to_string(p.tag_values, E'\n'), '') AS tag_values_text,
+    COALESCE(array_to_string(p.tag_labels_en, E'\n'), '') AS tag_labels_en_text,
+    COALESCE(array_to_string(p.tag_labels_zh, E'\n'), '') AS tag_labels_zh_text,
+    p.content_markdown_en,
+    p.content_markdown_zh,
     p.leetcode_url,
     p.sample_test_case,
     p.python3_template,
@@ -57,8 +64,8 @@
     <where>
       <if test="keyword != null and keyword != ''">
         AND (
-          p.title ILIKE CONCAT('%', #{keyword}, '%')
-          OR p.title_cn ILIKE CONCAT('%', #{keyword}, '%')
+          p.title_en ILIKE CONCAT('%', #{keyword}, '%')
+          OR p.title_zh ILIKE CONCAT('%', #{keyword}, '%')
           OR p.slug ILIKE CONCAT('%', #{keyword}, '%')
           OR CAST(p.frontend_id AS TEXT) = #{keyword}
         )
@@ -67,7 +74,7 @@
         AND p.difficulty = #{difficulty}
       </if>
       <if test="tag != null and tag != ''">
-        AND #{tag} = ANY(p.tags)
+        AND #{tag} = ANY(p.tag_values)
       </if>
       <if test="category != null and category != ''">
         AND EXISTS (
@@ -97,7 +104,14 @@
         ORDER BY p.frontend_id DESC NULLS LAST, p.id DESC
       </when>
       <when test="sort == 'TITLE_ASC'">
-        ORDER BY p.title ASC, p.frontend_id ASC NULLS LAST, p.id ASC
+        <choose>
+          <when test="locale == 'en-US'">
+            ORDER BY p.title_en ASC, p.frontend_id ASC NULLS LAST, p.id ASC
+          </when>
+          <otherwise>
+            ORDER BY p.title_zh ASC, p.frontend_id ASC NULLS LAST, p.id ASC
+          </otherwise>
+        </choose>
       </when>
       <when test="sort == 'UPDATED_DESC'">
         ORDER BY p.updated_at DESC, p.id DESC
@@ -125,6 +139,7 @@
   <select id="countProblemsByDifficulty" resultMap="ProblemFilterCountRowMap">
     SELECT
       p.difficulty AS value,
+      p.difficulty AS label,
       COUNT(*) AS problem_count
     FROM problem p
     WHERE p.difficulty IS NOT NULL
@@ -136,13 +151,20 @@
   <select id="countProblemsByTag" resultMap="ProblemFilterCountRowMap">
     SELECT
       t.tag AS value,
+      MIN(t.label) AS label,
       COUNT(*) AS problem_count
     FROM problem p
-    CROSS JOIN LATERAL unnest(p.tags) AS t(tag)
+    CROSS JOIN LATERAL unnest(
+      p.tag_values,
+      CASE
+        WHEN #{locale} = 'en-US' THEN p.tag_labels_en
+        ELSE p.tag_labels_zh
+      END
+    ) AS t(tag, label)
     WHERE t.tag IS NOT NULL
       AND t.tag != ''
     GROUP BY t.tag
-    ORDER BY t.tag ASC
+    ORDER BY MIN(t.label) ASC, t.tag ASC
   </select>
 
   <select id="countProblemCategories" resultMap="ProblemCategoryFilterRowMap">
@@ -160,11 +182,14 @@
     INSERT INTO problem (
       slug,
       frontend_id,
-      title,
-      title_cn,
+      title_en,
+      title_zh,
       difficulty,
-      tags,
-      content_markdown,
+      tag_values,
+      tag_labels_en,
+      tag_labels_zh,
+      content_markdown_en,
+      content_markdown_zh,
       leetcode_url,
       sample_test_case,
       python3_template,
@@ -175,11 +200,14 @@
     VALUES (
       #{slug},
       #{frontendId},
-      #{title},
-      #{titleCn},
+      #{titleEn},
+      #{titleZh},
       #{difficulty},
-      #{tags},
-      #{contentMarkdown},
+      #{tagValues},
+      #{tagLabelsEn},
+      #{tagLabelsZh},
+      #{contentMarkdownEn},
+      #{contentMarkdownZh},
       #{leetcodeUrl},
       #{sampleTestCase},
       #{python3Template},
@@ -189,11 +217,14 @@
     )
     ON CONFLICT (slug) DO UPDATE
     SET frontend_id = EXCLUDED.frontend_id,
-        title = EXCLUDED.title,
-        title_cn = EXCLUDED.title_cn,
+        title_en = EXCLUDED.title_en,
+        title_zh = EXCLUDED.title_zh,
         difficulty = EXCLUDED.difficulty,
-        tags = EXCLUDED.tags,
-        content_markdown = EXCLUDED.content_markdown,
+        tag_values = EXCLUDED.tag_values,
+        tag_labels_en = EXCLUDED.tag_labels_en,
+        tag_labels_zh = EXCLUDED.tag_labels_zh,
+        content_markdown_en = EXCLUDED.content_markdown_en,
+        content_markdown_zh = EXCLUDED.content_markdown_zh,
         leetcode_url = EXCLUDED.leetcode_url,
         sample_test_case = EXCLUDED.sample_test_case,
         python3_template = EXCLUDED.python3_template,

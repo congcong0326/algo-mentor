@@ -19,10 +19,12 @@ import org.congcong.algomentor.api.problem.model.ProblemDetail;
 import org.congcong.algomentor.api.problem.model.ProblemDifficulty;
 import org.congcong.algomentor.api.problem.model.ProblemFilterOption;
 import org.congcong.algomentor.api.problem.model.ProblemFilters;
+import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.api.problem.model.ProblemListItem;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
 import org.congcong.algomentor.api.problem.model.ProblemPage;
 import org.congcong.algomentor.api.problem.model.ProblemSeedRecord;
+import org.congcong.algomentor.api.problem.model.ProblemTag;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
 public class MyBatisProblemRepository implements ProblemRepository {
@@ -45,30 +47,42 @@ public class MyBatisProblemRepository implements ProblemRepository {
             request.tag(),
             request.category(),
             request.sort().name(),
+            request.locale().value(),
             request.pageSize(),
             request.offset())
         .stream()
-        .map(this::toListItem)
+        .map(row -> toListItem(row, request.locale()))
         .toList();
     return new ProblemPage<>(items, total, request.page(), request.pageSize());
   }
 
   @Override
   public Optional<ProblemDetail> findProblemBySlug(String slug) {
-    return Optional.ofNullable(mapper.findProblemBySlug(slug)).map(this::toDetail);
+    return findProblemBySlug(slug, ProblemLocale.DEFAULT);
   }
 
   @Override
   public ProblemFilters findProblemFilters() {
+    return findProblemFilters(ProblemLocale.DEFAULT);
+  }
+
+  @Override
+  public Optional<ProblemDetail> findProblemBySlug(String slug, ProblemLocale locale) {
+    return Optional.ofNullable(mapper.findProblemBySlug(slug)).map(row -> toDetail(row, locale));
+  }
+
+  @Override
+  public ProblemFilters findProblemFilters(ProblemLocale locale) {
     Map<String, Long> difficultyCounts = mapper.countProblemsByDifficulty().stream()
         .collect(Collectors.toMap(ProblemFilterCountRow::value, row -> count(row.problemCount())));
     List<ProblemFilterOption> difficulties = Arrays.stream(ProblemDifficulty.values())
         .map(difficulty -> new ProblemFilterOption(
             difficulty.name(),
+            difficulty.name(),
             difficultyCounts.getOrDefault(difficulty.name(), 0L)))
         .toList();
-    List<ProblemFilterOption> tags = mapper.countProblemsByTag().stream()
-        .map(row -> new ProblemFilterOption(row.value(), count(row.problemCount())))
+    List<ProblemFilterOption> tags = mapper.countProblemsByTag(locale.value()).stream()
+        .map(row -> new ProblemFilterOption(row.value(), fallback(row.label(), row.value()), count(row.problemCount())))
         .toList();
     List<ProblemCategoryFilterOption> categories = mapper.countProblemCategories().stream()
         .map(this::toCategoryFilterOption)
@@ -79,17 +93,27 @@ public class MyBatisProblemRepository implements ProblemRepository {
   @Override
   public void upsertProblem(ProblemSeedRecord problem) {
     Connection connection = DataSourceUtils.getConnection(dataSource);
-    Array tags = null;
+    List<String> tagValues = normalizedValues(problem.tagValues());
+    List<String> tagLabelsEn = normalizedLabels(problem.tagLabelsEn(), tagValues);
+    List<String> tagLabelsZh = normalizedLabels(problem.tagLabelsZh(), tagValues);
+    Array tagValuesArray = null;
+    Array tagLabelsEnArray = null;
+    Array tagLabelsZhArray = null;
     try {
-      tags = connection.createArrayOf("text", normalizedTags(problem.tags()).toArray(String[]::new));
+      tagValuesArray = connection.createArrayOf("text", tagValues.toArray(String[]::new));
+      tagLabelsEnArray = connection.createArrayOf("text", tagLabelsEn.toArray(String[]::new));
+      tagLabelsZhArray = connection.createArrayOf("text", tagLabelsZh.toArray(String[]::new));
       mapper.upsertProblem(new ProblemUpsertRow(
           problem.slug(),
           problem.frontendId(),
-          problem.title(),
-          problem.titleCn(),
+          problem.titleEn(),
+          problem.titleZh(),
           problem.difficulty() == null ? null : problem.difficulty().name(),
-          tags,
-          problem.contentMarkdown(),
+          tagValuesArray,
+          tagLabelsEnArray,
+          tagLabelsZhArray,
+          problem.contentMarkdownEn(),
+          problem.contentMarkdownZh(),
           problem.leetcodeUrl(),
           problem.sampleTestCase(),
           problem.python3Template(),
@@ -97,36 +121,30 @@ public class MyBatisProblemRepository implements ProblemRepository {
     } catch (SQLException exception) {
       throw new IllegalStateException("Failed to create PostgreSQL array for problem tags.", exception);
     } finally {
-      if (tags != null) {
-        try {
-          tags.free();
-        } catch (SQLException ignored) {
-          // PostgreSQL array cleanup failure should not mask the import result.
-        }
-      }
+      freeArray(tagValuesArray);
+      freeArray(tagLabelsEnArray);
+      freeArray(tagLabelsZhArray);
       DataSourceUtils.releaseConnection(connection, dataSource);
     }
   }
 
-  private ProblemListItem toListItem(ProblemRow row) {
+  private ProblemListItem toListItem(ProblemRow row, ProblemLocale locale) {
     return new ProblemListItem(
         row.slug(),
         row.frontendId(),
-        row.title(),
-        row.titleCn(),
+        title(row, locale),
         parseDifficulty(row.difficulty()),
-        tags(row));
+        tags(row, locale));
   }
 
-  private ProblemDetail toDetail(ProblemRow row) {
+  private ProblemDetail toDetail(ProblemRow row, ProblemLocale locale) {
     return new ProblemDetail(
         row.slug(),
         row.frontendId(),
-        row.title(),
-        row.titleCn(),
+        title(row, locale),
         parseDifficulty(row.difficulty()),
-        tags(row),
-        row.contentMarkdown(),
+        tags(row, locale),
+        contentMarkdown(row, locale),
         row.leetcodeUrl(),
         row.sampleTestCase(),
         row.python3Template(),
@@ -145,23 +163,74 @@ public class MyBatisProblemRepository implements ProblemRepository {
     return difficulty == null ? null : ProblemDifficulty.valueOf(difficulty);
   }
 
-  private List<String> tags(ProblemRow row) {
-    if (row.tagsText() == null || row.tagsText().isBlank()) {
-      return List.of();
-    }
-    return Arrays.stream(row.tagsText().split("\\R"))
-        .filter(tag -> !tag.isBlank())
+  private String title(ProblemRow row, ProblemLocale locale) {
+    return locale.isEnglish() ? fallback(row.titleEn(), row.titleZh()) : fallback(row.titleZh(), row.titleEn());
+  }
+
+  private String contentMarkdown(ProblemRow row, ProblemLocale locale) {
+    return locale.isEnglish()
+        ? fallback(row.contentMarkdownEn(), row.contentMarkdownZh())
+        : fallback(row.contentMarkdownZh(), row.contentMarkdownEn());
+  }
+
+  private List<ProblemTag> tags(ProblemRow row, ProblemLocale locale) {
+    List<String> values = splitArrayText(row.tagValuesText());
+    List<String> labels = splitArrayText(locale.isEnglish() ? row.tagLabelsEnText() : row.tagLabelsZhText());
+    return java.util.stream.IntStream.range(0, values.size())
+        .mapToObj(index -> new ProblemTag(values.get(index), fallback(valueAt(labels, index), values.get(index))))
         .toList();
   }
 
-  private List<String> normalizedTags(List<String> tags) {
-    if (tags == null) {
+  private List<String> splitArrayText(String value) {
+    if (value == null || value.isBlank()) {
       return List.of();
     }
-    return tags.stream()
-        .filter(tag -> tag != null && !tag.isBlank())
-        .map(String::trim)
+    return Arrays.stream(value.split("\\R", -1))
+        .map(this::blankToNull)
+        .map(valueOrNull -> valueOrNull == null ? "" : valueOrNull)
+        .toList();
+  }
+
+  private List<String> normalizedValues(List<String> values) {
+    if (values == null) {
+      return List.of();
+    }
+    return values.stream()
+        .map(this::blankToNull)
+        .filter(value -> value != null)
         .distinct()
         .toList();
+  }
+
+  private List<String> normalizedLabels(List<String> labels, List<String> tagValues) {
+    return java.util.stream.IntStream.range(0, tagValues.size())
+        .mapToObj(index -> fallback(valueAt(labels, index), tagValues.get(index)))
+        .toList();
+  }
+
+  private String valueAt(List<String> values, int index) {
+    if (values == null || index < 0 || index >= values.size()) {
+      return null;
+    }
+    return blankToNull(values.get(index));
+  }
+
+  private String fallback(String value, String fallback) {
+    String normalized = blankToNull(value);
+    return normalized == null ? fallback : normalized;
+  }
+
+  private String blankToNull(String value) {
+    return value == null || value.isBlank() ? null : value.trim();
+  }
+
+  private void freeArray(Array array) {
+    if (array != null) {
+      try {
+        array.free();
+      } catch (SQLException ignored) {
+        // PostgreSQL array cleanup failure should not mask the import result.
+      }
+    }
   }
 }

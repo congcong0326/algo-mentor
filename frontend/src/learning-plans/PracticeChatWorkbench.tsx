@@ -1,9 +1,6 @@
 import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
-import remarkGfm from 'remark-gfm';
+import MarkdownView from '../components/MarkdownView';
 import { formatDifficulty, formatProblemTitle } from '../i18n/formatters';
 import { useI18n } from '../i18n/I18nProvider';
 import type { SupportedLocale } from '../i18n/locales';
@@ -16,16 +13,6 @@ function problemLabel(problem: LearningPlanProblemDraft | undefined, locale: Sup
   }
   const id = problem.frontendId ? `${problem.frontendId}. ` : '';
   return `${id}${formatProblemTitle(problem, locale)}`;
-}
-
-function MarkdownMessage({ content }: { content: string }) {
-  return (
-    <div className="markdown-view">
-      <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeSanitize]} remarkPlugins={[remarkGfm]}>
-        {content}
-      </ReactMarkdown>
-    </div>
-  );
 }
 
 export default function PracticeChatWorkbench({
@@ -50,7 +37,7 @@ export default function PracticeChatWorkbench({
     setProblemDetail(undefined);
     setProblemError('');
 
-    getProblemDetail(problemSlug, controller.signal)
+    getProblemDetail(problemSlug, locale, controller.signal)
       .then((response) => {
         if (!response.success || !response.data) {
           throw new Error(response.error?.message ?? resources.learningPlans.detailLoadProblemFailed);
@@ -64,7 +51,7 @@ export default function PracticeChatWorkbench({
       });
 
     return () => controller.abort();
-  }, [problemSlug, resources.learningPlans.detailLoadProblemFailed]);
+  }, [locale, problemSlug, resources.learningPlans.detailLoadProblemFailed]);
 
   const statement = problemDetail?.contentMarkdown.trim() || resources.learningPlans.statementUnavailable;
 
@@ -94,7 +81,7 @@ export default function PracticeChatWorkbench({
       <section className="practice-message-list" aria-label={resources.learningPlans.chatMessages}>
         <article className="practice-message assistant-message">
           <span>{resources.learningPlans.coach}</span>
-          <MarkdownMessage content={problemError || (problemDetail ? statement : resources.learningPlans.loadingStatement)} />
+          <MarkdownView content={problemError || (problemDetail ? statement : resources.learningPlans.loadingStatement)} />
         </article>
       </section>
 

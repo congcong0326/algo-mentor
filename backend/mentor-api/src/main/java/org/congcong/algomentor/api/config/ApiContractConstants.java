@@ -36,6 +36,11 @@ public final class ApiContractConstants {
   public static final String PROBLEMS_BASE_PATH = "/api/problems";
 
   /**
+   * 题库内容语言请求参数名。
+   */
+  public static final String PROBLEM_LOCALE_PARAM = "locale";
+
+  /**
    * 学习计划接口根路径。
    */
   public static final String LEARNING_PLANS_BASE_PATH = "/api/learning-plans";

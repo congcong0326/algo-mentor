@@ -5,12 +5,14 @@ import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.DIF
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.FOUND;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.FRONTEND_ID;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.GET_PROBLEM_STATEMENT;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.LABEL;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.LEETCODE_URL;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.LOCALE;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.SAMPLE_TEST_CASE;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.SLUG;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.TAGS;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.TITLE;
-import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.TITLE_CN;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.VALUE;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -21,6 +23,8 @@ import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentExecutionContext;
 import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.api.problem.model.ProblemDetail;
+import org.congcong.algomentor.api.problem.model.ProblemLocale;
+import org.congcong.algomentor.api.problem.model.ProblemTag;
 import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 
@@ -46,8 +50,9 @@ public final class GetProblemStatementTool implements AgentTool {
   @Override
   public JsonNode execute(JsonNode arguments, AgentExecutionContext context) {
     String slug = ProblemAgentToolSupport.requiredText(arguments, SLUG, GET_PROBLEM_STATEMENT);
+    ProblemLocale locale = locale(arguments);
     try {
-      Optional<ProblemDetail> problem = problemService.findProblemBySlug(slug);
+      Optional<ProblemDetail> problem = problemService.findProblemBySlug(slug, locale);
       return problem.map(this::found).orElseGet(() -> notFound(slug));
     } catch (AgentException exception) {
       throw exception;
@@ -71,11 +76,12 @@ public final class GetProblemStatementTool implements AgentTool {
       output.put(FRONTEND_ID, problem.frontendId());
     }
     ProblemAgentToolSupport.putNullable(output, TITLE, problem.title());
-    ProblemAgentToolSupport.putNullable(output, TITLE_CN, problem.titleCn());
     output.put(DIFFICULTY, problem.difficulty() == null ? null : problem.difficulty().name());
     ArrayNode tags = output.putArray(TAGS);
-    for (String tag : problem.tags()) {
-      tags.add(tag);
+    for (ProblemTag tag : problem.tags()) {
+      ObjectNode tagNode = tags.addObject();
+      tagNode.put(VALUE, tag.value());
+      tagNode.put(LABEL, tag.label());
     }
     ProblemAgentToolSupport.putNullable(output, CONTENT_MARKDOWN, problem.contentMarkdown());
     ProblemAgentToolSupport.putNullable(output, SAMPLE_TEST_CASE, problem.sampleTestCase());
@@ -95,7 +101,19 @@ public final class GetProblemStatementTool implements AgentTool {
     ObjectNode properties = schema.putObject(ProblemAgentToolSupport.PROPERTIES);
     properties.set(SLUG, ProblemAgentToolSupport.stringProperty(
         "Stable problem slug, for example two-sum."));
+    ObjectNode locale = ProblemAgentToolSupport.nullableStringProperty(
+        "Problem content locale. Use zh-CN/zh for Chinese, en-US/en for English, or null for zh-CN.");
+    locale.putArray(ProblemAgentToolSupport.ENUM).add("zh-CN").add("zh").add("en-US").add("en").addNull();
+    properties.set(LOCALE, locale);
     ProblemAgentToolSupport.requireAllProperties(schema);
     return schema;
+  }
+
+  private ProblemLocale locale(JsonNode arguments) {
+    try {
+      return ProblemLocale.parse(ProblemAgentToolSupport.optionalText(arguments, LOCALE, GET_PROBLEM_STATEMENT));
+    } catch (ProblemLocale.UnsupportedProblemLocaleException exception) {
+      throw ProblemAgentToolSupport.toolFailure(GET_PROBLEM_STATEMENT, exception.getMessage(), exception);
+    }
   }
 }

@@ -20,9 +20,15 @@ class PrepareSeedTest(unittest.TestCase):
             (source / "problemset" / "1.json").write_text(json.dumps({
                 "questionFrontendId": "1",
                 "title": "Two Sum",
+                "translatedTitle": "两数之和",
                 "titleSlug": "two-sum",
                 "difficulty": "Easy",
-                "topicTags": [{"name": "Array"}, {"name": "Hash Table"}],
+                "content": "<p>Body</p>",
+                "translatedContent": "<p>中文题面</p>",
+                "topicTags": [
+                    {"slug": "array", "name": "Array", "translatedName": "数组"},
+                    {"slug": "hash-table", "name": "Hash Table", "translatedName": "哈希表"},
+                ],
                 "sampleTestCase": "[2,7,11,15]\n9",
                 "codeSnippets": [{"langSlug": "python3", "code": "class Solution:\n    pass"}],
             }), encoding="utf-8")
@@ -33,8 +39,14 @@ class PrepareSeedTest(unittest.TestCase):
             self.assertEqual("two-sum", problems[0].slug)
             self.assertEqual(1, problems[0].frontend_id)
             self.assertEqual("EASY", problems[0].difficulty)
-            self.assertEqual(["Array", "Hash Table"], problems[0].tags)
-            self.assertNotIn("hidden", problems[0].content_markdown)
+            self.assertEqual("Two Sum", problems[0].title_en)
+            self.assertEqual("两数之和", problems[0].title_zh)
+            self.assertEqual(["array", "hash-table"], problems[0].tag_values)
+            self.assertEqual(["Array", "Hash Table"], problems[0].tag_labels_en)
+            self.assertEqual(["数组", "哈希表"], problems[0].tag_labels_zh)
+            self.assertIn("# Two Sum", problems[0].content_markdown_en)
+            self.assertIn("# 两数之和", problems[0].content_markdown_zh)
+            self.assertNotIn("hidden", problems[0].content_markdown_en)
             self.assertEqual("class Solution:\n    pass", problems[0].python3_template)
 
     def test_build_seed_skips_bad_json_and_allows_empty_code_snippets(self) -> None:
@@ -49,6 +61,7 @@ class PrepareSeedTest(unittest.TestCase):
 
             self.assertEqual(1, len(problems))
             self.assertEqual("valid-problem", problems[0].slug)
+            self.assertEqual("Valid Problem", problems[0].title_zh)
             self.assertIsNone(problems[0].python3_template)
 
     def test_write_seed_outputs_manifest_and_empty_categories(self) -> None:

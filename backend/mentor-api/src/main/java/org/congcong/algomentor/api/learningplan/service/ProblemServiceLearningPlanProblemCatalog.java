@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import org.congcong.algomentor.api.problem.model.ProblemListItem;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
+import org.congcong.algomentor.api.problem.model.ProblemTag;
 import org.congcong.algomentor.api.problem.model.ProblemSort;
 import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCandidate;
@@ -29,7 +30,8 @@ public class ProblemServiceLearningPlanProblemCatalog implements LearningPlanPro
             null,
             ProblemSort.FRONTEND_ID_ASC,
             1,
-            search.limit()))
+            search.limit(),
+            null))
         .items()
         .stream()
         .map(this::toCandidate)
@@ -43,9 +45,9 @@ public class ProblemServiceLearningPlanProblemCatalog implements LearningPlanPro
             problem.slug(),
             problem.frontendId(),
             problem.title(),
-            problem.titleCn(),
+            null,
             problem.difficulty() == null ? null : problem.difficulty().name(),
-            problem.tags()));
+            tagLabels(problem.tags())));
   }
 
   private LearningPlanProblemCandidate toCandidate(ProblemListItem problem) {
@@ -53,8 +55,14 @@ public class ProblemServiceLearningPlanProblemCatalog implements LearningPlanPro
         problem.slug(),
         problem.frontendId(),
         problem.title(),
-        problem.titleCn(),
+        null,
         problem.difficulty() == null ? null : problem.difficulty().name(),
-        problem.tags());
+        tagLabels(problem.tags()));
+  }
+
+  private List<String> tagLabels(List<ProblemTag> tags) {
+    return tags.stream()
+        .map(ProblemTag::label)
+        .toList();
   }
 }

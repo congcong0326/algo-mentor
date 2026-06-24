@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, ExternalLink, Search } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { formatDifficulty, formatProblemTitle, formatTopicTag } from './i18n/formatters';
+import MarkdownView from './components/MarkdownView';
+import { formatDifficulty } from './i18n/formatters';
 import { useI18n } from './i18n/I18nProvider';
 import { getProblemDetail, getProblems } from './services/api';
 import type { ProblemDetail, ProblemDifficulty, ProblemListItem, ProblemListQuery, ProblemPage } from './types/api';
@@ -22,9 +23,10 @@ export default function ProblemLibrary() {
     keyword: keyword.trim() || undefined,
     difficulty,
     sort: 'frontend_id_asc',
+    locale,
     page,
     pageSize: 20,
-  }), [difficulty, keyword, page]);
+  }), [difficulty, keyword, locale, page]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -64,7 +66,7 @@ export default function ProblemLibrary() {
     setDetailLoading(true);
     setDetailError('');
 
-    getProblemDetail(selectedSlug, controller.signal)
+    getProblemDetail(selectedSlug, locale, controller.signal)
       .then((response) => {
         if (!response.success || !response.data) {
           throw new Error(response.error?.message ?? resources.problems.detailLoadFailed);
@@ -83,7 +85,7 @@ export default function ProblemLibrary() {
       });
 
     return () => controller.abort();
-  }, [selectedSlug, resources.problems.detailLoadFailed]);
+  }, [locale, selectedSlug, resources.problems.detailLoadFailed]);
 
   const totalPages = Math.max(1, Math.ceil((problemPage?.total ?? 0) / (problemPage?.pageSize ?? 20)));
   const difficultyOptions: Array<{ label: string; value: ProblemDifficulty | '' }> = [
@@ -153,7 +155,7 @@ export default function ProblemLibrary() {
                   >
                     <span className="problem-id">{problem.frontendId ?? '-'}</span>
                     <span className="problem-title">
-                      <strong>{formatProblemTitle(problem, locale)}</strong>
+                      <strong>{problem.title}</strong>
                       <small>{problem.slug}</small>
                     </span>
                     <span className={`difficulty-badge ${problem.difficulty?.toLowerCase() ?? 'unknown'}`}>
@@ -195,8 +197,8 @@ export default function ProblemLibrary() {
               <div className="detail-heading">
                 <div>
                   <p className="eyebrow">#{detail.frontendId ?? '-'}</p>
-                  <h2 id="problem-detail-title">{formatProblemTitle(detail, locale)}</h2>
-                  <p>{detail.title}</p>
+                  <h2 id="problem-detail-title">{detail.title}</h2>
+                  <p>{detail.slug}</p>
                 </div>
                 {detail.leetcodeUrl && (
                   <a className="external-link" href={detail.leetcodeUrl} rel="noreferrer" target="_blank">
@@ -209,9 +211,9 @@ export default function ProblemLibrary() {
                 <span className={`difficulty-badge ${detail.difficulty?.toLowerCase() ?? 'unknown'}`}>
                   {formatDifficulty(detail.difficulty, resources)}
                 </span>
-                {detail.tags.map((tag) => <span className="tag-pill" key={tag}>{formatTopicTag(tag, resources)}</span>)}
+                {detail.tags.map((tag) => <span className="tag-pill" key={tag.value}>{tag.label}</span>)}
               </div>
-              <pre className="markdown-view">{detail.contentMarkdown}</pre>
+              <MarkdownView content={detail.contentMarkdown} />
               {detail.sampleTestCase && (
                 <section className="code-section">
                   <h3>{resources.problems.sampleInput}</h3>
