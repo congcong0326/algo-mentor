@@ -1,11 +1,16 @@
 import { Activity, CalendarClock, Eye, Layers3, Plus, Trash2 } from 'lucide-react';
 import type {
-  LearningPlanIntent,
-  LearningPlanLevel,
   LearningPlanPageResponse,
-  LearningPlanStatus,
 } from '../types/api';
-import { intentOptions, levelOptions, programmingLanguageOptions } from './options';
+import {
+  formatPlanIntent,
+  formatPlanLevel,
+  formatPlanStatus,
+  formatShortDate,
+} from '../i18n/formatters';
+import { useI18n } from '../i18n/I18nProvider';
+import type { SupportedLocale } from '../i18n/locales';
+import { programmingLanguageOptions } from './options';
 
 interface LearningPlanListCardProps {
   page: LearningPlanPageResponse;
@@ -21,40 +26,18 @@ function getTotalPages(total: number, pageSize: number): number {
   return Math.max(1, Math.ceil(total / Math.max(1, pageSize)));
 }
 
-const intentLabels = new Map<LearningPlanIntent, string>(intentOptions.map((option) => [option.value, option.label]));
-const levelLabels = new Map<LearningPlanLevel, string>(levelOptions.map((option) => [option.value, option.label]));
-
-const statusLabels: Record<LearningPlanStatus, string> = {
-  ACTIVE: '进行中',
-  ARCHIVED: '已归档',
-};
-
-function formatDate(value: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return '-';
-  }
-
-  const parts = new Intl.DateTimeFormat('zh-CN', {
-    month: '2-digit',
-    day: '2-digit',
-  }).formatToParts(date).reduce<Record<string, string>>((result, part) => {
-    result[part.type] = part.value;
-    return result;
-  }, {});
-
-  return `${parts.month}-${parts.day}`;
-}
-
-function formatLatestDate(value?: string | null): string {
+function formatLatestDate(value: string | null | undefined, locale: SupportedLocale, empty: string): string {
   if (!value) {
-    return '暂无';
+    return empty;
   }
 
-  return formatDate(value);
+  return formatShortDate(value, locale);
 }
 
-function inferProgrammingLanguage(plan: { programmingLanguage?: string; title: string; goal: string }): string {
+function inferProgrammingLanguage(
+  plan: { programmingLanguage?: string; title: string; goal: string },
+  fallback: string,
+): string {
   if (plan.programmingLanguage?.trim()) {
     return plan.programmingLanguage.trim();
   }
@@ -64,7 +47,7 @@ function inferProgrammingLanguage(plan: { programmingLanguage?: string; title: s
     language === 'C'
       ? /(^|[^a-z0-9+#])c($|[^a-z0-9+#])/.test(searchable)
       : searchable.includes(language.toLocaleLowerCase())
-  )) ?? '未指定';
+  )) ?? fallback;
 }
 
 export default function LearningPlanListCard({
@@ -76,57 +59,59 @@ export default function LearningPlanListCard({
   onDelete,
   onPageChange,
 }: LearningPlanListCardProps) {
+  const { locale, resources } = useI18n();
   const totalPages = getTotalPages(page.total, page.pageSize);
   const visibleRangeStart = page.total === 0 ? 0 : (page.page - 1) * page.pageSize + 1;
   const visibleRangeEnd = Math.min(page.total, page.page * page.pageSize);
+  const latestDate = formatLatestDate(page.latestCreatedAt, locale, resources.common.empty);
 
   return (
-    <section className="plan-workspace" aria-label="训练方案工作台">
+    <section className="plan-workspace" aria-label={resources.learningPlans.ariaLabel}>
       <div className="plan-overview">
         <div className="plan-overview-copy">
           <p className="eyebrow">Learning Plans</p>
-          <h2 className="plan-overview-title">训练方案</h2>
-          <p>按目标、时间、当前水平与自身想法生成训练方案。</p>
+          <h2 className="plan-overview-title">{resources.learningPlans.overviewTitle}</h2>
+          <p>{resources.learningPlans.overviewDescription}</p>
         </div>
         <div className="plan-overview-actions">
           <button className="primary-button compact" onClick={onCreate} type="button">
             <Plus aria-hidden="true" />
-            <span>新建方案</span>
+            <span>{resources.learningPlans.newPlan}</span>
           </button>
         </div>
-        <dl className="plan-stat-grid" aria-label="方案概览">
+        <dl className="plan-stat-grid" aria-label={resources.learningPlans.overviewStats}>
           <div className="plan-stat-card">
-            <dt>进行中</dt>
+            <dt>{resources.learningPlans.active}</dt>
             <dd>{page.activeCount}</dd>
           </div>
           <div className="plan-stat-card">
-            <dt>已归档</dt>
+            <dt>{resources.learningPlans.archived}</dt>
             <dd>{page.archivedCount}</dd>
           </div>
           <div className="plan-stat-card">
-            <dt>最近创建</dt>
-            <dd>{formatLatestDate(page.latestCreatedAt)}</dd>
+            <dt>{resources.learningPlans.latestCreated}</dt>
+            <dd>{latestDate}</dd>
           </div>
         </dl>
       </div>
 
       <div className="plan-dashboard-grid">
-        <section className="plan-list-card" aria-label="方案列表">
+        <section className="plan-list-card" aria-label={resources.learningPlans.listTitle}>
           <div className="plan-section-heading">
             <div>
-              <h2>方案库</h2>
-              <p>共 {page.total} 个方案</p>
+              <h2>{resources.learningPlans.listTitle}</h2>
+              <p>{resources.learningPlans.totalPlans(page.total)}</p>
             </div>
             <span>{visibleRangeStart}-{visibleRangeEnd}</span>
           </div>
           <div className="plan-list">
             {page.items.length === 0 ? (
               <div className="empty-plan-state">
-                <h3>暂无正式方案</h3>
-                <p>先新建一个训练方案，把目标、周期和题目安排统一起来。</p>
+                <h3>{resources.learningPlans.emptyTitle}</h3>
+                <p>{resources.learningPlans.emptyDescription}</p>
               </div>
             ) : (
-              <div className="plan-list-stack" role="list" aria-label="方案列表">
+              <div className="plan-list-stack" role="list" aria-label={resources.learningPlans.listTitle}>
                 {page.items.map((plan) => {
                   const isDeleting = deletingPlanId === plan.id;
 
@@ -141,36 +126,36 @@ export default function LearningPlanListCard({
                       <div className="plan-row-content">
                         <div className="plan-title-line">
                           <strong>{plan.title}</strong>
-                          <span className="status-badge">{statusLabels[plan.status]}</span>
+                          <span className="status-badge">{formatPlanStatus(plan.status, resources)}</span>
                         </div>
                         <p>{plan.goal}</p>
-                        <div className="plan-meta-row" aria-label="方案参数">
-                          <span>{inferProgrammingLanguage(plan)}</span>
-                          <span>{levelLabels.get(plan.level) ?? plan.level}</span>
-                          <span>{intentLabels.get(plan.intent) ?? plan.intent}</span>
-                          <span>{plan.durationWeeks} 周</span>
-                          <span>{plan.weeklyHours}h/周</span>
-                          <span>{formatDate(plan.createdAt)} 创建</span>
+                        <div className="plan-meta-row" aria-label={resources.learningPlans.planParameters}>
+                          <span>{inferProgrammingLanguage(plan, resources.learningPlans.unspecified)}</span>
+                          <span>{formatPlanLevel(plan.level, resources)}</span>
+                          <span>{formatPlanIntent(plan.intent, resources)}</span>
+                          <span>{resources.common.week(plan.durationWeeks)}</span>
+                          <span>{resources.common.hoursPerWeek(plan.weeklyHours)}</span>
+                          <span>{formatShortDate(plan.createdAt, locale)} {resources.common.created}</span>
                         </div>
                       </div>
                       <div className="plan-row-actions">
                         {onSelect && (
                           <button
-                            aria-label={`查看 ${plan.title}`}
+                            aria-label={resources.learningPlans.viewPlan(plan.title)}
                             className="icon-button"
                             onClick={() => onSelect(plan.id)}
-                            title="查看"
+                            title={resources.common.view}
                             type="button"
                           >
                             <Eye aria-hidden="true" />
                           </button>
                         )}
                         <button
-                          aria-label={`删除 ${plan.title}`}
+                          aria-label={resources.learningPlans.deletePlan(plan.title)}
                           className="icon-button danger-icon-button"
                           disabled={isDeleting}
                           onClick={() => onDelete(plan.id)}
-                          title={isDeleting ? '删除中' : '删除'}
+                          title={isDeleting ? resources.common.deleting : resources.common.delete}
                           type="button"
                         >
                           <Trash2 aria-hidden="true" />
@@ -183,14 +168,14 @@ export default function LearningPlanListCard({
             )}
           </div>
           <div className="pagination-row">
-            <span>第 {page.page} / {totalPages} 页</span>
+            <span>{resources.common.pageStatus(page.page, totalPages)}</span>
             <button
               className="secondary-button compact"
               disabled={page.page <= 1}
               onClick={() => onPageChange(page.page - 1)}
               type="button"
             >
-              上一页
+              {resources.common.previousPage}
             </button>
             <button
               className="secondary-button compact"
@@ -198,38 +183,38 @@ export default function LearningPlanListCard({
               onClick={() => onPageChange(page.page + 1)}
               type="button"
             >
-              下一页
+              {resources.common.nextPage}
             </button>
           </div>
         </section>
 
-        <aside className="plan-insight-panel" aria-label="方案状态">
+        <aside className="plan-insight-panel" aria-label={resources.learningPlans.rhythmOverview}>
           <div className="plan-section-heading compact-heading">
             <div>
-              <h2>当前节奏</h2>
-              <p>方案执行概览</p>
+              <h2>{resources.learningPlans.currentRhythm}</h2>
+              <p>{resources.learningPlans.rhythmOverview}</p>
             </div>
           </div>
           <div className="plan-insight-list">
             <div className="plan-insight-item">
               <Activity aria-hidden="true" />
               <div>
-                <strong>{page.total === 0 ? '还没有训练节奏' : `${page.activeCount} 个方案正在推进`}</strong>
-                <span>{page.archivedCount} 个方案已沉淀为历史记录</span>
+                <strong>{page.total === 0 ? resources.learningPlans.noRhythm : resources.learningPlans.activePlans(page.activeCount)}</strong>
+                <span>{resources.learningPlans.archivedPlans(page.archivedCount)}</span>
               </div>
             </div>
             <div className="plan-insight-item">
               <Layers3 aria-hidden="true" />
               <div>
-                <strong>按场景维护方案</strong>
-                <span>面试冲刺、专题突破和长期学习不要混在同一个方案里。</span>
+                <strong>{resources.learningPlans.maintainByScenario}</strong>
+                <span>{resources.learningPlans.maintainByScenarioDescription}</span>
               </div>
             </div>
             <div className="plan-insight-item">
               <CalendarClock aria-hidden="true" />
               <div>
-                <strong>最近创建：{formatLatestDate(page.latestCreatedAt)}</strong>
-                <span>新方案保存后会出现在方案库顶部。</span>
+                <strong>{resources.learningPlans.latestCreatedLabel(latestDate)}</strong>
+                <span>{resources.learningPlans.latestCreatedDescription}</span>
               </div>
             </div>
           </div>

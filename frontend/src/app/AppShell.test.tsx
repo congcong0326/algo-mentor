@@ -1,7 +1,8 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import AppShell from './AppShell';
 import type { CurrentUser } from '../types/api';
+import { I18nProvider } from '../i18n/I18nProvider';
 
 const user: CurrentUser = {
   id: 42,
@@ -11,6 +12,12 @@ const user: CurrentUser = {
   roles: ['USER'],
   status: 'ACTIVE',
 };
+
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+  document.documentElement.lang = '';
+});
 
 describe('AppShell', () => {
   it('renders top navigation and delegates navigation clicks', () => {
@@ -37,6 +44,48 @@ describe('AppShell', () => {
     fireEvent.click(screen.getByRole('button', { name: '题库' }));
 
     expect(onNavigate).toHaveBeenCalledWith('problems');
+  });
+
+  it('switches the shell language and persists the selection', () => {
+    const originalLocalStorage = window.localStorage;
+    const setItem = vi.fn();
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      value: {
+        getItem: vi.fn(() => null),
+        setItem,
+      },
+    });
+
+    try {
+      render(
+        <I18nProvider>
+          <AppShell
+            activeView="home"
+            currentUser={user}
+            onLogout={vi.fn()}
+            onNavigate={vi.fn()}
+          >
+            <div>Current page</div>
+          </AppShell>
+        </I18nProvider>,
+      );
+
+      fireEvent.change(screen.getByRole('combobox', { name: '语言' }), {
+        target: { value: 'en-US' },
+      });
+
+      expect(screen.getByRole('button', { name: 'Dashboard' })).toHaveAttribute('aria-pressed', 'true');
+      expect(screen.getByRole('button', { name: 'Problems' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();
+      expect(setItem).toHaveBeenCalledWith('algo-mentor-locale', 'en-US');
+      expect(document.documentElement.lang).toBe('en-US');
+    } finally {
+      Object.defineProperty(window, 'localStorage', {
+        configurable: true,
+        value: originalLocalStorage,
+      });
+    }
   });
 
   it('renders logout error without removing page content', () => {

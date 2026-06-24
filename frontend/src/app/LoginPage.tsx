@@ -1,20 +1,27 @@
 import { LogIn } from 'lucide-react';
+import LanguageSelector from '../i18n/LanguageSelector';
+import { useI18n } from '../i18n/I18nProvider';
 
 export interface LoginPageProps {
   authFailed?: boolean;
 }
 
 export default function LoginPage({ authFailed = false }: LoginPageProps) {
+  const { resources } = useI18n();
+
   return (
     <main className="login-page" aria-labelledby="login-title">
+      <div className="login-language">
+        <LanguageSelector />
+      </div>
       <section className="login-panel">
-        <p className="home-kicker">ALGO MENTOR</p>
-        <h1 id="login-title">Algo Mentor</h1>
-        <p className="login-subtitle">算法学习、刷题训练和 AI 训练方案生成工具</p>
-        {authFailed && <p className="error-text">登录失败，请重新尝试。</p>}
+        <p className="home-kicker">{resources.app.brandKicker}</p>
+        <h1 id="login-title">{resources.app.brandName}</h1>
+        <p className="login-subtitle">{resources.auth.subtitle}</p>
+        {authFailed && <p className="error-text">{resources.auth.failed}</p>}
         <a className="primary-button login-oauth-link" href="/oauth2/authorization/google">
           <LogIn aria-hidden="true" />
-          <span>使用 Google 登录</span>
+          <span>{resources.auth.googleLogin}</span>
         </a>
       </section>
     </main>

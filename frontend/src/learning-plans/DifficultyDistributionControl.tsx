@@ -1,3 +1,4 @@
+import { useI18n } from '../i18n/I18nProvider';
 import { clampDifficultyDistributionValue, getDifficultyDistribution } from './options';
 
 interface DifficultyDistributionControlProps {
@@ -11,15 +12,22 @@ export default function DifficultyDistributionControl({
   value,
   onChange,
 }: DifficultyDistributionControlProps) {
+  const { resources } = useI18n();
   const selected = getDifficultyDistribution(value);
-  const valueText = `${selected.label}：简单 ${selected.easyPercent}%，中等 ${selected.mediumPercent}%，困难 ${selected.hardPercent}%`;
+  const selectedLabel = resources.labels.difficultyDistribution[selected.labelKey];
+  const valueText = resources.learningPlans.distributionValueText(
+    selectedLabel,
+    selected.easyPercent,
+    selected.mediumPercent,
+    selected.hardPercent,
+  );
 
   return (
     <div className="difficulty-control">
       <label className="topic-field">
-        <span>难度分布</span>
+        <span>{resources.learningPlans.difficultyDistribution}</span>
         <input
-          aria-label="难度分布"
+          aria-label={resources.learningPlans.difficultyDistribution}
           aria-valuetext={valueText}
           disabled={disabled}
           max={100}
@@ -33,9 +41,9 @@ export default function DifficultyDistributionControl({
         />
       </label>
       <div className="difficulty-ratio-row">
-        <span>简单 {selected.easyPercent}%</span>
-        <span>中等 {selected.mediumPercent}%</span>
-        <span>困难 {selected.hardPercent}%</span>
+        <span>{resources.learningPlans.easyPercent(selected.easyPercent)}</span>
+        <span>{resources.learningPlans.mediumPercent(selected.mediumPercent)}</span>
+        <span>{resources.learningPlans.hardPercent(selected.hardPercent)}</span>
       </div>
     </div>
   );

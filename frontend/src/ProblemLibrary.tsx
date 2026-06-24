@@ -1,20 +1,12 @@
 import { ChevronLeft, ChevronRight, ExternalLink, Search } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { formatDifficulty, formatProblemTitle, formatTopicTag } from './i18n/formatters';
+import { useI18n } from './i18n/I18nProvider';
 import { getProblemDetail, getProblems } from './services/api';
 import type { ProblemDetail, ProblemDifficulty, ProblemListItem, ProblemListQuery, ProblemPage } from './types/api';
 
-const difficultyOptions: Array<{ label: string; value: ProblemDifficulty | '' }> = [
-  { label: '全部难度', value: '' },
-  { label: 'Easy', value: 'EASY' },
-  { label: 'Medium', value: 'MEDIUM' },
-  { label: 'Hard', value: 'HARD' },
-];
-
-function difficultyLabel(difficulty?: ProblemDifficulty): string {
-  return difficulty ? difficulty[0] + difficulty.slice(1).toLowerCase() : '-';
-}
-
 export default function ProblemLibrary() {
+  const { locale, resources } = useI18n();
   const [keyword, setKeyword] = useState('');
   const [difficulty, setDifficulty] = useState<ProblemDifficulty | ''>('');
   const [page, setPage] = useState(1);
@@ -42,7 +34,7 @@ export default function ProblemLibrary() {
     getProblems(query, controller.signal)
       .then((response) => {
         if (!response.success || !response.data) {
-          throw new Error(response.error?.message ?? '题库列表加载失败');
+          throw new Error(response.error?.message ?? resources.problems.listLoadFailed);
         }
         const nextProblemPage = response.data;
         setProblemPage(nextProblemPage);
@@ -50,7 +42,7 @@ export default function ProblemLibrary() {
       })
       .catch((error) => {
         if (!controller.signal.aborted) {
-          setListError(error instanceof Error ? error.message : '题库列表加载失败');
+          setListError(error instanceof Error ? error.message : resources.problems.listLoadFailed);
         }
       })
       .finally(() => {
@@ -60,7 +52,7 @@ export default function ProblemLibrary() {
       });
 
     return () => controller.abort();
-  }, [query]);
+  }, [query, resources.problems.listLoadFailed]);
 
   useEffect(() => {
     if (!selectedSlug) {
@@ -75,13 +67,13 @@ export default function ProblemLibrary() {
     getProblemDetail(selectedSlug, controller.signal)
       .then((response) => {
         if (!response.success || !response.data) {
-          throw new Error(response.error?.message ?? '题目详情加载失败');
+          throw new Error(response.error?.message ?? resources.problems.detailLoadFailed);
         }
         setDetail(response.data);
       })
       .catch((error) => {
         if (!controller.signal.aborted) {
-          setDetailError(error instanceof Error ? error.message : '题目详情加载失败');
+          setDetailError(error instanceof Error ? error.message : resources.problems.detailLoadFailed);
         }
       })
       .finally(() => {
@@ -91,9 +83,15 @@ export default function ProblemLibrary() {
       });
 
     return () => controller.abort();
-  }, [selectedSlug]);
+  }, [selectedSlug, resources.problems.detailLoadFailed]);
 
   const totalPages = Math.max(1, Math.ceil((problemPage?.total ?? 0) / (problemPage?.pageSize ?? 20)));
+  const difficultyOptions: Array<{ label: string; value: ProblemDifficulty | '' }> = [
+    { label: resources.problems.allDifficulty, value: '' },
+    { label: formatDifficulty('EASY', resources), value: 'EASY' },
+    { label: formatDifficulty('MEDIUM', resources), value: 'MEDIUM' },
+    { label: formatDifficulty('HARD', resources), value: 'HARD' },
+  ];
 
   function handleKeywordChange(nextKeyword: string) {
     setKeyword(nextKeyword);
@@ -108,21 +106,21 @@ export default function ProblemLibrary() {
   }
 
   return (
-    <section className="problem-shell" aria-label="题库">
+    <section className="problem-shell" aria-label={resources.problems.ariaLabel}>
       <div className="problem-toolbar">
         <label className="search-field">
           <Search aria-hidden="true" />
           <input
-            aria-label="搜索题目"
+            aria-label={resources.problems.searchLabel}
             onChange={(event) => handleKeywordChange(event.target.value)}
-            placeholder="搜索标题、slug 或编号"
+            placeholder={resources.problems.searchPlaceholder}
             value={keyword}
           />
         </label>
         <label className="filter-field">
-          <span>难度</span>
+          <span>{resources.problems.difficulty}</span>
           <select
-            aria-label="难度筛选"
+            aria-label={resources.problems.difficultyFilter}
             onChange={(event) => handleDifficultyChange(event.target.value as ProblemDifficulty | '')}
             value={difficulty}
           >
@@ -136,15 +134,15 @@ export default function ProblemLibrary() {
       <div className="problem-layout">
         <article className="problem-list-panel" aria-labelledby="problem-list-title">
           <div className="panel-title compact-title">
-            <h2 id="problem-list-title">题目列表</h2>
-            <span>{problemPage?.total ?? 0} 题</span>
+            <h2 id="problem-list-title">{resources.problems.listTitle}</h2>
+            <span>{resources.problems.totalCount(problemPage?.total ?? 0)}</span>
           </div>
           {listError && <p className="error-text">{listError}</p>}
-          {listLoading && <p className="empty-log">加载题库...</p>}
+          {listLoading && <p className="empty-log">{resources.problems.loadingList}</p>}
           {!listLoading && !listError && (
             <div className="problem-list">
               {(problemPage?.items ?? []).length === 0 ? (
-                <p className="empty-log">没有匹配的题目</p>
+                <p className="empty-log">{resources.problems.emptyList}</p>
               ) : (
                 problemPage?.items.map((problem) => (
                   <button
@@ -155,11 +153,11 @@ export default function ProblemLibrary() {
                   >
                     <span className="problem-id">{problem.frontendId ?? '-'}</span>
                     <span className="problem-title">
-                      <strong>{problem.titleCn || problem.title}</strong>
+                      <strong>{formatProblemTitle(problem, locale)}</strong>
                       <small>{problem.slug}</small>
                     </span>
                     <span className={`difficulty-badge ${problem.difficulty?.toLowerCase() ?? 'unknown'}`}>
-                      {difficultyLabel(problem.difficulty)}
+                      {formatDifficulty(problem.difficulty, resources)}
                     </span>
                   </button>
                 ))
@@ -168,7 +166,7 @@ export default function ProblemLibrary() {
           )}
           <div className="pagination-row">
             <button
-              aria-label="上一页"
+              aria-label={resources.problems.previousPage}
               className="icon-button"
               disabled={page <= 1}
               onClick={() => setPage((current) => Math.max(1, current - 1))}
@@ -178,7 +176,7 @@ export default function ProblemLibrary() {
             </button>
             <span>{page} / {totalPages}</span>
             <button
-              aria-label="下一页"
+              aria-label={resources.problems.nextPage}
               className="icon-button"
               disabled={page >= totalPages}
               onClick={() => setPage((current) => current + 1)}
@@ -190,14 +188,14 @@ export default function ProblemLibrary() {
         </article>
 
         <article className="problem-detail-panel" aria-labelledby="problem-detail-title">
-          {detailLoading && <p className="empty-log">加载详情...</p>}
+          {detailLoading && <p className="empty-log">{resources.problems.loadingDetail}</p>}
           {detailError && <p className="error-text">{detailError}</p>}
           {!detailLoading && !detailError && detail && (
             <>
               <div className="detail-heading">
                 <div>
                   <p className="eyebrow">#{detail.frontendId ?? '-'}</p>
-                  <h2 id="problem-detail-title">{detail.titleCn || detail.title}</h2>
+                  <h2 id="problem-detail-title">{formatProblemTitle(detail, locale)}</h2>
                   <p>{detail.title}</p>
                 </div>
                 {detail.leetcodeUrl && (
@@ -209,27 +207,27 @@ export default function ProblemLibrary() {
               </div>
               <div className="tag-row">
                 <span className={`difficulty-badge ${detail.difficulty?.toLowerCase() ?? 'unknown'}`}>
-                  {difficultyLabel(detail.difficulty)}
+                  {formatDifficulty(detail.difficulty, resources)}
                 </span>
-                {detail.tags.map((tag) => <span className="tag-pill" key={tag}>{tag}</span>)}
+                {detail.tags.map((tag) => <span className="tag-pill" key={tag}>{formatTopicTag(tag, resources)}</span>)}
               </div>
               <pre className="markdown-view">{detail.contentMarkdown}</pre>
               {detail.sampleTestCase && (
                 <section className="code-section">
-                  <h3>样例输入</h3>
+                  <h3>{resources.problems.sampleInput}</h3>
                   <pre>{detail.sampleTestCase}</pre>
                 </section>
               )}
               {detail.python3Template && (
                 <section className="code-section">
-                  <h3>Python3 模板</h3>
+                  <h3>{resources.problems.pythonTemplate}</h3>
                   <pre>{detail.python3Template}</pre>
                 </section>
               )}
             </>
           )}
           {!detailLoading && !detailError && !detail && (
-            <p className="empty-log">选择一道题查看详情</p>
+            <p className="empty-log">{resources.problems.selectProblem}</p>
           )}
         </article>
       </div>

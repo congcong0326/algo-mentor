@@ -1,5 +1,6 @@
 import { Check, FileText, MessageSquare, Send } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useI18n } from '../i18n/I18nProvider';
 import type { LearningPlanDraftResponse } from '../types/api';
 import PlanPreview from './PlanPreview';
 
@@ -22,6 +23,7 @@ export default function LearningPlanDraftPanel({
   onReturnToWizard,
   onSendFollowUp,
 }: LearningPlanDraftPanelProps) {
+  const { resources } = useI18n();
   const [followUp, setFollowUp] = useState('');
   const [editingGoal, setEditingGoal] = useState(false);
   const [goalDraft, setGoalDraft] = useState(draft.draftPlan?.goal ?? '');
@@ -38,11 +40,11 @@ export default function LearningPlanDraftPanel({
       <article className="learning-panel">
         <div className="panel-title">
           <MessageSquare aria-hidden="true" />
-          <h2>Agent 追问</h2>
+          <h2>{resources.learningPlans.draftQuestion}</h2>
         </div>
         <p>{draft.assistantMessage}</p>
         <label className="topic-field" htmlFor={followUpId}>
-          <span>补充回答</span>
+          <span>{resources.learningPlans.followUpAnswer}</span>
           <textarea
             disabled={loading}
             id={followUpId}
@@ -64,7 +66,7 @@ export default function LearningPlanDraftPanel({
           type="button"
         >
           <Send aria-hidden="true" />
-          <span>发送补充</span>
+          <span>{resources.learningPlans.sendFollowUp}</span>
         </button>
       </article>
     );
@@ -75,14 +77,14 @@ export default function LearningPlanDraftPanel({
       <article className="learning-panel">
         <div className="panel-title">
           <FileText aria-hidden="true" />
-          <h2>训练方案</h2>
+          <h2>{resources.learningPlans.draftPreview}</h2>
         </div>
         {editingGoal ? (
           <div className="goal-editor">
             <label className="topic-field">
-              <span>目标摘要</span>
+              <span>{resources.learningPlans.goalSummary}</span>
               <textarea
-                aria-label="目标摘要"
+                aria-label={resources.learningPlans.goalSummary}
                 disabled={loading}
                 onChange={(event) => setGoalDraft(event.target.value)}
                 rows={3}
@@ -95,7 +97,7 @@ export default function LearningPlanDraftPanel({
               onClick={() => onRegenerateGoal?.(goalDraft.trim())}
               type="button"
             >
-              按新目标重新生成
+              {resources.learningPlans.regenerateByGoal}
             </button>
           </div>
         ) : (
@@ -108,7 +110,7 @@ export default function LearningPlanDraftPanel({
                 onClick={() => setEditingGoal(true)}
                 type="button"
               >
-                编辑目标摘要
+                {resources.learningPlans.editGoalSummary}
               </button>
             )}
           </div>
@@ -116,7 +118,7 @@ export default function LearningPlanDraftPanel({
         <PlanPreview plan={draft.draftPlan} />
         <button className="primary-button" disabled={loading} onClick={onConfirm} type="button">
           <Check aria-hidden="true" />
-          <span>保存方案</span>
+          <span>{resources.learningPlans.savePlan}</span>
         </button>
       </article>
     );
@@ -125,9 +127,9 @@ export default function LearningPlanDraftPanel({
   if (draft.status === 'GENERATION_FAILED' || draft.status === 'EXPIRED') {
     return (
       <article className="learning-panel">
-        <p className="empty-log">草案生成失败或已过期，请重新填写问卷后生成。</p>
+        <p className="empty-log">{resources.learningPlans.draftUnavailableFailed}</p>
         <button className="secondary-button" disabled={loading} onClick={retryCreate} type="button">
-          重新填写问卷
+          {resources.learningPlans.restartWizard}
         </button>
       </article>
     );
@@ -135,9 +137,9 @@ export default function LearningPlanDraftPanel({
 
   return (
     <article className="learning-panel">
-      <p className="empty-log">草案暂不可预览，请重新填写问卷后生成。</p>
+      <p className="empty-log">{resources.learningPlans.draftUnavailable}</p>
       <button className="secondary-button" disabled={loading} onClick={retryCreate} type="button">
-        重新填写问卷
+        {resources.learningPlans.restartWizard}
       </button>
     </article>
   );

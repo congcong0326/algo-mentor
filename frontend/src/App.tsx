@@ -11,6 +11,7 @@ import AiDebugConsole, {
 import AppShell from './app/AppShell';
 import LoginPage from './app/LoginPage';
 import { APP_ROUTES, pathForView, type AppView, viewFromPath } from './app/navigation';
+import { useI18n } from './i18n/I18nProvider';
 import { getCurrentUser, logout } from './services/api';
 import type { CurrentUser } from './types/api';
 
@@ -27,19 +28,21 @@ function isLoginRoute(pathname: string): boolean {
 }
 
 function AppLoadingShell({ activeView }: { activeView: AppView }) {
+  const { resources } = useI18n();
+
   return (
     <main className="app-shell loading-shell">
       <header className="app-header" role="banner">
         <div className="app-brand">
-          <span className="eyebrow">ALGO MENTOR</span>
-          <strong>Algo Mentor</strong>
+          <span className="eyebrow">{resources.app.brandKicker}</span>
+          <strong>{resources.app.brandName}</strong>
         </div>
-        <nav className="app-nav" aria-label="主导航">
+        <nav className="app-nav" aria-label={resources.app.mainNavigation}>
           {[
-            ['home', '首页'],
-            ['learningPlans', '方案'],
-            ['problems', '题库'],
-            ['debug', 'AI 调试'],
+            ['home', resources.nav.home],
+            ['learningPlans', resources.nav.learningPlans],
+            ['problems', resources.nav.problems],
+            ['debug', resources.nav.debug],
           ].map(([view, label]) => (
             <button
               aria-pressed={activeView === view}
@@ -53,14 +56,14 @@ function AppLoadingShell({ activeView }: { activeView: AppView }) {
           ))}
         </nav>
         <div className="app-header-actions">
-          <div className="auth-status" aria-label="登录状态">
-            <span>检查登录状态</span>
+          <div className="auth-status" aria-label={resources.app.loginStatus}>
+            <span>{resources.app.checkingLogin}</span>
           </div>
         </div>
       </header>
       <section className="app-content" aria-busy="true">
         <div className="loading-panel" role="status">
-          正在检查登录状态...
+          {resources.app.checkingLoginStatus}
         </div>
       </section>
     </main>
@@ -68,6 +71,7 @@ function AppLoadingShell({ activeView }: { activeView: AppView }) {
 }
 
 export default function App() {
+  const { resources } = useI18n();
   const [activeView, setActiveView] = useState<AppView>(() => viewFromPath(window.location.pathname) ?? 'home');
   const [pathname, setPathname] = useState(() => normalizeAuthenticatedPath(window.location.pathname));
   const [currentUser, setCurrentUser] = useState<CurrentUser>();
@@ -198,7 +202,7 @@ export default function App() {
       setCurrentUser(undefined);
       window.history.replaceState({}, '', APP_ROUTES.login);
     } catch (error) {
-      setLogoutError(error instanceof Error ? error.message : '退出登录失败');
+      setLogoutError(error instanceof Error ? error.message : resources.app.logoutFailed);
     } finally {
       setLogoutPending(false);
     }
@@ -212,9 +216,9 @@ export default function App() {
     return (
       <main className="login-page" aria-labelledby="auth-loading-title">
         <section className="login-panel">
-          <p className="home-kicker">ALGO MENTOR</p>
-          <h1 id="auth-loading-title">正在加载</h1>
-          <p className="login-subtitle" role="status">正在检查登录状态...</p>
+          <p className="home-kicker">{resources.app.brandKicker}</p>
+          <h1 id="auth-loading-title">{resources.app.loading}</h1>
+          <p className="login-subtitle" role="status">{resources.app.checkingLoginStatus}</p>
         </section>
       </main>
     );
@@ -224,11 +228,11 @@ export default function App() {
     return (
       <main className="login-page" aria-labelledby="auth-error-title">
         <section className="login-panel">
-          <p className="home-kicker">ALGO MENTOR</p>
-          <h1 id="auth-error-title">Algo Mentor</h1>
-          <p className="error-text" role="alert">登录状态检查失败，请稍后重试。</p>
+          <p className="home-kicker">{resources.app.brandKicker}</p>
+          <h1 id="auth-error-title">{resources.app.brandName}</h1>
+          <p className="error-text" role="alert">{resources.app.loginCheckFailed}</p>
           <button className="primary-button login-oauth-link" onClick={() => void checkAuthentication()} type="button">
-            重试
+            {resources.app.retry}
           </button>
         </section>
       </main>

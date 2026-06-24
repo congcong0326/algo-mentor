@@ -8,6 +8,8 @@ import {
   Server,
 } from 'lucide-react';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { formatTime } from '../i18n/formatters';
+import { useI18n } from '../i18n/I18nProvider';
 import { ApiRequestError, streamAgentConversation } from '../services/api';
 import type {
   AgentConversationStreamRequest,
@@ -58,15 +60,6 @@ function formatJson(data: unknown): string {
   }
 
   return JSON.stringify(data, null, 2);
-}
-
-function nowTime(): string {
-  return new Intl.DateTimeFormat('zh-CN', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    fractionalSecondDigits: 3,
-  }).format(new Date());
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -141,6 +134,7 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
   { onConnectionStateChange },
   ref,
 ) {
+  const { locale, resources } = useI18n();
   const [message, setMessage] = useState('Explain two pointers with a concrete example.');
   const [taskId, setTaskId] = useState('');
   const [userId, setUserId] = useState('');
@@ -193,7 +187,7 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
     const entry: StreamLogEntry = {
       id: logIdRef.current,
       eventName,
-      timestamp: nowTime(),
+      timestamp: formatTime(new Date(), locale),
       data,
     };
 
@@ -303,7 +297,7 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
             return;
           }
           setAndReportConnectionState('open');
-          addLog('connection_open', { message: 'POST SSE connection opened.' });
+          addLog('connection_open', { message: resources.debug.connectionOpened });
         },
         onEvent: ({ eventName, data }) => {
           if (!mountedRef.current || abortControllerRef.current !== controller) {
@@ -326,7 +320,7 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
         return;
       }
       abortControllerRef.current = null;
-      const message = error instanceof Error ? error.message : 'Conversation stream failed.';
+      const message = error instanceof Error ? error.message : resources.debug.streamFailed;
       addLog('connection_error', {
         message,
         ...(error instanceof ApiRequestError ? {
@@ -342,7 +336,7 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
   }
 
   function stopStream() {
-    addLog('connection_stopped', { message: 'Connection stopped by user.' });
+    addLog('connection_stopped', { message: resources.debug.connectionStopped });
     closeCurrentStream('stopped');
   }
 
@@ -371,14 +365,14 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
 
   return (
     <>
-      <section className="control-panel" aria-label="SSE 请求控制">
+      <section className="control-panel" aria-label={resources.debug.controls}>
         <label className="topic-field">
           <span>Message</span>
           <textarea
             aria-label="Message"
             disabled={isStreaming}
             onChange={(event) => setMessage(event.target.value)}
-            placeholder="输入本轮用户消息"
+            placeholder={resources.debug.messagePlaceholder}
             rows={4}
             value={message}
           />
@@ -391,7 +385,7 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
               disabled={isStreaming}
               inputMode="numeric"
               onChange={(event) => setTaskId(event.target.value)}
-              placeholder="首轮可留空"
+              placeholder={resources.debug.firstRoundOptional}
               value={taskId}
             />
           </label>
@@ -402,7 +396,7 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
               disabled={isStreaming}
               inputMode="numeric"
               onChange={(event) => setUserId(event.target.value)}
-              placeholder="可选"
+              placeholder={resources.debug.optional}
               value={userId}
             />
           </label>
@@ -419,19 +413,19 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
         <div className="button-row">
           <button className="primary-button" disabled={sendDisabled || !message.trim()} onClick={startStream} type="button">
             <Play aria-hidden="true" />
-            <span>Start</span>
+            <span>{resources.debug.start}</span>
           </button>
           <button className="secondary-button" disabled={!isStreaming} onClick={stopStream} type="button">
             <CircleStop aria-hidden="true" />
-            <span>Stop</span>
+            <span>{resources.debug.stop}</span>
           </button>
           <button className="secondary-button" disabled={isStreaming} onClick={clearLogs} type="button">
             <RotateCcw aria-hidden="true" />
-            <span>Clear</span>
+            <span>{resources.debug.clear}</span>
           </button>
           <button className="secondary-button" disabled={isStreaming} onClick={regenerateIdempotencyKey} type="button">
             <RefreshCw aria-hidden="true" />
-            <span>Key</span>
+            <span>{resources.debug.key}</span>
           </button>
         </div>
         <div className="request-url">
@@ -441,11 +435,11 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
         <pre className="request-body">{formatJson(requestBody)}</pre>
         <div className="request-url">
           <Server aria-hidden="true" />
-          <code>Idempotency-Key: {idempotencyKey || '(auto)'}</code>
+          <code>Idempotency-Key: {idempotencyKey || `(${resources.debug.auto})`}</code>
         </div>
       </section>
 
-      <section className="summary-grid" aria-label="流式请求摘要">
+      <section className="summary-grid" aria-label={resources.debug.summary}>
         <article className="summary-card">
           <span>Provider</span>
           <strong>{provider}</strong>
@@ -468,9 +462,9 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
         <article className="output-panel" aria-labelledby="output-title">
           <div className="panel-title">
             <Activity aria-hidden="true" />
-            <h2 id="output-title">模型输出</h2>
+            <h2 id="output-title">{resources.debug.outputTitle}</h2>
           </div>
-          <pre className="model-output">{output || '等待 content_delta 事件...'}</pre>
+          <pre className="model-output">{output || resources.debug.outputEmpty}</pre>
           {usage && (
             <dl className="usage-row" aria-label="Token usage">
               <div>
@@ -496,11 +490,11 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
         <article className="log-panel" aria-labelledby="log-title">
           <div className="panel-title">
             <AlertTriangle aria-hidden="true" />
-            <h2 id="log-title">事件日志</h2>
+            <h2 id="log-title">{resources.debug.logTitle}</h2>
           </div>
           <div className="event-list">
             {logs.length === 0 ? (
-              <p className="empty-log">等待 SSE 事件...</p>
+              <p className="empty-log">{resources.debug.logEmpty}</p>
             ) : (
               logs.map((log) => (
                 <article className="event-row" key={log.id}>

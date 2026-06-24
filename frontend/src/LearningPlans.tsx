@@ -9,6 +9,7 @@ import {
 import LearningPlanCreatePage from './learning-plans/LearningPlanCreatePage';
 import LearningPlanDetail from './learning-plans/LearningPlanDetail';
 import LearningPlanListCard from './learning-plans/LearningPlanListCard';
+import { useI18n } from './i18n/I18nProvider';
 import {
   deleteLearningPlan,
   getLearningPlanDetail,
@@ -41,6 +42,7 @@ function apiData<T>(response: { success: boolean; data?: T; error?: { message: s
 }
 
 export default function LearningPlans({ pathname, onNavigate }: LearningPlansProps) {
+  const { resources } = useI18n();
   const [plansPage, setPlansPage] = useState<LearningPlanPageResponse>(INITIAL_PLANS_PAGE);
   const [planDetail, setPlanDetail] = useState<LearningPlanDetailResponse>();
   const [page, setPage] = useState(1);
@@ -57,7 +59,7 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
     const controller = new AbortController();
     refreshPlans(1, controller.signal).catch((nextError) => {
       if (!controller.signal.aborted) {
-        setError(nextError instanceof Error ? nextError.message : '训练方案列表加载失败');
+        setError(nextError instanceof Error ? nextError.message : resources.learningPlans.listLoadFailed);
       }
     });
 
@@ -75,7 +77,7 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
     setPlanDetail(undefined);
     loadPlanDetail(selectedPlanId, controller.signal).catch((nextError) => {
       if (!controller.signal.aborted) {
-        setError(nextError instanceof Error ? nextError.message : '训练方案详情加载失败');
+        setError(nextError instanceof Error ? nextError.message : resources.learningPlans.detailLoadFailed);
       }
     });
 
@@ -85,7 +87,7 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
   async function refreshPlans(nextPage = page, signal?: AbortSignal) {
     const nextPlans = apiData(
       await getLearningPlans({ page: nextPage, pageSize: plansPage.pageSize }, signal),
-      '训练方案列表加载失败',
+      resources.learningPlans.listLoadFailed,
     );
     setPlansPage(nextPlans);
     setPage(nextPlans.page);
@@ -94,13 +96,13 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
   async function loadPlanDetail(planId: number, signal?: AbortSignal) {
     const detail = apiData(
       await getLearningPlanDetail(planId, signal),
-      '训练方案详情加载失败',
+      resources.learningPlans.detailLoadFailed,
     );
     setPlanDetail(detail);
   }
 
   async function removePlan(planId: number) {
-    if (!window.confirm('确认删除这个训练方案？')) {
+    if (!window.confirm(resources.learningPlans.confirmDelete)) {
       return;
     }
 
@@ -112,7 +114,7 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
       const nextPage = shouldStepBack ? page - 1 : page;
       await refreshPlans(nextPage);
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : '训练方案删除失败');
+      setError(nextError instanceof Error ? nextError.message : resources.learningPlans.deleteFailed);
     } finally {
       setDeletingPlanId(undefined);
     }
@@ -133,20 +135,20 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
 
   if (selectedPlanId !== undefined) {
     return (
-      <section className="learning-shell" aria-label="训练方案详情">
+      <section className="learning-shell" aria-label={resources.learningPlans.detailAriaLabel}>
         {error && <p className="error-text">{error}</p>}
         {!error && !planDetail ? (
           <article className="learning-panel" aria-busy="true">
-            <p className="eyebrow">Learning Plan</p>
-            <h2>正在加载方案详情...</h2>
+            <p className="eyebrow">{resources.learningPlans.learningPlanEyebrow}</p>
+            <h2>{resources.learningPlans.loadingDetail}</h2>
           </article>
         ) : null}
         {planDetail ? (
           practiceChatRoute ? (
             <Suspense fallback={(
               <article className="learning-panel" aria-busy="true">
-                <p className="eyebrow">Practice Chat</p>
-                <h2>正在加载题目聊天页...</h2>
+                <p className="eyebrow">{resources.learningPlans.practiceChatEyebrow}</p>
+                <h2>{resources.learningPlans.loadingPracticeChat}</h2>
               </article>
             )}
             >
@@ -172,7 +174,7 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
   }
 
   return (
-    <section className="learning-shell" aria-label="训练方案">
+    <section className="learning-shell" aria-label={resources.learningPlans.ariaLabel}>
       {error && <p className="error-text">{error}</p>}
 
       <LearningPlanListCard

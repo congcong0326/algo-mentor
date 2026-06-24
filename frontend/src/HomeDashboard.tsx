@@ -1,58 +1,59 @@
 import { ArrowRight, BrainCircuit, CalendarCheck, Library, ListChecks, Sparkles } from 'lucide-react';
 import type { AppView } from './app/navigation';
+import { useI18n } from './i18n/I18nProvider';
 
 interface HomeDashboardProps {
   onNavigate: (view: AppView) => void;
 }
 
-const featureCards = [
-  {
-    title: '训练方案',
-    description: '按目标、时间和强弱项生成阶段安排，把刷题节奏拆成可执行任务。',
-    icon: CalendarCheck,
-  },
-  {
-    title: '题库训练',
-    description: '集中管理题目、难度和标签，快速进入当前最该练的一类问题。',
-    icon: Library,
-  },
-  {
-    title: 'AI 讲解',
-    description: '围绕思路、边界条件和复杂度追问，让每道题沉淀成可复用模式。',
-    icon: BrainCircuit,
-  },
-];
-
-const workflowSteps = [
-  ['1', '选题', '从方案或题库选择本轮重点。'],
-  ['2', '练习', '先独立推导，再记录阻塞点。'],
-  ['3', '讲解', '用 AI 补齐思路、模板和边界。'],
-  ['∞', '复盘', '按方案回看，避免刷完就忘。'],
-];
-
 export default function HomeDashboard({ onNavigate }: HomeDashboardProps) {
+  const { resources } = useI18n();
+  const featureCards = [
+    {
+      title: resources.home.featurePlanTitle,
+      description: resources.home.featurePlanDescription,
+      icon: CalendarCheck,
+    },
+    {
+      title: resources.home.featureProblemTitle,
+      description: resources.home.featureProblemDescription,
+      icon: Library,
+    },
+    {
+      title: resources.home.featureAiTitle,
+      description: resources.home.featureAiDescription,
+      icon: BrainCircuit,
+    },
+  ];
+  const workflowSteps = [
+    ['1', resources.home.stepPickTitle, resources.home.stepPickDescription],
+    ['2', resources.home.stepPracticeTitle, resources.home.stepPracticeDescription],
+    ['3', resources.home.stepExplainTitle, resources.home.stepExplainDescription],
+    ['∞', resources.home.stepReviewTitle, resources.home.stepReviewDescription],
+  ];
+
   return (
-    <section className="home-page" aria-label="首页">
+    <section className="home-page" aria-label={resources.home.ariaLabel}>
       <section className="home-hero" aria-labelledby="home-title">
         <div className="home-hero-copy">
-          <p className="home-kicker">ALGORITHM LEARNING SYSTEM</p>
-          <h1 id="home-title">把算法练习变成可复盘的学习系统</h1>
+          <p className="home-kicker">{resources.home.kicker}</p>
+          <h1 id="home-title">{resources.home.title}</h1>
           <p className="home-subtitle">
-            Algo Mentor 把训练方案、题库训练和 AI 讲解放在同一个工作台里，帮助你持续练习、及时复盘、沉淀题型方法。
+            {resources.home.subtitle}
           </p>
           <div className="home-hero-actions">
             <button className="primary-button hero-action" onClick={() => onNavigate('learningPlans')} type="button">
               <Sparkles aria-hidden="true" />
-              <span>生成训练方案</span>
+              <span>{resources.home.generatePlan}</span>
             </button>
             <button className="secondary-button hero-action" onClick={() => onNavigate('problems')} type="button">
               <Library aria-hidden="true" />
-              <span>浏览题库</span>
+              <span>{resources.home.browseProblems}</span>
             </button>
           </div>
         </div>
 
-        <div className="home-preview" aria-label="学习工作台预览">
+        <div className="home-preview" aria-label={resources.home.previewLabel}>
           <div className="preview-window">
             <div className="preview-toolbar" aria-hidden="true">
               <span />
@@ -61,23 +62,23 @@ export default function HomeDashboard({ onNavigate }: HomeDashboardProps) {
             </div>
             <div className="preview-content">
               <div className="preview-summary">
-                <span>本周重点</span>
-                <strong>数组、哈希表、双指针</strong>
+                <span>{resources.home.previewFocusLabel}</span>
+                <strong>{resources.home.previewFocusValue}</strong>
               </div>
               <div className="preview-task active">
                 <ListChecks aria-hidden="true" />
-                <span>完成 5 道基础题</span>
-                <strong>进行中</strong>
+                <span>{resources.home.previewTaskOne}</span>
+                <strong>{resources.home.previewTaskOneStatus}</strong>
               </div>
               <div className="preview-task">
                 <BrainCircuit aria-hidden="true" />
-                <span>复盘 Two Sum 思路</span>
-                <strong>今天</strong>
+                <span>{resources.home.previewTaskTwo}</span>
+                <strong>{resources.home.previewTaskTwoStatus}</strong>
               </div>
               <div className="preview-task">
                 <CalendarCheck aria-hidden="true" />
-                <span>更新下周训练方案</span>
-                <strong>周日</strong>
+                <span>{resources.home.previewTaskThree}</span>
+                <strong>{resources.home.previewTaskThreeStatus}</strong>
               </div>
             </div>
           </div>
@@ -86,8 +87,8 @@ export default function HomeDashboard({ onNavigate }: HomeDashboardProps) {
 
       <section className="home-section" aria-labelledby="home-capabilities-title">
         <div className="home-section-header">
-          <p className="eyebrow">CAPABILITIES</p>
-          <h2 id="home-capabilities-title">高频训练入口放在第一屏之后</h2>
+          <p className="eyebrow">{resources.home.capabilitiesKicker}</p>
+          <h2 id="home-capabilities-title">{resources.home.capabilitiesTitle}</h2>
         </div>
         <div className="home-card-grid">
           {featureCards.map((card) => {
@@ -105,10 +106,10 @@ export default function HomeDashboard({ onNavigate }: HomeDashboardProps) {
 
       <section className="home-section" aria-labelledby="home-workflow-title">
         <div className="home-section-header">
-          <p className="eyebrow">LEARNING LOOP</p>
-          <h2 id="home-workflow-title">一套简单循环，长期记住题型</h2>
+          <p className="eyebrow">{resources.home.loopKicker}</p>
+          <h2 id="home-workflow-title">{resources.home.loopTitle}</h2>
         </div>
-        <ol className="home-workflow" aria-label="算法学习闭环">
+        <ol className="home-workflow" aria-label={resources.home.loopLabel}>
           {workflowSteps.map(([index, title, description]) => (
             <li className="home-workflow-step" key={title}>
               <span className="workflow-index" aria-hidden="true">{index}</span>
@@ -119,13 +120,13 @@ export default function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         </ol>
       </section>
 
-      <section className="home-cta" aria-label="开始学习">
+      <section className="home-cta" aria-label={resources.home.ctaLabel}>
         <div>
-          <h2>从一份方案开始今天的训练</h2>
-          <p>先确定目标和时间，再让系统给出阶段、题目和复盘建议。</p>
+          <h2>{resources.home.ctaTitle}</h2>
+          <p>{resources.home.ctaDescription}</p>
         </div>
         <button className="primary-button hero-action" onClick={() => onNavigate('learningPlans')} type="button">
-          <span>进入训练方案</span>
+          <span>{resources.home.enterPlans}</span>
           <ArrowRight aria-hidden="true" />
         </button>
       </section>

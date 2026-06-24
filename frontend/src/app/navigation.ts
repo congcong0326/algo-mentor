@@ -23,7 +23,7 @@ export type AppView = 'home' | 'learningPlans' | 'problems' | 'debug';
 
 export interface NavigationItem {
   view: AppView;
-  label: string;
+  labelKey: AppView;
   path: string;
   icon: LucideIcon;
 }
@@ -31,25 +31,25 @@ export interface NavigationItem {
 export const NAVIGATION_ITEMS: NavigationItem[] = [
   {
     view: 'home',
-    label: '首页',
+    labelKey: 'home',
     path: APP_ROUTES.home,
     icon: Home,
   },
   {
     view: 'learningPlans',
-    label: '方案',
+    labelKey: 'learningPlans',
     path: APP_ROUTES.learningPlans,
     icon: ClipboardList,
   },
   {
     view: 'problems',
-    label: '题库',
+    labelKey: 'problems',
     path: APP_ROUTES.problems,
     icon: Library,
   },
   {
     view: 'debug',
-    label: 'AI 调试',
+    labelKey: 'debug',
     path: APP_ROUTES.debug,
     icon: Bot,
   },

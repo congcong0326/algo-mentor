@@ -13,6 +13,7 @@ import type {
   LearningPlanDraftResponse,
   SseStreamEvent,
 } from '../types/api';
+import { useI18n } from '../i18n/I18nProvider';
 import AgentWorkIndicator from './AgentWorkIndicator';
 import LearningPlanCreateForm from './LearningPlanCreateForm';
 import LearningPlanDraftPanel from './LearningPlanDraftPanel';
@@ -32,6 +33,7 @@ function apiData<T>(response: { success: boolean; data?: T; error?: { message: s
 }
 
 export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: LearningPlanCreatePageProps) {
+  const { resources } = useI18n();
   const [formKey, setFormKey] = useState(0);
   const [draft, setDraft] = useState<LearningPlanDraftResponse>();
   const [workEvent, setWorkEvent] = useState<AgentWorkStatusEvent>();
@@ -42,13 +44,13 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
     setFlowState('generating');
     setError('');
     setDraft(undefined);
-    setWorkEvent({ message: '开始生成训练方案' });
+    setWorkEvent({ message: resources.learningPlans.generateStart });
     try {
       await streamLearningPlanDraft(request, {
         onEvent: handleDraftStreamEvent,
       });
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : '训练方案生成失败');
+      setError(nextError instanceof Error ? nextError.message : resources.learningPlans.generateFailed);
       setFlowState('editing');
     }
   }
@@ -58,7 +60,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
       const nextWorkEvent = event.data as AgentWorkStatusEvent;
       setWorkEvent(nextWorkEvent);
       if (event.eventName === 'work_error') {
-        setError(nextWorkEvent.message || '训练方案生成失败');
+        setError(nextWorkEvent.message || resources.learningPlans.generateFailed);
       }
       return;
     }
@@ -70,7 +72,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
     }
     if (event.eventName === 'draft_error') {
       const draftError = event.data as LearningPlanDraftErrorEvent;
-      setError(draftError.message || '训练方案生成失败');
+      setError(draftError.message || resources.learningPlans.generateFailed);
       setFlowState('editing');
     }
   }
@@ -84,20 +86,20 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
     try {
       const nextDraft = apiData(
         await sendLearningPlanDraftMessage(draft.draftId, { message: message.trim() }),
-        '训练方案追问提交失败',
+        resources.learningPlans.followUpFailed,
       );
       setDraft(nextDraft);
       setFlowState(nextDraft.status === 'COLLECTING' ? 'collecting' : 'previewing');
       return true;
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : '训练方案追问提交失败');
+      setError(nextError instanceof Error ? nextError.message : resources.learningPlans.followUpFailed);
       setFlowState('collecting');
       return false;
     }
   }
 
   async function regenerateFromGoal(goal: string) {
-    return sendFollowUp(`请按新的目标摘要重新生成训练方案：${goal}`);
+    return sendFollowUp(resources.learningPlans.followUpRegeneratePrefix(goal));
   }
 
   async function confirmDraft() {
@@ -107,11 +109,11 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
     setFlowState('confirming');
     setError('');
     try {
-      const confirmed = apiData(await confirmLearningPlanDraft(draft.draftId), '训练方案保存失败');
+      const confirmed = apiData(await confirmLearningPlanDraft(draft.draftId), resources.learningPlans.saveFailed);
       setDraft(undefined);
       onSaved(confirmed);
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : '训练方案保存失败');
+      setError(nextError instanceof Error ? nextError.message : resources.learningPlans.saveFailed);
       setFlowState('previewing');
     }
   }
@@ -125,7 +127,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
   }
 
   return (
-    <section className="learning-shell learning-create-shell" aria-label="新建训练方案">
+    <section className="learning-shell learning-create-shell" aria-label={resources.learningPlans.createAriaLabel}>
       <div className="learning-create-heading">
         <button
           className="secondary-button compact"
@@ -134,7 +136,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
           type="button"
         >
           <ArrowLeft aria-hidden="true" />
-          <span>返回方案页</span>
+          <span>{resources.learningPlans.backToPlans}</span>
         </button>
       </div>
 
@@ -161,7 +163,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
             loading={flowState === 'generating'}
             onCancel={onBackToPlans}
             onSubmit={submitDraft}
-            submitLabel="生成训练方案"
+            submitLabel={resources.learningPlans.generatePlan}
           />
         </article>
       )}

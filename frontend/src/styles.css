@@ -114,6 +114,17 @@ a {
   color: inherit;
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
 .test-shell {
   display: grid;
   gap: 20px;
@@ -165,6 +176,12 @@ a {
   width: min(280px, 100%);
   margin-top: 8px;
   text-decoration: none;
+}
+
+.login-language {
+  position: fixed;
+  top: 18px;
+  right: 20px;
 }
 
 .app-shell {
@@ -353,6 +370,35 @@ a {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.language-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+  background: var(--surface-card);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.language-selector svg {
+  width: 16px;
+  height: 16px;
+}
+
+.language-selector select {
+  min-height: 30px;
+  padding: 0 20px 0 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
 }
 
 .login-link {

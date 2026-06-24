@@ -3,35 +3,27 @@ import type {
   LearningPlanIntent,
   LearningPlanLevel,
 } from '../types/api';
+import type { LocaleResources } from '../i18n/locales';
 
-export const intentOptions: Array<{ label: string; value: LearningPlanIntent }> = [
-  { label: '面试冲刺', value: 'INTERVIEW_SPRINT' },
-  { label: '刷题目标', value: 'PRACTICE_GOAL' },
-  { label: '专题突破', value: 'TOPIC_BREAKTHROUGH' },
-  { label: '长期学习', value: 'LONG_TERM_LEARNING' },
-  { label: '能力诊断', value: 'ABILITY_DIAGNOSIS' },
-  { label: '错题复盘', value: 'MISTAKE_REVIEW' },
+export const intentOptionValues: LearningPlanIntent[] = [
+  'INTERVIEW_SPRINT',
+  'PRACTICE_GOAL',
+  'TOPIC_BREAKTHROUGH',
+  'LONG_TERM_LEARNING',
+  'ABILITY_DIAGNOSIS',
+  'MISTAKE_REVIEW',
 ];
 
-export const levelOptions: Array<{ label: string; value: LearningPlanLevel }> = [
-  { label: '入门', value: 'BEGINNER' },
-  { label: '中级', value: 'INTERMEDIATE' },
-  { label: '高级', value: 'ADVANCED' },
-];
+export const levelOptionValues: LearningPlanLevel[] = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'];
 
-export const difficultyOptions: Array<{ label: string; value: LearningPlanDifficultyPreference }> = [
-  { label: 'Easy', value: 'EASY' },
-  { label: 'Medium', value: 'MEDIUM' },
-  { label: 'Hard', value: 'HARD' },
-  { label: 'Mixed', value: 'MIXED' },
-];
+export const difficultyOptionValues: LearningPlanDifficultyPreference[] = ['EASY', 'MEDIUM', 'HARD', 'MIXED'];
 
 export const planScenarioOptions = [
-  { label: '面试冲刺', value: 'INTERVIEW_SPRINT', interviewOriented: true },
-  { label: '专项突破', value: 'TOPIC_BREAKTHROUGH', interviewOriented: false },
-  { label: '基础巩固', value: 'PRACTICE_GOAL', interviewOriented: false },
-  { label: '错题复盘', value: 'MISTAKE_REVIEW', interviewOriented: false },
-  { label: '长期学习', value: 'LONG_TERM_LEARNING', interviewOriented: false },
+  { labelKey: 'INTERVIEW_SPRINT', value: 'INTERVIEW_SPRINT', interviewOriented: true },
+  { labelKey: 'TOPIC_BREAKTHROUGH', value: 'TOPIC_BREAKTHROUGH', interviewOriented: false },
+  { labelKey: 'PRACTICE_GOAL', value: 'PRACTICE_GOAL', interviewOriented: false },
+  { labelKey: 'MISTAKE_REVIEW', value: 'MISTAKE_REVIEW', interviewOriented: false },
+  { labelKey: 'LONG_TERM_LEARNING', value: 'LONG_TERM_LEARNING', interviewOriented: false },
 ] as const;
 
 export const programmingLanguageOptions = [
@@ -49,20 +41,20 @@ export const programmingLanguageOptions = [
 ] as const;
 
 export const difficultyDistributionOptions: ReadonlyArray<{
-  label: string;
+  labelKey: keyof LocaleResources['labels']['difficultyDistribution'];
   value: number;
   preference: LearningPlanDifficultyPreference;
   easyPercent: number;
   mediumPercent: number;
   hardPercent: number;
 }> = [
-  { label: '入门', value: 0, preference: 'EASY', easyPercent: 60, mediumPercent: 35, hardPercent: 5 },
-  { label: '均衡', value: 50, preference: 'MIXED', easyPercent: 25, mediumPercent: 55, hardPercent: 20 },
-  { label: '冲刺', value: 100, preference: 'HARD', easyPercent: 10, mediumPercent: 55, hardPercent: 35 },
+  { labelKey: 'beginner', value: 0, preference: 'EASY', easyPercent: 60, mediumPercent: 35, hardPercent: 5 },
+  { labelKey: 'balanced', value: 50, preference: 'MIXED', easyPercent: 25, mediumPercent: 55, hardPercent: 20 },
+  { labelKey: 'sprint', value: 100, preference: 'HARD', easyPercent: 10, mediumPercent: 55, hardPercent: 35 },
 ] as const;
 
 export interface DifficultyDistribution {
-  label: string;
+  labelKey: keyof LocaleResources['labels']['difficultyDistribution'];
   value: number;
   preference: LearningPlanDifficultyPreference;
   easyPercent: number;
@@ -105,7 +97,7 @@ export function getDifficultyDistribution(value: number): DifficultyDistribution
   ), difficultyDistributionOptions[0]);
 
   return {
-    label: closest.label,
+    labelKey: closest.labelKey,
     value: clampedValue,
     preference: closest.preference,
     easyPercent,
@@ -115,26 +107,27 @@ export function getDifficultyDistribution(value: number): DifficultyDistribution
 }
 
 export const topicOptions = [
-  { label: '数组', value: 'Array' },
-  { label: '哈希表', value: 'Hash Table' },
-  { label: '字符串', value: 'String' },
-  { label: '双指针', value: 'Two Pointers' },
-  { label: '滑动窗口', value: 'Sliding Window' },
-  { label: '栈', value: 'Stack' },
-  { label: '队列', value: 'Queue' },
-  { label: '链表', value: 'Linked List' },
-  { label: '二叉树', value: 'Binary Tree' },
-  { label: '图', value: 'Graph' },
-  { label: 'DFS/BFS', value: 'Depth-First Search' },
-  { label: '二分查找', value: 'Binary Search' },
-  { label: '动态规划', value: 'Dynamic Programming' },
-  { label: '贪心', value: 'Greedy' },
-  { label: '堆', value: 'Heap' },
-  { label: '回溯', value: 'Backtracking' },
-  { label: '位运算', value: 'Bit Manipulation' },
+  { value: 'Array' },
+  { value: 'Hash Table' },
+  { value: 'String' },
+  { value: 'Two Pointers' },
+  { value: 'Sliding Window' },
+  { value: 'Stack' },
+  { value: 'Queue' },
+  { value: 'Linked List' },
+  { value: 'Binary Tree' },
+  { value: 'Graph' },
+  { value: 'Depth-First Search' },
+  { value: 'Binary Search' },
+  { value: 'Dynamic Programming' },
+  { value: 'Greedy' },
+  { value: 'Heap' },
+  { value: 'Backtracking' },
+  { value: 'Bit Manipulation' },
 ] as const;
 
 export interface BuildGoalInput {
+  resources: LocaleResources;
   intentLabel: string;
   durationWeeks: number;
   weeklyHours: number;
@@ -150,15 +143,16 @@ export interface BuildGoalInput {
 
 export function buildLearningPlanGoal(input: BuildGoalInput): string {
   const topics = input.topics.map((topic) => topic.trim()).filter(Boolean);
+  const resources = input.resources.learningPlans;
 
   return [
-    `训练场景：${input.intentLabel}`,
-    `周期：${input.durationWeeks} 周`,
-    `每周投入：${input.weeklyHours} 小时`,
-    `当前水平：${input.levelLabel}`,
-    `编程语言：${input.programmingLanguage}`,
-    `难度分布：${input.difficultyLabel}（简单 ${input.easyPercent}%，中等 ${input.mediumPercent}%，困难 ${input.hardPercent}%）`,
-    topics.length > 0 ? `主题偏好：${topics.join(', ')}` : '主题偏好：由系统根据训练场景安排',
-    input.additionalThoughts.trim() ? `补充想法：${input.additionalThoughts.trim()}` : undefined,
+    resources.goalIntent(input.intentLabel),
+    resources.goalDuration(input.durationWeeks),
+    resources.goalWeeklyHours(input.weeklyHours),
+    resources.goalLevel(input.levelLabel),
+    resources.goalLanguage(input.programmingLanguage),
+    resources.goalDifficulty(input.difficultyLabel, input.easyPercent, input.mediumPercent, input.hardPercent),
+    topics.length > 0 ? resources.goalTopics(topics.join(', ')) : resources.goalTopicsAuto,
+    input.additionalThoughts.trim() ? resources.goalAdditionalThoughts(input.additionalThoughts.trim()) : undefined,
   ].filter(Boolean).join('\n');
 }

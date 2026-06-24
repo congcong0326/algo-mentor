@@ -2,6 +2,8 @@ import { LogOut } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { NAVIGATION_ITEMS, type AppView } from './navigation';
 import type { CurrentUser } from '../types/api';
+import LanguageSelector from '../i18n/LanguageSelector';
+import { useI18n } from '../i18n/I18nProvider';
 
 interface AppShellProps {
   activeView: AppView;
@@ -24,16 +26,17 @@ export default function AppShell({
   onLogout,
   onNavigate,
 }: AppShellProps) {
-  const userLabel = currentUser.displayName || currentUser.email || `User #${currentUser.id}`;
+  const { resources } = useI18n();
+  const userLabel = currentUser.displayName || currentUser.email || resources.app.unknownUser(currentUser.id);
 
   return (
     <main className="app-shell">
       <header className="app-header" role="banner">
         <div className="app-brand">
-          <span className="eyebrow">ALGO MENTOR</span>
-          <strong>Algo Mentor</strong>
+          <span className="eyebrow">{resources.app.brandKicker}</span>
+          <strong>{resources.app.brandName}</strong>
         </div>
-        <nav className="app-nav" aria-label="主导航">
+        <nav className="app-nav" aria-label={resources.app.mainNavigation}>
           {NAVIGATION_ITEMS.map((item) => {
             const Icon = item.icon;
             return (
@@ -45,14 +48,15 @@ export default function AppShell({
                 type="button"
               >
                 <Icon aria-hidden="true" />
-                <span>{item.label}</span>
+                <span>{resources.nav[item.labelKey]}</span>
               </button>
             );
           })}
         </nav>
         <div className="app-header-actions">
           {debugStatus}
-          <div className="auth-status" aria-label="登录状态">
+          <LanguageSelector />
+          <div className="auth-status" aria-label={resources.app.loginStatus}>
             <span>{userLabel}</span>
             <button
               className="secondary-button compact"
@@ -61,7 +65,7 @@ export default function AppShell({
               type="button"
             >
               <LogOut aria-hidden="true" />
-              <span>{logoutPending ? '退出中' : '退出登录'}</span>
+              <span>{logoutPending ? resources.app.loggingOut : resources.app.logout}</span>
             </button>
           </div>
         </div>

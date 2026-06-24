@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { KeyboardEvent } from 'react';
+import { useI18n } from '../i18n/I18nProvider';
 import type { LearningPlanCreateDraftRequest } from '../types/api';
 import LearningPlanCreateForm from './LearningPlanCreateForm';
 
@@ -28,6 +29,7 @@ export default function LearningPlanCreateModal({
   onClose,
   onSubmit,
 }: LearningPlanCreateModalProps) {
+  const { resources } = useI18n();
   const [hasUnsavedInput, setHasUnsavedInput] = useState(false);
   const dialogRef = useRef<HTMLElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -88,7 +90,7 @@ export default function LearningPlanCreateModal({
     if (loading) {
       return;
     }
-    if (hasUnsavedInput && !window.confirm('放弃当前填写的方案问卷？')) {
+    if (hasUnsavedInput && !window.confirm(resources.learningPlans.confirmDiscard)) {
       return;
     }
     onClose();
@@ -142,11 +144,11 @@ export default function LearningPlanCreateModal({
       >
         <div className="modal-heading">
           <div>
-            <p className="eyebrow">新建方案</p>
-            <h2 id="create-plan-title">新建训练方案</h2>
+            <p className="eyebrow">{resources.learningPlans.newPlan}</p>
+            <h2 id="create-plan-title">{resources.learningPlans.createTitle}</h2>
           </div>
           <button
-            aria-label="关闭"
+            aria-label={resources.common.close}
             className="icon-button"
             disabled={loading}
             onClick={close}

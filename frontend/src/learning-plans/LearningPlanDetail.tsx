@@ -1,11 +1,8 @@
 import { ArrowLeft } from 'lucide-react';
+import { formatPlanIntent, formatPlanStatus } from '../i18n/formatters';
+import { useI18n } from '../i18n/I18nProvider';
 import type { LearningPlanDetailResponse } from '../types/api';
 import PlanPreview from './PlanPreview';
-
-const statusLabels = {
-  ACTIVE: '进行中',
-  ARCHIVED: '已归档',
-} as const;
 
 export default function LearningPlanDetail({
   onBack,
@@ -16,19 +13,21 @@ export default function LearningPlanDetail({
   onProblemSelect: (phaseIndex: number, problemSlug: string) => void;
   plan: LearningPlanDetailResponse;
 }) {
+  const { resources } = useI18n();
+
   return (
     <article className="learning-panel">
       <button className="secondary-button compact detail-back-button" onClick={onBack} type="button">
         <ArrowLeft aria-hidden="true" />
-        <span>返回方案库</span>
+        <span>{resources.learningPlans.backToList}</span>
       </button>
       <div className="detail-heading">
         <div>
-          <p className="eyebrow">{plan.intent}</p>
+          <p className="eyebrow">{formatPlanIntent(plan.intent, resources)}</p>
           <h2>{plan.title}</h2>
           <p>{plan.summary}</p>
         </div>
-        <span className="status-badge">{statusLabels[plan.status]}</span>
+        <span className="status-badge">{formatPlanStatus(plan.status, resources)}</span>
       </div>
       <PlanPreview onProblemSelect={onProblemSelect} plan={plan} />
     </article>

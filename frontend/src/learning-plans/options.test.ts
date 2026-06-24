@@ -5,6 +5,10 @@ import {
   getDifficultyDistribution,
   topicOptions,
 } from './options';
+import { formatTopicTag } from '../i18n/formatters';
+import { localeResources } from '../i18n/locales';
+
+const zhResources = localeResources['zh-CN'];
 
 describe('learning plan options', () => {
   it('maps difficulty distribution to visible percentages and backend preference', () => {
@@ -26,13 +30,14 @@ describe('learning plan options', () => {
   });
 
   it('maps Chinese topic labels to backend tags', () => {
-    expect(topicOptions.find((option) => option.label === '动态规划')).toMatchObject({
+    expect(topicOptions.find((option) => formatTopicTag(option.value, zhResources) === '动态规划')).toMatchObject({
       value: 'Dynamic Programming',
     });
   });
 
   it('builds a goal from questionnaire fields and optional notes', () => {
     const goal = buildLearningPlanGoal({
+      resources: zhResources,
       intentLabel: '面试冲刺',
       durationWeeks: 4,
       weeklyHours: 6,

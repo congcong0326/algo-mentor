@@ -5,11 +5,12 @@ import type {
   LearningPlanIntent,
   LearningPlanLevel,
 } from '../types/api';
+import { formatPlanLevel, formatTopicTag } from '../i18n/formatters';
+import { useI18n } from '../i18n/I18nProvider';
 import DifficultyDistributionControl from './DifficultyDistributionControl';
 import {
   buildLearningPlanGoal,
   getDifficultyDistribution,
-  levelOptions,
   planScenarioOptions,
   programmingLanguageOptions,
   topicOptions,
@@ -35,12 +36,13 @@ const DEFAULT_DIFFICULTY_VALUE = 50;
 export default function LearningPlanCreateForm({
   loading,
   error,
-  submitLabel = '生成方案草案',
+  submitLabel,
   confirmOnCancel = true,
   onDirtyChange,
   onCancel,
   onSubmit,
 }: LearningPlanCreateFormProps) {
+  const { resources } = useI18n();
   const [intent, setIntent] = useState<LearningPlanIntent>(DEFAULT_INTENT);
   const [durationWeeks, setDurationWeeks] = useState(DEFAULT_DURATION_WEEKS);
   const [weeklyHours, setWeeklyHours] = useState(DEFAULT_WEEKLY_HOURS);
@@ -54,9 +56,10 @@ export default function LearningPlanCreateForm({
   const numericValid = Number.isInteger(durationWeeks) && durationWeeks > 0
     && Number.isInteger(weeklyHours) && weeklyHours > 0;
   const selectedScenario = planScenarioOptions.find((option) => option.value === intent) ?? planScenarioOptions[0];
-  const selectedLevel = levelOptions.find((option) => option.value === level) ?? levelOptions[1];
+  const selectedLevelLabel = formatPlanLevel(level, resources);
   const selectedDifficulty = getDifficultyDistribution(difficultyValue);
   const difficultyPreference: LearningPlanDifficultyPreference = selectedDifficulty.preference;
+  const effectiveSubmitLabel = submitLabel ?? resources.learningPlans.generateDraft;
 
   const hasUnsavedInput = useMemo(
     () => intent !== DEFAULT_INTENT
@@ -87,7 +90,7 @@ export default function LearningPlanCreateForm({
     if (loading || !onCancel) {
       return;
     }
-    if (confirmOnCancel && hasUnsavedInput && !window.confirm('放弃当前填写的方案问卷？')) {
+    if (confirmOnCancel && hasUnsavedInput && !window.confirm(resources.learningPlans.confirmDiscard)) {
       return;
     }
     onCancel();
@@ -101,11 +104,11 @@ export default function LearningPlanCreateForm({
 
   function submit() {
     if (!numericValid) {
-      setValidationError('周期和每周投入必须是正整数。');
+      setValidationError(resources.learningPlans.validationPositiveIntegers);
       return;
     }
     if (intent === 'TOPIC_BREAKTHROUGH' && topicPreferences.length === 0) {
-      setValidationError('专项突破需要至少选择一个主题。');
+      setValidationError(resources.learningPlans.validationTopicRequired);
       return;
     }
 
@@ -113,12 +116,13 @@ export default function LearningPlanCreateForm({
     onSubmit({
       intent,
       goal: buildLearningPlanGoal({
-        intentLabel: selectedScenario.label,
+        resources,
+        intentLabel: resources.labels.planScenarios[selectedScenario.labelKey],
         durationWeeks,
         weeklyHours,
-        levelLabel: selectedLevel.label,
+        levelLabel: selectedLevelLabel,
         programmingLanguage,
-        difficultyLabel: selectedDifficulty.label,
+        difficultyLabel: resources.labels.difficultyDistribution[selectedDifficulty.labelKey],
         easyPercent: selectedDifficulty.easyPercent,
         mediumPercent: selectedDifficulty.mediumPercent,
         hardPercent: selectedDifficulty.hardPercent,
@@ -141,7 +145,7 @@ export default function LearningPlanCreateForm({
 
       <div className="modal-form">
         <section className="question-block">
-          <strong>训练场景</strong>
+          <strong>{resources.learningPlans.scenario}</strong>
           <div className="segmented-grid">
             {planScenarioOptions.map((option) => (
               <button
@@ -152,7 +156,7 @@ export default function LearningPlanCreateForm({
                 onClick={() => setIntent(option.value)}
                 type="button"
               >
-                {option.label}
+                {resources.labels.planScenarios[option.labelKey]}
               </button>
             ))}
           </div>
@@ -160,9 +164,9 @@ export default function LearningPlanCreateForm({
 
         <div className="mini-grid">
           <label className="topic-field">
-            <span>周期</span>
+            <span>{resources.learningPlans.duration}</span>
             <input
-              aria-label="训练周期"
+              aria-label={resources.learningPlans.durationInput}
               disabled={loading}
               min={1}
               onChange={(event) => setDurationWeeks(Number(event.target.value))}
@@ -171,9 +175,9 @@ export default function LearningPlanCreateForm({
             />
           </label>
           <label className="topic-field">
-            <span>每周投入</span>
+            <span>{resources.learningPlans.weeklyHours}</span>
             <input
-              aria-label="每周投入"
+              aria-label={resources.learningPlans.weeklyHours}
               disabled={loading}
               min={1}
               onChange={(event) => setWeeklyHours(Number(event.target.value))}
@@ -185,20 +189,22 @@ export default function LearningPlanCreateForm({
 
         <div className="mini-grid">
           <label className="topic-field">
-            <span>当前水平</span>
+            <span>{resources.learningPlans.level}</span>
             <select
-              aria-label="当前水平"
+              aria-label={resources.learningPlans.level}
               disabled={loading}
               onChange={(event) => setLevel(event.target.value as LearningPlanLevel)}
               value={level}
             >
-              {levelOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+              {(['BEGINNER', 'INTERMEDIATE', 'ADVANCED'] as LearningPlanLevel[]).map((option) => (
+                <option key={option} value={option}>{formatPlanLevel(option, resources)}</option>
+              ))}
             </select>
           </label>
           <label className="topic-field">
-            <span>编程语言</span>
+            <span>{resources.learningPlans.programmingLanguage}</span>
             <select
-              aria-label="编程语言"
+              aria-label={resources.learningPlans.programmingLanguage}
               disabled={loading}
               onChange={(event) => setProgrammingLanguage(event.target.value)}
               value={programmingLanguage}
@@ -211,7 +217,7 @@ export default function LearningPlanCreateForm({
         <DifficultyDistributionControl disabled={loading} onChange={setDifficultyValue} value={difficultyValue} />
 
         <section className="question-block">
-          <strong>主题偏好</strong>
+          <strong>{resources.learningPlans.topicPreferences}</strong>
           <div className="topic-option-grid">
             {topicOptions.map((option) => (
               <button
@@ -222,16 +228,16 @@ export default function LearningPlanCreateForm({
                 onClick={() => toggleTopic(option.value)}
                 type="button"
               >
-                {option.label}
+                {formatTopicTag(option.value, resources)}
               </button>
             ))}
           </div>
         </section>
 
         <label className="topic-field">
-          <span>补充想法</span>
+          <span>{resources.learningPlans.additionalThoughts}</span>
           <textarea
-            aria-label="补充想法"
+            aria-label={resources.learningPlans.additionalThoughts}
             disabled={loading}
             onChange={(event) => setAdditionalThoughts(event.target.value)}
             rows={4}
@@ -242,10 +248,12 @@ export default function LearningPlanCreateForm({
 
       <div className="modal-actions">
         {onCancel && (
-          <button className="secondary-button" disabled={loading} onClick={confirmCancel} type="button">取消</button>
+          <button className="secondary-button" disabled={loading} onClick={confirmCancel} type="button">
+            {resources.common.cancel}
+          </button>
         )}
         <button className="primary-button" disabled={loading} onClick={submit} type="button">
-          {loading ? '生成中' : submitLabel}
+          {loading ? resources.learningPlans.generating : effectiveSubmitLabel}
         </button>
       </div>
     </>
