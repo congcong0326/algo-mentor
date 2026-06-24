@@ -853,9 +853,41 @@ describe('App', () => {
     expect(screen.getByText('0').closest('strong')).toBeInTheDocument();
     expect(document.querySelector('script')).not.toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/problems/two-sum?locale=zh-CN',
-      expect.objectContaining({ headers: { Accept: 'application/json' } }),
+      '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=zh-CN',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+      }),
     );
+    expectCsrfHeader(fetchMock, '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=zh-CN');
+
+    fireEvent.change(screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '我想用哈希表。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+
+    expect(await screen.findByText('我想用哈希表。')).toBeInTheDocument();
+    expect(await screen.findByText(/先用哈希表记录已经见过的数字/)).toBeInTheDocument();
+    const streamCall = fetchMock.mock.calls.find(([url]) => url === '/api/practice-sessions/50/messages/stream');
+    expect(streamCall).toBeDefined();
+    const [, streamInit] = streamCall as [string, RequestInit];
+    expect(streamInit).toEqual(expect.objectContaining({
+      method: 'POST',
+      credentials: 'same-origin',
+      body: JSON.stringify({ message: '我想用哈希表。' }),
+    }));
+    expect(new Headers(streamInit.headers).get('Idempotency-Key')).toBe('generated-key');
+    expectCsrfHeader(fetchMock, '/api/practice-sessions/50/messages/stream', 'POST');
+
+    fireEvent.click(screen.getByRole('button', { name: '标记完成' }));
+
+    expect(await screen.findByText('已完成')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '标记完成' })).not.toBeInTheDocument();
+    expectCsrfHeader(fetchMock, '/api/practice-sessions/50/progress-status', 'PATCH');
+    const progressCall = fetchMock.mock.calls.find(([url]) => url === '/api/practice-sessions/50/progress-status');
+    expect(progressCall?.[1]?.body).toBe(JSON.stringify({ status: 'COMPLETED' }));
+    expect(fetchMock.mock.calls.some(([url]) => url === '/api/agent/conversations/stream')).toBe(false);
   });
 
   it('sends a practice chat message with practice context and renders streamed response', async () => {
@@ -924,9 +956,14 @@ describe('App', () => {
       'https://leetcode.com/problems/two-sum/',
     );
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/problems/two-sum?locale=en-US',
-      expect.objectContaining({ headers: { Accept: 'application/json' } }),
+      '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=en-US',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+      }),
     );
+    expectCsrfHeader(fetchMock, '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=en-US');
   });
 
   it('sends the edited goal regeneration prefix when regenerating a generated draft', async () => {
@@ -1237,6 +1274,53 @@ function mockLearningPlanFetch() {
       return Promise.resolve(jsonResponse({
         success: true,
         data: learningPlanDetail(),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=zh-CN'
+      || url === '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=en-US') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: practiceSessionResponse(),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/practice-sessions/50/messages/stream') {
+      return Promise.resolve(new Response(sseStream([
+        sseEvent('content_delta', { content: '可以' }),
+        sseEvent('content_delta', { content: '先用哈希表记录已经见过的数字。' }),
+        sseEvent('message_end', { finishReason: 'stop' }),
+      ]), { status: 200 }));
+    }
+
+    if (url === '/api/practice-sessions/50/progress-status') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: practiceSessionResponse({
+          session: {
+            ...basePracticeSessionResponse().session,
+            progressStatus: 'COMPLETED',
+          },
+          messages: [
+            ...practiceSessionMessages(),
+            {
+              id: 71,
+              role: 'USER',
+              messageType: 'CHAT',
+              contentMarkdown: '我想用哈希表。',
+              createdAt: '2026-06-22T00:01:00Z',
+            },
+            {
+              id: 72,
+              role: 'ASSISTANT',
+              messageType: 'CHAT',
+              contentMarkdown: '可以先用哈希表记录已经见过的数字。',
+              createdAt: '2026-06-22T00:01:01Z',
+            },
+          ],
+        }),
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
@@ -1662,6 +1746,13 @@ function problemDetail(overrides: Partial<ReturnType<typeof baseProblemDetail>> 
   };
 }
 
+function practiceSessionResponse(overrides: Partial<ReturnType<typeof basePracticeSessionResponse>> = {}) {
+  return {
+    ...basePracticeSessionResponse(),
+    ...overrides,
+  };
+}
+
 function baseProblemDetail() {
   return {
     slug: 'two-sum',
@@ -1674,6 +1765,41 @@ function baseProblemDetail() {
     sampleTestCase: '[2,7,11,15]\n9',
     python3Template: 'class Solution:\n    pass',
   };
+}
+
+function basePracticeSessionResponse() {
+  return {
+    session: {
+      id: 50,
+      planId: 900,
+      phaseIndex: 1,
+      problemSlug: 'two-sum',
+      progressStatus: 'IN_PROGRESS',
+      agentTaskId: 300,
+      createdAt: '2026-06-22T00:00:00Z',
+      updatedAt: '2026-06-22T00:00:00Z',
+    },
+    problem: {
+      slug: 'two-sum',
+      frontendId: 1,
+      title: 'Two Sum',
+      titleCn: '两数之和',
+      difficulty: 'EASY',
+      tags: ['Array', 'Hash Table'],
+      leetcodeUrl: 'https://leetcode.com/problems/two-sum/',
+    },
+    messages: practiceSessionMessages(),
+  };
+}
+
+function practiceSessionMessages() {
+  return [{
+    id: 60,
+    role: 'ASSISTANT',
+    messageType: 'PROBLEM_STATEMENT',
+    contentMarkdown: '# Two Sum\n\n给定一个整数数组 nums 和一个整数目标值 target。\n\n- 返回两个数的下标。\n\n```text\n输入：nums = [2,7,11,15], target = 9\n输出：[0,1]\n```\n\n<pre>给定 nums = [2, 7, 11, 15], target = 9\n\n因为 nums[<strong>0</strong>] + nums[<strong>1</strong>] = 2 + 7 = 9\n所以返回 [<strong>0, 1</strong>]\n</pre>\n\n<script>alert(\"xss\")</script>',
+    createdAt: '2026-06-22T00:00:00Z',
+  }];
 }
 
 function baseLearningPlanDetail() {

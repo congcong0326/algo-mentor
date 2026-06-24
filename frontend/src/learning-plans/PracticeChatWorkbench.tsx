@@ -1,18 +1,22 @@
-import { ArrowLeft, ExternalLink, Info } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ExternalLink, Info } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import type { FormEvent, MutableRefObject } from 'react';
+import type { FormEvent } from 'react';
 import MarkdownView from '../components/MarkdownView';
 import { formatDifficulty, formatProblemTitle } from '../i18n/formatters';
 import { useI18n } from '../i18n/I18nProvider';
-import type { SupportedLocale } from '../i18n/locales';
-import { getProblemDetail, streamAgentConversation } from '../services/api';
+import type { LocaleResources, SupportedLocale } from '../i18n/locales';
+import {
+  createOrReusePracticeSession,
+  streamPracticeMessage,
+  updatePracticeProgressStatus,
+} from '../services/api';
 import type {
-  ContentDeltaData,
   LearningPlanDetailResponse,
   LearningPlanProblemDraft,
-  ProblemDetail,
+  PracticeMessage,
+  PracticeProgressStatus,
+  PracticeSessionResponse,
 } from '../types/api';
-import { generateClientId } from '../utils/id';
 
 const LEETCODE_HOST_BY_LOCALE: Record<SupportedLocale, string> = {
   'zh-CN': 'leetcode.cn',
@@ -20,12 +24,6 @@ const LEETCODE_HOST_BY_LOCALE: Record<SupportedLocale, string> = {
 };
 
 const LEETCODE_HOSTS = new Set(['leetcode.cn', 'www.leetcode.cn', 'leetcode.com', 'www.leetcode.com']);
-
-interface PracticeMessage {
-  id: string;
-  role: 'assistant' | 'user';
-  content: string;
-}
 
 function problemLabel(problem: LearningPlanProblemDraft | undefined, locale: SupportedLocale, fallback: string): string {
   if (!problem) {
@@ -53,6 +51,34 @@ function localizedLeetCodeUrl(leetcodeUrl: string | undefined, locale: Supported
   }
 }
 
+function progressStatusLabel(status: PracticeProgressStatus | undefined, resources: LocaleResources): string {
+  const labels: Record<PracticeProgressStatus, string> = {
+    NOT_STARTED: resources.learningPlans.notStarted,
+    IN_PROGRESS: resources.learningPlans.inProgress,
+    COMPLETED: resources.learningPlans.completed,
+    SKIPPED: resources.learningPlans.skipped,
+  };
+
+  return labels[status ?? 'NOT_STARTED'];
+}
+
+function readContentDelta(data: unknown): string {
+  if (typeof data !== 'object' || data === null || !('content' in data)) {
+    return '';
+  }
+
+  const content = (data as { content?: unknown }).content;
+  return typeof content === 'string' ? content : '';
+}
+
+function nextIdempotencyKey(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  return `practice-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 export default function PracticeChatWorkbench({
   onBack,
   phaseIndex,
@@ -67,100 +93,174 @@ export default function PracticeChatWorkbench({
   const { locale, resources } = useI18n();
   const phase = plan.phases.find((candidate) => candidate.phaseIndex === phaseIndex);
   const problem = phase?.problems.find((candidate) => candidate.slug === problemSlug);
-  const [problemDetail, setProblemDetail] = useState<ProblemDetail>();
-  const [problemError, setProblemError] = useState('');
-  const [composerValue, setComposerValue] = useState('');
+  const [sessionResponse, setSessionResponse] = useState<PracticeSessionResponse>();
   const [messages, setMessages] = useState<PracticeMessage[]>([]);
-  const [streaming, setStreaming] = useState(false);
-  const messageSequenceRef = useRef(0);
-  const streamControllerRef = useRef<AbortController | undefined>(undefined);
+  const [composerValue, setComposerValue] = useState('');
+  const [status, setStatus] = useState<'loading' | 'idle' | 'streaming' | 'error'>('loading');
+  const [error, setError] = useState('');
+  const [completionUpdating, setCompletionUpdating] = useState(false);
+  const localMessageIdRef = useRef(-1);
+  const streamControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
-    setProblemDetail(undefined);
-    setProblemError('');
+    streamControllerRef.current?.abort();
+    streamControllerRef.current = null;
+    setSessionResponse(undefined);
+    setMessages([]);
+    setError('');
+    setStatus('loading');
 
-    getProblemDetail(problemSlug, locale, controller.signal)
+    createOrReusePracticeSession(plan.id, phaseIndex, problemSlug, locale, controller.signal)
       .then((response) => {
         if (!response.success || !response.data) {
-          throw new Error(response.error?.message ?? resources.learningPlans.detailLoadProblemFailed);
+          throw new Error(response.error?.message ?? resources.learningPlans.practiceSessionLoadFailed);
         }
-        setProblemDetail(response.data);
+        setSessionResponse(response.data);
+        setMessages(response.data.messages);
+        setStatus('idle');
       })
       .catch((error) => {
         if (!controller.signal.aborted) {
-          setProblemError(error instanceof Error ? error.message : resources.learningPlans.detailLoadProblemFailed);
+          setError(error instanceof Error ? error.message : resources.learningPlans.practiceSessionLoadFailed);
+          setStatus('error');
         }
       });
 
-    return () => controller.abort();
-  }, [locale, problemSlug, resources.learningPlans.detailLoadProblemFailed]);
+    return () => {
+      controller.abort();
+      streamControllerRef.current?.abort();
+      streamControllerRef.current = null;
+    };
+  }, [locale, phaseIndex, plan.id, problemSlug, resources.learningPlans.practiceSessionLoadFailed]);
 
-  useEffect(() => () => streamControllerRef.current?.abort(), []);
+  const sessionId = sessionResponse?.session.id;
+  const progressStatus = sessionResponse?.session.progressStatus;
+  const leetcodeUrl = localizedLeetCodeUrl(sessionResponse?.problem.leetcodeUrl, locale);
+  const difficulty = sessionResponse?.problem.difficulty ?? problem?.difficulty;
+  const canMarkCompleted = Boolean(sessionId) && progressStatus !== 'COMPLETED';
 
-  useEffect(() => {
-    streamControllerRef.current?.abort();
-    streamControllerRef.current = undefined;
-    setComposerValue('');
-    setMessages([]);
-    setStreaming(false);
-  }, [locale, phaseIndex, plan.id, problemSlug]);
-
-  const statement = problemDetail?.contentMarkdown.trim() || resources.learningPlans.statementUnavailable;
-  const leetcodeUrl = localizedLeetCodeUrl(problemDetail?.leetcodeUrl, locale);
-
-  async function sendMessage(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const message = composerValue.trim();
-    if (!message || streaming) {
+    const text = composerValue.trim();
+
+    if (!text || !sessionId || status === 'streaming') {
       return;
     }
 
+    streamControllerRef.current?.abort();
     const controller = new AbortController();
-    const assistantMessageId = nextMessageId(messageSequenceRef, 'assistant');
     streamControllerRef.current = controller;
-    setStreaming(true);
+    const userMessageId = localMessageIdRef.current;
+    localMessageIdRef.current -= 1;
+    const assistantMessageId = localMessageIdRef.current;
+    localMessageIdRef.current -= 1;
+    const now = new Date().toISOString();
+
+    setError('');
+    setStatus('streaming');
     setComposerValue('');
     setMessages((current) => [
       ...current,
-      { id: nextMessageId(messageSequenceRef, 'user'), role: 'user', content: message },
+      {
+        id: userMessageId,
+        role: 'USER',
+        messageType: 'CHAT',
+        contentMarkdown: text,
+        createdAt: now,
+      },
+      {
+        id: assistantMessageId,
+        role: 'ASSISTANT',
+        messageType: 'CHAT',
+        contentMarkdown: resources.learningPlans.organizingThoughts,
+        createdAt: now,
+      },
     ]);
 
     try {
-      await streamAgentConversation({
-        message,
-        practice: {
-          planId: plan.id,
-          phaseIndex,
-          problemSlug,
-          locale,
-        },
-      }, {
-        idempotencyKey: generateClientId(),
+      await streamPracticeMessage(sessionId, { message: text }, {
+        idempotencyKey: nextIdempotencyKey(),
         signal: controller.signal,
-        onEvent: (streamEvent) => {
-          if (streamEvent.eventName !== 'content_delta') {
-            return;
+        onEvent: (event) => {
+          if (event.eventName === 'content_delta') {
+            const delta = readContentDelta(event.data);
+            if (!delta) {
+              return;
+            }
+
+            setMessages((current) => current.map((message) => {
+              if (message.id !== assistantMessageId) {
+                return message;
+              }
+
+              return {
+                ...message,
+                contentMarkdown: message.contentMarkdown === resources.learningPlans.organizingThoughts
+                  ? delta
+                  : `${message.contentMarkdown}${delta}`,
+              };
+            }));
           }
-          const data = streamEvent.data as ContentDeltaData;
-          if (!data.content) {
-            return;
+
+          if (event.eventName === 'agent_run_end' || event.eventName === 'message_end') {
+            setStatus('idle');
           }
-          setMessages((current) => appendAssistantDelta(current, assistantMessageId, data.content ?? ''));
+
+          if (event.eventName === 'error' || event.eventName === 'agent_error') {
+            setError(resources.learningPlans.practiceMessageFailed);
+            setStatus('error');
+          }
         },
       });
+
+      if (!controller.signal.aborted) {
+        setStatus('idle');
+      }
     } catch (error) {
       if (!controller.signal.aborted) {
-        const errorMessage = error instanceof Error ? error.message : resources.learningPlans.practiceChatFailed;
-        setMessages((current) => appendAssistantDelta(current, assistantMessageId, errorMessage));
+        setError(error instanceof Error ? error.message : resources.learningPlans.practiceMessageFailed);
+        setStatus('error');
       }
     } finally {
-      if (!controller.signal.aborted) {
-        setStreaming(false);
-      }
       if (streamControllerRef.current === controller) {
-        streamControllerRef.current = undefined;
+        streamControllerRef.current = null;
       }
+    }
+  }
+
+  async function handleMarkCompleted() {
+    if (!sessionId || completionUpdating || progressStatus === 'COMPLETED') {
+      return;
+    }
+
+    setCompletionUpdating(true);
+    setError('');
+    try {
+      const response = await updatePracticeProgressStatus(sessionId, 'COMPLETED');
+      if (!response.success) {
+        throw new Error(response.error?.message ?? resources.learningPlans.progressUpdateFailed);
+      }
+      if (response.data) {
+        setSessionResponse(response.data);
+        setMessages(response.data.messages);
+      } else {
+        setSessionResponse((current) => current
+          ? {
+              ...current,
+              session: {
+                ...current.session,
+                progressStatus: 'COMPLETED',
+              },
+            }
+          : current);
+      }
+      setStatus('idle');
+    } catch (error) {
+      setError(error instanceof Error ? error.message : resources.learningPlans.progressUpdateFailed);
+      setStatus('error');
+    } finally {
+      setCompletionUpdating(false);
     }
   }
 
@@ -180,10 +280,21 @@ export default function PracticeChatWorkbench({
           </div>
         </div>
         <div className="practice-toolbar-actions">
-          <span className={`difficulty-badge ${String(problem?.difficulty ?? '').toLowerCase()}`}>
-            {formatDifficulty(problem?.difficulty, resources)}
+          <span className={`difficulty-badge ${String(difficulty ?? '').toLowerCase()}`}>
+            {formatDifficulty(difficulty, resources)}
           </span>
-          <span className="status-badge">{resources.learningPlans.notStarted}</span>
+          <span className="status-badge">{progressStatusLabel(progressStatus, resources)}</span>
+          {canMarkCompleted && (
+            <button
+              className="secondary-button compact"
+              disabled={completionUpdating || status === 'loading'}
+              onClick={handleMarkCompleted}
+              type="button"
+            >
+              <CheckCircle2 aria-hidden="true" />
+              <span>{resources.learningPlans.markCompleted}</span>
+            </button>
+          )}
           {leetcodeUrl && (
             <>
               <span
@@ -211,51 +322,42 @@ export default function PracticeChatWorkbench({
       </header>
 
       <section className="practice-message-list" aria-label={resources.learningPlans.chatMessages}>
-        <article className="practice-message assistant-message">
-          <span>{resources.learningPlans.coach}</span>
-          <MarkdownView content={problemError || (problemDetail ? statement : resources.learningPlans.loadingStatement)} />
-        </article>
+        {error && <p className="error-text practice-error" role="alert">{error}</p>}
+        {status === 'loading' && (
+          <article className="practice-message assistant-message">
+            <span>{resources.learningPlans.coach}</span>
+            <MarkdownView content={resources.learningPlans.loadingStatement} />
+          </article>
+        )}
+        {status !== 'loading' && messages.length === 0 && (
+          <article className="practice-message assistant-message">
+            <span>{resources.learningPlans.coach}</span>
+            <MarkdownView content={resources.learningPlans.statementUnavailable} />
+          </article>
+        )}
         {messages.map((message) => (
-          <article className={`practice-message ${message.role}-message`} key={message.id}>
-            <span>{message.role === 'assistant' ? resources.learningPlans.coach : resources.learningPlans.learner}</span>
-            <MarkdownView content={message.content} />
+          <article
+            className={`practice-message ${message.role === 'USER' ? 'user-message' : 'assistant-message'}`}
+            key={message.id}
+          >
+            <span>{message.role === 'USER' ? resources.learningPlans.you : resources.learningPlans.coach}</span>
+            <MarkdownView content={message.contentMarkdown || resources.learningPlans.organizingThoughts} />
           </article>
         ))}
       </section>
 
-      <form className="practice-composer" aria-label={resources.learningPlans.sendMessage} onSubmit={sendMessage}>
-        <textarea
+      <form className="practice-composer" aria-label={resources.learningPlans.sendMessage} onSubmit={handleSubmit}>
+        <input
           aria-label={resources.learningPlans.composerLabel}
-          disabled={streaming}
+          disabled={!sessionId || status === 'loading' || status === 'streaming'}
           onChange={(event) => setComposerValue(event.target.value)}
           placeholder={resources.learningPlans.composerPlaceholder}
-          rows={2}
           value={composerValue}
         />
-        <button className="primary-button compact" disabled={streaming || !composerValue.trim()} type="submit">
+        <button className="primary-button compact" disabled={!sessionId || status === 'loading' || status === 'streaming'} type="submit">
           {resources.learningPlans.send}
         </button>
       </form>
     </article>
   );
-}
-
-function appendAssistantDelta(messages: PracticeMessage[], assistantMessageId: string, delta: string): PracticeMessage[] {
-  const lastMessage = messages[messages.length - 1];
-  if (lastMessage?.id === assistantMessageId) {
-    return [
-      ...messages.slice(0, -1),
-      { ...lastMessage, content: `${lastMessage.content}${delta}` },
-    ];
-  }
-
-  return [
-    ...messages,
-    { id: assistantMessageId, role: 'assistant', content: delta },
-  ];
-}
-
-function nextMessageId(sequenceRef: MutableRefObject<number>, prefix: string): string {
-  sequenceRef.current += 1;
-  return `${prefix}-${sequenceRef.current}`;
 }
