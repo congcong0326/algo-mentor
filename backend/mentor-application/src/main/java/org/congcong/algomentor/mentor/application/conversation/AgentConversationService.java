@@ -146,7 +146,8 @@ public class AgentConversationService {
         command.userMessage(),
         command.idempotencyKey(),
         DEFAULT_MENTOR_SYSTEM_PROMPT,
-        preparationMetadata(command));
+        preparationMetadata(command),
+        userMessageMetadata(command));
   }
 
   private Map<String, Object> preparationMetadata(AgentConversationCommand command) {
@@ -160,6 +161,21 @@ public class AgentConversationService {
       metadata.put(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, reference.problemSlug());
       metadata.put(PracticeChatPromptConstants.METADATA_LOCALE, reference.locale());
     }
+    return Map.copyOf(metadata);
+  }
+
+  private Map<String, Object> userMessageMetadata(AgentConversationCommand command) {
+    if (!command.practiceChatEnabled()) {
+      return Map.of();
+    }
+    PracticeChatReference reference = command.practiceChat();
+    Map<String, Object> metadata = new HashMap<>();
+    metadata.put(PracticeChatPromptConstants.MESSAGE_TYPE_METADATA_KEY, PracticeChatPromptConstants.MESSAGE_TYPE_CHAT);
+    metadata.put(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO);
+    metadata.put(PracticeChatPromptConstants.METADATA_PLAN_ID, reference.planId());
+    metadata.put(PracticeChatPromptConstants.METADATA_PHASE_INDEX, reference.phaseIndex());
+    metadata.put(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, reference.problemSlug());
+    metadata.put(PracticeChatPromptConstants.METADATA_LOCALE, reference.locale());
     return Map.copyOf(metadata);
   }
 

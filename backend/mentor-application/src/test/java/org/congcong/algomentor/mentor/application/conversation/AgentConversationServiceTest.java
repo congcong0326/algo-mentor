@@ -139,6 +139,9 @@ class AgentConversationServiceTest {
         .containsEntry(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO)
         .containsEntry(PracticeChatPromptConstants.METADATA_PLAN_ID, 12L)
         .containsEntry(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, "two-sum");
+    assertThat(repository.lastRequest.userMessageMetadata())
+        .containsEntry(PracticeChatPromptConstants.MESSAGE_TYPE_METADATA_KEY, PracticeChatPromptConstants.MESSAGE_TYPE_CHAT)
+        .containsEntry(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO);
     assertThat(run.agentRequest().metadata())
         .containsEntry("promptProfile", PracticeChatPromptConstants.PROFILE_ID)
         .containsEntry(PracticeChatPromptConstants.METADATA_MESSAGE_INTENT, "ASK_SOLUTION")

@@ -8,8 +8,20 @@ public record AgentRunPreparationRequest(
     String userMessage,
     String idempotencyKey,
     String systemPrompt,
-    Map<String, Object> metadata
+    Map<String, Object> metadata,
+    Map<String, Object> userMessageMetadata
 ) {
+
+  public AgentRunPreparationRequest(
+      Long taskId,
+      Long userId,
+      String userMessage,
+      String idempotencyKey,
+      String systemPrompt,
+      Map<String, Object> metadata
+  ) {
+    this(taskId, userId, userMessage, idempotencyKey, systemPrompt, metadata, Map.of());
+  }
 
   public AgentRunPreparationRequest {
     if (userMessage == null || userMessage.isBlank()) {
@@ -25,5 +37,6 @@ public record AgentRunPreparationRequest(
       throw new IllegalArgumentException("Agent user id must be positive");
     }
     metadata = metadata == null ? Map.of() : Map.copyOf(metadata);
+    userMessageMetadata = userMessageMetadata == null ? Map.of() : Map.copyOf(userMessageMetadata);
   }
 }
