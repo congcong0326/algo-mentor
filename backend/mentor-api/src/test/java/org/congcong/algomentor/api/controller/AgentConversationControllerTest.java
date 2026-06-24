@@ -43,6 +43,19 @@ import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemDetail;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -176,6 +189,46 @@ class AgentConversationControllerTest {
   }
 
   @Test
+  void streamPracticeConversationUsesPracticePromptMetadata() throws Exception {
+    MvcResult result = mockMvc.perform(post("/api/agent/conversations/stream")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .header("Idempotency-Key", "idem-practice")
+            .content("""
+                {
+                  "message": "直接给答案和 Java 代码",
+                  "practice": {
+                    "planId": 12,
+                    "phaseIndex": 1,
+                    "problemSlug": "two-sum",
+                    "locale": "zh-CN"
+                  }
+                }
+                """))
+        .andExpect(request().asyncStarted())
+        .andReturn();
+
+    mockMvc.perform(asyncDispatch(result))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("\"promptProfile\":\"PRACTICE_CHAT_V1\"")))
+        .andExpect(content().string(containsString("\"problemSlug\":\"two-sum\"")))
+        .andExpect(content().string(containsString("\"messageIntent\":\"ASK_SOLUTION\"")));
+
+    org.assertj.core.api.Assertions.assertThat(conversationRepository.lastRequest.metadata())
+        .containsEntry(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO)
+        .containsEntry(PracticeChatPromptConstants.METADATA_PLAN_ID, 12L)
+        .containsEntry(PracticeChatPromptConstants.METADATA_PHASE_INDEX, 1)
+        .containsEntry(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, "two-sum");
+    org.assertj.core.api.Assertions.assertThat(agentLoopRunner.lastRequest.messages())
+        .extracting(org.congcong.algomentor.llm.core.request.LlmMessage::role)
+        .containsExactly(
+            org.congcong.algomentor.llm.core.request.LlmMessage.Role.SYSTEM,
+            org.congcong.algomentor.llm.core.request.LlmMessage.Role.SYSTEM,
+            org.congcong.algomentor.llm.core.request.LlmMessage.Role.SYSTEM,
+            org.congcong.algomentor.llm.core.request.LlmMessage.Role.USER);
+  }
+
+  @Test
   void streamConversationReturnsConflictWhenTaskLockIsHeld() throws Exception {
     AgentRunLockToken token = lockManager.tryAcquire(new AgentRunLockRequest(
         AgentRunLockConstants.TASK_LOCK_KEY_PREFIX + 1,
@@ -244,6 +297,25 @@ class AgentConversationControllerTest {
         }
       };
     }
+
+    @Bean
+    @Primary
+    LearningPlanRepository learningPlanRepository() {
+      return new StubLearningPlanRepository();
+    }
+
+    @Bean
+    @Primary
+    PracticeChatProblemCatalog practiceChatProblemCatalog() {
+      return (slug, locale) -> Optional.of(new PracticeChatProblemDetail(
+          slug,
+          1,
+          "Two Sum",
+          "EASY",
+          List.of("Array", "Hash Table"),
+          "# Two Sum\nFind two numbers.",
+          "https://leetcode.com/problems/two-sum/"));
+    }
   }
 
   static class StubAgentConversationRepository implements AgentConversationRepository {
@@ -308,6 +380,74 @@ class AgentConversationControllerTest {
     @Override
     public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
       throw new UnsupportedOperationException("stream not used");
+    }
+  }
+
+  static class StubLearningPlanRepository implements LearningPlanRepository {
+
+    @Override
+    public LearningPlan save(LearningPlan plan) {
+      return plan;
+    }
+
+    @Override
+    public List<LearningPlan> findByUserId(long userId) {
+      return List.of(plan());
+    }
+
+    @Override
+    public LearningPlanPage findPageByUserId(long userId, int page, int pageSize) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Optional<LearningPlan> findPlanByIdForUser(long planId, long userId) {
+      LearningPlan plan = plan();
+      return plan.id() == planId && plan.userId() == userId ? Optional.of(plan) : Optional.empty();
+    }
+
+    private LearningPlan plan() {
+      LearningPlanProblemDraft problem = new LearningPlanProblemDraft(
+          "two-sum",
+          1,
+          "Two Sum",
+          "两数之和",
+          "EASY",
+          List.of("Array", "Hash Table"),
+          "建立哈希查找模式。",
+          1);
+      LearningPlanPhaseDraft phase = new LearningPlanPhaseDraft(
+          1,
+          "哈希表基础",
+          1,
+          "补数查找",
+          List.of(),
+          List.of(),
+          List.of(),
+          "",
+          List.of(problem));
+      LearningPlanDraftPlan snapshot = new LearningPlanDraftPlan(
+          "哈希表训练",
+          "summary",
+          LearningPlanIntent.INTERVIEW_SPRINT,
+          "4 周内准备后端面试",
+          4,
+          LearningPlanLevel.INTERMEDIATE,
+          8,
+          "Java",
+          LearningPlanDifficultyPreference.MEDIUM,
+          true,
+          List.of("Hash Table"),
+          "profile",
+          List.of(phase),
+          Map.of());
+      return new LearningPlan(
+          12L,
+          7L,
+          LearningPlanStatus.ACTIVE,
+          snapshot,
+          java.time.Instant.parse("2026-01-01T00:00:00Z"),
+          java.time.Instant.parse("2026-01-01T00:00:00Z"));
     }
   }
 }

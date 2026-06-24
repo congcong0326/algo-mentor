@@ -1,15 +1,20 @@
 package org.congcong.algomentor.agent.core.runtime.context;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.congcong.algomentor.agent.core.prompt.DefaultPromptAssembler;
+import org.congcong.algomentor.agent.core.prompt.PromptAssembly;
+import org.congcong.algomentor.agent.core.prompt.PromptAssemblyRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 
 public class ContextAssembler {
+
+  private static final String SYSTEM_PROMPT = "systemPrompt";
+  private static final String ACTIVE_SUMMARY = "activeSummary";
+  private static final String HISTORY = "history";
+  private static final String CURRENT_USER_MESSAGE = "currentUserMessage";
 
   private final ContextAssemblyPolicy defaultPolicy;
 
@@ -41,43 +46,29 @@ public class ContextAssembler {
       throw new IllegalArgumentException("Current user message must not be blank");
     }
     ContextAssemblyPolicy effectivePolicy = policy == null ? defaultPolicy : policy;
-    List<LlmMessage> messages = new ArrayList<>();
-    if (systemPrompt != null && !systemPrompt.isBlank()) {
-      messages.add(LlmMessage.system(systemPrompt));
-    }
-    if (activeSummary != null && !activeSummary.isBlank()) {
-      messages.add(LlmMessage.system("Conversation summary:\n" + activeSummary));
-    }
-    recentMessages(history, effectivePolicy.recentTurns())
-        .forEach(message -> messages.add(toLlmMessage(message)));
-    messages.add(LlmMessage.user(currentUserMessage));
+    PromptAssembly assembly = new DefaultPromptAssembler(
+        new LegacyContextPromptProfileResolver(effectivePolicy),
+        List.of(new LegacyContextPromptSectionProvider(effectivePolicy)))
+        .assemble(new PromptAssemblyRequest(
+            LegacyContextPromptConstants.SCENARIO,
+            LegacyContextPromptConstants.PROFILE_ID,
+            effectivePolicy.tokenBudget(),
+            Map.of(
+                SYSTEM_PROMPT, systemPrompt == null ? "" : systemPrompt,
+                ACTIVE_SUMMARY, activeSummary == null ? "" : activeSummary,
+                HISTORY, history == null ? List.of() : List.copyOf(history),
+                CURRENT_USER_MESSAGE, currentUserMessage),
+            Map.of()));
 
-    int tokenEstimate = estimateTokens(messages);
-    Map<String, Object> metadata = new HashMap<>();
-    metadata.put(AgentRuntimeMetadataKeys.CONTEXT_POLICY, effectivePolicy.policyName());
-    metadata.put(AgentRuntimeMetadataKeys.CONTEXT_POLICY_VERSION, effectivePolicy.policyVersion());
-    metadata.put(AgentRuntimeMetadataKeys.TOKEN_BUDGET, effectivePolicy.tokenBudget());
-    metadata.put(AgentRuntimeMetadataKeys.TOKEN_ESTIMATE, tokenEstimate);
-    return new AssembledContext(messages, metadata, tokenEstimate);
-  }
-
-  private List<AgentMessage> recentMessages(List<AgentMessage> history, int recentTurns) {
-    if (history == null || history.isEmpty()) {
-      return List.of();
-    }
-    int messageLimit = recentTurns * 2;
-    List<AgentMessage> sorted = history.stream()
-        .sorted(Comparator.comparingLong(AgentMessage::sequenceNo))
-        .toList();
-    int fromIndex = Math.max(0, sorted.size() - messageLimit);
-    return sorted.subList(fromIndex, sorted.size());
-  }
-
-  private LlmMessage toLlmMessage(AgentMessage message) {
-    return switch (message.role()) {
-      case USER -> LlmMessage.user(message.content());
-      case ASSISTANT -> LlmMessage.assistant(message.content());
-    };
+    int legacyTokenEstimate = estimateTokens(assembly.canonicalMessages());
+    return new AssembledContext(
+        assembly.canonicalMessages(),
+        Map.of(
+            AgentRuntimeMetadataKeys.CONTEXT_POLICY, effectivePolicy.policyName(),
+            AgentRuntimeMetadataKeys.CONTEXT_POLICY_VERSION, effectivePolicy.policyVersion(),
+            AgentRuntimeMetadataKeys.TOKEN_BUDGET, effectivePolicy.tokenBudget(),
+            AgentRuntimeMetadataKeys.TOKEN_ESTIMATE, legacyTokenEstimate),
+        legacyTokenEstimate);
   }
 
   private int estimateTokens(List<LlmMessage> messages) {

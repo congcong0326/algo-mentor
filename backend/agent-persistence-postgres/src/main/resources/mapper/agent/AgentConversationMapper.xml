@@ -25,6 +25,9 @@
            typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.AgentMessageRoleTypeHandler"/>
       <arg column="content" javaType="string"/>
       <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="metadata"
+           javaType="java.util.Map"
+           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbMapTypeHandler"/>
     </constructor>
   </resultMap>
 
@@ -127,7 +130,7 @@
   </update>
 
   <select id="recentMessages" resultMap="AgentMessageMap">
-    SELECT id, task_id, sequence_no, role, content, created_at
+    SELECT id, task_id, sequence_no, role, content, created_at, metadata
     FROM agent_message
     WHERE task_id = #{taskId}
       AND status = 'active'

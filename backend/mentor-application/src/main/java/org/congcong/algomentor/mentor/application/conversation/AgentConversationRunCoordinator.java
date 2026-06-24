@@ -67,7 +67,7 @@ public class AgentConversationRunCoordinator {
         lockToken = lockResult.token();
       } else if (sameIdempotencyKey(lockResult.conflict(), command.idempotencyKey())) {
         AgentConversationRun replay = conversationService
-            .findRunByIdempotencyKey(command.idempotencyKey(), command.userMessage())
+            .findRunByIdempotencyKey(command)
             .orElseThrow(() -> new AgentConversationRunInProgressException(command.taskId()));
         return replayPublisher(replay);
       } else {

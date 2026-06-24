@@ -12,6 +12,9 @@ import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunCoordinator;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -25,8 +28,15 @@ public class AgentConversationApiAutoConfiguration {
   @ConditionalOnMissingBean
   public AgentConversationService agentConversationService(
       AgentConversationRepository conversationRepository,
-      ContextAssembler contextAssembler
+      ContextAssembler contextAssembler,
+      ObjectProvider<LearningPlanRepository> learningPlanRepository,
+      ObjectProvider<PracticeChatProblemCatalog> practiceProblemCatalog
   ) {
+    LearningPlanRepository planRepository = learningPlanRepository.getIfAvailable();
+    PracticeChatProblemCatalog problemCatalog = practiceProblemCatalog.getIfAvailable();
+    if (planRepository != null && problemCatalog != null) {
+      return new AgentConversationService(conversationRepository, contextAssembler, planRepository, problemCatalog);
+    }
     return new AgentConversationService(conversationRepository, contextAssembler);
   }
 

@@ -24,6 +24,8 @@ import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.api.service.SseLlmStreamSubscriber;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationCommand;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunCoordinator;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptConstants;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatReference;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -70,6 +72,14 @@ public class AgentConversationController {
     if (request.taskId() != null) {
       requestMetadata.put(AgentRuntimeMetadataKeys.TASK_ID, request.taskId());
     }
+    PracticeChatReference practiceReference = request.practiceReference();
+    if (practiceReference != null) {
+      requestMetadata.put(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO);
+      requestMetadata.put(PracticeChatPromptConstants.METADATA_PLAN_ID, practiceReference.planId());
+      requestMetadata.put(PracticeChatPromptConstants.METADATA_PHASE_INDEX, practiceReference.phaseIndex());
+      requestMetadata.put(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, practiceReference.problemSlug());
+      requestMetadata.put(PracticeChatPromptConstants.METADATA_LOCALE, practiceReference.locale());
+    }
     AiRunAdmission admission = admissionService.admit(new AiRunContext(
         UUID.randomUUID().toString(),
         actor,
@@ -85,7 +95,8 @@ public class AgentConversationController {
         actor.userId(),
         request.message(),
         effectiveKey,
-        admission.metadata()));
+        admission.metadata(),
+        practiceReference));
     /*
      * 本接口使用 Spring MVC 的 SseEmitter 把 Agent 的异步事件流桥接成 HTTP SSE：
      *
@@ -127,7 +138,29 @@ public class AgentConversationController {
   @JsonIgnoreProperties(ignoreUnknown = true)
   public record ConversationStreamRequest(
       @Positive Long taskId,
-      @NotBlank String message
+      @NotBlank String message,
+      @Valid
+      PracticeChatRequest practice
+  ) {
+
+    PracticeChatReference practiceReference() {
+      if (practice == null) {
+        return null;
+      }
+      return new PracticeChatReference(
+          practice.planId(),
+          practice.phaseIndex(),
+          practice.problemSlug(),
+          practice.locale());
+    }
+  }
+
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  public record PracticeChatRequest(
+      @Positive long planId,
+      @Positive int phaseIndex,
+      @NotBlank String problemSlug,
+      String locale
   ) {
   }
 }
