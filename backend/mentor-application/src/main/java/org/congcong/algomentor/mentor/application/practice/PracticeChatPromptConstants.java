@@ -33,6 +33,10 @@ public final class PracticeChatPromptConstants {
    */
   public static final String METADATA_SCENARIO = "scenario";
   /**
+   * 当前练习会话 ID，用于把 Agent trace 与题目训练会话关联。
+   */
+  public static final String METADATA_PRACTICE_SESSION_ID = "practiceSessionId";
+  /**
    * 当前学习计划 ID，用于按用户恢复计划上下文，并关联 trace/debug metadata。
    */
   public static final String METADATA_PLAN_ID = "planId";
