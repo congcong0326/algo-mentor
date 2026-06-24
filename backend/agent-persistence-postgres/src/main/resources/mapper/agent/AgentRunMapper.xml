@@ -22,6 +22,7 @@
       sequence_no,
       status,
       token_estimate,
+      metadata,
       created_at,
       updated_at
     )
@@ -34,6 +35,7 @@
       DEFAULT,
       'active',
       #{tokenEstimate},
+      #{metadata,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbMapTypeHandler},
       #{createdAt},
       #{updatedAt}
     )

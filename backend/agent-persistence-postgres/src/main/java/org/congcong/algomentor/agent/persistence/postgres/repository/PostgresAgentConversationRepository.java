@@ -5,16 +5,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessageRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.agent.core.runtime.model.AgentTaskCreationRequest;
+import org.congcong.algomentor.agent.core.runtime.model.AgentTaskRef;
 import org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
+import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentConversationMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentRunRecord;
 import org.springframework.transaction.annotation.Transactional;
 
-public class PostgresAgentConversationRepository implements AgentConversationRepository {
+public class PostgresAgentConversationRepository implements AgentConversationRepository, AgentTaskMessageRepository {
 
   private static final int DEFAULT_MAX_STEPS = 4;
 
@@ -40,7 +44,8 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
         taskId,
         turnId,
         request.userMessage(),
-        estimateTokens(request.userMessage()));
+        estimateTokens(request.userMessage()),
+        request.userMessageMetadata());
     String runUuid = UUID.randomUUID().toString();
     long runId = conversationMapper.insertRun(
         taskId,
@@ -78,6 +83,48 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
         .toList();
   }
 
+  @Override
+  @Transactional
+  public AgentTaskRef createTask(AgentTaskCreationRequest request) {
+    long taskId = conversationMapper.insertTask(
+        request.userId(),
+        request.title(),
+        request.systemPrompt(),
+        request.metadata());
+    return new AgentTaskRef(taskId);
+  }
+
+  @Override
+  @Transactional
+  public AgentMessage createAssistantSeedMessage(AgentAssistantSeedMessageRequest request) {
+    long turnId = conversationMapper.insertTurn(request.taskId());
+    long messageId = conversationMapper.insertAssistantSeedMessage(
+        request.taskId(),
+        turnId,
+        request.content(),
+        estimateTokens(request.content()),
+        request.metadata());
+    conversationMapper.attachTurnAssistantSeedMessage(turnId, messageId);
+    return conversationMapper.messages(request.taskId(), 1).stream()
+        .filter(message -> message.id() == messageId)
+        .findFirst()
+        .orElse(new AgentMessage(
+            messageId,
+            request.taskId(),
+            1L,
+            AgentMessage.Role.ASSISTANT,
+            request.content(),
+            java.time.Instant.EPOCH,
+            request.metadata()));
+  }
+
+  @Override
+  public List<AgentMessage> messages(long taskId, int messageLimit) {
+    return conversationMapper.messages(taskId, messageLimit).stream()
+        .sorted(Comparator.comparingLong(AgentMessage::sequenceNo))
+        .toList();
+  }
+
   private PreparedAgentRun existingDraft(long runId) {
     AgentRunRecord record = conversationMapper.findRunRecord(runId);
     return new PreparedAgentRun(
@@ -95,7 +142,8 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
     return conversationMapper.insertTask(
         request.userId(),
         title(request.userMessage()),
-        request.systemPrompt());
+        request.systemPrompt(),
+        request.metadata());
   }
 
   private String title(String userMessage) {

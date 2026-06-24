@@ -58,8 +58,16 @@
   </select>
 
   <select id="insertTask" resultType="_long">
-    INSERT INTO agent_task (user_id, title, status, system_prompt, created_at, updated_at)
-    VALUES (#{userId}, #{title}, 'active', #{systemPrompt}, NOW(), NOW())
+    INSERT INTO agent_task (user_id, title, status, system_prompt, metadata, created_at, updated_at)
+    VALUES (
+      #{userId},
+      #{title},
+      'active',
+      #{systemPrompt},
+      #{metadata,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbMapTypeHandler},
+      NOW(),
+      NOW()
+    )
     RETURNING id
   </select>
 
@@ -78,6 +86,7 @@
       sequence_no,
       status,
       token_estimate,
+      metadata,
       created_at,
       updated_at
     )
@@ -89,6 +98,35 @@
       DEFAULT,
       'active',
       #{tokenEstimate},
+      #{metadata,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbMapTypeHandler},
+      NOW(),
+      NOW()
+    )
+    RETURNING id
+  </select>
+
+  <select id="insertAssistantSeedMessage" resultType="_long">
+    INSERT INTO agent_message (
+      task_id,
+      turn_id,
+      role,
+      content,
+      sequence_no,
+      status,
+      token_estimate,
+      metadata,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{taskId},
+      #{turnId},
+      'assistant',
+      #{content},
+      DEFAULT,
+      'active',
+      #{tokenEstimate},
+      #{metadata,jdbcType=OTHER,typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbMapTypeHandler},
       NOW(),
       NOW()
     )
@@ -129,7 +167,24 @@
     WHERE id = #{turnId}
   </update>
 
+  <update id="attachTurnAssistantSeedMessage">
+    UPDATE agent_turn
+    SET assistant_message_id = #{assistantMessageId},
+        status = 'succeeded',
+        updated_at = NOW()
+    WHERE id = #{turnId}
+  </update>
+
   <select id="recentMessages" resultMap="AgentMessageMap">
+    SELECT id, task_id, sequence_no, role, content, created_at, metadata
+    FROM agent_message
+    WHERE task_id = #{taskId}
+      AND status = 'active'
+    ORDER BY sequence_no DESC
+    LIMIT #{messageLimit}
+  </select>
+
+  <select id="messages" resultMap="AgentMessageMap">
     SELECT id, task_id, sequence_no, role, content, created_at, metadata
     FROM agent_message
     WHERE task_id = #{taskId}

@@ -54,7 +54,7 @@ class PersistentAgentRunObserverTest {
 
     assertThat(mapper.startUpdate).isEqualTo(new RunStartUpdate(31L, 4, NOW));
     assertThat(mapper.insertedAssistantMessage)
-        .isEqualTo(new InsertedAssistantMessage(11L, 21L, 31L, "final answer", 3, NOW, NOW));
+        .isEqualTo(new InsertedAssistantMessage(11L, 21L, 31L, "final answer", 3, Map.of(), NOW, NOW));
     assertThat(mapper.successUpdate.runId()).isEqualTo(31L);
     assertThat(mapper.successUpdate.provider()).isEqualTo("openai");
     assertThat(mapper.successUpdate.model()).isEqualTo("gpt-test");
@@ -148,6 +148,35 @@ class PersistentAgentRunObserverTest {
     assertThat(mapper.turnFailed).isEqualTo(new TurnFailed(21L, NOW));
   }
 
+  @Test
+  void writesAssistantMessageMetadataFromRequestMetadata() {
+    FakeRunMapper mapper = new FakeRunMapper();
+    PersistentAgentRunObserver observer = new PersistentAgentRunObserver(mapper, new ObjectMapper(), fixedClock());
+    AgentRequest request = new AgentRequest(
+        "run-1",
+        "idem-1",
+        List.of(LlmMessage.user("hello")),
+        Map.of(
+            AgentRuntimeMetadataKeys.TASK_ID, 10L,
+            AgentRuntimeMetadataKeys.TURN_ID, 20L,
+            AgentRuntimeMetadataKeys.RUN_DB_ID, 30L,
+            "scenario", "PRACTICE_CHAT",
+            "messageType", "CHAT",
+            "practiceSessionId", 100L,
+            "planId", 12L,
+            "phaseIndex", 1,
+            "problemSlug", "two-sum"));
+
+    AgentLoopContext context = new AgentLoopContext("run-1", request, 4, request.metadata(), null);
+    observer.onRunStart(context);
+    observer.onFinalOutput(context, new AgentOutput("answer", null, null, null, Map.of()));
+
+    assertThat(mapper.lastAssistantMetadata)
+        .containsEntry("messageType", "CHAT")
+        .containsEntry("scenario", "PRACTICE_CHAT")
+        .containsEntry("practiceSessionId", 100L);
+  }
+
   private AgentLoopContext context() {
     Map<String, Object> metadata = Map.of(
         AgentRuntimeMetadataKeys.TASK_ID, 11L,
@@ -161,9 +190,14 @@ class PersistentAgentRunObserverTest {
     return new AgentLoopContext("agent-run-id", request, 4, metadata);
   }
 
+  private static Clock fixedClock() {
+    return Clock.fixed(NOW, ZoneOffset.UTC);
+  }
+
   private static final class FakeRunMapper implements AgentRunMapper {
     private final List<String> calls = new ArrayList<>();
     private long nextAssistantMessageId;
+    private Map<String, Object> lastAssistantMetadata = Map.of();
     private RunStartUpdate startUpdate;
     private InsertedAssistantMessage insertedAssistantMessage;
     private RunSuccessUpdate successUpdate;
@@ -185,16 +219,19 @@ class PersistentAgentRunObserverTest {
         long runId,
         String content,
         int tokenEstimate,
+        Map<String, Object> metadata,
         Instant createdAt,
         Instant updatedAt
     ) {
       calls.add("insertAssistantMessage");
+      lastAssistantMetadata = metadata;
       insertedAssistantMessage = new InsertedAssistantMessage(
           taskId,
           turnId,
           runId,
           content,
           tokenEstimate,
+          metadata,
           createdAt,
           updatedAt);
       return nextAssistantMessageId;
@@ -235,6 +272,7 @@ class PersistentAgentRunObserverTest {
       long runId,
       String content,
       int tokenEstimate,
+      Map<String, Object> metadata,
       Instant createdAt,
       Instant updatedAt
   ) {

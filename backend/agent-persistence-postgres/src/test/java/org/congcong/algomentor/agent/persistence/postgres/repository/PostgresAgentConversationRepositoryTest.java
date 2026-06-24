@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessageRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest;
 import org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun;
@@ -112,15 +113,49 @@ class PostgresAgentConversationRepositoryTest {
     assertThat(mapper.calls).containsExactly("recentMessages:101:3");
   }
 
+  @Test
+  void passesUserMessageMetadataWhenPreparingRun() {
+    FakeConversationMapper mapper = new FakeConversationMapper();
+    PostgresAgentConversationRepository repository = new PostgresAgentConversationRepository(mapper);
+
+    repository.createOrReuseRun(new AgentRunPreparationRequest(
+        10L,
+        42L,
+        "hello",
+        "idem-meta",
+        "system",
+        Map.of(),
+        Map.of("messageType", "CHAT")));
+
+    assertThat(mapper.lastUserMessageMetadata).containsEntry("messageType", "CHAT");
+  }
+
+  @Test
+  void createsAssistantSeedMessageWithMetadata() {
+    FakeConversationMapper mapper = new FakeConversationMapper();
+    PostgresAgentConversationRepository repository = new PostgresAgentConversationRepository(mapper);
+
+    AgentMessage message = repository.createAssistantSeedMessage(new AgentAssistantSeedMessageRequest(
+        10L,
+        "# Two Sum",
+        Map.of("messageType", "PROBLEM_STATEMENT")));
+
+    assertThat(message.role()).isEqualTo(AgentMessage.Role.ASSISTANT);
+    assertThat(message.metadata()).containsEntry("messageType", "PROBLEM_STATEMENT");
+    assertThat(mapper.calls).contains("insertAssistantSeedMessage:10:# Two Sum");
+  }
+
   private static final class FakeConversationMapper implements AgentConversationMapper {
     private final List<String> calls = new ArrayList<>();
     private Long existingRunId;
     private AgentRunRecord existingRunRecord;
     private List<AgentMessage> recentMessages = List.of();
-    private long nextTaskId;
-    private long nextTurnId;
-    private long nextMessageId;
-    private long nextRunId;
+    private Map<String, Object> lastUserMessageMetadata = Map.of();
+    private Map<String, Object> lastSeedMetadata = Map.of();
+    private long nextTaskId = 1L;
+    private long nextTurnId = 1L;
+    private long nextMessageId = 1L;
+    private long nextRunId = 1L;
 
     @Override
     public int lockIdempotencyKey(String idempotencyKey) {
@@ -141,7 +176,7 @@ class PostgresAgentConversationRepositoryTest {
     }
 
     @Override
-    public long insertTask(Long userId, String title, String systemPrompt) {
+    public long insertTask(Long userId, String title, String systemPrompt, Map<String, Object> metadata) {
       calls.add("insertTask:" + userId + ":" + title + ":" + systemPrompt);
       return nextTaskId;
     }
@@ -153,8 +188,28 @@ class PostgresAgentConversationRepositoryTest {
     }
 
     @Override
-    public long insertUserMessage(long taskId, long turnId, String content, int tokenEstimate) {
+    public long insertUserMessage(
+        long taskId,
+        long turnId,
+        String content,
+        int tokenEstimate,
+        Map<String, Object> metadata
+    ) {
       calls.add("insertUserMessage:" + taskId + ":" + turnId + ":" + content + ":" + tokenEstimate);
+      lastUserMessageMetadata = metadata;
+      return nextMessageId;
+    }
+
+    @Override
+    public long insertAssistantSeedMessage(
+        long taskId,
+        long turnId,
+        String content,
+        int tokenEstimate,
+        Map<String, Object> metadata
+    ) {
+      calls.add("insertAssistantSeedMessage:" + taskId + ":" + content);
+      lastSeedMetadata = metadata;
       return nextMessageId;
     }
 
@@ -171,9 +226,21 @@ class PostgresAgentConversationRepositoryTest {
     }
 
     @Override
+    public int attachTurnAssistantSeedMessage(long turnId, long assistantMessageId) {
+      calls.add("attachTurnAssistantSeedMessage:" + turnId + ":" + assistantMessageId);
+      return 1;
+    }
+
+    @Override
     public List<AgentMessage> recentMessages(long taskId, int messageLimit) {
       calls.add("recentMessages:" + taskId + ":" + messageLimit);
       return recentMessages;
+    }
+
+    @Override
+    public List<AgentMessage> messages(long taskId, int messageLimit) {
+      calls.add("messages:" + taskId + ":" + messageLimit);
+      return List.of();
     }
   }
 }

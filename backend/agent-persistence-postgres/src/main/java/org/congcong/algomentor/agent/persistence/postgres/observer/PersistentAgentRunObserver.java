@@ -25,6 +25,14 @@ import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 
 public class PersistentAgentRunObserver implements AgentLoopObserver {
 
+  private static final String SCENARIO = "scenario";
+  private static final String PRACTICE_CHAT_SCENARIO = "PRACTICE_CHAT";
+  private static final String MESSAGE_TYPE = "messageType";
+  private static final String PRACTICE_SESSION_ID = "practiceSessionId";
+  private static final String PLAN_ID = "planId";
+  private static final String PHASE_INDEX = "phaseIndex";
+  private static final String PROBLEM_SLUG = "problemSlug";
+
   private final AgentRunMapper runMapper;
   private final ObjectMapper objectMapper;
   private final Clock clock;
@@ -85,6 +93,7 @@ public class PersistentAgentRunObserver implements AgentLoopObserver {
         runDbId,
         content,
         estimateTokens(content),
+        assistantMessageMetadata(context),
         now,
         now);
   }
@@ -151,6 +160,29 @@ public class PersistentAgentRunObserver implements AgentLoopObserver {
 
   private JsonNode jsonNode(Object value) {
     return objectMapper.valueToTree(value);
+  }
+
+  private Map<String, Object> assistantMessageMetadata(AgentLoopContext context) {
+    Object scenario = context.metadata().get(SCENARIO);
+    Object messageType = context.metadata().get(MESSAGE_TYPE);
+    if (!PRACTICE_CHAT_SCENARIO.equals(scenario) || messageType == null) {
+      return Map.of();
+    }
+    Map<String, Object> metadata = new HashMap<>();
+    metadata.put(MESSAGE_TYPE, messageType);
+    copyMetadata(context, metadata, SCENARIO);
+    copyMetadata(context, metadata, PRACTICE_SESSION_ID);
+    copyMetadata(context, metadata, PLAN_ID);
+    copyMetadata(context, metadata, PHASE_INDEX);
+    copyMetadata(context, metadata, PROBLEM_SLUG);
+    return Map.copyOf(metadata);
+  }
+
+  private void copyMetadata(AgentLoopContext context, Map<String, Object> target, String key) {
+    Object value = context.metadata().get(key);
+    if (value != null) {
+      target.put(key, value);
+    }
   }
 
   private Long runDbId(AgentLoopContext context) {

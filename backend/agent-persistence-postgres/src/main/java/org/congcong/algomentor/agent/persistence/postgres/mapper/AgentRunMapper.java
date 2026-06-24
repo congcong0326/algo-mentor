@@ -2,6 +2,7 @@ package org.congcong.algomentor.agent.persistence.postgres.mapper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.time.Instant;
+import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunErrorUpdate;
@@ -19,6 +20,7 @@ public interface AgentRunMapper {
       @Param("runId") long runId,
       @Param("content") String content,
       @Param("tokenEstimate") int tokenEstimate,
+      @Param("metadata") Map<String, Object> metadata,
       @Param("createdAt") Instant createdAt,
       @Param("updatedAt") Instant updatedAt
   );
