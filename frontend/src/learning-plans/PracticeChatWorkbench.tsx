@@ -109,9 +109,11 @@ export default function PracticeChatWorkbench({
   const messageListRef = useRef<HTMLElement | null>(null);
   const shouldAutoScrollRef = useRef(true);
   const submittingRef = useRef(false);
+  const practiceLoadTokenRef = useRef(0);
 
   useEffect(() => {
     const controller = new AbortController();
+    practiceLoadTokenRef.current += 1;
     streamControllerRef.current?.abort();
     streamControllerRef.current = null;
     submittingRef.current = false;
@@ -303,11 +305,12 @@ export default function PracticeChatWorkbench({
     }
 
     const activeSessionId = sessionId;
+    const activeLoadToken = practiceLoadTokenRef.current;
     setCompletionUpdating(true);
     setError('');
     try {
       const response = await updatePracticeProgressStatus(sessionId, 'COMPLETED');
-      if (activeSessionIdRef.current !== activeSessionId) {
+      if (activeSessionIdRef.current !== activeSessionId || practiceLoadTokenRef.current !== activeLoadToken) {
         return;
       }
       if (!response.success) {
@@ -329,13 +332,13 @@ export default function PracticeChatWorkbench({
       }
       setStatus('idle');
     } catch (error) {
-      if (activeSessionIdRef.current !== activeSessionId) {
+      if (activeSessionIdRef.current !== activeSessionId || practiceLoadTokenRef.current !== activeLoadToken) {
         return;
       }
       setError(error instanceof Error ? error.message : resources.learningPlans.progressUpdateFailed);
       setStatus('error');
     } finally {
-      if (activeSessionIdRef.current === activeSessionId) {
+      if (activeSessionIdRef.current === activeSessionId && practiceLoadTokenRef.current === activeLoadToken) {
         setCompletionUpdating(false);
       }
     }

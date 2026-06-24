@@ -1157,6 +1157,74 @@ describe('App', () => {
     expect(screen.getByRole('button', { name: '标记完成' })).not.toBeDisabled();
   });
 
+  it('ignores stale completion responses after switching practice locale', async () => {
+    let resolveProgressUpdate: (value: Response) => void = () => undefined;
+    const fetchMock = vi.fn((url: string) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(authenticatedUserResponse());
+      }
+      if (isLearningPlanListUrl(url)) {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: learningPlanPage([learningPlanSummary()]),
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
+      }
+      if (url === '/api/learning-plans/900') {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: learningPlanDetail(),
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
+      }
+      if (url === '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=zh-CN'
+        || url === '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=en-US') {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: practiceSessionResponse(),
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
+      }
+      if (url === '/api/practice-sessions/50/progress-status') {
+        return new Promise<Response>((resolve) => {
+          resolveProgressUpdate = resolve;
+        });
+      }
+
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(
+      <I18nProvider>
+        <App />
+      </I18nProvider>,
+    );
+
+    fireEvent.click(await screen.findByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' }));
+    fireEvent.click(await screen.findByRole('button', { name: /两数之和/ }));
+    fireEvent.click(await screen.findByRole('button', { name: '标记完成' }));
+
+    fireEvent.change(screen.getByRole('combobox', { name: '语言' }), {
+      target: { value: 'en-US' },
+    });
+
+    expect(await screen.findByRole('heading', { level: 2, name: '1. Two Sum' })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Mark completed' })).not.toBeDisabled());
+
+    await act(async () => {
+      resolveProgressUpdate(jsonResponse({
+        success: false,
+        error: { code: 'PROGRESS_FAILED', message: 'old locale progress failed' },
+        timestamp: '2026-06-22T00:00:00Z',
+      }, 500));
+    });
+
+    expect(screen.queryByText('old locale progress failed')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Mark completed' })).not.toBeDisabled();
+  });
+
   it('shows a disabled LeetCode action when the practice session has no LeetCode URL', async () => {
     const fetchMock = mockLearningPlanFetch({ omitLeetCodeUrl: true });
     vi.stubGlobal('fetch', fetchMock);
