@@ -97,7 +97,7 @@
   </select>
 
   <select id="upsertSession" resultMap="PracticeSessionRowMap" affectData="true">
-    WITH upserted AS (
+    WITH session_row AS (
       INSERT INTO practice_session (
         user_id,
         plan_id,
@@ -124,15 +124,12 @@
     )
     SELECT
       <include refid="PracticeSessionColumns"/>
-    FROM practice_session session_row
-    JOIN upserted
-      ON upserted.id = session_row.id
+    FROM session_row
     JOIN learning_plan_problem_progress progress
       ON progress.user_id = session_row.user_id
       AND progress.plan_id = session_row.plan_id
       AND progress.phase_index = session_row.phase_index
       AND progress.problem_slug = session_row.problem_slug
-    FOR UPDATE OF session_row
   </select>
 
   <select id="findSessionByIdForUser" resultMap="PracticeSessionRowMap">
