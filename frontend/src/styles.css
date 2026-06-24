@@ -15,6 +15,7 @@
   --accent-warm: #ffc01e;
   --accent-warm-soft: #fff7d6;
   --accent-warm-border: #ffe58a;
+  --accent-warm-text: #8a5a00;
   --success: #16a34a;
   --success-soft: #ecfdf3;
   --danger: #dc2626;
@@ -32,6 +33,34 @@
     sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface-page: #0b1220;
+  --surface-card: #111827;
+  --surface-muted: #162033;
+  --surface-soft: #1f2937;
+  --surface-elevated: rgb(15 23 42 / 94%);
+  --border-subtle: #263447;
+  --border-strong: #3a4a5f;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --action-primary: #ffc01e;
+  --action-primary-hover: #f3b414;
+  --action-ink: #0f172a;
+  --accent-warm: #ffc01e;
+  --accent-warm-soft: rgb(255 192 30 / 14%);
+  --accent-warm-border: rgb(255 192 30 / 42%);
+  --accent-warm-text: #ffd166;
+  --success: #5eead4;
+  --success-soft: rgb(20 184 166 / 15%);
+  --danger: #fca5a5;
+  --danger-soft: rgb(248 113 113 / 14%);
+  --shadow-subtle: 0 18px 36px rgb(0 0 0 / 24%);
+  --shadow-hover: 0 24px 44px rgb(0 0 0 / 34%);
+  --shadow-cta: 0 14px 32px -16px rgb(255 192 30 / 52%);
 }
 
 * {
@@ -140,7 +169,10 @@ a {
   min-height: 100vh;
   padding: 96px 20px 48px;
   background:
-    linear-gradient(rgb(255 255 255 / 88%), rgb(255 255 255 / 88%)),
+    linear-gradient(
+      color-mix(in srgb, var(--surface-page) 88%, transparent),
+      color-mix(in srgb, var(--surface-page) 88%, transparent)
+    ),
     radial-gradient(circle at 18% 10%, rgb(255 192 30 / 18%), transparent 28%),
     var(--surface-page);
 }
@@ -206,9 +238,9 @@ a {
   align-items: center;
   min-height: 64px;
   padding: 0 max(20px, 3vw);
-  border-bottom: 1px solid rgb(15 23 42 / 6%);
+  border-bottom: 1px solid var(--border-subtle);
   background: var(--surface-elevated);
-  box-shadow: 0 1px 0 rgb(15 23 42 / 4%);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 4%);
   backdrop-filter: saturate(180%) blur(20px);
 }
 
@@ -435,7 +467,7 @@ a {
 
 .view-tabs button[aria-pressed="true"] {
   background: var(--text-primary);
-  color: #ffffff;
+  color: var(--surface-card);
 }
 
 .eyebrow {
@@ -479,7 +511,7 @@ a {
 .status-pill.blocked {
   border-color: var(--accent-warm-border);
   background: var(--accent-warm-soft);
-  color: #8a5a00;
+  color: var(--accent-warm-text);
 }
 
 .status-pill.error {
@@ -625,7 +657,7 @@ a {
 .external-link:hover {
   transform: translateY(-1px);
   background: var(--text-primary);
-  color: #ffffff;
+  color: var(--surface-card);
 }
 
 .icon-button:hover:not(:disabled) {
@@ -1054,7 +1086,7 @@ a {
 .difficulty-badge.medium {
   border-color: var(--accent-warm-border);
   background: var(--accent-warm-soft);
-  color: #8a5a00;
+  color: var(--accent-warm-text);
 }
 
 .difficulty-badge.hard {
@@ -1095,6 +1127,17 @@ a {
 .icon-button svg {
   width: 18px;
   height: 18px;
+}
+
+.theme-toggle-button {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  color: var(--text-secondary);
+}
+
+.theme-toggle-button:hover:not(:disabled) {
+  color: var(--text-primary);
 }
 
 .problem-detail-panel {
@@ -1816,7 +1859,7 @@ a {
   border: 1px solid var(--accent-warm-border);
   border-radius: var(--radius-pill);
   background: var(--accent-warm-soft);
-  color: #8a5a00;
+  color: var(--accent-warm-text);
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
@@ -1854,7 +1897,7 @@ a {
   gap: 16px;
   padding: 14px 18px;
   border-bottom: 1px solid var(--border-subtle);
-  background: #ffffff;
+  background: var(--surface-card);
 }
 
 .practice-toolbar-main,
@@ -1990,7 +2033,7 @@ a {
   gap: 10px;
   padding: 14px 18px;
   border-top: 1px solid var(--border-subtle);
-  background: #ffffff;
+  background: var(--surface-card);
 }
 
 .practice-composer input {
@@ -2050,7 +2093,7 @@ a {
 
 .wizard-steps li.active {
   border-color: var(--text-primary);
-  background: #ffffff;
+  background: var(--surface-card);
   color: var(--text-primary);
 }
 
@@ -2106,7 +2149,10 @@ a {
   min-height: 520px;
   padding: 76px 24px 68px;
   background:
-    linear-gradient(rgb(255 255 255 / 84%), rgb(255 255 255 / 90%)),
+    linear-gradient(
+      color-mix(in srgb, var(--surface-page) 84%, transparent),
+      color-mix(in srgb, var(--surface-page) 90%, transparent)
+    ),
     radial-gradient(circle at 50% 10%, rgb(255 192 30 / 20%), transparent 28%);
   text-align: center;
 }

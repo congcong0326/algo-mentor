@@ -2,6 +2,34 @@ import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testi
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { debugStatusLabel } from './ai-debug/AiDebugConsole';
 import App from './App';
+import { THEME_STORAGE_KEY } from './app/theme';
+
+let stubbedLocalStorage: Storage | undefined;
+
+function createFakeStorage(initialValues: Record<string, string> = {}): Storage {
+  const values = new Map(Object.entries(initialValues));
+
+  return {
+    get length() {
+      return values.size;
+    },
+    clear() {
+      values.clear();
+    },
+    getItem(key: string) {
+      return values.get(key) ?? null;
+    },
+    key(index: number) {
+      return Array.from(values.keys())[index] ?? null;
+    },
+    removeItem(key: string) {
+      values.delete(key);
+    },
+    setItem(key: string, value: string) {
+      values.set(key, value);
+    },
+  };
+}
 
 function sseStream(chunks: string[]): ReadableStream<Uint8Array> {
   return new ReadableStream<Uint8Array>({
@@ -19,6 +47,8 @@ function sseEvent(eventName: string, data: unknown): string {
 
 describe('App', () => {
   beforeEach(() => {
+    stubbedLocalStorage = createFakeStorage();
+    vi.stubGlobal('localStorage', stubbedLocalStorage);
     window.history.replaceState({}, '', '/');
     vi.stubGlobal('crypto', {
       randomUUID: vi.fn(() => 'generated-key'),
@@ -32,7 +62,11 @@ describe('App', () => {
 
   afterEach(() => {
     cleanup();
+    const localStorage = stubbedLocalStorage;
     vi.unstubAllGlobals();
+    localStorage?.clear();
+    stubbedLocalStorage = undefined;
+    document.documentElement.removeAttribute('data-theme');
   });
 
   it('shows an accessible loading state while checking authentication', () => {
@@ -129,6 +163,61 @@ describe('App', () => {
     expect(screen.getByRole('button', { name: '生成训练方案' })).toBeInTheDocument();
     expect(screen.getByText('User Name')).toBeInTheDocument();
     expect(window.location.pathname).toBe('/');
+  });
+
+  it('defaults authenticated users to light theme', async () => {
+    vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
+    window.history.replaceState({}, '', '/');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: '把算法练习变成可复盘的学习系统' })).toBeInTheDocument();
+    expect(document.documentElement.dataset.theme).toBe('light');
+  });
+
+  it('applies stored dark theme for authenticated shell', async () => {
+    window.localStorage.setItem(THEME_STORAGE_KEY, 'dark');
+    vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
+    window.history.replaceState({}, '', '/');
+
+    render(<App />);
+
+    expect(await screen.findByText('User Name')).toBeInTheDocument();
+    expect(document.documentElement.dataset.theme).toBe('dark');
+  });
+
+  it('toggles and persists authenticated shell theme', async () => {
+    vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
+    window.history.replaceState({}, '', '/');
+
+    render(<App />);
+
+    expect(await screen.findByText('User Name')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '切换为深色模式' }));
+
+    await waitFor(() => expect(document.documentElement.dataset.theme).toBe('dark'));
+    expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
+    expect(screen.getByRole('button', { name: '切换为浅色模式' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '切换为浅色模式' }));
+
+    await waitFor(() => expect(document.documentElement.dataset.theme).toBe('light'));
+    expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('light');
+    expect(screen.getByRole('button', { name: '切换为深色模式' })).toBeInTheDocument();
+  });
+
+  it('applies stored theme on login page without rendering a theme toggle there', async () => {
+    window.localStorage.setItem(THEME_STORAGE_KEY, 'dark');
+    vi.stubGlobal('fetch', mockUnauthenticatedFetch());
+    window.history.replaceState({}, '', '/login');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(screen.queryByRole('button', { name: '切换为深色模式' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '切换为浅色模式' })).not.toBeInTheDocument();
   });
 
   it('syncs active view when browser history changes', async () => {

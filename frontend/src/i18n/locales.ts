@@ -24,6 +24,8 @@ export interface LocaleResources {
     logout: string;
     loggingOut: string;
     logoutFailed: string;
+    switchToDarkMode: string;
+    switchToLightMode: string;
     unknownUser: (id: number) => string;
   };
   auth: {
@@ -269,6 +271,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       logout: '退出登录',
       loggingOut: '退出中',
       logoutFailed: '退出登录失败',
+      switchToDarkMode: '切换为深色模式',
+      switchToLightMode: '切换为浅色模式',
       unknownUser: (id) => `用户 #${id}`,
     },
     auth: {
@@ -557,6 +561,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       logout: 'Log out',
       loggingOut: 'Logging out',
       logoutFailed: 'Log out failed',
+      switchToDarkMode: 'Switch to dark mode',
+      switchToLightMode: 'Switch to light mode',
       unknownUser: (id) => `User #${id}`,
     },
     auth: {
