@@ -4,5 +4,6 @@ public enum AiRunSource {
   LEARNING_PLAN_DRAFT,
   PROBLEM_DETAIL,
   LEARNING_CHAT,
+  PRACTICE_CHAT,
   AI_DEBUG
 }
