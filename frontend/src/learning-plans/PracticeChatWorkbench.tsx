@@ -108,11 +108,13 @@ export default function PracticeChatWorkbench({
   const activeSessionIdRef = useRef<number | undefined>(undefined);
   const messageListRef = useRef<HTMLElement | null>(null);
   const shouldAutoScrollRef = useRef(true);
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     const controller = new AbortController();
     streamControllerRef.current?.abort();
     streamControllerRef.current = null;
+    submittingRef.current = false;
     setSessionResponse(undefined);
     setMessages([]);
     setError('');
@@ -138,6 +140,7 @@ export default function PracticeChatWorkbench({
       controller.abort();
       streamControllerRef.current?.abort();
       streamControllerRef.current = null;
+      submittingRef.current = false;
     };
   }, [locale, phaseIndex, plan.id, problemSlug, resources.learningPlans.practiceSessionLoadFailed]);
 
@@ -148,7 +151,7 @@ export default function PracticeChatWorkbench({
   const difficulty = sessionResponse?.problem.difficulty ?? problem?.difficulty;
   const canMarkCompleted = Boolean(sessionId) && progressStatus !== 'COMPLETED' && status !== 'streaming';
   const composerInputDisabled = !sessionId || status === 'loading';
-  const sendDisabled = !sessionId || status === 'loading' || status === 'streaming' || status === 'blocked' || !composerValue.trim();
+  const sendDisabled = !sessionId || status === 'loading' || status === 'streaming' || !composerValue.trim();
 
   useLayoutEffect(() => {
     const messageList = messageListRef.current;
@@ -186,10 +189,11 @@ export default function PracticeChatWorkbench({
     event.preventDefault();
     const text = composerValue.trim();
 
-    if (!text || !sessionId || status === 'loading' || status === 'streaming' || status === 'blocked') {
+    if (!text || !sessionId || status === 'loading' || status === 'streaming' || submittingRef.current) {
       return;
     }
 
+    submittingRef.current = true;
     streamControllerRef.current?.abort();
     const controller = new AbortController();
     streamControllerRef.current = controller;
@@ -276,7 +280,7 @@ export default function PracticeChatWorkbench({
         if (error instanceof ApiRequestError && error.code === AGENT_RUN_IN_PROGRESS_CODE) {
           setError(resources.learningPlans.practiceMessageBlocked);
           markAssistantMessageFailed(assistantMessageId, resources.learningPlans.practiceMessageBlocked);
-          setStatus('blocked');
+          setStatus('idle');
           return;
         }
 
@@ -287,6 +291,7 @@ export default function PracticeChatWorkbench({
     } finally {
       if (streamControllerRef.current === controller) {
         streamControllerRef.current = null;
+        submittingRef.current = false;
       }
     }
   }
@@ -323,10 +328,15 @@ export default function PracticeChatWorkbench({
       }
       setStatus('idle');
     } catch (error) {
+      if (activeSessionIdRef.current !== activeSessionId) {
+        return;
+      }
       setError(error instanceof Error ? error.message : resources.learningPlans.progressUpdateFailed);
       setStatus('error');
     } finally {
-      setCompletionUpdating(false);
+      if (activeSessionIdRef.current === activeSessionId) {
+        setCompletionUpdating(false);
+      }
     }
   }
 

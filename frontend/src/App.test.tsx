@@ -1035,7 +1035,42 @@ describe('App', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('当前回复仍在生成中，请稍后再试。');
     expect(composer).not.toBeDisabled();
-    expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
+    fireEvent.change(composer, {
+      target: { value: '稍后重试。' },
+    });
+    expect(screen.getByRole('button', { name: '发送' })).not.toBeDisabled();
+    expect(screen.getAllByText('当前回复仍在生成中，请稍后再试。').find((element) => (
+      element.classList.contains('practice-message-failed')
+    ))).toBeDefined();
+  });
+
+  it('ignores duplicate practice submits before streaming state rerenders', async () => {
+    const practiceStream = controlledSseStream();
+    const fetchMock = mockLearningPlanFetch({ practiceMessageStream: practiceStream.stream });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' }));
+    fireEvent.click(await screen.findByRole('button', { name: /两数之和/ }));
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '只应该提交一次。' },
+    });
+    const sendButton = screen.getByRole('button', { name: '发送' });
+    fireEvent.click(sendButton);
+    fireEvent.click(sendButton);
+
+    await waitFor(() => {
+      expect(fetchMock.mock.calls.filter(([url]) => url === '/api/practice-sessions/50/messages/stream')).toHaveLength(1);
+    });
+    expect(screen.getAllByText('只应该提交一次。')).toHaveLength(1);
+
+    await act(async () => {
+      practiceStream.enqueue(sseEvent('agent_run_end', { runId: 'run_1' }));
+      practiceStream.close();
+    });
   });
 
   it('shows a disabled LeetCode action when the practice session has no LeetCode URL', async () => {
