@@ -11,6 +11,26 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toContain('--action-ink: #0f172a');
   });
 
+  it('defines a neutral dark mode palette through root theme tokens', () => {
+    expect(styles).toContain(':root[data-theme="dark"]');
+    expect(styles).toContain('color-scheme: dark');
+    expect(styles).toContain('--surface-page: #0b1220');
+    expect(styles).toContain('--surface-card: #111827');
+    expect(styles).toContain('--surface-muted: #162033');
+    expect(styles).toContain('--surface-soft: #1f2937');
+    expect(styles).toContain('--border-subtle: #263447');
+    expect(styles).toContain('--text-primary: #f8fafc');
+    expect(styles).toContain('--accent-warm-soft: rgb(255 192 30 / 14%)');
+    expect(styles).toContain('--success-soft: rgb(20 184 166 / 15%)');
+    expect(styles).toContain('--danger-soft: rgb(248 113 113 / 14%)');
+  });
+
+  it('styles the theme toggle as a stable icon control', () => {
+    expect(styles).toContain('.theme-toggle-button');
+    expect(styles).toContain('width: 38px');
+    expect(styles).toContain('height: 38px');
+  });
+
   it('keeps primary UI chrome within the reference landing vocabulary', () => {
     expect(styles).toContain('position: fixed');
     expect(styles).toContain('backdrop-filter: saturate(180%) blur(20px)');
