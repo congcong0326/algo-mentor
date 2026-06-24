@@ -1,7 +1,9 @@
 package org.congcong.algomentor.mentor.application.practice;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,6 +25,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProbl
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
 import org.junit.jupiter.api.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 class PracticeSessionServiceTest {
 
@@ -51,7 +54,8 @@ class PracticeSessionServiceTest {
             .containsEntry(PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, 50L)
             .containsEntry(PracticeChatPromptConstants.METADATA_PLAN_ID, 12L)
             .containsEntry(PracticeChatPromptConstants.METADATA_PHASE_INDEX, 1)
-            .containsEntry(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, "two-sum"));
+            .containsEntry(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, "two-sum")
+            .containsEntry(PracticeChatPromptConstants.METADATA_LOCALE, "zh-CN"));
     assertThat(messageRepository.seedRequests)
         .singleElement()
         .satisfies(request -> {
@@ -60,8 +64,28 @@ class PracticeSessionServiceTest {
           assertThat(request.metadata())
               .containsEntry(PracticeChatPromptConstants.MESSAGE_TYPE_METADATA_KEY,
                   PracticeChatPromptConstants.MESSAGE_TYPE_PROBLEM_STATEMENT)
-              .containsEntry(PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, 50L);
+              .containsEntry(PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, 50L)
+              .containsEntry(PracticeChatPromptConstants.METADATA_LOCALE, "zh-CN");
         });
+  }
+
+  @Test
+  void persistsLocaleForMetadataAndGet() {
+    InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
+    InMemoryAgentTaskMessageRepository messageRepository = new InMemoryAgentTaskMessageRepository();
+    FakeProblemCatalog problemCatalog = new FakeProblemCatalog();
+    PracticeSessionService service = service(sessionRepository, messageRepository, problemCatalog);
+
+    PracticeSessionResult created = service.createOrReuse(7, new PracticeChatReference(12, 1, "two-sum", "en-US"));
+    PracticeSessionResult loaded = service.get(7, created.session().id());
+
+    assertThat(created.session().locale()).isEqualTo("en-US");
+    assertThat(loaded.session().locale()).isEqualTo("en-US");
+    assertThat(problemCatalog.locales).containsExactly("en-US", "en-US");
+    assertThat(messageRepository.taskRequests.get(0).metadata())
+        .containsEntry(PracticeChatPromptConstants.METADATA_LOCALE, "en-US");
+    assertThat(messageRepository.seedRequests.get(0).metadata())
+        .containsEntry(PracticeChatPromptConstants.METADATA_LOCALE, "en-US");
   }
 
   @Test
@@ -97,12 +121,63 @@ class PracticeSessionServiceTest {
     assertThat(sessionRepository.progress.status()).isEqualTo(PracticeProgressStatus.COMPLETED);
   }
 
+  @Test
+  void skippedProgressReturnsToInProgressWhenSessionOpens() {
+    InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
+    sessionRepository.progress = sessionRepository.progress(PracticeProgressStatus.SKIPPED);
+    InMemoryAgentTaskMessageRepository messageRepository = new InMemoryAgentTaskMessageRepository();
+    PracticeSessionService service = service(sessionRepository, messageRepository);
+
+    PracticeSessionResult result = service.createOrReuse(7, reference());
+
+    assertThat(result.session().progressStatus()).isEqualTo(PracticeProgressStatus.IN_PROGRESS);
+    assertThat(sessionRepository.progress.status()).isEqualTo(PracticeProgressStatus.IN_PROGRESS);
+  }
+
+  @Test
+  void createOrReuseAndProgressUpdateAreTransactional() throws NoSuchMethodException {
+    Method createOrReuse = PracticeSessionService.class.getMethod(
+        "createOrReuse", long.class, PracticeChatReference.class);
+    Method updateProgressStatus = PracticeSessionService.class.getMethod(
+        "updateProgressStatus", long.class, long.class, PracticeProgressStatus.class);
+
+    assertThat(createOrReuse.getAnnotation(Transactional.class)).isNotNull();
+    assertThat(updateProgressStatus.getAnnotation(Transactional.class)).isNotNull();
+  }
+
+  @Test
+  void rejectsInvalidPracticeProgressAndSession() {
+    assertThatThrownBy(() -> new PracticeProgress(0, 7, 12, 1, "two-sum",
+        PracticeProgressStatus.IN_PROGRESS, Instant.EPOCH, Instant.EPOCH))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("progress id");
+    assertThatThrownBy(() -> new PracticeSession(50, 0, 12, 1, "two-sum", PracticeSessionStatus.ACTIVE,
+        null, null, PracticeProgressStatus.IN_PROGRESS, null, Instant.EPOCH, Instant.EPOCH, "zh-CN"))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("session user id");
+    assertThatThrownBy(() -> new PracticeSession(50, 7, 12, 1, " ", PracticeSessionStatus.ACTIVE,
+        null, null, PracticeProgressStatus.IN_PROGRESS, null, Instant.EPOCH, Instant.EPOCH, "zh-CN"))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("problem slug");
+  }
+
   private PracticeSessionService service(
       InMemoryPracticeSessionRepository sessionRepository,
       InMemoryAgentTaskMessageRepository messageRepository) {
     return new PracticeSessionService(
         new InMemoryPlanRepository(),
         new FakeProblemCatalog(),
+        sessionRepository,
+        messageRepository);
+  }
+
+  private PracticeSessionService service(
+      InMemoryPracticeSessionRepository sessionRepository,
+      InMemoryAgentTaskMessageRepository messageRepository,
+      FakeProblemCatalog problemCatalog) {
+    return new PracticeSessionService(
+        new InMemoryPlanRepository(),
+        problemCatalog,
         sessionRepository,
         messageRepository);
   }
@@ -121,11 +196,10 @@ class PracticeSessionServiceTest {
     @Override
     public PracticeProgress upsertAndAdvanceProgress(long userId, long planId, int phaseIndex, String problemSlug) {
       if (progress == null) {
-        progress = new PracticeProgress(70, userId, planId, phaseIndex, problemSlug,
-            PracticeProgressStatus.IN_PROGRESS, NOW, NOW);
+        progress = progress(PracticeProgressStatus.IN_PROGRESS);
         return progress;
       }
-      if (progress.status() == PracticeProgressStatus.NOT_STARTED) {
+      if (progress.status() == PracticeProgressStatus.NOT_STARTED || progress.status() == PracticeProgressStatus.SKIPPED) {
         progress = new PracticeProgress(progress.id(), userId, planId, phaseIndex, problemSlug,
             PracticeProgressStatus.IN_PROGRESS, progress.createdAt(), NOW);
       }
@@ -133,10 +207,15 @@ class PracticeSessionServiceTest {
     }
 
     @Override
-    public PracticeSession upsertAndLockSession(long userId, long planId, int phaseIndex, String problemSlug) {
+    public PracticeSession upsertAndLockSession(
+        long userId,
+        long planId,
+        int phaseIndex,
+        String problemSlug,
+        String locale) {
       if (session == null) {
         session = new PracticeSession(50, userId, planId, phaseIndex, problemSlug, PracticeSessionStatus.ACTIVE,
-            null, null, PracticeProgressStatus.NOT_STARTED, null, NOW, NOW);
+            null, null, PracticeProgressStatus.NOT_STARTED, null, NOW, NOW, locale);
       }
       return session;
     }
@@ -168,6 +247,10 @@ class PracticeSessionServiceTest {
 
     @Override
     public void touchLastMessageAt(long sessionId) {
+    }
+
+    private PracticeProgress progress(PracticeProgressStatus status) {
+      return new PracticeProgress(70, 7, 12, 1, "two-sum", status, NOW, NOW);
     }
   }
 
@@ -267,8 +350,11 @@ class PracticeSessionServiceTest {
 
   private static final class FakeProblemCatalog implements PracticeChatProblemCatalog {
 
+    private final List<String> locales = new ArrayList<>();
+
     @Override
     public Optional<PracticeChatProblemDetail> findProblemBySlug(String slug, String locale) {
+      locales.add(locale);
       if (!"two-sum".equals(slug)) {
         return Optional.empty();
       }

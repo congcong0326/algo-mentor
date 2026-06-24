@@ -13,6 +13,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanExcep
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 public class PracticeSessionService {
 
@@ -35,12 +36,13 @@ public class PracticeSessionService {
     this.agentTaskMessageRepository = agentTaskMessageRepository;
   }
 
+  @Transactional
   public PracticeSessionResult createOrReuse(long userId, PracticeChatReference reference) {
     PracticeChatContext context = requireContext(userId, reference);
     PracticeProgress progress = practiceSessionRepository.upsertAndAdvanceProgress(
         userId, reference.planId(), reference.phaseIndex(), reference.problemSlug());
     PracticeSession session = practiceSessionRepository.upsertAndLockSession(
-        userId, reference.planId(), reference.phaseIndex(), reference.problemSlug());
+        userId, reference.planId(), reference.phaseIndex(), reference.problemSlug(), reference.locale());
 
     if (session.agentTaskId() == null) {
       AgentTaskCreationRequest request = new AgentTaskCreationRequest(
@@ -68,11 +70,12 @@ public class PracticeSessionService {
     PracticeSession session = practiceSessionRepository.findSessionForUser(sessionId, userId)
         .orElseThrow(() -> new LearningPlanException("PRACTICE_SESSION_NOT_FOUND", "题目练习会话不存在。"));
     PracticeChatReference reference = new PracticeChatReference(
-        session.planId(), session.phaseIndex(), session.problemSlug(), "zh-CN");
+        session.planId(), session.phaseIndex(), session.problemSlug(), session.locale());
     PracticeChatContext context = requireContext(userId, reference);
     return result(session, context.problemDetail());
   }
 
+  @Transactional
   public PracticeSession updateProgressStatus(long userId, long sessionId, PracticeProgressStatus status) {
     if (status != PracticeProgressStatus.COMPLETED) {
       throw new LearningPlanException("PRACTICE_PROGRESS_STATUS_UNSUPPORTED", "题目聊天页只支持标记完成。");
@@ -106,7 +109,8 @@ public class PracticeSessionService {
         status,
         session.lastMessageAt(),
         session.createdAt(),
-        session.updatedAt());
+        session.updatedAt(),
+        session.locale());
   }
 
   private PracticeSessionMessage toPracticeSessionMessage(AgentMessage message) {
@@ -157,6 +161,7 @@ public class PracticeSessionService {
     metadata.put(PracticeChatPromptConstants.METADATA_PLAN_ID, reference.planId());
     metadata.put(PracticeChatPromptConstants.METADATA_PHASE_INDEX, reference.phaseIndex());
     metadata.put(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, reference.problemSlug());
+    metadata.put(PracticeChatPromptConstants.METADATA_LOCALE, reference.locale());
     return metadata;
   }
 

@@ -6,7 +6,7 @@ public interface PracticeSessionRepository {
 
   PracticeProgress upsertAndAdvanceProgress(long userId, long planId, int phaseIndex, String problemSlug);
 
-  PracticeSession upsertAndLockSession(long userId, long planId, int phaseIndex, String problemSlug);
+  PracticeSession upsertAndLockSession(long userId, long planId, int phaseIndex, String problemSlug, String locale);
 
   Optional<PracticeSession> findSessionForUser(long sessionId, long userId);
 
