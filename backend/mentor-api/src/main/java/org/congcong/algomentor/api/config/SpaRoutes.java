@@ -25,6 +25,14 @@ public final class SpaRoutes {
       "/debug"
   };
 
+  /**
+   * 前端嵌套路由模式，由 Spring MVC 转发到 SPA 入口。
+   */
+  public static final String[] FRONTEND_ROUTE_PATTERNS = {
+      "/learning-plans/{planId:[0-9]+}",
+      "/learning-plans/{planId:[0-9]+}/phases/{phaseIndex:[0-9]+}/problems/{problemSlug}/chat"
+  };
+
   private SpaRoutes() {
   }
 }

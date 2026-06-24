@@ -1,12 +1,20 @@
-import { useEffect, useState } from 'react';
-import { APP_ROUTES } from './app/navigation';
+import { lazy, Suspense, useEffect, useState } from 'react';
+import {
+  APP_ROUTES,
+  learningPlanDetailPath,
+  learningPlanIdFromPath,
+  learningPlanPracticeChatPath,
+  learningPlanPracticeChatRouteFromPath,
+} from './app/navigation';
 import LearningPlanCreatePage from './learning-plans/LearningPlanCreatePage';
+import LearningPlanDetail from './learning-plans/LearningPlanDetail';
 import LearningPlanListCard from './learning-plans/LearningPlanListCard';
 import {
   deleteLearningPlan,
+  getLearningPlanDetail,
   getLearningPlans,
 } from './services/api';
-import type { LearningPlanConfirmResponse, LearningPlanPageResponse } from './types/api';
+import type { LearningPlanConfirmResponse, LearningPlanDetailResponse, LearningPlanPageResponse } from './types/api';
 
 interface LearningPlansProps {
   pathname: string;
@@ -23,6 +31,8 @@ const INITIAL_PLANS_PAGE: LearningPlanPageResponse = {
   latestCreatedAt: null,
 };
 
+const PracticeChatWorkbench = lazy(() => import('./learning-plans/PracticeChatWorkbench'));
+
 function apiData<T>(response: { success: boolean; data?: T; error?: { message: string } }, fallback: string): T {
   if (!response.success || response.data === undefined) {
     throw new Error(response.error?.message ?? fallback);
@@ -32,12 +42,15 @@ function apiData<T>(response: { success: boolean; data?: T; error?: { message: s
 
 export default function LearningPlans({ pathname, onNavigate }: LearningPlansProps) {
   const [plansPage, setPlansPage] = useState<LearningPlanPageResponse>(INITIAL_PLANS_PAGE);
+  const [planDetail, setPlanDetail] = useState<LearningPlanDetailResponse>();
   const [page, setPage] = useState(1);
   const [deletingPlanId, setDeletingPlanId] = useState<number>();
   const [error, setError] = useState('');
+  const practiceChatRoute = learningPlanPracticeChatRouteFromPath(pathname);
+  const selectedPlanId = practiceChatRoute?.planId ?? learningPlanIdFromPath(pathname);
 
   useEffect(() => {
-    if (pathname === APP_ROUTES.learningPlanNew) {
+    if (pathname === APP_ROUTES.learningPlanNew || selectedPlanId !== undefined) {
       return undefined;
     }
 
@@ -49,7 +62,25 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
     });
 
     return () => controller.abort();
-  }, [pathname]);
+  }, [pathname, selectedPlanId]);
+
+  useEffect(() => {
+    if (selectedPlanId === undefined) {
+      setPlanDetail(undefined);
+      return undefined;
+    }
+
+    const controller = new AbortController();
+    setError('');
+    setPlanDetail(undefined);
+    loadPlanDetail(selectedPlanId, controller.signal).catch((nextError) => {
+      if (!controller.signal.aborted) {
+        setError(nextError instanceof Error ? nextError.message : '训练方案详情加载失败');
+      }
+    });
+
+    return () => controller.abort();
+  }, [selectedPlanId]);
 
   async function refreshPlans(nextPage = page, signal?: AbortSignal) {
     const nextPlans = apiData(
@@ -58,6 +89,14 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
     );
     setPlansPage(nextPlans);
     setPage(nextPlans.page);
+  }
+
+  async function loadPlanDetail(planId: number, signal?: AbortSignal) {
+    const detail = apiData(
+      await getLearningPlanDetail(planId, signal),
+      '训练方案详情加载失败',
+    );
+    setPlanDetail(detail);
   }
 
   async function removePlan(planId: number) {
@@ -92,6 +131,46 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
     );
   }
 
+  if (selectedPlanId !== undefined) {
+    return (
+      <section className="learning-shell" aria-label="训练方案详情">
+        {error && <p className="error-text">{error}</p>}
+        {!error && !planDetail ? (
+          <article className="learning-panel" aria-busy="true">
+            <p className="eyebrow">Learning Plan</p>
+            <h2>正在加载方案详情...</h2>
+          </article>
+        ) : null}
+        {planDetail ? (
+          practiceChatRoute ? (
+            <Suspense fallback={(
+              <article className="learning-panel" aria-busy="true">
+                <p className="eyebrow">Practice Chat</p>
+                <h2>正在加载题目聊天页...</h2>
+              </article>
+            )}
+            >
+              <PracticeChatWorkbench
+                onBack={() => onNavigate(learningPlanDetailPath(planDetail.id))}
+                phaseIndex={practiceChatRoute.phaseIndex}
+                plan={planDetail}
+                problemSlug={practiceChatRoute.problemSlug}
+              />
+            </Suspense>
+          ) : (
+            <LearningPlanDetail
+              onBack={() => onNavigate(APP_ROUTES.learningPlans)}
+              onProblemSelect={(phaseIndex, problemSlug) => {
+                onNavigate(learningPlanPracticeChatPath(planDetail.id, phaseIndex, problemSlug));
+              }}
+              plan={planDetail}
+            />
+          )
+        ) : null}
+      </section>
+    );
+  }
+
   return (
     <section className="learning-shell" aria-label="训练方案">
       {error && <p className="error-text">{error}</p>}
@@ -104,6 +183,7 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
           setPage(nextPage);
           void refreshPlans(nextPage);
         }}
+        onSelect={(planId) => onNavigate(learningPlanDetailPath(planId))}
         page={plansPage}
       />
     </section>

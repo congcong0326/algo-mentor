@@ -1,6 +1,31 @@
 import type { LearningPlanDraftPlan } from '../types/api';
 
-export default function PlanPreview({ plan }: { plan: LearningPlanDraftPlan }) {
+function ProblemRowContent({
+  problem,
+}: {
+  problem: LearningPlanDraftPlan['phases'][number]['problems'][number];
+}) {
+  return (
+    <>
+      <span className="problem-id">{problem.frontendId ?? '-'}</span>
+      <span className="problem-title">
+        <strong>{problem.titleCn || problem.title}</strong>
+        <small>{problem.reason}</small>
+      </span>
+      <span className={`difficulty-badge ${String(problem.difficulty ?? '').toLowerCase()}`}>
+        {problem.difficulty ?? '-'}
+      </span>
+    </>
+  );
+}
+
+export default function PlanPreview({
+  onProblemSelect,
+  plan,
+}: {
+  onProblemSelect?: (phaseIndex: number, problemSlug: string) => void;
+  plan: LearningPlanDraftPlan;
+}) {
   return (
     <div className="plan-preview">
       <div className="summary-grid compact-summary">
@@ -29,20 +54,24 @@ export default function PlanPreview({ plan }: { plan: LearningPlanDraftPlan }) {
           </div>
           <div className="problem-list compact-problems">
             {phase.problems.map((problem) => (
-              <a
-                className="problem-row"
-                href={`/problems?keyword=${encodeURIComponent(problem.slug)}`}
-                key={problem.slug}
-              >
-                <span className="problem-id">{problem.frontendId ?? '-'}</span>
-                <span className="problem-title">
-                  <strong>{problem.titleCn || problem.title}</strong>
-                  <small>{problem.reason}</small>
-                </span>
-                <span className={`difficulty-badge ${String(problem.difficulty ?? '').toLowerCase()}`}>
-                  {problem.difficulty ?? '-'}
-                </span>
-              </a>
+              onProblemSelect ? (
+                <button
+                  className="problem-row"
+                  key={problem.slug}
+                  onClick={() => onProblemSelect(phase.phaseIndex, problem.slug)}
+                  type="button"
+                >
+                  <ProblemRowContent problem={problem} />
+                </button>
+              ) : (
+                <a
+                  className="problem-row"
+                  href={`/problems?keyword=${encodeURIComponent(problem.slug)}`}
+                  key={problem.slug}
+                >
+                  <ProblemRowContent problem={problem} />
+                </a>
+              )
             ))}
           </div>
         </section>

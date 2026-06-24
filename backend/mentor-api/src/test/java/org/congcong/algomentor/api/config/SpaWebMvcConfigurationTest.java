@@ -37,6 +37,17 @@ class SpaWebMvcConfigurationTest {
   }
 
   @Test
+  void forwardsNestedLearningPlanRoutesToIndexHtml() throws Exception {
+    mockMvc.perform(get("/learning-plans/900"))
+        .andExpect(status().isOk())
+        .andExpect(forwardedUrl("/" + SpaRoutes.INDEX_HTML));
+
+    mockMvc.perform(get("/learning-plans/900/phases/1/problems/two-sum/chat"))
+        .andExpect(status().isOk())
+        .andExpect(forwardedUrl("/" + SpaRoutes.INDEX_HTML));
+  }
+
+  @Test
   void doesNotCaptureApiRoutes() throws Exception {
     mockMvc.perform(get("/api/not-a-page"))
         .andExpect(status().isNotFound())

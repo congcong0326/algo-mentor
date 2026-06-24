@@ -12,5 +12,8 @@ public class SpaWebMvcConfiguration implements WebMvcConfigurer {
     for (String route : SpaRoutes.FRONTEND_ROUTES) {
       registry.addViewController(route).setViewName(SpaRoutes.INDEX_FORWARD);
     }
+    for (String routePattern : SpaRoutes.FRONTEND_ROUTE_PATTERNS) {
+      registry.addViewController(routePattern).setViewName(SpaRoutes.INDEX_FORWARD);
+    }
   }
 }

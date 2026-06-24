@@ -705,6 +705,58 @@ describe('App', () => {
     expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/confirm');
   });
 
+  it('opens a learning plan detail page from the list and returns to the plan library', async () => {
+    const fetchMock = mockLearningPlanFetch();
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' }));
+
+    expect(window.location.pathname).toBe('/learning-plans/900');
+    expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
+    expect(screen.getByText('基础题型恢复')).toBeInTheDocument();
+    expect(screen.getByText('两数之和')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plans/900',
+      expect.objectContaining({ headers: { Accept: 'application/json' } }),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '返回方案库' }));
+
+    expect(window.location.pathname).toBe('/learning-plans');
+    expect(await screen.findByRole('heading', { name: '方案库' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
+  });
+
+  it('opens the practice chat workbench when selecting a problem from a plan detail page', async () => {
+    const fetchMock = mockLearningPlanFetch();
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' }));
+    expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /两数之和/ }));
+
+    expect(window.location.pathname).toBe('/learning-plans/900/phases/1/problems/two-sum/chat');
+    expect(await screen.findByRole('heading', { level: 2, name: '1. 两数之和' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '返回方案' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Two Sum' })).toBeInTheDocument();
+    expect(screen.getByText('返回两个数的下标。').closest('li')).toBeInTheDocument();
+    expect(await screen.findByText(/给定一个整数数组/)).toBeInTheDocument();
+    expect(screen.getByText(/因为 nums/).closest('pre')).toBeInTheDocument();
+    expect(screen.getByText('0').closest('strong')).toBeInTheDocument();
+    expect(document.querySelector('script')).not.toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/problems/two-sum',
+      expect.objectContaining({ headers: { Accept: 'application/json' } }),
+    );
+  });
+
   it('sends the edited goal regeneration prefix when regenerating a generated draft', async () => {
     const fetchMock = mockLearningPlanFetch();
     vi.stubGlobal('fetch', fetchMock);
@@ -861,18 +913,7 @@ function mockProblemFetch(total = 1) {
     if (url.startsWith('/api/problems/two-sum')) {
       return Promise.resolve(jsonResponse({
         success: true,
-        data: {
-          slug: 'two-sum',
-          frontendId: 1,
-          title: 'Two Sum',
-          titleCn: '两数之和',
-          difficulty: 'EASY',
-          tags: ['Array', 'Hash Table'],
-          contentMarkdown: '# Two Sum',
-          leetcodeUrl: 'https://leetcode.com/problems/two-sum/',
-          sampleTestCase: '[2,7,11,15]\n9',
-          python3Template: 'class Solution:\n    pass',
-        },
+        data: problemDetail(),
         timestamp: '2026-06-17T00:00:00Z',
       }));
     }
@@ -980,15 +1021,7 @@ function mockLearningPlanAndProblemFetch() {
     if (url.startsWith('/api/problems/two-sum')) {
       return Promise.resolve(jsonResponse({
         success: true,
-        data: {
-          slug: 'two-sum',
-          frontendId: 1,
-          title: 'Two Sum',
-          titleCn: '两数之和',
-          difficulty: 'EASY',
-          tags: ['Array', 'Hash Table'],
-          contentMarkdown: '# Two Sum',
-        },
+        data: problemDetail(),
         timestamp: '2026-06-17T00:00:00Z',
       }));
     }
@@ -1034,6 +1067,16 @@ function mockLearningPlanFetch() {
       return Promise.resolve(jsonResponse({
         success: true,
         data: learningPlanDetail(),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/problems/two-sum') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: problemDetail({
+          contentMarkdown: '# Two Sum\n\n给定一个整数数组 nums 和一个整数目标值 target。\n\n- 返回两个数的下标。\n\n```text\n输入：nums = [2,7,11,15], target = 9\n输出：[0,1]\n```\n\n<pre>给定 nums = [2, 7, 11, 15], target = 9\n\n因为 nums[<strong>0</strong>] + nums[<strong>1</strong>] = 2 + 7 = 9\n所以返回 [<strong>0, 1</strong>]\n</pre>\n\n<script>alert(\"xss\")</script>',
+        }),
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
@@ -1432,6 +1475,28 @@ function learningPlanDetail(overrides: Partial<ReturnType<typeof baseLearningPla
   return {
     ...baseLearningPlanDetail(),
     ...overrides,
+  };
+}
+
+function problemDetail(overrides: Partial<ReturnType<typeof baseProblemDetail>> = {}) {
+  return {
+    ...baseProblemDetail(),
+    ...overrides,
+  };
+}
+
+function baseProblemDetail() {
+  return {
+    slug: 'two-sum',
+    frontendId: 1,
+    title: 'Two Sum',
+    titleCn: '两数之和',
+    difficulty: 'EASY',
+    tags: ['Array', 'Hash Table'],
+    contentMarkdown: '# Two Sum',
+    leetcodeUrl: 'https://leetcode.com/problems/two-sum/',
+    sampleTestCase: '[2,7,11,15]\n9',
+    python3Template: 'class Solution:\n    pass',
   };
 }
 

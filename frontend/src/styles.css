@@ -1791,6 +1791,171 @@ a {
   text-decoration: none;
 }
 
+.practice-workbench {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: calc(100vh - 148px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  background: var(--surface-card);
+  overflow: hidden;
+}
+
+.practice-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: #ffffff;
+}
+
+.practice-toolbar-main,
+.practice-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.practice-toolbar h2 {
+  margin: 2px 0 0;
+  font-size: 18px;
+}
+
+.practice-message-list {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-height: 0;
+  padding: 20px;
+  overflow: auto;
+  background: var(--surface-muted);
+}
+
+.practice-message {
+  display: grid;
+  gap: 8px;
+  max-width: 840px;
+  padding: 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  background: var(--surface-card);
+}
+
+.practice-message > span {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.practice-message .markdown-view {
+  margin: 0;
+}
+
+.practice-message .markdown-view h1,
+.practice-message .markdown-view h2,
+.practice-message .markdown-view h3,
+.practice-message .markdown-view p,
+.practice-message .markdown-view ul,
+.practice-message .markdown-view ol,
+.practice-message .markdown-view pre,
+.practice-message .markdown-view table {
+  margin-top: 0;
+}
+
+.practice-message .markdown-view h1,
+.practice-message .markdown-view h2,
+.practice-message .markdown-view h3 {
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.practice-message .markdown-view h1 {
+  font-size: 22px;
+}
+
+.practice-message .markdown-view h2 {
+  font-size: 18px;
+}
+
+.practice-message .markdown-view h3 {
+  font-size: 16px;
+}
+
+.practice-message .markdown-view p,
+.practice-message .markdown-view li {
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.practice-message .markdown-view ul,
+.practice-message .markdown-view ol {
+  padding-left: 22px;
+}
+
+.practice-message .markdown-view code {
+  padding: 2px 5px;
+  border-radius: 6px;
+  background: var(--surface-muted);
+  font-size: 0.92em;
+}
+
+.practice-message .markdown-view pre {
+  max-width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-strong);
+  border-left: 4px solid var(--accent-warm);
+  border-radius: 10px;
+  background: var(--surface-soft);
+  color: var(--text-primary);
+  overflow: auto;
+}
+
+.practice-message .markdown-view pre code {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.practice-message .markdown-view table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-wrap: anywhere;
+}
+
+.practice-message .markdown-view th,
+.practice-message .markdown-view td {
+  padding: 8px;
+  border: 1px solid var(--border-subtle);
+  text-align: left;
+  vertical-align: top;
+}
+
+.practice-message .markdown-view img {
+  max-width: 100%;
+  height: auto;
+}
+
+.practice-composer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--border-subtle);
+  background: #ffffff;
+}
+
+.practice-composer input {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-control);
+  background: var(--surface-muted);
+}
+
 .wizard-panel {
   gap: 18px;
 }
@@ -2456,9 +2621,23 @@ a {
 
   .detail-heading,
   .wizard-heading,
-  .phase-heading {
+  .phase-heading,
+  .practice-toolbar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .practice-toolbar-main {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .practice-toolbar-actions {
+    flex-wrap: wrap;
+  }
+
+  .practice-composer {
+    grid-template-columns: 1fr;
   }
 
   .mini-grid {
