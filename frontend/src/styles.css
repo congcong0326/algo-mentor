@@ -1941,6 +1941,8 @@ a {
 
 .practice-message .markdown-view {
   margin: 0;
+  line-height: 1.55;
+  white-space: normal;
 }
 
 .practice-message .markdown-view h1,
@@ -1952,6 +1954,7 @@ a {
 .practice-message .markdown-view pre,
 .practice-message .markdown-view table {
   margin-top: 0;
+  margin-bottom: 10px;
 }
 
 .practice-message .markdown-view h1,
@@ -1959,6 +1962,7 @@ a {
 .practice-message .markdown-view h3 {
   color: var(--text-primary);
   line-height: 1.3;
+  margin-bottom: 8px;
 }
 
 .practice-message .markdown-view h1 {
@@ -1976,12 +1980,27 @@ a {
 .practice-message .markdown-view p,
 .practice-message .markdown-view li {
   color: var(--text-secondary);
-  line-height: 1.7;
+  line-height: 1.55;
 }
 
 .practice-message .markdown-view ul,
 .practice-message .markdown-view ol {
-  padding-left: 22px;
+  padding-left: 20px;
+}
+
+.practice-message .markdown-view li {
+  margin: 4px 0;
+  padding-left: 2px;
+}
+
+.practice-message .markdown-view li > p {
+  display: inline;
+  margin: 0;
+}
+
+.practice-message .markdown-view li > p + p {
+  display: block;
+  margin-top: 6px;
 }
 
 .practice-message .markdown-view code {
@@ -2025,6 +2044,10 @@ a {
 .practice-message .markdown-view img {
   max-width: 100%;
   height: auto;
+}
+
+.practice-message .markdown-view > :last-child {
+  margin-bottom: 0;
 }
 
 .practice-composer {

@@ -39,4 +39,13 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toContain('background: var(--action-primary)');
     expect(styles).toContain('border-radius: var(--radius-pill)');
   });
+
+  it('keeps rendered Markdown lists compact and aligned', () => {
+    expect(styles).toContain('.practice-message .markdown-view {\n  margin: 0;\n  line-height: 1.55;\n  white-space: normal;');
+    expect(styles).toContain('margin-bottom: 10px;');
+    expect(styles).toContain('.practice-message .markdown-view p,\n.practice-message .markdown-view li {\n  color: var(--text-secondary);\n  line-height: 1.55;');
+    expect(styles).toContain('.practice-message .markdown-view li {\n  margin: 4px 0;\n  padding-left: 2px;');
+    expect(styles).toContain('.practice-message .markdown-view li > p {\n  display: inline;');
+    expect(styles).toContain('.practice-message .markdown-view > :last-child {\n  margin-bottom: 0;');
+  });
 });
