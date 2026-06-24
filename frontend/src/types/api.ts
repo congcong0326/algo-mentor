@@ -68,6 +68,49 @@ export interface ProblemPage<T> {
   pageSize: number;
 }
 
+export type PracticeProgressStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'SKIPPED';
+export type PracticeMessageRole = 'USER' | 'ASSISTANT';
+export type PracticeMessageType = 'PROBLEM_STATEMENT' | 'CHAT';
+
+export interface PracticeSessionSummary {
+  id: number;
+  planId: number;
+  phaseIndex: number;
+  problemSlug: string;
+  progressStatus: PracticeProgressStatus;
+  agentTaskId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PracticeProblemSummary {
+  slug: string;
+  frontendId?: number;
+  title: string;
+  titleCn?: string | null;
+  difficulty?: ProblemDifficulty | string;
+  tags: string[];
+  leetcodeUrl?: string;
+}
+
+export interface PracticeMessage {
+  id: number;
+  role: PracticeMessageRole;
+  messageType: PracticeMessageType;
+  contentMarkdown: string;
+  createdAt: string;
+}
+
+export interface PracticeSessionResponse {
+  session: PracticeSessionSummary;
+  problem: PracticeProblemSummary;
+  messages: PracticeMessage[];
+}
+
+export interface PracticeMessageRequest {
+  message: string;
+}
+
 export type LearningPlanIntent =
   | 'PRACTICE_GOAL'
   | 'ABILITY_DIAGNOSIS'

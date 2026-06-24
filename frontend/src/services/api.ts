@@ -10,6 +10,9 @@ import type {
   LearningPlanListQuery,
   LearningPlanMessageRequest,
   LearningPlanPageResponse,
+  PracticeMessageRequest,
+  PracticeProgressStatus,
+  PracticeSessionResponse,
   ProblemDetail,
   ProblemListItem,
   ProblemListQuery,
@@ -112,6 +115,103 @@ export async function getProblemDetail(
   }
 
   return response.json();
+}
+
+export async function createOrReusePracticeSession(
+  planId: number,
+  phaseIndex: number,
+  problemSlug: string,
+  locale?: ProblemListQuery['locale'],
+  signal?: AbortSignal,
+): Promise<ApiResponse<PracticeSessionResponse>> {
+  const response = await apiFetch(
+    `/api/learning-plans/${planId}/phases/${phaseIndex}/problems/${encodeURIComponent(problemSlug)}/practice-session${toQueryString({ locale })}`,
+    {
+      method: 'POST',
+      headers: {
+        ...jsonHeaders,
+        'Content-Type': 'application/json',
+      },
+      signal,
+    },
+  );
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Practice session request failed');
+  }
+
+  return response.json();
+}
+
+export async function getPracticeSession(
+  sessionId: number,
+  signal?: AbortSignal,
+): Promise<ApiResponse<PracticeSessionResponse>> {
+  const response = await fetch(`/api/practice-sessions/${sessionId}`, {
+    headers: jsonHeaders,
+    credentials: 'same-origin',
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Practice session detail request failed');
+  }
+
+  return response.json();
+}
+
+export async function updatePracticeProgressStatus(
+  sessionId: number,
+  status: Extract<PracticeProgressStatus, 'COMPLETED'>,
+): Promise<ApiResponse<PracticeSessionResponse>> {
+  const response = await apiFetch(`/api/practice-sessions/${sessionId}/progress-status`, {
+    method: 'PATCH',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ status }),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Practice progress status request failed');
+  }
+
+  return response.json();
+}
+
+export interface StreamPracticeMessageOptions {
+  idempotencyKey: string;
+  signal?: AbortSignal;
+  onOpen?: () => void;
+  onEvent: (event: SseStreamEvent) => void;
+}
+
+export async function streamPracticeMessage(
+  sessionId: number,
+  request: PracticeMessageRequest,
+  options: StreamPracticeMessageOptions,
+): Promise<void> {
+  const response = await apiFetch(`/api/practice-sessions/${sessionId}/messages/stream`, {
+    method: 'POST',
+    headers: {
+      Accept: 'text/event-stream, application/json',
+      'Content-Type': 'application/json',
+      'Idempotency-Key': options.idempotencyKey,
+    },
+    body: JSON.stringify(request),
+    signal: options.signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Practice message stream failed');
+  }
+  if (!response.body) {
+    throw new Error('Practice message stream response does not include a readable body');
+  }
+
+  options.onOpen?.();
+  await readEventStream(response.body, options.onEvent);
 }
 
 export async function getLearningPlans(
@@ -244,7 +344,13 @@ export async function confirmLearningPlanDraft(
   return response.json();
 }
 
-function toQueryString(query: ProblemListQuery | LearningPlanListQuery): string {
+interface PracticeSessionQuery {
+  locale?: ProblemListQuery['locale'];
+}
+
+type QueryParams = ProblemListQuery | LearningPlanListQuery | PracticeSessionQuery;
+
+function toQueryString(query: QueryParams): string {
   const params = new URLSearchParams();
   Object.entries(query).forEach(([key, value]) => {
     if (value === undefined || value === '') {
