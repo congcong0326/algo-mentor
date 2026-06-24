@@ -1,5 +1,6 @@
 package org.congcong.algomentor.api.controller.practice;
 
+import jakarta.validation.Valid;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeChatReference
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
+@ConditionalOnBean({PracticeSessionService.class, PracticeMessageStreamService.class})
 public class PracticeSessionController {
 
   private static final String DEFAULT_LOCALE = "zh-CN";
@@ -106,7 +109,7 @@ public class PracticeSessionController {
   public SseEmitter stream(
       @PathVariable long sessionId,
       @RequestHeader(name = ApiContractConstants.IDEMPOTENCY_KEY_HEADER, required = false) String idempotencyKey,
-      @RequestBody PracticeMessageRequest request
+      @Valid @RequestBody PracticeMessageRequest request
   ) {
     long userId = requireCurrentUserId();
     String effectiveKey = idempotencyKey == null || idempotencyKey.isBlank()
@@ -128,7 +131,7 @@ public class PracticeSessionController {
     Flow.Publisher<AgentStreamEvent> publisher = streamService.stream(
         userId,
         sessionId,
-        request == null ? null : request.message(),
+        request.message(),
         effectiveKey,
         DEFAULT_LOCALE,
         admission.metadata());
@@ -155,9 +158,6 @@ public class PracticeSessionController {
   }
 
   private int requestSize(PracticeMessageRequest request) {
-    if (request == null || request.message() == null) {
-      return 0;
-    }
     return request.message().getBytes(StandardCharsets.UTF_8).length;
   }
 

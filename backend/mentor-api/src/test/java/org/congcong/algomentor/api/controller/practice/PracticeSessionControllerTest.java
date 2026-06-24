@@ -3,7 +3,10 @@ package org.congcong.algomentor.api.controller.practice;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -50,11 +53,13 @@ import org.congcong.algomentor.mentor.application.practice.PracticeSessionResult
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionStatus;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -63,26 +68,36 @@ import org.springframework.test.web.servlet.MvcResult;
 
 @WebMvcTest(controllers = PracticeSessionController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import({PracticeSessionExceptionHandler.class, AiGovernanceExceptionHandler.class, LlmStreamSseMapper.class})
+@Import({
+    PracticeSessionControllerTest.TestConfig.class,
+    PracticeSessionExceptionHandler.class,
+    AiGovernanceExceptionHandler.class,
+    LlmStreamSseMapper.class
+})
 class PracticeSessionControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
 
-  @MockBean
+  @Autowired
   private PracticeSessionService practiceSessionService;
 
-  @MockBean
+  @Autowired
   private PracticeMessageStreamService streamService;
 
-  @MockBean
+  @Autowired
   private CurrentUserIdProvider currentUserIdProvider;
 
-  @MockBean
+  @Autowired
   private AiActorResolver actorResolver;
 
-  @MockBean
+  @Autowired
   private AiRunAdmissionService admissionService;
+
+  @BeforeEach
+  void resetMocks() {
+    reset(practiceSessionService, streamService, currentUserIdProvider, actorResolver, admissionService);
+  }
 
   @Test
   void createPracticeSessionUsesCurrentUserAndLocale() throws Exception {
@@ -166,6 +181,41 @@ class PracticeSessionControllerTest {
     org.assertj.core.api.Assertions.assertThat(metadataCaptor.getValue())
         .containsEntry(AiGovernanceMetadataKeys.SOURCE, "PRACTICE_CHAT")
         .containsEntry(PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, 50L);
+  }
+
+  @Test
+  void streamBlankMessageReturns400BeforeGovernance() throws Exception {
+    mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .content("{\"message\":\"   \"}"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.code").value("PRACTICE_MESSAGE_INVALID"));
+
+    verifyNoInteractions(admissionService, streamService);
+  }
+
+  @Test
+  void streamNullMessageReturns400BeforeGovernance() throws Exception {
+    mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .content("{\"message\":null}"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.code").value("PRACTICE_MESSAGE_INVALID"));
+
+    verifyNoInteractions(admissionService, streamService);
+  }
+
+  @Test
+  void streamMissingBodyReturns400BeforeGovernance() throws Exception {
+    mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_EVENT_STREAM))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.code").value("PRACTICE_MESSAGE_INVALID"));
+
+    verifyNoInteractions(admissionService, streamService);
   }
 
   @Test
@@ -280,5 +330,52 @@ class PracticeSessionControllerTest {
       publisher.submit(new AgentStreamEvent.AgentRunStart("run-50", "practice", 8));
       publisher.close();
     };
+  }
+
+  @TestConfiguration(proxyBeanMethods = false)
+  static class TestConfig {
+
+    @Bean
+    PracticeSessionService practiceSessionService() {
+      return mock(PracticeSessionService.class);
+    }
+
+    @Bean
+    PracticeMessageStreamService practiceMessageStreamService() {
+      return mock(PracticeMessageStreamService.class);
+    }
+
+    @Bean
+    CurrentUserIdProvider currentUserIdProvider() {
+      return mock(CurrentUserIdProvider.class);
+    }
+
+    @Bean
+    AiActorResolver aiActorResolver() {
+      return mock(AiActorResolver.class);
+    }
+
+    @Bean
+    AiRunAdmissionService aiRunAdmissionService() {
+      return mock(AiRunAdmissionService.class);
+    }
+
+    @Bean
+    PracticeSessionController practiceSessionController(
+        PracticeSessionService practiceSessionService,
+        PracticeMessageStreamService streamService,
+        CurrentUserIdProvider currentUserIdProvider,
+        AiActorResolver actorResolver,
+        AiRunAdmissionService admissionService,
+        LlmStreamSseMapper sseMapper
+    ) {
+      return new PracticeSessionController(
+          practiceSessionService,
+          streamService,
+          currentUserIdProvider,
+          actorResolver,
+          admissionService,
+          sseMapper);
+    }
   }
 }
