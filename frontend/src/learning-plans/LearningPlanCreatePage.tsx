@@ -42,13 +42,13 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
     setFlowState('generating');
     setError('');
     setDraft(undefined);
-    setWorkEvent({ message: '开始生成学习计划' });
+    setWorkEvent({ message: '开始生成训练方案' });
     try {
       await streamLearningPlanDraft(request, {
         onEvent: handleDraftStreamEvent,
       });
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : '学习计划方案生成失败');
+      setError(nextError instanceof Error ? nextError.message : '训练方案生成失败');
       setFlowState('editing');
     }
   }
@@ -58,7 +58,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
       const nextWorkEvent = event.data as AgentWorkStatusEvent;
       setWorkEvent(nextWorkEvent);
       if (event.eventName === 'work_error') {
-        setError(nextWorkEvent.message || '学习计划方案生成失败');
+        setError(nextWorkEvent.message || '训练方案生成失败');
       }
       return;
     }
@@ -70,7 +70,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
     }
     if (event.eventName === 'draft_error') {
       const draftError = event.data as LearningPlanDraftErrorEvent;
-      setError(draftError.message || '学习计划方案生成失败');
+      setError(draftError.message || '训练方案生成失败');
       setFlowState('editing');
     }
   }
@@ -84,20 +84,20 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
     try {
       const nextDraft = apiData(
         await sendLearningPlanDraftMessage(draft.draftId, { message: message.trim() }),
-        '学习计划追问提交失败',
+        '训练方案追问提交失败',
       );
       setDraft(nextDraft);
       setFlowState(nextDraft.status === 'COLLECTING' ? 'collecting' : 'previewing');
       return true;
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : '学习计划追问提交失败');
+      setError(nextError instanceof Error ? nextError.message : '训练方案追问提交失败');
       setFlowState('collecting');
       return false;
     }
   }
 
   async function regenerateFromGoal(goal: string) {
-    return sendFollowUp(`请按新的目标摘要重新生成学习计划：${goal}`);
+    return sendFollowUp(`请按新的目标摘要重新生成训练方案：${goal}`);
   }
 
   async function confirmDraft() {
@@ -107,11 +107,11 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
     setFlowState('confirming');
     setError('');
     try {
-      const confirmed = apiData(await confirmLearningPlanDraft(draft.draftId), '学习计划保存失败');
+      const confirmed = apiData(await confirmLearningPlanDraft(draft.draftId), '训练方案保存失败');
       setDraft(undefined);
       onSaved(confirmed);
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : '学习计划保存失败');
+      setError(nextError instanceof Error ? nextError.message : '训练方案保存失败');
       setFlowState('previewing');
     }
   }
@@ -125,7 +125,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
   }
 
   return (
-    <section className="learning-shell learning-create-shell" aria-label="新建学习计划">
+    <section className="learning-shell learning-create-shell" aria-label="新建训练方案">
       <div className="learning-create-heading">
         <button
           className="secondary-button compact"
@@ -134,7 +134,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
           type="button"
         >
           <ArrowLeft aria-hidden="true" />
-          <span>返回计划页</span>
+          <span>返回方案页</span>
         </button>
       </div>
 
@@ -161,7 +161,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
             loading={flowState === 'generating'}
             onCancel={onBackToPlans}
             onSubmit={submitDraft}
-            submitLabel="生成计划方案"
+            submitLabel="生成训练方案"
           />
         </article>
       )}

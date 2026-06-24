@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import type {
-  DifficultyDistributionLevel,
   LearningPlanCreateDraftRequest,
   LearningPlanDifficultyPreference,
   LearningPlanIntent,
@@ -9,7 +8,7 @@ import type {
 import DifficultyDistributionControl from './DifficultyDistributionControl';
 import {
   buildLearningPlanGoal,
-  difficultyDistributionOptions,
+  getDifficultyDistribution,
   levelOptions,
   planScenarioOptions,
   programmingLanguageOptions,
@@ -31,12 +30,12 @@ const DEFAULT_DURATION_WEEKS = 4;
 const DEFAULT_WEEKLY_HOURS = 6;
 const DEFAULT_LEVEL: LearningPlanLevel = 'INTERMEDIATE';
 const DEFAULT_PROGRAMMING_LANGUAGE = 'Java';
-const DEFAULT_DIFFICULTY_LEVEL: DifficultyDistributionLevel = 'BALANCED';
+const DEFAULT_DIFFICULTY_VALUE = 50;
 
 export default function LearningPlanCreateForm({
   loading,
   error,
-  submitLabel = '生成计划草案',
+  submitLabel = '生成方案草案',
   confirmOnCancel = true,
   onDirtyChange,
   onCancel,
@@ -47,7 +46,7 @@ export default function LearningPlanCreateForm({
   const [weeklyHours, setWeeklyHours] = useState(DEFAULT_WEEKLY_HOURS);
   const [level, setLevel] = useState<LearningPlanLevel>(DEFAULT_LEVEL);
   const [programmingLanguage, setProgrammingLanguage] = useState(DEFAULT_PROGRAMMING_LANGUAGE);
-  const [difficultyLevel, setDifficultyLevel] = useState<DifficultyDistributionLevel>(DEFAULT_DIFFICULTY_LEVEL);
+  const [difficultyValue, setDifficultyValue] = useState(DEFAULT_DIFFICULTY_VALUE);
   const [topicPreferences, setTopicPreferences] = useState<string[]>([]);
   const [additionalThoughts, setAdditionalThoughts] = useState('');
   const [validationError, setValidationError] = useState('');
@@ -56,8 +55,7 @@ export default function LearningPlanCreateForm({
     && Number.isInteger(weeklyHours) && weeklyHours > 0;
   const selectedScenario = planScenarioOptions.find((option) => option.value === intent) ?? planScenarioOptions[0];
   const selectedLevel = levelOptions.find((option) => option.value === level) ?? levelOptions[1];
-  const selectedDifficulty = difficultyDistributionOptions.find((option) => option.value === difficultyLevel)
-    ?? difficultyDistributionOptions[1];
+  const selectedDifficulty = getDifficultyDistribution(difficultyValue);
   const difficultyPreference: LearningPlanDifficultyPreference = selectedDifficulty.preference;
 
   const hasUnsavedInput = useMemo(
@@ -66,12 +64,12 @@ export default function LearningPlanCreateForm({
       || weeklyHours !== DEFAULT_WEEKLY_HOURS
       || level !== DEFAULT_LEVEL
       || programmingLanguage !== DEFAULT_PROGRAMMING_LANGUAGE
-      || difficultyLevel !== DEFAULT_DIFFICULTY_LEVEL
+      || difficultyValue !== DEFAULT_DIFFICULTY_VALUE
       || topicPreferences.length > 0
       || additionalThoughts.trim().length > 0,
     [
       additionalThoughts,
-      difficultyLevel,
+      difficultyValue,
       durationWeeks,
       intent,
       level,
@@ -89,7 +87,7 @@ export default function LearningPlanCreateForm({
     if (loading || !onCancel) {
       return;
     }
-    if (confirmOnCancel && hasUnsavedInput && !window.confirm('放弃当前填写的计划问卷？')) {
+    if (confirmOnCancel && hasUnsavedInput && !window.confirm('放弃当前填写的方案问卷？')) {
       return;
     }
     onCancel();
@@ -143,7 +141,7 @@ export default function LearningPlanCreateForm({
 
       <div className="modal-form">
         <section className="question-block">
-          <strong>计划场景</strong>
+          <strong>训练场景</strong>
           <div className="segmented-grid">
             {planScenarioOptions.map((option) => (
               <button
@@ -164,7 +162,7 @@ export default function LearningPlanCreateForm({
           <label className="topic-field">
             <span>周期</span>
             <input
-              aria-label="计划周期"
+              aria-label="训练周期"
               disabled={loading}
               min={1}
               onChange={(event) => setDurationWeeks(Number(event.target.value))}
@@ -210,7 +208,7 @@ export default function LearningPlanCreateForm({
           </label>
         </div>
 
-        <DifficultyDistributionControl disabled={loading} onChange={setDifficultyLevel} value={difficultyLevel} />
+        <DifficultyDistributionControl disabled={loading} onChange={setDifficultyValue} value={difficultyValue} />
 
         <section className="question-block">
           <strong>主题偏好</strong>

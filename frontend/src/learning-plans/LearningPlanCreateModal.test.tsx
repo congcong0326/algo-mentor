@@ -13,10 +13,10 @@ describe('LearningPlanCreateModal', () => {
 
     render(<LearningPlanCreateModal loading={false} open onClose={vi.fn()} onSubmit={onSubmit} />);
 
-    expect(screen.getByRole('dialog', { name: '新建学习计划' })).toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: '新建训练方案' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '面试冲刺' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryByRole('textbox', { name: '学习目标' })).not.toBeInTheDocument();
-    fireEvent.change(screen.getByRole('spinbutton', { name: '计划周期' }), { target: { value: '6' } });
+    fireEvent.change(screen.getByRole('spinbutton', { name: '训练周期' }), { target: { value: '6' } });
     fireEvent.change(screen.getByRole('spinbutton', { name: '每周投入' }), { target: { value: '8' } });
     fireEvent.change(screen.getByRole('combobox', { name: '编程语言' }), { target: { value: 'Python3' } });
     fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
@@ -24,7 +24,7 @@ describe('LearningPlanCreateModal', () => {
     fireEvent.change(screen.getByRole('textbox', { name: '补充想法' }), {
       target: { value: '希望每周留一天复盘。' },
     });
-    fireEvent.click(screen.getByRole('button', { name: '生成计划草案' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成方案草案' }));
 
     expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({
       intent: 'INTERVIEW_SPRINT',
@@ -44,7 +44,7 @@ describe('LearningPlanCreateModal', () => {
     render(<LearningPlanCreateModal loading={false} open onClose={vi.fn()} onSubmit={onSubmit} />);
 
     fireEvent.click(screen.getByRole('button', { name: '专项突破' }));
-    fireEvent.click(screen.getByRole('button', { name: '生成计划草案' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成方案草案' }));
 
     expect(screen.getByText('专项突破需要至少选择一个主题。')).toBeInTheDocument();
     expect(screen.getByRole('alert')).toHaveTextContent('专项突破需要至少选择一个主题。');
@@ -98,17 +98,17 @@ describe('LearningPlanCreateModal', () => {
     render(<LearningPlanCreateModal loading={false} open onClose={vi.fn()} onSubmit={vi.fn()} />);
 
     const closeButton = screen.getByRole('button', { name: '关闭' });
-    const submitButton = screen.getByRole('button', { name: '生成计划草案' });
+    const submitButton = screen.getByRole('button', { name: '生成方案草案' });
     closeButton.focus();
 
-    fireEvent.keyDown(screen.getByRole('dialog', { name: '新建学习计划' }), {
+    fireEvent.keyDown(screen.getByRole('dialog', { name: '新建训练方案' }), {
       key: 'Tab',
       shiftKey: true,
     });
 
     expect(submitButton).toHaveFocus();
 
-    fireEvent.keyDown(screen.getByRole('dialog', { name: '新建学习计划' }), { key: 'Tab' });
+    fireEvent.keyDown(screen.getByRole('dialog', { name: '新建训练方案' }), { key: 'Tab' });
 
     expect(closeButton).toHaveFocus();
   });
@@ -118,7 +118,7 @@ describe('LearningPlanCreateModal', () => {
 
     render(<LearningPlanCreateModal loading={false} open onClose={onClose} onSubmit={vi.fn()} />);
 
-    fireEvent.keyDown(screen.getByRole('dialog', { name: '新建学习计划' }), { key: 'Escape' });
+    fireEvent.keyDown(screen.getByRole('dialog', { name: '新建训练方案' }), { key: 'Escape' });
 
     expect(onClose).toHaveBeenCalled();
   });
@@ -128,7 +128,7 @@ describe('LearningPlanCreateModal', () => {
 
     render(<LearningPlanCreateModal loading open onClose={onClose} onSubmit={vi.fn()} />);
 
-    fireEvent.keyDown(screen.getByRole('dialog', { name: '新建学习计划' }), { key: 'Escape' });
+    fireEvent.keyDown(screen.getByRole('dialog', { name: '新建训练方案' }), { key: 'Escape' });
 
     expect(onClose).not.toHaveBeenCalled();
   });
@@ -140,7 +140,7 @@ describe('LearningPlanCreateModal', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '专项突破' }));
     fireEvent.change(screen.getByRole('combobox', { name: '编程语言' }), { target: { value: 'Python3' } });
-    fireEvent.click(screen.getByRole('button', { name: '生成计划草案' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成方案草案' }));
 
     expect(screen.getByText('专项突破需要至少选择一个主题。')).toBeInTheDocument();
 
@@ -160,7 +160,7 @@ describe('LearningPlanCreateModal', () => {
     fireEvent.change(screen.getByRole('combobox', { name: '编程语言' }), { target: { value: 'Python3' } });
     fireEvent.click(screen.getByRole('button', { name: '关闭' }));
 
-    expect(confirm).toHaveBeenCalledWith('放弃当前填写的计划问卷？');
+    expect(confirm).toHaveBeenCalledWith('放弃当前填写的方案问卷？');
     expect(onClose).not.toHaveBeenCalled();
   });
 });

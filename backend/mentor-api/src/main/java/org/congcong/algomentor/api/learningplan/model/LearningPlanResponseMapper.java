@@ -33,6 +33,7 @@ public final class LearningPlanResponseMapper {
         snapshot.goal(),
         snapshot.durationWeeks(),
         snapshot.level(),
+        snapshot.programmingLanguage(),
         snapshot.weeklyHours(),
         plan.status(),
         plan.createdAt());

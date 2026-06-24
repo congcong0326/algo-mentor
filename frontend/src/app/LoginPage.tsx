@@ -10,7 +10,7 @@ export default function LoginPage({ authFailed = false }: LoginPageProps) {
       <section className="login-panel">
         <p className="home-kicker">ALGO MENTOR</p>
         <h1 id="login-title">Algo Mentor</h1>
-        <p className="login-subtitle">算法学习、刷题训练和 AI 学习计划生成工具</p>
+        <p className="login-subtitle">算法学习、刷题训练和 AI 训练方案生成工具</p>
         {authFailed && <p className="error-text">登录失败，请重新尝试。</p>}
         <a className="primary-button login-oauth-link" href="/oauth2/authorization/google">
           <LogIn aria-hidden="true" />

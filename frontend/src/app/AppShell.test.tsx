@@ -29,7 +29,7 @@ describe('AppShell', () => {
 
     expect(screen.getByRole('banner')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '计划' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByText('User Name')).toBeInTheDocument();
     expect(screen.getByText('Current page')).toBeInTheDocument();

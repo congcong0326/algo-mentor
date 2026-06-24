@@ -2,16 +2,26 @@ import { describe, expect, it } from 'vitest';
 import {
   buildLearningPlanGoal,
   difficultyDistributionOptions,
+  getDifficultyDistribution,
   topicOptions,
 } from './options';
 
 describe('learning plan options', () => {
   it('maps difficulty distribution to visible percentages and backend preference', () => {
-    expect(difficultyDistributionOptions.find((option) => option.value === 'BALANCED')).toMatchObject({
+    expect(difficultyDistributionOptions.find((option) => option.value === 50)).toMatchObject({
       preference: 'MIXED',
       easyPercent: 25,
       mediumPercent: 55,
       hardPercent: 20,
+    });
+  });
+
+  it('interpolates difficulty distribution with one-percent steps', () => {
+    expect(getDifficultyDistribution(54)).toMatchObject({
+      preference: 'MIXED',
+      easyPercent: 24,
+      mediumPercent: 55,
+      hardPercent: 21,
     });
   });
 

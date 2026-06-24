@@ -50,8 +50,8 @@ describe('App', () => {
     render(<App />);
 
     expect(screen.getByRole('navigation', { name: '主导航' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '计划' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.queryByText('学习计划')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.queryByText('训练方案')).not.toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent('正在检查登录状态...');
     expect(screen.queryByRole('link', { name: '使用 Google 登录' })).not.toBeInTheDocument();
   });
@@ -124,9 +124,9 @@ describe('App', () => {
 
     expect(await screen.findByRole('heading', { name: '把算法练习变成可复盘的学习系统' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '计划' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByRole('button', { name: '生成学习计划' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '生成训练方案' })).toBeInTheDocument();
     expect(screen.getByText('User Name')).toBeInTheDocument();
     expect(window.location.pathname).toBe('/');
   });
@@ -139,10 +139,10 @@ describe('App', () => {
 
     expect(await screen.findByRole('heading', { name: '把算法练习变成可复盘的学习系统' })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '计划' }));
+    fireEvent.click(screen.getByRole('button', { name: '方案' }));
 
-    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '计划' })).toHaveAttribute('aria-pressed', 'true');
+    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
     expect(window.location.pathname).toBe('/learning-plans');
 
     fireEvent.click(screen.getByRole('button', { name: '题库' }));
@@ -155,11 +155,11 @@ describe('App', () => {
     await waitFor(() => expect(window.location.pathname).toBe('/learning-plans'));
     fireEvent(window, new PopStateEvent('popstate'));
 
-    await waitFor(() => expect(screen.getByRole('button', { name: '计划' })).toHaveAttribute(
+    await waitFor(() => expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute(
       'aria-pressed',
       'true',
     ));
-    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
   });
 
   it('renders the conversation stream test client shell', async () => {
@@ -297,7 +297,7 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
     expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
 
@@ -515,9 +515,9 @@ describe('App', () => {
     await waitFor(() => expect(capturedSignal).toBeDefined());
     expect(screen.getByText('connecting')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '计划' }));
+    fireEvent.click(screen.getByRole('button', { name: '方案' }));
 
-    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
     expect(capturedSignal?.aborted).toBe(true);
 
     fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
@@ -542,9 +542,9 @@ describe('App', () => {
 
     expect(await screen.findByText('done')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '计划' }));
+    fireEvent.click(screen.getByRole('button', { name: '方案' }));
 
-    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
 
@@ -656,44 +656,44 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByText('当前共有 1 个计划')).toBeInTheDocument();
+    expect(await screen.findByText(/共\s*1\s*个方案/)).toBeInTheDocument();
     expect(await screen.findAllByText('四周 Java 算法面试冲刺计划')).not.toHaveLength(0);
 
-    fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
+    fireEvent.click(screen.getByRole('button', { name: '新建方案' }));
     expect(window.location.pathname).toBe('/learning-plans/new');
-    expect(await screen.findByRole('button', { name: '返回计划页' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '返回方案页' })).toBeInTheDocument();
     expect(screen.queryByRole('textbox', { name: '学习目标' })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
-    fireEvent.click(screen.getByRole('button', { name: '生成计划方案' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
 
     expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/learning-plans/drafts',
+      '/api/learning-plans/drafts/stream',
       expect.objectContaining({
         method: 'POST',
         credentials: 'same-origin',
         headers: expect.any(Headers),
       }),
     );
-    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts');
+    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/stream');
 
     fireEvent.change(screen.getByRole('textbox', { name: '补充回答' }), {
       target: { value: '数组和哈希表' },
     });
     fireEvent.click(screen.getByRole('button', { name: '发送补充' }));
-    await screen.findByRole('heading', { name: '计划方案' });
+    await screen.findByRole('heading', { name: '训练方案' });
     expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/messages');
 
-    expect(screen.getByRole('heading', { name: '计划方案' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '训练方案' })).toBeInTheDocument();
     expect(screen.getByText('基础题型恢复')).toBeInTheDocument();
     expect(screen.getByText('两数之和')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '保存计划' }));
+    fireEvent.click(screen.getByRole('button', { name: '保存方案' }));
 
-    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
     expect(window.location.pathname).toBe('/learning-plans');
     expect(screen.getAllByText('四周 Java 算法面试冲刺计划')).not.toHaveLength(0);
-    expect(screen.getAllByText('ACTIVE')).not.toHaveLength(0);
+    expect(screen.getAllByText('进行中')).not.toHaveLength(0);
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/learning-plans/drafts/100/confirm',
       expect.objectContaining({
@@ -712,21 +712,21 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByText('当前共有 1 个计划')).toBeInTheDocument();
+    expect(await screen.findByText(/共\s*1\s*个方案/)).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
+    fireEvent.click(screen.getByRole('button', { name: '新建方案' }));
     fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
-    fireEvent.click(screen.getByRole('button', { name: '生成计划方案' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
     expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();
 
     fireEvent.change(screen.getByRole('textbox', { name: '补充回答' }), {
       target: { value: '数组和哈希表' },
     });
     fireEvent.click(screen.getByRole('button', { name: '发送补充' }));
-    await screen.findByRole('heading', { name: '计划方案' });
+    await screen.findByRole('heading', { name: '训练方案' });
 
     fireEvent.click(screen.getByRole('button', { name: '编辑目标摘要' }));
-    fireEvent.change(screen.getByRole('textbox', { name: '目标摘要' }), {
+    fireEvent.change(await screen.findByRole('textbox', { name: '目标摘要' }), {
       target: { value: '三周内集中突破动态规划面试题' },
     });
     fireEvent.click(screen.getByRole('button', { name: '按新目标重新生成' }));
@@ -735,7 +735,7 @@ describe('App', () => {
       const messageCalls = fetchMock.mock.calls.filter(([url]) => url === '/api/learning-plans/drafts/100/messages');
       expect(messageCalls).toHaveLength(2);
       expect(JSON.parse(messageCalls[1][1]?.body as string)).toEqual({
-        message: '请按新的目标摘要重新生成学习计划：三周内集中突破动态规划面试题',
+        message: '请按新的目标摘要重新生成训练方案：三周内集中突破动态规划面试题',
       });
     });
     expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/messages');
@@ -774,11 +774,11 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
-    fireEvent.click(screen.getByRole('button', { name: '生成计划方案' }));
+    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '新建方案' }));
+    fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
 
-    expect(await screen.findByRole('button', { name: '返回计划页' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '返回方案页' })).toBeInTheDocument();
     expect(window.location.pathname).toBe('/learning-plans/new');
     expect(screen.getByRole('alert')).toHaveTextContent('草案已过期，请调整问卷后重试。');
   });
@@ -832,13 +832,13 @@ describe('App', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: '发送补充' }));
 
-    expect(await screen.findByRole('heading', { name: '计划方案' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '训练方案' })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '保存计划' }));
+    fireEvent.click(screen.getByRole('button', { name: '保存方案' }));
 
-    expect(await screen.findByText('学习计划列表刷新失败')).toBeInTheDocument();
+    expect(await screen.findByText('训练方案列表刷新失败')).toBeInTheDocument();
     expect(window.location.pathname).toBe('/learning-plans');
-    expect(screen.queryByRole('button', { name: '保存计划' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '保存方案' })).not.toBeInTheDocument();
   });
 
   it('does not render an extra learning plan page title and keeps one create action', async () => {
@@ -847,9 +847,9 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
     expect(document.querySelectorAll('h1')).toHaveLength(0);
-    expect(screen.getAllByRole('button', { name: '新建计划' })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: '新建方案' })).toHaveLength(1);
   });
 });
 
@@ -1038,18 +1038,8 @@ function mockLearningPlanFetch() {
       }));
     }
 
-    if (url === '/api/learning-plans/drafts') {
-      return Promise.resolve(jsonResponse({
-        success: true,
-        data: {
-          draftId: 100,
-          status: 'COLLECTING',
-          assistantMessage: '请补充目标主题。',
-          missingFields: ['topicPreferences'],
-          draftPlan: null,
-        },
-        timestamp: '2026-06-22T00:00:00Z',
-      }));
+    if (url === '/api/learning-plans/drafts/stream') {
+      return Promise.resolve(learningPlanDraftStreamResponse(collectingLearningPlanDraft()));
     }
 
     if (url === '/api/learning-plans/drafts/100/messages') {
@@ -1059,7 +1049,7 @@ function mockLearningPlanFetch() {
         data: {
           draftId: 100,
           status: 'GENERATED',
-          assistantMessage: '已生成学习计划草案。',
+          assistantMessage: '已生成训练方案草案。',
           missingFields: [],
           draftPlan: learningPlanDetail(),
         },
@@ -1105,12 +1095,8 @@ function mockLearningPlanFollowUpFailureFetch() {
       }));
     }
 
-    if (url === '/api/learning-plans/drafts') {
-      return Promise.resolve(jsonResponse({
-        success: true,
-        data: collectingLearningPlanDraft(),
-        timestamp: '2026-06-22T00:00:00Z',
-      }));
+    if (url === '/api/learning-plans/drafts/stream') {
+      return Promise.resolve(learningPlanDraftStreamResponse(collectingLearningPlanDraft()));
     }
 
     if (url === '/api/learning-plans/drafts/100/messages') {
@@ -1147,12 +1133,12 @@ function mockExpiredLearningPlanDraftFetch() {
       }));
     }
 
-    if (url === '/api/learning-plans/drafts') {
+    if (url === '/api/learning-plans/drafts/stream') {
       return Promise.resolve(jsonResponse({
         success: false,
         error: { code: 'DRAFT_EXPIRED', message: '草案已过期，请调整问卷后重试。' },
         timestamp: '2026-06-22T00:00:00Z',
-      }));
+      }, 400));
     }
 
     return Promise.reject(new Error(`Unexpected URL: ${url}`));
@@ -1285,7 +1271,7 @@ function mockLearningPlanConfirmRefreshFailureFetch() {
       if (confirmed) {
         return Promise.resolve(jsonResponse({
           success: false,
-          error: { code: 'LEARNING_PLAN_REFRESH_FAILED', message: '学习计划列表刷新失败' },
+          error: { code: 'LEARNING_PLAN_REFRESH_FAILED', message: '训练方案列表刷新失败' },
           timestamp: '2026-06-22T00:00:00Z',
         }));
       }
@@ -1305,12 +1291,8 @@ function mockLearningPlanConfirmRefreshFailureFetch() {
       }));
     }
 
-    if (url === '/api/learning-plans/drafts') {
-      return Promise.resolve(jsonResponse({
-        success: true,
-        data: collectingLearningPlanDraft(),
-        timestamp: '2026-06-22T00:00:00Z',
-      }));
+    if (url === '/api/learning-plans/drafts/stream') {
+      return Promise.resolve(learningPlanDraftStreamResponse(collectingLearningPlanDraft()));
     }
 
     if (url === '/api/learning-plans/drafts/100/messages') {
@@ -1369,10 +1351,10 @@ function isLearningPlanListUrl(url: string): boolean {
 }
 
 async function createCollectingLearningPlanDraft() {
-  expect(await screen.findByRole('heading', { name: '计划列表' })).toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: '新建计划' }));
-  expect(await screen.findByRole('button', { name: '返回计划页' })).toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: '生成计划方案' }));
+  expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '新建方案' }));
+  expect(await screen.findByRole('button', { name: '返回方案页' })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
 
   expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();
 }
@@ -1391,10 +1373,16 @@ function generatedLearningPlanDraft() {
   return {
     draftId: 100,
     status: 'GENERATED',
-    assistantMessage: '已生成学习计划草案。',
+    assistantMessage: '已生成训练方案草案。',
     missingFields: [],
     draftPlan: learningPlanDetail(),
   };
+}
+
+function learningPlanDraftStreamResponse(draft: ReturnType<typeof collectingLearningPlanDraft> | ReturnType<typeof generatedLearningPlanDraft>) {
+  return new Response(sseStream([
+    sseEvent('draft_ready', draft),
+  ]), { status: 200 });
 }
 
 function learningPlanSummary(overrides: Partial<ReturnType<typeof baseLearningPlanSummary>> = {}) {

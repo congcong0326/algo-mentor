@@ -1,20 +1,9 @@
-import type { DifficultyDistributionLevel } from '../types/api';
-import { difficultyDistributionOptions } from './options';
+import { clampDifficultyDistributionValue, getDifficultyDistribution } from './options';
 
 interface DifficultyDistributionControlProps {
   disabled: boolean;
-  value: DifficultyDistributionLevel;
-  onChange: (value: DifficultyDistributionLevel) => void;
-}
-
-function clampOptionIndex(value: number): number {
-  const maxIndex = difficultyDistributionOptions.length - 1;
-
-  if (!Number.isFinite(value)) {
-    return 0;
-  }
-
-  return Math.min(Math.max(0, value), maxIndex);
+  value: number;
+  onChange: (value: number) => void;
 }
 
 export default function DifficultyDistributionControl({
@@ -22,8 +11,7 @@ export default function DifficultyDistributionControl({
   value,
   onChange,
 }: DifficultyDistributionControlProps) {
-  const selectedIndex = clampOptionIndex(difficultyDistributionOptions.findIndex((option) => option.value === value));
-  const selected = difficultyDistributionOptions[selectedIndex] ?? difficultyDistributionOptions[0];
+  const selected = getDifficultyDistribution(value);
   const valueText = `${selected.label}：简单 ${selected.easyPercent}%，中等 ${selected.mediumPercent}%，困难 ${selected.hardPercent}%`;
 
   return (
@@ -34,14 +22,14 @@ export default function DifficultyDistributionControl({
           aria-label="难度分布"
           aria-valuetext={valueText}
           disabled={disabled}
-          max={difficultyDistributionOptions.length - 1}
+          max={100}
           min={0}
           onChange={(event) => {
-            const next = difficultyDistributionOptions[clampOptionIndex(Number(event.target.value))];
-            onChange(next.value);
+            onChange(clampDifficultyDistributionValue(Number(event.target.value)));
           }}
+          step={1}
           type="range"
-          value={selectedIndex}
+          value={selected.value}
         />
       </label>
       <div className="difficulty-ratio-row">

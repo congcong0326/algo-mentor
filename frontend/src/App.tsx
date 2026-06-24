@@ -37,7 +37,7 @@ function AppLoadingShell({ activeView }: { activeView: AppView }) {
         <nav className="app-nav" aria-label="主导航">
           {[
             ['home', '首页'],
-            ['learningPlans', '计划'],
+            ['learningPlans', '方案'],
             ['problems', '题库'],
             ['debug', 'AI 调试'],
           ].map(([view, label]) => (

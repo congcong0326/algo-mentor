@@ -153,6 +153,7 @@ export interface LearningPlanSummaryResponse {
   goal: string;
   durationWeeks: number;
   level: LearningPlanLevel;
+  programmingLanguage?: string;
   weeklyHours: number;
   status: LearningPlanStatus;
   createdAt: string;
@@ -172,8 +173,6 @@ export interface LearningPlanPageResponse {
   archivedCount: number;
   latestCreatedAt?: string | null;
 }
-
-export type DifficultyDistributionLevel = 'INTRODUCTORY' | 'BALANCED' | 'SPRINT';
 
 export interface LearningPlanDetailResponse extends LearningPlanDraftPlan {
   id: number;

@@ -28,7 +28,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
   },
   {
     view: 'learningPlans',
-    label: '计划',
+    label: '方案',
     path: APP_ROUTES.learningPlans,
     icon: ClipboardList,
   },

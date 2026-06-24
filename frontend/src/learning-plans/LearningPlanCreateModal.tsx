@@ -88,7 +88,7 @@ export default function LearningPlanCreateModal({
     if (loading) {
       return;
     }
-    if (hasUnsavedInput && !window.confirm('放弃当前填写的计划问卷？')) {
+    if (hasUnsavedInput && !window.confirm('放弃当前填写的方案问卷？')) {
       return;
     }
     onClose();
@@ -142,8 +142,8 @@ export default function LearningPlanCreateModal({
       >
         <div className="modal-heading">
           <div>
-            <p className="eyebrow">新建计划</p>
-            <h2 id="create-plan-title">新建学习计划</h2>
+            <p className="eyebrow">新建方案</p>
+            <h2 id="create-plan-title">新建训练方案</h2>
           </div>
           <button
             aria-label="关闭"

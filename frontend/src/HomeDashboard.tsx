@@ -7,8 +7,8 @@ interface HomeDashboardProps {
 
 const featureCards = [
   {
-    title: '学习计划',
-    description: '按目标、时间和强弱项生成阶段计划，把刷题节奏拆成可执行任务。',
+    title: '训练方案',
+    description: '按目标、时间和强弱项生成阶段安排，把刷题节奏拆成可执行任务。',
     icon: CalendarCheck,
   },
   {
@@ -24,10 +24,10 @@ const featureCards = [
 ];
 
 const workflowSteps = [
-  ['1', '选题', '从计划或题库选择本轮重点。'],
+  ['1', '选题', '从方案或题库选择本轮重点。'],
   ['2', '练习', '先独立推导，再记录阻塞点。'],
   ['3', '讲解', '用 AI 补齐思路、模板和边界。'],
-  ['∞', '复盘', '按计划回看，避免刷完就忘。'],
+  ['∞', '复盘', '按方案回看，避免刷完就忘。'],
 ];
 
 export default function HomeDashboard({ onNavigate }: HomeDashboardProps) {
@@ -38,12 +38,12 @@ export default function HomeDashboard({ onNavigate }: HomeDashboardProps) {
           <p className="home-kicker">ALGORITHM LEARNING SYSTEM</p>
           <h1 id="home-title">把算法练习变成可复盘的学习系统</h1>
           <p className="home-subtitle">
-            Algo Mentor 把学习计划、题库训练和 AI 讲解放在同一个工作台里，帮助你持续练习、及时复盘、沉淀题型方法。
+            Algo Mentor 把训练方案、题库训练和 AI 讲解放在同一个工作台里，帮助你持续练习、及时复盘、沉淀题型方法。
           </p>
           <div className="home-hero-actions">
             <button className="primary-button hero-action" onClick={() => onNavigate('learningPlans')} type="button">
               <Sparkles aria-hidden="true" />
-              <span>生成学习计划</span>
+              <span>生成训练方案</span>
             </button>
             <button className="secondary-button hero-action" onClick={() => onNavigate('problems')} type="button">
               <Library aria-hidden="true" />
@@ -76,7 +76,7 @@ export default function HomeDashboard({ onNavigate }: HomeDashboardProps) {
               </div>
               <div className="preview-task">
                 <CalendarCheck aria-hidden="true" />
-                <span>更新下周训练计划</span>
+                <span>更新下周训练方案</span>
                 <strong>周日</strong>
               </div>
             </div>
@@ -121,11 +121,11 @@ export default function HomeDashboard({ onNavigate }: HomeDashboardProps) {
 
       <section className="home-cta" aria-label="开始学习">
         <div>
-          <h2>从一份计划开始今天的训练</h2>
+          <h2>从一份方案开始今天的训练</h2>
           <p>先确定目标和时间，再让系统给出阶段、题目和复盘建议。</p>
         </div>
         <button className="primary-button hero-action" onClick={() => onNavigate('learningPlans')} type="button">
-          <span>进入学习计划</span>
+          <span>进入训练方案</span>
           <ArrowRight aria-hidden="true" />
         </button>
       </section>

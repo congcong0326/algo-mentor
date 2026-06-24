@@ -8,7 +8,7 @@ interface AgentWorkIndicatorProps {
 }
 
 export default function AgentWorkIndicator({ event, active, error }: AgentWorkIndicatorProps) {
-  const message = error || event?.message || (active ? '正在生成学习计划' : '等待生成');
+  const message = error || event?.message || (active ? '正在生成训练方案' : '等待生成');
   const isError = Boolean(error) || Boolean(event?.code);
   const isDone = !active && !isError && event?.message === '生成完成';
 

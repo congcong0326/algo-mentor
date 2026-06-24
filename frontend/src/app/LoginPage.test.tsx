@@ -7,7 +7,7 @@ describe('LoginPage', () => {
     render(<LoginPage />);
 
     expect(screen.getByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
-    expect(screen.getByText('算法学习、刷题训练和 AI 学习计划生成工具')).toBeInTheDocument();
+    expect(screen.getByText('算法学习、刷题训练和 AI 训练方案生成工具')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '使用 Google 登录' })).toHaveAttribute(
       'href',
       '/oauth2/authorization/google',

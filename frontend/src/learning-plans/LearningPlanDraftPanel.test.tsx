@@ -75,7 +75,7 @@ describe('LearningPlanDraftPanel', () => {
     const draft: LearningPlanDraftResponse = {
       draftId: 100,
       status: 'GENERATED',
-      assistantMessage: '已生成学习计划草案。',
+      assistantMessage: '已生成训练方案草案。',
       missingFields: [],
       draftPlan,
     };
@@ -90,9 +90,9 @@ describe('LearningPlanDraftPanel', () => {
       />,
     );
 
-    expect(screen.getByRole('heading', { name: '计划方案' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '训练方案' })).toBeInTheDocument();
     expect(screen.getByText('基础题型恢复')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: '保存计划' }));
+    fireEvent.click(screen.getByRole('button', { name: '保存方案' }));
 
     expect(onConfirm).toHaveBeenCalled();
   });
@@ -102,7 +102,7 @@ describe('LearningPlanDraftPanel', () => {
     const draft: LearningPlanDraftResponse = {
       draftId: 100,
       status: 'GENERATED',
-      assistantMessage: '已生成学习计划草案。',
+      assistantMessage: '已生成训练方案草案。',
       missingFields: [],
       draftPlan,
     };
@@ -132,7 +132,7 @@ describe('LearningPlanDraftPanel', () => {
     const draft: LearningPlanDraftResponse = {
       draftId: 100,
       status: 'GENERATED',
-      assistantMessage: '已生成学习计划草案。',
+      assistantMessage: '已生成训练方案草案。',
       missingFields: [],
       draftPlan,
     };
@@ -195,8 +195,8 @@ describe('LearningPlanDraftPanel', () => {
     );
 
     expect(screen.getByText('草案生成失败或已过期，请重新填写问卷后生成。')).toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: '计划方案' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '保存计划' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '训练方案' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '保存方案' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '重新填写问卷' })).toBeInTheDocument();
   });
 
@@ -220,8 +220,8 @@ describe('LearningPlanDraftPanel', () => {
     );
 
     expect(screen.getByText('草案生成失败或已过期，请重新填写问卷后生成。')).toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: '计划方案' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '保存计划' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '训练方案' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '保存方案' })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '重新填写问卷' }));
 
     expect(onRetryCreate).toHaveBeenCalled();

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { APP_ROUTES } from './app/navigation';
 import LearningPlanCreatePage from './learning-plans/LearningPlanCreatePage';
 import LearningPlanListCard from './learning-plans/LearningPlanListCard';
-import LearningPlanSummaryCard from './learning-plans/LearningPlanSummaryCard';
 import {
   deleteLearningPlan,
   getLearningPlans,
@@ -45,7 +44,7 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
     const controller = new AbortController();
     refreshPlans(1, controller.signal).catch((nextError) => {
       if (!controller.signal.aborted) {
-        setError(nextError instanceof Error ? nextError.message : '学习计划列表加载失败');
+        setError(nextError instanceof Error ? nextError.message : '训练方案列表加载失败');
       }
     });
 
@@ -55,14 +54,14 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
   async function refreshPlans(nextPage = page, signal?: AbortSignal) {
     const nextPlans = apiData(
       await getLearningPlans({ page: nextPage, pageSize: plansPage.pageSize }, signal),
-      '学习计划列表加载失败',
+      '训练方案列表加载失败',
     );
     setPlansPage(nextPlans);
     setPage(nextPlans.page);
   }
 
   async function removePlan(planId: number) {
-    if (!window.confirm('确认删除这个学习计划？')) {
+    if (!window.confirm('确认删除这个训练方案？')) {
       return;
     }
 
@@ -74,7 +73,7 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
       const nextPage = shouldStepBack ? page - 1 : page;
       await refreshPlans(nextPage);
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : '学习计划删除失败');
+      setError(nextError instanceof Error ? nextError.message : '训练方案删除失败');
     } finally {
       setDeletingPlanId(undefined);
     }
@@ -94,25 +93,17 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
   }
 
   return (
-    <section className="learning-shell" aria-label="学习计划">
-      <LearningPlanSummaryCard
-        activeCount={plansPage.activeCount}
-        archivedCount={plansPage.archivedCount}
-        latestCreatedAt={plansPage.latestCreatedAt}
-        onCreate={() => onNavigate(APP_ROUTES.learningPlanNew)}
-        total={plansPage.total}
-      />
-
+    <section className="learning-shell" aria-label="训练方案">
       {error && <p className="error-text">{error}</p>}
 
       <LearningPlanListCard
         deletingPlanId={deletingPlanId}
+        onCreate={() => onNavigate(APP_ROUTES.learningPlanNew)}
         onDelete={removePlan}
         onPageChange={(nextPage) => {
           setPage(nextPage);
           void refreshPlans(nextPage);
         }}
-        onSelect={() => undefined}
         page={plansPage}
       />
     </section>
