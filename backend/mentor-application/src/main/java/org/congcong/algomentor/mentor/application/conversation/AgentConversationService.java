@@ -154,12 +154,7 @@ public class AgentConversationService {
     Map<String, Object> metadata = new HashMap<>();
     metadata.put("triggerType", "user_request");
     if (command.practiceChatEnabled()) {
-      PracticeChatReference reference = command.practiceChat();
-      metadata.put(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO);
-      metadata.put(PracticeChatPromptConstants.METADATA_PLAN_ID, reference.planId());
-      metadata.put(PracticeChatPromptConstants.METADATA_PHASE_INDEX, reference.phaseIndex());
-      metadata.put(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, reference.problemSlug());
-      metadata.put(PracticeChatPromptConstants.METADATA_LOCALE, reference.locale());
+      metadata.putAll(practiceReferenceMetadata(command.practiceChat()));
     }
     return Map.copyOf(metadata);
   }
@@ -168,9 +163,13 @@ public class AgentConversationService {
     if (!command.practiceChatEnabled()) {
       return Map.of();
     }
-    PracticeChatReference reference = command.practiceChat();
-    Map<String, Object> metadata = new HashMap<>();
+    Map<String, Object> metadata = new HashMap<>(practiceReferenceMetadata(command.practiceChat()));
     metadata.put(PracticeChatPromptConstants.MESSAGE_TYPE_METADATA_KEY, PracticeChatPromptConstants.MESSAGE_TYPE_CHAT);
+    return Map.copyOf(metadata);
+  }
+
+  private Map<String, Object> practiceReferenceMetadata(PracticeChatReference reference) {
+    Map<String, Object> metadata = new HashMap<>();
     metadata.put(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO);
     metadata.put(PracticeChatPromptConstants.METADATA_PLAN_ID, reference.planId());
     metadata.put(PracticeChatPromptConstants.METADATA_PHASE_INDEX, reference.phaseIndex());
