@@ -5,15 +5,21 @@ import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockOwnerProvider;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
+import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
 import org.congcong.algomentor.agent.persistence.postgres.config.AgentPostgresPersistenceConfiguration;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
 import org.congcong.algomentor.api.controller.AgentConversationController;
+import org.congcong.algomentor.api.controller.practice.PracticeSessionController;
 import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
+import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunCoordinator;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
+import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
+import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
+import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -76,5 +82,66 @@ public class AgentConversationApiAutoConfiguration {
       AiRunAdmissionService admissionService
   ) {
     return new AgentConversationController(runCoordinator, sseMapper, actorResolver, admissionService);
+  }
+
+  @Bean
+  @ConditionalOnBean({
+      LearningPlanRepository.class,
+      PracticeChatProblemCatalog.class,
+      PracticeSessionRepository.class,
+      AgentTaskMessageRepository.class
+  })
+  @ConditionalOnMissingBean
+  public PracticeSessionService practiceSessionService(
+      LearningPlanRepository learningPlanRepository,
+      PracticeChatProblemCatalog problemCatalog,
+      PracticeSessionRepository practiceSessionRepository,
+      AgentTaskMessageRepository agentTaskMessageRepository
+  ) {
+    return new PracticeSessionService(
+        learningPlanRepository,
+        problemCatalog,
+        practiceSessionRepository,
+        agentTaskMessageRepository);
+  }
+
+  @Bean
+  @ConditionalOnBean({
+      PracticeSessionRepository.class,
+      AgentConversationRunCoordinator.class
+  })
+  @ConditionalOnMissingBean
+  public PracticeMessageStreamService practiceMessageStreamService(
+      PracticeSessionRepository practiceSessionRepository,
+      AgentConversationRunCoordinator runCoordinator
+  ) {
+    return new PracticeMessageStreamService(practiceSessionRepository, runCoordinator);
+  }
+
+  @Bean
+  @ConditionalOnBean({
+      PracticeSessionService.class,
+      PracticeMessageStreamService.class,
+      CurrentUserIdProvider.class,
+      AiActorResolver.class,
+      AiRunAdmissionService.class,
+      LlmStreamSseMapper.class
+  })
+  @ConditionalOnMissingBean
+  public PracticeSessionController practiceSessionController(
+      PracticeSessionService practiceSessionService,
+      PracticeMessageStreamService streamService,
+      CurrentUserIdProvider currentUserIdProvider,
+      AiActorResolver actorResolver,
+      AiRunAdmissionService admissionService,
+      LlmStreamSseMapper sseMapper
+  ) {
+    return new PracticeSessionController(
+        practiceSessionService,
+        streamService,
+        currentUserIdProvider,
+        actorResolver,
+        admissionService,
+        sseMapper);
   }
 }

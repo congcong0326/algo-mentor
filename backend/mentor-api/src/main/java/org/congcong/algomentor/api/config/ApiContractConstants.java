@@ -66,6 +66,27 @@ public final class ApiContractConstants {
   public static final String LEARNING_PLAN_DRAFT_CONFIRM_PATH = "/{draftId}/confirm";
 
   /**
+   * 题目练习会话接口根路径。
+   */
+  public static final String PRACTICE_SESSIONS_BASE_PATH = "/api/practice-sessions";
+
+  /**
+   * 学习计划题目的练习会话创建路径。
+   */
+  public static final String LEARNING_PLAN_PROBLEM_PRACTICE_SESSION_PATH =
+      "/{planId}/phases/{phaseIndex}/problems/{slug}/practice-session";
+
+  /**
+   * 题目练习会话消息流式路径。
+   */
+  public static final String PRACTICE_SESSION_MESSAGES_STREAM_PATH = "/{sessionId}/messages/stream";
+
+  /**
+   * 题目练习会话进度状态路径。
+   */
+  public static final String PRACTICE_SESSION_PROGRESS_STATUS_PATH = "/{sessionId}/progress-status";
+
+  /**
    * 主题讲解请求参数名。
    */
   public static final String TOPIC_PARAM = "topic";
