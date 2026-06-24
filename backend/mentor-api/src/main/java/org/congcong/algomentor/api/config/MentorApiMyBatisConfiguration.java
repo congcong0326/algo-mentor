@@ -5,6 +5,8 @@ import javax.sql.DataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
 import org.congcong.algomentor.api.learningplan.repository.MyBatisLearningPlanRepository;
+import org.congcong.algomentor.api.practice.mapper.PracticeSessionMapper;
+import org.congcong.algomentor.api.practice.repository.MyBatisPracticeSessionRepository;
 import org.congcong.algomentor.api.problem.mapper.ProblemMapper;
 import org.congcong.algomentor.api.problem.repository.MyBatisProblemRepository;
 import org.congcong.algomentor.api.problem.repository.ProblemRepository;
@@ -12,6 +14,7 @@ import org.congcong.algomentor.agent.persistence.postgres.json.AgentMessageRoleT
 import org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
+import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -62,6 +65,12 @@ public class MentorApiMyBatisConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean
+  public PracticeSessionMapper practiceSessionMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(PracticeSessionMapper.class);
+  }
+
+  @Bean
   @ConditionalOnMissingBean(ProblemRepository.class)
   public ProblemRepository problemRepository(ProblemMapper problemMapper, DataSource dataSource) {
     return new MyBatisProblemRepository(problemMapper, dataSource);
@@ -73,5 +82,11 @@ public class MentorApiMyBatisConfiguration {
       LearningPlanMapper learningPlanMapper,
       ObjectMapper objectMapper) {
     return new MyBatisLearningPlanRepository(learningPlanMapper, objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(PracticeSessionRepository.class)
+  public PracticeSessionRepository practiceSessionRepository(PracticeSessionMapper practiceSessionMapper) {
+    return new MyBatisPracticeSessionRepository(practiceSessionMapper);
   }
 }

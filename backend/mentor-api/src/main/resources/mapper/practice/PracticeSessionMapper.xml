@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.practice.mapper.PracticeSessionMapper">
+
+  <resultMap id="PracticeProgressRowMap"
+      type="org.congcong.algomentor.api.practice.mapper.model.PracticeProgressRow">
+    <constructor>
+      <arg column="id" javaType="_long"/>
+      <arg column="user_id" javaType="_long"/>
+      <arg column="plan_id" javaType="_long"/>
+      <arg column="phase_index" javaType="_int"/>
+      <arg column="problem_slug" javaType="string"/>
+      <arg column="status" javaType="string"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <resultMap id="PracticeSessionRowMap"
+      type="org.congcong.algomentor.api.practice.mapper.model.PracticeSessionRow">
+    <constructor>
+      <arg column="id" javaType="_long"/>
+      <arg column="user_id" javaType="_long"/>
+      <arg column="plan_id" javaType="_long"/>
+      <arg column="phase_index" javaType="_int"/>
+      <arg column="problem_slug" javaType="string"/>
+      <arg column="status" javaType="string"/>
+      <arg column="agent_task_id" javaType="java.lang.Long"/>
+      <arg column="problem_statement_message_id" javaType="java.lang.Long"/>
+      <arg column="progress_status" javaType="string"/>
+      <arg column="last_message_at" javaType="java.time.Instant"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+      <arg column="locale" javaType="string"/>
+    </constructor>
+  </resultMap>
+
+  <sql id="PracticeProgressColumns">
+    id,
+    user_id,
+    plan_id,
+    phase_index,
+    problem_slug,
+    status,
+    created_at,
+    updated_at
+  </sql>
+
+  <sql id="PracticeSessionColumns">
+    session_row.id,
+    session_row.user_id,
+    session_row.plan_id,
+    session_row.phase_index,
+    session_row.problem_slug,
+    session_row.status,
+    session_row.agent_task_id,
+    session_row.problem_statement_message_id,
+    progress.status AS progress_status,
+    session_row.last_message_at,
+    session_row.created_at,
+    session_row.updated_at,
+    session_row.locale
+  </sql>
+
+  <select id="upsertProgress" resultMap="PracticeProgressRowMap" affectData="true">
+    INSERT INTO learning_plan_problem_progress (
+      user_id,
+      plan_id,
+      phase_index,
+      problem_slug,
+      status,
+      started_at,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{userId},
+      #{planId},
+      #{phaseIndex},
+      #{problemSlug},
+      'IN_PROGRESS',
+      NOW(),
+      NOW(),
+      NOW()
+    )
+    ON CONFLICT (user_id, plan_id, phase_index, problem_slug) DO UPDATE
+    SET status = CASE
+          WHEN learning_plan_problem_progress.status = 'COMPLETED' THEN learning_plan_problem_progress.status
+          ELSE 'IN_PROGRESS'
+        END,
+        started_at = COALESCE(learning_plan_problem_progress.started_at, NOW()),
+        updated_at = NOW()
+    RETURNING
+      <include refid="PracticeProgressColumns"/>
+  </select>
+
+  <select id="upsertSession" resultMap="PracticeSessionRowMap" affectData="true">
+    WITH upserted AS (
+      INSERT INTO practice_session (
+        user_id,
+        plan_id,
+        phase_index,
+        problem_slug,
+        status,
+        locale,
+        created_at,
+        updated_at
+      )
+      VALUES (
+        #{userId},
+        #{planId},
+        #{phaseIndex},
+        #{problemSlug},
+        'ACTIVE',
+        #{locale},
+        NOW(),
+        NOW()
+      )
+      ON CONFLICT (user_id, plan_id, phase_index, problem_slug) DO UPDATE
+      SET updated_at = practice_session.updated_at
+      RETURNING *
+    )
+    SELECT
+      <include refid="PracticeSessionColumns"/>
+    FROM practice_session session_row
+    JOIN upserted
+      ON upserted.id = session_row.id
+    JOIN learning_plan_problem_progress progress
+      ON progress.user_id = session_row.user_id
+      AND progress.plan_id = session_row.plan_id
+      AND progress.phase_index = session_row.phase_index
+      AND progress.problem_slug = session_row.problem_slug
+    FOR UPDATE OF session_row
+  </select>
+
+  <select id="findSessionByIdForUser" resultMap="PracticeSessionRowMap">
+    SELECT
+      <include refid="PracticeSessionColumns"/>
+    FROM practice_session session_row
+    JOIN learning_plan_problem_progress progress
+      ON progress.user_id = session_row.user_id
+      AND progress.plan_id = session_row.plan_id
+      AND progress.phase_index = session_row.phase_index
+      AND progress.problem_slug = session_row.problem_slug
+    WHERE session_row.id = #{sessionId}
+      AND session_row.user_id = #{userId}
+  </select>
+
+  <select id="attachAgentTask" resultMap="PracticeSessionRowMap" affectData="true">
+    WITH session_row AS (
+      UPDATE practice_session
+      SET agent_task_id = #{agentTaskId},
+          updated_at = NOW()
+      WHERE id = #{sessionId}
+      RETURNING *
+    )
+    SELECT
+      <include refid="PracticeSessionColumns"/>
+    FROM session_row
+    JOIN learning_plan_problem_progress progress
+      ON progress.user_id = session_row.user_id
+      AND progress.plan_id = session_row.plan_id
+      AND progress.phase_index = session_row.phase_index
+      AND progress.problem_slug = session_row.problem_slug
+  </select>
+
+  <select id="attachProblemStatementMessage" resultMap="PracticeSessionRowMap" affectData="true">
+    WITH session_row AS (
+      UPDATE practice_session
+      SET problem_statement_message_id = #{messageId},
+          updated_at = NOW()
+      WHERE id = #{sessionId}
+      RETURNING *
+    )
+    SELECT
+      <include refid="PracticeSessionColumns"/>
+    FROM session_row
+    JOIN learning_plan_problem_progress progress
+      ON progress.user_id = session_row.user_id
+      AND progress.plan_id = session_row.plan_id
+      AND progress.phase_index = session_row.phase_index
+      AND progress.problem_slug = session_row.problem_slug
+  </select>
+
+  <select id="updateProgressStatus" resultMap="PracticeProgressRowMap" affectData="true">
+    UPDATE learning_plan_problem_progress progress
+    SET status = #{status},
+        completed_at = CASE
+          WHEN #{status} = 'COMPLETED' THEN COALESCE(progress.completed_at, NOW())
+          ELSE progress.completed_at
+        END,
+        skipped_at = CASE
+          WHEN #{status} = 'SKIPPED' THEN COALESCE(progress.skipped_at, NOW())
+          ELSE progress.skipped_at
+        END,
+        updated_at = NOW()
+    FROM practice_session session_row
+    WHERE session_row.id = #{sessionId}
+      AND session_row.user_id = #{userId}
+      AND progress.user_id = session_row.user_id
+      AND progress.plan_id = session_row.plan_id
+      AND progress.phase_index = session_row.phase_index
+      AND progress.problem_slug = session_row.problem_slug
+    RETURNING
+      progress.id,
+      progress.user_id,
+      progress.plan_id,
+      progress.phase_index,
+      progress.problem_slug,
+      progress.status,
+      progress.created_at,
+      progress.updated_at
+  </select>
+
+  <update id="touchLastMessageAt">
+    UPDATE practice_session
+    SET last_message_at = NOW(),
+        updated_at = NOW()
+    WHERE id = #{sessionId}
+  </update>
+</mapper>
