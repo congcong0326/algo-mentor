@@ -149,7 +149,7 @@ class PersistentAgentRunObserverTest {
   }
 
   @Test
-  void writesAssistantMessageMetadataFromRequestMetadata() {
+  void writesCanonicalAssistantChatMetadataForPracticeChat() {
     FakeRunMapper mapper = new FakeRunMapper();
     PersistentAgentRunObserver observer = new PersistentAgentRunObserver(mapper, new ObjectMapper(), fixedClock());
     AgentRequest request = new AgentRequest(
@@ -161,7 +161,7 @@ class PersistentAgentRunObserverTest {
             AgentRuntimeMetadataKeys.TURN_ID, 20L,
             AgentRuntimeMetadataKeys.RUN_DB_ID, 30L,
             "scenario", "PRACTICE_CHAT",
-            "messageType", "CHAT",
+            "messageType", "PROBLEM_STATEMENT",
             "practiceSessionId", 100L,
             "planId", 12L,
             "phaseIndex", 1,
@@ -174,7 +174,8 @@ class PersistentAgentRunObserverTest {
     assertThat(mapper.lastAssistantMetadata)
         .containsEntry("messageType", "CHAT")
         .containsEntry("scenario", "PRACTICE_CHAT")
-        .containsEntry("practiceSessionId", 100L);
+        .containsEntry("practiceSessionId", 100L)
+        .doesNotContainEntry("messageType", "PROBLEM_STATEMENT");
   }
 
   private AgentLoopContext context() {

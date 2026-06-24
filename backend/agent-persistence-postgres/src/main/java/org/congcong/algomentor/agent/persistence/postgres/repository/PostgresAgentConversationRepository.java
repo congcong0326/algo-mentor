@@ -105,17 +105,11 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
         estimateTokens(request.content()),
         request.metadata());
     conversationMapper.attachTurnAssistantSeedMessage(turnId, messageId);
-    return conversationMapper.messages(request.taskId(), 1).stream()
-        .filter(message -> message.id() == messageId)
-        .findFirst()
-        .orElse(new AgentMessage(
-            messageId,
-            request.taskId(),
-            1L,
-            AgentMessage.Role.ASSISTANT,
-            request.content(),
-            java.time.Instant.EPOCH,
-            request.metadata()));
+    AgentMessage message = conversationMapper.findMessageById(messageId);
+    if (message == null) {
+      throw new IllegalStateException("Inserted assistant seed message was not found: " + messageId);
+    }
+    return message;
   }
 
   @Override

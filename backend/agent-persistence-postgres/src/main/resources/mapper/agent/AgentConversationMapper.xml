@@ -192,4 +192,11 @@
     ORDER BY sequence_no DESC
     LIMIT #{messageLimit}
   </select>
+
+  <select id="findMessageById" resultMap="AgentMessageMap">
+    SELECT id, task_id, sequence_no, role, content, created_at, metadata
+    FROM agent_message
+    WHERE id = #{messageId}
+      AND status = 'active'
+  </select>
 </mapper>

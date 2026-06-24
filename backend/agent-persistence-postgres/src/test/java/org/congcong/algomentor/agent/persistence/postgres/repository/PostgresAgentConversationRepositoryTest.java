@@ -134,21 +134,40 @@ class PostgresAgentConversationRepositoryTest {
   void createsAssistantSeedMessageWithMetadata() {
     FakeConversationMapper mapper = new FakeConversationMapper();
     PostgresAgentConversationRepository repository = new PostgresAgentConversationRepository(mapper);
+    mapper.nextTurnId = 20L;
+    mapper.nextMessageId = 30L;
+    Instant persistedAt = Instant.parse("2026-01-01T00:03:00Z");
+    mapper.messageById = new AgentMessage(
+        30L,
+        10L,
+        7L,
+        AgentMessage.Role.ASSISTANT,
+        "# Two Sum",
+        persistedAt,
+        Map.of("messageType", "PROBLEM_STATEMENT"));
 
     AgentMessage message = repository.createAssistantSeedMessage(new AgentAssistantSeedMessageRequest(
         10L,
         "# Two Sum",
         Map.of("messageType", "PROBLEM_STATEMENT")));
 
+    assertThat(message.id()).isEqualTo(30L);
     assertThat(message.role()).isEqualTo(AgentMessage.Role.ASSISTANT);
+    assertThat(message.sequenceNo()).isEqualTo(7L);
+    assertThat(message.createdAt()).isEqualTo(persistedAt);
     assertThat(message.metadata()).containsEntry("messageType", "PROBLEM_STATEMENT");
-    assertThat(mapper.calls).contains("insertAssistantSeedMessage:10:# Two Sum");
+    assertThat(mapper.calls).containsExactly(
+        "insertTurn:10",
+        "insertAssistantSeedMessage:10:# Two Sum",
+        "attachTurnAssistantSeedMessage:20:30",
+        "findMessageById:30");
   }
 
   private static final class FakeConversationMapper implements AgentConversationMapper {
     private final List<String> calls = new ArrayList<>();
     private Long existingRunId;
     private AgentRunRecord existingRunRecord;
+    private AgentMessage messageById;
     private List<AgentMessage> recentMessages = List.of();
     private Map<String, Object> lastUserMessageMetadata = Map.of();
     private Map<String, Object> lastSeedMetadata = Map.of();
@@ -241,6 +260,12 @@ class PostgresAgentConversationRepositoryTest {
     public List<AgentMessage> messages(long taskId, int messageLimit) {
       calls.add("messages:" + taskId + ":" + messageLimit);
       return List.of();
+    }
+
+    @Override
+    public AgentMessage findMessageById(long messageId) {
+      calls.add("findMessageById:" + messageId);
+      return messageById;
     }
   }
 }

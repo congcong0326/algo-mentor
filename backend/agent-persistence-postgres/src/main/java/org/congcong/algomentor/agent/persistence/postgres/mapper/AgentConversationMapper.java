@@ -69,4 +69,6 @@ public interface AgentConversationMapper {
       @Param("taskId") long taskId,
       @Param("messageLimit") int messageLimit
   );
+
+  AgentMessage findMessageById(@Param("messageId") long messageId);
 }
