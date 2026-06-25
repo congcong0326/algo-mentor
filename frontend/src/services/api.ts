@@ -13,6 +13,8 @@ import type {
   PracticeMessageRequest,
   PracticeMessage,
   PracticeActiveRun,
+  PracticeCodeReviewDetail,
+  PracticeCodeReviewHistoryResponse,
   PracticeProgressStatus,
   PracticeSessionResponse,
   ProblemDetail,
@@ -192,6 +194,41 @@ export async function getPracticeSessionMessages(
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Practice session messages request failed');
+  }
+
+  return response.json();
+}
+
+export async function getPracticeSessionReviews(
+  sessionId: number,
+  signal?: AbortSignal,
+): Promise<ApiResponse<PracticeCodeReviewHistoryResponse>> {
+  const response = await fetch(`/api/practice-sessions/${sessionId}/reviews`, {
+    headers: jsonHeaders,
+    credentials: 'same-origin',
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Practice code review history request failed');
+  }
+
+  return response.json();
+}
+
+export async function getPracticeSessionReviewDetail(
+  sessionId: number,
+  reviewId: number,
+  signal?: AbortSignal,
+): Promise<ApiResponse<PracticeCodeReviewDetail>> {
+  const response = await fetch(`/api/practice-sessions/${sessionId}/reviews/${reviewId}`, {
+    headers: jsonHeaders,
+    credentials: 'same-origin',
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Practice code review detail request failed');
   }
 
   return response.json();

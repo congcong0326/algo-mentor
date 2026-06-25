@@ -21,6 +21,8 @@ import type {
   PracticeSessionResponse,
 } from '../types/api';
 import { AGENT_RUN_IN_PROGRESS_CODE } from '../types/api';
+import CompletionGateHint from './CompletionGateHint';
+import ReviewHistoryDrawer from './ReviewHistoryDrawer';
 
 const LEETCODE_HOST_BY_LOCALE: Record<SupportedLocale, string> = {
   'zh-CN': 'leetcode.cn',
@@ -166,9 +168,15 @@ export default function PracticeChatWorkbench({
   activeSessionIdRef.current = sessionId;
   const hasActiveRun = Boolean(sessionResponse?.activeRun);
   const progressStatus = sessionResponse?.session.progressStatus;
+  const completionGate = sessionResponse?.completionGate;
+  const latestReview = sessionResponse?.latestReview;
   const leetcodeUrl = localizedLeetCodeUrl(sessionResponse?.problem.leetcodeUrl, locale);
   const difficulty = sessionResponse?.problem.difficulty ?? problem?.difficulty;
-  const canMarkCompleted = Boolean(sessionId) && progressStatus !== 'COMPLETED' && status !== 'streaming' && !hasActiveRun;
+  const canMarkCompleted = Boolean(sessionId)
+    && progressStatus !== 'COMPLETED'
+    && status !== 'streaming'
+    && !hasActiveRun
+    && (completionGate?.canComplete ?? true);
   const composerInputDisabled = !sessionId || status === 'loading' || hasActiveRun;
   const sendDisabled = !sessionId || status === 'loading' || status === 'streaming' || hasActiveRun || !composerValue.trim();
 
@@ -508,12 +516,14 @@ export default function PracticeChatWorkbench({
         onScroll={updateAutoScrollState}
         ref={messageListRef}
       >
-        {reviewHistoryOpen && (
-          <aside className="practice-review-panel">
-            <h3>{resources.learningPlans.reviewHistory}</h3>
-            <p>{resources.learningPlans.reviewHistoryUnavailable}</p>
-          </aside>
+        {status !== 'loading' && completionGate && (
+          <CompletionGateHint gate={completionGate} latestReview={latestReview} resources={resources} />
         )}
+        <ReviewHistoryDrawer
+          open={reviewHistoryOpen}
+          resources={resources}
+          sessionId={sessionId}
+        />
         {error && <p className="error-text practice-error" role="alert">{error}</p>}
         {status === 'loading' && (
           <article className="practice-message assistant-message">
@@ -554,12 +564,15 @@ export default function PracticeChatWorkbench({
           aria-label={resources.learningPlans.composerLabel}
           disabled={composerInputDisabled}
           onChange={(event) => setComposerValue(event.target.value)}
-          placeholder={resources.learningPlans.composerPlaceholder}
+          placeholder={resources.learningPlans.practiceComposerPlaceholderReview}
           value={composerValue}
         />
         <button className="primary-button compact" disabled={sendDisabled} type="submit">
           {resources.learningPlans.send}
         </button>
+        {completionGate && !completionGate.canComplete && (
+          <p className="practice-composer-hint">{resources.learningPlans.practiceComposerReviewHint}</p>
+        )}
       </form>
     </article>
   );

@@ -226,6 +226,26 @@ export interface LocaleResources {
     progressUpdateFailed: string;
     reviewHistory: string;
     reviewHistoryUnavailable: string;
+    reviewEmptyTitle: string;
+    reviewEmptyDescription: string;
+    reviewLoading: string;
+    reviewLoadFailed: string;
+    reviewDetailLoading: string;
+    reviewDetailLoadFailed: string;
+    reviewPassed: string;
+    reviewFailed: string;
+    reviewVersionLabel: (versionNo: number) => string;
+    reviewScoreText: (score: number, passScore?: number) => string;
+    reviewPassScoreLabel: (passScore: number) => string;
+    reviewNoReview: string;
+    reviewCodeSnapshot: string;
+    reviewDeductionReasons: string;
+    reviewImprovementSuggestions: string;
+    reviewEvidence: string;
+    reviewContextSummary: string;
+    completionGateFallback: string;
+    practiceComposerPlaceholderReview: string;
+    practiceComposerReviewHint: string;
     chatMessages: string;
     coach: string;
     you: string;
@@ -489,6 +509,26 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       progressUpdateFailed: '进度更新失败，请稍后重试。',
       reviewHistory: 'Review 记录',
       reviewHistoryUnavailable: '代码 Review 记录暂未开放。',
+      reviewEmptyTitle: '暂无代码 Review',
+      reviewEmptyDescription: '提交包含完整代码的练习消息后，系统会在这里展示 Review 版本。',
+      reviewLoading: '正在加载 Review 记录...',
+      reviewLoadFailed: 'Review 记录加载失败，请稍后重试。',
+      reviewDetailLoading: '正在加载 Review 详情...',
+      reviewDetailLoadFailed: 'Review 详情加载失败，请稍后重试。',
+      reviewPassed: '已通过',
+      reviewFailed: '未通过',
+      reviewVersionLabel: (versionNo) => `V${versionNo}`,
+      reviewScoreText: (score, passScore) => passScore === undefined ? `${score} 分` : `${score} / ${passScore} 分`,
+      reviewPassScoreLabel: (passScore) => `通过分 ${passScore}`,
+      reviewNoReview: '暂无 Review',
+      reviewCodeSnapshot: '代码快照',
+      reviewDeductionReasons: '扣分原因',
+      reviewImprovementSuggestions: '改进建议',
+      reviewEvidence: '评审依据',
+      reviewContextSummary: '上下文摘要',
+      completionGateFallback: '完成状态需要等待代码 Review 结果。',
+      practiceComposerPlaceholderReview: '粘贴完整代码、LeetCode 通过/失败反馈，或继续追问思路...',
+      practiceComposerReviewHint: '通过代码 Review 后才能标记完成。',
       chatMessages: '聊天消息',
       coach: '教练',
       you: '你',
@@ -795,6 +835,26 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       progressUpdateFailed: 'Failed to update progress. Try again later.',
       reviewHistory: 'Review history',
       reviewHistoryUnavailable: 'Code review history is not available yet.',
+      reviewEmptyTitle: 'No code reviews yet',
+      reviewEmptyDescription: 'Submit a practice message with complete code, and review versions will appear here.',
+      reviewLoading: 'Loading review history...',
+      reviewLoadFailed: 'Failed to load review history. Try again later.',
+      reviewDetailLoading: 'Loading review details...',
+      reviewDetailLoadFailed: 'Failed to load review details. Try again later.',
+      reviewPassed: 'Passed',
+      reviewFailed: 'Failed',
+      reviewVersionLabel: (versionNo) => `V${versionNo}`,
+      reviewScoreText: (score, passScore) => passScore === undefined ? `${score} pts` : `${score} / ${passScore} pts`,
+      reviewPassScoreLabel: (passScore) => `Pass score ${passScore}`,
+      reviewNoReview: 'No review yet',
+      reviewCodeSnapshot: 'Code snapshot',
+      reviewDeductionReasons: 'Deduction reasons',
+      reviewImprovementSuggestions: 'Improvement suggestions',
+      reviewEvidence: 'Evidence',
+      reviewContextSummary: 'Context summary',
+      completionGateFallback: 'Completion is waiting for a code review result.',
+      practiceComposerPlaceholderReview: 'Paste complete code, LeetCode accepted/failed feedback, or continue asking...',
+      practiceComposerReviewHint: 'Pass code review before marking this practice complete.',
       chatMessages: 'Chat messages',
       coach: 'Coach',
       you: 'You',

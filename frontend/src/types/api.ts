@@ -109,11 +109,80 @@ export interface PracticeActiveRun {
   startedAt: string;
 }
 
+export type PracticeCompletionGateReasonCode =
+  | 'NO_REVIEW'
+  | 'LATEST_REVIEW_FAILED'
+  | 'PASSED'
+  | 'ALREADY_COMPLETED';
+
+export interface PracticeCompletionGate {
+  canComplete: boolean;
+  reasonCode: PracticeCompletionGateReasonCode;
+  message: string;
+  latestScore?: number | null;
+  passScore: number;
+}
+
+export interface PracticeCodeReviewSummary {
+  id: number;
+  versionNo: number;
+  language: string;
+  totalScore: number;
+  passed: boolean;
+  createdAt: string;
+}
+
+export interface PracticeCodeReviewEvidence {
+  type: string;
+  value: string;
+}
+
+export interface PracticeCodeReviewScore {
+  correctness: number;
+  complexity: number;
+  edgeCases: number;
+  codeQuality: number;
+  problemFit: number;
+  total: number;
+}
+
+export interface PracticeCodeReviewDetail {
+  id: number;
+  planId?: number;
+  phaseIndex?: number;
+  problemSlug?: string;
+  sessionId: number;
+  versionNo: number;
+  userMessageId?: number | null;
+  assistantMessageId?: number | null;
+  agentRunDbId?: number | null;
+  rawCode?: string;
+  normalizedCode?: string;
+  submittedCode?: string;
+  language: string;
+  evidence: PracticeCodeReviewEvidence[];
+  contextSummary: string;
+  scores: PracticeCodeReviewScore;
+  passed: boolean;
+  deductionReasons: string[];
+  improvementSuggestions: string[];
+  reviewMarkdown: string;
+  createdAt: string;
+}
+
+export interface PracticeCodeReviewHistoryResponse {
+  latestReview?: PracticeCodeReviewSummary | null;
+  reviews: PracticeCodeReviewSummary[];
+  completionGate: PracticeCompletionGate;
+}
+
 export interface PracticeSessionResponse {
   session: PracticeSessionSummary;
   problem: PracticeProblemSummary;
   messages: PracticeMessage[];
   activeRun?: PracticeActiveRun | null;
+  latestReview?: PracticeCodeReviewSummary | null;
+  completionGate?: PracticeCompletionGate | null;
 }
 
 export interface PracticeMessageRequest {
