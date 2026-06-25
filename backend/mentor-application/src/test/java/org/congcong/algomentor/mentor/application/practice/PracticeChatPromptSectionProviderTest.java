@@ -97,6 +97,28 @@ class PracticeChatPromptSectionProviderTest {
         .contains("题库暂未提供题面 Markdown。");
   }
 
+  @Test
+  void coachingPolicyIncludesCompleteCodeReviewAndIncompleteSnippetGuidance() {
+    PromptAssembly assembly = assembler().assemble(new PromptAssemblyRequest(
+        PracticeChatPromptConstants.SCENARIO,
+        PracticeChatPromptConstants.PROFILE_ID,
+        8_000,
+        Map.of(
+            PracticeChatPromptConstants.VARIABLE_CONTEXT, context(null),
+            PracticeChatPromptConstants.VARIABLE_HISTORY, List.of(),
+            PracticeChatPromptConstants.VARIABLE_CURRENT_USER_MESSAGE, "```java\nclass Solution { }\n```"),
+        Map.of()));
+
+    String policyText = assembly.renderedSections().stream()
+        .filter(section -> section.section().slot() == PromptSlot.SCENARIO_POLICY)
+        .findFirst()
+        .orElseThrow()
+        .renderedText();
+    assertThat(policyText)
+        .contains("如果当前用户消息看起来是完整代码提交，请按代码 Review 风格回复，覆盖正确性、复杂度、边界条件、代码质量和下一步建议。")
+        .contains("如果只是片段、报错或伪代码，请正常答疑，并引导用户粘贴完整 LeetCode Solution 代码生成正式 Review。");
+  }
+
   private DefaultPromptAssembler assembler() {
     return new DefaultPromptAssembler(
         new PracticeChatPromptProfileResolver(),

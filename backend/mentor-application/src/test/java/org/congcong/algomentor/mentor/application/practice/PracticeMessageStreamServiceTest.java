@@ -34,14 +34,16 @@ import org.junit.jupiter.api.Test;
 class PracticeMessageStreamServiceTest {
 
   @Test
-  void streamsWithPracticeReferenceAndTouchesOnRunEnd() {
+  void delegatesToOrchestratorAndTouchesOnMergedRunEnd() {
     InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
-    CapturingCoordinator coordinator = new CapturingCoordinator(new AgentStreamEvent.AgentRunEnd(
+    CapturingOrchestrator orchestrator = new CapturingOrchestrator(new AgentStreamEvent.AgentRunEnd(
         "run-1",
         1,
         LlmFinishReason.STOP,
-        Map.of()));
-    PracticeMessageStreamService service = new PracticeMessageStreamService(sessionRepository, coordinator);
+        Map.of(PracticeCodeReviewConstants.METADATA_PRACTICE_CAPABILITIES, Map.of(
+            PracticeCodeReviewConstants.METADATA_CODE_REVIEW,
+            Map.of("status", PracticeReviewStatus.SAVED.name())))));
+    PracticeMessageStreamService service = new PracticeMessageStreamService(sessionRepository, orchestrator);
 
     List<AgentStreamEvent> events = collect(service.stream(
         7,
@@ -53,44 +55,37 @@ class PracticeMessageStreamServiceTest {
 
     assertThat(events).singleElement().isInstanceOf(AgentStreamEvent.AgentRunEnd.class);
     assertThat(sessionRepository.touchedSessionIds).containsExactly(50L);
-    assertThat(coordinator.command.taskId()).isEqualTo(100L);
-    assertThat(coordinator.command.practiceChat())
-        .isEqualTo(new PracticeChatReference(12L, 1, "two-sum", "zh-CN"));
-    assertThat(coordinator.command.governanceMetadata())
+    assertThat(orchestrator.userId).isEqualTo(7L);
+    assertThat(orchestrator.sessionId).isEqualTo(50L);
+    assertThat(orchestrator.message).isEqualTo("给我一个提示");
+    assertThat(orchestrator.idempotencyKey).isEqualTo("idem-1");
+    assertThat(orchestrator.locale).isEqualTo("en-US");
+    assertThat(orchestrator.governanceMetadata)
         .containsEntry("requestId", "req-1")
-        .containsEntry(PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, 50L)
-        .containsEntry(PracticeChatPromptConstants.MESSAGE_TYPE_METADATA_KEY, PracticeChatPromptConstants.MESSAGE_TYPE_CHAT)
-        .containsEntry(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO)
-        .containsEntry(PracticeChatPromptConstants.METADATA_PLAN_ID, 12L)
-        .containsEntry(PracticeChatPromptConstants.METADATA_PHASE_INDEX, 1)
-        .containsEntry(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, "two-sum")
-        .containsEntry(PracticeChatPromptConstants.METADATA_LOCALE, "zh-CN");
+        .containsEntry(PracticeChatPromptConstants.METADATA_PLAN_ID, 99L);
   }
 
   @Test
-  void persistedNonDefaultLocaleWins() {
+  void forwardsInputsWithoutResolvingLocale() {
     InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
     sessionRepository.session = sessionRepository.session(PracticeSessionStatus.ACTIVE, 100L, "en-US");
-    CapturingCoordinator coordinator = new CapturingCoordinator(new AgentStreamEvent.AgentRunEnd(
+    CapturingOrchestrator orchestrator = new CapturingOrchestrator(new AgentStreamEvent.AgentRunEnd(
         "run-1",
         1,
         LlmFinishReason.STOP,
         Map.of()));
-    PracticeMessageStreamService service = new PracticeMessageStreamService(sessionRepository, coordinator);
+    PracticeMessageStreamService service = new PracticeMessageStreamService(sessionRepository, orchestrator);
 
     collect(service.stream(7, 50, "hint", "idem-1", "zh-CN", null));
 
-    assertThat(coordinator.command.practiceChat())
-        .isEqualTo(new PracticeChatReference(12L, 1, "two-sum", "en-US"));
-    assertThat(coordinator.command.governanceMetadata())
-        .containsEntry(PracticeChatPromptConstants.METADATA_LOCALE, "en-US");
+    assertThat(orchestrator.locale).isEqualTo("zh-CN");
   }
 
   @Test
   void forwardsErrorWithoutTouchingSession() {
     InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
-    CapturingCoordinator coordinator = new CapturingCoordinator(new IllegalStateException("stream failed"));
-    PracticeMessageStreamService service = new PracticeMessageStreamService(sessionRepository, coordinator);
+    CapturingOrchestrator orchestrator = new CapturingOrchestrator(new IllegalStateException("stream failed"));
+    PracticeMessageStreamService service = new PracticeMessageStreamService(sessionRepository, orchestrator);
 
     CollectingSubscriber subscriber = new CollectingSubscriber();
     service.stream(7, 50, "hint", "idem-1", null, null).subscribe(subscriber);
@@ -105,12 +100,12 @@ class PracticeMessageStreamServiceTest {
   void touchFailureDoesNotBreakRunEndOrCompletion() {
     InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
     sessionRepository.touchFailure = new IllegalStateException("touch failed");
-    CapturingCoordinator coordinator = new CapturingCoordinator(new AgentStreamEvent.AgentRunEnd(
+    CapturingOrchestrator orchestrator = new CapturingOrchestrator(new AgentStreamEvent.AgentRunEnd(
         "run-1",
         1,
         LlmFinishReason.STOP,
         Map.of()));
-    PracticeMessageStreamService service = new PracticeMessageStreamService(sessionRepository, coordinator);
+    PracticeMessageStreamService service = new PracticeMessageStreamService(sessionRepository, orchestrator);
 
     CollectingSubscriber subscriber = new CollectingSubscriber();
     service.stream(7, 50, "hint", "idem-1", null, null).subscribe(subscriber);
@@ -126,7 +121,7 @@ class PracticeMessageStreamServiceTest {
     InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
     PracticeMessageStreamService service = new PracticeMessageStreamService(
         sessionRepository,
-        new CapturingCoordinator(new AgentStreamEvent.AgentRunEnd("run-1", 1, LlmFinishReason.STOP, Map.of())));
+        new CapturingOrchestrator(new AgentStreamEvent.AgentRunEnd("run-1", 1, LlmFinishReason.STOP, Map.of())));
 
     assertThatThrownBy(() -> service.stream(7, 51, "hint", "idem-1", null, null))
         .isInstanceOfSatisfying(LearningPlanException.class, exception ->
@@ -140,7 +135,7 @@ class PracticeMessageStreamServiceTest {
     sessionRepository.session = sessionRepository.session(PracticeSessionStatus.ARCHIVED, 100L, "zh-CN");
     PracticeMessageStreamService service = new PracticeMessageStreamService(
         sessionRepository,
-        new CapturingCoordinator(new AgentStreamEvent.AgentRunEnd("run-1", 1, LlmFinishReason.STOP, Map.of())));
+        new CapturingOrchestrator(new AgentStreamEvent.AgentRunEnd("run-1", 1, LlmFinishReason.STOP, Map.of())));
 
     assertThatThrownBy(() -> service.stream(7, 50, "hint", "idem-1", null, null))
         .isInstanceOfSatisfying(LearningPlanException.class, exception ->
@@ -154,7 +149,7 @@ class PracticeMessageStreamServiceTest {
     sessionRepository.session = sessionRepository.session(PracticeSessionStatus.ACTIVE, null, "zh-CN");
     PracticeMessageStreamService service = new PracticeMessageStreamService(
         sessionRepository,
-        new CapturingCoordinator(new AgentStreamEvent.AgentRunEnd("run-1", 1, LlmFinishReason.STOP, Map.of())));
+        new CapturingOrchestrator(new AgentStreamEvent.AgentRunEnd("run-1", 1, LlmFinishReason.STOP, Map.of())));
 
     assertThatThrownBy(() -> service.stream(7, 50, "hint", "idem-1", null, null))
         .isInstanceOfSatisfying(LearningPlanException.class, exception ->
@@ -240,23 +235,41 @@ class PracticeMessageStreamServiceTest {
     }
   }
 
-  private static final class CapturingCoordinator extends AgentConversationRunCoordinator {
+  private static final class CapturingOrchestrator extends PracticeTurnOrchestrator {
 
     private final Object result;
-    private AgentConversationCommand command;
+    private long userId;
+    private long sessionId;
+    private String message;
+    private String idempotencyKey;
+    private String locale;
+    private Map<String, Object> governanceMetadata;
 
-    private CapturingCoordinator(Object result) {
+    private CapturingOrchestrator(Object result) {
       super(
-          new AgentConversationService(new UnusedConversationRepository(), new ContextAssembler()),
-          new UnusedAgentLoopRunner(),
-          new InMemoryAgentRunLockManager(),
-          new LocalAgentRunLockOwnerProvider("owner-a"));
+          new InMemoryPracticeSessionRepository(),
+          new UnusedCoordinator(),
+          runId -> Optional.empty(),
+          new PracticeTurnClassifier(),
+          new PracticeTurnCapabilityRegistry(List.of()));
       this.result = result;
     }
 
     @Override
-    public Flow.Publisher<AgentStreamEvent> stream(AgentConversationCommand command) {
-      this.command = command;
+    public Flow.Publisher<AgentStreamEvent> stream(
+        long userId,
+        long sessionId,
+        String message,
+        String idempotencyKey,
+        String locale,
+        Map<String, Object> governanceMetadata
+    ) {
+      this.userId = userId;
+      this.sessionId = sessionId;
+      this.message = message;
+      this.idempotencyKey = idempotencyKey;
+      this.locale = locale;
+      this.governanceMetadata = governanceMetadata == null ? Map.of() : Map.copyOf(governanceMetadata);
       return subscriber -> subscriber.onSubscribe(new Flow.Subscription() {
         private boolean completed;
 
@@ -281,6 +294,16 @@ class PracticeMessageStreamServiceTest {
           completed = true;
         }
       });
+    }
+  }
+
+  private static final class UnusedCoordinator extends AgentConversationRunCoordinator {
+    private UnusedCoordinator() {
+      super(
+          new AgentConversationService(new UnusedConversationRepository(), new ContextAssembler()),
+          new UnusedAgentLoopRunner(),
+          new InMemoryAgentRunLockManager(),
+          new LocalAgentRunLockOwnerProvider("owner-a"));
     }
   }
 

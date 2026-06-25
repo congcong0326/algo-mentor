@@ -4,13 +4,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Flow;
+import org.congcong.algomentor.agent.core.AgentLoopRunner;
+import org.congcong.algomentor.agent.core.AgentRequest;
+import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessageRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentTaskCreationRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentTaskRef;
+import org.congcong.algomentor.agent.core.runtime.model.AgentTurnMessages;
+import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
+import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
+import org.congcong.algomentor.agent.core.runlock.InMemoryAgentRunLockManager;
+import org.congcong.algomentor.agent.core.runlock.LocalAgentRunLockOwnerProvider;
+import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
@@ -18,11 +31,18 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewDraft;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewSummary;
+import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeSession;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
+import org.congcong.algomentor.mentor.application.practice.PracticeTurnCapabilityRegistry;
+import org.congcong.algomentor.mentor.application.practice.PracticeTurnOrchestrator;
+import org.congcong.algomentor.llm.core.gateway.LlmGateway;
+import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
+import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
+import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -43,6 +63,21 @@ class AgentConversationApiAutoConfigurationTest {
 
       assertThat(reviewRepositoryField(service)).isSameAs(reviewRepository);
     });
+  }
+
+  @Test
+  void practiceStreamServiceExistsWithoutReviewInfrastructure() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeStreamWithoutReviewDependencies.class)
+        .run(context -> {
+          assertThat(context).doesNotHaveBean(PracticeCodeReviewRepository.class);
+          assertThat(context).doesNotHaveBean(LlmGateway.class);
+          assertThat(context).hasSingleBean(PracticeTurnCapabilityRegistry.class);
+          assertThat(context.getBean(PracticeTurnCapabilityRegistry.class).capabilities()).isEmpty();
+          assertThat(context).hasSingleBean(PracticeTurnOrchestrator.class);
+          assertThat(context).hasSingleBean(PracticeMessageStreamService.class);
+        });
   }
 
   private static PracticeCodeReviewRepository reviewRepositoryField(PracticeSessionService service) throws Exception {
@@ -77,6 +112,45 @@ class AgentConversationApiAutoConfigurationTest {
     @Bean
     PracticeCodeReviewRepository practiceCodeReviewRepository() {
       return PracticeCodeReviewRepository.empty();
+    }
+  }
+
+  @Configuration(proxyBeanMethods = false)
+  static class PracticeStreamWithoutReviewDependencies {
+
+    @Bean
+    PracticeSessionRepository practiceSessionRepository() {
+      return new EmptyPracticeSessionRepository();
+    }
+
+    @Bean
+    AgentConversationRepository agentConversationRepository() {
+      return new EmptyAgentConversationRepository();
+    }
+
+    @Bean
+    ContextAssembler contextAssembler() {
+      return new ContextAssembler();
+    }
+
+    @Bean
+    AgentLoopRunner agentLoopRunner() {
+      return new EmptyAgentLoopRunner();
+    }
+
+    @Bean
+    AgentRunLockManager agentRunLockManager() {
+      return new InMemoryAgentRunLockManager();
+    }
+
+    @Bean
+    LocalAgentRunLockOwnerProvider agentRunLockOwnerProvider() {
+      return new LocalAgentRunLockOwnerProvider("test-owner");
+    }
+
+    @Bean
+    AgentTurnMessageLookupRepository agentTurnMessageLookupRepository() {
+      return runId -> Optional.<AgentTurnMessages>empty();
     }
   }
 
@@ -160,6 +234,50 @@ class AgentConversationApiAutoConfigurationTest {
     @Override
     public Optional<AgentActiveRun> activeRun(long taskId) {
       return Optional.empty();
+    }
+  }
+
+  private static final class EmptyAgentConversationRepository implements AgentConversationRepository {
+    @Override
+    public org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun createOrReuseRun(
+        org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest request
+    ) {
+      throw new UnsupportedOperationException("create run not used");
+    }
+
+    @Override
+    public Optional<org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun> findRunByIdempotencyKey(
+        String idempotencyKey
+    ) {
+      return Optional.empty();
+    }
+
+    @Override
+    public List<AgentMessage> recentMessages(long taskId, int messageLimit) {
+      return List.of();
+    }
+  }
+
+  private static final class EmptyAgentLoopRunner extends AgentLoopRunner {
+    private EmptyAgentLoopRunner() {
+      super(new EmptyLlmGateway(), "stub-model", AgentToolRegistry.empty(), 1);
+    }
+
+    @Override
+    public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
+      throw new UnsupportedOperationException("agent stream not used");
+    }
+  }
+
+  private static final class EmptyLlmGateway implements LlmGateway {
+    @Override
+    public LlmCompletionResult complete(LlmCompletionRequest request) {
+      throw new UnsupportedOperationException("complete not used");
+    }
+
+    @Override
+    public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
+      throw new UnsupportedOperationException("llm stream not used");
     }
   }
 }
