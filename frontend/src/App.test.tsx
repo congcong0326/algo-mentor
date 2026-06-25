@@ -84,6 +84,7 @@ describe('App', () => {
 
   afterEach(() => {
     cleanup();
+    vi.useRealTimers();
     const localStorage = stubbedLocalStorage;
     vi.unstubAllGlobals();
     localStorage?.clear();
@@ -1014,8 +1015,16 @@ describe('App', () => {
     expect(screen.getByText('回复失败，请重试。')).toHaveClass('practice-message-failed');
   });
 
-  it('blocks duplicate practice messages when an agent run is already in progress', async () => {
-    const fetchMock = mockLearningPlanFetch({ blockPracticeMessage: true });
+  it('polls the active practice run and refreshes messages when a duplicate run is already in progress', async () => {
+    const fetchMock = mockLearningPlanFetch({
+      activeRunSequence: [
+        null,
+        activePracticeRun(),
+        activePracticeRun(),
+        null,
+      ],
+      blockPracticeMessage: true,
+    });
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
 
@@ -1033,15 +1042,54 @@ describe('App', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: '发送' }));
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('当前回复仍在生成中，请稍后再试。');
+    await waitFor(() => expect(composer).toBeDisabled());
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(composer).toBeDisabled();
+    const thinkingMessage = screen.getByText('正在整理思路...').closest('.practice-message');
+    expect(thinkingMessage).not.toBeNull();
+    expect(thinkingMessage!.compareDocumentPosition(
+      screen.getByText(/给定一个整数数组/).closest('.practice-message') as Node,
+    ) & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy();
+
+    expect(await screen.findByText('后台回复已经持久化。', undefined, { timeout: 5000 })).toBeInTheDocument();
     expect(composer).not.toBeDisabled();
-    fireEvent.change(composer, {
-      target: { value: '稍后重试。' },
+    expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/practice-sessions/50/active-run',
+      expect.objectContaining({ credentials: 'same-origin' }),
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/practice-sessions/50/messages?limit=50',
+      expect.objectContaining({ credentials: 'same-origin' }),
+    );
+  });
+
+  it('shows an assistant thinking bubble when a practice run is active after refresh', async () => {
+    const fetchMock = mockLearningPlanFetch({
+      activeRunSequence: [
+        activePracticeRun(),
+        activePracticeRun(),
+        null,
+      ],
     });
-    expect(screen.getByRole('button', { name: '发送' })).not.toBeDisabled();
-    expect(screen.getAllByText('当前回复仍在生成中，请稍后再试。').find((element) => (
-      element.classList.contains('practice-message-failed')
-    ))).toBeDefined();
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' }));
+    fireEvent.click(await screen.findByRole('button', { name: /两数之和/ }));
+
+    const composer = await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' });
+    await waitFor(() => expect(composer).toBeDisabled());
+    const thinkingMessage = screen.getByText('正在整理思路...').closest('.practice-message');
+    expect(thinkingMessage).not.toBeNull();
+    expect(thinkingMessage!.compareDocumentPosition(
+      screen.getByText(/给定一个整数数组/).closest('.practice-message') as Node,
+    ) & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy();
+
+    expect(await screen.findByText('后台回复已经持久化。', undefined, { timeout: 5000 })).toBeInTheDocument();
+    expect(composer).not.toBeDisabled();
   });
 
   it('ignores duplicate practice submits before streaming state rerenders', async () => {
@@ -1575,6 +1623,7 @@ function mockLearningPlanAndProblemFetch() {
 }
 
 function mockLearningPlanFetch(options: {
+  activeRunSequence?: Array<ReturnType<typeof activePracticeRun> | null>;
   blockPracticeMessage?: boolean;
   failPracticeMessage?: boolean;
   omitLeetCodeUrl?: boolean;
@@ -1640,6 +1689,41 @@ function mockLearningPlanFetch(options: {
         sseEvent('agent_run_end', { runId: 'run_1' }),
       ]);
       return Promise.resolve(new Response(stream, { status: 200 }));
+    }
+
+    if (url === '/api/practice-sessions/50/active-run') {
+      const nextActiveRun = options.activeRunSequence && options.activeRunSequence.length > 0
+        ? options.activeRunSequence.shift()
+        : null;
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: nextActiveRun,
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/practice-sessions/50/messages?limit=50') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: [
+          ...practiceSessionMessages(),
+          {
+            id: 71,
+            role: 'USER',
+            messageType: 'CHAT',
+            contentMarkdown: '再解释一下。',
+            createdAt: '2026-06-22T00:01:00Z',
+          },
+          {
+            id: 72,
+            role: 'ASSISTANT',
+            messageType: 'CHAT',
+            contentMarkdown: '后台回复已经持久化。',
+            createdAt: '2026-06-22T00:01:01Z',
+          },
+        ],
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
     }
 
     if (url === '/api/practice-sessions/50/progress-status') {
@@ -2157,6 +2241,16 @@ function practiceSessionMessages() {
     contentMarkdown: '# Two Sum\n\n给定一个整数数组 nums 和一个整数目标值 target。\n\n- 返回两个数的下标。\n\n```text\n输入：nums = [2,7,11,15], target = 9\n输出：[0,1]\n```\n\n<pre>给定 nums = [2, 7, 11, 15], target = 9\n\n因为 nums[<strong>0</strong>] + nums[<strong>1</strong>] = 2 + 7 = 9\n所以返回 [<strong>0, 1</strong>]\n</pre>\n\n<script>alert(\"xss\")</script>',
     createdAt: '2026-06-22T00:00:00Z',
   }];
+}
+
+function activePracticeRun() {
+  return {
+    runId: 80,
+    taskId: 300,
+    runUuid: 'run-active',
+    idempotencyKey: 'idem-active',
+    startedAt: '2026-06-22T00:01:00Z',
+  };
 }
 
 function baseLearningPlanDetail() {

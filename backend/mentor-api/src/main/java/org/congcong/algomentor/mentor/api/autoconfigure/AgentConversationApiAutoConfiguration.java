@@ -120,21 +120,16 @@ public class AgentConversationApiAutoConfiguration {
 
   @Bean
   @ConditionalOnBean({
-      PracticeSessionService.class,
-      PracticeMessageStreamService.class,
       CurrentUserIdProvider.class,
-      AiActorResolver.class,
-      AiRunAdmissionService.class,
-      LlmStreamSseMapper.class
   })
   @ConditionalOnMissingBean
   public PracticeSessionController practiceSessionController(
-      PracticeSessionService practiceSessionService,
-      PracticeMessageStreamService streamService,
+      ObjectProvider<PracticeSessionService> practiceSessionService,
+      ObjectProvider<PracticeMessageStreamService> streamService,
       CurrentUserIdProvider currentUserIdProvider,
-      AiActorResolver actorResolver,
-      AiRunAdmissionService admissionService,
-      LlmStreamSseMapper sseMapper
+      ObjectProvider<AiActorResolver> actorResolver,
+      ObjectProvider<AiRunAdmissionService> admissionService,
+      ObjectProvider<LlmStreamSseMapper> sseMapper
   ) {
     return new PracticeSessionController(
         practiceSessionService,

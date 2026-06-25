@@ -13,12 +13,23 @@ public class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent>
 
   private final SseEmitter emitter;
   private final LlmStreamSseMapper mapper;
+  private final boolean cancelUpstreamOnClientDisconnect;
   private final AtomicBoolean terminalEventSent = new AtomicBoolean(false);
+  private final AtomicBoolean clientConnected = new AtomicBoolean(true);
   private Flow.Subscription subscription;
 
   public SseLlmStreamSubscriber(SseEmitter emitter, LlmStreamSseMapper mapper) {
+    this(emitter, mapper, true);
+  }
+
+  public SseLlmStreamSubscriber(
+      SseEmitter emitter,
+      LlmStreamSseMapper mapper,
+      boolean cancelUpstreamOnClientDisconnect
+  ) {
     this.emitter = emitter;
     this.mapper = mapper;
+    this.cancelUpstreamOnClientDisconnect = cancelUpstreamOnClientDisconnect;
   }
 
   @Override
@@ -34,6 +45,10 @@ public class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent>
 
   @Override
   public void onNext(AgentStreamEvent event) {
+    if (!clientConnected.get()) {
+      requestNextOrFinish(event);
+      return;
+    }
     try {
       /*
        * Publisher 产出的是领域事件 AgentStreamEvent；浏览器需要的是 SSE 协议格式。
@@ -54,8 +69,17 @@ public class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent>
       // 当前事件已经成功写给客户端，再向上游申请下一个事件。
       subscription.request(1);
     } catch (IOException | RuntimeException sendFailure) {
-      // 写 HTTP 响应失败通常意味着客户端断开或连接不可用，此时取消上游并结束 SSE。
-      cancel();
+      /*
+       * 写 HTTP 响应失败通常意味着客户端已刷新、离开页面或网络断开。
+       * 对于需要后台持久化最终结果的流，不能把这个客户端事件继续传播成 Agent run cancel；
+       * 此时只分离 SSE 写端，并继续 drain 上游事件，避免 backpressure 卡住后台 run。
+       */
+      clientConnected.set(false);
+      if (cancelUpstreamOnClientDisconnect) {
+        cancel();
+      } else {
+        requestNextOrFinish(event);
+      }
       emitter.completeWithError(sendFailure);
     }
   }
@@ -98,8 +122,22 @@ public class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent>
   }
 
   public void cancel() {
+    if (!cancelUpstreamOnClientDisconnect) {
+      clientConnected.set(false);
+      return;
+    }
     if (subscription != null) {
       subscription.cancel();
+    }
+  }
+
+  private void requestNextOrFinish(AgentStreamEvent event) {
+    if (isTerminalEvent(event)) {
+      terminalEventSent.set(true);
+      return;
+    }
+    if (subscription != null) {
+      subscription.request(1);
     }
   }
 

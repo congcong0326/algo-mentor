@@ -5,7 +5,6 @@ import javax.sql.DataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.agent.persistence.postgres.json.AgentMessageRoleTypeHandler;
 import org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler;
@@ -105,7 +104,7 @@ public class AgentPostgresPersistenceConfiguration {
   @Bean
   @ConditionalOnBean(AgentConversationMapper.class)
   @ConditionalOnMissingBean
-  public AgentConversationRepository agentConversationRepository(AgentConversationMapper conversationMapper) {
+  public PostgresAgentConversationRepository agentConversationRepository(AgentConversationMapper conversationMapper) {
     return new PostgresAgentConversationRepository(conversationMapper);
   }
 

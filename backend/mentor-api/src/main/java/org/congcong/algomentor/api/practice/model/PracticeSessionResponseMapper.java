@@ -16,7 +16,15 @@ public final class PracticeSessionResponseMapper {
         toProblem(result.problem()),
         result.messages().stream()
             .map(PracticeSessionResponseMapper::toMessage)
-            .toList());
+            .toList(),
+        result.activeRun()
+            .map(run -> new PracticeActiveRunResponse(
+                run.runId(),
+                run.taskId(),
+                run.runUuid(),
+                run.idempotencyKey(),
+                run.startedAt()))
+            .orElse(null));
   }
 
   private static PracticeSessionSummaryResponse toSession(PracticeSession session) {

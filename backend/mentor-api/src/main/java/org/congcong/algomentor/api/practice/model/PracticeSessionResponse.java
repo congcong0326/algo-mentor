@@ -5,5 +5,6 @@ import java.util.List;
 public record PracticeSessionResponse(
     PracticeSessionSummaryResponse session,
     PracticeProblemSummaryResponse problem,
-    List<PracticeMessageResponse> messages) {
+    List<PracticeMessageResponse> messages,
+    PracticeActiveRunResponse activeRun) {
 }

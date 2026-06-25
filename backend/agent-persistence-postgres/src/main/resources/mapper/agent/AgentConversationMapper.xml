@@ -31,6 +31,16 @@
     </constructor>
   </resultMap>
 
+  <resultMap id="AgentActiveRunMap" type="org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun">
+    <constructor>
+      <arg column="run_id" javaType="_long"/>
+      <arg column="task_id" javaType="_long"/>
+      <arg column="run_uuid" javaType="string"/>
+      <arg column="idempotency_key" javaType="string"/>
+      <arg column="started_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
   <select id="lockIdempotencyKey" resultType="int">
     SELECT 1
     FROM (
@@ -198,5 +208,14 @@
     FROM agent_message
     WHERE id = #{messageId}
       AND status = 'active'
+  </select>
+
+  <select id="findActiveRun" resultMap="AgentActiveRunMap">
+    SELECT id AS run_id, task_id, run_uuid, idempotency_key, started_at
+    FROM agent_run
+    WHERE task_id = #{taskId}
+      AND status = 'running'
+    ORDER BY started_at DESC, id DESC
+    LIMIT 1
   </select>
 </mapper>

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentRunRecord;
 
@@ -71,4 +72,6 @@ public interface AgentConversationMapper {
   );
 
   AgentMessage findMessageById(@Param("messageId") long messageId);
+
+  AgentActiveRun findActiveRun(@Param("taskId") long taskId);
 }

@@ -8,6 +8,8 @@ import type { LocaleResources, SupportedLocale } from '../i18n/locales';
 import {
   ApiRequestError,
   createOrReusePracticeSession,
+  getPracticeSessionActiveRun,
+  getPracticeSessionMessages,
   streamPracticeMessage,
   updatePracticeProgressStatus,
 } from '../services/api';
@@ -27,6 +29,7 @@ const LEETCODE_HOST_BY_LOCALE: Record<SupportedLocale, string> = {
 
 const LEETCODE_HOSTS = new Set(['leetcode.cn', 'www.leetcode.cn', 'leetcode.com', 'www.leetcode.com']);
 const AUTO_SCROLL_THRESHOLD_PX = 96;
+const ACTIVE_RUN_POLL_INTERVAL_MS = 3000;
 
 function problemLabel(problem: LearningPlanProblemDraft | undefined, locale: SupportedLocale, fallback: string): string {
   if (!problem) {
@@ -130,6 +133,18 @@ export default function PracticeChatWorkbench({
         }
         setSessionResponse(response.data);
         setMessages(response.data.messages);
+        if (!response.data.activeRun) {
+          void getPracticeSessionActiveRun(response.data.session.id, controller.signal)
+            .then((activeRunResponse) => {
+              if (controller.signal.aborted || !activeRunResponse.success || !activeRunResponse.data) {
+                return;
+              }
+              setSessionResponse((current) => current && current.session.id === response.data!.session.id
+                ? { ...current, activeRun: activeRunResponse.data }
+                : current);
+            })
+            .catch(() => undefined);
+        }
         setStatus('idle');
       })
       .catch((error) => {
@@ -149,12 +164,59 @@ export default function PracticeChatWorkbench({
 
   const sessionId = sessionResponse?.session.id;
   activeSessionIdRef.current = sessionId;
+  const hasActiveRun = Boolean(sessionResponse?.activeRun);
   const progressStatus = sessionResponse?.session.progressStatus;
   const leetcodeUrl = localizedLeetCodeUrl(sessionResponse?.problem.leetcodeUrl, locale);
   const difficulty = sessionResponse?.problem.difficulty ?? problem?.difficulty;
-  const canMarkCompleted = Boolean(sessionId) && progressStatus !== 'COMPLETED' && status !== 'streaming';
-  const composerInputDisabled = !sessionId || status === 'loading';
-  const sendDisabled = !sessionId || status === 'loading' || status === 'streaming' || !composerValue.trim();
+  const canMarkCompleted = Boolean(sessionId) && progressStatus !== 'COMPLETED' && status !== 'streaming' && !hasActiveRun;
+  const composerInputDisabled = !sessionId || status === 'loading' || hasActiveRun;
+  const sendDisabled = !sessionId || status === 'loading' || status === 'streaming' || hasActiveRun || !composerValue.trim();
+
+  useEffect(() => {
+    if (!sessionId || !hasActiveRun) {
+      return undefined;
+    }
+
+    let stopped = false;
+    const controller = new AbortController();
+
+    async function poll() {
+      try {
+        const response = await getPracticeSessionActiveRun(sessionId!, controller.signal);
+        if (stopped || controller.signal.aborted) {
+          return;
+        }
+        if (response.data) {
+          return;
+        }
+        const messagesResponse = await getPracticeSessionMessages(sessionId!, 50, controller.signal);
+        if (stopped || controller.signal.aborted) {
+          return;
+        }
+        if (messagesResponse.success && messagesResponse.data) {
+          setMessages(messagesResponse.data);
+        }
+        setSessionResponse((current) => current && current.session.id === sessionId
+          ? { ...current, activeRun: null }
+          : current);
+        setStatus('idle');
+        setError('');
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setError(error instanceof Error ? error.message : resources.learningPlans.practiceSessionLoadFailed);
+        }
+      }
+    }
+
+    const intervalId = window.setInterval(poll, ACTIVE_RUN_POLL_INTERVAL_MS);
+    void poll();
+
+    return () => {
+      stopped = true;
+      controller.abort();
+      window.clearInterval(intervalId);
+    };
+  }, [hasActiveRun, resources.learningPlans.practiceSessionLoadFailed, sessionId]);
 
   useLayoutEffect(() => {
     const messageList = messageListRef.current;
@@ -256,6 +318,7 @@ export default function PracticeChatWorkbench({
 
           if (event.eventName === 'agent_run_end') {
             agentRunEnded = true;
+            setSessionResponse((current) => current ? { ...current, activeRun: null } : current);
             setStatus('idle');
           }
 
@@ -272,6 +335,7 @@ export default function PracticeChatWorkbench({
       }
 
       if (agentRunEnded) {
+        await refreshMessages(sessionId, controller.signal);
         setStatus('idle');
       } else {
         setError(resources.learningPlans.practiceMessageFailed);
@@ -281,8 +345,22 @@ export default function PracticeChatWorkbench({
     } catch (error) {
       if (!controller.signal.aborted) {
         if (error instanceof ApiRequestError && error.code === AGENT_RUN_IN_PROGRESS_CODE) {
-          setError(resources.learningPlans.practiceMessageBlocked);
-          markAssistantMessageFailed(assistantMessageId, resources.learningPlans.practiceMessageBlocked);
+          setError('');
+          setMessages((current) => current.filter((message) => message.id !== assistantMessageId));
+          try {
+            const activeRunResponse = await getPracticeSessionActiveRun(sessionId, controller.signal);
+            if (activeRunResponse.success && activeRunResponse.data) {
+              setSessionResponse((current) => current && current.session.id === sessionId
+                ? { ...current, activeRun: activeRunResponse.data }
+                : current);
+            }
+          } catch (activeRunError) {
+            if (!controller.signal.aborted) {
+              setError(activeRunError instanceof Error
+                ? activeRunError.message
+                : resources.learningPlans.practiceMessageBlocked);
+            }
+          }
           setStatus('idle');
           return;
         }
@@ -341,6 +419,13 @@ export default function PracticeChatWorkbench({
       if (activeSessionIdRef.current === activeSessionId && practiceLoadTokenRef.current === activeLoadToken) {
         setCompletionUpdating(false);
       }
+    }
+  }
+
+  async function refreshMessages(activeSessionId: number, signal?: AbortSignal) {
+    const response = await getPracticeSessionMessages(activeSessionId, 50, signal);
+    if (response.success && response.data) {
+      setMessages(response.data);
     }
   }
 
@@ -456,6 +541,12 @@ export default function PracticeChatWorkbench({
             )}
           </article>
         ))}
+        {hasActiveRun && (
+          <article className="practice-message assistant-message">
+            <span>{resources.learningPlans.coach}</span>
+            <MarkdownView content={resources.learningPlans.organizingThoughts} />
+          </article>
+        )}
       </section>
 
       <form className="practice-composer" aria-label={resources.learningPlans.sendMessage} onSubmit={handleSubmit}>

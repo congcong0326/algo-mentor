@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessageRequest;
+import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentTaskCreationRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentTaskRef;
@@ -104,6 +105,24 @@ class PracticeSessionServiceTest {
     assertThat(reused.messages())
         .extracting(PracticeSessionMessage::id)
         .containsExactly(200L);
+  }
+
+  @Test
+  void returnsActiveRunForSessionTask() {
+    InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
+    InMemoryAgentTaskMessageRepository messageRepository = new InMemoryAgentTaskMessageRepository();
+    messageRepository.activeRun = new AgentActiveRun(
+        300L,
+        100L,
+        "run-300",
+        "idem-300",
+        Instant.parse("2026-01-01T00:02:00Z"));
+    PracticeSessionService service = service(sessionRepository, messageRepository);
+
+    PracticeSessionResult result = service.createOrReuse(7, reference());
+
+    assertThat(result.activeRun()).isPresent();
+    assertThat(result.activeRun().orElseThrow().runUuid()).isEqualTo("run-300");
   }
 
   @Test
@@ -261,6 +280,7 @@ class PracticeSessionServiceTest {
     private final List<AgentTaskCreationRequest> taskRequests = new ArrayList<>();
     private final List<AgentAssistantSeedMessageRequest> seedRequests = new ArrayList<>();
     private final List<AgentMessage> messages = new ArrayList<>();
+    private AgentActiveRun activeRun;
 
     @Override
     public AgentTaskRef createTask(AgentTaskCreationRequest request) {
@@ -284,6 +304,12 @@ class PracticeSessionServiceTest {
           .sorted(Comparator.comparingLong(AgentMessage::sequenceNo))
           .limit(messageLimit)
           .toList();
+    }
+
+    @Override
+    public Optional<AgentActiveRun> activeRun(long taskId) {
+      return Optional.ofNullable(activeRun)
+          .filter(run -> run.taskId() == taskId);
     }
   }
 

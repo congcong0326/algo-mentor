@@ -15,6 +15,8 @@ import org.congcong.algomentor.ai.governance.model.AiRunContext;
 import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.practice.model.PracticeMessageRequest;
+import org.congcong.algomentor.api.practice.model.PracticeMessageResponse;
+import org.congcong.algomentor.api.practice.model.PracticeActiveRunResponse;
 import org.congcong.algomentor.api.practice.model.PracticeProgressStatusRequest;
 import org.congcong.algomentor.api.practice.model.PracticeSessionResponse;
 import org.congcong.algomentor.api.practice.model.PracticeSessionResponseMapper;
@@ -29,7 +31,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeChatReference
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -42,25 +44,24 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
-@ConditionalOnBean({PracticeSessionService.class, PracticeMessageStreamService.class})
 public class PracticeSessionController {
 
   private static final String DEFAULT_LOCALE = "zh-CN";
 
-  private final PracticeSessionService practiceSessionService;
-  private final PracticeMessageStreamService streamService;
+  private final ObjectProvider<PracticeSessionService> practiceSessionService;
+  private final ObjectProvider<PracticeMessageStreamService> streamService;
   private final CurrentUserIdProvider currentUserIdProvider;
-  private final AiActorResolver actorResolver;
-  private final AiRunAdmissionService admissionService;
-  private final LlmStreamSseMapper sseMapper;
+  private final ObjectProvider<AiActorResolver> actorResolver;
+  private final ObjectProvider<AiRunAdmissionService> admissionService;
+  private final ObjectProvider<LlmStreamSseMapper> sseMapper;
 
   public PracticeSessionController(
-      PracticeSessionService practiceSessionService,
-      PracticeMessageStreamService streamService,
+      ObjectProvider<PracticeSessionService> practiceSessionService,
+      ObjectProvider<PracticeMessageStreamService> streamService,
       CurrentUserIdProvider currentUserIdProvider,
-      AiActorResolver actorResolver,
-      AiRunAdmissionService admissionService,
-      LlmStreamSseMapper sseMapper
+      ObjectProvider<AiActorResolver> actorResolver,
+      ObjectProvider<AiRunAdmissionService> admissionService,
+      ObjectProvider<LlmStreamSseMapper> sseMapper
   ) {
     this.practiceSessionService = practiceSessionService;
     this.streamService = streamService;
@@ -79,7 +80,7 @@ public class PracticeSessionController {
       @RequestParam(required = false, defaultValue = DEFAULT_LOCALE) String locale
   ) {
     long userId = requireCurrentUserId();
-    return ApiResponse.success(PracticeSessionResponseMapper.toResponse(practiceSessionService.createOrReuse(
+    return ApiResponse.success(PracticeSessionResponseMapper.toResponse(requiredPracticeSessionService().createOrReuse(
         userId,
         new PracticeChatReference(planId, phaseIndex, slug, locale))));
   }
@@ -87,7 +88,27 @@ public class PracticeSessionController {
   @GetMapping(ApiContractConstants.PRACTICE_SESSIONS_BASE_PATH + "/{sessionId}")
   public ApiResponse<PracticeSessionResponse> get(@PathVariable long sessionId) {
     long userId = requireCurrentUserId();
-    return ApiResponse.success(PracticeSessionResponseMapper.toResponse(practiceSessionService.get(userId, sessionId)));
+    return ApiResponse.success(PracticeSessionResponseMapper.toResponse(requiredPracticeSessionService().get(userId, sessionId)));
+  }
+
+  @GetMapping(ApiContractConstants.PRACTICE_SESSIONS_BASE_PATH
+      + ApiContractConstants.PRACTICE_SESSION_ACTIVE_RUN_PATH)
+  public ApiResponse<PracticeActiveRunResponse> activeRun(@PathVariable long sessionId) {
+    long userId = requireCurrentUserId();
+    PracticeSessionResponse response = PracticeSessionResponseMapper.toResponse(requiredPracticeSessionService().get(userId, sessionId));
+    return ApiResponse.success(response.activeRun());
+  }
+
+  @GetMapping(ApiContractConstants.PRACTICE_SESSIONS_BASE_PATH
+      + ApiContractConstants.PRACTICE_SESSION_MESSAGES_PATH)
+  public ApiResponse<java.util.List<PracticeMessageResponse>> messages(
+      @PathVariable long sessionId,
+      @RequestParam(required = false, defaultValue = "50") int limit
+  ) {
+    long userId = requireCurrentUserId();
+    PracticeSessionResponse response = PracticeSessionResponseMapper.toResponse(
+        requiredPracticeSessionService().get(userId, sessionId, limit));
+    return ApiResponse.success(response.messages());
   }
 
   @PatchMapping(ApiContractConstants.PRACTICE_SESSIONS_BASE_PATH
@@ -98,8 +119,9 @@ public class PracticeSessionController {
   ) {
     long userId = requireCurrentUserId();
     PracticeProgressStatus status = parseProgressStatus(request);
-    practiceSessionService.updateProgressStatus(userId, sessionId, status);
-    return ApiResponse.success(PracticeSessionResponseMapper.toResponse(practiceSessionService.get(userId, sessionId)));
+    PracticeSessionService sessionService = requiredPracticeSessionService();
+    sessionService.updateProgressStatus(userId, sessionId, status);
+    return ApiResponse.success(PracticeSessionResponseMapper.toResponse(sessionService.get(userId, sessionId)));
   }
 
   @PostMapping(
@@ -115,10 +137,10 @@ public class PracticeSessionController {
     String effectiveKey = idempotencyKey == null || idempotencyKey.isBlank()
         ? UUID.randomUUID().toString()
         : idempotencyKey;
-    AiActor actor = actorResolver.currentActor();
+    AiActor actor = requiredActorResolver().currentActor();
     Map<String, Object> requestMetadata = Map.of(
         PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, sessionId);
-    AiRunAdmission admission = admissionService.admit(new AiRunContext(
+    AiRunAdmission admission = requiredAdmissionService().admit(new AiRunContext(
         UUID.randomUUID().toString(),
         actor,
         AiPurpose.LEARNING_CHAT,
@@ -128,7 +150,12 @@ public class PracticeSessionController {
         true,
         requestMetadata,
         Instant.now()));
-    Flow.Publisher<AgentStreamEvent> publisher = streamService.stream(
+    PracticeMessageStreamService practiceMessageStreamService = streamService.getIfAvailable(() -> {
+      throw new org.congcong.algomentor.mentor.application.learningplan.LearningPlanException(
+          "PRACTICE_MESSAGE_STREAM_UNAVAILABLE",
+          "题目训练消息流服务不可用。");
+    });
+    Flow.Publisher<AgentStreamEvent> publisher = practiceMessageStreamService.stream(
         userId,
         sessionId,
         request.message(),
@@ -137,7 +164,7 @@ public class PracticeSessionController {
         admission.metadata());
 
     SseEmitter emitter = new SseEmitter(30_000L);
-    SseLlmStreamSubscriber subscriber = new SseLlmStreamSubscriber(emitter, sseMapper);
+    SseLlmStreamSubscriber subscriber = new SseLlmStreamSubscriber(emitter, requiredSseMapper(), false);
 
     emitter.onCompletion(subscriber::cancel);
     emitter.onTimeout(subscriber::cancel);
@@ -155,6 +182,32 @@ public class PracticeSessionController {
     return currentUserIdProvider.currentUser()
         .map(AuthenticatedUserPrincipal::userId)
         .orElseThrow(() -> new PracticeSessionUnauthenticatedException("当前请求未登录或无法解析当前用户。"));
+  }
+
+  private PracticeSessionService requiredPracticeSessionService() {
+    return practiceSessionService.getIfAvailable(() -> {
+      throw new org.congcong.algomentor.mentor.application.learningplan.LearningPlanException(
+          "PRACTICE_SESSION_SERVICE_UNAVAILABLE",
+          "题目训练会话服务不可用。");
+    });
+  }
+
+  private AiActorResolver requiredActorResolver() {
+    return actorResolver.getIfAvailable(this::streamUnavailable);
+  }
+
+  private AiRunAdmissionService requiredAdmissionService() {
+    return admissionService.getIfAvailable(this::streamUnavailable);
+  }
+
+  private LlmStreamSseMapper requiredSseMapper() {
+    return sseMapper.getIfAvailable(this::streamUnavailable);
+  }
+
+  private <T> T streamUnavailable() {
+    throw new org.congcong.algomentor.mentor.application.learningplan.LearningPlanException(
+        "PRACTICE_MESSAGE_STREAM_UNAVAILABLE",
+        "题目训练消息流服务不可用。");
   }
 
   private int requestSize(PracticeMessageRequest request) {

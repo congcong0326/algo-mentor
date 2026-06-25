@@ -11,6 +11,8 @@ import type {
   LearningPlanMessageRequest,
   LearningPlanPageResponse,
   PracticeMessageRequest,
+  PracticeMessage,
+  PracticeActiveRun,
   PracticeProgressStatus,
   PracticeSessionResponse,
   ProblemDetail,
@@ -155,6 +157,41 @@ export async function getPracticeSession(
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Practice session detail request failed');
+  }
+
+  return response.json();
+}
+
+export async function getPracticeSessionActiveRun(
+  sessionId: number,
+  signal?: AbortSignal,
+): Promise<ApiResponse<PracticeActiveRun | null>> {
+  const response = await fetch(`/api/practice-sessions/${sessionId}/active-run`, {
+    headers: jsonHeaders,
+    credentials: 'same-origin',
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Practice session active run request failed');
+  }
+
+  return response.json();
+}
+
+export async function getPracticeSessionMessages(
+  sessionId: number,
+  limit = 50,
+  signal?: AbortSignal,
+): Promise<ApiResponse<PracticeMessage[]>> {
+  const response = await fetch(`/api/practice-sessions/${sessionId}/messages${toQueryString({ limit })}`, {
+    headers: jsonHeaders,
+    credentials: 'same-origin',
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Practice session messages request failed');
   }
 
   return response.json();
@@ -346,6 +383,7 @@ export async function confirmLearningPlanDraft(
 
 interface PracticeSessionQuery {
   locale?: ProblemListQuery['locale'];
+  limit?: number;
 }
 
 type QueryParams = ProblemListQuery | LearningPlanListQuery | PracticeSessionQuery;

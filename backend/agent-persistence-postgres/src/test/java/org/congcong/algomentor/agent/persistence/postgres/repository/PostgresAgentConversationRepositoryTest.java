@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessageRequest;
+import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest;
 import org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun;
@@ -163,11 +164,27 @@ class PostgresAgentConversationRepositoryTest {
         "findMessageById:30");
   }
 
+  @Test
+  void returnsActiveRunForTask() {
+    mapper.activeRun = new AgentActiveRun(
+        401L,
+        101L,
+        "run-uuid-401",
+        "idem-401",
+        Instant.parse("2026-01-01T00:04:00Z"));
+
+    AgentActiveRun run = repository.activeRun(101L).orElseThrow();
+
+    assertThat(run.runUuid()).isEqualTo("run-uuid-401");
+    assertThat(mapper.calls).containsExactly("findActiveRun:101");
+  }
+
   private static final class FakeConversationMapper implements AgentConversationMapper {
     private final List<String> calls = new ArrayList<>();
     private Long existingRunId;
     private AgentRunRecord existingRunRecord;
     private AgentMessage messageById;
+    private AgentActiveRun activeRun;
     private List<AgentMessage> recentMessages = List.of();
     private Map<String, Object> lastUserMessageMetadata = Map.of();
     private Map<String, Object> lastSeedMetadata = Map.of();
@@ -266,6 +283,12 @@ class PostgresAgentConversationRepositoryTest {
     public AgentMessage findMessageById(long messageId) {
       calls.add("findMessageById:" + messageId);
       return messageById;
+    }
+
+    @Override
+    public AgentActiveRun findActiveRun(long taskId) {
+      calls.add("findActiveRun:" + taskId);
+      return activeRun;
     }
   }
 }

@@ -101,10 +101,19 @@ export interface PracticeMessage {
   createdAt: string;
 }
 
+export interface PracticeActiveRun {
+  runId: number;
+  taskId: number;
+  runUuid: string;
+  idempotencyKey?: string;
+  startedAt: string;
+}
+
 export interface PracticeSessionResponse {
   session: PracticeSessionSummary;
   problem: PracticeProblemSummary;
   messages: PracticeMessage[];
+  activeRun?: PracticeActiveRun | null;
 }
 
 export interface PracticeMessageRequest {

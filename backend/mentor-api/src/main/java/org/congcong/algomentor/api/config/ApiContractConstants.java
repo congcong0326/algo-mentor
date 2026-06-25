@@ -82,6 +82,16 @@ public final class ApiContractConstants {
   public static final String PRACTICE_SESSION_MESSAGES_STREAM_PATH = "/{sessionId}/messages/stream";
 
   /**
+   * 题目练习会话 active run 查询路径。
+   */
+  public static final String PRACTICE_SESSION_ACTIVE_RUN_PATH = "/{sessionId}/active-run";
+
+  /**
+   * 题目练习会话历史消息查询路径。
+   */
+  public static final String PRACTICE_SESSION_MESSAGES_PATH = "/{sessionId}/messages";
+
+  /**
    * 题目练习会话进度状态路径。
    */
   public static final String PRACTICE_SESSION_PROGRESS_STATUS_PATH = "/{sessionId}/progress-status";

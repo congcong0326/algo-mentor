@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessageRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest;
@@ -117,6 +118,11 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
     return conversationMapper.messages(taskId, messageLimit).stream()
         .sorted(Comparator.comparingLong(AgentMessage::sequenceNo))
         .toList();
+  }
+
+  @Override
+  public Optional<AgentActiveRun> activeRun(long taskId) {
+    return Optional.ofNullable(conversationMapper.findActiveRun(taskId));
   }
 
   private PreparedAgentRun existingDraft(long runId) {

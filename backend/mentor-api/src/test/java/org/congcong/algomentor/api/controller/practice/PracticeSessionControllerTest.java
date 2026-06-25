@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
+import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
@@ -55,6 +56,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeSessionStatus
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -127,6 +129,39 @@ class PracticeSessionControllerTest {
     mockMvc.perform(get("/api/practice-sessions/50"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.session.progressStatus").value("IN_PROGRESS"));
+  }
+
+  @Test
+  void getPracticeSessionReturnsActiveRun() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(practiceSessionService.get(42L, 50L)).thenReturn(resultWithActiveRun());
+
+    mockMvc.perform(get("/api/practice-sessions/50"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.activeRun.runUuid").value("run-80"))
+        .andExpect(jsonPath("$.data.activeRun.idempotencyKey").value("idem-80"));
+  }
+
+  @Test
+  void activeRunEndpointReturnsCurrentActiveRun() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(practiceSessionService.get(42L, 50L)).thenReturn(resultWithActiveRun());
+
+    mockMvc.perform(get("/api/practice-sessions/50/active-run"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.runUuid").value("run-80"));
+  }
+
+  @Test
+  void messagesEndpointReturnsHistoryMessages() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(practiceSessionService.get(42L, 50L, 50)).thenReturn(result(PracticeProgressStatus.IN_PROGRESS));
+
+    mockMvc.perform(get("/api/practice-sessions/50/messages?limit=50"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data[0].messageType").value("PROBLEM_STATEMENT"));
+
+    verify(practiceSessionService).get(42L, 50L, 50);
   }
 
   @Test
@@ -281,7 +316,33 @@ class PracticeSessionControllerTest {
             "ASSISTANT",
             PracticeChatPromptConstants.MESSAGE_TYPE_PROBLEM_STATEMENT,
             "Given an array of integers...",
-            Instant.parse("2026-06-24T00:00:02Z"))));
+            Instant.parse("2026-06-24T00:00:02Z"))),
+        Optional.empty());
+  }
+
+  private PracticeSessionResult resultWithActiveRun() {
+    return new PracticeSessionResult(
+        session(PracticeProgressStatus.IN_PROGRESS),
+        new PracticeChatProblemDetail(
+            "two-sum",
+            1,
+            "Two Sum",
+            "EASY",
+            List.of("Array", "Hash Table"),
+            "Given an array of integers...",
+            "https://leetcode.com/problems/two-sum/"),
+        List.of(new PracticeSessionMessage(
+            70L,
+            "ASSISTANT",
+            PracticeChatPromptConstants.MESSAGE_TYPE_PROBLEM_STATEMENT,
+            "Given an array of integers...",
+            Instant.parse("2026-06-24T00:00:02Z"))),
+        Optional.of(new AgentActiveRun(
+            80L,
+            80L,
+            "run-80",
+            "idem-80",
+            Instant.parse("2026-06-24T00:00:04Z"))));
   }
 
   private PracticeSession session(PracticeProgressStatus progressStatus) {
@@ -362,12 +423,12 @@ class PracticeSessionControllerTest {
 
     @Bean
     PracticeSessionController practiceSessionController(
-        PracticeSessionService practiceSessionService,
-        PracticeMessageStreamService streamService,
+        ObjectProvider<PracticeSessionService> practiceSessionService,
+        ObjectProvider<PracticeMessageStreamService> streamService,
         CurrentUserIdProvider currentUserIdProvider,
-        AiActorResolver actorResolver,
-        AiRunAdmissionService admissionService,
-        LlmStreamSseMapper sseMapper
+        ObjectProvider<AiActorResolver> actorResolver,
+        ObjectProvider<AiRunAdmissionService> admissionService,
+        ObjectProvider<LlmStreamSseMapper> sseMapper
     ) {
       return new PracticeSessionController(
           practiceSessionService,

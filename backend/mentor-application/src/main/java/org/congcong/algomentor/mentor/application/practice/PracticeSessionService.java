@@ -4,7 +4,9 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessageRequest;
+import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentTaskCreationRequest;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
@@ -67,12 +69,16 @@ public class PracticeSessionService {
   }
 
   public PracticeSessionResult get(long userId, long sessionId) {
+    return get(userId, sessionId, MESSAGE_LIMIT);
+  }
+
+  public PracticeSessionResult get(long userId, long sessionId, int messageLimit) {
     PracticeSession session = practiceSessionRepository.findSessionForUser(sessionId, userId)
         .orElseThrow(() -> new LearningPlanException("PRACTICE_SESSION_NOT_FOUND", "题目练习会话不存在。"));
     PracticeChatReference reference = new PracticeChatReference(
         session.planId(), session.phaseIndex(), session.problemSlug(), session.locale());
     PracticeChatContext context = requireContext(userId, reference);
-    return result(session, context.problemDetail());
+    return result(session, context.problemDetail(), messageLimit);
   }
 
   @Transactional
@@ -87,13 +93,21 @@ public class PracticeSessionService {
   }
 
   private PracticeSessionResult result(PracticeSession session, PracticeChatProblemDetail problemDetail) {
+    return result(session, problemDetail, MESSAGE_LIMIT);
+  }
+
+  private PracticeSessionResult result(PracticeSession session, PracticeChatProblemDetail problemDetail, int messageLimit) {
+    int effectiveLimit = messageLimit < 1 ? MESSAGE_LIMIT : Math.min(messageLimit, MESSAGE_LIMIT);
     List<PracticeSessionMessage> messages = session.agentTaskId() == null
         ? List.of()
-        : agentTaskMessageRepository.messages(session.agentTaskId(), MESSAGE_LIMIT).stream()
+        : agentTaskMessageRepository.messages(session.agentTaskId(), effectiveLimit).stream()
             .sorted(Comparator.comparingLong(AgentMessage::sequenceNo))
             .map(this::toPracticeSessionMessage)
             .toList();
-    return new PracticeSessionResult(session, problemDetail, messages);
+    Optional<AgentActiveRun> activeRun = session.agentTaskId() == null
+        ? Optional.empty()
+        : agentTaskMessageRepository.activeRun(session.agentTaskId());
+    return new PracticeSessionResult(session, problemDetail, messages, activeRun);
   }
 
   private PracticeSession withProgressStatus(PracticeSession session, PracticeProgressStatus status) {
