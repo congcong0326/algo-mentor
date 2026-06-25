@@ -14,6 +14,7 @@ import org.congcong.algomentor.ai.governance.model.AiPurpose;
 import org.congcong.algomentor.ai.governance.model.AiRunContext;
 import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.api.config.ApiContractConstants;
+import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.practice.model.PracticeCodeReviewDetailResponse;
 import org.congcong.algomentor.api.practice.model.PracticeCodeReviewHistoryResponse;
 import org.congcong.algomentor.api.practice.model.PracticeCodeReviewResponseMapper;
@@ -57,6 +58,7 @@ public class PracticeSessionController {
   private final ObjectProvider<AiActorResolver> actorResolver;
   private final ObjectProvider<AiRunAdmissionService> admissionService;
   private final ObjectProvider<LlmStreamSseMapper> sseMapper;
+  private final ApiSseProperties sseProperties;
 
   public PracticeSessionController(
       ObjectProvider<PracticeSessionService> practiceSessionService,
@@ -64,7 +66,8 @@ public class PracticeSessionController {
       CurrentUserIdProvider currentUserIdProvider,
       ObjectProvider<AiActorResolver> actorResolver,
       ObjectProvider<AiRunAdmissionService> admissionService,
-      ObjectProvider<LlmStreamSseMapper> sseMapper
+      ObjectProvider<LlmStreamSseMapper> sseMapper,
+      ApiSseProperties sseProperties
   ) {
     this.practiceSessionService = practiceSessionService;
     this.streamService = streamService;
@@ -72,6 +75,7 @@ public class PracticeSessionController {
     this.actorResolver = actorResolver;
     this.admissionService = admissionService;
     this.sseMapper = sseMapper;
+    this.sseProperties = sseProperties;
   }
 
   @PostMapping(ApiContractConstants.LEARNING_PLANS_BASE_PATH
@@ -185,7 +189,7 @@ public class PracticeSessionController {
         DEFAULT_LOCALE,
         admission.metadata());
 
-    SseEmitter emitter = new SseEmitter(30_000L);
+    SseEmitter emitter = new SseEmitter(sseProperties.practiceMessageTimeoutMillis());
     SseLlmStreamSubscriber subscriber = new SseLlmStreamSubscriber(emitter, requiredSseMapper(), false);
 
     emitter.onCompletion(subscriber::cancel);

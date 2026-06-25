@@ -8,6 +8,7 @@ import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
+import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.agent.persistence.postgres.config.AgentPostgresPersistenceConfiguration;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
 import org.congcong.algomentor.api.controller.AgentConversationController;
@@ -183,7 +184,8 @@ public class AgentConversationApiAutoConfiguration {
       AgentConversationRunCoordinator.class,
       AgentTurnMessageLookupRepository.class,
       PracticeTurnClassifier.class,
-      PracticeTurnCapabilityRegistry.class
+      PracticeTurnCapabilityRegistry.class,
+      PracticeChatProblemCatalog.class
   })
   @ConditionalOnMissingBean
   public PracticeTurnOrchestrator practiceTurnOrchestrator(
@@ -191,14 +193,16 @@ public class AgentConversationApiAutoConfiguration {
       AgentConversationRunCoordinator runCoordinator,
       AgentTurnMessageLookupRepository turnMessageLookupRepository,
       PracticeTurnClassifier classifier,
-      PracticeTurnCapabilityRegistry capabilityRegistry
+      PracticeTurnCapabilityRegistry capabilityRegistry,
+      PracticeChatProblemCatalog problemCatalog
   ) {
     return new PracticeTurnOrchestrator(
         practiceSessionRepository,
         runCoordinator,
         turnMessageLookupRepository,
         classifier,
-        capabilityRegistry);
+        capabilityRegistry,
+        problemCatalog);
   }
 
   @Bean
@@ -225,7 +229,8 @@ public class AgentConversationApiAutoConfiguration {
       CurrentUserIdProvider currentUserIdProvider,
       ObjectProvider<AiActorResolver> actorResolver,
       ObjectProvider<AiRunAdmissionService> admissionService,
-      ObjectProvider<LlmStreamSseMapper> sseMapper
+      ObjectProvider<LlmStreamSseMapper> sseMapper,
+      ApiSseProperties sseProperties
   ) {
     return new PracticeSessionController(
         practiceSessionService,
@@ -233,6 +238,7 @@ public class AgentConversationApiAutoConfiguration {
         currentUserIdProvider,
         actorResolver,
         admissionService,
-        sseMapper);
+        sseMapper,
+        sseProperties);
   }
 }

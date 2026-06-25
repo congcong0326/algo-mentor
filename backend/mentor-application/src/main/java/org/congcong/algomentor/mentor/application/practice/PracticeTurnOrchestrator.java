@@ -33,13 +33,15 @@ public class PracticeTurnOrchestrator {
   private final AgentTurnMessageLookupRepository turnMessageLookupRepository;
   private final PracticeTurnClassifier classifier;
   private final PracticeTurnCapabilityRegistry capabilityRegistry;
+  private final PracticeChatProblemCatalog problemCatalog;
 
   public PracticeTurnOrchestrator(
       PracticeSessionRepository sessionRepository,
       AgentConversationRunCoordinator coordinator,
       AgentTurnMessageLookupRepository turnMessageLookupRepository,
       PracticeTurnClassifier classifier,
-      PracticeTurnCapabilityRegistry capabilityRegistry
+      PracticeTurnCapabilityRegistry capabilityRegistry,
+      PracticeChatProblemCatalog problemCatalog
   ) {
     this.sessionRepository = Objects.requireNonNull(sessionRepository, "sessionRepository must not be null");
     this.coordinator = Objects.requireNonNull(coordinator, "coordinator must not be null");
@@ -48,6 +50,7 @@ public class PracticeTurnOrchestrator {
         "turnMessageLookupRepository must not be null");
     this.classifier = Objects.requireNonNull(classifier, "classifier must not be null");
     this.capabilityRegistry = Objects.requireNonNull(capabilityRegistry, "capabilityRegistry must not be null");
+    this.problemCatalog = Objects.requireNonNull(problemCatalog, "problemCatalog must not be null");
   }
 
   public Flow.Publisher<AgentStreamEvent> stream(
@@ -187,6 +190,7 @@ public class PracticeTurnOrchestrator {
       PracticeTurnClassification classification
   ) {
     Long assistantMessageId = messages.assistantMessage().map(message -> message.id()).orElse(null);
+    Optional<PracticeChatProblemDetail> problem = problemCatalog.findProblemBySlug(session.problemSlug(), locale);
     return new PracticeTurnContext(
         userId,
         session.planId(),
@@ -196,12 +200,42 @@ public class PracticeTurnOrchestrator {
         messages.userMessage().id(),
         assistantMessageId,
         runDbId,
-        session.problemSlug(),
-        "planId=%d phaseIndex=%d".formatted(session.planId(), session.phaseIndex()),
+        problem.map(this::problemFacts).orElse("slug=%s".formatted(session.problemSlug())),
+        learningPlanFacts(session),
         classification.extractedCode(),
         classification.originalMessage(),
         "",
         locale);
+  }
+
+  private String problemFacts(PracticeChatProblemDetail problem) {
+    return """
+        slug=%s
+        frontendId=%s
+        title=%s
+        difficulty=%s
+        tags=%s
+        statement=%s
+        leetcodeUrl=%s
+        """.formatted(
+        problem.slug(),
+        problem.frontendId() == null ? "" : problem.frontendId(),
+        blankToEmpty(problem.title()),
+        blankToEmpty(problem.difficulty()),
+        String.join(", ", problem.tags()),
+        blankToEmpty(problem.contentMarkdown()),
+        blankToEmpty(problem.leetcodeUrl())).trim();
+  }
+
+  private String learningPlanFacts(PracticeSession session) {
+    return "planId=%d phaseIndex=%d problemSlug=%s".formatted(
+        session.planId(),
+        session.phaseIndex(),
+        session.problemSlug());
+  }
+
+  private String blankToEmpty(String value) {
+    return value == null ? "" : value;
   }
 
   private Map<String, Object> mergePracticeCapabilities(

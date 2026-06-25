@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.auth.model.AuthUserStatus;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
@@ -99,13 +100,19 @@ class PracticeSessionControllerWithoutStreamServiceTest {
     }
 
     @Bean
+    ApiSseProperties apiSseProperties() {
+      return new ApiSseProperties();
+    }
+
+    @Bean
     PracticeSessionController practiceSessionController(
         ObjectProvider<PracticeSessionService> practiceSessionService,
         ObjectProvider<org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService> streamService,
         CurrentUserIdProvider currentUserIdProvider,
         ObjectProvider<org.congcong.algomentor.api.service.AiActorResolver> actorResolver,
         ObjectProvider<org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService> admissionService,
-        ObjectProvider<org.congcong.algomentor.api.service.LlmStreamSseMapper> sseMapper
+        ObjectProvider<org.congcong.algomentor.api.service.LlmStreamSseMapper> sseMapper,
+        ApiSseProperties sseProperties
     ) {
       return new PracticeSessionController(
           practiceSessionService,
@@ -113,7 +120,8 @@ class PracticeSessionControllerWithoutStreamServiceTest {
           currentUserIdProvider,
           actorResolver,
           admissionService,
-          sseMapper);
+          sseMapper,
+          sseProperties);
     }
   }
 }

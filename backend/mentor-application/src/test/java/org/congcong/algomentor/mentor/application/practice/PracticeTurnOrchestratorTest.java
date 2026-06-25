@@ -75,6 +75,15 @@ class PracticeTurnOrchestratorTest {
     assertThat(capability.context.userMessageId()).isEqualTo(701L);
     assertThat(capability.context.assistantMessageId()).isEqualTo(702L);
     assertThat(capability.context.agentRunDbId()).isEqualTo(501L);
+    assertThat(capability.context.problemFacts())
+        .contains("title=Two Sum")
+        .contains("difficulty=EASY")
+        .contains("tags=Array, Hash Table")
+        .contains("Given an array of integers");
+    assertThat(capability.context.learningPlanFacts())
+        .contains("planId=12")
+        .contains("phaseIndex=1")
+        .contains("problemSlug=two-sum");
     assertThat(capability.classification.codeSubmissionCandidate()).isTrue();
     assertThat(coordinator.command.practiceChat())
         .isEqualTo(new PracticeChatReference(12L, 1, "two-sum", "zh-CN"));
@@ -190,7 +199,15 @@ class PracticeTurnOrchestratorTest {
         coordinator,
         turnMessages,
         new PracticeTurnClassifier(),
-        new PracticeTurnCapabilityRegistry(List.of(capability)));
+        new PracticeTurnCapabilityRegistry(List.of(capability)),
+        (slug, locale) -> Optional.of(new PracticeChatProblemDetail(
+            slug,
+            1,
+            "Two Sum",
+            "EASY",
+            List.of("Array", "Hash Table"),
+            "Given an array of integers, return indices of the two numbers such that they add up to target.",
+            "https://leetcode.com/problems/two-sum/")));
   }
 
   private CapturingCapability savedCapability() {

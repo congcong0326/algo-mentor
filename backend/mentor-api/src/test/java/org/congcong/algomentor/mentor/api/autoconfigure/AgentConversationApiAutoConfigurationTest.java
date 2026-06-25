@@ -152,6 +152,11 @@ class AgentConversationApiAutoConfigurationTest {
     AgentTurnMessageLookupRepository agentTurnMessageLookupRepository() {
       return runId -> Optional.<AgentTurnMessages>empty();
     }
+
+    @Bean
+    PracticeChatProblemCatalog practiceChatProblemCatalog() {
+      return (slug, locale) -> Optional.empty();
+    }
   }
 
   private static final class EmptyLearningPlanRepository implements LearningPlanRepository {

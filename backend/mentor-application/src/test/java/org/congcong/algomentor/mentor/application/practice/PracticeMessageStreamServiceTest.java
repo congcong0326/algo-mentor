@@ -251,7 +251,8 @@ class PracticeMessageStreamServiceTest {
           new UnusedCoordinator(),
           runId -> Optional.empty(),
           new PracticeTurnClassifier(),
-          new PracticeTurnCapabilityRegistry(List.of()));
+          new PracticeTurnCapabilityRegistry(List.of()),
+          (slug, locale) -> Optional.empty());
       this.result = result;
     }
 

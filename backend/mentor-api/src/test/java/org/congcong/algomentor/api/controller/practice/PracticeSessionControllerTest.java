@@ -37,6 +37,7 @@ import org.congcong.algomentor.ai.governance.model.AiRunContext;
 import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.ai.governance.model.AiRunStatus;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicy;
+import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.controller.AiGovernanceExceptionHandler;
 import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
@@ -104,9 +105,13 @@ class PracticeSessionControllerTest {
   @Autowired
   private AiRunAdmissionService admissionService;
 
+  @Autowired
+  private ApiSseProperties sseProperties;
+
   @BeforeEach
   void resetMocks() {
-    reset(practiceSessionService, streamService, currentUserIdProvider, actorResolver, admissionService);
+    reset(practiceSessionService, streamService, currentUserIdProvider, actorResolver, admissionService, sseProperties);
+    when(sseProperties.practiceMessageTimeoutMillis()).thenReturn(360_000L);
   }
 
   @Test
@@ -300,6 +305,7 @@ class PracticeSessionControllerTest {
     ArgumentCaptor<Map<String, Object>> metadataCaptor = ArgumentCaptor.captor();
     verify(streamService).stream(eq(42L), eq(50L), eq("提示一下思路"), eq("idem-50"), eq("zh-CN"),
         metadataCaptor.capture());
+    verify(sseProperties).practiceMessageTimeoutMillis();
     org.assertj.core.api.Assertions.assertThat(metadataCaptor.getValue())
         .containsEntry(AiGovernanceMetadataKeys.SOURCE, "PRACTICE_CHAT")
         .containsEntry(PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, 50L);
@@ -598,13 +604,19 @@ class PracticeSessionControllerTest {
     }
 
     @Bean
+    ApiSseProperties apiSseProperties() {
+      return mock(ApiSseProperties.class);
+    }
+
+    @Bean
     PracticeSessionController practiceSessionController(
         ObjectProvider<PracticeSessionService> practiceSessionService,
         ObjectProvider<PracticeMessageStreamService> streamService,
         CurrentUserIdProvider currentUserIdProvider,
         ObjectProvider<AiActorResolver> actorResolver,
         ObjectProvider<AiRunAdmissionService> admissionService,
-        ObjectProvider<LlmStreamSseMapper> sseMapper
+        ObjectProvider<LlmStreamSseMapper> sseMapper,
+        ApiSseProperties sseProperties
     ) {
       return new PracticeSessionController(
           practiceSessionService,
@@ -612,7 +624,8 @@ class PracticeSessionControllerTest {
           currentUserIdProvider,
           actorResolver,
           admissionService,
-          sseMapper);
+          sseMapper,
+          sseProperties);
     }
   }
 }
