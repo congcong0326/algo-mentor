@@ -1960,27 +1960,221 @@ a {
   margin: 0;
 }
 
-.practice-review-panel {
+.practice-review-drawer {
   display: grid;
-  gap: 6px;
-  max-width: 840px;
-  padding: 14px 16px;
-  border: 1px dashed var(--border-strong);
-  border-radius: 12px;
+  gap: 16px;
+  min-height: 0;
+  padding: 18px;
+  border-top: 1px solid var(--border-subtle);
   background: var(--surface-card);
 }
 
-.practice-review-panel h3,
-.practice-review-panel p {
+.practice-review-drawer .practice-review-panel {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.practice-review-drawer h3,
+.practice-review-drawer h4,
+.practice-review-drawer p {
   margin: 0;
 }
 
-.practice-review-panel h3 {
+.practice-review-drawer h3 {
   font-size: 15px;
 }
 
-.practice-review-panel p {
+.practice-review-drawer p {
   color: var(--text-secondary);
+}
+
+.review-drawer-content {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  gap: 16px;
+  min-height: 0;
+}
+
+.review-empty-state {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 8px;
+  background: var(--surface-muted);
+}
+
+.review-score-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 4px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.review-score-badge svg {
+  width: 14px;
+  height: 14px;
+}
+
+.review-score-badge.passed {
+  border-color: var(--success);
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.review-score-badge.failed {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.review-version-list {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.review-version-button {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  min-height: 74px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-muted);
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.review-version-button[aria-pressed="true"] {
+  border-color: var(--action-primary);
+  background: var(--accent-warm-soft);
+}
+
+.review-version-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.review-version-title span {
+  color: var(--text-muted);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.review-detail-region {
+  min-width: 0;
+}
+
+.review-detail-panel {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.review-detail-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.review-detail-heading h3 {
+  margin: 2px 0 0;
+  font-size: 16px;
+}
+
+.review-detail-panel .markdown-view {
+  min-width: 0;
+}
+
+.review-detail-section {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.review-detail-section h4 {
+  font-size: 13px;
+}
+
+.review-detail-section pre {
+  max-width: 100%;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-muted);
+  color: var(--text-primary);
+  overflow-x: auto;
+}
+
+.review-detail-section code {
+  white-space: pre;
+}
+
+.completion-gate-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 220px;
+  max-width: 360px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-muted);
+}
+
+.completion-gate-hint.ready {
+  border-color: var(--success);
+  background: var(--success-soft);
+}
+
+.completion-gate-hint.blocked {
+  border-color: var(--border-strong);
+}
+
+.completion-gate-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.completion-gate-copy {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.completion-gate-copy p {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.completion-gate-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
 }
 
 .practice-message > span {
@@ -2807,6 +3001,16 @@ a {
 
   .practice-toolbar-actions {
     flex-wrap: wrap;
+  }
+
+  .practice-toolbar-actions .completion-gate-hint {
+    order: 10;
+    width: 100%;
+    max-width: none;
+  }
+
+  .review-drawer-content {
+    grid-template-columns: 1fr;
   }
 
   .practice-composer {

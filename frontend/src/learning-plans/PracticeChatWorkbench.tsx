@@ -8,14 +8,17 @@ import type { LocaleResources, SupportedLocale } from '../i18n/locales';
 import {
   ApiRequestError,
   createOrReusePracticeSession,
+  getPracticeSession,
   getPracticeSessionActiveRun,
   getPracticeSessionMessages,
+  getPracticeSessionReviews,
   streamPracticeMessage,
   updatePracticeProgressStatus,
 } from '../services/api';
 import type {
   LearningPlanDetailResponse,
   LearningPlanProblemDraft,
+  PracticeCodeReviewHistoryResponse,
   PracticeMessage,
   PracticeProgressStatus,
   PracticeSessionResponse,
@@ -108,6 +111,9 @@ export default function PracticeChatWorkbench({
   const [error, setError] = useState('');
   const [completionUpdating, setCompletionUpdating] = useState(false);
   const [reviewHistoryOpen, setReviewHistoryOpen] = useState(false);
+  const [reviewHistory, setReviewHistory] = useState<PracticeCodeReviewHistoryResponse>();
+  const [reviewHistoryLoading, setReviewHistoryLoading] = useState(false);
+  const [reviewHistoryError, setReviewHistoryError] = useState('');
   const localMessageIdRef = useRef(-1);
   const streamControllerRef = useRef<AbortController | null>(null);
   const activeSessionIdRef = useRef<number | undefined>(undefined);
@@ -119,6 +125,7 @@ export default function PracticeChatWorkbench({
   useEffect(() => {
     const controller = new AbortController();
     practiceLoadTokenRef.current += 1;
+    const activeLoadToken = practiceLoadTokenRef.current;
     streamControllerRef.current?.abort();
     streamControllerRef.current = null;
     submittingRef.current = false;
@@ -126,10 +133,16 @@ export default function PracticeChatWorkbench({
     setMessages([]);
     setError('');
     setCompletionUpdating(false);
+    setReviewHistory(undefined);
+    setReviewHistoryError('');
+    setReviewHistoryLoading(false);
     setStatus('loading');
 
     createOrReusePracticeSession(plan.id, phaseIndex, problemSlug, locale, controller.signal)
       .then((response) => {
+        if (controller.signal.aborted || practiceLoadTokenRef.current !== activeLoadToken) {
+          return;
+        }
         if (!response.success || !response.data) {
           throw new Error(response.error?.message ?? resources.learningPlans.practiceSessionLoadFailed);
         }
@@ -150,7 +163,7 @@ export default function PracticeChatWorkbench({
         setStatus('idle');
       })
       .catch((error) => {
-        if (!controller.signal.aborted) {
+        if (!controller.signal.aborted && practiceLoadTokenRef.current === activeLoadToken) {
           setError(error instanceof Error ? error.message : resources.learningPlans.practiceSessionLoadFailed);
           setStatus('error');
         }
@@ -172,13 +185,26 @@ export default function PracticeChatWorkbench({
   const latestReview = sessionResponse?.latestReview;
   const leetcodeUrl = localizedLeetCodeUrl(sessionResponse?.problem.leetcodeUrl, locale);
   const difficulty = sessionResponse?.problem.difficulty ?? problem?.difficulty;
-  const canMarkCompleted = Boolean(sessionId)
-    && progressStatus !== 'COMPLETED'
-    && status !== 'streaming'
-    && !hasActiveRun
-    && (completionGate?.canComplete ?? true);
+  const shouldShowCompletionButton = Boolean(sessionId) && progressStatus !== 'COMPLETED';
+  const completionDisabled = !completionGate?.canComplete
+    || completionUpdating
+    || status === 'loading'
+    || status === 'streaming'
+    || hasActiveRun;
   const composerInputDisabled = !sessionId || status === 'loading' || hasActiveRun;
   const sendDisabled = !sessionId || status === 'loading' || status === 'streaming' || hasActiveRun || !composerValue.trim();
+
+  useEffect(() => {
+    if (!reviewHistoryOpen || !sessionId) {
+      return undefined;
+    }
+
+    const controller = new AbortController();
+    const activeLoadToken = practiceLoadTokenRef.current;
+    void refreshReviews(sessionId, activeLoadToken, controller.signal);
+
+    return () => controller.abort();
+  }, [reviewHistoryOpen, sessionId]);
 
   useEffect(() => {
     if (!sessionId || !hasActiveRun) {
@@ -197,13 +223,10 @@ export default function PracticeChatWorkbench({
         if (response.data) {
           return;
         }
-        const messagesResponse = await getPracticeSessionMessages(sessionId!, 50, controller.signal);
-        if (stopped || controller.signal.aborted) {
-          return;
-        }
-        if (messagesResponse.success && messagesResponse.data) {
-          setMessages(messagesResponse.data);
-        }
+        const activeLoadToken = practiceLoadTokenRef.current;
+        await refreshMessages(sessionId!, activeLoadToken, controller.signal);
+        await refreshSession(sessionId!, activeLoadToken, controller.signal);
+        await refreshReviews(sessionId!, activeLoadToken, controller.signal);
         setSessionResponse((current) => current && current.session.id === sessionId
           ? { ...current, activeRun: null }
           : current);
@@ -231,7 +254,7 @@ export default function PracticeChatWorkbench({
     if (messageList && shouldAutoScrollRef.current) {
       messageList.scrollTop = messageList.scrollHeight;
     }
-  }, [messages, error, reviewHistoryOpen, status]);
+  }, [messages, error, status]);
 
   function updateAutoScrollState() {
     const messageList = messageListRef.current;
@@ -343,7 +366,10 @@ export default function PracticeChatWorkbench({
       }
 
       if (agentRunEnded) {
-        await refreshMessages(sessionId, controller.signal);
+        const activeLoadToken = practiceLoadTokenRef.current;
+        await refreshMessages(sessionId, activeLoadToken, controller.signal);
+        await refreshSession(sessionId, activeLoadToken, controller.signal);
+        await refreshReviews(sessionId, activeLoadToken, controller.signal);
         setStatus('idle');
       } else {
         setError(resources.learningPlans.practiceMessageFailed);
@@ -386,7 +412,13 @@ export default function PracticeChatWorkbench({
   }
 
   async function handleMarkCompleted() {
-    if (!sessionId || completionUpdating || progressStatus === 'COMPLETED' || status === 'streaming') {
+    if (!sessionId
+      || completionUpdating
+      || progressStatus === 'COMPLETED'
+      || status === 'loading'
+      || status === 'streaming'
+      || hasActiveRun
+      || !completionGate?.canComplete) {
       return;
     }
 
@@ -430,10 +462,52 @@ export default function PracticeChatWorkbench({
     }
   }
 
-  async function refreshMessages(activeSessionId: number, signal?: AbortSignal) {
+  function isCurrentSession(activeSessionId: number, activeLoadToken: number) {
+    return activeSessionIdRef.current === activeSessionId && practiceLoadTokenRef.current === activeLoadToken;
+  }
+
+  async function refreshMessages(activeSessionId: number, activeLoadToken: number, signal?: AbortSignal) {
     const response = await getPracticeSessionMessages(activeSessionId, 50, signal);
-    if (response.success && response.data) {
+    if (!signal?.aborted && isCurrentSession(activeSessionId, activeLoadToken) && response.success && response.data) {
       setMessages(response.data);
+    }
+  }
+
+  async function refreshSession(activeSessionId: number, activeLoadToken: number, signal?: AbortSignal) {
+    const response = await getPracticeSession(activeSessionId, signal);
+    if (!signal?.aborted && isCurrentSession(activeSessionId, activeLoadToken) && response.success && response.data) {
+      setSessionResponse(response.data);
+    }
+  }
+
+  async function refreshReviews(activeSessionId: number, activeLoadToken: number, signal?: AbortSignal) {
+    setReviewHistoryLoading(true);
+    setReviewHistoryError('');
+    try {
+      const response = await getPracticeSessionReviews(activeSessionId, signal);
+      if (signal?.aborted || !isCurrentSession(activeSessionId, activeLoadToken)) {
+        return;
+      }
+      if (!response.success || !response.data) {
+        throw new Error(response.error?.message ?? resources.learningPlans.reviewLoadFailed);
+      }
+      setReviewHistory(response.data);
+      setSessionResponse((current) => current && current.session.id === activeSessionId
+        ? {
+            ...current,
+            completionGate: response.data!.completionGate,
+            latestReview: response.data!.latestReview ?? null,
+          }
+        : current);
+    } catch (error) {
+      if (signal?.aborted || !isCurrentSession(activeSessionId, activeLoadToken)) {
+        return;
+      }
+      setReviewHistoryError(error instanceof Error ? error.message : resources.learningPlans.reviewLoadFailed);
+    } finally {
+      if (isCurrentSession(activeSessionId, activeLoadToken)) {
+        setReviewHistoryLoading(false);
+      }
     }
   }
 
@@ -457,16 +531,19 @@ export default function PracticeChatWorkbench({
             {formatDifficulty(difficulty, resources)}
           </span>
           <span className="status-badge">{progressStatusLabel(progressStatus, resources)}</span>
-          {canMarkCompleted && (
+          {shouldShowCompletionButton && (
             <button
               className="secondary-button compact"
-              disabled={completionUpdating || status === 'loading'}
+              disabled={completionDisabled}
               onClick={handleMarkCompleted}
               type="button"
             >
               <CheckCircle2 aria-hidden="true" />
               <span>{resources.learningPlans.markCompleted}</span>
             </button>
+          )}
+          {status !== 'loading' && completionGate && (
+            <CompletionGateHint gate={completionGate} latestReview={latestReview} resources={resources} />
           )}
           <button
             className="secondary-button compact"
@@ -516,14 +593,6 @@ export default function PracticeChatWorkbench({
         onScroll={updateAutoScrollState}
         ref={messageListRef}
       >
-        {status !== 'loading' && completionGate && (
-          <CompletionGateHint gate={completionGate} latestReview={latestReview} resources={resources} />
-        )}
-        <ReviewHistoryDrawer
-          open={reviewHistoryOpen}
-          resources={resources}
-          sessionId={sessionId}
-        />
         {error && <p className="error-text practice-error" role="alert">{error}</p>}
         {status === 'loading' && (
           <article className="practice-message assistant-message">
@@ -558,6 +627,27 @@ export default function PracticeChatWorkbench({
           </article>
         )}
       </section>
+
+      {reviewHistoryOpen && (reviewHistoryLoading || reviewHistoryError || reviewHistory) && (
+        <span className="visually-hidden" aria-live="polite">
+          {reviewHistoryLoading
+            ? resources.learningPlans.reviewLoading
+            : reviewHistoryError || resources.learningPlans.reviewHistory}
+        </span>
+      )}
+      {reviewHistoryOpen && (
+        <div className="practice-review-drawer">
+          <ReviewHistoryDrawer
+            history={reviewHistory}
+            historyError={reviewHistoryError}
+            historyLoading={reviewHistoryLoading}
+            onHistoryLoaded={setReviewHistory}
+            open
+            resources={resources}
+            sessionId={sessionId}
+          />
+        </div>
+      )}
 
       <form className="practice-composer" aria-label={resources.learningPlans.sendMessage} onSubmit={handleSubmit}>
         <textarea

@@ -10,46 +10,68 @@ import ReviewDetailPanel from './ReviewDetailPanel';
 import ReviewVersionList from './ReviewVersionList';
 
 interface ReviewHistoryDrawerProps {
+  history?: PracticeCodeReviewHistoryResponse;
+  historyError?: string;
+  historyLoading?: boolean;
   open: boolean;
+  onHistoryLoaded?: (history: PracticeCodeReviewHistoryResponse) => void;
   resources: LocaleResources;
   sessionId?: number;
 }
 
-export default function ReviewHistoryDrawer({ open, resources, sessionId }: ReviewHistoryDrawerProps) {
-  const [history, setHistory] = useState<PracticeCodeReviewHistoryResponse>();
+export default function ReviewHistoryDrawer({
+  history: controlledHistory,
+  historyError,
+  historyLoading,
+  onHistoryLoaded,
+  open,
+  resources,
+  sessionId,
+}: ReviewHistoryDrawerProps) {
+  const [localHistory, setLocalHistory] = useState<PracticeCodeReviewHistoryResponse>();
   const [selectedReviewId, setSelectedReviewId] = useState<number>();
   const [detail, setDetail] = useState<PracticeCodeReviewDetail>();
-  const [historyStatus, setHistoryStatus] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [localHistoryStatus, setLocalHistoryStatus] = useState<'idle' | 'loading' | 'error'>('idle');
   const [detailStatus, setDetailStatus] = useState<'idle' | 'loading' | 'error'>('idle');
+  const history = controlledHistory ?? localHistory;
+  const effectiveHistoryStatus = historyLoading
+    ? 'loading'
+    : historyError
+      ? 'error'
+      : controlledHistory !== undefined
+        ? 'idle'
+        : localHistoryStatus;
 
   useEffect(() => {
-    setHistory(undefined);
+    setLocalHistory(undefined);
     setSelectedReviewId(undefined);
     setDetail(undefined);
     setDetailStatus('idle');
 
     if (!open || !sessionId) {
-      setHistoryStatus('idle');
+      setLocalHistoryStatus('idle');
+      return undefined;
+    }
+    if (onHistoryLoaded) {
+      setLocalHistoryStatus('idle');
       return undefined;
     }
 
     const controller = new AbortController();
-    setHistoryStatus('loading');
+    setLocalHistoryStatus('loading');
 
     getPracticeSessionReviews(sessionId, controller.signal)
       .then((response) => {
         if (!response.success || !response.data) {
           throw new Error(response.error?.message ?? resources.learningPlans.reviewLoadFailed);
         }
-        setHistory(response.data);
-        const firstReview = response.data.latestReview ?? response.data.reviews[0];
-        setSelectedReviewId(firstReview?.id);
-        setHistoryStatus('idle');
+        setLocalHistory(response.data);
+        setLocalHistoryStatus('idle');
       })
       .catch((error) => {
         if (!controller.signal.aborted) {
-          setHistory(undefined);
-          setHistoryStatus('error');
+          setLocalHistory(undefined);
+          setLocalHistoryStatus('error');
           setSelectedReviewId(undefined);
           setDetail(undefined);
           void error;
@@ -57,7 +79,20 @@ export default function ReviewHistoryDrawer({ open, resources, sessionId }: Revi
       });
 
     return () => controller.abort();
-  }, [open, resources.learningPlans.reviewLoadFailed, sessionId]);
+  }, [onHistoryLoaded, open, resources.learningPlans.reviewLoadFailed, sessionId]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const firstReview = history?.latestReview ?? history?.reviews[0];
+    setSelectedReviewId((current) => {
+      if (!firstReview) {
+        return undefined;
+      }
+      return history?.reviews.some((review) => review.id === current) ? current : firstReview.id;
+    });
+  }, [history, open]);
 
   useEffect(() => {
     if (!open || !sessionId || !selectedReviewId) {
@@ -99,9 +134,11 @@ export default function ReviewHistoryDrawer({ open, resources, sessionId }: Revi
         <h3>{resources.learningPlans.reviewHistory}</h3>
       </header>
 
-      {historyStatus === 'loading' && <p>{resources.learningPlans.reviewLoading}</p>}
-      {historyStatus === 'error' && <p className="error-text" role="alert">{resources.learningPlans.reviewLoadFailed}</p>}
-      {historyStatus === 'idle' && reviews.length === 0 && (
+      {effectiveHistoryStatus === 'loading' && <p>{resources.learningPlans.reviewLoading}</p>}
+      {effectiveHistoryStatus === 'error' && (
+        <p className="error-text" role="alert">{historyError || resources.learningPlans.reviewLoadFailed}</p>
+      )}
+      {effectiveHistoryStatus === 'idle' && reviews.length === 0 && (
         <div className="review-empty-state">
           <h4>{resources.learningPlans.reviewEmptyTitle}</h4>
           <p>{resources.learningPlans.reviewEmptyDescription}</p>

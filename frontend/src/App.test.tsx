@@ -4,6 +4,12 @@ import { debugStatusLabel } from './ai-debug/AiDebugConsole';
 import App from './App';
 import { THEME_STORAGE_KEY } from './app/theme';
 import { I18nProvider } from './i18n/I18nProvider';
+import type {
+  PracticeCodeReviewHistoryResponse,
+  PracticeCodeReviewSummary,
+  PracticeMessage,
+  PracticeSessionResponse,
+} from './types/api';
 
 let stubbedLocalStorage: Storage | undefined;
 
@@ -891,7 +897,8 @@ describe('App', () => {
     expect(fetchMock.mock.calls.some(([url]) => String(url).startsWith('/api/problems/two-sum'))).toBe(false);
 
     fireEvent.click(screen.getByRole('button', { name: 'Review 记录' }));
-    expect(screen.getByText('代码 Review 记录暂未开放。')).toBeInTheDocument();
+    expect(await screen.findByRole('complementary', { name: 'Review 记录' })).toBeInTheDocument();
+    expect(screen.getByText('暂无代码 Review')).toBeInTheDocument();
 
     fireEvent.change(screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
       target: { value: '我想用哈希表。' },
@@ -912,14 +919,14 @@ describe('App', () => {
     expectCsrfHeader(fetchMock, '/api/practice-sessions/50/messages/stream', 'POST');
     expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
     expect(screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' })).not.toBeDisabled();
-    expect(screen.queryByRole('button', { name: '标记完成' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '标记完成' })).toBeDisabled();
 
     await act(async () => {
       practiceStream.enqueue(sseEvent('agent_run_end', { runId: 'run_1' }));
       practiceStream.close();
     });
 
-    await waitFor(() => expect(screen.getByRole('button', { name: '标记完成' })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('button', { name: '标记完成' })).not.toBeDisabled());
     expect(screen.getByRole('button', { name: '发送' })).toBeDisabled();
 
     fireEvent.click(screen.getByRole('button', { name: '标记完成' }));
@@ -1144,14 +1151,14 @@ describe('App', () => {
       if (url === '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=zh-CN') {
         return Promise.resolve(jsonResponse({
           success: true,
-          data: practiceSessionResponse(),
+          data: completablePracticeSessionResponse(),
           timestamp: '2026-06-22T00:00:00Z',
         }));
       }
       if (url === '/api/learning-plans/900/phases/1/problems/three-sum/practice-session?locale=zh-CN') {
         return Promise.resolve(jsonResponse({
           success: true,
-          data: practiceSessionResponse({
+          data: completablePracticeSessionResponse({
             session: {
               ...basePracticeSessionResponse().session,
               id: 51,
@@ -1229,7 +1236,7 @@ describe('App', () => {
         || url === '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=en-US') {
         return Promise.resolve(jsonResponse({
           success: true,
-          data: practiceSessionResponse(),
+          data: completablePracticeSessionResponse(),
           timestamp: '2026-06-22T00:00:00Z',
         }));
       }
@@ -1688,6 +1695,7 @@ function mockLearningPlanFetch(options: {
         sseEvent('message_end', { finishReason: 'stop' }),
         sseEvent('agent_run_end', { runId: 'run_1' }),
       ]);
+      messagePosted = true;
       return Promise.resolve(new Response(stream, { status: 200 }));
     }
 
@@ -1722,6 +1730,51 @@ function mockLearningPlanFetch(options: {
             createdAt: '2026-06-22T00:01:01Z',
           },
         ],
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/practice-sessions/50') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: messagePosted ? practiceSessionResponse({
+          completionGate: {
+            canComplete: true,
+            reasonCode: 'PASSED',
+            message: '最新 Review 已通过，可以标记完成。',
+            latestScore: 92,
+            passScore: 6,
+          },
+          latestReview: practiceReviewSummary(),
+        }) : practiceSessionResponse(),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/practice-sessions/50/reviews') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: messagePosted ? {
+          latestReview: practiceReviewSummary(),
+          reviews: [practiceReviewSummary()],
+          completionGate: {
+            canComplete: true,
+            reasonCode: 'PASSED',
+            message: '最新 Review 已通过，可以标记完成。',
+            latestScore: 92,
+            passScore: 6,
+          },
+        } : {
+          latestReview: null,
+          reviews: [],
+          completionGate: {
+            canComplete: false,
+            reasonCode: 'NO_REVIEW',
+            message: '完成前需要先粘贴完整代码完成一次 AI Review。',
+            latestScore: null,
+            passScore: 6,
+          },
+        },
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
@@ -2187,11 +2240,25 @@ function problemDetail(overrides: Partial<ReturnType<typeof baseProblemDetail>> 
   };
 }
 
-function practiceSessionResponse(overrides: Partial<ReturnType<typeof basePracticeSessionResponse>> = {}) {
+function practiceSessionResponse(overrides: Partial<PracticeSessionResponse> = {}): PracticeSessionResponse {
   return {
     ...basePracticeSessionResponse(),
     ...overrides,
   };
+}
+
+function completablePracticeSessionResponse(overrides: Partial<PracticeSessionResponse> = {}): PracticeSessionResponse {
+  return practiceSessionResponse({
+    latestReview: practiceReviewSummary(),
+    completionGate: {
+      canComplete: true,
+      reasonCode: 'PASSED',
+      message: '最新 Review 已通过，可以标记完成。',
+      latestScore: 92,
+      passScore: 6,
+    },
+    ...overrides,
+  });
 }
 
 function baseProblemDetail() {
@@ -2208,7 +2275,7 @@ function baseProblemDetail() {
   };
 }
 
-function basePracticeSessionResponse() {
+function basePracticeSessionResponse(): PracticeSessionResponse {
   return {
     session: {
       id: 50,
@@ -2230,10 +2297,19 @@ function basePracticeSessionResponse() {
       leetcodeUrl: 'https://leetcode.com/problems/two-sum/',
     },
     messages: practiceSessionMessages(),
+    activeRun: null,
+    latestReview: null,
+    completionGate: {
+      canComplete: false,
+      reasonCode: 'NO_REVIEW',
+      message: '完成前需要先粘贴完整代码完成一次 AI Review。',
+      latestScore: null,
+      passScore: 6,
+    },
   };
 }
 
-function practiceSessionMessages() {
+function practiceSessionMessages(): PracticeMessage[] {
   return [{
     id: 60,
     role: 'ASSISTANT',
@@ -2250,6 +2326,17 @@ function activePracticeRun() {
     runUuid: 'run-active',
     idempotencyKey: 'idem-active',
     startedAt: '2026-06-22T00:01:00Z',
+  };
+}
+
+function practiceReviewSummary(): PracticeCodeReviewSummary {
+  return {
+    id: 70,
+    versionNo: 1,
+    language: 'java',
+    totalScore: 92,
+    passed: true,
+    createdAt: '2026-06-22T00:02:00Z',
   };
 }
 
