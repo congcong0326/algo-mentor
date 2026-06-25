@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -43,9 +44,16 @@ import org.congcong.algomentor.auth.model.AuthUserStatus;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunInProgressException;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemDetail;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptConstants;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatReference;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewEvidence;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewHistory;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewScore;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewSummary;
+import org.congcong.algomentor.mentor.application.practice.PracticeCompletionGate;
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeSession;
@@ -132,6 +140,57 @@ class PracticeSessionControllerTest {
   }
 
   @Test
+  void sessionResponseIncludesLatestReviewAndCompletionGate() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(practiceSessionService.get(42L, 50L)).thenReturn(resultWithPassedReview());
+
+    mockMvc.perform(get("/api/practice-sessions/50"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.latestReview.totalScore").value(7.0))
+        .andExpect(jsonPath("$.data.completionGate.reasonCode").value("PASSED"));
+  }
+
+  @Test
+  void reviewHistoryEndpointReturnsReviewsAndGate() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(practiceSessionService.history(42L, 50L)).thenReturn(reviewHistory());
+
+    mockMvc.perform(get("/api/practice-sessions/50/reviews"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.latestReview.totalScore").value(7.0))
+        .andExpect(jsonPath("$.data.reviews[0].versionNo").value(2))
+        .andExpect(jsonPath("$.data.completionGate.reasonCode").value("PASSED"));
+
+    verify(practiceSessionService).history(42L, 50L);
+  }
+
+  @Test
+  void reviewDetailEndpointReturnsReviewBody() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(practiceSessionService.detail(42L, 50L, 1002L)).thenReturn(review());
+
+    mockMvc.perform(get("/api/practice-sessions/50/reviews/1002"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.id").value(1002))
+        .andExpect(jsonPath("$.data.scores.correctness").value(3.0))
+        .andExpect(jsonPath("$.data.evidence[0].type").value("FENCED_CODE_BLOCK"))
+        .andExpect(jsonPath("$.data.reviewMarkdown").value("整体思路正确，注意边界。"));
+
+    verify(practiceSessionService).detail(42L, 50L, 1002L);
+  }
+
+  @Test
+  void reviewHistoryRequiresAuthentication() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.empty());
+
+    mockMvc.perform(get("/api/practice-sessions/50/reviews"))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"));
+
+    verifyNoInteractions(practiceSessionService);
+  }
+
+  @Test
   void getPracticeSessionReturnsActiveRun() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     when(practiceSessionService.get(42L, 50L)).thenReturn(resultWithActiveRun());
@@ -179,6 +238,34 @@ class PracticeSessionControllerTest {
 
     verify(practiceSessionService).updateProgressStatus(42L, 50L, PracticeProgressStatus.COMPLETED);
     verify(practiceSessionService).get(42L, 50L);
+  }
+
+  @Test
+  void completionBlockedByNoReviewReturnsStableCode() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(practiceSessionService.updateProgressStatus(42L, 50L, PracticeProgressStatus.COMPLETED))
+        .thenThrow(new LearningPlanException("PRACTICE_COMPLETION_REVIEW_REQUIRED",
+            "完成前需要先粘贴完整代码完成一次 AI Review。"));
+
+    mockMvc.perform(patch("/api/practice-sessions/50/progress-status")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"status\":\"COMPLETED\"}"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.code").value("PRACTICE_COMPLETION_REVIEW_REQUIRED"));
+  }
+
+  @Test
+  void completionBlockedByFailedReviewReturnsStableCode() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(practiceSessionService.updateProgressStatus(42L, 50L, PracticeProgressStatus.COMPLETED))
+        .thenThrow(new LearningPlanException("PRACTICE_COMPLETION_REVIEW_NOT_PASSED",
+            "最近一次 Review 为 5/10，达到 6 分后可标记完成。"));
+
+    mockMvc.perform(patch("/api/practice-sessions/50/progress-status")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"status\":\"COMPLETED\"}"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.code").value("PRACTICE_COMPLETION_REVIEW_NOT_PASSED"));
   }
 
   @Test
@@ -343,6 +430,95 @@ class PracticeSessionControllerTest {
             "run-80",
             "idem-80",
             Instant.parse("2026-06-24T00:00:04Z"))));
+  }
+
+  private PracticeSessionResult resultWithPassedReview() {
+    return new PracticeSessionResult(
+        session(PracticeProgressStatus.IN_PROGRESS),
+        problemDetail(),
+        List.of(new PracticeSessionMessage(
+            70L,
+            "ASSISTANT",
+            PracticeChatPromptConstants.MESSAGE_TYPE_PROBLEM_STATEMENT,
+            "Given an array of integers...",
+            Instant.parse("2026-06-24T00:00:02Z"))),
+        Optional.empty(),
+        latestReview(),
+        passedGate());
+  }
+
+  private PracticeCodeReviewHistory reviewHistory() {
+    return new PracticeCodeReviewHistory(
+        latestReview(),
+        List.of(latestReview(), new PracticeCodeReviewSummary(
+            1001L,
+            1,
+            "java",
+            new BigDecimal("5.0"),
+            false,
+            Instant.parse("2026-06-24T00:10:00Z"))),
+        passedGate());
+  }
+
+  private PracticeCodeReview review() {
+    return new PracticeCodeReview(
+        1002L,
+        42L,
+        900L,
+        1,
+        "two-sum",
+        50L,
+        2,
+        71L,
+        72L,
+        80L,
+        "class Solution { int[] twoSum(int[] nums, int target) { return nums; } }",
+        "class Solution { int[] twoSum(int[] nums, int target) { return nums; } }",
+        "java",
+        List.of(new PracticeCodeReviewEvidence("FENCED_CODE_BLOCK", "markdown fenced code block")),
+        "用户提交了 Java 解法。",
+        new PracticeCodeReviewScore(
+            new BigDecimal("3.0"),
+            new BigDecimal("1.5"),
+            new BigDecimal("1.0"),
+            new BigDecimal("0.8"),
+            new BigDecimal("0.7"),
+            new BigDecimal("7.0")),
+        true,
+        List.of("边界条件说明不足"),
+        List.of("补充空数组和重复元素说明"),
+        "整体思路正确，注意边界。",
+        Instant.parse("2026-06-24T00:20:00Z"));
+  }
+
+  private PracticeCodeReviewSummary latestReview() {
+    return new PracticeCodeReviewSummary(
+        1002L,
+        2,
+        "java",
+        new BigDecimal("7.0"),
+        true,
+        Instant.parse("2026-06-24T00:20:00Z"));
+  }
+
+  private PracticeCompletionGate passedGate() {
+    return new PracticeCompletionGate(
+        true,
+        PracticeCompletionGate.ReasonCode.PASSED,
+        "标记为已完成",
+        Optional.of(new BigDecimal("7.0")),
+        new BigDecimal("6.0"));
+  }
+
+  private PracticeChatProblemDetail problemDetail() {
+    return new PracticeChatProblemDetail(
+        "two-sum",
+        1,
+        "Two Sum",
+        "EASY",
+        List.of("Array", "Hash Table"),
+        "Given an array of integers...",
+        "https://leetcode.com/problems/two-sum/");
   }
 
   private PracticeSession session(PracticeProgressStatus progressStatus) {

@@ -24,7 +24,9 @@ public final class PracticeSessionResponseMapper {
                 run.runUuid(),
                 run.idempotencyKey(),
                 run.startedAt()))
-            .orElse(null));
+            .orElse(null),
+        PracticeCodeReviewResponseMapper.toSummaryResponse(result.latestReview()),
+        PracticeCodeReviewResponseMapper.toCompletionGateResponse(result.completionGate()));
   }
 
   private static PracticeSessionSummaryResponse toSession(PracticeSession session) {

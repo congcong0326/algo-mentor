@@ -97,6 +97,16 @@ public final class ApiContractConstants {
   public static final String PRACTICE_SESSION_PROGRESS_STATUS_PATH = "/{sessionId}/progress-status";
 
   /**
+   * 题目练习代码 Review 历史路径。
+   */
+  public static final String PRACTICE_SESSION_REVIEWS_PATH = "/{sessionId}/reviews";
+
+  /**
+   * 题目练习代码 Review 详情路径。
+   */
+  public static final String PRACTICE_SESSION_REVIEW_DETAIL_PATH = "/{sessionId}/reviews/{reviewId}";
+
+  /**
    * 主题讲解请求参数名。
    */
   public static final String TOPIC_PARAM = "topic";

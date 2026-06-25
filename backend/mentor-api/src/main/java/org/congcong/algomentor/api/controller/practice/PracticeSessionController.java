@@ -14,6 +14,9 @@ import org.congcong.algomentor.ai.governance.model.AiPurpose;
 import org.congcong.algomentor.ai.governance.model.AiRunContext;
 import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.api.config.ApiContractConstants;
+import org.congcong.algomentor.api.practice.model.PracticeCodeReviewDetailResponse;
+import org.congcong.algomentor.api.practice.model.PracticeCodeReviewHistoryResponse;
+import org.congcong.algomentor.api.practice.model.PracticeCodeReviewResponseMapper;
 import org.congcong.algomentor.api.practice.model.PracticeMessageRequest;
 import org.congcong.algomentor.api.practice.model.PracticeMessageResponse;
 import org.congcong.algomentor.api.practice.model.PracticeActiveRunResponse;
@@ -109,6 +112,25 @@ public class PracticeSessionController {
     PracticeSessionResponse response = PracticeSessionResponseMapper.toResponse(
         requiredPracticeSessionService().get(userId, sessionId, limit));
     return ApiResponse.success(response.messages());
+  }
+
+  @GetMapping(ApiContractConstants.PRACTICE_SESSIONS_BASE_PATH
+      + ApiContractConstants.PRACTICE_SESSION_REVIEWS_PATH)
+  public ApiResponse<PracticeCodeReviewHistoryResponse> reviews(@PathVariable long sessionId) {
+    long userId = requireCurrentUserId();
+    return ApiResponse.success(PracticeCodeReviewResponseMapper.toHistoryResponse(
+        requiredPracticeSessionService().history(userId, sessionId)));
+  }
+
+  @GetMapping(ApiContractConstants.PRACTICE_SESSIONS_BASE_PATH
+      + ApiContractConstants.PRACTICE_SESSION_REVIEW_DETAIL_PATH)
+  public ApiResponse<PracticeCodeReviewDetailResponse> reviewDetail(
+      @PathVariable long sessionId,
+      @PathVariable long reviewId
+  ) {
+    long userId = requireCurrentUserId();
+    return ApiResponse.success(PracticeCodeReviewResponseMapper.toDetailResponse(
+        requiredPracticeSessionService().detail(userId, sessionId, reviewId)));
   }
 
   @PatchMapping(ApiContractConstants.PRACTICE_SESSIONS_BASE_PATH

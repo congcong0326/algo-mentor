@@ -87,12 +87,25 @@ public class PracticeSessionService {
   }
 
   public PracticeSessionResult get(long userId, long sessionId, int messageLimit) {
-    PracticeSession session = practiceSessionRepository.findSessionForUser(sessionId, userId)
-        .orElseThrow(() -> new LearningPlanException("PRACTICE_SESSION_NOT_FOUND", "题目练习会话不存在。"));
+    PracticeSession session = requireSession(userId, sessionId);
     PracticeChatReference reference = new PracticeChatReference(
         session.planId(), session.phaseIndex(), session.problemSlug(), session.locale());
     PracticeChatContext context = requireContext(userId, reference);
     return result(session, context.problemDetail(), messageLimit);
+  }
+
+  public PracticeCodeReviewHistory history(long userId, long sessionId) {
+    PracticeSession session = requireSession(userId, sessionId);
+    List<PracticeCodeReviewSummary> reviews = reviewRepository.findSummaries(userId, session.id());
+    Optional<PracticeCodeReviewSummary> latestReview = reviews.stream().findFirst();
+    PracticeCompletionGate completionGate = completionGateService.evaluate(userId, session, latestReview);
+    return new PracticeCodeReviewHistory(latestReview.orElse(null), reviews, completionGate);
+  }
+
+  public PracticeCodeReview detail(long userId, long sessionId, long reviewId) {
+    PracticeSession session = requireSession(userId, sessionId);
+    return reviewRepository.findById(userId, session.id(), reviewId)
+        .orElseThrow(() -> new LearningPlanException("PRACTICE_CODE_REVIEW_NOT_FOUND", "题目练习代码 Review 不存在。"));
   }
 
   @Transactional
@@ -119,6 +132,11 @@ public class PracticeSessionService {
 
   private PracticeSessionResult result(PracticeSession session, PracticeChatProblemDetail problemDetail) {
     return result(session, problemDetail, MESSAGE_LIMIT);
+  }
+
+  private PracticeSession requireSession(long userId, long sessionId) {
+    return practiceSessionRepository.findSessionForUser(sessionId, userId)
+        .orElseThrow(() -> new LearningPlanException("PRACTICE_SESSION_NOT_FOUND", "题目练习会话不存在。"));
   }
 
   private PracticeSessionResult result(PracticeSession session, PracticeChatProblemDetail problemDetail, int messageLimit) {

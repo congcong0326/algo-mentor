@@ -6,5 +6,7 @@ public record PracticeSessionResponse(
     PracticeSessionSummaryResponse session,
     PracticeProblemSummaryResponse problem,
     List<PracticeMessageResponse> messages,
-    PracticeActiveRunResponse activeRun) {
+    PracticeActiveRunResponse activeRun,
+    PracticeCodeReviewSummaryResponse latestReview,
+    PracticeCompletionGateResponse completionGate) {
 }
