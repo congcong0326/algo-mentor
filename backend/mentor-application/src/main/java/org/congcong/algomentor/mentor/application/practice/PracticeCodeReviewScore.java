@@ -12,20 +12,21 @@ public record PracticeCodeReviewScore(
 ) {
 
   public PracticeCodeReviewScore {
-    requireScore(correctness, "correctness");
-    requireScore(complexity, "complexity");
-    requireScore(edgeCases, "edge cases");
-    requireScore(codeQuality, "code quality");
-    requireScore(problemFit, "problem fit");
-    requireScore(total, "total");
+    requireScore(correctness, "correctness", new BigDecimal("4"));
+    requireScore(complexity, "complexity", new BigDecimal("2"));
+    requireScore(edgeCases, "edge cases", new BigDecimal("2"));
+    requireScore(codeQuality, "code quality", BigDecimal.ONE);
+    requireScore(problemFit, "problem fit", BigDecimal.ONE);
+    requireScore(total, "total", BigDecimal.TEN);
   }
 
-  private static void requireScore(BigDecimal value, String fieldName) {
+  private static void requireScore(BigDecimal value, String fieldName, BigDecimal maximum) {
     if (value == null) {
       throw new IllegalArgumentException("Practice code review " + fieldName + " score must not be null");
     }
-    if (value.compareTo(BigDecimal.ZERO) < 0 || value.compareTo(BigDecimal.TEN) > 0) {
-      throw new IllegalArgumentException("Practice code review " + fieldName + " score must be between 0 and 10");
+    if (value.compareTo(BigDecimal.ZERO) < 0 || value.compareTo(maximum) > 0) {
+      throw new IllegalArgumentException(
+          "Practice code review " + fieldName + " score must be between 0 and " + maximum);
     }
   }
 }

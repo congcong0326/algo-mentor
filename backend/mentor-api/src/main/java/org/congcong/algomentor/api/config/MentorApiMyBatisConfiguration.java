@@ -5,7 +5,9 @@ import javax.sql.DataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
 import org.congcong.algomentor.api.learningplan.repository.MyBatisLearningPlanRepository;
+import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
 import org.congcong.algomentor.api.practice.mapper.PracticeSessionMapper;
+import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewRepository;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeSessionRepository;
 import org.congcong.algomentor.api.problem.mapper.ProblemMapper;
 import org.congcong.algomentor.api.problem.repository.MyBatisProblemRepository;
@@ -14,6 +16,7 @@ import org.congcong.algomentor.agent.persistence.postgres.json.AgentMessageRoleT
 import org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -71,6 +74,12 @@ public class MentorApiMyBatisConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean
+  public PracticeCodeReviewMapper practiceCodeReviewMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(PracticeCodeReviewMapper.class);
+  }
+
+  @Bean
   @ConditionalOnMissingBean(ProblemRepository.class)
   public ProblemRepository problemRepository(ProblemMapper problemMapper, DataSource dataSource) {
     return new MyBatisProblemRepository(problemMapper, dataSource);
@@ -88,5 +97,14 @@ public class MentorApiMyBatisConfiguration {
   @ConditionalOnMissingBean(PracticeSessionRepository.class)
   public PracticeSessionRepository practiceSessionRepository(PracticeSessionMapper practiceSessionMapper) {
     return new MyBatisPracticeSessionRepository(practiceSessionMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(PracticeCodeReviewRepository.class)
+  public PracticeCodeReviewRepository practiceCodeReviewRepository(
+      PracticeCodeReviewMapper mapper,
+      ObjectMapper objectMapper
+  ) {
+    return new MyBatisPracticeCodeReviewRepository(mapper, objectMapper);
   }
 }

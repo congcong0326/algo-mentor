@@ -8,9 +8,9 @@ public record PracticeCodeReviewDraft(
     int phaseIndex,
     String problemSlug,
     long sessionId,
-    Long userMessageId,
+    long userMessageId,
     Long assistantMessageId,
-    String agentRunId,
+    Long agentRunDbId,
     String rawCode,
     String normalizedCode,
     String language,
@@ -33,8 +33,9 @@ public record PracticeCodeReviewDraft(
       throw new IllegalArgumentException("Practice code review problem slug must not be blank");
     }
     requirePositive(sessionId, "session id");
-    requirePositiveIfPresent(userMessageId, "user message id");
+    requirePositive(userMessageId, "user message id");
     requirePositiveIfPresent(assistantMessageId, "assistant message id");
+    requirePositiveIfPresent(agentRunDbId, "agent run database id");
     if (rawCode == null || rawCode.isBlank()) {
       throw new IllegalArgumentException("Practice code review raw code must not be blank");
     }
@@ -45,7 +46,6 @@ public record PracticeCodeReviewDraft(
       throw new IllegalArgumentException("Practice code review score must not be null");
     }
     problemSlug = problemSlug.trim();
-    agentRunId = blankToNull(agentRunId);
     rawCode = rawCode.strip();
     normalizedCode = normalizedCode == null || normalizedCode.isBlank() ? rawCode : normalizedCode.strip();
     language = language.trim();

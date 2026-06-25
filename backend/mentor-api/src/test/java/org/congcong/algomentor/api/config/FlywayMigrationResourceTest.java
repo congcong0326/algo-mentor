@@ -55,6 +55,6 @@ class FlywayMigrationResourceTest {
         .isEmpty();
     assertThat(migrationsByVersion)
         .as("auth and ai governance module migrations must be discoverable from classpath*:db/migration/**/*.sql")
-        .containsKeys("8", "10", "12");
+        .containsKeys("8", "10", "12", "13");
   }
 }

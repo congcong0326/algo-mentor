@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper">
+
+  <resultMap id="PracticeCodeReviewRowMap"
+      type="org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewRow">
+    <constructor>
+      <arg column="id" javaType="_long"/>
+      <arg column="user_id" javaType="_long"/>
+      <arg column="plan_id" javaType="_long"/>
+      <arg column="phase_index" javaType="_int"/>
+      <arg column="problem_slug" javaType="string"/>
+      <arg column="practice_session_id" javaType="_long"/>
+      <arg column="version_no" javaType="_int"/>
+      <arg column="user_message_id" javaType="java.lang.Long"/>
+      <arg column="assistant_message_id" javaType="java.lang.Long"/>
+      <arg column="agent_run_id" javaType="java.lang.Long"/>
+      <arg column="raw_code" javaType="string"/>
+      <arg column="normalized_code" javaType="string"/>
+      <arg column="language" javaType="string"/>
+      <arg column="detection_evidence_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="context_summary" javaType="string"/>
+      <arg column="total_score" javaType="java.math.BigDecimal"/>
+      <arg column="correctness_score" javaType="java.math.BigDecimal"/>
+      <arg column="complexity_score" javaType="java.math.BigDecimal"/>
+      <arg column="edge_case_score" javaType="java.math.BigDecimal"/>
+      <arg column="code_quality_score" javaType="java.math.BigDecimal"/>
+      <arg column="problem_fit_score" javaType="java.math.BigDecimal"/>
+      <arg column="passed" javaType="_boolean"/>
+      <arg column="deduction_reasons_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="improvement_suggestions_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="review_markdown" javaType="string"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <resultMap id="PracticeCodeReviewSummaryRowMap"
+      type="org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewSummaryRow">
+    <constructor>
+      <arg column="id" javaType="_long"/>
+      <arg column="version_no" javaType="_int"/>
+      <arg column="language" javaType="string"/>
+      <arg column="total_score" javaType="java.math.BigDecimal"/>
+      <arg column="passed" javaType="_boolean"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <resultMap id="PracticeCodeReviewSessionLockRowMap"
+      type="org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewSessionLockRow">
+    <constructor>
+      <arg column="id" javaType="_long"/>
+      <arg column="plan_id" javaType="_long"/>
+      <arg column="phase_index" javaType="_int"/>
+      <arg column="problem_slug" javaType="string"/>
+    </constructor>
+  </resultMap>
+
+  <sql id="PracticeCodeReviewColumns">
+    id,
+    user_id,
+    plan_id,
+    phase_index,
+    problem_slug,
+    practice_session_id,
+    version_no,
+    user_message_id,
+    assistant_message_id,
+    agent_run_id,
+    raw_code,
+    normalized_code,
+    language,
+    detection_evidence_json,
+    context_summary,
+    total_score,
+    correctness_score,
+    complexity_score,
+    edge_case_score,
+    code_quality_score,
+    problem_fit_score,
+    passed,
+    deduction_reasons_json,
+    improvement_suggestions_json,
+    review_markdown,
+    created_at
+  </sql>
+
+  <sql id="PracticeCodeReviewSummaryColumns">
+    id,
+    version_no,
+    language,
+    total_score,
+    passed,
+    created_at
+  </sql>
+
+  <select id="lockSessionForReviewInsert" resultMap="PracticeCodeReviewSessionLockRowMap">
+    SELECT
+      id,
+      plan_id,
+      phase_index,
+      problem_slug
+    FROM practice_session
+    WHERE id = #{sessionId}
+      AND user_id = #{userId}
+      AND status = 'ACTIVE'
+    FOR UPDATE
+  </select>
+
+  <select id="insert" resultMap="PracticeCodeReviewRowMap" affectData="true">
+    WITH next_version AS (
+      SELECT COALESCE(MAX(version_no), 0) + 1 AS version_no
+      FROM practice_code_review
+      WHERE practice_session_id = #{sessionId}
+    )
+    INSERT INTO practice_code_review (
+      user_id,
+      plan_id,
+      phase_index,
+      problem_slug,
+      practice_session_id,
+      version_no,
+      user_message_id,
+      assistant_message_id,
+      agent_run_id,
+      raw_code,
+      normalized_code,
+      language,
+      detection_evidence_json,
+      context_summary,
+      total_score,
+      correctness_score,
+      complexity_score,
+      edge_case_score,
+      code_quality_score,
+      problem_fit_score,
+      passed,
+      deduction_reasons_json,
+      improvement_suggestions_json,
+      review_markdown
+    )
+    SELECT
+      #{userId},
+      #{planId},
+      #{phaseIndex},
+      #{problemSlug},
+      #{sessionId},
+      next_version.version_no,
+      #{userMessageId},
+      #{assistantMessageId},
+      #{agentRunDbId},
+      #{rawCode},
+      #{normalizedCode},
+      #{language},
+      #{detectionEvidenceJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{contextSummary},
+      #{totalScore},
+      #{correctnessScore},
+      #{complexityScore},
+      #{edgeCaseScore},
+      #{codeQualityScore},
+      #{problemFitScore},
+      #{passed},
+      #{deductionReasonsJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{improvementSuggestionsJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{reviewMarkdown}
+    FROM next_version
+    ON CONFLICT (practice_session_id, user_message_id) DO UPDATE
+      SET raw_code = practice_code_review.raw_code
+    RETURNING
+      <include refid="PracticeCodeReviewColumns"/>
+  </select>
+
+  <select id="findLatest" resultMap="PracticeCodeReviewRowMap">
+    SELECT
+      <include refid="PracticeCodeReviewColumns"/>
+    FROM practice_code_review
+    WHERE user_id = #{userId}
+      AND practice_session_id = #{sessionId}
+    ORDER BY version_no DESC
+    LIMIT 1
+  </select>
+
+  <select id="findLatestSummary" resultMap="PracticeCodeReviewSummaryRowMap">
+    SELECT
+      <include refid="PracticeCodeReviewSummaryColumns"/>
+    FROM practice_code_review
+    WHERE user_id = #{userId}
+      AND practice_session_id = #{sessionId}
+    ORDER BY version_no DESC
+    LIMIT 1
+  </select>
+
+  <select id="findSummaries" resultMap="PracticeCodeReviewSummaryRowMap">
+    SELECT
+      <include refid="PracticeCodeReviewSummaryColumns"/>
+    FROM practice_code_review
+    WHERE user_id = #{userId}
+      AND practice_session_id = #{sessionId}
+    ORDER BY version_no DESC
+  </select>
+
+  <select id="findById" resultMap="PracticeCodeReviewRowMap">
+    SELECT
+      <include refid="PracticeCodeReviewColumns"/>
+    FROM practice_code_review
+    WHERE user_id = #{userId}
+      AND practice_session_id = #{sessionId}
+      AND id = #{reviewId}
+  </select>
+
+  <select id="findByUserMessage" resultMap="PracticeCodeReviewRowMap">
+    SELECT
+      <include refid="PracticeCodeReviewColumns"/>
+    FROM practice_code_review
+    WHERE user_id = #{userId}
+      AND practice_session_id = #{sessionId}
+      AND user_message_id = #{userMessageId}
+  </select>
+</mapper>

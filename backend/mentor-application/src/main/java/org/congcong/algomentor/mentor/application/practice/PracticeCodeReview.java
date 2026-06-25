@@ -13,7 +13,7 @@ public record PracticeCodeReview(
     int versionNo,
     Long userMessageId,
     Long assistantMessageId,
-    String agentRunId,
+    Long agentRunDbId,
     String rawCode,
     String normalizedCode,
     String language,
@@ -43,6 +43,7 @@ public record PracticeCodeReview(
     }
     requirePositiveIfPresent(userMessageId, "user message id");
     requirePositiveIfPresent(assistantMessageId, "assistant message id");
+    requirePositiveIfPresent(agentRunDbId, "agent run database id");
     if (rawCode == null || rawCode.isBlank()) {
       throw new IllegalArgumentException("Practice code review raw code must not be blank");
     }
@@ -56,7 +57,6 @@ public record PracticeCodeReview(
       throw new IllegalArgumentException("Practice code review created time must not be null");
     }
     problemSlug = problemSlug.trim();
-    agentRunId = blankToNull(agentRunId);
     rawCode = rawCode.strip();
     normalizedCode = normalizedCode == null || normalizedCode.isBlank() ? rawCode : normalizedCode.strip();
     language = language.trim();
