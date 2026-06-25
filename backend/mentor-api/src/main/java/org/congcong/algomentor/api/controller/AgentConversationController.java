@@ -74,12 +74,31 @@ public class AgentConversationController {
     }
     PracticeChatReference practiceReference = request.practiceReference();
     if (practiceReference != null) {
+      /*
+       * PracticeChatWorkbench 复用通用 AgentConversation SSE 入口。
+       * 这里把前端传来的题目训练定位信息同步写入治理 metadata：
+       * - scenario 标记本次 run 属于题目训练聊天，后续会使用 PRACTICE_CHAT_V1 profile；
+       * - planId 用于按当前用户恢复学习计划；
+       * - phaseIndex/problemSlug/locale 用于定位阶段、题目和题面语言。
+       *
+       * 真正组装模型上下文时，application 层仍会使用 practiceReference
+       * 校验并加载学习计划、阶段和题面详情。
+       */
       requestMetadata.put(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO);
       requestMetadata.put(PracticeChatPromptConstants.METADATA_PLAN_ID, practiceReference.planId());
       requestMetadata.put(PracticeChatPromptConstants.METADATA_PHASE_INDEX, practiceReference.phaseIndex());
       requestMetadata.put(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, practiceReference.problemSlug());
       requestMetadata.put(PracticeChatPromptConstants.METADATA_LOCALE, practiceReference.locale());
     }
+    /*
+     * 进入 Agent run 前先经过 AI 治理准入：
+     * - 校验功能开关、登录态、权限、请求大小、每日额度和用户级并发锁；
+     * - 写入准入/拒绝审计记录；
+     * - 返回需要继续下传的治理 metadata，例如 admissionId、策略版本和锁 token。
+     *
+     * admission.metadata() 会合并进 AgentConversationCommand，后续 Agent run/trace
+     * 依赖这些字段做观测关联和终态锁释放。
+     */
     AiRunAdmission admission = admissionService.admit(new AiRunContext(
         UUID.randomUUID().toString(),
         actor,

@@ -28,11 +28,29 @@ public final class PracticeChatPromptConstants {
   public static final String VARIABLE_ACTIVE_SUMMARY = "activeSummary";
   public static final String VARIABLE_HISTORY = "history";
 
+  /**
+   * Agent 场景标识，用于把普通会话切换到题目训练聊天 prompt/profile 和治理观测语义。
+   */
   public static final String METADATA_SCENARIO = "scenario";
+  /**
+   * 当前学习计划 ID，用于按用户恢复计划上下文，并关联 trace/debug metadata。
+   */
   public static final String METADATA_PLAN_ID = "planId";
+  /**
+   * 当前学习计划阶段序号，用于定位阶段目标、训练重点和阶段内题目。
+   */
   public static final String METADATA_PHASE_INDEX = "phaseIndex";
+  /**
+   * 当前训练题目的 slug，用于校验题目属于该阶段，并加载题面、难度、标签等题库详情。
+   */
   public static final String METADATA_PROBLEM_SLUG = "problemSlug";
+  /**
+   * 当前题目聊天语言，用于选择题面本地化版本，并作为 prompt 中的回复语言参考。
+   */
   public static final String METADATA_LOCALE = "locale";
+  /**
+   * 本轮用户消息意图分类，用于在题目聊天 prompt 中调整教练策略。
+   */
   public static final String METADATA_MESSAGE_INTENT = "messageIntent";
 
   private PracticeChatPromptConstants() {

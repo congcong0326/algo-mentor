@@ -20,6 +20,7 @@ public class InMemoryAgentRunLockManager implements AgentRunLockManager {
     Instant expiresAt = request.ttl() == null ? null : now.plus(request.ttl());
     LockEntry newEntry = new LockEntry(request.ownerId(), tokenId, expiresAt, request.metadata());
     AtomicReference<LockEntry> conflict = new AtomicReference<>();
+    // locks.compute 会针对entry节点加锁，然后在 remappingFunction 会在锁的保护中执行，此时拿到锁的去修改原子变量，获取锁失败的拿不到原子变量
     locks.compute(request.lockKey(), (ignored, existing) -> {
       if (existing == null || existing.expiredAt(now)) {
         return newEntry;
@@ -27,6 +28,7 @@ public class InMemoryAgentRunLockManager implements AgentRunLockManager {
       conflict.set(existing);
       return existing;
     });
+    // 后续通过判断是否成功修改原子类来看枷锁成功还是失败
     if (conflict.get() == null) {
       return AgentRunLockAcquireResult.acquired(new AgentRunLockToken(
           request.lockKey(),

@@ -858,6 +858,43 @@ describe('App', () => {
     );
   });
 
+  it('sends a practice chat message with practice context and renders streamed response', async () => {
+    const fetchMock = mockLearningPlanFetch();
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' }));
+    expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /两数之和/ }));
+
+    expect(await screen.findByRole('heading', { level: 2, name: '1. 两数之和' })).toBeInTheDocument();
+    const composer = await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' });
+
+    fireEvent.change(composer, { target: { value: '我想先要一个提示' } });
+    expect(composer).toHaveValue('我想先要一个提示');
+
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+
+    expect(await screen.findByText('可以先从哈希表记录已访问数字入手。')).toBeInTheDocument();
+    const streamCall = fetchMock.mock.calls.find(([url]) => url === '/api/agent/conversations/stream');
+    expect(streamCall).toBeDefined();
+    const [, streamInit] = streamCall as [string, RequestInit];
+    expect(streamInit.body).toBe(JSON.stringify({
+      message: '我想先要一个提示',
+      practice: {
+        planId: 900,
+        phaseIndex: 1,
+        problemSlug: 'two-sum',
+        locale: 'zh-CN',
+      },
+    }));
+    expect(new Headers(streamInit.headers).get('Idempotency-Key')).toBe('generated-key');
+    expectCsrfHeader(fetchMock, '/api/agent/conversations/stream');
+  });
+
   it('uses the global LeetCode domain in an English practice chat workbench', async () => {
     stubbedLocalStorage?.setItem('algo-mentor-locale', 'en-US');
     const fetchMock = mockLearningPlanFetch();
@@ -1212,6 +1249,13 @@ function mockLearningPlanFetch() {
         }),
         timestamp: '2026-06-22T00:00:00Z',
       }));
+    }
+
+    if (url === '/api/agent/conversations/stream') {
+      return Promise.resolve(new Response(sseStream([
+        sseEvent('content_delta', { content: '可以先从哈希表记录已访问数字入手。' }),
+        sseEvent('agent_run_end', { runId: 'run_practice' }),
+      ]), { status: 200 }));
     }
 
     if (url === '/api/learning-plans/drafts/stream') {

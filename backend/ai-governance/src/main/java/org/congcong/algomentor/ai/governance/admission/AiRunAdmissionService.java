@@ -41,10 +41,19 @@ public class AiRunAdmissionService {
     this.admissionRepository = admissionRepository;
   }
 
+  /**
+   * 对一次 AI run 做统一准入检查，并返回后续 Agent/trace 需要携带的治理上下文。
+   *
+   * <p>当前流程包含：按 purpose 解析治理策略、检查功能开关和账号权限、限制请求大小、
+   * 消耗用户每日共享额度、获取用户级并发锁、写入准入审计记录，最后把 admissionId、
+   * lockToken、策略版本等信息合并到 metadata。调用方应把返回的 metadata 继续传给
+   * Agent run，便于后续释放锁、排查问题和关联治理审计。</p>
+   */
   @Transactional
   public AiRunAdmission admit(AiRunContext context) {
     AiPurposePolicy policy = policyResolver.resolve(context.purpose());
     Map<String, Object> metadata = baseMetadata(context, policy);
+    // 先执行不产生外部占用的静态校验：功能开关、登录态、权限和请求体大小。
     if (!properties.isEnabled() || !policy.enabled()) {
       reject(context, AiGovernanceErrorCode.AI_PURPOSE_DISABLED, AiRunStatus.REJECTED_DISABLED, metadata);
     }
@@ -58,12 +67,17 @@ public class AiRunAdmissionService {
       reject(context, AiGovernanceErrorCode.AI_REQUEST_TOO_LARGE, AiRunStatus.REJECTED_REQUEST_TOO_LARGE, metadata);
     }
 
+    // 当前额度按用户维度共享，不区分 learning chat、plan draft 等具体 purpose。
     long userId = context.actor().userId();
     LocalDate quotaDate = LocalDate.now(properties.getQuotaZone());
     if (!usageStore.tryConsumeRequest(userId, quotaDate, SHARED_QUOTA_SCOPE, policy.dailyRequestLimit())) {
       reject(context, AiGovernanceErrorCode.AI_QUOTA_EXCEEDED, AiRunStatus.REJECTED_QUOTA, metadata);
     }
 
+    /*
+     * 获取用户级 AI run 锁，避免同一用户并发启动多个 AI 任务。
+     * 锁 token 会随 admission metadata 下传到 Agent run，最终由运行结束回调释放。
+     */
     AgentRunLockToken lockToken = runLockService.tryAcquire(userId, context.runId(), metadata)
         .orElseThrow(() -> exception(
             AiGovernanceErrorCode.AI_CONCURRENT_RUN_CONFLICT,
@@ -71,8 +85,10 @@ public class AiRunAdmissionService {
             metadata));
     Long admissionId;
     try {
+      // 只有真正准入的请求会走到这里；被拒绝的请求已在 reject(...) 中写入 rejected 审计记录。
       admissionId = admissionRepository.insert(context, AiRunStatus.ADMITTED, null);
     } catch (RuntimeException ex) {
+      // 审计落库失败时释放刚获取的并发锁，避免用户后续请求被遗留锁阻塞。
       runLockService.release(lockToken);
       throw ex;
     }
@@ -110,6 +126,7 @@ public class AiRunAdmissionService {
       AiGovernanceErrorCode code,
       AiRunStatus status,
       Map<String, Object> metadata) {
+    // 拒绝也要落审计记录，便于统计、排查和向 API 层返回稳定错误码。
     admissionRepository.insertRejected(
         context.runId(),
         context.actor().userId(),
@@ -124,6 +141,7 @@ public class AiRunAdmissionService {
 
   private Map<String, Object> baseMetadata(AiRunContext context, AiPurposePolicy policy) {
     Map<String, Object> metadata = new LinkedHashMap<>();
+    // 这部分 metadata 会一路传入 Agent request、SSE 事件和 trace 快照，用于跨层关联。
     metadata.put(AiGovernanceMetadataKeys.RUN_ID, context.runId());
     if (context.actor().userId() != null) {
       metadata.put(AiGovernanceMetadataKeys.USER_ID, context.actor().userId());

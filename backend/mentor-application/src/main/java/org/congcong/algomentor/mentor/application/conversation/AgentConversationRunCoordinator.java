@@ -54,18 +54,33 @@ public class AgentConversationRunCoordinator {
     this.lockOwnerProvider = lockOwnerProvider;
   }
 
+  /**
+   * 创建或复用一次会话 run，并返回可被 Controller/SSE 层订阅的 Agent 事件流。
+   *
+   * <p>这个方法的职责是应用层编排，而不是执行模型推理本身：</p>
+   * <ul>
+   *   <li>在已知 taskId 时，先尝试获取 task 级运行锁，避免同一任务并发启动多个 Agent run；</li>
+   *   <li>如果锁冲突来自相同幂等键，则优先查找并回放已有 run 的身份事件，避免重复创建消息和重复调用模型；</li>
+   *   <li>调用 {@link AgentConversationService#prepareRun(AgentConversationCommand)} 持久化用户消息、
+   *       恢复历史上下文，并生成通用 {@link AgentRequest}；</li>
+   *   <li>把锁 token 写入 AgentRequest metadata，交给 Agent loop/observer 在异步终态释放锁；</li>
+   *   <li>只在 prepare/subscribe 启动阶段同步失败时兜底释放锁，正常流式过程的释放不在这里做。</li>
+   * </ul>
+   */
   public Flow.Publisher<AgentStreamEvent> stream(AgentConversationCommand command) {
     if (command == null) {
       throw new IllegalArgumentException("Agent conversation command must not be null");
     }
     AgentRunLockToken lockToken = null;
     if (command.taskId() != null) {
+      // taskId 已明确时，先加锁再 prepareRun，避免并发请求同时写入同一任务的会话上下文。
       AgentRunLockAcquireResult lockResult = tryAcquireLock(
           command.taskId(),
           preRunLockMetadata(command.taskId(), command.idempotencyKey()));
       if (lockResult.acquired()) {
         lockToken = lockResult.token();
       } else if (sameIdempotencyKey(lockResult.conflict(), command.idempotencyKey())) {
+        // 相同幂等键说明很可能是客户端重试：不启动新 run，只回放已有 run 的起止身份事件。
         AgentConversationRun replay = conversationService
             .findRunByIdempotencyKey(command)
             .orElseThrow(() -> new AgentConversationRunInProgressException(command.taskId()));
@@ -81,6 +96,7 @@ public class AgentConversationRunCoordinator {
         return replayPublisher(run);
       }
       if (lockToken == null) {
+        // 无 taskId 请求会在 prepareRun 后得到实际 taskId，此时再补拿 task 级锁。
         lockToken = acquireLock(run.taskId(), lockMetadata(run, command.idempotencyKey()));
       }
       return new LockedAgentStreamPublisher(

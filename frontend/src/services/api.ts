@@ -333,6 +333,7 @@ function compactRequest(request: AgentConversationStreamRequest): AgentConversat
     ...(request.taskId === undefined ? {} : { taskId: request.taskId }),
     ...(request.userId === undefined ? {} : { userId: request.userId }),
     message: request.message,
+    ...(request.practice === undefined ? {} : { practice: request.practice }),
   };
 }
 

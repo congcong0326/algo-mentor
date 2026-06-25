@@ -13,6 +13,11 @@ public class AiGovernanceProperties {
   private boolean enabled = true;
   private ZoneId quotaZone = ZoneOffset.UTC;
   private Duration activeRunTtl = Duration.ofMinutes(30);
+  /*
+   * 当前内置 purpose 策略作为本地默认值，并支持通过 Spring 配置在启动时覆盖。
+   * 后续如果需要运营后台、数据库或配置中心实时调整额度/模型/工具权限，
+   * 可以把这里扩展为动态策略源，再由 AiPurposePolicyResolver 统一读取。
+   */
   private EnumMap<AiPurpose, PurposeProperties> purposes = defaultPurposeProperties();
 
   public boolean isEnabled() {
@@ -56,6 +61,7 @@ public class AiGovernanceProperties {
   }
 
   private static EnumMap<AiPurpose, PurposeProperties> defaultPurposeProperties() {
+    // 目前写死的是治理策略默认值；不是业务常量，未来可迁移为数据库/配置中心驱动的动态配置。
     EnumMap<AiPurpose, PurposeProperties> defaults = new EnumMap<>(AiPurpose.class);
     defaults.put(AiPurpose.LEARNING_PLAN, new PurposeProperties(
         true, 50, 1, 32768, 4096, 12, false, true, true, false,

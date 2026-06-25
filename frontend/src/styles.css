@@ -1940,6 +1940,11 @@ a {
   background: var(--surface-card);
 }
 
+.practice-message.user-message {
+  justify-self: end;
+  background: var(--surface-soft);
+}
+
 .practice-message > span {
   color: var(--text-muted);
   font-size: 12px;
@@ -2066,13 +2071,18 @@ a {
   background: var(--surface-card);
 }
 
-.practice-composer input {
+.practice-composer textarea {
   width: 100%;
-  min-height: 42px;
-  padding: 0 12px;
+  min-height: 44px;
+  max-height: 160px;
+  padding: 10px 12px;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-control);
   background: var(--surface-muted);
+  color: var(--text-primary);
+  font: inherit;
+  line-height: 1.45;
+  resize: vertical;
 }
 
 .wizard-panel {

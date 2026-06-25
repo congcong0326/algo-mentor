@@ -215,6 +215,8 @@ export interface LocaleResources {
     notStarted: string;
     chatMessages: string;
     coach: string;
+    learner: string;
+    practiceChatFailed: string;
     loadingStatement: string;
     sendMessage: string;
     composerLabel: string;
@@ -464,6 +466,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       notStarted: '未开始',
       chatMessages: '聊天消息',
       coach: '教练',
+      learner: '我',
+      practiceChatFailed: '练习对话生成失败，请稍后重试。',
       loadingStatement: '正在加载题面...',
       sendMessage: '发送消息',
       composerLabel: '输入你的思路、问题、代码或 LeetCode 反馈',
@@ -756,6 +760,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       notStarted: 'Not started',
       chatMessages: 'Chat messages',
       coach: 'Coach',
+      learner: 'Me',
+      practiceChatFailed: 'Practice chat generation failed. Please try again later.',
       loadingStatement: 'Loading problem statement...',
       sendMessage: 'Send message',
       composerLabel: 'Enter your approach, question, code, or LeetCode feedback',

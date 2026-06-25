@@ -1,11 +1,18 @@
 import { ArrowLeft, ExternalLink, Info } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { FormEvent, MutableRefObject } from 'react';
 import MarkdownView from '../components/MarkdownView';
 import { formatDifficulty, formatProblemTitle } from '../i18n/formatters';
 import { useI18n } from '../i18n/I18nProvider';
 import type { SupportedLocale } from '../i18n/locales';
-import { getProblemDetail } from '../services/api';
-import type { LearningPlanDetailResponse, LearningPlanProblemDraft, ProblemDetail } from '../types/api';
+import { getProblemDetail, streamAgentConversation } from '../services/api';
+import type {
+  ContentDeltaData,
+  LearningPlanDetailResponse,
+  LearningPlanProblemDraft,
+  ProblemDetail,
+} from '../types/api';
+import { generateClientId } from '../utils/id';
 
 const LEETCODE_HOST_BY_LOCALE: Record<SupportedLocale, string> = {
   'zh-CN': 'leetcode.cn',
@@ -13,6 +20,12 @@ const LEETCODE_HOST_BY_LOCALE: Record<SupportedLocale, string> = {
 };
 
 const LEETCODE_HOSTS = new Set(['leetcode.cn', 'www.leetcode.cn', 'leetcode.com', 'www.leetcode.com']);
+
+interface PracticeMessage {
+  id: string;
+  role: 'assistant' | 'user';
+  content: string;
+}
 
 function problemLabel(problem: LearningPlanProblemDraft | undefined, locale: SupportedLocale, fallback: string): string {
   if (!problem) {
@@ -56,6 +69,11 @@ export default function PracticeChatWorkbench({
   const problem = phase?.problems.find((candidate) => candidate.slug === problemSlug);
   const [problemDetail, setProblemDetail] = useState<ProblemDetail>();
   const [problemError, setProblemError] = useState('');
+  const [composerValue, setComposerValue] = useState('');
+  const [messages, setMessages] = useState<PracticeMessage[]>([]);
+  const [streaming, setStreaming] = useState(false);
+  const messageSequenceRef = useRef(0);
+  const streamControllerRef = useRef<AbortController | undefined>(undefined);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -78,8 +96,73 @@ export default function PracticeChatWorkbench({
     return () => controller.abort();
   }, [locale, problemSlug, resources.learningPlans.detailLoadProblemFailed]);
 
+  useEffect(() => () => streamControllerRef.current?.abort(), []);
+
+  useEffect(() => {
+    streamControllerRef.current?.abort();
+    streamControllerRef.current = undefined;
+    setComposerValue('');
+    setMessages([]);
+    setStreaming(false);
+  }, [locale, phaseIndex, plan.id, problemSlug]);
+
   const statement = problemDetail?.contentMarkdown.trim() || resources.learningPlans.statementUnavailable;
   const leetcodeUrl = localizedLeetCodeUrl(problemDetail?.leetcodeUrl, locale);
+
+  async function sendMessage(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const message = composerValue.trim();
+    if (!message || streaming) {
+      return;
+    }
+
+    const controller = new AbortController();
+    const assistantMessageId = nextMessageId(messageSequenceRef, 'assistant');
+    streamControllerRef.current = controller;
+    setStreaming(true);
+    setComposerValue('');
+    setMessages((current) => [
+      ...current,
+      { id: nextMessageId(messageSequenceRef, 'user'), role: 'user', content: message },
+    ]);
+
+    try {
+      await streamAgentConversation({
+        message,
+        practice: {
+          planId: plan.id,
+          phaseIndex,
+          problemSlug,
+          locale,
+        },
+      }, {
+        idempotencyKey: generateClientId(),
+        signal: controller.signal,
+        onEvent: (streamEvent) => {
+          if (streamEvent.eventName !== 'content_delta') {
+            return;
+          }
+          const data = streamEvent.data as ContentDeltaData;
+          if (!data.content) {
+            return;
+          }
+          setMessages((current) => appendAssistantDelta(current, assistantMessageId, data.content ?? ''));
+        },
+      });
+    } catch (error) {
+      if (!controller.signal.aborted) {
+        const errorMessage = error instanceof Error ? error.message : resources.learningPlans.practiceChatFailed;
+        setMessages((current) => appendAssistantDelta(current, assistantMessageId, errorMessage));
+      }
+    } finally {
+      if (!controller.signal.aborted) {
+        setStreaming(false);
+      }
+      if (streamControllerRef.current === controller) {
+        streamControllerRef.current = undefined;
+      }
+    }
+  }
 
   return (
     <article className="practice-workbench" aria-labelledby="practice-workbench-title">
@@ -132,16 +215,47 @@ export default function PracticeChatWorkbench({
           <span>{resources.learningPlans.coach}</span>
           <MarkdownView content={problemError || (problemDetail ? statement : resources.learningPlans.loadingStatement)} />
         </article>
+        {messages.map((message) => (
+          <article className={`practice-message ${message.role}-message`} key={message.id}>
+            <span>{message.role === 'assistant' ? resources.learningPlans.coach : resources.learningPlans.learner}</span>
+            <MarkdownView content={message.content} />
+          </article>
+        ))}
       </section>
 
-      <form className="practice-composer" aria-label={resources.learningPlans.sendMessage}>
-        <input
+      <form className="practice-composer" aria-label={resources.learningPlans.sendMessage} onSubmit={sendMessage}>
+        <textarea
           aria-label={resources.learningPlans.composerLabel}
-          disabled
+          disabled={streaming}
+          onChange={(event) => setComposerValue(event.target.value)}
           placeholder={resources.learningPlans.composerPlaceholder}
+          rows={2}
+          value={composerValue}
         />
-        <button className="primary-button compact" disabled type="button">{resources.learningPlans.send}</button>
+        <button className="primary-button compact" disabled={streaming || !composerValue.trim()} type="submit">
+          {resources.learningPlans.send}
+        </button>
       </form>
     </article>
   );
+}
+
+function appendAssistantDelta(messages: PracticeMessage[], assistantMessageId: string, delta: string): PracticeMessage[] {
+  const lastMessage = messages[messages.length - 1];
+  if (lastMessage?.id === assistantMessageId) {
+    return [
+      ...messages.slice(0, -1),
+      { ...lastMessage, content: `${lastMessage.content}${delta}` },
+    ];
+  }
+
+  return [
+    ...messages,
+    { id: assistantMessageId, role: 'assistant', content: delta },
+  ];
+}
+
+function nextMessageId(sequenceRef: MutableRefObject<number>, prefix: string): string {
+  sequenceRef.current += 1;
+  return `${prefix}-${sequenceRef.current}`;
 }
