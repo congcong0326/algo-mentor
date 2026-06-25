@@ -13,6 +13,7 @@ import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationReque
 import org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentConversationMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentRunRecord;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentTurnMessagesRow;
 import org.junit.jupiter.api.Test;
 
 class PostgresAgentConversationRepositoryTest {
@@ -209,6 +210,12 @@ class PostgresAgentConversationRepositoryTest {
     public AgentRunRecord findRunRecord(long runId) {
       calls.add("findRunRecord:" + runId);
       return existingRunRecord;
+    }
+
+    @Override
+    public AgentTurnMessagesRow findTurnMessagesByRunId(long runId) {
+      calls.add("findTurnMessagesByRunId:" + runId);
+      return null;
     }
 
     @Override

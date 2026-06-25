@@ -41,6 +41,29 @@
     </constructor>
   </resultMap>
 
+  <resultMap id="AgentTurnMessagesRowMap"
+      type="org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentTurnMessagesRow">
+    <constructor>
+      <arg column="run_id" javaType="_long"/>
+      <arg column="turn_id" javaType="_long"/>
+      <arg column="task_id" javaType="_long"/>
+      <arg column="user_message_id" javaType="_long"/>
+      <arg column="user_sequence_no" javaType="_long"/>
+      <arg column="user_content" javaType="string"/>
+      <arg column="user_created_at" javaType="java.time.Instant"/>
+      <arg column="user_metadata"
+           javaType="java.util.Map"
+           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbMapTypeHandler"/>
+      <arg column="assistant_message_id" javaType="java.lang.Long"/>
+      <arg column="assistant_sequence_no" javaType="java.lang.Long"/>
+      <arg column="assistant_content" javaType="string"/>
+      <arg column="assistant_created_at" javaType="java.time.Instant"/>
+      <arg column="assistant_metadata"
+           javaType="java.util.Map"
+           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbMapTypeHandler"/>
+    </constructor>
+  </resultMap>
+
   <select id="lockIdempotencyKey" resultType="int">
     SELECT 1
     FROM (
@@ -64,6 +87,31 @@
       t.system_prompt
     FROM agent_run r
     JOIN agent_task t ON t.id = r.task_id
+    WHERE r.id = #{runId}
+  </select>
+
+  <select id="findTurnMessagesByRunId" resultMap="AgentTurnMessagesRowMap">
+    SELECT
+      r.id AS run_id,
+      t.id AS turn_id,
+      r.task_id,
+      u.id AS user_message_id,
+      u.sequence_no AS user_sequence_no,
+      u.content AS user_content,
+      u.created_at AS user_created_at,
+      u.metadata AS user_metadata,
+      a.id AS assistant_message_id,
+      a.sequence_no AS assistant_sequence_no,
+      a.content AS assistant_content,
+      a.created_at AS assistant_created_at,
+      a.metadata AS assistant_metadata
+    FROM agent_run r
+    JOIN agent_turn t ON t.id = r.turn_id
+    JOIN agent_message u ON u.id = t.user_message_id AND u.status = 'active' AND u.role = 'user'
+    LEFT JOIN agent_message a ON a.id = t.assistant_message_id
+      AND a.status = 'active'
+      AND a.role = 'assistant'
+      AND a.run_id = r.id
     WHERE r.id = #{runId}
   </select>
 

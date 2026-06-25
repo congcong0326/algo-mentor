@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentRunRecord;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentTurnMessagesRow;
 
 @Mapper
 public interface AgentConversationMapper {
@@ -16,6 +17,8 @@ public interface AgentConversationMapper {
   Long findRunIdByIdempotencyKey(@Param("idempotencyKey") String idempotencyKey);
 
   AgentRunRecord findRunRecord(@Param("runId") long runId);
+
+  AgentTurnMessagesRow findTurnMessagesByRunId(@Param("runId") long runId);
 
   long insertTask(
       @Param("userId") Long userId,
