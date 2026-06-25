@@ -17,6 +17,7 @@ import org.congcong.algomentor.mentor.application.conversation.AgentConversation
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
@@ -96,13 +97,15 @@ public class AgentConversationApiAutoConfiguration {
       LearningPlanRepository learningPlanRepository,
       PracticeChatProblemCatalog problemCatalog,
       PracticeSessionRepository practiceSessionRepository,
-      AgentTaskMessageRepository agentTaskMessageRepository
+      AgentTaskMessageRepository agentTaskMessageRepository,
+      ObjectProvider<PracticeCodeReviewRepository> reviewRepository
   ) {
     return new PracticeSessionService(
         learningPlanRepository,
         problemCatalog,
         practiceSessionRepository,
-        agentTaskMessageRepository);
+        agentTaskMessageRepository,
+        reviewRepository.getIfAvailable(PracticeCodeReviewRepository::empty));
   }
 
   @Bean

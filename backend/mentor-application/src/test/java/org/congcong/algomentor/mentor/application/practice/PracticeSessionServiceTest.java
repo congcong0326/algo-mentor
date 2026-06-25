@@ -3,6 +3,7 @@ package org.congcong.algomentor.mentor.application.practice;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.math.BigDecimal;
 import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRep
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
@@ -129,7 +131,7 @@ class PracticeSessionServiceTest {
   void completedProgressDoesNotReturnToInProgress() {
     InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
     InMemoryAgentTaskMessageRepository messageRepository = new InMemoryAgentTaskMessageRepository();
-    PracticeSessionService service = service(sessionRepository, messageRepository);
+    PracticeSessionService service = service(sessionRepository, messageRepository, passingReviewRepository());
 
     PracticeSessionResult created = service.createOrReuse(7, reference());
     PracticeSession completed = service.updateProgressStatus(7, created.session().id(), PracticeProgressStatus.COMPLETED);
@@ -138,6 +140,53 @@ class PracticeSessionServiceTest {
     assertThat(completed.progressStatus()).isEqualTo(PracticeProgressStatus.COMPLETED);
     assertThat(reused.session().progressStatus()).isEqualTo(PracticeProgressStatus.COMPLETED);
     assertThat(sessionRepository.progress.status()).isEqualTo(PracticeProgressStatus.COMPLETED);
+  }
+
+  @Test
+  void rejectsCompletionWhenReviewIsMissing() {
+    InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
+    InMemoryAgentTaskMessageRepository messageRepository = new InMemoryAgentTaskMessageRepository();
+    PracticeSessionService service = service(sessionRepository, messageRepository, new InMemoryPracticeCodeReviewRepository());
+
+    PracticeSessionResult created = service.createOrReuse(7, reference());
+
+    assertThatThrownBy(() -> service.updateProgressStatus(7L, created.session().id(), PracticeProgressStatus.COMPLETED))
+        .isInstanceOfSatisfying(LearningPlanException.class, exception ->
+            assertThat(exception.code()).isEqualTo("PRACTICE_COMPLETION_REVIEW_REQUIRED"));
+  }
+
+  @Test
+  void completesProgressWhenLatestReviewPassed() {
+    InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
+    InMemoryAgentTaskMessageRepository messageRepository = new InMemoryAgentTaskMessageRepository();
+    PracticeSessionService service = service(sessionRepository, messageRepository, passingReviewRepository());
+
+    PracticeSessionResult created = service.createOrReuse(7, reference());
+    PracticeSession completed = service.updateProgressStatus(7L, created.session().id(), PracticeProgressStatus.COMPLETED);
+
+    assertThat(completed.progressStatus()).isEqualTo(PracticeProgressStatus.COMPLETED);
+    assertThat(sessionRepository.progress.status()).isEqualTo(PracticeProgressStatus.COMPLETED);
+  }
+
+  @Test
+  void resultUsesOneLatestReviewSnapshotForReviewAndGate() {
+    InMemoryPracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
+    InMemoryAgentTaskMessageRepository messageRepository = new InMemoryAgentTaskMessageRepository();
+    InMemoryPracticeCodeReviewRepository reviewRepository = new InMemoryPracticeCodeReviewRepository();
+    reviewRepository.latestSequence = List.of(
+        Optional.of(reviewSummary(90L, new BigDecimal("5.0"), false)),
+        Optional.of(reviewSummary(91L, new BigDecimal("8.0"), true)));
+    PracticeSessionService service = service(sessionRepository, messageRepository, reviewRepository);
+
+    PracticeSessionResult result = service.createOrReuse(7, reference());
+
+    assertThat(reviewRepository.latestSummaryCalls).isEqualTo(1);
+    assertThat(result.latestReview()).isNotNull();
+    assertThat(result.latestReview().id()).isEqualTo(90L);
+    assertThat(result.completionGate().canComplete()).isFalse();
+    assertThat(result.completionGate().reasonCode())
+        .isEqualTo(PracticeCompletionGate.ReasonCode.LATEST_REVIEW_FAILED);
+    assertThat(result.completionGate().latestScore()).contains(new BigDecimal("5.0"));
   }
 
   @Test
@@ -183,22 +232,54 @@ class PracticeSessionServiceTest {
   private PracticeSessionService service(
       InMemoryPracticeSessionRepository sessionRepository,
       InMemoryAgentTaskMessageRepository messageRepository) {
+    return service(sessionRepository, messageRepository, new InMemoryPracticeCodeReviewRepository());
+  }
+
+  private PracticeSessionService service(
+      InMemoryPracticeSessionRepository sessionRepository,
+      InMemoryAgentTaskMessageRepository messageRepository,
+      PracticeCodeReviewRepository reviewRepository) {
     return new PracticeSessionService(
         new InMemoryPlanRepository(),
         new FakeProblemCatalog(),
         sessionRepository,
-        messageRepository);
+        messageRepository,
+        reviewRepository);
   }
 
   private PracticeSessionService service(
       InMemoryPracticeSessionRepository sessionRepository,
       InMemoryAgentTaskMessageRepository messageRepository,
       FakeProblemCatalog problemCatalog) {
+    return service(sessionRepository, messageRepository, problemCatalog, new InMemoryPracticeCodeReviewRepository());
+  }
+
+  private PracticeSessionService service(
+      InMemoryPracticeSessionRepository sessionRepository,
+      InMemoryAgentTaskMessageRepository messageRepository,
+      FakeProblemCatalog problemCatalog,
+      PracticeCodeReviewRepository reviewRepository) {
     return new PracticeSessionService(
         new InMemoryPlanRepository(),
         problemCatalog,
         sessionRepository,
-        messageRepository);
+        messageRepository,
+        reviewRepository);
+  }
+
+  private InMemoryPracticeCodeReviewRepository passingReviewRepository() {
+    InMemoryPracticeCodeReviewRepository reviewRepository = new InMemoryPracticeCodeReviewRepository();
+    reviewRepository.latest = Optional.of(reviewSummary(new BigDecimal("7.0")));
+    return reviewRepository;
+  }
+
+  private PracticeCodeReviewSummary reviewSummary(BigDecimal totalScore) {
+    return reviewSummary(90L, totalScore, true);
+  }
+
+  private PracticeCodeReviewSummary reviewSummary(long id, BigDecimal totalScore, boolean passed) {
+    return new PracticeCodeReviewSummary(id, 2, "java", totalScore, passed,
+        Instant.parse("2026-01-02T00:00:00Z"));
   }
 
   private PracticeChatReference reference() {
@@ -270,6 +351,48 @@ class PracticeSessionServiceTest {
 
     private PracticeProgress progress(PracticeProgressStatus status) {
       return new PracticeProgress(70, 7, 12, 1, "two-sum", status, NOW, NOW);
+    }
+  }
+
+  private static final class InMemoryPracticeCodeReviewRepository implements PracticeCodeReviewRepository {
+
+    private Optional<PracticeCodeReviewSummary> latest = Optional.empty();
+    private List<Optional<PracticeCodeReviewSummary>> latestSequence = List.of();
+    private int latestSummaryCalls;
+
+    @Override
+    public PracticeCodeReview save(PracticeCodeReviewDraft draft) {
+      throw new UnsupportedOperationException("save not used");
+    }
+
+    @Override
+    public Optional<PracticeCodeReviewSummary> findLatestSummary(long userId, long sessionId) {
+      latestSummaryCalls++;
+      if (!latestSequence.isEmpty()) {
+        int index = Math.min(latestSummaryCalls - 1, latestSequence.size() - 1);
+        return latestSequence.get(index);
+      }
+      return latest;
+    }
+
+    @Override
+    public Optional<PracticeCodeReview> findLatest(long userId, long sessionId) {
+      return Optional.empty();
+    }
+
+    @Override
+    public List<PracticeCodeReviewSummary> findSummaries(long userId, long sessionId) {
+      return latest.map(List::of).orElseGet(List::of);
+    }
+
+    @Override
+    public Optional<PracticeCodeReview> findById(long userId, long sessionId, long reviewId) {
+      return Optional.empty();
+    }
+
+    @Override
+    public Optional<PracticeCodeReview> findByUserMessage(long userId, long sessionId, long userMessageId) {
+      return Optional.empty();
     }
   }
 

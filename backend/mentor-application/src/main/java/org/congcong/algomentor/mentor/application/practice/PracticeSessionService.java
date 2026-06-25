@@ -26,16 +26,30 @@ public class PracticeSessionService {
   private final PracticeChatProblemCatalog problemCatalog;
   private final PracticeSessionRepository practiceSessionRepository;
   private final AgentTaskMessageRepository agentTaskMessageRepository;
+  private final PracticeCodeReviewRepository reviewRepository;
+  private final PracticeCompletionGateService completionGateService;
 
   public PracticeSessionService(
       LearningPlanRepository learningPlanRepository,
       PracticeChatProblemCatalog problemCatalog,
       PracticeSessionRepository practiceSessionRepository,
       AgentTaskMessageRepository agentTaskMessageRepository) {
+    this(learningPlanRepository, problemCatalog, practiceSessionRepository, agentTaskMessageRepository,
+        PracticeCodeReviewRepository.empty());
+  }
+
+  public PracticeSessionService(
+      LearningPlanRepository learningPlanRepository,
+      PracticeChatProblemCatalog problemCatalog,
+      PracticeSessionRepository practiceSessionRepository,
+      AgentTaskMessageRepository agentTaskMessageRepository,
+      PracticeCodeReviewRepository reviewRepository) {
     this.learningPlanRepository = learningPlanRepository;
     this.problemCatalog = problemCatalog;
     this.practiceSessionRepository = practiceSessionRepository;
     this.agentTaskMessageRepository = agentTaskMessageRepository;
+    this.reviewRepository = reviewRepository;
+    this.completionGateService = new PracticeCompletionGateService(reviewRepository);
   }
 
   @Transactional
@@ -88,6 +102,17 @@ public class PracticeSessionService {
     }
     PracticeSession session = practiceSessionRepository.findSessionForUser(sessionId, userId)
         .orElseThrow(() -> new LearningPlanException("PRACTICE_SESSION_NOT_FOUND", "题目练习会话不存在。"));
+    if (status == PracticeProgressStatus.COMPLETED) {
+      PracticeCompletionGate gate = completionGateService.evaluate(userId, session);
+      if (!gate.canComplete()) {
+        throw switch (gate.reasonCode()) {
+          case NO_REVIEW -> new LearningPlanException("PRACTICE_COMPLETION_REVIEW_REQUIRED", gate.message());
+          case LATEST_REVIEW_FAILED -> new LearningPlanException("PRACTICE_COMPLETION_REVIEW_NOT_PASSED", gate.message());
+          case ALREADY_COMPLETED -> new LearningPlanException("PRACTICE_PROGRESS_ALREADY_COMPLETED", gate.message());
+          case PASSED -> new IllegalStateException("Passed gate cannot block completion");
+        };
+      }
+    }
     PracticeProgress progress = practiceSessionRepository.updateProgressStatus(sessionId, userId, status);
     return withProgressStatus(session, progress.status());
   }
@@ -107,7 +132,9 @@ public class PracticeSessionService {
     Optional<AgentActiveRun> activeRun = session.agentTaskId() == null
         ? Optional.empty()
         : agentTaskMessageRepository.activeRun(session.agentTaskId());
-    return new PracticeSessionResult(session, problemDetail, messages, activeRun);
+    Optional<PracticeCodeReviewSummary> latestReview = reviewRepository.findLatestSummary(session.userId(), session.id());
+    PracticeCompletionGate completionGate = completionGateService.evaluate(session.userId(), session, latestReview);
+    return new PracticeSessionResult(session, problemDetail, messages, activeRun, latestReview.orElse(null), completionGate);
   }
 
   private PracticeSession withProgressStatus(PracticeSession session, PracticeProgressStatus status) {
@@ -187,4 +214,5 @@ public class PracticeSessionService {
     metadata.put(PracticeChatPromptConstants.MESSAGE_TYPE_METADATA_KEY, messageType);
     return metadata;
   }
+
 }
