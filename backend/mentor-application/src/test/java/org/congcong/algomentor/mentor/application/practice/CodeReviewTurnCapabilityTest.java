@@ -2,6 +2,7 @@ package org.congcong.algomentor.mentor.application.practice;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
@@ -59,6 +60,46 @@ class CodeReviewTurnCapabilityTest {
     assertThat(service.capturedContext.originalMessage()).startsWith("```java");
   }
 
+  @Test
+  void recordsLowCardinalityReviewCapabilityMetrics() {
+    SimpleMeterRegistry registry = new SimpleMeterRegistry();
+    CountingReviewService service = new CountingReviewService(PracticeReviewResult.saved(review()));
+    CodeReviewTurnCapability capability = new CodeReviewTurnCapability(
+        service,
+        new MicrometerPracticeCodeReviewMetrics(registry));
+
+    capability.afterTurn(context(), candidate());
+    capability.afterTurn(context(), PracticeTurnClassification.notCodeLike("怎么做？", null, Map.of()));
+
+    assertThat(registry.find("practice.code_review.capability.calls")
+        .tag("candidate", "true")
+        .tag("status", PracticeReviewStatus.SAVED.name())
+        .counter()
+        .count()).isEqualTo(1.0);
+    assertThat(registry.find("practice.code_review.capability.calls")
+        .tag("candidate", "false")
+        .tag("status", PracticeReviewStatus.NOT_CODE_LIKE.name())
+        .counter()
+        .count()).isEqualTo(1.0);
+    assertThat(registry.find("practice.code_review.capability.duration")
+        .tag("candidate", "true")
+        .tag("status", PracticeReviewStatus.SAVED.name())
+        .timer()
+        .count()).isEqualTo(1L);
+  }
+
+  @Test
+  void idempotentReplayUsesReplayLookupPath() {
+    CapturingReviewService service = new CapturingReviewService(PracticeReviewResult.saved(review()));
+    CodeReviewTurnCapability capability = new CodeReviewTurnCapability(service);
+
+    PracticeTurnCapabilityResult result = capability.afterTurn(context(), candidate().asIdempotentReplay());
+
+    assertThat(result.status()).isEqualTo(PracticeReviewStatus.SAVED);
+    assertThat(service.reviewCalls).isZero();
+    assertThat(service.replayCalls).isEqualTo(1);
+  }
+
   private PracticeTurnContext context() {
     return new PracticeTurnContext(
         7L,
@@ -109,6 +150,8 @@ class CodeReviewTurnCapabilityTest {
   private static final class CapturingReviewService extends PracticeCodeReviewService {
     private final PracticeReviewResult result;
     private PracticeTurnContext capturedContext;
+    private int reviewCalls;
+    private int replayCalls;
 
     private CapturingReviewService(PracticeReviewResult result) {
       super(context -> result);
@@ -117,6 +160,14 @@ class CodeReviewTurnCapabilityTest {
 
     @Override
     public PracticeReviewResult review(PracticeTurnContext context) {
+      reviewCalls++;
+      capturedContext = context;
+      return result;
+    }
+
+    @Override
+    public PracticeReviewResult replay(PracticeTurnContext context) {
+      replayCalls++;
       capturedContext = context;
       return result;
     }

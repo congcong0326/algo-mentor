@@ -56,6 +56,7 @@ algo-mentor:
   api:
     sse:
       learning-plan-draft-timeout: ${LEARNING_PLAN_DRAFT_SSE_TIMEOUT:6m}
+      practice-message-timeout: ${PRACTICE_MESSAGE_SSE_TIMEOUT:6m}
   auth:
     login-success-url: ${AUTH_LOGIN_SUCCESS_URL:/}
     logout-success-url: ${AUTH_LOGOUT_SUCCESS_URL:/}

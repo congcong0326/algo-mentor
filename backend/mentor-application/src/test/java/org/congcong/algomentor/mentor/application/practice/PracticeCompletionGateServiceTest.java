@@ -2,6 +2,7 @@ package org.congcong.algomentor.mentor.application.practice;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
@@ -56,6 +57,22 @@ class PracticeCompletionGateServiceTest {
 
     assertThat(gate.canComplete()).isFalse();
     assertThat(gate.reasonCode()).isEqualTo(PracticeCompletionGate.ReasonCode.ALREADY_COMPLETED);
+  }
+
+  @Test
+  void recordsCompletionGateMetricsByReasonAndDecision() {
+    SimpleMeterRegistry registry = new SimpleMeterRegistry();
+    PracticeCompletionGateService service = new PracticeCompletionGateService(
+        new FakeReviewRepository(Optional.of(summary(5, false))),
+        new MicrometerPracticeCodeReviewMetrics(registry));
+
+    service.evaluate(7L, session(PracticeProgressStatus.IN_PROGRESS));
+
+    assertThat(registry.find("practice.completion_gate.evaluations")
+        .tag("canComplete", "false")
+        .tag("reason", PracticeCompletionGate.ReasonCode.LATEST_REVIEW_FAILED.name())
+        .counter()
+        .count()).isEqualTo(1.0);
   }
 
   private PracticeCompletionGateService service(Optional<PracticeCodeReviewSummary> latest) {

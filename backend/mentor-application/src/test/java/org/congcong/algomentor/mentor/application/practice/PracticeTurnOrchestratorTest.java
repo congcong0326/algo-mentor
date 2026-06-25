@@ -152,8 +152,11 @@ class PracticeTurnOrchestratorTest {
   }
 
   @Test
-  void idempotentReplayDoesNotRunCapabilities() {
-    CapturingCapability capability = savedCapability();
+  void idempotentReplayReturnsExistingCapabilityMetadataWithoutRunningLlmReviewAgain() {
+    ReplayAwareCapability capability = new ReplayAwareCapability(new PracticeTurnCapabilityResult(
+        PracticeCodeReviewConstants.METADATA_CODE_REVIEW,
+        PracticeReviewStatus.SAVED,
+        Map.of("reviewId", 901L, "versionNo", 3, "totalScore", "8.0", "passed", true)));
     PracticeTurnOrchestrator orchestrator = orchestrator(
         new InMemoryPracticeSessionRepository(),
         new CapturingCoordinator(runEnd(Map.of(
@@ -164,9 +167,14 @@ class PracticeTurnOrchestratorTest {
 
     List<AgentStreamEvent> events = collect(orchestrator.stream(7L, 50L, completeCodeMessage(), "idem-1", null, null));
 
-    assertThat(capability.calls).isZero();
-    assertThat(((AgentStreamEvent.AgentRunEnd) events.get(0)).metadata())
-        .doesNotContainKey(PracticeCodeReviewConstants.METADATA_PRACTICE_CAPABILITIES);
+    assertThat(capability.calls).isEqualTo(1);
+    assertThat(capability.replayCalls).isEqualTo(1);
+    assertThat(codeReviewMetadata((AgentStreamEvent.AgentRunEnd) events.get(0)))
+        .containsEntry("status", PracticeReviewStatus.SAVED.name())
+        .containsEntry("reviewId", 901L)
+        .containsEntry("versionNo", 3)
+        .containsEntry("totalScore", "8.0")
+        .containsEntry("passed", true);
   }
 
   @Test
@@ -295,6 +303,31 @@ class PracticeTurnOrchestratorTest {
         throw failure;
       }
       return result;
+    }
+  }
+
+  private static final class ReplayAwareCapability implements PracticeTurnCapability {
+    private final PracticeTurnCapabilityResult replayResult;
+    private int calls;
+    private int replayCalls;
+
+    private ReplayAwareCapability(PracticeTurnCapabilityResult replayResult) {
+      this.replayResult = replayResult;
+    }
+
+    @Override
+    public String capabilityName() {
+      return PracticeCodeReviewConstants.METADATA_CODE_REVIEW;
+    }
+
+    @Override
+    public PracticeTurnCapabilityResult afterTurn(PracticeTurnContext context, PracticeTurnClassification classification) {
+      calls++;
+      if (classification.idempotentReplay()) {
+        replayCalls++;
+        return replayResult;
+      }
+      throw new AssertionError("Idempotent replay should be visible to the capability");
     }
   }
 

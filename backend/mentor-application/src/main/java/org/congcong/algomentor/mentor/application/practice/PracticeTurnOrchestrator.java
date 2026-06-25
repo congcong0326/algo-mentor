@@ -145,9 +145,6 @@ public class PracticeTurnOrchestrator {
     if (capabilities.isEmpty()) {
       return Map.of();
     }
-    if (isIdempotentReplay(runEnd.metadata())) {
-      return Map.of();
-    }
     Optional<Long> runDbId = longMetadata(runEnd.metadata(), AgentRuntimeMetadataKeys.RUN_DB_ID);
     if (runDbId.isEmpty()) {
       return failedCapabilities(capabilities, FAILURE_CODE_RUN_ID_MISSING);
@@ -156,12 +153,15 @@ public class PracticeTurnOrchestrator {
     if (messages.isEmpty()) {
       return failedCapabilities(capabilities, FAILURE_CODE_MESSAGES_MISSING);
     }
-    PracticeTurnContext context = context(session, userId, locale, runDbId.get(), messages.get(), classification);
+    PracticeTurnClassification effectiveClassification = isIdempotentReplay(runEnd.metadata())
+        ? classification.asIdempotentReplay()
+        : classification;
+    PracticeTurnContext context = context(session, userId, locale, runDbId.get(), messages.get(), effectiveClassification);
     Map<String, Object> values = new LinkedHashMap<>();
     for (PracticeTurnCapability capability : capabilities) {
       PracticeTurnCapabilityResult result;
       try {
-        result = capability.afterTurn(context, classification);
+        result = capability.afterTurn(context, effectiveClassification);
       } catch (RuntimeException exception) {
         log.warn(
             "Practice turn capability failed. sessionId={} runDbId={} capability={} exceptionType={}",

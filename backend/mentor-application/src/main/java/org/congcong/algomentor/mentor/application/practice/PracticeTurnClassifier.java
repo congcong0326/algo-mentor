@@ -57,7 +57,7 @@ public class PracticeTurnClassifier {
     if (isDominatedByStackTrace(original) && !hasSolutionStructure(code)) {
       return PracticeTurnClassification.notCodeLike(original, "", metadata, evidence.toArray(PracticeCodeReviewEvidence[]::new));
     }
-    return new PracticeTurnClassification(true, languageHint, code, original, metadata, evidence);
+    return new PracticeTurnClassification(true, false, languageHint, code, original, metadata, evidence);
   }
 
   private CandidateText candidateText(String original) {

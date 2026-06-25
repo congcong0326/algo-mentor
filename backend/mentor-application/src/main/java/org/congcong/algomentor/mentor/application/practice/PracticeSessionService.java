@@ -44,12 +44,28 @@ public class PracticeSessionService {
       PracticeSessionRepository practiceSessionRepository,
       AgentTaskMessageRepository agentTaskMessageRepository,
       PracticeCodeReviewRepository reviewRepository) {
+    this(
+        learningPlanRepository,
+        problemCatalog,
+        practiceSessionRepository,
+        agentTaskMessageRepository,
+        reviewRepository,
+        PracticeCodeReviewMetrics.NOOP);
+  }
+
+  public PracticeSessionService(
+      LearningPlanRepository learningPlanRepository,
+      PracticeChatProblemCatalog problemCatalog,
+      PracticeSessionRepository practiceSessionRepository,
+      AgentTaskMessageRepository agentTaskMessageRepository,
+      PracticeCodeReviewRepository reviewRepository,
+      PracticeCodeReviewMetrics metrics) {
     this.learningPlanRepository = learningPlanRepository;
     this.problemCatalog = problemCatalog;
     this.practiceSessionRepository = practiceSessionRepository;
     this.agentTaskMessageRepository = agentTaskMessageRepository;
     this.reviewRepository = reviewRepository;
-    this.completionGateService = new PracticeCompletionGateService(reviewRepository);
+    this.completionGateService = new PracticeCompletionGateService(reviewRepository, metrics);
   }
 
   @Transactional

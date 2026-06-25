@@ -2,6 +2,8 @@ package org.congcong.algomentor.mentor.api.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +31,10 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepos
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewDraft;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewSummary;
+import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
@@ -77,6 +81,16 @@ class AgentConversationApiAutoConfigurationTest {
           assertThat(context.getBean(PracticeTurnCapabilityRegistry.class).capabilities()).isEmpty();
           assertThat(context).hasSingleBean(PracticeTurnOrchestrator.class);
           assertThat(context).hasSingleBean(PracticeMessageStreamService.class);
+        });
+  }
+
+  @Test
+  void practiceReviewMetricsUsesMeterRegistryWhenAvailable() {
+    contextRunner.withBean(MeterRegistry.class, SimpleMeterRegistry::new)
+        .run(context -> {
+          assertThat(context).hasSingleBean(PracticeCodeReviewMetrics.class);
+          assertThat(context.getBean(PracticeCodeReviewMetrics.class))
+              .isInstanceOf(MicrometerPracticeCodeReviewMetrics.class);
         });
   }
 

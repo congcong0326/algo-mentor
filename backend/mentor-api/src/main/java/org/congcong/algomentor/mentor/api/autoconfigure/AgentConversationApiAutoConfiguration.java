@@ -1,5 +1,6 @@
 package org.congcong.algomentor.mentor.api.autoconfigure;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import java.util.List;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
@@ -21,7 +22,9 @@ import org.congcong.algomentor.mentor.application.conversation.AgentConversation
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.practice.CodeReviewTurnCapability;
+import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPromptBuilder;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
@@ -109,14 +112,23 @@ public class AgentConversationApiAutoConfiguration {
       PracticeChatProblemCatalog problemCatalog,
       PracticeSessionRepository practiceSessionRepository,
       AgentTaskMessageRepository agentTaskMessageRepository,
-      ObjectProvider<PracticeCodeReviewRepository> reviewRepository
+      ObjectProvider<PracticeCodeReviewRepository> reviewRepository,
+      ObjectProvider<PracticeCodeReviewMetrics> reviewMetrics
   ) {
     return new PracticeSessionService(
         learningPlanRepository,
         problemCatalog,
         practiceSessionRepository,
         agentTaskMessageRepository,
-        reviewRepository.getIfAvailable(PracticeCodeReviewRepository::empty));
+        reviewRepository.getIfAvailable(PracticeCodeReviewRepository::empty),
+        reviewMetrics.getIfAvailable(() -> PracticeCodeReviewMetrics.NOOP));
+  }
+
+  @Bean
+  @ConditionalOnBean(MeterRegistry.class)
+  @ConditionalOnMissingBean
+  public PracticeCodeReviewMetrics practiceCodeReviewMetrics(MeterRegistry registry) {
+    return new MicrometerPracticeCodeReviewMetrics(registry);
   }
 
   @Bean
@@ -165,8 +177,13 @@ public class AgentConversationApiAutoConfiguration {
   @Bean
   @ConditionalOnBean(PracticeCodeReviewService.class)
   @ConditionalOnMissingBean
-  public CodeReviewTurnCapability codeReviewTurnCapability(PracticeCodeReviewService reviewService) {
-    return new CodeReviewTurnCapability(reviewService);
+  public CodeReviewTurnCapability codeReviewTurnCapability(
+      PracticeCodeReviewService reviewService,
+      ObjectProvider<PracticeCodeReviewMetrics> reviewMetrics
+  ) {
+    return new CodeReviewTurnCapability(
+        reviewService,
+        reviewMetrics.getIfAvailable(() -> PracticeCodeReviewMetrics.NOOP));
   }
 
   @Bean

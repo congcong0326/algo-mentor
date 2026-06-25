@@ -15,6 +15,7 @@ public class PracticeCodeReviewService {
 
   public static final String FAILURE_CODE_LLM_COMPLETION_FAILED = "PRACTICE_CODE_REVIEW_LLM_FAILED";
   public static final String FAILURE_CODE_SAVE_FAILED = "PRACTICE_CODE_REVIEW_SAVE_FAILED";
+  public static final String FAILURE_CODE_REPLAY_REVIEW_MISSING = "PRACTICE_CODE_REVIEW_REPLAY_MISSING";
 
   private final PracticeCodeReviewRepository repository;
   private final LlmGateway llmGateway;
@@ -52,6 +53,19 @@ public class PracticeCodeReviewService {
     return repository.findByUserMessage(context.userId(), context.sessionId(), context.userMessageId())
         .map(PracticeReviewResult::saved)
         .orElseGet(() -> reviewWithLlm(context));
+  }
+
+  public PracticeReviewResult replay(PracticeTurnContext context) {
+    Objects.requireNonNull(context, "context must not be null");
+    if (delegate != null) {
+      return delegate.apply(context);
+    }
+
+    return repository.findByUserMessage(context.userId(), context.sessionId(), context.userMessageId())
+        .map(PracticeReviewResult::saved)
+        .orElseGet(() -> PracticeReviewResult.failed(
+            FAILURE_CODE_REPLAY_REVIEW_MISSING,
+            Map.of("failureCode", FAILURE_CODE_REPLAY_REVIEW_MISSING)));
   }
 
   private PracticeReviewResult reviewWithLlm(PracticeTurnContext context) {

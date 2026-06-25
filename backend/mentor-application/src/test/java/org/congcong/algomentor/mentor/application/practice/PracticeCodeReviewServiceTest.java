@@ -83,6 +83,20 @@ class PracticeCodeReviewServiceTest {
   }
 
   @Test
+  void replayMissingExistingReviewFailsWithoutCallingLlm() {
+    FakeRepository repository = new FakeRepository();
+    FakeLlmGateway llmGateway = new FakeLlmGateway(structuredOutput(true, true, true));
+    PracticeCodeReviewService service = service(repository, llmGateway);
+
+    PracticeReviewResult result = service.replay(context());
+
+    assertThat(result.status()).isEqualTo(PracticeReviewStatus.FAILED);
+    assertThat(result.failureCode()).isEqualTo(PracticeCodeReviewService.FAILURE_CODE_REPLAY_REVIEW_MISSING);
+    assertThat(repository.savedDrafts).isEmpty();
+    assertThat(llmGateway.completeCalls).isZero();
+  }
+
+  @Test
   void llmFailureReturnsFailed() {
     FakeRepository repository = new FakeRepository();
     FakeLlmGateway llmGateway = new FakeLlmGateway(structuredOutput(true, true, true));

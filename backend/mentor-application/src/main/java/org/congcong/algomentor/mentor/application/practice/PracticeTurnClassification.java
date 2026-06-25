@@ -5,6 +5,7 @@ import java.util.Map;
 
 public record PracticeTurnClassification(
     boolean codeSubmissionCandidate,
+    boolean idempotentReplay,
     String languageHint,
     String extractedCode,
     String originalMessage,
@@ -29,6 +30,7 @@ public record PracticeTurnClassification(
   ) {
     return new PracticeTurnClassification(
         true,
+        false,
         languageHint,
         extractedCode,
         originalMessage,
@@ -44,11 +46,23 @@ public record PracticeTurnClassification(
   ) {
     return new PracticeTurnClassification(
         false,
+        false,
         null,
         extractedCode,
         originalMessage,
         metadata,
         evidence == null ? List.of() : List.of(evidence));
+  }
+
+  public PracticeTurnClassification asIdempotentReplay() {
+    return new PracticeTurnClassification(
+        codeSubmissionCandidate,
+        true,
+        languageHint,
+        extractedCode,
+        originalMessage,
+        metadata,
+        evidence);
   }
 
   private static String blankToNull(String value) {
