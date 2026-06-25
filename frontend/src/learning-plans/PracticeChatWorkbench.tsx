@@ -110,6 +110,7 @@ export default function PracticeChatWorkbench({
   const [status, setStatus] = useState<'loading' | 'idle' | 'streaming' | 'blocked' | 'error'>('loading');
   const [error, setError] = useState('');
   const [completionUpdating, setCompletionUpdating] = useState(false);
+  const [postRunRefreshing, setPostRunRefreshing] = useState(false);
   const [reviewHistoryOpen, setReviewHistoryOpen] = useState(false);
   const [reviewHistory, setReviewHistory] = useState<PracticeCodeReviewHistoryResponse>();
   const [reviewHistoryLoading, setReviewHistoryLoading] = useState(false);
@@ -188,6 +189,7 @@ export default function PracticeChatWorkbench({
   const shouldShowCompletionButton = Boolean(sessionId) && progressStatus !== 'COMPLETED';
   const completionDisabled = !completionGate?.canComplete
     || completionUpdating
+    || postRunRefreshing
     || status === 'loading'
     || status === 'streaming'
     || hasActiveRun;
@@ -349,8 +351,8 @@ export default function PracticeChatWorkbench({
 
           if (event.eventName === 'agent_run_end') {
             agentRunEnded = true;
+            setPostRunRefreshing(true);
             setSessionResponse((current) => current ? { ...current, activeRun: null } : current);
-            setStatus('idle');
           }
 
           if (event.eventName === 'error' || event.eventName === 'agent_error') {
@@ -367,10 +369,16 @@ export default function PracticeChatWorkbench({
 
       if (agentRunEnded) {
         const activeLoadToken = practiceLoadTokenRef.current;
-        await refreshMessages(sessionId, activeLoadToken, controller.signal);
-        await refreshSession(sessionId, activeLoadToken, controller.signal);
-        await refreshReviews(sessionId, activeLoadToken, controller.signal);
-        setStatus('idle');
+        try {
+          await refreshMessages(sessionId, activeLoadToken, controller.signal);
+          await refreshSession(sessionId, activeLoadToken, controller.signal);
+          await refreshReviews(sessionId, activeLoadToken, controller.signal);
+          setStatus('idle');
+        } finally {
+          if (!controller.signal.aborted && isCurrentSession(sessionId, activeLoadToken)) {
+            setPostRunRefreshing(false);
+          }
+        }
       } else {
         setError(resources.learningPlans.practiceMessageFailed);
         markAssistantMessageFailed(assistantMessageId);
@@ -378,6 +386,7 @@ export default function PracticeChatWorkbench({
       }
     } catch (error) {
       if (!controller.signal.aborted) {
+        setPostRunRefreshing(false);
         if (error instanceof ApiRequestError && error.code === AGENT_RUN_IN_PROGRESS_CODE) {
           setError('');
           setMessages((current) => current.filter((message) => message.id !== assistantMessageId));

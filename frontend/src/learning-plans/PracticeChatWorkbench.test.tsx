@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { I18nProvider } from '../i18n/I18nProvider';
 import * as api from '../services/api';
@@ -128,6 +128,70 @@ describe('PracticeChatWorkbench review contracts', () => {
     expect(getPracticeSessionReviews).toHaveBeenCalledWith(101, expect.any(AbortSignal));
   });
 
+  it('keeps completion disabled while post-run review refresh is pending', async () => {
+    createOrReusePracticeSession.mockResolvedValue(apiResponse(sessionFixture({
+      completionGate: {
+        canComplete: true,
+        reasonCode: 'PASSED',
+        message: '上一版 Review 已通过。',
+        latestScore: 92,
+        passScore: 80,
+      },
+      latestReview: reviewSummaryFixture({ id: 42, versionNo: 2, totalScore: 92, passed: true }),
+    })));
+    getPracticeSessionMessages.mockResolvedValue(apiResponse(sessionFixture().messages));
+    let resolveSession: (response: ApiResponse<PracticeSessionResponse>) => void = () => undefined;
+    getPracticeSession.mockImplementation(() => new Promise((resolve) => {
+      resolveSession = resolve;
+    }));
+    let resolveReviews: (response: ApiResponse<PracticeCodeReviewHistoryResponse>) => void = () => undefined;
+    getPracticeSessionReviews.mockImplementation(() => new Promise((resolve) => {
+      resolveReviews = resolve;
+    }));
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      options.onEvent?.({ eventName: 'agent_run_end', data: { runId: 'run_1' } });
+      await new Promise<void>((resolve) => setTimeout(resolve, 20));
+    });
+    renderWorkbench();
+
+    expect(await screen.findByText('上一版 Review 已通过。')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '标记完成' })).not.toBeDisabled();
+
+    fireEvent.change(screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '这是新版本完整代码。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+
+    await waitFor(() => expect(getPracticeSession).toHaveBeenCalled());
+    expect(screen.getByRole('button', { name: '标记完成' })).toBeDisabled();
+
+    resolveSession(apiResponse(sessionFixture({
+      completionGate: {
+        canComplete: false,
+        reasonCode: 'LATEST_REVIEW_FAILED',
+        message: '新版 Review 未通过。',
+        latestScore: 70,
+        passScore: 80,
+      },
+      latestReview: reviewSummaryFixture({ id: 43, versionNo: 3, totalScore: 70, passed: false }),
+    })));
+    await waitFor(() => expect(getPracticeSessionReviews).toHaveBeenCalled());
+    resolveReviews(apiResponse(historyFixture({
+      latestReview: reviewSummaryFixture({ id: 43, versionNo: 3, totalScore: 70, passed: false }),
+      reviews: [reviewSummaryFixture({ id: 43, versionNo: 3, totalScore: 70, passed: false })],
+      completionGate: {
+        canComplete: false,
+        reasonCode: 'LATEST_REVIEW_FAILED',
+        message: '新版 Review 未通过。',
+        latestScore: 70,
+        passScore: 80,
+      },
+    })));
+
+    expect(await screen.findByText('新版 Review 未通过。')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '标记完成' })).toBeDisabled();
+  });
+
   it('updates an open review drawer after agent_run_end refreshes reviews', async () => {
     getPracticeSessionReviews
       .mockResolvedValueOnce(apiResponse(historyFixture({ reviews: [] })))
@@ -175,6 +239,72 @@ describe('PracticeChatWorkbench review contracts', () => {
 
     expect(await within(drawer).findByRole('button', { name: /V3/ })).toBeInTheDocument();
     expect(await within(drawer).findByText('刷新后通过。')).toBeInTheDocument();
+  });
+
+  it('selects the latest review when an open drawer receives a newer version', async () => {
+    getPracticeSessionReviews
+      .mockResolvedValueOnce(apiResponse(historyFixture({
+        latestReview: reviewSummaryFixture({ id: 42, versionNo: 2, totalScore: 92, passed: true }),
+        reviews: [
+          reviewSummaryFixture({ id: 42, versionNo: 2, totalScore: 92, passed: true }),
+          reviewSummaryFixture({ id: 41, versionNo: 1, totalScore: 68, passed: false }),
+        ],
+      })))
+      .mockResolvedValueOnce(apiResponse(historyFixture({
+        latestReview: reviewSummaryFixture({ id: 43, versionNo: 3, totalScore: 94, passed: true }),
+        reviews: [
+          reviewSummaryFixture({ id: 43, versionNo: 3, totalScore: 94, passed: true }),
+          reviewSummaryFixture({ id: 42, versionNo: 2, totalScore: 92, passed: true }),
+          reviewSummaryFixture({ id: 41, versionNo: 1, totalScore: 68, passed: false }),
+        ],
+        completionGate: {
+          canComplete: true,
+          reasonCode: 'PASSED',
+          message: '刷新后 Review 已通过。',
+          latestScore: 94,
+          passScore: 80,
+        },
+      })));
+    getPracticeSessionReviewDetail
+      .mockResolvedValueOnce(apiResponse(reviewDetailFixture({
+        id: 42,
+        versionNo: 2,
+        reviewMarkdown: '## 整体评价\n第二版通过。',
+        submittedCode: 'class Solution { version2(); }',
+      })))
+      .mockResolvedValueOnce(apiResponse(reviewDetailFixture({
+        id: 43,
+        versionNo: 3,
+        reviewMarkdown: '## 整体评价\n第三版最新通过。',
+        submittedCode: 'class Solution { version3(); }',
+      })));
+    getPracticeSession.mockResolvedValue(apiResponse(sessionFixture({
+      completionGate: {
+        canComplete: true,
+        reasonCode: 'PASSED',
+        message: '刷新后 Review 已通过。',
+        latestScore: 94,
+        passScore: 80,
+      },
+      latestReview: reviewSummaryFixture({ id: 43, versionNo: 3, totalScore: 94, passed: true }),
+    })));
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      options.onEvent?.({ eventName: 'agent_run_end', data: { runId: 'run_1' } });
+    });
+    renderWorkbench();
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Review 记录' }));
+    const drawer = await screen.findByRole('complementary', { name: 'Review 记录' });
+    expect(await within(drawer).findByText('第二版通过。')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '这是第三版完整代码。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+
+    expect(await within(drawer).findByRole('button', { name: /V3/ })).toBeInTheDocument();
+    expect(await within(drawer).findByText('第三版最新通过。')).toBeInTheDocument();
+    expect(getPracticeSessionReviewDetail).toHaveBeenCalledWith(101, 43, expect.any(AbortSignal));
   });
 
   it('refreshes session and reviews when active run polling clears', async () => {

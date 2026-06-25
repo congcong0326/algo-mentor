@@ -30,6 +30,7 @@ export default function ReviewHistoryDrawer({
 }: ReviewHistoryDrawerProps) {
   const [localHistory, setLocalHistory] = useState<PracticeCodeReviewHistoryResponse>();
   const [selectedReviewId, setSelectedReviewId] = useState<number>();
+  const [manualSelection, setManualSelection] = useState(false);
   const [detail, setDetail] = useState<PracticeCodeReviewDetail>();
   const [localHistoryStatus, setLocalHistoryStatus] = useState<'idle' | 'loading' | 'error'>('idle');
   const [detailStatus, setDetailStatus] = useState<'idle' | 'loading' | 'error'>('idle');
@@ -45,6 +46,7 @@ export default function ReviewHistoryDrawer({
   useEffect(() => {
     setLocalHistory(undefined);
     setSelectedReviewId(undefined);
+    setManualSelection(false);
     setDetail(undefined);
     setDetailStatus('idle');
 
@@ -90,9 +92,12 @@ export default function ReviewHistoryDrawer({
       if (!firstReview) {
         return undefined;
       }
+      if (!manualSelection) {
+        return firstReview.id;
+      }
       return history?.reviews.some((review) => review.id === current) ? current : firstReview.id;
     });
-  }, [history, open]);
+  }, [history, manualSelection, open]);
 
   useEffect(() => {
     if (!open || !sessionId || !selectedReviewId) {
@@ -147,7 +152,10 @@ export default function ReviewHistoryDrawer({
       {reviews.length > 0 && (
         <div className="review-drawer-content">
           <ReviewVersionList
-            onSelect={(review: PracticeCodeReviewSummary) => setSelectedReviewId(review.id)}
+            onSelect={(review: PracticeCodeReviewSummary) => {
+              setManualSelection(true);
+              setSelectedReviewId(review.id);
+            }}
             passScore={passScore}
             resources={resources}
             reviews={reviews}
