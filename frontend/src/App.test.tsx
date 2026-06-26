@@ -119,21 +119,41 @@ describe('App', () => {
     expect(screen.queryByRole('link', { name: '使用 Google 登录' })).not.toBeInTheDocument();
   });
 
-  it('shows the standalone login page when unauthenticated', async () => {
+  it('shows the public home page when unauthenticated', async () => {
     vi.stubGlobal('fetch', mockUnauthenticatedFetch());
     window.history.replaceState({}, '', '/learning-plans');
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '使用 Google 登录' })).toHaveAttribute(
-      'href',
-      '/oauth2/authorization/google',
-    );
+    expect(await screen.findByRole('heading', { name: /用 AI 掌握算法刷题\s*智能复盘系统/ }))
+      .toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '登录' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '开始使用' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
+    expect(window.location.pathname).toBe('/');
   });
 
-  it('preserves authentication failure query when redirecting to login', async () => {
+  it('routes both public home entry buttons to login', async () => {
+    vi.stubGlobal('fetch', mockUnauthenticatedFetch());
+    window.history.replaceState({}, '', '/');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '登录' }));
+
+    expect(await screen.findByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/login');
+
+    window.history.replaceState({}, '', '/');
+    fireEvent(window, new PopStateEvent('popstate'));
+
+    fireEvent.click(await screen.findByRole('button', { name: '开始使用' }));
+
+    expect(await screen.findByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/login');
+  });
+
+  it('preserves authentication failure query on the login page', async () => {
     vi.stubGlobal('fetch', mockUnauthenticatedFetch());
     window.history.replaceState({}, '', '/?auth=failed');
 
@@ -182,7 +202,7 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: '邮箱登录' }));
 
     expect(await screen.findByText('User Name')).toBeInTheDocument();
-    expect(window.location.pathname).toBe('/');
+    expect(window.location.pathname).toBe('/learning-plans');
   });
 
   it('shows password login errors from the API', async () => {
@@ -200,6 +220,7 @@ describe('App', () => {
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
     vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/login');
 
     render(<App />);
 
@@ -249,19 +270,19 @@ describe('App', () => {
     }));
   });
 
-  it('defaults authenticated users to the home page', async () => {
+  it('defaults authenticated users to the learning plans page', async () => {
     vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
     window.history.replaceState({}, '', '/');
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: /用 AI 掌握算法刷题\s*智能复盘系统/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'false');
+    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '首页' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getAllByRole('button', { name: 'Start Reviewing' })).toHaveLength(2);
+    expect(screen.queryByRole('button', { name: 'Start Reviewing' })).not.toBeInTheDocument();
     expect(screen.getByText('User Name')).toBeInTheDocument();
-    expect(window.location.pathname).toBe('/');
+    expect(window.location.pathname).toBe('/learning-plans');
   });
 
   it('defaults authenticated users to light theme', async () => {
@@ -270,7 +291,7 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: /用 AI 掌握算法刷题\s*智能复盘系统/ })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
     expect(document.documentElement.dataset.theme).toBe('light');
   });
 
@@ -326,7 +347,7 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: /用 AI 掌握算法刷题\s*智能复盘系统/ })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '方案' }));
 
@@ -389,9 +410,9 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: /用 AI 掌握算法刷题\s*智能复盘系统/ })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
-    expect(window.location.pathname).toBe('/');
+    expect(window.location.pathname).toBe('/learning-plans');
   });
 
   it('exposes debug status labels for the app shell', () => {
@@ -461,8 +482,8 @@ describe('App', () => {
         credentials: 'same-origin',
       }),
     ));
-    expect(await screen.findByRole('link', { name: '使用 Google 登录' })).toBeInTheDocument();
-    expect(window.location.pathname).toBe('/login');
+    expect(await screen.findByRole('button', { name: '登录' })).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/');
   });
 
   it('disables logout while the request is pending', async () => {
@@ -491,10 +512,10 @@ describe('App', () => {
       resolveLogout(jsonResponse({ success: true, timestamp: '2026-06-22T00:00:00Z' }));
     });
 
-    expect(await screen.findByRole('link', { name: '使用 Google 登录' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '登录' })).toBeInTheDocument();
   });
 
-  it('keeps login page normalized when history changes after logout', async () => {
+  it('keeps unauthenticated navigation limited to public home and login after logout', async () => {
     const fetchMock = vi.fn((url: string) => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
@@ -522,14 +543,14 @@ describe('App', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '退出登录' }));
 
-    expect(await screen.findByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
-    expect(window.location.pathname).toBe('/login');
+    expect(await screen.findByRole('button', { name: '登录' })).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/');
 
     window.history.pushState({}, '', '/debug');
     fireEvent(window, new PopStateEvent('popstate'));
 
-    await waitFor(() => expect(window.location.pathname).toBe('/login'));
-    expect(screen.getByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
+    await waitFor(() => expect(window.location.pathname).toBe('/'));
+    expect(screen.getByRole('button', { name: '登录' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
   });
 
@@ -701,7 +722,7 @@ describe('App', () => {
     ));
     expect(capturedSignal?.aborted).toBe(true);
     resolveLogout?.(jsonResponse({ success: true, timestamp: '2026-06-22T00:00:00Z' }));
-    await screen.findByRole('link', { name: '使用 Google 登录' });
+    await screen.findByRole('button', { name: '登录' });
     expect(screen.queryByRole('textbox', { name: 'Message' })).not.toBeInTheDocument();
   });
 

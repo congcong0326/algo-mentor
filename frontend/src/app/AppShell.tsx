@@ -73,9 +73,6 @@ export default function AppShell({
             <ThemeIcon aria-hidden="true" />
           </button>
           <LanguageSelector />
-          <button className="primary-button header-cta" onClick={() => onNavigate('learningPlans')} type="button">
-            <span>{resources.home.generatePlan}</span>
-          </button>
           <div className="auth-status" aria-label={resources.app.loginStatus}>
             <span>{userLabel}</span>
             <button

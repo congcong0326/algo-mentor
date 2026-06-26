@@ -71,6 +71,7 @@ export interface LocaleResources {
     showRegister: string;
     loginModeTitle: string;
     registerModeTitle: string;
+    loginAction: string;
     validationEmailRequired: string;
     validationPasswordRequired: string;
   };
@@ -108,6 +109,7 @@ export interface LocaleResources {
     titleHighlight: string;
     subtitle: string;
     generatePlan: string;
+    startUsing: string;
     browseProblems: string;
     previewLabel: string;
     previewFocusLabel: string;
@@ -411,6 +413,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       showRegister: '创建邮箱账号',
       loginModeTitle: '邮箱密码登录',
       registerModeTitle: '注册邮箱账号',
+      loginAction: '登录',
       validationEmailRequired: '请输入邮箱。',
       validationPasswordRequired: '请输入密码。',
     },
@@ -448,6 +451,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       titleHighlight: '智能复盘系统',
       subtitle: 'make your LeetCode review easier',
       generatePlan: 'Start Reviewing',
+      startUsing: '开始使用',
       browseProblems: '浏览题库',
       previewLabel: '学习工作台预览',
       previewFocusLabel: '本周重点',
@@ -794,6 +798,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       showRegister: 'Create email account',
       loginModeTitle: 'Email sign-in',
       registerModeTitle: 'Create email account',
+      loginAction: 'Log in',
       validationEmailRequired: 'Enter your email.',
       validationPasswordRequired: 'Enter your password.',
     },
@@ -831,6 +836,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       titleHighlight: 'Smart Review System',
       subtitle: 'make your LeetCode review easier',
       generatePlan: 'Start Reviewing',
+      startUsing: 'Start using',
       browseProblems: 'Browse Problems',
       previewLabel: 'Learning workspace preview',
       previewFocusLabel: 'This Week',

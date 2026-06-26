@@ -24,7 +24,7 @@ export default function LoginPage({
   onLogin,
   onRegister,
   onToggleTheme,
-  theme = 'dark',
+  theme = 'light',
 }: LoginPageProps) {
   const { resources } = useI18n();
   const [mode, setMode] = useState<PasswordMode>('login');

@@ -164,6 +164,20 @@ a {
 }
 
 .login-page {
+  --login-background: #ffffff;
+  --login-background-line: rgb(15 23 42 / 2.8%);
+  --login-watermark: rgb(15 23 42 / 4.5%);
+  --login-text: #0f172a;
+  --login-muted: #475569;
+  --login-accent: #ffba18;
+  --login-control-background: #f8fafc;
+  --login-input-background: #f1f5f9;
+  --login-border: #dbe3ef;
+  --login-border-strong: #cbd5e1;
+  --login-submit-background: #0f172a;
+  --login-submit-text: #ffffff;
+  --login-divider: rgb(15 23 42 / 10%);
+  --login-shadow: 0 14px 24px -18px rgb(15 23 42 / 38%);
   position: relative;
   display: grid;
   place-items: center;
@@ -174,11 +188,27 @@ a {
     repeating-linear-gradient(
       -14deg,
       transparent 0 132px,
-      rgb(255 255 255 / 2.6%) 132px 134px,
+      var(--login-background-line) 132px 134px,
       transparent 134px 270px
     ),
-    #090a0f;
-  color: #f9fafb;
+    var(--login-background);
+  color: var(--login-text);
+}
+
+:root[data-theme="dark"] .login-page {
+  --login-background: #090a0f;
+  --login-background-line: rgb(255 255 255 / 2.6%);
+  --login-watermark: rgb(255 255 255 / 5%);
+  --login-text: #f9fafb;
+  --login-muted: #9dccff;
+  --login-control-background: rgb(255 255 255 / 3.5%);
+  --login-input-background: #303037;
+  --login-border: rgb(255 255 255 / 14%);
+  --login-border-strong: rgb(255 255 255 / 24%);
+  --login-submit-background: #ffffff;
+  --login-submit-text: #030712;
+  --login-divider: rgb(255 255 255 / 9%);
+  --login-shadow: 0 14px 24px -18px rgb(255 186 24 / 90%);
 }
 
 .login-page::before {
@@ -188,7 +218,7 @@ a {
     repeating-linear-gradient(
       -15deg,
       transparent 0 170px,
-      rgb(255 255 255 / 4%) 170px 171px,
+      var(--login-background-line) 170px 171px,
       transparent 171px 300px
     );
   content: "";
@@ -202,11 +232,11 @@ a {
     repeating-linear-gradient(
       -15deg,
       transparent 0 150px,
-      rgb(255 255 255 / 4%) 150px 151px,
+      var(--login-background-line) 150px 151px,
       transparent 151px 312px
     );
   content: "2026-06-26  QIANXIN  曹明英";
-  color: rgb(255 255 255 / 5%);
+  color: var(--login-watermark);
   font-size: 18px;
   font-weight: 800;
   line-height: 8.8;
@@ -217,18 +247,19 @@ a {
   white-space: pre-wrap;
 }
 
-.login-theme-toggle {
+.login-page .login-theme-toggle {
   position: fixed;
   z-index: 2;
   top: 18px;
   right: 18px;
-  border-color: rgb(255 255 255 / 14%);
-  background: rgb(255 255 255 / 3%);
-  color: #f8fafc;
+  border-color: var(--login-border);
+  background: var(--login-control-background);
+  color: var(--login-text);
 }
 
-.login-theme-toggle:hover:not(:disabled) {
-  background: rgb(255 255 255 / 9%);
+.login-page .login-theme-toggle:hover:not(:disabled) {
+  border-color: var(--login-border-strong);
+  background: var(--login-input-background);
 }
 
 .login-panel {
@@ -240,7 +271,7 @@ a {
   padding: 0;
   border: 0;
   background: transparent;
-  color: #f8fafc;
+  color: var(--login-text);
   text-align: center;
 }
 
@@ -267,25 +298,25 @@ a {
 }
 
 .login-brand-mark span:first-child {
-  color: #ffba18;
+  color: var(--login-accent);
 }
 
 .login-brand-lockup h1 {
   margin: 10px 0 0;
-  color: #ffffff;
+  color: var(--login-text);
   font-size: 28px;
   font-weight: 800;
   line-height: 1;
 }
 
 .login-brand-lockup h1 span {
-  color: #ffba18;
+  color: var(--login-accent);
 }
 
 .login-brand-lockup p,
 .password-auth-heading p {
   margin: 0;
-  color: #9dccff;
+  color: var(--login-muted);
   font-size: 15px;
   line-height: 1.45;
 }
@@ -305,7 +336,7 @@ a {
 
 .password-auth-form h2 {
   margin: 0;
-  color: #ffffff;
+  color: var(--login-text);
   font-size: 23px;
   font-weight: 760;
   line-height: 1.18;
@@ -320,16 +351,16 @@ a {
   width: 100%;
   min-height: 44px;
   padding: 0 16px;
-  border: 1px solid rgb(255 255 255 / 8%);
+  border: 1px solid var(--login-border);
   border-radius: 8px;
   outline: 0;
-  background: #303037;
-  color: #ffffff;
+  background: var(--login-input-background);
+  color: var(--login-text);
   font-size: 14px;
 }
 
 .password-auth-form input::placeholder {
-  color: #7f9ac0;
+  color: color-mix(in srgb, var(--login-muted) 74%, transparent);
 }
 
 .password-auth-form input:focus {
@@ -346,10 +377,10 @@ a {
   padding: 0 18px;
   border: 0;
   border-radius: 8px;
-  background: #ffffff;
-  color: #030712;
+  background: var(--login-submit-background);
+  color: var(--login-submit-text);
   font-weight: 760;
-  box-shadow: 0 14px 24px -18px rgb(255 186 24 / 90%);
+  box-shadow: var(--login-shadow);
   transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
@@ -363,14 +394,14 @@ a {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 12px;
-  color: #9dccff;
+  color: var(--login-muted);
   font-size: 13px;
 }
 
 .login-auth-divider::before,
 .login-auth-divider::after {
   height: 1px;
-  background: rgb(255 255 255 / 9%);
+  background: var(--login-divider);
   content: "";
 }
 
@@ -387,10 +418,10 @@ a {
   gap: 10px;
   min-height: 64px;
   padding: 0 14px;
-  border: 1px solid rgb(255 255 255 / 14%);
+  border: 1px solid var(--login-border);
   border-radius: 8px;
-  background: rgb(255 255 255 / 3.5%);
-  color: #ffffff;
+  background: var(--login-control-background);
+  color: var(--login-text);
   font-size: 14px;
   font-weight: 760;
   text-decoration: none;
@@ -398,8 +429,8 @@ a {
 }
 
 .login-social-button:hover:not(:disabled) {
-  border-color: rgb(255 255 255 / 24%);
-  background: rgb(255 255 255 / 7%);
+  border-color: var(--login-border-strong);
+  background: var(--login-input-background);
 }
 
 .login-social-button svg {
@@ -417,18 +448,18 @@ a {
   display: grid;
   gap: 28px;
   padding-top: 6px;
-  border-top: 1px solid rgb(255 255 255 / 7%);
+  border-top: 1px solid var(--login-divider);
 }
 
 .login-support p {
   margin: 0;
-  color: #9dccff;
+  color: var(--login-muted);
   font-size: 12px;
   line-height: 1.5;
 }
 
 .login-support a {
-  color: #ffffff;
+  color: var(--login-text);
   font-weight: 720;
 }
 
@@ -441,11 +472,11 @@ a {
 .login-language .language-selector {
   border: 0;
   background: transparent;
-  color: #ffffff;
+  color: var(--login-text);
 }
 
 .login-language .language-selector select {
-  color: #ffffff;
+  color: var(--login-text);
 }
 
 .login-language .language-selector option {
@@ -453,10 +484,16 @@ a {
 }
 
 .login-page .error-text {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+  text-align: left;
+}
+
+:root[data-theme="dark"] .login-page .error-text {
   border-color: rgb(248 113 113 / 32%);
   background: rgb(127 29 29 / 32%);
   color: #fecaca;
-  text-align: left;
 }
 
 .app-shell {
@@ -581,6 +618,35 @@ a {
   display: grid;
   gap: 24px;
   min-width: 0;
+}
+
+.public-home-shell {
+  gap: 0;
+  padding: 64px 0 0;
+}
+
+.public-home-content {
+  gap: 0;
+}
+
+.public-home-nav {
+  justify-content: center;
+}
+
+.public-login-button {
+  min-height: 38px;
+  min-width: 96px;
+  padding: 0 18px;
+  border-radius: 9px;
+  border-color: var(--action-primary);
+  background: var(--action-primary);
+  color: var(--action-ink);
+  box-shadow: none;
+}
+
+.public-login-button:hover:not(:disabled) {
+  border-color: var(--action-primary-hover);
+  background: var(--action-primary-hover);
 }
 
 .app-content > h1 {
@@ -1388,15 +1454,6 @@ a {
 
 .theme-toggle-button:hover:not(:disabled) {
   color: #0f172a;
-}
-
-.header-cta {
-  min-height: 38px;
-  min-width: 130px;
-  padding: 0 18px;
-  border-radius: 9px;
-  font-size: 14px;
-  box-shadow: none;
 }
 
 .problem-detail-panel {

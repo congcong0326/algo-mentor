@@ -12,31 +12,78 @@ import AppShell from './app/AppShell';
 import LoginPage from './app/LoginPage';
 import { APP_ROUTES, pathForView, type AppView, viewFromPath } from './app/navigation';
 import { applyTheme, nextTheme, readStoredTheme, storeTheme, type AppTheme } from './app/theme';
+import LanguageSelector from './i18n/LanguageSelector';
 import { useI18n } from './i18n/I18nProvider';
 import { getCurrentUser, loginWithPassword, logout, registerWithPassword } from './services/api';
 import type { AuthPermission, CurrentUser, PasswordLoginRequest, PasswordRegisterRequest } from './types/api';
+
+const DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.learningPlans;
 
 function hasPermission(user: CurrentUser | undefined, permission: AuthPermission): boolean {
   return !!user?.permissions?.includes(permission);
 }
 
 function normalizeAuthenticatedView(pathname: string, user?: CurrentUser): AppView {
-  return viewFromPath(normalizeAuthenticatedPath(pathname, user)) ?? 'home';
+  return viewFromPath(normalizeAuthenticatedPath(pathname, user)) ?? 'learningPlans';
 }
 
 function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): string {
   const view = viewFromPath(pathname);
-  if (!view) {
-    return APP_ROUTES.home;
+  if (!view || view === 'home') {
+    return DEFAULT_AUTHENTICATED_ROUTE;
   }
   if (view === 'debug' && !hasPermission(user, 'debug:access')) {
-    return APP_ROUTES.home;
+    return DEFAULT_AUTHENTICATED_ROUTE;
   }
   return pathname;
 }
 
 function isLoginRoute(pathname: string): boolean {
   return pathname === APP_ROUTES.login;
+}
+
+function hasAuthFailedQuery(search: string): boolean {
+  return new URLSearchParams(search).get('auth') === 'failed';
+}
+
+function normalizePublicLocation(pathname: string, search: string): string {
+  if (isLoginRoute(pathname) || hasAuthFailedQuery(search)) {
+    return `${APP_ROUTES.login}${search}`;
+  }
+  return APP_ROUTES.home;
+}
+
+function PublicHomeShell({ onLogin }: { onLogin: () => void }) {
+  const { resources } = useI18n();
+
+  return (
+    <main className="app-shell public-home-shell">
+      <header className="app-header" role="banner">
+        <div className="app-brand">
+          <span className="eyebrow">{resources.app.brandKicker}</span>
+          <strong>{resources.app.brandName}</strong>
+        </div>
+        <nav className="app-nav public-home-nav" aria-label={resources.app.mainNavigation}>
+          <button aria-pressed="true" className="app-nav-button" type="button">
+            <span>{resources.nav.home}</span>
+          </button>
+        </nav>
+        <div className="app-header-actions">
+          <LanguageSelector />
+          <button
+            className="primary-button public-login-button"
+            onClick={onLogin}
+            type="button"
+          >
+            <span>{resources.auth.loginAction}</span>
+          </button>
+        </div>
+      </header>
+      <section className="app-content public-home-content">
+        <HomeDashboard onPrimaryAction={onLogin} primaryActionLabel={resources.home.startUsing} />
+      </section>
+    </main>
+  );
 }
 
 function AppLoadingShell({ activeView }: { activeView: AppView }) {
@@ -85,7 +132,7 @@ function AppLoadingShell({ activeView }: { activeView: AppView }) {
 export default function App() {
   const { resources } = useI18n();
   const [activeView, setActiveView] = useState<AppView>(() => viewFromPath(window.location.pathname) ?? 'home');
-  const [pathname, setPathname] = useState(() => normalizeAuthenticatedPath(window.location.pathname));
+  const [pathname, setPathname] = useState(() => window.location.pathname);
   const [currentUser, setCurrentUser] = useState<CurrentUser>();
   const [authChecked, setAuthChecked] = useState(false);
   const [authError, setAuthError] = useState(false);
@@ -135,8 +182,11 @@ export default function App() {
     }
 
     function handlePopState() {
-      if (window.location.pathname !== APP_ROUTES.login) {
-        window.history.replaceState({}, '', `${APP_ROUTES.login}${window.location.search}`);
+      const normalizedLocation = normalizePublicLocation(window.location.pathname, window.location.search);
+      setActiveView('home');
+      setPathname(normalizedLocation.startsWith(APP_ROUTES.login) ? APP_ROUTES.login : APP_ROUTES.home);
+      if (`${window.location.pathname}${window.location.search}` !== normalizedLocation) {
+        window.history.replaceState({}, '', normalizedLocation);
       }
     }
 
@@ -146,7 +196,7 @@ export default function App() {
 
   function navigateToView(view: AppView) {
     if (view === 'debug' && !hasPermission(currentUser, 'debug:access')) {
-      view = 'home';
+      view = 'learningPlans';
     }
     const nextPath = pathForView(view);
     if (activeView === view && window.location.pathname === nextPath) {
@@ -196,8 +246,13 @@ export default function App() {
         if (nextPath !== window.location.pathname) {
           window.history.replaceState({}, '', nextPath);
         }
-      } else if (window.location.pathname !== APP_ROUTES.login) {
-        window.history.replaceState({}, '', `${APP_ROUTES.login}${window.location.search}`);
+      } else {
+        const normalizedLocation = normalizePublicLocation(window.location.pathname, window.location.search);
+        setActiveView('home');
+        setPathname(normalizedLocation.startsWith(APP_ROUTES.login) ? APP_ROUTES.login : APP_ROUTES.home);
+        if (`${window.location.pathname}${window.location.search}` !== normalizedLocation) {
+          window.history.replaceState({}, '', normalizedLocation);
+        }
       }
     } catch {
       if (!isActive()) {
@@ -224,7 +279,9 @@ export default function App() {
     try {
       await logout();
       setCurrentUser(undefined);
-      window.history.replaceState({}, '', APP_ROUTES.login);
+      setActiveView('home');
+      setPathname(APP_ROUTES.home);
+      window.history.replaceState({}, '', APP_ROUTES.home);
     } catch (error) {
       setLogoutError(error instanceof Error ? error.message : resources.app.logoutFailed);
     } finally {
@@ -268,12 +325,20 @@ export default function App() {
     setCurrentUser(user);
     setAuthChecked(true);
     setAuthError(false);
-    const nextPath = normalizeAuthenticatedPath(window.location.pathname, user);
+    const nextPath = normalizeAuthenticatedPath(DEFAULT_AUTHENTICATED_ROUTE, user);
     const nextView = normalizeAuthenticatedView(nextPath, user);
     setActiveView(nextView);
     setPathname(nextPath);
     if (nextPath !== window.location.pathname || isLoginRoute(window.location.pathname)) {
       window.history.replaceState({}, '', nextPath);
+    }
+  }
+
+  function handlePublicLogin() {
+    setPasswordAuthError('');
+    setPathname(APP_ROUTES.login);
+    if (!isLoginRoute(window.location.pathname)) {
+      window.history.pushState({}, '', APP_ROUTES.login);
     }
   }
 
@@ -327,6 +392,10 @@ export default function App() {
   }
 
   if (!currentUser) {
+    if (!isLoginRoute(pathname)) {
+      return <PublicHomeShell onLogin={handlePublicLogin} />;
+    }
+
     return (
       <LoginPage
         authError={passwordAuthError}

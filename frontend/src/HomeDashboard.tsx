@@ -3,10 +3,12 @@ import type { AppView } from './app/navigation';
 import { useI18n } from './i18n/I18nProvider';
 
 interface HomeDashboardProps {
-  onNavigate: (view: AppView) => void;
+  onNavigate?: (view: AppView) => void;
+  onPrimaryAction?: () => void;
+  primaryActionLabel?: string;
 }
 
-export default function HomeDashboard({ onNavigate }: HomeDashboardProps) {
+export default function HomeDashboard({ onNavigate, onPrimaryAction, primaryActionLabel }: HomeDashboardProps) {
   const { resources } = useI18n();
   const featureCards = [
     {
@@ -26,6 +28,7 @@ export default function HomeDashboard({ onNavigate }: HomeDashboardProps) {
     },
   ];
   const companyMarks = ['A', 'AWS', 'T', 'S', 'G', 'Meta', 'M', 'N', 'A'];
+  const handlePrimaryAction = onPrimaryAction ?? (() => onNavigate?.('learningPlans'));
 
   return (
     <section className="home-page" aria-label={resources.home.ariaLabel}>
@@ -54,8 +57,8 @@ for (let i = 0; i < nums.length; i++) {
             {resources.home.subtitle}
           </p>
           <div className="home-hero-actions">
-            <button className="primary-button hero-action" onClick={() => onNavigate('learningPlans')} type="button">
-              <span>{resources.home.generatePlan}</span>
+            <button className="primary-button hero-action" onClick={handlePrimaryAction} type="button">
+              <span>{primaryActionLabel ?? resources.home.startUsing}</span>
             </button>
           </div>
           <div className="home-company-strip" aria-label={resources.home.companyStripLabel}>
