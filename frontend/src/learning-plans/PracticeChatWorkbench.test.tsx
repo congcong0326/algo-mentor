@@ -263,6 +263,37 @@ describe('PracticeChatWorkbench review contracts', () => {
       .toHaveClass('toolbar-tooltip', 'practice-guidance-tooltip');
   });
 
+  it('renders user messages as plain text without markdown parsing', async () => {
+    const pastedCode = '# class Solution\n\n**bold**\n<script>alert("xss")</script>';
+    createOrReusePracticeSession.mockResolvedValue(apiResponse(sessionFixture({
+      messages: [
+        messageFixture({
+          id: 2,
+          role: 'USER',
+          contentMarkdown: pastedCode,
+        }),
+        messageFixture({
+          id: 3,
+          role: 'ASSISTANT',
+          contentMarkdown: '# Review\n\n**重点：**继续保持 Markdown。',
+        }),
+      ],
+    })));
+
+    renderWorkbench();
+
+    const userText = await screen.findByText((_, element) => (
+      element?.classList.contains('practice-message-plain-text') && element.textContent === pastedCode
+    ));
+    expect(userText).toBeInTheDocument();
+    expect(userText.querySelector('strong')).toBeNull();
+    expect(userText.querySelector('script')).toBeNull();
+    expect(screen.queryByRole('heading', { level: 1, name: 'class Solution' })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Review' })).toBeInTheDocument();
+    expect(screen.getByText('重点：').closest('strong')).toBeInTheDocument();
+    expect(document.querySelector('script')).not.toBeInTheDocument();
+  });
+
   it('refreshes messages session and reviews after agent_run_end', async () => {
     const refreshedMessages = [
       ...sessionFixture().messages,

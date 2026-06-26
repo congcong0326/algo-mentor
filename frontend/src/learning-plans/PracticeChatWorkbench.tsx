@@ -876,6 +876,10 @@ export default function PracticeChatWorkbench({
             {message.contentMarkdown === resources.learningPlans.replyFailed
             || message.contentMarkdown === resources.learningPlans.practiceMessageBlocked ? (
               <p className="practice-message-failed">{message.contentMarkdown}</p>
+            ) : message.role === 'USER' ? (
+              <p className="practice-message-plain-text">
+                {message.contentMarkdown || resources.learningPlans.organizingThoughts}
+              </p>
             ) : (
               <MarkdownView content={message.contentMarkdown || resources.learningPlans.organizingThoughts} />
             )}
