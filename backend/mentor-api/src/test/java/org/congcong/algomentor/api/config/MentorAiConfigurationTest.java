@@ -6,20 +6,44 @@ import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Flow;
+import java.util.concurrent.TimeUnit;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.agent.core.AgentRequest;
+import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionBehavior;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionCoordinator;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionPlan;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionType;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionGuard;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHook;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHookChain;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionCheck;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionMetrics;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionResultFactory;
+import org.congcong.algomentor.agent.core.permission.InMemoryAgentToolPermissionCoordinator;
+import org.congcong.algomentor.agent.core.permission.NoopAgentToolPermissionMetrics;
+import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
 import org.congcong.algomentor.agent.core.tool.CalculatorTool;
 import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.congcong.algomentor.api.problem.tool.GetProblemStatementTool;
 import org.congcong.algomentor.api.problem.tool.ListProblemFiltersTool;
 import org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames;
 import org.congcong.algomentor.api.problem.tool.SearchProblemsTool;
+import org.congcong.algomentor.mentor.api.autoconfigure.AgentConversationApiAutoConfiguration;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentToolNames;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPermissionHook;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
+import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
@@ -43,6 +67,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class MentorAiConfigurationTest {
 
@@ -105,6 +130,127 @@ class MentorAiConfigurationTest {
       assertThat(context).hasSingleBean(CalculatorTool.class);
       assertThat(registry.specs()).extracting(spec -> spec.name()).contains("calculator");
     });
+  }
+
+  @Test
+  void registersToolPermissionBeansAndPassesGuardToRunner() {
+    contextRunner
+        .withPropertyValues(
+            "algo-mentor.agent.tool-permission.timeout=25ms",
+            "algo-mentor.agent.tool-permission.cleanup-interval=75ms")
+        .run(context -> {
+          assertThat(context).hasSingleBean(AgentToolPermissionResultFactory.class);
+          assertThat(context).hasSingleBean(AgentToolPermissionMetrics.class);
+          assertThat(context).hasSingleBean(AgentToolPermissionHookChain.class);
+          assertThat(context).hasSingleBean(AgentToolPermissionCoordinator.class);
+          assertThat(context).hasSingleBean(AgentToolPermissionGuard.class);
+          assertThat(context.getBean(AgentToolPermissionMetrics.class))
+              .isSameAs(NoopAgentToolPermissionMetrics.INSTANCE);
+
+          AgentToolPermissionCoordinator coordinator = context.getBean(AgentToolPermissionCoordinator.class);
+          assertThat(coordinator).isInstanceOf(InMemoryAgentToolPermissionCoordinator.class);
+          assertThat(ReflectionTestUtils.getField(coordinator, "timeout")).isEqualTo(Duration.ofMillis(25));
+          assertThat(context.getBean(AgentToolPermissionProperties.class).getCleanupInterval())
+              .isEqualTo(Duration.ofMillis(75));
+          assertThat(ReflectionTestUtils.getField(
+              context.getBean(AgentLoopRunner.class),
+              "permissionGuard")).isSameAs(context.getBean(AgentToolPermissionGuard.class));
+        });
+  }
+
+  @Test
+  void toolPermissionMetricsUsesMeterRegistryWhenAvailable() {
+    contextRunner
+        .withBean(MeterRegistry.class, SimpleMeterRegistry::new)
+        .run(context -> {
+          assertThat(context).hasSingleBean(AgentToolPermissionMetrics.class);
+          assertThat(context.getBean(AgentToolPermissionMetrics.class))
+              .isNotInstanceOf(NoopAgentToolPermissionMetrics.class);
+
+          AgentToolPermissionMetrics metrics = context.getBean(AgentToolPermissionMetrics.class);
+          metrics.recordHookDecision(
+              "submit_practice_code_review",
+              AgentToolPermissionBehavior.ASK,
+              "practice-review");
+          metrics.recordPermissionRequest("submit_practice_code_review", "practice-review");
+          metrics.recordUserDecision("submit_practice_code_review", AgentToolPermissionDecisionType.ALLOW);
+          metrics.recordTimeout("submit_practice_code_review");
+          metrics.recordLatency(
+              "submit_practice_code_review",
+              AgentToolPermissionMetrics.OUTCOME_ALLOW,
+              Duration.ofMillis(42));
+          metrics.recordHighPermissionExecution("submit_practice_code_review", "practice-review");
+
+          MeterRegistry registry = context.getBean(MeterRegistry.class);
+          assertThat(registry.get(AgentToolPermissionMetrics.HOOK_DECISIONS)
+              .tag(AgentToolPermissionMetrics.TAG_TOOL_NAME, "submit_practice_code_review")
+              .tag(AgentToolPermissionMetrics.TAG_BEHAVIOR, "ASK")
+              .tag(AgentToolPermissionMetrics.TAG_POLICY_SOURCE, "practice-review")
+              .counter()
+              .count()).isEqualTo(1.0);
+          assertThat(registry.get(AgentToolPermissionMetrics.PERMISSION_REQUESTS)
+              .tag(AgentToolPermissionMetrics.TAG_TOOL_NAME, "submit_practice_code_review")
+              .tag(AgentToolPermissionMetrics.TAG_POLICY_SOURCE, "practice-review")
+              .counter()
+              .count()).isEqualTo(1.0);
+          assertThat(registry.get(AgentToolPermissionMetrics.USER_DECISIONS)
+              .tag(AgentToolPermissionMetrics.TAG_TOOL_NAME, "submit_practice_code_review")
+              .tag(AgentToolPermissionMetrics.TAG_DECISION, "ALLOW")
+              .counter()
+              .count()).isEqualTo(1.0);
+          assertThat(registry.get(AgentToolPermissionMetrics.TIMEOUTS)
+              .tag(AgentToolPermissionMetrics.TAG_TOOL_NAME, "submit_practice_code_review")
+              .counter()
+              .count()).isEqualTo(1.0);
+          assertThat(registry.get(AgentToolPermissionMetrics.LATENCY)
+              .tag(AgentToolPermissionMetrics.TAG_TOOL_NAME, "submit_practice_code_review")
+              .tag(AgentToolPermissionMetrics.TAG_OUTCOME, AgentToolPermissionMetrics.OUTCOME_ALLOW)
+              .timer()
+              .totalTime(TimeUnit.MILLISECONDS)).isEqualTo(42.0);
+          assertThat(registry.get(AgentToolPermissionMetrics.HIGH_PERMISSION_EXECUTION)
+              .tag(AgentToolPermissionMetrics.TAG_TOOL_NAME, "submit_practice_code_review")
+              .tag(AgentToolPermissionMetrics.TAG_POLICY_SOURCE, "practice-review")
+              .counter()
+              .count()).isEqualTo(1.0);
+        });
+  }
+
+  @Test
+  void disabledToolPermissionKeepsRunnerGuardButIgnoresBusinessHooks() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+        .withUserConfiguration(DenyPermissionHookConfig.class, MentorAiConfiguration.class)
+        .withPropertyValues("algo-mentor.agent.tool-permission.enabled=false")
+        .run(context -> {
+          AgentToolPermissionHookChain hookChain = context.getBean(AgentToolPermissionHookChain.class);
+
+          assertThat(hookChain.hooks()).isEmpty();
+          assertThat(context.getBean(AgentToolPermissionCoordinator.class))
+              .isNotInstanceOf(InMemoryAgentToolPermissionCoordinator.class);
+          assertThat(ReflectionTestUtils.getField(
+              context.getBean(AgentLoopRunner.class),
+              "permissionGuard")).isSameAs(context.getBean(AgentToolPermissionGuard.class));
+        });
+  }
+
+  @Test
+  void collectsAutoConfiguredPracticeReviewToolAndPermissionHook() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(
+            JacksonAutoConfiguration.class,
+            AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeReviewToolCollectionConfig.class, MentorAiConfiguration.class)
+        .run(context -> {
+          AgentToolRegistry registry = context.getBean(AgentToolRegistry.class);
+          AgentToolPermissionHookChain hookChain = context.getBean(AgentToolPermissionHookChain.class);
+
+          assertThat(context).hasSingleBean(PracticeCodeReviewAgentTool.class);
+          assertThat(context).hasSingleBean(PracticeCodeReviewPermissionHook.class);
+          assertThat(registry.specs()).extracting(spec -> spec.name())
+              .contains(PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW);
+          assertThat(hookChain.hooks())
+              .anySatisfy(hook -> assertThat(hook).isInstanceOf(PracticeCodeReviewPermissionHook.class));
+        });
   }
 
   @Test
@@ -176,6 +322,44 @@ class MentorAiConfigurationTest {
     @Bean
     FakeProvider fakeProvider() {
       return new FakeProvider();
+    }
+  }
+
+  @Configuration(proxyBeanMethods = false)
+  static class DenyPermissionHookConfig {
+
+    @Bean
+    AgentToolPermissionHook denyPermissionHook() {
+      return new AgentToolPermissionHook() {
+        @Override
+        public int order() {
+          return 1;
+        }
+
+        @Override
+        public AgentToolPermissionDecisionPlan evaluate(AgentToolPermissionCheck check) {
+          return AgentToolPermissionDecisionPlan.deny("blocked", "test-policy");
+        }
+      };
+    }
+  }
+
+  @Configuration(proxyBeanMethods = false)
+  static class PracticeReviewToolCollectionConfig {
+
+    @Bean
+    PracticeSessionRepository practiceSessionRepository() {
+      return mock(PracticeSessionRepository.class);
+    }
+
+    @Bean
+    AgentTurnMessageLookupRepository agentTurnMessageLookupRepository() {
+      return mock(AgentTurnMessageLookupRepository.class);
+    }
+
+    @Bean
+    PracticeCodeReviewService practiceCodeReviewService() {
+      return mock(PracticeCodeReviewService.class);
     }
   }
 

@@ -119,6 +119,35 @@ class PracticeChatPromptSectionProviderTest {
         .contains("如果只是片段、报错或伪代码，请正常答疑，并引导用户粘贴完整 LeetCode Solution 代码生成正式 Review。");
   }
 
+  @Test
+  void coachingPolicyDeclaresPracticeCodeReviewToolBoundary() {
+    PromptAssembly assembly = assembler().assemble(new PromptAssemblyRequest(
+        PracticeChatPromptConstants.SCENARIO,
+        PracticeChatPromptConstants.PROFILE_ID,
+        8_000,
+        Map.of(
+            PracticeChatPromptConstants.VARIABLE_CONTEXT, context(null),
+            PracticeChatPromptConstants.VARIABLE_HISTORY, List.of(),
+            PracticeChatPromptConstants.VARIABLE_CURRENT_USER_MESSAGE, "请帮我正式 Review 这份解法能不能通过"),
+        Map.of()));
+
+    String policyText = assembly.renderedSections().stream()
+        .filter(section -> section.section().slot() == PromptSlot.SCENARIO_POLICY)
+        .findFirst()
+        .orElseThrow()
+        .renderedText();
+    assertThat(policyText)
+        .contains(PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW)
+        .contains("当用户明确请求正式代码 Review，或在题目练习中提交完整解法并希望判断是否通过时，调用 "
+            + PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW)
+        .contains(PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW
+            + " 会生成正式 Review 记录并可能影响题目完成状态")
+        .contains("系统会在执行前请求用户确认，工具不能绕过确认")
+        .contains("普通概念、语法、局部 bug、提示、复杂度分析、片段、报错和伪代码不要调用工具，应按普通答疑处理")
+        .contains("如果用户拒绝确认或确认超时，继续以普通聊天方式帮助用户，不要声称已完成正式 Review，也不要声称已生成 Review 记录")
+        .contains("以上规则只是模型工具调用指引，不是安全边界");
+  }
+
   private DefaultPromptAssembler assembler() {
     return new DefaultPromptAssembler(
         new PracticeChatPromptProfileResolver(),

@@ -21,6 +21,12 @@ public final class ApiContractConstants {
   public static final String AGENT_CONVERSATIONS_BASE_PATH = "/api/agent/conversations";
 
   /**
+   * Agent 工具权限决策提交路径。
+   */
+  public static final String AGENT_TOOL_PERMISSION_DECISION_PATH =
+      "/api/agent/tool-permissions/{permissionRequestId}/decision";
+
+  /**
    * Agent conversation 流式运行路径。
    */
   public static final String STREAM_PATH = "/stream";

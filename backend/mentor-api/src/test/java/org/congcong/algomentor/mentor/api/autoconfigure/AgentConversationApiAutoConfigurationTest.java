@@ -2,6 +2,7 @@ package org.congcong.algomentor.mentor.api.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.lang.reflect.Field;
@@ -20,6 +21,7 @@ import org.congcong.algomentor.agent.core.runtime.model.AgentTaskCreationRequest
 import org.congcong.algomentor.agent.core.runtime.model.AgentTaskRef;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
+import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.InMemoryAgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.LocalAgentRunLockOwnerProvider;
@@ -28,8 +30,10 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewDraft;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPermissionHook;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewSummary;
@@ -47,6 +51,7 @@ import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -88,6 +93,35 @@ class AgentConversationApiAutoConfigurationTest {
         .run(context -> {
           assertThat(context).hasSingleBean(PracticeCodeReviewService.class);
           assertThat(context).hasSingleBean(PracticeTurnOrchestrator.class);
+        });
+  }
+
+  @Test
+  void registersPracticeCodeReviewToolAndPermissionHookWhenDependenciesExist() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(
+            JacksonAutoConfiguration.class,
+            AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeReviewToolDependencies.class)
+        .run(context -> {
+          assertThat(context).hasSingleBean(PracticeCodeReviewService.class);
+          assertThat(context).hasSingleBean(PracticeCodeReviewAgentTool.class);
+          assertThat(context).hasSingleBean(PracticeCodeReviewPermissionHook.class);
+        });
+  }
+
+  @Test
+  void missingPracticeCodeReviewServiceDoesNotRegisterToolOrBreakContext() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(
+            JacksonAutoConfiguration.class,
+            AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeReviewHookOnlyDependencies.class)
+        .run(context -> {
+          assertThat(context).hasNotFailed();
+          assertThat(context).doesNotHaveBean(PracticeCodeReviewService.class);
+          assertThat(context).doesNotHaveBean(PracticeCodeReviewAgentTool.class);
+          assertThat(context).hasSingleBean(PracticeCodeReviewPermissionHook.class);
         });
   }
 
@@ -189,6 +223,34 @@ class AgentConversationApiAutoConfigurationTest {
     }
   }
 
+  @Configuration(proxyBeanMethods = false)
+  static class PracticeReviewToolDependencies extends PracticeStreamWithReviewDependencies {
+
+    @Bean
+    ObjectMapper objectMapper() {
+      return new ObjectMapper();
+    }
+
+    @Bean
+    AgentTurnMessageLookupRepository agentTurnMessageLookupRepository() {
+      return new EmptyAgentTurnMessageLookupRepository();
+    }
+  }
+
+  @Configuration(proxyBeanMethods = false)
+  static class PracticeReviewHookOnlyDependencies {
+
+    @Bean
+    PracticeSessionRepository practiceSessionRepository() {
+      return new EmptyPracticeSessionRepository();
+    }
+
+    @Bean
+    AgentTurnMessageLookupRepository agentTurnMessageLookupRepository() {
+      return new EmptyAgentTurnMessageLookupRepository();
+    }
+  }
+
   private static final class EmptyLearningPlanRepository implements LearningPlanRepository {
 
     @Override
@@ -268,6 +330,14 @@ class AgentConversationApiAutoConfigurationTest {
 
     @Override
     public Optional<AgentActiveRun> activeRun(long taskId) {
+      return Optional.empty();
+    }
+  }
+
+  private static final class EmptyAgentTurnMessageLookupRepository implements AgentTurnMessageLookupRepository {
+
+    @Override
+    public Optional<org.congcong.algomentor.agent.core.runtime.model.AgentTurnMessages> findByRunId(long runId) {
       return Optional.empty();
     }
   }

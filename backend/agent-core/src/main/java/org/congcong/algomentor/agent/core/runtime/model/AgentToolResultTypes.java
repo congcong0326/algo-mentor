@@ -20,6 +20,16 @@ public final class AgentToolResultTypes {
    */
   public static final String COMPACTED = "tool_result_compacted";
 
+  /**
+   * 权限流程拒绝执行工具时回填给模型的合成结果。
+   */
+  public static final String TOOL_PERMISSION_DENIED = "tool_permission_denied";
+
+  /**
+   * 权限流程等待用户确认超时时回填给模型的合成结果。
+   */
+  public static final String TOOL_PERMISSION_TIMEOUT = "tool_permission_timeout";
+
   private AgentToolResultTypes() {
   }
 }

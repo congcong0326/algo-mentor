@@ -58,6 +58,8 @@ class PracticeTurnOrchestratorTest {
         .doesNotContainKey(LEGACY_PRACTICE_CAPABILITIES_METADATA);
     assertThat(coordinator.command.practiceChat())
         .isEqualTo(new PracticeChatReference(12L, 1, "two-sum", "zh-CN"));
+    assertThat(coordinator.command.userId()).isEqualTo(7L);
+    assertThat(coordinator.command.taskId()).isEqualTo(100L);
     assertThat(coordinator.command.governanceMetadata())
         .containsEntry("requestId", "req-1")
         .containsEntry(PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, 50L)

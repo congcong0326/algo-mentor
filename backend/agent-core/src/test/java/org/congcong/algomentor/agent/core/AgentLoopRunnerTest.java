@@ -3,8 +3,10 @@ package org.congcong.algomentor.agent.core;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionType;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionPlan;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionGuard;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHook;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHookChain;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionResultFactory;
+import org.congcong.algomentor.agent.core.permission.InMemoryAgentToolPermissionCoordinator;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultJsonKeys;
+import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultTypes;
 import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
 import org.congcong.algomentor.common.trace.RequestTraceContext;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
@@ -37,6 +49,8 @@ import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 import org.junit.jupiter.api.Test;
 
 class AgentLoopRunnerTest {
+
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   @Test
   void streamsOneStepWhenNoToolIsRequested() {
@@ -168,6 +182,330 @@ class AgentLoopRunnerTest {
     assertThat(gateway.requests.get(1).messages().get(2).role()).isEqualTo(LlmMessage.Role.TOOL);
     assertThat(gateway.requests.get(1).messages().get(2).toolCallId()).isEqualTo("call_1");
     assertThat(tool.executedArguments).isEqualTo(toolCall.arguments());
+    assertThat(tool.executionCount).isEqualTo(1);
+  }
+
+  @Test
+  void permissionAllowRunsRealToolWithoutPermissionEvents() {
+    FakeGateway gateway = new FakeGateway();
+    LlmToolCall toolCall = new LlmToolCall(
+        "call_1",
+        "fake_lookup",
+        JsonNodeFactory.instance.objectNode().put("topic", "two pointers"));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ToolCallEnd(toolCall),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("Tool result explained."),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    FakeTool tool = new FakeTool("fake_lookup", JsonNodeFactory.instance.objectNode().put("summary", "allowed data"));
+    AgentLoopRunner runner = runnerWithPermissionPlan(
+        gateway,
+        tool,
+        AgentToolPermissionDecisionPlan.allow("test-policy"),
+        InMemoryAgentToolPermissionCoordinator.DEFAULT_TIMEOUT);
+
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(
+        "run-allow",
+        "Permission allow",
+        List.of(LlmMessage.user("two pointers")),
+        Map.of(AgentRuntimeMetadataKeys.USER_ID, 7L))));
+
+    assertThat(tool.executionCount).isEqualTo(1);
+    assertThat(tool.executedArguments).isEqualTo(toolCall.arguments());
+    assertThat(events).extracting(AgentStreamEvent::name)
+        .contains("agent_tool_start", "agent_tool_end", "agent_run_end")
+        .doesNotContain("tool_permission_request", "tool_permission_decision", "tool_permission_timeout");
+    LlmContentPart.ToolResult toolResult = toolResultFromSecondLlmRequest(gateway);
+    assertThat(toolResult.result().get("summary").asText()).isEqualTo("allowed data");
+  }
+
+  @Test
+  void permissionDenySkipsToolStartExecutionAndContinuesWithSyntheticToolResult() {
+    FakeGateway gateway = new FakeGateway();
+    LlmToolCall toolCall = new LlmToolCall(
+        "call_1",
+        "fake_lookup",
+        JsonNodeFactory.instance.objectNode().put("topic", "two pointers"));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ToolCallEnd(toolCall),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("I can continue without running it."),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    FakeTool tool = new FakeTool("fake_lookup", JsonNodeFactory.instance.objectNode().put("summary", "should not run"));
+    AgentLoopRunner runner = runnerWithPermissionPlan(
+        gateway,
+        tool,
+        AgentToolPermissionDecisionPlan.deny("policy_blocked", "test-policy"),
+        InMemoryAgentToolPermissionCoordinator.DEFAULT_TIMEOUT);
+
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
+
+    assertThat(tool.executionCount).isZero();
+    assertThat(tool.executedArguments).isNull();
+    assertThat(events).extracting(AgentStreamEvent::name)
+        .doesNotContain("agent_tool_start")
+        .contains("agent_tool_end", "agent_run_end");
+    assertThat(gateway.requests).hasSize(2);
+    LlmContentPart.ToolResult toolResult = toolResultFromSecondLlmRequest(gateway);
+    assertThat(toolResult.result().get(AgentToolResultJsonKeys.TYPE).asText())
+        .isEqualTo(AgentToolResultTypes.TOOL_PERMISSION_DENIED);
+    assertThat(toolResult.result().get(AgentToolResultJsonKeys.REASON).asText()).isEqualTo("policy_blocked");
+  }
+
+  @Test
+  void permissionAskUserAllowEmitsDecisionRunsToolAndContinuesWithRealToolResult() {
+    FakeGateway gateway = new FakeGateway();
+    LlmToolCall toolCall = new LlmToolCall(
+        "call_1",
+        "fake_lookup",
+        JsonNodeFactory.instance.objectNode().put("topic", "two pointers"));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ToolCallEnd(toolCall),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("Allowed tool result explained."),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    FakeTool tool = new FakeTool("fake_lookup", JsonNodeFactory.instance.objectNode().put("summary", "real data"));
+    InMemoryAgentToolPermissionCoordinator coordinator = permissionCoordinator(Duration.ofSeconds(5));
+    AgentLoopRunner runner = runnerWithPermissionCoordinator(
+        gateway,
+        tool,
+        askPlan(),
+        coordinator,
+        List.of());
+    PermissionDecisionSubscriber subscriber = new PermissionDecisionSubscriber();
+
+    runner.stream(new AgentRequest(
+        "run-ask-allow",
+        "Permission ask allow",
+        List.of(LlmMessage.user("two pointers")),
+        Map.of(AgentRuntimeMetadataKeys.USER_ID, 7L))).subscribe(subscriber);
+
+    AgentStreamEvent.ToolPermissionRequest request = subscriber.awaitPermissionRequest();
+    assertThat(tool.executionCount).isZero();
+    assertThat(subscriber.events()).extracting(AgentStreamEvent::name)
+        .contains("tool_permission_request")
+        .doesNotContain("tool_permission_decision", "agent_tool_start");
+
+    coordinator.decide(
+        request.permissionRequestId(),
+        AgentToolPermissionDecisionType.ALLOW,
+        "user_confirmed",
+        7L);
+    List<AgentStreamEvent> events = subscriber.awaitCompletion();
+
+    assertThat(tool.executionCount).isEqualTo(1);
+    assertThat(tool.executedArguments).isEqualTo(toolCall.arguments());
+    assertThat(coordinator.pendingRequestCount()).isZero();
+    assertThat(events).extracting(AgentStreamEvent::name).containsExactly(
+        "agent_run_start",
+        "agent_step_start",
+        "tool_call_end",
+        "message_end",
+        "agent_step_end",
+        "tool_permission_request",
+        "tool_permission_decision",
+        "agent_tool_start",
+        "agent_tool_end",
+        "agent_step_start",
+        "content_delta",
+        "message_end",
+        "agent_step_end",
+        "agent_run_end");
+    AgentStreamEvent.ToolPermissionDecision decision = events.stream()
+        .filter(AgentStreamEvent.ToolPermissionDecision.class::isInstance)
+        .map(AgentStreamEvent.ToolPermissionDecision.class::cast)
+        .findFirst()
+        .orElseThrow();
+    assertThat(decision.permissionRequestId()).isEqualTo(request.permissionRequestId());
+    assertThat(decision.decision()).isEqualTo(AgentToolPermissionDecisionType.ALLOW);
+    LlmContentPart.ToolResult toolResult = toolResultFromSecondLlmRequest(gateway);
+    assertThat(toolResult.result().get("summary").asText()).isEqualTo("real data");
+  }
+
+  @Test
+  void permissionAskUserDenySkipsToolStartAndContinuesWithSyntheticToolResult() {
+    FakeGateway gateway = new FakeGateway();
+    LlmToolCall toolCall = new LlmToolCall(
+        "call_1",
+        "fake_lookup",
+        JsonNodeFactory.instance.objectNode().put("topic", "two pointers"));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ToolCallEnd(toolCall),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("Denied, continuing without tool execution."),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    FakeTool tool = new FakeTool("fake_lookup", JsonNodeFactory.instance.objectNode().put("summary", "should not run"));
+    InMemoryAgentToolPermissionCoordinator coordinator = permissionCoordinator(Duration.ofSeconds(5));
+    AgentLoopRunner runner = runnerWithPermissionCoordinator(
+        gateway,
+        tool,
+        askPlan(),
+        coordinator,
+        List.of());
+    PermissionDecisionSubscriber subscriber = new PermissionDecisionSubscriber();
+
+    runner.stream(new AgentRequest(
+        "run-ask-deny",
+        "Permission ask deny",
+        List.of(LlmMessage.user("two pointers")),
+        Map.of(AgentRuntimeMetadataKeys.USER_ID, 7L))).subscribe(subscriber);
+
+    AgentStreamEvent.ToolPermissionRequest request = subscriber.awaitPermissionRequest();
+    assertThat(tool.executionCount).isZero();
+    coordinator.decide(
+        request.permissionRequestId(),
+        AgentToolPermissionDecisionType.DENY,
+        "user_rejected",
+        7L);
+    List<AgentStreamEvent> events = subscriber.awaitCompletion();
+
+    assertThat(tool.executionCount).isZero();
+    assertThat(tool.executedArguments).isNull();
+    assertThat(coordinator.pendingRequestCount()).isZero();
+    assertThat(events).extracting(AgentStreamEvent::name).containsExactly(
+        "agent_run_start",
+        "agent_step_start",
+        "tool_call_end",
+        "message_end",
+        "agent_step_end",
+        "tool_permission_request",
+        "tool_permission_decision",
+        "agent_tool_end",
+        "agent_step_start",
+        "content_delta",
+        "message_end",
+        "agent_step_end",
+        "agent_run_end");
+    AgentStreamEvent.AgentToolEnd toolEnd = events.stream()
+        .filter(AgentStreamEvent.AgentToolEnd.class::isInstance)
+        .map(AgentStreamEvent.AgentToolEnd.class::cast)
+        .findFirst()
+        .orElseThrow();
+    assertThat(toolEnd.result().get(AgentToolResultJsonKeys.TYPE).asText())
+        .isEqualTo(AgentToolResultTypes.TOOL_PERMISSION_DENIED);
+    assertThat(toolEnd.result().get(AgentToolResultJsonKeys.PERMISSION_REQUEST_ID).asText())
+        .isEqualTo(request.permissionRequestId());
+    assertThat(toolEnd.result().get(AgentToolResultJsonKeys.REASON).asText()).isEqualTo("user_rejected");
+    LlmContentPart.ToolResult toolResult = toolResultFromSecondLlmRequest(gateway);
+    assertThat(toolResult.result()).isEqualTo(toolEnd.result());
+  }
+
+  @Test
+  void permissionTimeoutSkipsToolStartExecutionAndContinuesWithSyntheticToolResult() {
+    FakeGateway gateway = new FakeGateway();
+    LlmToolCall toolCall = new LlmToolCall(
+        "call_1",
+        "fake_lookup",
+        JsonNodeFactory.instance.objectNode().put("topic", "two pointers"));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ToolCallEnd(toolCall),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("Permission timed out, so I did not run it."),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    FakeTool tool = new FakeTool("fake_lookup", JsonNodeFactory.instance.objectNode().put("summary", "should not run"));
+    AgentLoopRunner runner = runnerWithPermissionPlan(
+        gateway,
+        tool,
+        AgentToolPermissionDecisionPlan.ask(
+            "Fake lookup",
+            "需要用户确认",
+            Map.of("toolName", "fake_lookup"),
+            "test-policy"),
+        Duration.ofMillis(1));
+
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(
+        "run-1",
+        "Permission timeout",
+        List.of(LlmMessage.user("two pointers")),
+        Map.of(AgentRuntimeMetadataKeys.USER_ID, 7L))));
+
+    assertThat(tool.executionCount).isZero();
+    assertThat(tool.executedArguments).isNull();
+    assertThat(events).extracting(AgentStreamEvent::name)
+        .contains("tool_permission_request", "tool_permission_timeout", "agent_tool_end", "agent_run_end")
+        .doesNotContain("tool_permission_decision", "agent_tool_start");
+    assertEventOrder(
+        events,
+        "agent_step_end",
+        "tool_permission_request",
+        "tool_permission_timeout",
+        "agent_tool_end",
+        "agent_step_start",
+        "agent_run_end");
+    assertThat(gateway.requests).hasSize(2);
+    AgentStreamEvent.AgentToolEnd toolEnd = events.stream()
+        .filter(AgentStreamEvent.AgentToolEnd.class::isInstance)
+        .map(AgentStreamEvent.AgentToolEnd.class::cast)
+        .findFirst()
+        .orElseThrow();
+    LlmContentPart.ToolResult toolResult = toolResultFromSecondLlmRequest(gateway);
+    assertThat(toolResult.result()).isEqualTo(toolEnd.result());
+    assertThat(toolResult.result().get(AgentToolResultJsonKeys.TYPE).asText())
+        .isEqualTo(AgentToolResultTypes.TOOL_PERMISSION_TIMEOUT);
+    assertThat(toolResult.result().get(AgentToolResultJsonKeys.RETRYABLE).asBoolean()).isTrue();
+  }
+
+  @Test
+  void cancellationDuringPendingPermissionDoesNotHangAndDoesNotExecuteTool() {
+    FakeGateway gateway = new FakeGateway();
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ToolCallEnd(
+            new LlmToolCall("call_1", "fake_lookup", JsonNodeFactory.instance.objectNode().put("topic", "cancel"))),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
+    FakeTool tool = new FakeTool("fake_lookup", JsonNodeFactory.instance.objectNode().put("summary", "should not run"));
+    InMemoryAgentToolPermissionCoordinator coordinator = permissionCoordinator(Duration.ofSeconds(5));
+    List<AgentErrorCode> observedErrors = new java.util.concurrent.CopyOnWriteArrayList<>();
+    List<JsonNode> observedToolResults = new java.util.concurrent.CopyOnWriteArrayList<>();
+    CountDownLatch errorObserved = new CountDownLatch(1);
+    AgentLoopObserver observer = new AgentLoopObserver() {
+      @Override
+      public void onToolEnd(AgentLoopContext context, int stepIndex, LlmToolCall toolCall, JsonNode result) {
+        observedToolResults.add(result);
+      }
+
+      @Override
+      public void onError(AgentLoopContext context, AgentException error) {
+        observedErrors.add(error.code());
+        errorObserved.countDown();
+      }
+    };
+    AgentLoopRunner runner = runnerWithPermissionCoordinator(
+        gateway,
+        tool,
+        askPlan(),
+        coordinator,
+        List.of(observer));
+    PermissionDecisionSubscriber subscriber = new PermissionDecisionSubscriber();
+
+    runner.stream(new AgentRequest(
+        "run-cancel",
+        "Permission cancel",
+        List.of(LlmMessage.user("two pointers")),
+        Map.of(AgentRuntimeMetadataKeys.USER_ID, 7L))).subscribe(subscriber);
+
+    subscriber.awaitPermissionRequest();
+    assertThat(coordinator.pendingRequestCount()).isEqualTo(1);
+    subscriber.cancel();
+    await(errorObserved);
+
+    assertThat(tool.executionCount).isZero();
+    assertThat(tool.executedArguments).isNull();
+    assertThat(coordinator.pendingRequestCount()).isZero();
+    assertThat(observedErrors).containsExactly(AgentErrorCode.CANCELLED);
+    assertThat(observedToolResults).singleElement().satisfies(result -> {
+      assertThat(result.get(AgentToolResultJsonKeys.TYPE).asText())
+          .isEqualTo(AgentToolResultTypes.TOOL_PERMISSION_DENIED);
+      assertThat(result.get(AgentToolResultJsonKeys.REASON).asText())
+          .isEqualTo(AgentToolPermissionResultFactory.REASON_RUN_CANCELLED);
+    });
+    assertThat(subscriber.events()).extracting(AgentStreamEvent::name)
+        .contains("tool_permission_request")
+        .doesNotContain("agent_tool_start");
   }
 
   @Test
@@ -402,6 +740,8 @@ class AgentLoopRunnerTest {
     List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
 
     assertThat(events.get(events.size() - 1)).isInstanceOf(AgentStreamEvent.AgentError.class);
+    assertThat(events).extracting(AgentStreamEvent::name)
+        .doesNotContain("tool_permission_request", "tool_permission_decision", "tool_permission_timeout");
     AgentStreamEvent.AgentError error = (AgentStreamEvent.AgentError) events.get(events.size() - 1);
     assertThat(error.error().code()).isEqualTo(AgentErrorCode.UNKNOWN_TOOL);
     assertThat(error.error().metadata()).containsEntry("toolName", "missing_tool");
@@ -854,6 +1194,73 @@ class AgentLoopRunnerTest {
     return new LlmModelSelector(null, LlmModelId.of("gpt-test"), Set.of(), null);
   }
 
+  private AgentLoopRunner runnerWithPermissionPlan(
+      FakeGateway gateway,
+      AgentTool tool,
+      AgentToolPermissionDecisionPlan plan,
+      Duration timeout
+  ) {
+    return runnerWithPermissionCoordinator(
+        gateway,
+        tool,
+        plan,
+        permissionCoordinator(timeout),
+        List.of());
+  }
+
+  private AgentLoopRunner runnerWithPermissionCoordinator(
+      FakeGateway gateway,
+      AgentTool tool,
+      AgentToolPermissionDecisionPlan plan,
+      InMemoryAgentToolPermissionCoordinator coordinator,
+      List<AgentLoopObserver> observers
+  ) {
+    return new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.of(List.of(tool)),
+        LlmToolChoice.auto(),
+        4,
+        observers,
+        List.of(),
+        ToolResultCompactionPolicy.defaults(),
+        new InMemoryToolResultStore(),
+        OBJECT_MAPPER,
+        new AgentToolPermissionGuard(
+            new AgentToolPermissionHookChain(List.of(new FixedPermissionHook(plan))),
+            coordinator));
+  }
+
+  private InMemoryAgentToolPermissionCoordinator permissionCoordinator(Duration timeout) {
+    return new InMemoryAgentToolPermissionCoordinator(
+        new AgentToolPermissionResultFactory(OBJECT_MAPPER),
+        timeout,
+        java.time.Clock.systemUTC());
+  }
+
+  private AgentToolPermissionDecisionPlan askPlan() {
+    return AgentToolPermissionDecisionPlan.ask(
+        "Fake lookup",
+        "需要用户确认",
+        Map.of("toolName", "fake_lookup"),
+        "test-policy");
+  }
+
+  private LlmContentPart.ToolResult toolResultFromSecondLlmRequest(FakeGateway gateway) {
+    assertThat(gateway.requests).hasSize(2);
+    return (LlmContentPart.ToolResult) gateway.requests.get(1).messages().get(2).content().get(0);
+  }
+
+  private void assertEventOrder(List<AgentStreamEvent> events, String... names) {
+    int fromIndex = 0;
+    List<String> actualNames = events.stream().map(AgentStreamEvent::name).toList();
+    for (String name : names) {
+      int index = actualNames.subList(fromIndex, actualNames.size()).indexOf(name);
+      assertThat(index).as("event %s after index %s in %s", name, fromIndex, actualNames).isNotNegative();
+      fromIndex += index + 1;
+    }
+  }
+
   private void await(CountDownLatch latch) {
     try {
       assertThat(latch.await(5, TimeUnit.SECONDS)).isTrue();
@@ -936,6 +1343,75 @@ class AgentLoopRunnerTest {
     }
   }
 
+  private final class PermissionDecisionSubscriber implements Flow.Subscriber<AgentStreamEvent> {
+    private final List<AgentStreamEvent> events = new java.util.concurrent.CopyOnWriteArrayList<>();
+    private final CountDownLatch permissionRequested = new CountDownLatch(1);
+    private final CountDownLatch done = new CountDownLatch(1);
+    private final AtomicReference<AgentStreamEvent.ToolPermissionRequest> request = new AtomicReference<>();
+    private final AtomicReference<Throwable> error = new AtomicReference<>();
+    private Flow.Subscription subscription;
+
+    @Override
+    public void onSubscribe(Flow.Subscription subscription) {
+      this.subscription = subscription;
+      subscription.request(Long.MAX_VALUE);
+    }
+
+    @Override
+    public void onNext(AgentStreamEvent item) {
+      events.add(item);
+      if (item instanceof AgentStreamEvent.ToolPermissionRequest permissionRequest) {
+        request.set(permissionRequest);
+        permissionRequested.countDown();
+      }
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+      error.set(throwable);
+      done.countDown();
+    }
+
+    @Override
+    public void onComplete() {
+      done.countDown();
+    }
+
+    private AgentStreamEvent.ToolPermissionRequest awaitPermissionRequest() {
+      await(permissionRequested);
+      return request.get();
+    }
+
+    private List<AgentStreamEvent> awaitCompletion() {
+      await(done);
+      assertThat(error.get()).isNull();
+      return List.copyOf(events);
+    }
+
+    private List<AgentStreamEvent> events() {
+      return List.copyOf(events);
+    }
+
+    private void cancel() {
+      subscription.cancel();
+    }
+  }
+
+  private record FixedPermissionHook(AgentToolPermissionDecisionPlan plan) implements AgentToolPermissionHook {
+
+    @Override
+    public int order() {
+      return 1;
+    }
+
+    @Override
+    public AgentToolPermissionDecisionPlan evaluate(
+        org.congcong.algomentor.agent.core.permission.AgentToolPermissionCheck check
+    ) {
+      return plan;
+    }
+  }
+
   private static final class FakeGateway implements LlmGateway {
     private final List<LlmCompletionRequest> requests = new ArrayList<>();
     private final List<List<LlmStreamEvent>> steps = new ArrayList<>();
@@ -987,6 +1463,7 @@ class AgentLoopRunnerTest {
     private final String name;
     private final JsonNode result;
     private JsonNode executedArguments;
+    private int executionCount;
 
     private FakeTool(String name, JsonNode result) {
       this.name = name;
@@ -1000,6 +1477,7 @@ class AgentLoopRunnerTest {
 
     @Override
     public JsonNode execute(JsonNode arguments, AgentExecutionContext context) {
+      executionCount++;
       this.executedArguments = arguments;
       return result;
     }

@@ -1,5 +1,6 @@
 package org.congcong.algomentor.mentor.api.autoconfigure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
@@ -7,6 +8,7 @@ import org.congcong.algomentor.agent.core.runlock.AgentRunLockOwnerProvider;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
+import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
 import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.agent.persistence.postgres.config.AgentPostgresPersistenceConfiguration;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
@@ -21,7 +23,9 @@ import org.congcong.algomentor.mentor.application.conversation.AgentConversation
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPermissionHook;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPromptBuilder;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
@@ -161,6 +165,40 @@ public class AgentConversationApiAutoConfiguration {
       PracticeCodeReviewStructuredOutputMapper outputMapper
   ) {
     return new PracticeCodeReviewService(reviewRepository, llmGateway, promptBuilder, outputMapper);
+  }
+
+  @Bean
+  @ConditionalOnBean({
+      PracticeSessionRepository.class,
+      AgentTurnMessageLookupRepository.class,
+      PracticeCodeReviewService.class,
+      ObjectMapper.class
+  })
+  @ConditionalOnMissingBean
+  public PracticeCodeReviewAgentTool practiceCodeReviewAgentTool(
+      PracticeSessionRepository practiceSessionRepository,
+      AgentTurnMessageLookupRepository turnMessageLookupRepository,
+      PracticeCodeReviewService reviewService,
+      ObjectMapper objectMapper
+  ) {
+    return new PracticeCodeReviewAgentTool(
+        practiceSessionRepository,
+        turnMessageLookupRepository,
+        reviewService,
+        objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnBean({
+      PracticeSessionRepository.class,
+      AgentTurnMessageLookupRepository.class
+  })
+  @ConditionalOnMissingBean
+  public PracticeCodeReviewPermissionHook practiceCodeReviewPermissionHook(
+      PracticeSessionRepository practiceSessionRepository,
+      AgentTurnMessageLookupRepository turnMessageLookupRepository
+  ) {
+    return new PracticeCodeReviewPermissionHook(practiceSessionRepository, turnMessageLookupRepository);
   }
 
   @Bean

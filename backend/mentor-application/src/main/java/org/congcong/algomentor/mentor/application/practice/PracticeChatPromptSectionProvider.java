@@ -48,6 +48,17 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
       默认跟随界面语言回复；如果用户明显使用另一种语言提问，则跟随用户语言。
       """;
 
+  private static final String CODE_REVIEW_TOOL_BOUNDARY = """
+      工具边界：
+      1. 当用户明确请求正式代码 Review，或在题目练习中提交完整解法并希望判断是否通过时，调用 %s。
+      2. %s 会生成正式 Review 记录并可能影响题目完成状态；系统会在执行前请求用户确认，工具不能绕过确认。
+      3. 普通概念、语法、局部 bug、提示、复杂度分析、片段、报错和伪代码不要调用工具，应按普通答疑处理。
+      4. 如果用户拒绝确认或确认超时，继续以普通聊天方式帮助用户，不要声称已完成正式 Review，也不要声称已生成 Review 记录。
+      5. 以上规则只是模型工具调用指引，不是安全边界；实际执行仍由系统确认、权限和工具层校验控制。
+      """.formatted(
+      PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW,
+      PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW);
+
   @Override
   public List<PromptSection> sections(PromptAssemblyRequest request, PromptProfile profile) {
     PracticeChatContext context = context(request);
@@ -82,7 +93,8 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
   }
 
   private PromptSection scenarioPolicy(PracticeChatMessageIntent intent) {
-    String text = COACHING_POLICY.strip() + "\n\n本轮用户意图：" + intent.name() + "。";
+    String text = COACHING_POLICY.strip() + "\n\n" + CODE_REVIEW_TOOL_BOUNDARY.strip()
+        + "\n\n本轮用户意图：" + intent.name() + "。";
     return new PromptSection(
         PracticeChatPromptConstants.SECTION_SCENARIO_POLICY,
         "题目聊天教学策略",

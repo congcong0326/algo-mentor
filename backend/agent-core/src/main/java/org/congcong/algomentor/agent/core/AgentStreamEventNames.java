@@ -26,6 +26,21 @@ public final class AgentStreamEventNames {
   public static final String AGENT_TOOL_END = "agent_tool_end";
 
   /**
+   * Agent 工具权限请求。
+   */
+  public static final String TOOL_PERMISSION_REQUEST = "tool_permission_request";
+
+  /**
+   * Agent 工具权限决策。
+   */
+  public static final String TOOL_PERMISSION_DECISION = "tool_permission_decision";
+
+  /**
+   * Agent 工具权限等待超时。
+   */
+  public static final String TOOL_PERMISSION_TIMEOUT = "tool_permission_timeout";
+
+  /**
    * Agent 单步结束。
    */
   public static final String AGENT_STEP_END = "agent_step_end";

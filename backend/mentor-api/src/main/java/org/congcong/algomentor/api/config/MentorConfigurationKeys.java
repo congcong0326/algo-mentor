@@ -16,6 +16,11 @@ public final class MentorConfigurationKeys {
   public static final String AGENT_COMPACTION_PREFIX = "algo-mentor.agent.compaction";
 
   /**
+   * Agent 工具执行权限配置前缀。
+   */
+  public static final String AGENT_TOOL_PERMISSION_PREFIX = "algo-mentor.agent.tool-permission";
+
+  /**
    * API SSE 连接配置前缀。
    */
   public static final String API_SSE_PREFIX = "algo-mentor.api.sse";

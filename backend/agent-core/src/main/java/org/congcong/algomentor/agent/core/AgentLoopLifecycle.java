@@ -1,11 +1,22 @@
 package org.congcong.algomentor.agent.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.SubmissionPublisher;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionAuthorization;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionCoordinator;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecision;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionPlan;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionGuard;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHookChain;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionRequest;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionResultFactory;
+import org.congcong.algomentor.agent.core.permission.InMemoryAgentToolPermissionCoordinator;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
@@ -19,15 +30,33 @@ public final class AgentLoopLifecycle {
   private final SubmissionPublisher<AgentStreamEvent> publisher;
   private final List<AgentLoopObserver> observers;
   private final List<AgentLoopInterceptor> interceptors;
+  private final AgentToolPermissionGuard permissionGuard;
 
   public AgentLoopLifecycle(
       SubmissionPublisher<AgentStreamEvent> publisher,
       List<AgentLoopObserver> observers,
       List<AgentLoopInterceptor> interceptors
   ) {
+    this(
+        publisher,
+        observers,
+        interceptors,
+        new AgentToolPermissionGuard(
+            new AgentToolPermissionHookChain(),
+            new InMemoryAgentToolPermissionCoordinator(
+                new AgentToolPermissionResultFactory(new ObjectMapper()))));
+  }
+
+  public AgentLoopLifecycle(
+      SubmissionPublisher<AgentStreamEvent> publisher,
+      List<AgentLoopObserver> observers,
+      List<AgentLoopInterceptor> interceptors,
+      AgentToolPermissionGuard permissionGuard
+  ) {
     this.publisher = Objects.requireNonNull(publisher, "publisher must not be null");
     this.observers = observers == null ? List.of() : List.copyOf(observers);
     this.interceptors = interceptors == null ? List.of() : List.copyOf(interceptors);
+    this.permissionGuard = Objects.requireNonNull(permissionGuard, "permissionGuard must not be null");
   }
 
   public void runStarted(AgentLoopContext context) {
@@ -137,6 +166,56 @@ public final class AgentLoopLifecycle {
         result));
   }
 
+  public AgentToolPermissionAuthorization beforeToolExecution(
+      AgentLoopContext context,
+      int stepIndex,
+      LlmToolCall toolCall,
+      AgentTool tool
+  ) {
+    return permissionGuard.authorize(
+        context,
+        stepIndex,
+        toolCall,
+        tool,
+        new LifecyclePermissionEventPublisher(context));
+  }
+
+  public void toolPermissionRequested(
+      AgentLoopContext context,
+      AgentToolPermissionRequest request,
+      AgentToolPermissionDecisionPlan plan
+  ) {
+    notifyObserver(
+        observer -> observer.onToolPermissionRequest(context, request, plan),
+        "onToolPermissionRequest");
+    publisher.submit(new AgentStreamEvent.ToolPermissionRequest(request));
+  }
+
+  public void toolPermissionDecided(
+      AgentLoopContext context,
+      AgentToolPermissionRequest request,
+      AgentToolPermissionDecision decision,
+      AgentToolPermissionDecisionPlan plan
+  ) {
+    notifyObserver(
+        observer -> observer.onToolPermissionDecision(context, request, decision, plan),
+        "onToolPermissionDecision");
+    publisher.submit(new AgentStreamEvent.ToolPermissionDecision(request, decision));
+  }
+
+  public void toolPermissionTimedOut(
+      AgentLoopContext context,
+      AgentToolPermissionRequest request,
+      String reason,
+      Instant expiredAt,
+      AgentToolPermissionDecisionPlan plan
+  ) {
+    notifyObserver(
+        observer -> observer.onToolPermissionTimeout(context, request, reason, expiredAt, plan),
+        "onToolPermissionTimeout");
+    publisher.submit(new AgentStreamEvent.ToolPermissionTimeout(request, reason, expiredAt));
+  }
+
   public void toolErrored(
       AgentLoopContext context,
       int stepIndex,
@@ -179,5 +258,42 @@ public final class AgentLoopLifecycle {
   @FunctionalInterface
   private interface ObserverCallback {
     void call(AgentLoopObserver observer);
+  }
+
+  private final class LifecyclePermissionEventPublisher
+      implements AgentToolPermissionCoordinator.EventPublisher {
+
+    private final AgentLoopContext context;
+
+    private LifecyclePermissionEventPublisher(AgentLoopContext context) {
+      this.context = context;
+    }
+
+    @Override
+    public void toolPermissionRequested(
+        AgentToolPermissionRequest request,
+        AgentToolPermissionDecisionPlan plan
+    ) {
+      AgentLoopLifecycle.this.toolPermissionRequested(context, request, plan);
+    }
+
+    @Override
+    public void toolPermissionDecided(
+        AgentToolPermissionRequest request,
+        AgentToolPermissionDecision decision,
+        AgentToolPermissionDecisionPlan plan
+    ) {
+      AgentLoopLifecycle.this.toolPermissionDecided(context, request, decision, plan);
+    }
+
+    @Override
+    public void toolPermissionTimedOut(
+        AgentToolPermissionRequest request,
+        String reason,
+        Instant expiredAt,
+        AgentToolPermissionDecisionPlan plan
+    ) {
+      AgentLoopLifecycle.this.toolPermissionTimedOut(context, request, reason, expiredAt, plan);
+    }
   }
 }

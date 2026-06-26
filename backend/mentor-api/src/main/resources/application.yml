@@ -67,6 +67,11 @@ algo-mentor:
     max-steps: ${AGENT_MAX_STEPS:4}
     tool-choice: ${AGENT_TOOL_CHOICE:auto}
     specific-tool-name: ${AGENT_SPECIFIC_TOOL_NAME:}
+    # 阶段一权限 pending request 使用单实例内存实现；多实例部署前需要替换为共享 coordinator。
+    tool-permission:
+      enabled: ${AGENT_TOOL_PERMISSION_ENABLED:true}
+      timeout: ${AGENT_TOOL_PERMISSION_TIMEOUT:60s}
+      cleanup-interval: ${AGENT_TOOL_PERMISSION_CLEANUP_INTERVAL:2m}
     compaction:
       inline-max-chars: ${AGENT_TOOL_RESULT_INLINE_MAX_CHARS:12000}
       preview-max-chars: ${AGENT_TOOL_RESULT_PREVIEW_MAX_CHARS:2000}

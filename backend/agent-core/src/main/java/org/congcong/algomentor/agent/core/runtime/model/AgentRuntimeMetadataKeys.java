@@ -18,6 +18,11 @@ public final class AgentRuntimeMetadataKeys {
   public static final String RUN_DB_ID = "runDbId";
 
   /**
+   * 当前登录用户 ID，来自服务端受信上下文，用于权限 owner 校验。
+   */
+  public static final String USER_ID = "userId";
+
+  /**
    * 当前上下文允许使用的 token 预算。
    */
   public static final String TOKEN_BUDGET = "tokenBudget";

@@ -19,6 +19,11 @@ import org.congcong.algomentor.agent.core.compaction.RunMessageCompactor;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompaction;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactor;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionAuthorization;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionGuard;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHookChain;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionResultFactory;
+import org.congcong.algomentor.agent.core.permission.InMemoryAgentToolPermissionCoordinator;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
@@ -57,6 +62,7 @@ public class AgentLoopRunner {
   private final ToolResultCompactor toolResultCompactor;
   private final RunMessageCompactor runMessageCompactor;
   private final ObjectMapper objectMapper;
+  private final AgentToolPermissionGuard permissionGuard;
 
   @Deprecated(forRemoval = false)
   public AgentLoopRunner(LlmGateway llmGateway, String model, AgentToolRegistry toolRegistry, int maxSteps) {
@@ -116,6 +122,33 @@ public class AgentLoopRunner {
       ToolResultStore toolResultStore,
       ObjectMapper objectMapper
   ) {
+    this(
+        llmGateway,
+        modelSelector,
+        toolRegistry,
+        toolChoice,
+        maxSteps,
+        observers,
+        interceptors,
+        toolResultPolicy,
+        toolResultStore,
+        objectMapper,
+        null);
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
+      LlmModelSelector modelSelector,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps,
+      List<AgentLoopObserver> observers,
+      List<AgentLoopInterceptor> interceptors,
+      ToolResultCompactionPolicy toolResultPolicy,
+      ToolResultStore toolResultStore,
+      ObjectMapper objectMapper,
+      AgentToolPermissionGuard permissionGuard
+  ) {
     if (maxSteps < 1) {
       throw new IllegalArgumentException("Agent loop max steps must be positive");
     }
@@ -132,6 +165,7 @@ public class AgentLoopRunner {
     this.toolResultCompactor = new ToolResultCompactor(mapper, policy, store);
     this.runMessageCompactor = new RunMessageCompactor(mapper, toolResultCompactor);
     this.objectMapper = mapper;
+    this.permissionGuard = permissionGuard == null ? defaultPermissionGuard(mapper) : permissionGuard;
   }
 
   /**
@@ -194,7 +228,7 @@ public class AgentLoopRunner {
         maxSteps,
         request.metadata(),
         cancellationToken);
-    AgentLoopLifecycle lifecycle = new AgentLoopLifecycle(publisher, observers, interceptors);
+    AgentLoopLifecycle lifecycle = new AgentLoopLifecycle(publisher, observers, interceptors, permissionGuard);
     // messages 是本次 run 内的可变工作上下文：初始用户/系统消息、assistant tool_calls、tool result 都按顺序追加。
     List<LlmMessage> messages = new ArrayList<>(AgentLlmRequestFactory.initialMessages(request));
     lifecycle.runStarted(context);
@@ -241,9 +275,28 @@ public class AgentLoopRunner {
                       AgentRuntimeMetadataKeys.TOOL_NAME, toolCall.name(),
                       AgentRuntimeMetadataKeys.TOOL_CALL_ID, toolCall.id()),
                   null));
-          lifecycle.toolStarted(context, stepIndex, toolCall);
-          var result = executeTool(context, stepIndex, toolCall, tool, lifecycle);
-          throwIfCancelled(context);
+          AgentToolPermissionAuthorization authorization = lifecycle.beforeToolExecution(
+              context,
+              stepIndex,
+              toolCall,
+              tool);
+          JsonNode result;
+          if (authorization instanceof AgentToolPermissionAuthorization.Allowed) {
+            lifecycle.toolStarted(context, stepIndex, toolCall);
+            result = executeTool(context, stepIndex, toolCall, tool, lifecycle);
+            throwIfCancelled(context);
+          } else if (authorization instanceof AgentToolPermissionAuthorization.SyntheticResult syntheticResult) {
+            result = syntheticResult.result();
+          } else {
+            throw new AgentException(
+                AgentErrorCode.UNKNOWN,
+                "Unsupported agent tool permission authorization",
+                false,
+                Map.of(
+                    AgentRuntimeMetadataKeys.TOOL_NAME, toolCall.name(),
+                    AgentRuntimeMetadataKeys.TOOL_CALL_ID, toolCall.id()),
+                null);
+          }
           result = lifecycle.afterToolCall(context, stepIndex, toolCall, result);
           lifecycle.toolEnded(context, stepIndex, toolCall, result);
           ToolResultCompaction compaction = toolResultCompactor.compactForModel(context, stepIndex, toolCall, result);
@@ -415,6 +468,12 @@ public class AgentLoopRunner {
       throw new IllegalArgumentException("Agent loop model must not be blank");
     }
     return new LlmModelSelector(null, LlmModelId.of(model), Set.of(), DEFAULT_PURPOSE);
+  }
+
+  private static AgentToolPermissionGuard defaultPermissionGuard(ObjectMapper objectMapper) {
+    return new AgentToolPermissionGuard(
+        new AgentToolPermissionHookChain(),
+        new InMemoryAgentToolPermissionCoordinator(new AgentToolPermissionResultFactory(objectMapper)));
   }
 
   /**

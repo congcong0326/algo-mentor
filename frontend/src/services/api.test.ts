@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
+  ApiRequestError,
+  decideAgentToolPermission,
   getHealth,
   logout,
   streamAgentConversation,
@@ -60,7 +62,15 @@ describe('api request tracing', () => {
   it('adds request id to sse requests without changing idempotency key', async () => {
     vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x13, 0x14, 0x15, 0x16, 0x17, 0x18]) });
     const fetchMock = vi.fn(() => Promise.resolve(new Response(
-      'event:agent_run_end\ndata:{"runId":"run-1"}\n\n',
+      [
+        'event:agent_run_end',
+        'data:{"runId":"run-1"}',
+        '',
+        'event:tool_permission_request',
+        'data:{"runId":"run-1","stepIndex":1,"toolCallId":"call-1","toolName":"practice_review","permissionRequestId":"permission-1","displayName":"Code review","reason":"Review submitted code","preview":{"language":"java"},"expiresAt":"2026-06-26T00:01:00Z"}',
+        '',
+        '',
+      ].join('\n'),
       {
         status: 200,
         headers: {
@@ -82,6 +92,97 @@ describe('api request tracing', () => {
     expect(onEvent).toHaveBeenCalledWith({
       eventName: 'agent_run_end',
       data: { runId: 'run-1' },
+    });
+    expect(onEvent).toHaveBeenCalledWith({
+      eventName: 'tool_permission_request',
+      data: {
+        runId: 'run-1',
+        stepIndex: 1,
+        toolCallId: 'call-1',
+        toolName: 'practice_review',
+        permissionRequestId: 'permission-1',
+        displayName: 'Code review',
+        reason: 'Review submitted code',
+        preview: { language: 'java' },
+        expiresAt: '2026-06-26T00:01:00Z',
+      },
+    });
+  });
+
+  it('posts agent tool permission decisions with json, csrf, and request id headers', async () => {
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e]) });
+    Object.defineProperty(document, 'cookie', {
+      configurable: true,
+      writable: true,
+      value: 'XSRF-TOKEN=csrf-token',
+    });
+    const fetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        permissionRequestId: 'permission/1',
+        decision: 'ALLOW',
+        accepted: true,
+      },
+      timestamp: '2026-06-26T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const response = await decideAgentToolPermission('permission/1', {
+      decision: 'ALLOW',
+      reason: 'Looks correct',
+    });
+
+    expect(response.data).toEqual({
+      permissionRequestId: 'permission/1',
+      decision: 'ALLOW',
+      accepted: true,
+    });
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/agent/tool-permissions/permission%2F1/decision',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          decision: 'ALLOW',
+          reason: 'Looks correct',
+        }),
+      }),
+    );
+
+    const headers = requestHeaders(fetchMock);
+    expect(headers.get('Accept')).toBe('application/json');
+    expect(headers.get('Content-Type')).toBe('application/json');
+    expect(headers.get('X-Request-Id')).toBe('191a1b1c1d1e');
+    expect(headers.get('X-XSRF-TOKEN')).toBe('csrf-token');
+  });
+
+  it('throws ApiRequestError with backend code and message for rejected permission decisions', async () => {
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x1f, 0x20, 0x21, 0x22, 0x23, 0x24]) });
+    const fetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: false,
+      error: {
+        code: 'TOOL_PERMISSION_REQUEST_EXPIRED',
+        message: 'Permission request expired',
+      },
+      timestamp: '2026-06-26T00:00:00Z',
+    }, 409)));
+    vi.stubGlobal('fetch', fetchMock);
+
+    let caughtError: unknown;
+    try {
+      await decideAgentToolPermission('permission-1', {
+        decision: 'DENY',
+        reason: 'Not now',
+      });
+    } catch (error) {
+      caughtError = error;
+    }
+
+    expect(caughtError).toBeInstanceOf(ApiRequestError);
+    expect(caughtError).toMatchObject({
+      status: 409,
+      code: 'TOOL_PERMISSION_REQUEST_EXPIRED',
+      message: 'Permission request expired',
     });
   });
 });

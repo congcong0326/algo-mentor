@@ -1,8 +1,10 @@
 package org.congcong.algomentor.api.service;
 
+import java.time.Instant;
 import java.util.Map;
 import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionType;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
@@ -38,6 +40,45 @@ public class LlmStreamSseMapper {
       return event(
           SseEventNames.AGENT_TOOL_END,
           new AgentToolEndData(end.runId(), end.stepIndex(), end.toolCallId(), end.toolName(), end.result()));
+    }
+    if (event instanceof AgentStreamEvent.ToolPermissionRequest request) {
+      return event(
+          SseEventNames.TOOL_PERMISSION_REQUEST,
+          new ToolPermissionRequestData(
+              request.runId(),
+              request.stepIndex(),
+              request.toolCallId(),
+              request.toolName(),
+              request.permissionRequestId(),
+              request.displayName(),
+              request.reason(),
+              request.preview(),
+              request.expiresAt()));
+    }
+    if (event instanceof AgentStreamEvent.ToolPermissionDecision decision) {
+      return event(
+          SseEventNames.TOOL_PERMISSION_DECISION,
+          new ToolPermissionDecisionData(
+              decision.runId(),
+              decision.stepIndex(),
+              decision.toolCallId(),
+              decision.toolName(),
+              decision.permissionRequestId(),
+              decision.decision(),
+              decision.reason(),
+              decision.decidedAt()));
+    }
+    if (event instanceof AgentStreamEvent.ToolPermissionTimeout timeout) {
+      return event(
+          SseEventNames.TOOL_PERMISSION_TIMEOUT,
+          new ToolPermissionTimeoutData(
+              timeout.runId(),
+              timeout.stepIndex(),
+              timeout.toolCallId(),
+              timeout.toolName(),
+              timeout.permissionRequestId(),
+              timeout.reason(),
+              timeout.expiredAt()));
     }
     if (event instanceof AgentStreamEvent.AgentStepEnd end) {
       return event(
@@ -134,6 +175,42 @@ public class LlmStreamSseMapper {
       String toolCallId,
       String toolName,
       com.fasterxml.jackson.databind.JsonNode result
+  ) {
+  }
+
+  private record ToolPermissionRequestData(
+      String runId,
+      int stepIndex,
+      String toolCallId,
+      String toolName,
+      String permissionRequestId,
+      String displayName,
+      String reason,
+      Map<String, Object> preview,
+      Instant expiresAt
+  ) {
+  }
+
+  private record ToolPermissionDecisionData(
+      String runId,
+      int stepIndex,
+      String toolCallId,
+      String toolName,
+      String permissionRequestId,
+      AgentToolPermissionDecisionType decision,
+      String reason,
+      Instant decidedAt
+  ) {
+  }
+
+  private record ToolPermissionTimeoutData(
+      String runId,
+      int stepIndex,
+      String toolCallId,
+      String toolName,
+      String permissionRequestId,
+      String reason,
+      Instant expiredAt
   ) {
   }
 

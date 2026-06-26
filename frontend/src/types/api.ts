@@ -312,6 +312,9 @@ export type SseEventName =
   | 'agent_step_start'
   | 'agent_tool_start'
   | 'agent_tool_end'
+  | 'tool_permission_request'
+  | 'tool_permission_decision'
+  | 'tool_permission_timeout'
   | 'agent_step_end'
   | 'agent_run_end'
   | 'message_start'
@@ -352,6 +355,60 @@ export const AGENT_RUN_IN_PROGRESS_CODE = 'AGENT_RUN_IN_PROGRESS';
 export interface SseStreamEvent {
   eventName: SseEventName;
   data: unknown;
+}
+
+export type AgentToolPermissionDecisionType = 'ALLOW' | 'DENY';
+
+export interface AgentToolPermissionRequestEvent {
+  runId: string;
+  stepIndex: number;
+  toolCallId: string;
+  toolName: string;
+  permissionRequestId: string;
+  displayName: string;
+  reason: string;
+  preview: Record<string, unknown>;
+  expiresAt: string;
+}
+
+export interface AgentToolEndEvent {
+  runId: string;
+  stepIndex: number;
+  toolCallId: string;
+  toolName: string;
+  result: unknown;
+}
+
+export interface AgentToolPermissionDecisionEvent {
+  runId: string;
+  stepIndex: number;
+  toolCallId: string;
+  toolName: string;
+  permissionRequestId: string;
+  decision: AgentToolPermissionDecisionType;
+  reason: string;
+  decidedAt: string;
+}
+
+export interface AgentToolPermissionTimeoutEvent {
+  runId: string;
+  stepIndex: number;
+  toolCallId: string;
+  toolName: string;
+  permissionRequestId: string;
+  reason: string;
+  expiredAt: string;
+}
+
+export interface AgentToolPermissionDecisionRequest {
+  decision: AgentToolPermissionDecisionType;
+  reason: string;
+}
+
+export interface AgentToolPermissionDecisionResponse {
+  permissionRequestId: string;
+  decision: AgentToolPermissionDecisionType;
+  accepted: boolean;
 }
 
 export interface AgentWorkStatusEvent {

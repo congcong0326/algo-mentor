@@ -8,6 +8,7 @@ import type { LocaleResources, SupportedLocale } from '../i18n/locales';
 import {
   ApiRequestError,
   createOrReusePracticeSession,
+  decideAgentToolPermission,
   getPracticeSession,
   getPracticeSessionActiveRun,
   getPracticeSessionMessages,
@@ -16,8 +17,11 @@ import {
   updatePracticeProgressStatus,
 } from '../services/api';
 import type {
+  AgentToolEndEvent,
   LearningPlanDetailResponse,
   LearningPlanProblemDraft,
+  AgentToolPermissionRequestEvent,
+  AgentToolPermissionDecisionType,
   PracticeCodeReviewHistoryResponse,
   PracticeMessage,
   PracticeProgressStatus,
@@ -34,6 +38,28 @@ const LEETCODE_HOST_BY_LOCALE: Record<SupportedLocale, string> = {
 const LEETCODE_HOSTS = new Set(['leetcode.cn', 'www.leetcode.cn', 'leetcode.com', 'www.leetcode.com']);
 const AUTO_SCROLL_THRESHOLD_PX = 96;
 const ACTIVE_RUN_POLL_INTERVAL_MS = 3000;
+// 后端 SSE/tool result 公共契约，用于识别 Review tool 是否真实落库。
+const REVIEW_TOOL_NAME = 'submit_practice_code_review';
+const REVIEW_SUBMITTED_RESULT_TYPE = 'practice_code_review_submitted';
+const TOOL_PERMISSION_DENIED_RESULT_TYPE = 'tool_permission_denied';
+const TOOL_PERMISSION_TIMEOUT_RESULT_TYPE = 'tool_permission_timeout';
+
+interface PermissionPreview {
+  problemSlug?: string;
+  problemTitle?: string;
+  languageHint?: string;
+  codeLength?: number;
+  codePreview?: string;
+  effects: string[];
+  contextAvailable?: boolean;
+}
+
+interface PendingPermissionState {
+  request: AgentToolPermissionRequestEvent;
+  preview: PermissionPreview;
+  submitting: boolean;
+  error: string;
+}
 
 function problemLabel(problem: LearningPlanProblemDraft | undefined, locale: SupportedLocale, fallback: string): string {
   if (!problem) {
@@ -81,6 +107,131 @@ function readContentDelta(data: unknown): string {
   return typeof content === 'string' ? content : '';
 }
 
+function readStringField(source: Record<string, unknown>, key: string): string | undefined {
+  const value = source[key];
+  return typeof value === 'string' && value.trim() ? value : undefined;
+}
+
+function readNumberField(source: Record<string, unknown>, key: string): number | undefined {
+  const value = source[key];
+  return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+}
+
+function readBooleanField(source: Record<string, unknown>, key: string): boolean | undefined {
+  const value = source[key];
+  return typeof value === 'boolean' ? value : undefined;
+}
+
+function readStringListField(source: Record<string, unknown>, key: string): string[] {
+  const value = source[key];
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
+}
+
+function readPermissionPreview(data: unknown): PermissionPreview {
+  if (typeof data !== 'object' || data === null) {
+    return { effects: [] };
+  }
+
+  const preview = data as Record<string, unknown>;
+  return {
+    problemSlug: readStringField(preview, 'problemSlug'),
+    problemTitle: readStringField(preview, 'problemTitle'),
+    languageHint: readStringField(preview, 'languageHint'),
+    codeLength: readNumberField(preview, 'codeLength'),
+    codePreview: readStringField(preview, 'codePreview'),
+    effects: readStringListField(preview, 'effects'),
+    contextAvailable: readBooleanField(preview, 'contextAvailable'),
+  };
+}
+
+function readPermissionRequestEvent(data: unknown): AgentToolPermissionRequestEvent | undefined {
+  if (typeof data !== 'object' || data === null) {
+    return undefined;
+  }
+
+  const event = data as Record<string, unknown>;
+  const runId = readStringField(event, 'runId');
+  const stepIndex = readNumberField(event, 'stepIndex');
+  const toolCallId = readStringField(event, 'toolCallId');
+  const toolName = readStringField(event, 'toolName');
+  const permissionRequestId = readStringField(event, 'permissionRequestId');
+  const displayName = readStringField(event, 'displayName');
+  const reason = readStringField(event, 'reason');
+  const expiresAt = readStringField(event, 'expiresAt');
+  const preview = event.preview;
+
+  if (!runId
+    || stepIndex === undefined
+    || !toolCallId
+    || !toolName
+    || !permissionRequestId
+    || !displayName
+    || !reason
+    || typeof preview !== 'object'
+    || preview === null
+    || !expiresAt) {
+    return undefined;
+  }
+
+  return {
+    runId,
+    stepIndex,
+    toolCallId,
+    toolName,
+    permissionRequestId,
+    displayName,
+    reason,
+    preview: preview as Record<string, unknown>,
+    expiresAt,
+  };
+}
+
+function readPermissionRequestId(data: unknown): string | undefined {
+  if (typeof data !== 'object' || data === null || !('permissionRequestId' in data)) {
+    return undefined;
+  }
+
+  const permissionRequestId = (data as { permissionRequestId?: unknown }).permissionRequestId;
+  return typeof permissionRequestId === 'string' && permissionRequestId.trim() ? permissionRequestId : undefined;
+}
+
+function readAgentToolEndEvent(data: unknown): AgentToolEndEvent | undefined {
+  if (typeof data !== 'object' || data === null) {
+    return undefined;
+  }
+
+  const event = data as Record<string, unknown>;
+  const runId = readStringField(event, 'runId');
+  const stepIndex = readNumberField(event, 'stepIndex');
+  const toolCallId = readStringField(event, 'toolCallId');
+  const toolName = readStringField(event, 'toolName');
+
+  if (!runId || stepIndex === undefined || !toolCallId || !toolName || !('result' in event)) {
+    return undefined;
+  }
+
+  return {
+    runId,
+    stepIndex,
+    toolCallId,
+    toolName,
+    result: event.result,
+  };
+}
+
+function readResultType(result: unknown): string | undefined {
+  if (typeof result !== 'object' || result === null || !('type' in result)) {
+    return undefined;
+  }
+
+  const type = (result as { type?: unknown }).type;
+  return typeof type === 'string' && type.trim() ? type : undefined;
+}
+
 function nextIdempotencyKey(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();
@@ -114,9 +265,12 @@ export default function PracticeChatWorkbench({
   const [reviewHistory, setReviewHistory] = useState<PracticeCodeReviewHistoryResponse>();
   const [reviewHistoryLoading, setReviewHistoryLoading] = useState(false);
   const [reviewHistoryError, setReviewHistoryError] = useState('');
+  const [pendingPermission, setPendingPermission] = useState<PendingPermissionState>();
+  const [permissionNotice, setPermissionNotice] = useState('');
   const localMessageIdRef = useRef(-1);
   const streamControllerRef = useRef<AbortController | null>(null);
   const activeSessionIdRef = useRef<number | undefined>(undefined);
+  const pendingPermissionIdRef = useRef<string | undefined>(undefined);
   const messageListRef = useRef<HTMLElement | null>(null);
   const shouldAutoScrollRef = useRef(true);
   const submittingRef = useRef(false);
@@ -136,6 +290,9 @@ export default function PracticeChatWorkbench({
     setReviewHistory(undefined);
     setReviewHistoryError('');
     setReviewHistoryLoading(false);
+    setPendingPermission(undefined);
+    pendingPermissionIdRef.current = undefined;
+    setPermissionNotice('');
     setStatus('loading');
 
     createOrReusePracticeSession(plan.id, phaseIndex, problemSlug, locale, controller.signal)
@@ -305,6 +462,7 @@ export default function PracticeChatWorkbench({
     const now = new Date().toISOString();
 
     setError('');
+    setPermissionNotice('');
     setStatus('streaming');
     setComposerValue('');
     setMessages((current) => [
@@ -326,6 +484,7 @@ export default function PracticeChatWorkbench({
     ]);
 
     let agentRunEnded = false;
+    let reviewRefreshRequested = false;
 
     try {
       await streamPracticeMessage(sessionId, { message: text }, {
@@ -358,6 +517,64 @@ export default function PracticeChatWorkbench({
             setSessionResponse((current) => current ? { ...current, activeRun: null } : current);
           }
 
+          if (event.eventName === 'agent_tool_end') {
+            const toolEnd = readAgentToolEndEvent(event.data);
+            if (!toolEnd || toolEnd.toolName !== REVIEW_TOOL_NAME) {
+              return;
+            }
+
+            const resultType = readResultType(toolEnd.result);
+            if (resultType === REVIEW_SUBMITTED_RESULT_TYPE) {
+              reviewRefreshRequested = true;
+              setPostRunRefreshing(true);
+            }
+            if (resultType === TOOL_PERMISSION_DENIED_RESULT_TYPE
+              || resultType === TOOL_PERMISSION_TIMEOUT_RESULT_TYPE) {
+              return;
+            }
+          }
+
+          if (event.eventName === 'tool_permission_request') {
+            const permissionRequest = readPermissionRequestEvent(event.data);
+            if (!permissionRequest) {
+              return;
+            }
+
+            setPermissionNotice('');
+            pendingPermissionIdRef.current = permissionRequest.permissionRequestId;
+            setPendingPermission({
+              request: permissionRequest,
+              preview: readPermissionPreview(permissionRequest.preview),
+              submitting: false,
+              error: '',
+            });
+          }
+
+          if (event.eventName === 'tool_permission_decision') {
+            const permissionRequestId = readPermissionRequestId(event.data);
+            if (!permissionRequestId) {
+              return;
+            }
+
+            if (pendingPermissionIdRef.current === permissionRequestId) {
+              pendingPermissionIdRef.current = undefined;
+              setPendingPermission(undefined);
+            }
+          }
+
+          if (event.eventName === 'tool_permission_timeout') {
+            const permissionRequestId = readPermissionRequestId(event.data);
+            if (!permissionRequestId) {
+              return;
+            }
+
+            if (pendingPermissionIdRef.current === permissionRequestId) {
+              pendingPermissionIdRef.current = undefined;
+              setPermissionNotice(resources.learningPlans.toolPermissionTimeoutNotice);
+              setPendingPermission(undefined);
+            }
+          }
+
           if (event.eventName === 'error' || event.eventName === 'agent_error') {
             setError(resources.learningPlans.practiceMessageFailed);
             markAssistantMessageFailed(assistantMessageId);
@@ -383,6 +600,9 @@ export default function PracticeChatWorkbench({
           }
         }
       } else {
+        if (reviewRefreshRequested) {
+          setPostRunRefreshing(false);
+        }
         setError(resources.learningPlans.practiceMessageFailed);
         markAssistantMessageFailed(assistantMessageId);
         setStatus('error');
@@ -471,6 +691,35 @@ export default function PracticeChatWorkbench({
       if (activeSessionIdRef.current === activeSessionId && practiceLoadTokenRef.current === activeLoadToken) {
         setCompletionUpdating(false);
       }
+    }
+  }
+
+  async function handlePermissionDecision(decision: AgentToolPermissionDecisionType) {
+    if (!pendingPermission || pendingPermission.submitting) {
+      return;
+    }
+
+    const permissionRequestId = pendingPermission.request.permissionRequestId;
+    setPendingPermission((current) => current?.request.permissionRequestId === permissionRequestId
+      ? { ...current, submitting: true, error: '' }
+      : current);
+
+    try {
+      const response = await decideAgentToolPermission(permissionRequestId, {
+        decision,
+        reason: decision === 'ALLOW' ? 'user_confirmed' : 'user_rejected',
+      });
+      if (!response.success) {
+        throw new Error(response.error?.message ?? resources.learningPlans.toolPermissionDecisionFailed);
+      }
+    } catch (error) {
+      setPendingPermission((current) => current?.request.permissionRequestId === permissionRequestId
+        ? {
+            ...current,
+            submitting: false,
+            error: error instanceof Error ? error.message : resources.learningPlans.toolPermissionDecisionFailed,
+          }
+        : current);
     }
   }
 
@@ -622,6 +871,7 @@ export default function PracticeChatWorkbench({
         ref={messageListRef}
       >
         {error && <p className="error-text practice-error" role="alert">{error}</p>}
+        {permissionNotice && <p className="status-note practice-status-note" role="status">{permissionNotice}</p>}
         {status === 'loading' && (
           <article className="practice-message assistant-message">
             <span>{resources.learningPlans.coach}</span>
@@ -692,6 +942,100 @@ export default function PracticeChatWorkbench({
           <p className="practice-composer-hint">{resources.learningPlans.practiceComposerReviewHint}</p>
         )}
       </form>
+
+      {pendingPermission && (
+        <div className="modal-backdrop practice-permission-backdrop">
+          <section
+            aria-labelledby="practice-permission-title"
+            aria-modal="true"
+            className="practice-permission-modal"
+            role="dialog"
+          >
+            <div className="practice-permission-heading">
+              <p className="eyebrow">{resources.learningPlans.toolPermissionEyebrow}</p>
+              <h3 id="practice-permission-title">{pendingPermission.request.displayName}</h3>
+              <p>{pendingPermission.request.reason}</p>
+            </div>
+
+            <dl className="practice-permission-details">
+              {(pendingPermission.preview.problemTitle || pendingPermission.preview.problemSlug) && (
+                <div>
+                  <dt>{resources.learningPlans.toolPermissionProblem}</dt>
+                  <dd>
+                    {pendingPermission.preview.problemTitle ?? pendingPermission.preview.problemSlug}
+                    {pendingPermission.preview.problemTitle && pendingPermission.preview.problemSlug
+                      ? ` (${pendingPermission.preview.problemSlug})`
+                      : ''}
+                  </dd>
+                </div>
+              )}
+              {pendingPermission.preview.languageHint && (
+                <div>
+                  <dt>{resources.learningPlans.toolPermissionLanguage}</dt>
+                  <dd>{pendingPermission.preview.languageHint}</dd>
+                </div>
+              )}
+              {pendingPermission.preview.codeLength !== undefined && (
+                <div>
+                  <dt>{resources.learningPlans.toolPermissionCodeLength}</dt>
+                  <dd>{resources.learningPlans.toolPermissionCodeLengthValue(pendingPermission.preview.codeLength)}</dd>
+                </div>
+              )}
+              {pendingPermission.preview.contextAvailable !== undefined && (
+                <div>
+                  <dt>{resources.learningPlans.toolPermissionContext}</dt>
+                  <dd>
+                    {pendingPermission.preview.contextAvailable
+                      ? resources.learningPlans.toolPermissionContextAvailable
+                      : resources.learningPlans.toolPermissionContextUnavailable}
+                  </dd>
+                </div>
+              )}
+            </dl>
+
+            {pendingPermission.preview.codePreview && (
+              <div className="practice-permission-section">
+                <strong>{resources.learningPlans.toolPermissionCodePreview}</strong>
+                <pre><code>{pendingPermission.preview.codePreview}</code></pre>
+              </div>
+            )}
+
+            {pendingPermission.preview.effects.length > 0 && (
+              <div className="practice-permission-section">
+                <strong>{resources.learningPlans.toolPermissionEffects}</strong>
+                <ul>
+                  {pendingPermission.preview.effects.map((effect) => (
+                    <li key={effect}>{effect}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {pendingPermission.error && (
+              <p className="error-text practice-permission-error" role="alert">{pendingPermission.error}</p>
+            )}
+
+            <div className="modal-actions practice-permission-actions">
+              <button
+                className="secondary-button compact"
+                disabled={pendingPermission.submitting}
+                onClick={() => void handlePermissionDecision('DENY')}
+                type="button"
+              >
+                {resources.learningPlans.toolPermissionDeny}
+              </button>
+              <button
+                className="primary-button compact"
+                disabled={pendingPermission.submitting}
+                onClick={() => void handlePermissionDecision('ALLOW')}
+                type="button"
+              >
+                {resources.learningPlans.toolPermissionAllow}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </article>
   );
 }

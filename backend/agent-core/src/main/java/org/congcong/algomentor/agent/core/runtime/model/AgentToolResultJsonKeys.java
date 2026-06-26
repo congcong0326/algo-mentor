@@ -110,6 +110,21 @@ public final class AgentToolResultJsonKeys {
    */
   public static final String MESSAGE = "message";
 
+  /**
+   * 工具结果的机器可读原因。
+   */
+  public static final String REASON = "reason";
+
+  /**
+   * 当前工具结果对应的失败或等待场景是否建议重试。
+   */
+  public static final String RETRYABLE = "retryable";
+
+  /**
+   * 权限流程中创建的单次确认请求 ID。
+   */
+  public static final String PERMISSION_REQUEST_ID = "permissionRequestId";
+
   private AgentToolResultJsonKeys() {
   }
 }

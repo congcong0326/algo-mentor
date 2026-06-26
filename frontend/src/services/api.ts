@@ -1,5 +1,7 @@
 import type {
   AgentConversationStreamRequest,
+  AgentToolPermissionDecisionRequest,
+  AgentToolPermissionDecisionResponse,
   ApiResponse,
   CurrentUser,
   HealthStatus,
@@ -460,6 +462,31 @@ export async function streamAgentConversation(
 
   options.onOpen?.();
   await readEventStream(response.body, options.onEvent);
+}
+
+export async function decideAgentToolPermission(
+  permissionRequestId: string,
+  request: AgentToolPermissionDecisionRequest,
+  signal?: AbortSignal,
+): Promise<ApiResponse<AgentToolPermissionDecisionResponse>> {
+  const response = await apiFetch(
+    `/api/agent/tool-permissions/${encodeURIComponent(permissionRequestId)}/decision`,
+    {
+      method: 'POST',
+      headers: {
+        ...jsonHeaders,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+      signal,
+    },
+  );
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Agent tool permission decision request failed');
+  }
+
+  return response.json();
 }
 
 function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {

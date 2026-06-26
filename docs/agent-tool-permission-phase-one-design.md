@@ -1173,6 +1173,103 @@ Prompt 测试：
 - 取消、断线、超时不会让 run 永久卡住。
 - 日志和 SSE 不泄露密钥、Authorization 或完整长代码。
 
+## 实施落地备注
+
+阶段一实现已按服务端强制门禁方式落地，以下为相对设计草案需要后续开发者优先读取的确认点：
+
+- 受信用户 metadata key 已固定为 `AgentRuntimeMetadataKeys.USER_ID = "userId"`，权限 owner 校验、Review tool 和相关日志/trace 均应读取该受信字段。
+- 阶段一没有落地完整 `tool-name-policies` 配置 map；`ToolNamePermissionHook` 保留基础能力，`submit_practice_code_review` 的 `ASK` 策略通过 Spring 注册 `PracticeCodeReviewPermissionHook` 生效。
+- `algo-mentor.agent.tool-permission.enabled=false` 的语义是保留权限 guard 装配，但清空业务 hooks，并把 coordinator 切换为默认 allow；此模式用于本地调试或显式关闭权限功能，不代表生产高权限工具推荐配置。
+- `permissionRequestId` 当前格式为 `"perm_" + UUID.randomUUID().toString().replace("-", "")`，例如 `perm_` 后跟去连字符 UUID。
+- 决策 API 已落地为 `POST /api/agent/tool-permissions/{permissionRequestId}/decision`，request body 只接收 `decision` 和 `reason`；当前用户由 `CurrentUserIdProvider` 从认证上下文提供，不接收前端声明的 `userId`。
+- 决策 API 错误映射为：未登录 `401`、非 owner `403`、不存在或已清理 `404`、已决策/已过期 `409`、非法 decision `400`。
+- SSE mapper 已支持 `tool_permission_request`、`tool_permission_decision`、`tool_permission_timeout`，只输出低敏字段，不输出 owner user id、完整 arguments 或敏感 metadata。
+- `PracticeCodeReviewAgentTool` 从受信 metadata、`PracticeSessionRepository` 和 `AgentTurnMessageLookupRepository.findByRunId(...)` 获取 user/run/session/message/code 上下文，不信任模型 tool arguments 中的用户、会话、题目或完整代码。
+- `PracticeCodeReviewPermissionHook` 的 order 为 `ToolNamePermissionHook.DEFAULT_ORDER - 50`，优先于通用工具名策略命中 Review 工具；preview 会脱敏 authorization、cookie、api key、JWT-like token 和 bearer/JWT 类内容。
+- Review 工具成功结果 type 为 `practice_code_review_submitted`，拒绝或超时不会进入工具实现，也不会生成 Review 记录。
+- Micrometer 适配器在 `mentor-api` 配置层实现，`agent-core` 只定义 `AgentToolPermissionMetrics` 与 no-op 实现，不直接依赖 Micrometer。
+- 权限指标 tag 保持低基数：`toolName`、`behavior`、`policySource`、`decision`、`outcome`；用户决策 `reason` 只进低敏日志，不作为指标 tag。
+- 前端权限确认使用 `PracticeChatWorkbench` 内的轻量原生 modal，没有引入新的 UI 库。
+- 用户提交决策 API 成功后当前 SSE 流继续保持；modal 目前在收到 `tool_permission_decision` SSE 时关闭，不是在 API response 返回后立即关闭。
+- timeout 前端文案已确认：中文为“本次未执行。”，英文为 “This action was not run.”。
+- Review 成功后前端沿用 `agent_run_end` 后统一刷新 session/messages/reviews 的策略，避免弹窗决策、工具结束和 run 结束之间出现重复刷新或短暂不一致。
+
+## 阶段一限制
+
+- `InMemoryAgentToolPermissionCoordinator` 只适合单实例部署；pending request 不持久化。
+- 实例重启会丢失 pending request，已发出的权限请求会变成不可决策或被 API 映射为不存在。
+- 多实例部署时，如果 SSE 创建权限请求的实例与 decision API 命中的实例不同，当前内存 pending request 无法共享，决策可能返回不存在；上线多实例前需要迁移到 Redis/PostgreSQL coordinator，或保证路由粘性。
+- 阶段一不实现 forced tool calling、不保证模型一定调用 Review 工具，也不做后端代码提交意图识别；这些仍属于阶段二或后续显式入口设计。
+- 阶段一不实现永久允许、本会话总是允许、权限记忆或多工具并行授权聚合。
+
+## 配置与运维提示
+
+当前默认配置前缀：
+
+```yaml
+algo-mentor:
+  agent:
+    tool-permission:
+      enabled: true
+      timeout: 60s
+      cleanup-interval: 2m
+```
+
+运维侧需要注意：
+
+- `timeout` 控制 ASK 等待用户决策的最长时间，超时后生成 `tool_permission_timeout` synthetic result，run 会继续。
+- `cleanup-interval` 暴露为 pending/完成请求清理相关配置；阶段一仍是单实例内存状态，不能替代共享存储。
+- 生产环境不建议关闭 `enabled`，否则高权限业务 hook 会被清空，Review 工具会走默认 allow。
+- 日志和指标只应记录低敏字段：runId、toolName、toolCallId、permissionRequestId、decision、outcome、latency、expiresAt 等；不要记录完整代码、Authorization、Cookie、API key 或完整 tool arguments。
+
+## 验证记录
+
+本阶段已使用过的验证命令如下。它们覆盖配置装配、权限 coordinator/hook、prompt、前端 API、前端弹窗和一次前端构建；不等同于全量端到端验收。
+
+```bash
+mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository -pl mentor-api -am -Dtest=AgentConversationApiAutoConfigurationTest,MentorAiConfigurationTest -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+```bash
+mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository -pl mentor-application -am -Dtest=PracticeChatPromptSectionProviderTest -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+```bash
+mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository -pl mentor-api -am -Dtest=InMemoryAgentToolPermissionCoordinatorTest,AgentToolPermissionHookChainTest,MentorAiConfigurationTest -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+```bash
+npm --cache ./.npm --prefix frontend test -- --run src/services/api.test.ts
+```
+
+```bash
+npm --cache ./.npm --prefix frontend test -- --run src/learning-plans/PracticeChatWorkbench.test.tsx
+```
+
+```bash
+npm --cache ./.npm --prefix frontend run build
+```
+
+```bash
+mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository -pl mentor-application -am -Dtest=AgentLoopRunnerTest,PracticeCodeReviewFlowTest -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+`npm --cache ./.npm --prefix frontend run build` 已通过，但出现 Vite chunk-size warning。上述 Maven E2E 聚焦命令在主工作区通过，覆盖 `AgentLoopRunnerTest` 27 个测试和 `PracticeCodeReviewFlowTest` 4 个测试。本文档不额外声明未在本轮执行的命令已通过。
+
+阶段一收尾时还执行过一组更完整的聚焦复核：
+
+```bash
+mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository -pl mentor-api -am -Dtest=AgentLoopRunnerTest,AgentLoopLifecycleTest,AgentStreamEventTest,AgentToolPermissionModelTest,AgentToolPermissionHookChainTest,ToolNamePermissionHookTest,AgentToolPermissionResultFactoryTest,InMemoryAgentToolPermissionCoordinatorTest,PracticeCodeReviewAgentToolTest,PracticeCodeReviewPermissionHookTest,PracticeCodeReviewFlowTest,PracticeChatPromptSectionProviderTest,AgentToolPermissionControllerTest,LlmStreamSseMapperTest,AgentConversationApiAutoConfigurationTest,MentorAiConfigurationTest -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+该命令已通过，覆盖 `agent-core` 70 个测试、`mentor-application` 21 个测试、`mentor-api` 35 个测试。
+
+```bash
+npm --cache ./.npm --prefix frontend test -- --run src/services/api.test.ts src/learning-plans/PracticeChatWorkbench.test.tsx
+```
+
+该命令已通过，覆盖 2 个前端测试文件、27 个测试。随后再次执行 `npm --cache ./.npm --prefix frontend run build`，构建通过，仍有 Vite chunk-size warning。
+
 ## 后续演进
 
 阶段二在本设计之上增加 per-run tool execution options：

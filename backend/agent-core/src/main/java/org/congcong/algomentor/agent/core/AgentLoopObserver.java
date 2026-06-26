@@ -1,6 +1,10 @@
 package org.congcong.algomentor.agent.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.time.Instant;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecision;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionPlan;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionRequest;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
@@ -26,6 +30,27 @@ public interface AgentLoopObserver {
       int stepIndex,
       LlmToolCall toolCall,
       JsonNode result
+  ) {}
+
+  default void onToolPermissionRequest(
+      AgentLoopContext context,
+      AgentToolPermissionRequest request,
+      AgentToolPermissionDecisionPlan plan
+  ) {}
+
+  default void onToolPermissionDecision(
+      AgentLoopContext context,
+      AgentToolPermissionRequest request,
+      AgentToolPermissionDecision decision,
+      AgentToolPermissionDecisionPlan plan
+  ) {}
+
+  default void onToolPermissionTimeout(
+      AgentLoopContext context,
+      AgentToolPermissionRequest request,
+      String reason,
+      Instant expiredAt,
+      AgentToolPermissionDecisionPlan plan
   ) {}
 
   default void onToolError(

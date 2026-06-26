@@ -3,10 +3,13 @@ package org.congcong.algomentor.api.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import java.time.Instant;
 import java.util.Map;
 import org.congcong.algomentor.agent.core.AgentErrorCode;
 import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionType;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
@@ -24,7 +27,9 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 class LlmStreamSseMapperTest {
 
   private final LlmStreamSseMapper mapper = new LlmStreamSseMapper();
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper = new ObjectMapper()
+      .findAndRegisterModules()
+      .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
   @Test
   void mapsContentDeltaToNamedJsonEvent() throws Exception {
@@ -119,6 +124,84 @@ class LlmStreamSseMapperTest {
     assertThat(serializedData(stepStart)).contains("\"stepIndex\":1");
     assertThat(sseText(runEnd)).contains("event:agent_run_end");
     assertThat(serializedData(runEnd)).contains("\"finishReason\":\"STOP\"");
+  }
+
+  @Test
+  void mapsToolPermissionRequestToLowSensitivityNamedJsonEvent() throws Exception {
+    SseEmitter.SseEventBuilder event = mapper.toSseEvent(
+        new AgentStreamEvent.ToolPermissionRequest(
+            "perm_1",
+            "run_1",
+            2,
+            "call_1",
+            "review.list_notes",
+            "读取复盘笔记",
+            "需要读取最近的复盘笔记生成练习建议。",
+            Map.of("scope", "recent_notes", "limit", 3),
+            Instant.parse("2026-06-26T10:15:30Z")));
+
+    assertThat(sseText(event)).contains("event:tool_permission_request");
+    assertThat(serializedData(event))
+        .contains("\"runId\":\"run_1\"")
+        .contains("\"stepIndex\":2")
+        .contains("\"toolCallId\":\"call_1\"")
+        .contains("\"toolName\":\"review.list_notes\"")
+        .contains("\"permissionRequestId\":\"perm_1\"")
+        .contains("\"displayName\":\"读取复盘笔记\"")
+        .contains("\"reason\":\"需要读取最近的复盘笔记生成练习建议。\"")
+        .contains("\"preview\":", "\"scope\":\"recent_notes\"", "\"limit\":3")
+        .contains("\"expiresAt\":\"2026-06-26T10:15:30Z\"")
+        .doesNotContain("metadata", "trustedMetadata", "arguments", "userId", "ownerUserId");
+  }
+
+  @Test
+  void mapsToolPermissionDecisionToLowSensitivityNamedJsonEvent() throws Exception {
+    SseEmitter.SseEventBuilder event = mapper.toSseEvent(
+        new AgentStreamEvent.ToolPermissionDecision(
+            "perm_1",
+            "run_1",
+            2,
+            "call_1",
+            "review.list_notes",
+            AgentToolPermissionDecisionType.ALLOW,
+            "用户允许本次读取。",
+            Instant.parse("2026-06-26T10:16:00Z")));
+
+    assertThat(sseText(event)).contains("event:tool_permission_decision");
+    assertThat(serializedData(event))
+        .contains("\"runId\":\"run_1\"")
+        .contains("\"stepIndex\":2")
+        .contains("\"toolCallId\":\"call_1\"")
+        .contains("\"toolName\":\"review.list_notes\"")
+        .contains("\"permissionRequestId\":\"perm_1\"")
+        .contains("\"decision\":\"ALLOW\"")
+        .contains("\"reason\":\"用户允许本次读取。\"")
+        .contains("\"decidedAt\":\"2026-06-26T10:16:00Z\"")
+        .doesNotContain("metadata", "trustedMetadata", "arguments", "userId", "ownerUserId");
+  }
+
+  @Test
+  void mapsToolPermissionTimeoutToLowSensitivityNamedJsonEvent() throws Exception {
+    SseEmitter.SseEventBuilder event = mapper.toSseEvent(
+        new AgentStreamEvent.ToolPermissionTimeout(
+            "perm_1",
+            "run_1",
+            2,
+            "call_1",
+            "review.list_notes",
+            "用户未在有效期内决策。",
+            Instant.parse("2026-06-26T10:17:00Z")));
+
+    assertThat(sseText(event)).contains("event:tool_permission_timeout");
+    assertThat(serializedData(event))
+        .contains("\"runId\":\"run_1\"")
+        .contains("\"stepIndex\":2")
+        .contains("\"toolCallId\":\"call_1\"")
+        .contains("\"toolName\":\"review.list_notes\"")
+        .contains("\"permissionRequestId\":\"perm_1\"")
+        .contains("\"reason\":\"用户未在有效期内决策。\"")
+        .contains("\"expiredAt\":\"2026-06-26T10:17:00Z\"")
+        .doesNotContain("metadata", "trustedMetadata", "arguments", "userId", "ownerUserId");
   }
 
   @Test

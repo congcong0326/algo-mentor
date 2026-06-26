@@ -247,6 +247,20 @@ export interface LocaleResources {
     completionRequiresPassedReview: string;
     practiceComposerPlaceholderReview: string;
     practiceComposerReviewHint: string;
+    toolPermissionEyebrow: string;
+    toolPermissionProblem: string;
+    toolPermissionLanguage: string;
+    toolPermissionCodeLength: string;
+    toolPermissionCodeLengthValue: (count: number) => string;
+    toolPermissionContext: string;
+    toolPermissionContextAvailable: string;
+    toolPermissionContextUnavailable: string;
+    toolPermissionCodePreview: string;
+    toolPermissionEffects: string;
+    toolPermissionAllow: string;
+    toolPermissionDeny: string;
+    toolPermissionDecisionFailed: string;
+    toolPermissionTimeoutNotice: string;
     chatMessages: string;
     coach: string;
     you: string;
@@ -531,6 +545,20 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       completionRequiresPassedReview: '完成前需要先粘贴完整代码完成一次 AI Review，并且 Review 通过后才能标记完成。',
       practiceComposerPlaceholderReview: '粘贴完整代码、LeetCode 通过/失败反馈，或继续追问思路...',
       practiceComposerReviewHint: '粘贴完整代码完成 AI Review，并通过后才能标记完成。',
+      toolPermissionEyebrow: '需要确认',
+      toolPermissionProblem: '题目',
+      toolPermissionLanguage: '语言',
+      toolPermissionCodeLength: '代码长度',
+      toolPermissionCodeLengthValue: (count) => `${count} 字符`,
+      toolPermissionContext: '上下文',
+      toolPermissionContextAvailable: '可用',
+      toolPermissionContextUnavailable: '不可用',
+      toolPermissionCodePreview: '代码预览',
+      toolPermissionEffects: '影响',
+      toolPermissionAllow: '允许',
+      toolPermissionDeny: '拒绝',
+      toolPermissionDecisionFailed: '提交授权决定失败，请重试。',
+      toolPermissionTimeoutNotice: '本次未执行。',
       chatMessages: '聊天消息',
       coach: '教练',
       you: '你',
@@ -858,6 +886,20 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       completionRequiresPassedReview: 'Paste complete code for an AI review, then pass the review before marking this practice complete.',
       practiceComposerPlaceholderReview: 'Paste complete code, LeetCode accepted/failed feedback, or continue asking...',
       practiceComposerReviewHint: 'Paste complete code for AI review, then pass it before marking this practice complete.',
+      toolPermissionEyebrow: 'Confirmation needed',
+      toolPermissionProblem: 'Problem',
+      toolPermissionLanguage: 'Language',
+      toolPermissionCodeLength: 'Code length',
+      toolPermissionCodeLengthValue: (count) => `${count} chars`,
+      toolPermissionContext: 'Context',
+      toolPermissionContextAvailable: 'Available',
+      toolPermissionContextUnavailable: 'Unavailable',
+      toolPermissionCodePreview: 'Code preview',
+      toolPermissionEffects: 'Effects',
+      toolPermissionAllow: 'Allow',
+      toolPermissionDeny: 'Deny',
+      toolPermissionDecisionFailed: 'Failed to submit the decision. Please retry.',
+      toolPermissionTimeoutNotice: 'This action was not run.',
       chatMessages: 'Chat messages',
       coach: 'Coach',
       you: 'You',

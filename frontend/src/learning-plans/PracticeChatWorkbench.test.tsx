@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { I18nProvider } from '../i18n/I18nProvider';
 import * as api from '../services/api';
@@ -22,11 +22,13 @@ vi.mock('../services/api', async () => {
     getPracticeSessionReviewDetail: vi.fn(),
     getPracticeSessionReviews: vi.fn(),
     getPracticeSession: vi.fn(),
+    decideAgentToolPermission: vi.fn(),
     streamPracticeMessage: vi.fn(),
     updatePracticeProgressStatus: vi.fn(),
   };
 });
 
+const decideAgentToolPermission = vi.mocked(api.decideAgentToolPermission);
 const createOrReusePracticeSession = vi.mocked(api.createOrReusePracticeSession);
 const getPracticeSessionActiveRun = vi.mocked(api.getPracticeSessionActiveRun);
 const getPracticeSession = vi.mocked(api.getPracticeSession);
@@ -53,6 +55,11 @@ describe('PracticeChatWorkbench review contracts', () => {
     getPracticeSessionMessages.mockResolvedValue(apiResponse(sessionFixture().messages));
     getPracticeSessionReviews.mockResolvedValue(apiResponse(historyFixture({ reviews: [] })));
     getPracticeSessionReviewDetail.mockResolvedValue(apiResponse(reviewDetailFixture()));
+    decideAgentToolPermission.mockResolvedValue(apiResponse({
+      permissionRequestId: 'permission-1',
+      decision: 'ALLOW',
+      accepted: true,
+    }));
     streamPracticeMessage.mockResolvedValue(undefined);
     updatePracticeProgressStatus.mockResolvedValue(apiResponse(sessionFixture({
       completionGate: {
@@ -82,6 +89,170 @@ describe('PracticeChatWorkbench review contracts', () => {
     expect(screen.queryByText('暂无 Review')).not.toBeInTheDocument();
     expect(screen.queryByText('通过分 80')).not.toBeInTheDocument();
     expect(updatePracticeProgressStatus).not.toHaveBeenCalled();
+  });
+
+  it('shows permission request details with preview and effects', async () => {
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      options.onEvent?.({
+        eventName: 'tool_permission_request',
+        data: permissionRequestEvent(),
+      });
+      await new Promise<void>(() => undefined);
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '请 Review 这段代码。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+
+    const dialog = await screen.findByRole('dialog', { name: '代码 Review' });
+    expect(within(dialog).getByText('需要运行代码 Review')).toBeInTheDocument();
+    expect(within(dialog).getByText('两数之和 (two-sum)')).toBeInTheDocument();
+    expect(within(dialog).getByText('Java')).toBeInTheDocument();
+    expect(within(dialog).getByText('128 字符')).toBeInTheDocument();
+    expect(within(dialog).getByText('class Solution { return; }')).toBeInTheDocument();
+    expect(within(dialog).getByText('会保存一条 Review 记录')).toBeInTheDocument();
+    expect(within(dialog).getByText('可能更新完成状态')).toBeInTheDocument();
+  });
+
+  it('allows permission without aborting the stream and keeps appending content deltas', async () => {
+    let streamOptions: Parameters<typeof api.streamPracticeMessage>[2] | undefined;
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      streamOptions = options;
+      options.onEvent?.({
+        eventName: 'tool_permission_request',
+        data: permissionRequestEvent(),
+      });
+      await new Promise<void>(() => undefined);
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '请 Review 这段代码。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+    fireEvent.click(await screen.findByRole('button', { name: '允许' }));
+
+    await waitFor(() => expect(decideAgentToolPermission).toHaveBeenCalledWith(
+      'permission-1',
+      { decision: 'ALLOW', reason: 'user_confirmed' },
+    ));
+    expect(streamOptions?.signal?.aborted).toBe(false);
+
+    act(() => {
+      streamOptions?.onEvent({
+        eventName: 'content_delta',
+        data: { content: 'Review 正在执行。' },
+      });
+    });
+
+    expect(await screen.findByText('Review 正在执行。')).toBeInTheDocument();
+  });
+
+  it('denies permission with user rejection reason', async () => {
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      options.onEvent?.({
+        eventName: 'tool_permission_request',
+        data: permissionRequestEvent(),
+      });
+      await new Promise<void>(() => undefined);
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '请 Review 这段代码。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+    fireEvent.click(await screen.findByRole('button', { name: '拒绝' }));
+
+    await waitFor(() => expect(decideAgentToolPermission).toHaveBeenCalledWith(
+      'permission-1',
+      { decision: 'DENY', reason: 'user_rejected' },
+    ));
+  });
+
+  it('keeps permission dialog open on decision failure and allows retry', async () => {
+    let rejectDecision: (error: Error) => void = () => undefined;
+    decideAgentToolPermission
+      .mockImplementationOnce(() => new Promise((resolve, reject) => {
+        rejectDecision = reject;
+      }))
+      .mockResolvedValueOnce(apiResponse({
+        permissionRequestId: 'permission-1',
+        decision: 'ALLOW',
+        accepted: true,
+      }));
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      options.onEvent?.({
+        eventName: 'tool_permission_request',
+        data: permissionRequestEvent(),
+      });
+      await new Promise<void>(() => undefined);
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '请 Review 这段代码。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+
+    const allowButton = await screen.findByRole('button', { name: '允许' });
+    const denyButton = screen.getByRole('button', { name: '拒绝' });
+    fireEvent.click(allowButton);
+
+    expect(allowButton).toBeDisabled();
+    expect(denyButton).toBeDisabled();
+
+    await act(async () => {
+      rejectDecision(new Error('授权提交失败'));
+    });
+
+    const dialog = await screen.findByRole('dialog', { name: '代码 Review' });
+    expect(within(dialog).getByText('授权提交失败')).toBeInTheDocument();
+    expect(within(dialog).getByRole('button', { name: '允许' })).not.toBeDisabled();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: '允许' }));
+
+    await waitFor(() => expect(decideAgentToolPermission).toHaveBeenCalledTimes(2));
+    expect(decideAgentToolPermission).toHaveBeenLastCalledWith(
+      'permission-1',
+      { decision: 'ALLOW', reason: 'user_confirmed' },
+    );
+  });
+
+  it('closes permission dialog on timeout and shows not-run status', async () => {
+    let streamOptions: Parameters<typeof api.streamPracticeMessage>[2] | undefined;
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      streamOptions = options;
+      options.onEvent?.({
+        eventName: 'tool_permission_request',
+        data: permissionRequestEvent(),
+      });
+      await new Promise<void>(() => undefined);
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '请 Review 这段代码。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+
+    expect(await screen.findByRole('dialog', { name: '代码 Review' })).toBeInTheDocument();
+
+    act(() => {
+      streamOptions?.onEvent({
+        eventName: 'tool_permission_timeout',
+        data: {
+          permissionRequestId: 'permission-1',
+          reason: 'expired',
+          expiredAt: '2026-06-26T00:01:00Z',
+        },
+      });
+    });
+
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: '代码 Review' })).not.toBeInTheDocument());
+    expect(screen.getByRole('status')).toHaveTextContent('本次未执行。');
   });
 
   it('renders rounded guidance tooltip for generated problem statements', async () => {
@@ -136,6 +307,165 @@ describe('PracticeChatWorkbench review contracts', () => {
     expect(getPracticeSessionMessages).toHaveBeenCalledWith(101, 50, expect.any(AbortSignal));
     expect(getPracticeSession).toHaveBeenCalledWith(101, expect.any(AbortSignal));
     expect(getPracticeSessionReviews).toHaveBeenCalledWith(101, expect.any(AbortSignal));
+  });
+
+  it('refreshes review drawer and completion gate once after successful Review tool end and run end', async () => {
+    let streamOptions: Parameters<typeof api.streamPracticeMessage>[2] | undefined;
+    let resolveStream: () => void = () => undefined;
+    const passedGate = {
+      canComplete: true,
+      reasonCode: 'PASSED' as const,
+      message: 'Review tool 刷新后已通过。',
+      latestScore: 94,
+      passScore: 80,
+    };
+    getPracticeSessionReviews
+      .mockResolvedValueOnce(apiResponse(historyFixture({ reviews: [] })))
+      .mockResolvedValueOnce(apiResponse(historyFixture({
+        latestReview: reviewSummaryFixture({ id: 43, versionNo: 3, totalScore: 94, passed: true }),
+        reviews: [reviewSummaryFixture({ id: 43, versionNo: 3, totalScore: 94, passed: true })],
+        completionGate: passedGate,
+      })));
+    getPracticeSession.mockResolvedValue(apiResponse(sessionFixture({
+      latestReview: reviewSummaryFixture({ id: 43, versionNo: 3, totalScore: 94, passed: true }),
+      completionGate: passedGate,
+    })));
+    getPracticeSessionReviewDetail.mockResolvedValue(apiResponse(reviewDetailFixture({
+      id: 43,
+      versionNo: 3,
+      reviewMarkdown: '## 整体评价\nReview tool 刷新后通过。',
+      submittedCode: 'class Solution { version3(); }',
+      scores: scoreFixture({ total: 94 }),
+    })));
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      streamOptions = options;
+      await new Promise<void>((resolve) => {
+        resolveStream = resolve;
+      });
+    });
+    renderWorkbench();
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Review 记录' }));
+    const drawer = await screen.findByRole('complementary', { name: 'Review 记录' });
+    expect(await within(drawer).findByText('暂无代码 Review')).toBeInTheDocument();
+    await waitFor(() => expect(getPracticeSessionReviews).toHaveBeenCalledTimes(1));
+
+    fireEvent.change(screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '这是第三版完整代码。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+    await waitFor(() => expect(streamOptions).toBeDefined());
+
+    act(() => {
+      streamOptions?.onEvent({
+        eventName: 'agent_tool_end',
+        data: agentToolEndEvent({
+          result: { type: 'practice_code_review_submitted' },
+          toolName: 'submit_practice_code_review',
+        }),
+      });
+    });
+
+    expect(getPracticeSessionReviews).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      streamOptions?.onEvent({ eventName: 'agent_run_end', data: { runId: 'run-1' } });
+    });
+    await act(async () => {
+      resolveStream();
+    });
+
+    await waitFor(() => expect(getPracticeSessionReviews).toHaveBeenCalledTimes(2));
+    expect(await within(drawer).findByRole('button', { name: /V3/ })).toBeInTheDocument();
+    expect(await within(drawer).findByText('Review tool 刷新后通过。')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '标记完成' })).not.toBeDisabled();
+    expect(getPracticeSessionMessages).toHaveBeenCalledTimes(1);
+    expect(getPracticeSession).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    'tool_permission_denied',
+    'tool_permission_timeout',
+  ])('does not refresh reviews immediately for synthetic %s tool end', async (resultType) => {
+    let streamOptions: Parameters<typeof api.streamPracticeMessage>[2] | undefined;
+    let resolveStream: () => void = () => undefined;
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      streamOptions = options;
+      await new Promise<void>((resolve) => {
+        resolveStream = resolve;
+      });
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '请 Review 这段代码。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+    await waitFor(() => expect(streamOptions).toBeDefined());
+
+    act(() => {
+      streamOptions?.onEvent({
+        eventName: 'agent_tool_end',
+        data: agentToolEndEvent({
+          result: { type: resultType },
+          toolName: 'submit_practice_code_review',
+        }),
+      });
+    });
+
+    expect(getPracticeSessionReviews).not.toHaveBeenCalled();
+
+    act(() => {
+      streamOptions?.onEvent({ eventName: 'agent_run_end', data: { runId: 'run-1' } });
+    });
+    await act(async () => {
+      resolveStream();
+    });
+
+    await waitFor(() => expect(getPracticeSessionReviews).toHaveBeenCalledTimes(1));
+    expect(getPracticeSessionMessages).toHaveBeenCalledTimes(1);
+    expect(getPracticeSession).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not trigger special review refresh for non Review tool end', async () => {
+    let streamOptions: Parameters<typeof api.streamPracticeMessage>[2] | undefined;
+    let resolveStream: () => void = () => undefined;
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      streamOptions = options;
+      await new Promise<void>((resolve) => {
+        resolveStream = resolve;
+      });
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '普通聊天。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+    await waitFor(() => expect(streamOptions).toBeDefined());
+
+    act(() => {
+      streamOptions?.onEvent({
+        eventName: 'agent_tool_end',
+        data: agentToolEndEvent({
+          result: { type: 'practice_code_review_submitted' },
+          toolName: 'search_learning_notes',
+        }),
+      });
+    });
+
+    expect(getPracticeSessionReviews).not.toHaveBeenCalled();
+
+    act(() => {
+      streamOptions?.onEvent({ eventName: 'agent_run_end', data: { runId: 'run-1' } });
+    });
+    await act(async () => {
+      resolveStream();
+    });
+
+    await waitFor(() => expect(getPracticeSessionReviews).toHaveBeenCalledTimes(1));
+    expect(getPracticeSessionMessages).toHaveBeenCalledTimes(1);
+    expect(getPracticeSession).toHaveBeenCalledTimes(1);
   });
 
   it('keeps completion disabled while post-run review refresh is pending', async () => {
@@ -568,6 +898,41 @@ function apiResponse<T>(data: T): ApiResponse<T> {
     success: true,
     data,
     timestamp: '2026-06-25T00:00:00Z',
+  };
+}
+
+function permissionRequestEvent() {
+  return {
+    runId: 'run-1',
+    stepIndex: 1,
+    toolCallId: 'call-1',
+    toolName: 'practice_code_review',
+    permissionRequestId: 'permission-1',
+    displayName: '代码 Review',
+    reason: '需要运行代码 Review',
+    preview: {
+      problemSlug: 'two-sum',
+      problemTitle: '两数之和',
+      languageHint: 'Java',
+      codeLength: 128,
+      codePreview: 'class Solution { return; }',
+      effects: ['会保存一条 Review 记录', '可能更新完成状态'],
+      contextAvailable: true,
+    },
+    expiresAt: '2026-06-26T00:01:00Z',
+  };
+}
+
+function agentToolEndEvent(overrides: {
+  result: Record<string, unknown>;
+  toolName?: string;
+}) {
+  return {
+    runId: 'run-1',
+    stepIndex: 1,
+    toolCallId: 'call-1',
+    toolName: overrides.toolName ?? 'submit_practice_code_review',
+    result: overrides.result,
   };
 }
 

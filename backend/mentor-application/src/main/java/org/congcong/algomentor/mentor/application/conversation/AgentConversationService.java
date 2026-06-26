@@ -99,20 +99,24 @@ public class AgentConversationService {
 
   public AgentConversationRun prepareRun(AgentConversationCommand command) {
     PreparedAgentRun draft = conversationRepository.createOrReuseRun(toPreparationRequest(command));
-    return toConversationRun(draft, command);
+    return toConversationRun(draft, command, true);
   }
 
   public Optional<AgentConversationRun> findRunByIdempotencyKey(String idempotencyKey, String userMessage) {
     return conversationRepository.findRunByIdempotencyKey(idempotencyKey)
-        .map(draft -> toConversationRun(draft, new AgentConversationCommand(null, 1L, userMessage, idempotencyKey)));
+        .map(draft -> toConversationRun(draft, new AgentConversationCommand(null, 1L, userMessage, idempotencyKey), false));
   }
 
   public Optional<AgentConversationRun> findRunByIdempotencyKey(AgentConversationCommand command) {
     return conversationRepository.findRunByIdempotencyKey(command.idempotencyKey())
-        .map(draft -> toConversationRun(draft, command));
+        .map(draft -> toConversationRun(draft, command, true));
   }
 
-  private AgentConversationRun toConversationRun(PreparedAgentRun draft, AgentConversationCommand command) {
+  private AgentConversationRun toConversationRun(
+      PreparedAgentRun draft,
+      AgentConversationCommand command,
+      boolean includeTrustedUserId
+  ) {
     AssembledContext context = command.practiceChatEnabled()
         ? assemblePracticeChatContext(draft, command)
         : contextAssembler.assemble(
@@ -124,12 +128,15 @@ public class AgentConversationService {
 
     Map<String, Object> metadata = new HashMap<>(draft.metadata());
     metadata.putAll(context.metadata());
+    metadata.putAll(command.governanceMetadata());
     metadata.put(AgentRuntimeMetadataKeys.TASK_ID, draft.taskId());
     metadata.put(AgentRuntimeMetadataKeys.TURN_ID, draft.turnId());
     metadata.put(AgentRuntimeMetadataKeys.RUN_DB_ID, draft.runId());
     metadata.put(AgentRuntimeMetadataKeys.AGENT_RUN_ID, draft.runUuid());
+    if (includeTrustedUserId) {
+      metadata.put(AgentRuntimeMetadataKeys.USER_ID, command.userId());
+    }
     metadata.put(AgentRuntimeMetadataKeys.TITLE, "task-" + draft.taskId());
-    metadata.putAll(command.governanceMetadata());
 
     AgentRequest request = new AgentRequest(
         draft.runUuid(),

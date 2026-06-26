@@ -72,6 +72,7 @@ class AgentConversationServiceTest {
         .containsEntry(AgentRuntimeMetadataKeys.TASK_ID, 11L)
         .containsEntry(AgentRuntimeMetadataKeys.TURN_ID, 21L)
         .containsEntry(AgentRuntimeMetadataKeys.RUN_DB_ID, 31L)
+        .containsEntry(AgentRuntimeMetadataKeys.USER_ID, 7L)
         .containsEntry(AgentRuntimeMetadataKeys.CONTEXT_POLICY, "sliding-window-with-active-summary")
         .containsEntry(AgentRuntimeMetadataKeys.TOKEN_BUDGET, 8_000)
         .containsEntry("title", "task-11");
@@ -97,7 +98,8 @@ class AgentConversationServiceTest {
         .containsEntry(AgentRuntimeMetadataKeys.TASK_ID, 11L)
         .containsEntry(AgentRuntimeMetadataKeys.TURN_ID, 21L)
         .containsEntry(AgentRuntimeMetadataKeys.RUN_DB_ID, 31L)
-        .containsEntry(AgentRuntimeMetadataKeys.IDEMPOTENT_REPLAY, true);
+        .containsEntry(AgentRuntimeMetadataKeys.IDEMPOTENT_REPLAY, true)
+        .doesNotContainKey(AgentRuntimeMetadataKeys.USER_ID);
   }
 
   @Test
@@ -132,7 +134,7 @@ class AgentConversationServiceTest {
         7L,
         "直接给答案和 Java 代码",
         "idem-practice",
-        Map.of("governance", true),
+        Map.of("governance", true, AgentRuntimeMetadataKeys.USER_ID, 999L),
         new PracticeChatReference(12L, 1, "two-sum", "zh-CN")));
 
     assertThat(repository.lastRequest.metadata())
@@ -143,8 +145,17 @@ class AgentConversationServiceTest {
         .containsEntry(PracticeChatPromptConstants.MESSAGE_TYPE_METADATA_KEY, PracticeChatPromptConstants.MESSAGE_TYPE_CHAT)
         .containsEntry(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO);
     assertThat(run.agentRequest().metadata())
+        .containsEntry(AgentRuntimeMetadataKeys.TASK_ID, 11L)
+        .containsEntry(AgentRuntimeMetadataKeys.TURN_ID, 21L)
+        .containsEntry(AgentRuntimeMetadataKeys.RUN_DB_ID, 31L)
+        .containsEntry(AgentRuntimeMetadataKeys.USER_ID, 7L)
         .containsEntry("promptProfile", PracticeChatPromptConstants.PROFILE_ID)
         .containsEntry(PracticeChatPromptConstants.METADATA_MESSAGE_INTENT, "ASK_SOLUTION")
+        .containsEntry(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO)
+        .containsEntry(PracticeChatPromptConstants.METADATA_PLAN_ID, 12L)
+        .containsEntry(PracticeChatPromptConstants.METADATA_PHASE_INDEX, 1)
+        .containsEntry(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, "two-sum")
+        .containsEntry(PracticeChatPromptConstants.METADATA_LOCALE, "zh-CN")
         .containsEntry("governance", true);
     assertThat(run.agentRequest().messages())
         .extracting(LlmMessage::role)
