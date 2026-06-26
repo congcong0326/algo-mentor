@@ -44,6 +44,7 @@ describe('AppShell', () => {
     );
 
     expect(screen.getByRole('banner')).toBeInTheDocument();
+    expect(document.querySelector('.app-brand-mark')).toHaveTextContent('AM');
     expect(screen.queryByRole('button', { name: '首页' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');

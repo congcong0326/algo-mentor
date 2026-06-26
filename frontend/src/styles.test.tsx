@@ -45,8 +45,23 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toContain('position: fixed');
     expect(styles).toContain('backdrop-filter: saturate(180%) blur(20px)');
     expect(styles).toContain('border: 1px solid var(--border-subtle)');
+    expect(styles).toContain('background: var(--surface-elevated)');
+    expect(styles).not.toContain(':root[data-theme="dark"] .app-header {\n  background: #ffffff;');
+    expect(styles).toContain('.app-brand-mark');
+    expect(styles).not.toContain('.app-brand::before');
+    expect(styles).toContain('color: var(--text-secondary)');
+    expect(styles).toContain('color: var(--text-primary)');
     expect(styles).toContain('background: var(--action-primary)');
     expect(styles).toContain('border-radius: var(--radius-pill)');
+  });
+
+  it('uses theme tokens for the public home surfaces and text', () => {
+    expect(styles).toMatch(/\.home-hero \{[^}]*background: var\(--surface-page\);/);
+    expect(styles).toMatch(/\.home-kicker \{[^}]*color: var\(--text-secondary\);/);
+    expect(styles).toMatch(/\.home-hero h1 \{[^}]*color: var\(--text-primary\);/);
+    expect(styles).toMatch(/\.home-subtitle \{[^}]*color: var\(--text-secondary\);/);
+    expect(styles).toMatch(/\.home-company-strip p \{[^}]*color: var\(--text-muted\);/);
+    expect(styles).toMatch(/\.company-mark \{[^}]*color: var\(--text-muted\);/);
   });
 
   it('keeps rendered Markdown lists compact and aligned', () => {

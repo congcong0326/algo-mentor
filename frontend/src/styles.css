@@ -9,6 +9,9 @@
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-muted: #64748b;
+  --brand-mark-background: #ffffff;
+  --brand-mark-ink: #0b0d12;
+  --brand-mark-accent: #ffba18;
   --action-primary: #ffc01e;
   --action-primary-hover: #ffb515;
   --action-ink: #0f172a;
@@ -47,6 +50,9 @@
   --text-primary: #f8fafc;
   --text-secondary: #cbd5e1;
   --text-muted: #94a3b8;
+  --brand-mark-background: #ffffff;
+  --brand-mark-ink: #0b0d12;
+  --brand-mark-accent: #ffba18;
   --action-primary: #ffc01e;
   --action-primary-hover: #f3b414;
   --action-ink: #0f172a;
@@ -282,23 +288,29 @@ a {
   margin-bottom: 20px;
 }
 
-.login-brand-mark {
+.app-brand-mark {
   display: inline-grid;
   grid-template-columns: auto auto;
   place-items: center;
-  width: 56px;
-  height: 56px;
+  width: 34px;
+  height: 34px;
   border-radius: 13px;
-  background: #ffffff;
-  color: #0b0d12;
-  font-size: 27px;
+  background: var(--brand-mark-background);
+  color: var(--brand-mark-ink);
+  font-size: 16px;
   font-weight: 850;
   letter-spacing: 0;
   box-shadow: 0 18px 50px rgb(0 0 0 / 34%);
 }
 
-.login-brand-mark span:first-child {
-  color: var(--login-accent);
+.app-brand-mark span:first-child {
+  color: var(--brand-mark-accent);
+}
+
+.login-brand-mark {
+  width: 56px;
+  height: 56px;
+  font-size: 27px;
 }
 
 .login-brand-lockup h1 {
@@ -519,13 +531,9 @@ a {
   min-height: 64px;
   padding: 0 max(52px, calc((100vw - 1770px) / 2 + 52px));
   border-bottom: 1px solid var(--border-subtle);
-  background: #ffffff;
+  background: var(--surface-elevated);
   box-shadow: 0 1px 0 rgb(0 0 0 / 4%);
   backdrop-filter: saturate(180%) blur(20px);
-}
-
-:root[data-theme="dark"] .app-header {
-  background: #ffffff;
 }
 
 .app-brand {
@@ -535,30 +543,12 @@ a {
   min-width: 156px;
 }
 
-.app-brand::before {
-  display: inline;
-  width: auto;
-  height: auto;
-  border-radius: 0;
-  background: transparent;
-  color: #0f172a;
-  content: "A";
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1;
-  box-shadow: none;
-  text-decoration: underline;
-  text-decoration-color: #ffba18;
-  text-decoration-thickness: 4px;
-  text-underline-offset: -2px;
-}
-
 .app-brand .eyebrow {
   display: none;
 }
 
 .app-brand strong {
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 760;
   letter-spacing: 0;
@@ -587,7 +577,7 @@ a {
   border: 0;
   border-radius: var(--radius-control);
   background: transparent;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 700;
   transition: color 150ms ease, background 150ms ease;
@@ -599,7 +589,7 @@ a {
 
 .app-nav-button:hover,
 .app-nav-button[aria-pressed="true"] {
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .app-nav-button[aria-pressed="true"] {
@@ -708,7 +698,7 @@ a {
   gap: 8px;
   min-height: 36px;
   min-width: 0;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 550;
 }
@@ -729,7 +719,7 @@ a {
   border: 0;
   border-radius: var(--radius-control);
   background: transparent;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 600;
 }
@@ -745,7 +735,7 @@ a {
   border: 0;
   outline: 0;
   background: transparent;
-  color: #334155;
+  color: var(--text-primary);
   font: inherit;
 }
 
@@ -1449,11 +1439,11 @@ a {
   width: 38px;
   height: 38px;
   padding: 0;
-  color: #475569;
+  color: var(--text-secondary);
 }
 
 .theme-toggle-button:hover:not(:disabled) {
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .problem-detail-panel {
@@ -2859,7 +2849,7 @@ a {
   min-height: calc(100vh - 112px);
   overflow: hidden;
   padding: 86px 24px 86px;
-  background: #ffffff;
+  background: var(--surface-page);
   text-align: center;
 }
 
@@ -2921,7 +2911,7 @@ a {
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 17px;
   font-weight: 760;
   letter-spacing: 0.16em;
@@ -2932,7 +2922,7 @@ a {
   display: grid;
   gap: 4px;
   max-width: 780px;
-  color: #111827;
+  color: var(--text-primary);
   font-size: clamp(44px, 5vw, 64px);
   font-weight: 780;
   line-height: 1.06;
@@ -2946,7 +2936,7 @@ a {
 .home-subtitle {
   max-width: 700px;
   margin: 26px 0 8px;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 17px;
   line-height: 1.7;
 }
@@ -2978,7 +2968,7 @@ a {
 
 .home-company-strip p {
   margin: 0;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.18em;
@@ -2998,7 +2988,7 @@ a {
   justify-content: center;
   min-width: 32px;
   min-height: 34px;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 26px;
   font-weight: 820;
   line-height: 1;
@@ -3307,10 +3297,6 @@ a {
   .app-header {
     gap: 8px;
     padding: 8px 12px;
-  }
-
-  .app-brand::before {
-    font-size: 15px;
   }
 
   .app-nav-button {

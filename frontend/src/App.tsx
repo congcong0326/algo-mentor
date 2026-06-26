@@ -1,4 +1,4 @@
-import { Radio } from 'lucide-react';
+import { Moon, Radio, Sun } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import HomeDashboard from './HomeDashboard';
 import LearningPlans from './LearningPlans';
@@ -53,13 +53,27 @@ function normalizePublicLocation(pathname: string, search: string): string {
   return APP_ROUTES.home;
 }
 
-function PublicHomeShell({ onLogin }: { onLogin: () => void }) {
+function PublicHomeShell({
+  onLogin,
+  onToggleTheme,
+  theme,
+}: {
+  onLogin: () => void;
+  onToggleTheme: () => void;
+  theme: AppTheme;
+}) {
   const { resources } = useI18n();
+  const ThemeIcon = theme === 'light' ? Moon : Sun;
+  const themeLabel = theme === 'light' ? resources.app.switchToDarkMode : resources.app.switchToLightMode;
 
   return (
     <main className="app-shell public-home-shell">
       <header className="app-header" role="banner">
         <div className="app-brand">
+          <span className="app-brand-mark" aria-hidden="true">
+            <span>A</span>
+            <span>M</span>
+          </span>
           <span className="eyebrow">{resources.app.brandKicker}</span>
           <strong>{resources.app.brandName}</strong>
         </div>
@@ -69,6 +83,15 @@ function PublicHomeShell({ onLogin }: { onLogin: () => void }) {
           </button>
         </nav>
         <div className="app-header-actions">
+          <button
+            aria-label={themeLabel}
+            className="icon-button theme-toggle-button"
+            onClick={onToggleTheme}
+            title={themeLabel}
+            type="button"
+          >
+            <ThemeIcon aria-hidden="true" />
+          </button>
           <LanguageSelector />
           <button
             className="primary-button public-login-button"
@@ -93,6 +116,10 @@ function AppLoadingShell({ activeView }: { activeView: AppView }) {
     <main className="app-shell loading-shell">
       <header className="app-header" role="banner">
         <div className="app-brand">
+          <span className="app-brand-mark" aria-hidden="true">
+            <span>A</span>
+            <span>M</span>
+          </span>
           <span className="eyebrow">{resources.app.brandKicker}</span>
           <strong>{resources.app.brandName}</strong>
         </div>
@@ -359,7 +386,7 @@ export default function App() {
       <main className="login-page" aria-labelledby="auth-loading-title">
         <section className="login-panel">
           <div className="login-brand-lockup">
-            <span className="login-brand-mark" aria-hidden="true">
+            <span className="login-brand-mark app-brand-mark" aria-hidden="true">
               <span>A</span>
               <span>M</span>
             </span>
@@ -376,7 +403,7 @@ export default function App() {
       <main className="login-page" aria-labelledby="auth-error-title">
         <section className="login-panel">
           <div className="login-brand-lockup">
-            <span className="login-brand-mark" aria-hidden="true">
+            <span className="login-brand-mark app-brand-mark" aria-hidden="true">
               <span>A</span>
               <span>M</span>
             </span>
@@ -393,7 +420,13 @@ export default function App() {
 
   if (!currentUser) {
     if (!isLoginRoute(pathname)) {
-      return <PublicHomeShell onLogin={handlePublicLogin} />;
+      return (
+        <PublicHomeShell
+          onLogin={handlePublicLogin}
+          onToggleTheme={handleToggleTheme}
+          theme={theme}
+        />
+      );
     }
 
     return (

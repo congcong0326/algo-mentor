@@ -41,6 +41,10 @@ export default function AppShell({
     <main className="app-shell">
       <header className="app-header" role="banner">
         <div className="app-brand">
+          <span className="app-brand-mark" aria-hidden="true">
+            <span>A</span>
+            <span>M</span>
+          </span>
           <span className="eyebrow">{resources.app.brandKicker}</span>
           <strong>{resources.app.brandName}</strong>
         </div>

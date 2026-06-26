@@ -127,10 +127,25 @@ describe('App', () => {
 
     expect(await screen.findByRole('heading', { name: /用 AI 掌握算法刷题\s*智能复盘系统/ }))
       .toBeInTheDocument();
+    expect(document.querySelector('.app-brand-mark')).toHaveTextContent('AM');
+    expect(screen.getByRole('button', { name: '切换为深色模式' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '登录' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '开始使用' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
     expect(window.location.pathname).toBe('/');
+  });
+
+  it('toggles and persists the public home theme', async () => {
+    vi.stubGlobal('fetch', mockUnauthenticatedFetch());
+    window.history.replaceState({}, '', '/');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '切换为深色模式' }));
+
+    await waitFor(() => expect(document.documentElement.dataset.theme).toBe('dark'));
+    expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
+    expect(screen.getByRole('button', { name: '切换为浅色模式' })).toBeInTheDocument();
   });
 
   it('routes both public home entry buttons to login', async () => {
