@@ -42,7 +42,7 @@ describe('PracticeChatWorkbench review contracts', () => {
       completionGate: {
         canComplete: false,
         reasonCode: 'NO_REVIEW',
-        message: '提交一份可评审代码后才能标记完成。',
+        message: '旧接口文案。',
         latestScore: null,
         passScore: 80,
       },
@@ -74,11 +74,22 @@ describe('PracticeChatWorkbench review contracts', () => {
   it('renders no-review gate and disables completion', async () => {
     renderWorkbench();
 
-    expect(await screen.findByText('提交一份可评审代码后才能标记完成。')).toBeInTheDocument();
-    expect(screen.getByText('暂无 Review')).toBeInTheDocument();
-    expect(screen.getByText('通过分 80')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '标记完成' })).toBeDisabled();
+    const completionButton = await screen.findByRole('button', { name: '标记完成' });
+    expect(completionButton).toBeDisabled();
+    expect(screen.getByRole('tooltip', {
+      name: '完成前需要先粘贴完整代码完成一次 AI Review，并且 Review 通过后才能标记完成。',
+    })).toHaveClass('completion-disabled-tooltip');
+    expect(screen.queryByText('暂无 Review')).not.toBeInTheDocument();
+    expect(screen.queryByText('通过分 80')).not.toBeInTheDocument();
     expect(updatePracticeProgressStatus).not.toHaveBeenCalled();
+  });
+
+  it('renders rounded guidance tooltip for generated problem statements', async () => {
+    renderWorkbench();
+
+    expect(await screen.findByRole('img', { name: /题面内容为大模型生成/ })).toBeInTheDocument();
+    expect(screen.getByRole('tooltip', { name: /本站不内置题库，最终以 LeetCode 为准/ }))
+      .toHaveClass('toolbar-tooltip', 'practice-guidance-tooltip');
   });
 
   it('refreshes messages session and reviews after agent_run_end', async () => {
@@ -121,7 +132,6 @@ describe('PracticeChatWorkbench review contracts', () => {
     fireEvent.click(screen.getByRole('button', { name: '发送' }));
 
     expect(await screen.findByText('Review 已完成。')).toBeInTheDocument();
-    expect(screen.getByText('最新 Review 已通过，可以标记完成。')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '标记完成' })).not.toBeDisabled();
     expect(getPracticeSessionMessages).toHaveBeenCalledWith(101, 50, expect.any(AbortSignal));
     expect(getPracticeSession).toHaveBeenCalledWith(101, expect.any(AbortSignal));
@@ -154,8 +164,7 @@ describe('PracticeChatWorkbench review contracts', () => {
     });
     renderWorkbench();
 
-    expect(await screen.findByText('上一版 Review 已通过。')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '标记完成' })).not.toBeDisabled();
+    expect(await screen.findByRole('button', { name: '标记完成' })).not.toBeDisabled();
 
     fireEvent.change(screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
       target: { value: '这是新版本完整代码。' },
@@ -188,8 +197,9 @@ describe('PracticeChatWorkbench review contracts', () => {
       },
     })));
 
-    expect(await screen.findByText('新版 Review 未通过。')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '标记完成' })).toBeDisabled();
+    const failedCompletionButton = await screen.findByRole('button', { name: '标记完成' });
+    expect(failedCompletionButton).toBeDisabled();
+    expect(screen.getByRole('tooltip', { name: '新版 Review 未通过。' })).toBeInTheDocument();
   });
 
   it('updates an open review drawer after agent_run_end refreshes reviews', async () => {
@@ -346,7 +356,6 @@ describe('PracticeChatWorkbench review contracts', () => {
     renderWorkbench();
 
     expect(await screen.findByText('后台 Review 已落库。')).toBeInTheDocument();
-    expect(screen.getByText('轮询刷新后已通过 Review。')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '标记完成' })).not.toBeDisabled();
     expect(getPracticeSessionMessages).toHaveBeenCalledWith(101, 50, expect.any(AbortSignal));
     expect(getPracticeSession).toHaveBeenCalledWith(101, expect.any(AbortSignal));
@@ -366,8 +375,9 @@ describe('PracticeChatWorkbench review contracts', () => {
     })));
     renderWorkbench();
 
-    expect(await screen.findByText('最新 Review 未通过：边界条件不足。')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '标记完成' })).toBeDisabled();
+    const completionButton = await screen.findByRole('button', { name: '标记完成' });
+    expect(completionButton).toBeDisabled();
+    expect(screen.getByRole('tooltip', { name: '最新 Review 未通过：边界条件不足。' })).toBeInTheDocument();
   });
 
   it('enables completion when latest review passes', async () => {
@@ -383,8 +393,7 @@ describe('PracticeChatWorkbench review contracts', () => {
     })));
     renderWorkbench();
 
-    expect(await screen.findByText('最新 Review 已通过。')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '标记完成' })).not.toBeDisabled();
+    expect(await screen.findByRole('button', { name: '标记完成' })).not.toBeDisabled();
   });
 
   it('keeps completion disabled for latest failed review', async () => {
@@ -400,8 +409,9 @@ describe('PracticeChatWorkbench review contracts', () => {
     })));
     renderWorkbench();
 
-    expect(await screen.findByText('最新 Review 分数不足，请先修复代码。')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '标记完成' })).toBeDisabled();
+    const completionButton = await screen.findByRole('button', { name: '标记完成' });
+    expect(completionButton).toBeDisabled();
+    expect(screen.getByRole('tooltip', { name: '最新 Review 分数不足，请先修复代码。' })).toBeInTheDocument();
   });
 
   it('shows review drawer empty state', async () => {
@@ -531,7 +541,11 @@ describe('PracticeChatWorkbench review contracts', () => {
       </I18nProvider>,
     );
 
-    expect(await screen.findByText('新题还没有 Review。')).toBeInTheDocument();
+    const completionButton = await screen.findByRole('button', { name: '标记完成' });
+    expect(completionButton).toBeDisabled();
+    expect(screen.getByRole('tooltip', {
+      name: '完成前需要先粘贴完整代码完成一次 AI Review，并且 Review 通过后才能标记完成。',
+    })).toBeInTheDocument();
     expect(within(drawer).queryByRole('button', { name: /V2/ })).not.toBeInTheDocument();
   });
 });
@@ -603,7 +617,7 @@ function sessionFixture(overrides: Partial<PracticeSessionResponse> = {}): Pract
     completionGate: {
       canComplete: false,
       reasonCode: 'NO_REVIEW',
-      message: '提交一份可评审代码后才能标记完成。',
+      message: '完成前需要先粘贴完整代码完成一次 AI Review，并且 Review 通过后才能标记完成。',
       latestScore: null,
       passScore: 80,
     },
@@ -630,7 +644,7 @@ function historyFixture(overrides: Partial<PracticeCodeReviewHistoryResponse> = 
     completionGate: {
       canComplete: false,
       reasonCode: 'NO_REVIEW',
-      message: '提交一份可评审代码后才能标记完成。',
+      message: '完成前需要先粘贴完整代码完成一次 AI Review，并且 Review 通过后才能标记完成。',
       latestScore: null,
       passScore: 80,
     },

@@ -43,7 +43,7 @@ public class PracticeCompletionGateService {
     }
     if (latest.isEmpty()) {
       return record(gate(false, PracticeCompletionGate.ReasonCode.NO_REVIEW,
-          "完成前需要先粘贴完整代码完成一次 AI Review。", Optional.empty()));
+          "完成前需要先粘贴完整代码完成一次 AI Review，并且 Review 通过后才能标记完成。", Optional.empty()));
     }
     BigDecimal score = latest.get().totalScore();
     if (!latest.get().passed() || score.compareTo(PracticeCodeReviewConstants.PASS_SCORE) < 0) {

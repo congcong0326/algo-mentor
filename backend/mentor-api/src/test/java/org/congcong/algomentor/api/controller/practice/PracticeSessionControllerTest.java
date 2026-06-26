@@ -250,7 +250,7 @@ class PracticeSessionControllerTest {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     when(practiceSessionService.updateProgressStatus(42L, 50L, PracticeProgressStatus.COMPLETED))
         .thenThrow(new LearningPlanException("PRACTICE_COMPLETION_REVIEW_REQUIRED",
-            "完成前需要先粘贴完整代码完成一次 AI Review。"));
+            "完成前需要先粘贴完整代码完成一次 AI Review，并且 Review 通过后才能标记完成。"));
 
     mockMvc.perform(patch("/api/practice-sessions/50/progress-status")
             .contentType(MediaType.APPLICATION_JSON)

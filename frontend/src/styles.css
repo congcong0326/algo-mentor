@@ -1914,6 +1914,52 @@ a {
   cursor: help;
 }
 
+.completion-button-wrap,
+.toolbar-tooltip-wrap {
+  display: inline-flex;
+  position: relative;
+}
+
+.completion-button-wrap.has-tooltip {
+  cursor: not-allowed;
+}
+
+.completion-button-wrap > button:disabled {
+  pointer-events: none;
+}
+
+.toolbar-tooltip {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 30;
+  width: max-content;
+  max-width: min(320px, calc(100vw - 32px));
+  padding: 8px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-subtle);
+  color: var(--text-primary);
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity 120ms ease, transform 120ms ease;
+  visibility: hidden;
+  white-space: normal;
+}
+
+.completion-button-wrap.has-tooltip:hover .completion-disabled-tooltip,
+.completion-button-wrap.has-tooltip:focus-within .completion-disabled-tooltip,
+.toolbar-tooltip-wrap:hover .toolbar-tooltip,
+.toolbar-tooltip-wrap:focus-within .toolbar-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
 .practice-guidance-icon:hover,
 .practice-guidance-icon:focus-visible {
   background: var(--surface-soft);
@@ -2128,53 +2174,6 @@ a {
 
 .review-detail-section code {
   white-space: pre;
-}
-
-.completion-gate-hint {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  min-width: 220px;
-  max-width: 360px;
-  padding: 10px 12px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  background: var(--surface-muted);
-}
-
-.completion-gate-hint.ready {
-  border-color: var(--success);
-  background: var(--success-soft);
-}
-
-.completion-gate-hint.blocked {
-  border-color: var(--border-strong);
-}
-
-.completion-gate-icon svg {
-  width: 18px;
-  height: 18px;
-}
-
-.completion-gate-copy {
-  display: grid;
-  gap: 6px;
-  min-width: 0;
-}
-
-.completion-gate-copy p {
-  margin: 0;
-  color: var(--text-primary);
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-.completion-gate-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  color: var(--text-muted);
-  font-size: 12px;
 }
 
 .practice-message > span {
@@ -3001,12 +3000,6 @@ a {
 
   .practice-toolbar-actions {
     flex-wrap: wrap;
-  }
-
-  .practice-toolbar-actions .completion-gate-hint {
-    order: 10;
-    width: 100%;
-    max-width: none;
   }
 
   .review-drawer-content {

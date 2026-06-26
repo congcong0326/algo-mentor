@@ -18,6 +18,7 @@ class PracticeCompletionGateServiceTest {
 
     assertThat(gate.canComplete()).isFalse();
     assertThat(gate.reasonCode()).isEqualTo(PracticeCompletionGate.ReasonCode.NO_REVIEW);
+    assertThat(gate.message()).isEqualTo("完成前需要先粘贴完整代码完成一次 AI Review，并且 Review 通过后才能标记完成。");
     assertThat(gate.passScore()).isEqualByComparingTo("6.0");
   }
 

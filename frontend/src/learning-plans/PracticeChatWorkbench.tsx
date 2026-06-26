@@ -24,7 +24,6 @@ import type {
   PracticeSessionResponse,
 } from '../types/api';
 import { AGENT_RUN_IN_PROGRESS_CODE } from '../types/api';
-import CompletionGateHint from './CompletionGateHint';
 import ReviewHistoryDrawer from './ReviewHistoryDrawer';
 
 const LEETCODE_HOST_BY_LOCALE: Record<SupportedLocale, string> = {
@@ -183,7 +182,6 @@ export default function PracticeChatWorkbench({
   const hasActiveRun = Boolean(sessionResponse?.activeRun);
   const progressStatus = sessionResponse?.session.progressStatus;
   const completionGate = sessionResponse?.completionGate;
-  const latestReview = sessionResponse?.latestReview;
   const leetcodeUrl = localizedLeetCodeUrl(sessionResponse?.problem.leetcodeUrl, locale);
   const difficulty = sessionResponse?.problem.difficulty ?? problem?.difficulty;
   const shouldShowCompletionButton = Boolean(sessionId) && progressStatus !== 'COMPLETED';
@@ -193,6 +191,11 @@ export default function PracticeChatWorkbench({
     || status === 'loading'
     || status === 'streaming'
     || hasActiveRun;
+  const completionDisabledReason = completionGate && !completionGate.canComplete
+    ? completionGate.reasonCode === 'NO_REVIEW'
+      ? resources.learningPlans.completionRequiresPassedReview
+      : completionGate.message || resources.learningPlans.completionGateFallback
+    : undefined;
   const composerInputDisabled = !sessionId || status === 'loading' || hasActiveRun;
   const sendDisabled = !sessionId || status === 'loading' || status === 'streaming' || hasActiveRun || !composerValue.trim();
 
@@ -541,18 +544,29 @@ export default function PracticeChatWorkbench({
           </span>
           <span className="status-badge">{progressStatusLabel(progressStatus, resources)}</span>
           {shouldShowCompletionButton && (
-            <button
-              className="secondary-button compact"
-              disabled={completionDisabled}
-              onClick={handleMarkCompleted}
-              type="button"
+            <span
+              className={`completion-button-wrap ${completionDisabledReason ? 'has-tooltip' : ''}`}
             >
-              <CheckCircle2 aria-hidden="true" />
-              <span>{resources.learningPlans.markCompleted}</span>
-            </button>
-          )}
-          {status !== 'loading' && completionGate && (
-            <CompletionGateHint gate={completionGate} latestReview={latestReview} resources={resources} />
+              <button
+                className="secondary-button compact"
+                aria-describedby={completionDisabledReason ? 'completion-disabled-tooltip' : undefined}
+                disabled={completionDisabled}
+                onClick={handleMarkCompleted}
+                type="button"
+              >
+                <CheckCircle2 aria-hidden="true" />
+                <span>{resources.learningPlans.markCompleted}</span>
+              </button>
+              {completionDisabledReason && (
+                <span
+                  className="toolbar-tooltip completion-disabled-tooltip"
+                  id="completion-disabled-tooltip"
+                  role="tooltip"
+                >
+                  {completionDisabledReason}
+                </span>
+              )}
+            </span>
           )}
           <button
             className="secondary-button compact"
@@ -562,14 +576,19 @@ export default function PracticeChatWorkbench({
             <ClipboardList aria-hidden="true" />
             <span>{resources.learningPlans.reviewHistory}</span>
           </button>
-          <span
-            aria-label={resources.learningPlans.practiceLeetCodeGuidance}
-            className="icon-button practice-guidance-icon"
-            role="img"
-            tabIndex={0}
-            title={resources.learningPlans.practiceLeetCodeGuidance}
-          >
-            <Info aria-hidden="true" />
+          <span className="toolbar-tooltip-wrap">
+            <span
+              aria-describedby="practice-guidance-tooltip"
+              aria-label={resources.learningPlans.practiceLeetCodeGuidance}
+              className="icon-button practice-guidance-icon"
+              role="img"
+              tabIndex={0}
+            >
+              <Info aria-hidden="true" />
+            </span>
+            <span className="toolbar-tooltip practice-guidance-tooltip" id="practice-guidance-tooltip" role="tooltip">
+              {resources.learningPlans.practiceLeetCodeGuidance}
+            </span>
           </span>
           {leetcodeUrl ? (
             <a
