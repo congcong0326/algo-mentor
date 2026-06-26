@@ -60,6 +60,20 @@ class CurrentUserControllerTest {
     mockMvc.perform(get("/api/auth/me"))
         .andExpect(status().isUnauthorized())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"));
+        .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"))
+        .andExpect(jsonPath("$.error.messageKey").value("api.error.AUTH_UNAUTHENTICATED"))
+        .andExpect(jsonPath("$.error.message").value("当前请求未登录或登录状态已失效。"));
+  }
+
+  @Test
+  void meReturnsLocalized401WhenCurrentUserIsUnavailable() throws Exception {
+    currentUser = Optional.empty();
+
+    mockMvc.perform(get("/api/auth/me").header("Accept-Language", "en-US"))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"))
+        .andExpect(jsonPath("$.error.messageKey").value("api.error.AUTH_UNAUTHENTICATED"))
+        .andExpect(jsonPath("$.error.message").value("You are not signed in or your session has expired."));
   }
 }

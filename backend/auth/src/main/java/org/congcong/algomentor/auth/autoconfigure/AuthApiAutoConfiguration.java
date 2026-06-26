@@ -10,7 +10,9 @@ import org.congcong.algomentor.auth.security.AuthenticatedOidcUserService;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.auth.security.SecurityContextCurrentUserIdProvider;
 import org.congcong.algomentor.auth.service.OAuth2LoginUserService;
+import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -27,8 +29,14 @@ public class AuthApiAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public CurrentUserController currentUserController(CurrentUserIdProvider currentUserIdProvider) {
-    return new CurrentUserController(currentUserIdProvider);
+  public CurrentUserController currentUserController(
+      CurrentUserIdProvider currentUserIdProvider,
+      ObjectProvider<ApiErrorResponseFactory> apiErrorResponseFactoryProvider
+  ) {
+    ApiErrorResponseFactory responseFactory = apiErrorResponseFactoryProvider.getIfAvailable();
+    return responseFactory == null
+        ? new CurrentUserController(currentUserIdProvider)
+        : new CurrentUserController(currentUserIdProvider, responseFactory);
   }
 
   @Bean

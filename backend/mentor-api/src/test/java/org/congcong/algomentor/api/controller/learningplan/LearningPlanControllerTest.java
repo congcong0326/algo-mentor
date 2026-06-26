@@ -31,7 +31,7 @@ import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.ai.governance.model.AiRunStatus;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicy;
 import org.congcong.algomentor.api.config.ApiSseProperties;
-import org.congcong.algomentor.api.controller.AiGovernanceExceptionHandler;
+import org.congcong.algomentor.api.controller.LocalizedApiExceptionHandler;
 import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.auth.model.AuthUserStatus;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
@@ -67,7 +67,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 @WebMvcTest(controllers = LearningPlanController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import({LearningPlanExceptionHandler.class, AiGovernanceExceptionHandler.class})
+@Import(LocalizedApiExceptionHandler.class)
 class LearningPlanControllerTest {
 
   @Autowired
@@ -232,7 +232,9 @@ class LearningPlanControllerTest {
                 }
                 """))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.error.code").value("LEARNING_PLAN_GENERATION_FAILED"));
+        .andExpect(jsonPath("$.error.code").value("LEARNING_PLAN_GENERATION_FAILED"))
+        .andExpect(jsonPath("$.error.messageKey").value("api.error.LEARNING_PLAN_GENERATION_FAILED"))
+        .andExpect(jsonPath("$.error.message").value("学习计划生成失败。"));
 
     verify(lifecycleService).markRunning(any(AiRunAdmission.class), eq(null), eq(null));
     verify(lifecycleService).markFailed(any(AiRunAdmission.class), any(), any(), eq(null), eq(null));
@@ -300,9 +302,11 @@ class LearningPlanControllerTest {
   void unauthenticatedRequestReturns401() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.empty());
 
-    mockMvc.perform(get("/api/learning-plans"))
+    mockMvc.perform(get("/api/learning-plans").header("Accept-Language", "en-US"))
         .andExpect(status().isUnauthorized())
-        .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"));
+        .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"))
+        .andExpect(jsonPath("$.error.messageKey").value("api.error.AUTH_UNAUTHENTICATED"))
+        .andExpect(jsonPath("$.error.message").value("You are not signed in or your session has expired."));
   }
 
   private AuthenticatedUserPrincipal currentUser() {

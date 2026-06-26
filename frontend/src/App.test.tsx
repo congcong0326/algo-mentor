@@ -720,12 +720,14 @@ describe('App', () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/problems?sort=frontend_id_asc&locale=zh-CN&page=1&pageSize=20',
-      expect.objectContaining({ headers: { Accept: 'application/json' } }),
+      expect.objectContaining({ headers: expect.any(Headers) }),
     );
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/problems/two-sum?locale=zh-CN',
-      expect.objectContaining({ headers: { Accept: 'application/json' } }),
+      expect.objectContaining({ headers: expect.any(Headers) }),
     );
+    expectJsonHeaders(fetchMock, '/api/problems?sort=frontend_id_asc&locale=zh-CN&page=1&pageSize=20');
+    expectJsonHeaders(fetchMock, '/api/problems/two-sum?locale=zh-CN');
   });
 
   it('requests filtered problem list and paginates', async () => {
@@ -841,8 +843,9 @@ describe('App', () => {
     expect(screen.queryByText('进行中')).not.toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/learning-plans/900',
-      expect.objectContaining({ headers: { Accept: 'application/json' } }),
+      expect.objectContaining({ headers: expect.any(Headers) }),
     );
+    expectJsonHeaders(fetchMock, '/api/learning-plans/900');
 
     fireEvent.click(screen.getByRole('button', { name: '返回方案库' }));
 
@@ -2113,6 +2116,15 @@ function expectCsrfHeader(fetchMock: ReturnType<typeof vi.fn>, url: string, meth
   expect(call).toBeDefined();
   const [, init] = call as [string, RequestInit];
   expect(new Headers(init.headers).get('X-XSRF-TOKEN')).toBe('csrf-token');
+}
+
+function expectJsonHeaders(fetchMock: ReturnType<typeof vi.fn>, url: string) {
+  const call = fetchMock.mock.calls.find(([calledUrl]) => calledUrl === url);
+  expect(call).toBeDefined();
+  const [, init] = call as [string, RequestInit];
+  const headers = new Headers(init.headers);
+  expect(headers.get('Accept')).toBe('application/json');
+  expect(headers.get('Accept-Language')).toBe('zh-CN');
 }
 
 function isLearningPlanListUrl(url: string): boolean {

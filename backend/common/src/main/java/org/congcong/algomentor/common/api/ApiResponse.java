@@ -16,4 +16,17 @@ public record ApiResponse<T>(boolean success, T data, ApiError error, Instant ti
   public static <T> ApiResponse<T> failure(String code, String message, Map<String, Object> metadata) {
     return new ApiResponse<>(false, null, new ApiError(code, message, metadata), Instant.now());
   }
+
+  public static <T> ApiResponse<T> failureWithMessageKey(String code, String messageKey, String message) {
+    return new ApiResponse<>(false, null, new ApiError(code, messageKey, message), Instant.now());
+  }
+
+  public static <T> ApiResponse<T> failureWithMessageKey(
+      String code,
+      String messageKey,
+      String message,
+      Map<String, Object> metadata
+  ) {
+    return new ApiResponse<>(false, null, new ApiError(code, messageKey, message, metadata), Instant.now());
+  }
 }

@@ -9,6 +9,7 @@ import org.congcong.algomentor.auth.security.CsrfTokenCookieFilter;
 import org.congcong.algomentor.auth.security.OAuth2AuthenticationFailureHandler;
 import org.congcong.algomentor.auth.security.OAuth2AuthenticationSuccessHandler;
 import org.congcong.algomentor.auth.security.SpaCsrfTokenRequestHandler;
+import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -70,6 +71,7 @@ public class AuthSecurityAutoConfiguration {
   public SecurityFilterChain authSecurityFilterChain(
       HttpSecurity http,
       ObjectProvider<ObjectMapper> objectMapperProvider,
+      ObjectProvider<ApiErrorResponseFactory> apiErrorResponseFactoryProvider,
       ObjectProvider<AuthenticatedOAuth2UserService> authenticatedOAuth2UserService,
       ObjectProvider<AuthenticatedOidcUserService> authenticatedOidcUserService,
       ObjectProvider<ClientRegistrationRepository> clientRegistrationRepository,
@@ -77,6 +79,7 @@ public class AuthSecurityAutoConfiguration {
   ) throws Exception {
     CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
     ObjectMapper objectMapper = objectMapperProvider.getIfAvailable(() -> new ObjectMapper().findAndRegisterModules());
+    ApiErrorResponseFactory apiErrorResponseFactory = apiErrorResponseFactoryProvider.getIfAvailable();
     ClientRegistrationRepository registrations = clientRegistrationRepository.getIfAvailable();
     log.info(
         "Configuring auth security filter chain. oauth2ClientRegistrationRepositoryPresent={} loginSuccessUrl={} cookieSecure={} cookieSameSite={} sessionTimeout={}",
@@ -94,7 +97,9 @@ public class AuthSecurityAutoConfiguration {
         .addFilterAfter(new CsrfTokenCookieFilter(), CsrfFilter.class)
         .exceptionHandling(exceptions -> exceptions
             .defaultAuthenticationEntryPointFor(
-                new ApiAuthenticationEntryPoint(objectMapper),
+                apiErrorResponseFactory == null
+                    ? new ApiAuthenticationEntryPoint(objectMapper)
+                    : new ApiAuthenticationEntryPoint(objectMapper, apiErrorResponseFactory),
                 new AntPathRequestMatcher(AuthSecurityPaths.API_PATTERN))
             .defaultAuthenticationEntryPointFor(
                 new HttpStatusEntryPoint(org.springframework.http.HttpStatus.UNAUTHORIZED),

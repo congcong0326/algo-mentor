@@ -38,7 +38,7 @@ import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.ai.governance.model.AiRunStatus;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicy;
 import org.congcong.algomentor.api.config.ApiSseProperties;
-import org.congcong.algomentor.api.controller.AiGovernanceExceptionHandler;
+import org.congcong.algomentor.api.controller.LocalizedApiExceptionHandler;
 import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.auth.model.AuthUserStatus;
@@ -81,8 +81,7 @@ import org.springframework.test.web.servlet.MvcResult;
 @AutoConfigureMockMvc(addFilters = false)
 @Import({
     PracticeSessionControllerTest.TestConfig.class,
-    PracticeSessionExceptionHandler.class,
-    AiGovernanceExceptionHandler.class,
+    LocalizedApiExceptionHandler.class,
     LlmStreamSseMapper.class
 })
 class PracticeSessionControllerTest {
@@ -256,7 +255,10 @@ class PracticeSessionControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"status\":\"COMPLETED\"}"))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.error.code").value("PRACTICE_COMPLETION_REVIEW_REQUIRED"));
+        .andExpect(jsonPath("$.error.code").value("PRACTICE_COMPLETION_REVIEW_REQUIRED"))
+        .andExpect(jsonPath("$.error.messageKey").value("api.error.PRACTICE_COMPLETION_REVIEW_REQUIRED"))
+        .andExpect(jsonPath("$.error.message")
+            .value("完成前需要先粘贴完整代码完成一次 AI Review，并且 Review 通过后才能标记完成。"));
   }
 
   @Test
@@ -318,7 +320,9 @@ class PracticeSessionControllerTest {
             .accept(MediaType.TEXT_EVENT_STREAM)
             .content("{\"message\":\"   \"}"))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.error.code").value("PRACTICE_MESSAGE_INVALID"));
+        .andExpect(jsonPath("$.error.code").value("PRACTICE_MESSAGE_INVALID"))
+        .andExpect(jsonPath("$.error.messageKey").value("api.error.PRACTICE_MESSAGE_INVALID"))
+        .andExpect(jsonPath("$.error.message").value("练习消息不能为空。"));
 
     verifyNoInteractions(admissionService, streamService);
   }
@@ -341,7 +345,22 @@ class PracticeSessionControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.TEXT_EVENT_STREAM))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.error.code").value("PRACTICE_MESSAGE_INVALID"));
+        .andExpect(jsonPath("$.error.code").value("REQUEST_BODY_INVALID"))
+        .andExpect(jsonPath("$.error.messageKey").value("api.error.REQUEST_BODY_INVALID"));
+
+    verifyNoInteractions(admissionService, streamService);
+  }
+
+  @Test
+  void streamMalformedJsonReturnsRequestBodyInvalidBeforeGovernance() throws Exception {
+    mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .content("{\"message\":"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.error.code").value("REQUEST_BODY_INVALID"))
+        .andExpect(jsonPath("$.error.messageKey").value("api.error.REQUEST_BODY_INVALID"))
+        .andExpect(jsonPath("$.error.message").value("请求体不是合法 JSON 或与接口结构不匹配。"));
 
     verifyNoInteractions(admissionService, streamService);
   }
@@ -350,9 +369,10 @@ class PracticeSessionControllerTest {
   void unauthenticatedRequestReturns401() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.empty());
 
-    mockMvc.perform(get("/api/practice-sessions/50"))
+    mockMvc.perform(get("/api/practice-sessions/50").header("Accept-Language", "en-US"))
         .andExpect(status().isUnauthorized())
-        .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"));
+        .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"))
+        .andExpect(jsonPath("$.error.message").value("You are not signed in or your session has expired."));
   }
 
   @Test
@@ -380,7 +400,9 @@ class PracticeSessionControllerTest {
             .header("Idempotency-Key", "idem-50")
             .content("{\"message\":\"提示一下思路\"}"))
         .andExpect(status().isConflict())
-        .andExpect(jsonPath("$.error.code").value("AGENT_RUN_IN_PROGRESS"));
+        .andExpect(jsonPath("$.error.code").value("AGENT_RUN_IN_PROGRESS"))
+        .andExpect(jsonPath("$.error.messageKey").value("api.error.AGENT_RUN_IN_PROGRESS"))
+        .andExpect(jsonPath("$.error.metadata.taskId").value(50));
   }
 
   private AuthenticatedUserPrincipal currentUser() {

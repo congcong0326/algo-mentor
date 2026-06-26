@@ -92,10 +92,12 @@ class AuthSecurityAutoConfigurationTest {
 
   @Test
   void protectedApiReturnsJson401WhenUnauthenticated() throws Exception {
-    mockMvc.perform(get("/api/protected"))
+    mockMvc.perform(get("/api/protected").header("Accept-Language", "en-US"))
         .andExpect(status().isUnauthorized())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"));
+        .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"))
+        .andExpect(jsonPath("$.error.messageKey").value("api.error.AUTH_UNAUTHENTICATED"))
+        .andExpect(jsonPath("$.error.message").value("You are not signed in or your session has expired."));
   }
 
   @Test

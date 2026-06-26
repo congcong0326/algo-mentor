@@ -63,8 +63,8 @@ public class ProblemController {
   }
 
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  static class ProblemNotFoundException extends RuntimeException {
-    ProblemNotFoundException(String slug) {
+  public static class ProblemNotFoundException extends RuntimeException {
+    public ProblemNotFoundException(String slug) {
       super("Problem not found: " + slug);
     }
   }

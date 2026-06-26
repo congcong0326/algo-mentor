@@ -1,5 +1,6 @@
 export interface ApiError {
   code: string;
+  messageKey?: string;
   message: string;
   metadata?: Record<string, unknown>;
 }

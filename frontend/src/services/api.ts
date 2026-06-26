@@ -25,30 +25,41 @@ import type {
   SseStreamEvent,
 } from '../types/api';
 
-const jsonHeaders = {
+const jsonHeaders: HeadersInit = {
   Accept: 'application/json',
 };
 
 const xsrfCookieName = 'XSRF-TOKEN';
 const xsrfHeaderName = 'X-XSRF-TOKEN';
+const localeStorageKey = 'algo-mentor-locale';
+const defaultLocale = 'zh-CN';
+const supportedLocales = new Set(['zh-CN', 'en-US']);
 
 export class ApiRequestError extends Error {
   readonly status: number;
   readonly code?: string;
+  readonly messageKey?: string;
   readonly metadata?: Record<string, unknown>;
 
-  constructor(status: number, message: string, code?: string, metadata?: Record<string, unknown>) {
+  constructor(
+    status: number,
+    message: string,
+    code?: string,
+    messageKey?: string,
+    metadata?: Record<string, unknown>,
+  ) {
     super(message);
     this.name = 'ApiRequestError';
     this.status = status;
     this.code = code;
+    this.messageKey = messageKey;
     this.metadata = metadata;
   }
 }
 
 export async function getHealth(): Promise<ApiResponse<HealthStatus>> {
   const response = await fetch('/api/health', {
-    headers: jsonHeaders,
+    headers: apiHeaders(jsonHeaders),
     credentials: 'same-origin',
   });
 
@@ -61,7 +72,7 @@ export async function getHealth(): Promise<ApiResponse<HealthStatus>> {
 
 export async function getCurrentUser(): Promise<CurrentUser | undefined> {
   const response = await fetch('/api/auth/me', {
-    headers: jsonHeaders,
+    headers: apiHeaders(jsonHeaders),
     credentials: 'same-origin',
   });
 
@@ -91,7 +102,7 @@ export async function getProblems(
   signal?: AbortSignal,
 ): Promise<ApiResponse<ProblemPage<ProblemListItem>>> {
   const response = await fetch(`/api/problems${toQueryString(query)}`, {
-    headers: jsonHeaders,
+    headers: apiHeaders(jsonHeaders),
     credentials: 'same-origin',
     signal,
   });
@@ -109,7 +120,7 @@ export async function getProblemDetail(
   signal?: AbortSignal,
 ): Promise<ApiResponse<ProblemDetail>> {
   const response = await fetch(`/api/problems/${encodeURIComponent(slug)}${toQueryString({ locale })}`, {
-    headers: jsonHeaders,
+    headers: apiHeaders(jsonHeaders),
     credentials: 'same-origin',
     signal,
   });
@@ -152,7 +163,7 @@ export async function getPracticeSession(
   signal?: AbortSignal,
 ): Promise<ApiResponse<PracticeSessionResponse>> {
   const response = await fetch(`/api/practice-sessions/${sessionId}`, {
-    headers: jsonHeaders,
+    headers: apiHeaders(jsonHeaders),
     credentials: 'same-origin',
     signal,
   });
@@ -169,7 +180,7 @@ export async function getPracticeSessionActiveRun(
   signal?: AbortSignal,
 ): Promise<ApiResponse<PracticeActiveRun | null>> {
   const response = await fetch(`/api/practice-sessions/${sessionId}/active-run`, {
-    headers: jsonHeaders,
+    headers: apiHeaders(jsonHeaders),
     credentials: 'same-origin',
     signal,
   });
@@ -187,7 +198,7 @@ export async function getPracticeSessionMessages(
   signal?: AbortSignal,
 ): Promise<ApiResponse<PracticeMessage[]>> {
   const response = await fetch(`/api/practice-sessions/${sessionId}/messages${toQueryString({ limit })}`, {
-    headers: jsonHeaders,
+    headers: apiHeaders(jsonHeaders),
     credentials: 'same-origin',
     signal,
   });
@@ -204,7 +215,7 @@ export async function getPracticeSessionReviews(
   signal?: AbortSignal,
 ): Promise<ApiResponse<PracticeCodeReviewHistoryResponse>> {
   const response = await fetch(`/api/practice-sessions/${sessionId}/reviews`, {
-    headers: jsonHeaders,
+    headers: apiHeaders(jsonHeaders),
     credentials: 'same-origin',
     signal,
   });
@@ -222,7 +233,7 @@ export async function getPracticeSessionReviewDetail(
   signal?: AbortSignal,
 ): Promise<ApiResponse<PracticeCodeReviewDetail>> {
   const response = await fetch(`/api/practice-sessions/${sessionId}/reviews/${reviewId}`, {
-    headers: jsonHeaders,
+    headers: apiHeaders(jsonHeaders),
     credentials: 'same-origin',
     signal,
   });
@@ -293,7 +304,7 @@ export async function getLearningPlans(
   signal?: AbortSignal,
 ): Promise<ApiResponse<LearningPlanPageResponse>> {
   const response = await fetch(`/api/learning-plans${toQueryString(query)}`, {
-    headers: jsonHeaders,
+    headers: apiHeaders(jsonHeaders),
     signal,
   });
 
@@ -322,7 +333,7 @@ export async function getLearningPlanDetail(
   signal?: AbortSignal,
 ): Promise<ApiResponse<LearningPlanDetailResponse>> {
   const response = await fetch(`/api/learning-plans/${planId}`, {
-    headers: jsonHeaders,
+    headers: apiHeaders(jsonHeaders),
     signal,
   });
 
@@ -472,7 +483,7 @@ export async function streamAgentConversation(
 
 function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
   const method = (init.method ?? 'GET').toUpperCase();
-  const headers = new Headers(init.headers);
+  const headers = apiHeaders(init.headers);
   const csrfToken = readCookie(xsrfCookieName);
 
   if (csrfToken && method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS') {
@@ -484,6 +495,26 @@ function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Res
     credentials: init.credentials ?? 'same-origin',
     headers,
   });
+}
+
+function apiHeaders(headersInit?: HeadersInit): Headers {
+  const headers = new Headers(headersInit);
+  if (!headers.has('Accept-Language')) {
+    headers.set('Accept-Language', currentApiLocale());
+  }
+  return headers;
+}
+
+function currentApiLocale(): string {
+  if (typeof window === 'undefined' || typeof window.localStorage?.getItem !== 'function') {
+    return defaultLocale;
+  }
+  try {
+    const storedLocale = window.localStorage.getItem(localeStorageKey);
+    return storedLocale && supportedLocales.has(storedLocale) ? storedLocale : defaultLocale;
+  } catch {
+    return defaultLocale;
+  }
 }
 
 function readCookie(name: string): string | undefined {
@@ -502,6 +533,7 @@ async function toApiRequestError(response: Response, fallbackMessage: string): P
       response.status,
       body.error?.message ?? `${fallbackMessage} with status ${response.status}`,
       body.error?.code,
+      body.error?.messageKey,
       body.error?.metadata,
     );
   } catch {
