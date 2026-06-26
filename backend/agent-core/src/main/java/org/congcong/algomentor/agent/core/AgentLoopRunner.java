@@ -22,6 +22,7 @@ import org.congcong.algomentor.agent.core.compaction.ToolResultCompactor;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
+import org.congcong.algomentor.common.trace.RequestTraceContext;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
@@ -143,10 +144,14 @@ public class AgentLoopRunner {
   public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
     Objects.requireNonNull(request, "request must not be null");
     return subscriber -> {
-      SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
+      SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>(
+          RequestTraceContext.contextAwareExecutor(java.util.concurrent.ForkJoinPool.commonPool()),
+          Flow.defaultBufferSize());
       AgentCancellationToken cancellationToken = new AgentCancellationToken();
       publisher.subscribe(new CancellableForwardingSubscriber(subscriber, cancellationToken));
-      Thread worker = new Thread(() -> runLoop(request, publisher, cancellationToken), "agent-loop-stream");
+      Thread worker = new Thread(
+          RequestTraceContext.wrap(() -> runLoop(request, publisher, cancellationToken)),
+          "agent-loop-stream");
       worker.setDaemon(true);
       cancellationToken.worker(worker);
       worker.start();

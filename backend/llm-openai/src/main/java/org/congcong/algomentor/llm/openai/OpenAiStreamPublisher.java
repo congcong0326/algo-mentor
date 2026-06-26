@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.congcong.algomentor.common.trace.RequestTraceContext;
 import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
@@ -31,6 +32,7 @@ final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
       LlmProviderId providerId,
       LlmModelId modelId
   ) {
+    super(RequestTraceContext.contextAwareExecutor(java.util.concurrent.ForkJoinPool.commonPool()), Flow.defaultBufferSize());
     this.stream = stream;
     this.mapper = mapper;
     this.providerId = providerId;
@@ -47,7 +49,7 @@ final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
     if (!started.compareAndSet(false, true)) {
       return;
     }
-    Thread worker = new Thread(() -> {
+    Thread worker = new Thread(RequestTraceContext.wrap(() -> {
       try (stream) {
         stream.stream()
             .takeWhile(ignored -> !cancelled.get())
@@ -61,7 +63,7 @@ final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
         submit(new LlmStreamEvent.Error(OpenAiLlmExceptionMapper.map(error, providerId, modelId)));
         close();
       }
-    }, "openai-llm-stream");
+    }), "openai-llm-stream");
     this.worker = worker;
     worker.setDaemon(true);
     worker.start();

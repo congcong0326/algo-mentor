@@ -718,14 +718,8 @@ describe('App', () => {
     expect(screen.queryByText('**注意：**')).not.toBeInTheDocument();
     expect(screen.getByText(/class Solution:/)).toBeInTheDocument();
 
-    expect(fetchMock).toHaveBeenCalledWith(
-      '/api/problems?sort=frontend_id_asc&locale=zh-CN&page=1&pageSize=20',
-      expect.objectContaining({ headers: { Accept: 'application/json' } }),
-    );
-    expect(fetchMock).toHaveBeenCalledWith(
-      '/api/problems/two-sum?locale=zh-CN',
-      expect.objectContaining({ headers: { Accept: 'application/json' } }),
-    );
+    expectHeader(fetchMock, '/api/problems?sort=frontend_id_asc&locale=zh-CN&page=1&pageSize=20', 'Accept', 'application/json');
+    expectHeader(fetchMock, '/api/problems/two-sum?locale=zh-CN', 'Accept', 'application/json');
   });
 
   it('requests filtered problem list and paginates', async () => {
@@ -839,10 +833,7 @@ describe('App', () => {
     expect(screen.getByText('基础题型恢复')).toBeInTheDocument();
     expect(screen.getByText('两数之和')).toBeInTheDocument();
     expect(screen.queryByText('进行中')).not.toBeInTheDocument();
-    expect(fetchMock).toHaveBeenCalledWith(
-      '/api/learning-plans/900',
-      expect.objectContaining({ headers: { Accept: 'application/json' } }),
-    );
+    expectHeader(fetchMock, '/api/learning-plans/900', 'Accept', 'application/json');
 
     fireEvent.click(screen.getByRole('button', { name: '返回方案库' }));
 
@@ -2107,12 +2098,22 @@ function mockStreamFetch(chunks: string[]) {
 }
 
 function expectCsrfHeader(fetchMock: ReturnType<typeof vi.fn>, url: string, method?: string) {
+  expectHeader(fetchMock, url, 'X-XSRF-TOKEN', 'csrf-token', method);
+}
+
+function expectHeader(
+  fetchMock: ReturnType<typeof vi.fn>,
+  url: string,
+  name: string,
+  value: string,
+  method?: string,
+) {
   const call = fetchMock.mock.calls.find(([calledUrl, init]) => (
     calledUrl === url && (!method || (init as RequestInit | undefined)?.method === method)
   ));
   expect(call).toBeDefined();
   const [, init] = call as [string, RequestInit];
-  expect(new Headers(init.headers).get('X-XSRF-TOKEN')).toBe('csrf-token');
+  expect(new Headers(init.headers).get(name)).toBe(value);
 }
 
 function isLearningPlanListUrl(url: string): boolean {

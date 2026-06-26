@@ -29,6 +29,7 @@ const jsonHeaders = {
   Accept: 'application/json',
 };
 
+const requestIdHeaderName = 'X-Request-Id';
 const xsrfCookieName = 'XSRF-TOKEN';
 const xsrfHeaderName = 'X-XSRF-TOKEN';
 
@@ -47,9 +48,8 @@ export class ApiRequestError extends Error {
 }
 
 export async function getHealth(): Promise<ApiResponse<HealthStatus>> {
-  const response = await fetch('/api/health', {
+  const response = await apiFetch('/api/health', {
     headers: jsonHeaders,
-    credentials: 'same-origin',
   });
 
   if (!response.ok) {
@@ -60,9 +60,8 @@ export async function getHealth(): Promise<ApiResponse<HealthStatus>> {
 }
 
 export async function getCurrentUser(): Promise<CurrentUser | undefined> {
-  const response = await fetch('/api/auth/me', {
+  const response = await apiFetch('/api/auth/me', {
     headers: jsonHeaders,
-    credentials: 'same-origin',
   });
 
   if (response.status === 401) {
@@ -90,9 +89,8 @@ export async function getProblems(
   query: ProblemListQuery = {},
   signal?: AbortSignal,
 ): Promise<ApiResponse<ProblemPage<ProblemListItem>>> {
-  const response = await fetch(`/api/problems${toQueryString(query)}`, {
+  const response = await apiFetch(`/api/problems${toQueryString(query)}`, {
     headers: jsonHeaders,
-    credentials: 'same-origin',
     signal,
   });
 
@@ -108,9 +106,8 @@ export async function getProblemDetail(
   locale?: ProblemListQuery['locale'],
   signal?: AbortSignal,
 ): Promise<ApiResponse<ProblemDetail>> {
-  const response = await fetch(`/api/problems/${encodeURIComponent(slug)}${toQueryString({ locale })}`, {
+  const response = await apiFetch(`/api/problems/${encodeURIComponent(slug)}${toQueryString({ locale })}`, {
     headers: jsonHeaders,
-    credentials: 'same-origin',
     signal,
   });
 
@@ -151,9 +148,8 @@ export async function getPracticeSession(
   sessionId: number,
   signal?: AbortSignal,
 ): Promise<ApiResponse<PracticeSessionResponse>> {
-  const response = await fetch(`/api/practice-sessions/${sessionId}`, {
+  const response = await apiFetch(`/api/practice-sessions/${sessionId}`, {
     headers: jsonHeaders,
-    credentials: 'same-origin',
     signal,
   });
 
@@ -168,9 +164,8 @@ export async function getPracticeSessionActiveRun(
   sessionId: number,
   signal?: AbortSignal,
 ): Promise<ApiResponse<PracticeActiveRun | null>> {
-  const response = await fetch(`/api/practice-sessions/${sessionId}/active-run`, {
+  const response = await apiFetch(`/api/practice-sessions/${sessionId}/active-run`, {
     headers: jsonHeaders,
-    credentials: 'same-origin',
     signal,
   });
 
@@ -186,9 +181,8 @@ export async function getPracticeSessionMessages(
   limit = 50,
   signal?: AbortSignal,
 ): Promise<ApiResponse<PracticeMessage[]>> {
-  const response = await fetch(`/api/practice-sessions/${sessionId}/messages${toQueryString({ limit })}`, {
+  const response = await apiFetch(`/api/practice-sessions/${sessionId}/messages${toQueryString({ limit })}`, {
     headers: jsonHeaders,
-    credentials: 'same-origin',
     signal,
   });
 
@@ -203,9 +197,8 @@ export async function getPracticeSessionReviews(
   sessionId: number,
   signal?: AbortSignal,
 ): Promise<ApiResponse<PracticeCodeReviewHistoryResponse>> {
-  const response = await fetch(`/api/practice-sessions/${sessionId}/reviews`, {
+  const response = await apiFetch(`/api/practice-sessions/${sessionId}/reviews`, {
     headers: jsonHeaders,
-    credentials: 'same-origin',
     signal,
   });
 
@@ -221,9 +214,8 @@ export async function getPracticeSessionReviewDetail(
   reviewId: number,
   signal?: AbortSignal,
 ): Promise<ApiResponse<PracticeCodeReviewDetail>> {
-  const response = await fetch(`/api/practice-sessions/${sessionId}/reviews/${reviewId}`, {
+  const response = await apiFetch(`/api/practice-sessions/${sessionId}/reviews/${reviewId}`, {
     headers: jsonHeaders,
-    credentials: 'same-origin',
     signal,
   });
 
@@ -292,7 +284,7 @@ export async function getLearningPlans(
   query: LearningPlanListQuery = {},
   signal?: AbortSignal,
 ): Promise<ApiResponse<LearningPlanPageResponse>> {
-  const response = await fetch(`/api/learning-plans${toQueryString(query)}`, {
+  const response = await apiFetch(`/api/learning-plans${toQueryString(query)}`, {
     headers: jsonHeaders,
     signal,
   });
@@ -321,7 +313,7 @@ export async function getLearningPlanDetail(
   planId: number,
   signal?: AbortSignal,
 ): Promise<ApiResponse<LearningPlanDetailResponse>> {
-  const response = await fetch(`/api/learning-plans/${planId}`, {
+  const response = await apiFetch(`/api/learning-plans/${planId}`, {
     headers: jsonHeaders,
     signal,
   });
@@ -475,6 +467,8 @@ function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Res
   const headers = new Headers(init.headers);
   const csrfToken = readCookie(xsrfCookieName);
 
+  headers.set(requestIdHeaderName, generateRequestId());
+
   if (csrfToken && method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS') {
     headers.set(xsrfHeaderName, csrfToken);
   }
@@ -484,6 +478,16 @@ function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Res
     credentials: init.credentials ?? 'same-origin',
     headers,
   });
+}
+
+function generateRequestId(): string {
+  if (globalThis.crypto?.getRandomValues) {
+    const bytes = new Uint8Array(6);
+    globalThis.crypto.getRandomValues(bytes);
+    return [...bytes].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+  }
+
+  return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`.slice(-12);
 }
 
 function readCookie(name: string): string | undefined {

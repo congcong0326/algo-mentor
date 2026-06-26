@@ -31,6 +31,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Stream;
+import org.congcong.algomentor.common.trace.RequestTraceContext;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
@@ -219,6 +222,28 @@ class OpenAiLlmProviderTest {
         .anySatisfy(event -> assertThat(event).isInstanceOf(LlmStreamEvent.Usage.class))
         .anySatisfy(event -> assertThat(event).isInstanceOf(LlmStreamEvent.MessageEnd.class));
     assertThat(client.lastParams.input()).isPresent();
+  }
+
+  @Test
+  void streamWorkerPropagatesRequestTraceContext() throws Exception {
+    AtomicReference<String> observedRequestId = new AtomicReference<>();
+    FakeResponsesClient client = new FakeResponsesClient(
+        response("done"),
+        new ObservingStreamResponse(
+            observedRequestId,
+            List.of(ResponseStreamEvent.ofCompleted(ResponseCompletedEvent.builder()
+                .response(response("hello"))
+                .sequenceNumber(1)
+                .build()))));
+    OpenAiLlmProvider provider = new OpenAiLlmProvider(enabledProperties(), client);
+    TestSubscriber subscriber = new TestSubscriber();
+
+    try (RequestTraceContext.RequestTraceScope ignored = RequestTraceContext.withRequestId("request-openai-1")) {
+      provider.stream(textRequest()).subscribe(subscriber);
+    }
+
+    assertThat(subscriber.finished.await(2, TimeUnit.SECONDS)).isTrue();
+    assertThat(observedRequestId).hasValue("request-openai-1");
   }
 
   @Test
@@ -418,6 +443,29 @@ class OpenAiLlmProviderTest {
       return java.util.stream.Stream.generate(() -> {
         throw error;
       });
+    }
+
+    @Override
+    public void close() {
+    }
+  }
+
+  private static final class ObservingStreamResponse implements StreamResponse<ResponseStreamEvent> {
+    private final AtomicReference<String> observedRequestId;
+    private final List<ResponseStreamEvent> events;
+
+    private ObservingStreamResponse(
+        AtomicReference<String> observedRequestId,
+        List<ResponseStreamEvent> events
+    ) {
+      this.observedRequestId = observedRequestId;
+      this.events = events;
+    }
+
+    @Override
+    public Stream<ResponseStreamEvent> stream() {
+      observedRequestId.set(RequestTraceContext.currentRequestId().orElse(null));
+      return events.stream();
     }
 
     @Override

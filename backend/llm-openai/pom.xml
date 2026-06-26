@@ -16,6 +16,11 @@
   <dependencies>
     <dependency>
       <groupId>org.congcong.algomentor</groupId>
+      <artifactId>common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.congcong.algomentor</groupId>
       <artifactId>llm-core</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -45,6 +50,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

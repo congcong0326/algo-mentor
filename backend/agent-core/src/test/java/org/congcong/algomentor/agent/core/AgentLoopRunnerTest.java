@@ -14,8 +14,10 @@ import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
 import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
+import org.congcong.algomentor.common.trace.RequestTraceContext;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
@@ -103,6 +105,27 @@ class AgentLoopRunnerTest {
     assertThat(runEnd.metadata())
         .containsEntry("runDbId", 501L)
         .containsEntry("practiceSessionId", 28L);
+  }
+
+  @Test
+  void streamWorkerPropagatesRequestTraceContext() {
+    FakeGateway gateway = new FakeGateway();
+    AtomicReference<String> observedRequestId = new AtomicReference<>();
+    gateway.beforeStream = () -> observedRequestId.set(RequestTraceContext.currentRequestId().orElse(null));
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("Use two indices."),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        4);
+
+    try (RequestTraceContext.RequestTraceScope ignored = RequestTraceContext.withRequestId("request-agent-1")) {
+      collect(runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))));
+    }
+
+    assertThat(observedRequestId).hasValue("request-agent-1");
   }
 
   @Test
