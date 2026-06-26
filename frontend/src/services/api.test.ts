@@ -1,11 +1,25 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { ApiResponse } from '../types/api';
 import {
   ApiRequestError,
   decideAgentToolPermission,
   getHealth,
+  getLearningPlans,
   logout,
+  requireApiData,
   streamAgentConversation,
 } from './api';
+
+type FetchMock = ReturnType<typeof vi.fn<(input: RequestInfo | URL, init?: RequestInit) => Promise<Response>>>;
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  Object.defineProperty(document, 'cookie', {
+    configurable: true,
+    writable: true,
+    value: '',
+  });
+});
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -16,19 +30,120 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
-describe('api request tracing', () => {
-  afterEach(() => {
-    vi.unstubAllGlobals();
-    Object.defineProperty(document, 'cookie', {
-      configurable: true,
-      writable: true,
-      value: '',
+function createFakeStorage(initialValues: Record<string, string> = {}): Storage {
+  const values = new Map(Object.entries(initialValues));
+
+  return {
+    get length() {
+      return values.size;
+    },
+    clear() {
+      values.clear();
+    },
+    getItem(key: string) {
+      return values.get(key) ?? null;
+    },
+    key(index: number) {
+      return Array.from(values.keys())[index] ?? null;
+    },
+    removeItem(key: string) {
+      values.delete(key);
+    },
+    setItem(key: string, value: string) {
+      values.set(key, value);
+    },
+  };
+}
+
+describe('api service', () => {
+  it('sends Accept-Language from the current locale', async () => {
+    vi.stubGlobal('localStorage', createFakeStorage({ 'algo-mentor-locale': 'en-US' }));
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x01, 0x02, 0x03, 0x04, 0x05, 0x06]) });
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        items: [],
+        total: 0,
+        page: 1,
+        pageSize: 20,
+        totalPages: 0,
+        activeCount: 0,
+        archivedCount: 0,
+        latestCreatedAt: null,
+      },
+      timestamp: '2026-06-22T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getLearningPlans();
+
+    const headers = requestHeaders(fetchMock);
+    expect(headers.get('Accept')).toBe('application/json');
+    expect(headers.get('Accept-Language')).toBe('en-US');
+  });
+
+  it('preserves server error code messageKey and metadata', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: false,
+      error: {
+        code: 'AGENT_RUN_IN_PROGRESS',
+        messageKey: 'api.error.AGENT_RUN_IN_PROGRESS',
+        message: 'This conversation is already generating a response.',
+        metadata: { taskId: 42 },
+      },
+      timestamp: '2026-06-22T00:00:00Z',
+    }, 409)));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(getLearningPlans()).rejects.toMatchObject({
+      status: 409,
+      code: 'AGENT_RUN_IN_PROGRESS',
+      messageKey: 'api.error.AGENT_RUN_IN_PROGRESS',
+      message: 'This conversation is already generating a response.',
+      metadata: { taskId: 42 },
     });
   });
 
+  it('converts unsuccessful response envelopes to ApiRequestError', () => {
+    const response: ApiResponse<unknown> = {
+      success: false,
+      error: {
+        code: 'VALIDATION_FAILED',
+        messageKey: 'api.error.VALIDATION_FAILED',
+        message: '请求参数校验失败。',
+        metadata: { field: 'message' },
+      },
+      timestamp: '2026-06-22T00:00:00Z',
+    };
+
+    expect(() => requireApiData(response, 'fallback message')).toThrow(ApiRequestError);
+    try {
+      requireApiData(response, 'fallback message');
+    } catch (error) {
+      expect(error).toMatchObject({
+        status: 0,
+        code: 'VALIDATION_FAILED',
+        messageKey: 'api.error.VALIDATION_FAILED',
+        message: '请求参数校验失败。',
+        metadata: { field: 'message' },
+      });
+    }
+  });
+
+  it('uses the provided fallback when an unsuccessful response has no error body', () => {
+    const response: ApiResponse<unknown> = {
+      success: false,
+      timestamp: '2026-06-22T00:00:00Z',
+    };
+
+    expect(() => requireApiData(response, 'fallback message')).toThrow('fallback message');
+  });
+});
+
+describe('api request tracing', () => {
   it('adds a unique X-Request-Id to every request', async () => {
     vi.stubGlobal('crypto', { getRandomValues: sequentialRandomValues() });
-    const fetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
       success: true,
       data: { status: 'UP' },
       timestamp: '2026-06-26T00:00:00Z',
@@ -49,7 +164,7 @@ describe('api request tracing', () => {
       writable: true,
       value: 'XSRF-TOKEN=csrf-token',
     });
-    const fetchMock = vi.fn(() => Promise.resolve(new Response(null, { status: 204 })));
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(new Response(null, { status: 204 })));
     vi.stubGlobal('fetch', fetchMock);
 
     await logout();
@@ -61,7 +176,7 @@ describe('api request tracing', () => {
 
   it('adds request id to sse requests without changing idempotency key', async () => {
     vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x13, 0x14, 0x15, 0x16, 0x17, 0x18]) });
-    const fetchMock = vi.fn(() => Promise.resolve(new Response(
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(new Response(
       [
         'event:agent_run_end',
         'data:{"runId":"run-1"}',
@@ -116,7 +231,7 @@ describe('api request tracing', () => {
       writable: true,
       value: 'XSRF-TOKEN=csrf-token',
     });
-    const fetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
       success: true,
       data: {
         permissionRequestId: 'permission/1',
@@ -158,7 +273,7 @@ describe('api request tracing', () => {
 
   it('throws ApiRequestError with backend code and message for rejected permission decisions', async () => {
     vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x1f, 0x20, 0x21, 0x22, 0x23, 0x24]) });
-    const fetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
       success: false,
       error: {
         code: 'TOOL_PERMISSION_REQUEST_EXPIRED',
@@ -188,7 +303,7 @@ describe('api request tracing', () => {
 });
 
 function requestHeaders(
-  fetchMock: ReturnType<typeof vi.fn>,
+  fetchMock: FetchMock,
   callIndex = 0,
 ): Headers {
   const call = fetchMock.mock.calls[callIndex] as [RequestInfo | URL, RequestInit];

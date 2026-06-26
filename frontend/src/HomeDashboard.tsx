@@ -1,12 +1,14 @@
-import { ArrowRight, BrainCircuit, CalendarCheck, Library, ListChecks, Sparkles } from 'lucide-react';
+import { BrainCircuit, CalendarCheck, Library, Sparkles } from 'lucide-react';
 import type { AppView } from './app/navigation';
 import { useI18n } from './i18n/I18nProvider';
 
 interface HomeDashboardProps {
-  onNavigate: (view: AppView) => void;
+  onNavigate?: (view: AppView) => void;
+  onPrimaryAction?: () => void;
+  primaryActionLabel?: string;
 }
 
-export default function HomeDashboard({ onNavigate }: HomeDashboardProps) {
+export default function HomeDashboard({ onNavigate, onPrimaryAction, primaryActionLabel }: HomeDashboardProps) {
   const { resources } = useI18n();
   const featureCards = [
     {
@@ -25,61 +27,46 @@ export default function HomeDashboard({ onNavigate }: HomeDashboardProps) {
       icon: BrainCircuit,
     },
   ];
-  const workflowSteps = [
-    ['1', resources.home.stepPickTitle, resources.home.stepPickDescription],
-    ['2', resources.home.stepPracticeTitle, resources.home.stepPracticeDescription],
-    ['3', resources.home.stepExplainTitle, resources.home.stepExplainDescription],
-    ['∞', resources.home.stepReviewTitle, resources.home.stepReviewDescription],
-  ];
+  const companyMarks = ['A', 'AWS', 'T', 'S', 'G', 'Meta', 'M', 'N', 'A'];
+  const handlePrimaryAction = onPrimaryAction ?? (() => onNavigate?.('learningPlans'));
 
   return (
     <section className="home-page" aria-label={resources.home.ariaLabel}>
       <section className="home-hero" aria-labelledby="home-title">
+        <div className="home-code-backdrop" aria-hidden="true">
+          <pre>{`Given an array of integers nums and an integer target,
+return indices of the two numbers such that they add up to target.
+
+Example 1:
+  Input: nums = [2,7,11,15], target = 9
+  Output: [0,1]
+
+for (let i = 0; i < nums.length; i++) {
+  const complement = target - nums[i];
+  if (hashmap.has(complement)) return [hashmap.get(complement), i];
+  hashmap.set(nums[i], i);
+}`}</pre>
+        </div>
         <div className="home-hero-copy">
           <p className="home-kicker">{resources.home.kicker}</p>
-          <h1 id="home-title">{resources.home.title}</h1>
+          <h1 id="home-title">
+            {resources.home.title}
+            <strong>{resources.home.titleHighlight}</strong>
+          </h1>
           <p className="home-subtitle">
             {resources.home.subtitle}
           </p>
           <div className="home-hero-actions">
-            <button className="primary-button hero-action" onClick={() => onNavigate('learningPlans')} type="button">
-              <Sparkles aria-hidden="true" />
-              <span>{resources.home.generatePlan}</span>
-            </button>
-            <button className="secondary-button hero-action" onClick={() => onNavigate('problems')} type="button">
-              <Library aria-hidden="true" />
-              <span>{resources.home.browseProblems}</span>
+            <button className="primary-button hero-action" onClick={handlePrimaryAction} type="button">
+              <span>{primaryActionLabel ?? resources.home.startUsing}</span>
             </button>
           </div>
-        </div>
-
-        <div className="home-preview" aria-label={resources.home.previewLabel}>
-          <div className="preview-window">
-            <div className="preview-toolbar" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </div>
-            <div className="preview-content">
-              <div className="preview-summary">
-                <span>{resources.home.previewFocusLabel}</span>
-                <strong>{resources.home.previewFocusValue}</strong>
-              </div>
-              <div className="preview-task active">
-                <ListChecks aria-hidden="true" />
-                <span>{resources.home.previewTaskOne}</span>
-                <strong>{resources.home.previewTaskOneStatus}</strong>
-              </div>
-              <div className="preview-task">
-                <BrainCircuit aria-hidden="true" />
-                <span>{resources.home.previewTaskTwo}</span>
-                <strong>{resources.home.previewTaskTwoStatus}</strong>
-              </div>
-              <div className="preview-task">
-                <CalendarCheck aria-hidden="true" />
-                <span>{resources.home.previewTaskThree}</span>
-                <strong>{resources.home.previewTaskThreeStatus}</strong>
-              </div>
+          <div className="home-company-strip" aria-label={resources.home.companyStripLabel}>
+            <p>{resources.home.companyStripTitle}</p>
+            <div>
+              {companyMarks.map((mark, index) => (
+                <span className="company-mark" key={`${mark}-${index}`}>{mark}</span>
+              ))}
             </div>
           </div>
         </div>
@@ -104,32 +91,7 @@ export default function HomeDashboard({ onNavigate }: HomeDashboardProps) {
         </div>
       </section>
 
-      <section className="home-section" aria-labelledby="home-workflow-title">
-        <div className="home-section-header">
-          <p className="eyebrow">{resources.home.loopKicker}</p>
-          <h2 id="home-workflow-title">{resources.home.loopTitle}</h2>
-        </div>
-        <ol className="home-workflow" aria-label={resources.home.loopLabel}>
-          {workflowSteps.map(([index, title, description]) => (
-            <li className="home-workflow-step" key={title}>
-              <span className="workflow-index" aria-hidden="true">{index}</span>
-              <strong>{title}</strong>
-              <span>{description}</span>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="home-cta" aria-label={resources.home.ctaLabel}>
-        <div>
-          <h2>{resources.home.ctaTitle}</h2>
-          <p>{resources.home.ctaDescription}</p>
-        </div>
-        <button className="primary-button hero-action" onClick={() => onNavigate('learningPlans')} type="button">
-          <span>{resources.home.enterPlans}</span>
-          <ArrowRight aria-hidden="true" />
-        </button>
-      </section>
+      <div className="home-review-anchor" aria-hidden="true">{resources.home.reviewCardCta}</div>
     </section>
   );
 }

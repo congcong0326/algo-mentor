@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @WebMvcTest(controllers = AiGovernanceExceptionHandlerTest.TestAiGovernanceController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @Import({
-    AiGovernanceExceptionHandler.class,
+    LocalizedApiExceptionHandler.class,
     AiGovernanceExceptionHandlerTest.TestAiGovernanceController.class
 })
 class AiGovernanceExceptionHandlerTest {
@@ -35,15 +35,19 @@ class AiGovernanceExceptionHandlerTest {
         .andExpect(status().isTooManyRequests())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.error.code").value("AI_QUOTA_EXCEEDED"))
+        .andExpect(jsonPath("$.error.messageKey").value("api.error.AI_QUOTA_EXCEEDED"))
         .andExpect(jsonPath("$.error.message").value("今日 AI 使用次数已达上限，请明天再试。"));
   }
 
   @Test
   void mapsConcurrentRunConflictToStableApiResponse() throws Exception {
-    mockMvc.perform(get("/test/ai-governance/concurrent"))
+    mockMvc.perform(get("/test/ai-governance/concurrent").header("Accept-Language", "en-US"))
         .andExpect(status().isConflict())
         .andExpect(jsonPath("$.error.code").value("AI_CONCURRENT_RUN_CONFLICT"))
-        .andExpect(jsonPath("$.error.message").value("已有一个 AI 任务正在运行，请等待完成后再试。"));
+        .andExpect(jsonPath("$.error.messageKey").value("api.error.AI_CONCURRENT_RUN_CONFLICT"))
+        .andExpect(jsonPath("$.error.message")
+            .value("Another AI task is already running. Please wait until it finishes."))
+        .andExpect(jsonPath("$.error.metadata.taskId").value(42));
   }
 
   @RestController
@@ -66,7 +70,7 @@ class AiGovernanceExceptionHandlerTest {
           AiRunStatus.REJECTED_CONCURRENT,
           "已有一个 AI 任务正在运行，请等待完成后再试。",
           HttpStatus.CONFLICT,
-          Map.of());
+          Map.of("taskId", 42));
     }
   }
 }

@@ -19,6 +19,8 @@ import type {
   PracticeCodeReviewHistoryResponse,
   PracticeProgressStatus,
   PracticeSessionResponse,
+  PasswordLoginRequest,
+  PasswordRegisterRequest,
   ProblemDetail,
   ProblemListItem,
   ProblemListQuery,
@@ -27,26 +29,44 @@ import type {
   SseStreamEvent,
 } from '../types/api';
 
-const jsonHeaders = {
+const jsonHeaders: HeadersInit = {
   Accept: 'application/json',
 };
 
 const requestIdHeaderName = 'X-Request-Id';
 const xsrfCookieName = 'XSRF-TOKEN';
 const xsrfHeaderName = 'X-XSRF-TOKEN';
+const localeStorageKey = 'algo-mentor-locale';
+const defaultLocale = 'zh-CN';
+const supportedLocales = new Set(['zh-CN', 'en-US']);
 
 export class ApiRequestError extends Error {
   readonly status: number;
   readonly code?: string;
+  readonly messageKey?: string;
   readonly metadata?: Record<string, unknown>;
 
-  constructor(status: number, message: string, code?: string, metadata?: Record<string, unknown>) {
+  constructor(
+    status: number,
+    message: string,
+    code?: string,
+    messageKey?: string,
+    metadata?: Record<string, unknown>,
+  ) {
     super(message);
     this.name = 'ApiRequestError';
     this.status = status;
     this.code = code;
+    this.messageKey = messageKey;
     this.metadata = metadata;
   }
+}
+
+export function requireApiData<T>(response: ApiResponse<T>, fallbackMessage: string): T {
+  if (response.success && response.data !== undefined) {
+    return response.data;
+  }
+  throw apiResponseToRequestError(response, fallbackMessage);
 }
 
 export async function getHealth(): Promise<ApiResponse<HealthStatus>> {
@@ -55,7 +75,7 @@ export async function getHealth(): Promise<ApiResponse<HealthStatus>> {
   });
 
   if (!response.ok) {
-    throw new Error(`Health request failed with status ${response.status}`);
+    throw await toApiRequestError(response, 'Health request failed');
   }
 
   return response.json();
@@ -75,6 +95,42 @@ export async function getCurrentUser(): Promise<CurrentUser | undefined> {
 
   const body = await response.json() as ApiResponse<CurrentUser>;
   return body.data;
+}
+
+export async function loginWithPassword(request: PasswordLoginRequest): Promise<CurrentUser> {
+  const response = await apiFetch('/api/auth/login', {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Login request failed');
+  }
+
+  const body = await response.json() as ApiResponse<CurrentUser>;
+  return requireApiData(body, 'Login request failed');
+}
+
+export async function registerWithPassword(request: PasswordRegisterRequest): Promise<CurrentUser> {
+  const response = await apiFetch('/api/auth/register', {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Registration request failed');
+  }
+
+  const body = await response.json() as ApiResponse<CurrentUser>;
+  return requireApiData(body, 'Registration request failed');
 }
 
 export async function logout(): Promise<void> {
@@ -97,7 +153,7 @@ export async function getProblems(
   });
 
   if (!response.ok) {
-    throw new Error(`Problems request failed with status ${response.status}`);
+    throw await toApiRequestError(response, 'Problems request failed');
   }
 
   return response.json();
@@ -114,7 +170,7 @@ export async function getProblemDetail(
   });
 
   if (!response.ok) {
-    throw new Error(`Problem detail request failed with status ${response.status}`);
+    throw await toApiRequestError(response, 'Problem detail request failed');
   }
 
   return response.json();
@@ -491,7 +547,7 @@ export async function decideAgentToolPermission(
 
 function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
   const method = (init.method ?? 'GET').toUpperCase();
-  const headers = new Headers(init.headers);
+  const headers = apiHeaders(init.headers);
   const csrfToken = readCookie(xsrfCookieName);
 
   headers.set(requestIdHeaderName, generateRequestId());
@@ -517,6 +573,26 @@ function generateRequestId(): string {
   return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`.slice(-12);
 }
 
+function apiHeaders(headersInit?: HeadersInit): Headers {
+  const headers = new Headers(headersInit);
+  if (!headers.has('Accept-Language')) {
+    headers.set('Accept-Language', currentApiLocale());
+  }
+  return headers;
+}
+
+function currentApiLocale(): string {
+  if (typeof window === 'undefined' || typeof window.localStorage?.getItem !== 'function') {
+    return defaultLocale;
+  }
+  try {
+    const storedLocale = window.localStorage.getItem(localeStorageKey);
+    return storedLocale && supportedLocales.has(storedLocale) ? storedLocale : defaultLocale;
+  } catch {
+    return defaultLocale;
+  }
+}
+
 function readCookie(name: string): string | undefined {
   const prefix = `${encodeURIComponent(name)}=`;
   return document.cookie
@@ -529,15 +605,24 @@ function readCookie(name: string): string | undefined {
 async function toApiRequestError(response: Response, fallbackMessage: string): Promise<ApiRequestError> {
   try {
     const body = await response.json() as ApiResponse<unknown>;
-    return new ApiRequestError(
-      response.status,
-      body.error?.message ?? `${fallbackMessage} with status ${response.status}`,
-      body.error?.code,
-      body.error?.metadata,
-    );
+    return apiResponseToRequestError(body, `${fallbackMessage} with status ${response.status}`, response.status);
   } catch {
     return new ApiRequestError(response.status, `${fallbackMessage} with status ${response.status}`);
   }
+}
+
+function apiResponseToRequestError<T>(
+  response: ApiResponse<T>,
+  fallbackMessage: string,
+  status = 0,
+): ApiRequestError {
+  return new ApiRequestError(
+    status,
+    response.error?.message ?? fallbackMessage,
+    response.error?.code,
+    response.error?.messageKey,
+    response.error?.metadata,
+  );
 }
 
 function compactRequest(request: AgentConversationStreamRequest): AgentConversationStreamRequest {

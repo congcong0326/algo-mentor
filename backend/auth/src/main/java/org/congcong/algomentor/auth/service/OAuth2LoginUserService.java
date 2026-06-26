@@ -28,10 +28,20 @@ public class OAuth2LoginUserService {
 
   private final AuthUserRepository repository;
   private final Clock clock;
+  private final AdminEmailRoleService adminEmailRoleService;
 
   public OAuth2LoginUserService(AuthUserRepository repository, Clock clock) {
+    this(repository, clock, null);
+  }
+
+  public OAuth2LoginUserService(
+      AuthUserRepository repository,
+      Clock clock,
+      AdminEmailRoleService adminEmailRoleService
+  ) {
     this.repository = repository;
     this.clock = clock;
+    this.adminEmailRoleService = adminEmailRoleService;
   }
 
   @Transactional
@@ -56,6 +66,7 @@ public class OAuth2LoginUserService {
       repository.updateOAuthAccountProfile(account.id(), email, displayName, avatarUrl, now);
     }
     AuthUser updatedUser = repository.updateLastLoginAt(user.id(), now);
+    ensureConfiguredAdminRole(updatedUser);
     List<AuthRole> roles = repository.findRoles(updatedUser.id());
     List<AuthRole> effectiveRoles = roles.isEmpty() ? List.of(AuthRole.USER) : roles;
     log.info(
@@ -67,6 +78,12 @@ public class OAuth2LoginUserService {
         avatarUrl != null,
         effectiveRoles);
     return toPrincipal(updatedUser, effectiveRoles);
+  }
+
+  private void ensureConfiguredAdminRole(AuthUser user) {
+    if (adminEmailRoleService != null) {
+      adminEmailRoleService.ensureAdminRole(user.id(), user.email());
+    }
   }
 
   private OAuthAccount createGoogleAccount(

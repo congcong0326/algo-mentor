@@ -30,14 +30,57 @@ export interface LocaleResources {
   };
   auth: {
     subtitle: string;
+    welcomeEyebrow: string;
+    welcomeTitle: string;
+    welcomeDescription: string;
+    featurePlanTitle: string;
+    featurePlanDescription: string;
+    featurePracticeTitle: string;
+    featurePracticeDescription: string;
+    featureReviewTitle: string;
+    featureReviewDescription: string;
+    previewTitle: string;
+    previewSubtitle: string;
+    previewFocusLabel: string;
+    previewFocusValue: string;
+    previewItems: Array<{
+      title: string;
+      detail: string;
+    }>;
+    emailAuthDivider: string;
+    socialAuthDivider: string;
+    needHelpPrefix: string;
+    supportEmail: string;
+    termsPrefix: string;
+    termsLabel: string;
+    termsConnector: string;
+    privacyLabel: string;
     failed: string;
     googleLogin: string;
+    emailLabel: string;
+    emailPlaceholder: string;
+    passwordLabel: string;
+    passwordPlaceholder: string;
+    displayNameLabel: string;
+    displayNamePlaceholder: string;
+    passwordLogin: string;
+    passwordRegister: string;
+    loggingIn: string;
+    registering: string;
+    showLogin: string;
+    showRegister: string;
+    loginModeTitle: string;
+    registerModeTitle: string;
+    loginAction: string;
+    validationEmailRequired: string;
+    validationPasswordRequired: string;
   };
   nav: {
     home: string;
     learningPlans: string;
     problems: string;
     debug: string;
+    forbidden: string;
   };
   common: {
     cancel: string;
@@ -63,8 +106,10 @@ export interface LocaleResources {
     ariaLabel: string;
     kicker: string;
     title: string;
+    titleHighlight: string;
     subtitle: string;
     generatePlan: string;
+    startUsing: string;
     browseProblems: string;
     previewLabel: string;
     previewFocusLabel: string;
@@ -75,6 +120,9 @@ export interface LocaleResources {
     previewTaskTwoStatus: string;
     previewTaskThree: string;
     previewTaskThreeStatus: string;
+    companyStripLabel: string;
+    companyStripTitle: string;
+    reviewCardCta: string;
     capabilitiesKicker: string;
     capabilitiesTitle: string;
     featurePlanTitle: string;
@@ -328,14 +376,67 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     },
     auth: {
       subtitle: '算法学习、刷题训练和 AI 训练方案生成工具',
+      welcomeEyebrow: '面向算法学习者的 AI 训练工作台',
+      welcomeTitle: '把刷题变成可持续的训练节奏',
+      welcomeDescription: '让学习计划、题库练习、AI 讲解和错题复盘连成一个闭环，减少随机刷题，把注意力放回真正需要突破的知识点。',
+      featurePlanTitle: 'AI 方案生成',
+      featurePlanDescription: '按目标、时间和薄弱主题拆出阶段计划。',
+      featurePracticeTitle: '题库训练',
+      featurePracticeDescription: '围绕难度、标签和进度快速进入练习。',
+      featureReviewTitle: '错题复盘',
+      featureReviewDescription: '把讲解、代码反馈和历史记录沉淀下来。',
+      previewTitle: '本周训练节奏',
+      previewSubtitle: '示例学习流',
+      previewFocusLabel: '当前重点',
+      previewFocusValue: '动态规划 · 中等题',
+      previewItems: [
+        {
+          title: '生成 4 周学习计划',
+          detail: '根据面试冲刺目标安排每日主题。',
+        },
+        {
+          title: '完成 12 道核心题',
+          detail: '优先处理最长递增子序列和背包变体。',
+        },
+        {
+          title: '复盘 3 次代码审查',
+          detail: '记录边界条件、复杂度和可读性问题。',
+        },
+      ],
+      emailAuthDivider: '或使用邮箱继续',
+      socialAuthDivider: '或继续使用',
+      needHelpPrefix: '需要帮助？联系 ',
+      supportEmail: 'support@algomentor.local',
+      termsPrefix: '继续即表示你理解并同意',
+      termsLabel: '服务条款',
+      termsConnector: ' 和 ',
+      privacyLabel: '隐私政策',
       failed: '登录失败，请重新尝试。',
       googleLogin: '使用 Google 登录',
+      emailLabel: '邮箱',
+      emailPlaceholder: 'you@example.com',
+      passwordLabel: '密码',
+      passwordPlaceholder: '至少 8 个字符',
+      displayNameLabel: '昵称',
+      displayNamePlaceholder: '可选',
+      passwordLogin: '邮箱登录',
+      passwordRegister: '注册并登录',
+      loggingIn: '登录中',
+      registering: '注册中',
+      showLogin: '已有账号，去登录',
+      showRegister: '创建邮箱账号',
+      loginModeTitle: '邮箱密码登录',
+      registerModeTitle: '注册邮箱账号',
+      loginAction: '登录',
+      validationEmailRequired: '请输入邮箱。',
+      validationPasswordRequired: '请输入密码。',
     },
     nav: {
       home: '首页',
       learningPlans: '方案',
       problems: '题库',
       debug: 'AI 调试',
+      forbidden: '无权访问',
     },
     common: {
       cancel: '取消',
@@ -360,9 +461,11 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     home: {
       ariaLabel: '首页',
       kicker: 'ALGORITHM LEARNING SYSTEM',
-      title: '把算法练习变成可复盘的学习系统',
-      subtitle: 'Algo Mentor 把训练方案、题库训练和 AI 讲解放在同一个工作台里，帮助你持续练习、及时复盘、沉淀题型方法。',
-      generatePlan: '生成训练方案',
+      title: '用 AI 掌握算法刷题',
+      titleHighlight: '智能复盘系统',
+      subtitle: 'make your LeetCode review easier',
+      generatePlan: 'Start Reviewing',
+      startUsing: '开始使用',
       browseProblems: '浏览题库',
       previewLabel: '学习工作台预览',
       previewFocusLabel: '本周重点',
@@ -373,6 +476,9 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       previewTaskTwoStatus: '今天',
       previewTaskThree: '更新下周训练方案',
       previewTaskThreeStatus: '周日',
+      companyStripLabel: '训练目标公司',
+      companyStripTitle: 'PREP FOR INTERVIEWS AT',
+      reviewCardCta: 'REVIEW CARD',
       capabilitiesKicker: 'CAPABILITIES',
       capabilitiesTitle: '高频训练入口放在第一屏之后',
       featurePlanTitle: '训练方案',
@@ -669,14 +775,67 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     },
     auth: {
       subtitle: 'Algorithm practice, problem training, and AI learning plan generation.',
+      welcomeEyebrow: 'AI training workspace for algorithm learners',
+      welcomeTitle: 'Turn practice into a sustainable training rhythm',
+      welcomeDescription: 'Connect learning plans, problem practice, AI explanations, and review history into one loop so every session focuses on the concepts that need work.',
+      featurePlanTitle: 'AI plan generation',
+      featurePlanDescription: 'Break goals, available time, and weak topics into staged plans.',
+      featurePracticeTitle: 'Problem training',
+      featurePracticeDescription: 'Jump into practice by difficulty, tags, and progress.',
+      featureReviewTitle: 'Mistake review',
+      featureReviewDescription: 'Keep explanations, code feedback, and history in one place.',
+      previewTitle: 'This week training rhythm',
+      previewSubtitle: 'Example study flow',
+      previewFocusLabel: 'Current focus',
+      previewFocusValue: 'Dynamic programming · Medium',
+      previewItems: [
+        {
+          title: 'Generate a 4-week plan',
+          detail: 'Schedule daily themes around the interview sprint.',
+        },
+        {
+          title: 'Finish 12 core problems',
+          detail: 'Prioritize LIS and knapsack variants.',
+        },
+        {
+          title: 'Review 3 code reviews',
+          detail: 'Capture edge cases, complexity, and readability issues.',
+        },
+      ],
+      emailAuthDivider: 'Or continue with email',
+      socialAuthDivider: 'or continue with',
+      needHelpPrefix: 'Need help? Contact ',
+      supportEmail: 'support@algomentor.local',
+      termsPrefix: 'By continuing, you acknowledge and agree to the ',
+      termsLabel: 'Terms & Conditions',
+      termsConnector: ' and ',
+      privacyLabel: 'Privacy Policy',
       failed: 'Sign-in failed. Please try again.',
       googleLogin: 'Sign in with Google',
+      emailLabel: 'Email',
+      emailPlaceholder: 'you@example.com',
+      passwordLabel: 'Password',
+      passwordPlaceholder: 'At least 8 characters',
+      displayNameLabel: 'Display name',
+      displayNamePlaceholder: 'Optional',
+      passwordLogin: 'Sign in',
+      passwordRegister: 'Create account',
+      loggingIn: 'Signing in',
+      registering: 'Creating account',
+      showLogin: 'Already have an account',
+      showRegister: 'Create email account',
+      loginModeTitle: 'Email sign-in',
+      registerModeTitle: 'Create email account',
+      loginAction: 'Log in',
+      validationEmailRequired: 'Enter your email.',
+      validationPasswordRequired: 'Enter your password.',
     },
     nav: {
       home: 'Dashboard',
       learningPlans: 'Plans',
       problems: 'Problems',
       debug: 'AI Debug',
+      forbidden: 'Not authorized',
     },
     common: {
       cancel: 'Cancel',
@@ -701,9 +860,11 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     home: {
       ariaLabel: 'Dashboard',
       kicker: 'ALGORITHM LEARNING SYSTEM',
-      title: 'Turn algorithm practice into a reviewable learning system',
-      subtitle: 'Algo Mentor brings learning plans, problem practice, and AI explanations into one workspace so practice turns into durable patterns.',
-      generatePlan: 'Generate Plan',
+      title: 'Master LeetCode with',
+      titleHighlight: 'Smart Review System',
+      subtitle: 'make your LeetCode review easier',
+      generatePlan: 'Start Reviewing',
+      startUsing: 'Start using',
       browseProblems: 'Browse Problems',
       previewLabel: 'Learning workspace preview',
       previewFocusLabel: 'This Week',
@@ -714,6 +875,9 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       previewTaskTwoStatus: 'Today',
       previewTaskThree: 'Update next week plan',
       previewTaskThreeStatus: 'Sunday',
+      companyStripLabel: 'Target companies',
+      companyStripTitle: 'PREP FOR INTERVIEWS AT',
+      reviewCardCta: 'REVIEW CARD',
       capabilitiesKicker: 'CAPABILITIES',
       capabilitiesTitle: 'High-frequency training entry points stay close',
       featurePlanTitle: 'Learning Plans',

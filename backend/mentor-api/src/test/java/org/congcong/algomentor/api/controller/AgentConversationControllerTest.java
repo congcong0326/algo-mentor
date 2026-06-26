@@ -67,6 +67,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -97,6 +99,10 @@ class AgentConversationControllerTest {
 
   @BeforeEach
   void configureGovernance() {
+    SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
+        "admin@example.com",
+        "n/a",
+        List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_ADMIN"))));
     when(governance.admit(any(AiRunContext.class))).thenAnswer(invocation -> {
       AiRunContext context = invocation.getArgument(0);
       lastGovernanceContext = context;
@@ -134,6 +140,7 @@ class AgentConversationControllerTest {
         lockManager.release(lockToken);
       }
     } finally {
+      SecurityContextHolder.clearContext();
       agentLoopRunner.lastRequest = null;
       conversationRepository.lastRequest = null;
       lastGovernanceContext = null;
@@ -245,6 +252,7 @@ class AgentConversationControllerTest {
           .andExpect(status().isConflict())
           .andExpect(jsonPath("$.success").value(false))
           .andExpect(jsonPath("$.error.code").value("AGENT_RUN_IN_PROGRESS"))
+          .andExpect(jsonPath("$.error.messageKey").value("api.error.AGENT_RUN_IN_PROGRESS"))
           .andExpect(jsonPath("$.error.metadata.taskId").value(1));
 
       org.assertj.core.api.Assertions.assertThat(agentLoopRunner.lastRequest).isNull();
@@ -252,6 +260,22 @@ class AgentConversationControllerTest {
     } finally {
       lockManager.release(token);
     }
+  }
+
+  @Test
+  void streamConversationBlankMessageReturnsValidationFailure() throws Exception {
+    mockMvc.perform(post("/api/agent/conversations/stream")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .content("{\"message\":\"   \"}"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.error.code").value("VALIDATION_FAILED"))
+        .andExpect(jsonPath("$.error.messageKey").value("api.error.VALIDATION_FAILED"))
+        .andExpect(jsonPath("$.error.message").value("请求参数校验失败。"));
+
+    org.assertj.core.api.Assertions.assertThat(agentLoopRunner.lastRequest).isNull();
+    org.assertj.core.api.Assertions.assertThat(conversationRepository.lastRequest).isNull();
   }
 
   @TestConfiguration(proxyBeanMethods = false)

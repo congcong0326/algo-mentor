@@ -2,7 +2,7 @@ import { LogOut, Moon, Sun } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { NAVIGATION_ITEMS, type AppView } from './navigation';
 import type { AppTheme } from './theme';
-import type { CurrentUser } from '../types/api';
+import type { AuthPermission, CurrentUser } from '../types/api';
 import LanguageSelector from '../i18n/LanguageSelector';
 import { useI18n } from '../i18n/I18nProvider';
 
@@ -35,6 +35,7 @@ export default function AppShell({
   const userLabel = currentUser.displayName || currentUser.email || resources.app.unknownUser(currentUser.id);
   const ThemeIcon = theme === 'light' ? Moon : Sun;
   const themeLabel = theme === 'light' ? resources.app.switchToDarkMode : resources.app.switchToLightMode;
+  const permissions = new Set<AuthPermission>(currentUser.permissions ?? []);
 
   return (
     <main className="app-shell">
@@ -44,7 +45,7 @@ export default function AppShell({
           <strong>{resources.app.brandName}</strong>
         </div>
         <nav className="app-nav" aria-label={resources.app.mainNavigation}>
-          {NAVIGATION_ITEMS.map((item) => {
+          {NAVIGATION_ITEMS.filter((item) => !item.permission || permissions.has(item.permission)).map((item) => {
             const Icon = item.icon;
             return (
               <button

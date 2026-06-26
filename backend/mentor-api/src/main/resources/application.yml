@@ -63,6 +63,7 @@ algo-mentor:
     session-timeout: ${AUTH_SESSION_TIMEOUT:7d}
     cookie-secure: ${AUTH_COOKIE_SECURE:false}
     cookie-same-site: ${AUTH_COOKIE_SAME_SITE:Lax}
+    admin-emails: ${AUTH_ADMIN_EMAILS:}
   agent:
     max-steps: ${AGENT_MAX_STEPS:4}
     tool-choice: ${AGENT_TOOL_CHOICE:auto}

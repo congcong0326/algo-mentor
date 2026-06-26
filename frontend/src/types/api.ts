@@ -1,5 +1,6 @@
 export interface ApiError {
   code: string;
+  messageKey?: string;
   message: string;
   metadata?: Record<string, unknown>;
 }
@@ -17,6 +18,13 @@ export interface HealthStatus {
 
 export type AuthRole = 'USER' | 'ADMIN';
 export type AuthUserStatus = 'ACTIVE' | 'DISABLED';
+export type AuthPermission =
+  | 'learning-plan:read:own'
+  | 'learning-plan:write:own'
+  | 'practice-session:write:own'
+  | 'problem:write'
+  | 'user:manage'
+  | 'debug:access';
 
 export interface CurrentUser {
   id: number;
@@ -24,7 +32,17 @@ export interface CurrentUser {
   displayName?: string;
   avatarUrl?: string;
   roles: AuthRole[];
+  permissions: AuthPermission[];
   status: AuthUserStatus;
+}
+
+export interface PasswordLoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface PasswordRegisterRequest extends PasswordLoginRequest {
+  displayName?: string;
 }
 
 export type ProblemDifficulty = 'EASY' | 'MEDIUM' | 'HARD';

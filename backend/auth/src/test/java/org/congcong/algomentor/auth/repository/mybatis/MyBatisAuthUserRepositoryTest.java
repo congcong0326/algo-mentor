@@ -9,8 +9,10 @@ import org.congcong.algomentor.auth.model.AuthUser;
 import org.congcong.algomentor.auth.model.AuthUserStatus;
 import org.congcong.algomentor.auth.model.OAuthAccount;
 import org.congcong.algomentor.auth.model.OAuthProvider;
+import org.congcong.algomentor.auth.model.PasswordCredential;
 import org.congcong.algomentor.auth.repository.mybatis.model.AuthUserRow;
 import org.congcong.algomentor.auth.repository.mybatis.model.OAuthAccountRow;
+import org.congcong.algomentor.auth.repository.mybatis.model.PasswordCredentialRow;
 import org.junit.jupiter.api.Test;
 
 class MyBatisAuthUserRepositoryTest {
@@ -52,6 +54,15 @@ class MyBatisAuthUserRepositoryTest {
     assertThat(account.provider()).isEqualTo(OAuthProvider.GOOGLE);
   }
 
+  @Test
+  void createPasswordCredentialReturnsGeneratedIdFromMapper() {
+    PasswordCredential credential = repository.createPasswordCredential(42L, "{bcrypt}hash", NOW);
+
+    assertThat(credential.id()).isEqualTo(77L);
+    assertThat(credential.userId()).isEqualTo(42L);
+    assertThat(credential.passwordHash()).isEqualTo("{bcrypt}hash");
+  }
+
   private static final class GeneratedIdMapper implements AuthUserMapper {
 
     @Override
@@ -73,6 +84,17 @@ class MyBatisAuthUserRepositoryTest {
     public int insertUser(AuthUserRow user) {
       user.setId(42L);
       return 1;
+    }
+
+    @Override
+    public int insertPasswordCredential(PasswordCredentialRow credential) {
+      credential.setId(77L);
+      return 1;
+    }
+
+    @Override
+    public PasswordCredentialRow findPasswordCredentialByEmailNormalized(String emailNormalized) {
+      return null;
     }
 
     @Override

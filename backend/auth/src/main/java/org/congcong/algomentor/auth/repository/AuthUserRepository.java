@@ -8,6 +8,7 @@ import org.congcong.algomentor.auth.model.AuthUser;
 import org.congcong.algomentor.auth.model.AuthUserStatus;
 import org.congcong.algomentor.auth.model.OAuthAccount;
 import org.congcong.algomentor.auth.model.OAuthProvider;
+import org.congcong.algomentor.auth.model.PasswordCredential;
 
 public interface AuthUserRepository {
 
@@ -24,6 +25,10 @@ public interface AuthUserRepository {
       String avatarUrl,
       AuthUserStatus status,
       Instant now);
+
+  PasswordCredential createPasswordCredential(long userId, String passwordHash, Instant now);
+
+  Optional<PasswordCredential> findPasswordCredentialByEmailNormalized(String emailNormalized);
 
   void addRole(long userId, AuthRole role);
 

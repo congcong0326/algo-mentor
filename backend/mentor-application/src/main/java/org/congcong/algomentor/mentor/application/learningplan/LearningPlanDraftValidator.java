@@ -27,23 +27,38 @@ public class LearningPlanDraftValidator {
 
   public void validateGeneratedPlan(LearningPlanDraftPlan plan) {
     if (plan == null) {
-      throw new LearningPlanException("LEARNING_PLAN_DRAFT_INVALID", "学习计划草案为空。");
+      throw new LearningPlanException(
+          "LEARNING_PLAN_DRAFT_INVALID",
+          "api.error.LEARNING_PLAN_DRAFT_INVALID.empty",
+          "学习计划草案为空。");
     }
     if (plan.phases().isEmpty()) {
-      throw new LearningPlanException("LEARNING_PLAN_DRAFT_INVALID", "学习计划至少需要一个阶段。");
+      throw new LearningPlanException(
+          "LEARNING_PLAN_DRAFT_INVALID",
+          "api.error.LEARNING_PLAN_DRAFT_INVALID.no_phases",
+          "学习计划至少需要一个阶段。");
     }
     int expectedPhaseCount = expectedPhaseCount(plan.durationWeeks());
     int actualPhaseCount = plan.phases().size();
     if (Math.abs(expectedPhaseCount - actualPhaseCount) > 1) {
-      throw new LearningPlanException("LEARNING_PLAN_DRAFT_INVALID", "学习计划阶段数与周期不匹配。");
+      throw new LearningPlanException(
+          "LEARNING_PLAN_DRAFT_INVALID",
+          "api.error.LEARNING_PLAN_DRAFT_INVALID.phase_count",
+          "学习计划阶段数与周期不匹配。");
     }
     int totalWeeks = plan.phases().stream().mapToInt(LearningPlanPhaseDraft::durationWeeks).sum();
     if (totalWeeks != plan.durationWeeks()) {
-      throw new LearningPlanException("LEARNING_PLAN_DRAFT_INVALID", "学习计划阶段周数之和必须等于总周期。");
+      throw new LearningPlanException(
+          "LEARNING_PLAN_DRAFT_INVALID",
+          "api.error.LEARNING_PLAN_DRAFT_INVALID.duration_sum",
+          "学习计划阶段周数之和必须等于总周期。");
     }
     for (LearningPlanPhaseDraft phase : plan.phases()) {
       if (phase.problems().size() > 5) {
-        throw new LearningPlanException("LEARNING_PLAN_DRAFT_INVALID", "每个阶段最多推荐 5 道题。");
+        throw new LearningPlanException(
+            "LEARNING_PLAN_DRAFT_INVALID",
+            "api.error.LEARNING_PLAN_DRAFT_INVALID.too_many_problems",
+            "每个阶段最多推荐 5 道题。");
       }
     }
   }

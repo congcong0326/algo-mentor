@@ -32,6 +32,15 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toContain('height: 38px');
   });
 
+  it('keeps login light by default and dark through the root theme', () => {
+    expect(styles).toContain('.login-page {\n  --login-background: #ffffff');
+    expect(styles).toContain('--login-text: #0f172a');
+    expect(styles).toContain('--login-submit-background: #0f172a');
+    expect(styles).toContain(':root[data-theme="dark"] .login-page');
+    expect(styles).toContain('--login-background: #090a0f');
+    expect(styles).toContain('--login-text: #f9fafb');
+  });
+
   it('keeps primary UI chrome within the reference landing vocabulary', () => {
     expect(styles).toContain('position: fixed');
     expect(styles).toContain('backdrop-filter: saturate(180%) blur(20px)');

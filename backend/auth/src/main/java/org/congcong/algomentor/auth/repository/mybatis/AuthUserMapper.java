@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.congcong.algomentor.auth.repository.mybatis.model.AuthUserRow;
 import org.congcong.algomentor.auth.repository.mybatis.model.OAuthAccountRow;
+import org.congcong.algomentor.auth.repository.mybatis.model.PasswordCredentialRow;
 
 public interface AuthUserMapper {
 
@@ -17,6 +18,10 @@ public interface AuthUserMapper {
   AuthUserRow findUserByEmailNormalized(@Param("emailNormalized") String emailNormalized);
 
   int insertUser(AuthUserRow user);
+
+  int insertPasswordCredential(PasswordCredentialRow credential);
+
+  PasswordCredentialRow findPasswordCredentialByEmailNormalized(@Param("emailNormalized") String emailNormalized);
 
   int insertUserRole(
       @Param("userId") long userId,

@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 import java.util.Optional;
+import org.congcong.algomentor.api.controller.LocalizedApiExceptionHandler;
 import org.congcong.algomentor.api.problem.model.ProblemDetail;
 import org.congcong.algomentor.api.problem.model.ProblemDifficulty;
 import org.congcong.algomentor.api.problem.model.ProblemLocale;
@@ -26,7 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = ProblemController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import(ProblemExceptionHandler.class)
+@Import(LocalizedApiExceptionHandler.class)
 class ProblemControllerTest {
 
   @Autowired
@@ -89,16 +90,20 @@ class ProblemControllerTest {
     mockMvc.perform(get("/api/problems").param("locale", "fr-FR"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.error.code").value(ProblemExceptionHandler.UNSUPPORTED_PROBLEM_LOCALE_CODE));
+        .andExpect(jsonPath("$.error.code").value(ProblemExceptionHandler.UNSUPPORTED_PROBLEM_LOCALE_CODE))
+        .andExpect(jsonPath("$.error.messageKey").value("api.error.UNSUPPORTED_PROBLEM_LOCALE"))
+        .andExpect(jsonPath("$.error.message").value("题目语言暂不支持。"));
   }
 
   @Test
-  void getProblemReturns404ForUnknownSlug() throws Exception {
+  void getProblemReturns404ForUnknownSlugInEnglish() throws Exception {
     when(problemService.findProblemBySlug(eq("missing"), eq(ProblemLocale.DEFAULT))).thenReturn(Optional.empty());
 
-    mockMvc.perform(get("/api/problems/missing"))
+    mockMvc.perform(get("/api/problems/missing").header("Accept-Language", "en-US"))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.error.code").value(ProblemExceptionHandler.PROBLEM_NOT_FOUND_CODE));
+        .andExpect(jsonPath("$.error.code").value(ProblemExceptionHandler.PROBLEM_NOT_FOUND_CODE))
+        .andExpect(jsonPath("$.error.messageKey").value("api.error.PROBLEM_NOT_FOUND"))
+        .andExpect(jsonPath("$.error.message").value("Problem not found."));
   }
 }

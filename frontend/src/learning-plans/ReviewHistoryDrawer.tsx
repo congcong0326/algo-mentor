@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { LocaleResources } from '../i18n/locales';
-import { getPracticeSessionReviewDetail, getPracticeSessionReviews } from '../services/api';
+import { getPracticeSessionReviewDetail, getPracticeSessionReviews, requireApiData } from '../services/api';
 import type {
   PracticeCodeReviewDetail,
   PracticeCodeReviewHistoryResponse,
@@ -64,10 +64,7 @@ export default function ReviewHistoryDrawer({
 
     getPracticeSessionReviews(sessionId, controller.signal)
       .then((response) => {
-        if (!response.success || !response.data) {
-          throw new Error(response.error?.message ?? resources.learningPlans.reviewLoadFailed);
-        }
-        setLocalHistory(response.data);
+        setLocalHistory(requireApiData(response, resources.learningPlans.reviewLoadFailed));
         setLocalHistoryStatus('idle');
       })
       .catch((error) => {
@@ -109,10 +106,7 @@ export default function ReviewHistoryDrawer({
     setDetailStatus('loading');
     getPracticeSessionReviewDetail(sessionId, selectedReviewId, controller.signal)
       .then((response) => {
-        if (!response.success || !response.data) {
-          throw new Error(response.error?.message ?? resources.learningPlans.reviewDetailLoadFailed);
-        }
-        setDetail(response.data);
+        setDetail(requireApiData(response, resources.learningPlans.reviewDetailLoadFailed));
         setDetailStatus('idle');
       })
       .catch((error) => {

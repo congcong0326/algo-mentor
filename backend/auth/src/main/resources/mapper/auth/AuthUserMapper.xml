@@ -31,6 +31,16 @@
     </constructor>
   </resultMap>
 
+  <resultMap id="PasswordCredentialRowMap" type="org.congcong.algomentor.auth.repository.mybatis.model.PasswordCredentialRow">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Long"/>
+      <arg column="user_id" javaType="java.lang.Long"/>
+      <arg column="password_hash" javaType="java.lang.String"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
   <select id="findOAuthAccount" resultMap="OAuthAccountRowMap">
     select id,
            user_id,
@@ -99,6 +109,34 @@
     )
   </insert>
 
+  <insert id="insertPasswordCredential"
+          parameterType="org.congcong.algomentor.auth.repository.mybatis.model.PasswordCredentialRow"
+          useGeneratedKeys="true"
+          keyProperty="id">
+    insert into auth_password_credentials (
+      user_id,
+      password_hash,
+      created_at,
+      updated_at
+    ) values (
+      #{userId},
+      #{passwordHash},
+      #{createdAt},
+      #{updatedAt}
+    )
+  </insert>
+
+  <select id="findPasswordCredentialByEmailNormalized" resultMap="PasswordCredentialRowMap">
+    select credential.id,
+           credential.user_id,
+           credential.password_hash,
+           credential.created_at,
+           credential.updated_at
+    from auth_password_credentials credential
+    inner join auth_users users on users.id = credential.user_id
+    where users.email_normalized = #{emailNormalized}
+  </select>
+
   <insert id="insertUserRole">
     insert into auth_user_roles (user_id, role, created_at)
     values (#{userId}, #{role}, #{createdAt})
@@ -109,7 +147,12 @@
     select role
     from auth_user_roles
     where user_id = #{userId}
-    order by role
+    order by case role
+      when 'USER' then 1
+      when 'ADMIN' then 2
+      else 99
+    end,
+    role
   </select>
 
   <insert id="insertOAuthAccount"

@@ -10,6 +10,12 @@ const user: CurrentUser = {
   displayName: 'User Name',
   avatarUrl: 'https://example.com/avatar.png',
   roles: ['USER'],
+  permissions: [
+    'learning-plan:read:own',
+    'learning-plan:write:own',
+    'practice-session:write:own',
+    'debug:access',
+  ],
   status: 'ACTIVE',
 };
 
@@ -26,7 +32,7 @@ describe('AppShell', () => {
 
     render(
       <AppShell
-        activeView="home"
+        activeView="learningPlans"
         currentUser={user}
         onLogout={vi.fn()}
         onNavigate={onNavigate}
@@ -38,15 +44,33 @@ describe('AppShell', () => {
     );
 
     expect(screen.getByRole('banner')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.queryByRole('button', { name: '首页' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: 'AI 调试' })).toBeInTheDocument();
     expect(screen.getByText('User Name')).toBeInTheDocument();
     expect(screen.getByText('Current page')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '题库' }));
 
     expect(onNavigate).toHaveBeenCalledWith('problems');
+  });
+
+  it('hides debug navigation when the user lacks debug permission', () => {
+    render(
+      <AppShell
+        activeView="learningPlans"
+        currentUser={{ ...user, permissions: [] }}
+        onLogout={vi.fn()}
+        onNavigate={vi.fn()}
+        onToggleTheme={vi.fn()}
+        theme="light"
+      >
+        <div>Current page</div>
+      </AppShell>,
+    );
+
+    expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
   });
 
   it('switches the shell language and persists the selection', () => {
@@ -64,7 +88,7 @@ describe('AppShell', () => {
       render(
         <I18nProvider>
           <AppShell
-            activeView="home"
+            activeView="learningPlans"
             currentUser={user}
             onLogout={vi.fn()}
             onNavigate={vi.fn()}
@@ -80,7 +104,8 @@ describe('AppShell', () => {
         target: { value: 'en-US' },
       });
 
-      expect(screen.getByRole('button', { name: 'Dashboard' })).toHaveAttribute('aria-pressed', 'true');
+      expect(screen.queryByRole('button', { name: 'Dashboard' })).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Plans' })).toHaveAttribute('aria-pressed', 'true');
       expect(screen.getByRole('button', { name: 'Problems' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();
       expect(setItem).toHaveBeenCalledWith('algo-mentor-locale', 'en-US');
@@ -135,7 +160,7 @@ describe('AppShell', () => {
 
     render(
       <AppShell
-        activeView="home"
+        activeView="learningPlans"
         currentUser={user}
         onLogout={vi.fn()}
         onNavigate={vi.fn()}
@@ -154,7 +179,7 @@ describe('AppShell', () => {
   it('renders the light mode label when the current theme is dark', () => {
     render(
       <AppShell
-        activeView="home"
+        activeView="learningPlans"
         currentUser={user}
         onLogout={vi.fn()}
         onNavigate={vi.fn()}
