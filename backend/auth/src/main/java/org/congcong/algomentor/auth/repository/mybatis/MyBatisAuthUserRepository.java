@@ -9,9 +9,11 @@ import org.congcong.algomentor.auth.model.AuthUser;
 import org.congcong.algomentor.auth.model.AuthUserStatus;
 import org.congcong.algomentor.auth.model.OAuthAccount;
 import org.congcong.algomentor.auth.model.OAuthProvider;
+import org.congcong.algomentor.auth.model.PasswordCredential;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.repository.mybatis.model.AuthUserRow;
 import org.congcong.algomentor.auth.repository.mybatis.model.OAuthAccountRow;
+import org.congcong.algomentor.auth.repository.mybatis.model.PasswordCredentialRow;
 
 public class MyBatisAuthUserRepository implements AuthUserRepository {
 
@@ -61,6 +63,22 @@ public class MyBatisAuthUserRepository implements AuthUserRepository {
         now);
     mapper.insertUser(row);
     return row.toDomain();
+  }
+
+  @Override
+  public PasswordCredential createPasswordCredential(long userId, String passwordHash, Instant now) {
+    PasswordCredentialRow row = new PasswordCredentialRow(null, userId, passwordHash, now, now);
+    mapper.insertPasswordCredential(row);
+    return row.toDomain();
+  }
+
+  @Override
+  public Optional<PasswordCredential> findPasswordCredentialByEmailNormalized(String emailNormalized) {
+    if (emailNormalized == null || emailNormalized.isBlank()) {
+      return Optional.empty();
+    }
+    return Optional.ofNullable(mapper.findPasswordCredentialByEmailNormalized(emailNormalized))
+        .map(PasswordCredentialRow::toDomain);
   }
 
   @Override

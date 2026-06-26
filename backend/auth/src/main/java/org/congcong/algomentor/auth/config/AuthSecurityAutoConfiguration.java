@@ -25,6 +25,7 @@ import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializingConverter;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -32,11 +33,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
 @AutoConfiguration
 @EnableWebSecurity
+@EnableMethodSecurity
 @ConditionalOnClass(SecurityFilterChain.class)
 @EnableConfigurationProperties(AuthProperties.class)
 public class AuthSecurityAutoConfiguration {
@@ -75,6 +78,7 @@ public class AuthSecurityAutoConfiguration {
       ObjectProvider<AuthenticatedOAuth2UserService> authenticatedOAuth2UserService,
       ObjectProvider<AuthenticatedOidcUserService> authenticatedOidcUserService,
       ObjectProvider<ClientRegistrationRepository> clientRegistrationRepository,
+      ObjectProvider<SecurityContextRepository> securityContextRepository,
       AuthProperties properties
   ) throws Exception {
     CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
@@ -95,6 +99,7 @@ public class AuthSecurityAutoConfiguration {
             .csrfTokenRepository(csrfTokenRepository)
             .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler()))
         .addFilterAfter(new CsrfTokenCookieFilter(), CsrfFilter.class)
+        .securityContext(securityContext -> securityContextRepository.ifAvailable(securityContext::securityContextRepository))
         .exceptionHandling(exceptions -> exceptions
             .defaultAuthenticationEntryPointFor(
                 apiErrorResponseFactory == null
@@ -110,9 +115,13 @@ public class AuthSecurityAutoConfiguration {
             .requestMatchers(new AntPathRequestMatcher("/actuator/health/**")).permitAll()
             .requestMatchers(new AntPathRequestMatcher(AuthSecurityPaths.OAUTH2_AUTHORIZATION_PATTERN)).permitAll()
             .requestMatchers(new AntPathRequestMatcher(AuthSecurityPaths.OAUTH2_CALLBACK_PATTERN)).permitAll()
+            .requestMatchers(new AntPathRequestMatcher(AuthSecurityPaths.AUTH_REGISTER_PATH)).permitAll()
+            .requestMatchers(new AntPathRequestMatcher(AuthSecurityPaths.AUTH_LOGIN_PATH)).permitAll()
             .requestMatchers(new AntPathRequestMatcher(
                 AuthSecurityPaths.AUTH_LOGOUT_PATH,
                 AuthSecurityPaths.LOGOUT_METHOD.name())).permitAll()
+            .requestMatchers(new AntPathRequestMatcher(AuthSecurityPaths.ADMIN_API_PATTERN)).hasRole("ADMIN")
+            .requestMatchers(new AntPathRequestMatcher(AuthSecurityPaths.AGENT_CONVERSATIONS_API_PATTERN)).hasRole("ADMIN")
             .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
             .requestMatchers(new AntPathRequestMatcher("/index.html")).permitAll()
             .requestMatchers(new AntPathRequestMatcher("/assets/**")).permitAll()

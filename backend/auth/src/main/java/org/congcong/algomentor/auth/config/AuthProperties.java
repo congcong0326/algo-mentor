@@ -1,6 +1,7 @@
 package org.congcong.algomentor.auth.config;
 
 import java.time.Duration;
+import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(AuthConfigurationKeys.AUTH_PREFIX)
@@ -11,6 +12,7 @@ public class AuthProperties {
   private Duration sessionTimeout = Duration.ofDays(7);
   private boolean cookieSecure;
   private String cookieSameSite = "Lax";
+  private List<String> adminEmails = List.of();
 
   public String getLoginSuccessUrl() {
     return loginSuccessUrl;
@@ -50,5 +52,13 @@ public class AuthProperties {
 
   public void setCookieSameSite(String cookieSameSite) {
     this.cookieSameSite = cookieSameSite;
+  }
+
+  public List<String> getAdminEmails() {
+    return adminEmails;
+  }
+
+  public void setAdminEmails(List<String> adminEmails) {
+    this.adminEmails = adminEmails == null ? List.of() : List.copyOf(adminEmails);
   }
 }

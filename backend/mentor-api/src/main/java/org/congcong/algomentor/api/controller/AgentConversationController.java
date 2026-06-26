@@ -28,6 +28,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptCon
 import org.congcong.algomentor.mentor.application.practice.PracticeChatReference;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -59,6 +60,7 @@ public class AgentConversationController {
     this.admissionService = admissionService;
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping(value = ApiContractConstants.STREAM_PATH, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public SseEmitter stream(
       @RequestHeader(name = ApiContractConstants.IDEMPOTENCY_KEY_HEADER, required = false) String idempotencyKey,

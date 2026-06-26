@@ -67,6 +67,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -97,6 +99,10 @@ class AgentConversationControllerTest {
 
   @BeforeEach
   void configureGovernance() {
+    SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
+        "admin@example.com",
+        "n/a",
+        List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_ADMIN"))));
     when(governance.admit(any(AiRunContext.class))).thenAnswer(invocation -> {
       AiRunContext context = invocation.getArgument(0);
       lastGovernanceContext = context;
@@ -134,6 +140,7 @@ class AgentConversationControllerTest {
         lockManager.release(lockToken);
       }
     } finally {
+      SecurityContextHolder.clearContext();
       agentLoopRunner.lastRequest = null;
       conversationRepository.lastRequest = null;
       lastGovernanceContext = null;

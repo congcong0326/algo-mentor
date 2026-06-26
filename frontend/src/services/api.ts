@@ -17,6 +17,8 @@ import type {
   PracticeCodeReviewHistoryResponse,
   PracticeProgressStatus,
   PracticeSessionResponse,
+  PasswordLoginRequest,
+  PasswordRegisterRequest,
   ProblemDetail,
   ProblemListItem,
   ProblemListQuery,
@@ -92,6 +94,42 @@ export async function getCurrentUser(): Promise<CurrentUser | undefined> {
 
   const body = await response.json() as ApiResponse<CurrentUser>;
   return body.data;
+}
+
+export async function loginWithPassword(request: PasswordLoginRequest): Promise<CurrentUser> {
+  const response = await apiFetch('/api/auth/login', {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Login request failed');
+  }
+
+  const body = await response.json() as ApiResponse<CurrentUser>;
+  return requireApiData(body, 'Login request failed');
+}
+
+export async function registerWithPassword(request: PasswordRegisterRequest): Promise<CurrentUser> {
+  const response = await apiFetch('/api/auth/register', {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Registration request failed');
+  }
+
+  const body = await response.json() as ApiResponse<CurrentUser>;
+  return requireApiData(body, 'Registration request failed');
 }
 
 export async function logout(): Promise<void> {

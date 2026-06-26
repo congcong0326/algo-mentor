@@ -13,15 +13,26 @@ import LoginPage from './app/LoginPage';
 import { APP_ROUTES, pathForView, type AppView, viewFromPath } from './app/navigation';
 import { applyTheme, nextTheme, readStoredTheme, storeTheme, type AppTheme } from './app/theme';
 import { useI18n } from './i18n/I18nProvider';
-import { getCurrentUser, logout } from './services/api';
-import type { CurrentUser } from './types/api';
+import { getCurrentUser, loginWithPassword, logout, registerWithPassword } from './services/api';
+import type { AuthPermission, CurrentUser, PasswordLoginRequest, PasswordRegisterRequest } from './types/api';
 
-function normalizeAuthenticatedView(pathname: string): AppView {
-  return viewFromPath(pathname) ?? 'home';
+function hasPermission(user: CurrentUser | undefined, permission: AuthPermission): boolean {
+  return !!user?.permissions?.includes(permission);
 }
 
-function normalizeAuthenticatedPath(pathname: string): string {
-  return viewFromPath(pathname) ? pathname : APP_ROUTES.home;
+function normalizeAuthenticatedView(pathname: string, user?: CurrentUser): AppView {
+  return viewFromPath(normalizeAuthenticatedPath(pathname, user)) ?? 'home';
+}
+
+function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): string {
+  const view = viewFromPath(pathname);
+  if (!view) {
+    return APP_ROUTES.home;
+  }
+  if (view === 'debug' && !hasPermission(user, 'debug:access')) {
+    return APP_ROUTES.home;
+  }
+  return pathname;
 }
 
 function isLoginRoute(pathname: string): boolean {
@@ -80,6 +91,8 @@ export default function App() {
   const [authError, setAuthError] = useState(false);
   const [logoutError, setLogoutError] = useState('');
   const [logoutPending, setLogoutPending] = useState(false);
+  const [passwordAuthError, setPasswordAuthError] = useState('');
+  const [passwordAuthPending, setPasswordAuthPending] = useState(false);
   const [debugConnectionState, setDebugConnectionState] = useState<ConnectionState>('idle');
   const debugConsoleRef = useRef<AiDebugConsoleHandle | null>(null);
   const [theme, setTheme] = useState<AppTheme>(() => readStoredTheme());
@@ -103,8 +116,8 @@ export default function App() {
     }
 
     function handlePopState() {
-      const nextPath = normalizeAuthenticatedPath(window.location.pathname);
-      const nextView = normalizeAuthenticatedView(nextPath);
+      const nextPath = normalizeAuthenticatedPath(window.location.pathname, currentUser);
+      const nextView = normalizeAuthenticatedView(nextPath, currentUser);
       setActiveView(nextView);
       setPathname(nextPath);
       if (nextPath !== window.location.pathname) {
@@ -132,6 +145,9 @@ export default function App() {
   }, [authChecked, currentUser]);
 
   function navigateToView(view: AppView) {
+    if (view === 'debug' && !hasPermission(currentUser, 'debug:access')) {
+      view = 'home';
+    }
     const nextPath = pathForView(view);
     if (activeView === view && window.location.pathname === nextPath) {
       return;
@@ -145,8 +161,8 @@ export default function App() {
   }
 
   function navigateToPath(nextPath: string, options: { replace?: boolean } = {}) {
-    const normalizedPath = normalizeAuthenticatedPath(nextPath);
-    const nextView = normalizeAuthenticatedView(normalizedPath);
+    const normalizedPath = normalizeAuthenticatedPath(nextPath, currentUser);
+    const nextView = normalizeAuthenticatedView(normalizedPath, currentUser);
     setActiveView(nextView);
     setPathname(normalizedPath);
     if (window.location.pathname === normalizedPath) {
@@ -171,9 +187,10 @@ export default function App() {
 
       setCurrentUser(user);
       setAuthChecked(true);
+      setPasswordAuthError('');
       if (user) {
-        const nextPath = normalizeAuthenticatedPath(window.location.pathname);
-        const nextView = normalizeAuthenticatedView(nextPath);
+        const nextPath = normalizeAuthenticatedPath(window.location.pathname, user);
+        const nextView = normalizeAuthenticatedView(nextPath, user);
         setActiveView(nextView);
         setPathname(nextPath);
         if (nextPath !== window.location.pathname) {
@@ -190,6 +207,7 @@ export default function App() {
       setCurrentUser(undefined);
       setAuthChecked(true);
       setAuthError(true);
+      setPasswordAuthError('');
     }
   }
 
@@ -214,6 +232,51 @@ export default function App() {
     }
   }
 
+  async function handlePasswordLogin(request: PasswordLoginRequest) {
+    if (passwordAuthPending) {
+      return;
+    }
+    setPasswordAuthError('');
+    setPasswordAuthPending(true);
+    try {
+      const user = await loginWithPassword(request);
+      handleAuthenticatedUser(user);
+    } catch (error) {
+      setPasswordAuthError(error instanceof Error ? error.message : resources.auth.failed);
+    } finally {
+      setPasswordAuthPending(false);
+    }
+  }
+
+  async function handlePasswordRegister(request: PasswordRegisterRequest) {
+    if (passwordAuthPending) {
+      return;
+    }
+    setPasswordAuthError('');
+    setPasswordAuthPending(true);
+    try {
+      const user = await registerWithPassword(request);
+      handleAuthenticatedUser(user);
+    } catch (error) {
+      setPasswordAuthError(error instanceof Error ? error.message : resources.auth.failed);
+    } finally {
+      setPasswordAuthPending(false);
+    }
+  }
+
+  function handleAuthenticatedUser(user: CurrentUser) {
+    setCurrentUser(user);
+    setAuthChecked(true);
+    setAuthError(false);
+    const nextPath = normalizeAuthenticatedPath(window.location.pathname, user);
+    const nextView = normalizeAuthenticatedView(nextPath, user);
+    setActiveView(nextView);
+    setPathname(nextPath);
+    if (nextPath !== window.location.pathname || isLoginRoute(window.location.pathname)) {
+      window.history.replaceState({}, '', nextPath);
+    }
+  }
+
   function handleToggleTheme() {
     setTheme((currentTheme) => {
       const updatedTheme = nextTheme(currentTheme);
@@ -230,9 +293,14 @@ export default function App() {
     return (
       <main className="login-page" aria-labelledby="auth-loading-title">
         <section className="login-panel">
-          <p className="home-kicker">{resources.app.brandKicker}</p>
-          <h1 id="auth-loading-title">{resources.app.loading}</h1>
-          <p className="login-subtitle" role="status">{resources.app.checkingLoginStatus}</p>
+          <div className="login-brand-lockup">
+            <span className="login-brand-mark" aria-hidden="true">
+              <span>A</span>
+              <span>M</span>
+            </span>
+            <h1 id="auth-loading-title">{resources.app.loading}</h1>
+            <p role="status">{resources.app.checkingLoginStatus}</p>
+          </div>
         </section>
       </main>
     );
@@ -242,10 +310,15 @@ export default function App() {
     return (
       <main className="login-page" aria-labelledby="auth-error-title">
         <section className="login-panel">
-          <p className="home-kicker">{resources.app.brandKicker}</p>
-          <h1 id="auth-error-title">{resources.app.brandName}</h1>
+          <div className="login-brand-lockup">
+            <span className="login-brand-mark" aria-hidden="true">
+              <span>A</span>
+              <span>M</span>
+            </span>
+            <h1 id="auth-error-title">{resources.app.brandName}</h1>
+          </div>
           <p className="error-text" role="alert">{resources.app.loginCheckFailed}</p>
-          <button className="primary-button login-oauth-link" onClick={() => void checkAuthentication()} type="button">
+          <button className="password-auth-submit" onClick={() => void checkAuthentication()} type="button">
             {resources.app.retry}
           </button>
         </section>
@@ -254,14 +327,24 @@ export default function App() {
   }
 
   if (!currentUser) {
-    return <LoginPage authFailed={new URLSearchParams(window.location.search).get('auth') === 'failed'} />;
+    return (
+      <LoginPage
+        authError={passwordAuthError}
+        authFailed={new URLSearchParams(window.location.search).get('auth') === 'failed'}
+        onLogin={handlePasswordLogin}
+        onRegister={handlePasswordRegister}
+        onToggleTheme={handleToggleTheme}
+        pending={passwordAuthPending}
+        theme={theme}
+      />
+    );
   }
 
   return (
     <AppShell
       activeView={activeView}
       currentUser={currentUser}
-      debugStatus={activeView === 'debug' ? (
+      debugStatus={activeView === 'debug' && hasPermission(currentUser, 'debug:access') ? (
         <div className={`status-pill ${debugConnectionState}`}>
           <Radio aria-hidden="true" />
           <span>{debugStatusLabel(debugConnectionState)}</span>
@@ -280,7 +363,9 @@ export default function App() {
         ? <ProblemLibrary />
         : activeView === 'learningPlans'
           ? <LearningPlans onNavigate={navigateToPath} pathname={pathname} />
-          : <AiDebugConsole ref={debugConsoleRef} onConnectionStateChange={setDebugConnectionState} />}
+          : hasPermission(currentUser, 'debug:access')
+            ? <AiDebugConsole ref={debugConsoleRef} onConnectionStateChange={setDebugConnectionState} />
+            : <HomeDashboard onNavigate={navigateToView} />}
     </AppShell>
   );
 }

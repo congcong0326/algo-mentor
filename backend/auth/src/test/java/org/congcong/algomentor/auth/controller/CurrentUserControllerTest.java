@@ -50,6 +50,9 @@ class CurrentUserControllerTest {
         .andExpect(jsonPath("$.data.displayName").value("User Name"))
         .andExpect(jsonPath("$.data.avatarUrl").value("https://example.com/avatar.png"))
         .andExpect(jsonPath("$.data.roles[0]").value("USER"))
+        .andExpect(jsonPath("$.data.permissions[0]").value("learning-plan:read:own"))
+        .andExpect(jsonPath("$.data.permissions[1]").value("learning-plan:write:own"))
+        .andExpect(jsonPath("$.data.permissions[2]").value("practice-session:write:own"))
         .andExpect(jsonPath("$.data.status").value("ACTIVE"));
   }
 

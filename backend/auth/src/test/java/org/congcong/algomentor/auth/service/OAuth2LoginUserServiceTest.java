@@ -16,6 +16,7 @@ import org.congcong.algomentor.auth.model.AuthUser;
 import org.congcong.algomentor.auth.model.AuthUserStatus;
 import org.congcong.algomentor.auth.model.OAuthAccount;
 import org.congcong.algomentor.auth.model.OAuthProvider;
+import org.congcong.algomentor.auth.model.PasswordCredential;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.junit.jupiter.api.Test;
@@ -145,6 +146,23 @@ public class OAuth2LoginUserServiceTest {
         .isInstanceOf(OAuth2AuthenticationException.class);
   }
 
+  @Test
+  void configuredAdminEmailReceivesAdminRoleOnGoogleLogin() {
+    OAuth2LoginUserService adminService = new OAuth2LoginUserService(
+        repository,
+        Clock.fixed(NOW, ZoneOffset.UTC),
+        new AdminEmailRoleService(repository, List.of("admin@example.com")));
+
+    AuthenticatedUserPrincipal principal = adminService.syncGoogleUser(googleAttributes(
+        "admin-google-sub",
+        "ADMIN@example.com",
+        "Admin User",
+        null));
+
+    assertThat(principal.roles()).containsExactly(AuthRole.USER, AuthRole.ADMIN);
+    assertThat(repository.rolesByUserId.get(principal.userId())).containsExactly(AuthRole.USER, AuthRole.ADMIN);
+  }
+
   private static Map<String, Object> googleAttributes(
       String subject,
       String email,
@@ -161,9 +179,10 @@ public class OAuth2LoginUserServiceTest {
 
   public static final class InMemoryAuthUserRepository implements AuthUserRepository {
 
-    private final Map<Long, AuthUser> users = new HashMap<>();
-    private final Map<String, OAuthAccount> oauthAccountsByKey = new HashMap<>();
-    private final Map<Long, List<AuthRole>> rolesByUserId = new HashMap<>();
+    final Map<Long, AuthUser> users = new HashMap<>();
+    final Map<String, OAuthAccount> oauthAccountsByKey = new HashMap<>();
+    final Map<Long, PasswordCredential> credentialsByUserId = new HashMap<>();
+    final Map<Long, List<AuthRole>> rolesByUserId = new HashMap<>();
     private long nextUserId = 1L;
     private long nextOAuthAccountId = 1L;
     private int createUserCalls;
@@ -208,6 +227,25 @@ public class OAuth2LoginUserServiceTest {
           now);
       users.put(user.id(), user);
       return user;
+    }
+
+    @Override
+    public PasswordCredential createPasswordCredential(long userId, String passwordHash, Instant now) {
+      PasswordCredential credential = new PasswordCredential(
+          (long) credentialsByUserId.size() + 1,
+          userId,
+          passwordHash,
+          now,
+          now);
+      credentialsByUserId.put(userId, credential);
+      return credential;
+    }
+
+    @Override
+    public Optional<PasswordCredential> findPasswordCredentialByEmailNormalized(String emailNormalized) {
+      return findUserByEmailNormalized(emailNormalized)
+          .map(AuthUser::id)
+          .map(credentialsByUserId::get);
     }
 
     @Override

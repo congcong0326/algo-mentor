@@ -10,6 +10,12 @@ const user: CurrentUser = {
   displayName: 'User Name',
   avatarUrl: 'https://example.com/avatar.png',
   roles: ['USER'],
+  permissions: [
+    'learning-plan:read:own',
+    'learning-plan:write:own',
+    'practice-session:write:own',
+    'debug:access',
+  ],
   status: 'ACTIVE',
 };
 
@@ -41,12 +47,30 @@ describe('AppShell', () => {
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: 'AI 调试' })).toBeInTheDocument();
     expect(screen.getByText('User Name')).toBeInTheDocument();
     expect(screen.getByText('Current page')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '题库' }));
 
     expect(onNavigate).toHaveBeenCalledWith('problems');
+  });
+
+  it('hides debug navigation when the user lacks debug permission', () => {
+    render(
+      <AppShell
+        activeView="home"
+        currentUser={{ ...user, permissions: [] }}
+        onLogout={vi.fn()}
+        onNavigate={vi.fn()}
+        onToggleTheme={vi.fn()}
+        theme="light"
+      >
+        <div>Current page</div>
+      </AppShell>,
+    );
+
+    expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
   });
 
   it('switches the shell language and persists the selection', () => {

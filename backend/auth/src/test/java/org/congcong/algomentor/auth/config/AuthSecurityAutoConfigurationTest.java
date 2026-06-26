@@ -101,6 +101,14 @@ class AuthSecurityAutoConfigurationTest {
   }
 
   @Test
+  void unauthenticatedCurrentUserEndpointIssuesCsrfCookieForPasswordLogin() throws Exception {
+    mockMvc.perform(get("/api/auth/me"))
+        .andExpect(status().isUnauthorized())
+        .andExpect(cookie().exists("XSRF-TOKEN"))
+        .andExpect(cookie().httpOnly("XSRF-TOKEN", false));
+  }
+
+  @Test
   void loginPathIsReservedForFrontend() throws Exception {
     mockMvc.perform(get("/login"))
         .andExpect(status().isNotFound());
@@ -167,6 +175,34 @@ class AuthSecurityAutoConfigurationTest {
   }
 
   @Test
+  void registerAndLoginEndpointsArePublicButStillRequireCsrfToken() throws Exception {
+    mockMvc.perform(post(AuthSecurityPaths.AUTH_REGISTER_PATH).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isForbidden());
+    mockMvc.perform(post(AuthSecurityPaths.AUTH_LOGIN_PATH).contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void adminApiRequiresAdminRole() throws Exception {
+    mockMvc.perform(get("/api/admin/users").with(authentication(authenticationToken(AuthRole.USER))))
+        .andExpect(status().isForbidden());
+
+    mockMvc.perform(get("/api/admin/users").with(authentication(authenticationToken(AuthRole.ADMIN))))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("admin"));
+  }
+
+  @Test
+  void agentConversationApiRequiresAdminRole() throws Exception {
+    mockMvc.perform(get("/api/agent/conversations/ping").with(authentication(authenticationToken(AuthRole.USER))))
+        .andExpect(status().isForbidden());
+
+    mockMvc.perform(get("/api/agent/conversations/ping").with(authentication(authenticationToken(AuthRole.ADMIN))))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("agent"));
+  }
+
+  @Test
   void appliesSessionCookiePropertiesFromAuthConfiguration() throws Exception {
     MockServletContext servletContext = new MockServletContext();
 
@@ -205,12 +241,16 @@ class AuthSecurityAutoConfigurationTest {
   }
 
   private static UsernamePasswordAuthenticationToken authenticationToken() {
+    return authenticationToken(AuthRole.USER);
+  }
+
+  private static UsernamePasswordAuthenticationToken authenticationToken(AuthRole role) {
     AuthenticatedUserPrincipal principal = new AuthenticatedUserPrincipal(
         42L,
         "user@example.com",
         "User Name",
         "https://example.com/avatar.png",
-        List.of(AuthRole.USER),
+        List.of(role),
         AuthUserStatus.ACTIVE);
     return new UsernamePasswordAuthenticationToken(
         principal,
@@ -286,6 +326,16 @@ class AuthSecurityAutoConfigurationTest {
     @PostMapping("/api/protected")
     public StatusResponse protectedPost() {
       return new StatusResponse("protected");
+    }
+
+    @GetMapping("/api/admin/users")
+    public StatusResponse adminUsers() {
+      return new StatusResponse("admin");
+    }
+
+    @GetMapping("/api/agent/conversations/ping")
+    public StatusResponse agentConversationPing() {
+      return new StatusResponse("agent");
     }
   }
 

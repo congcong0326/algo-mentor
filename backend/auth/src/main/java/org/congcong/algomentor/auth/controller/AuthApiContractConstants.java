@@ -16,6 +16,16 @@ public final class AuthApiContractConstants {
   public static final String ME_PATH = "/me";
 
   /**
+   * 邮箱密码注册路径。
+   */
+  public static final String REGISTER_PATH = "/register";
+
+  /**
+   * 邮箱密码登录路径。
+   */
+  public static final String LOGIN_PATH = "/login";
+
+  /**
    * 当前请求没有可用登录用户时返回的错误码。
    */
   public static final String AUTH_UNAUTHENTICATED_CODE = "AUTH_UNAUTHENTICATED";

@@ -11,6 +11,7 @@ public final class AuthConfigurationKeys {
   public static final String SESSION_TIMEOUT = AUTH_PREFIX + ".session-timeout";
   public static final String COOKIE_SECURE = AUTH_PREFIX + ".cookie-secure";
   public static final String COOKIE_SAME_SITE = AUTH_PREFIX + ".cookie-same-site";
+  public static final String ADMIN_EMAILS = AUTH_PREFIX + ".admin-emails";
 
   private AuthConfigurationKeys() {
   }

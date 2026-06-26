@@ -32,7 +32,8 @@ class AuthCurrentUserEndpointTest {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.id").value(42))
         .andExpect(jsonPath("$.data.email").value("user@example.com"))
-        .andExpect(jsonPath("$.data.roles[0]").value("USER"));
+        .andExpect(jsonPath("$.data.roles[0]").value("USER"))
+        .andExpect(jsonPath("$.data.permissions[0]").value("learning-plan:read:own"));
   }
 
   @TestConfiguration(proxyBeanMethods = false)
