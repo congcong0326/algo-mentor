@@ -78,6 +78,34 @@ class AgentLoopRunnerTest {
   }
 
   @Test
+  void runEndIncludesRequestMetadata() {
+    FakeGateway gateway = new FakeGateway();
+    gateway.steps.add(List.of(
+        new LlmStreamEvent.ContentDelta("Use two indices."),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of("finish", "stop"))));
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        4);
+
+    List<AgentStreamEvent> events = collect(runner.stream(new AgentRequest(
+        "run-uuid",
+        "Two pointers",
+        List.of(LlmMessage.user("two pointers")),
+        Map.of("runDbId", 501L, "practiceSessionId", 28L))));
+
+    AgentStreamEvent.AgentRunEnd runEnd = events.stream()
+        .filter(AgentStreamEvent.AgentRunEnd.class::isInstance)
+        .map(AgentStreamEvent.AgentRunEnd.class::cast)
+        .findFirst()
+        .orElseThrow();
+    assertThat(runEnd.metadata())
+        .containsEntry("runDbId", 501L)
+        .containsEntry("practiceSessionId", 28L);
+  }
+
+  @Test
   void executesToolCallAndContinuesWithToolResultMessage() {
     FakeGateway gateway = new FakeGateway();
     LlmToolCall toolCall = new LlmToolCall(

@@ -29,6 +29,7 @@ import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
+import org.congcong.algomentor.mentor.application.practice.CodeReviewTurnCapability;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewDraft;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
@@ -81,6 +82,21 @@ class AgentConversationApiAutoConfigurationTest {
           assertThat(context.getBean(PracticeTurnCapabilityRegistry.class).capabilities()).isEmpty();
           assertThat(context).hasSingleBean(PracticeTurnOrchestrator.class);
           assertThat(context).hasSingleBean(PracticeMessageStreamService.class);
+        });
+  }
+
+  @Test
+  void practiceTurnCapabilityRegistryIncludesCodeReviewWhenReviewInfrastructureExists() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeStreamWithReviewDependencies.class)
+        .run(context -> {
+          assertThat(context).hasSingleBean(CodeReviewTurnCapability.class);
+          assertThat(context).hasSingleBean(PracticeTurnCapabilityRegistry.class);
+          assertThat(context.getBean(PracticeTurnCapabilityRegistry.class).capabilities())
+              .hasSize(1)
+              .first()
+              .isInstanceOf(CodeReviewTurnCapability.class);
         });
   }
 
@@ -170,6 +186,20 @@ class AgentConversationApiAutoConfigurationTest {
     @Bean
     PracticeChatProblemCatalog practiceChatProblemCatalog() {
       return (slug, locale) -> Optional.empty();
+    }
+  }
+
+  @Configuration(proxyBeanMethods = false)
+  static class PracticeStreamWithReviewDependencies extends PracticeStreamWithoutReviewDependencies {
+
+    @Bean
+    PracticeCodeReviewRepository practiceCodeReviewRepository() {
+      return PracticeCodeReviewRepository.empty();
+    }
+
+    @Bean
+    LlmGateway llmGateway() {
+      return new EmptyLlmGateway();
     }
   }
 

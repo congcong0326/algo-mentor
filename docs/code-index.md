@@ -14,6 +14,8 @@
 - `docs/practice-chat-workbench-design.md`：题目聊天工作台研发设计，说明方案详情、题目聊天页、固定工具栏、题目状态、训练会话和 AI 聊天接口草案。
 - `docs/practice-chat-agent-design.md`：题目聊天 Agent 研发设计，说明 prompt 组装、题面上下文注入、SSE 聊天气泡展示、后端会话/API 和测试计划。
 - `docs/practice-chat-system-prompt-assembly-design.md`：题目聊天系统提示词拼装设计，说明结构化片段、分层 prompt、动态 profile、预算裁剪、metadata 追踪和测试策略。
+- `docs/practice-code-review-product-design.md`：练习代码 Review 产品设计，说明自动识别完整代码提交、多版本 Review、评分规则、完成门槛和 Review 抽屉体验。
+- `docs/practice-code-review-technical-design.md`：练习代码 Review 技术设计，说明基于 practice turn orchestrator 与服务端 capability 的结构化 Review、数据模型、完成 gate、API 和前端闭环。
 - `docs/problem-agent-tools-design.md`：题目 Agent 工具体系设计，说明过滤项发现、查题、读取题面的用途、边界、返回内容和后续演进。
 
 ## 后端
@@ -46,7 +48,7 @@
 - `frontend/src/App.tsx`：学习工作台首屏。
 - `frontend/src/services/api.ts`：前端 API 调用封装。
 - `frontend/src/types/api.ts`：前后端共享契约的 TypeScript 表示。
-- `frontend/src/learning-plans/PracticeChatWorkbench.tsx`：题目训练聊天工作台，使用 practice session 专用 API 渲染题面 seed、流式 AI 回复、Review 占位入口、LeetCode 外链和题目完成状态。
+- `frontend/src/learning-plans/PracticeChatWorkbench.tsx`：题目训练聊天工作台，使用 practice session 专用 API 渲染题面 seed、流式 AI 回复、Review 入口、LeetCode 外链和题目完成状态。
 - `frontend/package.json`：React 19、TypeScript 6、Vite 8、Vitest 4 依赖与脚本。
 - `frontend/vite.config.ts`：Vite、React 插件和 Vitest 配置。
 

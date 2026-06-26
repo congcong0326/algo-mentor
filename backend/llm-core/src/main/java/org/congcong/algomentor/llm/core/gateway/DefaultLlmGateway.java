@@ -1,5 +1,7 @@
 package org.congcong.algomentor.llm.core.gateway;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +22,15 @@ import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 默认网关实现，负责解析提供商/模型选择并在分发前检查能力。
  */
 public class DefaultLlmGateway implements LlmGateway {
 
+  private static final Logger log = LoggerFactory.getLogger(DefaultLlmGateway.class);
   private static final Set<LlmCapability> COMPLETION_CAPABILITIES = Set.of(LlmCapability.CHAT_COMPLETION);
   private final Map<LlmProviderId, LlmProvider> providers;
   private final LlmProviderId defaultProviderId;
@@ -50,9 +55,36 @@ public class DefaultLlmGateway implements LlmGateway {
 
   @Override
   public LlmCompletionResult complete(LlmCompletionRequest request) {
+    Instant startedAt = Instant.now();
     ResolvedRequest resolved = resolve(request);
-    ensureSupported(resolved.descriptor(), requiredCapabilities(request, false));
-    return resolved.provider().complete(resolved.request());
+    Set<LlmCapability> requiredCapabilities = requiredCapabilities(request, false);
+    ensureSupported(resolved.descriptor(), requiredCapabilities);
+    log.info(
+        "LLM gateway completion dispatch started. provider={} model={} purpose={} requiredCapabilities={} messageCount={} responseFormat={}",
+        resolved.descriptor().providerId().value(),
+        resolved.descriptor().modelId().value(),
+        nullToEmpty(request.modelSelector().purpose()),
+        requiredCapabilities,
+        request.messages().size(),
+        responseFormatName(request.responseFormat()));
+    try {
+      LlmCompletionResult result = resolved.provider().complete(resolved.request());
+      log.info(
+          "LLM gateway completion dispatch completed. provider={} model={} finishReason={} elapsedMs={}",
+          result.provider().value(),
+          result.model().value(),
+          result.finishReason(),
+          Duration.between(startedAt, Instant.now()).toMillis());
+      return result;
+    } catch (RuntimeException exception) {
+      log.warn(
+          "LLM gateway completion dispatch failed. provider={} model={} elapsedMs={} exceptionType={}",
+          resolved.descriptor().providerId().value(),
+          resolved.descriptor().modelId().value(),
+          Duration.between(startedAt, Instant.now()).toMillis(),
+          exception.getClass().getSimpleName());
+      throw exception;
+    }
   }
 
   @Override
@@ -175,6 +207,17 @@ public class DefaultLlmGateway implements LlmGateway {
           descriptor.providerId(),
           descriptor.modelId());
     }
+  }
+
+  private String responseFormatName(LlmResponseFormat responseFormat) {
+    if (responseFormat instanceof LlmResponseFormat.JsonSchema schema) {
+      return "JsonSchema:%s".formatted(schema.name());
+    }
+    return responseFormat.getClass().getSimpleName();
+  }
+
+  private String nullToEmpty(String value) {
+    return value == null ? "" : value;
   }
 
   /**

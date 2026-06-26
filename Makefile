@@ -22,13 +22,15 @@ DB_SEED_USER := $(POSTGRES_USER)
 DB_SEED_PASSWORD := $(POSTGRES_PASSWORD)
 STATIC_DIR := backend/mentor-api/src/main/resources/static
 
-.PHONY: build package up down backend-build backend-test backend-dev frontend-install frontend-build frontend-test frontend-dev sync-frontend problem-source problem-seed db-install db-seed clean
+.PHONY: build package package-skip-tests up down backend-build backend-build-skip-tests backend-test backend-dev frontend-install frontend-build frontend-test frontend-dev sync-frontend problem-source problem-seed db-install db-seed clean
 
 build: backend-build frontend-build
 
 package: frontend-build sync-frontend backend-build
 
-up: package
+package-skip-tests: frontend-build sync-frontend backend-build-skip-tests
+
+up: package-skip-tests
 	@if [ -f /.dockerenv ] || [ -f /run/.containerenv ] || grep -qaE '(docker|containerd|kubepods|libpod)' /proc/1/cgroup 2>/dev/null; then \
 		if ! command -v psql >/dev/null 2>&1; then \
 			echo "psql is not installed. Run 'make db-install' once before 'make up' in a development container." >&2; \
@@ -62,6 +64,9 @@ down:
 
 backend-build:
 	$(MAVEN) package
+
+backend-build-skip-tests:
+	$(MAVEN) -DskipTests package
 
 backend-test:
 	$(MAVEN) test

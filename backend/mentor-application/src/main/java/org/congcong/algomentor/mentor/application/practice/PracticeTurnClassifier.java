@@ -18,7 +18,9 @@ public class PracticeTurnClassifier {
   public static final String EVIDENCE_PROBLEM_SLUG_OR_TITLE = "PROBLEM_SLUG_OR_TITLE";
 
   private static final Pattern FENCED_CODE = Pattern.compile("(?s)```\\s*([A-Za-z0-9_+#.-]*)\\s*\\R(.*?)\\R?```");
-  private static final Pattern JAVA_CLASS_SOLUTION = Pattern.compile("\\bclass\\s+Solution\\b");
+  private static final Pattern JAVA_CLASS_SOLUTION = Pattern.compile("(?<![A-Za-z0-9_$])class\\s+Solution\\b");
+  private static final Pattern JAVA_METHOD_SIGNATURE = Pattern.compile(
+      "\\b(?:public|private|protected)\\s+(?:static\\s+)?[A-Za-z_$][\\w$<>\\[\\],.?\\s]*\\s+[A-Za-z_$][\\w$]*\\s*\\([^;{}]*\\)\\s*\\{");
   private static final Pattern PYTHON_FUNCTION = Pattern.compile("(?m)^\\s*def\\s+[A-Za-z_][A-Za-z0-9_]*\\s*\\(");
   private static final Pattern JS_FUNCTION = Pattern.compile("\\bfunction\\s+[A-Za-z_$][A-Za-z0-9_$]*\\s*\\(");
   private static final Pattern STACK_TRACE_MARKER = Pattern.compile(
@@ -84,11 +86,9 @@ public class PracticeTurnClassifier {
     }
 
     if (JAVA_CLASS_SOLUTION.matcher(code).find()
-        && code.contains("{")
+        && JAVA_METHOD_SIGNATURE.matcher(code).find()
         && code.contains("}")
-        && code.contains(";")
-        && code.contains("public")
-        && hasReturn) {
+        && code.contains(";")) {
       evidence.add(new PracticeCodeReviewEvidence(EVIDENCE_CLASS_SOLUTION, "class Solution"));
       return new CodeShape(true, "java");
     }

@@ -20,7 +20,7 @@ class OpenAiLlmPropertiesTest {
     assertThat(properties.getApiKey()).isEmpty();
     assertThat(properties.getBaseUrl()).isEqualTo(URI.create("https://api.openai.com/v1"));
     assertThat(properties.getModel()).isEqualTo("gpt-5.2");
-    assertThat(properties.getTimeout()).isEqualTo(Duration.ofSeconds(30));
+    assertThat(properties.getTimeout()).isEqualTo(Duration.ofMinutes(5));
     assertThat(properties.getStreamTimeout()).isEqualTo(Duration.ofMinutes(5));
     assertThat(properties.getMaxRetries()).isEqualTo(2);
     properties.validate();

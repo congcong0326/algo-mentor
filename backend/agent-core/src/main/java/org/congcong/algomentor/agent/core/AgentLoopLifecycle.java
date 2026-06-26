@@ -1,7 +1,9 @@
 package org.congcong.algomentor.agent.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.SubmissionPublisher;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
@@ -150,7 +152,7 @@ public final class AgentLoopLifecycle {
         context.runId(),
         result.steps(),
         result.finishReason(),
-        result.metadata()));
+        runEndMetadata(context, result)));
   }
 
   public void error(AgentLoopContext context, AgentException error) {
@@ -166,6 +168,12 @@ public final class AgentLoopLifecycle {
         log.warn("Agent loop observer failed in {}", methodName, ex);
       }
     }
+  }
+
+  private Map<String, Object> runEndMetadata(AgentLoopContext context, AgentRunResult result) {
+    Map<String, Object> metadata = new LinkedHashMap<>(context.metadata());
+    metadata.putAll(result.metadata());
+    return Map.copyOf(metadata);
   }
 
   @FunctionalInterface

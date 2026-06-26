@@ -29,6 +29,92 @@ class PracticeTurnClassifierTest {
   }
 
   @Test
+  void detectsJavaVoidMethodSubmission() {
+    PracticeTurnClassification result = classifier.classify("""
+        解答如下class Solution {
+            public void merge(int[] nums1, int m, int[] nums2, int n) {
+                int i = m - 1;
+                int j = n - 1;
+                int k = m + n - 1;
+
+                while (i >= 0 && j >= 0) {
+                    if (nums1[i] > nums2[j]) {
+                        nums1[k] = nums1[i];
+                        i--;
+                    } else {
+                        nums1[k] = nums2[j];
+                        j--;
+                    }
+                    k--;
+                }
+
+                while (j >= 0) {
+                    nums1[k] = nums2[j];
+                    j--;
+                    k--;
+                }
+            }
+        }
+        """, "merge-sorted-array", "合并两个有序数组");
+
+    assertThat(result.codeSubmissionCandidate()).isTrue();
+    assertThat(result.languageHint()).isEqualTo("java");
+    assertThat(result.extractedCode()).contains("class Solution");
+    assertThat(result.evidence())
+        .extracting(PracticeCodeReviewEvidence::type)
+        .contains(PracticeTurnClassifier.EVIDENCE_CLASS_SOLUTION);
+  }
+
+  @Test
+  void detectsPlainPastedJavaVoidMethodSubmission() {
+    PracticeTurnClassification result = classifier.classify("""
+        class Solution {
+            public void merge(int[] nums1, int m, int[] nums2, int n) {
+                int[] temp = new int[m + n];
+
+                int i = 0;
+                int j = 0;
+                int k = 0;
+
+                while (i < m && j < n) {
+                    if (nums1[i] <= nums2[j]) {
+                        temp[k] = nums1[i];
+                        i++;
+                    } else {
+                        temp[k] = nums2[j];
+                        j++;
+                    }
+                    k++;
+                }
+
+                while (i < m) {
+                    temp[k] = nums1[i];
+                    i++;
+                    k++;
+                }
+
+                while (j < n) {
+                    temp[k] = nums2[j];
+                    j++;
+                    k++;
+                }
+
+                for (int x = 0; x < m + n; x++) {
+                    nums1[x] = temp[x];
+                }
+            }
+        }
+        """, "merge-sorted-array", "合并两个有序数组");
+
+    assertThat(result.codeSubmissionCandidate()).isTrue();
+    assertThat(result.languageHint()).isEqualTo("java");
+    assertThat(result.extractedCode()).contains("int[] temp = new int[m + n]");
+    assertThat(result.evidence())
+        .extracting(PracticeCodeReviewEvidence::type)
+        .contains(PracticeTurnClassifier.EVIDENCE_CLASS_SOLUTION);
+  }
+
+  @Test
   void detectsPythonFunctionSubmission() {
     PracticeTurnClassification result = classifier.classify("""
         def climbStairs(n):

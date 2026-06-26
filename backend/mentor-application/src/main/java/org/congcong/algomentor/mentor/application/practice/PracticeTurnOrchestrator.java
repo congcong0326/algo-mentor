@@ -72,6 +72,16 @@ public class PracticeTurnOrchestrator {
 
     String effectiveLocale = effectiveLocale(session.locale(), locale);
     PracticeTurnClassification classification = classifier.classify(message, session.problemSlug(), session.problemSlug());
+    log.info(
+        "Practice turn classified. sessionId={} problemSlug={} codeSubmissionCandidate={} languageHint={} evidenceTypes={} extractedCodeLength={} messageLength={} capabilityCount={}",
+        session.id(),
+        session.problemSlug(),
+        classification.codeSubmissionCandidate(),
+        classification.languageHint(),
+        evidenceTypes(classification),
+        classification.extractedCode().length(),
+        message == null ? 0 : message.length(),
+        capabilityRegistry.capabilities().size());
     Flow.Publisher<AgentStreamEvent> delegate = coordinator.stream(command(
         session,
         userId,
@@ -143,14 +153,31 @@ public class PracticeTurnOrchestrator {
   ) {
     List<PracticeTurnCapability> capabilities = capabilityRegistry.capabilities();
     if (capabilities.isEmpty()) {
+      log.warn(
+          "Practice turn capabilities are not registered. sessionId={} problemSlug={} codeSubmissionCandidate={}",
+          session.id(),
+          session.problemSlug(),
+          classification.codeSubmissionCandidate());
       return Map.of();
     }
     Optional<Long> runDbId = longMetadata(runEnd.metadata(), AgentRuntimeMetadataKeys.RUN_DB_ID);
     if (runDbId.isEmpty()) {
+      log.warn(
+          "Practice turn run database id missing. sessionId={} problemSlug={} runId={} capabilityCount={}",
+          session.id(),
+          session.problemSlug(),
+          runEnd.runId(),
+          capabilities.size());
       return failedCapabilities(capabilities, FAILURE_CODE_RUN_ID_MISSING);
     }
     Optional<AgentTurnMessages> messages = turnMessageLookupRepository.findByRunId(runDbId.get());
     if (messages.isEmpty()) {
+      log.warn(
+          "Practice turn messages missing. sessionId={} problemSlug={} runDbId={} capabilityCount={}",
+          session.id(),
+          session.problemSlug(),
+          runDbId.get(),
+          capabilities.size());
       return failedCapabilities(capabilities, FAILURE_CODE_MESSAGES_MISSING);
     }
     PracticeTurnClassification effectiveClassification = isIdempotentReplay(runEnd.metadata())
@@ -176,6 +203,14 @@ public class PracticeTurnOrchestrator {
                 "failureCode", FAILURE_CODE_CAPABILITY_FAILED,
                 "exceptionType", exception.getClass().getSimpleName()));
       }
+      log.info(
+          "Practice turn capability completed. sessionId={} problemSlug={} runDbId={} capability={} status={} failureCode={}",
+          session.id(),
+          session.problemSlug(),
+          runDbId.get(),
+          result.capabilityName(),
+          result.status(),
+          failureCode(result.metadata()));
       values.put(result.capabilityName(), resultMetadata(result));
     }
     return Map.copyOf(values);
@@ -286,6 +321,17 @@ public class PracticeTurnOrchestrator {
   private boolean isIdempotentReplay(Map<String, Object> metadata) {
     Object value = metadata.get(AgentRuntimeMetadataKeys.IDEMPOTENT_REPLAY);
     return Boolean.TRUE.equals(value) || (value instanceof String text && Boolean.parseBoolean(text));
+  }
+
+  private List<String> evidenceTypes(PracticeTurnClassification classification) {
+    return classification.evidence().stream()
+        .map(PracticeCodeReviewEvidence::type)
+        .toList();
+  }
+
+  private String failureCode(Map<String, Object> metadata) {
+    Object value = metadata.get("failureCode");
+    return value instanceof String text && !text.isBlank() ? text : "none";
   }
 
   private record MergingPublisher(

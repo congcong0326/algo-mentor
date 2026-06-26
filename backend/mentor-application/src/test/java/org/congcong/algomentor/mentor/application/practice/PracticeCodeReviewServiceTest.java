@@ -54,15 +54,21 @@ class PracticeCodeReviewServiceTest {
   }
 
   @Test
-  void nonCurrentProblemDoesNotSave() {
+  void nonCurrentProblemSavesRejectedAttempt() {
     FakeRepository repository = new FakeRepository();
     FakeLlmGateway llmGateway = new FakeLlmGateway(structuredOutput(true, false, true));
     PracticeCodeReviewService service = service(repository, llmGateway);
 
     PracticeReviewResult result = service.review(context());
 
-    assertThat(result.status()).isEqualTo(PracticeReviewStatus.NOT_COMPLETE_SUBMISSION);
-    assertThat(repository.savedDrafts).isEmpty();
+    assertThat(result.status()).isEqualTo(PracticeReviewStatus.SAVED);
+    assertThat(result.metadata())
+        .containsEntry("reviewAttemptStatus", PracticeReviewStatus.NOT_COMPLETE_SUBMISSION.name())
+        .containsEntry("totalScore", "0")
+        .containsEntry("passed", false);
+    assertThat(repository.savedDrafts).hasSize(1);
+    assertThat(repository.savedDrafts.get(0).score().total()).isEqualByComparingTo(BigDecimal.ZERO);
+    assertThat(repository.savedDrafts.get(0).passed()).isFalse();
     assertThat(llmGateway.completeCalls).isEqualTo(1);
   }
 
@@ -105,9 +111,20 @@ class PracticeCodeReviewServiceTest {
 
     PracticeReviewResult result = service.review(context());
 
-    assertThat(result.status()).isEqualTo(PracticeReviewStatus.FAILED);
-    assertThat(result.failureCode()).isEqualTo(PracticeCodeReviewService.FAILURE_CODE_LLM_COMPLETION_FAILED);
-    assertThat(repository.savedDrafts).isEmpty();
+    assertThat(result.status()).isEqualTo(PracticeReviewStatus.SAVED);
+    assertThat(result.metadata())
+        .containsEntry("reviewAttemptStatus", PracticeReviewStatus.FAILED.name())
+        .containsEntry("reviewAttemptFailureCode", PracticeCodeReviewService.FAILURE_CODE_LLM_COMPLETION_FAILED)
+        .containsEntry("totalScore", "0")
+        .containsEntry("passed", false);
+    assertThat(repository.savedDrafts).hasSize(1);
+    PracticeCodeReviewDraft savedDraft = repository.savedDrafts.get(0);
+    assertThat(savedDraft.language()).isEqualTo("unknown");
+    assertThat(savedDraft.score().total()).isEqualByComparingTo(BigDecimal.ZERO);
+    assertThat(savedDraft.passed()).isFalse();
+    assertThat(savedDraft.evidence())
+        .contains(new PracticeCodeReviewEvidence("REVIEW_ATTEMPT_REJECTED", PracticeReviewStatus.FAILED.name()));
+    assertThat(savedDraft.reviewMarkdown()).contains(PracticeCodeReviewService.FAILURE_CODE_LLM_COMPLETION_FAILED);
     assertThat(llmGateway.completeCalls).isEqualTo(1);
   }
 
@@ -168,6 +185,31 @@ class PracticeCodeReviewServiceTest {
         Instant.parse("2026-01-01T00:00:00Z"));
   }
 
+  private static PracticeCodeReview review(PracticeCodeReviewDraft draft) {
+    return new PracticeCodeReview(
+        900L,
+        draft.userId(),
+        draft.planId(),
+        draft.phaseIndex(),
+        draft.problemSlug(),
+        draft.sessionId(),
+        3,
+        draft.userMessageId(),
+        draft.assistantMessageId(),
+        draft.agentRunDbId(),
+        draft.rawCode(),
+        draft.normalizedCode(),
+        draft.language(),
+        draft.evidence(),
+        draft.contextSummary(),
+        draft.score(),
+        draft.passed(),
+        draft.deductionReasons(),
+        draft.improvementSuggestions(),
+        draft.reviewMarkdown(),
+        Instant.parse("2026-01-01T00:00:00Z"));
+  }
+
   private JsonNode structuredOutput(boolean isCodeSubmission, boolean belongsToCurrentProblem,
       boolean isCompleteLeetCodeSolution) {
     Map<String, Object> output = new LinkedHashMap<>();
@@ -200,7 +242,7 @@ class PracticeCodeReviewServiceTest {
     @Override
     public PracticeCodeReview save(PracticeCodeReviewDraft draft) {
       savedDrafts.add(draft);
-      return review();
+      return review(draft);
     }
 
     @Override

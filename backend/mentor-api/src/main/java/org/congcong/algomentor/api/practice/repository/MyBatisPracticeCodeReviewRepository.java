@@ -18,10 +18,13 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewEvi
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewScore;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewSummary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 public class MyBatisPracticeCodeReviewRepository implements PracticeCodeReviewRepository {
 
+  private static final Logger log = LoggerFactory.getLogger(MyBatisPracticeCodeReviewRepository.class);
   private static final TypeReference<List<PracticeCodeReviewEvidence>> EVIDENCE_LIST = new TypeReference<>() {
   };
   private static final TypeReference<List<String>> STRING_LIST = new TypeReference<>() {
@@ -38,14 +41,50 @@ public class MyBatisPracticeCodeReviewRepository implements PracticeCodeReviewRe
   @Override
   @Transactional
   public PracticeCodeReview save(PracticeCodeReviewDraft draft) {
+    log.info(
+        "Practice code review repository save requested. sessionId={} userMessageId={} agentRunDbId={} problemSlug={} rawCodeLength={} evidenceCount={}",
+        draft.sessionId(),
+        draft.userMessageId(),
+        draft.agentRunDbId(),
+        draft.problemSlug(),
+        draft.rawCode().length(),
+        draft.evidence().size());
     PracticeCodeReviewSessionLockRow session = mapper.lockSessionForReviewInsert(draft.userId(), draft.sessionId());
     if (session == null) {
+      log.warn(
+          "Practice code review repository session lock missed. sessionId={} userId={} userMessageId={} agentRunDbId={}",
+          draft.sessionId(),
+          draft.userId(),
+          draft.userMessageId(),
+          draft.agentRunDbId());
       throw sessionNotFound();
     }
+    log.info(
+        "Practice code review repository session locked. sessionId={} userMessageId={} agentRunDbId={} planId={} phaseIndex={} problemSlug={}",
+        session.id(),
+        draft.userMessageId(),
+        draft.agentRunDbId(),
+        session.planId(),
+        session.phaseIndex(),
+        session.problemSlug());
     PracticeCodeReviewRow row = mapper.insert(toInsertRow(draft, session));
     if (row == null) {
+      log.warn(
+          "Practice code review repository insert returned null. sessionId={} userMessageId={} agentRunDbId={}",
+          draft.sessionId(),
+          draft.userMessageId(),
+          draft.agentRunDbId());
       throw sessionNotFound();
     }
+    log.info(
+        "Practice code review repository save returned row. sessionId={} userMessageId={} agentRunDbId={} reviewId={} versionNo={} rowUserMessageId={} rowAgentRunDbId={}",
+        draft.sessionId(),
+        draft.userMessageId(),
+        draft.agentRunDbId(),
+        row.id(),
+        row.versionNo(),
+        row.userMessageId(),
+        row.agentRunDbId());
     return toReview(row);
   }
 

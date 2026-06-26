@@ -14,7 +14,7 @@ public class OpenAiLlmProperties {
   private String apiKey = "";
   private URI baseUrl = URI.create("https://api.openai.com/v1");
   private String model = "gpt-5.2";
-  private Duration timeout = Duration.ofSeconds(30);
+  private Duration timeout = Duration.ofMinutes(5);
   private Duration streamTimeout = Duration.ofMinutes(5);
   private int maxRetries = 2;
 
