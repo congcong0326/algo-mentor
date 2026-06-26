@@ -8,7 +8,6 @@ public final class PracticeCodeReviewConstants {
   public static final String SCHEMA_NAME = "practice_code_review_result";
   public static final String SCHEMA_VERSION = "v1";
   public static final BigDecimal PASS_SCORE = new BigDecimal("6.0");
-  public static final String METADATA_PRACTICE_CAPABILITIES = "practiceCapabilities";
   public static final String METADATA_CODE_REVIEW = "codeReview";
   /**
    * Review LLM 请求是否来自服务端判定的代码提交候选轮次。

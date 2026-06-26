@@ -18,10 +18,8 @@ import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessag
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentTaskCreationRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentTaskRef;
-import org.congcong.algomentor.agent.core.runtime.model.AgentTurnMessages;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
-import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.InMemoryAgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.LocalAgentRunLockOwnerProvider;
@@ -29,11 +27,11 @@ import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
-import org.congcong.algomentor.mentor.application.practice.CodeReviewTurnCapability;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewDraft;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewSummary;
 import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
@@ -42,7 +40,6 @@ import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatu
 import org.congcong.algomentor.mentor.application.practice.PracticeSession;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
-import org.congcong.algomentor.mentor.application.practice.PracticeTurnCapabilityRegistry;
 import org.congcong.algomentor.mentor.application.practice.PracticeTurnOrchestrator;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
@@ -78,25 +75,19 @@ class AgentConversationApiAutoConfigurationTest {
         .run(context -> {
           assertThat(context).doesNotHaveBean(PracticeCodeReviewRepository.class);
           assertThat(context).doesNotHaveBean(LlmGateway.class);
-          assertThat(context).hasSingleBean(PracticeTurnCapabilityRegistry.class);
-          assertThat(context.getBean(PracticeTurnCapabilityRegistry.class).capabilities()).isEmpty();
           assertThat(context).hasSingleBean(PracticeTurnOrchestrator.class);
           assertThat(context).hasSingleBean(PracticeMessageStreamService.class);
         });
   }
 
   @Test
-  void practiceTurnCapabilityRegistryIncludesCodeReviewWhenReviewInfrastructureExists() {
+  void reviewInfrastructureDoesNotRegisterPostRunCapability() {
     new ApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
         .withUserConfiguration(PracticeStreamWithReviewDependencies.class)
         .run(context -> {
-          assertThat(context).hasSingleBean(CodeReviewTurnCapability.class);
-          assertThat(context).hasSingleBean(PracticeTurnCapabilityRegistry.class);
-          assertThat(context.getBean(PracticeTurnCapabilityRegistry.class).capabilities())
-              .hasSize(1)
-              .first()
-              .isInstanceOf(CodeReviewTurnCapability.class);
+          assertThat(context).hasSingleBean(PracticeCodeReviewService.class);
+          assertThat(context).hasSingleBean(PracticeTurnOrchestrator.class);
         });
   }
 
@@ -176,11 +167,6 @@ class AgentConversationApiAutoConfigurationTest {
     @Bean
     LocalAgentRunLockOwnerProvider agentRunLockOwnerProvider() {
       return new LocalAgentRunLockOwnerProvider("test-owner");
-    }
-
-    @Bean
-    AgentTurnMessageLookupRepository agentTurnMessageLookupRepository() {
-      return runId -> Optional.<AgentTurnMessages>empty();
     }
 
     @Bean

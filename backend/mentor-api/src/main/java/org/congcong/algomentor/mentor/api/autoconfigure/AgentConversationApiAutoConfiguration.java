@@ -1,14 +1,12 @@
 package org.congcong.algomentor.mentor.api.autoconfigure;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import java.util.List;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockOwnerProvider;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
-import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
 import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.agent.persistence.postgres.config.AgentPostgresPersistenceConfiguration;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
@@ -21,7 +19,6 @@ import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunCoordinator;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
-import org.congcong.algomentor.mentor.application.practice.CodeReviewTurnCapability;
 import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
@@ -32,8 +29,6 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewStr
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
-import org.congcong.algomentor.mentor.application.practice.PracticeTurnCapabilityRegistry;
-import org.congcong.algomentor.mentor.application.practice.PracticeTurnClassifier;
 import org.congcong.algomentor.mentor.application.practice.PracticeTurnOrchestrator;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -132,12 +127,6 @@ public class AgentConversationApiAutoConfiguration {
   }
 
   @Bean
-  @ConditionalOnMissingBean
-  public PracticeTurnClassifier practiceTurnClassifier() {
-    return new PracticeTurnClassifier();
-  }
-
-  @Bean
   @ConditionalOnBean({
       LlmGateway.class,
       PracticeCodeReviewRepository.class
@@ -175,51 +164,18 @@ public class AgentConversationApiAutoConfiguration {
   }
 
   @Bean
-  @ConditionalOnBean(PracticeCodeReviewService.class)
-  @ConditionalOnMissingBean
-  public CodeReviewTurnCapability codeReviewTurnCapability(
-      PracticeCodeReviewService reviewService,
-      ObjectProvider<PracticeCodeReviewMetrics> reviewMetrics
-  ) {
-    return new CodeReviewTurnCapability(
-        reviewService,
-        reviewMetrics.getIfAvailable(() -> PracticeCodeReviewMetrics.NOOP));
-  }
-
-  @Bean
-  @ConditionalOnMissingBean
-  public PracticeTurnCapabilityRegistry practiceTurnCapabilityRegistry(
-      ObjectProvider<CodeReviewTurnCapability> codeReviewCapability
-  ) {
-    CodeReviewTurnCapability capability = codeReviewCapability.getIfAvailable();
-    return new PracticeTurnCapabilityRegistry(capability == null ? List.of() : List.of(capability));
-  }
-
-  @Bean
   @ConditionalOnBean({
       PracticeSessionRepository.class,
-      AgentConversationRunCoordinator.class,
-      AgentTurnMessageLookupRepository.class,
-      PracticeTurnClassifier.class,
-      PracticeTurnCapabilityRegistry.class,
-      PracticeChatProblemCatalog.class
+      AgentConversationRunCoordinator.class
   })
   @ConditionalOnMissingBean
   public PracticeTurnOrchestrator practiceTurnOrchestrator(
       PracticeSessionRepository practiceSessionRepository,
-      AgentConversationRunCoordinator runCoordinator,
-      AgentTurnMessageLookupRepository turnMessageLookupRepository,
-      PracticeTurnClassifier classifier,
-      PracticeTurnCapabilityRegistry capabilityRegistry,
-      PracticeChatProblemCatalog problemCatalog
+      AgentConversationRunCoordinator runCoordinator
   ) {
     return new PracticeTurnOrchestrator(
         practiceSessionRepository,
-        runCoordinator,
-        turnMessageLookupRepository,
-        classifier,
-        capabilityRegistry,
-        problemCatalog);
+        runCoordinator);
   }
 
   @Bean

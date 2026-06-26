@@ -2,12 +2,8 @@ package org.congcong.algomentor.mentor.application.practice;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,17 +16,12 @@ import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
-import org.congcong.algomentor.agent.core.runtime.model.AgentTurnMessages;
 import org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
-import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
 import org.congcong.algomentor.agent.core.runlock.InMemoryAgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.LocalAgentRunLockOwnerProvider;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
-import org.congcong.algomentor.llm.core.model.LlmModelId;
-import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
-import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
@@ -41,22 +32,17 @@ import org.junit.jupiter.api.Test;
 
 class PracticeCodeReviewFlowTest {
 
+  private static final String LEGACY_PRACTICE_CAPABILITIES_METADATA = "practiceCapabilities";
   private static final long USER_ID = 7L;
   private static final long SESSION_ID = 50L;
   private static final long PLAN_ID = 12L;
   private static final int PHASE_INDEX = 1;
   private static final String PROBLEM_SLUG = "merge-sorted-array";
-  private static final long RUN_DB_ID = 501L;
-  private static final long USER_MESSAGE_ID = 701L;
-  private static final long ASSISTANT_MESSAGE_ID = 702L;
-
-  private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Test
-  void plainPastedMergeSortedArrayCodeSavesReviewAndOpensCompletionGate() {
+  void plainPastedMergeSortedArrayCodeDoesNotAutoSaveReview() {
     InMemoryReviewRepository reviewRepository = new InMemoryReviewRepository();
-    FakeLlmGateway llmGateway = new FakeLlmGateway(reviewOutput(true, true, true));
-    PracticeMessageStreamService streamService = streamService(reviewRepository, llmGateway, plainPastedMergeCode());
+    PracticeMessageStreamService streamService = streamService();
 
     List<AgentStreamEvent> events = collect(streamService.stream(
         USER_ID,
@@ -67,103 +53,23 @@ class PracticeCodeReviewFlowTest {
         Map.of("requestId", "req-1")));
 
     AgentStreamEvent.AgentRunEnd runEnd = onlyRunEnd(events);
-    assertThat(codeReviewMetadata(runEnd))
-        .containsEntry("status", PracticeReviewStatus.SAVED.name())
-        .containsEntry("totalScore", "8.0")
-        .containsEntry("passed", true)
-        .containsEntry("language", "java");
-    assertThat(llmGateway.completeCalls).isEqualTo(1);
-    assertThat(reviewRepository.savedDrafts).hasSize(1);
-    assertThat(reviewRepository.savedDrafts.get(0).rawCode()).contains("public void merge");
+    assertThat(runEnd.metadata())
+        .containsEntry(AgentRuntimeMetadataKeys.RUN_DB_ID, 501L)
+        .doesNotContainKey(LEGACY_PRACTICE_CAPABILITIES_METADATA);
+    assertThat(reviewRepository.savedDrafts).isEmpty();
 
     PracticeCompletionGate gate = new PracticeCompletionGateService(reviewRepository)
         .evaluate(USER_ID, session());
-    assertThat(gate.canComplete()).isTrue();
-    assertThat(gate.reasonCode()).isEqualTo(PracticeCompletionGate.ReasonCode.PASSED);
+    assertThat(gate.canComplete()).isFalse();
+    assertThat(gate.reasonCode()).isEqualTo(PracticeCompletionGate.ReasonCode.NO_REVIEW);
   }
 
-  @Test
-  void reviewAttemptRejectedByLlmIsObservableInRunEndMetadata() {
-    InMemoryReviewRepository reviewRepository = new InMemoryReviewRepository();
-    FakeLlmGateway llmGateway = new FakeLlmGateway(reviewOutput(true, true, false));
-    PracticeMessageStreamService streamService = streamService(reviewRepository, llmGateway, plainPastedMergeCode());
-
-    List<AgentStreamEvent> events = collect(streamService.stream(
-        USER_ID,
-        SESSION_ID,
-        plainPastedMergeCode(),
-        "idem-rejected-code",
-        "zh-CN",
-        Map.of()));
-
-    assertThat(codeReviewMetadata(onlyRunEnd(events)))
-        .containsEntry("status", PracticeReviewStatus.SAVED.name())
-        .containsEntry("reviewAttemptStatus", PracticeReviewStatus.NOT_COMPLETE_SUBMISSION.name())
-        .containsEntry("totalScore", "0")
-        .containsEntry("passed", false)
-        .containsEntry("codeSubmissionCandidate", true);
-    assertThat(llmGateway.completeCalls).isEqualTo(1);
-    assertThat(reviewRepository.savedDrafts).hasSize(1);
-
-    PracticeCompletionGate gate = new PracticeCompletionGateService(reviewRepository)
-        .evaluate(USER_ID, session());
-    assertThat(gate.reasonCode()).isEqualTo(PracticeCompletionGate.ReasonCode.LATEST_REVIEW_FAILED);
-    assertThat(gate.latestScore()).contains(BigDecimal.ZERO);
-  }
-
-  private PracticeMessageStreamService streamService(
-      InMemoryReviewRepository reviewRepository,
-      FakeLlmGateway llmGateway,
-      String userMessage
-  ) {
-    PracticeCodeReviewService reviewService = new PracticeCodeReviewService(
-        reviewRepository,
-        llmGateway,
-        new PracticeCodeReviewPromptBuilder(),
-        new PracticeCodeReviewStructuredOutputMapper());
+  private PracticeMessageStreamService streamService() {
+    PracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
     PracticeTurnOrchestrator orchestrator = new PracticeTurnOrchestrator(
-        new InMemoryPracticeSessionRepository(),
-        new CapturingCoordinator(runEnd()),
-        new FixedTurnMessageLookupRepository(messages(userMessage)),
-        new PracticeTurnClassifier(),
-        new PracticeTurnCapabilityRegistry(List.of(new CodeReviewTurnCapability(reviewService))),
-        this::problemDetail);
-    return new PracticeMessageStreamService(new InMemoryPracticeSessionRepository(), orchestrator);
-  }
-
-  private Optional<PracticeChatProblemDetail> problemDetail(String slug, String locale) {
-    return Optional.of(new PracticeChatProblemDetail(
-        slug,
-        88,
-        "合并两个有序数组",
-        "EASY",
-        List.of("数组", "双指针"),
-        "将 nums2 合并到 nums1 中，使 nums1 成为一个有序数组。",
-        "https://leetcode.com/problems/merge-sorted-array/"));
-  }
-
-  private JsonNode reviewOutput(boolean isCodeSubmission, boolean belongsToCurrentProblem, boolean isComplete) {
-    Map<String, Object> output = new LinkedHashMap<>();
-    output.put("isCodeSubmission", isCodeSubmission);
-    output.put("belongsToCurrentProblem", belongsToCurrentProblem);
-    output.put("isCompleteLeetCodeSolution", isComplete);
-    output.put("language", "java");
-    output.put("rawCode", plainPastedMergeCode());
-    output.put("normalizedCode", plainPastedMergeCode());
-    output.put("evidence", List.of(Map.of("type", "ENTRY_FUNCTION", "value", "merge")));
-    output.put("contextSummary", "用户提交了 merge-sorted-array 的 Java 解法。");
-    output.put("scores", Map.of(
-        "correctness", 3.0,
-        "complexity", 1.0,
-        "edgeCases", 2.0,
-        "codeQuality", 1.0,
-        "problemFit", 1.0,
-        "total", 8.0));
-    output.put("passed", true);
-    output.put("deductionReasons", List.of("使用了额外数组，空间复杂度不是最优。"));
-    output.put("improvementSuggestions", List.of("可以从后往前原地合并。"));
-    output.put("reviewMarkdown", "代码可以得到正确结果，但空间复杂度可以优化。");
-    return objectMapper.valueToTree(output);
+        sessionRepository,
+        new CapturingCoordinator(runEnd()));
+    return new PracticeMessageStreamService(sessionRepository, orchestrator);
   }
 
   private String plainPastedMergeCode() {
@@ -225,39 +131,17 @@ class PracticeCodeReviewFlowTest {
         "zh-CN");
   }
 
-  private AgentTurnMessages messages(String userMessage) {
-    return new AgentTurnMessages(
-        RUN_DB_ID,
-        601L,
-        message(USER_MESSAGE_ID, AgentMessage.Role.USER, userMessage),
-        message(ASSISTANT_MESSAGE_ID, AgentMessage.Role.ASSISTANT, "可以，我来 review。"));
-  }
-
-  private AgentMessage message(long id, AgentMessage.Role role, String content) {
-    return new AgentMessage(id, 100L, id, role, content, Instant.parse("2026-01-01T00:00:00Z"), Map.of());
-  }
-
   private AgentStreamEvent.AgentRunEnd runEnd() {
     return new AgentStreamEvent.AgentRunEnd(
         "run-1",
         1,
         LlmFinishReason.STOP,
-        Map.of(AgentRuntimeMetadataKeys.RUN_DB_ID, RUN_DB_ID));
+        Map.of(AgentRuntimeMetadataKeys.RUN_DB_ID, 501L));
   }
 
   private AgentStreamEvent.AgentRunEnd onlyRunEnd(List<AgentStreamEvent> events) {
     assertThat(events).singleElement().isInstanceOf(AgentStreamEvent.AgentRunEnd.class);
     return (AgentStreamEvent.AgentRunEnd) events.get(0);
-  }
-
-  private Map<String, Object> codeReviewMetadata(AgentStreamEvent.AgentRunEnd event) {
-    Object capabilities = event.metadata().get(PracticeCodeReviewConstants.METADATA_PRACTICE_CAPABILITIES);
-    assertThat(capabilities).isInstanceOf(Map.class);
-    Object review = ((Map<?, ?>) capabilities).get(PracticeCodeReviewConstants.METADATA_CODE_REVIEW);
-    assertThat(review).isInstanceOf(Map.class);
-    Map<String, Object> values = new LinkedHashMap<>();
-    ((Map<?, ?>) review).forEach((key, value) -> values.put(String.valueOf(key), value));
-    return values;
   }
 
   private List<AgentStreamEvent> collect(Flow.Publisher<AgentStreamEvent> publisher) {
@@ -383,47 +267,6 @@ class PracticeCodeReviewFlowTest {
           draft.improvementSuggestions(),
           draft.reviewMarkdown(),
           Instant.parse("2026-01-01T00:00:00Z"));
-    }
-  }
-
-  private static final class FakeLlmGateway implements LlmGateway {
-    private final JsonNode output;
-    private int completeCalls;
-
-    private FakeLlmGateway(JsonNode output) {
-      this.output = output;
-    }
-
-    @Override
-    public LlmCompletionResult complete(LlmCompletionRequest request) {
-      completeCalls++;
-      return new LlmCompletionResult(
-          LlmMessage.assistant("{}"),
-          List.of(),
-          output,
-          LlmFinishReason.STOP,
-          null,
-          new LlmProviderId("fake"),
-          new LlmModelId("fake-model"),
-          Map.of());
-    }
-
-    @Override
-    public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
-      throw new UnsupportedOperationException("stream not used");
-    }
-  }
-
-  private static final class FixedTurnMessageLookupRepository implements AgentTurnMessageLookupRepository {
-    private final AgentTurnMessages messages;
-
-    private FixedTurnMessageLookupRepository(AgentTurnMessages messages) {
-      this.messages = messages;
-    }
-
-    @Override
-    public Optional<AgentTurnMessages> findByRunId(long runId) {
-      return Optional.of(messages).filter(value -> value.runId() == runId);
     }
   }
 

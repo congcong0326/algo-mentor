@@ -40,9 +40,7 @@ class PracticeMessageStreamServiceTest {
         "run-1",
         1,
         LlmFinishReason.STOP,
-        Map.of(PracticeCodeReviewConstants.METADATA_PRACTICE_CAPABILITIES, Map.of(
-            PracticeCodeReviewConstants.METADATA_CODE_REVIEW,
-            Map.of("status", PracticeReviewStatus.SAVED.name())))));
+        Map.of("existing", "metadata")));
     PracticeMessageStreamService service = new PracticeMessageStreamService(sessionRepository, orchestrator);
 
     List<AgentStreamEvent> events = collect(service.stream(
@@ -248,11 +246,7 @@ class PracticeMessageStreamServiceTest {
     private CapturingOrchestrator(Object result) {
       super(
           new InMemoryPracticeSessionRepository(),
-          new UnusedCoordinator(),
-          runId -> Optional.empty(),
-          new PracticeTurnClassifier(),
-          new PracticeTurnCapabilityRegistry(List.of()),
-          (slug, locale) -> Optional.empty());
+          new UnusedCoordinator());
       this.result = result;
     }
 
