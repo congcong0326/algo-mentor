@@ -57,6 +57,13 @@ export class ApiRequestError extends Error {
   }
 }
 
+export function requireApiData<T>(response: ApiResponse<T>, fallbackMessage: string): T {
+  if (response.success && response.data !== undefined) {
+    return response.data;
+  }
+  throw apiResponseToRequestError(response, fallbackMessage);
+}
+
 export async function getHealth(): Promise<ApiResponse<HealthStatus>> {
   const response = await fetch('/api/health', {
     headers: apiHeaders(jsonHeaders),
@@ -64,7 +71,7 @@ export async function getHealth(): Promise<ApiResponse<HealthStatus>> {
   });
 
   if (!response.ok) {
-    throw new Error(`Health request failed with status ${response.status}`);
+    throw await toApiRequestError(response, 'Health request failed');
   }
 
   return response.json();
@@ -108,7 +115,7 @@ export async function getProblems(
   });
 
   if (!response.ok) {
-    throw new Error(`Problems request failed with status ${response.status}`);
+    throw await toApiRequestError(response, 'Problems request failed');
   }
 
   return response.json();
@@ -126,7 +133,7 @@ export async function getProblemDetail(
   });
 
   if (!response.ok) {
-    throw new Error(`Problem detail request failed with status ${response.status}`);
+    throw await toApiRequestError(response, 'Problem detail request failed');
   }
 
   return response.json();
@@ -529,16 +536,24 @@ function readCookie(name: string): string | undefined {
 async function toApiRequestError(response: Response, fallbackMessage: string): Promise<ApiRequestError> {
   try {
     const body = await response.json() as ApiResponse<unknown>;
-    return new ApiRequestError(
-      response.status,
-      body.error?.message ?? `${fallbackMessage} with status ${response.status}`,
-      body.error?.code,
-      body.error?.messageKey,
-      body.error?.metadata,
-    );
+    return apiResponseToRequestError(body, `${fallbackMessage} with status ${response.status}`, response.status);
   } catch {
     return new ApiRequestError(response.status, `${fallbackMessage} with status ${response.status}`);
   }
+}
+
+function apiResponseToRequestError<T>(
+  response: ApiResponse<T>,
+  fallbackMessage: string,
+  status = 0,
+): ApiRequestError {
+  return new ApiRequestError(
+    status,
+    response.error?.message ?? fallbackMessage,
+    response.error?.code,
+    response.error?.messageKey,
+    response.error?.metadata,
+  );
 }
 
 function compactRequest(request: AgentConversationStreamRequest): AgentConversationStreamRequest {

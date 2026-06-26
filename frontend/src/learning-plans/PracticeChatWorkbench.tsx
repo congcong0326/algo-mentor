@@ -12,6 +12,7 @@ import {
   getPracticeSessionActiveRun,
   getPracticeSessionMessages,
   getPracticeSessionReviews,
+  requireApiData,
   streamPracticeMessage,
   updatePracticeProgressStatus,
 } from '../services/api';
@@ -143,18 +144,16 @@ export default function PracticeChatWorkbench({
         if (controller.signal.aborted || practiceLoadTokenRef.current !== activeLoadToken) {
           return;
         }
-        if (!response.success || !response.data) {
-          throw new Error(response.error?.message ?? resources.learningPlans.practiceSessionLoadFailed);
-        }
-        setSessionResponse(response.data);
-        setMessages(response.data.messages);
-        if (!response.data.activeRun) {
-          void getPracticeSessionActiveRun(response.data.session.id, controller.signal)
+        const nextSessionResponse = requireApiData(response, resources.learningPlans.practiceSessionLoadFailed);
+        setSessionResponse(nextSessionResponse);
+        setMessages(nextSessionResponse.messages);
+        if (!nextSessionResponse.activeRun) {
+          void getPracticeSessionActiveRun(nextSessionResponse.session.id, controller.signal)
             .then((activeRunResponse) => {
               if (controller.signal.aborted || !activeRunResponse.success || !activeRunResponse.data) {
                 return;
               }
-              setSessionResponse((current) => current && current.session.id === response.data!.session.id
+              setSessionResponse((current) => current && current.session.id === nextSessionResponse.session.id
                 ? { ...current, activeRun: activeRunResponse.data }
                 : current);
             })
@@ -443,23 +442,9 @@ export default function PracticeChatWorkbench({
       if (activeSessionIdRef.current !== activeSessionId || practiceLoadTokenRef.current !== activeLoadToken) {
         return;
       }
-      if (!response.success) {
-        throw new Error(response.error?.message ?? resources.learningPlans.progressUpdateFailed);
-      }
-      if (response.data) {
-        setSessionResponse(response.data);
-        setMessages(response.data.messages);
-      } else {
-        setSessionResponse((current) => current
-          ? {
-              ...current,
-              session: {
-                ...current.session,
-                progressStatus: 'COMPLETED',
-              },
-            }
-          : current);
-      }
+      const nextSessionResponse = requireApiData(response, resources.learningPlans.progressUpdateFailed);
+      setSessionResponse(nextSessionResponse);
+      setMessages(nextSessionResponse.messages);
       setStatus('idle');
     } catch (error) {
       if (activeSessionIdRef.current !== activeSessionId || practiceLoadTokenRef.current !== activeLoadToken) {
@@ -480,15 +465,15 @@ export default function PracticeChatWorkbench({
 
   async function refreshMessages(activeSessionId: number, activeLoadToken: number, signal?: AbortSignal) {
     const response = await getPracticeSessionMessages(activeSessionId, 50, signal);
-    if (!signal?.aborted && isCurrentSession(activeSessionId, activeLoadToken) && response.success && response.data) {
-      setMessages(response.data);
+    if (!signal?.aborted && isCurrentSession(activeSessionId, activeLoadToken)) {
+      setMessages(requireApiData(response, resources.learningPlans.practiceSessionLoadFailed));
     }
   }
 
   async function refreshSession(activeSessionId: number, activeLoadToken: number, signal?: AbortSignal) {
     const response = await getPracticeSession(activeSessionId, signal);
-    if (!signal?.aborted && isCurrentSession(activeSessionId, activeLoadToken) && response.success && response.data) {
-      setSessionResponse(response.data);
+    if (!signal?.aborted && isCurrentSession(activeSessionId, activeLoadToken)) {
+      setSessionResponse(requireApiData(response, resources.learningPlans.practiceSessionLoadFailed));
     }
   }
 
@@ -500,15 +485,13 @@ export default function PracticeChatWorkbench({
       if (signal?.aborted || !isCurrentSession(activeSessionId, activeLoadToken)) {
         return;
       }
-      if (!response.success || !response.data) {
-        throw new Error(response.error?.message ?? resources.learningPlans.reviewLoadFailed);
-      }
-      setReviewHistory(response.data);
+      const nextReviewHistory = requireApiData(response, resources.learningPlans.reviewLoadFailed);
+      setReviewHistory(nextReviewHistory);
       setSessionResponse((current) => current && current.session.id === activeSessionId
         ? {
             ...current,
-            completionGate: response.data!.completionGate,
-            latestReview: response.data!.latestReview ?? null,
+            completionGate: nextReviewHistory.completionGate,
+            latestReview: nextReviewHistory.latestReview ?? null,
           }
         : current);
     } catch (error) {

@@ -14,6 +14,7 @@ import {
   deleteLearningPlan,
   getLearningPlanDetail,
   getLearningPlans,
+  requireApiData,
 } from './services/api';
 import type { LearningPlanConfirmResponse, LearningPlanDetailResponse, LearningPlanPageResponse } from './types/api';
 
@@ -33,13 +34,6 @@ const INITIAL_PLANS_PAGE: LearningPlanPageResponse = {
 };
 
 const PracticeChatWorkbench = lazy(() => import('./learning-plans/PracticeChatWorkbench'));
-
-function apiData<T>(response: { success: boolean; data?: T; error?: { message: string } }, fallback: string): T {
-  if (!response.success || response.data === undefined) {
-    throw new Error(response.error?.message ?? fallback);
-  }
-  return response.data;
-}
 
 export default function LearningPlans({ pathname, onNavigate }: LearningPlansProps) {
   const { resources } = useI18n();
@@ -85,7 +79,7 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
   }, [selectedPlanId]);
 
   async function refreshPlans(nextPage = page, signal?: AbortSignal) {
-    const nextPlans = apiData(
+    const nextPlans = requireApiData(
       await getLearningPlans({ page: nextPage, pageSize: plansPage.pageSize }, signal),
       resources.learningPlans.listLoadFailed,
     );
@@ -94,7 +88,7 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
   }
 
   async function loadPlanDetail(planId: number, signal?: AbortSignal) {
-    const detail = apiData(
+    const detail = requireApiData(
       await getLearningPlanDetail(planId, signal),
       resources.learningPlans.detailLoadFailed,
     );

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { ApiRequestError, getLearningPlans } from './api';
+import { ApiRequestError, getLearningPlans, requireApiData } from './api';
+import type { ApiResponse } from '../types/api';
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -85,5 +86,40 @@ describe('api service', () => {
       message: 'This conversation is already generating a response.',
       metadata: { taskId: 42 },
     });
+  });
+
+  it('converts unsuccessful response envelopes to ApiRequestError', () => {
+    const response: ApiResponse<unknown> = {
+      success: false,
+      error: {
+        code: 'VALIDATION_FAILED',
+        messageKey: 'api.error.VALIDATION_FAILED',
+        message: '请求参数校验失败。',
+        metadata: { field: 'message' },
+      },
+      timestamp: '2026-06-22T00:00:00Z',
+    };
+
+    expect(() => requireApiData(response, 'fallback message')).toThrow(ApiRequestError);
+    try {
+      requireApiData(response, 'fallback message');
+    } catch (error) {
+      expect(error).toMatchObject({
+        status: 0,
+        code: 'VALIDATION_FAILED',
+        messageKey: 'api.error.VALIDATION_FAILED',
+        message: '请求参数校验失败。',
+        metadata: { field: 'message' },
+      });
+    }
+  });
+
+  it('uses the provided fallback when an unsuccessful response has no error body', () => {
+    const response: ApiResponse<unknown> = {
+      success: false,
+      timestamp: '2026-06-22T00:00:00Z',
+    };
+
+    expect(() => requireApiData(response, 'fallback message')).toThrow('fallback message');
   });
 });

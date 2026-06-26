@@ -2,6 +2,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import {
   confirmLearningPlanDraft,
+  requireApiData,
   sendLearningPlanDraftMessage,
   streamLearningPlanDraft,
 } from '../services/api';
@@ -23,13 +24,6 @@ type LearningPlanCreateState = 'editing' | 'generating' | 'collecting' | 'previe
 interface LearningPlanCreatePageProps {
   onBackToPlans: () => void;
   onSaved: (confirmed: LearningPlanConfirmResponse) => void;
-}
-
-function apiData<T>(response: { success: boolean; data?: T; error?: { message: string } }, fallback: string): T {
-  if (!response.success || response.data === undefined) {
-    throw new Error(response.error?.message ?? fallback);
-  }
-  return response.data;
 }
 
 export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: LearningPlanCreatePageProps) {
@@ -84,7 +78,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
     setFlowState('generating');
     setError('');
     try {
-      const nextDraft = apiData(
+      const nextDraft = requireApiData(
         await sendLearningPlanDraftMessage(draft.draftId, { message: message.trim() }),
         resources.learningPlans.followUpFailed,
       );
@@ -109,7 +103,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
     setFlowState('confirming');
     setError('');
     try {
-      const confirmed = apiData(await confirmLearningPlanDraft(draft.draftId), resources.learningPlans.saveFailed);
+      const confirmed = requireApiData(await confirmLearningPlanDraft(draft.draftId), resources.learningPlans.saveFailed);
       setDraft(undefined);
       onSaved(confirmed);
     } catch (nextError) {

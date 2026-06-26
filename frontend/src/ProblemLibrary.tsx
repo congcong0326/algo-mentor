@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import MarkdownView from './components/MarkdownView';
 import { formatDifficulty } from './i18n/formatters';
 import { useI18n } from './i18n/I18nProvider';
-import { getProblemDetail, getProblems } from './services/api';
+import { getProblemDetail, getProblems, requireApiData } from './services/api';
 import type { ProblemDetail, ProblemDifficulty, ProblemListItem, ProblemListQuery, ProblemPage } from './types/api';
 
 export default function ProblemLibrary() {
@@ -35,10 +35,7 @@ export default function ProblemLibrary() {
 
     getProblems(query, controller.signal)
       .then((response) => {
-        if (!response.success || !response.data) {
-          throw new Error(response.error?.message ?? resources.problems.listLoadFailed);
-        }
-        const nextProblemPage = response.data;
+        const nextProblemPage = requireApiData(response, resources.problems.listLoadFailed);
         setProblemPage(nextProblemPage);
         setSelectedSlug((current) => current ?? nextProblemPage.items[0]?.slug);
       })
@@ -68,10 +65,7 @@ export default function ProblemLibrary() {
 
     getProblemDetail(selectedSlug, locale, controller.signal)
       .then((response) => {
-        if (!response.success || !response.data) {
-          throw new Error(response.error?.message ?? resources.problems.detailLoadFailed);
-        }
-        setDetail(response.data);
+        setDetail(requireApiData(response, resources.problems.detailLoadFailed));
       })
       .catch((error) => {
         if (!controller.signal.aborted) {
