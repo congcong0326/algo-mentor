@@ -1,8 +1,16 @@
 # 练习代码 Review 技术设计
 
+## 当前状态
+
+本文早期采用“后端回合 capability 自动识别并落库”的方案。该方向已废弃，不再作为后续实现计划。
+
+当前实现方向是：Review 由 `submit_practice_code_review` Agent tool 承载。主模型在 practice chat 中自主判断当前用户消息是否像完整 LeetCode 解法提交；如果模型调用该工具，阶段一权限人在回路机制会先请求用户确认。用户允许后，工具从服务端受信 metadata、练习会话和 run message lookup 中读取上下文，调用 `PracticeCodeReviewService` 抽取代码、分析、打分并写入 `practice_code_review`。用户拒绝或确认超时，不生成正式 Review 记录。
+
+以下保留的 `PracticeTurnCapability`、`CodeReviewTurnCapability`、`PracticeTurnClassifier` 和 `practiceCapabilities` 设计均为历史方案说明，不应继续实现或恢复。
+
 ## 背景
 
-`docs/practice-code-review-product-design.md` 定义了练习聊天中的代码 Review 闭环：用户粘贴完整 LeetCode 题解代码后，系统自动识别、生成 AI Review、保存多版本记录，并用最近一次有效 Review 决定题目能否标记完成。
+`docs/practice-code-review-product-design.md` 定义了练习聊天中的代码 Review 闭环：用户粘贴完整 LeetCode 题解代码后，主模型自主判断是否调用正式 Review 工具；用户确认后系统生成 AI Review、保存多版本记录，并用最近一次有效 Review 决定题目能否标记完成。
 
 当前代码基础已经具备：
 
@@ -12,11 +20,11 @@
 - `learning_plan_problem_progress` 保存题目进度。
 - `llm-core` 和 `agent-core` 已支持 provider-native JSON Schema 结构化输出。
 
-本设计选择在现有 practice chat 流程上增量扩展，引入轻量的练习回合编排层，而不是引入完整 LangGraph/DAG 工作流引擎，也不新增在线判题、编译运行或独立代码编辑器。
+当前设计选择在现有 practice chat Agent tool calling 流程上增量扩展，不引入完整 LangGraph/DAG 工作流引擎，也不新增在线判题、编译运行、独立代码编辑器或后端自动识别 capability。
 
 ## 目标
 
-- 用户在练习聊天中发送完整题解代码后，自动生成结构化 Review 记录。
+- 用户在练习聊天中发送完整题解代码后，主模型应自主调用正式 Review 工具，并在用户确认后生成结构化 Review 记录。
 - 同一 `计划 + 阶段 + 题目 + 会话` 支持多次 Review 版本。
 - Review 记录保存代码快照、语言、识别证据、上下文摘要、评分、扣分原因和改进建议。
 - 完成题目的资格由最近一次有效 Review 决定。
@@ -30,11 +38,22 @@
 - 不实现 Review 版本 diff。
 - 不做人工 override 完成门槛。
 - 不做完整用户画像页面。
-- 不新增异步 worker 或消息队列；第一版在服务端练习回合编排内同步执行 capability。
+- 不新增异步 worker 或消息队列。
+- 不恢复服务端练习回合 capability 自动识别和写库链路。
 
 ## 方案选择
 
-采用方案 A 的轻量编排版：接入现有 practice chat 流程，在一次用户消息 run 结束后由服务端 `PracticeTurnOrchestrator` 执行 `PracticeTurnCapability`，自动识别并落 Review。
+历史方案采用轻量编排版：接入现有 practice chat 流程，在一次用户消息 run 结束后由服务端 `PracticeTurnOrchestrator` 执行 `PracticeTurnCapability`，自动识别并落 Review。
+
+该历史方案已废弃。当前方案是自主 tool call 版：
+
+1. 练习聊天仍由 `PracticeMessageStreamService -> PracticeTurnOrchestrator -> AgentConversationRunCoordinator -> AgentLoopRunner` 流式生成用户可见回复。
+2. Practice chat prompt 和 `submit_practice_code_review` 工具描述要求主模型在疑似完整题解提交时主动调用工具。
+3. `PracticeCodeReviewPermissionHook` 对该工具返回 `ASK`，通过 SSE 和决策 API 触发人在回路确认。
+4. 用户允许后，`PracticeCodeReviewAgentTool` 调用 `PracticeCodeReviewService`，生成并保存正式 Review 记录，tool result 回填给主模型总结。
+5. 用户拒绝或超时后，真实 Review 工具不执行，不写库；主模型可继续普通点评，但不得给正式分数或声称完成状态更新。
+
+下面的回合 capability 流程仅作为历史方案记录：
 
 流程分为两层：
 
@@ -44,7 +63,7 @@
 
 用户可见聊天回复和结构化 Review 记录是两个产物。第一版通过 practice chat prompt 让代码提交场景的回复使用 Review 风格；完成资格、抽屉分数和画像数据以后端结构化 Review 记录为准。
 
-不把代码 Review 包装成模型主动调用的 tool。原因是 Review 记录会影响完成门槛，属于服务端业务事实生成流程，是否写库必须由服务端规则和业务校验决定；模型可以参与识别和评分，但不拥有最终触发权。
+历史方案曾选择“不把代码 Review 包装成模型主动调用的 tool”。该判断已被阶段一权限设计替代：模型可以发起 tool call，但真实副作用由服务端权限确认、受信上下文和工具层校验控制。
 
 ## 总体架构
 

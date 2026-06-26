@@ -98,7 +98,7 @@ class PracticeChatPromptSectionProviderTest {
   }
 
   @Test
-  void coachingPolicyIncludesCompleteCodeReviewAndIncompleteSnippetGuidance() {
+  void coachingPolicyUsesAggressiveAutonomousReviewToolGuidance() {
     PromptAssembly assembly = assembler().assemble(new PromptAssemblyRequest(
         PracticeChatPromptConstants.SCENARIO,
         PracticeChatPromptConstants.PROFILE_ID,
@@ -115,8 +115,13 @@ class PracticeChatPromptSectionProviderTest {
         .orElseThrow()
         .renderedText();
     assertThat(policyText)
-        .contains("如果当前用户消息看起来是完整代码提交，请按代码 Review 风格回复，覆盖正确性、复杂度、边界条件、代码质量和下一步建议。")
-        .contains("如果只是片段、报错或伪代码，请正常答疑，并引导用户粘贴完整 LeetCode Solution 代码生成正式 Review。");
+        .contains("只要当前用户消息看起来像是在粘贴当前题目的完整 LeetCode 解法")
+        .contains("即使用户没有明确要求正式 Review，也应调用 "
+            + PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW)
+        .contains("如果用户拒绝确认或确认超时，可以继续普通点评代码")
+        .contains("不要给出正式分数")
+        .contains("不要声称已生成 Review 记录")
+        .doesNotContain("用户粘贴代码时，先定位关键问题和最小修改");
   }
 
   @Test
@@ -138,13 +143,15 @@ class PracticeChatPromptSectionProviderTest {
         .renderedText();
     assertThat(policyText)
         .contains(PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW)
-        .contains("当用户明确请求正式代码 Review，或在题目练习中提交完整解法并希望判断是否通过时，调用 "
+        .contains("当当前用户消息看起来像是在粘贴当前题目的完整 LeetCode 解法时，应优先调用 "
             + PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW)
         .contains(PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW
-            + " 会生成正式 Review 记录并可能影响题目完成状态")
+            + " 会记录一次正式代码提交，委托 Review 流程抽取代码、分析、打分并保存 Review 记录")
         .contains("系统会在执行前请求用户确认，工具不能绕过确认")
-        .contains("普通概念、语法、局部 bug、提示、复杂度分析、片段、报错和伪代码不要调用工具，应按普通答疑处理")
-        .contains("如果用户拒绝确认或确认超时，继续以普通聊天方式帮助用户，不要声称已完成正式 Review，也不要声称已生成 Review 记录")
+        .contains("明显片段、伪代码、报错日志、局部 bug、语法问题、复杂度讨论和概念问题不要调用工具，应按普通答疑处理")
+        .contains("如果用户拒绝确认或确认超时，可以继续普通点评代码")
+        .contains("不要给出正式分数")
+        .contains("不要声称已完成正式 Review，也不要声称已生成 Review 记录")
         .contains("以上规则只是模型工具调用指引，不是安全边界");
   }
 

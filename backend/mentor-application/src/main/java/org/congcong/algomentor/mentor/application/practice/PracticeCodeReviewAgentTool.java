@@ -22,6 +22,7 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
   private static final String JSON_TYPE = "type";
   private static final String JSON_OBJECT = "object";
   private static final String JSON_STRING = "string";
+  private static final String JSON_NULL = "null";
   private static final String JSON_PROPERTIES = "properties";
   private static final String JSON_REQUIRED = "required";
   private static final String JSON_ADDITIONAL_PROPERTIES = "additionalProperties";
@@ -38,9 +39,12 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
   private static final LlmToolSpec SPEC = new LlmToolSpec(
       PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW,
       """
-          Submit the current practice chat user message for a formal code review. Use only when the user appears to \
-          request or provide a code submission for the active practice problem. Do not pass user id, session id, \
-          problem slug, code, or message ids; the server derives them from trusted execution metadata.
+          Record the current practice user message as a formal code submission. This tool delegates to the review \
+          workflow to extract code, analyze, score, and save a review record that may affect completion eligibility. \
+          Use when the current user message looks like a complete solution submission for the active practice problem, \
+          even if the user did not explicitly ask for a formal review. Do not use for snippets, pseudocode, error logs, \
+          local bug questions, syntax questions, or conceptual discussion. Do not pass user id, session id, problem slug, \
+          code, or message ids; the server derives them from trusted execution metadata.
           """.strip(),
       inputSchema(),
       true);
@@ -244,18 +248,20 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
     ObjectNode properties = schema.putObject(JSON_PROPERTIES);
     properties.set(
         PracticeCodeReviewAgentToolNames.ARGUMENT_USER_INTENT,
-        stringProperty("Optional user-facing reason for requesting this formal review."));
+        nullableStringProperty("Optional user-facing reason for requesting this formal review."));
     properties.set(
         PracticeCodeReviewAgentToolNames.ARGUMENT_NOTES,
-        stringProperty("Optional short notes for the review request. Keep this concise and non-identifying."));
-    schema.putArray(JSON_REQUIRED);
+        nullableStringProperty("Optional short notes for the review request. Keep this concise and non-identifying."));
+    schema.putArray(JSON_REQUIRED)
+        .add(PracticeCodeReviewAgentToolNames.ARGUMENT_USER_INTENT)
+        .add(PracticeCodeReviewAgentToolNames.ARGUMENT_NOTES);
     schema.put(JSON_ADDITIONAL_PROPERTIES, false);
     return schema;
   }
 
-  private static ObjectNode stringProperty(String description) {
+  private static ObjectNode nullableStringProperty(String description) {
     ObjectNode node = JsonNodeFactory.instance.objectNode();
-    node.put(JSON_TYPE, JSON_STRING);
+    node.putArray(JSON_TYPE).add(JSON_STRING).add(JSON_NULL);
     node.put(JSON_DESCRIPTION, description);
     return node;
   }

@@ -1,5 +1,7 @@
 # 练习代码 Review 设计
 
+> 状态：历史方案，已废弃。本文描述的是服务端 `PracticeTurnCapability` 自动 Review 方向；当前方向已调整为 `submit_practice_code_review` Agent tool + 权限人在回路 + 主模型自主判断。不要继续按本文新增或恢复 `CodeReviewTurnCapability`、`PracticeTurnCapabilityRegistry` 或 `practiceCapabilities` 自动写库链路。
+
 ## 背景
 
 `docs/practice-code-review-product-design.md` 和 `docs/practice-code-review-technical-design.md` 已定义练习聊天中的代码 Review 闭环：用户在题目练习会话里粘贴完整 LeetCode 题解代码后，系统自动识别、生成结构化 Review、保存多版本记录，并用最近一次有效 Review 决定题目能否标记完成。

@@ -8,7 +8,7 @@
 - `AgentLoopRunner` 不承载具体权限策略，只保留一个不可绕过的工具执行门禁点。
 - `ASK` 的人在回路等待、SSE 事件、决策 API 和 synthetic tool result 仍由服务端运行时统一处理。
 
-阶段一只解决“模型自主调用高权限工具时，服务端如何安全执行或拒绝”的闭环。它不解决“模型一定调用 Review 工具”的确定性问题，也不引入 `tool_choice=SPECIFIC`、后端代码提交意图识别或显式 Review run。这些留给阶段二。
+阶段一只解决“模型自主调用高权限工具时，服务端如何安全执行或拒绝”的闭环。它不解决“模型一定调用 Review 工具”的确定性问题。阶段二也不引入 `tool_choice=SPECIFIC`、后端代码提交意图识别或显式 Review run，而是通过 prompt 和工具描述强化主模型自主调用意愿。
 
 ## 背景与现状
 
@@ -1199,7 +1199,7 @@ Prompt 测试：
 - `InMemoryAgentToolPermissionCoordinator` 只适合单实例部署；pending request 不持久化。
 - 实例重启会丢失 pending request，已发出的权限请求会变成不可决策或被 API 映射为不存在。
 - 多实例部署时，如果 SSE 创建权限请求的实例与 decision API 命中的实例不同，当前内存 pending request 无法共享，决策可能返回不存在；上线多实例前需要迁移到 Redis/PostgreSQL coordinator，或保证路由粘性。
-- 阶段一不实现 forced tool calling、不保证模型一定调用 Review 工具，也不做后端代码提交意图识别；这些仍属于阶段二或后续显式入口设计。
+- 阶段一不实现 forced tool calling、不保证模型一定调用 Review 工具，也不做后端代码提交意图识别；阶段二已调整为 prompt 和工具描述强化，后续仍依赖主模型自主判断，不追求 100% 触发。
 - 阶段一不实现永久允许、本会话总是允许、权限记忆或多工具并行授权聚合。
 
 ## 配置与运维提示
@@ -1272,12 +1272,10 @@ npm --cache ./.npm --prefix frontend test -- --run src/services/api.test.ts src/
 
 ## 后续演进
 
-阶段二在本设计之上增加 per-run tool execution options：
+阶段二在本设计之上强化自主 tool calling 契约：
 
-- `allowedToolNames`
-- `toolChoice=SPECIFIC(submit_practice_code_review)`
-- `scope=FIRST_STEP_ONLY`
-- `parallelToolCalls=false`
-- `maxToolCalls=1`
+- practice chat prompt 采用积极触发风格：疑似完整题解提交时，主模型应主动调用 `submit_practice_code_review`。
+- `submit_practice_code_review` 工具描述明确为正式代码提交记录和 Review 子流程入口。
+- 用户拒绝或确认超时后，模型可以普通点评代码，但不得给正式分数、不得声称生成 Review 记录、不得声称完成状态已更新。
 
-显式“提交 Review”入口可以选择把用户点击视为本次授权，或仍复用阶段一确认弹窗。无论如何，阶段一的服务端权限 hook 和执行门禁点仍作为最终保护层保留。
+后续不再计划通过 `toolChoice=SPECIFIC(submit_practice_code_review)`、显式 Review run 或后端代码提交识别来追求确定性触发。无论模型是否调用工具，阶段一的服务端权限 hook 和执行门禁点仍作为最终保护层保留。

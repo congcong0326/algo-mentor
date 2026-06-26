@@ -43,7 +43,7 @@ class PracticeCodeReviewAgentToolTest {
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Test
-  void specOnlyExposesOptionalIntentAndNotes() {
+  void specUsesOpenAiStrictSchemaAndOnlyExposesNullableIntentAndNotes() {
     PracticeCodeReviewAgentTool tool = tool(
         new FakePracticeSessionRepository(),
         new FakeTurnMessageLookupRepository(turnMessages()),
@@ -52,15 +52,34 @@ class PracticeCodeReviewAgentToolTest {
     LlmToolSpec spec = tool.spec();
 
     assertThat(spec.name()).isEqualTo(PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW);
+    assertThat(spec.description())
+        .contains("Record the current practice user message as a formal code submission")
+        .contains("extract code, analyze, score, and save a review record")
+        .contains("Use when the current user message looks like a complete solution submission")
+        .contains("even if the user did not explicitly ask for a formal review")
+        .contains("Do not pass user id, session id, problem slug, code, or message ids");
     JsonNode schema = spec.inputSchema();
     assertThat(schema.path("type").asText()).isEqualTo("object");
+    assertThat(spec.strict()).isTrue();
     assertThat(schema.path("additionalProperties").asBoolean()).isFalse();
-    assertThat(schema.path("required")).isEmpty();
     assertThat(schema.path("properties").fieldNames())
         .toIterable()
         .containsExactlyInAnyOrder(
             PracticeCodeReviewAgentToolNames.ARGUMENT_USER_INTENT,
             PracticeCodeReviewAgentToolNames.ARGUMENT_NOTES);
+    List<String> properties = new ArrayList<>();
+    schema.path("properties").fieldNames().forEachRemaining(properties::add);
+    List<String> required = new ArrayList<>();
+    schema.path("required").forEach(node -> required.add(node.asText()));
+    assertThat(required).containsExactlyElementsOf(properties);
+    JsonNode userIntentType = schema.path("properties")
+        .path(PracticeCodeReviewAgentToolNames.ARGUMENT_USER_INTENT)
+        .path("type");
+    assertThat(userIntentType).extracting(JsonNode::asText).containsExactly("string", "null");
+    JsonNode notesType = schema.path("properties")
+        .path(PracticeCodeReviewAgentToolNames.ARGUMENT_NOTES)
+        .path("type");
+    assertThat(notesType).extracting(JsonNode::asText).containsExactly("string", "null");
     assertThat(schema.toString())
         .doesNotContain("userId")
         .doesNotContain("sessionId")

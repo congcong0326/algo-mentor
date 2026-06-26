@@ -1,5 +1,7 @@
 # Practice Code Review Implementation Plan
 
+> 状态：历史执行计划，已废弃。本文基于服务端 `PracticeTurnCapability` 自动 Review 方案；当前方向已调整为 `submit_practice_code_review` Agent tool + 权限人在回路 + 主模型自主判断。不要继续按本文新增或恢复 `CodeReviewTurnCapability`、`PracticeTurnCapabilityRegistry` 或 `practiceCapabilities` 自动写库链路。
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:using-git-worktrees before code changes, then use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. When using subagents, use the high model level requested by the user.
 
 **Goal:** Build automatic practice code Review for practice chat: detect complete LeetCode submissions, save structured multi-version Review records, expose Review history, and enforce completion by the latest valid Review.
