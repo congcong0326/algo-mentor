@@ -389,6 +389,13 @@ export interface AgentToolPermissionRequestEvent {
   expiresAt: string;
 }
 
+export interface AgentToolStartEvent {
+  runId: string;
+  stepIndex: number;
+  toolCallId: string;
+  toolName: string;
+}
+
 export interface AgentToolEndEvent {
   runId: string;
   stepIndex: number;

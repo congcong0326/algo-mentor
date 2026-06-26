@@ -282,6 +282,8 @@ export interface LocaleResources {
     reviewDetailLoadFailed: string;
     reviewPassed: string;
     reviewFailed: string;
+    reviewToolRunning: string;
+    reviewToolScoreSummary: (statusLabel: string, scoreText: string) => string;
     reviewVersionLabel: (versionNo: number) => string;
     reviewScoreText: (score: number, passScore?: number) => string;
     reviewPassScoreLabel: (passScore: number) => string;
@@ -638,6 +640,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       reviewDetailLoadFailed: 'Review 详情加载失败，请稍后重试。',
       reviewPassed: '已通过',
       reviewFailed: '未通过',
+      reviewToolRunning: '正在执行代码 Review...',
+      reviewToolScoreSummary: (statusLabel, scoreText) => `代码 Review 已完成：${statusLabel}，${scoreText}。`,
       reviewVersionLabel: (versionNo) => `V${versionNo}`,
       reviewScoreText: (score, passScore) => passScore === undefined ? `${score} 分` : `${score} / ${passScore} 分`,
       reviewPassScoreLabel: (passScore) => `通过分 ${passScore}`,
@@ -1037,6 +1041,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       reviewDetailLoadFailed: 'Failed to load review details. Try again later.',
       reviewPassed: 'Passed',
       reviewFailed: 'Failed',
+      reviewToolRunning: 'Running code review...',
+      reviewToolScoreSummary: (statusLabel, scoreText) => `Code review complete: ${statusLabel}, ${scoreText}.`,
       reviewVersionLabel: (versionNo) => `V${versionNo}`,
       reviewScoreText: (score, passScore) => passScore === undefined ? `${score} pts` : `${score} / ${passScore} pts`,
       reviewPassScoreLabel: (passScore) => `Pass score ${passScore}`,

@@ -150,6 +150,73 @@ describe('PracticeChatWorkbench review contracts', () => {
     expect(await screen.findByText('Review 正在执行。')).toBeInTheDocument();
   });
 
+  it('updates the pending assistant bubble when Review tool starts', async () => {
+    let streamOptions: Parameters<typeof api.streamPracticeMessage>[2] | undefined;
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      streamOptions = options;
+      await new Promise<void>(() => undefined);
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: 'class Solution { int[] twoSum() { return null; } }' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+    expect(await screen.findByText('正在整理思路...')).toBeInTheDocument();
+
+    act(() => {
+      streamOptions?.onEvent({
+        eventName: 'agent_tool_start',
+        data: agentToolEvent({ toolName: 'submit_practice_code_review' }),
+      });
+    });
+
+    expect(await screen.findByText('正在执行代码 Review...')).toBeInTheDocument();
+    expect(screen.queryByText('正在整理思路...')).not.toBeInTheDocument();
+  });
+
+  it('shows failed Review score from tool result before the final assistant text', async () => {
+    let streamOptions: Parameters<typeof api.streamPracticeMessage>[2] | undefined;
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      streamOptions = options;
+      await new Promise<void>(() => undefined);
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: 'class Solution { int[] twoSum() { return new int[]{0,0}; } }' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+    await waitFor(() => expect(streamOptions).toBeDefined());
+
+    act(() => {
+      streamOptions?.onEvent({
+        eventName: 'agent_tool_end',
+        data: agentToolEndEvent({
+          result: {
+            type: 'practice_code_review_submitted',
+            status: 'SAVED',
+            totalScore: 4.5,
+            passed: false,
+          },
+          toolName: 'submit_practice_code_review',
+        }),
+      });
+    });
+
+    expect(await screen.findByText('代码 Review 已完成：未通过，4.5 / 80 分。')).toBeInTheDocument();
+
+    act(() => {
+      streamOptions?.onEvent({
+        eventName: 'content_delta',
+        data: { content: '主要问题是返回值固定，不能覆盖输入。' },
+      });
+    });
+
+    expect(screen.getByText(/代码 Review 已完成：未通过，4.5 \/ 80 分。/)).toBeInTheDocument();
+    expect(screen.getByText(/主要问题是返回值固定，不能覆盖输入。/)).toBeInTheDocument();
+  });
+
   it('denies permission with user rejection reason', async () => {
     streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
       options.onEvent?.({
@@ -959,11 +1026,19 @@ function agentToolEndEvent(overrides: {
   toolName?: string;
 }) {
   return {
+    ...agentToolEvent({ toolName: overrides.toolName }),
+    result: overrides.result,
+  };
+}
+
+function agentToolEvent(overrides: {
+  toolName?: string;
+} = {}) {
+  return {
     runId: 'run-1',
     stepIndex: 1,
     toolCallId: 'call-1',
     toolName: overrides.toolName ?? 'submit_practice_code_review',
-    result: overrides.result,
   };
 }
 

@@ -19,6 +19,7 @@ import {
 } from '../services/api';
 import type {
   AgentToolEndEvent,
+  AgentToolStartEvent,
   LearningPlanDetailResponse,
   LearningPlanProblemDraft,
   AgentToolPermissionRequestEvent,
@@ -224,6 +225,29 @@ function readAgentToolEndEvent(data: unknown): AgentToolEndEvent | undefined {
   };
 }
 
+function readAgentToolStartEvent(data: unknown): AgentToolStartEvent | undefined {
+  if (typeof data !== 'object' || data === null) {
+    return undefined;
+  }
+
+  const event = data as Record<string, unknown>;
+  const runId = readStringField(event, 'runId');
+  const stepIndex = readNumberField(event, 'stepIndex');
+  const toolCallId = readStringField(event, 'toolCallId');
+  const toolName = readStringField(event, 'toolName');
+
+  if (!runId || stepIndex === undefined || !toolCallId || !toolName) {
+    return undefined;
+  }
+
+  return {
+    runId,
+    stepIndex,
+    toolCallId,
+    toolName,
+  };
+}
+
 function readResultType(result: unknown): string | undefined {
   if (typeof result !== 'object' || result === null || !('type' in result)) {
     return undefined;
@@ -231,6 +255,42 @@ function readResultType(result: unknown): string | undefined {
 
   const type = (result as { type?: unknown }).type;
   return typeof type === 'string' && type.trim() ? type : undefined;
+}
+
+function readResultScore(result: unknown): number | undefined {
+  if (typeof result !== 'object' || result === null || !('totalScore' in result)) {
+    return undefined;
+  }
+
+  const totalScore = (result as { totalScore?: unknown }).totalScore;
+  if (typeof totalScore === 'number' && Number.isFinite(totalScore)) {
+    return totalScore;
+  }
+  if (typeof totalScore === 'string' && totalScore.trim()) {
+    const parsed = Number(totalScore);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  }
+  return undefined;
+}
+
+function readResultPassed(result: unknown): boolean | undefined {
+  if (typeof result !== 'object' || result === null || !('passed' in result)) {
+    return undefined;
+  }
+
+  const passed = (result as { passed?: unknown }).passed;
+  if (typeof passed === 'boolean') {
+    return passed;
+  }
+  if (typeof passed === 'string') {
+    if (passed.toLowerCase() === 'true') {
+      return true;
+    }
+    if (passed.toLowerCase() === 'false') {
+      return false;
+    }
+  }
+  return undefined;
 }
 
 function nextIdempotencyKey(): string {
@@ -442,6 +502,49 @@ export default function PracticeChatWorkbench({
     )));
   }
 
+  function replaceAssistantPlaceholder(assistantMessageId: number, contentMarkdown: string) {
+    setMessages((current) => current.map((message) => (
+      message.id === assistantMessageId
+        ? {
+            ...message,
+            contentMarkdown,
+            messageType: 'CHAT',
+          }
+        : message
+    )));
+  }
+
+  function appendAssistantContent(assistantMessageId: number, content: string) {
+    setMessages((current) => current.map((message) => {
+      if (message.id !== assistantMessageId) {
+        return message;
+      }
+
+      const currentContent = message.contentMarkdown;
+      return {
+        ...message,
+        contentMarkdown: currentContent === resources.learningPlans.organizingThoughts
+          || currentContent === resources.learningPlans.reviewToolRunning
+          ? content
+          : `${currentContent}${content}`,
+      };
+    }));
+  }
+
+  function reviewToolScoreSummary(result: unknown): string | undefined {
+    const totalScore = readResultScore(result);
+    const passed = readResultPassed(result);
+    if (totalScore === undefined || passed === undefined) {
+      return undefined;
+    }
+
+    const statusLabel = passed ? resources.learningPlans.reviewPassed : resources.learningPlans.reviewFailed;
+    return resources.learningPlans.reviewToolScoreSummary(
+      statusLabel,
+      resources.learningPlans.reviewScoreText(totalScore, completionGate?.passScore),
+    );
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const text = composerValue.trim();
@@ -496,18 +599,7 @@ export default function PracticeChatWorkbench({
               return;
             }
 
-            setMessages((current) => current.map((message) => {
-              if (message.id !== assistantMessageId) {
-                return message;
-              }
-
-              return {
-                ...message,
-                contentMarkdown: message.contentMarkdown === resources.learningPlans.organizingThoughts
-                  ? delta
-                  : `${message.contentMarkdown}${delta}`,
-              };
-            }));
+            appendAssistantContent(assistantMessageId, delta);
           }
 
           if (event.eventName === 'agent_run_end') {
@@ -526,11 +618,24 @@ export default function PracticeChatWorkbench({
             if (resultType === REVIEW_SUBMITTED_RESULT_TYPE) {
               reviewRefreshRequested = true;
               setPostRunRefreshing(true);
+              const scoreSummary = reviewToolScoreSummary(toolEnd.result);
+              if (scoreSummary) {
+                appendAssistantContent(assistantMessageId, `${scoreSummary}\n\n`);
+              }
             }
             if (resultType === TOOL_PERMISSION_DENIED_RESULT_TYPE
               || resultType === TOOL_PERMISSION_TIMEOUT_RESULT_TYPE) {
               return;
             }
+          }
+
+          if (event.eventName === 'agent_tool_start') {
+            const toolStart = readAgentToolStartEvent(event.data);
+            if (!toolStart || toolStart.toolName !== REVIEW_TOOL_NAME) {
+              return;
+            }
+
+            replaceAssistantPlaceholder(assistantMessageId, resources.learningPlans.reviewToolRunning);
           }
 
           if (event.eventName === 'tool_permission_request') {
