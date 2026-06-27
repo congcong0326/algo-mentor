@@ -350,7 +350,7 @@ describe('PracticeChatWorkbench review contracts', () => {
     renderWorkbench();
 
     const userText = await screen.findByText((_, element) => (
-      element?.classList.contains('practice-message-plain-text') && element.textContent === pastedCode
+      Boolean(element?.classList.contains('practice-message-plain-text') && element.textContent === pastedCode)
     ));
     expect(userText).toBeInTheDocument();
     expect(userText.querySelector('strong')).toBeNull();
