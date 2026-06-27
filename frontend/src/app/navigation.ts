@@ -13,8 +13,15 @@ export const APP_ROUTES = {
 
 const LEARNING_PLAN_DETAIL_PATTERN = /^\/learning-plans\/(\d+)$/;
 const LEARNING_PLAN_PRACTICE_CHAT_PATTERN = /^\/learning-plans\/(\d+)\/phases\/(\d+)\/problems\/([^/]+)\/chat$/;
+const LEARNING_PLAN_PRACTICE_SUBMISSIONS_PATTERN = /^\/learning-plans\/(\d+)\/phases\/(\d+)\/problems\/([^/]+)\/submissions$/;
 
 export interface LearningPlanPracticeChatRoute {
+  planId: number;
+  phaseIndex: number;
+  problemSlug: string;
+}
+
+export interface LearningPlanPracticeSubmissionsRoute {
   planId: number;
   phaseIndex: number;
   problemSlug: string;
@@ -67,6 +74,7 @@ export function viewFromPath(pathname: string): AppView | undefined {
     || pathname === APP_ROUTES.learningPlanNew
     || LEARNING_PLAN_DETAIL_PATTERN.test(pathname)
     || LEARNING_PLAN_PRACTICE_CHAT_PATTERN.test(pathname)
+    || LEARNING_PLAN_PRACTICE_SUBMISSIONS_PATTERN.test(pathname)
   ) {
     return 'learningPlans';
   }
@@ -98,8 +106,25 @@ export function learningPlanPracticeChatPath(planId: number, phaseIndex: number,
   return `${learningPlanDetailPath(planId)}/phases/${phaseIndex}/problems/${encodeURIComponent(problemSlug)}/chat`;
 }
 
+export function learningPlanPracticeSubmissionsPath(planId: number, phaseIndex: number, problemSlug: string): string {
+  return `${learningPlanDetailPath(planId)}/phases/${phaseIndex}/problems/${encodeURIComponent(problemSlug)}/submissions`;
+}
+
 export function learningPlanPracticeChatRouteFromPath(pathname: string): LearningPlanPracticeChatRoute | undefined {
   const match = LEARNING_PLAN_PRACTICE_CHAT_PATTERN.exec(pathname);
+  const route = practiceRouteFromMatch(match);
+  return route ? { ...route } : undefined;
+}
+
+export function learningPlanPracticeSubmissionsRouteFromPath(
+  pathname: string,
+): LearningPlanPracticeSubmissionsRoute | undefined {
+  const match = LEARNING_PLAN_PRACTICE_SUBMISSIONS_PATTERN.exec(pathname);
+  const route = practiceRouteFromMatch(match);
+  return route ? { ...route } : undefined;
+}
+
+function practiceRouteFromMatch(match: RegExpExecArray | null) {
   if (!match) {
     return undefined;
   }

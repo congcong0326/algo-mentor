@@ -5,6 +5,8 @@ import {
   learningPlanIdFromPath,
   learningPlanPracticeChatPath,
   learningPlanPracticeChatRouteFromPath,
+  learningPlanPracticeSubmissionsPath,
+  learningPlanPracticeSubmissionsRouteFromPath,
 } from './app/navigation';
 import LearningPlanCreatePage from './learning-plans/LearningPlanCreatePage';
 import LearningPlanDetail from './learning-plans/LearningPlanDetail';
@@ -34,6 +36,7 @@ const INITIAL_PLANS_PAGE: LearningPlanPageResponse = {
 };
 
 const PracticeChatWorkbench = lazy(() => import('./learning-plans/PracticeChatWorkbench'));
+const PracticeSubmissionHistoryPage = lazy(() => import('./learning-plans/PracticeSubmissionHistoryPage'));
 
 export default function LearningPlans({ pathname, onNavigate }: LearningPlansProps) {
   const { resources } = useI18n();
@@ -43,7 +46,10 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
   const [deletingPlanId, setDeletingPlanId] = useState<number>();
   const [error, setError] = useState('');
   const practiceChatRoute = learningPlanPracticeChatRouteFromPath(pathname);
-  const selectedPlanId = practiceChatRoute?.planId ?? learningPlanIdFromPath(pathname);
+  const practiceSubmissionsRoute = learningPlanPracticeSubmissionsRouteFromPath(pathname);
+  const selectedPlanId = practiceChatRoute?.planId
+    ?? practiceSubmissionsRoute?.planId
+    ?? learningPlanIdFromPath(pathname);
 
   useEffect(() => {
     if (pathname === APP_ROUTES.learningPlanNew || selectedPlanId !== undefined) {
@@ -148,9 +154,33 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
             >
               <PracticeChatWorkbench
                 onBack={() => onNavigate(learningPlanDetailPath(planDetail.id))}
+                onOpenSubmissions={() => onNavigate(learningPlanPracticeSubmissionsPath(
+                  planDetail.id,
+                  practiceChatRoute.phaseIndex,
+                  practiceChatRoute.problemSlug,
+                ))}
                 phaseIndex={practiceChatRoute.phaseIndex}
                 plan={planDetail}
                 problemSlug={practiceChatRoute.problemSlug}
+              />
+            </Suspense>
+          ) : practiceSubmissionsRoute ? (
+            <Suspense fallback={(
+              <article className="learning-panel" aria-busy="true">
+                <p className="eyebrow">{resources.learningPlans.practiceChatEyebrow}</p>
+                <h2>{resources.learningPlans.reviewLoading}</h2>
+              </article>
+            )}
+            >
+              <PracticeSubmissionHistoryPage
+                onBackToChat={() => onNavigate(learningPlanPracticeChatPath(
+                  planDetail.id,
+                  practiceSubmissionsRoute.phaseIndex,
+                  practiceSubmissionsRoute.problemSlug,
+                ))}
+                phaseIndex={practiceSubmissionsRoute.phaseIndex}
+                plan={planDetail}
+                problemSlug={practiceSubmissionsRoute.problemSlug}
               />
             </Suspense>
           ) : (

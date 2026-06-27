@@ -30,7 +30,6 @@ import type {
   PracticeSessionResponse,
 } from '../types/api';
 import { AGENT_RUN_IN_PROGRESS_CODE } from '../types/api';
-import ReviewHistoryDrawer from './ReviewHistoryDrawer';
 
 const LEETCODE_HOST_BY_LOCALE: Record<SupportedLocale, string> = {
   'zh-CN': 'leetcode.cn',
@@ -69,6 +68,20 @@ function problemLabel(problem: LearningPlanProblemDraft | undefined, locale: Sup
   }
   const id = problem.frontendId ? `${problem.frontendId}. ` : '';
   return `${id}${formatProblemTitle(problem, locale)}`;
+}
+
+function practiceProblemLabel(
+  sessionResponse: PracticeSessionResponse | undefined,
+  problem: LearningPlanProblemDraft | undefined,
+  locale: SupportedLocale,
+  fallback: string,
+): string {
+  const sessionProblem = sessionResponse?.problem;
+  if (sessionProblem) {
+    const id = sessionProblem.frontendId ? `${sessionProblem.frontendId}. ` : '';
+    return `${id}${formatProblemTitle(sessionProblem, locale)}`;
+  }
+  return problemLabel(problem, locale, fallback);
 }
 
 function localizedLeetCodeUrl(leetcodeUrl: string | undefined, locale: SupportedLocale): string | undefined {
@@ -201,6 +214,38 @@ function readPermissionRequestId(data: unknown): string | undefined {
   return typeof permissionRequestId === 'string' && permissionRequestId.trim() ? permissionRequestId : undefined;
 }
 
+function permissionProblemLabel(
+  preview: PermissionPreview,
+  sessionResponse: PracticeSessionResponse | undefined,
+  problem: LearningPlanProblemDraft | undefined,
+  locale: SupportedLocale,
+): string | undefined {
+  if (!preview.problemSlug && !preview.problemTitle) {
+    return undefined;
+  }
+  const localizedTitle = localizedProblemTitleForSlug(preview.problemSlug, sessionResponse, problem, locale);
+  const title = localizedTitle ?? preview.problemTitle;
+  if (title && preview.problemSlug && title !== preview.problemSlug) {
+    return `${title} (${preview.problemSlug})`;
+  }
+  return title ?? preview.problemSlug;
+}
+
+function localizedProblemTitleForSlug(
+  problemSlug: string | undefined,
+  sessionResponse: PracticeSessionResponse | undefined,
+  problem: LearningPlanProblemDraft | undefined,
+  locale: SupportedLocale,
+): string | undefined {
+  if (sessionResponse?.problem && sessionResponse.problem.slug === problemSlug) {
+    return formatProblemTitle(sessionResponse.problem, locale);
+  }
+  if (problem && problem.slug === problemSlug) {
+    return formatProblemTitle(problem, locale);
+  }
+  return undefined;
+}
+
 function readAgentToolEndEvent(data: unknown): AgentToolEndEvent | undefined {
   if (typeof data !== 'object' || data === null) {
     return undefined;
@@ -303,11 +348,13 @@ function nextIdempotencyKey(): string {
 
 export default function PracticeChatWorkbench({
   onBack,
+  onOpenSubmissions,
   phaseIndex,
   plan,
   problemSlug,
 }: {
   onBack: () => void;
+  onOpenSubmissions: () => void;
   phaseIndex: number;
   plan: LearningPlanDetailResponse;
   problemSlug: string;
@@ -322,7 +369,6 @@ export default function PracticeChatWorkbench({
   const [error, setError] = useState('');
   const [completionUpdating, setCompletionUpdating] = useState(false);
   const [postRunRefreshing, setPostRunRefreshing] = useState(false);
-  const [reviewHistoryOpen, setReviewHistoryOpen] = useState(false);
   const [reviewHistory, setReviewHistory] = useState<PracticeCodeReviewHistoryResponse>();
   const [reviewHistoryLoading, setReviewHistoryLoading] = useState(false);
   const [reviewHistoryError, setReviewHistoryError] = useState('');
@@ -414,18 +460,15 @@ export default function PracticeChatWorkbench({
     : undefined;
   const composerInputDisabled = !sessionId || status === 'loading' || hasActiveRun;
   const sendDisabled = !sessionId || status === 'loading' || status === 'streaming' || hasActiveRun || !composerValue.trim();
-
-  useEffect(() => {
-    if (!reviewHistoryOpen || !sessionId) {
-      return undefined;
-    }
-
-    const controller = new AbortController();
-    const activeLoadToken = practiceLoadTokenRef.current;
-    void refreshReviews(sessionId, activeLoadToken, controller.signal);
-
-    return () => controller.abort();
-  }, [reviewHistoryOpen, sessionId]);
+  const workbenchTitle = practiceProblemLabel(
+    sessionResponse,
+    problem,
+    locale,
+    resources.learningPlans.problemTraining,
+  );
+  const pendingPermissionProblem = pendingPermission
+    ? permissionProblemLabel(pendingPermission.preview, sessionResponse, problem, locale)
+    : undefined;
 
   useEffect(() => {
     if (!sessionId || !hasActiveRun) {
@@ -871,7 +914,7 @@ export default function PracticeChatWorkbench({
           <div>
             <p className="eyebrow">{phase?.title ?? resources.learningPlans.phaseFallback(phaseIndex)}</p>
             <h2 id="practice-workbench-title">
-              {problemLabel(problem, locale, resources.learningPlans.problemTraining)}
+              {workbenchTitle}
             </h2>
           </div>
         </div>
@@ -907,7 +950,7 @@ export default function PracticeChatWorkbench({
           )}
           <button
             className="secondary-button compact"
-            onClick={() => setReviewHistoryOpen((current) => !current)}
+            onClick={onOpenSubmissions}
             type="button"
           >
             <ClipboardList aria-hidden="true" />
@@ -998,25 +1041,12 @@ export default function PracticeChatWorkbench({
         )}
       </section>
 
-      {reviewHistoryOpen && (reviewHistoryLoading || reviewHistoryError || reviewHistory) && (
+      {(reviewHistoryLoading || reviewHistoryError || reviewHistory) && (
         <span className="visually-hidden" aria-live="polite">
           {reviewHistoryLoading
             ? resources.learningPlans.reviewLoading
             : reviewHistoryError || resources.learningPlans.reviewHistory}
         </span>
-      )}
-      {reviewHistoryOpen && (
-        <div className="practice-review-drawer">
-          <ReviewHistoryDrawer
-            history={reviewHistory}
-            historyError={reviewHistoryError}
-            historyLoading={reviewHistoryLoading}
-            onHistoryLoaded={setReviewHistory}
-            open
-            resources={resources}
-            sessionId={sessionId}
-          />
-        </div>
       )}
 
       <form className="practice-composer" aria-label={resources.learningPlans.sendMessage} onSubmit={handleSubmit}>
@@ -1050,15 +1080,10 @@ export default function PracticeChatWorkbench({
             </div>
 
             <dl className="practice-permission-details">
-              {(pendingPermission.preview.problemTitle || pendingPermission.preview.problemSlug) && (
+              {pendingPermissionProblem && (
                 <div>
                   <dt>{resources.learningPlans.toolPermissionProblem}</dt>
-                  <dd>
-                    {pendingPermission.preview.problemTitle ?? pendingPermission.preview.problemSlug}
-                    {pendingPermission.preview.problemTitle && pendingPermission.preview.problemSlug
-                      ? ` (${pendingPermission.preview.problemSlug})`
-                      : ''}
-                  </dd>
+                  <dd>{pendingPermissionProblem}</dd>
                 </div>
               )}
               {pendingPermission.preview.languageHint && (

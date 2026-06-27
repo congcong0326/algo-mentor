@@ -2460,6 +2460,58 @@ a {
   color: var(--text-secondary);
 }
 
+.practice-submissions-page {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: min(760px, calc(100vh - 156px));
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  background: var(--surface-card);
+  overflow: hidden;
+}
+
+.practice-submissions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-card);
+}
+
+.practice-submissions-header h2,
+.practice-submissions-header p {
+  margin: 0;
+}
+
+.practice-submissions-header h2 {
+  margin-top: 2px;
+  font-size: 20px;
+}
+
+.practice-submissions-header p {
+  color: var(--text-secondary);
+}
+
+.practice-submissions-status {
+  margin: 0;
+  padding: 20px;
+}
+
+.practice-submissions-page > .review-empty-state {
+  margin: 20px;
+}
+
+.practice-submissions-content {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+  gap: 18px;
+  min-height: 0;
+  padding: 18px;
+  overflow: auto;
+}
+
 .review-drawer-content {
   display: grid;
   grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
@@ -3404,6 +3456,11 @@ a {
     align-items: flex-start;
   }
 
+  .practice-submissions-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .practice-toolbar-main {
     align-items: flex-start;
     flex-direction: column;
@@ -3414,6 +3471,10 @@ a {
   }
 
   .review-drawer-content {
+    grid-template-columns: 1fr;
+  }
+
+  .practice-submissions-content {
     grid-template-columns: 1fr;
   }
 

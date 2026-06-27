@@ -5,6 +5,7 @@ import App from './App';
 import { THEME_STORAGE_KEY } from './app/theme';
 import { I18nProvider } from './i18n/I18nProvider';
 import type {
+  PracticeCodeReviewDetail,
   PracticeCodeReviewHistoryResponse,
   PracticeCodeReviewSummary,
   PracticeMessage,
@@ -1034,9 +1035,13 @@ describe('App', () => {
     expectCsrfHeader(fetchMock, '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=zh-CN');
     expect(fetchMock.mock.calls.some(([url]) => String(url).startsWith('/api/problems/two-sum'))).toBe(false);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Review 记录' }));
-    expect(await screen.findByRole('complementary', { name: 'Review 记录' })).toBeInTheDocument();
-    expect(screen.getByText('暂无代码 Review')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '代码提交记录' }));
+    expect(window.location.pathname).toBe('/learning-plans/900/phases/1/problems/two-sum/submissions');
+    expect(await screen.findByRole('heading', { level: 2, name: '代码提交记录' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '返回聊天' }));
+    expect(window.location.pathname).toBe('/learning-plans/900/phases/1/problems/two-sum/chat');
+    expect(await screen.findByRole('heading', { level: 2, name: '1. 两数之和' })).toBeInTheDocument();
 
     fireEvent.change(screen.getByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
       target: { value: '我想用哈希表。' },
@@ -1075,6 +1080,47 @@ describe('App', () => {
     const progressCall = fetchMock.mock.calls.find(([url]) => url === '/api/practice-sessions/50/progress-status');
     expect(progressCall?.[1]?.body).toBe(JSON.stringify({ status: 'COMPLETED' }));
     expect(fetchMock.mock.calls.some(([url]) => url === '/api/agent/conversations/stream')).toBe(false);
+  });
+
+  it('opens a standalone practice submission history page and returns to chat', async () => {
+    const fetchMock = mockLearningPlanFetch({ includePracticeReviews: true });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans/900/phases/1/problems/two-sum/chat');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { level: 2, name: '1. 两数之和' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '代码提交记录' }));
+
+    expect(window.location.pathname).toBe('/learning-plans/900/phases/1/problems/two-sum/submissions');
+    expect(await screen.findByRole('heading', { level: 2, name: '代码提交记录' })).toBeInTheDocument();
+    expect(screen.getByText('1. 两数之和')).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /V2/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /V1/ })).toBeInTheDocument();
+    expect(await screen.findByText('第二版通过。')).toBeInTheDocument();
+    expect(screen.getByText('class Solution { version2(); }')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /V1/ }));
+
+    expect(await screen.findByText('第一版还要修复边界。')).toBeInTheDocument();
+    expect(screen.getByText('class Solution { version1(); }')).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/practice-sessions/50/reviews',
+      expect.objectContaining({ credentials: 'same-origin' }),
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/practice-sessions/50/reviews/2',
+      expect.objectContaining({ credentials: 'same-origin' }),
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/practice-sessions/50/reviews/1',
+      expect.objectContaining({ credentials: 'same-origin' }),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '返回聊天' }));
+
+    expect(window.location.pathname).toBe('/learning-plans/900/phases/1/problems/two-sum/chat');
+    expect(await screen.findByRole('heading', { level: 2, name: '1. 两数之和' })).toBeInTheDocument();
   });
 
   it('keeps the practice composer failed when the stream closes before agent_run_end', async () => {
@@ -1791,6 +1837,7 @@ function mockLearningPlanFetch(options: {
   activeRunSequence?: Array<ReturnType<typeof activePracticeRun> | null>;
   blockPracticeMessage?: boolean;
   failPracticeMessage?: boolean;
+  includePracticeReviews?: boolean;
   omitLeetCodeUrl?: boolean;
   practiceMessageStream?: ReadableStream<Uint8Array>;
 } = {}) {
@@ -1912,7 +1959,20 @@ function mockLearningPlanFetch(options: {
     if (url === '/api/practice-sessions/50/reviews') {
       return Promise.resolve(jsonResponse({
         success: true,
-        data: messagePosted ? {
+        data: options.includePracticeReviews ? {
+          latestReview: practiceReviewSummary({ id: 2, versionNo: 2, totalScore: 92, passed: true }),
+          reviews: [
+            practiceReviewSummary({ id: 2, versionNo: 2, totalScore: 92, passed: true }),
+            practiceReviewSummary({ id: 1, versionNo: 1, totalScore: 68, passed: false }),
+          ],
+          completionGate: {
+            canComplete: true,
+            reasonCode: 'PASSED',
+            message: '最新 Review 已通过，可以标记完成。',
+            latestScore: 92,
+            passScore: 6,
+          },
+        } : messagePosted ? {
           latestReview: practiceReviewSummary(),
           reviews: [practiceReviewSummary()],
           completionGate: {
@@ -1928,11 +1988,55 @@ function mockLearningPlanFetch(options: {
           completionGate: {
             canComplete: false,
             reasonCode: 'NO_REVIEW',
-            message: '完成前需要先粘贴完整代码完成一次 AI Review，并且 Review 通过后才能标记完成。',
+            message: '完成前需要先粘贴完整代码生成一次代码提交记录，并且通过后才能标记完成。',
             latestScore: null,
             passScore: 6,
           },
         },
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/practice-sessions/50/reviews/2') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: practiceReviewDetail({
+          id: 2,
+          versionNo: 2,
+          reviewMarkdown: '## 整体评价\n第二版通过。',
+          submittedCode: 'class Solution { version2(); }',
+          passed: true,
+          scores: {
+            correctness: 4,
+            complexity: 2,
+            edgeCases: 2,
+            codeQuality: 1,
+            problemFit: 1,
+            total: 92,
+          },
+        }),
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+
+    if (url === '/api/practice-sessions/50/reviews/1') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: practiceReviewDetail({
+          id: 1,
+          versionNo: 1,
+          reviewMarkdown: '## 整体评价\n第一版还要修复边界。',
+          submittedCode: 'class Solution { version1(); }',
+          passed: false,
+          scores: {
+            correctness: 3,
+            complexity: 2,
+            edgeCases: 1,
+            codeQuality: 1,
+            problemFit: 1,
+            total: 68,
+          },
+        }),
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
@@ -2479,7 +2583,7 @@ function basePracticeSessionResponse(): PracticeSessionResponse {
     completionGate: {
       canComplete: false,
       reasonCode: 'NO_REVIEW',
-      message: '完成前需要先粘贴完整代码完成一次 AI Review，并且 Review 通过后才能标记完成。',
+      message: '完成前需要先粘贴完整代码生成一次代码提交记录，并且通过后才能标记完成。',
       latestScore: null,
       passScore: 6,
     },
@@ -2506,7 +2610,7 @@ function activePracticeRun() {
   };
 }
 
-function practiceReviewSummary(): PracticeCodeReviewSummary {
+function practiceReviewSummary(overrides: Partial<PracticeCodeReviewSummary> = {}): PracticeCodeReviewSummary {
   return {
     id: 70,
     versionNo: 1,
@@ -2514,6 +2618,33 @@ function practiceReviewSummary(): PracticeCodeReviewSummary {
     totalScore: 92,
     passed: true,
     createdAt: '2026-06-22T00:02:00Z',
+    ...overrides,
+  };
+}
+
+function practiceReviewDetail(overrides: Partial<PracticeCodeReviewDetail> = {}): PracticeCodeReviewDetail {
+  return {
+    id: 70,
+    sessionId: 50,
+    versionNo: 1,
+    language: 'java',
+    submittedCode: 'class Solution { version1(); }',
+    reviewMarkdown: '## 整体评价\n提交记录详情。',
+    passed: true,
+    scores: {
+      correctness: 4,
+      complexity: 2,
+      edgeCases: 2,
+      codeQuality: 1,
+      problemFit: 1,
+      total: 92,
+    },
+    evidence: [],
+    deductionReasons: [],
+    improvementSuggestions: [],
+    contextSummary: '',
+    createdAt: '2026-06-22T00:02:00Z',
+    ...overrides,
   };
 }
 
