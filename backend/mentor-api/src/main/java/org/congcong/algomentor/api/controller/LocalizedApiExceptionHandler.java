@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionException;
 import org.congcong.algomentor.api.controller.ability.AbilityProfileUnauthenticatedException;
 import org.congcong.algomentor.api.controller.learningplan.LearningPlanUnauthenticatedException;
+import org.congcong.algomentor.api.controller.preference.UserAiPreferenceUnauthenticatedException;
 import org.congcong.algomentor.api.controller.practice.PracticeProgressStatusInvalidException;
 import org.congcong.algomentor.api.controller.practice.PracticeSessionUnauthenticatedException;
 import org.congcong.algomentor.api.problem.model.ProblemLocale;
@@ -71,7 +72,8 @@ public class LocalizedApiExceptionHandler {
   @ExceptionHandler({
       LearningPlanUnauthenticatedException.class,
       PracticeSessionUnauthenticatedException.class,
-      AbilityProfileUnauthenticatedException.class
+      AbilityProfileUnauthenticatedException.class,
+      UserAiPreferenceUnauthenticatedException.class
   })
   public ResponseEntity<ApiResponse<Void>> unauthenticated(RuntimeException exception) {
     return failure(HttpStatus.UNAUTHORIZED, AUTH_UNAUTHENTICATED_CODE, exception.getMessage());

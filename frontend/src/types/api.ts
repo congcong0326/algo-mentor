@@ -57,6 +57,28 @@ export interface AbilityProfileResponse {
   scope: AbilityProfileScope;
 }
 
+export type PracticeCoachStyle =
+  | 'SOCRATIC_GUIDE'
+  | 'DIRECT_EXPLAINER'
+  | 'INTERVIEWER'
+  | 'STRICT_REVIEWER'
+  | 'SUPPORTIVE_MENTOR';
+
+export type PracticeResponseLanguage = 'ZH_CN' | 'EN_US';
+
+export interface UserAiPreference {
+  coachStyle: PracticeCoachStyle;
+  coachStyleLabel: string;
+  responseLanguage: PracticeResponseLanguage;
+  responseLanguageLabel: string;
+  updatedAt?: string;
+}
+
+export interface UserAiPreferenceRequest {
+  coachStyle?: PracticeCoachStyle;
+  responseLanguage?: PracticeResponseLanguage;
+}
+
 export interface PasswordLoginRequest {
   email: string;
   password: string;

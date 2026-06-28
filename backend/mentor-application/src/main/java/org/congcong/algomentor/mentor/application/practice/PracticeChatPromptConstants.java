@@ -13,6 +13,8 @@ public final class PracticeChatPromptConstants {
   public static final int DEFAULT_TOKEN_BUDGET = 8_000;
 
   public static final String SECTION_BASE_INSTRUCTION = "practice.base.identity";
+  public static final String SECTION_COACH_STYLE = "practice.strategy.coach-style";
+  public static final String SECTION_RESPONSE_LANGUAGE = "practice.strategy.response-language";
   public static final String SECTION_SCENARIO_POLICY = "practice.strategy.coach";
   public static final String SECTION_RUNTIME_CONTEXT = "practice.context.training";
   public static final String SECTION_ACTIVE_SUMMARY = "practice.memory.active-summary";
@@ -27,6 +29,8 @@ public final class PracticeChatPromptConstants {
   public static final String VARIABLE_CURRENT_USER_MESSAGE = "currentUserMessage";
   public static final String VARIABLE_ACTIVE_SUMMARY = "activeSummary";
   public static final String VARIABLE_HISTORY = "history";
+  public static final String VARIABLE_COACH_STYLE = "coachStyle";
+  public static final String VARIABLE_RESPONSE_LANGUAGE = "responseLanguage";
 
   /**
    * Agent 场景标识，用于把普通会话切换到题目训练聊天 prompt/profile 和治理观测语义。
@@ -56,6 +60,14 @@ public final class PracticeChatPromptConstants {
    * 本轮用户消息意图分类，用于在题目聊天 prompt 中调整教练策略。
    */
   public static final String METADATA_MESSAGE_INTENT = "messageIntent";
+  /**
+   * 当前用户选择的教练风格，用于每轮动态注入受控 style prompt。
+   */
+  public static final String METADATA_COACH_STYLE = "coachStyle";
+  /**
+   * 当前用户选择的 AI 回复语言，用于每轮动态注入语言约束。
+   */
+  public static final String METADATA_RESPONSE_LANGUAGE = "responseLanguage";
 
   private PracticeChatPromptConstants() {
   }

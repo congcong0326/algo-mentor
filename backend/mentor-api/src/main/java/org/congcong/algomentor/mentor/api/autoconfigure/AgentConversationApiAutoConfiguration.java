@@ -21,6 +21,8 @@ import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunCoordinator;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
+import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
+import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceService;
 import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
@@ -224,9 +226,19 @@ public class AgentConversationApiAutoConfiguration {
   @ConditionalOnMissingBean
   public PracticeMessageStreamService practiceMessageStreamService(
       PracticeSessionRepository practiceSessionRepository,
-      PracticeTurnOrchestrator orchestrator
+      PracticeTurnOrchestrator orchestrator,
+      ObjectProvider<UserAiPreferenceService> preferenceService
   ) {
-    return new PracticeMessageStreamService(practiceSessionRepository, orchestrator);
+    return new PracticeMessageStreamService(
+        practiceSessionRepository,
+        orchestrator,
+        preferenceService.getIfAvailable(() -> new UserAiPreferenceService(UserAiPreferenceRepository.empty())));
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public UserAiPreferenceService userAiPreferenceService(ObjectProvider<UserAiPreferenceRepository> repository) {
+    return new UserAiPreferenceService(repository.getIfAvailable(UserAiPreferenceRepository::empty));
   }
 
   @Bean

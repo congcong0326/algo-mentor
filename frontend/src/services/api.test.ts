@@ -6,9 +6,11 @@ import {
   getAbilityProfile,
   getHealth,
   getLearningPlans,
+  getUserAiPreference,
   logout,
   requireApiData,
   streamAgentConversation,
+  updateUserAiPreference,
 } from './api';
 
 type FetchMock = ReturnType<typeof vi.fn<(input: RequestInfo | URL, init?: RequestInit) => Promise<Response>>>;
@@ -87,6 +89,79 @@ describe('api service', () => {
     const headers = requestHeaders(fetchMock);
     expect(headers.get('Accept')).toBe('application/json');
     expect(headers.get('Accept-Language')).toBe('zh-CN');
+  });
+
+  it('loads user AI preferences with json and locale headers', async () => {
+    vi.stubGlobal('localStorage', createFakeStorage({ 'algo-mentor-locale': 'zh-CN' }));
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x31, 0x32, 0x33, 0x34, 0x35, 0x36]) });
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        coachStyle: 'SOCRATIC_GUIDE',
+        coachStyleLabel: '启发型教练',
+        responseLanguage: 'ZH_CN',
+        responseLanguageLabel: '简体中文',
+      },
+      timestamp: '2026-06-28T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getUserAiPreference();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/me/ai-preferences',
+      expect.objectContaining({
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+      }),
+    );
+    const headers = requestHeaders(fetchMock);
+    expect(headers.get('Accept')).toBe('application/json');
+    expect(headers.get('Accept-Language')).toBe('zh-CN');
+  });
+
+  it('patches user AI preferences with json csrf locale and request id headers', async () => {
+    vi.stubGlobal('localStorage', createFakeStorage({ 'algo-mentor-locale': 'en-US' }));
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x41, 0x42, 0x43, 0x44, 0x45, 0x46]) });
+    Object.defineProperty(document, 'cookie', {
+      configurable: true,
+      writable: true,
+      value: 'XSRF-TOKEN=csrf-token',
+    });
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        coachStyle: 'INTERVIEWER',
+        coachStyleLabel: '面试官教练',
+        responseLanguage: 'EN_US',
+        responseLanguageLabel: 'English',
+      },
+      timestamp: '2026-06-28T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await updateUserAiPreference({
+      coachStyle: 'INTERVIEWER',
+      responseLanguage: 'EN_US',
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/me/ai-preferences',
+      expect.objectContaining({
+        method: 'PATCH',
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          coachStyle: 'INTERVIEWER',
+          responseLanguage: 'EN_US',
+        }),
+      }),
+    );
+    const headers = requestHeaders(fetchMock);
+    expect(headers.get('Accept')).toBe('application/json');
+    expect(headers.get('Content-Type')).toBe('application/json');
+    expect(headers.get('Accept-Language')).toBe('en-US');
+    expect(headers.get('X-Request-Id')).toBe('414243444546');
+    expect(headers.get('X-XSRF-TOKEN')).toBe('csrf-token');
   });
 
   it('sends Accept-Language from the current locale', async () => {

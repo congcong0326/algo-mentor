@@ -4,6 +4,9 @@ import java.util.Map;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.congcong.algomentor.mentor.application.preference.UserAiPreference;
+import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
+import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,10 +19,19 @@ public class PracticeMessageStreamService {
 
   private final PracticeSessionRepository sessionRepository;
   private final PracticeTurnOrchestrator orchestrator;
+  private final UserAiPreferenceService preferenceService;
 
   public PracticeMessageStreamService(
       PracticeSessionRepository sessionRepository,
       PracticeTurnOrchestrator orchestrator
+  ) {
+    this(sessionRepository, orchestrator, new UserAiPreferenceService(UserAiPreferenceRepository.empty()));
+  }
+
+  public PracticeMessageStreamService(
+      PracticeSessionRepository sessionRepository,
+      PracticeTurnOrchestrator orchestrator,
+      UserAiPreferenceService preferenceService
   ) {
     if (sessionRepository == null) {
       throw new IllegalArgumentException("Practice session repository must not be null");
@@ -29,6 +41,9 @@ public class PracticeMessageStreamService {
     }
     this.sessionRepository = sessionRepository;
     this.orchestrator = orchestrator;
+    this.preferenceService = preferenceService == null
+        ? new UserAiPreferenceService(UserAiPreferenceRepository.empty())
+        : preferenceService;
   }
 
   public Flow.Publisher<AgentStreamEvent> stream(
@@ -48,13 +63,19 @@ public class PracticeMessageStreamService {
       throw new LearningPlanException("PRACTICE_SESSION_AGENT_TASK_MISSING", "题目训练会话缺少运行任务。");
     }
 
+    UserAiPreference preference = preferenceService.get(userId);
+    Map<String, Object> metadata = new java.util.LinkedHashMap<>(
+        governanceMetadata == null ? Map.of() : governanceMetadata);
+    metadata.put(PracticeChatPromptConstants.METADATA_COACH_STYLE, preference.coachStyle().name());
+    metadata.put(PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, preference.responseLanguage().name());
+
     Flow.Publisher<AgentStreamEvent> delegate = orchestrator.stream(
         userId,
         sessionId,
         message,
         idempotencyKey,
         locale,
-        governanceMetadata);
+        Map.copyOf(metadata));
     return new TouchingPublisher(delegate, sessionRepository, session.id());
   }
 

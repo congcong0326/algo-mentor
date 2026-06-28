@@ -30,6 +30,8 @@ import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptCon
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptProfileResolver;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptSectionProvider;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatReference;
+import org.congcong.algomentor.mentor.application.practice.PracticeCoachStyle;
+import org.congcong.algomentor.mentor.application.practice.PracticeResponseLanguage;
 
 public class AgentConversationService {
 
@@ -188,6 +190,10 @@ public class AgentConversationService {
   private AssembledContext assemblePracticeChatContext(PreparedAgentRun draft, AgentConversationCommand command) {
     PracticeChatContext practiceContext = practiceChatContext(command.practiceChat(), command.userId());
     List<AgentMessage> history = conversationRepository.recentMessages(draft.taskId(), contextPolicy.recentTurns() * 2);
+    PracticeCoachStyle coachStyle = PracticeCoachStyle.from(
+        command.governanceMetadata().get(PracticeChatPromptConstants.METADATA_COACH_STYLE));
+    PracticeResponseLanguage responseLanguage = PracticeResponseLanguage.from(
+        command.governanceMetadata().get(PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE));
     PromptAssembly assembly = practicePromptAssembler.assemble(new PromptAssemblyRequest(
         PracticeChatPromptConstants.SCENARIO,
         PracticeChatPromptConstants.PROFILE_ID,
@@ -196,13 +202,17 @@ public class AgentConversationService {
             PracticeChatPromptConstants.VARIABLE_CONTEXT, practiceContext,
             PracticeChatPromptConstants.VARIABLE_ACTIVE_SUMMARY, draft.activeSummary() == null ? "" : draft.activeSummary(),
             PracticeChatPromptConstants.VARIABLE_HISTORY, history,
-            PracticeChatPromptConstants.VARIABLE_CURRENT_USER_MESSAGE, command.userMessage()),
+            PracticeChatPromptConstants.VARIABLE_CURRENT_USER_MESSAGE, command.userMessage(),
+            PracticeChatPromptConstants.VARIABLE_COACH_STYLE, coachStyle,
+            PracticeChatPromptConstants.VARIABLE_RESPONSE_LANGUAGE, responseLanguage),
         Map.of(
             PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO,
             PracticeChatPromptConstants.METADATA_PLAN_ID, command.practiceChat().planId(),
             PracticeChatPromptConstants.METADATA_PHASE_INDEX, command.practiceChat().phaseIndex(),
             PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, command.practiceChat().problemSlug(),
             PracticeChatPromptConstants.METADATA_LOCALE, command.practiceChat().locale(),
+            PracticeChatPromptConstants.METADATA_COACH_STYLE, coachStyle.name(),
+            PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, responseLanguage.name(),
             PracticeChatPromptConstants.METADATA_MESSAGE_INTENT,
             PracticeChatMessageIntentClassifier.classify(command.userMessage()).name())));
     return new AssembledContext(assembly.canonicalMessages(), assembly.metadata(), assembly.tokenEstimate());

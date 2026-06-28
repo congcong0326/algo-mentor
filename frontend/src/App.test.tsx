@@ -299,12 +299,53 @@ describe('App', () => {
 
     render(<App />);
 
+    expect(await screen.findByRole('heading', { name: 'AI 教练偏好' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /启发型教练/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: /English/ })).toHaveAttribute('aria-pressed', 'false');
     expect(await screen.findByRole('heading', { name: '能力雷达图' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '我的' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'false');
     expect(document.querySelector('.my-card.ability-card')).toBeInTheDocument();
     expect(await screen.findAllByTestId('ability-radar-axis-label')).toHaveLength(23);
     expect(window.location.pathname).toBe('/me');
+  });
+
+  it('updates AI coach preferences from the my page', async () => {
+    const fetchMock = mockAuthenticatedAppFetch();
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/me');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: /面试官教练/ }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      '/api/me/ai-preferences',
+      expect.objectContaining({
+        method: 'PATCH',
+        body: JSON.stringify({
+          coachStyle: 'INTERVIEWER',
+          responseLanguage: 'ZH_CN',
+        }),
+      }),
+    ));
+    expect(await screen.findByText('已保存')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /面试官教练/ })).toHaveAttribute('aria-pressed', 'true');
+
+    fireEvent.click(screen.getByRole('button', { name: /English/ }));
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
+      '/api/me/ai-preferences',
+      expect.objectContaining({
+        method: 'PATCH',
+        body: JSON.stringify({
+          coachStyle: 'INTERVIEWER',
+          responseLanguage: 'EN_US',
+        }),
+      }),
+    ));
+    expect(screen.getByRole('button', { name: /English/ })).toHaveAttribute('aria-pressed', 'true');
+    expectCsrfHeader(fetchMock, '/api/me/ai-preferences', 'PATCH');
   });
 
   it('defaults authenticated users to light theme', async () => {
@@ -1769,9 +1810,24 @@ function mockUnauthenticatedFetch() {
 }
 
 function mockAuthenticatedAppFetch() {
-  return vi.fn((url: string) => {
+  let preference = userAiPreferenceData();
+  return vi.fn((url: string, init?: RequestInit) => {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
+    }
+    if (url === '/api/me/ai-preferences' && (!init?.method || init.method === 'GET')) {
+      return Promise.resolve(userAiPreferenceResponse(preference));
+    }
+    if (url === '/api/me/ai-preferences' && init?.method === 'PATCH') {
+      const request = JSON.parse(String(init.body ?? '{}')) as Partial<ReturnType<typeof userAiPreferenceData>>;
+      preference = {
+        ...preference,
+        coachStyle: request.coachStyle ?? preference.coachStyle,
+        coachStyleLabel: coachStyleLabel(request.coachStyle ?? preference.coachStyle),
+        responseLanguage: request.responseLanguage ?? preference.responseLanguage,
+        responseLanguageLabel: responseLanguageLabel(request.responseLanguage ?? preference.responseLanguage),
+      };
+      return Promise.resolve(userAiPreferenceResponse(preference));
     }
     if (url === '/api/abilities/profile') {
       return Promise.resolve(abilityProfileResponse());
@@ -1800,6 +1856,9 @@ function mockLearningPlanAndProblemFetch() {
   return vi.fn((url: string) => {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
+    }
+    if (url === '/api/me/ai-preferences') {
+      return Promise.resolve(userAiPreferenceResponse());
     }
     if (url === '/api/abilities/profile') {
       return Promise.resolve(abilityProfileResponse());
@@ -1854,6 +1913,37 @@ function abilityProfileResponse(): Response {
     },
     timestamp: '2026-06-27T00:00:00Z',
   });
+}
+
+function userAiPreferenceResponse(data = userAiPreferenceData()): Response {
+  return jsonResponse({
+    success: true,
+    data,
+    timestamp: '2026-06-28T00:00:00Z',
+  });
+}
+
+function userAiPreferenceData() {
+  return {
+    coachStyle: 'SOCRATIC_GUIDE',
+    coachStyleLabel: '启发型教练',
+    responseLanguage: 'ZH_CN',
+    responseLanguageLabel: '简体中文',
+  };
+}
+
+function coachStyleLabel(style: string): string {
+  return {
+    SOCRATIC_GUIDE: '启发型教练',
+    DIRECT_EXPLAINER: '直给型教练',
+    INTERVIEWER: '面试官教练',
+    STRICT_REVIEWER: '严苛 Review 官',
+    SUPPORTIVE_MENTOR: '陪伴型教练',
+  }[style] ?? '启发型教练';
+}
+
+function responseLanguageLabel(language: string): string {
+  return language === 'EN_US' ? 'English' : '简体中文';
 }
 
 function abilityTags() {

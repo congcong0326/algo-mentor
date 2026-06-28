@@ -49,6 +49,8 @@ class PracticeChatPromptSectionProviderTest {
             LlmMessage.Role.SYSTEM,
             LlmMessage.Role.SYSTEM,
             LlmMessage.Role.SYSTEM,
+            LlmMessage.Role.SYSTEM,
+            LlmMessage.Role.SYSTEM,
             LlmMessage.Role.USER,
             LlmMessage.Role.ASSISTANT,
             LlmMessage.Role.USER);
@@ -56,6 +58,8 @@ class PracticeChatPromptSectionProviderTest {
         .extracting(section -> section.section().slot())
         .containsExactly(
             PromptSlot.STATIC_INSTRUCTION,
+            PromptSlot.SCENARIO_POLICY,
+            PromptSlot.SCENARIO_POLICY,
             PromptSlot.SCENARIO_POLICY,
             PromptSlot.RUNTIME_CONTEXT,
             PromptSlot.MEMORY_SUMMARY,
@@ -66,6 +70,8 @@ class PracticeChatPromptSectionProviderTest {
     String allText = assembly.canonicalMessages().stream().map(LlmMessage::text).reduce("", String::concat);
     assertThat(allText)
         .contains("algo-mentor 的算法刷题教练")
+        .contains("启发型教练")
+        .contains("Response language: Simplified Chinese")
         .contains("本轮用户意图：ASK_SOLUTION")
         .contains("- planId: 12")
         .contains("- phaseIndex: 1")
@@ -79,6 +85,43 @@ class PracticeChatPromptSectionProviderTest {
     assertThat(assembly.metadata())
         .containsEntry("promptProfile", PracticeChatPromptConstants.PROFILE_ID)
         .containsEntry("promptPolicy", PracticeChatPromptConstants.POLICY_NAME);
+  }
+
+  @Test
+  void rendersConfiguredCoachStyleAndResponseLanguageBeforePracticePolicy() {
+    PromptAssembly assembly = assembler().assemble(new PromptAssemblyRequest(
+        PracticeChatPromptConstants.SCENARIO,
+        PracticeChatPromptConstants.PROFILE_ID,
+        8_000,
+        Map.of(
+            PracticeChatPromptConstants.VARIABLE_CONTEXT, context(null),
+            PracticeChatPromptConstants.VARIABLE_HISTORY, List.of(),
+            PracticeChatPromptConstants.VARIABLE_CURRENT_USER_MESSAGE, "请像面试一样追问我",
+            PracticeChatPromptConstants.VARIABLE_COACH_STYLE, PracticeCoachStyle.INTERVIEWER,
+            PracticeChatPromptConstants.VARIABLE_RESPONSE_LANGUAGE, PracticeResponseLanguage.EN_US),
+        Map.of(
+            PracticeChatPromptConstants.METADATA_COACH_STYLE, PracticeCoachStyle.INTERVIEWER.name(),
+            PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, PracticeResponseLanguage.EN_US.name())));
+
+    assertThat(assembly.renderedSections())
+        .extracting(section -> section.section().id())
+        .containsSubsequence(
+            PracticeChatPromptConstants.SECTION_BASE_INSTRUCTION,
+            PracticeChatPromptConstants.SECTION_COACH_STYLE,
+            PracticeChatPromptConstants.SECTION_RESPONSE_LANGUAGE,
+            PracticeChatPromptConstants.SECTION_SCENARIO_POLICY,
+            PracticeChatPromptConstants.SECTION_RUNTIME_CONTEXT);
+
+    String allText = assembly.canonicalMessages().stream().map(LlmMessage::text).reduce("", String::concat);
+    assertThat(allText)
+        .contains("面试官教练")
+        .contains("Act like an algorithm interviewer")
+        .contains("Response language: English")
+        .contains("Coach style and response language only affect presentation")
+        .contains("题目聊天教学策略");
+    assertThat(assembly.metadata())
+        .containsEntry(PracticeChatPromptConstants.METADATA_COACH_STYLE, "INTERVIEWER")
+        .containsEntry(PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, "EN_US");
   }
 
   @Test
@@ -110,12 +153,13 @@ class PracticeChatPromptSectionProviderTest {
         Map.of()));
 
     String policyText = assembly.renderedSections().stream()
-        .filter(section -> section.section().slot() == PromptSlot.SCENARIO_POLICY)
+        .filter(section -> PracticeChatPromptConstants.SECTION_SCENARIO_POLICY.equals(section.section().id()))
         .findFirst()
         .orElseThrow()
         .renderedText();
     assertThat(policyText)
-        .contains("只要当前用户消息看起来像是在粘贴当前题目的完整 LeetCode 解法")
+        .contains("当当前用户消息看起来像是在粘贴当前题目的完整 LeetCode 解法时，应优先调用 "
+            + PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW)
         .contains("即使用户没有明确要求正式代码提交记录，也应调用 "
             + PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW)
         .contains("如果用户拒绝确认或确认超时，可以继续普通点评代码")
@@ -137,7 +181,7 @@ class PracticeChatPromptSectionProviderTest {
         Map.of()));
 
     String policyText = assembly.renderedSections().stream()
-        .filter(section -> section.section().slot() == PromptSlot.SCENARIO_POLICY)
+        .filter(section -> PracticeChatPromptConstants.SECTION_SCENARIO_POLICY.equals(section.section().id()))
         .findFirst()
         .orElseThrow()
         .renderedText();

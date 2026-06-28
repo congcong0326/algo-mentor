@@ -6,6 +6,8 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.congcong.algomentor.api.ability.mapper.AbilityProfileMapper;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
 import org.congcong.algomentor.api.learningplan.repository.MyBatisLearningPlanRepository;
+import org.congcong.algomentor.api.preference.mapper.UserAiPreferenceMapper;
+import org.congcong.algomentor.api.preference.repository.MyBatisUserAiPreferenceRepository;
 import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
 import org.congcong.algomentor.api.practice.mapper.PracticeSessionMapper;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewRepository;
@@ -17,6 +19,7 @@ import org.congcong.algomentor.agent.persistence.postgres.json.AgentMessageRoleT
 import org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
+import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.mybatis.spring.SqlSessionFactoryBean;
@@ -87,6 +90,12 @@ public class MentorApiMyBatisConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean
+  public UserAiPreferenceMapper userAiPreferenceMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(UserAiPreferenceMapper.class);
+  }
+
+  @Bean
   @ConditionalOnMissingBean(ProblemRepository.class)
   public ProblemRepository problemRepository(ProblemMapper problemMapper, DataSource dataSource) {
     return new MyBatisProblemRepository(problemMapper, dataSource);
@@ -113,5 +122,11 @@ public class MentorApiMyBatisConfiguration {
       ObjectMapper objectMapper
   ) {
     return new MyBatisPracticeCodeReviewRepository(mapper, objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(UserAiPreferenceRepository.class)
+  public UserAiPreferenceRepository userAiPreferenceRepository(UserAiPreferenceMapper mapper) {
+    return new MyBatisUserAiPreferenceRepository(mapper);
   }
 }

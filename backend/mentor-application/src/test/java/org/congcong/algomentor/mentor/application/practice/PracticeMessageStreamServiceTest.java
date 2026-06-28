@@ -29,6 +29,9 @@ import org.congcong.algomentor.mentor.application.conversation.AgentConversation
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunCoordinator;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.congcong.algomentor.mentor.application.preference.UserAiPreference;
+import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
+import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceService;
 import org.junit.jupiter.api.Test;
 
 class PracticeMessageStreamServiceTest {
@@ -41,7 +44,10 @@ class PracticeMessageStreamServiceTest {
         1,
         LlmFinishReason.STOP,
         Map.of("existing", "metadata")));
-    PracticeMessageStreamService service = new PracticeMessageStreamService(sessionRepository, orchestrator);
+    PracticeMessageStreamService service = new PracticeMessageStreamService(
+        sessionRepository,
+        orchestrator,
+        new StubPreferenceService(PracticeCoachStyle.INTERVIEWER, PracticeResponseLanguage.EN_US));
 
     List<AgentStreamEvent> events = collect(service.stream(
         7,
@@ -60,7 +66,9 @@ class PracticeMessageStreamServiceTest {
     assertThat(orchestrator.locale).isEqualTo("en-US");
     assertThat(orchestrator.governanceMetadata)
         .containsEntry("requestId", "req-1")
-        .containsEntry(PracticeChatPromptConstants.METADATA_PLAN_ID, 99L);
+        .containsEntry(PracticeChatPromptConstants.METADATA_PLAN_ID, 99L)
+        .containsEntry(PracticeChatPromptConstants.METADATA_COACH_STYLE, "INTERVIEWER")
+        .containsEntry(PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, "EN_US");
   }
 
   @Test
@@ -289,6 +297,28 @@ class PracticeMessageStreamServiceTest {
           completed = true;
         }
       });
+    }
+  }
+
+  private static final class StubPreferenceService extends UserAiPreferenceService {
+
+    private final PracticeCoachStyle coachStyle;
+    private final PracticeResponseLanguage responseLanguage;
+
+    private StubPreferenceService(PracticeCoachStyle coachStyle, PracticeResponseLanguage responseLanguage) {
+      super(UserAiPreferenceRepository.empty());
+      this.coachStyle = coachStyle;
+      this.responseLanguage = responseLanguage;
+    }
+
+    @Override
+    public UserAiPreference get(long userId) {
+      return new UserAiPreference(
+          userId,
+          coachStyle,
+          responseLanguage,
+          Instant.parse("2026-06-28T00:00:00Z"),
+          Instant.parse("2026-06-28T00:00:00Z"));
     }
   }
 

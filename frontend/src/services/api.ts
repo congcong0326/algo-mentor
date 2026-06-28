@@ -28,6 +28,8 @@ import type {
   ProblemPage,
   SseEventName,
   SseStreamEvent,
+  UserAiPreference,
+  UserAiPreferenceRequest,
 } from '../types/api';
 
 const jsonHeaders: HeadersInit = {
@@ -152,6 +154,40 @@ export async function getAbilityProfile(signal?: AbortSignal): Promise<ApiRespon
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Ability profile request failed');
+  }
+
+  return response.json();
+}
+
+export async function getUserAiPreference(signal?: AbortSignal): Promise<ApiResponse<UserAiPreference>> {
+  const response = await apiFetch('/api/me/ai-preferences', {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'AI preference request failed');
+  }
+
+  return response.json();
+}
+
+export async function updateUserAiPreference(
+  request: UserAiPreferenceRequest,
+  signal?: AbortSignal,
+): Promise<ApiResponse<UserAiPreference>> {
+  const response = await apiFetch('/api/me/ai-preferences', {
+    method: 'PATCH',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'AI preference update request failed');
   }
 
   return response.json();

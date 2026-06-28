@@ -104,6 +104,27 @@ export interface LocaleResources {
     zhCN: string;
     enUS: string;
   };
+  aiPreference: {
+    title: string;
+    subtitle: string;
+    loading: string;
+    loadFailed: string;
+    saveFailed: string;
+    saved: string;
+    saving: string;
+    coachStyle: string;
+    responseLanguage: string;
+    coachStyleLabels: Record<
+      'SOCRATIC_GUIDE' | 'DIRECT_EXPLAINER' | 'INTERVIEWER' | 'STRICT_REVIEWER' | 'SUPPORTIVE_MENTOR',
+      string
+    >;
+    responseLanguageLabels: Record<'ZH_CN' | 'EN_US', string>;
+    coachStyleDescriptions: Record<
+      'SOCRATIC_GUIDE' | 'DIRECT_EXPLAINER' | 'INTERVIEWER' | 'STRICT_REVIEWER' | 'SUPPORTIVE_MENTOR',
+      string
+    >;
+    responseLanguageDescriptions: Record<'ZH_CN' | 'EN_US', string>;
+  };
   home: {
     ariaLabel: string;
     kicker: string;
@@ -480,6 +501,39 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       label: '语言',
       zhCN: '中文',
       enUS: 'English',
+    },
+    aiPreference: {
+      title: 'AI 教练偏好',
+      subtitle: '用于题目聊天的下一次回复，已开始生成的回复不受影响。',
+      loading: '正在加载 AI 教练偏好...',
+      loadFailed: 'AI 教练偏好加载失败',
+      saveFailed: 'AI 教练偏好保存失败',
+      saved: '已保存',
+      saving: '保存中',
+      coachStyle: '教练风格',
+      responseLanguage: '回复语言',
+      coachStyleLabels: {
+        SOCRATIC_GUIDE: '启发型教练',
+        DIRECT_EXPLAINER: '直给型教练',
+        INTERVIEWER: '面试官教练',
+        STRICT_REVIEWER: '严苛 Review 官',
+        SUPPORTIVE_MENTOR: '陪伴型教练',
+      },
+      responseLanguageLabels: {
+        ZH_CN: '简体中文',
+        EN_US: 'English',
+      },
+      coachStyleDescriptions: {
+        SOCRATIC_GUIDE: '耐心追问，先给提示和关键观察，再逐步展开完整解法。',
+        DIRECT_EXPLAINER: '直接给出思路、复杂度、坑点和可运行代码，减少来回确认。',
+        INTERVIEWER: '像面试官一样围绕约束、复杂度、边界和取舍持续追问。',
+        STRICT_REVIEWER: '优先挑出正确性风险、反例、边界条件和实现质量问题。',
+        SUPPORTIVE_MENTOR: '把问题拆小，语气更温和，但不降低正确性标准。',
+      },
+      responseLanguageDescriptions: {
+        ZH_CN: '默认用简体中文讲解，保留代码、API 和错误名原文。',
+        EN_US: 'Use English for explanations while preserving code and identifiers.',
+      },
     },
     home: {
       ariaLabel: '首页',
@@ -900,6 +954,39 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       label: 'Language',
       zhCN: '中文',
       enUS: 'English',
+    },
+    aiPreference: {
+      title: 'AI Coach Preferences',
+      subtitle: 'Applies to the next practice-chat reply. Replies already generating stay unchanged.',
+      loading: 'Loading AI coach preferences...',
+      loadFailed: 'Failed to load AI coach preferences',
+      saveFailed: 'Failed to save AI coach preferences',
+      saved: 'Saved',
+      saving: 'Saving',
+      coachStyle: 'Coach Style',
+      responseLanguage: 'Response Language',
+      coachStyleLabels: {
+        SOCRATIC_GUIDE: 'Socratic Guide',
+        DIRECT_EXPLAINER: 'Direct Explainer',
+        INTERVIEWER: 'Interviewer',
+        STRICT_REVIEWER: 'Strict Reviewer',
+        SUPPORTIVE_MENTOR: 'Supportive Mentor',
+      },
+      responseLanguageLabels: {
+        ZH_CN: 'Simplified Chinese',
+        EN_US: 'English',
+      },
+      coachStyleDescriptions: {
+        SOCRATIC_GUIDE: 'Patiently asks guiding questions before expanding into the full solution.',
+        DIRECT_EXPLAINER: 'Gives direct reasoning, complexity, pitfalls, and runnable code when asked.',
+        INTERVIEWER: 'Pushes on constraints, complexity, edge cases, alternatives, and trade-offs.',
+        STRICT_REVIEWER: 'Focuses on correctness risks, counterexamples, edge cases, and code quality.',
+        SUPPORTIVE_MENTOR: 'Breaks the problem down with a calmer tone while preserving rigor.',
+      },
+      responseLanguageDescriptions: {
+        ZH_CN: 'Use Simplified Chinese for explanations while preserving code and identifiers.',
+        EN_US: 'Use English for explanations while preserving code and identifiers.',
+      },
     },
     home: {
       ariaLabel: 'Dashboard',
