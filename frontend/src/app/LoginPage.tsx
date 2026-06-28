@@ -1,5 +1,5 @@
 import { LogIn, Moon, Sun, UserPlus } from 'lucide-react';
-import { FormEvent, useState } from 'react';
+import { FormEvent, MouseEvent, useState } from 'react';
 import LanguageSelector from '../i18n/LanguageSelector';
 import { useI18n } from '../i18n/I18nProvider';
 import type { AppTheme } from './theme';
@@ -32,11 +32,13 @@ export default function LoginPage({
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [validationError, setValidationError] = useState('');
+  const [googleLoginPending, setGoogleLoginPending] = useState(false);
   const isRegisterMode = mode === 'register';
   const ThemeIcon = theme === 'light' ? Moon : Sun;
   const themeLabel = theme === 'light' ? resources.app.switchToDarkMode : resources.app.switchToLightMode;
   const [brandLead, ...brandRestParts] = resources.app.brandName.split(' ');
   const brandRest = brandRestParts.length > 0 ? ` ${brandRestParts.join(' ')}` : '';
+  const googleLoginDisabled = pending || googleLoginPending;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -58,6 +60,14 @@ export default function LoginPage({
       return;
     }
     await onLogin?.({ email: email.trim(), password });
+  }
+
+  function handleGoogleLoginClick(event: MouseEvent<HTMLAnchorElement>) {
+    if (googleLoginDisabled) {
+      event.preventDefault();
+      return;
+    }
+    setGoogleLoginPending(true);
   }
 
   const errorText = validationError || authError || (authFailed ? resources.auth.failed : '');
@@ -139,7 +149,12 @@ export default function LoginPage({
           <span>{resources.auth.socialAuthDivider}</span>
         </div>
         <div className="login-social-grid">
-          <a className="login-social-button" href="/oauth2/authorization/google">
+          <a
+            aria-disabled={googleLoginDisabled}
+            className="login-social-button"
+            href="/oauth2/authorization/google"
+            onClick={handleGoogleLoginClick}
+          >
             <span className="login-google-mark" aria-hidden="true">G</span>
             <span>{resources.auth.googleLogin}</span>
           </a>

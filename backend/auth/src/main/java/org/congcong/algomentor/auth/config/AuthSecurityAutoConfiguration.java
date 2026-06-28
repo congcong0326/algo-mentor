@@ -14,12 +14,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
+import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
+import org.springframework.session.jdbc.PostgreSqlJdbcIndexedSessionRepositoryCustomizer;
+import org.springframework.session.config.SessionRepositoryCustomizer;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializingConverter;
@@ -68,6 +72,12 @@ public class AuthSecurityAutoConfiguration {
     conversionService.addConverter(Object.class, byte[].class, new SerializingConverter());
     conversionService.addConverter(byte[].class, Object.class, new DeserializingConverter());
     return conversionService;
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(PostgreSqlJdbcIndexedSessionRepositoryCustomizer.class)
+  public SessionRepositoryCustomizer<JdbcIndexedSessionRepository> authPostgreSqlJdbcSessionRepositoryCustomizer() {
+    return new PostgreSqlJdbcIndexedSessionRepositoryCustomizer();
   }
 
   @Bean

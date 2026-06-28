@@ -445,6 +445,17 @@ a {
   background: var(--login-input-background);
 }
 
+.login-social-button:disabled,
+.login-social-button[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.login-social-button[aria-disabled='true']:hover {
+  border-color: var(--login-border);
+  background: var(--login-control-background);
+}
+
 .login-social-button svg {
   width: 20px;
   height: 20px;

@@ -28,6 +28,18 @@ describe('LoginPage', () => {
     expect(screen.getByText('登录失败，请重新尝试。')).toBeInTheDocument();
   });
 
+  it('prevents duplicate Google login navigation after the first click', () => {
+    render(<LoginPage />);
+
+    const googleLogin = screen.getByRole('link', { name: '使用 Google 登录' });
+    const firstClick = fireEvent.click(googleLogin);
+    const secondClick = fireEvent.click(googleLogin);
+
+    expect(firstClick).toBe(true);
+    expect(secondClick).toBe(false);
+    expect(googleLogin).toHaveAttribute('aria-disabled', 'true');
+  });
+
   it('submits password login credentials', async () => {
     const onLogin = vi.fn(() => Promise.resolve());
     render(<LoginPage onLogin={onLogin} />);

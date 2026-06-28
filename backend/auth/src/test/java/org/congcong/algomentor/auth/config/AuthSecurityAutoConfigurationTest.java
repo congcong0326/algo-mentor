@@ -2,6 +2,7 @@ package org.congcong.algomentor.auth.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.startsWith;
+import static org.mockito.Mockito.mock;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -29,6 +30,7 @@ import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -55,8 +57,13 @@ import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.oidc.IdTokenClaimNames;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.session.config.SessionRepositoryCustomizer;
+import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
+import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -82,6 +89,9 @@ class AuthSecurityAutoConfigurationTest {
 
   @Autowired
   private ConversionService springSessionConversionService;
+
+  @Autowired
+  private ObjectProvider<SessionRepositoryCustomizer<JdbcIndexedSessionRepository>> jdbcSessionRepositoryCustomizers;
 
   @Test
   void permitsHealthEndpoint() throws Exception {
@@ -231,6 +241,19 @@ class AuthSecurityAutoConfigurationTest {
     Object deserialized = springSessionConversionService.convert(serialized, Object.class);
 
     assertThat(deserialized).isInstanceOf(SecurityContextImpl.class);
+  }
+
+  @Test
+  void jdbcSessionAttributeInsertUsesPostgreSqlUpsert() {
+    JdbcIndexedSessionRepository repository = new JdbcIndexedSessionRepository(
+        mock(JdbcOperations.class),
+        mock(TransactionOperations.class));
+
+    jdbcSessionRepositoryCustomizers.orderedStream().forEach(customizer -> customizer.customize(repository));
+
+    assertThat((String) ReflectionTestUtils.getField(repository, "createSessionAttributeQuery"))
+        .contains("ON CONFLICT (SESSION_PRIMARY_ID, ATTRIBUTE_NAME)")
+        .contains("DO UPDATE SET ATTRIBUTE_BYTES = EXCLUDED.ATTRIBUTE_BYTES");
   }
 
   @Test
