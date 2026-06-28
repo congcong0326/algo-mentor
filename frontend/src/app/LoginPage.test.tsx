@@ -82,4 +82,21 @@ describe('LoginPage', () => {
       displayName: 'New User',
     }));
   });
+
+  it('requires display name when registering', () => {
+    const onRegister = vi.fn(() => Promise.resolve());
+    render(<LoginPage onRegister={onRegister} />);
+
+    fireEvent.click(screen.getByRole('button', { name: '创建邮箱账号' }));
+    fireEvent.change(screen.getByRole('textbox', { name: '邮箱' }), {
+      target: { value: 'new@example.com' },
+    });
+    fireEvent.change(screen.getByLabelText('密码'), {
+      target: { value: 'password-123' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '注册并登录' }));
+
+    expect(screen.getByText('请输入昵称。')).toBeInTheDocument();
+    expect(onRegister).not.toHaveBeenCalled();
+  });
 });

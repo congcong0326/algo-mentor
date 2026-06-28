@@ -7,6 +7,7 @@ Thumbs.db
 
 .m2/
 .npm/
+.venv/
 .superpowers/
 .worktrees
 .worktrees/
@@ -24,6 +25,11 @@ frontend/.vite/
 *.tmp
 __pycache__/
 *.py[cod]
+reports/
+tests/smoke/reports/*
+!tests/smoke/reports/.gitkeep
+tests/evals/reports/*
+!tests/evals/reports/.gitkeep
 
 .idea/
 *.iml

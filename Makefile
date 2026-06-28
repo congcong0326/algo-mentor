@@ -22,7 +22,7 @@ DB_SEED_USER := $(POSTGRES_USER)
 DB_SEED_PASSWORD := $(POSTGRES_PASSWORD)
 STATIC_DIR := backend/mentor-api/src/main/resources/static
 
-.PHONY: build package package-skip-tests up down backend-build backend-build-skip-tests backend-test backend-dev frontend-install frontend-build frontend-test frontend-dev sync-frontend problem-source problem-seed db-install db-seed clean
+.PHONY: build package package-skip-tests up down backend-build backend-build-skip-tests backend-test backend-dev frontend-install frontend-build frontend-test frontend-dev test test-smoke test-smoke-all test-env sync-frontend problem-source problem-seed db-install db-seed clean
 
 build: backend-build frontend-build
 
@@ -85,6 +85,19 @@ frontend-test:
 
 frontend-dev:
 	$(NPM) run dev -- --host 0.0.0.0
+
+test: test-smoke
+
+test-smoke:
+	uv run python tests/smoke/run.py
+
+test-smoke-all:
+	SMOKE_SUITE=all uv run python tests/smoke/run.py
+
+test-env:
+	uv run python --version
+	@command -v hurl >/dev/null 2>&1 || { echo "hurl is not installed. Install Hurl before running smoke tests." >&2; exit 1; }
+	hurl --version
 
 problem-source:
 	@if [ -d "$(PROBLEM_SOURCE_DIR)/.git" ]; then \

@@ -4,6 +4,7 @@
 
 - `Makefile`：统一构建、测试、本地运行和前端静态资源同步入口。
 - `pom.xml`：仓库级 Maven 聚合入口，引入 `backend` 多模块工程。
+- `pyproject.toml` / `uv.lock` / `.python-version`：测试工程 Python 3.12 + uv 环境配置，供后续 smoke/eval runner 使用。
 - `.env.example`：本地开发环境变量样例，不包含真实密钥。
 - `deploy/docker/docker-compose.yml`：本地 PostgreSQL 服务。
 - `docs/agent-loop-lifecycle-design.md`：Agent loop 生命周期扩展设计，说明 observer、interceptor、lifecycle 与 SSE 边界。

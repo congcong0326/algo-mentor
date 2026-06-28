@@ -94,7 +94,7 @@ class PasswordAuthControllerTest {
             .content(objectMapper.writeValueAsBytes(new PasswordRegisterRequest(
                 "user@example.com",
                 "password-123",
-                null))))
+                "User Name"))))
         .andExpect(status().isOk());
 
     mockMvc.perform(post("/api/auth/login")
@@ -114,7 +114,7 @@ class PasswordAuthControllerTest {
             .content(objectMapper.writeValueAsBytes(new PasswordRegisterRequest(
                 "user@example.com",
                 "password-123",
-                null))))
+                "User Name"))))
         .andExpect(status().isOk());
 
     mockMvc.perform(post("/api/auth/login")
@@ -125,5 +125,19 @@ class PasswordAuthControllerTest {
         .andExpect(status().isUnauthorized())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.error.code").value("AUTH_INVALID_CREDENTIALS"));
+  }
+
+  @Test
+  void registerReturnsBadRequestWhenDisplayNameIsMissing() throws Exception {
+    mockMvc.perform(post("/api/auth/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsBytes(new PasswordRegisterRequest(
+                "user@example.com",
+                "password-123",
+                " "))))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.error.code").value("AUTH_DISPLAY_NAME_REQUIRED"))
+        .andExpect(jsonPath("$.error.message").value("请输入昵称。"));
   }
 }

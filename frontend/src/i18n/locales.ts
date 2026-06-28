@@ -74,6 +74,7 @@ export interface LocaleResources {
     loginAction: string;
     validationEmailRequired: string;
     validationPasswordRequired: string;
+    validationDisplayNameRequired: string;
   };
   nav: {
     home: string;
@@ -438,7 +439,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       passwordLabel: '密码',
       passwordPlaceholder: '至少 8 个字符',
       displayNameLabel: '昵称',
-      displayNamePlaceholder: '可选',
+      displayNamePlaceholder: '请输入昵称',
       passwordLogin: '邮箱登录',
       passwordRegister: '注册并登录',
       loggingIn: '登录中',
@@ -450,6 +451,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       loginAction: '登录',
       validationEmailRequired: '请输入邮箱。',
       validationPasswordRequired: '请输入密码。',
+      validationDisplayNameRequired: '请输入昵称。',
     },
     nav: {
       home: '首页',
@@ -857,7 +859,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       passwordLabel: 'Password',
       passwordPlaceholder: 'At least 8 characters',
       displayNameLabel: 'Display name',
-      displayNamePlaceholder: 'Optional',
+      displayNamePlaceholder: 'Enter a display name',
       passwordLogin: 'Sign in',
       passwordRegister: 'Create account',
       loggingIn: 'Signing in',
@@ -869,6 +871,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       loginAction: 'Log in',
       validationEmailRequired: 'Enter your email.',
       validationPasswordRequired: 'Enter your password.',
+      validationDisplayNameRequired: 'Enter a display name.',
     },
     nav: {
       home: 'Dashboard',

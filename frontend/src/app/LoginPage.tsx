@@ -52,10 +52,14 @@ export default function LoginPage({
       return;
     }
     if (isRegisterMode) {
+      if (!displayName.trim()) {
+        setValidationError(resources.auth.validationDisplayNameRequired);
+        return;
+      }
       await onRegister?.({
         email: email.trim(),
         password,
-        displayName: displayName.trim() || undefined,
+        displayName: displayName.trim(),
       });
       return;
     }

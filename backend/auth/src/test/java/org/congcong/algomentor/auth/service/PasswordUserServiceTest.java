@@ -49,7 +49,7 @@ class PasswordUserServiceTest {
         Clock.fixed(NOW, ZoneOffset.UTC),
         new AdminEmailRoleService(repository, List.of("admin@example.com")));
 
-    AuthenticatedUserPrincipal principal = service.register("admin@example.com", "password-123", null);
+    AuthenticatedUserPrincipal principal = service.register("admin@example.com", "password-123", "Admin User");
 
     assertThat(principal.roles()).containsExactly(AuthRole.USER, AuthRole.ADMIN);
   }
@@ -61,10 +61,38 @@ class PasswordUserServiceTest {
         passwordEncoder,
         Clock.fixed(NOW, ZoneOffset.UTC),
         null);
-    service.register("user@example.com", "password-123", null);
+    service.register("user@example.com", "password-123", "Same Name");
 
-    assertThatThrownBy(() -> service.register("USER@example.com", "password-456", null))
+    assertThatThrownBy(() -> service.register("USER@example.com", "password-456", "Same Name"))
         .isInstanceOf(PasswordRegistrationException.class)
         .hasMessage("该邮箱已注册，请直接登录。");
+  }
+
+  @Test
+  void duplicateDisplayNameIsAllowed() {
+    PasswordUserService service = new PasswordUserService(
+        repository,
+        passwordEncoder,
+        Clock.fixed(NOW, ZoneOffset.UTC),
+        null);
+
+    AuthenticatedUserPrincipal first = service.register("first@example.com", "password-123", "Same Name");
+    AuthenticatedUserPrincipal second = service.register("second@example.com", "password-123", "Same Name");
+
+    assertThat(first.displayName()).isEqualTo("Same Name");
+    assertThat(second.displayName()).isEqualTo("Same Name");
+  }
+
+  @Test
+  void missingDisplayNameFailsRegistration() {
+    PasswordUserService service = new PasswordUserService(
+        repository,
+        passwordEncoder,
+        Clock.fixed(NOW, ZoneOffset.UTC),
+        null);
+
+    assertThatThrownBy(() -> service.register("user@example.com", "password-123", " "))
+        .isInstanceOf(PasswordRegistrationException.class)
+        .hasMessage("请输入昵称。");
   }
 }

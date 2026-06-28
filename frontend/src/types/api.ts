@@ -63,7 +63,7 @@ export interface PasswordLoginRequest {
 }
 
 export interface PasswordRegisterRequest extends PasswordLoginRequest {
-  displayName?: string;
+  displayName: string;
 }
 
 export type ProblemDifficulty = 'EASY' | 'MEDIUM' | 'HARD';

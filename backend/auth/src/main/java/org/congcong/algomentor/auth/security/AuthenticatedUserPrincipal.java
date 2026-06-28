@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import org.congcong.algomentor.auth.model.AuthRole;
 import org.congcong.algomentor.auth.model.AuthUserStatus;
+import org.springframework.security.core.AuthenticatedPrincipal;
 
 public record AuthenticatedUserPrincipal(
     Long userId,
@@ -12,7 +13,7 @@ public record AuthenticatedUserPrincipal(
     String avatarUrl,
     List<AuthRole> roles,
     AuthUserStatus status
-) implements Serializable {
+) implements AuthenticatedPrincipal, Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -22,5 +23,10 @@ public record AuthenticatedUserPrincipal(
     }
     roles = roles == null ? List.of() : List.copyOf(roles);
     status = status == null ? AuthUserStatus.ACTIVE : status;
+  }
+
+  @Override
+  public String getName() {
+    return userId.toString();
   }
 }

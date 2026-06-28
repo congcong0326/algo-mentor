@@ -36,7 +36,8 @@ public class PasswordUserService {
   @Transactional
   public AuthenticatedUserPrincipal register(String email, String password, String displayName) {
     String normalizedEmail = normalizeEmail(email);
-    validateRegistration(normalizedEmail, password);
+    String normalizedDisplayName = normalizeDisplayName(displayName);
+    validateRegistration(normalizedEmail, password, normalizedDisplayName);
     if (repository.findUserByEmailNormalized(normalizedEmail).isPresent()) {
       throw new PasswordRegistrationException(
           PasswordAuthErrorCode.AUTH_EMAIL_ALREADY_REGISTERED,
@@ -44,11 +45,10 @@ public class PasswordUserService {
     }
 
     Instant now = Instant.now(clock);
-    String effectiveDisplayName = normalizeDisplayName(displayName, normalizedEmail);
     AuthUser user = repository.createUser(
         email.trim(),
         normalizedEmail,
-        effectiveDisplayName,
+        normalizedDisplayName,
         null,
         AuthUserStatus.ACTIVE,
         now);
@@ -61,7 +61,7 @@ public class PasswordUserService {
     return toPrincipal(user, roles.isEmpty() ? List.of(AuthRole.USER) : roles);
   }
 
-  private static void validateRegistration(String emailNormalized, String password) {
+  private static void validateRegistration(String emailNormalized, String password, String displayName) {
     if (emailNormalized.isBlank() || !emailNormalized.contains("@")) {
       throw new PasswordRegistrationException(
           PasswordAuthErrorCode.AUTH_REQUEST_INVALID,
@@ -71,6 +71,11 @@ public class PasswordUserService {
       throw new PasswordRegistrationException(
           PasswordAuthErrorCode.AUTH_REQUEST_INVALID,
           "密码至少需要 8 个字符。");
+    }
+    if (displayName.isBlank()) {
+      throw new PasswordRegistrationException(
+          PasswordAuthErrorCode.AUTH_DISPLAY_NAME_REQUIRED,
+          "请输入昵称。");
     }
   }
 
@@ -88,11 +93,7 @@ public class PasswordUserService {
     return email == null ? "" : email.trim().toLowerCase(Locale.ROOT);
   }
 
-  private static String normalizeDisplayName(String displayName, String emailNormalized) {
-    if (displayName != null && !displayName.isBlank()) {
-      return displayName.trim();
-    }
-    int atIndex = emailNormalized.indexOf('@');
-    return atIndex > 0 ? emailNormalized.substring(0, atIndex) : emailNormalized;
+  private static String normalizeDisplayName(String displayName) {
+    return displayName == null ? "" : displayName.trim();
   }
 }

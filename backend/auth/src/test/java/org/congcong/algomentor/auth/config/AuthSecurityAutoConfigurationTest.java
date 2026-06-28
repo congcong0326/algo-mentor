@@ -244,6 +244,13 @@ class AuthSecurityAutoConfigurationTest {
   }
 
   @Test
+  void passwordAuthenticationNameUsesStableUserId() {
+    UsernamePasswordAuthenticationToken authentication = authenticationToken();
+
+    assertThat(authentication.getName()).isEqualTo("42");
+  }
+
+  @Test
   void jdbcSessionAttributeInsertUsesPostgreSqlUpsert() {
     JdbcIndexedSessionRepository repository = new JdbcIndexedSessionRepository(
         mock(JdbcOperations.class),
