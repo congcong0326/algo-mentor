@@ -2,6 +2,7 @@ import { Moon, Radio, Sun } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import HomeDashboard from './HomeDashboard';
 import LearningPlans from './LearningPlans';
+import MyPage from './MyPage';
 import ProblemLibrary from './ProblemLibrary';
 import AiDebugConsole, {
   debugStatusLabel,
@@ -129,6 +130,7 @@ function AppLoadingShell({ activeView }: { activeView: AppView }) {
             ['learningPlans', resources.nav.learningPlans],
             ['problems', resources.nav.problems],
             ['debug', resources.nav.debug],
+            ['my', resources.nav.my],
           ].map(([view, label]) => (
             <button
               aria-pressed={activeView === view}
@@ -461,6 +463,8 @@ export default function App() {
     >
       {activeView === 'home'
         ? <HomeDashboard onNavigate={navigateToView} />
+        : activeView === 'my'
+        ? <MyPage />
         : activeView === 'problems'
         ? <ProblemLibrary />
         : activeView === 'learningPlans'

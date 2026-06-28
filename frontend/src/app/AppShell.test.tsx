@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import AppShell from './AppShell';
 import type { CurrentUser } from '../types/api';
@@ -46,15 +46,20 @@ describe('AppShell', () => {
     expect(screen.getByRole('banner')).toBeInTheDocument();
     expect(document.querySelector('.app-brand-mark')).toHaveTextContent('AM');
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('button', { name: '我的' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: 'AI 调试' })).toBeInTheDocument();
+    expect(within(screen.getByRole('navigation', { name: '主导航' })).getAllByRole('button')
+      .map((button) => button.textContent)).toEqual(['首页', '方案', '题库', 'AI 调试', '我的']);
     expect(screen.getByText('User Name')).toBeInTheDocument();
     expect(screen.getByText('Current page')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '题库' }));
 
     expect(onNavigate).toHaveBeenCalledWith('problems');
+    fireEvent.click(screen.getByRole('button', { name: '我的' }));
+    expect(onNavigate).toHaveBeenCalledWith('my');
   });
 
   it('hides debug navigation when the user lacks debug permission', () => {
@@ -106,6 +111,7 @@ describe('AppShell', () => {
       });
 
       expect(screen.getByRole('button', { name: 'Dashboard' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Me' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Plans' })).toHaveAttribute('aria-pressed', 'true');
       expect(screen.getByRole('button', { name: 'Problems' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();

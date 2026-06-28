@@ -1,10 +1,6 @@
-import { AlertCircle, BrainCircuit, CalendarCheck, ClipboardList, Library, RotateCw } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import AbilityRadarChart from './ability/AbilityRadarChart';
+import { BrainCircuit, CalendarCheck, Library } from 'lucide-react';
 import type { AppView } from './app/navigation';
 import { useI18n } from './i18n/I18nProvider';
-import { getAbilityProfile, requireApiData } from './services/api';
-import type { AbilityProfileResponse } from './types/api';
 
 interface HomeDashboardProps {
   onNavigate?: (view: AppView) => void;
@@ -15,19 +11,6 @@ interface HomeDashboardProps {
 export default function HomeDashboard({ onNavigate, onPrimaryAction, primaryActionLabel }: HomeDashboardProps) {
   const { resources } = useI18n();
   const isPublicHome = !!onPrimaryAction || !!primaryActionLabel;
-  const [abilityProfile, setAbilityProfile] = useState<AbilityProfileResponse>();
-  const [abilityLoading, setAbilityLoading] = useState(!isPublicHome);
-  const [abilityError, setAbilityError] = useState('');
-
-  useEffect(() => {
-    if (isPublicHome) {
-      return undefined;
-    }
-
-    const controller = new AbortController();
-    void loadAbilityProfile(controller.signal);
-    return () => controller.abort();
-  }, [isPublicHome]);
 
   const featureCards = [
     {
@@ -49,76 +32,8 @@ export default function HomeDashboard({ onNavigate, onPrimaryAction, primaryActi
   const companyMarks = ['A', 'AWS', 'T', 'S', 'G', 'Meta', 'M', 'N', 'A'];
   const handlePrimaryAction = onPrimaryAction ?? (() => onNavigate?.('learningPlans'));
 
-  async function loadAbilityProfile(signal?: AbortSignal) {
-    setAbilityLoading(true);
-    setAbilityError('');
-    try {
-      const response = await getAbilityProfile(signal);
-      setAbilityProfile(requireApiData(response, resources.home.abilityLoadFailed));
-    } catch (error) {
-      if (signal?.aborted) {
-        return;
-      }
-      setAbilityError(error instanceof Error ? error.message : resources.home.abilityLoadFailed);
-    } finally {
-      if (!signal?.aborted) {
-        setAbilityLoading(false);
-      }
-    }
-  }
-
   if (!isPublicHome) {
-    return (
-      <section className="home-workbench" aria-label={resources.home.workspaceAriaLabel}>
-        <div className="home-workbench-main">
-          <section className="workbench-panel workbench-focus-panel" aria-labelledby="home-workbench-title">
-            <p className="eyebrow">{resources.home.workspaceKicker}</p>
-            <h1 id="home-workbench-title">{resources.home.workspaceTitle}</h1>
-            <p>{resources.home.workspaceSubtitle}</p>
-          </section>
-          <section className="workbench-grid" aria-label={resources.home.workspaceSectionsLabel}>
-            <article className="workbench-panel">
-              <ClipboardList aria-hidden="true" />
-              <h2>{resources.home.recentPracticeTitle}</h2>
-              <p>{resources.home.recentPracticeEmpty}</p>
-            </article>
-            <article className="workbench-panel">
-              <CalendarCheck aria-hidden="true" />
-              <h2>{resources.home.planPreviewTitle}</h2>
-              <p>{resources.home.planPreviewEmpty}</p>
-            </article>
-            <article className="workbench-panel">
-              <RotateCw aria-hidden="true" />
-              <h2>{resources.home.reviewQueueTitle}</h2>
-              <p>{resources.home.reviewQueueEmpty}</p>
-            </article>
-          </section>
-        </div>
-        <aside className="ability-panel" aria-labelledby="ability-radar-title">
-          <div className="ability-panel-header">
-            <div>
-              <h2 id="ability-radar-title">{resources.home.abilityRadarTitle}</h2>
-              <p>{resources.home.abilityRadarSubtitle}</p>
-            </div>
-          </div>
-          {abilityLoading ? (
-            <div className="ability-state" role="status">{resources.home.abilityLoading}</div>
-          ) : abilityError ? (
-            <div className="ability-state error" role="alert">
-              <AlertCircle aria-hidden="true" />
-              <span>{abilityError}</span>
-              <button className="secondary-button compact" onClick={() => void loadAbilityProfile()} type="button">
-                {resources.app.retry}
-              </button>
-            </div>
-          ) : abilityProfile ? (
-            <AbilityRadarChart profile={abilityProfile} />
-          ) : (
-            <div className="ability-state">{resources.home.abilityEmpty}</div>
-          )}
-        </aside>
-      </section>
-    );
+    return <section className="home-empty" aria-label={resources.home.ariaLabel} />;
   }
 
   return (

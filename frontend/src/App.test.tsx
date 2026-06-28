@@ -195,9 +195,6 @@ describe('App', () => {
         }));
         return Promise.resolve(authenticatedUserResponse());
       }
-      if (url === '/api/abilities/profile') {
-        return Promise.resolve(abilityProfileResponse());
-      }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
     vi.stubGlobal('fetch', fetchMock);
@@ -214,7 +211,8 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: '邮箱登录' }));
 
     expect(await screen.findByText('User Name')).toBeInTheDocument();
-    expect(await screen.findByRole('heading', { name: '能力雷达图' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.queryByRole('img', { name: '能力雷达图' })).not.toBeInTheDocument();
     expect(window.location.pathname).toBe('/');
   });
 
@@ -261,9 +259,6 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
       }
-      if (url === '/api/abilities/profile') {
-        return Promise.resolve(abilityProfileResponse());
-      }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
     vi.stubGlobal('fetch', fetchMock);
@@ -280,19 +275,36 @@ describe('App', () => {
   });
 
   it('defaults authenticated users to the dashboard home page', async () => {
-    vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
+    const fetchMock = mockAuthenticatedAppFetch();
+    vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/');
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '能力雷达图' })).toBeInTheDocument();
+    expect(await screen.findByText('User Name')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: '首页' })).toHaveClass('home-empty');
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '我的' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.queryByRole('button', { name: 'Start Reviewing' })).not.toBeInTheDocument();
-    expect(screen.getByText('User Name')).toBeInTheDocument();
-    expect(await screen.findAllByTestId('ability-radar-axis-label')).toHaveLength(23);
+    expect(screen.queryByRole('img', { name: '能力雷达图' })).not.toBeInTheDocument();
+    expect(fetchMock.mock.calls.some(([url]) => url === '/api/abilities/profile')).toBe(false);
     expect(window.location.pathname).toBe('/');
+  });
+
+  it('shows the ability radar on the my page', async () => {
+    vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
+    window.history.replaceState({}, '', '/me');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: '能力雷达图' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '我的' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'false');
+    expect(document.querySelector('.my-card.ability-card')).toBeInTheDocument();
+    expect(await screen.findAllByTestId('ability-radar-axis-label')).toHaveLength(23);
+    expect(window.location.pathname).toBe('/me');
   });
 
   it('defaults authenticated users to light theme', async () => {
@@ -301,7 +313,7 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '能力雷达图' })).toBeInTheDocument();
+    expect(await screen.findByText('User Name')).toBeInTheDocument();
     expect(document.documentElement.dataset.theme).toBe('light');
   });
 
@@ -357,7 +369,7 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '能力雷达图' })).toBeInTheDocument();
+    expect(await screen.findByText('User Name')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
 
     fireEvent.click(screen.getByRole('button', { name: '方案' }));
@@ -407,9 +419,6 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(userWithoutDebugPermissionResponse());
       }
-      if (url === '/api/abilities/profile') {
-        return Promise.resolve(abilityProfileResponse());
-      }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
     vi.stubGlobal('fetch', fetchMock);
@@ -417,7 +426,8 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '能力雷达图' })).toBeInTheDocument();
+    expect(await screen.findByText('User Name')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: '首页' })).toHaveClass('home-empty');
     expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
     expect(window.location.pathname).toBe('/');
   });

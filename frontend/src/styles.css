@@ -3170,105 +3170,37 @@ a {
   line-height: 1.7;
 }
 
-.home-workbench {
+.home-empty {
+  min-height: 360px;
+}
+
+.my-page {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(380px, 520px);
-  gap: 20px;
-  align-items: start;
-  width: min(1440px, 100%);
+  justify-items: center;
+  width: min(1180px, 100%);
   margin: 0 auto;
 }
 
-.home-workbench-main {
-  display: grid;
-  gap: 18px;
-  min-width: 0;
-}
-
-.workbench-panel,
-.ability-panel {
+.my-card {
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
   background: var(--surface-card);
   box-shadow: var(--shadow-subtle);
 }
 
-.workbench-focus-panel {
+.ability-card {
   display: grid;
-  gap: 12px;
-  min-height: 176px;
-  padding: 24px;
-}
-
-.workbench-focus-panel h1 {
-  max-width: 720px;
-  font-size: 30px;
-}
-
-.workbench-focus-panel p:last-child {
-  max-width: 760px;
-  margin: 0;
-  color: var(--text-secondary);
-  line-height: 1.7;
-}
-
-.workbench-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-}
-
-.workbench-grid .workbench-panel {
-  display: grid;
-  gap: 12px;
-  min-height: 166px;
-  padding: 18px;
-}
-
-.workbench-panel svg {
-  width: 22px;
-  height: 22px;
-  color: var(--accent-warm-text);
-}
-
-.workbench-panel h2 {
-  font-size: 17px;
-}
-
-.workbench-panel p {
-  margin: 0;
-  color: var(--text-secondary);
-  line-height: 1.65;
-}
-
-.ability-panel {
-  display: grid;
-  gap: 16px;
+  width: min(100%, 960px);
+  min-height: min(820px, calc(100vh - 160px));
+  align-content: center;
   min-width: 0;
-  padding: 18px;
-}
-
-.ability-panel-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 14px;
-}
-
-.ability-panel-header h2 {
-  font-size: 20px;
-}
-
-.ability-panel-header p {
-  margin: 6px 0 0;
-  color: var(--text-muted);
-  font-size: 13px;
+  padding: 36px;
 }
 
 .ability-state {
   display: grid;
   place-items: center;
-  min-height: 320px;
+  min-height: 520px;
   gap: 12px;
   padding: 20px;
   border: 1px dashed var(--border-subtle);
@@ -3289,12 +3221,13 @@ a {
 
 .ability-radar {
   display: grid;
-  gap: 12px;
+  justify-items: center;
   margin: 0;
 }
 
 .ability-radar svg {
   width: 100%;
+  max-width: min(100%, 880px);
   aspect-ratio: 1;
   overflow: visible;
 }
@@ -3342,32 +3275,6 @@ a {
   fill: var(--text-secondary);
   font-size: 8px;
   font-weight: 500;
-}
-
-.ability-radar-caption {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px 12px;
-  max-height: 168px;
-  overflow: auto;
-  padding-right: 4px;
-  color: var(--text-secondary);
-  font-size: 12px;
-}
-
-.ability-radar-caption span {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  min-width: 0;
-}
-
-.ability-radar-caption strong {
-  overflow: hidden;
-  color: var(--text-primary);
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 @media (max-width: 980px) {
@@ -3491,17 +3398,6 @@ a {
     min-height: 0;
   }
 
-  .home-workbench {
-    grid-template-columns: 1fr;
-  }
-
-  .workbench-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .ability-panel {
-    order: 2;
-  }
 }
 
 @media (max-width: 720px) {
@@ -3735,17 +3631,11 @@ a {
     font-size: 20px;
   }
 
-  .workbench-focus-panel,
-  .workbench-grid .workbench-panel,
-  .ability-panel {
+  .ability-card {
     padding: 16px;
   }
 
-  .workbench-focus-panel h1 {
-    font-size: 25px;
-  }
-
-  .ability-radar-caption {
-    grid-template-columns: 1fr;
+  .ability-card {
+    min-height: 0;
   }
 }

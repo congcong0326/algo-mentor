@@ -77,6 +77,7 @@ export interface LocaleResources {
   };
   nav: {
     home: string;
+    my: string;
     learningPlans: string;
     problems: string;
     debug: string;
@@ -452,6 +453,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     },
     nav: {
       home: '首页',
+      my: '我的',
       learningPlans: '方案',
       problems: '题库',
       debug: 'AI 调试',
@@ -870,6 +872,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     },
     nav: {
       home: 'Dashboard',
+      my: 'Me',
       learningPlans: 'Plans',
       problems: 'Problems',
       debug: 'AI Debug',

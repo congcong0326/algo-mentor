@@ -79,14 +79,6 @@ export default function AbilityRadarChart({ profile }: AbilityRadarChartProps) {
           })}
         </g>
       </svg>
-      <figcaption className="ability-radar-caption">
-        {axes.map((tag) => (
-          <span key={tag.tag}>
-            <strong>{tag.label}</strong>
-            {formatScore(tag.abilityScore)}
-          </span>
-        ))}
-      </figcaption>
     </figure>
   );
 }

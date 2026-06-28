@@ -21,4 +21,8 @@ describe('learning plan practice submissions navigation', () => {
     expect(viewFromPath('/learning-plans/900/phases/1/problems/two-sum/submissions'))
       .toBe('learningPlans');
   });
+
+  it('parses the my page route', () => {
+    expect(viewFromPath('/me')).toBe('my');
+  });
 });

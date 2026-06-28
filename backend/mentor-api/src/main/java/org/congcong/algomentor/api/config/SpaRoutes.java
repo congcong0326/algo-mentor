@@ -20,6 +20,7 @@ public final class SpaRoutes {
    */
   public static final String[] FRONTEND_ROUTES = {
       "/login",
+      "/me",
       "/learning-plans",
       "/problems",
       "/debug"
