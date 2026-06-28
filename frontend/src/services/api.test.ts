@@ -3,6 +3,7 @@ import type { ApiResponse } from '../types/api';
 import {
   ApiRequestError,
   decideAgentToolPermission,
+  getAbilityProfile,
   getHealth,
   getLearningPlans,
   logout,
@@ -56,6 +57,38 @@ function createFakeStorage(initialValues: Record<string, string> = {}): Storage 
 }
 
 describe('api service', () => {
+  it('requests the current ability profile with json and locale headers', async () => {
+    vi.stubGlobal('localStorage', createFakeStorage({ 'algo-mentor-locale': 'zh-CN' }));
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x21, 0x22, 0x23, 0x24, 0x25, 0x26]) });
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        tags: [],
+        scope: {
+          minProblemCount: 20,
+          scorePrecision: 1,
+          latestReviewOnly: true,
+          conservativeWeight: 4,
+        },
+      },
+      timestamp: '2026-06-27T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getAbilityProfile();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/abilities/profile',
+      expect.objectContaining({
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+      }),
+    );
+    const headers = requestHeaders(fetchMock);
+    expect(headers.get('Accept')).toBe('application/json');
+    expect(headers.get('Accept-Language')).toBe('zh-CN');
+  });
+
   it('sends Accept-Language from the current locale', async () => {
     vi.stubGlobal('localStorage', createFakeStorage({ 'algo-mentor-locale': 'en-US' }));
     vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x01, 0x02, 0x03, 0x04, 0x05, 0x06]) });

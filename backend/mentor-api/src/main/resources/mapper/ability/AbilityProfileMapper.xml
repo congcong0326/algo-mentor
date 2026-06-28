@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.ability.mapper.AbilityProfileMapper">
+
+  <resultMap id="AbilityTagScoreRowMap"
+      type="org.congcong.algomentor.api.ability.mapper.model.AbilityTagScoreRow">
+    <constructor>
+      <arg column="tag" javaType="string"/>
+      <arg column="label" javaType="string"/>
+      <arg column="problem_count" javaType="_long"/>
+      <arg column="reviewed_problem_count" javaType="_long"/>
+      <arg column="raw_average_score" javaType="java.math.BigDecimal"/>
+    </constructor>
+  </resultMap>
+
+  <select id="findCommonTagScores" resultMap="AbilityTagScoreRowMap">
+    WITH expanded_problem_tags AS (
+      SELECT
+        p.slug,
+        t.tag,
+        t.label
+      FROM problem p
+      CROSS JOIN LATERAL unnest(
+        p.tag_values,
+        p.tag_labels_zh
+      ) AS t(tag, label)
+      WHERE t.tag IS NOT NULL
+        AND t.tag != ''
+    ),
+    tag_catalog AS (
+      SELECT
+        tag,
+        MIN(label) AS label,
+        COUNT(*) AS problem_count
+      FROM expanded_problem_tags
+      GROUP BY tag
+      HAVING COUNT(*) >= #{minProblemCount}
+    ),
+    latest_reviews AS (
+      SELECT
+        problem_slug,
+        total_score
+      FROM (
+        SELECT
+          problem_slug,
+          total_score,
+          ROW_NUMBER() OVER (PARTITION BY problem_slug ORDER BY created_at DESC, id DESC) AS row_number
+        FROM practice_code_review
+        WHERE user_id = #{userId}
+      ) ranked_reviews
+      WHERE row_number = 1
+    ),
+    tag_review_scores AS (
+      SELECT
+        ept.tag,
+        COUNT(*) AS reviewed_problem_count,
+        AVG(lr.total_score) AS raw_average_score
+      FROM latest_reviews lr
+      JOIN expanded_problem_tags ept ON ept.slug = lr.problem_slug
+      GROUP BY ept.tag
+    )
+    SELECT
+      tc.tag,
+      tc.label,
+      tc.problem_count,
+      COALESCE(trs.reviewed_problem_count, 0) AS reviewed_problem_count,
+      trs.raw_average_score
+    FROM tag_catalog tc
+    LEFT JOIN tag_review_scores trs ON trs.tag = tc.tag
+    ORDER BY tc.problem_count DESC, tc.tag ASC
+  </select>
+</mapper>

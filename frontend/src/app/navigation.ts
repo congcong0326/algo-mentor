@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Bot, ClipboardList, Library } from 'lucide-react';
+import { Bot, ClipboardList, House, Library } from 'lucide-react';
 import type { AuthPermission } from '../types/api';
 
 export const APP_ROUTES = {
@@ -38,6 +38,12 @@ export interface NavigationItem {
 }
 
 export const NAVIGATION_ITEMS: NavigationItem[] = [
+  {
+    view: 'home',
+    labelKey: 'home',
+    path: APP_ROUTES.home,
+    icon: House,
+  },
   {
     view: 'learningPlans',
     labelKey: 'learningPlans',

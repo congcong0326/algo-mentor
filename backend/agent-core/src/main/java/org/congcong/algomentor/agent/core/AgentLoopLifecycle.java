@@ -235,6 +235,15 @@ public final class AgentLoopLifecycle {
   }
 
   public void error(AgentLoopContext context, AgentException error) {
+    log.warn(
+        "Agent run failed. runId={} code={} retryable={} message={} requestMetadata={} errorMetadata={}",
+        context.runId(),
+        error.code(),
+        error.retryable(),
+        error.getMessage(),
+        safeMetadata(context.metadata()),
+        safeMetadata(error.metadata()),
+        error);
     notifyObserver(observer -> observer.onError(context, error), "onError");
     publisher.submit(new AgentStreamEvent.AgentError(context.runId(), error));
   }
@@ -253,6 +262,58 @@ public final class AgentLoopLifecycle {
     Map<String, Object> metadata = new LinkedHashMap<>(context.metadata());
     metadata.putAll(result.metadata());
     return Map.copyOf(metadata);
+  }
+
+  private Map<String, Object> safeMetadata(Map<String, Object> metadata) {
+    if (metadata == null || metadata.isEmpty()) {
+      return Map.of();
+    }
+    Map<String, Object> safe = new LinkedHashMap<>();
+    metadata.forEach((key, value) -> safe.put(key, safeMetadataValue(key, value)));
+    return java.util.Collections.unmodifiableMap(safe);
+  }
+
+  private Object safeMetadataValue(String key, Object value) {
+    if (value == null) {
+      return null;
+    }
+    if (isSensitiveKey(key)) {
+      return "[REDACTED]";
+    }
+    if (value instanceof Number || value instanceof Boolean || value instanceof Enum<?>) {
+      return value;
+    }
+    if (value instanceof CharSequence text) {
+      return truncate(text.toString());
+    }
+    return value.getClass().getSimpleName();
+  }
+
+  private boolean isSensitiveKey(String key) {
+    if (key == null) {
+      return false;
+    }
+    String normalized = key.toLowerCase(java.util.Locale.ROOT);
+    return normalized.contains("authorization")
+        || normalized.contains("cookie")
+        || normalized.contains("apikey")
+        || normalized.contains("api_key")
+        || normalized.equals("token")
+        || normalized.endsWith("token")
+        || normalized.contains("access_token")
+        || normalized.contains("refresh_token")
+        || normalized.contains("bearer")
+        || normalized.contains("jwt")
+        || normalized.contains("secret")
+        || normalized.contains("password")
+        || normalized.contains("credential");
+  }
+
+  private String truncate(String value) {
+    if (value == null || value.length() <= 256) {
+      return value;
+    }
+    return value.substring(0, 256) + "...";
   }
 
   @FunctionalInterface

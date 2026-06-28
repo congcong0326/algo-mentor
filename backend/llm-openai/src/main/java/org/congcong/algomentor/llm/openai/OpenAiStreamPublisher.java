@@ -9,13 +9,18 @@ import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.congcong.algomentor.common.trace.RequestTraceContext;
+import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
+
+  private static final Logger log = LoggerFactory.getLogger(OpenAiStreamPublisher.class);
 
   private final StreamResponse<ResponseStreamEvent> stream;
   private final OpenAiResponsesMapper mapper;
@@ -60,7 +65,17 @@ final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
           close();
           return;
         }
-        submit(new LlmStreamEvent.Error(OpenAiLlmExceptionMapper.map(error, providerId, modelId)));
+        LlmException mapped = OpenAiLlmExceptionMapper.map(error, providerId, modelId);
+        log.warn(
+            "OpenAI stream failed while consuming events. provider={} model={} code={} retryable={} metadata={} causeType={} causeMessage={}",
+            providerId.value(),
+            modelId.value(),
+            mapped.code(),
+            mapped.retryable(),
+            mapped.metadata(),
+            causeType(mapped),
+            causeMessage(mapped));
+        submit(new LlmStreamEvent.Error(mapped));
         close();
       }
     }), "openai-llm-stream");
@@ -124,14 +139,36 @@ final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
     }
     if (event.isError()) {
       var error = event.asError();
-      submit(new LlmStreamEvent.Error(OpenAiLlmExceptionMapper.streamError(
+      LlmException mapped = OpenAiLlmExceptionMapper.streamError(
           error.message(),
           providerId,
           modelId,
           Map.of(
               LlmMetadataKeys.PROVIDER, providerId.value(),
-              LlmMetadataKeys.SEQUENCE_NUMBER, error.sequenceNumber()))));
+              LlmMetadataKeys.SEQUENCE_NUMBER, error.sequenceNumber()));
+      log.warn(
+          "OpenAI stream returned error event. provider={} model={} sequenceNumber={} code={} retryable={} message={}",
+          providerId.value(),
+          modelId.value(),
+          error.sequenceNumber(),
+          mapped.code(),
+          mapped.retryable(),
+          mapped.getMessage());
+      submit(new LlmStreamEvent.Error(mapped));
     }
+  }
+
+  private String causeType(Throwable error) {
+    Throwable cause = error.getCause();
+    return cause == null ? "none" : cause.getClass().getName();
+  }
+
+  private String causeMessage(Throwable error) {
+    Throwable cause = error.getCause();
+    if (cause == null || cause.getMessage() == null || cause.getMessage().isBlank()) {
+      return "";
+    }
+    return cause.getMessage();
   }
 
   private ResponseFunctionToolCall withAccumulatedArguments(ResponseFunctionToolCall call) {

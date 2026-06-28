@@ -146,6 +146,22 @@ export interface LocaleResources {
     ctaTitle: string;
     ctaDescription: string;
     enterPlans: string;
+    workspaceAriaLabel: string;
+    workspaceKicker: string;
+    workspaceTitle: string;
+    workspaceSubtitle: string;
+    workspaceSectionsLabel: string;
+    recentPracticeTitle: string;
+    recentPracticeEmpty: string;
+    planPreviewTitle: string;
+    planPreviewEmpty: string;
+    reviewQueueTitle: string;
+    reviewQueueEmpty: string;
+    abilityRadarTitle: string;
+    abilityRadarSubtitle: string;
+    abilityLoading: string;
+    abilityLoadFailed: string;
+    abilityEmpty: string;
   };
   problems: {
     ariaLabel: string;
@@ -505,6 +521,22 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       ctaTitle: '从一份方案开始今天的训练',
       ctaDescription: '先确定目标和时间，再让系统给出阶段、题目和复盘建议。',
       enterPlans: '进入训练方案',
+      workspaceAriaLabel: '学习工作台',
+      workspaceKicker: 'WORKBENCH',
+      workspaceTitle: '今日学习工作台',
+      workspaceSubtitle: '把最近练习、训练计划、待复盘和能力画像放在同一屏，先看状态，再进入具体任务。',
+      workspaceSectionsLabel: '主页工作台模块',
+      recentPracticeTitle: '最近练习',
+      recentPracticeEmpty: '后续展示最近进入的题目和 Review 状态。',
+      planPreviewTitle: '学习计划',
+      planPreviewEmpty: '后续展示当前推进中的阶段和推荐任务。',
+      reviewQueueTitle: '待复盘',
+      reviewQueueEmpty: '后续汇总需要回看的代码 Review 和错题。',
+      abilityRadarTitle: '能力雷达图',
+      abilityRadarSubtitle: '常见 tag · 保守诊断 · 满分 10 分',
+      abilityLoading: '正在加载能力画像...',
+      abilityLoadFailed: '能力画像加载失败',
+      abilityEmpty: '暂无能力画像数据',
     },
     problems: {
       ariaLabel: '题库',
@@ -907,6 +939,22 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       ctaTitle: 'Start today from one plan',
       ctaDescription: 'Set your goal and time first, then let the system propose phases, problems, and review points.',
       enterPlans: 'Open Plans',
+      workspaceAriaLabel: 'Learning workbench',
+      workspaceKicker: 'WORKBENCH',
+      workspaceTitle: 'Today Workbench',
+      workspaceSubtitle: 'Recent practice, plans, review queue, and the ability profile live together so status comes before task switching.',
+      workspaceSectionsLabel: 'Dashboard workbench modules',
+      recentPracticeTitle: 'Recent Practice',
+      recentPracticeEmpty: 'Recent problems and review state will appear here.',
+      planPreviewTitle: 'Learning Plan',
+      planPreviewEmpty: 'Current phases and recommended tasks will appear here.',
+      reviewQueueTitle: 'Review Queue',
+      reviewQueueEmpty: 'Code reviews and missed problems to revisit will appear here.',
+      abilityRadarTitle: 'Ability Radar',
+      abilityRadarSubtitle: 'Common tags · conservative diagnosis · 10-point scale',
+      abilityLoading: 'Loading ability profile...',
+      abilityLoadFailed: 'Failed to load ability profile',
+      abilityEmpty: 'No ability profile data',
     },
     problems: {
       ariaLabel: 'Problems',

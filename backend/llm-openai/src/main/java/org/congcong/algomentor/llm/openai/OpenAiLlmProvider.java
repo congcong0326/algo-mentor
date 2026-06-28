@@ -115,12 +115,35 @@ public class OpenAiLlmProvider implements LlmProvider {
 
   @Override
   public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
+    Instant startedAt = Instant.now();
     ensureEnabled();
     LlmModelId modelId = resolvedModel(request);
     try {
+      log.info(
+          "OpenAI stream request started. provider={} model={} baseUrlHost={} timeoutMs={} maxRetries={} messageCount={} toolCount={} toolChoice={} responseFormat={}",
+          PROVIDER_ID.value(),
+          modelId.value(),
+          properties.getBaseUrl().getHost(),
+          properties.getTimeout().toMillis(),
+          properties.getMaxRetries(),
+          request.messages().size(),
+          request.tools().size(),
+          request.toolChoice().mode(),
+          responseFormatName(request.responseFormat()));
       return new OpenAiStreamPublisher(client.createStreaming(mapper.toParams(request, modelId)), mapper, PROVIDER_ID, modelId);
     } catch (Throwable error) {
-      throw OpenAiLlmExceptionMapper.map(error, PROVIDER_ID, modelId);
+      LlmException mapped = OpenAiLlmExceptionMapper.map(error, PROVIDER_ID, modelId);
+      log.warn(
+          "OpenAI stream request failed before subscription. provider={} model={} elapsedMs={} code={} retryable={} metadata={} causeType={} causeMessage={}",
+          PROVIDER_ID.value(),
+          modelId.value(),
+          Duration.between(startedAt, Instant.now()).toMillis(),
+          mapped.code(),
+          mapped.retryable(),
+          mapped.metadata(),
+          causeType(mapped),
+          causeMessage(mapped));
+      throw mapped;
     }
   }
 

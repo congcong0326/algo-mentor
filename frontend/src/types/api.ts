@@ -36,6 +36,27 @@ export interface CurrentUser {
   status: AuthUserStatus;
 }
 
+export interface AbilityTagScore {
+  tag: string;
+  label: string;
+  problemCount: number;
+  reviewedProblemCount: number;
+  rawAverageScore: number;
+  abilityScore: number;
+}
+
+export interface AbilityProfileScope {
+  minProblemCount: number;
+  scorePrecision: number;
+  latestReviewOnly: boolean;
+  conservativeWeight: number;
+}
+
+export interface AbilityProfileResponse {
+  tags: AbilityTagScore[];
+  scope: AbilityProfileScope;
+}
+
 export interface PasswordLoginRequest {
   email: string;
   password: string;

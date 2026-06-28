@@ -45,7 +45,7 @@ describe('AppShell', () => {
 
     expect(screen.getByRole('banner')).toBeInTheDocument();
     expect(document.querySelector('.app-brand-mark')).toHaveTextContent('AM');
-    expect(screen.queryByRole('button', { name: '首页' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: 'AI 调试' })).toBeInTheDocument();
@@ -105,7 +105,7 @@ describe('AppShell', () => {
         target: { value: 'en-US' },
       });
 
-      expect(screen.queryByRole('button', { name: 'Dashboard' })).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Dashboard' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Plans' })).toHaveAttribute('aria-pressed', 'true');
       expect(screen.getByRole('button', { name: 'Problems' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();

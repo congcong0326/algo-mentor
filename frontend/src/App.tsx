@@ -17,19 +17,19 @@ import { useI18n } from './i18n/I18nProvider';
 import { getCurrentUser, loginWithPassword, logout, registerWithPassword } from './services/api';
 import type { AuthPermission, CurrentUser, PasswordLoginRequest, PasswordRegisterRequest } from './types/api';
 
-const DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.learningPlans;
+const DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.home;
 
 function hasPermission(user: CurrentUser | undefined, permission: AuthPermission): boolean {
   return !!user?.permissions?.includes(permission);
 }
 
 function normalizeAuthenticatedView(pathname: string, user?: CurrentUser): AppView {
-  return viewFromPath(normalizeAuthenticatedPath(pathname, user)) ?? 'learningPlans';
+  return viewFromPath(normalizeAuthenticatedPath(pathname, user)) ?? 'home';
 }
 
 function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): string {
   const view = viewFromPath(pathname);
-  if (!view || view === 'home') {
+  if (!view) {
     return DEFAULT_AUTHENTICATED_ROUTE;
   }
   if (view === 'debug' && !hasPermission(user, 'debug:access')) {

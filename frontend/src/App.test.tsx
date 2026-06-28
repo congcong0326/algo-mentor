@@ -195,12 +195,8 @@ describe('App', () => {
         }));
         return Promise.resolve(authenticatedUserResponse());
       }
-      if (isLearningPlanListUrl(url)) {
-        return Promise.resolve(jsonResponse({
-          success: true,
-          data: learningPlanPage([]),
-          timestamp: '2026-06-22T00:00:00Z',
-        }));
+      if (url === '/api/abilities/profile') {
+        return Promise.resolve(abilityProfileResponse());
       }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
@@ -218,7 +214,8 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: '邮箱登录' }));
 
     expect(await screen.findByText('User Name')).toBeInTheDocument();
-    expect(window.location.pathname).toBe('/learning-plans');
+    expect(await screen.findByRole('heading', { name: '能力雷达图' })).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/');
   });
 
   it('shows password login errors from the API', async () => {
@@ -264,12 +261,8 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
       }
-      if (isLearningPlanListUrl(url)) {
-        return Promise.resolve(jsonResponse({
-          success: true,
-          data: learningPlanPage([]),
-          timestamp: '2026-06-22T00:00:00Z',
-        }));
+      if (url === '/api/abilities/profile') {
+        return Promise.resolve(abilityProfileResponse());
       }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
@@ -286,19 +279,20 @@ describe('App', () => {
     }));
   });
 
-  it('defaults authenticated users to the learning plans page', async () => {
+  it('defaults authenticated users to the dashboard home page', async () => {
     vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
     window.history.replaceState({}, '', '/');
 
     render(<App />);
 
-    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '首页' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
+    expect(await screen.findByRole('heading', { name: '能力雷达图' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.queryByRole('button', { name: 'Start Reviewing' })).not.toBeInTheDocument();
     expect(screen.getByText('User Name')).toBeInTheDocument();
-    expect(window.location.pathname).toBe('/learning-plans');
+    expect(await screen.findAllByTestId('ability-radar-axis-label')).toHaveLength(23);
+    expect(window.location.pathname).toBe('/');
   });
 
   it('defaults authenticated users to light theme', async () => {
@@ -307,7 +301,7 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '能力雷达图' })).toBeInTheDocument();
     expect(document.documentElement.dataset.theme).toBe('light');
   });
 
@@ -363,7 +357,8 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '能力雷达图' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
 
     fireEvent.click(screen.getByRole('button', { name: '方案' }));
 
@@ -412,12 +407,8 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(userWithoutDebugPermissionResponse());
       }
-      if (isLearningPlanListUrl(url)) {
-        return Promise.resolve(jsonResponse({
-          success: true,
-          data: learningPlanPage([]),
-          timestamp: '2026-06-22T00:00:00Z',
-        }));
+      if (url === '/api/abilities/profile') {
+        return Promise.resolve(abilityProfileResponse());
       }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
@@ -426,9 +417,9 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '能力雷达图' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
-    expect(window.location.pathname).toBe('/learning-plans');
+    expect(window.location.pathname).toBe('/');
   });
 
   it('exposes debug status labels for the app shell', () => {
@@ -1772,6 +1763,9 @@ function mockAuthenticatedAppFetch() {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
     }
+    if (url === '/api/abilities/profile') {
+      return Promise.resolve(abilityProfileResponse());
+    }
     if (isLearningPlanListUrl(url)) {
       return Promise.resolve(jsonResponse({
         success: true,
@@ -1796,6 +1790,9 @@ function mockLearningPlanAndProblemFetch() {
   return vi.fn((url: string) => {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
+    }
+    if (url === '/api/abilities/profile') {
+      return Promise.resolve(abilityProfileResponse());
     }
     if (isLearningPlanListUrl(url)) {
       return Promise.resolve(jsonResponse({
@@ -1831,6 +1828,59 @@ function mockLearningPlanAndProblemFetch() {
     }
     return Promise.reject(new Error(`Unexpected URL: ${url}`));
   });
+}
+
+function abilityProfileResponse(): Response {
+  return jsonResponse({
+    success: true,
+    data: {
+      tags: abilityTags(),
+      scope: {
+        minProblemCount: 20,
+        scorePrecision: 1,
+        latestReviewOnly: true,
+        conservativeWeight: 4,
+      },
+    },
+    timestamp: '2026-06-27T00:00:00Z',
+  });
+}
+
+function abilityTags() {
+  const labels = [
+    ['dynamic-programming', '动态规划', 240, 3, 8, 3.4],
+    ['array', '数组', 220, 0, 0, 0],
+    ['string', '字符串', 190, 0, 0, 0],
+    ['hash-table', '哈希表', 180, 1, 10, 2],
+    ['math', '数学', 170, 0, 0, 0],
+    ['sorting', '排序', 160, 0, 0, 0],
+    ['greedy', '贪心', 150, 0, 0, 0],
+    ['depth-first-search', '深度优先搜索', 140, 0, 0, 0],
+    ['binary-search', '二分查找', 130, 0, 0, 0],
+    ['tree', '树', 120, 8, 8, 5.3],
+    ['breadth-first-search', '广度优先搜索', 110, 0, 0, 0],
+    ['matrix', '矩阵', 100, 0, 0, 0],
+    ['two-pointers', '双指针', 96, 0, 0, 0],
+    ['bit-manipulation', '位运算', 92, 0, 0, 0],
+    ['heap-priority-queue', '堆', 88, 0, 0, 0],
+    ['prefix-sum', '前缀和', 84, 0, 0, 0],
+    ['simulation', '模拟', 80, 0, 0, 0],
+    ['stack', '栈', 76, 0, 0, 0],
+    ['graph', '图', 72, 0, 0, 0],
+    ['counting', '计数', 68, 0, 0, 0],
+    ['sliding-window', '滑动窗口', 64, 0, 0, 0],
+    ['backtracking', '回溯', 60, 0, 0, 0],
+    ['linked-list', '链表', 56, 0, 0, 0],
+  ] as const;
+
+  return labels.map(([tag, label, problemCount, reviewedProblemCount, rawAverageScore, abilityScore]) => ({
+    tag,
+    label,
+    problemCount,
+    reviewedProblemCount,
+    rawAverageScore,
+    abilityScore,
+  }));
 }
 
 function mockLearningPlanFetch(options: {

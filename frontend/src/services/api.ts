@@ -2,6 +2,7 @@ import type {
   AgentConversationStreamRequest,
   AgentToolPermissionDecisionRequest,
   AgentToolPermissionDecisionResponse,
+  AbilityProfileResponse,
   ApiResponse,
   CurrentUser,
   HealthStatus,
@@ -141,6 +142,19 @@ export async function logout(): Promise<void> {
   if (!response.ok) {
     throw await toApiRequestError(response, 'Logout request failed');
   }
+}
+
+export async function getAbilityProfile(signal?: AbortSignal): Promise<ApiResponse<AbilityProfileResponse>> {
+  const response = await apiFetch('/api/abilities/profile', {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Ability profile request failed');
+  }
+
+  return response.json();
 }
 
 export async function getProblems(

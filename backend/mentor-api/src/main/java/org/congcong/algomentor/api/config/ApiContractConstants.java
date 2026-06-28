@@ -37,6 +37,11 @@ public final class ApiContractConstants {
   public static final String HEALTH_PATH = "/api/health";
 
   /**
+   * 当前用户能力画像接口根路径。
+   */
+  public static final String ABILITIES_PROFILE_PATH = "/api/abilities/profile";
+
+  /**
    * 题库接口根路径。
    */
   public static final String PROBLEMS_BASE_PATH = "/api/problems";
