@@ -6,6 +6,7 @@ public record PracticeChatProblemDetail(
     String slug,
     Integer frontendId,
     String title,
+    String titleCn,
     String difficulty,
     List<String> tags,
     String contentMarkdown,

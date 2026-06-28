@@ -123,6 +123,8 @@ class PracticeSessionControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.session.id").value(50))
+        .andExpect(jsonPath("$.data.problem.title").value("Two Sum"))
+        .andExpect(jsonPath("$.data.problem.titleCn").value("两数之和"))
         .andExpect(jsonPath("$.data.messages[0].messageType").value("PROBLEM_STATEMENT"));
 
     ArgumentCaptor<PracticeChatReference> referenceCaptor = ArgumentCaptor.forClass(PracticeChatReference.class);
@@ -249,7 +251,7 @@ class PracticeSessionControllerTest {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     when(practiceSessionService.updateProgressStatus(42L, 50L, PracticeProgressStatus.COMPLETED))
         .thenThrow(new LearningPlanException("PRACTICE_COMPLETION_REVIEW_REQUIRED",
-            "完成前需要先粘贴完整代码完成一次 AI Review，并且 Review 通过后才能标记完成。"));
+            "完成前需要先粘贴完整代码生成一次代码提交记录，并且通过后才能标记完成。"));
 
     mockMvc.perform(patch("/api/practice-sessions/50/progress-status")
             .contentType(MediaType.APPLICATION_JSON)
@@ -258,7 +260,7 @@ class PracticeSessionControllerTest {
         .andExpect(jsonPath("$.error.code").value("PRACTICE_COMPLETION_REVIEW_REQUIRED"))
         .andExpect(jsonPath("$.error.messageKey").value("api.error.PRACTICE_COMPLETION_REVIEW_REQUIRED"))
         .andExpect(jsonPath("$.error.message")
-            .value("完成前需要先粘贴完整代码完成一次 AI Review，并且 Review 通过后才能标记完成。"));
+            .value("完成前需要先粘贴完整代码生成一次代码提交记录，并且通过后才能标记完成。"));
   }
 
   @Test
@@ -266,7 +268,7 @@ class PracticeSessionControllerTest {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     when(practiceSessionService.updateProgressStatus(42L, 50L, PracticeProgressStatus.COMPLETED))
         .thenThrow(new LearningPlanException("PRACTICE_COMPLETION_REVIEW_NOT_PASSED",
-            "最近一次 Review 为 5/10，达到 6 分后可标记完成。"));
+            "最近一次代码提交记录为 5/10，达到 6 分后可标记完成。"));
 
     mockMvc.perform(patch("/api/practice-sessions/50/progress-status")
             .contentType(MediaType.APPLICATION_JSON)
@@ -422,6 +424,7 @@ class PracticeSessionControllerTest {
             "two-sum",
             1,
             "Two Sum",
+            "两数之和",
             "EASY",
             List.of("Array", "Hash Table"),
             "Given an array of integers...",
@@ -442,6 +445,7 @@ class PracticeSessionControllerTest {
             "two-sum",
             1,
             "Two Sum",
+            "两数之和",
             "EASY",
             List.of("Array", "Hash Table"),
             "Given an array of integers...",
@@ -543,6 +547,7 @@ class PracticeSessionControllerTest {
         "two-sum",
         1,
         "Two Sum",
+        "两数之和",
         "EASY",
         List.of("Array", "Hash Table"),
         "Given an array of integers...",

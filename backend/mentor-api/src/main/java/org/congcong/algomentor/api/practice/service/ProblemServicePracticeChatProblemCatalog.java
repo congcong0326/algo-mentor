@@ -25,6 +25,9 @@ public class ProblemServicePracticeChatProblemCatalog implements PracticeChatPro
             problem.slug(),
             problem.frontendId(),
             problem.title(),
+            problemService.findProblemBySlug(slug, ProblemLocale.ZH_CN)
+                .map(zhProblem -> zhProblem.title())
+                .orElse(problem.title()),
             problem.difficulty() == null ? null : problem.difficulty().name(),
             tagLabels(problem.tags()),
             problem.contentMarkdown(),

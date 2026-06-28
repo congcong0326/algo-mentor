@@ -116,11 +116,11 @@ class PracticeChatPromptSectionProviderTest {
         .renderedText();
     assertThat(policyText)
         .contains("只要当前用户消息看起来像是在粘贴当前题目的完整 LeetCode 解法")
-        .contains("即使用户没有明确要求正式 Review，也应调用 "
+        .contains("即使用户没有明确要求正式代码提交记录，也应调用 "
             + PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW)
         .contains("如果用户拒绝确认或确认超时，可以继续普通点评代码")
         .contains("不要给出正式分数")
-        .contains("不要声称已生成 Review 记录")
+        .contains("不要声称已生成代码提交记录")
         .doesNotContain("用户粘贴代码时，先定位关键问题和最小修改");
   }
 
@@ -146,12 +146,12 @@ class PracticeChatPromptSectionProviderTest {
         .contains("当当前用户消息看起来像是在粘贴当前题目的完整 LeetCode 解法时，应优先调用 "
             + PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW)
         .contains(PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW
-            + " 会记录一次正式代码提交，委托 Review 流程抽取代码、分析、打分并保存 Review 记录")
+            + " 会记录一次正式代码提交，委托分析流程抽取代码、分析、打分并保存代码提交记录")
         .contains("系统会在执行前请求用户确认，工具不能绕过确认")
         .contains("明显片段、伪代码、报错日志、局部 bug、语法问题、复杂度讨论和概念问题不要调用工具，应按普通答疑处理")
         .contains("如果用户拒绝确认或确认超时，可以继续普通点评代码")
         .contains("不要给出正式分数")
-        .contains("不要声称已完成正式 Review，也不要声称已生成 Review 记录")
+        .contains("不要声称已完成正式代码提交分析，也不要声称已生成代码提交记录")
         .contains("以上规则只是模型工具调用指引，不是安全边界");
   }
 
@@ -211,6 +211,7 @@ class PracticeChatPromptSectionProviderTest {
         "two-sum",
         1,
         "Two Sum",
+        "两数之和",
         "EASY",
         List.of("Array", "Hash Table"),
         markdown,

@@ -19,12 +19,12 @@ public final class PracticeCodeReviewPermissionHook implements AgentToolPermissi
 
   public static final int DEFAULT_ORDER = ToolNamePermissionHook.DEFAULT_ORDER - 50;
   public static final String POLICY_SOURCE = "practice-code-review-hook";
-  public static final String DISPLAY_NAME = "提交代码 Review";
-  public static final String REASON = "模型请求执行一次正式代码 Review。";
+  public static final String DISPLAY_NAME = "提交代码记录";
+  public static final String REASON = "模型请求生成一次代码提交记录。";
 
   private static final int CODE_PREVIEW_MAX_LENGTH = 500;
   private static final List<String> REVIEW_EFFECTS = List.of(
-      "将生成正式 Review 记录",
+      "将生成代码提交记录",
       "可能影响题目完成状态");
   private static final Pattern CODE_FENCE_LANGUAGE_PATTERN =
       Pattern.compile("(?m)^```\\s*([A-Za-z0-9_+#.-]+)");

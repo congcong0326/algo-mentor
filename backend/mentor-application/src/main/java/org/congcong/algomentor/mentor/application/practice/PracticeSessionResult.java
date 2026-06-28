@@ -32,7 +32,7 @@ public record PracticeSessionResult(
     return new PracticeCompletionGate(
         false,
         PracticeCompletionGate.ReasonCode.NO_REVIEW,
-        "完成前需要先粘贴完整代码完成一次 AI Review，并且 Review 通过后才能标记完成。",
+        "完成前需要先粘贴完整代码生成一次代码提交记录，并且通过后才能标记完成。",
         Optional.empty(),
         PracticeCodeReviewConstants.PASS_SCORE);
   }

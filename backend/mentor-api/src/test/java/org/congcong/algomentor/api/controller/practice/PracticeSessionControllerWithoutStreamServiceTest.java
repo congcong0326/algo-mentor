@@ -69,6 +69,7 @@ class PracticeSessionControllerWithoutStreamServiceTest {
                 "maximum-subarray",
                 53,
                 "Maximum Subarray",
+                "最大子数组和",
                 "MEDIUM",
                 List.of("Array", "Dynamic Programming"),
                 "# Maximum Subarray",

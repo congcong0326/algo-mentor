@@ -253,8 +253,8 @@ class AgentToolPermissionControllerTest {
         1,
         "call-1",
         "submit_practice_code_review",
-        "提交代码 Review",
-        "模型请求执行正式 Review",
+        "提交代码记录",
+        "模型请求生成一次代码提交记录。",
         Map.of("effect", "save_review"),
         Instant.parse("2026-06-26T00:00:00Z"),
         Instant.parse("2026-06-26T00:01:00Z"));

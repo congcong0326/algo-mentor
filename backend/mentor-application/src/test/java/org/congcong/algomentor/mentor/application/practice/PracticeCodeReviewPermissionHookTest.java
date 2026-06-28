@@ -78,7 +78,7 @@ class PracticeCodeReviewPermissionHookTest {
         .containsEntry(PracticeCodeReviewAgentToolNames.PREVIEW_CONTEXT_AVAILABLE, true);
     assertThat(plan.preview().get(PracticeCodeReviewAgentToolNames.PREVIEW_EFFECTS))
         .asList()
-        .anySatisfy(value -> assertThat(value).asString().contains("正式 Review"));
+        .anySatisfy(value -> assertThat(value).asString().contains("代码提交记录"));
     assertThat(plan.preview().toString())
         .doesNotContain("model-controlled-slug")
         .doesNotContain("malicious code from model arguments");

@@ -257,10 +257,10 @@ public class PracticeCodeReviewService {
 
   private PracticeCodeReviewDraft rejectedAttemptDraft(PracticeTurnContext context, PracticeReviewResult mapped) {
     String reason = switch (mapped.status()) {
-      case NOT_COMPLETE_SUBMISSION -> "AI Review 已触发，但模型判断本轮内容不是当前题目的完整 LeetCode 提交。";
-      case NOT_CODE_LIKE -> "AI Review 已触发，但模型判断本轮内容不像代码提交。";
-      case FAILED -> "AI Review 已触发，但结构化结果无效，未能完成有效评分。";
-      default -> "AI Review 已触发，但未形成可通过的有效 Review。";
+      case NOT_COMPLETE_SUBMISSION -> "代码提交分析已触发，但模型判断本轮内容不是当前题目的完整 LeetCode 提交。";
+      case NOT_CODE_LIKE -> "代码提交分析已触发，但模型判断本轮内容不像代码提交。";
+      case FAILED -> "代码提交分析已触发，但结构化结果无效，未能完成有效评分。";
+      default -> "代码提交分析已触发，但未形成可通过的有效代码提交记录。";
     };
     if (mapped.failureCode() != null) {
       reason = reason + " failureCode=" + mapped.failureCode();
@@ -278,7 +278,7 @@ public class PracticeCodeReviewService {
         fallbackCode(context),
         "unknown",
         List.of(new PracticeCodeReviewEvidence("REVIEW_ATTEMPT_REJECTED", mapped.status().name())),
-        "代码候选已进入 AI Review，但未形成有效评分。",
+        "代码候选已进入代码提交分析，但未形成有效评分。",
         zeroScore(),
         false,
         List.of(reason),

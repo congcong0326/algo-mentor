@@ -43,12 +43,12 @@ public class PracticeCompletionGateService {
     }
     if (latest.isEmpty()) {
       return record(gate(false, PracticeCompletionGate.ReasonCode.NO_REVIEW,
-          "完成前需要先粘贴完整代码完成一次 AI Review，并且 Review 通过后才能标记完成。", Optional.empty()));
+          "完成前需要先粘贴完整代码生成一次代码提交记录，并且通过后才能标记完成。", Optional.empty()));
     }
     BigDecimal score = latest.get().totalScore();
     if (!latest.get().passed() || score.compareTo(PracticeCodeReviewConstants.PASS_SCORE) < 0) {
       return record(gate(false, PracticeCompletionGate.ReasonCode.LATEST_REVIEW_FAILED,
-          "最近一次 Review 为 %s/10，达到 6 分后可标记完成。".formatted(score.stripTrailingZeros().toPlainString()),
+          "最近一次代码提交记录为 %s/10，达到 6 分后可标记完成。".formatted(score.stripTrailingZeros().toPlainString()),
           Optional.of(score)));
     }
     return record(gate(true, PracticeCompletionGate.ReasonCode.PASSED, "标记为已完成", Optional.of(score)));

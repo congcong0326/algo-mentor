@@ -53,11 +53,11 @@ public final class PracticeCodeReviewToolResultMapper {
 
   private String message(PracticeReviewResult result) {
     return switch (result.status()) {
-      case SAVED -> "代码 Review 已提交。";
-      case NOT_CODE_LIKE -> "本轮内容不像代码提交，未形成有效 Review。";
-      case NOT_COMPLETE_SUBMISSION -> "本轮内容不是完整代码提交，未形成有效 Review。";
-      case FAILED -> "代码 Review 未能完成。";
-      case REVIEWED -> "代码 Review 已完成，等待保存。";
+      case SAVED -> "代码提交记录已生成。";
+      case NOT_CODE_LIKE -> "本轮内容不像代码提交，未形成有效代码提交记录。";
+      case NOT_COMPLETE_SUBMISSION -> "本轮内容不是完整代码提交，未形成有效代码提交记录。";
+      case FAILED -> "代码提交记录未能生成。";
+      case REVIEWED -> "代码提交分析已完成，等待保存。";
     };
   }
 

@@ -49,7 +49,7 @@ public final class PracticeSessionResponseMapper {
         problem.slug(),
         problem.frontendId(),
         problem.title(),
-        null,
+        problem.titleCn(),
         problem.difficulty(),
         problem.tags(),
         problem.leetcodeUrl());

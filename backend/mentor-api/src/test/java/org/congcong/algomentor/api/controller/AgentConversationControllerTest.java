@@ -335,6 +335,7 @@ class AgentConversationControllerTest {
           slug,
           1,
           "Two Sum",
+          "两数之和",
           "EASY",
           List.of("Array", "Hash Table"),
           "# Two Sum\nFind two numbers.",

@@ -9,7 +9,10 @@ import type {
 } from '../types/api';
 import type { LocaleResources, SupportedLocale } from './locales';
 
-type ProblemLike = Pick<ProblemListItem, 'title'> | Pick<LearningPlanProblemDraft, 'title' | 'titleCn'>;
+type ProblemLike = Pick<ProblemListItem, 'title'> | {
+  title: string;
+  titleCn?: string | null;
+};
 
 export function formatDate(value: string, locale: SupportedLocale, options?: Intl.DateTimeFormatOptions): string {
   const date = new Date(value);
