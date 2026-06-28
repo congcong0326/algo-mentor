@@ -50,6 +50,17 @@ def discover_cases(suites_root: Path, suite_selector: str, case_name: str | None
 
 def run_hurl_cases(context: SmokeContext, cases: list[HurlCase], report_dir: Path) -> int:
   ensure_hurl_available()
+  exit_code = 0
+  for case in cases:
+    case_report_dir = report_dir / case_report_name(case)
+    case_report_dir.mkdir(parents=True, exist_ok=True)
+    result = run_hurl_case(context, case, case_report_dir)
+    if result != 0 and exit_code == 0:
+      exit_code = result
+  return exit_code
+
+
+def run_hurl_case(context: SmokeContext, case: HurlCase, report_dir: Path) -> int:
   cookie_file = report_dir / "cookies.txt"
   command = [
       "hurl",
@@ -72,9 +83,13 @@ def run_hurl_cases(context: SmokeContext, cases: list[HurlCase], report_dir: Pat
   for name, value in context.hurl_variables().items():
     option = "--secret" if name == "smoke_password" else "--variable"
     command.extend([option, f"{name}={value}"])
-  command.extend(str(case.path) for case in cases)
+  command.append(str(case.path))
   result = subprocess.run(command, cwd=context.repo_root)
   return result.returncode
+
+
+def case_report_name(case: HurlCase) -> str:
+  return f"{case.suite}-{case.name}"
 
 
 def parse_suite_selector(selector: str, suites_root: Path) -> list[str]:
