@@ -11,8 +11,6 @@ public final class UserAiPreferenceResponseMapper {
     return new UserAiPreferenceResponse(
         preference.coachStyle().name(),
         preference.coachStyle().label(),
-        preference.responseLanguage().name(),
-        preference.responseLanguage().label(),
         preference.updatedAt());
   }
 }

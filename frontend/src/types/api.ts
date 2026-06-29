@@ -69,14 +69,11 @@ export type PracticeResponseLanguage = 'ZH_CN' | 'EN_US';
 export interface UserAiPreference {
   coachStyle: PracticeCoachStyle;
   coachStyleLabel: string;
-  responseLanguage: PracticeResponseLanguage;
-  responseLanguageLabel: string;
   updatedAt?: string;
 }
 
 export interface UserAiPreferenceRequest {
   coachStyle?: PracticeCoachStyle;
-  responseLanguage?: PracticeResponseLanguage;
 }
 
 export interface PasswordLoginRequest {

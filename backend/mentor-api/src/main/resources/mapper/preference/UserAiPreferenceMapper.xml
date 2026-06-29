@@ -9,7 +9,6 @@
     <constructor>
       <arg column="user_id" javaType="java.lang.Long"/>
       <arg column="coach_style" javaType="string"/>
-      <arg column="response_language" javaType="string"/>
       <arg column="created_at" javaType="java.time.Instant"/>
       <arg column="updated_at" javaType="java.time.Instant"/>
     </constructor>
@@ -18,7 +17,6 @@
   <sql id="UserAiPreferenceColumns">
     user_id,
     coach_style,
-    response_language,
     created_at,
     updated_at
   </sql>
@@ -34,20 +32,17 @@
     INSERT INTO user_ai_preference (
       user_id,
       coach_style,
-      response_language,
       created_at,
       updated_at
     )
     VALUES (
       #{userId},
       #{coachStyle},
-      #{responseLanguage},
       NOW(),
       NOW()
     )
     ON CONFLICT (user_id) DO UPDATE
     SET coach_style = #{coachStyle},
-        response_language = #{responseLanguage},
         updated_at = NOW()
     RETURNING
       <include refid="UserAiPreferenceColumns"/>

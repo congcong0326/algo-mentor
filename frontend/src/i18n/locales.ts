@@ -113,17 +113,36 @@ export interface LocaleResources {
     saved: string;
     saving: string;
     coachStyle: string;
-    responseLanguage: string;
     coachStyleLabels: Record<
       'SOCRATIC_GUIDE' | 'DIRECT_EXPLAINER' | 'INTERVIEWER' | 'STRICT_REVIEWER' | 'SUPPORTIVE_MENTOR',
       string
     >;
-    responseLanguageLabels: Record<'ZH_CN' | 'EN_US', string>;
     coachStyleDescriptions: Record<
       'SOCRATIC_GUIDE' | 'DIRECT_EXPLAINER' | 'INTERVIEWER' | 'STRICT_REVIEWER' | 'SUPPORTIVE_MENTOR',
       string
     >;
-    responseLanguageDescriptions: Record<'ZH_CN' | 'EN_US', string>;
+  };
+  myPage: {
+    profileKicker: string;
+    title: string;
+    subtitle: string;
+    coachPanelEyebrow: string;
+    abilityPanelEyebrow: string;
+    selectedCoach: string;
+    readyForNextReply: string;
+    dataPending: string;
+    noData: string;
+    statCurrentCoach: string;
+    statEvaluatedTags: string;
+    statAverageScore: string;
+    statReviewedProblems: string;
+    radarSummaryTitle: string;
+    strongestTag: string;
+    topAbilities: string;
+    noTopAbilities: string;
+    tagCoverage: (reviewed: number, total: number) => string;
+    scoreValue: (score: string) => string;
+    reviewedProblemsValue: (count: number) => string;
   };
   home: {
     ariaLabel: string;
@@ -511,17 +530,12 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       saved: '已保存',
       saving: '保存中',
       coachStyle: '教练风格',
-      responseLanguage: '回复语言',
       coachStyleLabels: {
         SOCRATIC_GUIDE: '启发型教练',
         DIRECT_EXPLAINER: '直给型教练',
         INTERVIEWER: '面试官教练',
         STRICT_REVIEWER: '严苛 Review 官',
         SUPPORTIVE_MENTOR: '陪伴型教练',
-      },
-      responseLanguageLabels: {
-        ZH_CN: '简体中文',
-        EN_US: 'English',
       },
       coachStyleDescriptions: {
         SOCRATIC_GUIDE: '耐心追问，先给提示和关键观察，再逐步展开完整解法。',
@@ -530,10 +544,28 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         STRICT_REVIEWER: '优先挑出正确性风险、反例、边界条件和实现质量问题。',
         SUPPORTIVE_MENTOR: '把问题拆小，语气更温和，但不降低正确性标准。',
       },
-      responseLanguageDescriptions: {
-        ZH_CN: '默认用简体中文讲解，保留代码、API 和错误名原文。',
-        EN_US: 'Use English for explanations while preserving code and identifiers.',
-      },
+    },
+    myPage: {
+      profileKicker: 'PERSONAL TRAINING CENTER',
+      title: '我的学习画像',
+      subtitle: '把 AI 教练偏好、训练覆盖度和能力雷达放到同一屏，先判断状态，再决定今天怎么练。',
+      coachPanelEyebrow: 'COACHING MODE',
+      abilityPanelEyebrow: 'ABILITY PROFILE',
+      selectedCoach: '当前教练',
+      readyForNextReply: '下一次回复生效',
+      dataPending: '同步中',
+      noData: '暂无',
+      statCurrentCoach: '教练模式',
+      statEvaluatedTags: '覆盖标签',
+      statAverageScore: '平均能力',
+      statReviewedProblems: '已复盘题量',
+      radarSummaryTitle: '能力画像摘要',
+      strongestTag: '当前优势',
+      topAbilities: '优势标签',
+      noTopAbilities: '完成更多代码复盘后，这里会显示优势标签。',
+      tagCoverage: (reviewed, total) => `${reviewed}/${total}`,
+      scoreValue: (score) => `${score} 分`,
+      reviewedProblemsValue: (count) => `${count} 题`,
     },
     home: {
       ariaLabel: '首页',
@@ -964,17 +996,12 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       saved: 'Saved',
       saving: 'Saving',
       coachStyle: 'Coach Style',
-      responseLanguage: 'Response Language',
       coachStyleLabels: {
         SOCRATIC_GUIDE: 'Socratic Guide',
         DIRECT_EXPLAINER: 'Direct Explainer',
         INTERVIEWER: 'Interviewer',
         STRICT_REVIEWER: 'Strict Reviewer',
         SUPPORTIVE_MENTOR: 'Supportive Mentor',
-      },
-      responseLanguageLabels: {
-        ZH_CN: 'Simplified Chinese',
-        EN_US: 'English',
       },
       coachStyleDescriptions: {
         SOCRATIC_GUIDE: 'Patiently asks guiding questions before expanding into the full solution.',
@@ -983,10 +1010,28 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         STRICT_REVIEWER: 'Focuses on correctness risks, counterexamples, edge cases, and code quality.',
         SUPPORTIVE_MENTOR: 'Breaks the problem down with a calmer tone while preserving rigor.',
       },
-      responseLanguageDescriptions: {
-        ZH_CN: 'Use Simplified Chinese for explanations while preserving code and identifiers.',
-        EN_US: 'Use English for explanations while preserving code and identifiers.',
-      },
+    },
+    myPage: {
+      profileKicker: 'PERSONAL TRAINING CENTER',
+      title: 'My Learning Profile',
+      subtitle: 'Coach preferences, training coverage, and the ability radar live together so status comes before today\'s practice decision.',
+      coachPanelEyebrow: 'COACHING MODE',
+      abilityPanelEyebrow: 'ABILITY PROFILE',
+      selectedCoach: 'Current coach',
+      readyForNextReply: 'Applies to the next reply',
+      dataPending: 'Syncing',
+      noData: 'No data',
+      statCurrentCoach: 'Coach Mode',
+      statEvaluatedTags: 'Covered Tags',
+      statAverageScore: 'Average Ability',
+      statReviewedProblems: 'Reviewed Problems',
+      radarSummaryTitle: 'Ability profile summary',
+      strongestTag: 'Strongest',
+      topAbilities: 'Top Abilities',
+      noTopAbilities: 'Finish more code reviews to surface top ability tags here.',
+      tagCoverage: (reviewed, total) => `${reviewed}/${total}`,
+      scoreValue: (score) => `${score} pts`,
+      reviewedProblemsValue: (count) => `${count} ${count === 1 ? 'problem' : 'problems'}`,
     },
     home: {
       ariaLabel: 'Dashboard',

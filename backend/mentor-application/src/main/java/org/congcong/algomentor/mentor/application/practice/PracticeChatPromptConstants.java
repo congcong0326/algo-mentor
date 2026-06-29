@@ -65,7 +65,7 @@ public final class PracticeChatPromptConstants {
    */
   public static final String METADATA_COACH_STYLE = "coachStyle";
   /**
-   * 当前用户选择的 AI 回复语言，用于每轮动态注入语言约束。
+   * 当前请求语境推导出的 AI 回复语言，用于每轮动态注入语言约束。
    */
   public static final String METADATA_RESPONSE_LANGUAGE = "responseLanguage";
 

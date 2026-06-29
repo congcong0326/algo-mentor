@@ -21,7 +21,6 @@ import org.congcong.algomentor.mentor.application.preference.UserAiPreference;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceService;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceUpdate;
 import org.congcong.algomentor.mentor.application.practice.PracticeCoachStyle;
-import org.congcong.algomentor.mentor.application.practice.PracticeResponseLanguage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -59,14 +58,14 @@ class UserAiPreferenceControllerTest {
   @Test
   void getPreferenceUsesCurrentUser() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(preferenceService.get(42L)).thenReturn(preference(PracticeCoachStyle.SOCRATIC_GUIDE, PracticeResponseLanguage.ZH_CN));
+    when(preferenceService.get(42L)).thenReturn(preference(PracticeCoachStyle.SOCRATIC_GUIDE));
 
     mockMvc.perform(get("/api/me/ai-preferences"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.coachStyle").value("SOCRATIC_GUIDE"))
         .andExpect(jsonPath("$.data.coachStyleLabel").value("启发型教练"))
-        .andExpect(jsonPath("$.data.responseLanguage").value("ZH_CN"))
-        .andExpect(jsonPath("$.data.responseLanguageLabel").value("简体中文"));
+        .andExpect(jsonPath("$.data.responseLanguage").doesNotExist())
+        .andExpect(jsonPath("$.data.responseLanguageLabel").doesNotExist());
 
     verify(preferenceService).get(42L);
   }
@@ -75,20 +74,19 @@ class UserAiPreferenceControllerTest {
   void patchPreferenceSavesSupportedValues() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     when(preferenceService.update(org.mockito.ArgumentMatchers.eq(42L), org.mockito.ArgumentMatchers.any()))
-        .thenReturn(preference(PracticeCoachStyle.INTERVIEWER, PracticeResponseLanguage.EN_US));
+        .thenReturn(preference(PracticeCoachStyle.INTERVIEWER));
 
     mockMvc.perform(patch("/api/me/ai-preferences")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"coachStyle\":\"INTERVIEWER\",\"responseLanguage\":\"EN_US\"}"))
+            .content("{\"coachStyle\":\"INTERVIEWER\"}"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.coachStyle").value("INTERVIEWER"))
         .andExpect(jsonPath("$.data.coachStyleLabel").value("面试官教练"))
-        .andExpect(jsonPath("$.data.responseLanguage").value("EN_US"));
+        .andExpect(jsonPath("$.data.responseLanguage").doesNotExist());
 
     ArgumentCaptor<UserAiPreferenceUpdate> updateCaptor = ArgumentCaptor.forClass(UserAiPreferenceUpdate.class);
     verify(preferenceService).update(org.mockito.ArgumentMatchers.eq(42L), updateCaptor.capture());
     org.assertj.core.api.Assertions.assertThat(updateCaptor.getValue().coachStyle()).isEqualTo(PracticeCoachStyle.INTERVIEWER);
-    org.assertj.core.api.Assertions.assertThat(updateCaptor.getValue().responseLanguage()).isEqualTo(PracticeResponseLanguage.EN_US);
   }
 
   @Test
@@ -112,11 +110,10 @@ class UserAiPreferenceControllerTest {
         AuthUserStatus.ACTIVE);
   }
 
-  private UserAiPreference preference(PracticeCoachStyle style, PracticeResponseLanguage language) {
+  private UserAiPreference preference(PracticeCoachStyle style) {
     return new UserAiPreference(
         42L,
         style,
-        language,
         Instant.parse("2026-06-28T00:00:00Z"),
         Instant.parse("2026-06-28T00:00:00Z"));
   }

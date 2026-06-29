@@ -64,10 +64,11 @@ public class PracticeMessageStreamService {
     }
 
     UserAiPreference preference = preferenceService.get(userId);
+    PracticeResponseLanguage responseLanguage = PracticeResponseLanguage.fromLocale(locale);
     Map<String, Object> metadata = new java.util.LinkedHashMap<>(
         governanceMetadata == null ? Map.of() : governanceMetadata);
     metadata.put(PracticeChatPromptConstants.METADATA_COACH_STYLE, preference.coachStyle().name());
-    metadata.put(PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, preference.responseLanguage().name());
+    metadata.put(PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, responseLanguage.name());
 
     Flow.Publisher<AgentStreamEvent> delegate = orchestrator.stream(
         userId,

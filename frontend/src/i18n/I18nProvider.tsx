@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
+import { setApiLocale } from '../services/api';
 import { localeResources, SUPPORTED_LOCALES, type LocaleResources, type SupportedLocale } from './locales';
 
 const STORAGE_KEY = 'algo-mentor-locale';
@@ -33,10 +34,15 @@ function initialLocale(): SupportedLocale {
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<SupportedLocale>(initialLocale);
+  const [locale, setLocaleState] = useState<SupportedLocale>(() => {
+    const nextLocale = initialLocale();
+    setApiLocale(nextLocale);
+    return nextLocale;
+  });
 
   useEffect(() => {
     document.documentElement.lang = locale;
+    setApiLocale(locale);
     if (typeof window.localStorage.setItem === 'function') {
       window.localStorage.setItem(STORAGE_KEY, locale);
     }

@@ -39,9 +39,9 @@ const jsonHeaders: HeadersInit = {
 const requestIdHeaderName = 'X-Request-Id';
 const xsrfCookieName = 'XSRF-TOKEN';
 const xsrfHeaderName = 'X-XSRF-TOKEN';
-const localeStorageKey = 'algo-mentor-locale';
 const defaultLocale = 'zh-CN';
 const supportedLocales = new Set(['zh-CN', 'en-US']);
+let apiLocale = defaultLocale;
 
 export class ApiRequestError extends Error {
   readonly status: number;
@@ -70,6 +70,10 @@ export function requireApiData<T>(response: ApiResponse<T>, fallbackMessage: str
     return response.data;
   }
   throw apiResponseToRequestError(response, fallbackMessage);
+}
+
+export function setApiLocale(locale: string): void {
+  apiLocale = supportedLocales.has(locale) ? locale : defaultLocale;
 }
 
 export async function getHealth(): Promise<ApiResponse<HealthStatus>> {
@@ -632,15 +636,7 @@ function apiHeaders(headersInit?: HeadersInit): Headers {
 }
 
 function currentApiLocale(): string {
-  if (typeof window === 'undefined' || typeof window.localStorage?.getItem !== 'function') {
-    return defaultLocale;
-  }
-  try {
-    const storedLocale = window.localStorage.getItem(localeStorageKey);
-    return storedLocale && supportedLocales.has(storedLocale) ? storedLocale : defaultLocale;
-  } catch {
-    return defaultLocale;
-  }
+  return apiLocale;
 }
 
 function readCookie(name: string): string | undefined {

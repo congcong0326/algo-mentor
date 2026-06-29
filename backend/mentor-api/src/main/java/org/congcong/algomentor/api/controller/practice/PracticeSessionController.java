@@ -29,6 +29,7 @@ import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.api.service.SseLlmStreamSubscriber;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
+import org.congcong.algomentor.common.api.ApiErrorLocales;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptConstants;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatReference;
@@ -157,6 +158,7 @@ public class PracticeSessionController {
   public SseEmitter stream(
       @PathVariable long sessionId,
       @RequestHeader(name = ApiContractConstants.IDEMPOTENCY_KEY_HEADER, required = false) String idempotencyKey,
+      @RequestHeader(name = ApiContractConstants.ACCEPT_LANGUAGE_HEADER, required = false) String acceptLanguage,
       @Valid @RequestBody PracticeMessageRequest request
   ) {
     long userId = requireCurrentUserId();
@@ -186,7 +188,7 @@ public class PracticeSessionController {
         sessionId,
         request.message(),
         effectiveKey,
-        DEFAULT_LOCALE,
+        currentRequestLocale(acceptLanguage),
         admission.metadata());
 
     SseEmitter emitter = new SseEmitter(sseProperties.practiceMessageTimeoutMillis());
@@ -238,6 +240,10 @@ public class PracticeSessionController {
 
   private int requestSize(PracticeMessageRequest request) {
     return request.message().getBytes(StandardCharsets.UTF_8).length;
+  }
+
+  private String currentRequestLocale(String acceptLanguage) {
+    return ApiErrorLocales.parse(acceptLanguage).toLanguageTag();
   }
 
   private PracticeProgressStatus parseProgressStatus(PracticeProgressStatusRequest request) {

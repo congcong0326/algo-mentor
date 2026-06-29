@@ -299,9 +299,13 @@ describe('App', () => {
 
     render(<App />);
 
+    expect(await screen.findByRole('heading', { name: '我的学习画像' })).toBeInTheDocument();
+    expect(screen.getByLabelText('能力画像摘要')).toBeInTheDocument();
+    expect(screen.getByText('覆盖标签')).toBeInTheDocument();
+    expect(await screen.findByText('优势标签')).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'AI 教练偏好' })).toBeInTheDocument();
     expect(await screen.findByRole('button', { name: /启发型教练/ })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: /English/ })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.queryByRole('button', { name: /English/ })).not.toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: '能力雷达图' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '我的' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'false');
@@ -325,26 +329,11 @@ describe('App', () => {
         method: 'PATCH',
         body: JSON.stringify({
           coachStyle: 'INTERVIEWER',
-          responseLanguage: 'ZH_CN',
         }),
       }),
     ));
     expect(await screen.findByText('已保存')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /面试官教练/ })).toHaveAttribute('aria-pressed', 'true');
-
-    fireEvent.click(screen.getByRole('button', { name: /English/ }));
-
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
-      '/api/me/ai-preferences',
-      expect.objectContaining({
-        method: 'PATCH',
-        body: JSON.stringify({
-          coachStyle: 'INTERVIEWER',
-          responseLanguage: 'EN_US',
-        }),
-      }),
-    ));
-    expect(screen.getByRole('button', { name: /English/ })).toHaveAttribute('aria-pressed', 'true');
     expectCsrfHeader(fetchMock, '/api/me/ai-preferences', 'PATCH');
   });
 
@@ -1824,8 +1813,6 @@ function mockAuthenticatedAppFetch() {
         ...preference,
         coachStyle: request.coachStyle ?? preference.coachStyle,
         coachStyleLabel: coachStyleLabel(request.coachStyle ?? preference.coachStyle),
-        responseLanguage: request.responseLanguage ?? preference.responseLanguage,
-        responseLanguageLabel: responseLanguageLabel(request.responseLanguage ?? preference.responseLanguage),
       };
       return Promise.resolve(userAiPreferenceResponse(preference));
     }
@@ -1927,8 +1914,6 @@ function userAiPreferenceData() {
   return {
     coachStyle: 'SOCRATIC_GUIDE',
     coachStyleLabel: '启发型教练',
-    responseLanguage: 'ZH_CN',
-    responseLanguageLabel: '简体中文',
   };
 }
 
@@ -1940,10 +1925,6 @@ function coachStyleLabel(style: string): string {
     STRICT_REVIEWER: '严苛 Review 官',
     SUPPORTIVE_MENTOR: '陪伴型教练',
   }[style] ?? '启发型教练';
-}
-
-function responseLanguageLabel(language: string): string {
-  return language === 'EN_US' ? 'English' : '简体中文';
 }
 
 function abilityTags() {

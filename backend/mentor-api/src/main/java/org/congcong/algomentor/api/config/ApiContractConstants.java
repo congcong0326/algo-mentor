@@ -132,6 +132,11 @@ public final class ApiContractConstants {
    */
   public static final String IDEMPOTENCY_KEY_HEADER = "Idempotency-Key";
 
+  /**
+   * 请求语境语言头名，用于错误本地化和 AI 回复语言动态注入。
+   */
+  public static final String ACCEPT_LANGUAGE_HEADER = "Accept-Language";
+
   private ApiContractConstants() {
   }
 }

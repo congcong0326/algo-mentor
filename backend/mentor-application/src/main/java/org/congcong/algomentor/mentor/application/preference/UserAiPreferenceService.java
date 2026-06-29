@@ -3,7 +3,6 @@ package org.congcong.algomentor.mentor.application.preference;
 import java.time.Clock;
 import java.time.Instant;
 import org.congcong.algomentor.mentor.application.practice.PracticeCoachStyle;
-import org.congcong.algomentor.mentor.application.practice.PracticeResponseLanguage;
 
 public class UserAiPreferenceService {
 
@@ -28,14 +27,10 @@ public class UserAiPreferenceService {
     PracticeCoachStyle coachStyle = update == null || update.coachStyle() == null
         ? current.coachStyle()
         : update.coachStyle();
-    PracticeResponseLanguage responseLanguage = update == null || update.responseLanguage() == null
-        ? current.responseLanguage()
-        : update.responseLanguage();
     Instant now = Instant.now(clock);
     return repository.upsert(new UserAiPreference(
         userId,
         coachStyle,
-        responseLanguage,
         current.createdAt() == null ? now : current.createdAt(),
         now));
   }
@@ -45,7 +40,6 @@ public class UserAiPreferenceService {
     return new UserAiPreference(
         userId,
         PracticeCoachStyle.defaultStyle(),
-        PracticeResponseLanguage.defaultLanguage(),
         now,
         now);
   }

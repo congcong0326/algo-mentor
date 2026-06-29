@@ -9,6 +9,7 @@ import {
   getUserAiPreference,
   logout,
   requireApiData,
+  setApiLocale,
   streamAgentConversation,
   updateUserAiPreference,
 } from './api';
@@ -16,6 +17,7 @@ import {
 type FetchMock = ReturnType<typeof vi.fn<(input: RequestInfo | URL, init?: RequestInit) => Promise<Response>>>;
 
 afterEach(() => {
+  setApiLocale('zh-CN');
   vi.unstubAllGlobals();
   Object.defineProperty(document, 'cookie', {
     configurable: true,
@@ -60,7 +62,7 @@ function createFakeStorage(initialValues: Record<string, string> = {}): Storage 
 
 describe('api service', () => {
   it('requests the current ability profile with json and locale headers', async () => {
-    vi.stubGlobal('localStorage', createFakeStorage({ 'algo-mentor-locale': 'zh-CN' }));
+    setApiLocale('zh-CN');
     vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x21, 0x22, 0x23, 0x24, 0x25, 0x26]) });
     const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
       success: true,
@@ -92,15 +94,13 @@ describe('api service', () => {
   });
 
   it('loads user AI preferences with json and locale headers', async () => {
-    vi.stubGlobal('localStorage', createFakeStorage({ 'algo-mentor-locale': 'zh-CN' }));
+    setApiLocale('zh-CN');
     vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x31, 0x32, 0x33, 0x34, 0x35, 0x36]) });
     const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
       success: true,
       data: {
         coachStyle: 'SOCRATIC_GUIDE',
         coachStyleLabel: '启发型教练',
-        responseLanguage: 'ZH_CN',
-        responseLanguageLabel: '简体中文',
       },
       timestamp: '2026-06-28T00:00:00Z',
     })));
@@ -121,7 +121,7 @@ describe('api service', () => {
   });
 
   it('patches user AI preferences with json csrf locale and request id headers', async () => {
-    vi.stubGlobal('localStorage', createFakeStorage({ 'algo-mentor-locale': 'en-US' }));
+    setApiLocale('en-US');
     vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x41, 0x42, 0x43, 0x44, 0x45, 0x46]) });
     Object.defineProperty(document, 'cookie', {
       configurable: true,
@@ -133,8 +133,6 @@ describe('api service', () => {
       data: {
         coachStyle: 'INTERVIEWER',
         coachStyleLabel: '面试官教练',
-        responseLanguage: 'EN_US',
-        responseLanguageLabel: 'English',
       },
       timestamp: '2026-06-28T00:00:00Z',
     })));
@@ -142,7 +140,6 @@ describe('api service', () => {
 
     await updateUserAiPreference({
       coachStyle: 'INTERVIEWER',
-      responseLanguage: 'EN_US',
     });
 
     expect(fetchMock).toHaveBeenCalledWith(
@@ -152,7 +149,6 @@ describe('api service', () => {
         credentials: 'same-origin',
         body: JSON.stringify({
           coachStyle: 'INTERVIEWER',
-          responseLanguage: 'EN_US',
         }),
       }),
     );
@@ -165,7 +161,7 @@ describe('api service', () => {
   });
 
   it('sends Accept-Language from the current locale', async () => {
-    vi.stubGlobal('localStorage', createFakeStorage({ 'algo-mentor-locale': 'en-US' }));
+    setApiLocale('en-US');
     vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x01, 0x02, 0x03, 0x04, 0x05, 0x06]) });
     const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
       success: true,

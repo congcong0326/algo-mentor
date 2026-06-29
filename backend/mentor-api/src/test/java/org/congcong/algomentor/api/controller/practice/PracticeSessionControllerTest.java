@@ -37,6 +37,7 @@ import org.congcong.algomentor.ai.governance.model.AiRunContext;
 import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.ai.governance.model.AiRunStatus;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicy;
+import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.controller.LocalizedApiExceptionHandler;
 import org.congcong.algomentor.api.service.AiActorResolver;
@@ -288,7 +289,7 @@ class PracticeSessionControllerTest {
     MvcResult result = mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.TEXT_EVENT_STREAM)
-            .header("Idempotency-Key", "idem-50")
+            .header(ApiContractConstants.IDEMPOTENCY_KEY_HEADER, "idem-50")
             .content("{\"message\":\"提示一下思路\"}"))
         .andExpect(request().asyncStarted())
         .andReturn();
@@ -313,6 +314,29 @@ class PracticeSessionControllerTest {
     org.assertj.core.api.Assertions.assertThat(metadataCaptor.getValue())
         .containsEntry(AiGovernanceMetadataKeys.SOURCE, "PRACTICE_CHAT")
         .containsEntry(PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, 50L);
+  }
+
+  @Test
+  void streamPracticeMessageUsesAcceptLanguageAsDynamicResponseContext() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
+    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
+    when(streamService.stream(eq(42L), eq(50L), eq("give me a hint"), eq("idem-50"), eq("en-US"), any()))
+        .thenReturn(streamPublisher());
+
+    MvcResult result = mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .header(ApiContractConstants.IDEMPOTENCY_KEY_HEADER, "idem-50")
+            .header(ApiContractConstants.ACCEPT_LANGUAGE_HEADER, "en-US")
+            .content("{\"message\":\"give me a hint\"}"))
+        .andExpect(request().asyncStarted())
+        .andReturn();
+
+    mockMvc.perform(asyncDispatch(result))
+        .andExpect(status().isOk());
+
+    verify(streamService).stream(eq(42L), eq(50L), eq("give me a hint"), eq("idem-50"), eq("en-US"), any());
   }
 
   @Test

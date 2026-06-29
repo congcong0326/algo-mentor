@@ -5,7 +5,6 @@ import java.time.Instant;
 public record UserAiPreferenceRow(
     Long userId,
     String coachStyle,
-    String responseLanguage,
     Instant createdAt,
     Instant updatedAt
 ) {

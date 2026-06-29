@@ -6,7 +6,6 @@ import org.congcong.algomentor.api.preference.mapper.model.UserAiPreferenceRow;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreference;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCoachStyle;
-import org.congcong.algomentor.mentor.application.practice.PracticeResponseLanguage;
 
 public class MyBatisUserAiPreferenceRepository implements UserAiPreferenceRepository {
 
@@ -25,15 +24,13 @@ public class MyBatisUserAiPreferenceRepository implements UserAiPreferenceReposi
   public UserAiPreference upsert(UserAiPreference preference) {
     return toPreference(mapper.upsert(
         preference.userId(),
-        preference.coachStyle().name(),
-        preference.responseLanguage().name()));
+        preference.coachStyle().name()));
   }
 
   private UserAiPreference toPreference(UserAiPreferenceRow row) {
     return new UserAiPreference(
         row.userId(),
         PracticeCoachStyle.from(row.coachStyle()),
-        PracticeResponseLanguage.from(row.responseLanguage()),
         row.createdAt(),
         row.updatedAt());
   }

@@ -11,7 +11,6 @@ public interface UserAiPreferenceMapper {
 
   UserAiPreferenceRow upsert(
       @Param("userId") long userId,
-      @Param("coachStyle") String coachStyle,
-      @Param("responseLanguage") String responseLanguage
+      @Param("coachStyle") String coachStyle
   );
 }

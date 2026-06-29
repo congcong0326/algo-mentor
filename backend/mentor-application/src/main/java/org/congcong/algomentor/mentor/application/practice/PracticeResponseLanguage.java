@@ -1,5 +1,7 @@
 package org.congcong.algomentor.mentor.application.practice;
 
+import java.util.Locale;
+
 /**
  * 题目聊天回复语言白名单，用于在 prompt 中动态约束输出语言。
  */
@@ -24,6 +26,17 @@ public enum PracticeResponseLanguage {
   }
 
   public static PracticeResponseLanguage defaultLanguage() {
+    return ZH_CN;
+  }
+
+  public static PracticeResponseLanguage fromLocale(String locale) {
+    if (locale == null || locale.isBlank()) {
+      return defaultLanguage();
+    }
+    String normalized = locale.trim().toLowerCase(Locale.ROOT);
+    if (normalized.startsWith("en")) {
+      return EN_US;
+    }
     return ZH_CN;
   }
 

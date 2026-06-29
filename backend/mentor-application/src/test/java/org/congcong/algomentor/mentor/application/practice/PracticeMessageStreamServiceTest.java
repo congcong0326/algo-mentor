@@ -47,7 +47,7 @@ class PracticeMessageStreamServiceTest {
     PracticeMessageStreamService service = new PracticeMessageStreamService(
         sessionRepository,
         orchestrator,
-        new StubPreferenceService(PracticeCoachStyle.INTERVIEWER, PracticeResponseLanguage.EN_US));
+        new StubPreferenceService(PracticeCoachStyle.INTERVIEWER));
 
     List<AgentStreamEvent> events = collect(service.stream(
         7,
@@ -303,12 +303,10 @@ class PracticeMessageStreamServiceTest {
   private static final class StubPreferenceService extends UserAiPreferenceService {
 
     private final PracticeCoachStyle coachStyle;
-    private final PracticeResponseLanguage responseLanguage;
 
-    private StubPreferenceService(PracticeCoachStyle coachStyle, PracticeResponseLanguage responseLanguage) {
+    private StubPreferenceService(PracticeCoachStyle coachStyle) {
       super(UserAiPreferenceRepository.empty());
       this.coachStyle = coachStyle;
-      this.responseLanguage = responseLanguage;
     }
 
     @Override
@@ -316,7 +314,6 @@ class PracticeMessageStreamServiceTest {
       return new UserAiPreference(
           userId,
           coachStyle,
-          responseLanguage,
           Instant.parse("2026-06-28T00:00:00Z"),
           Instant.parse("2026-06-28T00:00:00Z"));
     }

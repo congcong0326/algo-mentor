@@ -10,7 +10,6 @@ import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceService;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceUpdate;
 import org.congcong.algomentor.mentor.application.practice.PracticeCoachStyle;
-import org.congcong.algomentor.mentor.application.practice.PracticeResponseLanguage;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,8 +40,7 @@ public class UserAiPreferenceController {
     return ApiResponse.success(UserAiPreferenceResponseMapper.toResponse(preferenceService.update(
         requireCurrentUserId(),
         new UserAiPreferenceUpdate(
-            PracticeCoachStyle.from(request == null ? null : request.coachStyle()),
-            PracticeResponseLanguage.from(request == null ? null : request.responseLanguage())))));
+            PracticeCoachStyle.from(request == null ? null : request.coachStyle())))));
   }
 
   private long requireCurrentUserId() {
