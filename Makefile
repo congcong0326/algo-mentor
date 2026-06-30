@@ -6,6 +6,8 @@ endif
 MAVEN := mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository
 NPM := npm --cache ./.npm --prefix frontend
 COMPOSE := docker compose -f deploy/docker/docker-compose.yml
+OBSERVABILITY_PROFILE := --profile observability
+OBSERVABILITY_CHECK := deploy/docker/observability/check-docker.sh
 SERVER_PORT ?= 8080
 POSTGRES_VERSION ?= 16
 POSTGRES_HOST ?= localhost
@@ -22,7 +24,7 @@ DB_SEED_USER := $(POSTGRES_USER)
 DB_SEED_PASSWORD := $(POSTGRES_PASSWORD)
 STATIC_DIR := backend/mentor-api/src/main/resources/static
 
-.PHONY: build package package-skip-tests up down backend-build backend-build-skip-tests backend-test backend-dev frontend-install frontend-build frontend-test frontend-dev test test-smoke test-smoke-all test-env sync-frontend problem-source problem-seed db-install db-seed clean
+.PHONY: build package package-skip-tests up down observability-up observability-down observability-status observability-logs observability-check backend-build backend-build-skip-tests backend-test backend-dev frontend-install frontend-build frontend-test frontend-dev test test-smoke test-smoke-all test-env sync-frontend problem-source problem-seed db-install db-seed clean
 
 build: backend-build frontend-build
 
@@ -61,6 +63,28 @@ up: package-skip-tests
 
 down:
 	$(COMPOSE) down
+
+observability-check:
+	$(OBSERVABILITY_CHECK)
+
+observability-up: observability-check
+	$(COMPOSE) $(OBSERVABILITY_PROFILE) up -d prometheus grafana loki promtail
+	@echo "Prometheus: http://localhost:$${PROMETHEUS_PORT:-9090}"
+	@echo "Grafana:    http://localhost:$${GRAFANA_PORT:-3000}"
+	@echo "Loki:       http://localhost:$${LOKI_PORT:-3100}"
+
+observability-down: observability-check
+	$(COMPOSE) $(OBSERVABILITY_PROFILE) stop prometheus grafana loki promtail
+	$(COMPOSE) $(OBSERVABILITY_PROFILE) rm -f prometheus grafana loki promtail
+
+observability-status: observability-check
+	$(COMPOSE) $(OBSERVABILITY_PROFILE) ps prometheus grafana loki promtail
+	@echo "Prometheus readiness: curl http://localhost:$${PROMETHEUS_PORT:-9090}/-/ready"
+	@echo "Grafana health:       curl http://localhost:$${GRAFANA_PORT:-3000}/api/health"
+	@echo "Loki ready:           curl http://localhost:$${LOKI_PORT:-3100}/ready"
+
+observability-logs: observability-check
+	$(COMPOSE) $(OBSERVABILITY_PROFILE) logs -f --tail=200 prometheus grafana loki promtail
 
 backend-build:
 	$(MAVEN) package
