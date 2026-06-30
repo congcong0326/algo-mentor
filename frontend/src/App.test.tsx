@@ -115,6 +115,8 @@ describe('App', () => {
 
     expect(screen.getByRole('navigation', { name: '主导航' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '用户管理' })).not.toBeInTheDocument();
     expect(screen.queryByText('训练方案')).not.toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent('正在检查登录状态...');
     expect(screen.queryByRole('link', { name: '使用 Google 登录' })).not.toBeInTheDocument();

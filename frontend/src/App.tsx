@@ -132,7 +132,6 @@ function AppLoadingShell({ activeView }: { activeView: AppView }) {
             ['home', resources.nav.home],
             ['learningPlans', resources.nav.learningPlans],
             ['problems', resources.nav.problems],
-            ['debug', resources.nav.debug],
             ['my', resources.nav.my],
           ].map(([view, label]) => (
             <button
