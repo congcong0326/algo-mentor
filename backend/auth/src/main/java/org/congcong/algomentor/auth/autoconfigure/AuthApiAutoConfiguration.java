@@ -1,6 +1,7 @@
 package org.congcong.algomentor.auth.autoconfigure;
 
 import java.time.Clock;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.congcong.algomentor.auth.config.AuthProperties;
 import org.congcong.algomentor.auth.controller.CurrentUserController;
 import org.congcong.algomentor.auth.controller.PasswordAuthController;
@@ -13,6 +14,12 @@ import org.congcong.algomentor.auth.security.AuthenticatedOidcUserService;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.auth.security.PasswordUserDetailsService;
 import org.congcong.algomentor.auth.security.SecurityContextCurrentUserIdProvider;
+import org.congcong.algomentor.auth.session.AuthSessionMetrics;
+import org.congcong.algomentor.auth.session.AuthSessionRevocationService;
+import org.congcong.algomentor.auth.session.IdentityUserStatusChangedEventListener;
+import org.congcong.algomentor.auth.session.MicrometerAuthSessionMetrics;
+import org.congcong.algomentor.auth.session.NoopAuthSessionMetrics;
+import org.congcong.algomentor.auth.session.SpringSessionAuthSessionRevocationService;
 import org.congcong.algomentor.auth.service.AdminEmailRoleService;
 import org.congcong.algomentor.auth.service.AuthPermissionService;
 import org.congcong.algomentor.auth.service.OAuth2LoginUserService;
@@ -33,6 +40,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.Session;
 
 @AutoConfiguration(after = IdentityAutoConfiguration.class)
 @EnableConfigurationProperties(AuthProperties.class)
@@ -141,6 +150,32 @@ public class AuthApiAutoConfiguration {
   @ConditionalOnMissingBean
   public SecurityContextRepository securityContextRepository() {
     return new HttpSessionSecurityContextRepository();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public AuthSessionMetrics authSessionMetrics(ObjectProvider<MeterRegistry> meterRegistryProvider) {
+    MeterRegistry registry = meterRegistryProvider.getIfAvailable();
+    return registry == null ? new NoopAuthSessionMetrics() : new MicrometerAuthSessionMetrics(registry);
+  }
+
+  @Bean
+  @ConditionalOnBean(FindByIndexNameSessionRepository.class)
+  @ConditionalOnMissingBean
+  public AuthSessionRevocationService authSessionRevocationService(
+      FindByIndexNameSessionRepository<? extends Session> sessionRepository
+  ) {
+    return new SpringSessionAuthSessionRevocationService(sessionRepository);
+  }
+
+  @Bean
+  @ConditionalOnBean(AuthSessionRevocationService.class)
+  @ConditionalOnMissingBean
+  public IdentityUserStatusChangedEventListener identityUserStatusChangedEventListener(
+      AuthSessionRevocationService revocationService,
+      AuthSessionMetrics metrics
+  ) {
+    return new IdentityUserStatusChangedEventListener(revocationService, metrics);
   }
 
   @Bean
