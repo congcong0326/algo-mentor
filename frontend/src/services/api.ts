@@ -3,6 +3,10 @@ import type {
   AgentToolPermissionDecisionRequest,
   AgentToolPermissionDecisionResponse,
   AbilityProfileResponse,
+  AdminUserDetail,
+  AdminUserListQuery,
+  AdminUserPage,
+  AdminUserStatusUpdateRequest,
   ApiResponse,
   CurrentUser,
   HealthStatus,
@@ -192,6 +196,71 @@ export async function updateUserAiPreference(
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'AI preference update request failed');
+  }
+
+  return response.json();
+}
+
+export async function getAdminUsers(
+  query: AdminUserListQuery = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminUserPage>> {
+  const response = await apiFetch(`/api/admin/users${toQueryString(query)}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Admin users request failed');
+  }
+
+  return response.json();
+}
+
+export async function getAdminUserDetail(
+  userId: number,
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminUserDetail>> {
+  const response = await apiFetch(`/api/admin/users/${userId}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Admin user detail request failed');
+  }
+
+  return response.json();
+}
+
+export async function updateAdminUserStatus(
+  userId: number,
+  request: AdminUserStatusUpdateRequest,
+): Promise<ApiResponse<AdminUserDetail>> {
+  const response = await apiFetch(`/api/admin/users/${userId}/status`, {
+    method: 'PATCH',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Admin user status update request failed');
+  }
+
+  return response.json();
+}
+
+export async function deleteAdminUser(userId: number): Promise<ApiResponse<AdminUserDetail>> {
+  const response = await apiFetch(`/api/admin/users/${userId}`, {
+    method: 'DELETE',
+    headers: jsonHeaders,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Admin user delete request failed');
   }
 
   return response.json();
@@ -527,7 +596,7 @@ interface PracticeSessionQuery {
   limit?: number;
 }
 
-type QueryParams = ProblemListQuery | LearningPlanListQuery | PracticeSessionQuery;
+type QueryParams = ProblemListQuery | LearningPlanListQuery | PracticeSessionQuery | AdminUserListQuery;
 
 function toQueryString(query: QueryParams): string {
   const params = new URLSearchParams();

@@ -3,7 +3,10 @@ import type { ApiResponse } from '../types/api';
 import {
   ApiRequestError,
   decideAgentToolPermission,
+  deleteAdminUser,
   getAbilityProfile,
+  getAdminUserDetail,
+  getAdminUsers,
   getHealth,
   getLearningPlans,
   getUserAiPreference,
@@ -11,6 +14,7 @@ import {
   requireApiData,
   setApiLocale,
   streamAgentConversation,
+  updateAdminUserStatus,
   updateUserAiPreference,
 } from './api';
 
@@ -118,6 +122,140 @@ describe('api service', () => {
     const headers = requestHeaders(fetchMock);
     expect(headers.get('Accept')).toBe('application/json');
     expect(headers.get('Accept-Language')).toBe('zh-CN');
+  });
+
+  it('loads admin users with pagination filters and locale headers', async () => {
+    setApiLocale('zh-CN');
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x51, 0x52, 0x53, 0x54, 0x55, 0x56]) });
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        items: [],
+        total: 0,
+        page: 2,
+        pageSize: 10,
+      },
+      timestamp: '2026-06-30T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getAdminUsers({
+      page: 2,
+      pageSize: 10,
+      keyword: 'alice',
+      status: 'ACTIVE',
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/admin/users?page=2&pageSize=10&keyword=alice&status=ACTIVE',
+      expect.objectContaining({
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+      }),
+    );
+    expect(requestHeaders(fetchMock).get('Accept-Language')).toBe('zh-CN');
+  });
+
+  it('loads admin user detail by id', async () => {
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x57, 0x58, 0x59, 0x5a, 0x5b, 0x5c]) });
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        id: 42,
+        email: 'alice@example.com',
+        status: 'ACTIVE',
+        roles: ['USER'],
+        createdAt: '2026-06-30T00:00:00Z',
+        updatedAt: '2026-06-30T00:00:00Z',
+      },
+      timestamp: '2026-06-30T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getAdminUserDetail(42);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/admin/users/42',
+      expect.objectContaining({
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+      }),
+    );
+  });
+
+  it('patches admin user status with json csrf and request id headers', async () => {
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x5d, 0x5e, 0x5f, 0x60, 0x61, 0x62]) });
+    Object.defineProperty(document, 'cookie', {
+      configurable: true,
+      writable: true,
+      value: 'XSRF-TOKEN=csrf-token',
+    });
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        id: 42,
+        email: 'alice@example.com',
+        status: 'DISABLED',
+        roles: ['USER'],
+        createdAt: '2026-06-30T00:00:00Z',
+        updatedAt: '2026-06-30T00:00:00Z',
+      },
+      timestamp: '2026-06-30T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await updateAdminUserStatus(42, { status: 'DISABLED' });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/admin/users/42/status',
+      expect.objectContaining({
+        method: 'PATCH',
+        credentials: 'same-origin',
+        body: JSON.stringify({ status: 'DISABLED' }),
+      }),
+    );
+    const headers = requestHeaders(fetchMock);
+    expect(headers.get('Accept')).toBe('application/json');
+    expect(headers.get('Content-Type')).toBe('application/json');
+    expect(headers.get('X-Request-Id')).toBe('5d5e5f606162');
+    expect(headers.get('X-XSRF-TOKEN')).toBe('csrf-token');
+  });
+
+  it('deletes admin user with csrf and request id headers', async () => {
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x63, 0x64, 0x65, 0x66, 0x67, 0x68]) });
+    Object.defineProperty(document, 'cookie', {
+      configurable: true,
+      writable: true,
+      value: 'XSRF-TOKEN=csrf-token',
+    });
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        id: 42,
+        email: 'alice@example.com',
+        status: 'DELETED',
+        roles: ['USER'],
+        createdAt: '2026-06-30T00:00:00Z',
+        updatedAt: '2026-06-30T00:00:00Z',
+        deletedAt: '2026-06-30T00:00:00Z',
+      },
+      timestamp: '2026-06-30T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await deleteAdminUser(42);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/admin/users/42',
+      expect.objectContaining({
+        method: 'DELETE',
+        credentials: 'same-origin',
+      }),
+    );
+    const headers = requestHeaders(fetchMock);
+    expect(headers.get('Accept')).toBe('application/json');
+    expect(headers.get('X-Request-Id')).toBe('636465666768');
+    expect(headers.get('X-XSRF-TOKEN')).toBe('csrf-token');
   });
 
   it('patches user AI preferences with json csrf locale and request id headers', async () => {

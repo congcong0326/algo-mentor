@@ -17,7 +17,7 @@ export interface HealthStatus {
 }
 
 export type AuthRole = 'USER' | 'ADMIN';
-export type AuthUserStatus = 'ACTIVE' | 'DISABLED';
+export type AuthUserStatus = 'ACTIVE' | 'DISABLED' | 'DELETED';
 export type AuthPermission =
   | 'learning-plan:read:own'
   | 'learning-plan:write:own'
@@ -34,6 +34,42 @@ export interface CurrentUser {
   roles: AuthRole[];
   permissions: AuthPermission[];
   status: AuthUserStatus;
+}
+
+export interface AdminUserSummary {
+  id: number;
+  email?: string;
+  displayName?: string;
+  avatarUrl?: string;
+  status: AuthUserStatus;
+  roles: AuthRole[];
+  createdAt: string;
+  updatedAt: string;
+  lastLoginAt?: string | null;
+}
+
+export interface AdminUserDetail extends AdminUserSummary {
+  emailNormalized?: string;
+  deletedAt?: string | null;
+  deletedBy?: number | null;
+}
+
+export interface AdminUserPage {
+  items: AdminUserSummary[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface AdminUserListQuery {
+  page?: number;
+  pageSize?: number;
+  keyword?: string;
+  status?: AuthUserStatus | '';
+}
+
+export interface AdminUserStatusUpdateRequest {
+  status: Extract<AuthUserStatus, 'ACTIVE' | 'DISABLED'>;
 }
 
 export interface AbilityTagScore {
