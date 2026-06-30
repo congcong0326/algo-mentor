@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ApiRequestError, deleteAdminUser, getAdminUserDetail, getAdminUsers, requireApiData, updateAdminUserStatus } from '../services/api';
 import type { AdminUserDetail, AdminUserPage, AdminUserSummary, AuthUserStatus } from '../types/api';
 import { useI18n } from '../i18n/I18nProvider';
@@ -39,6 +39,8 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
   const [forbidden, setForbidden] = useState(false);
   const [operation, setOperation] = useState(false);
   const [pendingConfirmation, setPendingConfirmation] = useState<PendingConfirmation>();
+  const listRequestIdRef = useRef(0);
+  const detailRequestIdRef = useRef(0);
 
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(usersPage.total / usersPage.pageSize)),
@@ -53,6 +55,10 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
   }, [keyword, page, pageSize, status]);
 
   async function loadUsers(pageToLoad: number, signal?: AbortSignal): Promise<AdminUserPage | undefined> {
+    const requestId = listRequestIdRef.current + 1;
+    listRequestIdRef.current = requestId;
+    const isCurrentRequest = () => requestId === listRequestIdRef.current && !signal?.aborted;
+
     setLoading(true);
     setError('');
     setForbidden(false);
@@ -64,10 +70,13 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
         keyword,
         status,
       }, signal), t.loadFailed);
+      if (!isCurrentRequest()) {
+        return undefined;
+      }
       setUsersPage(data);
       return data;
     } catch (caught) {
-      if (signal?.aborted) {
+      if (!isCurrentRequest()) {
         return undefined;
       }
       if (isForbidden(caught)) {
@@ -78,22 +87,33 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
       setError(caught instanceof Error ? caught.message : t.loadFailed);
       return undefined;
     } finally {
-      if (!signal?.aborted) {
+      if (isCurrentRequest()) {
         setLoading(false);
       }
     }
   }
 
   async function openDetail(userId: number) {
+    const requestId = detailRequestIdRef.current + 1;
+    detailRequestIdRef.current = requestId;
+    const isCurrentRequest = () => requestId === detailRequestIdRef.current;
+
     setDetailLoading(true);
     setError('');
     try {
       const detail = requireApiData(await getAdminUserDetail(userId), t.loadFailed);
+      if (!isCurrentRequest()) {
+        return;
+      }
       setSelectedUser(detail);
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : t.loadFailed);
+      if (isCurrentRequest()) {
+        setError(caught instanceof Error ? caught.message : t.loadFailed);
+      }
     } finally {
-      setDetailLoading(false);
+      if (isCurrentRequest()) {
+        setDetailLoading(false);
+      }
     }
   }
 
@@ -156,7 +176,7 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
           <h1>{t.title}</h1>
           <p>{t.forbidden}</p>
           <button className="primary-button" onClick={onNavigateHome} type="button">
-            {resources.nav.home === '首页' ? '返回首页' : 'Back to dashboard'}
+            {t.backHome}
           </button>
         </div>
       </section>
@@ -285,7 +305,7 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
 
       {detailLoading ? <div role="status">{t.loading}</div> : null}
       {selectedUser ? (
-        <aside className="admin-user-detail" aria-label="用户详情" role="region">
+        <aside className="admin-user-detail" aria-label={t.detailAriaLabel} role="region">
           <div>
             <h2>{selectedUser.displayName ?? resources.app.unknownUser(selectedUser.id)}</h2>
             <button className="secondary-button compact" onClick={() => setSelectedUser(undefined)} type="button">
@@ -317,8 +337,8 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
 
       {pendingConfirmation ? (
         <div className="admin-confirm-dialog-backdrop">
-          <div className="admin-confirm-dialog" aria-modal="true" role="dialog">
-            <h2>{confirmationTitle(pendingConfirmation.action)}</h2>
+          <div className="admin-confirm-dialog" aria-labelledby="admin-confirm-dialog-title" aria-modal="true" role="dialog">
+            <h2 id="admin-confirm-dialog-title">{confirmationTitle(pendingConfirmation.action)}</h2>
             {pendingConfirmation.action === 'delete' ? <p>{t.confirmDeleteDescription}</p> : null}
             <div className="button-row">
               <button className="secondary-button" disabled={operation} onClick={() => setPendingConfirmation(undefined)} type="button">

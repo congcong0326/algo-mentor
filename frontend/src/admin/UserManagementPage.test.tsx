@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import UserManagementPage from './UserManagementPage';
 import { I18nProvider } from '../i18n/I18nProvider';
@@ -29,6 +29,7 @@ describe('UserManagementPage', () => {
   afterEach(() => {
     cleanup();
     vi.unstubAllGlobals();
+    window.localStorage?.removeItem?.('algo-mentor-locale');
   });
 
   it('loads users with keyword status and pagination controls', async () => {
@@ -119,6 +120,70 @@ describe('UserManagementPage', () => {
     expect(detailPanel).toHaveTextContent('2026-06-20 08:00');
   });
 
+  it('keeps the latest selected user detail when detail responses resolve out of order', async () => {
+    const activeDetail = deferred<Response>();
+    const disabledDetail = deferred<Response>();
+    const fetchMock = vi.fn((url: string) => {
+      if (url === '/api/admin/users?page=1&pageSize=20') {
+        return Promise.resolve(adminUsersResponse({ items: [activeUser, disabledUser], total: 2, page: 1, pageSize: 20 }));
+      }
+      if (url === '/api/admin/users/42') {
+        return activeDetail.promise;
+      }
+      if (url === '/api/admin/users/43') {
+        return disabledDetail.promise;
+      }
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderPage();
+
+    const viewButtons = await screen.findAllByRole('button', { name: '查看' });
+    fireEvent.click(viewButtons[0]);
+    fireEvent.click(viewButtons[1]);
+
+    await act(async () => {
+      disabledDetail.resolve(apiResponse(userDetail(disabledUser)));
+    });
+
+    const detailPanel = await screen.findByRole('region', { name: '用户详情' });
+    expect(detailPanel).toHaveTextContent('Disabled User');
+
+    await act(async () => {
+      activeDetail.resolve(apiResponse(userDetail(activeUser)));
+    });
+
+    const currentDetailPanel = screen.getByRole('region', { name: '用户详情' });
+    expect(currentDetailPanel).toHaveTextContent('Disabled User');
+    expect(currentDetailPanel).not.toHaveTextContent('Active User');
+  });
+
+  it('uses localized admin detail labels in English', async () => {
+    vi.stubGlobal('localStorage', {
+      getItem: vi.fn((key: string) => (key === 'algo-mentor-locale' ? 'en-US' : null)),
+      setItem: vi.fn(),
+      removeItem: vi.fn(),
+    });
+    const fetchMock = vi.fn((url: string) => {
+      if (url === '/api/admin/users?page=1&pageSize=20') {
+        return Promise.resolve(adminUsersResponse({ items: [activeUser], total: 1, page: 1, pageSize: 20 }));
+      }
+      if (url === '/api/admin/users/42') {
+        return Promise.resolve(apiResponse(userDetail(activeUser)));
+      }
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderPage();
+
+    fireEvent.click(await screen.findByRole('button', { name: 'View' }));
+
+    expect(await screen.findByRole('region', { name: 'User detail' })).toHaveTextContent('Active User');
+    expect(screen.queryByRole('region', { name: '用户详情' })).not.toBeInTheDocument();
+  });
+
   it('confirms and disables an active user then refreshes the current page', async () => {
     const fetchMock = vi.fn((url: string, init?: RequestInit) => {
       if (url === '/api/admin/users?page=1&pageSize=20') {
@@ -197,10 +262,21 @@ describe('UserManagementPage', () => {
       if (url === '/api/admin/users?page=2&pageSize=20&__afterDelete=1') {
         return Promise.resolve(adminUsersResponse({ items: [], total: 20, page: 2, pageSize: 20 }));
       }
+      if (url === '/api/admin/users?page=1&pageSize=20&__afterDelete=1') {
+        return Promise.resolve(adminUsersResponse({
+          items: Array.from({ length: 20 }, (_, index) => userSummary({ id: index + 1 })),
+          total: 20,
+          page: 1,
+          pageSize: 20,
+        }));
+      }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
     vi.stubGlobal('fetch', (url: string, init?: RequestInit) => {
       const deleteCompleted = fetchMock.mock.calls.some(([calledUrl]) => calledUrl === '/api/admin/users/42');
+      if (deleteCompleted && url === '/api/admin/users?page=1&pageSize=20') {
+        return fetchMock('/api/admin/users?page=1&pageSize=20&__afterDelete=1', init);
+      }
       if (deleteCompleted && url === '/api/admin/users?page=2&pageSize=20') {
         return fetchMock('/api/admin/users?page=2&pageSize=20&__afterDelete=1', init);
       }
@@ -223,6 +299,9 @@ describe('UserManagementPage', () => {
       '/api/admin/users?page=1&pageSize=20',
       expect.any(Object),
     ));
+    expect(await screen.findByText('user-1@example.com')).toBeInTheDocument();
+    expect(screen.queryByText('active@example.com')).not.toBeInTheDocument();
+    expect(screen.getByText('第 1 / 1 页')).toBeInTheDocument();
   });
 
   it('shows a permission error for 401 or 403 responses', async () => {
@@ -295,4 +374,14 @@ function apiResponse(data: unknown, status = 200, success = true): Response {
     status,
     headers: { 'Content-Type': 'application/json' },
   });
+}
+
+function deferred<T>() {
+  let resolve!: (value: T | PromiseLike<T>) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, resolve, reject };
 }

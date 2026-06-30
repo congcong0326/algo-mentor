@@ -98,6 +98,8 @@ export interface LocaleResources {
     empty: string;
     loadFailed: string;
     forbidden: string;
+    backHome: string;
+    detailAriaLabel: string;
     id: string;
     email: string;
     displayName: string;
@@ -551,6 +553,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       empty: '没有匹配的用户',
       loadFailed: '用户列表加载失败',
       forbidden: '没有权限管理用户',
+      backHome: '返回首页',
+      detailAriaLabel: '用户详情',
       id: 'ID',
       email: '邮箱',
       displayName: '昵称',
@@ -1053,6 +1057,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       empty: 'No matching users',
       loadFailed: 'Failed to load users',
       forbidden: 'You do not have permission to manage users',
+      backHome: 'Back to dashboard',
+      detailAriaLabel: 'User detail',
       id: 'ID',
       email: 'Email',
       displayName: 'Display name',

@@ -4342,13 +4342,13 @@ a {
 }
 
 .admin-users-controls label span {
-  color: var(--color-text-muted);
+  color: var(--text-muted);
   font-size: 12px;
 }
 
 .admin-users-table-wrap {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card);
   overflow-x: auto;
 }
@@ -4362,7 +4362,7 @@ a {
 
 .admin-users-table th,
 .admin-users-table td {
-  border-bottom: 1px solid var(--color-border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
   font-size: 13px;
   padding: 12px;
   text-align: left;
@@ -4371,7 +4371,7 @@ a {
 }
 
 .admin-users-table th {
-  color: var(--color-text-muted);
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 700;
 }
@@ -4381,11 +4381,11 @@ a {
 }
 
 .admin-users-skeleton-row td {
-  color: var(--color-text-muted);
+  color: var(--text-muted);
 }
 
 .admin-user-status {
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--border-subtle);
   border-radius: 999px;
   display: inline-flex;
   font-size: 12px;
@@ -4421,8 +4421,8 @@ a {
 }
 
 .admin-user-detail {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card);
   display: grid;
   gap: 14px;
@@ -4449,7 +4449,7 @@ a {
 }
 
 .admin-user-detail dt {
-  color: var(--color-text-muted);
+  color: var(--text-muted);
   font-size: 12px;
   font-weight: 700;
 }
@@ -4470,10 +4470,10 @@ a {
 }
 
 .admin-confirm-dialog {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-hover);
   display: grid;
   gap: 14px;
   max-width: 420px;
@@ -4487,7 +4487,7 @@ a {
 }
 
 .admin-confirm-dialog p {
-  color: var(--color-text-muted);
+  color: var(--text-muted);
   margin: 0;
 }
 
@@ -4499,13 +4499,13 @@ a {
 }
 
 .admin-users-pagination span {
-  color: var(--color-text-muted);
+  color: var(--text-muted);
   font-size: 13px;
 }
 
 .admin-users-forbidden {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-card);
   display: grid;
   gap: 12px;
