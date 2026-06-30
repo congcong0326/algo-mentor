@@ -1,7 +1,7 @@
 package org.congcong.algomentor.ai.governance.model;
 
 import java.util.Set;
-import org.congcong.algomentor.auth.model.AuthRole;
+import org.congcong.algomentor.identity.model.AuthRole;
 
 public record AiActor(Long userId, Set<AuthRole> roles, boolean authenticated) {
 

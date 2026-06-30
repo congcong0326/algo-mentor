@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Set;
 import org.congcong.algomentor.ai.governance.model.AiActor;
-import org.congcong.algomentor.auth.model.AuthRole;
+import org.congcong.algomentor.identity.model.AuthRole;
 import org.junit.jupiter.api.Test;
 
 class AiTraceAccessPolicyTest {

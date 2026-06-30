@@ -18,7 +18,7 @@ import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecision
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionType;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionException;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionRequest;
-import org.congcong.algomentor.auth.model.AuthUserStatus;
+import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.junit.jupiter.api.Test;

@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
-import org.congcong.algomentor.auth.model.AuthRole;
+import org.congcong.algomentor.identity.model.AuthRole;
 import org.junit.jupiter.api.Test;
 
 class AiGovernanceModelTest {

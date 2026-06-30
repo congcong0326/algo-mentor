@@ -22,7 +22,7 @@ import org.congcong.algomentor.ai.governance.policy.AiPurposePolicyResolver;
 import org.congcong.algomentor.ai.governance.repository.mybatis.PostgresAiRunAdmissionRepository;
 import org.congcong.algomentor.ai.governance.runlock.AiRunLockService;
 import org.congcong.algomentor.ai.governance.usage.AiDailyUsageStore;
-import org.congcong.algomentor.auth.model.AuthRole;
+import org.congcong.algomentor.identity.model.AuthRole;
 import org.junit.jupiter.api.Test;
 
 class AiRunAdmissionServiceTest {
