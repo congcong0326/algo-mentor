@@ -54,6 +54,7 @@ import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
 import org.congcong.algomentor.ops.observability.OpsStatus;
+import org.congcong.algomentor.ops.observability.autoconfigure.OpsObservabilityAutoConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -166,6 +167,29 @@ class AgentConversationApiAutoConfigurationTest {
           assertThat(registry.get("practice.completion_gate.evaluations")
               .tag("canComplete", "true")
               .tag("reason", PracticeCompletionGate.ReasonCode.PASSED.name())
+              .counter()
+              .count())
+              .isEqualTo(1.0);
+        });
+  }
+
+  @Test
+  void practiceReviewMetricsUsesOpsRecorderWithRealAutoConfigurationOrder() {
+    SimpleMeterRegistry registry = new SimpleMeterRegistry();
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(
+            AgentConversationApiAutoConfiguration.class,
+            OpsObservabilityAutoConfiguration.class))
+        .withUserConfiguration(PracticeSessionServiceDependencies.class)
+        .withBean(MeterRegistry.class, () -> registry)
+        .run(context -> {
+          assertThat(context).hasSingleBean(PracticeCodeReviewMetrics.class);
+
+          context.getBean(PracticeCodeReviewMetrics.class)
+              .recordReview(PracticeCodeReviewMetricStatus.COMPLETED);
+
+          assertThat(registry.get("algo.mentor.practice.code_reviews")
+              .tag("status", "completed")
               .counter()
               .count())
               .isEqualTo(1.0);

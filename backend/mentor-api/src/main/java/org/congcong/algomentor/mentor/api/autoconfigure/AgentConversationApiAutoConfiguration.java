@@ -40,13 +40,17 @@ import org.congcong.algomentor.mentor.application.practice.PracticeSessionServic
 import org.congcong.algomentor.mentor.application.practice.PracticeTurnOrchestrator;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
 import org.congcong.algomentor.ops.observability.OpsStatus;
+import org.congcong.algomentor.ops.observability.autoconfigure.OpsObservabilityAutoConfiguration;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 
-@AutoConfiguration(after = AgentPostgresPersistenceConfiguration.class)
+@AutoConfiguration(after = {
+    AgentPostgresPersistenceConfiguration.class,
+    OpsObservabilityAutoConfiguration.class
+})
 public class AgentConversationApiAutoConfiguration {
 
   @Bean

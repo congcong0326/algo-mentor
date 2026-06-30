@@ -12,6 +12,7 @@ import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
+import org.congcong.algomentor.ops.observability.OpsLogEventType;
 import org.congcong.algomentor.ops.observability.OpsStatus;
 import org.congcong.algomentor.ops.observability.SseFailureType;
 import org.congcong.algomentor.ops.observability.SseOpsRecorder;
@@ -163,6 +164,28 @@ class SseLlmStreamSubscriberOpsTest {
   }
 
   @Test
+  void logsPracticeMessageStreamFailureWhenBusinessFails() {
+    RecordingSseOpsRecorder sseRecorder = new RecordingSseOpsRecorder();
+    RecordingLearningOpsRecorder learningRecorder = new RecordingLearningOpsRecorder();
+    RecordingStructuredOpsLogger opsLogger = new RecordingStructuredOpsLogger();
+    SseLlmStreamSubscriber subscriber = practiceSubscriber(
+        new RecordingSseEmitter(),
+        sseRecorder,
+        learningRecorder,
+        opsLogger,
+        true);
+
+    subscriber.onSubscribe(new RecordingSubscription());
+    subscriber.onNext(new AgentStreamEvent.AgentError(
+        "run-1",
+        new AgentException(AgentErrorCode.LLM_STREAM_FAILED, "upstream failed")));
+
+    assertThat(opsLogger.warnEvents)
+        .contains("eventType=practice_message_stream_failed exceptionType=AgentException "
+            + "sseStreamType=practice_message failureType=upstream_error");
+  }
+
+  @Test
   void recordsTimeout() {
     RecordingSseOpsRecorder sseRecorder = new RecordingSseOpsRecorder();
     RecordingLearningOpsRecorder learningRecorder = new RecordingLearningOpsRecorder();
@@ -221,6 +244,22 @@ class SseLlmStreamSubscriberOpsTest {
         sseRecorder,
         learningRecorder,
         new StructuredOpsLogger());
+  }
+
+  private SseLlmStreamSubscriber practiceSubscriber(
+      SseEmitter emitter,
+      SseOpsRecorder sseRecorder,
+      LearningOpsRecorder learningRecorder,
+      StructuredOpsLogger opsLogger,
+      boolean cancelUpstreamOnClientDisconnect) {
+    return new SseLlmStreamSubscriber(
+        emitter,
+        new LlmStreamSseMapper(),
+        cancelUpstreamOnClientDisconnect,
+        SseStreamType.PRACTICE_MESSAGE,
+        sseRecorder,
+        learningRecorder,
+        opsLogger);
   }
 
   private static final class RecordingSseEmitter extends SseEmitter {
@@ -301,6 +340,20 @@ class SseLlmStreamSubscriberOpsTest {
     @Override
     public void practiceCodeReview(OpsStatus status) {
       events.add("review:" + status.tagValue());
+    }
+  }
+
+  private static final class RecordingStructuredOpsLogger extends StructuredOpsLogger {
+
+    private final List<String> warnEvents = new ArrayList<>();
+
+    @Override
+    public void warn(
+        org.slf4j.Logger log,
+        OpsLogEventType eventType,
+        java.util.Map<String, ?> fields,
+        Throwable throwable) {
+      warnEvents.add(format(eventType, fields));
     }
   }
 }

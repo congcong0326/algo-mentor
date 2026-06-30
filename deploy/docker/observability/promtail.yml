@@ -26,3 +26,6 @@ scrape_configs:
         action: keep
       - target_label: job
         replacement: algo-mentor-docker
+      - source_labels: ['__meta_docker_container_id']
+        target_label: __path__
+        replacement: /var/lib/docker/containers/$1/$1-json.log

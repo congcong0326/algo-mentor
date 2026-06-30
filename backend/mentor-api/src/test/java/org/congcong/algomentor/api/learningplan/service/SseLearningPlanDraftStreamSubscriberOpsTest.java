@@ -24,6 +24,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamEvent;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
+import org.congcong.algomentor.ops.observability.OpsLogEventType;
 import org.congcong.algomentor.ops.observability.OpsStatus;
 import org.congcong.algomentor.ops.observability.SseFailureType;
 import org.congcong.algomentor.ops.observability.SseOpsRecorder;
@@ -117,6 +118,29 @@ class SseLearningPlanDraftStreamSubscriberOpsTest {
   }
 
   @Test
+  void logsLearningPlanDraftFailureWhenBusinessFails() {
+    AiRunLifecycleService lifecycleService = mock(AiRunLifecycleService.class);
+    AiRunAdmission admission = admission();
+    RecordingSseOpsRecorder sseRecorder = new RecordingSseOpsRecorder();
+    RecordingLearningOpsRecorder learningRecorder = new RecordingLearningOpsRecorder();
+    RecordingStructuredOpsLogger opsLogger = new RecordingStructuredOpsLogger();
+    SseLearningPlanDraftStreamSubscriber subscriber = subscriber(
+        new RecordingSseEmitter(),
+        lifecycleService,
+        admission,
+        sseRecorder,
+        learningRecorder,
+        opsLogger);
+
+    subscriber.onSubscribe(new RecordingSubscription());
+    subscriber.onError(new RuntimeException("upstream failed"));
+
+    assertThat(opsLogger.warnEvents)
+        .contains("eventType=learning_plan_draft_failed exceptionType=RuntimeException "
+            + "sseStreamType=learning_plan_draft failureType=upstream_error");
+  }
+
+  @Test
   void clientDisconnectedCallbackRecordsFailedAndCancelsUpstream() throws IOException {
     AiRunLifecycleService lifecycleService = mock(AiRunLifecycleService.class);
     AiRunAdmission admission = admission();
@@ -187,6 +211,24 @@ class SseLearningPlanDraftStreamSubscriberOpsTest {
         sseRecorder,
         learningRecorder,
         new StructuredOpsLogger());
+  }
+
+  private SseLearningPlanDraftStreamSubscriber subscriber(
+      SseEmitter emitter,
+      AiRunLifecycleService lifecycleService,
+      AiRunAdmission admission,
+      SseOpsRecorder sseRecorder,
+      LearningOpsRecorder learningRecorder,
+      StructuredOpsLogger opsLogger) {
+    return new SseLearningPlanDraftStreamSubscriber(
+        emitter,
+        new LearningPlanDraftStreamSseMapper(),
+        lifecycleService,
+        admission,
+        SseStreamType.LEARNING_PLAN_DRAFT,
+        sseRecorder,
+        learningRecorder,
+        opsLogger);
   }
 
   private AiRunAdmission admission() {
@@ -292,6 +334,20 @@ class SseLearningPlanDraftStreamSubscriberOpsTest {
     @Override
     public void practiceCodeReview(OpsStatus status) {
       events.add("review:" + status.tagValue());
+    }
+  }
+
+  private static final class RecordingStructuredOpsLogger extends StructuredOpsLogger {
+
+    private final List<String> warnEvents = new ArrayList<>();
+
+    @Override
+    public void warn(
+        org.slf4j.Logger log,
+        OpsLogEventType eventType,
+        Map<String, ?> fields,
+        Throwable throwable) {
+      warnEvents.add(format(eventType, fields));
     }
   }
 }

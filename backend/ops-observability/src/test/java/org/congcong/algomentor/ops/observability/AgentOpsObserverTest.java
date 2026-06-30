@@ -48,6 +48,26 @@ class AgentOpsObserverTest {
   }
 
   @Test
+  void logsAgentRunFailuresAndPermissionTimeouts() {
+    RecordingStructuredOpsLogger opsLogger = new RecordingStructuredOpsLogger();
+    AgentOpsObserver loggingObserver = new AgentOpsObserver(recorder, opsLogger);
+    AgentLoopContext context = context(Map.of("aiSource", "PRACTICE_CHAT"));
+    AgentToolPermissionRequest request = permissionRequest();
+
+    loggingObserver.onError(context, new AgentException(AgentErrorCode.UNKNOWN, "failed"));
+    loggingObserver.onToolPermissionTimeout(
+        context,
+        request,
+        "expired",
+        Instant.parse("2026-06-30T00:01:00Z"),
+        permissionPlan());
+
+    assertThat(opsLogger.warnEvents).containsExactly(
+        "eventType=agent_run_failed exceptionType=AgentException agentSource=practice_message",
+        "eventType=agent_tool_permission_timeout toolName=submit_practice_code_review");
+  }
+
+  @Test
   void recordsToolEndAndError() {
     AgentLoopContext context = context(Map.of());
     LlmToolCall toolCall = new LlmToolCall(
@@ -212,6 +232,20 @@ class AgentOpsObserverTest {
       return List.copyOf(events);
     }
 
+  }
+
+  private static final class RecordingStructuredOpsLogger extends StructuredOpsLogger {
+
+    private final List<String> warnEvents = new ArrayList<>();
+
+    @Override
+    public void warn(
+        org.slf4j.Logger log,
+        OpsLogEventType eventType,
+        Map<String, ?> fields,
+        Throwable throwable) {
+      warnEvents.add(format(eventType, fields));
+    }
   }
 
 }

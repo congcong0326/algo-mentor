@@ -195,7 +195,7 @@ public class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent>
     }
     recordSseFailed(SseFailureType.TIMEOUT, null);
     if (cancelUpstreamOnClientDisconnect) {
-      recordPracticeStatus(OpsStatus.FAILED);
+      recordPracticeStatus(OpsStatus.FAILED, SseFailureType.TIMEOUT, null);
     }
     cancel();
   }
@@ -245,12 +245,12 @@ public class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent>
 
   private void recordUpstreamCompleted() {
     recordSseCompleted();
-    recordPracticeStatus(OpsStatus.COMPLETED);
+    recordPracticeStatus(OpsStatus.COMPLETED, null, null);
   }
 
   private void recordUpstreamFailure(Throwable throwable) {
     recordSseFailed(SseFailureType.UPSTREAM_ERROR, throwable);
-    recordPracticeStatus(OpsStatus.FAILED);
+    recordPracticeStatus(OpsStatus.FAILED, SseFailureType.UPSTREAM_ERROR, throwable);
   }
 
   private void recordSseCompleted() {
@@ -282,14 +282,21 @@ public class SseLlmStreamSubscriber implements Flow.Subscriber<AgentStreamEvent>
     }
     recordSseFailed(SseFailureType.SEND_FAILURE, throwable);
     if (cancelUpstreamOnClientDisconnect) {
-      recordPracticeStatus(OpsStatus.FAILED);
+      recordPracticeStatus(OpsStatus.FAILED, SseFailureType.SEND_FAILURE, throwable);
     }
   }
 
-  private void recordPracticeStatus(OpsStatus status) {
+  private void recordPracticeStatus(OpsStatus status, SseFailureType failureType, Throwable throwable) {
     if (streamType == SseStreamType.PRACTICE_MESSAGE
         && practiceBusinessRecorded.compareAndSet(false, true)) {
       learningOpsRecorder.practiceMessageStream(status);
+      if (status == OpsStatus.FAILED) {
+        opsLogger.warn(
+            log,
+            OpsLogEventType.PRACTICE_MESSAGE_STREAM_FAILED,
+            logFields(failureType == null ? SseFailureType.UPSTREAM_ERROR : failureType, throwable),
+            null);
+      }
     }
   }
 

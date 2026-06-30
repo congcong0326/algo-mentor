@@ -136,7 +136,7 @@ public class SseLearningPlanDraftStreamSubscriber implements Flow.Subscriber<Lea
   public void timeout() {
     if (terminal.compareAndSet(false, true)) {
       lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
-      recordBusinessStatus(OpsStatus.FAILED);
+      recordBusinessStatus(OpsStatus.FAILED, SseFailureType.TIMEOUT, null);
     }
     if (timeoutRecorded.compareAndSet(false, true)) {
       sseOpsRecorder.timeout(streamType);
@@ -153,7 +153,7 @@ public class SseLearningPlanDraftStreamSubscriber implements Flow.Subscriber<Lea
   public void clientDisconnected(Throwable throwable) {
     if (terminal.compareAndSet(false, true)) {
       lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
-      recordBusinessStatus(OpsStatus.FAILED);
+      recordBusinessStatus(OpsStatus.FAILED, SseFailureType.SEND_FAILURE, throwable);
     }
     if (!sseTerminalRecorded.get()) {
       recordClientDisconnected(throwable);
@@ -209,7 +209,7 @@ public class SseLearningPlanDraftStreamSubscriber implements Flow.Subscriber<Lea
 
   private void recordFailed(SseFailureType failureType, Throwable throwable) {
     recordSseFailed(failureType, throwable);
-    recordBusinessStatus(OpsStatus.FAILED);
+    recordBusinessStatus(OpsStatus.FAILED, failureType, throwable);
   }
 
   private void recordSseFailed(SseFailureType failureType, Throwable throwable) {
@@ -235,8 +235,19 @@ public class SseLearningPlanDraftStreamSubscriber implements Flow.Subscriber<Lea
   }
 
   private void recordBusinessStatus(OpsStatus status) {
+    recordBusinessStatus(status, null, null);
+  }
+
+  private void recordBusinessStatus(OpsStatus status, SseFailureType failureType, Throwable throwable) {
     if (businessRecorded.compareAndSet(false, true)) {
       learningOpsRecorder.learningPlanDraft(status);
+      if (status == OpsStatus.FAILED) {
+        opsLogger.warn(
+            log,
+            OpsLogEventType.LEARNING_PLAN_DRAFT_FAILED,
+            logFields(failureType == null ? SseFailureType.UPSTREAM_ERROR : failureType, throwable),
+            null);
+      }
     }
   }
 

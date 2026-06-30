@@ -13,9 +13,12 @@ import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecision
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionPlan;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionRequest;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AgentOpsObserver implements AgentLoopObserver {
 
+  private static final Logger log = LoggerFactory.getLogger(AgentOpsObserver.class);
   private static final AgentOpsSource FALLBACK_SOURCE = AgentOpsSource.AGENT_CONVERSATION;
   /** AI governance metadata key carrying the low-cardinality run source. */
   private static final String AI_SOURCE_METADATA_KEY = "aiSource";
@@ -27,9 +30,15 @@ public class AgentOpsObserver implements AgentLoopObserver {
   private static final String PERMISSION_TIMEOUT_DECISION = "timeout";
 
   private final AgentOpsRecorder agent;
+  private final StructuredOpsLogger opsLogger;
 
   public AgentOpsObserver(AgentOpsRecorder agent) {
+    this(agent, new StructuredOpsLogger());
+  }
+
+  AgentOpsObserver(AgentOpsRecorder agent, StructuredOpsLogger opsLogger) {
     this.agent = Objects.requireNonNull(agent, "agent must not be null");
+    this.opsLogger = Objects.requireNonNull(opsLogger, "opsLogger must not be null");
   }
 
   @Override
@@ -44,7 +53,15 @@ public class AgentOpsObserver implements AgentLoopObserver {
 
   @Override
   public void onError(AgentLoopContext context, AgentException error) {
-    agent.runFailed(source(context));
+    AgentOpsSource agentSource = source(context);
+    agent.runFailed(agentSource);
+    opsLogger.warn(
+        log,
+        OpsLogEventType.AGENT_RUN_FAILED,
+        Map.of(
+            OpsLogFields.AGENT_SOURCE, agentSource.tagValue(),
+            OpsLogFields.EXCEPTION_TYPE, error.getClass().getSimpleName()),
+        null);
   }
 
   @Override
@@ -74,6 +91,11 @@ public class AgentOpsObserver implements AgentLoopObserver {
       Instant expiredAt,
       AgentToolPermissionDecisionPlan plan) {
     agent.toolPermissionDecision(PERMISSION_TIMEOUT_DECISION);
+    opsLogger.warn(
+        log,
+        OpsLogEventType.AGENT_TOOL_PERMISSION_TIMEOUT,
+        Map.of(OpsLogFields.TOOL_NAME, request.toolName()),
+        null);
   }
 
   AgentOpsSource source(AgentLoopContext context) {
