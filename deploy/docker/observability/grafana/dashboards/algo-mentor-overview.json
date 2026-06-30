@@ -66,32 +66,53 @@
     {
       "id": 8,
       "type": "timeseries",
-      "title": "SSE failures",
+      "title": "SSE connection events",
       "gridPos": {"x": 8, "y": 10, "w": 8, "h": 6},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "targets": [{"expr": "sum(increase(algo_mentor_sse_connections_failed_total[5m])) by (stream_type, failure_type)", "refId": "A"}]
+      "targets": [
+        {"expr": "sum(increase(algo_mentor_sse_connections_opened_total[5m])) by (stream_type)", "refId": "A"},
+        {"expr": "sum(increase(algo_mentor_sse_connections_completed_total[5m])) by (stream_type)", "refId": "B"},
+        {"expr": "sum(increase(algo_mentor_sse_connections_failed_total[5m])) by (stream_type, failure_type)", "refId": "C"},
+        {"expr": "sum(increase(algo_mentor_sse_connections_timeout_total[5m])) by (stream_type)", "refId": "D"}
+      ]
     },
     {
       "id": 9,
       "type": "timeseries",
-      "title": "Agent run failures",
+      "title": "Agent runs",
       "gridPos": {"x": 16, "y": 10, "w": 8, "h": 6},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "targets": [{"expr": "sum(increase(algo_mentor_agent_runs_total{status=\"failed\"}[5m])) by (source)", "refId": "A"}]
+      "targets": [{"expr": "sum(increase(algo_mentor_agent_runs_total[5m])) by (source, status)", "refId": "A"}]
     },
     {
       "id": 10,
       "type": "timeseries",
-      "title": "Learning plan draft failures",
-      "gridPos": {"x": 0, "y": 16, "w": 12, "h": 6},
+      "title": "Learning plan draft generations",
+      "gridPos": {"x": 0, "y": 16, "w": 8, "h": 6},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "targets": [{"expr": "sum(increase(algo_mentor_learning_plan_draft_generations_total{status=\"failed\"}[5m]))", "refId": "A"}]
+      "targets": [{"expr": "sum(increase(algo_mentor_learning_plan_draft_generations_total[5m])) by (status)", "refId": "A"}]
     },
     {
       "id": 11,
+      "type": "timeseries",
+      "title": "Practice message streams",
+      "gridPos": {"x": 8, "y": 16, "w": 8, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [{"expr": "sum(increase(algo_mentor_practice_message_streams_total[5m])) by (status)", "refId": "A"}]
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Practice code reviews",
+      "gridPos": {"x": 16, "y": 16, "w": 8, "h": 6},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "targets": [{"expr": "sum(increase(algo_mentor_practice_code_reviews_total[5m])) by (status)", "refId": "A"}]
+    },
+    {
+      "id": 13,
       "type": "logs",
       "title": "Ops failure logs",
-      "gridPos": {"x": 12, "y": 16, "w": 12, "h": 6},
+      "gridPos": {"x": 0, "y": 22, "w": 24, "h": 6},
       "datasource": {"type": "loki", "uid": "Loki"},
       "targets": [{"expr": "{job=\"algo-mentor-docker\", compose_service=\"mentor-api\"} |= \"eventType=\" |~ \"failed|timeout\"", "refId": "A"}]
     }

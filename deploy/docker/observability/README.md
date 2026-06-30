@@ -25,3 +25,7 @@ python3 -m json.tool deploy/docker/observability/grafana/dashboards/algo-mentor-
 ```bash
 docker compose -f deploy/docker/docker-compose.yml --profile observability up -d prometheus grafana loki promtail
 ```
+
+## 告警规则
+
+`prometheus-alert-rules.yml` 只提供开发/测试示例规则。项目不在应用内发送告警；生产或外置监控接入时，应由外部 Prometheus/Alertmanager 或云厂商平台读取同一套指标。
