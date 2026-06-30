@@ -6,7 +6,11 @@ endif
 MAVEN := mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository
 NPM := npm --cache ./.npm --prefix frontend
 COMPOSE := docker compose -f deploy/docker/docker-compose.yml
-SERVER_PORT ?= 8080
+PROXY_PORT ?= 8080
+API_PORT ?= 18080
+SERVER_PORT ?= $(API_PORT)
+PROMETHEUS_HOST ?= localhost
+PROMETHEUS_PORT ?= 9090
 POSTGRES_VERSION ?= 16
 POSTGRES_HOST ?= localhost
 POSTGRES_PORT ?= 5432
@@ -22,7 +26,7 @@ DB_SEED_USER := $(POSTGRES_USER)
 DB_SEED_PASSWORD := $(POSTGRES_PASSWORD)
 STATIC_DIR := backend/mentor-api/src/main/resources/static
 
-.PHONY: build package package-skip-tests up down backend-build backend-build-skip-tests backend-test backend-dev frontend-install frontend-build frontend-test frontend-dev test test-smoke test-smoke-all test-env sync-frontend problem-source problem-seed db-install db-seed clean
+.PHONY: build package package-skip-tests up down proxy-up proxy-down proxy-restart proxy-status backend-build backend-build-skip-tests backend-test backend-dev frontend-install frontend-build frontend-test frontend-dev test test-smoke test-smoke-all test-env sync-frontend problem-source problem-seed db-install db-seed clean
 
 build: backend-build frontend-build
 
@@ -31,7 +35,9 @@ package: frontend-build sync-frontend backend-build
 package-skip-tests: frontend-build sync-frontend backend-build-skip-tests
 
 up: package-skip-tests
-	@if [ -f /.dockerenv ] || [ -f /run/.containerenv ] || grep -qaE '(docker|containerd|kubepods|libpod)' /proc/1/cgroup 2>/dev/null; then \
+	@if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1 && docker info >/dev/null 2>&1; then \
+		$(COMPOSE) up -d --build; \
+	else \
 		if ! command -v psql >/dev/null 2>&1; then \
 			echo "psql is not installed. Run 'make db-install' once before 'make up' in a development container." >&2; \
 			exit 1; \
@@ -45,9 +51,11 @@ up: package-skip-tests
 			echo "Cannot find packaged mentor-api jar under backend/mentor-api/target." >&2; \
 			exit 1; \
 		fi; \
-		echo "Detected container environment. Starting $$api_jar with local PostgreSQL at $(POSTGRES_HOST):$(POSTGRES_PORT)."; \
+		API_PORT="$(API_PORT)" PROXY_PORT="$(PROXY_PORT)" PROMETHEUS_HOST="$(PROMETHEUS_HOST)" PROMETHEUS_PORT="$(PROMETHEUS_PORT)" scripts/local-proxy.sh start; \
+		echo "Docker is unavailable. Starting $$api_jar on :$(API_PORT) behind proxy :$(PROXY_PORT) with PostgreSQL at $(POSTGRES_HOST):$(POSTGRES_PORT)."; \
 		exec env \
-			SERVER_PORT="$(SERVER_PORT)" \
+			API_PORT="$(API_PORT)" \
+			SERVER_PORT="$(API_PORT)" \
 			SPRING_PROFILES_ACTIVE=local \
 			POSTGRES_HOST="$(POSTGRES_HOST)" \
 			POSTGRES_PORT="$(POSTGRES_PORT)" \
@@ -55,12 +63,26 @@ up: package-skip-tests
 			POSTGRES_USER="$(POSTGRES_USER)" \
 			POSTGRES_PASSWORD="$(POSTGRES_PASSWORD)" \
 			java -jar "$$api_jar"; \
-	else \
-		$(COMPOSE) up -d --build; \
 	fi
 
 down:
-	$(COMPOSE) down
+	@if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1 && docker info >/dev/null 2>&1; then \
+		$(COMPOSE) down; \
+	else \
+		API_PORT="$(API_PORT)" PROXY_PORT="$(PROXY_PORT)" PROMETHEUS_HOST="$(PROMETHEUS_HOST)" PROMETHEUS_PORT="$(PROMETHEUS_PORT)" scripts/local-proxy.sh stop; \
+	fi
+
+proxy-up:
+	API_PORT="$(API_PORT)" PROXY_PORT="$(PROXY_PORT)" PROMETHEUS_HOST="$(PROMETHEUS_HOST)" PROMETHEUS_PORT="$(PROMETHEUS_PORT)" scripts/local-proxy.sh start
+
+proxy-down:
+	API_PORT="$(API_PORT)" PROXY_PORT="$(PROXY_PORT)" PROMETHEUS_HOST="$(PROMETHEUS_HOST)" PROMETHEUS_PORT="$(PROMETHEUS_PORT)" scripts/local-proxy.sh stop
+
+proxy-restart:
+	API_PORT="$(API_PORT)" PROXY_PORT="$(PROXY_PORT)" PROMETHEUS_HOST="$(PROMETHEUS_HOST)" PROMETHEUS_PORT="$(PROMETHEUS_PORT)" scripts/local-proxy.sh restart
+
+proxy-status:
+	API_PORT="$(API_PORT)" PROXY_PORT="$(PROXY_PORT)" PROMETHEUS_HOST="$(PROMETHEUS_HOST)" PROMETHEUS_PORT="$(PROMETHEUS_PORT)" scripts/local-proxy.sh status
 
 backend-build:
 	$(MAVEN) package
@@ -72,7 +94,7 @@ backend-test:
 	$(MAVEN) test
 
 backend-dev:
-	$(MAVEN) -pl mentor-api -am spring-boot:run
+	API_PORT="$(API_PORT)" SERVER_PORT="$(API_PORT)" $(MAVEN) -pl mentor-api -am spring-boot:run
 
 frontend-install:
 	$(NPM) install
@@ -184,7 +206,7 @@ db-install:
 	echo "PostgreSQL $(POSTGRES_VERSION) is ready at localhost:$(POSTGRES_PORT)/$(POSTGRES_DB)."
 
 db-seed:
-	$(MAVEN) -pl mentor-api -am -DskipTests spring-boot:run \
+	API_PORT="$(API_PORT)" SERVER_PORT="$(API_PORT)" $(MAVEN) -pl mentor-api -am -DskipTests spring-boot:run \
 		-Dspring-boot.run.arguments="--algo-mentor.problem.seed.enabled=true --algo-mentor.problem.seed.path=$(PROBLEM_SEED_ABS_DIR) --spring.datasource.url=$(DB_SEED_URL) --spring.datasource.username=$(DB_SEED_USER) --spring.datasource.password=$(DB_SEED_PASSWORD) --spring.flyway.enabled=true" \
 		-Dspring-boot.run.profiles=local
 
