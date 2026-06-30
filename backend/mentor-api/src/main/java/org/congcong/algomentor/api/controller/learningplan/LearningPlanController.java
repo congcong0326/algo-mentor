@@ -35,6 +35,11 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
+import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
+import org.congcong.algomentor.ops.observability.NoopOpsRecorders;
+import org.congcong.algomentor.ops.observability.SseOpsRecorder;
+import org.congcong.algomentor.ops.observability.SseStreamType;
+import org.congcong.algomentor.ops.observability.StructuredOpsLogger;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -61,6 +66,9 @@ public class LearningPlanController {
   private final ObjectProvider<LearningPlanDraftStreamService> draftStreamServiceProvider;
   private final LearningPlanDraftStreamSseMapper draftStreamSseMapper;
   private final ApiSseProperties sseProperties;
+  private final SseOpsRecorder sseOpsRecorder;
+  private final LearningOpsRecorder learningOpsRecorder;
+  private final StructuredOpsLogger opsLogger;
 
   public LearningPlanController(
       LearningPlanDraftService draftService,
@@ -70,7 +78,9 @@ public class LearningPlanController {
       ObjectProvider<AiRunAdmissionService> admissionServiceProvider,
       ObjectProvider<AiRunLifecycleService> lifecycleServiceProvider,
       ObjectProvider<LearningPlanDraftStreamService> draftStreamServiceProvider,
-      ApiSseProperties sseProperties) {
+      ApiSseProperties sseProperties,
+      ObjectProvider<SseOpsRecorder> sseOpsRecorder,
+      ObjectProvider<LearningOpsRecorder> learningOpsRecorder) {
     this.draftService = draftService;
     this.planService = planService;
     this.currentUserIdProvider = currentUserIdProvider;
@@ -80,6 +90,9 @@ public class LearningPlanController {
     this.draftStreamServiceProvider = draftStreamServiceProvider;
     this.draftStreamSseMapper = new LearningPlanDraftStreamSseMapper();
     this.sseProperties = sseProperties;
+    this.sseOpsRecorder = sseOpsRecorder.getIfAvailable(NoopOpsRecorders::sse);
+    this.learningOpsRecorder = learningOpsRecorder.getIfAvailable(NoopOpsRecorders::learning);
+    this.opsLogger = new StructuredOpsLogger();
   }
 
   @PostMapping(ApiContractConstants.LEARNING_PLAN_DRAFTS_PATH)
@@ -115,10 +128,14 @@ public class LearningPlanController {
         emitter,
         draftStreamSseMapper,
         lifecycleService,
-        admission);
-    emitter.onCompletion(subscriber::cancel);
-    emitter.onTimeout(subscriber::cancel);
-    emitter.onError(ignored -> subscriber.cancel());
+        admission,
+        SseStreamType.LEARNING_PLAN_DRAFT,
+        sseOpsRecorder,
+        learningOpsRecorder,
+        opsLogger);
+    emitter.onCompletion(() -> subscriber.clientDisconnected(null));
+    emitter.onTimeout(subscriber::timeout);
+    emitter.onError(subscriber::clientDisconnected);
 
     try {
       requiredDraftStreamService()

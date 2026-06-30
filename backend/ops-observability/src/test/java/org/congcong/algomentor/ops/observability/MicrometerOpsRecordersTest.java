@@ -38,12 +38,20 @@ class MicrometerOpsRecordersTest {
   }
 
   @Test
-  void activeSseGaugeIncrementsAndNeverDropsBelowZero() {
+  void activeSseGaugeOnlyDropsOnTerminalCompletionOrFailure() {
     sse.opened(SseStreamType.AI_EXPLANATION);
     sse.opened(SseStreamType.AI_EXPLANATION);
     sse.completed(SseStreamType.AI_EXPLANATION);
     sse.timeout(SseStreamType.AI_EXPLANATION);
     sse.clientDisconnected(SseStreamType.AI_EXPLANATION);
+
+    assertThat(registry.get(OpsMetricNames.SSE_CONNECTIONS_ACTIVE)
+        .tag("stream_type", "ai_explanation")
+        .gauge()
+        .value()).isEqualTo(1.0);
+
+    sse.failed(SseStreamType.AI_EXPLANATION, SseFailureType.TIMEOUT);
+    sse.failed(SseStreamType.AI_EXPLANATION, SseFailureType.SEND_FAILURE);
 
     assertThat(registry.get(OpsMetricNames.SSE_CONNECTIONS_ACTIVE)
         .tag("stream_type", "ai_explanation")
