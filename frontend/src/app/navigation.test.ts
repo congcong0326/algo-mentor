@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   learningPlanPracticeSubmissionsPath,
   learningPlanPracticeSubmissionsRouteFromPath,
+  pathForView,
   viewFromPath,
 } from './navigation';
 
@@ -24,5 +25,10 @@ describe('learning plan practice submissions navigation', () => {
 
   it('parses the my page route', () => {
     expect(viewFromPath('/me')).toBe('my');
+  });
+
+  it('maps the admin users route', () => {
+    expect(viewFromPath('/admin/users')).toBe('adminUsers');
+    expect(pathForView('adminUsers')).toBe('/admin/users');
   });
 });

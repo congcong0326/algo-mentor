@@ -36,6 +36,9 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
   if (view === 'debug' && !hasPermission(user, 'debug:access')) {
     return DEFAULT_AUTHENTICATED_ROUTE;
   }
+  if (view === 'adminUsers' && !hasPermission(user, 'user:manage')) {
+    return DEFAULT_AUTHENTICATED_ROUTE;
+  }
   return pathname;
 }
 
@@ -226,6 +229,9 @@ export default function App() {
   function navigateToView(view: AppView) {
     if (view === 'debug' && !hasPermission(currentUser, 'debug:access')) {
       view = 'learningPlans';
+    }
+    if (view === 'adminUsers' && !hasPermission(currentUser, 'user:manage')) {
+      view = 'home';
     }
     const nextPath = pathForView(view);
     if (activeView === view && window.location.pathname === nextPath) {
@@ -467,6 +473,8 @@ export default function App() {
         ? <MyPage />
         : activeView === 'problems'
         ? <ProblemLibrary />
+        : activeView === 'adminUsers'
+        ? <HomeDashboard onNavigate={navigateToView} />
         : activeView === 'learningPlans'
           ? <LearningPlans onNavigate={navigateToPath} pathname={pathname} />
           : hasPermission(currentUser, 'debug:access')

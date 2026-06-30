@@ -81,6 +81,7 @@ export interface LocaleResources {
     my: string;
     learningPlans: string;
     problems: string;
+    adminUsers: string;
     debug: string;
     forbidden: string;
   };
@@ -498,6 +499,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       my: '我的',
       learningPlans: '方案',
       problems: '题库',
+      adminUsers: '用户管理',
       debug: 'AI 调试',
       forbidden: '无权访问',
     },
@@ -964,6 +966,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       my: 'Me',
       learningPlans: 'Plans',
       problems: 'Problems',
+      adminUsers: 'Users',
       debug: 'AI Debug',
       forbidden: 'Not authorized',
     },

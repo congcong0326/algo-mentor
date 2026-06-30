@@ -79,6 +79,23 @@ describe('AppShell', () => {
     expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
   });
 
+  it('shows user management navigation only with user manage permission', () => {
+    render(
+      <AppShell
+        activeView="adminUsers"
+        currentUser={{ ...user, roles: ['ADMIN'], permissions: ['user:manage'] }}
+        onLogout={vi.fn()}
+        onNavigate={vi.fn()}
+        onToggleTheme={vi.fn()}
+        theme="light"
+      >
+        <div>Users page</div>
+      </AppShell>,
+    );
+
+    expect(screen.getByRole('button', { name: '用户管理' })).toHaveAttribute('aria-pressed', 'true');
+  });
+
   it('switches the shell language and persists the selection', () => {
     const originalLocalStorage = window.localStorage;
     const setItem = vi.fn();

@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Bot, ClipboardList, House, Library, UserRound } from 'lucide-react';
+import { Bot, ClipboardList, House, Library, UserRound, UsersRound } from 'lucide-react';
 import type { AuthPermission } from '../types/api';
 
 export const APP_ROUTES = {
@@ -9,6 +9,7 @@ export const APP_ROUTES = {
   learningPlans: '/learning-plans',
   learningPlanNew: '/learning-plans/new',
   problems: '/problems',
+  adminUsers: '/admin/users',
   debug: '/debug',
 } as const;
 
@@ -28,7 +29,7 @@ export interface LearningPlanPracticeSubmissionsRoute {
   problemSlug: string;
 }
 
-export type AppView = 'home' | 'my' | 'learningPlans' | 'problems' | 'debug';
+export type AppView = 'home' | 'my' | 'learningPlans' | 'problems' | 'adminUsers' | 'debug';
 
 export interface NavigationItem {
   view: AppView;
@@ -58,6 +59,13 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     icon: Library,
   },
   {
+    view: 'adminUsers',
+    labelKey: 'adminUsers',
+    path: APP_ROUTES.adminUsers,
+    icon: UsersRound,
+    permission: 'user:manage',
+  },
+  {
     view: 'debug',
     labelKey: 'debug',
     path: APP_ROUTES.debug,
@@ -81,6 +89,9 @@ export function viewFromPath(pathname: string): AppView | undefined {
   }
   if (pathname === APP_ROUTES.problems) {
     return 'problems';
+  }
+  if (pathname === APP_ROUTES.adminUsers) {
+    return 'adminUsers';
   }
   if (pathname === APP_ROUTES.debug) {
     return 'debug';

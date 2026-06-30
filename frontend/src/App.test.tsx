@@ -462,6 +462,17 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/');
   });
 
+  it('redirects admin users route to home without user manage permission', async () => {
+    vi.stubGlobal('fetch', mockAuthenticatedUserWithoutUserManageFetch());
+    window.history.replaceState({}, '', '/admin/users');
+
+    render(<App />);
+
+    expect(await screen.findByText('User Name')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
+    expect(window.location.pathname).toBe('/');
+  });
+
   it('exposes debug status labels for the app shell', () => {
     expect(debugStatusLabel('idle')).toBe('idle');
     expect(debugStatusLabel('connecting')).toBe('connecting');
@@ -1834,6 +1845,19 @@ function mockAuthenticatedDebugFetch() {
   return vi.fn((url: string) => {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
+    }
+    return Promise.reject(new Error(`Unexpected URL: ${url}`));
+  });
+}
+
+function mockAuthenticatedUserWithoutUserManageFetch() {
+  return vi.fn((url: string) => {
+    if (url === '/api/auth/me') {
+      return Promise.resolve(authenticatedUserResponseWithPermissions([
+        'learning-plan:read:own',
+        'learning-plan:write:own',
+        'practice-session:write:own',
+      ], ['USER']));
     }
     return Promise.reject(new Error(`Unexpected URL: ${url}`));
   });
