@@ -70,7 +70,7 @@ public class IdentityUserService {
     }
 
     AuthUser updated = getUser(userId);
-    publishStatusChanged(userId, previousStatus, updated.status(), operatorUserId, now);
+    publishStatusChanged(userId, previousStatus, requestedStatus, operatorUserId, now);
     return updated;
   }
 
@@ -92,7 +92,7 @@ public class IdentityUserService {
     }
 
     AuthUser updated = getUser(userId);
-    publishStatusChanged(userId, previousStatus, updated.status(), operatorUserId, now);
+    publishStatusChanged(userId, previousStatus, AuthUserStatus.DELETED, operatorUserId, now);
     return updated;
   }
 

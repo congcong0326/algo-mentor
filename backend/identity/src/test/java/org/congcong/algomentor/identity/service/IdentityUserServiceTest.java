@@ -69,6 +69,22 @@ class IdentityUserServiceTest {
   }
 
   @Test
+  void statusChangeEventUsesRequestedStatusWhenReloadSeesLaterConcurrentState() {
+    repository.save(user(42L, AuthUserStatus.ACTIVE));
+    repository.statusAfterSuccessfulUpdateReload = AuthUserStatus.ACTIVE;
+
+    AuthUser updated = service.updateStatus(42L, 7L, AuthUserStatus.DISABLED);
+
+    assertThat(updated.status()).isEqualTo(AuthUserStatus.ACTIVE);
+    assertThat(publisher.events).containsExactly(new IdentityUserStatusChangedEvent(
+        42L,
+        AuthUserStatus.ACTIVE,
+        AuthUserStatus.DISABLED,
+        7L,
+        NOW));
+  }
+
+  @Test
   void softDeleteActiveUserMarksDeletedAndPublishesEvent() {
     repository.save(user(42L, AuthUserStatus.ACTIVE));
 
@@ -196,6 +212,8 @@ class IdentityUserServiceTest {
   private static final class FakeIdentityUserRepository implements IdentityUserRepository {
 
     private final Map<Long, AuthUser> users = new LinkedHashMap<>();
+    private AuthUserStatus statusAfterSuccessfulUpdateReload;
+    private boolean useStatusAfterSuccessfulUpdateReload;
 
     void save(AuthUser user) {
       users.put(user.id(), user);
@@ -203,7 +221,24 @@ class IdentityUserServiceTest {
 
     @Override
     public Optional<AuthUser> findUserById(long userId) {
-      return Optional.ofNullable(users.get(userId));
+      AuthUser user = users.get(userId);
+      if (!useStatusAfterSuccessfulUpdateReload || user == null) {
+        return Optional.ofNullable(user);
+      }
+      useStatusAfterSuccessfulUpdateReload = false;
+      AuthUserStatus reloadStatus = statusAfterSuccessfulUpdateReload;
+      return Optional.of(new AuthUser(
+          user.id(),
+          user.email(),
+          user.emailNormalized(),
+          user.displayName(),
+          user.avatarUrl(),
+          reloadStatus,
+          user.createdAt(),
+          user.updatedAt(),
+          user.lastLoginAt(),
+          user.deletedAt(),
+          user.deletedBy()));
     }
 
     @Override
@@ -298,6 +333,7 @@ class IdentityUserServiceTest {
           user.lastLoginAt(),
           user.deletedAt(),
           user.deletedBy()));
+      useStatusAfterSuccessfulUpdateReload = statusAfterSuccessfulUpdateReload != null;
       return true;
     }
 
