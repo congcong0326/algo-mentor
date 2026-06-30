@@ -32,7 +32,8 @@ class PracticeCodeReviewServiceTest {
   void savesCompleteSubmission() {
     FakeRepository repository = new FakeRepository();
     FakeLlmGateway llmGateway = new FakeLlmGateway(structuredOutput(true, true, true));
-    PracticeCodeReviewService service = service(repository, llmGateway);
+    RecordingPracticeCodeReviewMetrics metrics = new RecordingPracticeCodeReviewMetrics();
+    PracticeCodeReviewService service = service(repository, llmGateway, metrics);
 
     PracticeReviewResult result = service.review(context());
 
@@ -51,13 +52,15 @@ class PracticeCodeReviewServiceTest {
     assertThat(llmGateway.lastRequest.metadata())
         .containsEntry(PracticeCodeReviewConstants.METADATA_REVIEW_CANDIDATE, true)
         .containsEntry(PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, 50L);
+    assertThat(metrics.reviewStatuses).containsExactly(PracticeCodeReviewMetricStatus.COMPLETED);
   }
 
   @Test
   void nonCurrentProblemSavesRejectedAttempt() {
     FakeRepository repository = new FakeRepository();
     FakeLlmGateway llmGateway = new FakeLlmGateway(structuredOutput(true, false, true));
-    PracticeCodeReviewService service = service(repository, llmGateway);
+    RecordingPracticeCodeReviewMetrics metrics = new RecordingPracticeCodeReviewMetrics();
+    PracticeCodeReviewService service = service(repository, llmGateway, metrics);
 
     PracticeReviewResult result = service.review(context());
 
@@ -70,6 +73,7 @@ class PracticeCodeReviewServiceTest {
     assertThat(repository.savedDrafts.get(0).score().total()).isEqualByComparingTo(BigDecimal.ZERO);
     assertThat(repository.savedDrafts.get(0).passed()).isFalse();
     assertThat(llmGateway.completeCalls).isEqualTo(1);
+    assertThat(metrics.reviewStatuses).containsExactly(PracticeCodeReviewMetricStatus.UNREVIEWABLE);
   }
 
   @Test
@@ -92,7 +96,8 @@ class PracticeCodeReviewServiceTest {
   void replayMissingExistingReviewFailsWithoutCallingLlm() {
     FakeRepository repository = new FakeRepository();
     FakeLlmGateway llmGateway = new FakeLlmGateway(structuredOutput(true, true, true));
-    PracticeCodeReviewService service = service(repository, llmGateway);
+    RecordingPracticeCodeReviewMetrics metrics = new RecordingPracticeCodeReviewMetrics();
+    PracticeCodeReviewService service = service(repository, llmGateway, metrics);
 
     PracticeReviewResult result = service.replay(context());
 
@@ -100,6 +105,7 @@ class PracticeCodeReviewServiceTest {
     assertThat(result.failureCode()).isEqualTo(PracticeCodeReviewService.FAILURE_CODE_REPLAY_REVIEW_MISSING);
     assertThat(repository.savedDrafts).isEmpty();
     assertThat(llmGateway.completeCalls).isZero();
+    assertThat(metrics.reviewStatuses).containsExactly(PracticeCodeReviewMetricStatus.FAILED);
   }
 
   @Test
@@ -107,7 +113,8 @@ class PracticeCodeReviewServiceTest {
     FakeRepository repository = new FakeRepository();
     FakeLlmGateway llmGateway = new FakeLlmGateway(structuredOutput(true, true, true));
     llmGateway.failure = new RuntimeException("provider unavailable");
-    PracticeCodeReviewService service = service(repository, llmGateway);
+    RecordingPracticeCodeReviewMetrics metrics = new RecordingPracticeCodeReviewMetrics();
+    PracticeCodeReviewService service = service(repository, llmGateway, metrics);
 
     PracticeReviewResult result = service.review(context());
 
@@ -126,14 +133,23 @@ class PracticeCodeReviewServiceTest {
         .contains(new PracticeCodeReviewEvidence("REVIEW_ATTEMPT_REJECTED", PracticeReviewStatus.FAILED.name()));
     assertThat(savedDraft.reviewMarkdown()).contains(PracticeCodeReviewService.FAILURE_CODE_LLM_COMPLETION_FAILED);
     assertThat(llmGateway.completeCalls).isEqualTo(1);
+    assertThat(metrics.reviewStatuses).containsExactly(PracticeCodeReviewMetricStatus.FAILED);
   }
 
   private PracticeCodeReviewService service(FakeRepository repository, FakeLlmGateway llmGateway) {
+    return service(repository, llmGateway, PracticeCodeReviewMetrics.NOOP);
+  }
+
+  private PracticeCodeReviewService service(
+      FakeRepository repository,
+      FakeLlmGateway llmGateway,
+      PracticeCodeReviewMetrics metrics) {
     return new PracticeCodeReviewService(
         repository,
         llmGateway,
         new PracticeCodeReviewPromptBuilder(),
-        new PracticeCodeReviewStructuredOutputMapper());
+        new PracticeCodeReviewStructuredOutputMapper(),
+        metrics);
   }
 
   private PracticeTurnContext context() {
@@ -268,6 +284,16 @@ class PracticeCodeReviewServiceTest {
     @Override
     public Optional<PracticeCodeReview> findByUserMessage(long userId, long sessionId, long userMessageId) {
       return existing;
+    }
+  }
+
+  private static final class RecordingPracticeCodeReviewMetrics implements PracticeCodeReviewMetrics {
+
+    private final List<PracticeCodeReviewMetricStatus> reviewStatuses = new ArrayList<>();
+
+    @Override
+    public void recordReview(PracticeCodeReviewMetricStatus status) {
+      reviewStatuses.add(status);
     }
   }
 

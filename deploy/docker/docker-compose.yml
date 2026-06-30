@@ -59,8 +59,6 @@ services:
       - prometheus-data:/prometheus
     ports:
       - "127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"
-    depends_on:
-      - mentor-api
 
   loki:
     image: grafana/loki:3.3.2

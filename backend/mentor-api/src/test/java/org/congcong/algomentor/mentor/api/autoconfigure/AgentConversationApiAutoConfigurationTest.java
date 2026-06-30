@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -28,16 +29,18 @@ import org.congcong.algomentor.agent.core.runlock.LocalAgentRunLockOwnerProvider
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
+import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
+import org.congcong.algomentor.mentor.application.practice.PracticeCompletionGate;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewDraft;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetricStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPermissionHook;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewSummary;
-import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
@@ -49,6 +52,8 @@ import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
+import org.congcong.algomentor.ops.observability.OpsStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -132,6 +137,38 @@ class AgentConversationApiAutoConfigurationTest {
           assertThat(context).hasSingleBean(PracticeCodeReviewMetrics.class);
           assertThat(context.getBean(PracticeCodeReviewMetrics.class))
               .isInstanceOf(MicrometerPracticeCodeReviewMetrics.class);
+        });
+  }
+
+  @Test
+  void practiceReviewMetricsUsesLearningOpsRecorderWhenAvailable() {
+    SimpleMeterRegistry registry = new SimpleMeterRegistry();
+    contextRunner
+        .withBean(MeterRegistry.class, () -> registry)
+        .withBean(LearningOpsRecorder.class, RecordingLearningOpsRecorder::new)
+        .run(context -> {
+          assertThat(context).hasSingleBean(PracticeCodeReviewMetrics.class);
+          PracticeCodeReviewMetrics metrics = context.getBean(PracticeCodeReviewMetrics.class);
+          RecordingLearningOpsRecorder recorder = context.getBean(RecordingLearningOpsRecorder.class);
+
+          metrics.recordReview(PracticeCodeReviewMetricStatus.COMPLETED);
+          metrics.recordReview(PracticeCodeReviewMetricStatus.FAILED);
+          metrics.recordReview(PracticeCodeReviewMetricStatus.UNREVIEWABLE);
+
+          assertThat(recorder.practiceCodeReviewStatuses)
+              .containsExactly(OpsStatus.COMPLETED, OpsStatus.FAILED, OpsStatus.UNREVIEWABLE);
+          metrics.recordCompletionGate(new PracticeCompletionGate(
+              true,
+              PracticeCompletionGate.ReasonCode.PASSED,
+              "标记为已完成",
+              Optional.of(BigDecimal.TEN),
+              BigDecimal.TEN));
+          assertThat(registry.get("practice.completion_gate.evaluations")
+              .tag("canComplete", "true")
+              .tag("reason", PracticeCompletionGate.ReasonCode.PASSED.name())
+              .counter()
+              .count())
+              .isEqualTo(1.0);
         });
   }
 
@@ -266,6 +303,28 @@ class AgentConversationApiAutoConfigurationTest {
     @Override
     public Optional<LearningPlan> findPlanByIdForUser(long planId, long userId) {
       return Optional.empty();
+    }
+  }
+
+  static final class RecordingLearningOpsRecorder implements LearningOpsRecorder {
+
+    private final List<OpsStatus> learningPlanDraftStatuses = new java.util.ArrayList<>();
+    private final List<OpsStatus> practiceMessageStreamStatuses = new java.util.ArrayList<>();
+    private final List<OpsStatus> practiceCodeReviewStatuses = new java.util.ArrayList<>();
+
+    @Override
+    public void learningPlanDraft(OpsStatus status) {
+      learningPlanDraftStatuses.add(status);
+    }
+
+    @Override
+    public void practiceMessageStream(OpsStatus status) {
+      practiceMessageStreamStatuses.add(status);
+    }
+
+    @Override
+    public void practiceCodeReview(OpsStatus status) {
+      practiceCodeReviewStatuses.add(status);
     }
   }
 

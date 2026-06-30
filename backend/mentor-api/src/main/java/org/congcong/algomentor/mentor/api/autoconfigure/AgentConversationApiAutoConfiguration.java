@@ -25,8 +25,10 @@ import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRep
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceService;
 import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
+import org.congcong.algomentor.mentor.application.practice.PracticeCompletionGate;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetricStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPermissionHook;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPromptBuilder;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
@@ -36,6 +38,8 @@ import org.congcong.algomentor.mentor.application.practice.PracticeMessageStream
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
 import org.congcong.algomentor.mentor.application.practice.PracticeTurnOrchestrator;
+import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
+import org.congcong.algomentor.ops.observability.OpsStatus;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -126,8 +130,22 @@ public class AgentConversationApiAutoConfiguration {
   }
 
   @Bean
-  @ConditionalOnBean(MeterRegistry.class)
+  @ConditionalOnBean(LearningOpsRecorder.class)
   @ConditionalOnMissingBean
+  public PracticeCodeReviewMetrics opsPracticeCodeReviewMetrics(
+      LearningOpsRecorder learningOpsRecorder,
+      ObjectProvider<MeterRegistry> meterRegistry
+  ) {
+    MeterRegistry registry = meterRegistry.getIfAvailable();
+    PracticeCodeReviewMetrics delegate = registry == null
+        ? PracticeCodeReviewMetrics.NOOP
+        : new MicrometerPracticeCodeReviewMetrics(registry);
+    return new OpsPracticeCodeReviewMetrics(learningOpsRecorder, delegate);
+  }
+
+  @Bean
+  @ConditionalOnBean(MeterRegistry.class)
+  @ConditionalOnMissingBean(PracticeCodeReviewMetrics.class)
   public PracticeCodeReviewMetrics practiceCodeReviewMetrics(MeterRegistry registry) {
     return new MicrometerPracticeCodeReviewMetrics(registry);
   }
@@ -164,9 +182,15 @@ public class AgentConversationApiAutoConfiguration {
       PracticeCodeReviewRepository reviewRepository,
       LlmGateway llmGateway,
       PracticeCodeReviewPromptBuilder promptBuilder,
-      PracticeCodeReviewStructuredOutputMapper outputMapper
+      PracticeCodeReviewStructuredOutputMapper outputMapper,
+      ObjectProvider<PracticeCodeReviewMetrics> metrics
   ) {
-    return new PracticeCodeReviewService(reviewRepository, llmGateway, promptBuilder, outputMapper);
+    return new PracticeCodeReviewService(
+        reviewRepository,
+        llmGateway,
+        promptBuilder,
+        outputMapper,
+        metrics.getIfAvailable(() -> PracticeCodeReviewMetrics.NOOP));
   }
 
   @Bean
@@ -239,6 +263,42 @@ public class AgentConversationApiAutoConfiguration {
   @ConditionalOnMissingBean
   public UserAiPreferenceService userAiPreferenceService(ObjectProvider<UserAiPreferenceRepository> repository) {
     return new UserAiPreferenceService(repository.getIfAvailable(UserAiPreferenceRepository::empty));
+  }
+
+  private static final class OpsPracticeCodeReviewMetrics implements PracticeCodeReviewMetrics {
+
+    private final LearningOpsRecorder learningOpsRecorder;
+    private final PracticeCodeReviewMetrics delegate;
+
+    private OpsPracticeCodeReviewMetrics(
+        LearningOpsRecorder learningOpsRecorder,
+        PracticeCodeReviewMetrics delegate
+    ) {
+      this.learningOpsRecorder = learningOpsRecorder;
+      this.delegate = delegate;
+    }
+
+    @Override
+    public void recordCompletionGate(PracticeCompletionGate gate) {
+      delegate.recordCompletionGate(gate);
+    }
+
+    @Override
+    public void recordReview(PracticeCodeReviewMetricStatus status) {
+      delegate.recordReview(status);
+      learningOpsRecorder.practiceCodeReview(toOpsStatus(status));
+    }
+
+    private OpsStatus toOpsStatus(PracticeCodeReviewMetricStatus status) {
+      if (status == null) {
+        return OpsStatus.FAILED;
+      }
+      return switch (status) {
+        case COMPLETED -> OpsStatus.COMPLETED;
+        case FAILED -> OpsStatus.FAILED;
+        case UNREVIEWABLE -> OpsStatus.UNREVIEWABLE;
+      };
+    }
   }
 
   @Bean

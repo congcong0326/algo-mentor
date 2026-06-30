@@ -31,6 +31,7 @@ public class PracticeCodeReviewService {
   private final LlmGateway llmGateway;
   private final PracticeCodeReviewPromptBuilder promptBuilder;
   private final PracticeCodeReviewStructuredOutputMapper outputMapper;
+  private final PracticeCodeReviewMetrics metrics;
   private final Function<PracticeTurnContext, PracticeReviewResult> delegate;
 
   public PracticeCodeReviewService(
@@ -39,10 +40,21 @@ public class PracticeCodeReviewService {
       PracticeCodeReviewPromptBuilder promptBuilder,
       PracticeCodeReviewStructuredOutputMapper outputMapper
   ) {
+    this(repository, llmGateway, promptBuilder, outputMapper, PracticeCodeReviewMetrics.NOOP);
+  }
+
+  public PracticeCodeReviewService(
+      PracticeCodeReviewRepository repository,
+      LlmGateway llmGateway,
+      PracticeCodeReviewPromptBuilder promptBuilder,
+      PracticeCodeReviewStructuredOutputMapper outputMapper,
+      PracticeCodeReviewMetrics metrics
+  ) {
     this.repository = Objects.requireNonNull(repository, "repository must not be null");
     this.llmGateway = Objects.requireNonNull(llmGateway, "llmGateway must not be null");
     this.promptBuilder = Objects.requireNonNull(promptBuilder, "promptBuilder must not be null");
     this.outputMapper = Objects.requireNonNull(outputMapper, "outputMapper must not be null");
+    this.metrics = Objects.requireNonNull(metrics, "metrics must not be null");
     this.delegate = null;
   }
 
@@ -51,6 +63,7 @@ public class PracticeCodeReviewService {
     this.llmGateway = null;
     this.promptBuilder = null;
     this.outputMapper = null;
+    this.metrics = PracticeCodeReviewMetrics.NOOP;
     this.delegate = Objects.requireNonNull(delegate, "delegate must not be null");
   }
 
@@ -60,6 +73,7 @@ public class PracticeCodeReviewService {
       return delegate.apply(context);
     }
 
+    PracticeReviewResult result;
     Optional<PracticeCodeReview> existing = repository.findByUserMessage(
         context.userId(),
         context.sessionId(),
@@ -73,7 +87,9 @@ public class PracticeCodeReviewService {
           review.id(),
           review.versionNo(),
           review.agentRunDbId());
-      return PracticeReviewResult.saved(review);
+      result = PracticeReviewResult.saved(review);
+      recordReviewResult(result);
+      return result;
     }
     log.info(
         "Practice code review existing lookup missed. sessionId={} userMessageId={} agentRunDbId={} problemSlug={}",
@@ -81,7 +97,9 @@ public class PracticeCodeReviewService {
         context.userMessageId(),
         context.agentRunDbId(),
         context.problemSlug());
-    return reviewWithLlm(context);
+    result = reviewWithLlm(context);
+    recordReviewResult(result);
+    return result;
   }
 
   public PracticeReviewResult replay(PracticeTurnContext context) {
@@ -90,6 +108,7 @@ public class PracticeCodeReviewService {
       return delegate.apply(context);
     }
 
+    PracticeReviewResult result;
     Optional<PracticeCodeReview> existing = repository.findByUserMessage(
         context.userId(),
         context.sessionId(),
@@ -103,7 +122,9 @@ public class PracticeCodeReviewService {
           review.id(),
           review.versionNo(),
           review.agentRunDbId());
-      return PracticeReviewResult.saved(review);
+      result = PracticeReviewResult.saved(review);
+      recordReviewResult(result);
+      return result;
     }
     log.warn(
         "Practice code review replay missing existing review. sessionId={} userMessageId={} agentRunDbId={} problemSlug={}",
@@ -111,9 +132,34 @@ public class PracticeCodeReviewService {
         context.userMessageId(),
         context.agentRunDbId(),
         context.problemSlug());
-    return PracticeReviewResult.failed(
+    result = PracticeReviewResult.failed(
         FAILURE_CODE_REPLAY_REVIEW_MISSING,
         Map.of("failureCode", FAILURE_CODE_REPLAY_REVIEW_MISSING));
+    recordReviewResult(result);
+    return result;
+  }
+
+  private void recordReviewResult(PracticeReviewResult result) {
+    if (result.status() == PracticeReviewStatus.SAVED) {
+      if (result.metadata().containsKey("reviewAttemptStatus")) {
+        metrics.recordReview(attemptMetricStatus(result.metadata().get("reviewAttemptStatus")));
+        return;
+      }
+      metrics.recordReview(PracticeCodeReviewMetricStatus.COMPLETED);
+      return;
+    }
+    if (result.status() == PracticeReviewStatus.FAILED) {
+      metrics.recordReview(PracticeCodeReviewMetricStatus.FAILED);
+      return;
+    }
+    metrics.recordReview(PracticeCodeReviewMetricStatus.UNREVIEWABLE);
+  }
+
+  private PracticeCodeReviewMetricStatus attemptMetricStatus(Object status) {
+    if (PracticeReviewStatus.FAILED.name().equals(status)) {
+      return PracticeCodeReviewMetricStatus.FAILED;
+    }
+    return PracticeCodeReviewMetricStatus.UNREVIEWABLE;
   }
 
   private PracticeReviewResult reviewWithLlm(PracticeTurnContext context) {
