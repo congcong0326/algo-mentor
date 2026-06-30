@@ -7,6 +7,8 @@ import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.congcong.algomentor.identity.service.IdentityUserErrorCode;
 import org.congcong.algomentor.identity.service.IdentityUserManagementException;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.validation.FieldError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice(assignableTypes = AdminUserController.class)
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class AdminUserExceptionHandler {
 
   private final ApiErrorResponseFactory responseFactory;
@@ -52,6 +55,13 @@ public class AdminUserExceptionHandler {
       String message = "用户状态不合法。";
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failure(code, message, locale));
     }
+    if (exception instanceof HttpMessageNotReadableException) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(failure(
+              AdminUserApiContractConstants.REQUEST_BODY_INVALID,
+              "请求体不是合法 JSON 或与接口结构不匹配。",
+              locale));
+    }
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(failure(AdminUserApiContractConstants.VALIDATION_FAILED, "请求参数校验失败。", locale));
   }
@@ -83,12 +93,12 @@ public class AdminUserExceptionHandler {
     if (exception instanceof BindException bindException) {
       return bindException.getFieldErrors().stream()
           .map(FieldError::getField)
-          .anyMatch("status"::equals);
+          .anyMatch(this::isStatusField);
     }
     if (exception instanceof MethodArgumentNotValidException methodArgumentNotValidException) {
       return methodArgumentNotValidException.getFieldErrors().stream()
           .map(FieldError::getField)
-          .anyMatch("status"::equals);
+          .anyMatch(this::isStatusField);
     }
     if (exception instanceof HttpMessageNotReadableException httpMessageNotReadableException) {
       return statusDeserializationFailed(httpMessageNotReadableException.getMostSpecificCause());
@@ -101,5 +111,9 @@ public class AdminUserExceptionHandler {
       return invalidFormatException.getTargetType() == AuthUserStatus.class;
     }
     return false;
+  }
+
+  private boolean isStatusField(String field) {
+    return "status".equals(field) || field.endsWith(".status");
   }
 }
