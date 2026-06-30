@@ -43,5 +43,70 @@ services:
     ports:
       - "${PROXY_PORT:-8080}:${API_PORT:-18080}"
       - "127.0.0.1:5005:5005"
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: algo-mentor-prometheus
+    profiles:
+      - observability
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./observability/prometheus-alert-rules.yml:/etc/prometheus/prometheus-alert-rules.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"
+
+  loki:
+    image: grafana/loki:3.3.2
+    container_name: algo-mentor-loki
+    profiles:
+      - observability
+    command:
+      - -config.file=/etc/loki/local-config.yml
+    volumes:
+      - ./observability/loki.yml:/etc/loki/local-config.yml:ro
+      - loki-data:/loki
+    ports:
+      - "127.0.0.1:${LOKI_PORT:-3100}:3100"
+
+  promtail:
+    image: grafana/promtail:3.3.2
+    container_name: algo-mentor-promtail
+    profiles:
+      - observability
+    command:
+      - -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./observability/promtail.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    depends_on:
+      - loki
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    container_name: algo-mentor-grafana
+    profiles:
+      - observability
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "127.0.0.1:${GRAFANA_PORT:-3000}:3000"
+    depends_on:
+      - prometheus
+      - loki
 volumes:
   postgres-data:
+  prometheus-data:
+  loki-data:
+  grafana-data:

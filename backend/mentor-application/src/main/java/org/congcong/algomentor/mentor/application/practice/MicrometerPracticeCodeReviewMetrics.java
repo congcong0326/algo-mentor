@@ -24,4 +24,15 @@ public class MicrometerPracticeCodeReviewMetrics implements PracticeCodeReviewMe
         .increment();
   }
 
+  @Override
+  public void recordReview(PracticeCodeReviewMetricStatus status) {
+    if (status == null) {
+      return;
+    }
+    Counter.builder("practice.code_review.results")
+        .tag("status", status.name().toLowerCase(java.util.Locale.ROOT))
+        .register(registry)
+        .increment();
+  }
+
 }

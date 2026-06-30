@@ -7,4 +7,7 @@ public interface PracticeCodeReviewMetrics {
 
   default void recordCompletionGate(PracticeCompletionGate gate) {
   }
+
+  default void recordReview(PracticeCodeReviewMetricStatus status) {
+  }
 }

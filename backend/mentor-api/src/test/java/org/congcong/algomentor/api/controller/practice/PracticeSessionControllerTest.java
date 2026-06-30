@@ -63,6 +63,8 @@ import org.congcong.algomentor.mentor.application.practice.PracticeSessionMessag
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionResult;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionStatus;
+import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
+import org.congcong.algomentor.ops.observability.SseOpsRecorder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentCaptor;
@@ -667,7 +669,9 @@ class PracticeSessionControllerTest {
         ObjectProvider<AiActorResolver> actorResolver,
         ObjectProvider<AiRunAdmissionService> admissionService,
         ObjectProvider<LlmStreamSseMapper> sseMapper,
-        ApiSseProperties sseProperties
+        ApiSseProperties sseProperties,
+        ObjectProvider<SseOpsRecorder> sseOpsRecorder,
+        ObjectProvider<LearningOpsRecorder> learningOpsRecorder
     ) {
       return new PracticeSessionController(
           practiceSessionService,
@@ -676,7 +680,9 @@ class PracticeSessionControllerTest {
           actorResolver,
           admissionService,
           sseMapper,
-          sseProperties);
+          sseProperties,
+          sseOpsRecorder,
+          learningOpsRecorder);
     }
   }
 }

@@ -26,6 +26,13 @@ import org.congcong.algomentor.mentor.application.conversation.AgentConversation
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunCoordinator;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptConstants;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatReference;
+import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
+import org.congcong.algomentor.ops.observability.NoopOpsRecorders;
+import org.congcong.algomentor.ops.observability.SseOpsRecorder;
+import org.congcong.algomentor.ops.observability.SseStreamType;
+import org.congcong.algomentor.ops.observability.StructuredOpsLogger;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,6 +54,9 @@ public class AgentConversationController {
   private final LlmStreamSseMapper sseMapper;
   private final AiActorResolver actorResolver;
   private final AiRunAdmissionService admissionService;
+  private final SseOpsRecorder sseOpsRecorder;
+  private final LearningOpsRecorder learningOpsRecorder;
+  private final StructuredOpsLogger opsLogger;
 
   public AgentConversationController(
       AgentConversationRunCoordinator runCoordinator,
@@ -58,6 +68,27 @@ public class AgentConversationController {
     this.sseMapper = sseMapper;
     this.actorResolver = actorResolver;
     this.admissionService = admissionService;
+    this.sseOpsRecorder = NoopOpsRecorders.sse();
+    this.learningOpsRecorder = NoopOpsRecorders.learning();
+    this.opsLogger = new StructuredOpsLogger();
+  }
+
+  @Autowired
+  public AgentConversationController(
+      AgentConversationRunCoordinator runCoordinator,
+      LlmStreamSseMapper sseMapper,
+      AiActorResolver actorResolver,
+      AiRunAdmissionService admissionService,
+      ObjectProvider<SseOpsRecorder> sseOpsRecorder,
+      ObjectProvider<LearningOpsRecorder> learningOpsRecorder
+  ) {
+    this.runCoordinator = runCoordinator;
+    this.sseMapper = sseMapper;
+    this.actorResolver = actorResolver;
+    this.admissionService = admissionService;
+    this.sseOpsRecorder = sseOpsRecorder.getIfAvailable(NoopOpsRecorders::sse);
+    this.learningOpsRecorder = learningOpsRecorder.getIfAvailable(NoopOpsRecorders::learning);
+    this.opsLogger = new StructuredOpsLogger();
   }
 
   @PreAuthorize("hasRole('ADMIN')")
@@ -137,15 +168,22 @@ public class AgentConversationController {
      *     -> 浏览器 EventSource/fetch stream 按 SSE 事件名消费数据
      */
     SseEmitter emitter = new SseEmitter(30_000L);
-    SseLlmStreamSubscriber subscriber = new SseLlmStreamSubscriber(emitter, sseMapper);
+    SseLlmStreamSubscriber subscriber = new SseLlmStreamSubscriber(
+        emitter,
+        sseMapper,
+        true,
+        SseStreamType.AGENT_CONVERSATION,
+        sseOpsRecorder,
+        learningOpsRecorder,
+        opsLogger);
 
     /*
      * 客户端断开、SSE 超时或写响应失败时，需要取消订阅。
      * 取消后上游 Publisher/Agent loop 可以停止继续生产 token 和工具事件，避免后台任务无意义运行。
      */
-    emitter.onCompletion(subscriber::cancel);
-    emitter.onTimeout(subscriber::cancel);
-    emitter.onError(ignored -> subscriber.cancel());
+    emitter.onCompletion(() -> subscriber.clientDisconnected(null));
+    emitter.onTimeout(subscriber::timeout);
+    emitter.onError(subscriber::clientDisconnected);
 
     try {
       // subscribe 是整个流式链路的启动点；之后由 Subscriber 的回调方法接收并转发事件。

@@ -36,7 +36,13 @@ import org.congcong.algomentor.mentor.application.practice.PracticeChatReference
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
+import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
+import org.congcong.algomentor.ops.observability.NoopOpsRecorders;
+import org.congcong.algomentor.ops.observability.SseOpsRecorder;
+import org.congcong.algomentor.ops.observability.SseStreamType;
+import org.congcong.algomentor.ops.observability.StructuredOpsLogger;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -60,6 +66,9 @@ public class PracticeSessionController {
   private final ObjectProvider<AiRunAdmissionService> admissionService;
   private final ObjectProvider<LlmStreamSseMapper> sseMapper;
   private final ApiSseProperties sseProperties;
+  private final SseOpsRecorder sseOpsRecorder;
+  private final LearningOpsRecorder learningOpsRecorder;
+  private final StructuredOpsLogger opsLogger;
 
   public PracticeSessionController(
       ObjectProvider<PracticeSessionService> practiceSessionService,
@@ -77,6 +86,33 @@ public class PracticeSessionController {
     this.admissionService = admissionService;
     this.sseMapper = sseMapper;
     this.sseProperties = sseProperties;
+    this.sseOpsRecorder = NoopOpsRecorders.sse();
+    this.learningOpsRecorder = NoopOpsRecorders.learning();
+    this.opsLogger = new StructuredOpsLogger();
+  }
+
+  @Autowired
+  public PracticeSessionController(
+      ObjectProvider<PracticeSessionService> practiceSessionService,
+      ObjectProvider<PracticeMessageStreamService> streamService,
+      CurrentUserIdProvider currentUserIdProvider,
+      ObjectProvider<AiActorResolver> actorResolver,
+      ObjectProvider<AiRunAdmissionService> admissionService,
+      ObjectProvider<LlmStreamSseMapper> sseMapper,
+      ApiSseProperties sseProperties,
+      ObjectProvider<SseOpsRecorder> sseOpsRecorder,
+      ObjectProvider<LearningOpsRecorder> learningOpsRecorder
+  ) {
+    this.practiceSessionService = practiceSessionService;
+    this.streamService = streamService;
+    this.currentUserIdProvider = currentUserIdProvider;
+    this.actorResolver = actorResolver;
+    this.admissionService = admissionService;
+    this.sseMapper = sseMapper;
+    this.sseProperties = sseProperties;
+    this.sseOpsRecorder = sseOpsRecorder.getIfAvailable(NoopOpsRecorders::sse);
+    this.learningOpsRecorder = learningOpsRecorder.getIfAvailable(NoopOpsRecorders::learning);
+    this.opsLogger = new StructuredOpsLogger();
   }
 
   @PostMapping(ApiContractConstants.LEARNING_PLANS_BASE_PATH
@@ -192,11 +228,18 @@ public class PracticeSessionController {
         admission.metadata());
 
     SseEmitter emitter = new SseEmitter(sseProperties.practiceMessageTimeoutMillis());
-    SseLlmStreamSubscriber subscriber = new SseLlmStreamSubscriber(emitter, requiredSseMapper(), false);
+    SseLlmStreamSubscriber subscriber = new SseLlmStreamSubscriber(
+        emitter,
+        requiredSseMapper(),
+        false,
+        SseStreamType.PRACTICE_MESSAGE,
+        sseOpsRecorder,
+        learningOpsRecorder,
+        opsLogger);
 
-    emitter.onCompletion(subscriber::cancel);
-    emitter.onTimeout(subscriber::cancel);
-    emitter.onError(ignored -> subscriber.cancel());
+    emitter.onCompletion(() -> subscriber.clientDisconnected(null));
+    emitter.onTimeout(subscriber::timeout);
+    emitter.onError(subscriber::clientDisconnected);
 
     try {
       publisher.subscribe(subscriber);

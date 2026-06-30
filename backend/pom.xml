@@ -29,6 +29,7 @@
     <module>auth</module>
     <module>ai-governance</module>
     <module>mentor-application</module>
+    <module>ops-observability</module>
     <module>mentor-api</module>
   </modules>
 
