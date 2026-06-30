@@ -111,6 +111,7 @@ public class OAuth2LoginUserService {
             avatarUrl,
             AuthUserStatus.ACTIVE,
             now));
+    ensureActive(user);
     if (userByEmail.isEmpty()) {
       identityRepository.addRole(user.id(), AuthRole.USER);
     }

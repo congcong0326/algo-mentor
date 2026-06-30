@@ -18,6 +18,7 @@ import org.congcong.algomentor.auth.service.AuthPermissionService;
 import org.congcong.algomentor.auth.service.OAuth2LoginUserService;
 import org.congcong.algomentor.auth.service.PasswordUserService;
 import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
+import org.congcong.algomentor.identity.autoconfigure.IdentityAutoConfiguration;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.ObjectProvider;
@@ -33,7 +34,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 
-@AutoConfiguration
+@AutoConfiguration(after = IdentityAutoConfiguration.class)
 @EnableConfigurationProperties(AuthProperties.class)
 public class AuthApiAutoConfiguration {
 

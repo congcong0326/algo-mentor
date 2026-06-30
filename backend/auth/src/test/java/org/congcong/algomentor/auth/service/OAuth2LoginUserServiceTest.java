@@ -122,6 +122,50 @@ public class OAuth2LoginUserServiceTest {
   }
 
   @Test
+  void firstGoogleLoginWithSameEmailDisabledUserDoesNotCreateBinding() {
+    repository.createUser(
+        "disabled@example.com",
+        "disabled@example.com",
+        "Disabled User",
+        null,
+        AuthUserStatus.DISABLED,
+        NOW.minusSeconds(3600));
+
+    assertThatThrownBy(() -> service.syncGoogleUser(googleAttributes(
+        "disabled-unbound-sub",
+        "DISABLED@example.com",
+        "Disabled User",
+        null)))
+        .isInstanceOf(OAuth2AuthenticationException.class)
+        .extracting(exception -> ((OAuth2AuthenticationException) exception).getError().getErrorCode())
+        .isEqualTo("auth_user_disabled");
+    assertThat(repository.oauthAccountsByKey)
+        .doesNotContainKey(OAuthProvider.GOOGLE.value() + ":disabled-unbound-sub");
+  }
+
+  @Test
+  void firstGoogleLoginWithSameEmailDeletedUserDoesNotCreateBinding() {
+    repository.createUser(
+        "deleted@example.com",
+        "deleted@example.com",
+        "Deleted User",
+        null,
+        AuthUserStatus.DELETED,
+        NOW.minusSeconds(3600));
+
+    assertThatThrownBy(() -> service.syncGoogleUser(googleAttributes(
+        "deleted-unbound-sub",
+        "DELETED@example.com",
+        "Deleted User",
+        null)))
+        .isInstanceOf(OAuth2AuthenticationException.class)
+        .extracting(exception -> ((OAuth2AuthenticationException) exception).getError().getErrorCode())
+        .isEqualTo("auth_user_disabled");
+    assertThat(repository.oauthAccountsByKey)
+        .doesNotContainKey(OAuthProvider.GOOGLE.value() + ":deleted-unbound-sub");
+  }
+
+  @Test
   void disabledUserCannotLogin() {
     AuthUser user = repository.createUser(
         "disabled@example.com",
