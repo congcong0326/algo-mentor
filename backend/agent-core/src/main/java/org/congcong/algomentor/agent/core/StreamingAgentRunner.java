@@ -17,7 +17,11 @@ public class StreamingAgentRunner {
   }
 
   public StreamingAgentRunner(LlmGateway llmGateway, LlmModelSelector modelSelector) {
-    this(request -> llmGateway.stream(AgentLlmRequestFactory.build(modelSelector, request)));
+    this(llmGateway, new AgentLlmRequestFactory(modelSelector));
+  }
+
+  public StreamingAgentRunner(LlmGateway llmGateway, AgentLlmRequestFactory requestFactory) {
+    this(request -> llmGateway.stream(requestFactory.build(request)));
   }
 
   protected StreamingAgentRunner(Function<AgentRequest, Flow.Publisher<LlmStreamEvent>> streamRunner) {

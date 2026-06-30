@@ -1,8 +1,9 @@
 package org.congcong.algomentor.agent.core;
 
-import java.util.List;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
@@ -12,9 +13,23 @@ import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 
-final class AgentLlmRequestFactory {
+public final class AgentLlmRequestFactory {
 
-  private AgentLlmRequestFactory() {
+  private final LlmModelSelector defaultModelSelector;
+  private final AgentModelSelectorResolver modelSelectorResolver;
+
+  public AgentLlmRequestFactory(LlmModelSelector defaultModelSelector) {
+    this(defaultModelSelector, new DefaultAgentModelSelectorResolver());
+  }
+
+  public AgentLlmRequestFactory(
+      LlmModelSelector defaultModelSelector,
+      AgentModelSelectorResolver modelSelectorResolver
+  ) {
+    this.defaultModelSelector = validatedSelector(defaultModelSelector);
+    this.modelSelectorResolver = Objects.requireNonNull(
+        modelSelectorResolver,
+        "agent model selector resolver must not be null");
   }
 
   static LlmCompletionRequest build(String model, AgentRequest request) {
@@ -22,10 +37,14 @@ final class AgentLlmRequestFactory {
   }
 
   static LlmCompletionRequest build(LlmModelSelector modelSelector, AgentRequest request) {
-    return build(modelSelector, request, initialMessages(request), List.of(), null, request.metadata());
+    return new AgentLlmRequestFactory(modelSelector).build(request);
   }
 
-  static List<LlmMessage> initialMessages(AgentRequest request) {
+  public LlmCompletionRequest build(AgentRequest request) {
+    return build(request, 1, initialMessages(request), List.of(), null, request.metadata());
+  }
+
+  public List<LlmMessage> initialMessages(AgentRequest request) {
     return request.messages();
   }
 
@@ -70,9 +89,28 @@ final class AgentLlmRequestFactory {
       LlmToolChoice toolChoice,
       Map<String, Object> metadata
   ) {
+    return new AgentLlmRequestFactory(modelSelector).build(request, 1, messages, tools, toolChoice, metadata);
+  }
+
+  public LlmCompletionRequest build(
+      AgentRequest request,
+      int stepIndex,
+      List<LlmMessage> messages,
+      List<LlmToolSpec> tools,
+      LlmToolChoice toolChoice,
+      Map<String, Object> metadata
+  ) {
     AgentExecutionOptions executionOptions = request.executionOptions();
+    LlmModelSelector modelSelector = resolveModelSelector(new AgentModelSelectionContext(
+        request,
+        stepIndex,
+        messages,
+        tools,
+        toolChoice,
+        metadata,
+        defaultModelSelector));
     return LlmCompletionRequest.builder()
-        .modelSelector(validatedSelector(modelSelector))
+        .modelSelector(modelSelector)
         .messages(messages)
         .options(executionOptions.generationOptions())
         .tools(tools)
@@ -80,6 +118,10 @@ final class AgentLlmRequestFactory {
         .responseFormat(executionOptions.responseFormat())
         .metadata(executionMetadata(metadata, executionOptions.structuredOutput()))
         .build();
+  }
+
+  private LlmModelSelector resolveModelSelector(AgentModelSelectionContext context) {
+    return validatedSelector(modelSelectorResolver.resolve(context));
   }
 
   private static Map<String, Object> executionMetadata(

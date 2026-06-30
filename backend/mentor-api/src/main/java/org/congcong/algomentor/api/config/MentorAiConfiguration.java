@@ -8,12 +8,15 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Flow;
+import org.congcong.algomentor.agent.core.AgentCancellationToken;
+import org.congcong.algomentor.agent.core.AgentLlmRequestFactory;
 import org.congcong.algomentor.agent.core.AgentLoopObserver;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
+import org.congcong.algomentor.agent.core.AgentModelSelectorResolver;
 import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
-import org.congcong.algomentor.agent.core.AgentCancellationToken;
+import org.congcong.algomentor.agent.core.DefaultAgentModelSelectorResolver;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionAuthorization;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionCheck;
@@ -97,8 +100,25 @@ public class MentorAiConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public AgentRunner agentRunner(LlmGateway llmGateway, LlmGatewayProperties gatewayProperties) {
-    return new AgentRunner(llmGateway, gatewayProperties.defaultSelector(MentorPurposes.TOPIC_EXPLANATION));
+  public AgentModelSelectorResolver agentModelSelectorResolver() {
+    return new DefaultAgentModelSelectorResolver();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public AgentLlmRequestFactory agentLlmRequestFactory(
+      LlmGatewayProperties gatewayProperties,
+      AgentModelSelectorResolver modelSelectorResolver
+  ) {
+    return new AgentLlmRequestFactory(
+        gatewayProperties.defaultSelector(MentorPurposes.TOPIC_EXPLANATION),
+        modelSelectorResolver);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public AgentRunner agentRunner(LlmGateway llmGateway, AgentLlmRequestFactory requestFactory) {
+    return new AgentRunner(llmGateway, requestFactory);
   }
 
   @Bean
@@ -246,7 +266,7 @@ public class MentorAiConfiguration {
   @ConditionalOnMissingBean
   public AgentLoopRunner agentLoopRunner(
       LlmGateway llmGateway,
-      LlmGatewayProperties gatewayProperties,
+      AgentLlmRequestFactory requestFactory,
       AgentToolRegistry agentToolRegistry,
       List<AgentLoopObserver> observers,
       @Value("${" + MentorConfigurationKeys.AGENT_TOOL_CHOICE + ":auto}") String toolChoice,
@@ -259,7 +279,7 @@ public class MentorAiConfiguration {
   ) {
     return new AgentLoopRunner(
         llmGateway,
-        gatewayProperties.defaultSelector(MentorPurposes.TOPIC_EXPLANATION),
+        requestFactory,
         agentToolRegistry,
         toToolChoice(toolChoice, specificToolName),
         maxSteps,

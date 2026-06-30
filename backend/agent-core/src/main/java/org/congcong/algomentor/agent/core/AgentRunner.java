@@ -15,8 +15,12 @@ public class AgentRunner {
   }
 
   public AgentRunner(LlmGateway llmGateway, LlmModelSelector modelSelector) {
+    this(llmGateway, new AgentLlmRequestFactory(modelSelector));
+  }
+
+  public AgentRunner(LlmGateway llmGateway, AgentLlmRequestFactory requestFactory) {
     this(request -> new AgentResponse(
-        llmGateway.complete(AgentLlmRequestFactory.build(modelSelector, request)).message().text()));
+        llmGateway.complete(requestFactory.build(request)).message().text()));
   }
 
   protected AgentRunner(Function<AgentRequest, AgentResponse> runner) {

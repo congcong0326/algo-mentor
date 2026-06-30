@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
+import org.congcong.algomentor.agent.core.AgentModelSelectorResolver;
 import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionBehavior;
@@ -31,6 +32,7 @@ import org.congcong.algomentor.agent.core.permission.AgentToolPermissionMetrics;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionResultFactory;
 import org.congcong.algomentor.agent.core.permission.InMemoryAgentToolPermissionCoordinator;
 import org.congcong.algomentor.agent.core.permission.NoopAgentToolPermissionMetrics;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
 import org.congcong.algomentor.agent.core.tool.CalculatorTool;
 import org.congcong.algomentor.api.problem.service.ProblemService;
@@ -102,6 +104,35 @@ class MentorAiConfigurationTest {
           assertThat(provider.lastRequest.modelSelector().providerId()).contains(TEST_PROVIDER);
           assertThat(provider.lastRequest.modelSelector().modelId()).contains(TEST_MODEL);
           assertThat(provider.lastRequest.modelSelector().purpose()).isEqualTo("topic-explanation");
+        });
+  }
+
+  @Test
+  void allowsReplacingAgentModelSelectorResolver() {
+    CustomModelSelectorResolverConfig.capturedUserId = null;
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+        .withUserConfiguration(
+            FakeProviderConfig.class,
+            CustomModelSelectorResolverConfig.class,
+            MentorAiConfiguration.class)
+        .withPropertyValues(
+            "algo-mentor.ai.gateway.default-provider=test-provider",
+            "algo-mentor.ai.gateway.default-model=test-model")
+        .run(context -> {
+          AgentRunner agentRunner = context.getBean(AgentRunner.class);
+
+          agentRunner.run(new AgentRequest(
+              "run-1",
+              "request-1",
+              List.of(LlmMessage.user("hello")),
+              Map.of(AgentRuntimeMetadataKeys.USER_ID, 42L)));
+
+          FakeProvider provider = context.getBean(FakeProvider.class);
+          assertThat(provider.lastRequest.modelSelector().providerId()).contains(TEST_PROVIDER);
+          assertThat(provider.lastRequest.modelSelector().modelId()).contains(TEST_MODEL);
+          assertThat(provider.lastRequest.modelSelector().purpose()).isEqualTo("custom-user-routing");
+          assertThat(CustomModelSelectorResolverConfig.capturedUserId).isEqualTo(42L);
         });
   }
 
@@ -322,6 +353,19 @@ class MentorAiConfigurationTest {
     @Bean
     FakeProvider fakeProvider() {
       return new FakeProvider();
+    }
+  }
+
+  @Configuration(proxyBeanMethods = false)
+  static class CustomModelSelectorResolverConfig {
+    private static Long capturedUserId;
+
+    @Bean
+    AgentModelSelectorResolver agentModelSelectorResolver() {
+      return context -> {
+        capturedUserId = context.trustedUserId();
+        return new LlmModelSelector(null, null, Set.of(), "custom-user-routing");
+      };
     }
   }
 

@@ -53,7 +53,7 @@ public class AgentLoopRunner {
   private static final String DEFAULT_PURPOSE = "topic-explanation";
 
   private final LlmGateway llmGateway;
-  private final LlmModelSelector modelSelector;
+  private final AgentLlmRequestFactory requestFactory;
   private final AgentToolRegistry toolRegistry;
   private final LlmToolChoice toolChoice;
   private final int maxSteps;
@@ -75,7 +75,16 @@ public class AgentLoopRunner {
       AgentToolRegistry toolRegistry,
       int maxSteps
   ) {
-    this(llmGateway, modelSelector, toolRegistry, null, maxSteps);
+    this(llmGateway, new AgentLlmRequestFactory(modelSelector), toolRegistry, null, maxSteps);
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
+      AgentLlmRequestFactory requestFactory,
+      AgentToolRegistry toolRegistry,
+      int maxSteps
+  ) {
+    this(llmGateway, requestFactory, toolRegistry, null, maxSteps);
   }
 
   public AgentLoopRunner(
@@ -85,7 +94,17 @@ public class AgentLoopRunner {
       LlmToolChoice toolChoice,
       int maxSteps
   ) {
-    this(llmGateway, modelSelector, toolRegistry, toolChoice, maxSteps, List.of(), List.of());
+    this(llmGateway, new AgentLlmRequestFactory(modelSelector), toolRegistry, toolChoice, maxSteps, List.of(), List.of());
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
+      AgentLlmRequestFactory requestFactory,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps
+  ) {
+    this(llmGateway, requestFactory, toolRegistry, toolChoice, maxSteps, List.of(), List.of());
   }
 
   public AgentLoopRunner(
@@ -99,7 +118,29 @@ public class AgentLoopRunner {
   ) {
     this(
         llmGateway,
-        modelSelector,
+        new AgentLlmRequestFactory(modelSelector),
+        toolRegistry,
+        toolChoice,
+        maxSteps,
+        observers,
+        interceptors,
+        ToolResultCompactionPolicy.defaults(),
+        new InMemoryToolResultStore(),
+        new ObjectMapper());
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
+      AgentLlmRequestFactory requestFactory,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps,
+      List<AgentLoopObserver> observers,
+      List<AgentLoopInterceptor> interceptors
+  ) {
+    this(
+        llmGateway,
+        requestFactory,
         toolRegistry,
         toolChoice,
         maxSteps,
@@ -124,7 +165,33 @@ public class AgentLoopRunner {
   ) {
     this(
         llmGateway,
-        modelSelector,
+        new AgentLlmRequestFactory(modelSelector),
+        toolRegistry,
+        toolChoice,
+        maxSteps,
+        observers,
+        interceptors,
+        toolResultPolicy,
+        toolResultStore,
+        objectMapper,
+        null);
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
+      AgentLlmRequestFactory requestFactory,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps,
+      List<AgentLoopObserver> observers,
+      List<AgentLoopInterceptor> interceptors,
+      ToolResultCompactionPolicy toolResultPolicy,
+      ToolResultStore toolResultStore,
+      ObjectMapper objectMapper
+  ) {
+    this(
+        llmGateway,
+        requestFactory,
         toolRegistry,
         toolChoice,
         maxSteps,
@@ -149,11 +216,38 @@ public class AgentLoopRunner {
       ObjectMapper objectMapper,
       AgentToolPermissionGuard permissionGuard
   ) {
+    this(
+        llmGateway,
+        new AgentLlmRequestFactory(modelSelector),
+        toolRegistry,
+        toolChoice,
+        maxSteps,
+        observers,
+        interceptors,
+        toolResultPolicy,
+        toolResultStore,
+        objectMapper,
+        permissionGuard);
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
+      AgentLlmRequestFactory requestFactory,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps,
+      List<AgentLoopObserver> observers,
+      List<AgentLoopInterceptor> interceptors,
+      ToolResultCompactionPolicy toolResultPolicy,
+      ToolResultStore toolResultStore,
+      ObjectMapper objectMapper,
+      AgentToolPermissionGuard permissionGuard
+  ) {
     if (maxSteps < 1) {
       throw new IllegalArgumentException("Agent loop max steps must be positive");
     }
     this.llmGateway = Objects.requireNonNull(llmGateway, "llmGateway must not be null");
-    this.modelSelector = Objects.requireNonNull(modelSelector, "modelSelector must not be null");
+    this.requestFactory = Objects.requireNonNull(requestFactory, "agent LLM request factory must not be null");
     this.toolRegistry = toolRegistry == null ? AgentToolRegistry.empty() : toolRegistry;
     this.toolChoice = toolChoice == null ? LlmToolChoice.auto() : toolChoice;
     this.maxSteps = maxSteps;
@@ -230,7 +324,7 @@ public class AgentLoopRunner {
         cancellationToken);
     AgentLoopLifecycle lifecycle = new AgentLoopLifecycle(publisher, observers, interceptors, permissionGuard);
     // messages 是本次 run 内的可变工作上下文：初始用户/系统消息、assistant tool_calls、tool result 都按顺序追加。
-    List<LlmMessage> messages = new ArrayList<>(AgentLlmRequestFactory.initialMessages(request));
+    List<LlmMessage> messages = new ArrayList<>(requestFactory.initialMessages(request));
     lifecycle.runStarted(context);
     try {
       for (int stepIndex = 1; stepIndex <= maxSteps; stepIndex++) {
@@ -433,9 +527,9 @@ public class AgentLoopRunner {
     messages.clear();
     messages.addAll(compaction.messages());
     Map<String, Object> requestMetadata = mergedMetadata(context.request().metadata(), compaction.metadata());
-    LlmCompletionRequest llmRequest = lifecycle.beforeLlmRequest(context, stepIndex, AgentLlmRequestFactory.build(
-        modelSelector,
+    LlmCompletionRequest llmRequest = lifecycle.beforeLlmRequest(context, stepIndex, requestFactory.build(
         context.request(),
+        stepIndex,
         messages,
         toolRegistry.specs(),
         toolChoice,

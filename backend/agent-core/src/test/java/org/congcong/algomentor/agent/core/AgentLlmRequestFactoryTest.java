@@ -7,13 +7,14 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
-import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.junit.jupiter.api.Test;
 
 class AgentLlmRequestFactoryTest {
@@ -56,5 +57,48 @@ class AgentLlmRequestFactoryTest {
         .containsEntry(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_STRATEGY, "PROVIDER_NATIVE")
         .containsEntry(AgentRuntimeMetadataKeys.SCHEMA_NAME, "learning_plan_draft")
         .containsEntry(AgentRuntimeMetadataKeys.SCHEMA_VERSION, "v1");
+  }
+
+  @Test
+  void usesRequestModelSelectorBeforeGlobalDefault() {
+    LlmModelSelector requestSelector = new LlmModelSelector(null, LlmModelId.of("gpt-expensive"), Set.of(), "code-review");
+    AgentRequest request = new AgentRequest(
+        "run-1",
+        "request-1",
+        List.of(LlmMessage.user("review code")),
+        Map.of(),
+        new AgentExecutionOptions(
+            requestSelector,
+            LlmGenerationOptions.defaults(),
+            new LlmResponseFormat.Text(),
+            AgentStructuredOutputOptions.none()));
+    AgentLlmRequestFactory factory = new AgentLlmRequestFactory(
+        new LlmModelSelector(null, LlmModelId.of("gpt-cheap"), Set.of(), "default"));
+
+    LlmCompletionRequest llmRequest = factory.build(request);
+
+    assertThat(llmRequest.modelSelector()).isEqualTo(requestSelector);
+  }
+
+  @Test
+  void exposesTrustedUserIdToResolver() {
+    AtomicReference<AgentModelSelectionContext> capturedContext = new AtomicReference<>();
+    LlmModelSelector routedSelector = new LlmModelSelector(null, LlmModelId.of("gpt-user-tier"), Set.of(), "user-tier");
+    AgentLlmRequestFactory factory = new AgentLlmRequestFactory(
+        new LlmModelSelector(null, LlmModelId.of("gpt-default"), Set.of(), "default"),
+        context -> {
+          capturedContext.set(context);
+          return routedSelector;
+        });
+    AgentRequest request = new AgentRequest(
+        "run-1",
+        "request-1",
+        List.of(LlmMessage.user("hello")),
+        Map.of(AgentRuntimeMetadataKeys.USER_ID, 42L));
+
+    LlmCompletionRequest llmRequest = factory.build(request);
+
+    assertThat(llmRequest.modelSelector()).isEqualTo(routedSelector);
+    assertThat(capturedContext.get().trustedUserId()).isEqualTo(42L);
   }
 }
