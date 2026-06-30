@@ -90,6 +90,16 @@ class AdminUserControllerTest {
   }
 
   @Test
+  void malformedPaginationMapsToGenericValidationError() throws Exception {
+    mockMvc.perform(get("/api/admin/users")
+            .param("page", "abc")
+            .param("pageSize", "20"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.error.code").value("VALIDATION_FAILED"));
+  }
+
+  @Test
   void detailReturnsRolesAndDeleteFields() throws Exception {
     AuthUser user = deletedUser(42L, 7L);
     when(service.getUser(42L)).thenReturn(user);

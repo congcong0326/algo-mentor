@@ -10,6 +10,7 @@ public final class AdminUserApiContractConstants {
   public static final String USER_STATUS_CONFLICT = "USER_STATUS_CONFLICT";
   public static final String USER_SELF_OPERATION_FORBIDDEN = "USER_SELF_OPERATION_FORBIDDEN";
   public static final String USER_STATUS_INVALID = "USER_STATUS_INVALID";
+  public static final String VALIDATION_FAILED = "VALIDATION_FAILED";
 
   private AdminUserApiContractConstants() {
   }
