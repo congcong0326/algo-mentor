@@ -58,35 +58,35 @@ mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository test
 
 ### Docker Observability
 
-- Modify: `deploy/docker/docker-compose.yml`  
+- Modify: `deploy/docker/docker-compose.yml`<br>
   增加 `observability` profile 下的 `prometheus`、`grafana`、`loki`、`promtail` 服务，并让服务加入默认 Compose 网络。
-- Create: `deploy/docker/observability/prometheus.yml`  
+- Create: `deploy/docker/observability/prometheus.yml`<br>
   Prometheus scrape 配置，抓取 `mentor-api:8080/actuator/prometheus` 和自身 `localhost:9090`。
-- Create: `deploy/docker/observability/prometheus-alert-rules.yml`  
+- Create: `deploy/docker/observability/prometheus-alert-rules.yml`<br>
   示例告警规则，不负责通知发送。
-- Create: `deploy/docker/observability/loki.yml`  
+- Create: `deploy/docker/observability/loki.yml`<br>
   本地单节点 Loki 配置。
-- Create: `deploy/docker/observability/promtail.yml`  
+- Create: `deploy/docker/observability/promtail.yml`<br>
   收集 Docker 容器 stdout 日志，低基数 label 只使用 compose/service/container/job。
-- Create: `deploy/docker/observability/grafana/provisioning/datasources/datasources.yml`  
+- Create: `deploy/docker/observability/grafana/provisioning/datasources/datasources.yml`<br>
   自动配置 Prometheus 和 Loki datasource。
-- Create: `deploy/docker/observability/grafana/provisioning/dashboards/dashboards.yml`  
+- Create: `deploy/docker/observability/grafana/provisioning/dashboards/dashboards.yml`<br>
   自动加载 dashboard JSON。
-- Create: `deploy/docker/observability/grafana/dashboards/algo-mentor-overview.json`  
+- Create: `deploy/docker/observability/grafana/dashboards/algo-mentor-overview.json`<br>
   Grafana dashboard JSON。
 
 ### Makefile and Docker Detection
 
-- Modify: `Makefile`  
+- Modify: `Makefile`<br>
   新增 `observability-up`、`observability-down`、`observability-status`、`observability-logs` 入口。
-- Create: `deploy/docker/observability/check-docker.sh`  
+- Create: `deploy/docker/observability/check-docker.sh`<br>
   Makefile 调用的 Docker 可用性探测脚本。
 
 ### Backend Module
 
-- Modify: `backend/pom.xml`  
+- Modify: `backend/pom.xml`<br>
   新增 Maven module `ops-observability`。
-- Create: `backend/ops-observability/pom.xml`  
+- Create: `backend/ops-observability/pom.xml`<br>
   依赖 `agent-core`、Micrometer、SLF4J、Spring Boot autoconfigure/test。
 - Create: `backend/ops-observability/src/main/java/org/congcong/algomentor/ops/observability/OpsMetricNames.java`
 - Create: `backend/ops-observability/src/main/java/org/congcong/algomentor/ops/observability/OpsLogFields.java`
@@ -107,19 +107,19 @@ mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository test
 
 ### Backend Wiring and Instrumentation
 
-- Modify: `backend/mentor-api/pom.xml`  
+- Modify: `backend/mentor-api/pom.xml`<br>
   依赖 `ops-observability`。
-- Modify: `backend/mentor-api/src/main/resources/application.yml`  
+- Modify: `backend/mentor-api/src/main/resources/application.yml`<br>
   开启 HTTP server histogram，便于 dashboard 计算 P95。
-- Modify: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/service/SseLlmStreamSubscriber.java`  
+- Modify: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/service/SseLlmStreamSubscriber.java`<br>
   为 AI explanation、practice message、agent conversation 等 Agent SSE 流记录 opened/completed/failed/timeout/client disconnected。
-- Modify: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/learningplan/service/SseLearningPlanDraftStreamSubscriber.java`  
+- Modify: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/learningplan/service/SseLearningPlanDraftStreamSubscriber.java`<br>
   为学习计划草案 SSE 流记录指标和结构化日志。
 - Modify: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/AiStreamController.java`
 - Modify: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/AgentConversationController.java`
 - Modify: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/learningplan/LearningPlanController.java`
 - Modify: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/practice/PracticeSessionController.java`
-- Modify: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/ApiContractConstants.java`  
+- Modify: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/ApiContractConstants.java`<br>
   如需新增共享 path/template 常量，放在这里，不在 controller 内重复字面量。
 
 ### Tests
@@ -129,7 +129,7 @@ mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository test
 - Create: `backend/ops-observability/src/test/java/org/congcong/algomentor/ops/observability/AgentOpsObserverTest.java`
 - Create: `backend/mentor-api/src/test/java/org/congcong/algomentor/api/service/SseLlmStreamSubscriberOpsTest.java`
 - Create: `backend/mentor-api/src/test/java/org/congcong/algomentor/api/learningplan/service/SseLearningPlanDraftStreamSubscriberOpsTest.java`
-- Create: `deploy/docker/observability/README.md`  
+- Create: `deploy/docker/observability/README.md`<br>
   中文说明本地访问地址、验证命令和非生产定位。
 
 ---
@@ -1646,4 +1646,3 @@ Expected: clean worktree after final commit, or only intentional uncommitted doc
 - 指标低基数标签统一来自 `SseStreamType`、`SseFailureType`、`AgentOpsSource`、`OpsStatus`。
 - 日志字段统一来自 `OpsLogFields`，日志事件统一来自 `OpsLogEventType`。
 - Prometheus 查询使用 Micrometer 的 Prometheus 命名转换结果。
-
