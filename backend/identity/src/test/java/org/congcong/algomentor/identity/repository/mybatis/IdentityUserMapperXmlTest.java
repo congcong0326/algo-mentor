@@ -25,6 +25,7 @@ class IdentityUserMapperXmlTest {
         .contains("id=\"findRoles\"")
         .contains("id=\"updateUserStatus\"")
         .contains("id=\"softDeleteUser\"")
+        .contains("or cast(id as text) = #{keyword}")
         .contains("deleted_at")
         .contains("deleted_by");
   }

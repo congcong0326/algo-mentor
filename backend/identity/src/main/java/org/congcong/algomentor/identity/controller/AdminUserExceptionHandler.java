@@ -6,7 +6,10 @@ import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.identity.service.IdentityUserErrorCode;
 import org.congcong.algomentor.identity.service.IdentityUserManagementException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -33,6 +36,20 @@ public class AdminUserExceptionHandler {
         ? ApiResponse.failure(code, exception.getMessage())
         : responseFactory.failure(code, exception.getMessage(), locale);
     return ResponseEntity.status(toStatus(exception.code())).body(response);
+  }
+
+  @ExceptionHandler({
+      BindException.class,
+      MethodArgumentNotValidException.class,
+      HttpMessageNotReadableException.class
+  })
+  public ResponseEntity<ApiResponse<Void>> handleInvalidStatusParsing(Locale locale) {
+    String code = toApiCode(IdentityUserErrorCode.USER_STATUS_INVALID);
+    String message = "用户状态不合法。";
+    ApiResponse<Void> response = responseFactory == null
+        ? ApiResponse.failure(code, message)
+        : responseFactory.failure(code, message, locale);
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
   }
 
   private HttpStatus toStatus(IdentityUserErrorCode code) {

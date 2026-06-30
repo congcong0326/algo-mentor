@@ -79,6 +79,17 @@ class AdminUserControllerTest {
   }
 
   @Test
+  void malformedQueryStatusMapsTo400ContractError() throws Exception {
+    mockMvc.perform(get("/api/admin/users")
+            .param("page", "1")
+            .param("pageSize", "20")
+            .param("status", "BOGUS"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.error.code").value("USER_STATUS_INVALID"));
+  }
+
+  @Test
   void detailReturnsRolesAndDeleteFields() throws Exception {
     AuthUser user = deletedUser(42L, 7L);
     when(service.getUser(42L)).thenReturn(user);
@@ -158,6 +169,17 @@ class AdminUserControllerTest {
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.error.code").value("USER_STATUS_INVALID"))
         .andExpect(jsonPath("$.error.message").value("用户状态不合法。"));
+  }
+
+  @Test
+  void malformedJsonStatusMapsTo400ContractError() throws Exception {
+    mockMvc.perform(patch("/api/admin/users/{userId}/status", 42L)
+            .principal(new TestingAuthenticationToken("99", "n/a"))
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"status\":\"BOGUS\"}"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.error.code").value("USER_STATUS_INVALID"));
   }
 
   private AuthUser activeUser(long id) {

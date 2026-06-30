@@ -18,14 +18,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.congcong.algomentor.auth.autoconfigure.AuthApiAutoConfiguration;
 import org.congcong.algomentor.auth.security.AuthAuthorities;
 import org.congcong.algomentor.auth.security.AuthenticatedOidcUser;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.OAuth2AuthenticationFailureHandler;
+import org.congcong.algomentor.identity.model.AuthUser;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.ObjectProvider;
@@ -67,6 +71,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.congcong.algomentor.identity.model.AuthRole;
 import org.congcong.algomentor.identity.model.AuthUserStatus;
+import org.congcong.algomentor.identity.model.IdentityUserPage;
+import org.congcong.algomentor.identity.model.IdentityUserSearchQuery;
+import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
@@ -92,6 +99,15 @@ class AuthSecurityAutoConfigurationTest {
 
   @Autowired
   private ObjectProvider<SessionRepositoryCustomizer<JdbcIndexedSessionRepository>> jdbcSessionRepositoryCustomizers;
+
+  @Autowired
+  private FakeIdentityUserRepository identityUsers;
+
+  @BeforeEach
+  void setUpIdentityUsers() {
+    identityUsers.clear();
+    identityUsers.save(authUser(42L, AuthUserStatus.ACTIVE));
+  }
 
   @Test
   void permitsHealthEndpoint() throws Exception {
@@ -160,6 +176,16 @@ class AuthSecurityAutoConfigurationTest {
         .andExpect(cookie().httpOnly("XSRF-TOKEN", false))
         .andExpect(jsonPath("$.data.email").value("user@example.com"))
         .andExpect(jsonPath("$.data.roles[0]").value("USER"));
+  }
+
+  @Test
+  void rejectsAuthenticatedApiRequestWhenIdentityUserIsNoLongerActive() throws Exception {
+    identityUsers.save(authUser(42L, AuthUserStatus.DISABLED));
+
+    mockMvc.perform(get("/api/protected").with(authentication(authenticationToken())))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"));
   }
 
   @Test
@@ -338,6 +364,10 @@ class AuthSecurityAutoConfigurationTest {
   })
   @Import(TestControllers.class)
   static class TestApplication {
+    @Bean
+    FakeIdentityUserRepository identityUserRepository() {
+      return new FakeIdentityUserRepository();
+    }
   }
 
   @RestController
@@ -370,5 +400,89 @@ class AuthSecurityAutoConfigurationTest {
   }
 
   record StatusResponse(String status) {
+  }
+
+  private static AuthUser authUser(long userId, AuthUserStatus status) {
+    return new AuthUser(
+        userId,
+        "user@example.com",
+        "user@example.com",
+        "User Name",
+        "https://example.com/avatar.png",
+        status,
+        Instant.parse("2026-06-30T00:00:00Z"),
+        Instant.parse("2026-06-30T00:00:00Z"),
+        null,
+        null,
+        null);
+  }
+
+  static class FakeIdentityUserRepository implements IdentityUserRepository {
+    private final Map<Long, AuthUser> users = new HashMap<>();
+
+    void clear() {
+      users.clear();
+    }
+
+    void save(AuthUser user) {
+      users.put(user.id(), user);
+    }
+
+    @Override
+    public Optional<AuthUser> findUserById(long userId) {
+      return Optional.ofNullable(users.get(userId));
+    }
+
+    @Override
+    public Optional<AuthUser> findUserByEmailNormalized(String emailNormalized) {
+      throw new UnsupportedOperationException("findUserByEmailNormalized is not used by this test.");
+    }
+
+    @Override
+    public AuthUser createUser(
+        String email,
+        String emailNormalized,
+        String displayName,
+        String avatarUrl,
+        AuthUserStatus status,
+        Instant now
+    ) {
+      throw new UnsupportedOperationException("createUser is not used by this test.");
+    }
+
+    @Override
+    public void addRole(long userId, AuthRole role) {
+      throw new UnsupportedOperationException("addRole is not used by this test.");
+    }
+
+    @Override
+    public List<AuthRole> findRoles(long userId) {
+      throw new UnsupportedOperationException("findRoles is not used by this test.");
+    }
+
+    @Override
+    public AuthUser updateLastLoginAt(long userId, Instant lastLoginAt) {
+      throw new UnsupportedOperationException("updateLastLoginAt is not used by this test.");
+    }
+
+    @Override
+    public IdentityUserPage searchUsers(IdentityUserSearchQuery query) {
+      throw new UnsupportedOperationException("searchUsers is not used by this test.");
+    }
+
+    @Override
+    public boolean updateUserStatus(
+        long userId,
+        AuthUserStatus expectedStatus,
+        AuthUserStatus status,
+        Instant updatedAt
+    ) {
+      throw new UnsupportedOperationException("updateUserStatus is not used by this test.");
+    }
+
+    @Override
+    public boolean softDeleteUser(long userId, long operatorUserId, AuthUserStatus expectedStatus, Instant deletedAt) {
+      throw new UnsupportedOperationException("softDeleteUser is not used by this test.");
+    }
   }
 }

@@ -2,6 +2,7 @@ package org.congcong.algomentor.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Locale;
+import org.congcong.algomentor.auth.security.ActiveIdentityUserFilter;
 import org.congcong.algomentor.auth.security.ApiAuthenticationEntryPoint;
 import org.congcong.algomentor.auth.security.AuthenticatedOAuth2UserService;
 import org.congcong.algomentor.auth.security.AuthenticatedOidcUserService;
@@ -10,6 +11,7 @@ import org.congcong.algomentor.auth.security.OAuth2AuthenticationFailureHandler;
 import org.congcong.algomentor.auth.security.OAuth2AuthenticationSuccessHandler;
 import org.congcong.algomentor.auth.security.SpaCsrfTokenRequestHandler;
 import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
+import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -34,10 +36,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 
@@ -89,11 +93,15 @@ public class AuthSecurityAutoConfiguration {
       ObjectProvider<AuthenticatedOidcUserService> authenticatedOidcUserService,
       ObjectProvider<ClientRegistrationRepository> clientRegistrationRepository,
       ObjectProvider<SecurityContextRepository> securityContextRepository,
+      ObjectProvider<IdentityUserRepository> identityUserRepositoryProvider,
       AuthProperties properties
   ) throws Exception {
     CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
     ObjectMapper objectMapper = objectMapperProvider.getIfAvailable(() -> new ObjectMapper().findAndRegisterModules());
     ApiErrorResponseFactory apiErrorResponseFactory = apiErrorResponseFactoryProvider.getIfAvailable();
+    AuthenticationEntryPoint apiAuthenticationEntryPoint = apiErrorResponseFactory == null
+        ? new ApiAuthenticationEntryPoint(objectMapper)
+        : new ApiAuthenticationEntryPoint(objectMapper, apiErrorResponseFactory);
     ClientRegistrationRepository registrations = clientRegistrationRepository.getIfAvailable();
     log.info(
         "Configuring auth security filter chain. oauth2ClientRegistrationRepositoryPresent={} loginSuccessUrl={} cookieSecure={} cookieSameSite={} sessionTimeout={}",
@@ -112,9 +120,7 @@ public class AuthSecurityAutoConfiguration {
         .securityContext(securityContext -> securityContextRepository.ifAvailable(securityContext::securityContextRepository))
         .exceptionHandling(exceptions -> exceptions
             .defaultAuthenticationEntryPointFor(
-                apiErrorResponseFactory == null
-                    ? new ApiAuthenticationEntryPoint(objectMapper)
-                    : new ApiAuthenticationEntryPoint(objectMapper, apiErrorResponseFactory),
+                apiAuthenticationEntryPoint,
                 new AntPathRequestMatcher(AuthSecurityPaths.API_PATTERN))
             .defaultAuthenticationEntryPointFor(
                 new HttpStatusEntryPoint(org.springframework.http.HttpStatus.UNAUTHORIZED),
@@ -152,6 +158,10 @@ public class AuthSecurityAutoConfiguration {
             .invalidateHttpSession(true)
             .deleteCookies("JSESSIONID"))
         .sessionManagement(Customizer.withDefaults());
+
+    identityUserRepositoryProvider.ifAvailable(repository -> http.addFilterAfter(
+        new ActiveIdentityUserFilter(repository, apiAuthenticationEntryPoint),
+        SecurityContextHolderFilter.class));
 
     return http.build();
   }

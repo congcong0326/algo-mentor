@@ -118,6 +118,7 @@
       and (
         lower(coalesce(email, '')) like concat('%', lower(#{keyword}), '%')
         or lower(coalesce(display_name, '')) like concat('%', lower(#{keyword}), '%')
+        or cast(id as text) = #{keyword}
       )
     </if>
     order by created_at desc, id desc
@@ -136,6 +137,7 @@
       and (
         lower(coalesce(email, '')) like concat('%', lower(#{keyword}), '%')
         or lower(coalesce(display_name, '')) like concat('%', lower(#{keyword}), '%')
+        or cast(id as text) = #{keyword}
       )
     </if>
   </select>
