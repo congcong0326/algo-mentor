@@ -26,6 +26,7 @@
 - `backend/pom.xml`：Maven 多模块根，统一 Java 17、Spring Boot 与 `openai-java` 版本。
 - `backend/common`：跨模块公共模型、DTO 和工具。
 - `backend/domain`：业务领域模型，例如算法学习主题、题目、学习计划、会话等。
+- `backend/identity`：身份本体模块，拥有用户/角色模型、用户与角色 MyBatis mapper、管理员用户管理 API、身份状态事件和用户软删除迁移；`auth` 依赖该模块完成认证流程中的用户创建、查询、角色和状态校验。
 - `backend/llm-core`：项目内 LLM 抽象契约，按职责拆分为 `gateway`、`provider`、`model`、`request`、`response`、`stream`、`tool`、`exception` 子包。
 - `backend/llm-openai`：OpenAI provider 适配模块，隔离 `openai-java` SDK、OpenAI 配置、provider 能力描述和后续请求/响应映射。
 - `backend/agent-core`：Agent 核心编排模型，面向 `LlmGateway` 组织模型调用和后续工具执行流程；`runtime` 子包提供通用会话模型、上下文组装策略和 repository 端口。
