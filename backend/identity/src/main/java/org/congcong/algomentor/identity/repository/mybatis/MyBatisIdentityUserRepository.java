@@ -72,7 +72,10 @@ public class MyBatisIdentityUserRepository implements IdentityUserRepository {
 
   @Override
   public AuthUser updateLastLoginAt(long userId, Instant lastLoginAt) {
-    mapper.updateLastLoginAt(userId, lastLoginAt);
+    int updatedRows = mapper.updateLastLoginAt(userId, lastLoginAt);
+    if (updatedRows != 1) {
+      throw new IllegalStateException("Cannot update identity user login time: " + userId);
+    }
     return findUserById(userId)
         .orElseThrow(() -> new IllegalStateException("Cannot load identity user after updating login time: " + userId));
   }

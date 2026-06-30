@@ -24,4 +24,19 @@ class IdentityMigrationResourceTest {
         .contains("idx_auth_users_deleted_at")
         .contains("idx_auth_users_email_display_name");
   }
+
+  @Test
+  void identityMigrationGuardsSoftDeleteForeignKeyCreation() throws Exception {
+    ClassPathResource resource = new ClassPathResource(
+        "db/migration/identity/V16__identity_user_soft_delete.sql");
+
+    assertThat(resource.exists()).isTrue();
+
+    String sql = resource.getContentAsString(StandardCharsets.UTF_8);
+    assertThat(sql)
+        .contains("do $$")
+        .contains("pg_constraint")
+        .contains("if not exists")
+        .contains("fk_auth_users_deleted_by");
+  }
 }

@@ -1,6 +1,7 @@
 package org.congcong.algomentor.identity.repository.mybatis;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Instant;
 import java.util.List;
@@ -13,6 +14,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class MyBatisIdentityUserRepositoryTest {
+
+  private static final Instant NOW = Instant.parse("2026-06-30T00:00:00Z");
 
   private FakeIdentityUserMapper mapper;
   private MyBatisIdentityUserRepository repository;
@@ -41,7 +44,17 @@ class MyBatisIdentityUserRepositoryTest {
         42L,
         1L,
         AuthUserStatus.ACTIVE,
-        Instant.parse("2026-06-30T00:00:00Z"))).isFalse();
+        NOW)).isFalse();
+  }
+
+  @Test
+  void updateLastLoginAtThrowsWhenMapperDoesNotUpdateAnyRow() {
+    mapper.updatedRows = 0;
+
+    assertThatThrownBy(() -> repository.updateLastLoginAt(42L, NOW))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("Cannot update identity user login time")
+        .hasMessageContaining("42");
   }
 
   private static final class FakeIdentityUserMapper implements IdentityUserMapper {
@@ -78,7 +91,7 @@ class MyBatisIdentityUserRepositoryTest {
 
     @Override
     public int updateLastLoginAt(long userId, Instant lastLoginAt) {
-      return 1;
+      return updatedRows;
     }
 
     @Override
@@ -104,7 +117,6 @@ class MyBatisIdentityUserRepositoryTest {
     }
 
     private AuthUserRow userRow(long userId) {
-      Instant now = Instant.parse("2026-06-30T00:00:00Z");
       return new AuthUserRow(
           userId,
           "user@example.com",
@@ -112,8 +124,8 @@ class MyBatisIdentityUserRepositoryTest {
           "User",
           null,
           AuthUserStatus.ACTIVE.name(),
-          now,
-          now,
+          NOW,
+          NOW,
           null,
           null,
           null);

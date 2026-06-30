@@ -2,9 +2,18 @@ alter table auth_users
   add column if not exists deleted_at timestamptz,
   add column if not exists deleted_by bigint;
 
-alter table auth_users
-  add constraint fk_auth_users_deleted_by
-    foreign key (deleted_by) references auth_users (id);
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'fk_auth_users_deleted_by'
+  ) then
+    alter table auth_users
+      add constraint fk_auth_users_deleted_by
+        foreign key (deleted_by) references auth_users (id);
+  end if;
+end $$;
 
 create index if not exists idx_auth_users_status
   on auth_users (status);
