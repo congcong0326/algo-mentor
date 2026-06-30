@@ -85,6 +85,41 @@ export interface LocaleResources {
     debug: string;
     forbidden: string;
   };
+  adminUsers: {
+    ariaLabel: string;
+    title: string;
+    searchPlaceholder: string;
+    statusAll: string;
+    statusActive: string;
+    statusDisabled: string;
+    statusDeleted: string;
+    refresh: string;
+    loading: string;
+    empty: string;
+    loadFailed: string;
+    forbidden: string;
+    id: string;
+    email: string;
+    displayName: string;
+    roles: string;
+    status: string;
+    createdAt: string;
+    lastLoginAt: string;
+    updatedAt: string;
+    deletedAt: string;
+    deletedBy: string;
+    actions: string;
+    disable: string;
+    restore: string;
+    delete: string;
+    confirm: string;
+    confirmDisableTitle: string;
+    confirmRestoreTitle: string;
+    confirmDeleteTitle: string;
+    confirmDeleteDescription: string;
+    operationFailed: string;
+    operationSucceeded: string;
+  };
   common: {
     cancel: string;
     create: string;
@@ -502,6 +537,41 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminUsers: '用户管理',
       debug: 'AI 调试',
       forbidden: '无权访问',
+    },
+    adminUsers: {
+      ariaLabel: '用户管理',
+      title: '用户管理',
+      searchPlaceholder: '搜索邮箱、昵称或 ID',
+      statusAll: '全部状态',
+      statusActive: '正常',
+      statusDisabled: '已禁用',
+      statusDeleted: '已删除',
+      refresh: '刷新',
+      loading: '正在加载用户...',
+      empty: '没有匹配的用户',
+      loadFailed: '用户列表加载失败',
+      forbidden: '没有权限管理用户',
+      id: 'ID',
+      email: '邮箱',
+      displayName: '昵称',
+      roles: '角色',
+      status: '状态',
+      createdAt: '创建时间',
+      lastLoginAt: '最近登录',
+      updatedAt: '更新时间',
+      deletedAt: '删除时间',
+      deletedBy: '删除人',
+      actions: '操作',
+      disable: '禁用',
+      restore: '恢复',
+      delete: '删除',
+      confirm: '确认',
+      confirmDisableTitle: '确认禁用该用户',
+      confirmRestoreTitle: '确认恢复该用户',
+      confirmDeleteTitle: '确认删除该用户',
+      confirmDeleteDescription: '删除后用户会进入软删除状态，无法再执行管理操作。',
+      operationFailed: '操作失败，请稍后重试。',
+      operationSucceeded: '操作已完成。',
     },
     common: {
       cancel: '取消',
@@ -969,6 +1039,41 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminUsers: 'Users',
       debug: 'AI Debug',
       forbidden: 'Not authorized',
+    },
+    adminUsers: {
+      ariaLabel: 'User management',
+      title: 'User management',
+      searchPlaceholder: 'Search email, name, or ID',
+      statusAll: 'All statuses',
+      statusActive: 'Active',
+      statusDisabled: 'Disabled',
+      statusDeleted: 'Deleted',
+      refresh: 'Refresh',
+      loading: 'Loading users...',
+      empty: 'No matching users',
+      loadFailed: 'Failed to load users',
+      forbidden: 'You do not have permission to manage users',
+      id: 'ID',
+      email: 'Email',
+      displayName: 'Display name',
+      roles: 'Roles',
+      status: 'Status',
+      createdAt: 'Created',
+      lastLoginAt: 'Last login',
+      updatedAt: 'Updated',
+      deletedAt: 'Deleted at',
+      deletedBy: 'Deleted by',
+      actions: 'Actions',
+      disable: 'Disable',
+      restore: 'Restore',
+      delete: 'Delete',
+      confirm: 'Confirm',
+      confirmDisableTitle: 'Disable this user?',
+      confirmRestoreTitle: 'Restore this user?',
+      confirmDeleteTitle: 'Delete this user?',
+      confirmDeleteDescription: 'The user will be soft deleted and management actions will no longer be available.',
+      operationFailed: 'Operation failed. Please try again later.',
+      operationSucceeded: 'Operation completed.',
     },
     common: {
       cancel: 'Cancel',

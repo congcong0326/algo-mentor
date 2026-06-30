@@ -475,6 +475,45 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/');
   });
 
+  it('renders the admin user management page for users with manage permission', async () => {
+    const fetchMock = vi.fn((url: string) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(authenticatedUserResponse());
+      }
+      if (url === '/api/admin/users?page=1&pageSize=20') {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: {
+            items: [{
+              id: 42,
+              email: 'managed@example.com',
+              displayName: 'Managed User',
+              roles: ['USER'],
+              status: 'ACTIVE',
+              createdAt: '2026-06-20T08:00:00Z',
+              updatedAt: '2026-06-21T09:30:00Z',
+              lastLoginAt: null,
+            }],
+            total: 1,
+            page: 1,
+            pageSize: 20,
+          },
+          timestamp: '2026-06-30T00:00:00Z',
+        }));
+      }
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/admin/users');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: '用户管理' })).toBeInTheDocument();
+    expect(await screen.findByText('managed@example.com')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '用户管理' })).toHaveAttribute('aria-pressed', 'true');
+    expect(window.location.pathname).toBe('/admin/users');
+  });
+
   it('exposes debug status labels for the app shell', () => {
     expect(debugStatusLabel('idle')).toBe('idle');
     expect(debugStatusLabel('connecting')).toBe('connecting');

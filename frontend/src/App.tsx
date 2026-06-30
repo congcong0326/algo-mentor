@@ -9,6 +9,7 @@ import AiDebugConsole, {
   type AiDebugConsoleHandle,
   type ConnectionState,
 } from './ai-debug/AiDebugConsole';
+import UserManagementPage from './admin/UserManagementPage';
 import AppShell from './app/AppShell';
 import LoginPage from './app/LoginPage';
 import { APP_ROUTES, pathForView, type AppView, viewFromPath } from './app/navigation';
@@ -472,8 +473,8 @@ export default function App() {
         ? <MyPage />
         : activeView === 'problems'
         ? <ProblemLibrary />
-        : activeView === 'adminUsers'
-        ? <HomeDashboard onNavigate={navigateToView} />
+        : activeView === 'adminUsers' && hasPermission(currentUser, 'user:manage')
+        ? <UserManagementPage onNavigateHome={() => navigateToView('home')} />
         : activeView === 'learningPlans'
           ? <LearningPlans onNavigate={navigateToPath} pathname={pathname} />
           : hasPermission(currentUser, 'debug:access')
