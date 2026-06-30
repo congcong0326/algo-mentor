@@ -47,9 +47,9 @@ public final class ApiContractConstants {
   public static final String ME_AI_PREFERENCES_PATH = "/api/me/ai-preferences";
 
   /**
-   * 题库接口根路径。
+   * 管理员题库查询接口根路径。
    */
-  public static final String PROBLEMS_BASE_PATH = "/api/problems";
+  public static final String PROBLEMS_BASE_PATH = "/api/admin/problems";
 
   /**
    * 题库内容语言请求参数名。

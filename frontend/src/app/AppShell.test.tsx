@@ -48,16 +48,13 @@ describe('AppShell', () => {
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '我的' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'AI 调试' })).toBeInTheDocument();
     expect(within(screen.getByRole('navigation', { name: '主导航' })).getAllByRole('button')
-      .map((button) => button.textContent)).toEqual(['首页', '方案', '题库', 'AI 调试', '我的']);
+      .map((button) => button.textContent)).toEqual(['首页', '方案', 'AI 调试', '我的']);
     expect(screen.getByText('User Name')).toBeInTheDocument();
     expect(screen.getByText('Current page')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '题库' }));
-
-    expect(onNavigate).toHaveBeenCalledWith('problems');
     fireEvent.click(screen.getByRole('button', { name: '我的' }));
     expect(onNavigate).toHaveBeenCalledWith('my');
   });
@@ -96,6 +93,23 @@ describe('AppShell', () => {
     expect(screen.getByRole('button', { name: '用户管理' })).toHaveAttribute('aria-pressed', 'true');
   });
 
+  it('shows problem library navigation only with problem read permission', () => {
+    render(
+      <AppShell
+        activeView="problems"
+        currentUser={{ ...user, roles: ['ADMIN'], permissions: ['problem:read', 'user:manage'] }}
+        onLogout={vi.fn()}
+        onNavigate={vi.fn()}
+        onToggleTheme={vi.fn()}
+        theme="light"
+      >
+        <div>Problems page</div>
+      </AppShell>,
+    );
+
+    expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'true');
+  });
+
   it('switches the shell language and persists the selection', () => {
     const originalLocalStorage = window.localStorage;
     const setItem = vi.fn();
@@ -130,7 +144,7 @@ describe('AppShell', () => {
       expect(screen.getByRole('button', { name: 'Dashboard' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Me' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Plans' })).toHaveAttribute('aria-pressed', 'true');
-      expect(screen.getByRole('button', { name: 'Problems' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Problems' })).not.toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();
       expect(setItem).toHaveBeenCalledWith('algo-mentor-locale', 'en-US');
       expect(document.documentElement.lang).toBe('en-US');

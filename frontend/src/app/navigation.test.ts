@@ -31,4 +31,10 @@ describe('learning plan practice submissions navigation', () => {
     expect(viewFromPath('/admin/users')).toBe('adminUsers');
     expect(pathForView('adminUsers')).toBe('/admin/users');
   });
+
+  it('maps the problem library to the admin route only', () => {
+    expect(viewFromPath('/admin/problems')).toBe('problems');
+    expect(pathForView('problems')).toBe('/admin/problems');
+    expect(viewFromPath('/problems')).toBeUndefined();
+  });
 });

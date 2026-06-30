@@ -77,13 +77,12 @@ export default function PlanPreview({
                   <ProblemRowContent problem={problem} />
                 </button>
               ) : (
-                <a
+                <div
                   className="problem-row"
-                  href={`/problems?keyword=${encodeURIComponent(problem.slug)}`}
                   key={problem.slug}
                 >
                   <ProblemRowContent problem={problem} />
-                </a>
+                </div>
               )
             ))}
           </div>

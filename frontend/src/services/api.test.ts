@@ -124,6 +124,52 @@ describe('api service', () => {
     expect(headers.get('Accept-Language')).toBe('zh-CN');
   });
 
+  it('loads admin problems through the admin API with locale headers', async () => {
+    setApiLocale('zh-CN');
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        items: [],
+        total: 0,
+        page: 1,
+        pageSize: 20,
+      },
+      timestamp: '2026-06-30T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+    const { getProblems } = await import('./api');
+
+    await getProblems({ keyword: 'sum', locale: 'zh-CN', page: 1, pageSize: 20 });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/admin/problems?keyword=sum&locale=zh-CN&page=1&pageSize=20',
+      expect.objectContaining({
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+      }),
+    );
+    const headers = requestHeaders(fetchMock);
+    expect(headers.get('Accept')).toBe('application/json');
+    expect(headers.get('Accept-Language')).toBe('zh-CN');
+  });
+
+  it('loads admin problem detail through the admin API', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: { slug: 'two-sum' },
+      timestamp: '2026-06-30T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+    const { getProblemDetail } = await import('./api');
+
+    await getProblemDetail('two-sum', 'zh-CN');
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/admin/problems/two-sum?locale=zh-CN',
+      expect.objectContaining({ headers: expect.any(Headers) }),
+    );
+  });
+
   it('loads admin users with pagination filters and locale headers', async () => {
     setApiLocale('zh-CN');
     vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x51, 0x52, 0x53, 0x54, 0x55, 0x56]) });

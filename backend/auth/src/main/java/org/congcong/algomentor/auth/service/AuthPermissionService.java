@@ -22,6 +22,7 @@ public class AuthPermissionService {
       permissions.add(AuthPermission.LEARNING_PLAN_READ_OWN);
       permissions.add(AuthPermission.LEARNING_PLAN_WRITE_OWN);
       permissions.add(AuthPermission.PRACTICE_SESSION_WRITE_OWN);
+      permissions.add(AuthPermission.PROBLEM_READ);
       permissions.add(AuthPermission.PROBLEM_WRITE);
       permissions.add(AuthPermission.USER_MANAGE);
       permissions.add(AuthPermission.DEBUG_ACCESS);

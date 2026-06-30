@@ -20,9 +20,19 @@ import { getCurrentUser, loginWithPassword, logout, registerWithPassword } from 
 import type { AuthPermission, CurrentUser, PasswordLoginRequest, PasswordRegisterRequest } from './types/api';
 
 const DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.home;
+const ADMIN_DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.adminUsers;
+const ADMIN_RESTRICTED_VIEWS: ReadonlySet<AppView> = new Set(['home', 'learningPlans', 'my']);
 
 function hasPermission(user: CurrentUser | undefined, permission: AuthPermission): boolean {
   return !!user?.permissions?.includes(permission);
+}
+
+function isAdminUser(user: CurrentUser | undefined): boolean {
+  return hasPermission(user, 'user:manage');
+}
+
+function defaultAuthenticatedRouteForUser(user?: CurrentUser): string {
+  return isAdminUser(user) ? ADMIN_DEFAULT_AUTHENTICATED_ROUTE : DEFAULT_AUTHENTICATED_ROUTE;
 }
 
 function normalizeAuthenticatedView(pathname: string, user?: CurrentUser): AppView {
@@ -32,13 +42,19 @@ function normalizeAuthenticatedView(pathname: string, user?: CurrentUser): AppVi
 function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): string {
   const view = viewFromPath(pathname);
   if (!view) {
-    return DEFAULT_AUTHENTICATED_ROUTE;
+    return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'debug' && !hasPermission(user, 'debug:access')) {
-    return DEFAULT_AUTHENTICATED_ROUTE;
+    return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminUsers' && !hasPermission(user, 'user:manage')) {
-    return DEFAULT_AUTHENTICATED_ROUTE;
+    return defaultAuthenticatedRouteForUser(user);
+  }
+  if (view === 'problems' && !hasPermission(user, 'problem:read')) {
+    return defaultAuthenticatedRouteForUser(user);
+  }
+  if (isAdminUser(user) && ADMIN_RESTRICTED_VIEWS.has(view)) {
+    return ADMIN_DEFAULT_AUTHENTICATED_ROUTE;
   }
   return pathname;
 }
@@ -227,18 +243,13 @@ export default function App() {
   }, [authChecked, currentUser]);
 
   function navigateToView(view: AppView) {
-    if (view === 'debug' && !hasPermission(currentUser, 'debug:access')) {
-      view = 'learningPlans';
-    }
-    if (view === 'adminUsers' && !hasPermission(currentUser, 'user:manage')) {
-      view = 'home';
-    }
-    const nextPath = pathForView(view);
-    if (activeView === view && window.location.pathname === nextPath) {
+    const nextPath = normalizeAuthenticatedPath(pathForView(view), currentUser);
+    const nextView = normalizeAuthenticatedView(nextPath, currentUser);
+    if (activeView === nextView && window.location.pathname === nextPath) {
       return;
     }
 
-    setActiveView(view);
+    setActiveView(nextView);
     setPathname(nextPath);
     if (window.location.pathname !== nextPath) {
       window.history.pushState({}, '', nextPath);
@@ -360,7 +371,7 @@ export default function App() {
     setCurrentUser(user);
     setAuthChecked(true);
     setAuthError(false);
-    const nextPath = normalizeAuthenticatedPath(DEFAULT_AUTHENTICATED_ROUTE, user);
+    const nextPath = normalizeAuthenticatedPath(defaultAuthenticatedRouteForUser(user), user);
     const nextView = normalizeAuthenticatedView(nextPath, user);
     setActiveView(nextView);
     setPathname(nextPath);
@@ -471,7 +482,7 @@ export default function App() {
         ? <HomeDashboard onNavigate={navigateToView} />
         : activeView === 'my'
         ? <MyPage />
-        : activeView === 'problems'
+        : activeView === 'problems' && hasPermission(currentUser, 'problem:read')
         ? <ProblemLibrary />
         : activeView === 'adminUsers' && hasPermission(currentUser, 'user:manage')
         ? <UserManagementPage onNavigateHome={() => navigateToView('home')} />

@@ -223,6 +223,12 @@ class AuthSecurityAutoConfigurationTest {
     mockMvc.perform(get("/api/admin/users").with(authentication(authenticationToken(AuthRole.USER))))
         .andExpect(status().isForbidden());
 
+    mockMvc.perform(get("/api/admin/problems").with(authentication(authenticationToken(AuthRole.USER))))
+        .andExpect(status().isForbidden());
+
+    mockMvc.perform(get("/api/admin/problems/two-sum").with(authentication(authenticationToken(AuthRole.USER))))
+        .andExpect(status().isForbidden());
+
     mockMvc.perform(get("/api/admin/users").with(authentication(authenticationToken(AuthRole.ADMIN))))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.status").value("admin"));
@@ -391,6 +397,11 @@ class AuthSecurityAutoConfigurationTest {
     @GetMapping("/api/admin/users")
     public StatusResponse adminUsers() {
       return new StatusResponse("admin");
+    }
+
+    @GetMapping({"/api/admin/problems", "/api/admin/problems/{slug}"})
+    public StatusResponse adminProblems() {
+      return new StatusResponse("problems");
     }
 
     @GetMapping("/api/agent/conversations/ping")

@@ -8,7 +8,7 @@ export const APP_ROUTES = {
   my: '/me',
   learningPlans: '/learning-plans',
   learningPlanNew: '/learning-plans/new',
-  problems: '/problems',
+  problems: '/admin/problems',
   adminUsers: '/admin/users',
   debug: '/debug',
 } as const;
@@ -57,6 +57,7 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     labelKey: 'problems',
     path: APP_ROUTES.problems,
     icon: Library,
+    permission: 'problem:read',
   },
   {
     view: 'adminUsers',

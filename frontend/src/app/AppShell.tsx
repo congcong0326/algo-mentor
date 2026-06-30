@@ -36,6 +36,16 @@ export default function AppShell({
   const ThemeIcon = theme === 'light' ? Moon : Sun;
   const themeLabel = theme === 'light' ? resources.app.switchToDarkMode : resources.app.switchToLightMode;
   const permissions = new Set<AuthPermission>(currentUser.permissions ?? []);
+  const isAdmin = permissions.has('user:manage');
+  const visibleNavigationItems = NAVIGATION_ITEMS.filter((item) => {
+    if (item.permission && !permissions.has(item.permission)) {
+      return false;
+    }
+    if (!isAdmin) {
+      return true;
+    }
+    return item.view === 'problems' || item.view === 'adminUsers' || item.view === 'debug';
+  });
 
   return (
     <main className="app-shell">
@@ -49,7 +59,7 @@ export default function AppShell({
           <strong>{resources.app.brandName}</strong>
         </div>
         <nav className="app-nav" aria-label={resources.app.mainNavigation}>
-          {NAVIGATION_ITEMS.filter((item) => !item.permission || permissions.has(item.permission)).map((item) => {
+          {visibleNavigationItems.map((item) => {
             const Icon = item.icon;
             return (
               <button

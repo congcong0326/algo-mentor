@@ -37,6 +37,13 @@ class SpaWebMvcConfigurationTest {
   }
 
   @Test
+  void doesNotForwardLegacyProblemRouteToIndexHtml() throws Exception {
+    mockMvc.perform(get("/problems"))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string(not(containsString("<div id=\"root\"></div>"))));
+  }
+
+  @Test
   void forwardsNestedLearningPlanRoutesToIndexHtml() throws Exception {
     mockMvc.perform(get("/learning-plans/900"))
         .andExpect(status().isOk())

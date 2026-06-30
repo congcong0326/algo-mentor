@@ -43,7 +43,7 @@ class ProblemControllerTest {
             new ProblemTag("array", "数组")))
     ), 1, 1, 20));
 
-    mockMvc.perform(get("/api/problems")
+    mockMvc.perform(get("/api/admin/problems")
             .param("keyword", "sum")
             .param("difficulty", "easy")
             .param("tag", "array")
@@ -75,7 +75,7 @@ class ProblemControllerTest {
         "class Solution:\n    pass",
         "abc123")));
 
-    mockMvc.perform(get("/api/problems/two-sum").param("locale", "en-US"))
+    mockMvc.perform(get("/api/admin/problems/two-sum").param("locale", "en-US"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.slug").value("two-sum"))
@@ -87,7 +87,7 @@ class ProblemControllerTest {
 
   @Test
   void listProblemsReturns400ForUnsupportedLocale() throws Exception {
-    mockMvc.perform(get("/api/problems").param("locale", "fr-FR"))
+    mockMvc.perform(get("/api/admin/problems").param("locale", "fr-FR"))
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.error.code").value(ProblemExceptionHandler.UNSUPPORTED_PROBLEM_LOCALE_CODE))
@@ -99,7 +99,7 @@ class ProblemControllerTest {
   void getProblemReturns404ForUnknownSlugInEnglish() throws Exception {
     when(problemService.findProblemBySlug(eq("missing"), eq(ProblemLocale.DEFAULT))).thenReturn(Optional.empty());
 
-    mockMvc.perform(get("/api/problems/missing").header("Accept-Language", "en-US"))
+    mockMvc.perform(get("/api/admin/problems/missing").header("Accept-Language", "en-US"))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.error.code").value(ProblemExceptionHandler.PROBLEM_NOT_FOUND_CODE))

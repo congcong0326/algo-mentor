@@ -270,7 +270,7 @@ export async function getProblems(
   query: ProblemListQuery = {},
   signal?: AbortSignal,
 ): Promise<ApiResponse<ProblemPage<ProblemListItem>>> {
-  const response = await apiFetch(`/api/problems${toQueryString(query)}`, {
+  const response = await apiFetch(`/api/admin/problems${toQueryString(query)}`, {
     headers: jsonHeaders,
     signal,
   });
@@ -287,7 +287,7 @@ export async function getProblemDetail(
   locale?: ProblemListQuery['locale'],
   signal?: AbortSignal,
 ): Promise<ApiResponse<ProblemDetail>> {
-  const response = await apiFetch(`/api/problems/${encodeURIComponent(slug)}${toQueryString({ locale })}`, {
+  const response = await apiFetch(`/api/admin/problems/${encodeURIComponent(slug)}${toQueryString({ locale })}`, {
     headers: jsonHeaders,
     signal,
   });

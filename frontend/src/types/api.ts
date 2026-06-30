@@ -22,6 +22,7 @@ export type AuthPermission =
   | 'learning-plan:read:own'
   | 'learning-plan:write:own'
   | 'practice-session:write:own'
+  | 'problem:read'
   | 'problem:write'
   | 'user:manage'
   | 'debug:access';

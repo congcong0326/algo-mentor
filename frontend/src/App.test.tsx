@@ -288,7 +288,7 @@ describe('App', () => {
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '我的' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Start Reviewing' })).not.toBeInTheDocument();
     expect(screen.queryByRole('img', { name: '能力雷达图' })).not.toBeInTheDocument();
     expect(fetchMock.mock.calls.some(([url]) => url === '/api/abilities/profile')).toBe(false);
@@ -410,11 +410,13 @@ describe('App', () => {
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
     expect(window.location.pathname).toBe('/learning-plans');
 
-    fireEvent.click(screen.getByRole('button', { name: '题库' }));
+    expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
 
-    expect(await screen.findByRole('textbox', { name: '搜索题目' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'true');
-    expect(window.location.pathname).toBe('/problems');
+    fireEvent.click(screen.getByRole('button', { name: '我的' }));
+
+    expect(await screen.findByRole('heading', { name: '我的学习画像' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '我的' })).toHaveAttribute('aria-pressed', 'true');
+    expect(window.location.pathname).toBe('/me');
 
     window.history.back();
     await waitFor(() => expect(window.location.pathname).toBe('/learning-plans'));
@@ -435,7 +437,7 @@ describe('App', () => {
     expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     expect(screen.getByText('User Name')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'AI 调试' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'Message' })).toHaveValue(
       'Explain two pointers with a concrete example.',
     );
@@ -475,35 +477,22 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/');
   });
 
-  it('renders the admin user management page for users with manage permission', async () => {
-    const fetchMock = vi.fn((url: string) => {
-      if (url === '/api/auth/me') {
-        return Promise.resolve(authenticatedUserResponse());
-      }
-      if (url === '/api/admin/users?page=1&pageSize=20') {
-        return Promise.resolve(jsonResponse({
-          success: true,
-          data: {
-            items: [{
-              id: 42,
-              email: 'managed@example.com',
-              displayName: 'Managed User',
-              roles: ['USER'],
-              status: 'ACTIVE',
-              createdAt: '2026-06-20T08:00:00Z',
-              updatedAt: '2026-06-21T09:30:00Z',
-              lastLoginAt: null,
-            }],
-            total: 1,
-            page: 1,
-            pageSize: 20,
-          },
-          timestamp: '2026-06-30T00:00:00Z',
-        }));
-      }
-      return Promise.reject(new Error(`Unexpected URL: ${url}`));
-    });
+  it('normalizes legacy problem library route for ordinary users without loading problems', async () => {
+    const fetchMock = mockAuthenticatedAppFetch();
     vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/problems');
+
+    render(<App />);
+
+    expect(await screen.findByText('User Name')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
+    expect(window.location.pathname).toBe('/');
+    expect(fetchMock.mock.calls.some(([url]) => String(url).startsWith('/api/admin/problems'))).toBe(false);
+  });
+
+  it('renders the admin user management page for users with manage permission', async () => {
+    vi.stubGlobal('fetch', mockAdminUserManagementFetch());
     window.history.replaceState({}, '', '/admin/users');
 
     render(<App />);
@@ -512,6 +501,56 @@ describe('App', () => {
     expect(await screen.findByText('managed@example.com')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '用户管理' })).toHaveAttribute('aria-pressed', 'true');
     expect(window.location.pathname).toBe('/admin/users');
+  });
+
+  it('defaults admin users to user management and hides learner-only navigation', async () => {
+    vi.stubGlobal('fetch', mockAdminUserManagementFetch());
+    window.history.replaceState({}, '', '/');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: '用户管理' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '用户管理' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '题库' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'AI 调试' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '首页' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '方案' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '我的' })).not.toBeInTheDocument();
+    expect(window.location.pathname).toBe('/admin/users');
+  });
+
+  it('redirects admin users away from learner-only routes', async () => {
+    vi.stubGlobal('fetch', mockAdminUserManagementFetch());
+    window.history.replaceState({}, '', '/learning-plans/123');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: '用户管理' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '用户管理' })).toHaveAttribute('aria-pressed', 'true');
+    expect(window.location.pathname).toBe('/admin/users');
+
+    window.history.pushState({}, '', '/me');
+    fireEvent(window, new PopStateEvent('popstate'));
+
+    await waitFor(() => expect(window.location.pathname).toBe('/admin/users'));
+    expect(screen.getByRole('heading', { name: '用户管理' })).toBeInTheDocument();
+  });
+
+  it('keeps problem library and debug routes available to admin users', async () => {
+    vi.stubGlobal('fetch', mockAdminProblemAndDebugFetch());
+    window.history.replaceState({}, '', '/admin/problems');
+
+    render(<App />);
+
+    expect(await screen.findByRole('textbox', { name: '搜索题目' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'true');
+    expect(window.location.pathname).toBe('/admin/problems');
+
+    fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
+
+    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'AI 调试' })).toHaveAttribute('aria-pressed', 'true');
+    expect(window.location.pathname).toBe('/debug');
   });
 
   it('exposes debug status labels for the app shell', () => {
@@ -928,7 +967,7 @@ describe('App', () => {
   it('loads problem list and detail in problem library view', async () => {
     const fetchMock = mockProblemFetch();
     vi.stubGlobal('fetch', fetchMock);
-    window.history.replaceState({}, '', '/problems');
+    window.history.replaceState({}, '', '/admin/problems');
     render(<App />);
 
     expect(await screen.findByRole('textbox', { name: '搜索题目' })).toBeInTheDocument();
@@ -940,21 +979,21 @@ describe('App', () => {
     expect(screen.getByText(/class Solution:/)).toBeInTheDocument();
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/problems?sort=frontend_id_asc&locale=zh-CN&page=1&pageSize=20',
+      '/api/admin/problems?sort=frontend_id_asc&locale=zh-CN&page=1&pageSize=20',
       expect.objectContaining({ headers: expect.any(Headers) }),
     );
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/problems/two-sum?locale=zh-CN',
+      '/api/admin/problems/two-sum?locale=zh-CN',
       expect.objectContaining({ headers: expect.any(Headers) }),
     );
-    expectJsonHeaders(fetchMock, '/api/problems?sort=frontend_id_asc&locale=zh-CN&page=1&pageSize=20');
-    expectJsonHeaders(fetchMock, '/api/problems/two-sum?locale=zh-CN');
+    expectJsonHeaders(fetchMock, '/api/admin/problems?sort=frontend_id_asc&locale=zh-CN&page=1&pageSize=20');
+    expectJsonHeaders(fetchMock, '/api/admin/problems/two-sum?locale=zh-CN');
   });
 
   it('requests filtered problem list and paginates', async () => {
     const fetchMock = mockProblemFetch(40);
     vi.stubGlobal('fetch', fetchMock);
-    window.history.replaceState({}, '', '/problems');
+    window.history.replaceState({}, '', '/admin/problems');
     render(<App />);
 
     await screen.findByText('两数之和');
@@ -967,14 +1006,14 @@ describe('App', () => {
     });
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
-      '/api/problems?keyword=tree&difficulty=HARD&sort=frontend_id_asc&locale=zh-CN&page=1&pageSize=20',
+      '/api/admin/problems?keyword=tree&difficulty=HARD&sort=frontend_id_asc&locale=zh-CN&page=1&pageSize=20',
       expect.any(Object),
     ));
 
     fireEvent.click(screen.getByRole('button', { name: '下一页' }));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
-      '/api/problems?keyword=tree&difficulty=HARD&sort=frontend_id_asc&locale=zh-CN&page=2&pageSize=20',
+      '/api/admin/problems?keyword=tree&difficulty=HARD&sort=frontend_id_asc&locale=zh-CN&page=2&pageSize=20',
       expect.any(Object),
     ));
   });
@@ -982,11 +1021,11 @@ describe('App', () => {
   it('shows problem library error state', async () => {
     vi.stubGlobal('fetch', vi.fn((url: string) => {
       if (url === '/api/auth/me') {
-        return Promise.resolve(authenticatedUserResponse());
+        return Promise.resolve(adminUserResponse());
       }
       return Promise.reject(new Error('network failed'));
     }));
-    window.history.replaceState({}, '', '/problems');
+    window.history.replaceState({}, '', '/admin/problems');
     render(<App />);
 
     expect(await screen.findByText('network failed')).toBeInTheDocument();
@@ -1116,7 +1155,7 @@ describe('App', () => {
       }),
     );
     expectCsrfHeader(fetchMock, '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=zh-CN');
-    expect(fetchMock.mock.calls.some(([url]) => String(url).startsWith('/api/problems/two-sum'))).toBe(false);
+    expect(fetchMock.mock.calls.some(([url]) => String(url).startsWith('/api/admin/problems/two-sum'))).toBe(false);
 
     fireEvent.click(screen.getByRole('button', { name: '代码提交记录' }));
     expect(window.location.pathname).toBe('/learning-plans/900/phases/1/problems/two-sum/submissions');
@@ -1758,9 +1797,9 @@ describe('App', () => {
 function mockProblemFetch(total = 1) {
   return vi.fn((url: string) => {
     if (url === '/api/auth/me') {
-      return Promise.resolve(authenticatedUserResponse());
+      return Promise.resolve(adminUserResponse());
     }
-    if (url.startsWith('/api/problems/two-sum')) {
+    if (url.startsWith('/api/admin/problems/two-sum')) {
       return Promise.resolve(jsonResponse({
         success: true,
         data: problemDetail(),
@@ -1768,7 +1807,7 @@ function mockProblemFetch(total = 1) {
       }));
     }
 
-    if (url.startsWith('/api/problems')) {
+    if (url.startsWith('/api/admin/problems')) {
       return Promise.resolve(jsonResponse({
         success: true,
         data: {
@@ -1811,6 +1850,16 @@ function authenticatedUserResponse(): Response {
     'learning-plan:read:own',
     'learning-plan:write:own',
     'practice-session:write:own',
+    'debug:access',
+  ], ['USER']);
+}
+
+function adminUserResponse(): Response {
+  return authenticatedUserResponseWithPermissions([
+    'learning-plan:read:own',
+    'learning-plan:write:own',
+    'practice-session:write:own',
+    'problem:read',
     'problem:write',
     'user:manage',
     'debug:access',
@@ -1891,6 +1940,63 @@ function mockAuthenticatedDebugFetch() {
   });
 }
 
+function mockAdminUserManagementFetch() {
+  return vi.fn((url: string) => {
+    if (url === '/api/auth/me') {
+      return Promise.resolve(adminUserResponse());
+    }
+    if (url === '/api/admin/users?page=1&pageSize=20') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: {
+          items: [{
+            id: 42,
+            email: 'managed@example.com',
+            displayName: 'Managed User',
+            roles: ['USER'],
+            status: 'ACTIVE',
+            createdAt: '2026-06-20T08:00:00Z',
+            updatedAt: '2026-06-21T09:30:00Z',
+            lastLoginAt: null,
+          }],
+          total: 1,
+          page: 1,
+          pageSize: 20,
+        },
+        timestamp: '2026-06-30T00:00:00Z',
+      }));
+    }
+    return Promise.reject(new Error(`Unexpected URL: ${url}`));
+  });
+}
+
+function mockAdminProblemAndDebugFetch() {
+  return vi.fn((url: string) => {
+    if (url === '/api/auth/me') {
+      return Promise.resolve(adminUserResponse());
+    }
+    if (url.startsWith('/api/admin/problems')) {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: {
+          items: [{
+            slug: 'two-sum',
+            frontendId: 1,
+            title: '两数之和',
+            difficulty: 'EASY',
+            tags: [{ value: 'array', label: '数组' }],
+          }],
+          total: 1,
+          page: 1,
+          pageSize: 20,
+        },
+        timestamp: '2026-06-17T00:00:00Z',
+      }));
+    }
+    return Promise.reject(new Error(`Unexpected URL: ${url}`));
+  });
+}
+
 function mockAuthenticatedUserWithoutUserManageFetch() {
   return vi.fn((url: string) => {
     if (url === '/api/auth/me') {
@@ -1922,14 +2028,14 @@ function mockLearningPlanAndProblemFetch() {
         timestamp: '2026-06-22T00:00:00Z',
       }));
     }
-    if (url.startsWith('/api/problems/two-sum')) {
+    if (url.startsWith('/api/admin/problems/two-sum')) {
       return Promise.resolve(jsonResponse({
         success: true,
         data: problemDetail(),
         timestamp: '2026-06-17T00:00:00Z',
       }));
     }
-    if (url.startsWith('/api/problems')) {
+    if (url.startsWith('/api/admin/problems')) {
       return Promise.resolve(jsonResponse({
         success: true,
         data: {

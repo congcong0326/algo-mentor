@@ -22,7 +22,8 @@ public final class SpaRoutes {
       "/login",
       "/me",
       "/learning-plans",
-      "/problems",
+      "/admin/problems",
+      "/admin/users",
       "/debug"
   };
 
