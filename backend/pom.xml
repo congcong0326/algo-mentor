@@ -40,6 +40,7 @@
     <openai-java.version>4.39.1</openai-java.version>
     <mybatis.version>3.5.19</mybatis.version>
     <mybatis-spring.version>3.0.5</mybatis-spring.version>
+    <surefire.failIfNoSpecifiedTests>false</surefire.failIfNoSpecifiedTests>
   </properties>
 
   <dependencyManagement>
