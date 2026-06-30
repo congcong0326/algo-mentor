@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import org.congcong.algomentor.auth.model.AuthRole;
-import org.congcong.algomentor.auth.model.AuthUser;
-import org.congcong.algomentor.auth.model.AuthUserStatus;
 import org.congcong.algomentor.auth.model.OAuthAccount;
 import org.congcong.algomentor.auth.model.OAuthProvider;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
+import org.congcong.algomentor.identity.model.AuthRole;
+import org.congcong.algomentor.identity.model.AuthUser;
+import org.congcong.algomentor.identity.model.AuthUserStatus;
+import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -26,20 +27,27 @@ public class OAuth2LoginUserService {
   public static final String AUTH_USER_DISABLED_CODE = "auth_user_disabled";
   public static final String MISSING_SUBJECT_CODE = "missing_provider_subject";
 
-  private final AuthUserRepository repository;
+  private final AuthUserRepository authRepository;
+  private final IdentityUserRepository identityRepository;
   private final Clock clock;
   private final AdminEmailRoleService adminEmailRoleService;
 
-  public OAuth2LoginUserService(AuthUserRepository repository, Clock clock) {
-    this(repository, clock, null);
+  public OAuth2LoginUserService(
+      AuthUserRepository authRepository,
+      IdentityUserRepository identityRepository,
+      Clock clock
+  ) {
+    this(authRepository, identityRepository, clock, null);
   }
 
   public OAuth2LoginUserService(
-      AuthUserRepository repository,
+      AuthUserRepository authRepository,
+      IdentityUserRepository identityRepository,
       Clock clock,
       AdminEmailRoleService adminEmailRoleService
   ) {
-    this.repository = repository;
+    this.authRepository = authRepository;
+    this.identityRepository = identityRepository;
     this.clock = clock;
     this.adminEmailRoleService = adminEmailRoleService;
   }
@@ -53,21 +61,21 @@ public class OAuth2LoginUserService {
     String avatarUrl = stringAttribute(attributes, "picture");
     Instant now = Instant.now(clock);
 
-    Optional<OAuthAccount> existingAccount = repository.findOAuthAccount(OAuthProvider.GOOGLE, subject);
+    Optional<OAuthAccount> existingAccount = authRepository.findOAuthAccount(OAuthProvider.GOOGLE, subject);
     boolean createdAccount = existingAccount.isEmpty();
     OAuthAccount account = existingAccount
         .orElseGet(() -> createGoogleAccount(subject, email, emailNormalized, displayName, avatarUrl, now));
 
-    AuthUser user = repository.findUserById(account.userId())
+    AuthUser user = identityRepository.findUserById(account.userId())
         .orElseThrow(() -> authenticationException("auth_user_missing", "Authenticated user does not exist."));
     ensureActive(user);
 
     if (account.id() != null) {
-      repository.updateOAuthAccountProfile(account.id(), email, displayName, avatarUrl, now);
+      authRepository.updateOAuthAccountProfile(account.id(), email, displayName, avatarUrl, now);
     }
-    AuthUser updatedUser = repository.updateLastLoginAt(user.id(), now);
+    AuthUser updatedUser = identityRepository.updateLastLoginAt(user.id(), now);
     ensureConfiguredAdminRole(updatedUser);
-    List<AuthRole> roles = repository.findRoles(updatedUser.id());
+    List<AuthRole> roles = identityRepository.findRoles(updatedUser.id());
     List<AuthRole> effectiveRoles = roles.isEmpty() ? List.of(AuthRole.USER) : roles;
     log.info(
         "Google OAuth user synchronized. userId={} createdAccount={} emailPresent={} displayNamePresent={} avatarPresent={} roles={}",
@@ -94,9 +102,9 @@ public class OAuth2LoginUserService {
       String avatarUrl,
       Instant now
   ) {
-    Optional<AuthUser> userByEmail = repository.findUserByEmailNormalized(emailNormalized);
+    Optional<AuthUser> userByEmail = identityRepository.findUserByEmailNormalized(emailNormalized);
     AuthUser user = userByEmail
-        .orElseGet(() -> repository.createUser(
+        .orElseGet(() -> identityRepository.createUser(
             email,
             emailNormalized,
             displayName,
@@ -104,9 +112,9 @@ public class OAuth2LoginUserService {
             AuthUserStatus.ACTIVE,
             now));
     if (userByEmail.isEmpty()) {
-      repository.addRole(user.id(), AuthRole.USER);
+      identityRepository.addRole(user.id(), AuthRole.USER);
     }
-    return repository.createOAuthAccount(new OAuthAccount(
+    return authRepository.createOAuthAccount(new OAuthAccount(
         null,
         user.id(),
         OAuthProvider.GOOGLE,
@@ -129,7 +137,7 @@ public class OAuth2LoginUserService {
   }
 
   private static void ensureActive(AuthUser user) {
-    if (user.status() == AuthUserStatus.DISABLED) {
+    if (user.status() != AuthUserStatus.ACTIVE) {
       throw authenticationException(AUTH_USER_DISABLED_CODE, "User is disabled.");
     }
   }

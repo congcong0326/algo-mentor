@@ -1,6 +1,8 @@
 package org.congcong.algomentor.auth.model;
 
 import java.util.List;
+import org.congcong.algomentor.identity.model.AuthRole;
+import org.congcong.algomentor.identity.model.AuthUserStatus;
 
 public record CurrentUserResponse(
     Long id,

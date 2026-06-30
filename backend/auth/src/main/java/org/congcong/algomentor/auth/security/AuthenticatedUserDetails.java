@@ -1,6 +1,7 @@
 package org.congcong.algomentor.auth.security;
 
 import java.util.Collection;
+import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -41,6 +42,6 @@ public class AuthenticatedUserDetails implements UserDetails {
 
   @Override
   public boolean isEnabled() {
-    return principal.status() == org.congcong.algomentor.auth.model.AuthUserStatus.ACTIVE;
+    return principal.status() == AuthUserStatus.ACTIVE;
   }
 }

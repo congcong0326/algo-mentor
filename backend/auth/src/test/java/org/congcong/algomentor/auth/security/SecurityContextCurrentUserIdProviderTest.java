@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
-import org.congcong.algomentor.auth.model.AuthRole;
-import org.congcong.algomentor.auth.model.AuthUserStatus;
+import org.congcong.algomentor.identity.model.AuthRole;
+import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.TestingAuthenticationToken;

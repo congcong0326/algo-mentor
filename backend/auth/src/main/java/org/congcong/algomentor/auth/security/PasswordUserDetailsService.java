@@ -4,12 +4,13 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
-import org.congcong.algomentor.auth.model.AuthRole;
-import org.congcong.algomentor.auth.model.AuthUser;
-import org.congcong.algomentor.auth.model.AuthUserStatus;
 import org.congcong.algomentor.auth.model.PasswordCredential;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.service.AdminEmailRoleService;
+import org.congcong.algomentor.identity.model.AuthRole;
+import org.congcong.algomentor.identity.model.AuthUser;
+import org.congcong.algomentor.identity.model.AuthUserStatus;
+import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,16 +19,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class PasswordUserDetailsService implements UserDetailsService {
 
-  private final AuthUserRepository repository;
+  private final AuthUserRepository authRepository;
+  private final IdentityUserRepository identityRepository;
   private final Clock clock;
   private final AdminEmailRoleService adminEmailRoleService;
 
   public PasswordUserDetailsService(
-      AuthUserRepository repository,
+      AuthUserRepository authRepository,
+      IdentityUserRepository identityRepository,
       Clock clock,
       AdminEmailRoleService adminEmailRoleService
   ) {
-    this.repository = repository;
+    this.authRepository = authRepository;
+    this.identityRepository = identityRepository;
     this.clock = clock;
     this.adminEmailRoleService = adminEmailRoleService;
   }
@@ -36,18 +40,18 @@ public class PasswordUserDetailsService implements UserDetailsService {
   @Transactional
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     String emailNormalized = normalizeEmail(username);
-    PasswordCredential credential = repository.findPasswordCredentialByEmailNormalized(emailNormalized)
+    PasswordCredential credential = authRepository.findPasswordCredentialByEmailNormalized(emailNormalized)
         .orElseThrow(() -> new UsernameNotFoundException("Bad credentials."));
-    AuthUser user = repository.findUserById(credential.userId())
+    AuthUser user = identityRepository.findUserById(credential.userId())
         .orElseThrow(() -> new UsernameNotFoundException("Bad credentials."));
-    if (user.status() == AuthUserStatus.DISABLED) {
+    if (user.status() != AuthUserStatus.ACTIVE) {
       throw new DisabledException("Bad credentials.");
     }
     if (adminEmailRoleService != null) {
       adminEmailRoleService.ensureAdminRole(user.id(), user.email());
     }
-    AuthUser updatedUser = repository.updateLastLoginAt(user.id(), Instant.now(clock));
-    List<AuthRole> roles = repository.findRoles(updatedUser.id());
+    AuthUser updatedUser = identityRepository.updateLastLoginAt(user.id(), Instant.now(clock));
+    List<AuthRole> roles = identityRepository.findRoles(updatedUser.id());
     List<AuthRole> effectiveRoles = roles.isEmpty() ? List.of(AuthRole.USER) : roles;
     AuthenticatedUserPrincipal principal = new AuthenticatedUserPrincipal(
         updatedUser.id(),

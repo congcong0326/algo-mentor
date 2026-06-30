@@ -2,8 +2,8 @@ package org.congcong.algomentor.auth.security;
 
 import java.io.Serializable;
 import java.util.List;
-import org.congcong.algomentor.auth.model.AuthRole;
-import org.congcong.algomentor.auth.model.AuthUserStatus;
+import org.congcong.algomentor.identity.model.AuthRole;
+import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.springframework.security.core.AuthenticatedPrincipal;
 
 public record AuthenticatedUserPrincipal(

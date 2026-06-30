@@ -11,14 +11,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.congcong.algomentor.auth.model.AuthRole;
-import org.congcong.algomentor.auth.model.AuthUser;
-import org.congcong.algomentor.auth.model.AuthUserStatus;
 import org.congcong.algomentor.auth.model.OAuthAccount;
 import org.congcong.algomentor.auth.model.OAuthProvider;
 import org.congcong.algomentor.auth.model.PasswordCredential;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
+import org.congcong.algomentor.identity.model.AuthRole;
+import org.congcong.algomentor.identity.model.AuthUser;
+import org.congcong.algomentor.identity.model.AuthUserStatus;
+import org.congcong.algomentor.identity.model.IdentityUserPage;
+import org.congcong.algomentor.identity.model.IdentityUserSearchQuery;
+import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 
@@ -27,6 +30,7 @@ public class OAuth2LoginUserServiceTest {
   private static final Instant NOW = Instant.parse("2026-06-22T07:00:00Z");
   private final InMemoryAuthUserRepository repository = new InMemoryAuthUserRepository();
   private final OAuth2LoginUserService service = new OAuth2LoginUserService(
+      repository,
       repository,
       Clock.fixed(NOW, ZoneOffset.UTC));
 
@@ -147,8 +151,40 @@ public class OAuth2LoginUserServiceTest {
   }
 
   @Test
+  void deletedUserCannotLogin() {
+    AuthUser user = repository.createUser(
+        "deleted@example.com",
+        "deleted@example.com",
+        "Deleted User",
+        null,
+        AuthUserStatus.DELETED,
+        NOW.minusSeconds(3600));
+    repository.addRole(user.id(), AuthRole.USER);
+    repository.createOAuthAccount(new OAuthAccount(
+        null,
+        user.id(),
+        OAuthProvider.GOOGLE,
+        "deleted-sub",
+        "deleted@example.com",
+        "Deleted User",
+        null,
+        NOW.minusSeconds(3600),
+        NOW.minusSeconds(3600)));
+
+    assertThatThrownBy(() -> service.syncGoogleUser(googleAttributes(
+        "deleted-sub",
+        "deleted@example.com",
+        "Deleted User",
+        null)))
+        .isInstanceOf(OAuth2AuthenticationException.class)
+        .extracting(exception -> ((OAuth2AuthenticationException) exception).getError().getErrorCode())
+        .isEqualTo("auth_user_disabled");
+  }
+
+  @Test
   void configuredAdminEmailReceivesAdminRoleOnGoogleLogin() {
     OAuth2LoginUserService adminService = new OAuth2LoginUserService(
+        repository,
         repository,
         Clock.fixed(NOW, ZoneOffset.UTC),
         new AdminEmailRoleService(repository, List.of("admin@example.com")));
@@ -177,7 +213,7 @@ public class OAuth2LoginUserServiceTest {
     return attributes;
   }
 
-  public static final class InMemoryAuthUserRepository implements AuthUserRepository {
+  public static final class InMemoryAuthUserRepository implements AuthUserRepository, IdentityUserRepository {
 
     final Map<Long, AuthUser> users = new HashMap<>();
     final Map<String, OAuthAccount> oauthAccountsByKey = new HashMap<>();
@@ -224,7 +260,9 @@ public class OAuth2LoginUserServiceTest {
           status,
           now,
           now,
-          now);
+          now,
+          null,
+          null);
       users.put(user.id(), user);
       return user;
     }
@@ -311,9 +349,42 @@ public class OAuth2LoginUserServiceTest {
           user.status(),
           user.createdAt(),
           lastLoginAt,
-          lastLoginAt);
+          lastLoginAt,
+          user.deletedAt(),
+          user.deletedBy());
       users.put(userId, updated);
       return updated;
+    }
+
+    public void setUserStatus(String emailNormalized, AuthUserStatus status) {
+      AuthUser user = findUserByEmailNormalized(emailNormalized).orElseThrow();
+      users.put(user.id(), new AuthUser(
+          user.id(),
+          user.email(),
+          user.emailNormalized(),
+          user.displayName(),
+          user.avatarUrl(),
+          status,
+          user.createdAt(),
+          user.lastLoginAt(),
+          user.updatedAt(),
+          user.deletedAt(),
+          user.deletedBy()));
+    }
+
+    @Override
+    public IdentityUserPage searchUsers(IdentityUserSearchQuery query) {
+      throw new UnsupportedOperationException("searchUsers is not needed by auth tests.");
+    }
+
+    @Override
+    public boolean updateUserStatus(long userId, AuthUserStatus expectedStatus, AuthUserStatus status, Instant updatedAt) {
+      throw new UnsupportedOperationException("updateUserStatus is not needed by auth tests.");
+    }
+
+    @Override
+    public boolean softDeleteUser(long userId, long operatorUserId, AuthUserStatus expectedStatus, Instant deletedAt) {
+      throw new UnsupportedOperationException("softDeleteUser is not needed by auth tests.");
     }
 
     private static String accountKey(OAuthProvider provider, String providerSubject) {

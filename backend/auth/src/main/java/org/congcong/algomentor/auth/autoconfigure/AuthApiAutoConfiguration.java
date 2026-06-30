@@ -18,6 +18,7 @@ import org.congcong.algomentor.auth.service.AuthPermissionService;
 import org.congcong.algomentor.auth.service.OAuth2LoginUserService;
 import org.congcong.algomentor.auth.service.PasswordUserService;
 import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
+import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -82,40 +83,44 @@ public class AuthApiAutoConfiguration {
   }
 
   @Bean
-  @ConditionalOnBean(AuthUserRepository.class)
+  @ConditionalOnBean(IdentityUserRepository.class)
   @ConditionalOnMissingBean
   public AdminEmailRoleService adminEmailRoleService(
-      AuthUserRepository authUserRepository,
+      IdentityUserRepository identityUserRepository,
       AuthProperties authProperties
   ) {
-    return new AdminEmailRoleService(authUserRepository, authProperties.getAdminEmails());
+    return new AdminEmailRoleService(identityUserRepository, authProperties.getAdminEmails());
   }
 
   @Bean
-  @ConditionalOnBean(AuthUserRepository.class)
+  @ConditionalOnBean({AuthUserRepository.class, IdentityUserRepository.class})
   @ConditionalOnMissingBean
   public PasswordUserDetailsService passwordUserDetailsService(
       AuthUserRepository authUserRepository,
+      IdentityUserRepository identityUserRepository,
       Clock authClock,
       ObjectProvider<AdminEmailRoleService> adminEmailRoleServiceProvider
   ) {
     return new PasswordUserDetailsService(
         authUserRepository,
+        identityUserRepository,
         authClock,
         adminEmailRoleServiceProvider.getIfAvailable());
   }
 
   @Bean
-  @ConditionalOnBean(AuthUserRepository.class)
+  @ConditionalOnBean({AuthUserRepository.class, IdentityUserRepository.class})
   @ConditionalOnMissingBean
   public PasswordUserService passwordUserService(
       AuthUserRepository authUserRepository,
+      IdentityUserRepository identityUserRepository,
       PasswordEncoder passwordEncoder,
       Clock authClock,
       ObjectProvider<AdminEmailRoleService> adminEmailRoleServiceProvider
   ) {
     return new PasswordUserService(
         authUserRepository,
+        identityUserRepository,
         passwordEncoder,
         authClock,
         adminEmailRoleServiceProvider.getIfAvailable());
@@ -138,15 +143,17 @@ public class AuthApiAutoConfiguration {
   }
 
   @Bean
-  @ConditionalOnBean(AuthUserRepository.class)
+  @ConditionalOnBean({AuthUserRepository.class, IdentityUserRepository.class})
   @ConditionalOnMissingBean
   public OAuth2LoginUserService oAuth2LoginUserService(
       AuthUserRepository authUserRepository,
+      IdentityUserRepository identityUserRepository,
       Clock authClock,
       ObjectProvider<AdminEmailRoleService> adminEmailRoleServiceProvider
   ) {
     return new OAuth2LoginUserService(
         authUserRepository,
+        identityUserRepository,
         authClock,
         adminEmailRoleServiceProvider.getIfAvailable());
   }

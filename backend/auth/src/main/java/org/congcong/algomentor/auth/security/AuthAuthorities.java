@@ -2,7 +2,7 @@ package org.congcong.algomentor.auth.security;
 
 import java.util.Collection;
 import java.util.List;
-import org.congcong.algomentor.auth.model.AuthRole;
+import org.congcong.algomentor.identity.model.AuthRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 

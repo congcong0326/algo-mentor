@@ -18,6 +18,7 @@ import org.congcong.algomentor.auth.service.AdminEmailRoleService;
 import org.congcong.algomentor.auth.service.AuthPermissionService;
 import org.congcong.algomentor.auth.service.OAuth2LoginUserServiceTest;
 import org.congcong.algomentor.auth.service.PasswordUserService;
+import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -46,10 +47,12 @@ class PasswordAuthControllerTest {
     AdminEmailRoleService adminEmailRoleService = new AdminEmailRoleService(repository, List.of("admin@example.com"));
     PasswordUserService passwordUserService = new PasswordUserService(
         repository,
+        repository,
         passwordEncoder,
         clock,
         adminEmailRoleService);
     PasswordUserDetailsService userDetailsService = new PasswordUserDetailsService(
+        repository,
         repository,
         clock,
         adminEmailRoleService);
@@ -128,6 +131,48 @@ class PasswordAuthControllerTest {
   }
 
   @Test
+  void disabledUserReceivesUnifiedLoginFailure() throws Exception {
+    mockMvc.perform(post("/api/auth/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsBytes(new PasswordRegisterRequest(
+                "disabled@example.com",
+                "password-123",
+                "Disabled User"))))
+        .andExpect(status().isOk());
+    setUserStatus("disabled@example.com", AuthUserStatus.DISABLED);
+
+    mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsBytes(new PasswordLoginRequest(
+                "disabled@example.com",
+                "password-123"))))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.error.code").value("AUTH_INVALID_CREDENTIALS"));
+  }
+
+  @Test
+  void deletedUserReceivesUnifiedLoginFailure() throws Exception {
+    mockMvc.perform(post("/api/auth/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsBytes(new PasswordRegisterRequest(
+                "deleted@example.com",
+                "password-123",
+                "Deleted User"))))
+        .andExpect(status().isOk());
+    setUserStatus("deleted@example.com", AuthUserStatus.DELETED);
+
+    mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsBytes(new PasswordLoginRequest(
+                "deleted@example.com",
+                "password-123"))))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.error.code").value("AUTH_INVALID_CREDENTIALS"));
+  }
+
+  @Test
   void registerReturnsBadRequestWhenDisplayNameIsMissing() throws Exception {
     mockMvc.perform(post("/api/auth/register")
             .contentType(MediaType.APPLICATION_JSON)
@@ -139,5 +184,9 @@ class PasswordAuthControllerTest {
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.error.code").value("AUTH_DISPLAY_NAME_REQUIRED"))
         .andExpect(jsonPath("$.error.message").value("请输入昵称。"));
+  }
+
+  private void setUserStatus(String emailNormalized, AuthUserStatus status) {
+    repository.setUserStatus(emailNormalized, status);
   }
 }

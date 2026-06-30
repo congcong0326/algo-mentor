@@ -7,9 +7,9 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
-import org.congcong.algomentor.auth.model.AuthRole;
 import org.congcong.algomentor.auth.model.PasswordCredential;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
+import org.congcong.algomentor.identity.model.AuthRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -24,6 +24,7 @@ class PasswordUserServiceTest {
   @Test
   void registerCreatesUserPasswordHashAndUserRole() {
     PasswordUserService service = new PasswordUserService(
+        repository,
         repository,
         passwordEncoder,
         Clock.fixed(NOW, ZoneOffset.UTC),
@@ -45,6 +46,7 @@ class PasswordUserServiceTest {
   void configuredAdminEmailReceivesAdminRoleOnRegistration() {
     PasswordUserService service = new PasswordUserService(
         repository,
+        repository,
         passwordEncoder,
         Clock.fixed(NOW, ZoneOffset.UTC),
         new AdminEmailRoleService(repository, List.of("admin@example.com")));
@@ -57,6 +59,7 @@ class PasswordUserServiceTest {
   @Test
   void duplicateEmailFailsRegistration() {
     PasswordUserService service = new PasswordUserService(
+        repository,
         repository,
         passwordEncoder,
         Clock.fixed(NOW, ZoneOffset.UTC),
@@ -72,6 +75,7 @@ class PasswordUserServiceTest {
   void duplicateDisplayNameIsAllowed() {
     PasswordUserService service = new PasswordUserService(
         repository,
+        repository,
         passwordEncoder,
         Clock.fixed(NOW, ZoneOffset.UTC),
         null);
@@ -86,6 +90,7 @@ class PasswordUserServiceTest {
   @Test
   void missingDisplayNameFailsRegistration() {
     PasswordUserService service = new PasswordUserService(
+        repository,
         repository,
         passwordEncoder,
         Clock.fixed(NOW, ZoneOffset.UTC),

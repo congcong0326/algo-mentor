@@ -4,7 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import org.congcong.algomentor.auth.model.AuthPermission;
-import org.congcong.algomentor.auth.model.AuthRole;
+import org.congcong.algomentor.identity.model.AuthRole;
 
 /**
  * 根据本地角色推导前端展示与路由体验所需的权限能力。

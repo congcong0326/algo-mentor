@@ -8,10 +8,10 @@ import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.congcong.algomentor.auth.model.AuthRole;
-import org.congcong.algomentor.auth.model.AuthUserStatus;
 import org.congcong.algomentor.auth.service.OAuth2LoginUserService;
 import org.congcong.algomentor.auth.service.OAuth2LoginUserServiceTest.InMemoryAuthUserRepository;
+import org.congcong.algomentor.identity.model.AuthRole;
+import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -30,6 +30,7 @@ class AuthenticatedOAuth2UserServiceTest {
 
   private final InMemoryAuthUserRepository repository = new InMemoryAuthUserRepository();
   private final OAuth2LoginUserService loginUserService = new OAuth2LoginUserService(
+      repository,
       repository,
       Clock.fixed(NOW, ZoneOffset.UTC));
 

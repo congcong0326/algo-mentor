@@ -21,12 +21,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import org.congcong.algomentor.auth.autoconfigure.AuthApiAutoConfiguration;
-import org.congcong.algomentor.auth.model.AuthRole;
-import org.congcong.algomentor.auth.model.AuthUserStatus;
-import org.congcong.algomentor.auth.security.OAuth2AuthenticationFailureHandler;
 import org.congcong.algomentor.auth.security.AuthAuthorities;
 import org.congcong.algomentor.auth.security.AuthenticatedOidcUser;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
+import org.congcong.algomentor.auth.security.OAuth2AuthenticationFailureHandler;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +65,8 @@ import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.congcong.algomentor.identity.model.AuthRole;
+import org.congcong.algomentor.identity.model.AuthUserStatus;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
