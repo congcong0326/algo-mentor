@@ -3,24 +3,36 @@ package org.congcong.algomentor.api.ability.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.function.Supplier;
 import org.congcong.algomentor.api.ability.mapper.AbilityProfileMapper;
 import org.congcong.algomentor.api.ability.mapper.model.AbilityTagScoreRow;
 import org.congcong.algomentor.api.ability.model.AbilityProfileResponse;
 import org.congcong.algomentor.api.ability.model.AbilityProfileScopeResponse;
 import org.congcong.algomentor.api.ability.model.AbilityTagScoreResponse;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AbilityProfileService {
 
-  private final AbilityProfileMapper mapper;
+  private final Supplier<AbilityProfileMapper> mapperSupplier;
 
-  public AbilityProfileService(AbilityProfileMapper mapper) {
-    this.mapper = mapper;
+  @Autowired
+  public AbilityProfileService(ObjectProvider<AbilityProfileMapper> mapperProvider) {
+    this(mapperProvider::getIfAvailable);
+  }
+
+  AbilityProfileService(AbilityProfileMapper mapper) {
+    this(() -> mapper);
+  }
+
+  private AbilityProfileService(Supplier<AbilityProfileMapper> mapperSupplier) {
+    this.mapperSupplier = mapperSupplier;
   }
 
   public AbilityProfileResponse getProfile(long userId) {
-    List<AbilityTagScoreResponse> tags = mapper
+    List<AbilityTagScoreResponse> tags = mapper()
         .findCommonTagScores(userId, AbilityProfileConstants.MIN_PROBLEM_COUNT)
         .stream()
         .map(this::toResponse)
@@ -69,5 +81,19 @@ public class AbilityProfileService {
         AbilityProfileConstants.SCORE_SCALE,
         AbilityProfileConstants.LATEST_REVIEW_ONLY,
         AbilityProfileConstants.CONSERVATIVE_WEIGHT);
+  }
+
+  private AbilityProfileMapper mapper() {
+    AbilityProfileMapper mapper = mapperSupplier.get();
+    if (mapper == null) {
+      throw new AbilityProfileMapperUnavailableException();
+    }
+    return mapper;
+  }
+
+  public static class AbilityProfileMapperUnavailableException extends RuntimeException {
+    public AbilityProfileMapperUnavailableException() {
+      super("Ability profile mapper is unavailable. Enable the local datasource profile before using ability APIs.");
+    }
   }
 }

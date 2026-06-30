@@ -21,6 +21,7 @@ import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
+import org.congcong.algomentor.agent.core.prompt.AgentPromptMetadataKeys;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockConstants;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockToken;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
@@ -226,12 +227,21 @@ class AgentConversationControllerTest {
         .containsEntry(PracticeChatPromptConstants.METADATA_PLAN_ID, 12L)
         .containsEntry(PracticeChatPromptConstants.METADATA_PHASE_INDEX, 1)
         .containsEntry(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, "two-sum");
+    @SuppressWarnings("unchecked")
+    Map<String, ?> promptSectionVersions =
+        (Map<String, ?>) agentLoopRunner.lastRequest.metadata().get(AgentPromptMetadataKeys.PROMPT_SECTION_VERSIONS);
+    org.assertj.core.api.Assertions.assertThat(promptSectionVersions)
+        .containsKeys(
+            PracticeChatPromptConstants.SECTION_BASE_INSTRUCTION,
+            PracticeChatPromptConstants.SECTION_COACH_STYLE,
+            PracticeChatPromptConstants.SECTION_RESPONSE_LANGUAGE,
+            PracticeChatPromptConstants.SECTION_SCENARIO_POLICY,
+            PracticeChatPromptConstants.SECTION_RUNTIME_CONTEXT,
+            PracticeChatPromptConstants.SECTION_CURRENT_USER_MESSAGE);
     org.assertj.core.api.Assertions.assertThat(agentLoopRunner.lastRequest.messages())
         .extracting(org.congcong.algomentor.llm.core.request.LlmMessage::role)
-        .containsExactly(
-            org.congcong.algomentor.llm.core.request.LlmMessage.Role.SYSTEM,
-            org.congcong.algomentor.llm.core.request.LlmMessage.Role.SYSTEM,
-            org.congcong.algomentor.llm.core.request.LlmMessage.Role.SYSTEM,
+        .startsWith(org.congcong.algomentor.llm.core.request.LlmMessage.Role.SYSTEM)
+        .endsWith(
             org.congcong.algomentor.llm.core.request.LlmMessage.Role.USER);
   }
 

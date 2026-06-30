@@ -1,6 +1,7 @@
 package org.congcong.algomentor.api.ability.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -67,6 +68,15 @@ class AbilityProfileServiceTest {
     assertThat(response.scope().scorePrecision()).isEqualTo(1);
     assertThat(response.scope().latestReviewOnly()).isTrue();
     assertThat(response.scope().conservativeWeight()).isEqualTo(4);
+  }
+
+  @Test
+  void reportsUnavailableMapperWhenDatasourceIsDisabled() {
+    AbilityProfileService service = new AbilityProfileService((AbilityProfileMapper) null);
+
+    assertThatThrownBy(() -> service.getProfile(42L))
+        .isInstanceOf(AbilityProfileService.AbilityProfileMapperUnavailableException.class)
+        .hasMessageContaining("Ability profile mapper is unavailable");
   }
 
   private AbilityProfileResponse profileFor(AbilityTagScoreRow row) {

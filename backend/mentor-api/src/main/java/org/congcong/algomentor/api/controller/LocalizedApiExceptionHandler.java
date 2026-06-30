@@ -2,6 +2,7 @@ package org.congcong.algomentor.api.controller;
 
 import jakarta.validation.ConstraintViolationException;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionException;
+import org.congcong.algomentor.api.ability.service.AbilityProfileService;
 import org.congcong.algomentor.api.controller.ability.AbilityProfileUnauthenticatedException;
 import org.congcong.algomentor.api.controller.learningplan.LearningPlanUnauthenticatedException;
 import org.congcong.algomentor.api.controller.preference.UserAiPreferenceUnauthenticatedException;
@@ -36,6 +37,7 @@ public class LocalizedApiExceptionHandler {
   public static final String PROBLEM_NOT_FOUND_CODE = "PROBLEM_NOT_FOUND";
   public static final String UNSUPPORTED_PROBLEM_LOCALE_CODE = "UNSUPPORTED_PROBLEM_LOCALE";
   public static final String PROBLEM_REPOSITORY_UNAVAILABLE_CODE = "PROBLEM_REPOSITORY_UNAVAILABLE";
+  public static final String ABILITY_PROFILE_UNAVAILABLE_CODE = "ABILITY_PROFILE_UNAVAILABLE";
   public static final String PRACTICE_MESSAGE_INVALID_CODE = "PRACTICE_MESSAGE_INVALID";
   public static final String PRACTICE_PROGRESS_STATUS_INVALID_CODE = "PRACTICE_PROGRESS_STATUS_INVALID";
   public static final String VALIDATION_FAILED_CODE = "VALIDATION_FAILED";
@@ -62,6 +64,11 @@ public class LocalizedApiExceptionHandler {
   @ExceptionHandler(ProblemService.ProblemRepositoryUnavailableException.class)
   public ResponseEntity<ApiResponse<Void>> problemRepositoryUnavailable(RuntimeException exception) {
     return failure(HttpStatus.SERVICE_UNAVAILABLE, PROBLEM_REPOSITORY_UNAVAILABLE_CODE, exception.getMessage());
+  }
+
+  @ExceptionHandler(AbilityProfileService.AbilityProfileMapperUnavailableException.class)
+  public ResponseEntity<ApiResponse<Void>> abilityProfileUnavailable(RuntimeException exception) {
+    return failure(HttpStatus.SERVICE_UNAVAILABLE, ABILITY_PROFILE_UNAVAILABLE_CODE, exception.getMessage());
   }
 
   @ExceptionHandler(ProblemLocale.UnsupportedProblemLocaleException.class)
