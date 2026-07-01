@@ -56,25 +56,27 @@ public class LearningPlanExtensionApplyService {
     LearningPlan currentPlan = learningPlanRepository.findPlanByIdForUser(planId, userId)
         .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_NOT_FOUND", "学习计划不存在。"));
     List<PracticeProgress> progress = practiceSessionRepository.findProgressByPlan(userId, planId);
-    LearningPlanExtensionDraft reindexedExtension = reindexExtension(
+    int currentMaxPhaseIndex = currentMaxPhaseIndex(currentPlan);
+    LearningPlanExtensionDraft appendReadyExtension = appendReadyExtension(
+        revision,
         revision.proposedExtension(),
-        currentMaxPhaseIndex(currentPlan));
+        currentMaxPhaseIndex);
 
     try {
-      validator.validate(reindexedExtension, currentPlan, progress);
+      validator.validate(appendReadyExtension, currentPlan, progress);
     } catch (LearningPlanException exception) {
       if ("LEARNING_PLAN_EXTENSION_INVALID".equals(exception.code())
-          && hasCurrentPlanProblemSlug(reindexedExtension, currentPlan)) {
+          && hasCurrentPlanProblemSlug(appendReadyExtension, currentPlan)) {
         throw new LearningPlanException("LEARNING_PLAN_EXTENSION_CONFLICT", "扩展提案与当前学习计划冲突，请重新生成。");
       }
       throw exception;
     }
 
-    learningPlanRepository.appendPhases(userId, planId, reindexedExtension.newPhases());
+    learningPlanRepository.appendPhases(userId, planId, appendReadyExtension.newPhases());
 
     Instant now = clock.instant();
     LearningPlanExtensionRevision appliedRevision = revision
-        .withReady(revision.previousExtension(), reindexedExtension, now)
+        .withReady(revision.previousExtension(), appendReadyExtension, now)
         .withApplied(now, now);
     proposalRepository.saveExtensionRevision(appliedRevision);
     proposalRepository.saveGroup(group.withStatus(LearningPlanProposalGroupStatus.APPLIED, now));
@@ -84,7 +86,7 @@ public class LearningPlanExtensionApplyService {
         proposalGroupId,
         revision.id(),
         LearningPlanProposalGroupStatus.APPLIED,
-        reindexedExtension.newPhases().size());
+        appendReadyExtension.newPhases().size());
   }
 
   private static void validateGroup(LearningPlanProposalGroup group, long planId) {
@@ -100,6 +102,16 @@ public class LearningPlanExtensionApplyService {
     if (revision.planId() != planId || revision.userId() != userId) {
       throw new LearningPlanException("LEARNING_PLAN_PROPOSAL_REVISION_INVALID", "学习计划扩展提案与请求不匹配。");
     }
+  }
+
+  private static LearningPlanExtensionDraft appendReadyExtension(
+      LearningPlanExtensionRevision revision,
+      LearningPlanExtensionDraft extension,
+      int currentMaxPhaseIndex) {
+    if (currentMaxPhaseIndex == revision.baseMaxPhaseIndex()) {
+      return extension;
+    }
+    return reindexExtension(extension, currentMaxPhaseIndex);
   }
 
   private static LearningPlanExtensionDraft reindexExtension(

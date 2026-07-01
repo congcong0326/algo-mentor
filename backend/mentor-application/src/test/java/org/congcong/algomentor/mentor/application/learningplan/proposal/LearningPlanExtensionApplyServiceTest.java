@@ -163,6 +163,32 @@ class LearningPlanExtensionApplyServiceTest {
         .containsExactly(3);
   }
 
+  @Test
+  void noPhaseIndexDriftDoesNotNormalizeInvalidReadyRevision() {
+    learningPlanRepository.save(plan(phase(1, "two-sum")));
+    LearningPlanProposalGroup group = saveActiveGroup((Long) null);
+    LearningPlanExtensionRevision revision = saveReadyRevision(
+        group.id(),
+        1,
+        1,
+        extension(phase(2, "graph-valid-tree"), phase(2, "number-of-islands")));
+    saveActiveGroup(group.withLatestProposalId(revision.id(), NOW));
+
+    assertThatThrownBy(() -> service.apply(USER_ID, PLAN_ID, group.id()))
+        .isInstanceOf(LearningPlanException.class)
+        .hasMessage("扩展阶段编号不能重复。")
+        .extracting("code")
+        .isEqualTo("LEARNING_PLAN_EXTENSION_INVALID");
+    assertThat(learningPlanRepository.appendCount).isZero();
+    assertThat(learningPlanRepository.findPlanByIdForUser(PLAN_ID, USER_ID).orElseThrow().plan().phases())
+        .extracting(LearningPlanPhaseDraft::phaseIndex)
+        .containsExactly(1);
+    assertThat(proposalRepository.findGroupForUser(group.id(), USER_ID).orElseThrow().status())
+        .isEqualTo(LearningPlanProposalGroupStatus.ACTIVE);
+    assertThat(proposalRepository.findExtensionRevisionForUser(revision.id(), USER_ID).orElseThrow().status())
+        .isEqualTo(LearningPlanProposalRevisionStatus.READY);
+  }
+
   private LearningPlanProposalGroup saveActiveGroup(Long latestProposalId) {
     return saveActiveGroup(new LearningPlanProposalGroup(
         null,
@@ -286,6 +312,7 @@ class LearningPlanExtensionApplyServiceTest {
   private static class InMemoryLearningPlanRepository implements LearningPlanRepository {
 
     private final Map<Long, LearningPlan> plans = new HashMap<>();
+    private int appendCount;
 
     @Override
     public LearningPlan save(LearningPlan plan) {
@@ -307,6 +334,7 @@ class LearningPlanExtensionApplyServiceTest {
 
     @Override
     public LearningPlan appendPhases(long userId, long planId, List<LearningPlanPhaseDraft> newPhases) {
+      appendCount++;
       LearningPlan current = findPlanByIdForUser(planId, userId).orElseThrow();
       List<LearningPlanPhaseDraft> existingPhases = current.plan().phases();
       List<LearningPlanPhaseDraft> mergedPhases = new ArrayList<>(existingPhases);
