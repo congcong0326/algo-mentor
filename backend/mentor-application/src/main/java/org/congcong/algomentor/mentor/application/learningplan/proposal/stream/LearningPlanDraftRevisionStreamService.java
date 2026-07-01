@@ -353,12 +353,15 @@ public class LearningPlanDraftRevisionStreamService {
     }
 
     private LearningPlanProposalEvent completeReadyTransition(LearningPlanDraftPlan plan) {
+      LearningPlanDraft lockedDraft = draftRepository.findDraftByIdForUserForUpdate(draft.id(), draft.userId())
+          .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_DRAFT_NOT_FOUND", "学习计划草案不存在。"));
+      validateRevisionDraft(lockedDraft);
       LearningPlanProposalGroup lockedGroup = proposalRepository.findGroupForUserForUpdate(
               revision.proposalGroupId(),
-              draft.userId())
+              lockedDraft.userId())
           .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_PROPOSAL_GROUP_NOT_FOUND", "学习计划提案分组不存在。"));
       int nextRevisionNo = proposalRepository.nextRevisionNo(lockedGroup.id());
-      Optional<LearningPlanProposalGroup> latestActiveGroup = latestActiveGroup(draft.userId(), draft.id());
+      Optional<LearningPlanProposalGroup> latestActiveGroup = latestActiveGroup(lockedDraft.userId(), lockedDraft.id());
       if (nextRevisionNo > revision.revisionNo() + 1
           || latestActiveGroup.isEmpty()
           || !Objects.equals(latestActiveGroup.get().id(), lockedGroup.id())) {
@@ -370,7 +373,7 @@ public class LearningPlanDraftRevisionStreamService {
           readyRevision.proposalGroupId(),
           readyRevision.id());
       proposalRepository.saveGroup(lockedGroup.withLatestProposalId(readyRevision.id(), clock.instant()));
-      LearningPlanDraft savedDraft = draftRepository.save(draftWithRevisionPlan(plan));
+      LearningPlanDraft savedDraft = draftRepository.save(draftWithRevisionPlan(lockedDraft, plan));
       return new LearningPlanProposalEvent.DraftRevisionReady(LearningPlanDraftRevisionResult.fromRevision(
           readyRevision,
           superseded,
@@ -388,22 +391,22 @@ public class LearningPlanDraftRevisionStreamService {
           false);
     }
 
-    private LearningPlanDraft draftWithRevisionPlan(LearningPlanDraftPlan plan) {
+    private LearningPlanDraft draftWithRevisionPlan(LearningPlanDraft currentDraft, LearningPlanDraftPlan plan) {
       Instant now = clock.instant();
-      List<String> messages = new ArrayList<>(draft.messages());
+      List<String> messages = new ArrayList<>(currentDraft.messages());
       messages.add(revision.instruction());
       return new LearningPlanDraft(
-          draft.id(),
-          draft.userId(),
+          currentDraft.id(),
+          currentDraft.userId(),
           LearningPlanDraftStatus.GENERATED,
-          draft.command(),
+          currentDraft.command(),
           messages,
           List.of(),
           "已生成学习计划修订草案。",
           plan,
-          draft.confirmedPlanId(),
-          draft.expiresAt(),
-          draft.createdAt(),
+          currentDraft.confirmedPlanId(),
+          currentDraft.expiresAt(),
+          currentDraft.createdAt(),
           now);
     }
 

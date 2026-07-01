@@ -55,8 +55,9 @@ import org.springframework.transaction.support.TransactionOperations;
 class LearningPlanDraftRevisionStreamServiceTest {
 
   private final Clock clock = Clock.fixed(Instant.parse("2026-07-01T00:00:00Z"), ZoneOffset.UTC);
-  private final InMemoryDraftRepository draftRepository = new InMemoryDraftRepository();
-  private final InMemoryProposalRepository proposalRepository = new InMemoryProposalRepository();
+  private final List<String> locks = new ArrayList<>();
+  private final InMemoryDraftRepository draftRepository = new InMemoryDraftRepository(locks);
+  private final InMemoryProposalRepository proposalRepository = new InMemoryProposalRepository(locks);
   private final FakeProblemCatalog problemCatalog = new FakeProblemCatalog();
 
   @org.junit.jupiter.api.Test
@@ -103,6 +104,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
     assertThat(proposalRepository.groups.get(group.id()).latestProposalId()).isEqualTo(ready.result().proposalId());
     assertThat(draftRepository.findDraftByIdForUser(draft.id(), draft.userId()).orElseThrow().draftPlan().title())
         .isEqualTo("修订后计划");
+    assertThat(lockOrder()).containsExactly("draft:100", "draft:100", "group:10");
   }
 
   @org.junit.jupiter.api.Test
@@ -523,6 +525,10 @@ class LearningPlanDraftRevisionStreamServiceTest {
     throw new AssertionError("Timed out waiting for stream completion event");
   }
 
+  private List<String> lockOrder() {
+    return locks;
+  }
+
   private static class FakeAgentLoopRunner extends AgentLoopRunner {
     private final String content;
 
@@ -699,7 +705,12 @@ class LearningPlanDraftRevisionStreamServiceTest {
 
   private static final class InMemoryDraftRepository implements LearningPlanDraftRepository {
     private final Map<Long, LearningPlanDraft> drafts = new HashMap<>();
+    private final List<String> locks;
     private long sequence = 100;
+
+    private InMemoryDraftRepository(List<String> locks) {
+      this.locks = locks;
+    }
 
     @Override
     public LearningPlanDraft save(LearningPlanDraft draft) {
@@ -713,14 +724,25 @@ class LearningPlanDraftRevisionStreamServiceTest {
     public Optional<LearningPlanDraft> findDraftByIdForUser(long draftId, long userId) {
       return Optional.ofNullable(drafts.get(draftId)).filter(draft -> draft.userId() == userId);
     }
+
+    @Override
+    public Optional<LearningPlanDraft> findDraftByIdForUserForUpdate(long draftId, long userId) {
+      locks.add("draft:" + draftId);
+      return findDraftByIdForUser(draftId, userId);
+    }
   }
 
   private static final class InMemoryProposalRepository implements LearningPlanProposalRepository {
     private final Map<Long, LearningPlanProposalGroup> groups = new HashMap<>();
     private final Map<Long, LearningPlanDraftRevision> draftRevisions = new HashMap<>();
     private final Map<Long, LearningPlanExtensionRevision> extensionRevisions = new HashMap<>();
+    private final List<String> locks;
     private long groupSequence = 10;
     private long proposalSequence = 1000;
+
+    private InMemoryProposalRepository(List<String> locks) {
+      this.locks = locks;
+    }
 
     @Override
     public LearningPlanProposalGroup saveGroup(LearningPlanProposalGroup group) {
@@ -733,6 +755,12 @@ class LearningPlanDraftRevisionStreamServiceTest {
     @Override
     public Optional<LearningPlanProposalGroup> findGroupForUser(long groupId, long userId) {
       return Optional.ofNullable(groups.get(groupId)).filter(group -> group.userId() == userId);
+    }
+
+    @Override
+    public Optional<LearningPlanProposalGroup> findGroupForUserForUpdate(long groupId, long userId) {
+      locks.add("group:" + groupId);
+      return findGroupForUser(groupId, userId);
     }
 
     @Override
