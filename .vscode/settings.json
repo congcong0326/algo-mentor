@@ -4,5 +4,18 @@
     "java.hover.javadoc.enabled": true,
     "java.implementationCodeLens": "all",
     "java.referencesCodeLens.enabled": true,
-    "mybatis-boost.useDefinitionProvider": false
+    "mybatis-boost.useDefinitionProvider": false,
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "algo-mentor-local",
+            "database": "algo_mentor",
+            "username": "algo_mentor",
+            "password": "algo_mentor_dev"
+        }
+    ]
 }
