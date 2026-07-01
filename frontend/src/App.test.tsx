@@ -1646,8 +1646,44 @@ describe('App', () => {
     expectCsrfHeader(fetchMock, '/api/learning-plans/900/phases/1/problems/two-sum/practice-session?locale=en-US');
   });
 
-  it('sends the edited goal regeneration prefix when regenerating a generated draft', async () => {
-    const fetchMock = mockLearningPlanFetch();
+  it('revises a generated draft through the revision stream and updates the preview', async () => {
+    const basePlan = learningPlanDetail();
+    const revisedPlan = learningPlanDetail({
+      title: '三周动态规划面试计划',
+      goal: '三周内集中突破动态规划面试题',
+      phases: [{
+        ...basePlan.phases[0],
+        title: '动态规划基础强化',
+        focus: '动态规划',
+        recommendedTags: ['Dynamic Programming'],
+        problems: [{
+          ...basePlan.phases[0].problems[0],
+          slug: 'climbing-stairs',
+          frontendId: 70,
+          title: 'Climbing Stairs',
+          titleCn: '爬楼梯',
+          tags: ['Dynamic Programming'],
+          reason: '建立状态转移手感。',
+        }],
+      }],
+    });
+    const fetchMock = mockLearningPlanFetch({
+      draftRevisionStream: sseStream([
+        sseEvent('draft_revision_ready', {
+          proposalGroupId: 1,
+          proposalId: 2,
+          draftId: 100,
+          revisionNo: 1,
+          status: 'READY',
+          supersededProposalIds: [],
+          draft: {
+            ...generatedLearningPlanDraft(),
+            assistantMessage: '已按要求调整训练方案。',
+            draftPlan: revisedPlan,
+          },
+        }),
+      ]),
+    });
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/learning-plans');
 
@@ -1666,20 +1702,96 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: '发送补充' }));
     await screen.findByRole('heading', { name: '训练方案' });
 
-    fireEvent.click(screen.getByRole('button', { name: '编辑目标摘要' }));
-    fireEvent.change(await screen.findByRole('textbox', { name: '目标摘要' }), {
+    fireEvent.change(screen.getByRole('textbox', { name: '对当前计划不满意？输入调整要求' }), {
       target: { value: '三周内集中突破动态规划面试题' },
     });
-    fireEvent.click(screen.getByRole('button', { name: '按新目标重新生成' }));
+    fireEvent.click(screen.getByRole('button', { name: '按要求调整计划' }));
 
     await waitFor(() => {
-      const messageCalls = fetchMock.mock.calls.filter(([url]) => url === '/api/learning-plans/drafts/100/messages');
-      expect(messageCalls).toHaveLength(2);
-      expect(JSON.parse(messageCalls[1][1]?.body as string)).toEqual({
-        message: '请按新的目标摘要重新生成训练方案：三周内集中突破动态规划面试题',
-      });
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/learning-plans/drafts/100/revisions/stream',
+        expect.objectContaining({
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: expect.any(Headers),
+          body: JSON.stringify({ instruction: '三周内集中突破动态规划面试题' }),
+        }),
+      );
     });
-    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/messages');
+    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/revisions/stream');
+    expect(await screen.findByText('动态规划基础强化')).toBeInTheDocument();
+    expect(screen.getByText('爬楼梯')).toBeInTheDocument();
+    expect(screen.getByText('三周内集中突破动态规划面试题')).toBeInTheDocument();
+  });
+
+  it('returns to draft preview with an error when revision stream has no terminal event', async () => {
+    const fetchMock = mockLearningPlanFetch({
+      draftRevisionStream: sseStream([
+        sseEvent('work_start', { message: '正在调整计划' }),
+      ]),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    await createCollectingLearningPlanDraft();
+    fireEvent.change(screen.getByRole('textbox', { name: '补充回答' }), {
+      target: { value: '数组和哈希表' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送补充' }));
+    await screen.findByRole('heading', { name: '训练方案' });
+
+    fireEvent.change(screen.getByRole('textbox', { name: '对当前计划不满意？输入调整要求' }), {
+      target: { value: '减少每周题量' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '按要求调整计划' }));
+
+    expect(await screen.findByText('调整学习计划失败，请稍后重试。')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '训练方案' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '保存方案' })).not.toBeDisabled();
+    expect(screen.getByRole('textbox', { name: '对当前计划不满意？输入调整要求' })).toHaveValue('减少每周题量');
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/learning-plans/drafts/100/revisions/stream',
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({ instruction: '减少每周题量' }),
+        }),
+      );
+    });
+    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/revisions/stream');
+  });
+
+  it('keeps revision text when draft revision submission rejects', async () => {
+    const fetchMock = mockLearningPlanFetch({ failDraftRevision: true });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    await createCollectingLearningPlanDraft();
+    fireEvent.change(screen.getByRole('textbox', { name: '补充回答' }), {
+      target: { value: '数组和哈希表' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送补充' }));
+    await screen.findByRole('heading', { name: '训练方案' });
+
+    fireEvent.change(screen.getByRole('textbox', { name: '对当前计划不满意？输入调整要求' }), {
+      target: { value: '降低难度' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '按要求调整计划' }));
+
+    expect(await screen.findByText('revision failed')).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: '对当前计划不满意？输入调整要求' })).toHaveValue('降低难度');
+    expect(screen.getByRole('button', { name: '保存方案' })).not.toBeDisabled();
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/learning-plans/drafts/100/revisions/stream',
+        expect.objectContaining({ method: 'POST' }),
+      );
+    });
+    expectCsrfHeader(fetchMock, '/api/learning-plans/drafts/100/revisions/stream');
   });
 
   it('keeps clarification panel and typed answer when follow-up submission fails', async () => {
@@ -2138,6 +2250,8 @@ function abilityTags() {
 function mockLearningPlanFetch(options: {
   activeRunSequence?: Array<ReturnType<typeof activePracticeRun> | null>;
   blockPracticeMessage?: boolean;
+  draftRevisionStream?: ReadableStream<Uint8Array>;
+  failDraftRevision?: boolean;
   failPracticeMessage?: boolean;
   includePracticeReviews?: boolean;
   omitLeetCodeUrl?: boolean;
@@ -2390,6 +2504,28 @@ function mockLearningPlanFetch(options: {
         },
         timestamp: '2026-06-22T00:00:00Z',
       }));
+    }
+
+    if (url === '/api/learning-plans/drafts/100/revisions/stream') {
+      if (options.failDraftRevision) {
+        return Promise.resolve(jsonResponse({
+          success: false,
+          error: { code: 'DRAFT_REVISION_FAILED', message: 'revision failed' },
+          timestamp: '2026-06-22T00:00:00Z',
+        }, 500));
+      }
+
+      return Promise.resolve(new Response(options.draftRevisionStream ?? sseStream([
+        sseEvent('draft_revision_ready', {
+          proposalGroupId: 1,
+          proposalId: 2,
+          draftId: 100,
+          revisionNo: 1,
+          status: 'READY',
+          supersededProposalIds: [],
+          draft: generatedLearningPlanDraft(),
+        }),
+      ]), { status: 200 }));
     }
 
     if (url === '/api/learning-plans/drafts/100/confirm' && messagePosted) {

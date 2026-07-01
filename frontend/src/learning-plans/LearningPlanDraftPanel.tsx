@@ -97,11 +97,13 @@ export default function LearningPlanDraftPanel({
               className="secondary-button"
               disabled={loading || !revisionInstruction.trim()}
               onClick={() => {
-                void onReviseDraft(revisionInstruction.trim()).then((revised) => {
-                  if (revised) {
-                    setRevisionInstruction('');
-                  }
-                });
+                void onReviseDraft(revisionInstruction.trim())
+                  .then((revised) => {
+                    if (revised) {
+                      setRevisionInstruction('');
+                    }
+                  })
+                  .catch(() => undefined);
               }}
               type="button"
             >

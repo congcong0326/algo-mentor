@@ -183,6 +183,37 @@ describe('LearningPlanDraftPanel', () => {
     await waitFor(() => expect(textarea).toHaveValue(''));
   });
 
+  it('keeps revision instructions when revision rejects', async () => {
+    const onReviseDraft = vi.fn(() => Promise.reject(new Error('revision failed')));
+    const draft: LearningPlanDraftResponse = {
+      draftId: 100,
+      status: 'GENERATED',
+      assistantMessage: '已生成训练方案草案。',
+      missingFields: [],
+      draftPlan,
+    };
+
+    render(
+      <LearningPlanDraftPanel
+        draft={draft}
+        loading={false}
+        onConfirm={vi.fn()}
+        onReturnToWizard={vi.fn()}
+        onReviseDraft={onReviseDraft}
+        onSendFollowUp={vi.fn(() => Promise.resolve(true))}
+      />,
+    );
+
+    const textarea = screen.getByRole('textbox', { name: '对当前计划不满意？输入调整要求' });
+    fireEvent.change(textarea, {
+      target: { value: '降低难度。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '按要求调整计划' }));
+
+    await waitFor(() => expect(onReviseDraft).toHaveBeenCalledWith('降低难度。'));
+    expect(textarea).toHaveValue('降低难度。');
+  });
+
   it('does not allow confirmation for failed drafts even when a stale plan exists', () => {
     render(
       <LearningPlanDraftPanel
