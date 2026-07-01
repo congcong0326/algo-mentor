@@ -198,6 +198,28 @@ class LearningPlanExtensionApplyServiceTest {
         .isEqualTo(LearningPlanProposalRevisionStatus.READY);
   }
 
+  @Test
+  void archivedPlanCannotApplyExtension() {
+    learningPlanRepository.save(plan(LearningPlanStatus.ARCHIVED, phase(1, "two-sum")));
+    LearningPlanProposalGroup group = saveActiveGroup((Long) null);
+    LearningPlanExtensionRevision revision = saveReadyRevision(group.id(), 1, 1, extension(phase(2, "graph-valid-tree")));
+    saveActiveGroup(group.withLatestProposalId(revision.id(), NOW));
+
+    assertThatThrownBy(() -> service.apply(USER_ID, PLAN_ID, group.id()))
+        .isInstanceOf(LearningPlanException.class)
+        .hasMessage("当前学习计划状态不允许应用扩展。")
+        .extracting("code")
+        .isEqualTo("LEARNING_PLAN_EXTENSION_PLAN_NOT_ACTIVE");
+    assertThat(learningPlanRepository.appendCount).isZero();
+    assertThat(learningPlanRepository.findPlanByIdForUser(PLAN_ID, USER_ID).orElseThrow().plan().phases())
+        .extracting(LearningPlanPhaseDraft::phaseIndex)
+        .containsExactly(1);
+    assertThat(proposalRepository.findGroupForUser(group.id(), USER_ID).orElseThrow().status())
+        .isEqualTo(LearningPlanProposalGroupStatus.ACTIVE);
+    assertThat(proposalRepository.findExtensionRevisionForUser(revision.id(), USER_ID).orElseThrow().status())
+        .isEqualTo(LearningPlanProposalRevisionStatus.READY);
+  }
+
   private LearningPlanProposalGroup saveActiveGroup(Long latestProposalId) {
     return saveActiveGroup(new LearningPlanProposalGroup(
         null,
@@ -242,10 +264,14 @@ class LearningPlanExtensionApplyServiceTest {
   }
 
   private static LearningPlan plan(LearningPlanPhaseDraft... phases) {
+    return plan(LearningPlanStatus.ACTIVE, phases);
+  }
+
+  private static LearningPlan plan(LearningPlanStatus status, LearningPlanPhaseDraft... phases) {
     return new LearningPlan(
         PLAN_ID,
         USER_ID,
-        LearningPlanStatus.ACTIVE,
+        status,
         draftPlan(List.of(phases)),
         NOW,
         NOW);

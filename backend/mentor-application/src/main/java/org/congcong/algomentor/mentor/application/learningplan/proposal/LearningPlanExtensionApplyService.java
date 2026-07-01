@@ -11,6 +11,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +58,11 @@ public class LearningPlanExtensionApplyService {
 
     LearningPlan currentPlan = learningPlanRepository.findPlanByIdForUser(planId, userId)
         .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_NOT_FOUND", "学习计划不存在。"));
+    if (currentPlan.status() != LearningPlanStatus.ACTIVE) {
+      throw new LearningPlanException(
+          "LEARNING_PLAN_EXTENSION_PLAN_NOT_ACTIVE",
+          "当前学习计划状态不允许应用扩展。");
+    }
     List<PracticeProgress> progress = practiceSessionRepository.findProgressByPlan(userId, planId);
     int currentMaxPhaseIndex = currentMaxPhaseIndex(currentPlan);
     LearningPlanExtensionDraft appendReadyExtension = appendReadyExtension(
