@@ -13,6 +13,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhase
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 public class LearningPlanExtensionApplyService {
 
@@ -35,6 +36,7 @@ public class LearningPlanExtensionApplyService {
     this.clock = Objects.requireNonNull(clock, "clock");
   }
 
+  @Transactional
   public LearningPlanExtensionApplyResult apply(long userId, long planId, long proposalGroupId) {
     LearningPlanProposalGroup group = proposalRepository.findGroupForUser(proposalGroupId, userId)
         .orElseThrow(() -> new LearningPlanException(

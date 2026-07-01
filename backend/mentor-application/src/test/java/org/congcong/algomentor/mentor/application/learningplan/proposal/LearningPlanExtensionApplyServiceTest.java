@@ -30,6 +30,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatu
 import org.congcong.algomentor.mentor.application.practice.PracticeSession;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 class LearningPlanExtensionApplyServiceTest {
 
@@ -47,6 +48,14 @@ class LearningPlanExtensionApplyServiceTest {
       practiceSessionRepository,
       new LearningPlanExtensionValidator(new FakeProblemCatalog()),
       clock);
+
+  @Test
+  void applyIsTransactional() throws NoSuchMethodException {
+    assertThat(LearningPlanExtensionApplyService.class
+        .getDeclaredMethod("apply", long.class, long.class, long.class)
+        .isAnnotationPresent(Transactional.class))
+        .isTrue();
+  }
 
   @Test
   void latestReadyRevisionAppliesAndMarksGroupAndRevisionApplied() {
