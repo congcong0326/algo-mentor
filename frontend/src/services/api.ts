@@ -506,25 +506,6 @@ export async function getLearningPlanDetail(
   return response.json();
 }
 
-export async function createLearningPlanDraft(
-  request: LearningPlanCreateDraftRequest,
-): Promise<ApiResponse<LearningPlanDraftResponse>> {
-  const response = await apiFetch('/api/learning-plans/drafts', {
-    method: 'POST',
-    headers: {
-      ...jsonHeaders,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request),
-  });
-
-  if (!response.ok) {
-    throw await toApiRequestError(response, 'Learning plan draft request failed');
-  }
-
-  return response.json();
-}
-
 export interface StreamLearningPlanDraftOptions {
   signal?: AbortSignal;
   onOpen?: () => void;

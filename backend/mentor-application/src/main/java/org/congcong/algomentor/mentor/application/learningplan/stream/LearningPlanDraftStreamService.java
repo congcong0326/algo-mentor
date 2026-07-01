@@ -79,6 +79,7 @@ public class LearningPlanDraftStreamService {
     if (!missingFields.isEmpty()) {
       return immediateCollecting(userId, command, missingFields);
     }
+    // 第一次写库：先落一条空草案，拿到稳定 draft id；通用 Agent 只负责生成，不直接持有学习计划仓储。
     LearningPlanDraft draft = createInitialDraft(userId, command);
     AgentRequest request = new AgentRequest(
         runId,
@@ -90,6 +91,7 @@ public class LearningPlanDraftStreamService {
       SubmissionPublisher<LearningPlanDraftStreamEvent> publisher = new SubmissionPublisher<>();
       publisher.subscribe(subscriber);
       AgentWorkStatusProjector projector = new AgentWorkStatusProjector(learningPlanProfile(), clock);
+      // 从这里进入通用 Agent loop；学习计划草案的解析和持久化由下面的 StreamSubscriber 接管。
       agentLoopRunner.stream(request).subscribe(new StreamSubscriber(
           publisher,
           projector,
@@ -242,8 +244,10 @@ public class LearningPlanDraftStreamService {
         if (finalContent == null || finalContent.isBlank()) {
           throw new LearningPlanException("LEARNING_PLAN_FINAL_OUTPUT_MISSING", "模型未返回学习计划结果。");
         }
+        // AgentRunEnd 表示最后一个无工具调用 step 已完成，此时 finalContent 才是可落库的结构化计划。
         LearningPlanDraftPlan plan = outputMapper.map(objectMapper.readTree(finalContent), command);
         validator.validateGeneratedPlan(plan);
+        // 第二次写库：把模型最终 JSON 规范化后的领域计划写入 draft_plan_json，并把状态置为 GENERATED。
         LearningPlanDraft saved = draftRepository.save(draft.withState(
             LearningPlanDraftStatus.GENERATED,
             List.of(),
@@ -269,6 +273,7 @@ public class LearningPlanDraftStreamService {
         stepContent.append(delta.content());
         return;
       }
+      // 有工具调用的 step 内容只是中间推理/工具阶段输出；无工具调用的 step 才被视为最终答案。
       if (event instanceof AgentStreamEvent.AgentStepEnd end && end.toolCallCount() == 0) {
         finalContent = stepContent.toString();
       }

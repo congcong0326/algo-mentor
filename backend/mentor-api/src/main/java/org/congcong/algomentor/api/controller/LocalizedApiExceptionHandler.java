@@ -27,6 +27,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
@@ -42,6 +43,7 @@ public class LocalizedApiExceptionHandler {
   public static final String PRACTICE_PROGRESS_STATUS_INVALID_CODE = "PRACTICE_PROGRESS_STATUS_INVALID";
   public static final String VALIDATION_FAILED_CODE = "VALIDATION_FAILED";
   public static final String REQUEST_BODY_INVALID_CODE = "REQUEST_BODY_INVALID";
+  public static final String REQUEST_METHOD_NOT_SUPPORTED_CODE = "REQUEST_METHOD_NOT_SUPPORTED";
   public static final String INTERNAL_ERROR_CODE = "INTERNAL_ERROR";
 
   private static final Logger log = LoggerFactory.getLogger(LocalizedApiExceptionHandler.class);
@@ -109,6 +111,11 @@ public class LocalizedApiExceptionHandler {
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ApiResponse<Void>> invalidRequestBody(HttpMessageNotReadableException exception) {
     return failure(HttpStatus.BAD_REQUEST, REQUEST_BODY_INVALID_CODE, "请求体不是合法 JSON 或与接口结构不匹配。");
+  }
+
+  @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+  public ResponseEntity<ApiResponse<Void>> methodNotSupported(HttpRequestMethodNotSupportedException exception) {
+    return failure(HttpStatus.METHOD_NOT_ALLOWED, REQUEST_METHOD_NOT_SUPPORTED_CODE, "当前接口不支持该请求方法。");
   }
 
   @ExceptionHandler({

@@ -2,7 +2,6 @@ package org.congcong.algomentor.mentor.application.learningplan;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,25 +26,6 @@ public class LearningPlanDraftService {
     this.agentService = agentService;
     this.validator = validator;
     this.clock = clock;
-  }
-
-  public LearningPlanDraftResult createDraft(long userId, LearningPlanDraftCommand command) {
-    Instant now = clock.instant();
-    LearningPlanDraft draft = new LearningPlanDraft(
-        null,
-        userId,
-        LearningPlanDraftStatus.COLLECTING,
-        command,
-        List.of(),
-        List.of(),
-        null,
-        null,
-        null,
-        now.plus(14, ChronoUnit.DAYS),
-        now,
-        now);
-    LearningPlanDraft saved = draftRepository.save(draft);
-    return LearningPlanDraftResult.fromDraft(advance(saved));
   }
 
   public LearningPlanDraftResult continueDraft(long userId, long draftId, String message) {

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,44 +26,8 @@ class LearningPlanDraftServiceTest {
       clock);
 
   @Test
-  void createDraftAsksOneClarificationWhenRequiredFactsAreMissing() {
-    LearningPlanDraftResult result = service.createDraft(7L, new LearningPlanDraftCommand(
-        LearningPlanIntent.INTERVIEW_SPRINT,
-        "",
-        4,
-        LearningPlanLevel.INTERMEDIATE,
-        6,
-        "Java",
-        LearningPlanDifficultyPreference.MEDIUM,
-        true,
-        List.of("Array")));
-
-    assertThat(result.status()).isEqualTo(LearningPlanDraftStatus.COLLECTING);
-    assertThat(result.assistantMessage()).contains("学习目标");
-    assertThat(result.missingFields()).containsExactly("goal");
-    assertThat(result.draftPlan()).isNull();
-  }
-
-  @Test
-  void createDraftGeneratesPlanWithRealProblemsWhenFactsAreComplete() {
-    LearningPlanDraftResult result = service.createDraft(7L, completeCommand(4));
-
-    assertThat(result.status()).isEqualTo(LearningPlanDraftStatus.GENERATED);
-    assertThat(result.assistantMessage()).contains("已生成");
-    assertThat(result.draftPlan()).isNotNull();
-    assertThat(result.draftPlan().phases()).hasSize(3);
-    assertThat(result.draftPlan().phases())
-        .allSatisfy(phase -> {
-          assertThat(phase.problems()).hasSizeBetween(1, 5);
-          assertThat(phase.problems()).extracting(LearningPlanProblemDraft::slug)
-              .allMatch(slug -> List.of("two-sum", "valid-parentheses", "binary-search", "climbing-stairs")
-                  .contains(slug));
-        });
-  }
-
-  @Test
   void continueDraftCollectsMissingGoalAndGeneratesPlan() {
-    LearningPlanDraftResult collecting = service.createDraft(7L, new LearningPlanDraftCommand(
+    LearningPlanDraft collecting = saveDraft(7L, new LearningPlanDraftCommand(
         LearningPlanIntent.PRACTICE_GOAL,
         "",
         2,
@@ -73,7 +38,7 @@ class LearningPlanDraftServiceTest {
         false,
         List.of()));
 
-    LearningPlanDraftResult generated = service.continueDraft(7L, collecting.draftId(), "想用 Java 练习数组和哈希表");
+    LearningPlanDraftResult generated = service.continueDraft(7L, collecting.id(), "想用 Java 练习数组和哈希表");
 
     assertThat(generated.status()).isEqualTo(LearningPlanDraftStatus.GENERATED);
     assertThat(generated.draftPlan()).isNotNull();
@@ -82,11 +47,11 @@ class LearningPlanDraftServiceTest {
 
   @Test
   void continueDraftRegeneratesPlanFromEditedGoalPrefix() {
-    LearningPlanDraftResult original = service.createDraft(7L, completeCommand(4));
+    LearningPlanDraft original = saveGeneratedDraft(7L, completeCommand(4));
 
     LearningPlanDraftResult regenerated = service.continueDraft(
         7L,
-        original.draftId(),
+        original.id(),
         "请按新的目标摘要重新生成学习计划：三周内集中突破动态规划面试题");
 
     assertThat(regenerated.status()).isEqualTo(LearningPlanDraftStatus.GENERATED);
@@ -101,23 +66,24 @@ class LearningPlanDraftServiceTest {
 
   @Test
   void confirmDraftIsIdempotent() {
-    LearningPlanDraftResult generated = service.createDraft(7L, completeCommand(8));
+    LearningPlanDraft generated = saveGeneratedDraft(7L, completeCommand(8));
 
-    LearningPlanConfirmResult first = service.confirmDraft(7L, generated.draftId());
-    LearningPlanConfirmResult second = service.confirmDraft(7L, generated.draftId());
+    LearningPlanConfirmResult first = service.confirmDraft(7L, generated.id());
+    LearningPlanConfirmResult second = service.confirmDraft(7L, generated.id());
 
     assertThat(first.planId()).isEqualTo(second.planId());
     assertThat(first.status()).isEqualTo(LearningPlanStatus.ACTIVE);
-    assertThat(draftRepository.findDraftByIdForUser(generated.draftId(), 7L).orElseThrow().status())
+    assertThat(draftRepository.findDraftByIdForUser(generated.id(), 7L).orElseThrow().status())
         .isEqualTo(LearningPlanDraftStatus.CONFIRMED);
   }
 
   @Test
-  void phaseCountFollowsDurationRules() {
-    assertThat(service.createDraft(7L, completeCommand(1)).draftPlan().phases()).hasSize(1);
-    assertThat(service.createDraft(7L, completeCommand(2)).draftPlan().phases()).hasSize(2);
-    assertThat(service.createDraft(7L, completeCommand(6)).draftPlan().phases()).hasSize(3);
-    assertThat(service.createDraft(7L, completeCommand(7)).draftPlan().phases()).hasSize(4);
+  void confirmDraftRejectsCollectingDraft() {
+    LearningPlanDraft collecting = saveDraft(7L, completeCommand(4));
+
+    org.assertj.core.api.Assertions.assertThatThrownBy(() -> service.confirmDraft(7L, collecting.id()))
+        .isInstanceOf(LearningPlanException.class)
+        .hasMessage("只有已生成的学习计划草案可以确认保存。");
   }
 
   private LearningPlanDraftCommand completeCommand(int durationWeeks) {
@@ -131,6 +97,29 @@ class LearningPlanDraftServiceTest {
         LearningPlanDifficultyPreference.MEDIUM,
         true,
         List.of("Array", "Hash Table"));
+  }
+
+  private LearningPlanDraft saveDraft(long userId, LearningPlanDraftCommand command) {
+    Instant now = clock.instant();
+    return draftRepository.save(new LearningPlanDraft(
+        null,
+        userId,
+        LearningPlanDraftStatus.COLLECTING,
+        command,
+        List.of(),
+        List.of(),
+        null,
+        null,
+        null,
+        now.plus(14, ChronoUnit.DAYS),
+        now,
+        now));
+  }
+
+  private LearningPlanDraft saveGeneratedDraft(long userId, LearningPlanDraftCommand command) {
+    LearningPlanDraft draft = saveDraft(userId, command);
+    LearningPlanDraftResult generated = service.continueDraft(userId, draft.id(), "");
+    return draftRepository.findDraftByIdForUser(generated.draftId(), userId).orElseThrow();
   }
 
   private static class FakeProblemCatalog implements LearningPlanProblemCatalog {

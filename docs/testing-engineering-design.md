@@ -210,7 +210,7 @@ eval-smoke:
 1. 访问 `/api/auth/me` 初始化 CSRF cookie，并断言未登录状态符合预期。
 2. 使用唯一 smoke 邮箱调用 `/api/auth/register` 注册用户。
 3. 调用 `/api/auth/me`，断言当前用户已登录且邮箱匹配。
-4. 调用 `/api/learning-plans/drafts` 创建学习计划草案。
+4. 调用 `/api/learning-plans/drafts/stream` 创建学习计划草案，并消费 SSE 到 `draft_ready`。
 5. 断言草案状态为 `GENERATED`，并 capture `draftId`。
 6. 调用 `/api/learning-plans/drafts/{draftId}/confirm` 确认草案。
 7. 断言返回 `planId`、状态为 `ACTIVE`。

@@ -98,52 +98,21 @@ class LearningPlanControllerTest {
   private ApiSseProperties sseProperties;
 
   @Test
-  void createDraftUsesCurrentUserAndReturnsGeneratedDraft() throws Exception {
-    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
-    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
-    when(draftService.createDraft(eq(42L), any())).thenReturn(new LearningPlanDraftResult(
-        100L,
-        LearningPlanDraftStatus.GENERATED,
-        "已生成学习计划草案。",
-        List.of(),
-        draftPlan()));
-
+  void createDraftWithoutStreamIsNotExposed() throws Exception {
     mockMvc.perform(post("/api/learning-plans/drafts")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
-                  "userId": 999,
                   "intent": "INTERVIEW_SPRINT",
                   "goal": "准备 Java 后端算法面试",
                   "durationWeeks": 4,
                   "level": "INTERMEDIATE",
-                  "weeklyHours": 6,
-                  "programmingLanguage": "Java",
-                  "difficultyPreference": "MEDIUM",
-                  "interviewOriented": true,
-                  "topicPreferences": ["Array", "Hash Table"]
+                  "weeklyHours": 6
                 }
                 """))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data.draftId").value(100))
-        .andExpect(jsonPath("$.data.status").value("GENERATED"))
-        .andExpect(jsonPath("$.data.draftPlan.phases[0].problems[0].slug").value("two-sum"));
+        .andExpect(status().isMethodNotAllowed());
 
-    ArgumentCaptor<org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand> captor =
-        ArgumentCaptor.forClass(org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand.class);
-    verify(draftService).createDraft(eq(42L), captor.capture());
-    org.assertj.core.api.Assertions.assertThat(captor.getValue().goal()).isEqualTo("准备 Java 后端算法面试");
-    ArgumentCaptor<AiRunContext> governanceCaptor = ArgumentCaptor.forClass(AiRunContext.class);
-    verify(admissionService).admit(governanceCaptor.capture());
-    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().actor().userId()).isEqualTo(42L);
-    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().purpose()).isEqualTo(AiPurpose.LEARNING_PLAN);
-    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().source())
-        .isEqualTo(AiRunSource.LEARNING_PLAN_DRAFT);
-    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().streaming()).isFalse();
-    verify(lifecycleService).markRunning(any(AiRunAdmission.class), eq(null), eq(null));
-    verify(lifecycleService).markCompleted(any(AiRunAdmission.class), any(), eq(null), eq(null));
+    verifyNoInteractions(draftService, admissionService, lifecycleService);
   }
 
   @Test
@@ -211,33 +180,6 @@ class LearningPlanControllerTest {
     verify(sseProperties).learningPlanDraftTimeoutMillis();
     verify(lifecycleService).markRunning(any(AiRunAdmission.class), eq(null), eq(null));
     verify(lifecycleService).markCompleted(any(AiRunAdmission.class), any(), eq(null), eq(null));
-  }
-
-  @Test
-  void createDraftMarksGovernanceFailedWhenDraftGenerationFails() throws Exception {
-    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
-    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
-    when(draftService.createDraft(eq(42L), any()))
-        .thenThrow(new LearningPlanException("LEARNING_PLAN_GENERATION_FAILED", "学习计划生成失败。"));
-
-    mockMvc.perform(post("/api/learning-plans/drafts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content("""
-                {
-                  "goal": "准备 Java 后端算法面试",
-                  "durationWeeks": 4,
-                  "level": "INTERMEDIATE",
-                  "weeklyHours": 6
-                }
-                """))
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.error.code").value("LEARNING_PLAN_GENERATION_FAILED"))
-        .andExpect(jsonPath("$.error.messageKey").value("api.error.LEARNING_PLAN_GENERATION_FAILED"))
-        .andExpect(jsonPath("$.error.message").value("学习计划生成失败。"));
-
-    verify(lifecycleService).markRunning(any(AiRunAdmission.class), eq(null), eq(null));
-    verify(lifecycleService).markFailed(any(AiRunAdmission.class), any(), any(), eq(null), eq(null));
   }
 
   @Test

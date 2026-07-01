@@ -95,15 +95,6 @@ public class LearningPlanController {
     this.opsLogger = new StructuredOpsLogger();
   }
 
-  @PostMapping(ApiContractConstants.LEARNING_PLAN_DRAFTS_PATH)
-  public ApiResponse<LearningPlanDraftResponse> createDraft(@RequestBody LearningPlanCreateDraftRequest request) {
-    long userId = requireCurrentUserId();
-    return governedDraft(
-        UUID.randomUUID().toString(),
-        requestSize(request),
-        () -> draftService.createDraft(userId, request.toCommand()));
-  }
-
   @PostMapping(value = ApiContractConstants.LEARNING_PLAN_DRAFTS_STREAM_PATH,
       produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public SseEmitter streamDraft(@RequestBody LearningPlanCreateDraftRequest request) {

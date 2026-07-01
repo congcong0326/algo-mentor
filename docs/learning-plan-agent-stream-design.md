@@ -2,7 +2,7 @@
 
 ## 背景
 
-当前 `POST /api/learning-plans/drafts` 已经接入 AI 治理 admission/lifecycle，但学习计划内容仍由 `LearningPlanAgentService` 在本地静态生成。它根据用户目标、周期、水平、偏好标签和题库搜索结果拼接阶段、目标和推荐题目，没有调用 `LlmGateway` 或 OpenAI provider。
+旧版 `POST /api/learning-plans/drafts` 曾经接入 AI 治理 admission/lifecycle，但学习计划内容仍由 `LearningPlanAgentService` 在本地静态生成。它根据用户目标、周期、水平、偏好标签和题库搜索结果拼接阶段、目标和推荐题目，没有调用 `LlmGateway` 或 OpenAI provider。该同步创建入口已经废弃并移除，当前学习计划草案创建统一走 `POST /api/learning-plans/drafts/stream`。
 
 后续希望把学习计划草案生成交给大模型，并让用户在等待期间看到模型仍在工作。这个等待反馈不应直接展示完整模型 token 或半成品 JSON，而应展示简短的后台状态，例如“正在分析目标...”“正在搜索候选题...”。最终仍返回结构化、可校验、可保存的 `LearningPlanDraftResponse`。
 
@@ -32,7 +32,7 @@ AgentLoopRunner
 
 - 不把学习计划生成做成只靠模型自由文本解析的流程。
 - 不把完整中间 JSON、工具参数、工具结果原样暴露给普通用户界面。
-- 不在本次设计中移除或重写现有 `/api/learning-plans/drafts` 同步接口。
+- 不保留同步草案创建入口；学习计划草案创建统一通过 `/api/learning-plans/drafts/stream`。
 - 不改 `AgentLoopLifecycle` 的核心事件语义；新增逻辑应作为下游事件消费或 API 层包装。
 
 ## 两类流式视图
@@ -279,15 +279,15 @@ prompt 应明确：
 - `title/titleCn/tags` 以本地题库为准。
 - `orderIndex` 由后端重排。
 
-## 与现有同步接口的关系
+## 与旧同步接口的关系
 
-第一阶段保留：
+旧同步接口已经删除：
 
 ```text
 POST /api/learning-plans/drafts
 ```
 
-新接口完毕后将该接口删除，并且清理相关代码
+当前创建草案只保留流式接口；草案后续追问和确认仍使用 `/api/learning-plans/drafts/{draftId}/messages` 与 `/api/learning-plans/drafts/{draftId}/confirm`。
 
 ## 前端接入
 
