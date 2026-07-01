@@ -144,17 +144,42 @@ public class LearningPlanExtensionProposalStreamService {
       }
       SubmissionPublisher<LearningPlanProposalStreamEvent> publisher = new SubmissionPublisher<>();
       publisher.subscribe(subscriber);
+      SubscriptionRevisionContext context = null;
       try {
-        SubscriptionRevisionContext context = transactionOperations.execute(status -> factory.create());
+        context = transactionOperations.execute(status -> factory.create());
         AgentWorkStatusProjector projector = new AgentWorkStatusProjector(learningPlanProfile(), clock);
         agentLoopRunner.stream(context.request()).subscribe(new StreamSubscriber(
             publisher,
             projector,
             context.revision()));
       } catch (RuntimeException exception) {
-        publisher.closeExceptionally(exception);
+        if (context == null) {
+          publisher.closeExceptionally(exception);
+          return;
+        }
+        failStartupRevisionAndEmit(publisher, context.revision(), exception);
       }
     };
+  }
+
+  private void failStartupRevisionAndEmit(
+      SubmissionPublisher<LearningPlanProposalStreamEvent> publisher,
+      LearningPlanExtensionRevision revision,
+      RuntimeException exception
+  ) {
+    String code = "LEARNING_PLAN_EXTENSION_STREAM_FAILED";
+    String message = "学习计划扩展生成失败，请稍后重试。";
+    log.warn(
+        "Learning plan extension stream startup failed after revision creation: revisionId={}, code={}, causeMessage={}",
+        revision.id(),
+        code,
+        exception.getMessage(),
+        exception);
+    proposalRepository.saveExtensionRevision(revision.withFailure(code, message, clock.instant()));
+    publisher.submit(new LearningPlanProposalStreamEvent.Proposal(
+        PROFILE,
+        new LearningPlanProposalEvent.ProposalError(code, message, false)));
+    publisher.close();
   }
 
   private String requireInstruction(String instruction) {

@@ -278,6 +278,30 @@ class LearningPlanExtensionProposalStreamServiceTest {
     assertThat(proposalRepository.extensionRevisions).hasSize(1);
   }
 
+  @org.junit.jupiter.api.Test
+  void synchronousAgentStartupFailureAfterRevisionCreationStoresFailedAndEmitsPlanExtensionError() {
+    LearningPlan plan = learningPlanRepository.save(activePlan(basePlan()));
+    LearningPlanExtensionProposalStreamService service = serviceWithAgent(new ThrowingAgentLoopRunner());
+    CollectingSubscriber subscriber = new CollectingSubscriber();
+
+    service.streamFirstRevision(
+        plan.userId(),
+        plan.id(),
+        "追加图论阶段",
+        "run-startup-failure",
+        Map.of()).subscribe(subscriber);
+    subscriber.await();
+
+    assertThat(subscriber.error).isNull();
+    assertThat(subscriber.events).isNotEmpty();
+    assertThat(subscriber.events.get(subscriber.events.size() - 1).eventName()).isEqualTo("plan_extension_error");
+    LearningPlanExtensionRevision failed = proposalRepository.extensionRevisions.values().stream()
+        .findFirst()
+        .orElseThrow();
+    assertThat(failed.status()).isEqualTo(LearningPlanProposalRevisionStatus.FAILED);
+    assertThat(failed.errorCode()).isEqualTo("LEARNING_PLAN_EXTENSION_STREAM_FAILED");
+  }
+
   private LearningPlanExtensionProposalStreamService serviceWithAgent(String content) {
     return serviceWithAgent(new CapturingAgentLoopRunner(content));
   }
@@ -544,6 +568,30 @@ class LearningPlanExtensionProposalStreamServiceTest {
       current.onNext(new AgentStreamEvent.AgentStepEnd(currentRequest.runId(), 1, LlmFinishReason.STOP, 0));
       current.onNext(new AgentStreamEvent.AgentRunEnd(currentRequest.runId(), 1, LlmFinishReason.STOP, Map.of()));
       current.onComplete();
+    }
+  }
+
+  private static final class ThrowingAgentLoopRunner extends AgentLoopRunner {
+
+    ThrowingAgentLoopRunner() {
+      super(new org.congcong.algomentor.llm.core.gateway.LlmGateway() {
+        @Override
+        public org.congcong.algomentor.llm.core.response.LlmCompletionResult complete(
+            org.congcong.algomentor.llm.core.request.LlmCompletionRequest request) {
+          throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Flow.Publisher<LlmStreamEvent> stream(
+            org.congcong.algomentor.llm.core.request.LlmCompletionRequest request) {
+          throw new UnsupportedOperationException();
+        }
+      }, "test-model", org.congcong.algomentor.agent.core.AgentToolRegistry.empty(), 1);
+    }
+
+    @Override
+    public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
+      throw new IllegalStateException("agent startup failed");
     }
   }
 
