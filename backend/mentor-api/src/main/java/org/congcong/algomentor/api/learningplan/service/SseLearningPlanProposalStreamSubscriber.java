@@ -99,7 +99,9 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
       if (terminal.compareAndSet(false, true)) {
         lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
       }
-      recordClientDisconnected(exception);
+      if (terminalProposalEvent != null) {
+        recordClientDisconnected(exception);
+      }
       recordSseFailed(SseFailureType.SEND_FAILURE, exception);
       cancel();
       emitter.completeWithError(exception);

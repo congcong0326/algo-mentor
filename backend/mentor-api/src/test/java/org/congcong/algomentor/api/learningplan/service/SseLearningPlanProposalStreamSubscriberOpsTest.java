@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockToken;
+import org.congcong.algomentor.agent.core.work.AgentWorkStatusEvent;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
 import org.congcong.algomentor.ai.governance.admission.AiRunLifecycleService;
 import org.congcong.algomentor.ai.governance.model.AiGovernanceErrorCode;
@@ -93,6 +94,33 @@ class SseLearningPlanProposalStreamSubscriberOpsTest {
         .markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
   }
 
+  @Test
+  void nonTerminalWorkSendFailureMarksFailedWithoutClientDisconnectedMetric() {
+    AiRunLifecycleService lifecycleService = mock(AiRunLifecycleService.class);
+    AiRunAdmission admission = admission();
+    RecordingSseOpsRecorder sseRecorder = new RecordingSseOpsRecorder();
+    RecordingLearningOpsRecorder learningRecorder = new RecordingLearningOpsRecorder();
+    RecordingSubscription subscription = new RecordingSubscription();
+    SseLearningPlanProposalStreamSubscriber subscriber = subscriber(
+        new FailingSseEmitter(),
+        lifecycleService,
+        admission,
+        sseRecorder,
+        learningRecorder);
+
+    subscriber.onSubscribe(subscription);
+    subscriber.onNext(workEvent());
+
+    assertThat(sseRecorder.events).containsExactly(
+        "opened:learning_plan_proposal",
+        "failed:learning_plan_proposal:send_failure");
+    assertThat(learningRecorder.events).isEmpty();
+    assertThat(subscription.cancelled).isTrue();
+    verify(lifecycleService, never()).markCompleted(admission, AiUsage.zero(), null, null);
+    verify(lifecycleService)
+        .markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
+  }
+
   private SseLearningPlanProposalStreamSubscriber subscriber(
       SseEmitter emitter,
       AiRunLifecycleService lifecycleService,
@@ -122,6 +150,11 @@ class SseLearningPlanProposalStreamSubscriberOpsTest {
             List.of(),
             "补充图论训练",
             null)));
+  }
+
+  private LearningPlanProposalStreamEvent workEvent() {
+    return new LearningPlanProposalStreamEvent.Work(
+        new AgentWorkStatusEvent.WorkStart("run-1", "learning_plan_proposal", "开始生成提案"));
   }
 
   private AiRunAdmission admission() {
