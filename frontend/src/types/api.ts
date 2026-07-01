@@ -426,8 +426,7 @@ export interface LearningPlanDraftRevisionReadyEvent {
   draftId: number;
   revisionNo: number;
   status: LearningPlanProposalRevisionStatus;
-  supersededProposalId?: number | null;
-  supersededProposalIds?: number[];
+  supersededProposalIds: number[];
   draft: LearningPlanDraftResponse;
 }
 
@@ -437,8 +436,7 @@ export interface LearningPlanExtensionReadyEvent {
   planId: number;
   revisionNo: number;
   status: LearningPlanProposalRevisionStatus;
-  supersededProposalId?: number | null;
-  supersededProposalIds?: number[];
+  supersededProposalIds: number[];
   summary: string;
   extensionDraft: LearningPlanExtensionDraft;
 }

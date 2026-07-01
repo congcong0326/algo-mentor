@@ -600,7 +600,7 @@ describe('learning plan proposal api', () => {
     vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x25, 0x26, 0x27, 0x28, 0x29, 0x2a]) });
     const fetchMock: FetchMock = vi.fn(() => Promise.resolve(eventStreamResponse([
       'event:draft_revision_ready',
-      'data:{"proposalGroupId":1,"proposalId":2,"draftId":100,"revisionNo":1,"status":"READY","draft":{"draftId":100,"status":"GENERATED","missingFields":[]}}',
+      'data:{"proposalGroupId":1,"proposalId":2,"draftId":100,"revisionNo":1,"status":"READY","supersededProposalIds":[],"draft":{"draftId":100,"status":"GENERATED","assistantMessage":"已降低难度。","missingFields":[],"draftPlan":null}}',
       '',
       '',
     ])));
@@ -620,21 +620,37 @@ describe('learning plan proposal api', () => {
     const headers = requestHeaders(fetchMock);
     expect(headers.get('Accept')).toBe('text/event-stream, application/json');
     expect(headers.get('Content-Type')).toBe('application/json');
-    expect(onEvent).toHaveBeenCalledWith(expect.objectContaining({
+    expect(onEvent).toHaveBeenCalledWith({
       eventName: 'draft_revision_ready',
-    }));
+      data: {
+        proposalGroupId: 1,
+        proposalId: 2,
+        draftId: 100,
+        revisionNo: 1,
+        status: 'READY',
+        supersededProposalIds: [],
+        draft: {
+          draftId: 100,
+          status: 'GENERATED',
+          assistantMessage: '已降低难度。',
+          missingFields: [],
+          draftPlan: null,
+        },
+      },
+    });
   });
 
   it('streams learning plan extension proposal requests', async () => {
     const fetchMock: FetchMock = vi.fn(() => Promise.resolve(eventStreamResponse([
       'event:plan_extension_ready',
-      'data:{"proposalGroupId":30,"proposalId":31,"planId":88,"revisionNo":1,"status":"READY","summary":"增加动态规划强化","extensionDraft":{"summary":"增加动态规划强化","newPhases":[],"metadata":{}}}',
+      'data:{"proposalGroupId":30,"proposalId":31,"planId":88,"revisionNo":1,"status":"READY","supersededProposalIds":[],"summary":"增加动态规划强化","extensionDraft":{"summary":"增加动态规划强化","newPhases":[],"metadata":{"source":"ai"}}}',
       '',
       '',
     ])));
     vi.stubGlobal('fetch', fetchMock);
+    const onEvent = vi.fn();
 
-    await streamLearningPlanExtensionProposal(88, { instruction: '增加动态规划强化' }, { onEvent: vi.fn() });
+    await streamLearningPlanExtensionProposal(88, { instruction: '增加动态规划强化' }, { onEvent });
 
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/learning-plans/88/extension-proposals/stream',
@@ -647,6 +663,25 @@ describe('learning plan proposal api', () => {
     const headers = requestHeaders(fetchMock);
     expect(headers.get('Accept')).toBe('text/event-stream, application/json');
     expect(headers.get('Content-Type')).toBe('application/json');
+    expect(onEvent).toHaveBeenCalledWith({
+      eventName: 'plan_extension_ready',
+      data: {
+        proposalGroupId: 30,
+        proposalId: 31,
+        planId: 88,
+        revisionNo: 1,
+        status: 'READY',
+        supersededProposalIds: [],
+        summary: '增加动态规划强化',
+        extensionDraft: {
+          summary: '增加动态规划强化',
+          newPhases: [],
+          metadata: {
+            source: 'ai',
+          },
+        },
+      },
+    });
   });
 
   it('streams learning plan extension proposal revision requests', async () => {
@@ -657,12 +692,13 @@ describe('learning plan proposal api', () => {
       '',
     ])));
     vi.stubGlobal('fetch', fetchMock);
+    const onEvent = vi.fn();
 
     await streamLearningPlanExtensionProposalRevision(
       88,
       30,
       { instruction: '降低扩展难度' },
-      { onEvent: vi.fn() },
+      { onEvent },
     );
 
     expect(fetchMock).toHaveBeenCalledWith(
@@ -673,6 +709,23 @@ describe('learning plan proposal api', () => {
         body: JSON.stringify({ instruction: '降低扩展难度' }),
       }),
     );
+    expect(onEvent).toHaveBeenCalledWith({
+      eventName: 'plan_extension_ready',
+      data: {
+        proposalGroupId: 30,
+        proposalId: 32,
+        planId: 88,
+        revisionNo: 2,
+        status: 'READY',
+        supersededProposalIds: [31],
+        summary: '降低扩展难度',
+        extensionDraft: {
+          summary: '降低扩展难度',
+          newPhases: [],
+          metadata: {},
+        },
+      },
+    });
   });
 
   it('applies learning plan extension proposals', async () => {
