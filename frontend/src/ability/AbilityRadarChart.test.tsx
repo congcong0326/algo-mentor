@@ -21,6 +21,31 @@ describe('AbilityRadarChart', () => {
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
     expect(document.querySelector('[title]')).not.toBeInTheDocument();
   });
+
+  it('renders only the provided tag subset when tags are passed', () => {
+    const profile = abilityProfile();
+
+    render(<AbilityRadarChart profile={profile} tags={[profile.tags[0], profile.tags[8], profile.tags[9]]} />);
+
+    expect(screen.getAllByTestId('ability-radar-axis-label')).toHaveLength(3);
+    expect(screen.getAllByText('动态规划').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('3.4').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('5.3').length).toBeGreaterThan(0);
+    expect(screen.queryByText('标签 2')).not.toBeInTheDocument();
+    ['2', '4', '6', '8', '10'].forEach((tick) => {
+      expect(screen.getByText(tick)).toBeInTheDocument();
+    });
+  });
+
+  it('renders rose petals instead of radar polygons for each tag', () => {
+    const profile = abilityProfile();
+
+    render(<AbilityRadarChart profile={profile} tags={[profile.tags[0], profile.tags[8], profile.tags[9]]} />);
+
+    expect(screen.getAllByTestId('ability-rose-petal')).toHaveLength(3);
+    expect(document.querySelector('.ability-radar-area')).not.toBeInTheDocument();
+    expect(document.querySelector('.ability-radar-line')).not.toBeInTheDocument();
+  });
 });
 
 function abilityProfile(): AbilityProfileResponse {
@@ -39,6 +64,22 @@ function abilityProfile(): AbilityProfileResponse {
     reviewedProblemCount: 3,
     rawAverageScore: 8,
     abilityScore: 3.4,
+  };
+  tags[8] = {
+    tag: 'binary-search',
+    label: '二分查找',
+    problemCount: 130,
+    reviewedProblemCount: 0,
+    rawAverageScore: 0,
+    abilityScore: 0,
+  };
+  tags[9] = {
+    tag: 'tree',
+    label: '树',
+    problemCount: 120,
+    reviewedProblemCount: 8,
+    rawAverageScore: 8,
+    abilityScore: 5.3,
   };
   return {
     tags,

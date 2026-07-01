@@ -3184,21 +3184,19 @@ a {
 .my-page-hero {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 24px;
-  align-items: end;
-  min-height: 210px;
-  padding: 32px;
+  gap: 18px;
+  align-items: center;
+  min-height: 136px;
+  padding: 22px 24px;
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background:
-    linear-gradient(135deg, rgb(255 192 30 / 18%), transparent 34%),
-    linear-gradient(140deg, var(--surface-card) 0%, var(--surface-muted) 100%);
-  box-shadow: var(--shadow-subtle);
+  background: var(--surface-card);
+  box-shadow: none;
 }
 
 .my-hero-copy {
   display: grid;
-  gap: 12px;
+  gap: 8px;
   max-width: 760px;
 }
 
@@ -3223,16 +3221,17 @@ a {
 
 .my-hero-copy h1 {
   max-width: 720px;
-  font-size: 40px;
-  line-height: 1.08;
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.18;
 }
 
 .my-hero-copy > p:last-child {
   max-width: 720px;
   margin: 0;
   color: var(--text-secondary);
-  font-size: 16px;
-  line-height: 1.72;
+  font-size: 14px;
+  line-height: 1.62;
 }
 
 .my-hero-status {
@@ -3274,13 +3273,13 @@ a {
 .my-summary-card {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 14px;
-  min-height: 132px;
-  padding: 18px;
+  gap: 12px;
+  min-height: 112px;
+  padding: 16px;
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
   background: var(--surface-card);
-  box-shadow: var(--shadow-subtle);
+  box-shadow: none;
 }
 
 .my-summary-icon,
@@ -3293,8 +3292,8 @@ a {
 }
 
 .my-summary-icon {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
 }
 
 .my-summary-icon svg,
@@ -3304,22 +3303,22 @@ a {
 }
 
 .my-summary-card.coach .my-summary-icon {
-  background: rgb(255 192 30 / 18%);
+  background: rgb(255 192 30 / 12%);
   color: #8a5a00;
 }
 
 .my-summary-card.scope .my-summary-icon {
-  background: rgb(14 165 233 / 13%);
+  background: rgb(14 165 233 / 10%);
   color: #0369a1;
 }
 
 .my-summary-card.score .my-summary-icon {
-  background: rgb(15 118 110 / 14%);
+  background: rgb(15 118 110 / 10%);
   color: #0f766e;
 }
 
 .my-summary-card.review .my-summary-icon {
-  background: rgb(99 102 241 / 12%);
+  background: rgb(99 102 241 / 9%);
   color: #4f46e5;
 }
 
@@ -3339,7 +3338,7 @@ a {
   min-width: 0;
   overflow: hidden;
   color: var(--text-primary);
-  font-size: 22px;
+  font-size: 19px;
   font-weight: 760;
   line-height: 1.16;
   text-overflow: ellipsis;
@@ -3607,7 +3606,7 @@ a {
 }
 
 .ability-card {
-  min-height: min(760px, calc(100vh - 160px));
+  min-height: 0;
 }
 
 .ability-heading {
@@ -3637,7 +3636,7 @@ a {
 .ability-state {
   display: grid;
   place-items: center;
-  min-height: 520px;
+  min-height: 420px;
   gap: 12px;
   padding: 20px;
   border: 1px dashed var(--border-subtle);
@@ -3659,21 +3658,42 @@ a {
 
 .ability-radar-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.36fr);
-  gap: 18px;
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr);
 }
 
-.ability-radar-stage {
+.ability-radar-stage,
+.ability-radar-open-button {
   display: grid;
   place-items: center;
   min-width: 0;
-  min-height: 560px;
+  min-height: 430px;
   padding: 18px;
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background:
-    linear-gradient(180deg, var(--surface-card), var(--surface-muted));
+  background: var(--surface-muted);
+}
+
+.ability-radar-open-button {
+  width: 100%;
+  color: inherit;
+  cursor: zoom-in;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.ability-radar-open-button:hover {
+  transform: translateY(-1px);
+  border-color: rgb(15 118 110 / 32%);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-hover);
+}
+
+.ability-radar-open-button:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 3px;
 }
 
 .ability-radar {
@@ -3684,12 +3704,12 @@ a {
 }
 
 .ability-radar svg {
-  width: min(100%, 660px);
+  width: min(100%, 520px);
   aspect-ratio: 1;
   overflow: visible;
 }
 
-.ability-radar-grid polygon {
+.ability-radar-grid circle {
   fill: none;
   stroke: var(--border-subtle);
   stroke-width: 1;
@@ -3705,21 +3725,24 @@ a {
   font-size: 9px;
 }
 
-.ability-radar-area {
-  fill: rgb(255 192 30 / 22%);
-  stroke: none;
-}
-
-.ability-radar-line {
-  fill: none;
+.ability-rose-petals path {
+  fill: rgb(15 118 110 / 28%);
   stroke: #0f766e;
-  stroke-width: 2;
+  stroke-width: 1.4;
+  transition:
+    fill 160ms ease,
+    stroke-width 160ms ease;
 }
 
-.ability-radar-points circle {
-  fill: #0f766e;
+.ability-radar-open-button:hover .ability-rose-petals path {
+  fill: rgb(15 118 110 / 36%);
+  stroke-width: 1.8;
+}
+
+.ability-dialog-radar-stage .ability-rose-petals path {
+  fill: rgb(15 118 110 / 32%);
   stroke: var(--surface-card);
-  stroke-width: 1.5;
+  stroke-width: 1.2;
 }
 
 .ability-radar-labels text {
@@ -3734,7 +3757,109 @@ a {
   font-weight: 500;
 }
 
-.ability-insights {
+.ability-insights-empty {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.ability-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ability-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.ability-chip svg,
+.ability-dialog-heading .icon-button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.ability-dialog-backdrop {
+  position: fixed;
+  z-index: 160;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 88px 24px 24px;
+  background: rgb(15 23 42 / 52%);
+}
+
+.ability-dialog {
+  display: grid;
+  gap: 18px;
+  width: min(1120px, 100%);
+  max-height: calc(100vh - 112px);
+  overflow: auto;
+  padding: 22px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-card);
+  box-shadow: var(--shadow-elevated);
+}
+
+.ability-dialog-heading,
+.ability-heatmap-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ability-dialog-heading h2,
+.ability-heatmap-heading h3 {
+  margin: 4px 0 6px;
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+.ability-dialog-heading p:last-child,
+.ability-heatmap-heading span {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.ability-dialog-radar-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(230px, 0.32fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.ability-dialog-radar-stage {
+  display: grid;
+  place-items: center;
+  min-height: 540px;
+  padding: 18px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-muted);
+}
+
+.ability-dialog-radar-stage .ability-radar svg {
+  width: min(100%, 650px);
+}
+
+.ability-dialog-selection {
   display: grid;
   align-content: start;
   gap: 14px;
@@ -3745,92 +3870,95 @@ a {
   background: var(--surface-muted);
 }
 
-.ability-insights h3 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.ability-dialog-selection-count {
+  display: grid;
+  gap: 4px;
+}
+
+.ability-dialog-selection-count strong {
+  color: var(--text-primary);
+  font-size: 18px;
+}
+
+.ability-dialog-selection-count span,
+.ability-selection-notice {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.ability-chip {
+  cursor: pointer;
+}
+
+.ability-chip.fixed {
+  color: var(--text-secondary);
+}
+
+.ability-selection-notice {
   margin: 0;
-  font-size: 15px;
-  line-height: 1.25;
-}
-
-.ability-insights h3 svg {
-  width: 17px;
-  height: 17px;
   color: var(--accent-warm-text);
+  line-height: 1.45;
 }
 
-.ability-top-list {
+.ability-heatmap-section {
   display: grid;
   gap: 12px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
 }
 
-.ability-top-list li {
+.ability-heatmap-grid {
   display: grid;
-  gap: 8px;
-  min-width: 0;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
 }
 
-.ability-top-row {
+.ability-heatmap-cell {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 8px;
-  align-items: center;
-  min-width: 0;
+  gap: 6px;
+  min-height: 104px;
+  padding: 12px;
+  border: 1px solid rgb(15 118 110 / 12%);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgb(15 118 110 / var(--ability-heat-alpha)), rgb(15 118 110 / 4%)),
+    var(--surface-card);
+  color: var(--text-primary);
+  text-align: left;
 }
 
-.ability-top-rank {
-  display: inline-grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--surface-card);
-  color: var(--text-muted);
-  font-size: 11px;
-  font-weight: 820;
+.ability-heatmap-cell:hover:not(:disabled) {
+  border-color: rgb(15 118 110 / 38%);
+  box-shadow: var(--shadow-hover);
 }
 
-.ability-top-name {
+.ability-heatmap-cell.selected {
+  border-color: #0f766e;
+  box-shadow: inset 0 0 0 1px rgb(15 118 110 / 42%);
+}
+
+.ability-heatmap-cell:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ability-heatmap-cell strong {
   min-width: 0;
   overflow: hidden;
-  color: var(--text-primary);
   font-size: 13px;
-  font-weight: 740;
+  line-height: 1.3;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.ability-top-row strong {
+.ability-heatmap-cell span {
   color: #0f766e;
-  font-size: 12px;
-  font-weight: 820;
+  font-size: 13px;
+  font-weight: 780;
 }
 
-.ability-score-track {
-  height: 7px;
-  overflow: hidden;
-  border-radius: var(--radius-pill);
-  background: var(--surface-card);
-}
-
-.ability-score-track span {
-  display: block;
-  width: var(--ability-score);
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #0f766e, #ffc01e);
-}
-
-.ability-top-list p,
-.ability-insights-empty {
-  margin: 0;
+.ability-heatmap-cell small {
   color: var(--text-muted);
-  font-size: 12px;
-  line-height: 1.45;
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 :root[data-theme="dark"] .my-summary-card.coach .my-summary-icon {
@@ -3843,7 +3971,7 @@ a {
 
 :root[data-theme="dark"] .my-summary-card.score .my-summary-icon,
 :root[data-theme="dark"] .ability-score-pill,
-:root[data-theme="dark"] .ability-top-row strong {
+:root[data-theme="dark"] .ability-heatmap-cell span {
   color: #5eead4;
 }
 
@@ -3851,8 +3979,8 @@ a {
   color: #a5b4fc;
 }
 
-:root[data-theme="dark"] .ability-score-track span {
-  background: linear-gradient(90deg, #5eead4, #ffc01e);
+:root[data-theme="dark"] .ability-heatmap-cell.selected {
+  border-color: #5eead4;
 }
 
 @media (max-width: 980px) {

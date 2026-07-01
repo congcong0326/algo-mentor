@@ -177,6 +177,21 @@ export interface LocaleResources {
     radarSummaryTitle: string;
     strongestTag: string;
     topAbilities: string;
+    selectedAbilityTags: string;
+    expandAbilityProfile: string;
+    abilityDetailTitle: string;
+    abilityDetailSubtitle: (max: number) => string;
+    closeAbilityDetail: string;
+    selectedTagCount: (selected: number, max: number) => string;
+    minimumTagCount: (min: number) => string;
+    minimumSelectionNotice: (min: number) => string;
+    maximumSelectionNotice: (max: number) => string;
+    removeSelectedTag: (label: string) => string;
+    abilityHeatmapTitle: string;
+    abilityHeatmapHint: string;
+    addHeatmapTag: (label: string) => string;
+    removeHeatmapTag: (label: string) => string;
+    catalogProblemsValue: (count: number) => string;
     noTopAbilities: string;
     tagCoverage: (reviewed: number, total: number) => string;
     scoreValue: (score: string) => string;
@@ -638,6 +653,21 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       radarSummaryTitle: '能力画像摘要',
       strongestTag: '当前优势',
       topAbilities: '优势标签',
+      selectedAbilityTags: '当前雷达标签',
+      expandAbilityProfile: '放大能力画像',
+      abilityDetailTitle: '能力画像详情',
+      abilityDetailSubtitle: (max) => `上方雷达图会随选择动态变化，最多展示 ${max} 个 tag。`,
+      closeAbilityDetail: '关闭能力画像详情',
+      selectedTagCount: (selected, max) => `${selected}/${max} 个 tag`,
+      minimumTagCount: (min) => `至少保留 ${min} 个 tag`,
+      minimumSelectionNotice: (min) => `至少保留 ${min} 个 tag，避免雷达图失真。`,
+      maximumSelectionNotice: (max) => `最多选择 ${max} 个 tag。`,
+      removeSelectedTag: (label) => `移除 ${label}`,
+      abilityHeatmapTitle: '全量 tag 能力热力图',
+      abilityHeatmapHint: '色块深浅按能力分展示',
+      addHeatmapTag: (label) => `添加 ${label}`,
+      removeHeatmapTag: (label) => `移除 ${label}`,
+      catalogProblemsValue: (count) => `题库 ${count} 题`,
       noTopAbilities: '完成更多代码复盘后，这里会显示优势标签。',
       tagCoverage: (reviewed, total) => `${reviewed}/${total}`,
       scoreValue: (score) => `${score} 分`,
@@ -1142,6 +1172,21 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       radarSummaryTitle: 'Ability profile summary',
       strongestTag: 'Strongest',
       topAbilities: 'Top Abilities',
+      selectedAbilityTags: 'Selected radar tags',
+      expandAbilityProfile: 'Expand ability profile',
+      abilityDetailTitle: 'Ability Profile Details',
+      abilityDetailSubtitle: (max) => `The radar updates as tags change and supports up to ${max} tags.`,
+      closeAbilityDetail: 'Close ability profile details',
+      selectedTagCount: (selected, max) => `${selected}/${max} tags`,
+      minimumTagCount: (min) => `Keep at least ${min} tags`,
+      minimumSelectionNotice: (min) => `Keep at least ${min} tags so the radar remains readable.`,
+      maximumSelectionNotice: (max) => `Select up to ${max} tags.`,
+      removeSelectedTag: (label) => `Remove ${label}`,
+      abilityHeatmapTitle: 'All-tag Ability Heatmap',
+      abilityHeatmapHint: 'Cell intensity follows ability score',
+      addHeatmapTag: (label) => `Add ${label}`,
+      removeHeatmapTag: (label) => `Remove ${label}`,
+      catalogProblemsValue: (count) => `${count} catalog ${count === 1 ? 'problem' : 'problems'}`,
       noTopAbilities: 'Finish more code reviews to surface top ability tags here.',
       tagCoverage: (reviewed, total) => `${reviewed}/${total}`,
       scoreValue: (score) => `${score} pts`,

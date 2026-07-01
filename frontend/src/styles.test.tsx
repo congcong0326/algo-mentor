@@ -64,6 +64,12 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toMatch(/\.company-mark \{[^}]*color: var\(--text-muted\);/);
   });
 
+  it('keeps the ability detail dialog above the fixed app header with top safe spacing', () => {
+    expect(styles).toMatch(/\.app-header \{[^}]*z-index: 100;/);
+    expect(styles).toMatch(/\.ability-dialog-backdrop \{[^}]*z-index: 160;/);
+    expect(styles).toMatch(/\.ability-dialog-backdrop \{[^}]*padding: 88px 24px 24px;/);
+  });
+
   it('keeps rendered Markdown lists compact and aligned', () => {
     expect(styles).toContain('.practice-message .markdown-view {\n  margin: 0;\n  min-height: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  overflow: visible;');
     expect(styles).toContain('line-height: 1.55;\n  white-space: normal;');

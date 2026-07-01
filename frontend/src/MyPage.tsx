@@ -5,6 +5,7 @@ import {
   Check,
   CheckCircle2,
   Gauge,
+  X,
   Settings2,
   Sparkles,
   Target,
@@ -35,12 +36,18 @@ const coachStyleOptions: PracticeCoachStyle[] = [
   'STRICT_REVIEWER',
   'SUPPORTIVE_MENTOR',
 ];
+const defaultRadarTagCount = 8;
+const maxRadarTagCount = 12;
+const minRadarTagCount = 3;
 
 export default function MyPage() {
   const { locale, resources } = useI18n();
   const [abilityProfile, setAbilityProfile] = useState<AbilityProfileResponse>();
   const [abilityLoading, setAbilityLoading] = useState(true);
   const [abilityError, setAbilityError] = useState('');
+  const [selectedAbilityTags, setSelectedAbilityTags] = useState<string[]>([]);
+  const [abilityDialogOpen, setAbilityDialogOpen] = useState(false);
+  const [abilitySelectionNotice, setAbilitySelectionNotice] = useState('');
   const [aiPreference, setAiPreference] = useState<UserAiPreference>();
   const [preferenceLoading, setPreferenceLoading] = useState(true);
   const [preferenceError, setPreferenceError] = useState('');
@@ -60,7 +67,10 @@ export default function MyPage() {
     setAbilityError('');
     try {
       const response = await getAbilityProfile(signal);
-      setAbilityProfile(requireApiData(response, resources.home.abilityLoadFailed));
+      const profile = requireApiData(response, resources.home.abilityLoadFailed);
+      setAbilityProfile(profile);
+      setSelectedAbilityTags(defaultAbilityTagKeys(profile));
+      setAbilitySelectionNotice('');
     } catch (error) {
       if (signal?.aborted) {
         return;
@@ -125,6 +135,10 @@ export default function MyPage() {
   }
 
   const abilitySummary = summarizeAbilityProfile(abilityProfile);
+  const selectedAbilityTagScores = selectedAbilityTags
+    .map((tag) => abilityProfile?.tags.find((item) => item.tag === tag))
+    .filter((tag): tag is AbilityTagScore => Boolean(tag));
+  const defaultAbilityTags = new Set(abilityProfile ? defaultAbilityTagKeys(abilityProfile) : []);
   const averageScore = formatScore(abilitySummary.averageScore, locale);
   const strongestScore = abilitySummary.strongestTag
     ? formatScore(abilitySummary.strongestTag.abilityScore, locale)
@@ -167,6 +181,25 @@ export default function MyPage() {
       detail: resources.myPage.radarSummaryTitle,
     },
   ];
+
+  function toggleAbilityTag(tag: AbilityTagScore) {
+    setSelectedAbilityTags((currentTags) => {
+      if (currentTags.includes(tag.tag)) {
+        if (currentTags.length <= minRadarTagCount) {
+          setAbilitySelectionNotice(resources.myPage.minimumSelectionNotice(minRadarTagCount));
+          return currentTags;
+        }
+        setAbilitySelectionNotice('');
+        return currentTags.filter((selectedTag) => selectedTag !== tag.tag);
+      }
+      if (currentTags.length >= maxRadarTagCount) {
+        setAbilitySelectionNotice(resources.myPage.maximumSelectionNotice(maxRadarTagCount));
+        return currentTags;
+      }
+      setAbilitySelectionNotice('');
+      return [...currentTags, tag.tag];
+    });
+  }
 
   return (
     <section className="my-page" aria-label={resources.nav.my}>
@@ -311,40 +344,111 @@ export default function MyPage() {
             </div>
           ) : abilityProfile ? (
             <div className="ability-radar-layout">
-              <div className="ability-radar-stage">
-                <AbilityRadarChart profile={abilityProfile} />
-              </div>
-              <aside className="ability-insights" aria-label={resources.myPage.topAbilities}>
-                <h3>
-                  <Trophy aria-hidden="true" />
-                  <span>{resources.myPage.topAbilities}</span>
-                </h3>
-                {abilitySummary.topTags.length > 0 ? (
-                  <ol className="ability-top-list">
-                    {abilitySummary.topTags.map((tag, index) => (
-                      <li key={tag.tag}>
-                        <div className="ability-top-row">
-                          <span className="ability-top-rank">{index + 1}</span>
-                          <span className="ability-top-name">{tag.label}</span>
-                          <strong>{resources.myPage.scoreValue(formatScore(tag.abilityScore, locale))}</strong>
-                        </div>
-                        <div className="ability-score-track" aria-hidden="true">
-                          <span style={scoreBarStyle(tag.abilityScore)} />
-                        </div>
-                        <p>{resources.myPage.reviewedProblemsValue(tag.reviewedProblemCount)}</p>
-                      </li>
-                    ))}
-                  </ol>
-                ) : (
-                  <p className="ability-insights-empty">{resources.myPage.noTopAbilities}</p>
-                )}
-              </aside>
+              <button
+                aria-label={resources.myPage.expandAbilityProfile}
+                className="ability-radar-open-button"
+                onClick={() => setAbilityDialogOpen(true)}
+                type="button"
+              >
+                <AbilityRadarChart profile={abilityProfile} tags={selectedAbilityTagScores} />
+              </button>
             </div>
           ) : (
             <div className="ability-state">{resources.home.abilityEmpty}</div>
           )}
         </article>
       </div>
+      {abilityDialogOpen && abilityProfile ? (
+        <div className="ability-dialog-backdrop">
+          <section
+            aria-labelledby="ability-dialog-title"
+            aria-modal="true"
+            className="ability-dialog"
+            role="dialog"
+          >
+            <header className="ability-dialog-heading">
+              <div>
+                <p className="my-section-eyebrow">{resources.myPage.abilityPanelEyebrow}</p>
+                <h2 id="ability-dialog-title">{resources.myPage.abilityDetailTitle}</h2>
+                <p>{resources.myPage.abilityDetailSubtitle(maxRadarTagCount)}</p>
+              </div>
+              <button
+                aria-label={resources.myPage.closeAbilityDetail}
+                className="icon-button"
+                onClick={() => setAbilityDialogOpen(false)}
+                type="button"
+              >
+                <X aria-hidden="true" />
+              </button>
+            </header>
+            <div className="ability-dialog-radar-grid">
+              <div className="ability-dialog-radar-stage">
+                <AbilityRadarChart profile={abilityProfile} tags={selectedAbilityTagScores} />
+              </div>
+              <aside className="ability-dialog-selection" aria-label={resources.myPage.selectedAbilityTags}>
+                <div className="ability-dialog-selection-count">
+                  <strong>{resources.myPage.selectedTagCount(selectedAbilityTagScores.length, maxRadarTagCount)}</strong>
+                  <span>{resources.myPage.minimumTagCount(minRadarTagCount)}</span>
+                </div>
+                <div className="ability-chip-list">
+                  {selectedAbilityTagScores.map((tag) => (
+                    defaultAbilityTags.has(tag.tag) ? (
+                      <span className="ability-chip fixed" key={tag.tag}>{tag.label}</span>
+                    ) : (
+                      <button
+                        aria-label={resources.myPage.removeSelectedTag(tag.label)}
+                        className="ability-chip"
+                        key={tag.tag}
+                        onClick={() => toggleAbilityTag(tag)}
+                        type="button"
+                      >
+                        <span>{tag.label}</span>
+                        <X aria-hidden="true" />
+                      </button>
+                    )
+                  ))}
+                </div>
+                {abilitySelectionNotice ? (
+                  <p className="ability-selection-notice" role="status">{abilitySelectionNotice}</p>
+                ) : null}
+              </aside>
+            </div>
+            <section className="ability-heatmap-section" aria-labelledby="ability-heatmap-title">
+              <div className="ability-heatmap-heading">
+                <h3 id="ability-heatmap-title">{resources.myPage.abilityHeatmapTitle}</h3>
+                <span>{resources.myPage.abilityHeatmapHint}</span>
+              </div>
+              <div className="ability-heatmap-grid">
+                {abilityProfile.tags.map((tag) => {
+                  const selected = selectedAbilityTags.includes(tag.tag);
+                  const disabled = !selected && selectedAbilityTags.length >= maxRadarTagCount;
+                  return (
+                    <button
+                      aria-label={selected ? resources.myPage.removeHeatmapTag(tag.label) : resources.myPage.addHeatmapTag(tag.label)}
+                      aria-pressed={selected}
+                      className={`ability-heatmap-cell ${selected ? 'selected' : ''}`}
+                      data-testid="ability-heatmap-tag"
+                      disabled={disabled}
+                      key={tag.tag}
+                      onClick={() => toggleAbilityTag(tag)}
+                      style={heatmapCellStyle(tag.abilityScore)}
+                      type="button"
+                    >
+                      <strong>{tag.label}</strong>
+                      <span>{resources.myPage.scoreValue(formatScore(tag.abilityScore, locale))}</span>
+                      <small>
+                        {resources.myPage.reviewedProblemsValue(tag.reviewedProblemCount)}
+                        {' / '}
+                        {resources.myPage.catalogProblemsValue(tag.problemCount)}
+                      </small>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          </section>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -354,7 +458,6 @@ interface AbilitySummary {
   reviewedProblems: number;
   reviewedTags: number;
   strongestTag?: AbilityTagScore;
-  topTags: AbilityTagScore[];
   totalTags: number;
 }
 
@@ -374,9 +477,6 @@ function summarizeAbilityProfile(profile?: AbilityProfileResponse): AbilitySumma
     reviewedProblems,
     reviewedTags: tags.filter((tag) => tag.reviewedProblemCount > 0).length,
     strongestTag: scoredTags[0],
-    topTags: scoredTags
-      .filter((tag) => tag.abilityScore > 0 || tag.reviewedProblemCount > 0)
-      .slice(0, 5),
     totalTags: tags.length,
   };
 }
@@ -388,7 +488,11 @@ function formatScore(score: number, locale: string): string {
   }).format(score);
 }
 
-function scoreBarStyle(score: number): CSSProperties {
+function heatmapCellStyle(score: number): CSSProperties {
   const clampedScore = Math.max(0, Math.min(10, score));
-  return { '--ability-score': `${clampedScore * 10}%` } as CSSProperties;
+  return { '--ability-heat-alpha': String(0.06 + clampedScore * 0.026) } as CSSProperties;
+}
+
+function defaultAbilityTagKeys(profile: AbilityProfileResponse): string[] {
+  return profile.tags.slice(0, defaultRadarTagCount).map((tag) => tag.tag);
 }

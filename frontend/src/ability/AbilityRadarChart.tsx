@@ -2,6 +2,7 @@ import type { AbilityProfileResponse, AbilityTagScore } from '../types/api';
 
 interface AbilityRadarChartProps {
   profile: AbilityProfileResponse;
+  tags?: AbilityTagScore[];
 }
 
 const chartSize = 520;
@@ -10,19 +11,20 @@ const radius = 168;
 const ticks = [2, 4, 6, 8, 10];
 const maxScore = 10;
 
-export default function AbilityRadarChart({ profile }: AbilityRadarChartProps) {
-  const axes = profile.tags;
-  const points = axes.map((tag, index) => pointFor(index, axes.length, scaledRadius(tag.abilityScore)));
-  const polygonPoints = points.map((point) => `${point.x},${point.y}`).join(' ');
+export default function AbilityRadarChart({ profile, tags }: AbilityRadarChartProps) {
+  const axes = tags ?? profile.tags;
+  const petalAngle = axes.length > 0 ? (Math.PI * 2) / axes.length : 0;
 
   return (
     <figure className="ability-radar" aria-label="能力雷达图" role="img">
       <svg viewBox={`0 0 ${chartSize} ${chartSize}`} aria-hidden="true" focusable="false">
         <g className="ability-radar-grid">
           {ticks.map((tick) => (
-            <polygon
+            <circle
+              cx={center}
+              cy={center}
               key={tick}
-              points={ringPoints(axes.length, scaledRadius(tick))}
+              r={scaledRadius(tick)}
             />
           ))}
           {axes.map((tag, index) => {
@@ -45,11 +47,13 @@ export default function AbilityRadarChart({ profile }: AbilityRadarChartProps) {
             </text>
           ))}
         </g>
-        <polygon className="ability-radar-area" points={polygonPoints} />
-        <polyline className="ability-radar-line" points={`${polygonPoints} ${points[0]?.x ?? center},${points[0]?.y ?? center}`} />
-        <g className="ability-radar-points">
-          {points.map((point, index) => (
-            <circle key={axes[index].tag} cx={point.x} cy={point.y} r="3.5" />
+        <g className="ability-rose-petals">
+          {axes.map((tag, index) => (
+            <path
+              d={petalPath(index, axes.length, scaledRadius(tag.abilityScore), petalAngle)}
+              data-testid="ability-rose-petal"
+              key={tag.tag}
+            />
           ))}
         </g>
         <g className="ability-radar-labels">
@@ -83,13 +87,6 @@ export default function AbilityRadarChart({ profile }: AbilityRadarChartProps) {
   );
 }
 
-function ringPoints(count: number, ringRadius: number): string {
-  return Array.from({ length: count }, (_, index) => {
-    const point = pointFor(index, count, ringRadius);
-    return `${point.x},${point.y}`;
-  }).join(' ');
-}
-
 function pointFor(index: number, count: number, pointRadius: number): { x: number; y: number } {
   if (count === 0) {
     return { x: center, y: center };
@@ -103,6 +100,33 @@ function pointFor(index: number, count: number, pointRadius: number): { x: numbe
 
 function scaledRadius(score: number): number {
   return (Math.max(0, Math.min(maxScore, score)) / maxScore) * radius;
+}
+
+function petalPath(index: number, count: number, petalRadius: number, petalAngle: number): string {
+  if (count === 0 || petalRadius <= 0) {
+    return `M ${center} ${center}`;
+  }
+  const angle = (Math.PI * 2 * index) / count - Math.PI / 2;
+  const halfAngle = Math.max(0.08, petalAngle * 0.36);
+  const start = polarPoint(angle - halfAngle, Math.max(16, petalRadius * 0.22));
+  const tip = polarPoint(angle, petalRadius);
+  const end = polarPoint(angle + halfAngle, Math.max(16, petalRadius * 0.22));
+  const controlLeft = polarPoint(angle - halfAngle * 0.52, petalRadius * 0.88);
+  const controlRight = polarPoint(angle + halfAngle * 0.52, petalRadius * 0.88);
+  return [
+    `M ${center} ${center}`,
+    `L ${start.x} ${start.y}`,
+    `C ${controlLeft.x} ${controlLeft.y} ${tip.x} ${tip.y} ${tip.x} ${tip.y}`,
+    `C ${tip.x} ${tip.y} ${controlRight.x} ${controlRight.y} ${end.x} ${end.y}`,
+    'Z',
+  ].join(' ');
+}
+
+function polarPoint(angle: number, pointRadius: number): { x: number; y: number } {
+  return {
+    x: round(center + Math.cos(angle) * pointRadius),
+    y: round(center + Math.sin(angle) * pointRadius),
+  };
 }
 
 function textAnchor(x: number): 'start' | 'middle' | 'end' {
