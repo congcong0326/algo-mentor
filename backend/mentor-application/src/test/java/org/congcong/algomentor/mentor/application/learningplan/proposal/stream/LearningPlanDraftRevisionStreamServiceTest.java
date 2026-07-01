@@ -17,6 +17,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
@@ -46,6 +47,7 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalTargetType;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalType;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftPromptBuilder;
+import org.springframework.transaction.support.TransactionOperations;
 
 class LearningPlanDraftRevisionStreamServiceTest {
 
@@ -123,16 +125,106 @@ class LearningPlanDraftRevisionStreamServiceTest {
         .isEqualTo("原计划");
   }
 
+  @org.junit.jupiter.api.Test
+  void staleCompletionDoesNotOverwriteNewerReadyRevisionOrDraftPlan() {
+    LearningPlanDraft draft = draftRepository.save(generatedDraft(basePlan("原计划")));
+    LearningPlanProposalGroup group = proposalRepository.saveGroup(activeDraftRevisionGroup(draft.id(), "旧修订请求"));
+    ManualAgentLoopRunner olderRunner = new ManualAgentLoopRunner();
+    LearningPlanDraftRevisionStreamService olderService = serviceWithAgent(olderRunner);
+    List<LearningPlanProposalStreamEvent> olderEvents = collectAsync(olderService.stream(
+        draft.userId(),
+        draft.id(),
+        "旧修订请求",
+        "run-old",
+        Map.of()));
+    waitUntilRevisionCount(1);
+    LearningPlanDraftRevision newer = proposalRepository.saveDraftRevision(new LearningPlanDraftRevision(
+        null,
+        group.id(),
+        draft.id(),
+        draft.userId(),
+        proposalRepository.nextRevisionNo(group.id()),
+        LearningPlanProposalRevisionStatus.GENERATING,
+        "新修订请求",
+        draft.draftPlan(),
+        null,
+        null,
+        null,
+        clock.instant(),
+        clock.instant())).withReady(basePlan("新修订计划"), clock.instant());
+    newer = proposalRepository.saveDraftRevision(newer);
+    proposalRepository.saveGroup(group.withLatestProposalId(newer.id(), clock.instant()));
+    draftRepository.save(draftWithPlan(draft, basePlan("新修订计划")));
+
+    olderRunner.complete(finalJson("旧修订计划"));
+    waitUntilDone(olderEvents, 1);
+
+    assertThat(olderEvents.get(olderEvents.size() - 1).eventName()).isEqualTo("draft_revision_error");
+    LearningPlanDraftRevision older = proposalRepository.draftRevisions.values().stream()
+        .filter(revision -> revision.revisionNo() == 1)
+        .findFirst()
+        .orElseThrow();
+    assertThat(older.status()).isEqualTo(LearningPlanProposalRevisionStatus.FAILED);
+    assertThat(older.errorCode()).isEqualTo("LEARNING_PLAN_DRAFT_REVISION_SUPERSEDED");
+    assertThat(older.errorMessage()).isEqualTo("学习计划修订结果已被更新的请求取代。");
+    assertThat(proposalRepository.draftRevisions.get(newer.id()).status()).isEqualTo(LearningPlanProposalRevisionStatus.READY);
+    assertThat(proposalRepository.groups.get(group.id()).latestProposalId()).isEqualTo(newer.id());
+    assertThat(draftRepository.findDraftByIdForUser(draft.id(), draft.userId()).orElseThrow().draftPlan().title())
+        .isEqualTo("新修订计划");
+  }
+
+  @org.junit.jupiter.api.Test
+  void streamDoesNotCreateRevisionBeforeSubscription() {
+    LearningPlanDraft draft = draftRepository.save(generatedDraft(basePlan("原计划")));
+    LearningPlanDraftRevisionStreamService service = serviceWithAgent(finalJson("修订后计划"));
+
+    service.stream(draft.userId(), draft.id(), "减少动态规划题", "run-no-subscription", Map.of());
+
+    assertThat(proposalRepository.draftRevisions).isEmpty();
+    assertThat(proposalRepository.groups).isEmpty();
+  }
+
+  @org.junit.jupiter.api.Test
+  void rejectsDuplicateSubscriptionWithoutStartingSecondRevision() {
+    LearningPlanDraft draft = draftRepository.save(generatedDraft(basePlan("原计划")));
+    ManualAgentLoopRunner runner = new ManualAgentLoopRunner();
+    LearningPlanDraftRevisionStreamService service = serviceWithAgent(runner);
+    Flow.Publisher<LearningPlanProposalStreamEvent> publisher = service.stream(
+        draft.userId(),
+        draft.id(),
+        "减少动态规划题",
+        "run-duplicate",
+        Map.of());
+    CollectingSubscriber first = new CollectingSubscriber();
+    CollectingSubscriber second = new CollectingSubscriber();
+
+    publisher.subscribe(first);
+    waitUntilRevisionCount(1);
+    publisher.subscribe(second);
+    second.await();
+    runner.complete(finalJson("修订后计划"));
+    first.await();
+
+    assertThat(first.events.get(first.events.size() - 1).eventName()).isEqualTo("draft_revision_ready");
+    assertThat(second.error).isInstanceOf(IllegalStateException.class);
+    assertThat(proposalRepository.draftRevisions).hasSize(1);
+  }
+
   private LearningPlanDraftRevisionStreamService serviceWithAgent(String content) {
+    return serviceWithAgent(new FakeAgentLoopRunner(content));
+  }
+
+  private LearningPlanDraftRevisionStreamService serviceWithAgent(AgentLoopRunner runner) {
     return new LearningPlanDraftRevisionStreamService(
         draftRepository,
         proposalRepository,
         new LearningPlanProposalGroupService(proposalRepository, clock),
         new LearningPlanDraftValidator(),
-        new FakeAgentLoopRunner(content),
+        runner,
         new LearningPlanDraftPromptBuilder(),
         new ObjectMapper(),
         problemCatalog,
+        TransactionOperations.withoutTransaction(),
         clock);
   }
 
@@ -298,6 +390,50 @@ class LearningPlanDraftRevisionStreamServiceTest {
     return subscriber.events;
   }
 
+  private List<LearningPlanProposalStreamEvent> collectAsync(Flow.Publisher<LearningPlanProposalStreamEvent> publisher) {
+    CollectingSubscriber subscriber = new CollectingSubscriber();
+    publisher.subscribe(subscriber);
+    return subscriber.events;
+  }
+
+  private LearningPlanDraft draftWithPlan(LearningPlanDraft draft, LearningPlanDraftPlan plan) {
+    return new LearningPlanDraft(
+        draft.id(),
+        draft.userId(),
+        LearningPlanDraftStatus.GENERATED,
+        draft.command(),
+        draft.messages(),
+        List.of(),
+        "已生成学习计划修订草案。",
+        plan,
+        draft.confirmedPlanId(),
+        draft.expiresAt(),
+        draft.createdAt(),
+        clock.instant());
+  }
+
+  private void waitUntilRevisionCount(int expectedCount) {
+    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+    while (System.nanoTime() < deadline) {
+      if (proposalRepository.draftRevisions.size() >= expectedCount) {
+        return;
+      }
+      Thread.yield();
+    }
+    throw new AssertionError("Timed out waiting for draft revision count " + expectedCount);
+  }
+
+  private void waitUntilDone(List<LearningPlanProposalStreamEvent> events, int minEvents) {
+    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+    while (System.nanoTime() < deadline) {
+      if (events.size() >= minEvents && events.get(events.size() - 1) instanceof LearningPlanProposalStreamEvent.Proposal) {
+        return;
+      }
+      Thread.yield();
+    }
+    throw new AssertionError("Timed out waiting for stream completion event");
+  }
+
   private static class FakeAgentLoopRunner extends AgentLoopRunner {
     private final String content;
 
@@ -332,9 +468,58 @@ class LearningPlanDraftRevisionStreamServiceTest {
     }
   }
 
+  private static final class ManualAgentLoopRunner extends AgentLoopRunner {
+    private final AtomicReference<Flow.Subscriber<? super AgentStreamEvent>> subscriber = new AtomicReference<>();
+    private final AtomicReference<AgentRequest> request = new AtomicReference<>();
+
+    ManualAgentLoopRunner() {
+      super(new org.congcong.algomentor.llm.core.gateway.LlmGateway() {
+        @Override
+        public org.congcong.algomentor.llm.core.response.LlmCompletionResult complete(
+            org.congcong.algomentor.llm.core.request.LlmCompletionRequest request) {
+          throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Flow.Publisher<LlmStreamEvent> stream(
+            org.congcong.algomentor.llm.core.request.LlmCompletionRequest request) {
+          throw new UnsupportedOperationException();
+        }
+      }, "test-model", org.congcong.algomentor.agent.core.AgentToolRegistry.empty(), 1);
+    }
+
+    @Override
+    public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
+      this.request.set(request);
+      return subscriber -> {
+        this.subscriber.set(subscriber);
+        subscriber.onSubscribe(new Flow.Subscription() {
+          @Override
+          public void request(long n) {
+          }
+
+          @Override
+          public void cancel() {
+          }
+        });
+      };
+    }
+
+    void complete(String content) {
+      Flow.Subscriber<? super AgentStreamEvent> current = subscriber.get();
+      AgentRequest currentRequest = request.get();
+      current.onNext(new AgentStreamEvent.AgentStepStart(currentRequest.runId(), 1));
+      current.onNext(AgentStreamEvent.fromLlm(new LlmStreamEvent.ContentDelta(content)));
+      current.onNext(new AgentStreamEvent.AgentStepEnd(currentRequest.runId(), 1, LlmFinishReason.STOP, 0));
+      current.onNext(new AgentStreamEvent.AgentRunEnd(currentRequest.runId(), 1, LlmFinishReason.STOP, Map.of()));
+      current.onComplete();
+    }
+  }
+
   private static class CollectingSubscriber implements Flow.Subscriber<LearningPlanProposalStreamEvent> {
     private final List<LearningPlanProposalStreamEvent> events = new ArrayList<>();
     private final CountDownLatch done = new CountDownLatch(1);
+    private Throwable error;
     private Flow.Subscription subscription;
 
     @Override
@@ -351,6 +536,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
 
     @Override
     public void onError(Throwable throwable) {
+      error = throwable;
       done.countDown();
     }
 

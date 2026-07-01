@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import org.congcong.algomentor.agent.core.AgentExecutionOptions;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
@@ -46,6 +48,7 @@ import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPl
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanStreamConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.support.TransactionOperations;
 
 /**
  * 学习计划草案修订流式生成编排服务。
@@ -64,6 +67,7 @@ public class LearningPlanDraftRevisionStreamService {
   private final LearningPlanDraftPromptBuilder promptBuilder;
   private final LearningPlanDraftStructuredOutputMapper outputMapper;
   private final ObjectMapper objectMapper;
+  private final TransactionOperations transactionOperations;
   private final Clock clock;
 
   public LearningPlanDraftRevisionStreamService(
@@ -75,6 +79,7 @@ public class LearningPlanDraftRevisionStreamService {
       LearningPlanDraftPromptBuilder promptBuilder,
       ObjectMapper objectMapper,
       LearningPlanProblemCatalog problemCatalog,
+      TransactionOperations transactionOperations,
       Clock clock
   ) {
     this.draftRepository = Objects.requireNonNull(draftRepository, "draftRepository");
@@ -85,6 +90,7 @@ public class LearningPlanDraftRevisionStreamService {
     this.promptBuilder = Objects.requireNonNull(promptBuilder, "promptBuilder");
     this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper");
     this.outputMapper = new LearningPlanDraftStructuredOutputMapper(objectMapper, problemCatalog);
+    this.transactionOperations = Objects.requireNonNull(transactionOperations, "transactionOperations");
     this.clock = Objects.requireNonNull(clock, "clock");
   }
 
@@ -104,29 +110,47 @@ public class LearningPlanDraftRevisionStreamService {
     if (draft.draftPlan() == null) {
       throw new LearningPlanException("LEARNING_PLAN_DRAFT_PLAN_MISSING", "学习计划草案缺少可修订的计划内容。");
     }
-    LearningPlanProposalGroup group = latestActiveGroup(userId, draftId)
-        .orElseGet(() -> groupService.createGroup(
-            userId,
-            LearningPlanProposalType.DRAFT_REVISION,
-            LearningPlanProposalTargetType.DRAFT,
-            draftId,
-            normalizedInstruction));
-    LearningPlanDraftRevision revision = createGeneratingRevision(draft, group, normalizedInstruction);
     AgentRequest request = new AgentRequest(
         runId,
         null,
         buildRevisionPrompt(draft, normalizedInstruction),
         metadata,
         executionOptions());
+    AtomicBoolean subscribed = new AtomicBoolean(false);
     return subscriber -> {
+      if (!subscribed.compareAndSet(false, true)) {
+        subscriber.onSubscribe(new Flow.Subscription() {
+          @Override
+          public void request(long n) {
+          }
+
+          @Override
+          public void cancel() {
+          }
+        });
+        subscriber.onError(new IllegalStateException("Learning plan draft revision stream publisher is single-use"));
+        return;
+      }
       SubmissionPublisher<LearningPlanProposalStreamEvent> publisher = new SubmissionPublisher<>();
       publisher.subscribe(subscriber);
-      AgentWorkStatusProjector projector = new AgentWorkStatusProjector(learningPlanProfile(), clock);
-      agentLoopRunner.stream(request).subscribe(new StreamSubscriber(
-          publisher,
-          projector,
-          draft,
-          revision));
+      try {
+        LearningPlanProposalGroup group = latestActiveGroup(userId, draftId)
+            .orElseGet(() -> groupService.createGroup(
+                userId,
+                LearningPlanProposalType.DRAFT_REVISION,
+                LearningPlanProposalTargetType.DRAFT,
+                draftId,
+                normalizedInstruction));
+        LearningPlanDraftRevision revision = createGeneratingRevision(draft, group, normalizedInstruction);
+        AgentWorkStatusProjector projector = new AgentWorkStatusProjector(learningPlanProfile(), clock);
+        agentLoopRunner.stream(request).subscribe(new StreamSubscriber(
+            publisher,
+            projector,
+            draft,
+            revision));
+      } catch (RuntimeException exception) {
+        publisher.closeExceptionally(exception);
+      }
     };
   }
 
@@ -137,7 +161,7 @@ public class LearningPlanDraftRevisionStreamService {
     return instruction.trim();
   }
 
-  private java.util.Optional<LearningPlanProposalGroup> latestActiveGroup(long userId, long draftId) {
+  private Optional<LearningPlanProposalGroup> latestActiveGroup(long userId, long draftId) {
     return proposalRepository.findLatestActiveGroup(
         userId,
         LearningPlanProposalType.DRAFT_REVISION,
@@ -257,7 +281,7 @@ public class LearningPlanDraftRevisionStreamService {
         return;
       }
       if (event instanceof AgentStreamEvent.AgentError error) {
-        failRevision(
+        failRevisionAndEmit(
             error.error().code().name(),
             "学习计划修订失败，请稍后重试。",
             error.error().retryable(),
@@ -269,7 +293,7 @@ public class LearningPlanDraftRevisionStreamService {
 
     @Override
     public void onError(Throwable throwable) {
-      failRevision("LEARNING_PLAN_DRAFT_REVISION_STREAM_FAILED", "学习计划修订失败，请稍后重试。", false, throwable);
+      failRevisionAndEmit("LEARNING_PLAN_DRAFT_REVISION_STREAM_FAILED", "学习计划修订失败，请稍后重试。", false, throwable);
     }
 
     @Override
@@ -284,27 +308,46 @@ public class LearningPlanDraftRevisionStreamService {
         }
         LearningPlanDraftPlan plan = outputMapper.map(objectMapper.readTree(finalContent), draft.command());
         validator.validateGeneratedPlan(plan);
-        LearningPlanDraftRevision readyRevision = proposalRepository.saveDraftRevision(
-            revision.withReady(plan, clock.instant()));
-        List<Long> superseded = proposalRepository.markReadyDraftRevisionsSuperseded(
-            readyRevision.proposalGroupId(),
-            readyRevision.id());
-        proposalRepository.findGroupForUserForUpdate(readyRevision.proposalGroupId(), draft.userId())
-            .map(group -> group.withLatestProposalId(readyRevision.id(), clock.instant()))
-            .ifPresent(proposalRepository::saveGroup);
-        LearningPlanDraft savedDraft = draftRepository.save(draftWithRevisionPlan(plan));
         publisher.submit(new LearningPlanProposalStreamEvent.Proposal(
             PROFILE,
-            new LearningPlanProposalEvent.DraftRevisionReady(LearningPlanDraftRevisionResult.fromRevision(
-                readyRevision,
-                superseded,
-                LearningPlanDraftResult.fromDraft(savedDraft)))));
+            transactionOperations.execute(status -> completeReadyTransition(plan))));
         publisher.close();
       } catch (JsonProcessingException exception) {
-        failRevision("LEARNING_PLAN_STRUCTURED_OUTPUT_INVALID", "学习计划修订结构化结果解析失败。", true, exception);
+        failRevisionAndEmit("LEARNING_PLAN_STRUCTURED_OUTPUT_INVALID", "学习计划修订结构化结果解析失败。", true, exception);
       } catch (LearningPlanException exception) {
-        failRevision(exception.code(), exception.getMessage(), true, exception);
+        failRevisionAndEmit(exception.code(), exception.getMessage(), true, exception);
+      } catch (RuntimeException exception) {
+        emitError("LEARNING_PLAN_DRAFT_REVISION_FAILED", "学习计划修订失败，请稍后重试。", false, exception);
       }
+    }
+
+    private LearningPlanProposalEvent completeReadyTransition(LearningPlanDraftPlan plan) {
+      LearningPlanProposalGroup lockedGroup = proposalRepository.findGroupForUserForUpdate(
+              revision.proposalGroupId(),
+              draft.userId())
+          .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_PROPOSAL_GROUP_NOT_FOUND", "学习计划提案分组不存在。"));
+      int nextRevisionNo = proposalRepository.nextRevisionNo(lockedGroup.id());
+      if (nextRevisionNo > revision.revisionNo() + 1) {
+        LearningPlanDraftRevision staleRevision = proposalRepository.saveDraftRevision(revision.withFailure(
+            "LEARNING_PLAN_DRAFT_REVISION_SUPERSEDED",
+            "学习计划修订结果已被更新的请求取代。",
+            clock.instant()));
+        return new LearningPlanProposalEvent.ProposalError(
+            staleRevision.errorCode(),
+            staleRevision.errorMessage(),
+            false);
+      }
+      LearningPlanDraftRevision readyRevision = proposalRepository.saveDraftRevision(
+          revision.withReady(plan, clock.instant()));
+      List<Long> superseded = proposalRepository.markReadyDraftRevisionsSuperseded(
+          readyRevision.proposalGroupId(),
+          readyRevision.id());
+      proposalRepository.saveGroup(lockedGroup.withLatestProposalId(readyRevision.id(), clock.instant()));
+      LearningPlanDraft savedDraft = draftRepository.save(draftWithRevisionPlan(plan));
+      return new LearningPlanProposalEvent.DraftRevisionReady(LearningPlanDraftRevisionResult.fromRevision(
+          readyRevision,
+          superseded,
+          LearningPlanDraftResult.fromDraft(savedDraft)));
     }
 
     private LearningPlanDraft draftWithRevisionPlan(LearningPlanDraftPlan plan) {
@@ -340,7 +383,7 @@ public class LearningPlanDraftRevisionStreamService {
       }
     }
 
-    private void failRevision(String code, String message, boolean retryable, Throwable cause) {
+    private void failRevisionAndEmit(String code, String message, boolean retryable, Throwable cause) {
       log.warn(
           "Learning plan draft revision stream failed: code={}, retryable={}, message={}, causeMessage={}",
           code,
@@ -349,6 +392,19 @@ public class LearningPlanDraftRevisionStreamService {
           cause == null ? null : cause.getMessage(),
           cause);
       proposalRepository.saveDraftRevision(revision.withFailure(code, message, clock.instant()));
+      emitError(code, message, retryable, cause);
+    }
+
+    private void emitError(String code, String message, boolean retryable, Throwable cause) {
+      if (cause != null) {
+        log.warn(
+            "Learning plan draft revision stream emitted error: code={}, retryable={}, message={}, causeMessage={}",
+            code,
+            retryable,
+            message,
+            cause.getMessage(),
+            cause);
+      }
       publisher.submit(new LearningPlanProposalStreamEvent.Proposal(
           PROFILE,
           new LearningPlanProposalEvent.ProposalError(code, message, retryable)));
