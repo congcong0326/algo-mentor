@@ -58,6 +58,11 @@ public class MyBatisLearningPlanProposalRepository implements LearningPlanPropos
   }
 
   @Override
+  public Optional<LearningPlanProposalGroup> findGroupForUserForUpdate(long groupId, long userId) {
+    return Optional.ofNullable(mapper.lockProposalGroupForUpdate(groupId, userId)).map(this::toGroup);
+  }
+
+  @Override
   public Optional<LearningPlanProposalGroup> findLatestActiveGroup(
       long userId,
       LearningPlanProposalType proposalType,

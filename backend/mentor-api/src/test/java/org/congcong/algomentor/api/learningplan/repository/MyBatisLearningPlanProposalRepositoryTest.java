@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRevisionRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanExtensionRevisionRow;
@@ -36,6 +37,21 @@ class MyBatisLearningPlanProposalRepositoryTest {
   private static final Instant UPDATED_AT = Instant.parse("2026-01-02T00:00:00Z");
 
   private final ObjectMapper objectMapper = new ObjectMapper();
+
+  @Test
+  void findGroupForUserForUpdateUsesLockingMapperRead() {
+    LearningPlanMapper mapper = mock(LearningPlanMapper.class);
+    MyBatisLearningPlanProposalRepository repository = new MyBatisLearningPlanProposalRepository(mapper, objectMapper);
+    when(mapper.lockProposalGroupForUpdate(20, 7)).thenReturn(group(
+        LearningPlanProposalType.PLAN_EXTENSION,
+        LearningPlanProposalTargetType.PLAN,
+        40));
+
+    Optional<?> result = repository.findGroupForUserForUpdate(20, 7);
+
+    assertThat(result).isPresent();
+    verify(mapper).lockProposalGroupForUpdate(20, 7);
+  }
 
   @Test
   void insertDraftRevisionLocksGroupAndAllocatesFreshRevisionNumber() {

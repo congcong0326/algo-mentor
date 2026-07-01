@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanRow;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
@@ -31,6 +32,18 @@ class MyBatisLearningPlanRepositoryTest {
   private static final Instant UPDATED_AT = Instant.parse("2026-01-02T00:00:00Z");
 
   private final ObjectMapper objectMapper = new ObjectMapper();
+
+  @Test
+  void findPlanByIdForUserForUpdateUsesLockingMapperRead() {
+    LearningPlanMapper mapper = mock(LearningPlanMapper.class);
+    MyBatisLearningPlanRepository repository = new MyBatisLearningPlanRepository(mapper, objectMapper);
+    when(mapper.findPlanByIdForUserForUpdate(12, 7)).thenReturn(planRow(plan(List.of(phase(1, "base", "two-sum")))));
+
+    Optional<LearningPlan> result = repository.findPlanByIdForUserForUpdate(12, 7);
+
+    assertThat(result).isPresent();
+    verify(mapper).findPlanByIdForUserForUpdate(12, 7);
+  }
 
   @Test
   void appendPhasesLocksPlanAndReindexesNewPhasesFromCurrentMax() throws Exception {

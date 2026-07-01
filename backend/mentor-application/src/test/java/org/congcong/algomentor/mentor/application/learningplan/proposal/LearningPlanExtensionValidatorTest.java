@@ -81,6 +81,27 @@ class LearningPlanExtensionValidatorTest {
         .hasMessage("扩展提案内部不能重复推荐同一道题。");
   }
 
+  @Test
+  void rejectsMoreThanFiveProblemsInOneExtensionPhase() {
+    LearningPlanExtensionDraft extension = new LearningPlanExtensionDraft(
+        "补充图论",
+        List.of(phase(
+            2,
+            "problem-1",
+            "problem-2",
+            "problem-3",
+            "problem-4",
+            "problem-5",
+            "problem-6")),
+        null);
+
+    assertThatThrownBy(() -> validator.validate(extension, plan(), List.of()))
+        .isInstanceOf(LearningPlanException.class)
+        .hasMessage("每个扩展阶段最多推荐 5 道题。")
+        .extracting("code")
+        .isEqualTo("LEARNING_PLAN_EXTENSION_INVALID");
+  }
+
   private static LearningPlan plan() {
     Instant now = Instant.parse("2026-07-01T00:00:00Z");
     return new LearningPlan(

@@ -39,8 +39,9 @@ class LearningPlanExtensionApplyServiceTest {
   private static final Instant NOW = Instant.parse("2026-07-01T00:00:00Z");
 
   private final Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
-  private final InMemoryProposalRepository proposalRepository = new InMemoryProposalRepository();
-  private final InMemoryLearningPlanRepository learningPlanRepository = new InMemoryLearningPlanRepository();
+  private final List<String> operations = new ArrayList<>();
+  private final InMemoryProposalRepository proposalRepository = new InMemoryProposalRepository(operations);
+  private final InMemoryLearningPlanRepository learningPlanRepository = new InMemoryLearningPlanRepository(operations);
   private final FakePracticeSessionRepository practiceSessionRepository = new FakePracticeSessionRepository();
   private final LearningPlanExtensionApplyService service = new LearningPlanExtensionApplyService(
       proposalRepository,
@@ -82,6 +83,18 @@ class LearningPlanExtensionApplyServiceTest {
     assertThat(learningPlanRepository.findPlanByIdForUser(PLAN_ID, USER_ID).orElseThrow().plan().phases())
         .extracting(LearningPlanPhaseDraft::phaseIndex)
         .containsExactly(1, 2);
+  }
+
+  @Test
+  void applyLocksPlanThenGroupBeforeAppend() {
+    learningPlanRepository.save(plan(phase(1, "two-sum")));
+    LearningPlanProposalGroup group = saveActiveGroup((Long) null);
+    LearningPlanExtensionRevision revision = saveReadyRevision(group.id(), 1, 1, extension(phase(2, "graph-valid-tree")));
+    saveActiveGroup(group.withLatestProposalId(revision.id(), NOW));
+
+    service.apply(USER_ID, PLAN_ID, group.id());
+
+    assertThat(operations).containsSubsequence("plan-lock", "group-lock", "append");
   }
 
   @Test
@@ -346,8 +359,13 @@ class LearningPlanExtensionApplyServiceTest {
 
   private static class InMemoryLearningPlanRepository implements LearningPlanRepository {
 
+    private final List<String> operations;
     private final Map<Long, LearningPlan> plans = new HashMap<>();
     private int appendCount;
+
+    private InMemoryLearningPlanRepository(List<String> operations) {
+      this.operations = operations;
+    }
 
     @Override
     public LearningPlan save(LearningPlan plan) {
@@ -368,7 +386,14 @@ class LearningPlanExtensionApplyServiceTest {
     }
 
     @Override
+    public Optional<LearningPlan> findPlanByIdForUserForUpdate(long planId, long userId) {
+      operations.add("plan-lock");
+      return findPlanByIdForUser(planId, userId);
+    }
+
+    @Override
     public LearningPlan appendPhases(long userId, long planId, List<LearningPlanPhaseDraft> newPhases) {
+      operations.add("append");
       appendCount++;
       LearningPlan current = findPlanByIdForUser(planId, userId).orElseThrow();
       List<LearningPlanPhaseDraft> existingPhases = current.plan().phases();
@@ -388,11 +413,16 @@ class LearningPlanExtensionApplyServiceTest {
   }
 
   private static class InMemoryProposalRepository implements LearningPlanProposalRepository {
+    private final List<String> operations;
     private final Map<Long, LearningPlanProposalGroup> groups = new HashMap<>();
     private final Map<Long, LearningPlanDraftRevision> draftRevisions = new HashMap<>();
     private final Map<Long, LearningPlanExtensionRevision> extensionRevisions = new HashMap<>();
     private long groupSequence = 10;
     private long proposalSequence = 100;
+
+    private InMemoryProposalRepository(List<String> operations) {
+      this.operations = operations;
+    }
 
     @Override
     public LearningPlanProposalGroup saveGroup(LearningPlanProposalGroup group) {
@@ -405,6 +435,12 @@ class LearningPlanExtensionApplyServiceTest {
     @Override
     public Optional<LearningPlanProposalGroup> findGroupForUser(long groupId, long userId) {
       return Optional.ofNullable(groups.get(groupId)).filter(group -> group.userId() == userId);
+    }
+
+    @Override
+    public Optional<LearningPlanProposalGroup> findGroupForUserForUpdate(long groupId, long userId) {
+      operations.add("group-lock");
+      return findGroupForUser(groupId, userId);
     }
 
     @Override

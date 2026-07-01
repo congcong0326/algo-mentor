@@ -98,6 +98,11 @@ public class MyBatisLearningPlanRepository implements LearningPlanDraftRepositor
   }
 
   @Override
+  public Optional<LearningPlan> findPlanByIdForUserForUpdate(long planId, long userId) {
+    return Optional.ofNullable(mapper.findPlanByIdForUserForUpdate(planId, userId)).map(this::toPlan);
+  }
+
+  @Override
   public void clearConfirmedPlanReferences(long userId, long planId) {
     mapper.clearConfirmedPlanReferences(userId, planId);
   }

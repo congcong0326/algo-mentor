@@ -9,6 +9,10 @@ public interface LearningPlanProposalRepository {
 
   Optional<LearningPlanProposalGroup> findGroupForUser(long groupId, long userId);
 
+  default Optional<LearningPlanProposalGroup> findGroupForUserForUpdate(long groupId, long userId) {
+    return findGroupForUser(groupId, userId);
+  }
+
   Optional<LearningPlanProposalGroup> findLatestActiveGroup(
       long userId,
       LearningPlanProposalType proposalType,

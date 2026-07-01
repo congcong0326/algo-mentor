@@ -39,12 +39,19 @@ public class LearningPlanExtensionApplyService {
 
   @Transactional
   public LearningPlanExtensionApplyResult apply(long userId, long planId, long proposalGroupId) {
-    LearningPlanProposalGroup group = proposalRepository.findGroupForUser(proposalGroupId, userId)
+    LearningPlan currentPlan = learningPlanRepository.findPlanByIdForUserForUpdate(planId, userId)
+        .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_NOT_FOUND", "学习计划不存在。"));
+    if (currentPlan.status() != LearningPlanStatus.ACTIVE) {
+      throw new LearningPlanException(
+          "LEARNING_PLAN_EXTENSION_PLAN_NOT_ACTIVE",
+          "当前学习计划状态不允许应用扩展。");
+    }
+
+    LearningPlanProposalGroup group = proposalRepository.findGroupForUserForUpdate(proposalGroupId, userId)
         .orElseThrow(() -> new LearningPlanException(
             "LEARNING_PLAN_PROPOSAL_GROUP_NOT_FOUND",
             "学习计划提案组不存在。"));
     validateGroup(group, planId);
-
     LearningPlanExtensionRevision revision = proposalRepository.findLatestReadyExtensionRevision(proposalGroupId)
         .orElseThrow(() -> new LearningPlanException(
             "LEARNING_PLAN_PROPOSAL_NOT_LATEST",
@@ -56,13 +63,6 @@ public class LearningPlanExtensionApplyService {
     }
     validateRevision(revision, userId, planId);
 
-    LearningPlan currentPlan = learningPlanRepository.findPlanByIdForUser(planId, userId)
-        .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_NOT_FOUND", "学习计划不存在。"));
-    if (currentPlan.status() != LearningPlanStatus.ACTIVE) {
-      throw new LearningPlanException(
-          "LEARNING_PLAN_EXTENSION_PLAN_NOT_ACTIVE",
-          "当前学习计划状态不允许应用扩展。");
-    }
     List<PracticeProgress> progress = practiceSessionRepository.findProgressByPlan(userId, planId);
     int currentMaxPhaseIndex = currentMaxPhaseIndex(currentPlan);
     LearningPlanExtensionDraft appendReadyExtension = appendReadyExtension(
