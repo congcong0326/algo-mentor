@@ -82,13 +82,11 @@ class LearningPlanDraftRevisionStreamServiceTest {
         "run-revision-1",
         Map.of("source", "test")));
 
-    assertThat(events).extracting(LearningPlanProposalStreamEvent::eventName).contains("draft_revision_ready");
-    LearningPlanProposalStreamEvent.Proposal finalEvent = (LearningPlanProposalStreamEvent.Proposal) events.stream()
-        .filter(event -> event.eventName().equals("draft_revision_ready"))
-        .findFirst()
-        .orElseThrow();
+    LearningPlanProposalStreamEvent finalEvent = events.get(events.size() - 1);
+    assertThat(finalEvent.eventName()).isEqualTo("draft_revision_ready");
+    LearningPlanProposalStreamEvent.Proposal proposalEvent = (LearningPlanProposalStreamEvent.Proposal) finalEvent;
     LearningPlanProposalEvent.DraftRevisionReady ready =
-        (LearningPlanProposalEvent.DraftRevisionReady) finalEvent.event();
+        (LearningPlanProposalEvent.DraftRevisionReady) proposalEvent.event();
     assertThat(ready.result().status()).isEqualTo(LearningPlanProposalRevisionStatus.READY);
     assertThat(ready.result().proposalGroupId()).isEqualTo(group.id());
     assertThat(ready.result().revisionNo()).isEqualTo(2);
