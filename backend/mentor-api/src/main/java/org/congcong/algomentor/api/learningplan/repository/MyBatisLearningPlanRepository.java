@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
@@ -56,6 +58,11 @@ public class MyBatisLearningPlanRepository implements LearningPlanDraftRepositor
   }
 
   @Override
+  public Optional<LearningPlanDraft> findDraftByIdForUserForUpdate(long draftId, long userId) {
+    return Optional.ofNullable(mapper.findDraftByIdForUserForUpdate(draftId, userId)).map(this::toDraft);
+  }
+
+  @Override
   @Transactional
   public LearningPlan save(LearningPlan plan) {
     LearningPlanRow row = toPlanRow(plan);
@@ -96,6 +103,11 @@ public class MyBatisLearningPlanRepository implements LearningPlanDraftRepositor
   }
 
   @Override
+  public Optional<LearningPlan> findPlanByIdForUserForUpdate(long planId, long userId) {
+    return Optional.ofNullable(mapper.findPlanByIdForUserForUpdate(planId, userId)).map(this::toPlan);
+  }
+
+  @Override
   public void clearConfirmedPlanReferences(long userId, long planId) {
     mapper.clearConfirmedPlanReferences(userId, planId);
   }
@@ -111,6 +123,71 @@ public class MyBatisLearningPlanRepository implements LearningPlanDraftRepositor
   public boolean deletePlanAndClearReferences(long userId, long planId) {
     mapper.clearConfirmedPlanReferences(userId, planId);
     return mapper.deletePlanByIdForUser(planId, userId) > 0;
+  }
+
+  @Override
+  @Transactional
+  public LearningPlan appendPhases(long userId, long planId, List<LearningPlanPhaseDraft> newPhases) {
+    LearningPlan current = Optional.ofNullable(mapper.findPlanByIdForUserForUpdate(planId, userId))
+        .map(this::toPlan)
+        .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_NOT_FOUND", "学习计划不存在。"));
+    int baseMaxPhaseIndex = mapper.findMaxPhaseIndex(planId);
+    List<LearningPlanPhaseDraft> reindexedNewPhases = reindexPhases(
+        newPhases == null ? List.of() : newPhases,
+        baseMaxPhaseIndex);
+    List<LearningPlanPhaseDraft> phases = new ArrayList<>(current.plan().phases());
+    phases.addAll(reindexedNewPhases);
+    LearningPlanDraftPlan mergedPlan = new LearningPlanDraftPlan(
+        current.plan().title(),
+        current.plan().summary(),
+        current.plan().intent(),
+        current.plan().goal(),
+        current.plan().durationWeeks(),
+        current.plan().level(),
+        current.plan().weeklyHours(),
+        current.plan().programmingLanguage(),
+        current.plan().difficultyPreference(),
+        current.plan().interviewOriented(),
+        current.plan().topicPreferences(),
+        current.plan().profileSummary(),
+        phases,
+        current.plan().metadata());
+
+    for (LearningPlanPhaseDraft phase : reindexedNewPhases) {
+      mapper.insertPlanPhase(planId, phase.phaseIndex(), phase.title(), phase.durationWeeks(), phase.focus());
+      for (LearningPlanProblemDraft problem : phase.problems()) {
+        mapper.insertPlanProblem(
+            planId,
+            phase.phaseIndex(),
+            problem.slug(),
+            problem.frontendId(),
+            problem.title(),
+            problem.titleCn(),
+            problem.difficulty(),
+            problem.reason(),
+            problem.sortOrder());
+      }
+    }
+    mapper.updatePlanJsonSnapshot(planId, userId, mergedPlan.title(), json(mergedPlan), Instant.now());
+    return toPlan(mapper.findPlanByIdForUser(planId, userId));
+  }
+
+  private List<LearningPlanPhaseDraft> reindexPhases(List<LearningPlanPhaseDraft> phases, int baseMaxPhaseIndex) {
+    List<LearningPlanPhaseDraft> reindexed = new ArrayList<>(phases.size());
+    int nextPhaseIndex = baseMaxPhaseIndex + 1;
+    for (LearningPlanPhaseDraft phase : phases) {
+      reindexed.add(new LearningPlanPhaseDraft(
+          nextPhaseIndex++,
+          phase.title(),
+          phase.durationWeeks(),
+          phase.focus(),
+          phase.objectives(),
+          phase.recommendedTags(),
+          phase.acceptanceCriteria(),
+          phase.reviewAdvice(),
+          phase.problems()));
+    }
+    return reindexed;
   }
 
   private void replacePlanDetails(long planId, LearningPlanDraftPlan plan) {

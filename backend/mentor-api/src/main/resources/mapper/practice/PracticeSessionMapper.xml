@@ -211,6 +211,15 @@
       progress.updated_at
   </select>
 
+  <select id="findProgressByPlan" resultMap="PracticeProgressRowMap">
+    SELECT
+      <include refid="PracticeProgressColumns"/>
+    FROM learning_plan_problem_progress
+    WHERE user_id = #{userId}
+      AND plan_id = #{planId}
+    ORDER BY phase_index ASC, problem_slug ASC
+  </select>
+
   <update id="touchLastMessageAt">
     UPDATE practice_session
     SET last_message_at = NOW(),

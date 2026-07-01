@@ -1,5 +1,6 @@
 package org.congcong.algomentor.api.practice.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.congcong.algomentor.api.practice.mapper.PracticeSessionMapper;
 import org.congcong.algomentor.api.practice.mapper.model.PracticeProgressRow;
@@ -58,6 +59,11 @@ public class MyBatisPracticeSessionRepository implements PracticeSessionReposito
   @Transactional
   public PracticeProgress updateProgressStatus(long sessionId, long userId, PracticeProgressStatus status) {
     return toProgress(mapper.updateProgressStatus(sessionId, userId, status.name()));
+  }
+
+  @Override
+  public List<PracticeProgress> findProgressByPlan(long userId, long planId) {
+    return mapper.findProgressByPlan(userId, planId).stream().map(this::toProgress).toList();
   }
 
   @Override

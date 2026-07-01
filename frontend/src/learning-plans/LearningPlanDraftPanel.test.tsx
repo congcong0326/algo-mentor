@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import LearningPlanDraftPanel from './LearningPlanDraftPanel';
 import type { LearningPlanDraftResponse } from '../types/api';
@@ -57,6 +57,7 @@ describe('LearningPlanDraftPanel', () => {
         loading={false}
         onConfirm={vi.fn()}
         onReturnToWizard={vi.fn()}
+        onReviseDraft={vi.fn(() => Promise.resolve(true))}
         onSendFollowUp={onSendFollowUp}
       />,
     );
@@ -86,19 +87,20 @@ describe('LearningPlanDraftPanel', () => {
         loading={false}
         onConfirm={onConfirm}
         onReturnToWizard={vi.fn()}
+        onReviseDraft={vi.fn(() => Promise.resolve(true))}
         onSendFollowUp={vi.fn(() => Promise.resolve(true))}
       />,
     );
 
     expect(screen.getByRole('heading', { name: '训练方案' })).toBeInTheDocument();
     expect(screen.getByText('基础题型恢复')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '保存方案' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '保存方案' }));
 
     expect(onConfirm).toHaveBeenCalled();
   });
 
-  it('allows editing the goal summary and asks for regeneration', () => {
-    const onRegenerate = vi.fn();
+  it('shows a revision textarea for generated drafts', () => {
     const draft: LearningPlanDraftResponse = {
       draftId: 100,
       status: 'GENERATED',
@@ -112,23 +114,18 @@ describe('LearningPlanDraftPanel', () => {
         draft={draft}
         loading={false}
         onConfirm={vi.fn()}
-        onRegenerateGoal={onRegenerate}
         onReturnToWizard={vi.fn()}
+        onReviseDraft={vi.fn(() => Promise.resolve(true))}
         onSendFollowUp={vi.fn(() => Promise.resolve(true))}
       />,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: '编辑目标摘要' }));
-    fireEvent.change(screen.getByRole('textbox', { name: '目标摘要' }), {
-      target: { value: '改成动态规划冲刺目标。' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: '按新目标重新生成' }));
-
-    expect(onRegenerate).toHaveBeenCalledWith('改成动态规划冲刺目标。');
+    expect(screen.getByRole('textbox', { name: '对当前计划不满意？输入调整要求' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '按要求调整计划' })).toBeDisabled();
   });
 
-  it('resets goal editing state when a regenerated draft arrives', () => {
-    const onRegenerate = vi.fn();
+  it('sends trimmed revision instructions', () => {
+    const onReviseDraft = vi.fn(() => Promise.resolve(false));
     const draft: LearningPlanDraftResponse = {
       draftId: 100,
       status: 'GENERATED',
@@ -136,45 +133,85 @@ describe('LearningPlanDraftPanel', () => {
       missingFields: [],
       draftPlan,
     };
-    const { rerender } = render(
+
+    render(
       <LearningPlanDraftPanel
         draft={draft}
         loading={false}
         onConfirm={vi.fn()}
-        onRegenerateGoal={onRegenerate}
         onReturnToWizard={vi.fn()}
+        onReviseDraft={onReviseDraft}
         onSendFollowUp={vi.fn(() => Promise.resolve(true))}
       />,
     );
 
-    fireEvent.click(screen.getByRole('button', { name: '编辑目标摘要' }));
-    fireEvent.change(screen.getByRole('textbox', { name: '目标摘要' }), {
-      target: { value: '仍然停留在旧输入里的目标。' },
+    fireEvent.change(screen.getByRole('textbox', { name: '对当前计划不满意？输入调整要求' }), {
+      target: { value: '  降低难度，减少每周题量。  ' },
     });
-    fireEvent.click(screen.getByRole('button', { name: '按新目标重新生成' }));
+    fireEvent.click(screen.getByRole('button', { name: '按要求调整计划' }));
 
-    rerender(
+    expect(onReviseDraft).toHaveBeenCalledWith('降低难度，减少每周题量。');
+  });
+
+  it('clears revision instructions after successful revision', async () => {
+    const onReviseDraft = vi.fn(() => Promise.resolve(true));
+    const draft: LearningPlanDraftResponse = {
+      draftId: 100,
+      status: 'GENERATED',
+      assistantMessage: '已生成训练方案草案。',
+      missingFields: [],
+      draftPlan,
+    };
+
+    render(
       <LearningPlanDraftPanel
-        draft={{
-          ...draft,
-          draftId: 101,
-          draftPlan: {
-            ...draftPlan,
-            goal: '新的动态规划冲刺目标',
-            title: '动态规划冲刺计划',
-          },
-        }}
+        draft={draft}
         loading={false}
         onConfirm={vi.fn()}
-        onRegenerateGoal={onRegenerate}
         onReturnToWizard={vi.fn()}
+        onReviseDraft={onReviseDraft}
         onSendFollowUp={vi.fn(() => Promise.resolve(true))}
       />,
     );
 
-    expect(screen.getByText('新的动态规划冲刺目标')).toBeInTheDocument();
-    expect(screen.queryByRole('textbox', { name: '目标摘要' })).not.toBeInTheDocument();
-    expect(screen.queryByDisplayValue('仍然停留在旧输入里的目标。')).not.toBeInTheDocument();
+    const textarea = screen.getByRole('textbox', { name: '对当前计划不满意？输入调整要求' });
+    fireEvent.change(textarea, {
+      target: { value: '增加动态规划专题。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '按要求调整计划' }));
+
+    await waitFor(() => expect(textarea).toHaveValue(''));
+  });
+
+  it('keeps revision instructions when revision rejects', async () => {
+    const onReviseDraft = vi.fn(() => Promise.reject(new Error('revision failed')));
+    const draft: LearningPlanDraftResponse = {
+      draftId: 100,
+      status: 'GENERATED',
+      assistantMessage: '已生成训练方案草案。',
+      missingFields: [],
+      draftPlan,
+    };
+
+    render(
+      <LearningPlanDraftPanel
+        draft={draft}
+        loading={false}
+        onConfirm={vi.fn()}
+        onReturnToWizard={vi.fn()}
+        onReviseDraft={onReviseDraft}
+        onSendFollowUp={vi.fn(() => Promise.resolve(true))}
+      />,
+    );
+
+    const textarea = screen.getByRole('textbox', { name: '对当前计划不满意？输入调整要求' });
+    fireEvent.change(textarea, {
+      target: { value: '降低难度。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '按要求调整计划' }));
+
+    await waitFor(() => expect(onReviseDraft).toHaveBeenCalledWith('降低难度。'));
+    expect(textarea).toHaveValue('降低难度。');
   });
 
   it('does not allow confirmation for failed drafts even when a stale plan exists', () => {
@@ -190,6 +227,7 @@ describe('LearningPlanDraftPanel', () => {
         loading={false}
         onConfirm={vi.fn()}
         onReturnToWizard={vi.fn()}
+        onReviseDraft={vi.fn(() => Promise.resolve(true))}
         onSendFollowUp={vi.fn(() => Promise.resolve(true))}
       />,
     );
@@ -215,6 +253,7 @@ describe('LearningPlanDraftPanel', () => {
         loading={false}
         onConfirm={vi.fn()}
         onRetryCreate={onRetryCreate}
+        onReviseDraft={vi.fn(() => Promise.resolve(true))}
         onSendFollowUp={vi.fn(() => Promise.resolve(true))}
       />,
     );

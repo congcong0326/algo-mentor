@@ -1636,6 +1636,7 @@ a {
 .plan-list,
 .goal-editor,
 .goal-summary,
+.draft-revision-panel,
 .learning-detail-area {
   display: grid;
   gap: 14px;
@@ -2092,6 +2093,44 @@ a {
   margin: 0;
   color: var(--text-secondary);
   line-height: 1.65;
+}
+
+.draft-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.learning-plan-extension-panel,
+.pending-extension-block {
+  display: grid;
+  gap: 14px;
+}
+
+.learning-plan-extension-panel {
+  padding-top: 18px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.learning-plan-extension-panel > .primary-button {
+  justify-self: start;
+}
+
+.pending-extension-block {
+  padding-top: 4px;
+}
+
+.pending-extension-block .plan-preview .summary-grid {
+  display: none;
+}
+
+.extension-revision-panel {
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.extension-action-row {
+  align-items: center;
 }
 
 .empty-plan-panel {

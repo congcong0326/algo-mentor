@@ -14,9 +14,11 @@ import type {
   LearningPlanCreateDraftRequest,
   LearningPlanDetailResponse,
   LearningPlanDraftResponse,
+  LearningPlanExtensionApplyResponse,
   LearningPlanListQuery,
   LearningPlanMessageRequest,
   LearningPlanPageResponse,
+  LearningPlanRevisionRequest,
   PracticeMessageRequest,
   PracticeMessage,
   PracticeActiveRun,
@@ -72,6 +74,13 @@ export class ApiRequestError extends Error {
 export function requireApiData<T>(response: ApiResponse<T>, fallbackMessage: string): T {
   if (response.success && response.data !== undefined) {
     return response.data;
+  }
+  throw apiResponseToRequestError(response, fallbackMessage);
+}
+
+export function requireApiSuccess<T>(response: ApiResponse<T>, fallbackMessage: string): void {
+  if (response.success) {
+    return;
   }
   throw apiResponseToRequestError(response, fallbackMessage);
 }
@@ -537,6 +546,32 @@ export async function streamLearningPlanDraft(
   await readEventStream(response.body, options.onEvent);
 }
 
+export async function streamLearningPlanDraftRevision(
+  draftId: number,
+  request: LearningPlanRevisionRequest,
+  options: StreamLearningPlanDraftOptions,
+): Promise<void> {
+  const response = await apiFetch(`/api/learning-plans/drafts/${draftId}/revisions/stream`, {
+    method: 'POST',
+    headers: {
+      Accept: 'text/event-stream, application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+    signal: options.signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan draft revision stream failed');
+  }
+  if (!response.body) {
+    throw new Error('Learning plan draft revision stream response does not include a readable body');
+  }
+
+  options.onOpen?.();
+  await readEventStream(response.body, options.onEvent);
+}
+
 export async function sendLearningPlanDraftMessage(
   draftId: number,
   request: LearningPlanMessageRequest,
@@ -567,6 +602,98 @@ export async function confirmLearningPlanDraft(
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Learning plan confirm request failed');
+  }
+
+  return response.json();
+}
+
+export async function streamLearningPlanExtensionProposal(
+  planId: number,
+  request: LearningPlanRevisionRequest,
+  options: StreamLearningPlanDraftOptions,
+): Promise<void> {
+  const response = await apiFetch(`/api/learning-plans/${planId}/extension-proposals/stream`, {
+    method: 'POST',
+    headers: {
+      Accept: 'text/event-stream, application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+    signal: options.signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan extension proposal stream failed');
+  }
+  if (!response.body) {
+    throw new Error('Learning plan extension proposal stream response does not include a readable body');
+  }
+
+  options.onOpen?.();
+  await readEventStream(response.body, options.onEvent);
+}
+
+export async function streamLearningPlanExtensionProposalRevision(
+  planId: number,
+  proposalGroupId: number,
+  request: LearningPlanRevisionRequest,
+  options: StreamLearningPlanDraftOptions,
+): Promise<void> {
+  const response = await apiFetch(
+    `/api/learning-plans/${planId}/extension-proposals/${proposalGroupId}/revisions/stream`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'text/event-stream, application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+      signal: options.signal,
+    },
+  );
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan extension proposal revision stream failed');
+  }
+  if (!response.body) {
+    throw new Error('Learning plan extension proposal revision stream response does not include a readable body');
+  }
+
+  options.onOpen?.();
+  await readEventStream(response.body, options.onEvent);
+}
+
+export async function applyLearningPlanExtensionProposal(
+  planId: number,
+  proposalGroupId: number,
+  signal?: AbortSignal,
+): Promise<ApiResponse<LearningPlanExtensionApplyResponse>> {
+  const response = await apiFetch(`/api/learning-plans/${planId}/extension-proposals/${proposalGroupId}/apply`, {
+    method: 'POST',
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan extension proposal apply request failed');
+  }
+
+  return response.json();
+}
+
+export async function discardLearningPlanExtensionProposal(
+  planId: number,
+  proposalGroupId: number,
+  signal?: AbortSignal,
+): Promise<ApiResponse<void>> {
+  const response = await apiFetch(`/api/learning-plans/${planId}/extension-proposals/${proposalGroupId}/discard`, {
+    method: 'POST',
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan extension proposal discard request failed');
   }
 
   return response.json();

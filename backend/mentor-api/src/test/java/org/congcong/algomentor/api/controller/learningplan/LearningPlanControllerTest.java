@@ -51,6 +51,18 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhase
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanDraftRevisionResult;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionApplyResult;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionApplyService;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionDraft;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionResult;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalGroupService;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalGroupStatus;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRevisionStatus;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionStreamService;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionProposalStreamService;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanProposalEvent;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanProposalStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
@@ -93,6 +105,18 @@ class LearningPlanControllerTest {
 
   @MockBean
   private LearningPlanDraftStreamService draftStreamService;
+
+  @MockBean
+  private LearningPlanDraftRevisionStreamService draftRevisionStreamService;
+
+  @MockBean
+  private LearningPlanExtensionProposalStreamService extensionProposalStreamService;
+
+  @MockBean
+  private LearningPlanExtensionApplyService extensionApplyService;
+
+  @MockBean
+  private LearningPlanProposalGroupService proposalGroupService;
 
   @MockBean
   private ApiSseProperties sseProperties;
@@ -180,6 +204,133 @@ class LearningPlanControllerTest {
     verify(sseProperties).learningPlanDraftTimeoutMillis();
     verify(lifecycleService).markRunning(any(AiRunAdmission.class), eq(null), eq(null));
     verify(lifecycleService).markCompleted(any(AiRunAdmission.class), any(), eq(null), eq(null));
+  }
+
+  @Test
+  void streamDraftRevisionReturnsSseAndUsesLearningPlanDraftRevisionSource() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
+    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
+    when(sseProperties.learningPlanDraftTimeoutMillis()).thenReturn(360_000L);
+    when(draftRevisionStreamService.stream(eq(42L), eq(100L), eq("请增加动态规划训练"), any(), any()))
+        .thenReturn(proposalPublisher(new LearningPlanProposalStreamEvent.Proposal(
+            LearningPlanProposalStreamEvent.ProposalProfile.DRAFT_REVISION,
+            new LearningPlanProposalEvent.DraftRevisionReady(new LearningPlanDraftRevisionResult(
+                700L,
+                701L,
+                100L,
+                2,
+                LearningPlanProposalRevisionStatus.READY,
+                List.of(699L),
+                new LearningPlanDraftResult(
+                    100L,
+                    LearningPlanDraftStatus.GENERATED,
+                    "已生成学习计划修订草案。",
+                    List.of(),
+                    draftPlan()))))));
+
+    MvcResult result = mockMvc.perform(post("/api/learning-plans/drafts/100/revisions/stream")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .content("{\"instruction\":\"  请增加动态规划训练  \"}"))
+        .andReturn();
+
+    mockMvc.perform(asyncDispatch(result))
+        .andExpect(status().isOk())
+        .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
+            .string(org.hamcrest.Matchers.allOf(
+                org.hamcrest.Matchers.containsString("event:draft_revision_ready"),
+                org.hamcrest.Matchers.containsString("\"proposalGroupId\":700"),
+                org.hamcrest.Matchers.containsString("\"proposalId\":701"),
+                org.hamcrest.Matchers.containsString("\"draftId\":100"),
+                org.hamcrest.Matchers.containsString("\"supersededProposalIds\":[699]"),
+                org.hamcrest.Matchers.containsString("\"draftPlan\""),
+                org.hamcrest.Matchers.containsString("\"programmingLanguage\":\"Java\""),
+                org.hamcrest.Matchers.containsString("\"slug\":\"two-sum\""))));
+
+    ArgumentCaptor<AiRunContext> governanceCaptor = ArgumentCaptor.forClass(AiRunContext.class);
+    verify(admissionService).admit(governanceCaptor.capture());
+    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().source())
+        .isEqualTo(AiRunSource.LEARNING_PLAN_DRAFT_REVISION);
+    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().streaming()).isTrue();
+    verify(draftRevisionStreamService).stream(eq(42L), eq(100L), eq("请增加动态规划训练"), any(), any());
+  }
+
+  @Test
+  void streamExtensionProposalReturnsSseAndUsesLearningPlanExtensionSource() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
+    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
+    when(sseProperties.learningPlanDraftTimeoutMillis()).thenReturn(360_000L);
+    when(extensionProposalStreamService.streamFirstRevision(eq(42L), eq(900L), eq("补充图论训练"), any(), any()))
+        .thenReturn(proposalPublisher(new LearningPlanProposalStreamEvent.Proposal(
+            LearningPlanProposalStreamEvent.ProposalProfile.PLAN_EXTENSION,
+            new LearningPlanProposalEvent.PlanExtensionReady(new LearningPlanExtensionResult(
+                800L,
+                801L,
+                900L,
+                1,
+                LearningPlanProposalRevisionStatus.READY,
+                List.of(),
+                "补充图论训练",
+                extensionDraft())))));
+
+    MvcResult result = mockMvc.perform(post("/api/learning-plans/900/extension-proposals/stream")
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .content("{\"instruction\":\" 补充图论训练 \"}"))
+        .andReturn();
+
+    mockMvc.perform(asyncDispatch(result))
+        .andExpect(status().isOk())
+        .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
+            .string(org.hamcrest.Matchers.allOf(
+                org.hamcrest.Matchers.containsString("event:plan_extension_ready"),
+                org.hamcrest.Matchers.containsString("\"proposalGroupId\":800"),
+                org.hamcrest.Matchers.containsString("\"proposalId\":801"),
+                org.hamcrest.Matchers.containsString("\"planId\":900"),
+                org.hamcrest.Matchers.containsString("\"supersededProposalIds\":[]"),
+                org.hamcrest.Matchers.containsString("\"extensionDraft\""),
+                org.hamcrest.Matchers.containsString("\"phaseIndex\":2"),
+                org.hamcrest.Matchers.containsString("\"recommendedTags\":[\"Graph\"]"),
+                org.hamcrest.Matchers.containsString("\"title\":\"Number of Islands\""))));
+
+    ArgumentCaptor<AiRunContext> governanceCaptor = ArgumentCaptor.forClass(AiRunContext.class);
+    verify(admissionService).admit(governanceCaptor.capture());
+    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().source())
+        .isEqualTo(AiRunSource.LEARNING_PLAN_EXTENSION_PROPOSAL);
+    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().streaming()).isTrue();
+    verify(extensionProposalStreamService).streamFirstRevision(eq(42L), eq(900L), eq("补充图论训练"), any(), any());
+  }
+
+  @Test
+  void applyExtensionProposalReturnsAppliedResponse() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(extensionApplyService.apply(42L, 900L, 800L)).thenReturn(new LearningPlanExtensionApplyResult(
+        900L,
+        800L,
+        801L,
+        LearningPlanProposalGroupStatus.APPLIED,
+        2));
+
+    mockMvc.perform(post("/api/learning-plans/900/extension-proposals/800/apply"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.planId").value(900))
+        .andExpect(jsonPath("$.data.proposalGroupId").value(800))
+        .andExpect(jsonPath("$.data.proposalId").value(801))
+        .andExpect(jsonPath("$.data.status").value("APPLIED"))
+        .andExpect(jsonPath("$.data.appendedPhaseCount").value(2));
+  }
+
+  @Test
+  void discardExtensionProposalUsesCurrentUser() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+
+    mockMvc.perform(post("/api/learning-plans/900/extension-proposals/800/discard"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true));
+
+    verify(proposalGroupService).discardExtensionProposal(42L, 900L, 800L);
   }
 
   @Test
@@ -289,6 +440,39 @@ class LearningPlanControllerTest {
       publisher.submit(new LearningPlanDraftStreamEvent.Draft(new LearningPlanDraftEvent.DraftReady(result)));
       publisher.close();
     };
+  }
+
+  private Flow.Publisher<LearningPlanProposalStreamEvent> proposalPublisher(LearningPlanProposalStreamEvent event) {
+    return subscriber -> {
+      SubmissionPublisher<LearningPlanProposalStreamEvent> publisher = new SubmissionPublisher<>();
+      publisher.subscribe(subscriber);
+      publisher.submit(event);
+      publisher.close();
+    };
+  }
+
+  private LearningPlanExtensionDraft extensionDraft() {
+    return new LearningPlanExtensionDraft(
+        "补充图论训练",
+        List.of(new LearningPlanPhaseDraft(
+            2,
+            "图论补强",
+            1,
+            "图遍历",
+            List.of("掌握 BFS 与 DFS"),
+            List.of("Graph"),
+            List.of("能解释遍历边界"),
+            "复盘图题模板。",
+            List.of(new LearningPlanProblemDraft(
+                "number-of-islands",
+                1,
+                "Number of Islands",
+                "岛屿数量",
+                "MEDIUM",
+                List.of("Graph", "DFS"),
+                "练习图遍历。",
+                1)))),
+        Map.of("problemRecommendationIncomplete", false));
   }
 
   private LearningPlanDraftPlan draftPlan() {

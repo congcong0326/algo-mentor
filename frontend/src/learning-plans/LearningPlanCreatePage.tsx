@@ -5,12 +5,14 @@ import {
   requireApiData,
   sendLearningPlanDraftMessage,
   streamLearningPlanDraft,
+  streamLearningPlanDraftRevision,
 } from '../services/api';
 import type {
   AgentWorkStatusEvent,
   LearningPlanConfirmResponse,
   LearningPlanCreateDraftRequest,
   LearningPlanDraftErrorEvent,
+  LearningPlanDraftRevisionReadyEvent,
   LearningPlanDraftResponse,
   SseStreamEvent,
 } from '../types/api';
@@ -61,13 +63,29 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
     if (event.eventName === 'draft_ready') {
       const nextDraft = event.data as LearningPlanDraftResponse;
       setDraft(nextDraft);
+      setWorkEvent(undefined);
       setFlowState(nextDraft.status === 'COLLECTING' ? 'collecting' : 'previewing');
+      return;
+    }
+    if (event.eventName === 'draft_revision_ready') {
+      const revision = event.data as LearningPlanDraftRevisionReadyEvent;
+      setDraft(revision.draft);
+      setWorkEvent(undefined);
+      setFlowState('previewing');
       return;
     }
     if (event.eventName === 'draft_error') {
       const draftError = event.data as LearningPlanDraftErrorEvent;
       setError(draftError.message || resources.learningPlans.generateFailed);
+      setWorkEvent(undefined);
       setFlowState('editing');
+      return;
+    }
+    if (event.eventName === 'draft_revision_error') {
+      const draftError = event.data as LearningPlanDraftErrorEvent;
+      setError(draftError.message || resources.learningPlans.revisionFailed);
+      setWorkEvent(undefined);
+      setFlowState('previewing');
     }
   }
 
@@ -92,8 +110,40 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
     }
   }
 
-  async function regenerateFromGoal(goal: string) {
-    return sendFollowUp(resources.learningPlans.followUpRegeneratePrefix(goal));
+  async function reviseDraft(instruction: string) {
+    if (!draft || !instruction.trim()) {
+      return false;
+    }
+    setFlowState('generating');
+    setError('');
+    setWorkEvent({ message: resources.learningPlans.reviseDraft });
+    try {
+      let revisionReady = false;
+      let revisionFailed = false;
+      await streamLearningPlanDraftRevision(draft.draftId, { instruction: instruction.trim() }, {
+        onEvent: (event) => {
+          if (event.eventName === 'draft_revision_ready') {
+            revisionReady = true;
+          }
+          if (event.eventName === 'draft_revision_error') {
+            revisionFailed = true;
+          }
+          handleDraftStreamEvent(event);
+        },
+      });
+      if (!revisionReady && !revisionFailed) {
+        setError(resources.learningPlans.revisionFailed);
+        setWorkEvent(undefined);
+        setFlowState('previewing');
+        return false;
+      }
+      return revisionReady && !revisionFailed;
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : resources.learningPlans.revisionFailed);
+      setWorkEvent(undefined);
+      setFlowState('previewing');
+      return false;
+    }
   }
 
   async function confirmDraft() {
@@ -140,9 +190,10 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
           <LearningPlanDraftPanel
             draft={draft}
             loading={flowState === 'generating' || flowState === 'confirming'}
+            workEvent={flowState === 'generating' ? workEvent : undefined}
             onConfirm={confirmDraft}
-            onRegenerateGoal={regenerateFromGoal}
             onRetryCreate={retryCreateDraft}
+            onReviseDraft={reviseDraft}
             onSendFollowUp={sendFollowUp}
           />
         </>

@@ -327,6 +327,18 @@ export interface LocaleResources {
     followUpFailed: string;
     saveFailed: string;
     followUpRegeneratePrefix: (goal: string) => string;
+    revisionInstructionLabel: string;
+    reviseDraft: string;
+    revisionFailed: string;
+    extensionEntryLabel: string;
+    generateExtension: string;
+    pendingExtensionTitle: string;
+    reviseExtensionLabel: string;
+    reviseExtension: string;
+    applyExtension: string;
+    discardExtension: string;
+    extensionFailed: string;
+    extensionApplyFailed: string;
     createTitle: string;
     generatePlan: string;
     generateDraft: string;
@@ -807,6 +819,18 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       followUpFailed: '训练方案追问提交失败',
       saveFailed: '训练方案保存失败',
       followUpRegeneratePrefix: (goal) => `请按新的目标摘要重新生成训练方案：${goal}`,
+      revisionInstructionLabel: '对当前计划不满意？输入调整要求',
+      reviseDraft: '按要求调整计划',
+      revisionFailed: '调整学习计划失败，请稍后重试。',
+      extensionEntryLabel: '想继续学习？描述接下来的目标',
+      generateExtension: '生成扩展建议',
+      pendingExtensionTitle: '待追加内容',
+      reviseExtensionLabel: '对扩展建议不满意？输入调整要求',
+      reviseExtension: '按要求调整扩展',
+      applyExtension: '应用扩展',
+      discardExtension: '放弃',
+      extensionFailed: '生成扩展建议失败，请稍后重试。',
+      extensionApplyFailed: '应用扩展失败，请重新生成后再试。',
       createTitle: '新建训练方案',
       generatePlan: '生成训练方案',
       generateDraft: '生成方案草案',
@@ -1330,6 +1354,18 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       followUpFailed: 'Failed to submit follow-up',
       saveFailed: 'Failed to save learning plan',
       followUpRegeneratePrefix: (goal) => `Regenerate the learning plan from this updated goal summary: ${goal}`,
+      revisionInstructionLabel: 'Want changes? Describe how to revise this plan',
+      reviseDraft: 'Revise Plan',
+      revisionFailed: 'Failed to revise the learning plan. Try again later.',
+      extensionEntryLabel: 'Want to keep learning? Describe your next goal',
+      generateExtension: 'Generate Extension',
+      pendingExtensionTitle: 'Pending Extension',
+      reviseExtensionLabel: 'Want changes to this extension? Describe the adjustment',
+      reviseExtension: 'Revise Extension',
+      applyExtension: 'Apply Extension',
+      discardExtension: 'Discard',
+      extensionFailed: 'Failed to generate the extension. Please try again later.',
+      extensionApplyFailed: 'Failed to apply the extension. Generate a new one and try again.',
       createTitle: 'Create Learning Plan',
       generatePlan: 'Generate Plan',
       generateDraft: 'Generate Draft',
