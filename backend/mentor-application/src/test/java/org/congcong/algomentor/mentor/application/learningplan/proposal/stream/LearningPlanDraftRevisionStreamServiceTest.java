@@ -17,6 +17,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentRequest;
@@ -47,6 +48,8 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalTargetType;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalType;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftPromptBuilder;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
 class LearningPlanDraftRevisionStreamServiceTest {
@@ -174,6 +177,81 @@ class LearningPlanDraftRevisionStreamServiceTest {
   }
 
   @org.junit.jupiter.api.Test
+  void crossGroupStaleCompletionDoesNotOverwriteNewerReadyRevisionOrDraftPlan() {
+    LearningPlanDraft draft = draftRepository.save(generatedDraft(basePlan("原计划")));
+    LearningPlanProposalGroup olderGroup = proposalRepository.saveGroup(activeDraftRevisionGroupAt(
+        draft.id(),
+        "旧修订请求",
+        clock.instant()));
+    ManualAgentLoopRunner olderRunner = new ManualAgentLoopRunner();
+    LearningPlanDraftRevisionStreamService olderService = serviceWithAgent(olderRunner);
+    List<LearningPlanProposalStreamEvent> olderEvents = collectAsync(olderService.stream(
+        draft.userId(),
+        draft.id(),
+        "旧修订请求",
+        "run-cross-group-old",
+        Map.of()));
+    waitUntilRevisionCount(1);
+    LearningPlanProposalGroup newerGroup = proposalRepository.saveGroup(activeDraftRevisionGroupAt(
+        draft.id(),
+        "新修订请求",
+        clock.instant().plusSeconds(1)));
+    LearningPlanDraftRevision newer = proposalRepository.saveDraftRevision(new LearningPlanDraftRevision(
+        null,
+        newerGroup.id(),
+        draft.id(),
+        draft.userId(),
+        proposalRepository.nextRevisionNo(newerGroup.id()),
+        LearningPlanProposalRevisionStatus.GENERATING,
+        "新修订请求",
+        draft.draftPlan(),
+        null,
+        null,
+        null,
+        clock.instant(),
+        clock.instant())).withReady(basePlan("新修订计划"), clock.instant());
+    newer = proposalRepository.saveDraftRevision(newer);
+    proposalRepository.saveGroup(newerGroup.withLatestProposalId(newer.id(), clock.instant()));
+    draftRepository.save(draftWithPlan(draft, basePlan("新修订计划")));
+
+    olderRunner.complete(finalJson("旧修订计划"));
+    waitUntilDone(olderEvents, 1);
+
+    assertThat(olderEvents.get(olderEvents.size() - 1).eventName()).isEqualTo("draft_revision_error");
+    LearningPlanDraftRevision older = proposalRepository.draftRevisions.values().stream()
+        .filter(revision -> revision.proposalGroupId() == olderGroup.id())
+        .findFirst()
+        .orElseThrow();
+    assertThat(older.status()).isEqualTo(LearningPlanProposalRevisionStatus.FAILED);
+    assertThat(older.errorCode()).isEqualTo("LEARNING_PLAN_DRAFT_REVISION_SUPERSEDED");
+    assertThat(proposalRepository.groups.get(newerGroup.id()).latestProposalId()).isEqualTo(newer.id());
+    assertThat(proposalRepository.draftRevisions.get(newer.id()).status()).isEqualTo(LearningPlanProposalRevisionStatus.READY);
+    assertThat(draftRepository.findDraftByIdForUser(draft.id(), draft.userId()).orElseThrow().draftPlan().title())
+        .isEqualTo("新修订计划");
+  }
+
+  @org.junit.jupiter.api.Test
+  void readyTransactionFailureMarksRevisionFailedAndEmitsDraftRevisionError() {
+    LearningPlanDraft draft = draftRepository.save(generatedDraft(basePlan("原计划")));
+    ThrowOnSecondExecuteTransactionOperations transactions = new ThrowOnSecondExecuteTransactionOperations();
+    LearningPlanDraftRevisionStreamService service = serviceWithAgent(
+        new FakeAgentLoopRunner(finalJson("修订后计划")),
+        transactions);
+
+    List<LearningPlanProposalStreamEvent> events = collect(service.stream(
+        draft.userId(),
+        draft.id(),
+        "减少动态规划题",
+        "run-ready-fails",
+        Map.of()));
+
+    assertThat(events.get(events.size() - 1).eventName()).isEqualTo("draft_revision_error");
+    LearningPlanDraftRevision revision = proposalRepository.draftRevisions.values().stream().findFirst().orElseThrow();
+    assertThat(revision.status()).isEqualTo(LearningPlanProposalRevisionStatus.FAILED);
+    assertThat(revision.errorCode()).isEqualTo("LEARNING_PLAN_DRAFT_REVISION_FAILED");
+  }
+
+  @org.junit.jupiter.api.Test
   void streamDoesNotCreateRevisionBeforeSubscription() {
     LearningPlanDraft draft = draftRepository.save(generatedDraft(basePlan("原计划")));
     LearningPlanDraftRevisionStreamService service = serviceWithAgent(finalJson("修订后计划"));
@@ -215,6 +293,13 @@ class LearningPlanDraftRevisionStreamServiceTest {
   }
 
   private LearningPlanDraftRevisionStreamService serviceWithAgent(AgentLoopRunner runner) {
+    return serviceWithAgent(runner, TransactionOperations.withoutTransaction());
+  }
+
+  private LearningPlanDraftRevisionStreamService serviceWithAgent(
+      AgentLoopRunner runner,
+      TransactionOperations transactionOperations
+  ) {
     return new LearningPlanDraftRevisionStreamService(
         draftRepository,
         proposalRepository,
@@ -224,7 +309,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
         new LearningPlanDraftPromptBuilder(),
         new ObjectMapper(),
         problemCatalog,
-        TransactionOperations.withoutTransaction(),
+        transactionOperations,
         clock);
   }
 
@@ -246,6 +331,10 @@ class LearningPlanDraftRevisionStreamServiceTest {
   }
 
   private LearningPlanProposalGroup activeDraftRevisionGroup(long draftId, String instruction) {
+    return activeDraftRevisionGroupAt(draftId, instruction, clock.instant());
+  }
+
+  private LearningPlanProposalGroup activeDraftRevisionGroupAt(long draftId, String instruction, Instant createdAt) {
     Instant now = clock.instant();
     return new LearningPlanProposalGroup(
         null,
@@ -256,7 +345,7 @@ class LearningPlanDraftRevisionStreamServiceTest {
         LearningPlanProposalGroupStatus.ACTIVE,
         instruction,
         null,
-        now,
+        createdAt,
         now);
   }
 
@@ -513,6 +602,59 @@ class LearningPlanDraftRevisionStreamServiceTest {
       current.onNext(new AgentStreamEvent.AgentStepEnd(currentRequest.runId(), 1, LlmFinishReason.STOP, 0));
       current.onNext(new AgentStreamEvent.AgentRunEnd(currentRequest.runId(), 1, LlmFinishReason.STOP, Map.of()));
       current.onComplete();
+    }
+  }
+
+  private static final class ThrowOnSecondExecuteTransactionOperations implements TransactionOperations {
+    private final AtomicInteger executions = new AtomicInteger();
+
+    @Override
+    public <T> T execute(TransactionCallback<T> action) {
+      if (executions.incrementAndGet() == 2) {
+        throw new IllegalStateException("ready transaction failed");
+      }
+      return action.doInTransaction(new TransactionStatus() {
+        @Override
+        public boolean isNewTransaction() {
+          return false;
+        }
+
+        @Override
+        public boolean hasSavepoint() {
+          return false;
+        }
+
+        @Override
+        public void setRollbackOnly() {
+        }
+
+        @Override
+        public boolean isRollbackOnly() {
+          return false;
+        }
+
+        @Override
+        public void flush() {
+        }
+
+        @Override
+        public boolean isCompleted() {
+          return false;
+        }
+
+        @Override
+        public Object createSavepoint() {
+          return new Object();
+        }
+
+        @Override
+        public void rollbackToSavepoint(Object savepoint) {
+        }
+
+        @Override
+        public void releaseSavepoint(Object savepoint) {
+        }
+      });
     }
   }
 

@@ -14,10 +14,14 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
+import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanRow;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
@@ -32,6 +36,18 @@ class MyBatisLearningPlanRepositoryTest {
   private static final Instant UPDATED_AT = Instant.parse("2026-01-02T00:00:00Z");
 
   private final ObjectMapper objectMapper = new ObjectMapper();
+
+  @Test
+  void findDraftByIdForUserForUpdateUsesLockingMapperRead() {
+    LearningPlanMapper mapper = mock(LearningPlanMapper.class);
+    MyBatisLearningPlanRepository repository = new MyBatisLearningPlanRepository(mapper, objectMapper);
+    when(mapper.findDraftByIdForUserForUpdate(12, 7)).thenReturn(draftRow(plan(List.of(phase(1, "base", "two-sum")))));
+
+    Optional<LearningPlanDraft> result = repository.findDraftByIdForUserForUpdate(12, 7);
+
+    assertThat(result).isPresent();
+    verify(mapper).findDraftByIdForUserForUpdate(12, 7);
+  }
 
   @Test
   void findPlanByIdForUserForUpdateUsesLockingMapperRead() {
@@ -85,6 +101,31 @@ class MyBatisLearningPlanRepositoryTest {
         LearningPlanStatus.ACTIVE.name(),
         plan.title(),
         objectMapper.valueToTree(plan),
+        CREATED_AT,
+        UPDATED_AT);
+  }
+
+  private LearningPlanDraftRow draftRow(LearningPlanDraftPlan plan) {
+    return new LearningPlanDraftRow(
+        12L,
+        7L,
+        LearningPlanDraftStatus.GENERATED.name(),
+        objectMapper.valueToTree(new LearningPlanDraftCommand(
+            LearningPlanIntent.PRACTICE_GOAL,
+            "goal",
+            4,
+            LearningPlanLevel.INTERMEDIATE,
+            8,
+            "java",
+            LearningPlanDifficultyPreference.MIXED,
+            true,
+            List.of("array"))),
+        objectMapper.valueToTree(List.of("message")),
+        objectMapper.valueToTree(List.of()),
+        "assistant",
+        objectMapper.valueToTree(plan),
+        null,
+        UPDATED_AT,
         CREATED_AT,
         UPDATED_AT);
   }

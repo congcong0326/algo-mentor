@@ -20,6 +20,8 @@ public interface LearningPlanMapper {
 
   LearningPlanDraftRow findDraftByIdForUser(@Param("id") long id, @Param("userId") long userId);
 
+  LearningPlanDraftRow findDraftByIdForUserForUpdate(@Param("id") long id, @Param("userId") long userId);
+
   long insertPlan(LearningPlanRow row);
 
   int updatePlanSnapshot(LearningPlanRow row);

@@ -168,6 +168,26 @@
       AND user_id = #{userId}
   </select>
 
+  <select id="findDraftByIdForUserForUpdate" resultMap="LearningPlanDraftRowMap">
+    SELECT
+      id,
+      user_id,
+      status,
+      command_json,
+      messages_json,
+      missing_fields_json,
+      assistant_message,
+      draft_plan_json,
+      confirmed_plan_id,
+      expires_at,
+      created_at,
+      updated_at
+    FROM learning_plan_draft
+    WHERE id = #{id}
+      AND user_id = #{userId}
+    FOR UPDATE
+  </select>
+
   <select id="insertPlan" resultType="java.lang.Long" affectData="true">
     INSERT INTO learning_plan (
       user_id,

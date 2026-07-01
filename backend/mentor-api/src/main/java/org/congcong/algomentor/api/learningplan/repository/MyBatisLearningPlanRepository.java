@@ -58,6 +58,11 @@ public class MyBatisLearningPlanRepository implements LearningPlanDraftRepositor
   }
 
   @Override
+  public Optional<LearningPlanDraft> findDraftByIdForUserForUpdate(long draftId, long userId) {
+    return Optional.ofNullable(mapper.findDraftByIdForUserForUpdate(draftId, userId)).map(this::toDraft);
+  }
+
+  @Override
   @Transactional
   public LearningPlan save(LearningPlan plan) {
     LearningPlanRow row = toPlanRow(plan);
