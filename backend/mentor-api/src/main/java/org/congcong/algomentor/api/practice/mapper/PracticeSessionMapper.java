@@ -1,5 +1,6 @@
 package org.congcong.algomentor.api.practice.mapper;
 
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.congcong.algomentor.api.practice.mapper.model.PracticeProgressRow;
@@ -37,6 +38,8 @@ public interface PracticeSessionMapper {
       @Param("userId") long userId,
       @Param("status") String status
   );
+
+  List<PracticeProgressRow> findProgressByPlan(@Param("userId") long userId, @Param("planId") long planId);
 
   int touchLastMessageAt(@Param("sessionId") long sessionId);
 }

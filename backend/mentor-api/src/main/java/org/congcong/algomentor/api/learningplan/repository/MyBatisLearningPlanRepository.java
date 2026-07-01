@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
@@ -111,6 +113,48 @@ public class MyBatisLearningPlanRepository implements LearningPlanDraftRepositor
   public boolean deletePlanAndClearReferences(long userId, long planId) {
     mapper.clearConfirmedPlanReferences(userId, planId);
     return mapper.deletePlanByIdForUser(planId, userId) > 0;
+  }
+
+  @Override
+  @Transactional
+  public LearningPlan appendPhases(long userId, long planId, List<LearningPlanPhaseDraft> newPhases) {
+    LearningPlan current = findPlanByIdForUser(planId, userId)
+        .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_NOT_FOUND", "学习计划不存在。"));
+    List<LearningPlanPhaseDraft> phases = new ArrayList<>(current.plan().phases());
+    phases.addAll(newPhases == null ? List.of() : newPhases);
+    LearningPlanDraftPlan mergedPlan = new LearningPlanDraftPlan(
+        current.plan().title(),
+        current.plan().summary(),
+        current.plan().intent(),
+        current.plan().goal(),
+        current.plan().durationWeeks(),
+        current.plan().level(),
+        current.plan().weeklyHours(),
+        current.plan().programmingLanguage(),
+        current.plan().difficultyPreference(),
+        current.plan().interviewOriented(),
+        current.plan().topicPreferences(),
+        current.plan().profileSummary(),
+        phases,
+        current.plan().metadata());
+
+    for (LearningPlanPhaseDraft phase : newPhases == null ? List.<LearningPlanPhaseDraft>of() : newPhases) {
+      mapper.insertPlanPhase(planId, phase.phaseIndex(), phase.title(), phase.durationWeeks(), phase.focus());
+      for (LearningPlanProblemDraft problem : phase.problems()) {
+        mapper.insertPlanProblem(
+            planId,
+            phase.phaseIndex(),
+            problem.slug(),
+            problem.frontendId(),
+            problem.title(),
+            problem.titleCn(),
+            problem.difficulty(),
+            problem.reason(),
+            problem.sortOrder());
+      }
+    }
+    mapper.updatePlanJsonSnapshot(planId, userId, mergedPlan.title(), json(mergedPlan), Instant.now());
+    return toPlan(mapper.findPlanByIdForUser(planId, userId));
   }
 
   private void replacePlanDetails(long planId, LearningPlanDraftPlan plan) {

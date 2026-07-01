@@ -40,6 +40,70 @@
     </constructor>
   </resultMap>
 
+  <resultMap id="LearningPlanProposalGroupRowMap"
+      type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanProposalGroupRow">
+    <constructor>
+      <arg column="id" javaType="java.lang.Long"/>
+      <arg column="user_id" javaType="java.lang.Long"/>
+      <arg column="proposal_type" javaType="string"/>
+      <arg column="target_type" javaType="string"/>
+      <arg column="target_id" javaType="java.lang.Long"/>
+      <arg column="status" javaType="string"/>
+      <arg column="initial_instruction" javaType="string"/>
+      <arg column="latest_proposal_id" javaType="java.lang.Long"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <resultMap id="LearningPlanDraftRevisionRowMap"
+      type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRevisionRow">
+    <constructor>
+      <arg column="id" javaType="java.lang.Long"/>
+      <arg column="proposal_group_id" javaType="java.lang.Long"/>
+      <arg column="draft_id" javaType="java.lang.Long"/>
+      <arg column="user_id" javaType="java.lang.Long"/>
+      <arg column="revision_no" javaType="java.lang.Integer"/>
+      <arg column="status" javaType="string"/>
+      <arg column="instruction" javaType="string"/>
+      <arg column="base_plan_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="proposed_plan_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="error_code" javaType="string"/>
+      <arg column="error_message" javaType="string"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <resultMap id="LearningPlanExtensionRevisionRowMap"
+      type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanExtensionRevisionRow">
+    <constructor>
+      <arg column="id" javaType="java.lang.Long"/>
+      <arg column="proposal_group_id" javaType="java.lang.Long"/>
+      <arg column="plan_id" javaType="java.lang.Long"/>
+      <arg column="user_id" javaType="java.lang.Long"/>
+      <arg column="revision_no" javaType="java.lang.Integer"/>
+      <arg column="status" javaType="string"/>
+      <arg column="instruction" javaType="string"/>
+      <arg column="base_plan_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="progress_snapshot_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="base_max_phase_index" javaType="java.lang.Integer"/>
+      <arg column="previous_extension_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="proposed_extension_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="applied_at" javaType="java.time.Instant"/>
+      <arg column="error_code" javaType="string"/>
+      <arg column="error_message" javaType="string"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
   <select id="insertDraft" resultType="java.lang.Long" affectData="true">
     INSERT INTO learning_plan_draft (
       user_id,
@@ -131,6 +195,15 @@
         plan_json = #{planJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
         updated_at = #{updatedAt}
     WHERE id = #{id}
+      AND user_id = #{userId}
+  </update>
+
+  <update id="updatePlanJsonSnapshot">
+    UPDATE learning_plan
+    SET title = #{title},
+        plan_json = #{planJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        updated_at = #{updatedAt}
+    WHERE id = #{planId}
       AND user_id = #{userId}
   </update>
 
@@ -257,4 +330,289 @@
     WHERE id = #{id}
       AND user_id = #{userId}
   </delete>
+
+  <select id="insertProposalGroup" resultType="java.lang.Long" affectData="true">
+    INSERT INTO learning_plan_proposal_group (
+      user_id,
+      proposal_type,
+      target_type,
+      target_id,
+      status,
+      initial_instruction,
+      latest_proposal_id,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{userId},
+      #{proposalType},
+      #{targetType},
+      #{targetId},
+      #{status},
+      #{initialInstruction},
+      #{latestProposalId},
+      #{createdAt},
+      #{updatedAt}
+    )
+    RETURNING id
+  </select>
+
+  <update id="updateProposalGroup">
+    UPDATE learning_plan_proposal_group
+    SET status = #{status},
+        initial_instruction = #{initialInstruction},
+        latest_proposal_id = #{latestProposalId},
+        updated_at = #{updatedAt}
+    WHERE id = #{id}
+      AND user_id = #{userId}
+  </update>
+
+  <select id="findProposalGroupForUser" resultMap="LearningPlanProposalGroupRowMap">
+    SELECT
+      id,
+      user_id,
+      proposal_type,
+      target_type,
+      target_id,
+      status,
+      initial_instruction,
+      latest_proposal_id,
+      created_at,
+      updated_at
+    FROM learning_plan_proposal_group
+    WHERE id = #{id}
+      AND user_id = #{userId}
+  </select>
+
+  <select id="findLatestActiveProposalGroup" resultMap="LearningPlanProposalGroupRowMap">
+    SELECT
+      id,
+      user_id,
+      proposal_type,
+      target_type,
+      target_id,
+      status,
+      initial_instruction,
+      latest_proposal_id,
+      created_at,
+      updated_at
+    FROM learning_plan_proposal_group
+    WHERE user_id = #{userId}
+      AND proposal_type = #{proposalType}
+      AND target_type = #{targetType}
+      AND target_id = #{targetId}
+      AND status = 'ACTIVE'
+    ORDER BY updated_at DESC, id DESC
+    LIMIT 1
+  </select>
+
+  <select id="insertDraftRevision" resultType="java.lang.Long" affectData="true">
+    INSERT INTO learning_plan_draft_revision (
+      proposal_group_id,
+      draft_id,
+      user_id,
+      revision_no,
+      status,
+      instruction,
+      base_plan_json,
+      proposed_plan_json,
+      error_code,
+      error_message,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{proposalGroupId},
+      #{draftId},
+      #{userId},
+      #{revisionNo},
+      #{status},
+      #{instruction},
+      #{basePlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{proposedPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{errorCode},
+      #{errorMessage},
+      #{createdAt},
+      #{updatedAt}
+    )
+    RETURNING id
+  </select>
+
+  <update id="updateDraftRevision">
+    UPDATE learning_plan_draft_revision
+    SET status = #{status},
+        instruction = #{instruction},
+        base_plan_json = #{basePlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        proposed_plan_json = #{proposedPlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        error_code = #{errorCode},
+        error_message = #{errorMessage},
+        updated_at = #{updatedAt}
+    WHERE id = #{id}
+      AND user_id = #{userId}
+  </update>
+
+  <select id="findDraftRevisionForUser" resultMap="LearningPlanDraftRevisionRowMap">
+    SELECT
+      id,
+      proposal_group_id,
+      draft_id,
+      user_id,
+      revision_no,
+      status,
+      instruction,
+      base_plan_json,
+      proposed_plan_json,
+      error_code,
+      error_message,
+      created_at,
+      updated_at
+    FROM learning_plan_draft_revision
+    WHERE id = #{id}
+      AND user_id = #{userId}
+  </select>
+
+  <select id="insertExtensionRevision" resultType="java.lang.Long" affectData="true">
+    INSERT INTO learning_plan_extension_revision (
+      proposal_group_id,
+      plan_id,
+      user_id,
+      revision_no,
+      status,
+      instruction,
+      base_plan_json,
+      progress_snapshot_json,
+      base_max_phase_index,
+      previous_extension_json,
+      proposed_extension_json,
+      applied_at,
+      error_code,
+      error_message,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{proposalGroupId},
+      #{planId},
+      #{userId},
+      #{revisionNo},
+      #{status},
+      #{instruction},
+      #{basePlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{progressSnapshotJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{baseMaxPhaseIndex},
+      #{previousExtensionJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{proposedExtensionJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{appliedAt},
+      #{errorCode},
+      #{errorMessage},
+      #{createdAt},
+      #{updatedAt}
+    )
+    RETURNING id
+  </select>
+
+  <update id="updateExtensionRevision">
+    UPDATE learning_plan_extension_revision
+    SET status = #{status},
+        instruction = #{instruction},
+        base_plan_json = #{basePlanJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        progress_snapshot_json = #{progressSnapshotJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        base_max_phase_index = #{baseMaxPhaseIndex},
+        previous_extension_json = #{previousExtensionJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        proposed_extension_json = #{proposedExtensionJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+        applied_at = #{appliedAt},
+        error_code = #{errorCode},
+        error_message = #{errorMessage},
+        updated_at = #{updatedAt}
+    WHERE id = #{id}
+      AND user_id = #{userId}
+  </update>
+
+  <select id="findExtensionRevisionForUser" resultMap="LearningPlanExtensionRevisionRowMap">
+    SELECT
+      id,
+      proposal_group_id,
+      plan_id,
+      user_id,
+      revision_no,
+      status,
+      instruction,
+      base_plan_json,
+      progress_snapshot_json,
+      base_max_phase_index,
+      previous_extension_json,
+      proposed_extension_json,
+      applied_at,
+      error_code,
+      error_message,
+      created_at,
+      updated_at
+    FROM learning_plan_extension_revision
+    WHERE id = #{id}
+      AND user_id = #{userId}
+  </select>
+
+  <select id="findLatestReadyExtensionRevision" resultMap="LearningPlanExtensionRevisionRowMap">
+    SELECT
+      id,
+      proposal_group_id,
+      plan_id,
+      user_id,
+      revision_no,
+      status,
+      instruction,
+      base_plan_json,
+      progress_snapshot_json,
+      base_max_phase_index,
+      previous_extension_json,
+      proposed_extension_json,
+      applied_at,
+      error_code,
+      error_message,
+      created_at,
+      updated_at
+    FROM learning_plan_extension_revision
+    WHERE proposal_group_id = #{proposalGroupId}
+      AND status = 'READY'
+    ORDER BY revision_no DESC, id DESC
+    LIMIT 1
+  </select>
+
+  <select id="nextDraftRevisionNo" resultType="int">
+    SELECT COALESCE(MAX(revision_no), 0) + 1
+    FROM learning_plan_draft_revision
+    WHERE proposal_group_id = #{proposalGroupId}
+  </select>
+
+  <select id="nextExtensionRevisionNo" resultType="int">
+    SELECT COALESCE(MAX(revision_no), 0) + 1
+    FROM learning_plan_extension_revision
+    WHERE proposal_group_id = #{proposalGroupId}
+  </select>
+
+  <select id="markReadyDraftRevisionsSuperseded" resultType="java.lang.Long" affectData="true">
+    UPDATE learning_plan_draft_revision
+    SET status = 'SUPERSEDED',
+        updated_at = #{updatedAt}
+    WHERE proposal_group_id = #{proposalGroupId}
+      AND id != #{exceptRevisionId}
+      AND status = 'READY'
+    RETURNING id
+  </select>
+
+  <select id="markReadyExtensionRevisionsSuperseded" resultType="java.lang.Long" affectData="true">
+    UPDATE learning_plan_extension_revision
+    SET status = 'SUPERSEDED',
+        updated_at = #{updatedAt}
+    WHERE proposal_group_id = #{proposalGroupId}
+      AND id != #{exceptRevisionId}
+      AND status = 'READY'
+    RETURNING id
+  </select>
+
+  <select id="findMaxPhaseIndex" resultType="java.lang.Integer">
+    SELECT COALESCE(MAX(phase_index), 0)
+    FROM learning_plan_phase
+    WHERE plan_id = #{planId}
+  </select>
 </mapper>

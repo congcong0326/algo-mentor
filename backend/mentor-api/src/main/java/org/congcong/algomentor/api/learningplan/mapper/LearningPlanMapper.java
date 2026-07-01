@@ -2,9 +2,13 @@ package org.congcong.algomentor.api.learningplan.mapper;
 
 import java.time.Instant;
 import java.util.List;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRevisionRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRow;
+import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanExtensionRevisionRow;
+import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanProposalGroupRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanRow;
 
 @Mapper
@@ -60,4 +64,53 @@ public interface LearningPlanMapper {
   int clearConfirmedPlanReferences(@Param("userId") long userId, @Param("planId") long planId);
 
   int deletePlanByIdForUser(@Param("id") long id, @Param("userId") long userId);
+
+  long insertProposalGroup(LearningPlanProposalGroupRow row);
+
+  int updateProposalGroup(LearningPlanProposalGroupRow row);
+
+  LearningPlanProposalGroupRow findProposalGroupForUser(@Param("id") long id, @Param("userId") long userId);
+
+  LearningPlanProposalGroupRow findLatestActiveProposalGroup(
+      @Param("userId") long userId,
+      @Param("proposalType") String proposalType,
+      @Param("targetType") String targetType,
+      @Param("targetId") long targetId);
+
+  long insertDraftRevision(LearningPlanDraftRevisionRow row);
+
+  int updateDraftRevision(LearningPlanDraftRevisionRow row);
+
+  LearningPlanDraftRevisionRow findDraftRevisionForUser(@Param("id") long id, @Param("userId") long userId);
+
+  long insertExtensionRevision(LearningPlanExtensionRevisionRow row);
+
+  int updateExtensionRevision(LearningPlanExtensionRevisionRow row);
+
+  LearningPlanExtensionRevisionRow findExtensionRevisionForUser(@Param("id") long id, @Param("userId") long userId);
+
+  LearningPlanExtensionRevisionRow findLatestReadyExtensionRevision(@Param("proposalGroupId") long proposalGroupId);
+
+  int nextDraftRevisionNo(@Param("proposalGroupId") long proposalGroupId);
+
+  int nextExtensionRevisionNo(@Param("proposalGroupId") long proposalGroupId);
+
+  List<Long> markReadyDraftRevisionsSuperseded(
+      @Param("proposalGroupId") long proposalGroupId,
+      @Param("exceptRevisionId") long exceptRevisionId,
+      @Param("updatedAt") Instant updatedAt);
+
+  List<Long> markReadyExtensionRevisionsSuperseded(
+      @Param("proposalGroupId") long proposalGroupId,
+      @Param("exceptRevisionId") long exceptRevisionId,
+      @Param("updatedAt") Instant updatedAt);
+
+  Integer findMaxPhaseIndex(@Param("planId") long planId);
+
+  int updatePlanJsonSnapshot(
+      @Param("planId") long planId,
+      @Param("userId") long userId,
+      @Param("title") String title,
+      @Param("planJson") JsonNode planJson,
+      @Param("updatedAt") Instant updatedAt);
 }

@@ -66,5 +66,16 @@ class ProblemMapperXmlTest {
         "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.insertPlan")).isTrue();
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.findPlansByUserId")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.insertProposalGroup")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.insertDraftRevision")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.insertExtensionRevision")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.markReadyExtensionRevisionsSuperseded"))
+        .isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.updatePlanJsonSnapshot")).isTrue();
   }
 }
