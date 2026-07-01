@@ -167,13 +167,17 @@ export interface LocaleResources {
     coachPanelEyebrow: string;
     abilityPanelEyebrow: string;
     selectedCoach: string;
-    readyForNextReply: string;
     dataPending: string;
     noData: string;
-    statCurrentCoach: string;
     statEvaluatedTags: string;
     statAverageScore: string;
     statReviewedProblems: string;
+    statPrimaryStrength: string;
+    diagnosisSummaryTitle: string;
+    currentStrength: string;
+    currentStrengthDetail: (label: string, score: string, reviewedProblems: number) => string;
+    breakthroughAdvice: string;
+    breakthroughAdviceDetail: (label: string) => string;
     radarSummaryTitle: string;
     strongestTag: string;
     topAbilities: string;
@@ -614,7 +618,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     },
     aiPreference: {
       title: 'AI 教练偏好',
-      subtitle: '用于题目聊天的下一次回复，已开始生成的回复不受影响。',
+      subtitle: '选择题目聊天中的讲解方式、追问密度和反馈力度。',
       loading: '正在加载 AI 教练偏好...',
       loadFailed: 'AI 教练偏好加载失败',
       saveFailed: 'AI 教练偏好保存失败',
@@ -643,13 +647,17 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       coachPanelEyebrow: 'COACHING MODE',
       abilityPanelEyebrow: 'ABILITY PROFILE',
       selectedCoach: '当前教练',
-      readyForNextReply: '下一次回复生效',
       dataPending: '同步中',
       noData: '暂无',
-      statCurrentCoach: '教练模式',
       statEvaluatedTags: '覆盖标签',
       statAverageScore: '平均能力',
       statReviewedProblems: '已复盘题量',
+      statPrimaryStrength: '当前主攻优势',
+      diagnosisSummaryTitle: '诊断报告摘要',
+      currentStrength: '当前优势',
+      currentStrengthDetail: (label, score, reviewedProblems) => `${label} 当前能力为 ${score}，已复盘 ${reviewedProblems} 题，可作为今天训练的稳定支点。`,
+      breakthroughAdvice: '突破建议',
+      breakthroughAdviceDetail: (label) => `建议今天开启一题“${label}”基础练习，补齐雷达图中的薄弱维度。`,
       radarSummaryTitle: '能力画像摘要',
       strongestTag: '当前优势',
       topAbilities: '优势标签',
@@ -1133,7 +1141,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     },
     aiPreference: {
       title: 'AI Coach Preferences',
-      subtitle: 'Applies to the next practice-chat reply. Replies already generating stay unchanged.',
+      subtitle: 'Choose the explanation style, follow-up pressure, and feedback tone for practice chat.',
       loading: 'Loading AI coach preferences...',
       loadFailed: 'Failed to load AI coach preferences',
       saveFailed: 'Failed to save AI coach preferences',
@@ -1162,13 +1170,17 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       coachPanelEyebrow: 'COACHING MODE',
       abilityPanelEyebrow: 'ABILITY PROFILE',
       selectedCoach: 'Current coach',
-      readyForNextReply: 'Applies to the next reply',
       dataPending: 'Syncing',
       noData: 'No data',
-      statCurrentCoach: 'Coach Mode',
       statEvaluatedTags: 'Covered Tags',
       statAverageScore: 'Average Ability',
       statReviewedProblems: 'Reviewed Problems',
+      statPrimaryStrength: 'Primary Strength',
+      diagnosisSummaryTitle: 'Diagnostic Summary',
+      currentStrength: 'Current Strength',
+      currentStrengthDetail: (label, score, reviewedProblems) => `${label} is currently at ${score} across ${reviewedProblems} reviewed ${reviewedProblems === 1 ? 'problem' : 'problems'}, giving today\'s practice a stable anchor.`,
+      breakthroughAdvice: 'Breakthrough Advice',
+      breakthroughAdviceDetail: (label) => `Start one foundational ${label} problem today to open a weaker radar dimension.`,
       radarSummaryTitle: 'Ability profile summary',
       strongestTag: 'Strongest',
       topAbilities: 'Top Abilities',

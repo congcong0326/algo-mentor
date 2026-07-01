@@ -3,7 +3,6 @@ import {
   AlertCircle,
   BrainCircuit,
   Check,
-  CheckCircle2,
   Gauge,
   X,
   Settings2,
@@ -143,14 +142,8 @@ export default function MyPage() {
   const strongestScore = abilitySummary.strongestTag
     ? formatScore(abilitySummary.strongestTag.abilityScore, locale)
     : resources.myPage.noData;
+  const breakthroughTag = findBreakthroughTag(abilityProfile, abilitySummary.strongestTag);
   const summaryCards = [
-    {
-      className: 'coach',
-      icon: BrainCircuit,
-      label: resources.myPage.statCurrentCoach,
-      value: aiPreference?.coachStyleLabel ?? (preferenceLoading ? resources.myPage.dataPending : resources.myPage.noData),
-      detail: resources.myPage.readyForNextReply,
-    },
     {
       className: 'scope',
       icon: Target,
@@ -179,6 +172,15 @@ export default function MyPage() {
         ? resources.myPage.reviewedProblemsValue(abilitySummary.reviewedProblems)
         : (abilityLoading ? resources.myPage.dataPending : resources.myPage.noData),
       detail: resources.myPage.radarSummaryTitle,
+    },
+    {
+      className: 'strength',
+      icon: Trophy,
+      label: resources.myPage.statPrimaryStrength,
+      value: abilitySummary.strongestTag?.label ?? (abilityLoading ? resources.myPage.dataPending : resources.myPage.noData),
+      detail: abilitySummary.strongestTag
+        ? resources.myPage.scoreValue(strongestScore)
+        : resources.myPage.noTopAbilities,
     },
   ];
 
@@ -212,12 +214,6 @@ export default function MyPage() {
           <h1 id="my-page-title">{resources.myPage.title}</h1>
           <p>{resources.myPage.subtitle}</p>
         </div>
-        <div className="my-hero-status" aria-live="polite">
-          <span className="my-hero-status-icon" aria-hidden="true">
-            <CheckCircle2 />
-          </span>
-          <span>{preferenceSaving ? resources.aiPreference.saving : resources.myPage.readyForNextReply}</span>
-        </div>
       </header>
 
       <div className="my-summary-grid" aria-label={resources.myPage.radarSummaryTitle}>
@@ -239,82 +235,6 @@ export default function MyPage() {
       </div>
 
       <div className="my-workspace-grid">
-        <article className="my-card ai-preference-card" aria-labelledby="ai-preference-title">
-          <div className="my-card-heading">
-            <div className="my-card-title">
-              <span className="my-card-title-icon" aria-hidden="true">
-                <Settings2 />
-              </span>
-              <div>
-                <p className="my-section-eyebrow">{resources.myPage.coachPanelEyebrow}</p>
-                <h2 id="ai-preference-title">{resources.aiPreference.title}</h2>
-                <p>{resources.aiPreference.subtitle}</p>
-              </div>
-            </div>
-            <div className="preference-save-status" aria-live="polite">
-              {preferenceSaving ? (
-                <span>{resources.aiPreference.saving}</span>
-              ) : preferenceSaved ? (
-                <span>{resources.aiPreference.saved}</span>
-              ) : null}
-            </div>
-          </div>
-
-          {preferenceLoading ? (
-            <div className="preference-state" role="status">{resources.aiPreference.loading}</div>
-          ) : preferenceError ? (
-            <div className="preference-state error" role="alert">
-              <AlertCircle aria-hidden="true" />
-              <span>{preferenceError}</span>
-              <button className="secondary-button compact" onClick={() => void loadAiPreference()} type="button">
-                {resources.app.retry}
-              </button>
-            </div>
-          ) : aiPreference ? (
-            <div className="preference-controls">
-              <div className="current-coach-strip">
-                <BrainCircuit aria-hidden="true" />
-                <div>
-                  <span>{resources.myPage.selectedCoach}</span>
-                  <strong>{aiPreference.coachStyleLabel}</strong>
-                </div>
-                <span>{resources.myPage.readyForNextReply}</span>
-              </div>
-              <fieldset className="preference-control-group">
-                <legend>{resources.aiPreference.coachStyle}</legend>
-                <div className="coach-style-grid">
-                  {coachStyleOptions.map((style) => (
-                    <button
-                      aria-pressed={aiPreference.coachStyle === style}
-                      className={`preference-option ${aiPreference.coachStyle === style ? 'selected' : ''}`}
-                      disabled={preferenceSaving}
-                      key={style}
-                      onClick={() => void saveAiPreference({ coachStyle: style })}
-                      type="button"
-                    >
-                      <span className="preference-option-title">
-                        <span className="preference-option-check" aria-hidden="true">
-                          {aiPreference.coachStyle === style ? <Check /> : null}
-                        </span>
-                        {resources.aiPreference.coachStyleLabels[style]}
-                      </span>
-                      <span className="preference-option-description">
-                        {resources.aiPreference.coachStyleDescriptions[style]}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </fieldset>
-              {preferenceSaveError ? (
-                <div className="preference-save-error" role="alert">
-                  <AlertCircle aria-hidden="true" />
-                  <span>{preferenceSaveError}</span>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-        </article>
-
         <article className="my-card ability-card" aria-labelledby="ability-radar-title">
           <div className="my-card-heading ability-heading">
             <div className="my-card-title">
@@ -352,10 +272,110 @@ export default function MyPage() {
               >
                 <AbilityRadarChart profile={abilityProfile} tags={selectedAbilityTagScores} />
               </button>
+              <aside className="ability-diagnostics" aria-labelledby="ability-diagnostics-title">
+                <h3 id="ability-diagnostics-title">{resources.myPage.diagnosisSummaryTitle}</h3>
+                <div className="ability-diagnostic-panel">
+                  <div className="ability-diagnostic-row">
+                    <span>{resources.myPage.currentStrength}</span>
+                    <strong>{abilitySummary.strongestTag?.label ?? resources.myPage.noData}</strong>
+                  </div>
+                  <p>
+                    {abilitySummary.strongestTag
+                      ? resources.myPage.currentStrengthDetail(
+                        abilitySummary.strongestTag.label,
+                        resources.myPage.scoreValue(strongestScore),
+                        abilitySummary.strongestTag.reviewedProblemCount,
+                      )
+                      : resources.myPage.noTopAbilities}
+                  </p>
+                </div>
+                <div className="ability-diagnostic-panel advice">
+                  <span>{resources.myPage.breakthroughAdvice}</span>
+                  <p>
+                    {breakthroughTag
+                      ? resources.myPage.breakthroughAdviceDetail(breakthroughTag.label)
+                      : resources.myPage.noTopAbilities}
+                  </p>
+                </div>
+              </aside>
             </div>
           ) : (
             <div className="ability-state">{resources.home.abilityEmpty}</div>
           )}
+        </article>
+
+        <article className="my-card ai-preference-card" aria-labelledby="ai-preference-title">
+          <div className="my-card-heading">
+            <div className="my-card-title">
+              <span className="my-card-title-icon" aria-hidden="true">
+                <Settings2 />
+              </span>
+              <div>
+                <p className="my-section-eyebrow">{resources.myPage.coachPanelEyebrow}</p>
+                <h2 id="ai-preference-title">{resources.aiPreference.title}</h2>
+              </div>
+            </div>
+            <div className="preference-save-status" aria-live="polite">
+              {preferenceSaving ? (
+                <span>{resources.aiPreference.saving}</span>
+              ) : preferenceSaved ? (
+                <span>{resources.aiPreference.saved}</span>
+              ) : null}
+            </div>
+          </div>
+
+          {preferenceLoading ? (
+            <div className="preference-state" role="status">{resources.aiPreference.loading}</div>
+          ) : preferenceError ? (
+            <div className="preference-state error" role="alert">
+              <AlertCircle aria-hidden="true" />
+              <span>{preferenceError}</span>
+              <button className="secondary-button compact" onClick={() => void loadAiPreference()} type="button">
+                {resources.app.retry}
+              </button>
+            </div>
+          ) : aiPreference ? (
+            <div className="preference-controls">
+              <div className="current-coach-strip">
+                <BrainCircuit aria-hidden="true" />
+                <div>
+                  <span>{resources.myPage.selectedCoach}</span>
+                  <strong>{aiPreference.coachStyleLabel}</strong>
+                </div>
+              </div>
+              <fieldset className="preference-control-group">
+                <legend>{resources.aiPreference.coachStyle}</legend>
+                <div className="coach-style-grid">
+                  {coachStyleOptions.map((style) => (
+                    <button
+                      aria-pressed={aiPreference.coachStyle === style}
+                      className={`preference-option ${aiPreference.coachStyle === style ? 'selected' : ''}`}
+                      disabled={preferenceSaving}
+                      key={style}
+                      onClick={() => void saveAiPreference({ coachStyle: style })}
+                      type="button"
+                    >
+                      <span className="preference-option-title">
+                        <span className="preference-option-check" aria-hidden="true">
+                          {aiPreference.coachStyle === style ? <Check /> : null}
+                        </span>
+                        {resources.aiPreference.coachStyleLabels[style]}
+                      </span>
+                      <span className="preference-option-description">
+                        {resources.aiPreference.coachStyleDescriptions[style]}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+              {preferenceSaveError ? (
+                <div className="preference-save-error" role="alert">
+                  <AlertCircle aria-hidden="true" />
+                  <span>{preferenceSaveError}</span>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </article>
       </div>
       {abilityDialogOpen && abilityProfile ? (
@@ -495,4 +515,14 @@ function heatmapCellStyle(score: number): CSSProperties {
 
 function defaultAbilityTagKeys(profile: AbilityProfileResponse): string[] {
   return profile.tags.slice(0, defaultRadarTagCount).map((tag) => tag.tag);
+}
+
+function findBreakthroughTag(
+  profile?: AbilityProfileResponse,
+  strongestTag?: AbilityTagScore,
+): AbilityTagScore | undefined {
+  const tags = profile?.tags ?? [];
+  return tags.find((tag) => tag.reviewedProblemCount === 0)
+    ?? tags.find((tag) => tag.tag !== strongestTag?.tag)
+    ?? strongestTag;
 }
