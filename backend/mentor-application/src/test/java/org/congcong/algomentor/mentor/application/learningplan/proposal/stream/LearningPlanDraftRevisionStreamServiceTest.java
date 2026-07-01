@@ -290,6 +290,50 @@ class LearningPlanDraftRevisionStreamServiceTest {
     assertThat(proposalRepository.draftRevisions).hasSize(1);
   }
 
+  @org.junit.jupiter.api.Test
+  void synchronousAgentStartupFailureAfterRevisionCreationStoresFailedAndEmitsDraftRevisionError() {
+    LearningPlanDraft draft = draftRepository.save(generatedDraft(basePlan("原计划")));
+    LearningPlanDraftRevisionStreamService service = serviceWithAgent(new ThrowingAgentLoopRunner());
+    CollectingSubscriber subscriber = new CollectingSubscriber();
+
+    service.stream(
+        draft.userId(),
+        draft.id(),
+        "减少动态规划题",
+        "run-startup-failure",
+        Map.of()).subscribe(subscriber);
+    subscriber.await();
+
+    assertThat(subscriber.error).isNull();
+    assertThat(subscriber.events).isNotEmpty();
+    assertThat(subscriber.events.get(subscriber.events.size() - 1).eventName()).isEqualTo("draft_revision_error");
+    LearningPlanDraftRevision failed = proposalRepository.draftRevisions.values().stream()
+        .findFirst()
+        .orElseThrow();
+    assertThat(failed.status()).isEqualTo(LearningPlanProposalRevisionStatus.FAILED);
+    assertThat(failed.errorCode()).isEqualTo("LEARNING_PLAN_DRAFT_REVISION_STREAM_FAILED");
+  }
+
+  @org.junit.jupiter.api.Test
+  void agentCompletionWithoutTerminalEventStoresFailedAndEmitsDraftRevisionError() {
+    LearningPlanDraft draft = draftRepository.save(generatedDraft(basePlan("原计划")));
+    LearningPlanDraftRevisionStreamService service = serviceWithAgent(new IncompleteAgentLoopRunner(finalJson("未完整结束")));
+
+    List<LearningPlanProposalStreamEvent> events = collect(service.stream(
+        draft.userId(),
+        draft.id(),
+        "减少动态规划题",
+        "run-incomplete-agent",
+        Map.of()));
+
+    assertThat(events.get(events.size() - 1).eventName()).isEqualTo("draft_revision_error");
+    LearningPlanDraftRevision failed = proposalRepository.draftRevisions.values().stream()
+        .findFirst()
+        .orElseThrow();
+    assertThat(failed.status()).isEqualTo(LearningPlanProposalRevisionStatus.FAILED);
+    assertThat(failed.errorCode()).isEqualTo("LEARNING_PLAN_DRAFT_REVISION_STREAM_FAILED");
+  }
+
   private LearningPlanDraftRevisionStreamService serviceWithAgent(String content) {
     return serviceWithAgent(new FakeAgentLoopRunner(content));
   }
@@ -563,6 +607,39 @@ class LearningPlanDraftRevisionStreamServiceTest {
     }
   }
 
+  private static final class IncompleteAgentLoopRunner extends AgentLoopRunner {
+    private final String content;
+
+    IncompleteAgentLoopRunner(String content) {
+      super(new org.congcong.algomentor.llm.core.gateway.LlmGateway() {
+        @Override
+        public org.congcong.algomentor.llm.core.response.LlmCompletionResult complete(
+            org.congcong.algomentor.llm.core.request.LlmCompletionRequest request) {
+          throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Flow.Publisher<LlmStreamEvent> stream(
+            org.congcong.algomentor.llm.core.request.LlmCompletionRequest request) {
+          throw new UnsupportedOperationException();
+        }
+      }, "test-model", org.congcong.algomentor.agent.core.AgentToolRegistry.empty(), 1);
+      this.content = content;
+    }
+
+    @Override
+    public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
+      return subscriber -> {
+        SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
+        publisher.subscribe(subscriber);
+        publisher.submit(new AgentStreamEvent.AgentStepStart(request.runId(), 1));
+        publisher.submit(AgentStreamEvent.fromLlm(new LlmStreamEvent.ContentDelta(content)));
+        publisher.submit(new AgentStreamEvent.AgentStepEnd(request.runId(), 1, LlmFinishReason.STOP, 0));
+        publisher.close();
+      };
+    }
+  }
+
   private static final class ManualAgentLoopRunner extends AgentLoopRunner {
     private final AtomicReference<Flow.Subscriber<? super AgentStreamEvent>> subscriber = new AtomicReference<>();
     private final AtomicReference<AgentRequest> request = new AtomicReference<>();
@@ -661,6 +738,30 @@ class LearningPlanDraftRevisionStreamServiceTest {
         public void releaseSavepoint(Object savepoint) {
         }
       });
+    }
+  }
+
+  private static final class ThrowingAgentLoopRunner extends AgentLoopRunner {
+
+    ThrowingAgentLoopRunner() {
+      super(new org.congcong.algomentor.llm.core.gateway.LlmGateway() {
+        @Override
+        public org.congcong.algomentor.llm.core.response.LlmCompletionResult complete(
+            org.congcong.algomentor.llm.core.request.LlmCompletionRequest request) {
+          throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Flow.Publisher<LlmStreamEvent> stream(
+            org.congcong.algomentor.llm.core.request.LlmCompletionRequest request) {
+          throw new UnsupportedOperationException();
+        }
+      }, "test-model", org.congcong.algomentor.agent.core.AgentToolRegistry.empty(), 1);
+    }
+
+    @Override
+    public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
+      throw new IllegalStateException("agent startup failed");
     }
   }
 

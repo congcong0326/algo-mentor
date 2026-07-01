@@ -119,8 +119,9 @@ public class LearningPlanDraftRevisionStreamService {
       }
       SubmissionPublisher<LearningPlanProposalStreamEvent> publisher = new SubmissionPublisher<>();
       publisher.subscribe(subscriber);
+      SubscriptionRevisionContext context = null;
       try {
-        SubscriptionRevisionContext context = transactionOperations.execute(status -> createSubscriptionRevision(
+        context = transactionOperations.execute(status -> createSubscriptionRevision(
             userId,
             draftId,
             normalizedInstruction,
@@ -133,9 +134,39 @@ public class LearningPlanDraftRevisionStreamService {
             context.draft(),
             context.revision()));
       } catch (RuntimeException exception) {
-        publisher.closeExceptionally(exception);
+        if (context == null) {
+          publisher.closeExceptionally(exception);
+          return;
+        }
+        failStartupRevisionAndEmit(publisher, context.revision(), exception);
       }
     };
+  }
+
+  private void failStartupRevisionAndEmit(
+      SubmissionPublisher<LearningPlanProposalStreamEvent> publisher,
+      LearningPlanDraftRevision revision,
+      RuntimeException exception
+  ) {
+    String code = "LEARNING_PLAN_DRAFT_REVISION_STREAM_FAILED";
+    String message = "学习计划修订失败，请稍后重试。";
+    log.warn(
+        "Learning plan draft revision stream startup failed after revision creation: revisionId={}, code={}, causeMessage={}",
+        revision.id(),
+        code,
+        exception.getMessage(),
+        exception);
+    try {
+      LearningPlanProposalEvent event = transactionOperations.execute(status -> failureTransition(
+          revision,
+          code,
+          message,
+          false));
+      publisher.submit(new LearningPlanProposalStreamEvent.Proposal(PROFILE, event));
+      publisher.close();
+    } catch (RuntimeException persistenceFailure) {
+      publisher.closeExceptionally(persistenceFailure);
+    }
   }
 
   private String requireInstruction(String instruction) {
@@ -211,6 +242,22 @@ public class LearningPlanDraftRevisionStreamService {
         now));
   }
 
+  private LearningPlanProposalEvent failureTransition(
+      LearningPlanDraftRevision revision,
+      String code,
+      String message,
+      boolean retryable
+  ) {
+    LearningPlanDraftRevision failedRevision = proposalRepository.saveDraftRevision(revision.withFailure(
+        code,
+        message,
+        clock.instant()));
+    return new LearningPlanProposalEvent.ProposalError(
+        failedRevision.errorCode(),
+        failedRevision.errorMessage(),
+        retryable);
+  }
+
   private List<LlmMessage> buildRevisionPrompt(LearningPlanDraft draft, String instruction) {
     List<LlmMessage> messages = new ArrayList<>(promptBuilder.build(draft.command()));
     messages.add(LlmMessage.assistant("""
@@ -276,6 +323,7 @@ public class LearningPlanDraftRevisionStreamService {
     private final LearningPlanDraft draft;
     private final LearningPlanDraftRevision revision;
     private final AtomicReference<Flow.Subscription> subscription = new AtomicReference<>();
+    private final AtomicBoolean terminalProposalEmitted = new AtomicBoolean(false);
     private final StringBuilder stepContent = new StringBuilder();
     private String finalContent;
 
@@ -325,7 +373,15 @@ public class LearningPlanDraftRevisionStreamService {
 
     @Override
     public void onComplete() {
-      publisher.close();
+      if (terminalProposalEmitted.get()) {
+        publisher.close();
+        return;
+      }
+      failRevisionAndEmit(
+          "LEARNING_PLAN_DRAFT_REVISION_STREAM_FAILED",
+          "学习计划修订失败，请稍后重试。",
+          false,
+          null);
     }
 
     private void completeWithRevision() {
@@ -335,10 +391,7 @@ public class LearningPlanDraftRevisionStreamService {
         }
         LearningPlanDraftPlan plan = outputMapper.map(objectMapper.readTree(finalContent), draft.command());
         validator.validateGeneratedPlan(plan);
-        publisher.submit(new LearningPlanProposalStreamEvent.Proposal(
-            PROFILE,
-            transactionOperations.execute(status -> completeReadyTransition(plan))));
-        publisher.close();
+        emitTerminalEvent(transactionOperations.execute(status -> completeReadyTransition(plan)));
       } catch (JsonProcessingException exception) {
         failRevisionAndEmit("LEARNING_PLAN_STRUCTURED_OUTPUT_INVALID", "学习计划修订结构化结果解析失败。", true, exception);
       } catch (LearningPlanException exception) {
@@ -425,6 +478,9 @@ public class LearningPlanDraftRevisionStreamService {
     }
 
     private void failRevisionAndEmit(String code, String message, boolean retryable, Throwable cause) {
+      if (!terminalProposalEmitted.compareAndSet(false, true)) {
+        return;
+      }
       log.warn(
           "Learning plan draft revision stream failed: code={}, retryable={}, message={}, causeMessage={}",
           code,
@@ -432,11 +488,33 @@ public class LearningPlanDraftRevisionStreamService {
           message,
           cause == null ? null : cause.getMessage(),
           cause);
-      proposalRepository.saveDraftRevision(revision.withFailure(code, message, clock.instant()));
-      emitError(code, message, retryable, cause);
+      try {
+        emitError(
+            transactionOperations.execute(status -> failureTransition(revision, code, message, retryable)),
+            code,
+            message,
+            retryable,
+            cause);
+      } catch (RuntimeException persistenceFailure) {
+        publisher.closeExceptionally(persistenceFailure);
+      }
     }
 
-    private void emitError(String code, String message, boolean retryable, Throwable cause) {
+    private void emitTerminalEvent(LearningPlanProposalEvent event) {
+      if (!terminalProposalEmitted.compareAndSet(false, true)) {
+        return;
+      }
+      publisher.submit(new LearningPlanProposalStreamEvent.Proposal(PROFILE, event));
+      publisher.close();
+    }
+
+    private void emitError(
+        LearningPlanProposalEvent event,
+        String code,
+        String message,
+        boolean retryable,
+        Throwable cause
+    ) {
       if (cause != null) {
         log.warn(
             "Learning plan draft revision stream emitted error: code={}, retryable={}, message={}, causeMessage={}",
@@ -446,9 +524,7 @@ public class LearningPlanDraftRevisionStreamService {
             cause.getMessage(),
             cause);
       }
-      publisher.submit(new LearningPlanProposalStreamEvent.Proposal(
-          PROFILE,
-          new LearningPlanProposalEvent.ProposalError(code, message, retryable)));
+      publisher.submit(new LearningPlanProposalStreamEvent.Proposal(PROFILE, event));
       publisher.close();
     }
   }
