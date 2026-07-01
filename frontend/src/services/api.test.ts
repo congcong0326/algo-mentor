@@ -2,8 +2,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ApiResponse } from '../types/api';
 import {
   ApiRequestError,
+  applyLearningPlanExtensionProposal,
   decideAgentToolPermission,
   deleteAdminUser,
+  discardLearningPlanExtensionProposal,
   getAbilityProfile,
   getAdminUserDetail,
   getAdminUsers,
@@ -14,6 +16,9 @@ import {
   requireApiData,
   setApiLocale,
   streamAgentConversation,
+  streamLearningPlanDraftRevision,
+  streamLearningPlanExtensionProposal,
+  streamLearningPlanExtensionProposalRevision,
   updateAdminUserStatus,
   updateUserAiPreference,
 } from './api';
@@ -590,6 +595,139 @@ describe('api request tracing', () => {
   });
 });
 
+describe('learning plan proposal api', () => {
+  it('streams learning plan draft revision requests', async () => {
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x25, 0x26, 0x27, 0x28, 0x29, 0x2a]) });
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(eventStreamResponse([
+      'event:draft_revision_ready',
+      'data:{"proposalGroupId":1,"proposalId":2,"draftId":100,"revisionNo":1,"status":"READY","draft":{"draftId":100,"status":"GENERATED","missingFields":[]}}',
+      '',
+      '',
+    ])));
+    vi.stubGlobal('fetch', fetchMock);
+    const onEvent = vi.fn();
+
+    await streamLearningPlanDraftRevision(100, { instruction: '降低难度' }, { onEvent });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plans/drafts/100/revisions/stream',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+        body: JSON.stringify({ instruction: '降低难度' }),
+      }),
+    );
+    const headers = requestHeaders(fetchMock);
+    expect(headers.get('Accept')).toBe('text/event-stream, application/json');
+    expect(headers.get('Content-Type')).toBe('application/json');
+    expect(onEvent).toHaveBeenCalledWith(expect.objectContaining({
+      eventName: 'draft_revision_ready',
+    }));
+  });
+
+  it('streams learning plan extension proposal requests', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(eventStreamResponse([
+      'event:plan_extension_ready',
+      'data:{"proposalGroupId":30,"proposalId":31,"planId":88,"revisionNo":1,"status":"READY","summary":"增加动态规划强化","extensionDraft":{"summary":"增加动态规划强化","newPhases":[],"metadata":{}}}',
+      '',
+      '',
+    ])));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await streamLearningPlanExtensionProposal(88, { instruction: '增加动态规划强化' }, { onEvent: vi.fn() });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plans/88/extension-proposals/stream',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+        body: JSON.stringify({ instruction: '增加动态规划强化' }),
+      }),
+    );
+    const headers = requestHeaders(fetchMock);
+    expect(headers.get('Accept')).toBe('text/event-stream, application/json');
+    expect(headers.get('Content-Type')).toBe('application/json');
+  });
+
+  it('streams learning plan extension proposal revision requests', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(eventStreamResponse([
+      'event:plan_extension_ready',
+      'data:{"proposalGroupId":30,"proposalId":32,"planId":88,"revisionNo":2,"status":"READY","supersededProposalIds":[31],"summary":"降低扩展难度","extensionDraft":{"summary":"降低扩展难度","newPhases":[],"metadata":{}}}',
+      '',
+      '',
+    ])));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await streamLearningPlanExtensionProposalRevision(
+      88,
+      30,
+      { instruction: '降低扩展难度' },
+      { onEvent: vi.fn() },
+    );
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plans/88/extension-proposals/30/revisions/stream',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+        body: JSON.stringify({ instruction: '降低扩展难度' }),
+      }),
+    );
+  });
+
+  it('applies learning plan extension proposals', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        planId: 88,
+        proposalGroupId: 30,
+        proposalId: 32,
+        status: 'APPLIED',
+        appendedPhaseCount: 1,
+      },
+      timestamp: '2026-07-01T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const response = await applyLearningPlanExtensionProposal(88, 30);
+
+    expect(response.data).toEqual({
+      planId: 88,
+      proposalGroupId: 30,
+      proposalId: 32,
+      status: 'APPLIED',
+      appendedPhaseCount: 1,
+    });
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plans/88/extension-proposals/30/apply',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+      }),
+    );
+    expect(requestHeaders(fetchMock).get('Accept')).toBe('application/json');
+  });
+
+  it('discards learning plan extension proposals', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      timestamp: '2026-07-01T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await discardLearningPlanExtensionProposal(88, 30);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plans/88/extension-proposals/30/discard',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+      }),
+    );
+    expect(requestHeaders(fetchMock).get('Accept')).toBe('application/json');
+  });
+});
+
 function requestHeaders(
   fetchMock: FetchMock,
   callIndex = 0,
@@ -613,5 +751,14 @@ function sequentialRandomValues() {
       next += 1;
     }
     return target;
+  });
+}
+
+function eventStreamResponse(lines: string[]): Response {
+  return new Response(lines.join('\n'), {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/event-stream',
+    },
   });
 }

@@ -296,6 +296,14 @@ export type LearningPlanLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 export type LearningPlanDifficultyPreference = 'EASY' | 'MEDIUM' | 'HARD' | 'MIXED';
 export type LearningPlanDraftStatus = 'COLLECTING' | 'GENERATED' | 'CONFIRMED' | 'GENERATION_FAILED' | 'EXPIRED';
 export type LearningPlanStatus = 'ACTIVE' | 'ARCHIVED';
+export type LearningPlanProposalRevisionStatus =
+  | 'GENERATING'
+  | 'READY'
+  | 'SUPERSEDED'
+  | 'FAILED'
+  | 'APPLIED'
+  | 'DISCARDED'
+  | 'EXPIRED';
 
 export interface LearningPlanCreateDraftRequest {
   intent?: LearningPlanIntent;
@@ -311,6 +319,10 @@ export interface LearningPlanCreateDraftRequest {
 
 export interface LearningPlanMessageRequest {
   message: string;
+}
+
+export interface LearningPlanRevisionRequest {
+  instruction: string;
 }
 
 export interface LearningPlanProblemDraft {
@@ -402,6 +414,43 @@ export interface LearningPlanDetailResponse extends LearningPlanDraftPlan {
   updatedAt: string;
 }
 
+export interface LearningPlanExtensionDraft {
+  summary: string;
+  newPhases: LearningPlanPhaseDraft[];
+  metadata: Record<string, unknown>;
+}
+
+export interface LearningPlanDraftRevisionReadyEvent {
+  proposalGroupId: number;
+  proposalId: number;
+  draftId: number;
+  revisionNo: number;
+  status: LearningPlanProposalRevisionStatus;
+  supersededProposalId?: number | null;
+  supersededProposalIds?: number[];
+  draft: LearningPlanDraftResponse;
+}
+
+export interface LearningPlanExtensionReadyEvent {
+  proposalGroupId: number;
+  proposalId: number;
+  planId: number;
+  revisionNo: number;
+  status: LearningPlanProposalRevisionStatus;
+  supersededProposalId?: number | null;
+  supersededProposalIds?: number[];
+  summary: string;
+  extensionDraft: LearningPlanExtensionDraft;
+}
+
+export interface LearningPlanExtensionApplyResponse {
+  planId: number;
+  proposalGroupId: number;
+  proposalId: number;
+  status: 'APPLIED';
+  appendedPhaseCount: number;
+}
+
 export type SseEventName =
   | 'agent_run_start'
   | 'agent_step_start'
@@ -429,7 +478,11 @@ export type SseEventName =
   | 'work_done'
   | 'work_error'
   | 'draft_ready'
-  | 'draft_error';
+  | 'draft_error'
+  | 'draft_revision_ready'
+  | 'draft_revision_error'
+  | 'plan_extension_ready'
+  | 'plan_extension_error';
 
 export interface AgentConversationStreamRequest {
   taskId?: number;
