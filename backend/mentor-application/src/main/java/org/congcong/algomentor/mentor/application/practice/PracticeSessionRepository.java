@@ -1,5 +1,6 @@
 package org.congcong.algomentor.mentor.application.practice;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PracticeSessionRepository {
@@ -15,6 +16,10 @@ public interface PracticeSessionRepository {
   PracticeSession attachProblemStatementMessage(long sessionId, long messageId);
 
   PracticeProgress updateProgressStatus(long sessionId, long userId, PracticeProgressStatus status);
+
+  default List<PracticeProgress> findProgressByPlan(long userId, long planId) {
+    throw new UnsupportedOperationException("Practice progress lookup by plan is not available");
+  }
 
   void touchLastMessageAt(long sessionId);
 }

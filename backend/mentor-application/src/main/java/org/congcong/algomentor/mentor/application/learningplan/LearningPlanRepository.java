@@ -15,6 +15,10 @@ public interface LearningPlanRepository {
 
   Optional<LearningPlan> findPlanByIdForUser(long planId, long userId);
 
+  default LearningPlan appendPhases(long userId, long planId, List<LearningPlanPhaseDraft> newPhases) {
+    throw new LearningPlanRepositoryUnavailableException();
+  }
+
   default void clearConfirmedPlanReferences(long userId, long planId) {
     throw new LearningPlanRepositoryUnavailableException();
   }
