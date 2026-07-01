@@ -8,14 +8,17 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentRequest;
@@ -52,12 +55,14 @@ import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeSession;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
 class LearningPlanExtensionProposalStreamServiceTest {
 
   private final Clock clock = Clock.fixed(Instant.parse("2026-07-01T00:00:00Z"), ZoneOffset.UTC);
-  private final List<String> locks = new ArrayList<>();
+  private final List<String> locks = new CopyOnWriteArrayList<>();
   private final InMemoryLearningPlanRepository learningPlanRepository = new InMemoryLearningPlanRepository(locks);
   private final InMemoryProposalRepository proposalRepository = new InMemoryProposalRepository(locks);
   private final InMemoryPracticeSessionRepository practiceSessionRepository = new InMemoryPracticeSessionRepository();
@@ -302,11 +307,64 @@ class LearningPlanExtensionProposalStreamServiceTest {
     assertThat(failed.errorCode()).isEqualTo("LEARNING_PLAN_EXTENSION_STREAM_FAILED");
   }
 
+  @org.junit.jupiter.api.Test
+  void agentCompletionWithoutTerminalEventStoresFailedAndEmitsPlanExtensionError() {
+    LearningPlan plan = learningPlanRepository.save(activePlan(basePlan()));
+    LearningPlanExtensionProposalStreamService service = serviceWithAgent(new IncompleteAgentLoopRunner(
+        extensionJson("未完整结束", "graph-valid-tree")));
+
+    List<LearningPlanProposalStreamEvent> events = collect(service.streamFirstRevision(
+        plan.userId(),
+        plan.id(),
+        "追加图论阶段",
+        "run-incomplete-agent",
+        Map.of()));
+
+    assertThat(events.get(events.size() - 1).eventName()).isEqualTo("plan_extension_error");
+    LearningPlanExtensionRevision failed = proposalRepository.extensionRevisions.values().stream()
+        .findFirst()
+        .orElseThrow();
+    assertThat(failed.status()).isEqualTo(LearningPlanProposalRevisionStatus.FAILED);
+    assertThat(failed.errorCode()).isEqualTo("LEARNING_PLAN_EXTENSION_STREAM_FAILED");
+  }
+
+  @org.junit.jupiter.api.Test
+  void failureTransitionPersistenceFailureClosesPublisherExceptionally() {
+    LearningPlan plan = learningPlanRepository.save(activePlan(basePlan()));
+    ThrowOnSecondExecuteTransactionOperations transactions = new ThrowOnSecondExecuteTransactionOperations();
+    LearningPlanExtensionProposalStreamService service = serviceWithAgent(
+        new ThrowingAgentLoopRunner(),
+        transactions);
+    CollectingSubscriber subscriber = new CollectingSubscriber();
+
+    service.streamFirstRevision(
+        plan.userId(),
+        plan.id(),
+        "追加图论阶段",
+        "run-failure-persistence-failed",
+        Map.of()).subscribe(subscriber);
+    subscriber.await();
+
+    assertThat(subscriber.error).isInstanceOf(IllegalStateException.class);
+    assertThat(subscriber.error).hasMessage("failure transaction failed");
+    LearningPlanExtensionRevision revision = proposalRepository.extensionRevisions.values().stream()
+        .findFirst()
+        .orElseThrow();
+    assertThat(revision.status()).isEqualTo(LearningPlanProposalRevisionStatus.GENERATING);
+  }
+
   private LearningPlanExtensionProposalStreamService serviceWithAgent(String content) {
     return serviceWithAgent(new CapturingAgentLoopRunner(content));
   }
 
   private LearningPlanExtensionProposalStreamService serviceWithAgent(AgentLoopRunner runner) {
+    return serviceWithAgent(runner, TransactionOperations.withoutTransaction());
+  }
+
+  private LearningPlanExtensionProposalStreamService serviceWithAgent(
+      AgentLoopRunner runner,
+      TransactionOperations transactionOperations
+  ) {
     return new LearningPlanExtensionProposalStreamService(
         learningPlanRepository,
         proposalRepository,
@@ -316,7 +374,7 @@ class LearningPlanExtensionProposalStreamServiceTest {
         runner,
         new org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalPromptBuilder(new ObjectMapper()),
         new ObjectMapper(),
-        TransactionOperations.withoutTransaction(),
+        transactionOperations,
         clock);
   }
 
@@ -523,6 +581,39 @@ class LearningPlanExtensionProposalStreamServiceTest {
     }
   }
 
+  private static final class IncompleteAgentLoopRunner extends AgentLoopRunner {
+    private final String content;
+
+    IncompleteAgentLoopRunner(String content) {
+      super(new org.congcong.algomentor.llm.core.gateway.LlmGateway() {
+        @Override
+        public org.congcong.algomentor.llm.core.response.LlmCompletionResult complete(
+            org.congcong.algomentor.llm.core.request.LlmCompletionRequest request) {
+          throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Flow.Publisher<LlmStreamEvent> stream(
+            org.congcong.algomentor.llm.core.request.LlmCompletionRequest request) {
+          throw new UnsupportedOperationException();
+        }
+      }, "test-model", org.congcong.algomentor.agent.core.AgentToolRegistry.empty(), 1);
+      this.content = content;
+    }
+
+    @Override
+    public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
+      return subscriber -> {
+        SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
+        publisher.subscribe(subscriber);
+        publisher.submit(new AgentStreamEvent.AgentStepStart(request.runId(), 1));
+        publisher.submit(AgentStreamEvent.fromLlm(new LlmStreamEvent.ContentDelta(content)));
+        publisher.submit(new AgentStreamEvent.AgentStepEnd(request.runId(), 1, LlmFinishReason.STOP, 0));
+        publisher.close();
+      };
+    }
+  }
+
   private static final class ManualAgentLoopRunner extends AgentLoopRunner {
     private final AtomicReference<Flow.Subscriber<? super AgentStreamEvent>> subscriber = new AtomicReference<>();
     private final AtomicReference<AgentRequest> request = new AtomicReference<>();
@@ -596,10 +687,10 @@ class LearningPlanExtensionProposalStreamServiceTest {
   }
 
   private static class CollectingSubscriber implements Flow.Subscriber<LearningPlanProposalStreamEvent> {
-    private final List<LearningPlanProposalStreamEvent> events = new ArrayList<>();
+    private final List<LearningPlanProposalStreamEvent> events = new CopyOnWriteArrayList<>();
     private final CountDownLatch done = new CountDownLatch(1);
-    private Throwable error;
-    private Flow.Subscription subscription;
+    private volatile Throwable error;
+    private volatile Flow.Subscription subscription;
 
     @Override
     public void onSubscribe(Flow.Subscription subscription) {
@@ -635,7 +726,7 @@ class LearningPlanExtensionProposalStreamServiceTest {
   }
 
   private static final class InMemoryLearningPlanRepository implements LearningPlanRepository {
-    private final Map<Long, LearningPlan> plans = new HashMap<>();
+    private final Map<Long, LearningPlan> plans = new ConcurrentHashMap<>();
     private final List<String> locks;
 
     private InMemoryLearningPlanRepository(List<String> locks) {
@@ -667,12 +758,12 @@ class LearningPlanExtensionProposalStreamServiceTest {
   }
 
   private static final class InMemoryProposalRepository implements LearningPlanProposalRepository {
-    private final Map<Long, LearningPlanProposalGroup> groups = new HashMap<>();
-    private final Map<Long, LearningPlanDraftRevision> draftRevisions = new HashMap<>();
-    private final Map<Long, LearningPlanExtensionRevision> extensionRevisions = new HashMap<>();
+    private final Map<Long, LearningPlanProposalGroup> groups = new ConcurrentHashMap<>();
+    private final Map<Long, LearningPlanDraftRevision> draftRevisions = new ConcurrentHashMap<>();
+    private final Map<Long, LearningPlanExtensionRevision> extensionRevisions = new ConcurrentHashMap<>();
     private final List<String> locks;
-    private long groupSequence = 10;
-    private long proposalSequence = 1000;
+    private final AtomicLong groupSequence = new AtomicLong(10);
+    private final AtomicLong proposalSequence = new AtomicLong(1000);
 
     private InMemoryProposalRepository(List<String> locks) {
       this.locks = locks;
@@ -680,7 +771,7 @@ class LearningPlanExtensionProposalStreamServiceTest {
 
     @Override
     public LearningPlanProposalGroup saveGroup(LearningPlanProposalGroup group) {
-      long id = group.id() == null ? groupSequence++ : group.id();
+      long id = group.id() == null ? groupSequence.getAndIncrement() : group.id();
       LearningPlanProposalGroup saved = group.withId(id);
       groups.put(id, saved);
       return saved;
@@ -714,7 +805,7 @@ class LearningPlanExtensionProposalStreamServiceTest {
 
     @Override
     public LearningPlanDraftRevision saveDraftRevision(LearningPlanDraftRevision revision) {
-      long id = revision.id() == null ? proposalSequence++ : revision.id();
+      long id = revision.id() == null ? proposalSequence.getAndIncrement() : revision.id();
       LearningPlanDraftRevision saved = revision.withId(id);
       draftRevisions.put(id, saved);
       return saved;
@@ -722,7 +813,7 @@ class LearningPlanExtensionProposalStreamServiceTest {
 
     @Override
     public LearningPlanExtensionRevision saveExtensionRevision(LearningPlanExtensionRevision revision) {
-      long id = revision.id() == null ? proposalSequence++ : revision.id();
+      long id = revision.id() == null ? proposalSequence.getAndIncrement() : revision.id();
       LearningPlanExtensionRevision saved = revision.withId(id);
       extensionRevisions.put(id, saved);
       return saved;
@@ -779,7 +870,7 @@ class LearningPlanExtensionProposalStreamServiceTest {
   }
 
   private static final class InMemoryPracticeSessionRepository implements PracticeSessionRepository {
-    private final List<PracticeProgress> progress = new ArrayList<>();
+    private final List<PracticeProgress> progress = new CopyOnWriteArrayList<>();
 
     @Override
     public PracticeProgress upsertAndAdvanceProgress(long userId, long planId, int phaseIndex, String problemSlug) {
@@ -822,6 +913,59 @@ class LearningPlanExtensionProposalStreamServiceTest {
     @Override
     public void touchLastMessageAt(long sessionId) {
       throw new UnsupportedOperationException();
+    }
+  }
+
+  private static final class ThrowOnSecondExecuteTransactionOperations implements TransactionOperations {
+    private final AtomicInteger executions = new AtomicInteger();
+
+    @Override
+    public <T> T execute(TransactionCallback<T> action) {
+      if (executions.incrementAndGet() == 2) {
+        throw new IllegalStateException("failure transaction failed");
+      }
+      return action.doInTransaction(new TransactionStatus() {
+        @Override
+        public boolean isNewTransaction() {
+          return false;
+        }
+
+        @Override
+        public boolean hasSavepoint() {
+          return false;
+        }
+
+        @Override
+        public void setRollbackOnly() {
+        }
+
+        @Override
+        public boolean isRollbackOnly() {
+          return false;
+        }
+
+        @Override
+        public void flush() {
+        }
+
+        @Override
+        public boolean isCompleted() {
+          return false;
+        }
+
+        @Override
+        public Object createSavepoint() {
+          return new Object();
+        }
+
+        @Override
+        public void rollbackToSavepoint(Object savepoint) {
+        }
+
+        @Override
+        public void releaseSavepoint(Object savepoint) {
+        }
+      });
     }
   }
 

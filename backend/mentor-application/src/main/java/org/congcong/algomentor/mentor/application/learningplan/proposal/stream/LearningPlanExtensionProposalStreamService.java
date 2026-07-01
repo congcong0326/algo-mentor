@@ -175,11 +175,17 @@ public class LearningPlanExtensionProposalStreamService {
         code,
         exception.getMessage(),
         exception);
-    proposalRepository.saveExtensionRevision(revision.withFailure(code, message, clock.instant()));
-    publisher.submit(new LearningPlanProposalStreamEvent.Proposal(
-        PROFILE,
-        new LearningPlanProposalEvent.ProposalError(code, message, false)));
-    publisher.close();
+    try {
+      LearningPlanProposalEvent event = transactionOperations.execute(status -> failureTransition(
+          revision,
+          code,
+          message,
+          false));
+      publisher.submit(new LearningPlanProposalStreamEvent.Proposal(PROFILE, event));
+      publisher.close();
+    } catch (RuntimeException persistenceFailure) {
+      publisher.closeExceptionally(persistenceFailure);
+    }
   }
 
   private String requireInstruction(String instruction) {
@@ -343,6 +349,22 @@ public class LearningPlanExtensionProposalStreamService {
     }
   }
 
+  private LearningPlanProposalEvent failureTransition(
+      LearningPlanExtensionRevision revision,
+      String code,
+      String message,
+      boolean retryable
+  ) {
+    LearningPlanExtensionRevision failedRevision = proposalRepository.saveExtensionRevision(revision.withFailure(
+        code,
+        message,
+        clock.instant()));
+    return new LearningPlanProposalEvent.ProposalError(
+        failedRevision.errorCode(),
+        failedRevision.errorMessage(),
+        retryable);
+  }
+
   private AgentExecutionOptions executionOptions() {
     return new AgentExecutionOptions(
         LlmGenerationOptions.defaults(),
@@ -388,6 +410,7 @@ public class LearningPlanExtensionProposalStreamService {
     private final AgentWorkStatusProjector projector;
     private final LearningPlanExtensionRevision revision;
     private final AtomicReference<Flow.Subscription> subscription = new AtomicReference<>();
+    private final AtomicBoolean terminalProposalEmitted = new AtomicBoolean(false);
     private final StringBuilder stepContent = new StringBuilder();
     private String finalContent;
 
@@ -435,7 +458,15 @@ public class LearningPlanExtensionProposalStreamService {
 
     @Override
     public void onComplete() {
-      publisher.close();
+      if (terminalProposalEmitted.get()) {
+        publisher.close();
+        return;
+      }
+      failRevisionAndEmit(
+          "LEARNING_PLAN_EXTENSION_STREAM_FAILED",
+          "学习计划扩展生成失败，请稍后重试。",
+          false,
+          null);
     }
 
     private void completeWithRevision() {
@@ -444,10 +475,7 @@ public class LearningPlanExtensionProposalStreamService {
           throw new LearningPlanException("LEARNING_PLAN_EXTENSION_FINAL_OUTPUT_MISSING", "模型未返回扩展提案。");
         }
         LearningPlanExtensionDraft extension = outputMapper.map(objectMapper.readTree(finalContent));
-        publisher.submit(new LearningPlanProposalStreamEvent.Proposal(
-            PROFILE,
-            transactionOperations.execute(status -> completeReadyTransition(extension))));
-        publisher.close();
+        emitTerminalEvent(transactionOperations.execute(status -> completeReadyTransition(extension)));
       } catch (JsonProcessingException exception) {
         failRevisionAndEmit("LEARNING_PLAN_EXTENSION_STRUCTURED_OUTPUT_INVALID", "扩展提案结构化结果解析失败。", true, exception);
       } catch (LearningPlanException exception) {
@@ -515,6 +543,9 @@ public class LearningPlanExtensionProposalStreamService {
     }
 
     private void failRevisionAndEmit(String code, String message, boolean retryable, Throwable cause) {
+      if (!terminalProposalEmitted.compareAndSet(false, true)) {
+        return;
+      }
       log.warn(
           "Learning plan extension stream failed: code={}, retryable={}, message={}, causeMessage={}",
           code,
@@ -522,11 +553,33 @@ public class LearningPlanExtensionProposalStreamService {
           message,
           cause == null ? null : cause.getMessage(),
           cause);
-      proposalRepository.saveExtensionRevision(revision.withFailure(code, message, clock.instant()));
-      emitError(code, message, retryable, cause);
+      try {
+        emitError(
+            transactionOperations.execute(status -> failureTransition(revision, code, message, retryable)),
+            code,
+            message,
+            retryable,
+            cause);
+      } catch (RuntimeException persistenceFailure) {
+        publisher.closeExceptionally(persistenceFailure);
+      }
     }
 
-    private void emitError(String code, String message, boolean retryable, Throwable cause) {
+    private void emitTerminalEvent(LearningPlanProposalEvent event) {
+      if (!terminalProposalEmitted.compareAndSet(false, true)) {
+        return;
+      }
+      publisher.submit(new LearningPlanProposalStreamEvent.Proposal(PROFILE, event));
+      publisher.close();
+    }
+
+    private void emitError(
+        LearningPlanProposalEvent event,
+        String code,
+        String message,
+        boolean retryable,
+        Throwable cause
+    ) {
       if (cause != null) {
         log.warn(
             "Learning plan extension stream emitted error: code={}, retryable={}, message={}, causeMessage={}",
@@ -536,9 +589,7 @@ public class LearningPlanExtensionProposalStreamService {
             cause.getMessage(),
             cause);
       }
-      publisher.submit(new LearningPlanProposalStreamEvent.Proposal(
-          PROFILE,
-          new LearningPlanProposalEvent.ProposalError(code, message, retryable)));
+      publisher.submit(new LearningPlanProposalStreamEvent.Proposal(PROFILE, event));
       publisher.close();
     }
   }
