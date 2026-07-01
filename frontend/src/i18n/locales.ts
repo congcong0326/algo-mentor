@@ -308,6 +308,9 @@ export interface LocaleResources {
     followUpFailed: string;
     saveFailed: string;
     followUpRegeneratePrefix: (goal: string) => string;
+    revisionInstructionLabel: string;
+    reviseDraft: string;
+    revisionFailed: string;
     createTitle: string;
     generatePlan: string;
     generateDraft: string;
@@ -769,6 +772,9 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       followUpFailed: '训练方案追问提交失败',
       saveFailed: '训练方案保存失败',
       followUpRegeneratePrefix: (goal) => `请按新的目标摘要重新生成训练方案：${goal}`,
+      revisionInstructionLabel: '对当前计划不满意？输入调整要求',
+      reviseDraft: '按要求调整计划',
+      revisionFailed: '调整学习计划失败，请稍后重试。',
       createTitle: '新建训练方案',
       generatePlan: '生成训练方案',
       generateDraft: '生成方案草案',
@@ -1273,6 +1279,9 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       followUpFailed: 'Failed to submit follow-up',
       saveFailed: 'Failed to save learning plan',
       followUpRegeneratePrefix: (goal) => `Regenerate the learning plan from this updated goal summary: ${goal}`,
+      revisionInstructionLabel: 'Want changes? Describe how to revise this plan',
+      reviseDraft: 'Revise Plan',
+      revisionFailed: 'Failed to revise the learning plan. Try again later.',
       createTitle: 'Create Learning Plan',
       generatePlan: 'Generate Plan',
       generateDraft: 'Generate Draft',

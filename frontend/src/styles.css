@@ -1636,6 +1636,7 @@ a {
 .plan-list,
 .goal-editor,
 .goal-summary,
+.draft-revision-panel,
 .learning-detail-area {
   display: grid;
   gap: 14px;
@@ -2092,6 +2093,12 @@ a {
   margin: 0;
   color: var(--text-secondary);
   line-height: 1.65;
+}
+
+.draft-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .empty-plan-panel {

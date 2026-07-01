@@ -1,39 +1,36 @@
 import { Check, FileText, MessageSquare, Send } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useI18n } from '../i18n/I18nProvider';
-import type { LearningPlanDraftResponse } from '../types/api';
+import type { AgentWorkStatusEvent, LearningPlanDraftResponse } from '../types/api';
 import PlanPreview from './PlanPreview';
 
 interface LearningPlanDraftPanelProps {
   draft: LearningPlanDraftResponse;
   loading: boolean;
+  workEvent?: AgentWorkStatusEvent;
   onConfirm: () => void;
-  onRegenerateGoal?: (goal: string) => void;
   onRetryCreate?: () => void;
   onReturnToWizard?: () => void;
   onSendFollowUp: (message: string) => Promise<boolean>;
+  onReviseDraft: (instruction: string) => Promise<boolean>;
 }
 
 export default function LearningPlanDraftPanel({
   draft,
   loading,
+  workEvent,
   onConfirm,
-  onRegenerateGoal,
   onRetryCreate,
   onReturnToWizard,
   onSendFollowUp,
+  onReviseDraft,
 }: LearningPlanDraftPanelProps) {
   const { resources } = useI18n();
   const [followUp, setFollowUp] = useState('');
-  const [editingGoal, setEditingGoal] = useState(false);
-  const [goalDraft, setGoalDraft] = useState(draft.draftPlan?.goal ?? '');
+  const [revisionInstruction, setRevisionInstruction] = useState('');
   const followUpId = `learning-plan-draft-${draft.draftId}-follow-up`;
+  const revisionInstructionId = `learning-plan-draft-${draft.draftId}-revision`;
   const retryCreate = onRetryCreate ?? onReturnToWizard;
-
-  useEffect(() => {
-    setGoalDraft(draft.draftPlan?.goal ?? '');
-    setEditingGoal(false);
-  }, [draft.draftId, draft.draftPlan?.goal]);
 
   if (draft.status === 'COLLECTING') {
     return (
@@ -79,47 +76,44 @@ export default function LearningPlanDraftPanel({
           <FileText aria-hidden="true" />
           <h2>{resources.learningPlans.draftPreview}</h2>
         </div>
-        {editingGoal ? (
-          <div className="goal-editor">
-            <label className="topic-field">
-              <span>{resources.learningPlans.goalSummary}</span>
-              <textarea
-                aria-label={resources.learningPlans.goalSummary}
-                disabled={loading}
-                onChange={(event) => setGoalDraft(event.target.value)}
-                rows={3}
-                value={goalDraft}
-              />
-            </label>
+        <div className="goal-summary">
+          <p>{draft.draftPlan.goal}</p>
+        </div>
+        <PlanPreview plan={draft.draftPlan} />
+        <div className="draft-revision-panel">
+          <label className="topic-field" htmlFor={revisionInstructionId}>
+            <span>{resources.learningPlans.revisionInstructionLabel}</span>
+            <textarea
+              disabled={loading}
+              id={revisionInstructionId}
+              onChange={(event) => setRevisionInstruction(event.target.value)}
+              rows={3}
+              value={revisionInstruction}
+            />
+          </label>
+          {workEvent?.message && <p className="empty-log">{workEvent.message}</p>}
+          <div className="draft-action-row">
             <button
               className="secondary-button"
-              disabled={loading || !goalDraft.trim()}
-              onClick={() => onRegenerateGoal?.(goalDraft.trim())}
+              disabled={loading || !revisionInstruction.trim()}
+              onClick={() => {
+                void onReviseDraft(revisionInstruction.trim()).then((revised) => {
+                  if (revised) {
+                    setRevisionInstruction('');
+                  }
+                });
+              }}
               type="button"
             >
-              {resources.learningPlans.regenerateByGoal}
+              <Send aria-hidden="true" />
+              <span>{resources.learningPlans.reviseDraft}</span>
+            </button>
+            <button className="primary-button" disabled={loading} onClick={onConfirm} type="button">
+              <Check aria-hidden="true" />
+              <span>{resources.learningPlans.savePlan}</span>
             </button>
           </div>
-        ) : (
-          <div className="goal-summary">
-            <p>{draft.draftPlan.goal}</p>
-            {onRegenerateGoal && (
-              <button
-                className="secondary-button compact"
-                disabled={loading}
-                onClick={() => setEditingGoal(true)}
-                type="button"
-              >
-                {resources.learningPlans.editGoalSummary}
-              </button>
-            )}
-          </div>
-        )}
-        <PlanPreview plan={draft.draftPlan} />
-        <button className="primary-button" disabled={loading} onClick={onConfirm} type="button">
-          <Check aria-hidden="true" />
-          <span>{resources.learningPlans.savePlan}</span>
-        </button>
+        </div>
       </article>
     );
   }
