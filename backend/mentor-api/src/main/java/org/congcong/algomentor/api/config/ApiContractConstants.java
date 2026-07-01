@@ -72,6 +72,11 @@ public final class ApiContractConstants {
   public static final String LEARNING_PLAN_DRAFTS_STREAM_PATH = "/drafts/stream";
 
   /**
+   * 学习计划草案修订流式创建路径。
+   */
+  public static final String LEARNING_PLAN_DRAFT_REVISIONS_STREAM_PATH = "/{draftId}/revisions/stream";
+
+  /**
    * 学习计划草案消息路径。
    */
   public static final String LEARNING_PLAN_DRAFT_MESSAGES_PATH = "/{draftId}/messages";
@@ -80,6 +85,30 @@ public final class ApiContractConstants {
    * 学习计划草案确认路径。
    */
   public static final String LEARNING_PLAN_DRAFT_CONFIRM_PATH = "/{draftId}/confirm";
+
+  /**
+   * 学习计划扩展提案首次生成流式路径。
+   */
+  public static final String LEARNING_PLAN_EXTENSION_PROPOSALS_STREAM_PATH =
+      "/{planId}/extension-proposals/stream";
+
+  /**
+   * 学习计划扩展提案修订流式路径。
+   */
+  public static final String LEARNING_PLAN_EXTENSION_PROPOSAL_REVISIONS_STREAM_PATH =
+      "/{planId}/extension-proposals/{proposalGroupId}/revisions/stream";
+
+  /**
+   * 学习计划扩展提案应用路径。
+   */
+  public static final String LEARNING_PLAN_EXTENSION_PROPOSAL_APPLY_PATH =
+      "/{planId}/extension-proposals/{proposalGroupId}/apply";
+
+  /**
+   * 学习计划扩展提案丢弃路径。
+   */
+  public static final String LEARNING_PLAN_EXTENSION_PROPOSAL_DISCARD_PATH =
+      "/{planId}/extension-proposals/{proposalGroupId}/discard";
 
   /**
    * 题目练习会话接口根路径。

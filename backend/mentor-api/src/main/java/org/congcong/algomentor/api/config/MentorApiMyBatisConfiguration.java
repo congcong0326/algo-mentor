@@ -6,6 +6,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.congcong.algomentor.api.ability.mapper.AbilityProfileMapper;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
 import org.congcong.algomentor.api.learningplan.repository.MyBatisLearningPlanRepository;
+import org.congcong.algomentor.api.learningplan.repository.MyBatisLearningPlanProposalRepository;
 import org.congcong.algomentor.api.preference.mapper.UserAiPreferenceMapper;
 import org.congcong.algomentor.api.preference.repository.MyBatisUserAiPreferenceRepository;
 import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
@@ -19,6 +20,7 @@ import org.congcong.algomentor.agent.persistence.postgres.json.AgentMessageRoleT
 import org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRepository;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
@@ -107,6 +109,14 @@ public class MentorApiMyBatisConfiguration {
       LearningPlanMapper learningPlanMapper,
       ObjectMapper objectMapper) {
     return new MyBatisLearningPlanRepository(learningPlanMapper, objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(LearningPlanProposalRepository.class)
+  public LearningPlanProposalRepository learningPlanProposalRepository(
+      LearningPlanMapper learningPlanMapper,
+      ObjectMapper objectMapper) {
+    return new MyBatisLearningPlanProposalRepository(learningPlanMapper, objectMapper);
   }
 
   @Bean

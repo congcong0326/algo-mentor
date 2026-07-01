@@ -47,6 +47,38 @@ class LearningPlanProposalGroupServiceTest {
   }
 
   @Test
+  void discardsActiveExtensionProposalForUserAndPlan() {
+    LearningPlanProposalGroup group = service.createGroup(
+        42L,
+        LearningPlanProposalType.PLAN_EXTENSION,
+        LearningPlanProposalTargetType.PLAN,
+        900L,
+        "增加图论题");
+
+    LearningPlanProposalGroup discarded = service.discardExtensionProposal(42L, 900L, group.id());
+
+    assertThat(discarded.status()).isEqualTo(LearningPlanProposalGroupStatus.DISCARDED);
+    assertThat(repository.findGroupForUser(group.id(), 42L)).get()
+        .extracting(LearningPlanProposalGroup::status)
+        .isEqualTo(LearningPlanProposalGroupStatus.DISCARDED);
+    assertThat(discarded.updatedAt()).isEqualTo(clock.instant());
+  }
+
+  @Test
+  void rejectsDiscardWhenExtensionProposalDoesNotMatchPlan() {
+    LearningPlanProposalGroup group = service.createGroup(
+        42L,
+        LearningPlanProposalType.PLAN_EXTENSION,
+        LearningPlanProposalTargetType.PLAN,
+        900L,
+        "增加图论题");
+
+    assertThatThrownBy(() -> service.discardExtensionProposal(42L, 901L, group.id()))
+        .isInstanceOf(org.congcong.algomentor.mentor.application.learningplan.LearningPlanException.class)
+        .hasMessage("学习计划扩展提案组与请求不匹配。");
+  }
+
+  @Test
   void rejectsInvalidProposalTargetPair() {
     Instant now = clock.instant();
 
