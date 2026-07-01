@@ -5,6 +5,8 @@ import { useI18n } from '../i18n/I18nProvider';
 import {
   applyLearningPlanExtensionProposal,
   discardLearningPlanExtensionProposal,
+  requireApiData,
+  requireApiSuccess,
   streamLearningPlanExtensionProposal,
   streamLearningPlanExtensionProposalRevision,
 } from '../services/api';
@@ -26,7 +28,7 @@ export default function LearningPlanDetail({
   plan,
 }: {
   onBack: () => void;
-  onPlanUpdated: () => void;
+  onPlanUpdated: () => Promise<void>;
   onProblemSelect: (phaseIndex: number, problemSlug: string) => void;
   plan: LearningPlanDetailResponse;
 }) {
@@ -70,6 +72,7 @@ export default function LearningPlanDetail({
     try {
       let extensionReady = false;
       let extensionFailed = false;
+      let terminalErrorMessage = '';
       await streamLearningPlanExtensionProposal(plan.id, { instruction: instruction.trim() }, {
         onEvent: (event) => {
           if (event.eventName === 'plan_extension_ready') {
@@ -77,6 +80,13 @@ export default function LearningPlanDetail({
           }
           if (event.eventName === 'plan_extension_error') {
             extensionFailed = true;
+            terminalErrorMessage = (event.data as LearningPlanDraftErrorEvent).message
+              || resources.learningPlans.extensionFailed;
+          }
+          if (event.eventName === 'work_error') {
+            extensionFailed = true;
+            terminalErrorMessage = (event.data as AgentWorkStatusEvent).message
+              || resources.learningPlans.extensionFailed;
           }
           handleExtensionStreamEvent(event);
         },
@@ -86,6 +96,11 @@ export default function LearningPlanDetail({
         setExtensionWorkEvent(undefined);
         setExtensionLoading(false);
         return false;
+      }
+      if (!extensionReady && terminalErrorMessage) {
+        setExtensionError(terminalErrorMessage);
+        setExtensionWorkEvent(undefined);
+        setExtensionLoading(false);
       }
       return extensionReady && !extensionFailed;
     } catch (nextError) {
@@ -106,6 +121,7 @@ export default function LearningPlanDetail({
     try {
       let extensionReady = false;
       let extensionFailed = false;
+      let terminalErrorMessage = '';
       await streamLearningPlanExtensionProposalRevision(plan.id, proposalGroupId, { instruction: instruction.trim() }, {
         onEvent: (event) => {
           if (event.eventName === 'plan_extension_ready') {
@@ -113,6 +129,13 @@ export default function LearningPlanDetail({
           }
           if (event.eventName === 'plan_extension_error') {
             extensionFailed = true;
+            terminalErrorMessage = (event.data as LearningPlanDraftErrorEvent).message
+              || resources.learningPlans.extensionFailed;
+          }
+          if (event.eventName === 'work_error') {
+            extensionFailed = true;
+            terminalErrorMessage = (event.data as AgentWorkStatusEvent).message
+              || resources.learningPlans.extensionFailed;
           }
           handleExtensionStreamEvent(event);
         },
@@ -122,6 +145,11 @@ export default function LearningPlanDetail({
         setExtensionWorkEvent(undefined);
         setExtensionLoading(false);
         return false;
+      }
+      if (!extensionReady && terminalErrorMessage) {
+        setExtensionError(terminalErrorMessage);
+        setExtensionWorkEvent(undefined);
+        setExtensionLoading(false);
       }
       return extensionReady && !extensionFailed;
     } catch (nextError) {
@@ -136,10 +164,13 @@ export default function LearningPlanDetail({
     setExtensionLoading(true);
     setExtensionError('');
     try {
-      await applyLearningPlanExtensionProposal(plan.id, proposalGroupId);
+      requireApiData(
+        await applyLearningPlanExtensionProposal(plan.id, proposalGroupId),
+        resources.learningPlans.extensionApplyFailed,
+      );
+      await onPlanUpdated();
       setExtension(undefined);
       setExtensionError('');
-      onPlanUpdated();
     } catch (nextError) {
       setExtensionError(nextError instanceof Error ? nextError.message : resources.learningPlans.extensionApplyFailed);
     } finally {
@@ -152,7 +183,10 @@ export default function LearningPlanDetail({
     setExtensionLoading(true);
     setExtensionError('');
     try {
-      await discardLearningPlanExtensionProposal(plan.id, proposalGroupId);
+      requireApiSuccess(
+        await discardLearningPlanExtensionProposal(plan.id, proposalGroupId),
+        resources.learningPlans.extensionFailed,
+      );
       setExtension(undefined);
       setExtensionError('');
     } catch (nextError) {

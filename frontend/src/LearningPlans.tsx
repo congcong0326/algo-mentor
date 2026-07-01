@@ -187,8 +187,10 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
             <LearningPlanDetail
               onBack={() => onNavigate(APP_ROUTES.learningPlans)}
               onPlanUpdated={() => {
-                void loadPlanDetail(planDetail.id).catch((nextError) => {
+                setError('');
+                return loadPlanDetail(planDetail.id).catch((nextError) => {
                   setError(nextError instanceof Error ? nextError.message : resources.learningPlans.detailLoadFailed);
+                  throw nextError;
                 });
               }}
               onProblemSelect={(phaseIndex, problemSlug) => {

@@ -78,6 +78,13 @@ export function requireApiData<T>(response: ApiResponse<T>, fallbackMessage: str
   throw apiResponseToRequestError(response, fallbackMessage);
 }
 
+export function requireApiSuccess<T>(response: ApiResponse<T>, fallbackMessage: string): void {
+  if (response.success) {
+    return;
+  }
+  throw apiResponseToRequestError(response, fallbackMessage);
+}
+
 export function setApiLocale(locale: string): void {
   apiLocale = supportedLocales.has(locale) ? locale : defaultLocale;
 }
