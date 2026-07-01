@@ -73,11 +73,21 @@ public class MyBatisLearningPlanProposalRepository implements LearningPlanPropos
   @Override
   @Transactional
   public LearningPlanDraftRevision saveDraftRevision(LearningPlanDraftRevision revision) {
+    LearningPlanProposalGroupRow group = lockAndValidateGroup(
+        revision.proposalGroupId(),
+        revision.userId(),
+        LearningPlanProposalType.DRAFT_REVISION,
+        LearningPlanProposalTargetType.DRAFT,
+        revision.draftId());
     LearningPlanDraftRevisionRow row = toDraftRevisionRow(revision);
     long revisionId = row.id() == null ? 0 : row.id();
     if (revision.id() == null) {
+      row = toDraftRevisionRow(withRevisionNo(revision, nextRevisionNoAfterLock(group.id())));
       revisionId = mapper.insertDraftRevision(row);
     } else {
+      LearningPlanDraftRevisionRow existing = mapper.findDraftRevisionForUser(revision.id(), revision.userId());
+      validateExistingDraftRevision(existing, revision);
+      row = toDraftRevisionRow(withRevisionNo(revision, existing.revisionNo()));
       mapper.updateDraftRevision(row);
     }
     return toDraftRevision(mapper.findDraftRevisionForUser(revisionId, revision.userId()));
@@ -86,11 +96,21 @@ public class MyBatisLearningPlanProposalRepository implements LearningPlanPropos
   @Override
   @Transactional
   public LearningPlanExtensionRevision saveExtensionRevision(LearningPlanExtensionRevision revision) {
+    LearningPlanProposalGroupRow group = lockAndValidateGroup(
+        revision.proposalGroupId(),
+        revision.userId(),
+        LearningPlanProposalType.PLAN_EXTENSION,
+        LearningPlanProposalTargetType.PLAN,
+        revision.planId());
     LearningPlanExtensionRevisionRow row = toExtensionRevisionRow(revision);
     long revisionId = row.id() == null ? 0 : row.id();
     if (revision.id() == null) {
+      row = toExtensionRevisionRow(withRevisionNo(revision, nextRevisionNoAfterLock(group.id())));
       revisionId = mapper.insertExtensionRevision(row);
     } else {
+      LearningPlanExtensionRevisionRow existing = mapper.findExtensionRevisionForUser(revision.id(), revision.userId());
+      validateExistingExtensionRevision(existing, revision);
+      row = toExtensionRevisionRow(withRevisionNo(revision, existing.revisionNo()));
       mapper.updateExtensionRevision(row);
     }
     return toExtensionRevision(mapper.findExtensionRevisionForUser(revisionId, revision.userId()));
@@ -112,8 +132,13 @@ public class MyBatisLearningPlanProposalRepository implements LearningPlanPropos
   }
 
   @Override
+  @Transactional
   public int nextRevisionNo(long proposalGroupId) {
-    return Math.max(mapper.nextDraftRevisionNo(proposalGroupId), mapper.nextExtensionRevisionNo(proposalGroupId));
+    LearningPlanProposalGroupRow group = mapper.lockProposalGroupByIdForUpdate(proposalGroupId);
+    if (group == null) {
+      throw new LearningPlanException("LEARNING_PLAN_PROPOSAL_GROUP_NOT_FOUND", "学习计划提案组不存在。");
+    }
+    return nextRevisionNoAfterLock(proposalGroupId);
   }
 
   @Override
@@ -140,6 +165,89 @@ public class MyBatisLearningPlanProposalRepository implements LearningPlanPropos
         group.latestProposalId(),
         group.createdAt(),
         group.updatedAt());
+  }
+
+  private LearningPlanProposalGroupRow lockAndValidateGroup(
+      long groupId,
+      long userId,
+      LearningPlanProposalType proposalType,
+      LearningPlanProposalTargetType targetType,
+      long targetId) {
+    LearningPlanProposalGroupRow group = mapper.lockProposalGroupForUpdate(groupId, userId);
+    if (group == null) {
+      throw new LearningPlanException("LEARNING_PLAN_PROPOSAL_GROUP_NOT_FOUND", "学习计划提案组不存在。");
+    }
+    if (!proposalType.name().equals(group.proposalType())
+        || !targetType.name().equals(group.targetType())
+        || group.targetId() == null
+        || group.targetId().longValue() != targetId) {
+      throw new LearningPlanException("LEARNING_PLAN_PROPOSAL_GROUP_INVALID", "学习计划提案组与修订目标不匹配。");
+    }
+    return group;
+  }
+
+  private int nextRevisionNoAfterLock(long proposalGroupId) {
+    return Math.max(mapper.nextDraftRevisionNo(proposalGroupId), mapper.nextExtensionRevisionNo(proposalGroupId));
+  }
+
+  private void validateExistingDraftRevision(
+      LearningPlanDraftRevisionRow existing,
+      LearningPlanDraftRevision revision) {
+    if (existing == null
+        || !existing.proposalGroupId().equals(revision.proposalGroupId())
+        || !existing.draftId().equals(revision.draftId())
+        || !existing.userId().equals(revision.userId())) {
+      throw new LearningPlanException("LEARNING_PLAN_PROPOSAL_REVISION_INVALID", "学习计划草案修订记录与请求不匹配。");
+    }
+  }
+
+  private void validateExistingExtensionRevision(
+      LearningPlanExtensionRevisionRow existing,
+      LearningPlanExtensionRevision revision) {
+    if (existing == null
+        || !existing.proposalGroupId().equals(revision.proposalGroupId())
+        || !existing.planId().equals(revision.planId())
+        || !existing.userId().equals(revision.userId())) {
+      throw new LearningPlanException("LEARNING_PLAN_PROPOSAL_REVISION_INVALID", "学习计划扩展修订记录与请求不匹配。");
+    }
+  }
+
+  private LearningPlanDraftRevision withRevisionNo(LearningPlanDraftRevision revision, int revisionNo) {
+    return new LearningPlanDraftRevision(
+        revision.id(),
+        revision.proposalGroupId(),
+        revision.draftId(),
+        revision.userId(),
+        revisionNo,
+        revision.status(),
+        revision.instruction(),
+        revision.basePlan(),
+        revision.proposedPlan(),
+        revision.errorCode(),
+        revision.errorMessage(),
+        revision.createdAt(),
+        revision.updatedAt());
+  }
+
+  private LearningPlanExtensionRevision withRevisionNo(LearningPlanExtensionRevision revision, int revisionNo) {
+    return new LearningPlanExtensionRevision(
+        revision.id(),
+        revision.proposalGroupId(),
+        revision.planId(),
+        revision.userId(),
+        revisionNo,
+        revision.status(),
+        revision.instruction(),
+        revision.basePlan(),
+        revision.progressSnapshot(),
+        revision.baseMaxPhaseIndex(),
+        revision.previousExtension(),
+        revision.proposedExtension(),
+        revision.appliedAt(),
+        revision.errorCode(),
+        revision.errorMessage(),
+        revision.createdAt(),
+        revision.updatedAt());
   }
 
   private LearningPlanDraftRevisionRow toDraftRevisionRow(LearningPlanDraftRevision revision) {

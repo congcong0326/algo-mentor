@@ -118,10 +118,15 @@ public class MyBatisLearningPlanRepository implements LearningPlanDraftRepositor
   @Override
   @Transactional
   public LearningPlan appendPhases(long userId, long planId, List<LearningPlanPhaseDraft> newPhases) {
-    LearningPlan current = findPlanByIdForUser(planId, userId)
+    LearningPlan current = Optional.ofNullable(mapper.findPlanByIdForUserForUpdate(planId, userId))
+        .map(this::toPlan)
         .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_NOT_FOUND", "学习计划不存在。"));
+    int baseMaxPhaseIndex = mapper.findMaxPhaseIndex(planId);
+    List<LearningPlanPhaseDraft> reindexedNewPhases = reindexPhases(
+        newPhases == null ? List.of() : newPhases,
+        baseMaxPhaseIndex);
     List<LearningPlanPhaseDraft> phases = new ArrayList<>(current.plan().phases());
-    phases.addAll(newPhases == null ? List.of() : newPhases);
+    phases.addAll(reindexedNewPhases);
     LearningPlanDraftPlan mergedPlan = new LearningPlanDraftPlan(
         current.plan().title(),
         current.plan().summary(),
@@ -138,7 +143,7 @@ public class MyBatisLearningPlanRepository implements LearningPlanDraftRepositor
         phases,
         current.plan().metadata());
 
-    for (LearningPlanPhaseDraft phase : newPhases == null ? List.<LearningPlanPhaseDraft>of() : newPhases) {
+    for (LearningPlanPhaseDraft phase : reindexedNewPhases) {
       mapper.insertPlanPhase(planId, phase.phaseIndex(), phase.title(), phase.durationWeeks(), phase.focus());
       for (LearningPlanProblemDraft problem : phase.problems()) {
         mapper.insertPlanProblem(
@@ -155,6 +160,24 @@ public class MyBatisLearningPlanRepository implements LearningPlanDraftRepositor
     }
     mapper.updatePlanJsonSnapshot(planId, userId, mergedPlan.title(), json(mergedPlan), Instant.now());
     return toPlan(mapper.findPlanByIdForUser(planId, userId));
+  }
+
+  private List<LearningPlanPhaseDraft> reindexPhases(List<LearningPlanPhaseDraft> phases, int baseMaxPhaseIndex) {
+    List<LearningPlanPhaseDraft> reindexed = new ArrayList<>(phases.size());
+    int nextPhaseIndex = baseMaxPhaseIndex + 1;
+    for (LearningPlanPhaseDraft phase : phases) {
+      reindexed.add(new LearningPlanPhaseDraft(
+          nextPhaseIndex++,
+          phase.title(),
+          phase.durationWeeks(),
+          phase.focus(),
+          phase.objectives(),
+          phase.recommendedTags(),
+          phase.acceptanceCriteria(),
+          phase.reviewAdvice(),
+          phase.problems()));
+    }
+    return reindexed;
   }
 
   private void replacePlanDetails(long planId, LearningPlanDraftPlan plan) {

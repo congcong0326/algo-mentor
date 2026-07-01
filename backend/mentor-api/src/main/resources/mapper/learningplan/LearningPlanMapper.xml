@@ -317,6 +317,21 @@
       AND user_id = #{userId}
   </select>
 
+  <select id="findPlanByIdForUserForUpdate" resultMap="LearningPlanRowMap">
+    SELECT
+      id,
+      user_id,
+      status,
+      title,
+      plan_json,
+      created_at,
+      updated_at
+    FROM learning_plan
+    WHERE id = #{id}
+      AND user_id = #{userId}
+    FOR UPDATE
+  </select>
+
   <update id="clearConfirmedPlanReferences">
     UPDATE learning_plan_draft
     SET confirmed_plan_id = NULL,
@@ -382,6 +397,41 @@
     FROM learning_plan_proposal_group
     WHERE id = #{id}
       AND user_id = #{userId}
+  </select>
+
+  <select id="lockProposalGroupForUpdate" resultMap="LearningPlanProposalGroupRowMap">
+    SELECT
+      id,
+      user_id,
+      proposal_type,
+      target_type,
+      target_id,
+      status,
+      initial_instruction,
+      latest_proposal_id,
+      created_at,
+      updated_at
+    FROM learning_plan_proposal_group
+    WHERE id = #{id}
+      AND user_id = #{userId}
+    FOR UPDATE
+  </select>
+
+  <select id="lockProposalGroupByIdForUpdate" resultMap="LearningPlanProposalGroupRowMap">
+    SELECT
+      id,
+      user_id,
+      proposal_type,
+      target_type,
+      target_id,
+      status,
+      initial_instruction,
+      latest_proposal_id,
+      created_at,
+      updated_at
+    FROM learning_plan_proposal_group
+    WHERE id = #{id}
+    FOR UPDATE
   </select>
 
   <select id="findLatestActiveProposalGroup" resultMap="LearningPlanProposalGroupRowMap">

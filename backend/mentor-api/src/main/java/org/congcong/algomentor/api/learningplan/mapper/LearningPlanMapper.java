@@ -1,8 +1,8 @@
 package org.congcong.algomentor.api.learningplan.mapper;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.time.Instant;
 import java.util.List;
-import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRevisionRow;
@@ -61,6 +61,8 @@ public interface LearningPlanMapper {
 
   LearningPlanRow findPlanByIdForUser(@Param("id") long id, @Param("userId") long userId);
 
+  LearningPlanRow findPlanByIdForUserForUpdate(@Param("id") long id, @Param("userId") long userId);
+
   int clearConfirmedPlanReferences(@Param("userId") long userId, @Param("planId") long planId);
 
   int deletePlanByIdForUser(@Param("id") long id, @Param("userId") long userId);
@@ -70,6 +72,10 @@ public interface LearningPlanMapper {
   int updateProposalGroup(LearningPlanProposalGroupRow row);
 
   LearningPlanProposalGroupRow findProposalGroupForUser(@Param("id") long id, @Param("userId") long userId);
+
+  LearningPlanProposalGroupRow lockProposalGroupForUpdate(@Param("id") long id, @Param("userId") long userId);
+
+  LearningPlanProposalGroupRow lockProposalGroupByIdForUpdate(@Param("id") long id);
 
   LearningPlanProposalGroupRow findLatestActiveProposalGroup(
       @Param("userId") long userId,

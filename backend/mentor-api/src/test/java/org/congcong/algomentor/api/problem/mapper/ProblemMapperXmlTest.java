@@ -67,7 +67,13 @@ class ProblemMapperXmlTest {
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.findPlansByUserId")).isTrue();
     assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.findPlanByIdForUserForUpdate")).isTrue();
+    assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.insertProposalGroup")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.lockProposalGroupForUpdate")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.lockProposalGroupByIdForUpdate")).isTrue();
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.insertDraftRevision")).isTrue();
     assertThat(configuration.hasStatement(
