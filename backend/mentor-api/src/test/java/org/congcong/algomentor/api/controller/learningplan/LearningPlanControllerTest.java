@@ -238,7 +238,15 @@ class LearningPlanControllerTest {
     mockMvc.perform(asyncDispatch(result))
         .andExpect(status().isOk())
         .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
-            .string(org.hamcrest.Matchers.containsString("event:draft_revision_ready")));
+            .string(org.hamcrest.Matchers.allOf(
+                org.hamcrest.Matchers.containsString("event:draft_revision_ready"),
+                org.hamcrest.Matchers.containsString("\"proposalGroupId\":700"),
+                org.hamcrest.Matchers.containsString("\"proposalId\":701"),
+                org.hamcrest.Matchers.containsString("\"draftId\":100"),
+                org.hamcrest.Matchers.containsString("\"supersededProposalIds\":[699]"),
+                org.hamcrest.Matchers.containsString("\"draftPlan\""),
+                org.hamcrest.Matchers.containsString("\"programmingLanguage\":\"Java\""),
+                org.hamcrest.Matchers.containsString("\"slug\":\"two-sum\""))));
 
     ArgumentCaptor<AiRunContext> governanceCaptor = ArgumentCaptor.forClass(AiRunContext.class);
     verify(admissionService).admit(governanceCaptor.capture());
@@ -276,7 +284,16 @@ class LearningPlanControllerTest {
     mockMvc.perform(asyncDispatch(result))
         .andExpect(status().isOk())
         .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
-            .string(org.hamcrest.Matchers.containsString("event:plan_extension_ready")));
+            .string(org.hamcrest.Matchers.allOf(
+                org.hamcrest.Matchers.containsString("event:plan_extension_ready"),
+                org.hamcrest.Matchers.containsString("\"proposalGroupId\":800"),
+                org.hamcrest.Matchers.containsString("\"proposalId\":801"),
+                org.hamcrest.Matchers.containsString("\"planId\":900"),
+                org.hamcrest.Matchers.containsString("\"supersededProposalIds\":[]"),
+                org.hamcrest.Matchers.containsString("\"extensionDraft\""),
+                org.hamcrest.Matchers.containsString("\"phaseIndex\":2"),
+                org.hamcrest.Matchers.containsString("\"recommendedTags\":[\"Graph\"]"),
+                org.hamcrest.Matchers.containsString("\"title\":\"Number of Islands\""))));
 
     ArgumentCaptor<AiRunContext> governanceCaptor = ArgumentCaptor.forClass(AiRunContext.class);
     verify(admissionService).admit(governanceCaptor.capture());

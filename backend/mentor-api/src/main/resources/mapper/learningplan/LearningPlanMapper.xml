@@ -476,6 +476,18 @@
     LIMIT 1
   </select>
 
+  <update id="discardActiveExtensionProposalGroup">
+    UPDATE learning_plan_proposal_group
+    SET status = #{discardedStatus},
+        updated_at = #{updatedAt}
+    WHERE id = #{proposalGroupId}
+      AND user_id = #{userId}
+      AND proposal_type = 'PLAN_EXTENSION'
+      AND target_type = 'PLAN'
+      AND target_id = #{planId}
+      AND status = #{activeStatus}
+  </update>
+
   <select id="insertDraftRevision" resultType="java.lang.Long" affectData="true">
     INSERT INTO learning_plan_draft_revision (
       proposal_group_id,

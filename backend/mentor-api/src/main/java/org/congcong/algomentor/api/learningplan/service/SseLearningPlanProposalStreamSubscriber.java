@@ -11,11 +11,9 @@ import org.congcong.algomentor.ai.governance.model.AiGovernanceErrorCode;
 import org.congcong.algomentor.ai.governance.model.AiUsage;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanProposalEvent;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanProposalStreamEvent;
-import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
 import org.congcong.algomentor.ops.observability.NoopOpsRecorders;
 import org.congcong.algomentor.ops.observability.OpsLogEventType;
 import org.congcong.algomentor.ops.observability.OpsLogFields;
-import org.congcong.algomentor.ops.observability.OpsStatus;
 import org.congcong.algomentor.ops.observability.SseFailureType;
 import org.congcong.algomentor.ops.observability.SseOpsRecorder;
 import org.congcong.algomentor.ops.observability.SseStreamType;
@@ -34,11 +32,9 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
   private final AiRunAdmission admission;
   private final SseStreamType streamType;
   private final SseOpsRecorder sseOpsRecorder;
-  private final LearningOpsRecorder learningOpsRecorder;
   private final StructuredOpsLogger opsLogger;
   private final AtomicBoolean terminal = new AtomicBoolean(false);
   private final AtomicBoolean sseTerminalRecorded = new AtomicBoolean(false);
-  private final AtomicBoolean businessRecorded = new AtomicBoolean(false);
   private final AtomicBoolean clientDisconnectedRecorded = new AtomicBoolean(false);
   private final AtomicBoolean timeoutRecorded = new AtomicBoolean(false);
   private Flow.Subscription subscription;
@@ -56,7 +52,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
         admission,
         SseStreamType.LEARNING_PLAN_PROPOSAL,
         NoopOpsRecorders.sse(),
-        NoopOpsRecorders.learning(),
         new StructuredOpsLogger());
   }
 
@@ -67,7 +62,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
       AiRunAdmission admission,
       SseStreamType streamType,
       SseOpsRecorder sseOpsRecorder,
-      LearningOpsRecorder learningOpsRecorder,
       StructuredOpsLogger opsLogger
   ) {
     this.emitter = Objects.requireNonNull(emitter, "emitter must not be null");
@@ -76,7 +70,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
     this.admission = Objects.requireNonNull(admission, "admission must not be null");
     this.streamType = Objects.requireNonNull(streamType, "streamType must not be null");
     this.sseOpsRecorder = Objects.requireNonNull(sseOpsRecorder, "sseOpsRecorder must not be null");
-    this.learningOpsRecorder = Objects.requireNonNull(learningOpsRecorder, "learningOpsRecorder must not be null");
     this.opsLogger = Objects.requireNonNull(opsLogger, "opsLogger must not be null");
   }
 
@@ -91,25 +84,23 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
   @Override
   public void onNext(LearningPlanProposalStreamEvent event) {
     LearningPlanProposalEvent terminalProposalEvent = terminalProposalEvent(event);
-    if (terminalProposalEvent != null) {
-      markLifecycle(terminalProposalEvent);
-      recordTerminalProposalEvent(terminalProposalEvent);
-      terminal.set(true);
-    }
     try {
       emitter.send(mapper.toSseEvent(event));
       if (terminalProposalEvent != null) {
+        markLifecycle(terminalProposalEvent);
+        recordTerminalProposalEvent(terminalProposalEvent);
+        terminal.set(true);
         emitter.complete();
         cancel();
         return;
       }
       subscription.request(1);
     } catch (IOException | RuntimeException exception) {
-      if (terminalProposalEvent == null) {
-        recordFailed(SseFailureType.SEND_FAILURE, exception);
-      } else {
-        recordClientDisconnected(exception);
+      if (terminal.compareAndSet(false, true)) {
+        lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
       }
+      recordClientDisconnected(exception);
+      recordSseFailed(SseFailureType.SEND_FAILURE, exception);
       cancel();
       emitter.completeWithError(exception);
     }
@@ -136,7 +127,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
   public void timeout() {
     if (terminal.compareAndSet(false, true)) {
       lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
-      recordBusinessStatus(OpsStatus.FAILED, SseFailureType.TIMEOUT, null);
     }
     if (timeoutRecorded.compareAndSet(false, true)) {
       sseOpsRecorder.timeout(streamType);
@@ -149,7 +139,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
   public void clientDisconnected(Throwable throwable) {
     if (terminal.compareAndSet(false, true)) {
       lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
-      recordBusinessStatus(OpsStatus.FAILED, SseFailureType.SEND_FAILURE, throwable);
     }
     if (!sseTerminalRecorded.get()) {
       recordClientDisconnected(throwable);
@@ -197,7 +186,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
 
   private void recordCompleted() {
     recordSseCompleted();
-    recordBusinessStatus(OpsStatus.COMPLETED);
   }
 
   private void recordSseCompleted() {
@@ -209,7 +197,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
 
   private void recordFailed(SseFailureType failureType, Throwable throwable) {
     recordSseFailed(failureType, throwable);
-    recordBusinessStatus(OpsStatus.FAILED, failureType, throwable);
   }
 
   private void recordSseFailed(SseFailureType failureType, Throwable throwable) {
@@ -223,23 +210,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
     if (clientDisconnectedRecorded.compareAndSet(false, true)) {
       sseOpsRecorder.clientDisconnected(streamType);
       opsLogger.warn(log, OpsLogEventType.SSE_CONNECTION_FAILED, logFields(SseFailureType.SEND_FAILURE, throwable), null);
-    }
-  }
-
-  private void recordBusinessStatus(OpsStatus status) {
-    recordBusinessStatus(status, null, null);
-  }
-
-  private void recordBusinessStatus(OpsStatus status, SseFailureType failureType, Throwable throwable) {
-    if (businessRecorded.compareAndSet(false, true)) {
-      learningOpsRecorder.learningPlanDraft(status);
-      if (status == OpsStatus.FAILED) {
-        opsLogger.warn(
-            log,
-            OpsLogEventType.LEARNING_PLAN_DRAFT_FAILED,
-            logFields(failureType == null ? SseFailureType.UPSTREAM_ERROR : failureType, throwable),
-            null);
-      }
     }
   }
 

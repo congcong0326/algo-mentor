@@ -85,6 +85,14 @@ public interface LearningPlanMapper {
       @Param("targetType") String targetType,
       @Param("targetId") long targetId);
 
+  int discardActiveExtensionProposalGroup(
+      @Param("userId") long userId,
+      @Param("planId") long planId,
+      @Param("proposalGroupId") long proposalGroupId,
+      @Param("activeStatus") String activeStatus,
+      @Param("discardedStatus") String discardedStatus,
+      @Param("updatedAt") Instant updatedAt);
+
   long insertDraftRevision(LearningPlanDraftRevisionRow row);
 
   int updateDraftRevision(LearningPlanDraftRevisionRow row);

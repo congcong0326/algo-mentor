@@ -79,6 +79,41 @@ class LearningPlanProposalGroupServiceTest {
   }
 
   @Test
+  void rejectsDiscardWhenGroupWasAppliedBeforeTransition() {
+    LearningPlanProposalGroup group = service.createGroup(
+        42L,
+        LearningPlanProposalType.PLAN_EXTENSION,
+        LearningPlanProposalTargetType.PLAN,
+        900L,
+        "增加图论题");
+    repository.saveGroup(group.withStatus(LearningPlanProposalGroupStatus.APPLIED, clock.instant()));
+
+    assertThatThrownBy(() -> service.discardExtensionProposal(42L, 900L, group.id()))
+        .isInstanceOf(org.congcong.algomentor.mentor.application.learningplan.LearningPlanException.class)
+        .extracting("code")
+        .isEqualTo("LEARNING_PLAN_PROPOSAL_GROUP_NOT_ACTIVE");
+  }
+
+  @Test
+  void staleDiscardTransitionDoesNotOverwriteAppliedGroup() {
+    LearningPlanProposalGroup group = service.createGroup(
+        42L,
+        LearningPlanProposalType.PLAN_EXTENSION,
+        LearningPlanProposalTargetType.PLAN,
+        900L,
+        "增加图论题");
+    repository.applyAfterNextLock(group.id());
+
+    assertThatThrownBy(() -> service.discardExtensionProposal(42L, 900L, group.id()))
+        .isInstanceOf(org.congcong.algomentor.mentor.application.learningplan.LearningPlanException.class)
+        .extracting("code")
+        .isEqualTo("LEARNING_PLAN_PROPOSAL_GROUP_NOT_ACTIVE");
+    assertThat(repository.findGroupForUser(group.id(), 42L)).get()
+        .extracting(LearningPlanProposalGroup::status)
+        .isEqualTo(LearningPlanProposalGroupStatus.APPLIED);
+  }
+
+  @Test
   void rejectsInvalidProposalTargetPair() {
     Instant now = clock.instant();
 
@@ -243,6 +278,7 @@ class LearningPlanProposalGroupServiceTest {
     private final Map<Long, LearningPlanExtensionRevision> extensionRevisions = new HashMap<>();
     private long groupSequence = 10;
     private long proposalSequence = 100;
+    private Long applyAfterNextLockGroupId;
 
     @Override
     public LearningPlanProposalGroup saveGroup(LearningPlanProposalGroup group) {
@@ -255,6 +291,38 @@ class LearningPlanProposalGroupServiceTest {
     @Override
     public Optional<LearningPlanProposalGroup> findGroupForUser(long groupId, long userId) {
       return Optional.ofNullable(groups.get(groupId)).filter(group -> group.userId() == userId);
+    }
+
+    @Override
+    public Optional<LearningPlanProposalGroup> findGroupForUserForUpdate(long groupId, long userId) {
+      Optional<LearningPlanProposalGroup> group = findGroupForUser(groupId, userId);
+      if (applyAfterNextLockGroupId != null && applyAfterNextLockGroupId == groupId) {
+        applyAfterNextLockGroupId = null;
+        group.ifPresent(current -> groups.put(groupId, current.withStatus(
+            LearningPlanProposalGroupStatus.APPLIED,
+            current.updatedAt())));
+      }
+      return group;
+    }
+
+    @Override
+    public LearningPlanProposalGroup discardActiveExtensionProposalGroup(
+        long userId,
+        long planId,
+        long proposalGroupId,
+        Instant updatedAt) {
+      LearningPlanProposalGroup current = groups.get(proposalGroupId);
+      if (current == null
+          || current.userId() != userId
+          || current.proposalType() != LearningPlanProposalType.PLAN_EXTENSION
+          || current.targetType() != LearningPlanProposalTargetType.PLAN
+          || current.targetId() != planId
+          || current.status() != LearningPlanProposalGroupStatus.ACTIVE) {
+        return null;
+      }
+      LearningPlanProposalGroup discarded = current.withStatus(LearningPlanProposalGroupStatus.DISCARDED, updatedAt);
+      groups.put(proposalGroupId, discarded);
+      return discarded;
     }
 
     @Override
@@ -345,6 +413,10 @@ class LearningPlanProposalGroupServiceTest {
         return revision;
       });
       return superseded;
+    }
+
+    private void applyAfterNextLock(long groupId) {
+      this.applyAfterNextLockGroupId = groupId;
     }
   }
 }

@@ -77,6 +77,9 @@ class ProblemMapperXmlTest {
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.lockProposalGroupByIdForUpdate")).isTrue();
     assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.discardActiveExtensionProposalGroup"))
+        .isTrue();
+    assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.insertDraftRevision")).isTrue();
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.insertExtensionRevision")).isTrue();

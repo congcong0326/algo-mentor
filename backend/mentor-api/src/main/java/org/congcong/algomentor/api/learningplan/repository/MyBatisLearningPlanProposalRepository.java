@@ -77,6 +77,26 @@ public class MyBatisLearningPlanProposalRepository implements LearningPlanPropos
 
   @Override
   @Transactional
+  public LearningPlanProposalGroup discardActiveExtensionProposalGroup(
+      long userId,
+      long planId,
+      long proposalGroupId,
+      Instant updatedAt) {
+    int updated = mapper.discardActiveExtensionProposalGroup(
+        userId,
+        planId,
+        proposalGroupId,
+        LearningPlanProposalGroupStatus.ACTIVE.name(),
+        LearningPlanProposalGroupStatus.DISCARDED.name(),
+        updatedAt);
+    if (updated == 0) {
+      return null;
+    }
+    return toGroup(mapper.findProposalGroupForUser(proposalGroupId, userId));
+  }
+
+  @Override
+  @Transactional
   public LearningPlanDraftRevision saveDraftRevision(LearningPlanDraftRevision revision) {
     LearningPlanProposalGroupRow group = lockAndValidateGroup(
         revision.proposalGroupId(),

@@ -146,6 +146,53 @@ class MyBatisLearningPlanProposalRepositoryTest {
   }
 
   @Test
+  void discardActiveExtensionProposalGroupUsesStatusGuardedMapperUpdate() {
+    LearningPlanMapper mapper = mock(LearningPlanMapper.class);
+    MyBatisLearningPlanProposalRepository repository = new MyBatisLearningPlanProposalRepository(mapper, objectMapper);
+    when(mapper.discardActiveExtensionProposalGroup(
+        7,
+        40,
+        20,
+        LearningPlanProposalGroupStatus.ACTIVE.name(),
+        LearningPlanProposalGroupStatus.DISCARDED.name(),
+        UPDATED_AT)).thenReturn(1);
+    when(mapper.findProposalGroupForUser(20, 7)).thenReturn(group(
+        LearningPlanProposalType.PLAN_EXTENSION,
+        LearningPlanProposalTargetType.PLAN,
+        40,
+        LearningPlanProposalGroupStatus.DISCARDED));
+
+    var result = repository.discardActiveExtensionProposalGroup(7, 40, 20, UPDATED_AT);
+
+    assertThat(result).isNotNull();
+    assertThat(result.status()).isEqualTo(LearningPlanProposalGroupStatus.DISCARDED);
+    verify(mapper).discardActiveExtensionProposalGroup(
+        7,
+        40,
+        20,
+        LearningPlanProposalGroupStatus.ACTIVE.name(),
+        LearningPlanProposalGroupStatus.DISCARDED.name(),
+        UPDATED_AT);
+  }
+
+  @Test
+  void discardActiveExtensionProposalGroupReturnsNullWhenStatusGuardMisses() {
+    LearningPlanMapper mapper = mock(LearningPlanMapper.class);
+    MyBatisLearningPlanProposalRepository repository = new MyBatisLearningPlanProposalRepository(mapper, objectMapper);
+    when(mapper.discardActiveExtensionProposalGroup(
+        7,
+        40,
+        20,
+        LearningPlanProposalGroupStatus.ACTIVE.name(),
+        LearningPlanProposalGroupStatus.DISCARDED.name(),
+        UPDATED_AT)).thenReturn(0);
+
+    var result = repository.discardActiveExtensionProposalGroup(7, 40, 20, UPDATED_AT);
+
+    assertThat(result).isNull();
+  }
+
+  @Test
   void updateDraftRevisionRejectsMovingPersistedRevisionToAnotherDraft() {
     LearningPlanMapper mapper = mock(LearningPlanMapper.class);
     MyBatisLearningPlanProposalRepository repository = new MyBatisLearningPlanProposalRepository(mapper, objectMapper);
@@ -203,13 +250,21 @@ class MyBatisLearningPlanProposalRepositoryTest {
       LearningPlanProposalType proposalType,
       LearningPlanProposalTargetType targetType,
       long targetId) {
+    return group(proposalType, targetType, targetId, LearningPlanProposalGroupStatus.ACTIVE);
+  }
+
+  private LearningPlanProposalGroupRow group(
+      LearningPlanProposalType proposalType,
+      LearningPlanProposalTargetType targetType,
+      long targetId,
+      LearningPlanProposalGroupStatus status) {
     return new LearningPlanProposalGroupRow(
         20L,
         7L,
         proposalType.name(),
         targetType.name(),
         targetId,
-        LearningPlanProposalGroupStatus.ACTIVE.name(),
+        status.name(),
         "instruction",
         null,
         CREATED_AT,
