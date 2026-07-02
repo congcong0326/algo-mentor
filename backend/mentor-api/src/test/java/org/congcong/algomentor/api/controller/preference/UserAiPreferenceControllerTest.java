@@ -58,12 +58,12 @@ class UserAiPreferenceControllerTest {
   @Test
   void getPreferenceUsesCurrentUser() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(preferenceService.get(42L)).thenReturn(preference(PracticeCoachStyle.SOCRATIC_GUIDE));
+    when(preferenceService.get(42L)).thenReturn(preference(PracticeCoachStyle.GUIDED));
 
     mockMvc.perform(get("/api/me/ai-preferences"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.data.coachStyle").value("SOCRATIC_GUIDE"))
-        .andExpect(jsonPath("$.data.coachStyleLabel").value("启发型教练"))
+        .andExpect(jsonPath("$.data.coachStyle").value("GUIDED"))
+        .andExpect(jsonPath("$.data.coachStyleLabel").value("引导型教练"))
         .andExpect(jsonPath("$.data.responseLanguage").doesNotExist())
         .andExpect(jsonPath("$.data.responseLanguageLabel").doesNotExist());
 
@@ -74,19 +74,37 @@ class UserAiPreferenceControllerTest {
   void patchPreferenceSavesSupportedValues() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     when(preferenceService.update(org.mockito.ArgumentMatchers.eq(42L), org.mockito.ArgumentMatchers.any()))
-        .thenReturn(preference(PracticeCoachStyle.INTERVIEWER));
+        .thenReturn(preference(PracticeCoachStyle.DIRECT));
 
     mockMvc.perform(patch("/api/me/ai-preferences")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"coachStyle\":\"INTERVIEWER\"}"))
+            .content("{\"coachStyle\":\"DIRECT\"}"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.data.coachStyle").value("INTERVIEWER"))
-        .andExpect(jsonPath("$.data.coachStyleLabel").value("面试官教练"))
+        .andExpect(jsonPath("$.data.coachStyle").value("DIRECT"))
+        .andExpect(jsonPath("$.data.coachStyleLabel").value("直给型教练"))
         .andExpect(jsonPath("$.data.responseLanguage").doesNotExist());
 
     ArgumentCaptor<UserAiPreferenceUpdate> updateCaptor = ArgumentCaptor.forClass(UserAiPreferenceUpdate.class);
     verify(preferenceService).update(org.mockito.ArgumentMatchers.eq(42L), updateCaptor.capture());
-    org.assertj.core.api.Assertions.assertThat(updateCaptor.getValue().coachStyle()).isEqualTo(PracticeCoachStyle.INTERVIEWER);
+    org.assertj.core.api.Assertions.assertThat(updateCaptor.getValue().coachStyle()).isEqualTo(PracticeCoachStyle.DIRECT);
+  }
+
+  @Test
+  void patchPreferenceFallsBackToGuidedForUnknownCoachStyle() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(preferenceService.update(org.mockito.ArgumentMatchers.eq(42L), org.mockito.ArgumentMatchers.any()))
+        .thenReturn(preference(PracticeCoachStyle.GUIDED));
+
+    mockMvc.perform(patch("/api/me/ai-preferences")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"coachStyle\":\"UNKNOWN_VALUE\"}"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.coachStyle").value("GUIDED"))
+        .andExpect(jsonPath("$.data.coachStyleLabel").value("引导型教练"));
+
+    ArgumentCaptor<UserAiPreferenceUpdate> updateCaptor = ArgumentCaptor.forClass(UserAiPreferenceUpdate.class);
+    verify(preferenceService).update(org.mockito.ArgumentMatchers.eq(42L), updateCaptor.capture());
+    org.assertj.core.api.Assertions.assertThat(updateCaptor.getValue().coachStyle()).isEqualTo(PracticeCoachStyle.GUIDED);
   }
 
   @Test

@@ -310,7 +310,7 @@ describe('App', () => {
     expect(screen.queryByText('教练模式')).not.toBeInTheDocument();
     expect(screen.queryByText('精选能力')).not.toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'AI 教练偏好' })).toBeInTheDocument();
-    expect(await screen.findByRole('button', { name: /启发型教练/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(await screen.findByRole('button', { name: /引导型教练/ })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryByRole('button', { name: /English/ })).not.toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: '能力雷达图' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '诊断报告摘要' })).toBeInTheDocument();
@@ -391,19 +391,19 @@ describe('App', () => {
 
     render(<App />);
 
-    fireEvent.click(await screen.findByRole('button', { name: /面试官教练/ }));
+    fireEvent.click(await screen.findByRole('button', { name: /直给型教练/ }));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
       '/api/me/ai-preferences',
       expect.objectContaining({
         method: 'PATCH',
         body: JSON.stringify({
-          coachStyle: 'INTERVIEWER',
+          coachStyle: 'DIRECT',
         }),
       }),
     ));
     expect(await screen.findByText('已保存')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /面试官教练/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: /直给型教练/ })).toHaveAttribute('aria-pressed', 'true');
     expectCsrfHeader(fetchMock, '/api/me/ai-preferences', 'PATCH');
   });
 
@@ -2263,19 +2263,16 @@ function userAiPreferenceResponse(data = userAiPreferenceData()): Response {
 
 function userAiPreferenceData() {
   return {
-    coachStyle: 'SOCRATIC_GUIDE',
-    coachStyleLabel: '启发型教练',
+    coachStyle: 'GUIDED',
+    coachStyleLabel: '引导型教练',
   };
 }
 
 function coachStyleLabel(style: string): string {
   return {
-    SOCRATIC_GUIDE: '启发型教练',
-    DIRECT_EXPLAINER: '直给型教练',
-    INTERVIEWER: '面试官教练',
-    STRICT_REVIEWER: '严苛 Review 官',
-    SUPPORTIVE_MENTOR: '陪伴型教练',
-  }[style] ?? '启发型教练';
+    GUIDED: '引导型教练',
+    DIRECT: '直给型教练',
+  }[style] ?? '引导型教练';
 }
 
 function abilityTags() {

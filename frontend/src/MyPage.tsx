@@ -28,13 +28,7 @@ import type {
   UserAiPreferenceRequest,
 } from './types/api';
 
-const coachStyleOptions: PracticeCoachStyle[] = [
-  'SOCRATIC_GUIDE',
-  'DIRECT_EXPLAINER',
-  'INTERVIEWER',
-  'STRICT_REVIEWER',
-  'SUPPORTIVE_MENTOR',
-];
+const coachStyleOptions: PracticeCoachStyle[] = ['GUIDED', 'DIRECT'];
 const defaultRadarTagCount = 8;
 const maxRadarTagCount = 12;
 const minRadarTagCount = 3;

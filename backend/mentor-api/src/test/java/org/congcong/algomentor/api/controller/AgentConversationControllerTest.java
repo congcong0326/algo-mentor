@@ -227,6 +227,8 @@ class AgentConversationControllerTest {
         .containsEntry(PracticeChatPromptConstants.METADATA_PLAN_ID, 12L)
         .containsEntry(PracticeChatPromptConstants.METADATA_PHASE_INDEX, 1)
         .containsEntry(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, "two-sum");
+    org.assertj.core.api.Assertions.assertThat(agentLoopRunner.lastRequest.metadata())
+        .containsEntry(PracticeChatPromptConstants.METADATA_COACH_STYLE, "GUIDED");
     @SuppressWarnings("unchecked")
     Map<String, ?> promptSectionVersions =
         (Map<String, ?>) agentLoopRunner.lastRequest.metadata().get(AgentPromptMetadataKeys.PROMPT_SECTION_VERSIONS);
@@ -243,6 +245,13 @@ class AgentConversationControllerTest {
         .startsWith(org.congcong.algomentor.llm.core.request.LlmMessage.Role.SYSTEM)
         .endsWith(
             org.congcong.algomentor.llm.core.request.LlmMessage.Role.USER);
+    String allText = agentLoopRunner.lastRequest.messages().stream()
+        .map(org.congcong.algomentor.llm.core.request.LlmMessage::text)
+        .reduce("", String::concat);
+    org.assertj.core.api.Assertions.assertThat(allText)
+        .contains("引导型教练")
+        .contains("Layered Hint Protocol")
+        .contains("TAKES PRECEDENCE");
   }
 
   @Test

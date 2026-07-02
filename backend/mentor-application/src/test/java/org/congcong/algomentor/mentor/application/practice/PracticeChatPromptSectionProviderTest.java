@@ -9,6 +9,7 @@ import org.congcong.algomentor.agent.core.prompt.DefaultPromptAssembler;
 import org.congcong.algomentor.agent.core.prompt.PromptAssembly;
 import org.congcong.algomentor.agent.core.prompt.PromptAssemblyRequest;
 import org.congcong.algomentor.agent.core.prompt.PromptSlot;
+import org.congcong.algomentor.agent.core.prompt.RenderedPromptSection;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
@@ -70,7 +71,8 @@ class PracticeChatPromptSectionProviderTest {
     String allText = assembly.canonicalMessages().stream().map(LlmMessage::text).reduce("", String::concat);
     assertThat(allText)
         .contains("algo-mentor 的算法刷题教练")
-        .contains("启发型教练")
+        .contains("引导型教练")
+        .contains("Layered Hint Protocol")
         .contains("Response language: Simplified Chinese")
         .contains("本轮用户意图：ASK_SOLUTION")
         .contains("- planId: 12")
@@ -96,11 +98,11 @@ class PracticeChatPromptSectionProviderTest {
         Map.of(
             PracticeChatPromptConstants.VARIABLE_CONTEXT, context(null),
             PracticeChatPromptConstants.VARIABLE_HISTORY, List.of(),
-            PracticeChatPromptConstants.VARIABLE_CURRENT_USER_MESSAGE, "请像面试一样追问我",
-            PracticeChatPromptConstants.VARIABLE_COACH_STYLE, PracticeCoachStyle.INTERVIEWER,
+            PracticeChatPromptConstants.VARIABLE_CURRENT_USER_MESSAGE, "直接讲完整解法",
+            PracticeChatPromptConstants.VARIABLE_COACH_STYLE, PracticeCoachStyle.DIRECT,
             PracticeChatPromptConstants.VARIABLE_RESPONSE_LANGUAGE, PracticeResponseLanguage.EN_US),
         Map.of(
-            PracticeChatPromptConstants.METADATA_COACH_STYLE, PracticeCoachStyle.INTERVIEWER.name(),
+            PracticeChatPromptConstants.METADATA_COACH_STYLE, PracticeCoachStyle.DIRECT.name(),
             PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, PracticeResponseLanguage.EN_US.name())));
 
     assertThat(assembly.renderedSections())
@@ -114,14 +116,44 @@ class PracticeChatPromptSectionProviderTest {
 
     String allText = assembly.canonicalMessages().stream().map(LlmMessage::text).reduce("", String::concat);
     assertThat(allText)
-        .contains("面试官教练")
-        .contains("Act like an algorithm interviewer")
+        .contains("直给型教练")
+        .contains("Act as a concise, direct explainer")
+        .contains("Intuition")
         .contains("Response language: English")
         .contains("Coach style and response language only affect presentation")
         .contains("题目聊天教学策略");
+    RenderedPromptSection coachStyleSection = section(assembly, PracticeChatPromptConstants.SECTION_COACH_STYLE);
+    assertThat(coachStyleSection.section().version()).isEqualTo("v2");
+    assertThat(coachStyleSection.section().sourceRef().attributes())
+        .containsEntry(PracticeChatPromptConstants.METADATA_COACH_STYLE, PracticeCoachStyle.DIRECT.name());
     assertThat(assembly.metadata())
-        .containsEntry(PracticeChatPromptConstants.METADATA_COACH_STYLE, "INTERVIEWER")
+        .containsEntry(PracticeChatPromptConstants.METADATA_COACH_STYLE, "DIRECT")
         .containsEntry(PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, "EN_US");
+  }
+
+  @Test
+  void rendersGuidedLayeredHintProtocolInCoachStyleSection() {
+    PromptAssembly assembly = assembler().assemble(new PromptAssemblyRequest(
+        PracticeChatPromptConstants.SCENARIO,
+        PracticeChatPromptConstants.PROFILE_ID,
+        8_000,
+        Map.of(
+            PracticeChatPromptConstants.VARIABLE_CONTEXT, context(null),
+            PracticeChatPromptConstants.VARIABLE_HISTORY, List.of(),
+            PracticeChatPromptConstants.VARIABLE_CURRENT_USER_MESSAGE, "给点提示",
+            PracticeChatPromptConstants.VARIABLE_COACH_STYLE, PracticeCoachStyle.GUIDED),
+        Map.of(PracticeChatPromptConstants.METADATA_COACH_STYLE, PracticeCoachStyle.GUIDED.name())));
+
+    RenderedPromptSection coachStyleSection = section(assembly, PracticeChatPromptConstants.SECTION_COACH_STYLE);
+    assertThat(coachStyleSection.renderedText())
+        .contains("引导型教练")
+        .contains("Layered Hint Protocol")
+        .contains("MUST NOT")
+        .contains("Starting Layer Selection")
+        .contains("TAKES PRECEDENCE");
+    assertThat(coachStyleSection.section().version()).isEqualTo("v2");
+    assertThat(coachStyleSection.section().sourceRef().attributes())
+        .containsEntry(PracticeChatPromptConstants.METADATA_COACH_STYLE, PracticeCoachStyle.GUIDED.name());
   }
 
   @Test
@@ -203,6 +235,13 @@ class PracticeChatPromptSectionProviderTest {
     return new DefaultPromptAssembler(
         new PracticeChatPromptProfileResolver(),
         List.of(new PracticeChatPromptSectionProvider()));
+  }
+
+  private RenderedPromptSection section(PromptAssembly assembly, String sectionId) {
+    return assembly.renderedSections().stream()
+        .filter(section -> sectionId.equals(section.section().id()))
+        .findFirst()
+        .orElseThrow();
   }
 
   private PracticeChatContext context(PracticeChatProblemDetail detail) {

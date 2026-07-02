@@ -173,7 +173,8 @@ class AgentConversationServiceTest {
     String allText = run.agentRequest().messages().stream().map(LlmMessage::text).reduce("", String::concat);
     assertThat(allText)
         .contains("平台与安全基线")
-        .contains("启发型教练")
+        .contains("引导型教练")
+        .contains("Layered Hint Protocol")
         .contains("Response language: Simplified Chinese")
         .contains("题目聊天教学策略")
         .contains("当前训练上下文")
@@ -200,17 +201,17 @@ class AgentConversationServiceTest {
         "请模拟面试追问",
         "idem-practice",
         Map.of(
-            PracticeChatPromptConstants.METADATA_COACH_STYLE, PracticeCoachStyle.INTERVIEWER.name(),
+            PracticeChatPromptConstants.METADATA_COACH_STYLE, PracticeCoachStyle.DIRECT.name(),
             PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, PracticeResponseLanguage.EN_US.name()),
         new PracticeChatReference(12L, 1, "two-sum", "zh-CN")));
 
     assertThat(run.agentRequest().metadata())
-        .containsEntry(PracticeChatPromptConstants.METADATA_COACH_STYLE, "INTERVIEWER")
+        .containsEntry(PracticeChatPromptConstants.METADATA_COACH_STYLE, "DIRECT")
         .containsEntry(PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, "EN_US");
     String allText = run.agentRequest().messages().stream().map(LlmMessage::text).reduce("", String::concat);
     assertThat(allText)
-        .contains("面试官教练")
-        .contains("Act like an algorithm interviewer")
+        .contains("直给型教练")
+        .contains("Act as a concise, direct explainer")
         .contains("Response language: English");
   }
 

@@ -112,7 +112,7 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
         PromptSensitivity.PUBLIC_FACT,
         20,
         true,
-        "v1",
+        "v2",
         PromptCachePolicy.CACHEABLE_BY_PROFILE,
         PromptBudgetPolicy.FAIL_IF_OVER_BUDGET,
         PromptRenderMode.MARKDOWN,
