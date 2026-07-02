@@ -49,7 +49,7 @@ class PostgresAgentConversationRepositoryTest {
         "insertTask:7:learn monotonic stack:system prompt",
         "insertTurn:101",
         "insertUserMessage:101:201:learn monotonic stack:5",
-        "insertRun:101:201:idem-1:4",
+        "insertRun:101:201:idem-1:50",
         "attachTurnUserMessageAndRun:201:301:401");
   }
 

@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentCancellationToken;
 import org.congcong.algomentor.agent.core.AgentLlmRequestFactory;
+import org.congcong.algomentor.agent.core.AgentLoopDefaults;
 import org.congcong.algomentor.agent.core.AgentLoopObserver;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentModelSelectorResolver;
@@ -271,7 +272,7 @@ public class MentorAiConfiguration {
       List<AgentLoopObserver> observers,
       @Value("${" + MentorConfigurationKeys.AGENT_TOOL_CHOICE + ":auto}") String toolChoice,
       @Value("${" + MentorConfigurationKeys.AGENT_SPECIFIC_TOOL_NAME + ":}") String specificToolName,
-      @Value("${" + MentorConfigurationKeys.AGENT_MAX_STEPS + ":20}") int maxSteps,
+      @Value("${" + MentorConfigurationKeys.AGENT_MAX_STEPS + ":" + AgentLoopDefaults.DEFAULT_MAX_STEPS + "}") int maxSteps,
       ToolResultCompactionPolicy toolResultPolicy,
       org.springframework.beans.factory.ObjectProvider<ToolResultStore> toolResultStore,
       ObjectMapper objectMapper,

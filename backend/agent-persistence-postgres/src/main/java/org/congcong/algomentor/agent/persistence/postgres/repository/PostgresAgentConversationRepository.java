@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import org.congcong.algomentor.agent.core.AgentLoopDefaults;
 import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessageRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
@@ -20,8 +21,6 @@ import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentRunR
 import org.springframework.transaction.annotation.Transactional;
 
 public class PostgresAgentConversationRepository implements AgentConversationRepository, AgentTaskMessageRepository {
-
-  private static final int DEFAULT_MAX_STEPS = 4;
 
   private final AgentConversationMapper conversationMapper;
 
@@ -53,7 +52,7 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
         turnId,
         runUuid,
         request.idempotencyKey(),
-        DEFAULT_MAX_STEPS);
+        AgentLoopDefaults.DEFAULT_MAX_STEPS);
     conversationMapper.attachTurnUserMessageAndRun(turnId, userMessageId, runId);
 
     return new PreparedAgentRun(

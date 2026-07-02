@@ -16,6 +16,7 @@ import java.util.concurrent.Flow;
 import java.util.concurrent.TimeUnit;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.agent.core.AgentRequest;
+import org.congcong.algomentor.agent.core.AgentLoopDefaults;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentModelSelectorResolver;
 import org.congcong.algomentor.agent.core.AgentRunner;
@@ -161,6 +162,13 @@ class MentorAiConfigurationTest {
       assertThat(context).hasSingleBean(CalculatorTool.class);
       assertThat(registry.specs()).extracting(spec -> spec.name()).contains("calculator");
     });
+  }
+
+  @Test
+  void usesFiftyAgentLoopStepsByDefault() {
+    contextRunner.run(context -> assertThat(ReflectionTestUtils.getField(
+        context.getBean(AgentLoopRunner.class),
+        "maxSteps")).isEqualTo(AgentLoopDefaults.DEFAULT_MAX_STEPS));
   }
 
   @Test

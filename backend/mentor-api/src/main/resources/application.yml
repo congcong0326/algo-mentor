@@ -68,7 +68,7 @@ algo-mentor:
     cookie-same-site: ${AUTH_COOKIE_SAME_SITE:Lax}
     admin-emails: ${AUTH_ADMIN_EMAILS:}
   agent:
-    max-steps: ${AGENT_MAX_STEPS:4}
+    max-steps: ${AGENT_MAX_STEPS:50}
     tool-choice: ${AGENT_TOOL_CHOICE:auto}
     specific-tool-name: ${AGENT_SPECIFIC_TOOL_NAME:}
     # 阶段一权限 pending request 使用单实例内存实现；多实例部署前需要替换为共享 coordinator。
