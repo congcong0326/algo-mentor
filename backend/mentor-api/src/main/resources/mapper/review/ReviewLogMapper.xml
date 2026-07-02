@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.review.mapper.ReviewLogMapper">
+
+  <insert id="insert">
+    INSERT INTO review_log (
+      mistake_note_id,
+      user_id,
+      review_mode,
+      card_variant,
+      card_prompt_json,
+      user_recall_text,
+      user_note_transient,
+      grade,
+      grade_source,
+      ai_judgment_json,
+      practice_code_review_id,
+      recall_message_id,
+      interval_before,
+      interval_after,
+      ease_factor_before,
+      ease_factor_after,
+      reviewed_at
+    ) VALUES (
+      #{mistakeNoteId},
+      #{userId},
+      #{reviewMode},
+      #{cardVariant},
+      #{cardPromptJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{userRecallText},
+      #{userNoteTransient},
+      #{grade},
+      #{gradeSource},
+      #{aiJudgmentJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{practiceCodeReviewId},
+      #{recallMessageId},
+      #{intervalBefore},
+      #{intervalAfter},
+      #{easeFactorBefore},
+      #{easeFactorAfter},
+      #{reviewedAt}
+    )
+  </insert>
+</mapper>

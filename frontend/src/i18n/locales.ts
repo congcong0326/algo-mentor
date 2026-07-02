@@ -80,6 +80,7 @@ export interface LocaleResources {
     home: string;
     my: string;
     learningPlans: string;
+    mistakes: string;
     problems: string;
     adminUsers: string;
     debug: string;
@@ -560,6 +561,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       home: '首页',
       my: '我的',
       learningPlans: '方案',
+      mistakes: '错题本',
       problems: '题库',
       adminUsers: '用户管理',
       debug: 'AI 调试',
@@ -1089,6 +1091,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       home: 'Dashboard',
       my: 'Me',
       learningPlans: 'Plans',
+      mistakes: 'Mistakes',
       problems: 'Problems',
       adminUsers: 'Users',
       debug: 'AI Debug',

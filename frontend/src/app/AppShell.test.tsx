@@ -51,7 +51,7 @@ describe('AppShell', () => {
     expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'AI 调试' })).toBeInTheDocument();
     expect(within(screen.getByRole('navigation', { name: '主导航' })).getAllByRole('button')
-      .map((button) => button.textContent)).toEqual(['首页', '方案', 'AI 调试', '我的']);
+      .map((button) => button.textContent)).toEqual(['首页', '方案', '错题本', 'AI 调试', '我的']);
     expect(screen.getByText('User Name')).toBeInTheDocument();
     expect(screen.getByText('Current page')).toBeInTheDocument();
 

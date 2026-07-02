@@ -26,12 +26,19 @@ import type {
   PracticeCodeReviewHistoryResponse,
   PracticeProgressStatus,
   PracticeSessionResponse,
+  MasteryState,
+  MistakeNote,
+  MistakeSource,
   PasswordLoginRequest,
   PasswordRegisterRequest,
   ProblemDetail,
   ProblemListItem,
   ProblemListQuery,
   ProblemPage,
+  RecallReviewResult,
+  ReviewCard,
+  ReviewQueueResponse,
+  ReviewSummaryResponse,
   SseEventName,
   SseStreamEvent,
   UserAiPreference,
@@ -161,6 +168,146 @@ export async function logout(): Promise<void> {
   if (!response.ok) {
     throw await toApiRequestError(response, 'Logout request failed');
   }
+}
+
+export async function listMistakeNotes(
+  query: { state?: MasteryState | ''; source?: MistakeSource | ''; keyword?: string; limit?: number; offset?: number } = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<MistakeNote[]>> {
+  const response = await apiFetch(`/api/mistake-notes${toQueryString(query)}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Mistake notes request failed');
+  }
+
+  return response.json();
+}
+
+export async function markMistake(problemSlug: string, signal?: AbortSignal): Promise<ApiResponse<MistakeNote>> {
+  const response = await apiFetch('/api/mistake-notes', {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ problemSlug }),
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Mark mistake request failed');
+  }
+
+  return response.json();
+}
+
+export async function archiveMistake(
+  noteId: number,
+  archived: boolean,
+  signal?: AbortSignal,
+): Promise<ApiResponse<MistakeNote>> {
+  const response = await apiFetch(`/api/mistake-notes/${noteId}/archive`, {
+    method: 'PATCH',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ archived }),
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Archive mistake request failed');
+  }
+
+  return response.json();
+}
+
+export async function updateMistakeNote(
+  noteId: number,
+  text: string,
+  signal?: AbortSignal,
+): Promise<ApiResponse<MistakeNote>> {
+  const response = await apiFetch(`/api/mistake-notes/${noteId}/note`, {
+    method: 'PATCH',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ text }),
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Update mistake note request failed');
+  }
+
+  return response.json();
+}
+
+export async function getReviewCard(noteId: number, signal?: AbortSignal): Promise<ApiResponse<ReviewCard>> {
+  const response = await apiFetch(`/api/mistake-notes/${noteId}/card`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Review card request failed');
+  }
+
+  return response.json();
+}
+
+export async function submitRecall(
+  noteId: number,
+  recallText: string,
+  transientNote?: string,
+  signal?: AbortSignal,
+): Promise<ApiResponse<RecallReviewResult>> {
+  const response = await apiFetch(`/api/mistake-notes/${noteId}/recall`, {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ recallText, transientNote }),
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Submit recall request failed');
+  }
+
+  return response.json();
+}
+
+export async function getReviewQueue(limit = 20, signal?: AbortSignal): Promise<ApiResponse<ReviewQueueResponse>> {
+  const response = await apiFetch(`/api/review-sessions/queue${toQueryString({ limit })}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Review queue request failed');
+  }
+
+  return response.json();
+}
+
+export async function getReviewSummary(signal?: AbortSignal): Promise<ApiResponse<ReviewSummaryResponse>> {
+  const response = await apiFetch('/api/review-sessions/summary', {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Review summary request failed');
+  }
+
+  return response.json();
 }
 
 export async function getAbilityProfile(signal?: AbortSignal): Promise<ApiResponse<AbilityProfileResponse>> {
@@ -704,7 +851,20 @@ interface PracticeSessionQuery {
   limit?: number;
 }
 
-type QueryParams = ProblemListQuery | LearningPlanListQuery | PracticeSessionQuery | AdminUserListQuery;
+interface MistakeNoteListQuery {
+  state?: MasteryState | '';
+  source?: MistakeSource | '';
+  keyword?: string;
+  limit?: number;
+  offset?: number;
+}
+
+type QueryParams =
+  | ProblemListQuery
+  | LearningPlanListQuery
+  | PracticeSessionQuery
+  | AdminUserListQuery
+  | MistakeNoteListQuery;
 
 function toQueryString(query: QueryParams): string {
   const params = new URLSearchParams();

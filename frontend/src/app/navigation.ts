@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Bot, ClipboardList, House, Library, UserRound, UsersRound } from 'lucide-react';
+import { Bot, ClipboardList, House, Library, NotebookTabs, UserRound, UsersRound } from 'lucide-react';
 import type { AuthPermission } from '../types/api';
 
 export const APP_ROUTES = {
@@ -8,6 +8,8 @@ export const APP_ROUTES = {
   my: '/me',
   learningPlans: '/learning-plans',
   learningPlanNew: '/learning-plans/new',
+  mistakes: '/mistakes',
+  reviewSession: '/mistakes/review',
   problems: '/admin/problems',
   adminUsers: '/admin/users',
   debug: '/debug',
@@ -29,7 +31,7 @@ export interface LearningPlanPracticeSubmissionsRoute {
   problemSlug: string;
 }
 
-export type AppView = 'home' | 'my' | 'learningPlans' | 'problems' | 'adminUsers' | 'debug';
+export type AppView = 'home' | 'my' | 'learningPlans' | 'mistakes' | 'problems' | 'adminUsers' | 'debug';
 
 export interface NavigationItem {
   view: AppView;
@@ -51,6 +53,12 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     labelKey: 'learningPlans',
     path: APP_ROUTES.learningPlans,
     icon: ClipboardList,
+  },
+  {
+    view: 'mistakes',
+    labelKey: 'mistakes',
+    path: APP_ROUTES.mistakes,
+    icon: NotebookTabs,
   },
   {
     view: 'problems',
@@ -87,6 +95,9 @@ export function viewFromPath(pathname: string): AppView | undefined {
   }
   if (pathname === APP_ROUTES.my) {
     return 'my';
+  }
+  if (pathname === APP_ROUTES.mistakes || pathname === APP_ROUTES.reviewSession) {
+    return 'mistakes';
   }
   if (pathname === APP_ROUTES.problems) {
     return 'problems';

@@ -113,3 +113,11 @@ algo-mentor:
       timeout: ${OPENAI_TIMEOUT:5m}
       stream-timeout: ${OPENAI_STREAM_TIMEOUT:5m}
       max-retries: ${OPENAI_MAX_RETRIES:2}
+  review:
+    card-gen:
+      daily-limit: ${REVIEW_CARD_GEN_DAILY_LIMIT:20}
+      cache-ttl-hours: ${REVIEW_CARD_GEN_CACHE_TTL_HOURS:168}
+      prefetch-count: ${REVIEW_CARD_PREFETCH_COUNT:3}
+    scheduler:
+      graduation-interval-days: ${REVIEW_GRADUATION_INTERVAL_DAYS:30}
+      graduation-repetitions: ${REVIEW_GRADUATION_REPETITIONS:3}

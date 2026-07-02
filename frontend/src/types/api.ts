@@ -608,3 +608,72 @@ export interface UsageData {
 export interface MessageEndData {
   finishReason?: string;
 }
+
+export type MasteryState = 'NEW' | 'LEARNING' | 'MASTERED' | 'LAPSED';
+export type MistakeSource = 'REVIEW_FAILED' | 'USER_MARKED' | 'AI_WEAK';
+export type ReviewGrade = 'FORGOT' | 'BARELY' | 'MASTERED' | 'FLUENT';
+export type CardVariant = 'STATIC' | 'RULE_BASED' | 'AI_GENERATED';
+
+export interface MistakeNote {
+  id: number;
+  problemSlug: string;
+  source: MistakeSource;
+  sourceDetail: Record<string, unknown>;
+  masteryState: MasteryState;
+  repetitions: number;
+  easeFactor: number;
+  intervalDays: number;
+  dueAt: string;
+  lapses: number;
+  lastReviewedAt?: string | null;
+  lastGrade?: ReviewGrade | null;
+  archived: boolean;
+  userNotePersistent?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ReviewCardPrompt {
+  key: string;
+  label: string;
+  hint?: string | null;
+}
+
+export interface ReviewCardScaffold {
+  templateMarkdown: string;
+  maxInputChars: number;
+}
+
+export interface ReviewCard {
+  cardVariant: CardVariant;
+  problemRef: {
+    slug: string;
+    titleCn: string;
+    difficulty: string;
+  };
+  contextSummary: string;
+  prompts: ReviewCardPrompt[];
+  scaffold?: ReviewCardScaffold | null;
+  revealPolicy: string;
+  expectedEffort: 'LIGHT' | 'MEDIUM' | 'HEAVY' | string;
+}
+
+export interface RecallReviewResult {
+  grade: ReviewGrade;
+  hitPoints: string[];
+  missedPoints: string[];
+  gapSummary: string;
+  nextDueAt: string;
+  masteryState: MasteryState;
+  intervalDays: number;
+  repetitions: number;
+}
+
+export interface ReviewQueueResponse {
+  items: MistakeNote[];
+  dueCount: number;
+}
+
+export interface ReviewSummaryResponse {
+  dueCount: number;
+}

@@ -16,6 +16,7 @@ import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
+import org.congcong.algomentor.mentor.application.review.PracticeCodeReviewObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,7 @@ public class PracticeCodeReviewService {
   private final PracticeCodeReviewPromptBuilder promptBuilder;
   private final PracticeCodeReviewStructuredOutputMapper outputMapper;
   private final PracticeCodeReviewMetrics metrics;
+  private final PracticeCodeReviewObserver observer;
   private final Function<PracticeTurnContext, PracticeReviewResult> delegate;
 
   public PracticeCodeReviewService(
@@ -50,11 +52,23 @@ public class PracticeCodeReviewService {
       PracticeCodeReviewStructuredOutputMapper outputMapper,
       PracticeCodeReviewMetrics metrics
   ) {
+    this(repository, llmGateway, promptBuilder, outputMapper, metrics, PracticeCodeReviewObserver.NOOP);
+  }
+
+  public PracticeCodeReviewService(
+      PracticeCodeReviewRepository repository,
+      LlmGateway llmGateway,
+      PracticeCodeReviewPromptBuilder promptBuilder,
+      PracticeCodeReviewStructuredOutputMapper outputMapper,
+      PracticeCodeReviewMetrics metrics,
+      PracticeCodeReviewObserver observer
+  ) {
     this.repository = Objects.requireNonNull(repository, "repository must not be null");
     this.llmGateway = Objects.requireNonNull(llmGateway, "llmGateway must not be null");
     this.promptBuilder = Objects.requireNonNull(promptBuilder, "promptBuilder must not be null");
     this.outputMapper = Objects.requireNonNull(outputMapper, "outputMapper must not be null");
     this.metrics = Objects.requireNonNull(metrics, "metrics must not be null");
+    this.observer = Objects.requireNonNull(observer, "observer must not be null");
     this.delegate = null;
   }
 
@@ -64,6 +78,7 @@ public class PracticeCodeReviewService {
     this.promptBuilder = null;
     this.outputMapper = null;
     this.metrics = PracticeCodeReviewMetrics.NOOP;
+    this.observer = PracticeCodeReviewObserver.NOOP;
     this.delegate = Objects.requireNonNull(delegate, "delegate must not be null");
   }
 
@@ -265,6 +280,7 @@ public class PracticeCodeReviewService {
           saved.versionNo(),
           saved.score().total().toPlainString(),
           saved.passed());
+      notifyReviewSaved(saved);
       return PracticeReviewResult.saved(saved);
     } catch (RuntimeException exception) {
       log.warn(
@@ -277,6 +293,20 @@ public class PracticeCodeReviewService {
       return PracticeReviewResult.failed(
           FAILURE_CODE_SAVE_FAILED,
           Map.of("failureCode", FAILURE_CODE_SAVE_FAILED));
+    }
+  }
+
+  private void notifyReviewSaved(PracticeCodeReview saved) {
+    try {
+      observer.onReviewSaved(saved);
+    } catch (RuntimeException exception) {
+      log.warn(
+          "Practice code review observer failed. reviewId={} userId={} sessionId={} exceptionType={}",
+          saved.id(),
+          saved.userId(),
+          saved.sessionId(),
+          exception.getClass().getSimpleName(),
+          exception);
     }
   }
 
