@@ -108,8 +108,8 @@ describe('api service', () => {
     const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
       success: true,
       data: {
-        coachStyle: 'SOCRATIC_GUIDE',
-        coachStyleLabel: '启发型教练',
+        coachStyle: 'GUIDED',
+        coachStyleLabel: '引导型教练',
       },
       timestamp: '2026-06-28T00:00:00Z',
     })));
@@ -320,15 +320,15 @@ describe('api service', () => {
     const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
       success: true,
       data: {
-        coachStyle: 'INTERVIEWER',
-        coachStyleLabel: '面试官教练',
+        coachStyle: 'DIRECT',
+        coachStyleLabel: '直给型教练',
       },
       timestamp: '2026-06-28T00:00:00Z',
     })));
     vi.stubGlobal('fetch', fetchMock);
 
     await updateUserAiPreference({
-      coachStyle: 'INTERVIEWER',
+      coachStyle: 'DIRECT',
     });
 
     expect(fetchMock).toHaveBeenCalledWith(
@@ -337,7 +337,7 @@ describe('api service', () => {
         method: 'PATCH',
         credentials: 'same-origin',
         body: JSON.stringify({
-          coachStyle: 'INTERVIEWER',
+          coachStyle: 'DIRECT',
         }),
       }),
     );

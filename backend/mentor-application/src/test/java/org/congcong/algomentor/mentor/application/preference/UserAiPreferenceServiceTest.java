@@ -19,7 +19,7 @@ class UserAiPreferenceServiceTest {
     UserAiPreference preference = service.get(42L);
 
     assertThat(preference.userId()).isEqualTo(42L);
-    assertThat(preference.coachStyle()).isEqualTo(PracticeCoachStyle.SOCRATIC_GUIDE);
+    assertThat(preference.coachStyle()).isEqualTo(PracticeCoachStyle.GUIDED);
     assertThat(repository.saved).isEmpty();
   }
 
@@ -30,10 +30,10 @@ class UserAiPreferenceServiceTest {
 
     UserAiPreference preference = service.update(
         42L,
-        new UserAiPreferenceUpdate(PracticeCoachStyle.INTERVIEWER));
+        new UserAiPreferenceUpdate(PracticeCoachStyle.DIRECT));
 
-    assertThat(preference.coachStyle()).isEqualTo(PracticeCoachStyle.INTERVIEWER);
-    assertThat(repository.saved.get(42L).coachStyle()).isEqualTo(PracticeCoachStyle.INTERVIEWER);
+    assertThat(preference.coachStyle()).isEqualTo(PracticeCoachStyle.DIRECT);
+    assertThat(repository.saved.get(42L).coachStyle()).isEqualTo(PracticeCoachStyle.DIRECT);
   }
 
   private static final class InMemoryRepository implements UserAiPreferenceRepository {

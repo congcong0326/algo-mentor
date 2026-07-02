@@ -94,12 +94,7 @@ export interface AbilityProfileResponse {
   scope: AbilityProfileScope;
 }
 
-export type PracticeCoachStyle =
-  | 'SOCRATIC_GUIDE'
-  | 'DIRECT_EXPLAINER'
-  | 'INTERVIEWER'
-  | 'STRICT_REVIEWER'
-  | 'SUPPORTIVE_MENTOR';
+export type PracticeCoachStyle = 'GUIDED' | 'DIRECT';
 
 export type PracticeResponseLanguage = 'ZH_CN' | 'EN_US';
 

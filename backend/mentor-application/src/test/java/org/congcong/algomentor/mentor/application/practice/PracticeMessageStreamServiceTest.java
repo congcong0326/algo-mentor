@@ -47,7 +47,7 @@ class PracticeMessageStreamServiceTest {
     PracticeMessageStreamService service = new PracticeMessageStreamService(
         sessionRepository,
         orchestrator,
-        new StubPreferenceService(PracticeCoachStyle.INTERVIEWER));
+        new StubPreferenceService(PracticeCoachStyle.DIRECT));
 
     List<AgentStreamEvent> events = collect(service.stream(
         7,
@@ -67,7 +67,7 @@ class PracticeMessageStreamServiceTest {
     assertThat(orchestrator.governanceMetadata)
         .containsEntry("requestId", "req-1")
         .containsEntry(PracticeChatPromptConstants.METADATA_PLAN_ID, 99L)
-        .containsEntry(PracticeChatPromptConstants.METADATA_COACH_STYLE, "INTERVIEWER")
+        .containsEntry(PracticeChatPromptConstants.METADATA_COACH_STYLE, "DIRECT")
         .containsEntry(PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, "EN_US");
   }
 
