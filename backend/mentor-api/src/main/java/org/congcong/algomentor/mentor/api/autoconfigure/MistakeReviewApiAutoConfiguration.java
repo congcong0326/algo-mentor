@@ -21,6 +21,8 @@ import org.congcong.algomentor.mentor.application.review.ReviewCardPregeneration
 import org.congcong.algomentor.mentor.application.review.ReviewCardProperties;
 import org.congcong.algomentor.mentor.application.review.ReviewCardService;
 import org.congcong.algomentor.mentor.application.review.ReviewLogRepository;
+import org.congcong.algomentor.mentor.application.review.ReviewProblemCatalog;
+import org.congcong.algomentor.mentor.application.review.ReviewProblemSnapshot;
 import org.congcong.algomentor.mentor.application.review.ReviewSchedulerProperties;
 import org.congcong.algomentor.mentor.application.review.ReviewSchedulerService;
 import org.congcong.algomentor.mentor.application.review.ReviewSeedPolicy;
@@ -158,7 +160,8 @@ public class MistakeReviewApiAutoConfiguration {
       ReviewCardPregenerationService pregenerationService,
       ReviewSeedPolicy seedPolicy,
       ObjectMapper objectMapper,
-      ObjectProvider<MistakeReviewMetrics> metrics
+      ObjectProvider<MistakeReviewMetrics> metrics,
+      ObjectProvider<ReviewProblemCatalog> problemCatalog
   ) {
     return new MistakeNoteService(
         repository,
@@ -166,7 +169,14 @@ public class MistakeReviewApiAutoConfiguration {
         seedPolicy,
         objectMapper,
         metrics.getIfAvailable(() -> MistakeReviewMetrics.NOOP),
+        problemCatalog.getIfAvailable(NoopReviewProblemCatalog::new),
         Clock.systemUTC());
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ReviewProblemCatalog noopReviewProblemCatalog() {
+    return new NoopReviewProblemCatalog();
   }
 
   @Bean
@@ -222,6 +232,13 @@ public class MistakeReviewApiAutoConfiguration {
 
     @Override
     public void addUsage(long userId, LocalDate quotaDate, String scope, AiUsage usage) {
+    }
+  }
+
+  private static final class NoopReviewProblemCatalog implements ReviewProblemCatalog {
+    @Override
+    public java.util.Optional<ReviewProblemSnapshot> findBySlug(String slug) {
+      return java.util.Optional.empty();
     }
   }
 }

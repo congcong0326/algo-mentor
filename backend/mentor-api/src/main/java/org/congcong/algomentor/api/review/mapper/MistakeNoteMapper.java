@@ -20,6 +20,8 @@ public interface MistakeNoteMapper {
 
   MistakeNoteRow findForUser(@Param("userId") long userId, @Param("noteId") long noteId);
 
+  MistakeNoteRow findByUserAndSlug(@Param("userId") long userId, @Param("problemSlug") String problemSlug);
+
   List<MistakeNoteRow> findDue(
       @Param("userId") long userId,
       @Param("now") Instant now,

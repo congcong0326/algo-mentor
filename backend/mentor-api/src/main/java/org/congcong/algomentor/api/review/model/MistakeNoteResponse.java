@@ -7,6 +7,9 @@ import java.util.Map;
 public record MistakeNoteResponse(
     long id,
     String problemSlug,
+    String problemTitle,
+    String problemLocale,
+    String problemDifficulty,
     String source,
     Map<String, Object> sourceDetail,
     String masteryState,

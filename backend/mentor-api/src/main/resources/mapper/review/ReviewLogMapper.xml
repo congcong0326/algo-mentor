@@ -43,4 +43,23 @@
       #{reviewedAt}
     )
   </insert>
+
+  <select id="findRecentRecallHistory"
+      resultType="org.congcong.algomentor.api.review.mapper.model.ReviewRecallHistoryRow">
+    SELECT
+      rl.id,
+      rl.grade,
+      rl.user_recall_text,
+      rl.user_note_transient,
+      rl.reviewed_at,
+      rl.interval_after
+    FROM review_log rl
+    JOIN mistake_note mn ON mn.id = rl.mistake_note_id
+    WHERE rl.user_id = #{userId}
+      AND rl.mistake_note_id = #{noteId}
+      AND rl.review_mode = 'RECALL'
+      AND mn.user_id = #{userId}
+    ORDER BY rl.reviewed_at DESC, rl.id DESC
+    LIMIT #{limit}
+  </select>
 </mapper>

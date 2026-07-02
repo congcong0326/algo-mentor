@@ -55,7 +55,7 @@ public class ReviewCardService {
     String signature = signature(note);
     ReviewCardCache cache = note.pendingCard();
     if (cacheHit(note, signature)) {
-      return objectMapper.convertValue(cache.cardJson(), ReviewCard.class);
+      return withNoteProblemContext(note, objectMapper.convertValue(cache.cardJson(), ReviewCard.class));
     }
     if (pregenerationService != null) {
       pregenerationService.enqueue(note.id());
@@ -72,7 +72,8 @@ public class ReviewCardService {
       ReviewCard card = objectMapper.convertValue(result.structuredOutput(), ReviewCard.class);
       return new ReviewCard(
           CardVariant.AI_GENERATED,
-          card.problemRef(),
+          problemRef(note, card.problemRef()),
+          problemStatement(note),
           card.contextSummary(),
           card.prompts(),
           card.scaffold(),
@@ -142,6 +143,7 @@ public class ReviewCardService {
                 题目 slug：%s
                 题目标题：%s
                 难度：%s
+                题眼摘要：%s
                 掌握状态：%s
                 lapses：%d
                 上次 Review 分数：%s
@@ -149,8 +151,9 @@ public class ReviewCardService {
                 请生成 1-4 个针对薄弱点的复习问题，并给出不超过 400 字输入上限的 scaffold。
                 """.stripIndent().formatted(
                 note.problemSlug(),
-                note.sourceDetail().getOrDefault("titleCn", note.problemSlug()),
-                note.sourceDetail().getOrDefault("difficulty", "UNKNOWN"),
+                note.sourceDetail().getOrDefault(MistakeReviewConstants.METADATA_TITLE_CN, note.problemSlug()),
+                note.sourceDetail().getOrDefault(MistakeReviewConstants.METADATA_DIFFICULTY, "UNKNOWN"),
+                note.sourceDetail().getOrDefault(MistakeReviewConstants.METADATA_STATEMENT_SUMMARY, "未记录"),
                 note.scheduling().masteryState(),
                 note.scheduling().lapses(),
                 note.sourceDetail().getOrDefault("latestReviewScore", "未知"),
@@ -161,5 +164,44 @@ public class ReviewCardService {
             true))
         .metadata(Map.of(MistakeReviewConstants.METADATA_MISTAKE_NOTE_ID, note.id()))
         .build();
+  }
+
+  private ReviewCard withNoteProblemContext(MistakeNote note, ReviewCard card) {
+    if (card == null) {
+      return null;
+    }
+    return new ReviewCard(
+        card.cardVariant(),
+        problemRef(note, card.problemRef()),
+        problemStatement(note),
+        card.contextSummary(),
+        card.prompts(),
+        card.scaffold(),
+        card.revealPolicy(),
+        card.expectedEffort());
+  }
+
+  private ProblemRef problemRef(MistakeNote note, ProblemRef fallback) {
+    String titleCn = text(note, MistakeReviewConstants.METADATA_TITLE_CN,
+        fallback == null ? note.problemSlug() : fallback.titleCn());
+    String difficulty = text(note, MistakeReviewConstants.METADATA_DIFFICULTY,
+        fallback == null ? "UNKNOWN" : fallback.difficulty());
+    return new ProblemRef(note.problemSlug(), titleCn, difficulty);
+  }
+
+  private ProblemStatement problemStatement(MistakeNote note) {
+    String summary = text(note, MistakeReviewConstants.METADATA_STATEMENT_SUMMARY, "");
+    if (summary.isBlank()) {
+      return null;
+    }
+    return new ProblemStatement(summary, true);
+  }
+
+  private String text(MistakeNote note, String key, String fallback) {
+    Object value = note.sourceDetail().get(key);
+    if (value == null || value.toString().isBlank()) {
+      return fallback;
+    }
+    return value.toString();
   }
 }

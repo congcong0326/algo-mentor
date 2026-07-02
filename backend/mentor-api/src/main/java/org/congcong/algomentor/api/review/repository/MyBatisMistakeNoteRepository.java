@@ -75,6 +75,11 @@ public class MyBatisMistakeNoteRepository implements MistakeNoteRepository {
   }
 
   @Override
+  public Optional<MistakeNote> findByUserAndSlug(long userId, String problemSlug) {
+    return Optional.ofNullable(mapper.findByUserAndSlug(userId, problemSlug)).map(this::toNote);
+  }
+
+  @Override
   public List<MistakeNote> findDue(long userId, Instant now, int limit) {
     return mapper.findDue(userId, now, limit).stream().map(this::toNote).toList();
   }

@@ -12,6 +12,8 @@ public interface MistakeNoteRepository {
 
   MistakeNote mark(long userId, String problemSlug, MistakeSource source, JsonNode sourceDetail, Instant now);
 
+  Optional<MistakeNote> findByUserAndSlug(long userId, String problemSlug);
+
   Optional<MistakeNote> findById(long noteId);
 
   Optional<MistakeNote> findForUser(long userId, long noteId);

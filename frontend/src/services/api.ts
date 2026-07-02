@@ -37,6 +37,7 @@ import type {
   ProblemPage,
   RecallReviewResult,
   ReviewCard,
+  ReviewProblemStatementResponse,
   ReviewQueueResponse,
   ReviewSummaryResponse,
   SseEventName,
@@ -263,6 +264,22 @@ export async function getReviewCard(noteId: number, signal?: AbortSignal): Promi
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Review card request failed');
+  }
+
+  return response.json();
+}
+
+export async function getReviewProblemStatement(
+  noteId: number,
+  signal?: AbortSignal,
+): Promise<ApiResponse<ReviewProblemStatementResponse>> {
+  const response = await apiFetch(`/api/mistake-notes/${noteId}/problem-statement`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Review problem statement request failed');
   }
 
   return response.json();

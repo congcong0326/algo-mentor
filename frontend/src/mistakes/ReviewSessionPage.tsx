@@ -1,8 +1,10 @@
-import { ArrowLeft, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, Eye, Loader2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { APP_ROUTES } from '../app/navigation';
+import MarkdownView from '../components/MarkdownView';
 import {
   getReviewCard,
+  getReviewProblemStatement,
   getReviewQueue,
   requireApiData,
   submitRecall,
@@ -30,10 +32,14 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [statementCache, setStatementCache] = useState<Map<number, string>>(new Map());
+  const [statementLoading, setStatementLoading] = useState(false);
+  const [statementError, setStatementError] = useState('');
 
   const current = queue[index];
   const maxChars = card?.scaffold?.maxInputChars ?? 400;
   const finished = !loading && queue.length === 0;
+  const currentTitle = current?.problemTitle || card?.problemRef.titleCn || current?.problemSlug;
   const progressLabel = useMemo(() => (
     queue.length > 0 ? `${Math.min(index + 1, queue.length)} / ${queue.length}` : '0 / 0'
   ), [index, queue.length]);
@@ -47,6 +53,8 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
   useEffect(() => {
     if (!current) {
       setCard(undefined);
+      setStatementError('');
+      setStatementLoading(false);
       return;
     }
     const controller = new AbortController();
@@ -77,6 +85,8 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
     setResult(undefined);
     setRecallText('');
     setTransientNote('');
+    setStatementError('');
+    setStatementLoading(false);
     try {
       const response = await getReviewCard(noteId, signal);
       setCard(requireApiData(response, '复习卡加载失败'));
@@ -100,6 +110,29 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
       setError(submitError instanceof Error ? submitError.message : '复述提交失败');
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function loadProblemStatement(noteId: number, signal?: AbortSignal) {
+    if (statementCache.has(noteId) || statementLoading) {
+      return;
+    }
+    setStatementLoading(true);
+    setStatementError('');
+    try {
+      const response = await getReviewProblemStatement(noteId, signal);
+      const data = requireApiData(response, '题目原文加载失败');
+      setStatementCache((currentCache) => {
+        const nextCache = new Map(currentCache);
+        nextCache.set(noteId, data.contentMarkdown);
+        return nextCache;
+      });
+    } catch (loadError) {
+      if (!(loadError instanceof DOMException && loadError.name === 'AbortError')) {
+        setStatementError(loadError instanceof Error ? loadError.message : '未找到题目原文');
+      }
+    } finally {
+      setStatementLoading(false);
     }
   }
 
@@ -143,7 +176,29 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
             <span>{progressLabel}</span>
             <span>{card?.cardVariant ?? '...'}</span>
           </div>
-          <h2>{card?.problemRef.titleCn || current?.problemSlug}</h2>
+          <h2>{currentTitle}</h2>
+          {current && (
+            <details
+              className="review-problem-full"
+              onToggle={(event) => {
+                if (event.currentTarget.open) {
+                  void loadProblemStatement(current.id);
+                }
+              }}
+            >
+              <summary>
+                <Eye aria-hidden="true" />
+                <span>查看题面</span>
+              </summary>
+              {statementLoading && !statementCache.has(current.id) ? (
+                <p className="review-card-summary">正在加载题目原文...</p>
+              ) : statementError ? (
+                <p className="review-card-summary">{statementError}</p>
+              ) : statementCache.has(current.id) ? (
+                <MarkdownView content={statementCache.get(current.id) ?? ''} />
+              ) : null}
+            </details>
+          )}
           <p className="review-card-summary">{card?.contextSummary ?? '正在加载复习卡...'}</p>
 
           <ol className="review-prompts">

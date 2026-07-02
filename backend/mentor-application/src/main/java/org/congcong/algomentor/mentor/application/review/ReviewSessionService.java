@@ -65,6 +65,19 @@ public class ReviewSessionService {
     return card;
   }
 
+  public ReviewCardDetail cardDetail(long userId, long noteId) {
+    MistakeNote note = noteRepository.findForUser(userId, noteId)
+        .orElseThrow(() -> new MistakeReviewException("MISTAKE_NOTE_NOT_FOUND", "错题记录不存在。"));
+    ReviewCard card = cardService.getOrFallback(note);
+    if (card.cardVariant() == CardVariant.RULE_BASED) {
+      metrics.recordCardGeneration(CardGenerationOutcome.FALLBACK_RULE);
+    }
+    return new ReviewCardDetail(
+        card,
+        note.userNotePersistent(),
+        logRepository.findRecentRecallHistory(userId, noteId, 5));
+  }
+
   public RecallReviewResult submitRecall(long userId, long noteId, String recallText, String transientNote) {
     MistakeNote note = noteRepository.findForUser(userId, noteId)
         .orElseThrow(() -> new MistakeReviewException("MISTAKE_NOTE_NOT_FOUND", "错题记录不存在。"));

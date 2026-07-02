@@ -98,7 +98,10 @@ public class LocalizedApiExceptionHandler {
 
   @ExceptionHandler(MistakeReviewException.class)
   public ResponseEntity<ApiResponse<Void>> mistakeReviewException(MistakeReviewException exception) {
-    HttpStatus status = "MISTAKE_NOTE_NOT_FOUND".equals(exception.code()) ? HttpStatus.NOT_FOUND : HttpStatus.BAD_REQUEST;
+    HttpStatus status = "MISTAKE_NOTE_NOT_FOUND".equals(exception.code())
+        || "MISTAKE_NOTE_PROBLEM_NOT_FOUND".equals(exception.code())
+        ? HttpStatus.NOT_FOUND
+        : HttpStatus.BAD_REQUEST;
     return failure(status, exception.code(), exception.getMessage());
   }
 

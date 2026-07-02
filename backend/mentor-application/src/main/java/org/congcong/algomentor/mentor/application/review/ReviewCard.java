@@ -5,6 +5,7 @@ import java.util.List;
 public record ReviewCard(
     CardVariant cardVariant,
     ProblemRef problemRef,
+    ProblemStatement problemStatement,
     String contextSummary,
     List<ReviewCardPrompt> prompts,
     ReviewCardScaffold scaffold,

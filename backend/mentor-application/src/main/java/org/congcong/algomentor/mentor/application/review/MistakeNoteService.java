@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewConstants;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ public class MistakeNoteService {
   private final ReviewSeedPolicy seedPolicy;
   private final ObjectMapper objectMapper;
   private final MistakeReviewMetrics metrics;
+  private final ReviewProblemCatalog problemCatalog;
   private final Clock clock;
 
   public MistakeNoteService(
@@ -29,6 +32,7 @@ public class MistakeNoteService {
       ReviewSeedPolicy seedPolicy,
       ObjectMapper objectMapper,
       MistakeReviewMetrics metrics,
+      ReviewProblemCatalog problemCatalog,
       Clock clock
   ) {
     this.repository = Objects.requireNonNull(repository, "repository must not be null");
@@ -36,6 +40,7 @@ public class MistakeNoteService {
     this.seedPolicy = Objects.requireNonNull(seedPolicy, "seedPolicy must not be null");
     this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper must not be null");
     this.metrics = Objects.requireNonNull(metrics, "metrics must not be null");
+    this.problemCatalog = Objects.requireNonNull(problemCatalog, "problemCatalog must not be null");
     this.clock = Objects.requireNonNull(clock, "clock must not be null");
   }
 
@@ -45,8 +50,9 @@ public class MistakeNoteService {
         && review.score().total().compareTo(PracticeCodeReviewConstants.PASS_SCORE) >= 0;
     MistakeSource source = passed ? MistakeSource.REVIEW_PASSED : MistakeSource.REVIEW_FAILED;
     ReviewSeed seed = seedPolicy.forReview(review, passed, Instant.now(clock));
+    Optional<MistakeNote> previous = repository.findByUserAndSlug(review.userId(), review.problemSlug());
     MistakeNote note = repository.upsertForReview(review, source, sourceDetail(review, seed), seed);
-    metrics.recordNoteIngest(source);
+    metrics.recordNoteIngest(source, outcome(source, previous, note));
     metrics.recordSeed(seed.bucket());
     pregenerationService.enqueue(note.id());
     log.info("Review note ingested from code review. noteId={} reviewId={} userId={} problemSlug={} source={} seed={}",
@@ -54,13 +60,15 @@ public class MistakeNoteService {
   }
 
   public MistakeNote mark(long userId, String problemSlug) {
+    String normalizedSlug = requireText(problemSlug, "problemSlug");
+    Optional<MistakeNote> previous = repository.findByUserAndSlug(userId, normalizedSlug);
     MistakeNote note = repository.mark(
         userId,
-        requireText(problemSlug, "problemSlug"),
+        normalizedSlug,
         MistakeSource.USER_MARKED,
-        objectMapper.valueToTree(Map.of("source", MistakeSource.USER_MARKED.name())),
+        markSourceDetail(normalizedSlug),
         Instant.now(clock));
-    metrics.recordNoteIngest(MistakeSource.USER_MARKED);
+    metrics.recordNoteIngest(MistakeSource.USER_MARKED, outcome(MistakeSource.USER_MARKED, previous, note));
     pregenerationService.enqueue(note.id());
     return note;
   }
@@ -95,15 +103,58 @@ public class MistakeNoteService {
   }
 
   private JsonNode sourceDetail(PracticeCodeReview review, ReviewSeed seed) {
-    return objectMapper.valueToTree(Map.of(
-        "latestReviewId", review.id(),
-        "latestReviewScore", review.score().total(),
-        "latestReviewPassed", review.passed(),
-        "deductionReasons", review.deductionReasons(),
-        "improvementSuggestions", review.improvementSuggestions(),
-        "language", review.language(),
-        "lowConfidence", seed.lowConfidence(),
-        "seedBucket", seed.bucket().name()));
+    Map<String, Object> detail = new LinkedHashMap<>();
+    detail.put("latestReviewId", review.id());
+    detail.put("latestReviewScore", review.score().total());
+    detail.put("latestReviewPassed", review.passed());
+    detail.put("deductionReasons", review.deductionReasons());
+    detail.put("improvementSuggestions", review.improvementSuggestions());
+    detail.put("language", review.language());
+    detail.put("lowConfidence", seed.lowConfidence());
+    detail.put("seedBucket", seed.bucket().name());
+    enrichProblemDetail(review.userId(), review.problemSlug(), detail);
+    return objectMapper.valueToTree(detail);
+  }
+
+  private JsonNode markSourceDetail(String problemSlug) {
+    Map<String, Object> detail = new LinkedHashMap<>();
+    detail.put("source", MistakeSource.USER_MARKED.name());
+    enrichProblemDetail(null, problemSlug, detail);
+    return objectMapper.valueToTree(detail);
+  }
+
+  private void enrichProblemDetail(Long userId, String problemSlug, Map<String, Object> detail) {
+    try {
+      problemCatalog.findBySlug(problemSlug).ifPresent(snapshot -> {
+        putIfNotBlank(detail, MistakeReviewConstants.METADATA_TITLE_CN, snapshot.titleCn());
+        putIfNotBlank(detail, MistakeReviewConstants.METADATA_DIFFICULTY, snapshot.difficulty());
+        putIfNotBlank(detail, MistakeReviewConstants.METADATA_STATEMENT_SUMMARY, snapshot.statementSummary());
+      });
+    } catch (RuntimeException exception) {
+      log.warn("Review problem catalog lookup failed. userId={} problemSlug={} exceptionType={}",
+          userId == null ? "" : userId,
+          problemSlug,
+          exception.getClass().getSimpleName());
+    }
+  }
+
+  private void putIfNotBlank(Map<String, Object> detail, String key, String value) {
+    if (value != null && !value.isBlank()) {
+      detail.put(key, value.strip());
+    }
+  }
+
+  private NoteIngestOutcome outcome(MistakeSource source, Optional<MistakeNote> previous, MistakeNote current) {
+    if (previous.isEmpty()) {
+      return NoteIngestOutcome.INSERTED;
+    }
+    MistakeNote before = previous.get();
+    if (source == MistakeSource.REVIEW_FAILED
+        && current.scheduling().masteryState() == MasteryState.LAPSED
+        && current.scheduling().lapses() > before.scheduling().lapses()) {
+      return NoteIngestOutcome.LAPSED;
+    }
+    return NoteIngestOutcome.UPDATED;
   }
 
   private String requireText(String text, String field) {

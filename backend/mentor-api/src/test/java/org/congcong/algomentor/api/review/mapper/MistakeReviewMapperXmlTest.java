@@ -33,6 +33,7 @@ class MistakeReviewMapperXmlTest {
 
     String logNamespace = "org.congcong.algomentor.api.review.mapper.ReviewLogMapper.";
     assertThat(configuration.hasStatement(logNamespace + "insert")).isTrue();
+    assertThat(configuration.hasStatement(logNamespace + "findRecentRecallHistory")).isTrue();
   }
 
   private void parse(Configuration configuration, String resource) throws Exception {

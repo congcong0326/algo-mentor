@@ -38,6 +38,17 @@ class RuleBasedCardComposerTest {
     assertThat(card.scaffold()).isNotNull();
   }
 
+  @Test
+  void usesProblemMetadataFromSourceDetail() {
+    ReviewCard card = composer.compose(note(Map.of(
+        "difficulty", "MEDIUM",
+        "titleCn", "两数之和",
+        "statementSummary", "给定整数数组和目标值，返回两数下标。"), ReviewGrade.BARELY, 0));
+
+    assertThat(card.problemRef().titleCn()).isEqualTo("两数之和");
+    assertThat(card.problemStatement().summary()).isEqualTo("给定整数数组和目标值，返回两数下标。");
+  }
+
   private MistakeNote note(Map<String, Object> sourceDetail, ReviewGrade lastGrade, int lapses) {
     return new MistakeNote(
         1L,

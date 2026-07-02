@@ -31,7 +31,15 @@ public class MicrometerMistakeReviewMetrics implements MistakeReviewMetrics {
 
   @Override
   public void recordNoteIngest(MistakeSource source) {
-    registry.counter("review.note.ingest", "source", source.name()).increment();
+    recordNoteIngest(source, NoteIngestOutcome.UNKNOWN);
+  }
+
+  @Override
+  public void recordNoteIngest(MistakeSource source, NoteIngestOutcome outcome) {
+    registry.counter(
+        "review.note.ingest",
+        "source", source.name(),
+        "outcome", outcome.name()).increment();
   }
 
   @Override

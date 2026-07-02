@@ -171,6 +171,13 @@
       AND user_id = #{userId}
   </select>
 
+  <select id="findByUserAndSlug" resultMap="MistakeNoteRowMap">
+    SELECT <include refid="MistakeNoteColumns"/>
+    FROM mistake_note
+    WHERE user_id = #{userId}
+      AND problem_slug = #{problemSlug}
+  </select>
+
   <select id="findDue" resultMap="MistakeNoteRowMap">
     SELECT <include refid="MistakeNoteColumns"/>
     FROM mistake_note

@@ -80,6 +80,7 @@ class ReviewCardPregenerationServiceTest {
     return new ReviewCard(
         CardVariant.AI_GENERATED,
         new ProblemRef("two-sum", "两数之和", "EASY"),
+        new ProblemStatement("给定整数数组和目标值，返回两数下标。", true),
         "context",
         List.of(new ReviewCardPrompt("key_step", "关键点", "")),
         new ReviewCardScaffold("1. 思路：", 400),
@@ -152,6 +153,11 @@ class ReviewCardPregenerationServiceTest {
 
     @Override
     public Optional<MistakeNote> findById(long noteId) {
+      return Optional.of(note);
+    }
+
+    @Override
+    public Optional<MistakeNote> findByUserAndSlug(long userId, String problemSlug) {
       return Optional.of(note);
     }
 

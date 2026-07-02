@@ -617,6 +617,9 @@ export type CardVariant = 'STATIC' | 'RULE_BASED' | 'AI_GENERATED';
 export interface MistakeNote {
   id: number;
   problemSlug: string;
+  problemTitle?: string | null;
+  problemLocale?: string | null;
+  problemDifficulty?: string | null;
   source: MistakeSource;
   sourceDetail: Record<string, unknown>;
   masteryState: MasteryState;
@@ -644,6 +647,15 @@ export interface ReviewCardScaffold {
   maxInputChars: number;
 }
 
+export interface ReviewRecallHistory {
+  id: number;
+  grade: ReviewGrade;
+  userRecallText?: string | null;
+  userNoteTransient?: string | null;
+  reviewedAt: string;
+  intervalAfter: number;
+}
+
 export interface ReviewCard {
   cardVariant: CardVariant;
   problemRef: {
@@ -656,6 +668,15 @@ export interface ReviewCard {
   scaffold?: ReviewCardScaffold | null;
   revealPolicy: string;
   expectedEffort: 'LIGHT' | 'MEDIUM' | 'HEAVY' | string;
+  userNotePersistent?: string | null;
+  recentRecallHistory: ReviewRecallHistory[];
+}
+
+export interface ReviewProblemStatementResponse {
+  slug: string;
+  titleCn: string;
+  difficulty: string;
+  contentMarkdown: string;
 }
 
 export interface RecallReviewResult {

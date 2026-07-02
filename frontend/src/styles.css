@@ -196,7 +196,6 @@ a {
 }
 
 .mistake-toolbar,
-.mistake-manual-mark,
 .review-actions {
   display: flex;
   align-items: center;
@@ -231,7 +230,6 @@ a {
 }
 
 .search-field input,
-.mistake-manual-mark input,
 .mistake-toolbar select,
 .review-input-label textarea {
   border: 1px solid var(--border-subtle);
@@ -248,7 +246,6 @@ a {
   background: transparent;
 }
 
-.mistake-manual-mark input,
 .mistake-toolbar select {
   min-height: 40px;
   padding: 0 12px;
@@ -257,6 +254,13 @@ a {
 .mistake-list {
   display: grid;
   gap: 10px;
+}
+
+.mistake-content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
 }
 
 .mistake-note-card {
@@ -268,6 +272,14 @@ a {
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
   background: var(--surface-card);
+}
+
+.mistake-note-main {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  gap: 4px;
+  text-align: left;
 }
 
 .mistake-note-card h2 {
@@ -287,6 +299,8 @@ a {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .mistake-state {
@@ -306,6 +320,39 @@ a {
 .mistake-state.lapsed {
   border-color: var(--danger);
   color: var(--danger);
+}
+
+.mistake-detail-modal {
+  display: grid;
+  gap: 16px;
+  width: min(860px, 100%);
+  max-height: min(780px, calc(100vh - 40px));
+  overflow: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-card);
+  box-shadow: 0 24px 80px rgb(15 23 42 / 26%);
+  padding: 20px;
+}
+
+.mistake-detail-content {
+  display: grid;
+  gap: 14px;
+}
+
+.mistake-detail-meta,
+.mistake-detail-section p {
+  margin-bottom: 0;
+  color: var(--text-secondary);
+}
+
+.mistake-detail-section {
+  display: grid;
+  gap: 8px;
+}
+
+.mistake-detail-section h3 {
+  font-size: 15px;
 }
 
 .review-card-panel,
@@ -329,6 +376,31 @@ a {
   color: var(--text-secondary);
 }
 
+.review-problem-full {
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-muted);
+  padding: 12px;
+}
+
+.review-problem-full summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.review-problem-full summary svg {
+  height: 16px;
+  width: 16px;
+}
+
+.review-problem-full .markdown-view {
+  margin-top: 12px;
+}
+
 .review-prompts {
   display: grid;
   gap: 10px;
@@ -350,6 +422,31 @@ a {
   background: var(--surface-muted);
   color: var(--text-secondary);
   white-space: pre-wrap;
+}
+
+.review-history-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.review-history-list li {
+  display: grid;
+  gap: 6px;
+}
+
+.review-history-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.review-history-meta span,
+.review-history-list small {
+  color: var(--text-muted);
+  font-size: 12px;
 }
 
 .review-input-label {
@@ -414,6 +511,10 @@ a {
   }
 
   .mistake-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mistake-content-grid {
     grid-template-columns: 1fr;
   }
 

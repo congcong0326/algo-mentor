@@ -1,9 +1,12 @@
 package org.congcong.algomentor.api.review.repository;
 
+import java.util.List;
 import org.congcong.algomentor.api.review.mapper.ReviewLogMapper;
 import org.congcong.algomentor.api.review.mapper.model.ReviewLogInsertRow;
+import org.congcong.algomentor.mentor.application.review.ReviewGrade;
 import org.congcong.algomentor.mentor.application.review.ReviewLogEntry;
 import org.congcong.algomentor.mentor.application.review.ReviewLogRepository;
+import org.congcong.algomentor.mentor.application.review.ReviewRecallHistoryItem;
 import org.springframework.transaction.annotation.Transactional;
 
 public class MyBatisReviewLogRepository implements ReviewLogRepository {
@@ -35,5 +38,20 @@ public class MyBatisReviewLogRepository implements ReviewLogRepository {
         entry.easeFactorBefore(),
         entry.easeFactorAfter(),
         entry.reviewedAt()));
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<ReviewRecallHistoryItem> findRecentRecallHistory(long userId, long noteId, int limit) {
+    int effectiveLimit = limit <= 0 ? 5 : Math.min(limit, 20);
+    return mapper.findRecentRecallHistory(userId, noteId, effectiveLimit).stream()
+        .map(row -> new ReviewRecallHistoryItem(
+            row.id(),
+            ReviewGrade.ofQ(row.grade()),
+            row.userRecallText(),
+            row.userNoteTransient(),
+            row.reviewedAt(),
+            row.intervalAfter()))
+        .toList();
   }
 }

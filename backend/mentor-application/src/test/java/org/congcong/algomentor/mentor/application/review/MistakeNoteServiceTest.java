@@ -38,7 +38,10 @@ class MistakeNoteServiceTest {
     assertThat(repository.seed.state().intervalDays()).isEqualTo(3);
     assertThat(repository.sourceDetail.get("seedBucket").asText()).isEqualTo("NORMAL");
     assertThat(repository.sourceDetail.get("lowConfidence").asBoolean()).isFalse();
+    assertThat(repository.sourceDetail.get("titleCn").asText()).isEqualTo("两数之和");
+    assertThat(repository.sourceDetail.get("statementSummary").asText()).isEqualTo("给定整数数组和目标值，返回两数下标。");
     assertThat(metrics.ingestSource).isEqualTo(MistakeSource.REVIEW_PASSED);
+    assertThat(metrics.ingestOutcome).isEqualTo(NoteIngestOutcome.INSERTED);
     assertThat(metrics.seedBucket).isEqualTo(ReviewSeedBucket.NORMAL);
   }
 
@@ -54,6 +57,21 @@ class MistakeNoteServiceTest {
     assertThat(repository.seed.bucket()).isEqualTo(ReviewSeedBucket.FAILED);
     assertThat(repository.seed.dueAt()).isEqualTo(Instant.parse("2026-07-02T00:00:00Z"));
     assertThat(metrics.ingestSource).isEqualTo(MistakeSource.REVIEW_FAILED);
+  }
+
+  @Test
+  void passedToFailedReviewRecordsLapseOutcome() {
+    RecordingRepository repository = new RecordingRepository();
+    RecordingMetrics metrics = new RecordingMetrics();
+    MistakeNoteService service = service(repository, metrics);
+
+    service.ingestFromReview(review("8.0", true));
+    service.ingestFromReview(review("5.0", false));
+
+    assertThat(repository.note.source()).isEqualTo(MistakeSource.REVIEW_FAILED);
+    assertThat(repository.note.scheduling().masteryState()).isEqualTo(MasteryState.LAPSED);
+    assertThat(repository.note.scheduling().lapses()).isEqualTo(1);
+    assertThat(metrics.ingestOutcome).isEqualTo(NoteIngestOutcome.LAPSED);
   }
 
   private MistakeNoteService service(RecordingRepository repository, RecordingMetrics metrics) {
@@ -77,6 +95,12 @@ class MistakeNoteServiceTest {
         new ReviewSeedPolicy(ReviewSchedulerProperties.defaults()),
         objectMapper,
         metrics,
+        slug -> Optional.of(new ReviewProblemSnapshot(
+            slug,
+            "两数之和",
+            "EASY",
+            "给定整数数组和目标值，返回两数下标。",
+            "# 两数之和")),
         clock);
   }
 
@@ -131,16 +155,25 @@ class MistakeNoteServiceTest {
       this.source = source;
       this.sourceDetail = sourceDetail;
       this.seed = seed;
+      SchedulingState state = seed.state();
+      if (note != null && note.source() == MistakeSource.REVIEW_PASSED && source == MistakeSource.REVIEW_FAILED) {
+        state = new SchedulingState(
+            0,
+            note.scheduling().easeFactor().subtract(new BigDecimal("0.32")).max(new BigDecimal("1.30")),
+            1,
+            MasteryState.LAPSED,
+            note.scheduling().lapses() + 1);
+      }
       this.note = new MistakeNote(
           1L,
           review.userId(),
           review.problemSlug(),
           source,
-          Map.of("latestReviewId", review.id()),
+          objectMapper().convertValue(sourceDetail, Map.class),
           review.planId(),
           review.phaseIndex(),
           review.sessionId(),
-          seed.state(),
+          state,
           seed.dueAt(),
           null,
           null,
@@ -150,6 +183,14 @@ class MistakeNoteServiceTest {
           review.createdAt(),
           review.createdAt());
       return note;
+    }
+
+    @Override
+    public Optional<MistakeNote> findByUserAndSlug(long userId, String problemSlug) {
+      if (note == null || note.userId() != userId || !note.problemSlug().equals(problemSlug)) {
+        return Optional.empty();
+      }
+      return Optional.of(note);
     }
 
     @Override
@@ -213,6 +254,7 @@ class MistakeNoteServiceTest {
 
   private static final class RecordingMetrics implements MistakeReviewMetrics {
     private MistakeSource ingestSource;
+    private NoteIngestOutcome ingestOutcome;
     private ReviewSeedBucket seedBucket;
 
     @Override
@@ -233,9 +275,19 @@ class MistakeNoteServiceTest {
     }
 
     @Override
+    public void recordNoteIngest(MistakeSource source, NoteIngestOutcome outcome) {
+      this.ingestSource = source;
+      this.ingestOutcome = outcome;
+    }
+
+    @Override
     public void recordSeed(ReviewSeedBucket bucket) {
       this.seedBucket = bucket;
     }
+  }
+
+  private static ObjectMapper objectMapper() {
+    return new ObjectMapper();
   }
 
   private static final class RejectingUsageStore implements AiDailyUsageStore {

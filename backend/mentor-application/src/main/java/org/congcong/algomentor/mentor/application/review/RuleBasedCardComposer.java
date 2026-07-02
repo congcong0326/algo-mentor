@@ -45,7 +45,11 @@ public class RuleBasedCardComposer {
 
     return new ReviewCard(
         variant,
-        new ProblemRef(note.problemSlug(), sourceText(note, "titleCn", note.problemSlug()), difficulty),
+        new ProblemRef(
+            note.problemSlug(),
+            sourceText(note, MistakeReviewConstants.METADATA_TITLE_CN, note.problemSlug()),
+            difficulty),
+        problemStatement(note),
         contextSummary(note),
         prompts,
         scaffold,
@@ -62,6 +66,14 @@ public class RuleBasedCardComposer {
     return "上次 Review：%s；扣分点：%s".formatted(
         score == null ? "未知" : score,
         deductions == null ? "未记录" : deductions);
+  }
+
+  private ProblemStatement problemStatement(MistakeNote note) {
+    String summary = sourceText(note, MistakeReviewConstants.METADATA_STATEMENT_SUMMARY, "");
+    if (summary.isBlank()) {
+      return null;
+    }
+    return new ProblemStatement(summary, true);
   }
 
   private String sourceText(MistakeNote note, String key, String fallback) {

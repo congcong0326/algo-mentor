@@ -20,6 +20,9 @@
 - `docs/practice-code-review-product-design.md`：练习代码 Review 产品设计，说明自动识别完整代码提交、多版本 Review、评分规则、完成门槛和 Review 抽屉体验。
 - `docs/practice-code-review-technical-design.md`：练习代码 Review 技术设计，说明基于 practice turn orchestrator 与服务端 capability 的结构化 Review、数据模型、完成 gate、API 和前端闭环。
 - `docs/problem-agent-tools-design.md`：题目 Agent 工具体系设计，说明过滤项发现、查题、读取题面的用途、边界、返回内容和后续演进。
+- `docs/product-planning/p0-mistake-notebook-spaced-repetition-design.md`：错题本 + 间隔重复复习产品形态设计（P0·3.4），说明 Recall-first、AI 判定驱动调度、C 档 AI 卡片全量 + 异步预生成、每日配额、备注两级和会员切面。
+- `docs/mistake-notebook-review-technical-design.md`：错题本 + 间隔重复复习技术详设，说明 `mistake_note`/`review_log` 迁移（V18）、`mentor.application.review` 模块划分、SM-2 调度引擎、事件驱动入库、卡片生成/预生成/配额、复述判定、API 契约与任务拆解。
+- `docs/review-card-content-fix-design.md`：复习卡内容修复研发设计，说明复习卡标题补齐 `titleCn/difficulty`、题面通过 `GET /api/mistake-notes/{id}/problem-statement` 按需查询、`review.note.ingest{outcome}` 埋点扩展与任务拆解。
 
 ## 后端
 

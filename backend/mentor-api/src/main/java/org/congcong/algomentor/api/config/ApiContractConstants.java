@@ -157,6 +157,11 @@ public final class ApiContractConstants {
   public static final String MISTAKE_NOTES_BASE_PATH = "/api/mistake-notes";
 
   /**
+   * 错题题面详情路径后缀。
+   */
+  public static final String MISTAKE_NOTES_PROBLEM_STATEMENT_PATH_SUFFIX = "/problem-statement";
+
+  /**
    * 复习会话接口根路径。
    */
   public static final String REVIEW_SESSIONS_BASE_PATH = "/api/review-sessions";
