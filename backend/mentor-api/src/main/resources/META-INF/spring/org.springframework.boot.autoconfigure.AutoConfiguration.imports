@@ -1,1 +1,2 @@
 org.congcong.algomentor.mentor.api.autoconfigure.AgentConversationApiAutoConfiguration
+org.congcong.algomentor.mentor.api.autoconfigure.MistakeReviewApiAutoConfiguration

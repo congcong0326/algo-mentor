@@ -1,0 +1,36 @@
+package org.congcong.algomentor.mentor.application.review;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import java.util.Objects;
+
+public class MicrometerMistakeReviewMetrics implements MistakeReviewMetrics {
+
+  private final MeterRegistry registry;
+
+  public MicrometerMistakeReviewMetrics(MeterRegistry registry) {
+    this.registry = Objects.requireNonNull(registry, "registry must not be null");
+  }
+
+  @Override
+  public void recordCardGeneration(CardGenerationOutcome outcome) {
+    registry.counter("review.card.generate", "outcome", outcome.name()).increment();
+  }
+
+  @Override
+  public void recordRecallJudge(ReviewGrade grade, RecallJudgeOutcome outcome) {
+    registry.counter(
+        "review.recall.judge",
+        "grade", grade == null ? "UNKNOWN" : grade.name(),
+        "outcome", outcome.name()).increment();
+  }
+
+  @Override
+  public void recordSessionSubmit() {
+    registry.counter("review.session.submit").increment();
+  }
+
+  @Override
+  public void recordNoteIngest(MistakeSource source) {
+    registry.counter("review.note.ingest", "source", source.name()).increment();
+  }
+}

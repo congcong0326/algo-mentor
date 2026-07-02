@@ -38,6 +38,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeMessageStream
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
 import org.congcong.algomentor.mentor.application.practice.PracticeTurnOrchestrator;
+import org.congcong.algomentor.mentor.application.review.PracticeCodeReviewObserver;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
 import org.congcong.algomentor.ops.observability.OpsStatus;
 import org.congcong.algomentor.ops.observability.autoconfigure.OpsObservabilityAutoConfiguration;
@@ -187,14 +188,16 @@ public class AgentConversationApiAutoConfiguration {
       LlmGateway llmGateway,
       PracticeCodeReviewPromptBuilder promptBuilder,
       PracticeCodeReviewStructuredOutputMapper outputMapper,
-      ObjectProvider<PracticeCodeReviewMetrics> metrics
+      ObjectProvider<PracticeCodeReviewMetrics> metrics,
+      ObjectProvider<PracticeCodeReviewObserver> observer
   ) {
     return new PracticeCodeReviewService(
         reviewRepository,
         llmGateway,
         promptBuilder,
         outputMapper,
-        metrics.getIfAvailable(() -> PracticeCodeReviewMetrics.NOOP));
+        metrics.getIfAvailable(() -> PracticeCodeReviewMetrics.NOOP),
+        observer.getIfAvailable(() -> PracticeCodeReviewObserver.NOOP));
   }
 
   @Bean

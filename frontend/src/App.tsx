@@ -4,6 +4,8 @@ import HomeDashboard from './HomeDashboard';
 import LearningPlans from './LearningPlans';
 import MyPage from './MyPage';
 import ProblemLibrary from './ProblemLibrary';
+import MistakeNotebookPage from './mistakes/MistakeNotebookPage';
+import ReviewSessionPage from './mistakes/ReviewSessionPage';
 import AiDebugConsole, {
   debugStatusLabel,
   type AiDebugConsoleHandle,
@@ -21,7 +23,7 @@ import type { AuthPermission, CurrentUser, PasswordLoginRequest, PasswordRegiste
 
 const DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.home;
 const ADMIN_DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.adminUsers;
-const ADMIN_RESTRICTED_VIEWS: ReadonlySet<AppView> = new Set(['home', 'learningPlans', 'my']);
+const ADMIN_RESTRICTED_VIEWS: ReadonlySet<AppView> = new Set(['home', 'learningPlans', 'mistakes', 'my']);
 
 function hasPermission(user: CurrentUser | undefined, permission: AuthPermission): boolean {
   return !!user?.permissions?.includes(permission);
@@ -486,6 +488,10 @@ export default function App() {
         ? <ProblemLibrary />
         : activeView === 'adminUsers' && hasPermission(currentUser, 'user:manage')
         ? <UserManagementPage onNavigateHome={() => navigateToView('home')} />
+        : activeView === 'mistakes'
+          ? pathname === APP_ROUTES.reviewSession
+            ? <ReviewSessionPage onNavigate={navigateToPath} />
+            : <MistakeNotebookPage onNavigate={navigateToPath} />
         : activeView === 'learningPlans'
           ? <LearningPlans onNavigate={navigateToPath} pathname={pathname} />
           : hasPermission(currentUser, 'debug:access')

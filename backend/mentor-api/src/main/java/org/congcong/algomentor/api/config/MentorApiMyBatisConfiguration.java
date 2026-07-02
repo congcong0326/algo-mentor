@@ -16,6 +16,10 @@ import org.congcong.algomentor.api.practice.repository.MyBatisPracticeSessionRep
 import org.congcong.algomentor.api.problem.mapper.ProblemMapper;
 import org.congcong.algomentor.api.problem.repository.MyBatisProblemRepository;
 import org.congcong.algomentor.api.problem.repository.ProblemRepository;
+import org.congcong.algomentor.api.review.mapper.MistakeNoteMapper;
+import org.congcong.algomentor.api.review.mapper.ReviewLogMapper;
+import org.congcong.algomentor.api.review.repository.MyBatisMistakeNoteRepository;
+import org.congcong.algomentor.api.review.repository.MyBatisReviewLogRepository;
 import org.congcong.algomentor.agent.persistence.postgres.json.AgentMessageRoleTypeHandler;
 import org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
@@ -24,6 +28,8 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
+import org.congcong.algomentor.mentor.application.review.MistakeNoteRepository;
+import org.congcong.algomentor.mentor.application.review.ReviewLogRepository;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -87,6 +93,18 @@ public class MentorApiMyBatisConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
+  public MistakeNoteMapper mistakeNoteMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(MistakeNoteMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ReviewLogMapper reviewLogMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(ReviewLogMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
   public AbilityProfileMapper abilityProfileMapper(SqlSessionTemplate sqlSessionTemplate) {
     return sqlSessionTemplate.getMapper(AbilityProfileMapper.class);
   }
@@ -132,6 +150,18 @@ public class MentorApiMyBatisConfiguration {
       ObjectMapper objectMapper
   ) {
     return new MyBatisPracticeCodeReviewRepository(mapper, objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(MistakeNoteRepository.class)
+  public MistakeNoteRepository mistakeNoteRepository(MistakeNoteMapper mapper, ObjectMapper objectMapper) {
+    return new MyBatisMistakeNoteRepository(mapper, objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(ReviewLogRepository.class)
+  public ReviewLogRepository reviewLogRepository(ReviewLogMapper mapper) {
+    return new MyBatisReviewLogRepository(mapper);
   }
 
   @Bean
