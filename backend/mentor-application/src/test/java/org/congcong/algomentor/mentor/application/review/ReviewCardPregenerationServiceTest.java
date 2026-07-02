@@ -161,7 +161,12 @@ class ReviewCardPregenerationServiceTest {
     }
 
     @Override
-    public MistakeNote upsertForReviewFailure(PracticeCodeReview review, JsonNode sourceDetail) {
+    public MistakeNote upsertForReview(
+        PracticeCodeReview review,
+        MistakeSource source,
+        JsonNode sourceDetail,
+        ReviewSeed seed
+    ) {
       throw new UnsupportedOperationException();
     }
 
@@ -181,7 +186,15 @@ class ReviewCardPregenerationServiceTest {
     }
 
     @Override
-    public List<MistakeNote> list(long userId, MasteryState state, MistakeSource source, String keyword, int limit, int offset) {
+    public List<MistakeNote> list(
+        long userId,
+        MasteryState state,
+        MistakeSource source,
+        boolean mistakeOnly,
+        String keyword,
+        int limit,
+        int offset
+    ) {
       throw new UnsupportedOperationException();
     }
 

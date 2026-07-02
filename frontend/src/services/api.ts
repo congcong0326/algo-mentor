@@ -171,7 +171,14 @@ export async function logout(): Promise<void> {
 }
 
 export async function listMistakeNotes(
-  query: { state?: MasteryState | ''; source?: MistakeSource | ''; keyword?: string; limit?: number; offset?: number } = {},
+  query: {
+    state?: MasteryState | '';
+    source?: MistakeSource | '';
+    mistakeOnly?: boolean;
+    keyword?: string;
+    limit?: number;
+    offset?: number;
+  } = {},
   signal?: AbortSignal,
 ): Promise<ApiResponse<MistakeNote[]>> {
   const response = await apiFetch(`/api/mistake-notes${toQueryString(query)}`, {
@@ -854,6 +861,7 @@ interface PracticeSessionQuery {
 interface MistakeNoteListQuery {
   state?: MasteryState | '';
   source?: MistakeSource | '';
+  mistakeOnly?: boolean;
   keyword?: string;
   limit?: number;
   offset?: number;

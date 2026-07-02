@@ -12,7 +12,7 @@ import org.congcong.algomentor.api.review.mapper.model.MistakeNoteUpsertRow;
 @Mapper
 public interface MistakeNoteMapper {
 
-  MistakeNoteRow upsertForReviewFailure(MistakeNoteUpsertRow row);
+  MistakeNoteRow upsertForReview(MistakeNoteUpsertRow row);
 
   MistakeNoteRow mark(MistakeNoteUpsertRow row);
 
@@ -30,6 +30,7 @@ public interface MistakeNoteMapper {
       @Param("userId") long userId,
       @Param("state") String state,
       @Param("source") String source,
+      @Param("mistakeOnly") boolean mistakeOnly,
       @Param("keyword") String keyword,
       @Param("limit") int limit,
       @Param("offset") int offset

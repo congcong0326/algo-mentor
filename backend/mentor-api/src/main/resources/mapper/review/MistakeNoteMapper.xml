@@ -62,7 +62,7 @@
     updated_at
   </sql>
 
-  <select id="upsertForReviewFailure" resultMap="MistakeNoteRowMap" affectData="true">
+  <select id="upsertForReview" resultMap="MistakeNoteRowMap" affectData="true">
     INSERT INTO mistake_note (
       user_id,
       problem_slug,
@@ -70,7 +70,13 @@
       source_detail_json,
       origin_plan_id,
       origin_phase_index,
-      origin_practice_session_id
+      origin_practice_session_id,
+      mastery_state,
+      repetitions,
+      ease_factor,
+      interval_days,
+      due_at,
+      lapses
     ) VALUES (
       #{userId},
       #{problemSlug},
@@ -78,15 +84,56 @@
       #{sourceDetailJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{originPlanId},
       #{originPhaseIndex},
-      #{originPracticeSessionId}
+      #{originPracticeSessionId},
+      #{masteryState},
+      #{repetitions},
+      #{easeFactor},
+      #{intervalDays},
+      #{dueAt},
+      #{lapses}
     )
     ON CONFLICT (user_id, problem_slug) DO UPDATE SET
+      source = CASE
+        WHEN mistake_note.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN EXCLUDED.source
+        ELSE mistake_note.source
+      END,
       source_detail_json = EXCLUDED.source_detail_json,
       origin_plan_id = COALESCE(mistake_note.origin_plan_id, EXCLUDED.origin_plan_id),
       origin_phase_index = COALESCE(mistake_note.origin_phase_index, EXCLUDED.origin_phase_index),
       origin_practice_session_id = COALESCE(
           mistake_note.origin_practice_session_id,
           EXCLUDED.origin_practice_session_id),
+      repetitions = CASE
+        WHEN mistake_note.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN 0
+        ELSE mistake_note.repetitions
+      END,
+      ease_factor = CASE
+        WHEN mistake_note.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN GREATEST(mistake_note.ease_factor - 0.32, 1.30)
+        ELSE mistake_note.ease_factor
+      END,
+      interval_days = CASE
+        WHEN mistake_note.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN 1
+        ELSE mistake_note.interval_days
+      END,
+      due_at = CASE
+        WHEN mistake_note.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN NOW() + INTERVAL '1 day'
+        ELSE mistake_note.due_at
+      END,
+      lapses = CASE
+        WHEN mistake_note.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN mistake_note.lapses + 1
+        ELSE mistake_note.lapses
+      END,
+      mastery_state = CASE
+        WHEN mistake_note.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN 'LAPSED'
+        ELSE mistake_note.mastery_state
+      END,
       archived = FALSE,
       updated_at = NOW()
     RETURNING <include refid="MistakeNoteColumns"/>
@@ -130,7 +177,7 @@
     WHERE user_id = #{userId}
       AND archived = FALSE
       AND due_at &lt;= #{now}
-    ORDER BY due_at ASC, id ASC
+    ORDER BY (source = 'REVIEW_FAILED' OR lapses &gt; 0) DESC, due_at ASC, id ASC
     LIMIT #{limit}
   </select>
 
@@ -144,11 +191,14 @@
       <if test="source != null">
         AND source = #{source}
       </if>
+      <if test="mistakeOnly">
+        AND (source = 'REVIEW_FAILED' OR lapses &gt; 0)
+      </if>
       <if test="keyword != null and keyword != ''">
         AND (problem_slug ILIKE CONCAT('%', #{keyword}, '%')
           OR COALESCE(user_note_persistent, '') ILIKE CONCAT('%', #{keyword}, '%'))
       </if>
-    ORDER BY archived ASC, due_at ASC, updated_at DESC
+    ORDER BY archived ASC, (source = 'REVIEW_FAILED' OR lapses &gt; 0) DESC, due_at ASC, updated_at DESC
     LIMIT #{limit}
     OFFSET #{offset}
   </select>

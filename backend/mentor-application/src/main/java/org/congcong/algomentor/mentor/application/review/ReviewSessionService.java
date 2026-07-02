@@ -16,6 +16,7 @@ public class ReviewSessionService {
   private final RecallJudgeService judgeService;
   private final ReviewCardPregenerationService pregenerationService;
   private final ReviewCardProperties cardProperties;
+  private final ReviewSchedulerProperties schedulerProperties;
   private final ObjectMapper objectMapper;
   private final MistakeReviewMetrics metrics;
   private final Clock clock;
@@ -28,6 +29,7 @@ public class ReviewSessionService {
       RecallJudgeService judgeService,
       ReviewCardPregenerationService pregenerationService,
       ReviewCardProperties cardProperties,
+      ReviewSchedulerProperties schedulerProperties,
       ObjectMapper objectMapper,
       MistakeReviewMetrics metrics,
       Clock clock
@@ -39,6 +41,7 @@ public class ReviewSessionService {
     this.judgeService = Objects.requireNonNull(judgeService, "judgeService must not be null");
     this.pregenerationService = Objects.requireNonNull(pregenerationService, "pregenerationService must not be null");
     this.cardProperties = Objects.requireNonNull(cardProperties, "cardProperties must not be null");
+    this.schedulerProperties = Objects.requireNonNull(schedulerProperties, "schedulerProperties must not be null");
     this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper must not be null");
     this.metrics = Objects.requireNonNull(metrics, "metrics must not be null");
     this.clock = Objects.requireNonNull(clock, "clock must not be null");
@@ -49,7 +52,7 @@ public class ReviewSessionService {
     int effectiveLimit = limit <= 0 ? 20 : Math.min(limit, 100);
     List<MistakeNote> notes = noteRepository.findDue(userId, now, effectiveLimit);
     notes.stream().limit(cardProperties.prefetchCount()).forEach(note -> pregenerationService.enqueue(note.id()));
-    return new ReviewQueue(notes, noteRepository.countDue(userId, now));
+    return new ReviewQueue(notes, Math.min(noteRepository.countDue(userId, now), schedulerProperties.queueDailyCap()));
   }
 
   public ReviewCard card(long userId, long noteId) {
@@ -96,7 +99,9 @@ public class ReviewSessionService {
   }
 
   public ReviewSummary summary(long userId) {
-    return new ReviewSummary(noteRepository.countDue(userId, Instant.now(clock)));
+    return new ReviewSummary(Math.min(
+        noteRepository.countDue(userId, Instant.now(clock)),
+        schedulerProperties.queueDailyCap()));
   }
 
   private String requireRecallText(String recallText) {

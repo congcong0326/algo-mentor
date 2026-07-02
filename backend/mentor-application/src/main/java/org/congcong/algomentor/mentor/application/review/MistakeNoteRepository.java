@@ -8,7 +8,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
 
 public interface MistakeNoteRepository {
 
-  MistakeNote upsertForReviewFailure(PracticeCodeReview review, JsonNode sourceDetail);
+  MistakeNote upsertForReview(PracticeCodeReview review, MistakeSource source, JsonNode sourceDetail, ReviewSeed seed);
 
   MistakeNote mark(long userId, String problemSlug, MistakeSource source, JsonNode sourceDetail, Instant now);
 
@@ -18,7 +18,15 @@ public interface MistakeNoteRepository {
 
   List<MistakeNote> findDue(long userId, Instant now, int limit);
 
-  List<MistakeNote> list(long userId, MasteryState state, MistakeSource source, String keyword, int limit, int offset);
+  List<MistakeNote> list(
+      long userId,
+      MasteryState state,
+      MistakeSource source,
+      boolean mistakeOnly,
+      String keyword,
+      int limit,
+      int offset
+  );
 
   int countDue(long userId, Instant now);
 

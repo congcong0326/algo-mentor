@@ -121,7 +121,7 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
         </div>
         <button className="secondary-button" onClick={() => onNavigate(APP_ROUTES.mistakes)} type="button">
           <ArrowLeft aria-hidden="true" />
-          <span>返回错题本</span>
+          <span>返回复习中心</span>
         </button>
       </header>
 
@@ -134,7 +134,7 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
           <CheckCircle2 aria-hidden="true" />
           <h2>今日待复习已完成</h2>
           <button className="primary-button" onClick={() => onNavigate(APP_ROUTES.mistakes)} type="button">
-            返回错题本
+            返回复习中心
           </button>
         </div>
       ) : (

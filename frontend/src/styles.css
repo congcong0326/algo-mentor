@@ -221,6 +221,15 @@ a {
   color: var(--text-muted);
 }
 
+.checkbox-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 10px;
+  color: var(--text-secondary);
+}
+
 .search-field input,
 .mistake-manual-mark input,
 .mistake-toolbar select,

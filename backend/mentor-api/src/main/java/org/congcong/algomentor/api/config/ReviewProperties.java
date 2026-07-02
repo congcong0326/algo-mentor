@@ -1,5 +1,6 @@
 package org.congcong.algomentor.api.config;
 
+import java.math.BigDecimal;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "algo-mentor.review")
@@ -7,6 +8,8 @@ public class ReviewProperties {
 
   private final CardGen cardGen = new CardGen();
   private final Scheduler scheduler = new Scheduler();
+  private final Seed seed = new Seed();
+  private final Queue queue = new Queue();
 
   public CardGen getCardGen() {
     return cardGen;
@@ -14,6 +17,14 @@ public class ReviewProperties {
 
   public Scheduler getScheduler() {
     return scheduler;
+  }
+
+  public Seed getSeed() {
+    return seed;
+  }
+
+  public Queue getQueue() {
+    return queue;
   }
 
   public static class CardGen {
@@ -64,6 +75,57 @@ public class ReviewProperties {
 
     public void setGraduationRepetitions(int graduationRepetitions) {
       this.graduationRepetitions = graduationRepetitions;
+    }
+  }
+
+  public static class Seed {
+    private int passedFirstIntervalDays = 3;
+    private int passedHighScoreIntervalDays = 4;
+    private int lowConfidenceIntervalDays = 1;
+    private BigDecimal highScoreRatio = new BigDecimal("0.90");
+
+    public int getPassedFirstIntervalDays() {
+      return passedFirstIntervalDays;
+    }
+
+    public void setPassedFirstIntervalDays(int passedFirstIntervalDays) {
+      this.passedFirstIntervalDays = passedFirstIntervalDays;
+    }
+
+    public int getPassedHighScoreIntervalDays() {
+      return passedHighScoreIntervalDays;
+    }
+
+    public void setPassedHighScoreIntervalDays(int passedHighScoreIntervalDays) {
+      this.passedHighScoreIntervalDays = passedHighScoreIntervalDays;
+    }
+
+    public int getLowConfidenceIntervalDays() {
+      return lowConfidenceIntervalDays;
+    }
+
+    public void setLowConfidenceIntervalDays(int lowConfidenceIntervalDays) {
+      this.lowConfidenceIntervalDays = lowConfidenceIntervalDays;
+    }
+
+    public BigDecimal getHighScoreRatio() {
+      return highScoreRatio;
+    }
+
+    public void setHighScoreRatio(BigDecimal highScoreRatio) {
+      this.highScoreRatio = highScoreRatio;
+    }
+  }
+
+  public static class Queue {
+    private int dailyCap = 20;
+
+    public int getDailyCap() {
+      return dailyCap;
+    }
+
+    public void setDailyCap(int dailyCap) {
+      this.dailyCap = dailyCap;
     }
   }
 }

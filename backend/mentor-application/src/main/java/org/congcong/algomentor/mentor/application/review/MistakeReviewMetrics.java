@@ -10,6 +10,8 @@ public interface MistakeReviewMetrics {
 
   void recordNoteIngest(MistakeSource source);
 
+  void recordSeed(ReviewSeedBucket bucket);
+
   MistakeReviewMetrics NOOP = new MistakeReviewMetrics() {
     @Override
     public void recordCardGeneration(CardGenerationOutcome outcome) {
@@ -25,6 +27,10 @@ public interface MistakeReviewMetrics {
 
     @Override
     public void recordNoteIngest(MistakeSource source) {
+    }
+
+    @Override
+    public void recordSeed(ReviewSeedBucket bucket) {
     }
   };
 }

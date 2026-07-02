@@ -19,6 +19,7 @@ import org.congcong.algomentor.mentor.application.review.MistakeNote;
 import org.congcong.algomentor.mentor.application.review.MistakeNoteRepository;
 import org.congcong.algomentor.mentor.application.review.MistakeReviewException;
 import org.congcong.algomentor.mentor.application.review.MistakeSource;
+import org.congcong.algomentor.mentor.application.review.ReviewSeed;
 import org.congcong.algomentor.mentor.application.review.ReviewCardCache;
 import org.congcong.algomentor.mentor.application.review.ReviewGrade;
 import org.congcong.algomentor.mentor.application.review.SchedulingState;
@@ -39,21 +40,28 @@ public class MyBatisMistakeNoteRepository implements MistakeNoteRepository {
 
   @Override
   @Transactional
-  public MistakeNote upsertForReviewFailure(PracticeCodeReview review, JsonNode sourceDetail) {
-    return toNote(mapper.upsertForReviewFailure(new MistakeNoteUpsertRow(
+  public MistakeNote upsertForReview(PracticeCodeReview review, MistakeSource source, JsonNode sourceDetail, ReviewSeed seed) {
+    return toNote(mapper.upsertForReview(new MistakeNoteUpsertRow(
         review.userId(),
         review.problemSlug(),
-        MistakeSource.REVIEW_FAILED.name(),
+        source.name(),
         sourceDetail,
         review.planId(),
         review.phaseIndex(),
-        review.sessionId())));
+        review.sessionId(),
+        seed.state().repetitions(),
+        seed.state().easeFactor(),
+        seed.state().intervalDays(),
+        seed.state().masteryState().name(),
+        seed.state().lapses(),
+        seed.dueAt())));
   }
 
   @Override
   @Transactional
   public MistakeNote mark(long userId, String problemSlug, MistakeSource source, JsonNode sourceDetail, Instant now) {
-    return toNote(mapper.mark(new MistakeNoteUpsertRow(userId, problemSlug, source.name(), sourceDetail, null, null, null)));
+    return toNote(mapper.mark(new MistakeNoteUpsertRow(
+        userId, problemSlug, source.name(), sourceDetail, null, null, null, null, null, null, null, null, null)));
   }
 
   @Override
@@ -72,11 +80,20 @@ public class MyBatisMistakeNoteRepository implements MistakeNoteRepository {
   }
 
   @Override
-  public List<MistakeNote> list(long userId, MasteryState state, MistakeSource source, String keyword, int limit, int offset) {
+  public List<MistakeNote> list(
+      long userId,
+      MasteryState state,
+      MistakeSource source,
+      boolean mistakeOnly,
+      String keyword,
+      int limit,
+      int offset
+  ) {
     return mapper.list(
         userId,
         state == null ? null : state.name(),
         source == null ? null : source.name(),
+        mistakeOnly,
         keyword,
         limit,
         offset).stream().map(this::toNote).toList();

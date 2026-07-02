@@ -610,7 +610,7 @@ export interface MessageEndData {
 }
 
 export type MasteryState = 'NEW' | 'LEARNING' | 'MASTERED' | 'LAPSED';
-export type MistakeSource = 'REVIEW_FAILED' | 'USER_MARKED' | 'AI_WEAK';
+export type MistakeSource = 'REVIEW_FAILED' | 'REVIEW_PASSED' | 'USER_MARKED' | 'AI_WEAK';
 export type ReviewGrade = 'FORGOT' | 'BARELY' | 'MASTERED' | 'FLUENT';
 export type CardVariant = 'STATIC' | 'RULE_BASED' | 'AI_GENERATED';
 

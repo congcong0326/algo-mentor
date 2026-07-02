@@ -25,7 +25,7 @@ class MistakeReviewMapperXmlTest {
     parse(configuration, "mapper/review/ReviewLogMapper.xml");
 
     String noteNamespace = "org.congcong.algomentor.api.review.mapper.MistakeNoteMapper.";
-    assertThat(configuration.hasStatement(noteNamespace + "upsertForReviewFailure")).isTrue();
+    assertThat(configuration.hasStatement(noteNamespace + "upsertForReview")).isTrue();
     assertThat(configuration.hasStatement(noteNamespace + "mark")).isTrue();
     assertThat(configuration.hasStatement(noteNamespace + "findDue")).isTrue();
     assertThat(configuration.hasStatement(noteNamespace + "updateScheduling")).isTrue();

@@ -33,4 +33,9 @@ public class MicrometerMistakeReviewMetrics implements MistakeReviewMetrics {
   public void recordNoteIngest(MistakeSource source) {
     registry.counter("review.note.ingest", "source", source.name()).increment();
   }
+
+  @Override
+  public void recordSeed(ReviewSeedBucket bucket) {
+    registry.counter("review.seed", "bucket", bucket.name()).increment();
+  }
 }

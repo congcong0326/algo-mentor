@@ -49,6 +49,7 @@ public class MistakeNoteController {
   public ApiResponse<List<MistakeNoteResponse>> list(
       @RequestParam(required = false) String state,
       @RequestParam(required = false) String source,
+      @RequestParam(defaultValue = "false") boolean mistakeOnly,
       @RequestParam(required = false) String keyword,
       @RequestParam(defaultValue = "50") int limit,
       @RequestParam(defaultValue = "0") int offset
@@ -58,6 +59,7 @@ public class MistakeNoteController {
         userId,
         parseState(state),
         parseSource(source),
+        mistakeOnly,
         keyword,
         limit,
         offset)));

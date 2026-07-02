@@ -7,7 +7,7 @@ import {
   markMistake,
   requireApiData,
 } from '../services/api';
-import type { MasteryState, MistakeNote } from '../types/api';
+import type { MasteryState, MistakeNote, MistakeSource } from '../types/api';
 
 interface MistakeNotebookPageProps {
   onNavigate: (path: string) => void;
@@ -20,37 +20,45 @@ const stateLabels: Record<MasteryState, string> = {
   LAPSED: '又忘了',
 };
 
+const sourceLabels: Record<MistakeSource, string> = {
+  REVIEW_FAILED: '错题',
+  REVIEW_PASSED: '复习',
+  USER_MARKED: '手动标记',
+  AI_WEAK: '薄弱点',
+};
+
 export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageProps) {
   const [items, setItems] = useState<MistakeNote[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [keyword, setKeyword] = useState('');
   const [state, setState] = useState<MasteryState | ''>('');
+  const [mistakeOnly, setMistakeOnly] = useState(false);
   const [manualSlug, setManualSlug] = useState('');
   const [actionError, setActionError] = useState('');
 
   const stats = useMemo(() => {
     const active = items.filter((item) => !item.archived);
     const due = active.filter((item) => new Date(item.dueAt).getTime() <= Date.now());
-    const mastered = active.filter((item) => item.masteryState === 'MASTERED');
-    return { active: active.length, due: due.length, mastered: mastered.length };
+    const mistakes = active.filter((item) => item.source === 'REVIEW_FAILED' || item.lapses > 0);
+    return { active: active.length, due: due.length, mistakes: mistakes.length };
   }, [items]);
 
   useEffect(() => {
     const controller = new AbortController();
     void load(controller.signal);
     return () => controller.abort();
-  }, [keyword, state]);
+  }, [keyword, state, mistakeOnly]);
 
   async function load(signal?: AbortSignal) {
     setLoading(true);
     setError('');
     try {
-      const response = await listMistakeNotes({ keyword, state, limit: 80 }, signal);
-      setItems(requireApiData(response, '错题列表加载失败'));
+      const response = await listMistakeNotes({ keyword, state, mistakeOnly, limit: 80 }, signal);
+      setItems(requireApiData(response, '复习队列加载失败'));
     } catch (loadError) {
       if (!(loadError instanceof DOMException && loadError.name === 'AbortError')) {
-        setError(loadError instanceof Error ? loadError.message : '错题列表加载失败');
+        setError(loadError instanceof Error ? loadError.message : '复习队列加载失败');
       }
     } finally {
       setLoading(false);
@@ -64,11 +72,11 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
     setActionError('');
     try {
       const response = await markMistake(manualSlug.trim());
-      const note = requireApiData(response, '加入错题本失败');
+      const note = requireApiData(response, '加入复习队列失败');
       setItems((current) => [note, ...current.filter((item) => item.id !== note.id)]);
       setManualSlug('');
     } catch (markError) {
-      setActionError(markError instanceof Error ? markError.message : '加入错题本失败');
+      setActionError(markError instanceof Error ? markError.message : '加入复习队列失败');
     }
   }
 
@@ -87,8 +95,8 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
     <section className="mistake-page" aria-labelledby="mistake-title">
       <header className="mistake-header">
         <div>
-          <p className="eyebrow">Mistake Notebook</p>
-          <h1 id="mistake-title">错题本</h1>
+          <p className="eyebrow">Review Center</p>
+          <h1 id="mistake-title">复习中心</h1>
         </div>
         <button className="primary-button" onClick={() => onNavigate(APP_ROUTES.reviewSession)} type="button">
           <BookOpenCheck aria-hidden="true" />
@@ -96,22 +104,22 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
         </button>
       </header>
 
-      <section className="mistake-stat-grid" aria-label="错题概览">
+      <section className="mistake-stat-grid" aria-label="复习概览">
         <div>
           <span>待复习</span>
           <strong>{stats.due}</strong>
         </div>
         <div>
-          <span>有效错题</span>
+          <span>复习题</span>
           <strong>{stats.active}</strong>
         </div>
         <div>
-          <span>已掌握</span>
-          <strong>{stats.mastered}</strong>
+          <span>错题</span>
+          <strong>{stats.mistakes}</strong>
         </div>
       </section>
 
-      <section className="mistake-toolbar" aria-label="错题筛选">
+      <section className="mistake-toolbar" aria-label="复习筛选">
         <label className="search-field">
           <Search aria-hidden="true" />
           <input
@@ -126,19 +134,27 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
             <option key={value} value={value}>{label}</option>
           ))}
         </select>
+        <label className="checkbox-control">
+          <input
+            checked={mistakeOnly}
+            onChange={(event) => setMistakeOnly(event.target.checked)}
+            type="checkbox"
+          />
+          <span>仅看错题</span>
+        </label>
         <button className="icon-button" onClick={() => void load()} title="刷新" type="button">
           <RefreshCw aria-hidden="true" />
         </button>
       </section>
 
-      <section className="mistake-manual-mark" aria-label="手动加入错题本">
+      <section className="mistake-manual-mark" aria-label="手动加入复习队列">
         <input
           onChange={(event) => setManualSlug(event.target.value)}
           placeholder="problem-slug"
           value={manualSlug}
         />
         <button className="secondary-button" onClick={() => void handleManualMark()} type="button">
-          加入错题本
+          加入复习队列
         </button>
       </section>
 
@@ -146,14 +162,14 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
 
       <div className="mistake-list" aria-busy={loading}>
         {loading ? (
-          <div className="loading-panel">正在加载错题...</div>
+          <div className="loading-panel">正在加载复习队列...</div>
         ) : items.length === 0 ? (
-          <div className="loading-panel">暂无错题记录。</div>
+          <div className="loading-panel">暂无复习记录。</div>
         ) : items.map((note) => (
           <article className="mistake-note-card" key={note.id}>
             <div>
               <h2>{note.problemSlug}</h2>
-              <p>{stateLabels[note.masteryState]} · 间隔 {note.intervalDays} 天 · lapses {note.lapses}</p>
+              <p>{sourceLabels[note.source]} · {stateLabels[note.masteryState]} · 间隔 {note.intervalDays} 天 · lapses {note.lapses}</p>
               {note.userNotePersistent && <p className="mistake-note-text">{note.userNotePersistent}</p>}
             </div>
             <div className="mistake-note-actions">

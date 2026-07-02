@@ -23,6 +23,7 @@ import org.congcong.algomentor.mentor.application.review.ReviewCardService;
 import org.congcong.algomentor.mentor.application.review.ReviewLogRepository;
 import org.congcong.algomentor.mentor.application.review.ReviewSchedulerProperties;
 import org.congcong.algomentor.mentor.application.review.ReviewSchedulerService;
+import org.congcong.algomentor.mentor.application.review.ReviewSeedPolicy;
 import org.congcong.algomentor.mentor.application.review.ReviewSessionService;
 import org.congcong.algomentor.mentor.application.review.RuleBasedCardComposer;
 import org.springframework.beans.factory.ObjectProvider;
@@ -51,7 +52,18 @@ public class MistakeReviewApiAutoConfiguration {
   public ReviewSchedulerProperties reviewSchedulerProperties(ReviewProperties properties) {
     return new ReviewSchedulerProperties(
         properties.getScheduler().getGraduationIntervalDays(),
-        properties.getScheduler().getGraduationRepetitions());
+        properties.getScheduler().getGraduationRepetitions(),
+        properties.getSeed().getPassedFirstIntervalDays(),
+        properties.getSeed().getPassedHighScoreIntervalDays(),
+        properties.getSeed().getLowConfidenceIntervalDays(),
+        properties.getSeed().getHighScoreRatio(),
+        properties.getQueue().getDailyCap());
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ReviewSeedPolicy reviewSeedPolicy(ReviewSchedulerProperties properties) {
+    return new ReviewSeedPolicy(properties);
   }
 
   @Bean
@@ -138,17 +150,20 @@ public class MistakeReviewApiAutoConfiguration {
   }
 
   @Bean
-  @ConditionalOnBean({MistakeNoteRepository.class, ReviewCardPregenerationService.class, ObjectMapper.class})
+  @ConditionalOnBean({MistakeNoteRepository.class, ReviewCardPregenerationService.class, ReviewSeedPolicy.class,
+      ObjectMapper.class})
   @ConditionalOnMissingBean
   public MistakeNoteService mistakeNoteService(
       MistakeNoteRepository repository,
       ReviewCardPregenerationService pregenerationService,
+      ReviewSeedPolicy seedPolicy,
       ObjectMapper objectMapper,
       ObjectProvider<MistakeReviewMetrics> metrics
   ) {
     return new MistakeNoteService(
         repository,
         pregenerationService,
+        seedPolicy,
         objectMapper,
         metrics.getIfAvailable(() -> MistakeReviewMetrics.NOOP),
         Clock.systemUTC());
@@ -169,6 +184,7 @@ public class MistakeReviewApiAutoConfiguration {
       ReviewCardService.class,
       RecallJudgeService.class,
       ReviewCardPregenerationService.class,
+      ReviewSchedulerProperties.class,
       ObjectMapper.class
   })
   @ConditionalOnMissingBean
@@ -180,6 +196,7 @@ public class MistakeReviewApiAutoConfiguration {
       RecallJudgeService judgeService,
       ReviewCardPregenerationService pregenerationService,
       ReviewCardProperties cardProperties,
+      ReviewSchedulerProperties schedulerProperties,
       ObjectMapper objectMapper,
       ObjectProvider<MistakeReviewMetrics> metrics
   ) {
@@ -191,6 +208,7 @@ public class MistakeReviewApiAutoConfiguration {
         judgeService,
         pregenerationService,
         cardProperties,
+        schedulerProperties,
         objectMapper,
         metrics.getIfAvailable(() -> MistakeReviewMetrics.NOOP),
         Clock.systemUTC());

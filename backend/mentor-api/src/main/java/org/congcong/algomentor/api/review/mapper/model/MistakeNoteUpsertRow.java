@@ -1,6 +1,8 @@
 package org.congcong.algomentor.api.review.mapper.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.math.BigDecimal;
+import java.time.Instant;
 
 public record MistakeNoteUpsertRow(
     long userId,
@@ -9,6 +11,12 @@ public record MistakeNoteUpsertRow(
     JsonNode sourceDetailJson,
     Long originPlanId,
     Integer originPhaseIndex,
-    Long originPracticeSessionId
+    Long originPracticeSessionId,
+    Integer repetitions,
+    BigDecimal easeFactor,
+    Integer intervalDays,
+    String masteryState,
+    Integer lapses,
+    Instant dueAt
 ) {
 }
