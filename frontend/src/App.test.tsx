@@ -3009,6 +3009,7 @@ function learningPlanDetailWithTwoPracticeProblems() {
                 tags: ['Array', 'Two Pointers'],
                 reason: '练习排序和双指针。',
                 sortOrder: 2,
+                progressStatus: 'NOT_STARTED',
               },
             ],
           }
@@ -3185,6 +3186,7 @@ function baseLearningPlanDetail() {
         tags: ['Array', 'Hash Table'],
         reason: '恢复哈希表查找。',
         sortOrder: 1,
+        progressStatus: 'IN_PROGRESS',
       }],
     }],
     metadata: { problemRecommendationIncomplete: false },

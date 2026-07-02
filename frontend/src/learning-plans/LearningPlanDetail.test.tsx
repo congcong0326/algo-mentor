@@ -269,6 +269,7 @@ const planFixture: LearningPlanDetailResponse = {
           tags: ['Array', 'Hash Table'],
           reason: '基础题',
           sortOrder: 1,
+          progressStatus: 'NOT_STARTED',
         },
       ],
     },

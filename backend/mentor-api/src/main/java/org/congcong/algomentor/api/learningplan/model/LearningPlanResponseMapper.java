@@ -1,10 +1,15 @@
 package org.congcong.algomentor.api.learningplan.model;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanConfirmResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
+import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
+import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 
 public final class LearningPlanResponseMapper {
 
@@ -51,7 +56,12 @@ public final class LearningPlanResponseMapper {
   }
 
   public static LearningPlanDetailResponse toDetailResponse(LearningPlan plan) {
+    return toDetailResponse(plan, List.of());
+  }
+
+  public static LearningPlanDetailResponse toDetailResponse(LearningPlan plan, List<PracticeProgress> progress) {
     LearningPlanDraftPlan snapshot = plan.plan();
+    Map<ProgressKey, PracticeProgressStatus> progressByProblem = progressByProblem(progress);
     return new LearningPlanDetailResponse(
         plan.id(),
         snapshot.title(),
@@ -67,9 +77,47 @@ public final class LearningPlanResponseMapper {
         snapshot.topicPreferences(),
         snapshot.profileSummary(),
         plan.status(),
-        snapshot.phases(),
+        snapshot.phases().stream()
+            .map(phase -> new LearningPlanDetailPhaseResponse(
+                phase.phaseIndex(),
+                phase.title(),
+                phase.durationWeeks(),
+                phase.focus(),
+                phase.objectives(),
+                phase.recommendedTags(),
+                phase.acceptanceCriteria(),
+                phase.reviewAdvice(),
+                phase.problems().stream()
+                    .map(problem -> new LearningPlanDetailProblemResponse(
+                        problem.slug(),
+                        problem.frontendId(),
+                        problem.title(),
+                        problem.titleCn(),
+                        problem.difficulty(),
+                        problem.tags(),
+                        problem.reason(),
+                        problem.sortOrder(),
+                        progressByProblem.getOrDefault(
+                            new ProgressKey(phase.phaseIndex(), problem.slug()),
+                            PracticeProgressStatus.NOT_STARTED)))
+                    .toList()))
+            .toList(),
         snapshot.metadata(),
         plan.createdAt(),
         plan.updatedAt());
+  }
+
+  private static Map<ProgressKey, PracticeProgressStatus> progressByProblem(List<PracticeProgress> progress) {
+    Map<ProgressKey, PracticeProgressStatus> progressByProblem = new HashMap<>();
+    if (progress == null) {
+      return progressByProblem;
+    }
+    for (PracticeProgress item : progress) {
+      progressByProblem.put(new ProgressKey(item.phaseIndex(), item.problemSlug()), item.status());
+    }
+    return progressByProblem;
+  }
+
+  private record ProgressKey(int phaseIndex, String problemSlug) {
   }
 }

@@ -6,7 +6,6 @@ import java.util.Map;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
 
 public record LearningPlanDetailResponse(
@@ -24,7 +23,7 @@ public record LearningPlanDetailResponse(
     List<String> topicPreferences,
     String profileSummary,
     LearningPlanStatus status,
-    List<LearningPlanPhaseDraft> phases,
+    List<LearningPlanDetailPhaseResponse> phases,
     Map<String, Object> metadata,
     Instant createdAt,
     Instant updatedAt

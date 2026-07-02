@@ -66,6 +66,9 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.L
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
+import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
+import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
+import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,6 +120,9 @@ class LearningPlanControllerTest {
 
   @MockBean
   private LearningPlanProposalGroupService proposalGroupService;
+
+  @MockBean
+  private PracticeSessionRepository practiceSessionRepository;
 
   @MockBean
   private ApiSseProperties sseProperties;
@@ -362,6 +368,7 @@ class LearningPlanControllerTest {
         4,
         Instant.parse("2026-06-22T00:00:00Z")));
     when(planService.getPlan(42L, 900L)).thenReturn(plan);
+    when(practiceSessionRepository.findProgressByPlan(42L, 900L)).thenReturn(List.of());
 
     mockMvc.perform(get("/api/learning-plans?page=2&pageSize=5"))
         .andExpect(status().isOk())
@@ -377,7 +384,32 @@ class LearningPlanControllerTest {
     mockMvc.perform(get("/api/learning-plans/900"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.id").value(900))
-        .andExpect(jsonPath("$.data.phases[0].title").value("基础题型恢复"));
+        .andExpect(jsonPath("$.data.phases[0].title").value("基础题型恢复"))
+        .andExpect(jsonPath("$.data.phases[0].problems[0].progressStatus").value("NOT_STARTED"));
+  }
+
+  @Test
+  void detailMergesPracticeProgressStatus() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    LearningPlan plan = new LearningPlan(
+        900L,
+        42L,
+        LearningPlanStatus.ACTIVE,
+        draftPlanWithMultipleProblems(),
+        Instant.now(),
+        Instant.now());
+    when(planService.getPlan(42L, 900L)).thenReturn(plan);
+    when(practiceSessionRepository.findProgressByPlan(42L, 900L)).thenReturn(List.of(
+        progress("two-sum", 1, PracticeProgressStatus.COMPLETED),
+        progress("valid-palindrome", 1, PracticeProgressStatus.IN_PROGRESS),
+        progress("number-of-islands", 2, PracticeProgressStatus.SKIPPED)));
+
+    mockMvc.perform(get("/api/learning-plans/900"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.phases[0].problems[0].progressStatus").value("COMPLETED"))
+        .andExpect(jsonPath("$.data.phases[0].problems[1].progressStatus").value("IN_PROGRESS"))
+        .andExpect(jsonPath("$.data.phases[0].problems[2].progressStatus").value("NOT_STARTED"))
+        .andExpect(jsonPath("$.data.phases[1].problems[0].progressStatus").value("SKIPPED"));
   }
 
   @Test
@@ -508,5 +540,77 @@ class LearningPlanControllerTest {
                 "恢复哈希表查找。",
                 1)))),
         Map.of("problemRecommendationIncomplete", false));
+  }
+
+  private LearningPlanDraftPlan draftPlanWithMultipleProblems() {
+    return new LearningPlanDraftPlan(
+        "四周 Java 算法面试冲刺计划",
+        "围绕数组和哈希表建立高频题型能力。",
+        LearningPlanIntent.INTERVIEW_SPRINT,
+        "准备 Java 后端算法面试",
+        4,
+        LearningPlanLevel.INTERMEDIATE,
+        6,
+        "Java",
+        LearningPlanDifficultyPreference.MEDIUM,
+        true,
+        List.of("Array", "Hash Table"),
+        "中级，每周 6 小时。",
+        List.of(
+            new LearningPlanPhaseDraft(
+                1,
+                "基础题型恢复",
+                1,
+                "数组和哈希表",
+                List.of("恢复基础题型手感"),
+                List.of("Array", "Hash Table"),
+                List.of("能说明哈希表查找边界"),
+                "整理错误原因。",
+                List.of(
+                    problem("two-sum", 1, "Two Sum", "两数之和", "EASY", "恢复哈希表查找。", 1),
+                    problem("valid-palindrome", 125, "Valid Palindrome", "验证回文串", "EASY", "练习双指针。", 2),
+                    problem("merge-intervals", 56, "Merge Intervals", "合并区间", "MEDIUM", "练习区间归并。", 3))),
+            new LearningPlanPhaseDraft(
+                2,
+                "图论补强",
+                1,
+                "图遍历",
+                List.of("掌握 BFS 与 DFS"),
+                List.of("Graph"),
+                List.of("能解释遍历边界"),
+                "复盘图题模板。",
+                List.of(problem("number-of-islands", 200, "Number of Islands", "岛屿数量", "MEDIUM", "练习图遍历。", 1)))),
+        Map.of("problemRecommendationIncomplete", false));
+  }
+
+  private LearningPlanProblemDraft problem(
+      String slug,
+      int frontendId,
+      String title,
+      String titleCn,
+      String difficulty,
+      String reason,
+      int sortOrder) {
+    return new LearningPlanProblemDraft(
+        slug,
+        frontendId,
+        title,
+        titleCn,
+        difficulty,
+        List.of("Array"),
+        reason,
+        sortOrder);
+  }
+
+  private PracticeProgress progress(String problemSlug, int phaseIndex, PracticeProgressStatus status) {
+    return new PracticeProgress(
+        phaseIndex * 100L + problemSlug.length(),
+        42L,
+        900L,
+        phaseIndex,
+        problemSlug,
+        status,
+        Instant.parse("2026-06-25T00:00:00Z"),
+        Instant.parse("2026-06-25T00:00:00Z"));
   }
 }

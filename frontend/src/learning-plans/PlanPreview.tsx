@@ -5,14 +5,36 @@ import {
   formatTopicTag,
 } from '../i18n/formatters';
 import { useI18n } from '../i18n/I18nProvider';
-import type { LearningPlanDraftPlan } from '../types/api';
+import type {
+  LearningPlanDetailProblemResponse,
+  LearningPlanDraftPlan,
+  PracticeProgressStatus,
+} from '../types/api';
+
+type PlanPreviewProblem = LearningPlanDraftPlan['phases'][number]['problems'][number]
+  | LearningPlanDetailProblemResponse;
+
+function hasProgressStatus(problem: PlanPreviewProblem): problem is LearningPlanDetailProblemResponse {
+  return 'progressStatus' in problem;
+}
+
+function formatProgressStatus(status: PracticeProgressStatus, resources: ReturnType<typeof useI18n>['resources']) {
+  const labels: Record<PracticeProgressStatus, string> = {
+    NOT_STARTED: resources.learningPlans.notStarted,
+    IN_PROGRESS: resources.learningPlans.inProgress,
+    COMPLETED: resources.learningPlans.completed,
+    SKIPPED: resources.learningPlans.skipped,
+  };
+  return labels[status];
+}
 
 function ProblemRowContent({
   problem,
 }: {
-  problem: LearningPlanDraftPlan['phases'][number]['problems'][number];
+  problem: PlanPreviewProblem;
 }) {
   const { locale, resources } = useI18n();
+  const progressStatus = hasProgressStatus(problem) ? problem.progressStatus : undefined;
 
   return (
     <>
@@ -21,8 +43,15 @@ function ProblemRowContent({
         <strong>{formatProblemTitle(problem, locale)}</strong>
         <small>{problem.reason}</small>
       </span>
-      <span className={`difficulty-badge ${String(problem.difficulty ?? '').toLowerCase()}`}>
-        {formatDifficulty(problem.difficulty, resources)}
+      <span className="problem-badge-group">
+        <span className={`difficulty-badge ${String(problem.difficulty ?? '').toLowerCase()}`}>
+          {formatDifficulty(problem.difficulty, resources)}
+        </span>
+        {progressStatus ? (
+          <span className={`progress-status-badge ${progressStatus.toLowerCase().replace('_', '-')}`}>
+            {formatProgressStatus(progressStatus, resources)}
+          </span>
+        ) : null}
       </span>
     </>
   );

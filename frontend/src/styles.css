@@ -1706,7 +1706,7 @@ a {
 
 .problem-row {
   display: grid;
-  grid-template-columns: 54px minmax(0, 1fr) 86px;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
   gap: 10px;
   align-items: center;
   min-height: 64px;
@@ -1791,6 +1791,47 @@ a {
   border-color: var(--border-subtle);
   background: var(--surface-muted);
   color: var(--text-secondary);
+}
+
+.problem-badge-group {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-width: 0;
+}
+
+.progress-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 0 9px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.progress-status-badge.in-progress {
+  border-color: var(--accent-warm-border);
+  background: var(--accent-warm-soft);
+  color: var(--accent-warm-text);
+}
+
+.progress-status-badge.completed {
+  border-color: #bbf7d0;
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.progress-status-badge.skipped {
+  border-color: #fecaca;
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
 .pagination-row {
@@ -4800,6 +4841,11 @@ a {
   .problem-row .difficulty-badge {
     grid-column: 2;
     justify-self: start;
+  }
+
+  .problem-row .problem-badge-group {
+    grid-column: 2;
+    justify-content: flex-start;
   }
 
   .detail-heading,

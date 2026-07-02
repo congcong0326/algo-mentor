@@ -343,6 +343,14 @@ export interface LearningPlanPhaseDraft {
   problems: LearningPlanProblemDraft[];
 }
 
+export interface LearningPlanDetailProblemResponse extends LearningPlanProblemDraft {
+  progressStatus: PracticeProgressStatus;
+}
+
+export interface LearningPlanDetailPhaseResponse extends Omit<LearningPlanPhaseDraft, 'problems'> {
+  problems: LearningPlanDetailProblemResponse[];
+}
+
 export interface LearningPlanDraftPlan {
   title: string;
   summary: string;
@@ -405,6 +413,7 @@ export interface LearningPlanPageResponse {
 export interface LearningPlanDetailResponse extends LearningPlanDraftPlan {
   id: number;
   status: LearningPlanStatus;
+  phases: LearningPlanDetailPhaseResponse[];
   createdAt: string;
   updatedAt: string;
 }

@@ -2,6 +2,7 @@ package org.congcong.algomentor.api.controller.learningplan;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Flow;
@@ -45,6 +46,8 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.L
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionProposalStreamService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanProposalStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
+import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
+import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
 import org.congcong.algomentor.ops.observability.NoopOpsRecorders;
 import org.congcong.algomentor.ops.observability.SseOpsRecorder;
@@ -78,6 +81,7 @@ public class LearningPlanController {
   private final ObjectProvider<LearningPlanExtensionProposalStreamService> extensionProposalStreamServiceProvider;
   private final ObjectProvider<LearningPlanExtensionApplyService> extensionApplyServiceProvider;
   private final ObjectProvider<LearningPlanProposalGroupService> proposalGroupServiceProvider;
+  private final ObjectProvider<PracticeSessionRepository> practiceSessionRepositoryProvider;
   private final LearningPlanDraftStreamSseMapper draftStreamSseMapper;
   private final LearningPlanProposalStreamSseMapper proposalStreamSseMapper;
   private final ApiSseProperties sseProperties;
@@ -97,6 +101,7 @@ public class LearningPlanController {
       ObjectProvider<LearningPlanExtensionProposalStreamService> extensionProposalStreamServiceProvider,
       ObjectProvider<LearningPlanExtensionApplyService> extensionApplyServiceProvider,
       ObjectProvider<LearningPlanProposalGroupService> proposalGroupServiceProvider,
+      ObjectProvider<PracticeSessionRepository> practiceSessionRepositoryProvider,
       ApiSseProperties sseProperties,
       ObjectProvider<SseOpsRecorder> sseOpsRecorder,
       ObjectProvider<LearningOpsRecorder> learningOpsRecorder) {
@@ -111,6 +116,7 @@ public class LearningPlanController {
     this.extensionProposalStreamServiceProvider = extensionProposalStreamServiceProvider;
     this.extensionApplyServiceProvider = extensionApplyServiceProvider;
     this.proposalGroupServiceProvider = proposalGroupServiceProvider;
+    this.practiceSessionRepositoryProvider = practiceSessionRepositoryProvider;
     this.draftStreamSseMapper = new LearningPlanDraftStreamSseMapper();
     this.proposalStreamSseMapper = new LearningPlanProposalStreamSseMapper();
     this.sseProperties = sseProperties;
@@ -254,7 +260,9 @@ public class LearningPlanController {
   @GetMapping("/{planId}")
   public ApiResponse<LearningPlanDetailResponse> getPlan(@PathVariable long planId) {
     long userId = requireCurrentUserId();
-    return ApiResponse.success(LearningPlanResponseMapper.toDetailResponse(planService.getPlan(userId, planId)));
+    return ApiResponse.success(LearningPlanResponseMapper.toDetailResponse(
+        planService.getPlan(userId, planId),
+        progressByPlan(userId, planId)));
   }
 
   @DeleteMapping("/{planId}")
@@ -268,6 +276,18 @@ public class LearningPlanController {
     return currentUserIdProvider.currentUser()
         .map(AuthenticatedUserPrincipal::userId)
         .orElseThrow(() -> new LearningPlanUnauthenticatedException("当前请求未登录或无法解析当前用户。"));
+  }
+
+  private List<PracticeProgress> progressByPlan(long userId, long planId) {
+    PracticeSessionRepository repository = practiceSessionRepositoryProvider.getIfAvailable();
+    if (repository == null) {
+      return List.of();
+    }
+    try {
+      return repository.findProgressByPlan(userId, planId);
+    } catch (UnsupportedOperationException exception) {
+      return List.of();
+    }
   }
 
   private ApiResponse<LearningPlanDraftResponse> governedDraft(
