@@ -132,7 +132,7 @@ function PublicHomeShell({
   );
 }
 
-function AppLoadingShell({ activeView }: { activeView: AppView }) {
+function AppLoadingShell() {
   const { resources } = useI18n();
 
   return (
@@ -147,21 +147,12 @@ function AppLoadingShell({ activeView }: { activeView: AppView }) {
           <strong>{resources.app.brandName}</strong>
         </div>
         <nav className="app-nav" aria-label={resources.app.mainNavigation}>
-          {[
-            ['home', resources.nav.home],
-            ['learningPlans', resources.nav.learningPlans],
-            ['problems', resources.nav.problems],
-            ['my', resources.nav.my],
-          ].map(([view, label]) => (
-            <button
-              aria-pressed={activeView === view}
-              className="app-nav-button"
-              disabled
-              key={view}
-              type="button"
-            >
-              <span>{label}</span>
-            </button>
+          {Array.from({ length: 4 }, (_, index) => (
+            <span
+              aria-hidden="true"
+              className="app-nav-skeleton-item"
+              key={index}
+            />
           ))}
         </nav>
         <div className="app-header-actions">
@@ -400,7 +391,7 @@ export default function App() {
 
   if (!authChecked) {
     if (!isLoginRoute(window.location.pathname)) {
-      return <AppLoadingShell activeView={activeView} />;
+      return <AppLoadingShell />;
     }
 
     return (

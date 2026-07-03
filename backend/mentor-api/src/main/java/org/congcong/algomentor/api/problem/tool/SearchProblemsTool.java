@@ -1,7 +1,12 @@
 package org.congcong.algomentor.api.problem.tool;
 
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.APPLIED_FILTERS;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.COMPANY;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.COMPANY_FREQUENCY_SCORE;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.COMPANY_SIGNAL_COUNT;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.CONTENT_STATUS;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.DIFFICULTY;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.FRONTEND_DISPLAY_ID;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.FRONTEND_ID;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.ITEMS;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.KEYWORD;
@@ -9,6 +14,8 @@ import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.LAB
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.LOCALE;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.PAGE;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.PAGE_SIZE;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.RECENCY_BUCKET;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.ROLE;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.SEARCH_PROBLEMS;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.SLUG;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.SORT;
@@ -81,6 +88,9 @@ public final class SearchProblemsTool implements AgentTool {
         DIFFICULTY,
         SEARCH_PROBLEMS));
     String tag = ProblemAgentToolSupport.optionalText(arguments, TAG, SEARCH_PROBLEMS);
+    String company = ProblemAgentToolSupport.optionalText(arguments, COMPANY, SEARCH_PROBLEMS);
+    String role = ProblemAgentToolSupport.optionalText(arguments, ROLE, SEARCH_PROBLEMS);
+    String recencyBucket = ProblemAgentToolSupport.optionalText(arguments, RECENCY_BUCKET, SEARCH_PROBLEMS);
     ProblemSort sort = sort(ProblemAgentToolSupport.optionalText(arguments, SORT, SEARCH_PROBLEMS));
     int page = ProblemAgentToolSupport.optionalInt(
         arguments,
@@ -93,7 +103,7 @@ public final class SearchProblemsTool implements AgentTool {
         ProblemListRequest.DEFAULT_PAGE_SIZE,
         SEARCH_PROBLEMS);
     ProblemLocale locale = locale(arguments);
-    return new ProblemListRequest(keyword, difficulty, tag, null, sort, page, pageSize, locale);
+    return new ProblemListRequest(keyword, difficulty, tag, null, company, role, recencyBucket, sort, page, pageSize, locale);
   }
 
   private ProblemDifficulty difficulty(String raw) {
@@ -119,7 +129,7 @@ public final class SearchProblemsTool implements AgentTool {
     } catch (IllegalArgumentException exception) {
       throw ProblemAgentToolSupport.toolFailure(
           SEARCH_PROBLEMS,
-          "sort must be one of FRONTEND_ID_ASC, FRONTEND_ID_DESC, TITLE_ASC, or UPDATED_DESC.",
+          "sort must be one of FRONTEND_ID_ASC, FRONTEND_ID_DESC, TITLE_ASC, UPDATED_DESC, or COMPANY_FREQUENCY_DESC.",
           exception);
     }
   }
@@ -167,8 +177,16 @@ public final class SearchProblemsTool implements AgentTool {
       } else {
         node.put(FRONTEND_ID, item.frontendId());
       }
+      ProblemAgentToolSupport.putNullable(node, FRONTEND_DISPLAY_ID, item.frontendDisplayId());
       ProblemAgentToolSupport.putNullable(node, TITLE, item.title());
       node.put(DIFFICULTY, item.difficulty() == null ? null : item.difficulty().name());
+      ProblemAgentToolSupport.putNullable(node, CONTENT_STATUS, item.contentStatus());
+      if (item.companyFrequencyScore() == null) {
+        node.putNull(COMPANY_FREQUENCY_SCORE);
+      } else {
+        node.put(COMPANY_FREQUENCY_SCORE, item.companyFrequencyScore());
+      }
+      node.put(COMPANY_SIGNAL_COUNT, item.companySignalCount());
       ArrayNode tags = node.putArray(TAGS);
       for (ProblemTag tag : item.tags()) {
         ObjectNode tagNode = tags.addObject();
@@ -185,6 +203,9 @@ public final class SearchProblemsTool implements AgentTool {
     ProblemAgentToolSupport.putNullable(node, KEYWORD, request.keyword());
     node.put(DIFFICULTY, request.difficulty() == null ? null : request.difficulty().name());
     ProblemAgentToolSupport.putNullable(node, TAG, request.tag());
+    ProblemAgentToolSupport.putNullable(node, COMPANY, request.company());
+    ProblemAgentToolSupport.putNullable(node, ROLE, request.role());
+    ProblemAgentToolSupport.putNullable(node, RECENCY_BUCKET, request.recencyBucket());
     node.put(SORT, request.sort().name());
     node.put(PAGE, request.page());
     node.put(PAGE_SIZE, request.pageSize());
@@ -203,13 +224,20 @@ public final class SearchProblemsTool implements AgentTool {
     properties.set(DIFFICULTY, difficulty);
     properties.set(TAG, ProblemAgentToolSupport.nullableStringProperty(
         "Exact tag value returned by list_problem_filters, for example Binary Search. Use null to omit this filter."));
+    properties.set(COMPANY, ProblemAgentToolSupport.nullableStringProperty(
+        "Exact company slug returned by list_problem_filters. Use null to omit this filter."));
+    properties.set(ROLE, ProblemAgentToolSupport.nullableStringProperty(
+        "Exact role value returned by list_problem_filters. Use null to omit this filter."));
+    properties.set(RECENCY_BUCKET, ProblemAgentToolSupport.nullableStringProperty(
+        "Exact recency bucket returned by list_problem_filters. Use null to omit this filter."));
     ObjectNode sort = ProblemAgentToolSupport.nullableStringProperty(
-        "One of FRONTEND_ID_ASC, FRONTEND_ID_DESC, TITLE_ASC, UPDATED_DESC. Use null for the default sort.");
+        "One of FRONTEND_ID_ASC, FRONTEND_ID_DESC, TITLE_ASC, UPDATED_DESC, COMPANY_FREQUENCY_DESC. Use null for the default sort.");
     sort.putArray(ProblemAgentToolSupport.ENUM)
         .add("FRONTEND_ID_ASC")
         .add("FRONTEND_ID_DESC")
         .add("TITLE_ASC")
         .add("UPDATED_DESC")
+        .add("COMPANY_FREQUENCY_DESC")
         .addNull();
     properties.set(SORT, sort);
     properties.set(PAGE, ProblemAgentToolSupport.nullableIntegerProperty(

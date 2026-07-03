@@ -40,12 +40,22 @@ public class MyBatisProblemRepository implements ProblemRepository {
   @Override
   public ProblemPage<ProblemListItem> findProblems(ProblemListRequest request) {
     String difficulty = request.difficulty() == null ? null : request.difficulty().name();
-    long total = mapper.countProblems(request.keyword(), difficulty, request.tag(), request.category());
+    long total = mapper.countProblems(
+        request.keyword(),
+        difficulty,
+        request.tag(),
+        request.category(),
+        request.company(),
+        request.role(),
+        request.recencyBucket());
     List<ProblemListItem> items = mapper.findProblems(
             request.keyword(),
             difficulty,
             request.tag(),
             request.category(),
+            request.company(),
+            request.role(),
+            request.recencyBucket(),
             request.sort().name(),
             request.locale().value(),
             request.pageSize(),
@@ -87,7 +97,16 @@ public class MyBatisProblemRepository implements ProblemRepository {
     List<ProblemCategoryFilterOption> categories = mapper.countProblemCategories().stream()
         .map(this::toCategoryFilterOption)
         .toList();
-    return new ProblemFilters(mapper.countAllProblems(), difficulties, tags, categories);
+    List<ProblemFilterOption> companies = mapper.countProblemCompanies().stream()
+        .map(row -> new ProblemFilterOption(row.value(), fallback(row.label(), row.value()), count(row.problemCount())))
+        .toList();
+    List<ProblemFilterOption> roles = mapper.countProblemSignalRoles().stream()
+        .map(row -> new ProblemFilterOption(row.value(), roleLabel(row.value()), count(row.problemCount())))
+        .toList();
+    List<ProblemFilterOption> recencyBuckets = mapper.countProblemSignalRecencyBuckets().stream()
+        .map(row -> new ProblemFilterOption(row.value(), recencyBucketLabel(row.value()), count(row.problemCount())))
+        .toList();
+    return new ProblemFilters(mapper.countAllProblems(), difficulties, tags, categories, companies, roles, recencyBuckets);
   }
 
   @Override
@@ -103,9 +122,12 @@ public class MyBatisProblemRepository implements ProblemRepository {
       tagValuesArray = connection.createArrayOf("text", tagValues.toArray(String[]::new));
       tagLabelsEnArray = connection.createArrayOf("text", tagLabelsEn.toArray(String[]::new));
       tagLabelsZhArray = connection.createArrayOf("text", tagLabelsZh.toArray(String[]::new));
+      mapper.clearConflictingFrontendId(problem.slug(), problem.frontendId());
+      mapper.clearConflictingFrontendDisplayId(problem.slug(), problem.frontendDisplayId());
       mapper.upsertProblem(new ProblemUpsertRow(
           problem.slug(),
           problem.frontendId(),
+          problem.frontendDisplayId(),
           problem.titleEn(),
           problem.titleZh(),
           problem.difficulty() == null ? null : problem.difficulty().name(),
@@ -114,6 +136,8 @@ public class MyBatisProblemRepository implements ProblemRepository {
           tagLabelsZhArray,
           problem.contentMarkdownEn(),
           problem.contentMarkdownZh(),
+          fallback(problem.contentStatus(), "BILINGUAL"),
+          fallback(problem.sourceSite(), "LEETCODE_COM_CN"),
           problem.leetcodeUrl(),
           problem.sampleTestCase(),
           problem.python3Template(),
@@ -132,19 +156,25 @@ public class MyBatisProblemRepository implements ProblemRepository {
     return new ProblemListItem(
         row.slug(),
         row.frontendId(),
+        row.frontendDisplayId(),
         title(row, locale),
         parseDifficulty(row.difficulty()),
-        tags(row, locale));
+        tags(row, locale),
+        row.contentStatus(),
+        row.companyFrequencyScore(),
+        count(row.companySignalCount()));
   }
 
   private ProblemDetail toDetail(ProblemRow row, ProblemLocale locale) {
     return new ProblemDetail(
         row.slug(),
         row.frontendId(),
+        row.frontendDisplayId(),
         title(row, locale),
         parseDifficulty(row.difficulty()),
         tags(row, locale),
         contentMarkdown(row, locale),
+        row.contentStatus(),
         row.leetcodeUrl(),
         row.sampleTestCase(),
         row.python3Template(),
@@ -153,6 +183,30 @@ public class MyBatisProblemRepository implements ProblemRepository {
 
   private ProblemCategoryFilterOption toCategoryFilterOption(ProblemCategoryFilterRow row) {
     return new ProblemCategoryFilterOption(row.slug(), row.name(), count(row.problemCount()));
+  }
+
+  private String roleLabel(String value) {
+    return switch (value) {
+      case "BACKEND" -> "Backend";
+      case "FRONTEND" -> "Frontend";
+      case "ALGORITHM" -> "Algorithm";
+      case "CLIENT" -> "Client";
+      case "TEST" -> "Test";
+      case "DATA" -> "Data";
+      case "GENERAL" -> "General";
+      default -> value;
+    };
+  }
+
+  private String recencyBucketLabel(String value) {
+    return switch (value) {
+      case "THIRTY_DAYS" -> "Thirty Days";
+      case "THREE_MONTHS" -> "Three Months";
+      case "SIX_MONTHS" -> "Six Months";
+      case "MORE_THAN_SIX_MONTHS" -> "More Than Six Months";
+      case "ALL_TIME" -> "All Time";
+      default -> value;
+    };
   }
 
   private long count(Long value) {

@@ -59,6 +59,10 @@ class ProblemAgentToolsTest {
     assertThat(difficultyEnum.get(1).asText()).isEqualTo("MEDIUM");
     assertThat(difficultyEnum.get(2).asText()).isEqualTo("HARD");
     assertThat(difficultyEnum.get(3).isNull()).isTrue();
+    assertThat(searchSchema.path("properties").has("company")).isTrue();
+    assertThat(searchSchema.path("properties").path("sort").path("enum"))
+        .extracting(JsonNode::asText)
+        .contains("COMPANY_FREQUENCY_DESC");
   }
 
   @Test
@@ -72,7 +76,10 @@ class ProblemAgentToolsTest {
         List.of(
             new ProblemFilterOption("array", "数组", 2),
             new ProblemFilterOption("hash-table", "哈希表", 1)),
-        List.of(new ProblemCategoryFilterOption("classic", "经典题", 2))));
+        List.of(new ProblemCategoryFilterOption("classic", "经典题", 2)),
+        List.of(new ProblemFilterOption("tencent", "腾讯", 1)),
+        List.of(new ProblemFilterOption("BACKEND", "Backend", 1)),
+        List.of(new ProblemFilterOption("ALL_TIME", "All Time", 1))));
 
     JsonNode output = new ListProblemFiltersTool(problemService).execute(null, null);
 
@@ -86,8 +93,11 @@ class ProblemAgentToolsTest {
     assertThat(output.path("tags")).extracting(tag -> tag.path("label").asText())
         .containsExactly("数组", "哈希表");
     assertThat(output.path("sorts")).extracting(JsonNode::asText)
-        .contains("FRONTEND_ID_ASC", "UPDATED_DESC");
+        .contains("FRONTEND_ID_ASC", "UPDATED_DESC", "COMPANY_FREQUENCY_DESC");
     assertThat(output.path("categories").get(0).path("slug").asText()).isEqualTo("classic");
+    assertThat(output.path("companies").get(0).path("value").asText()).isEqualTo("tencent");
+    assertThat(output.path("roles").get(0).path("value").asText()).isEqualTo("BACKEND");
+    assertThat(output.path("recencyBuckets").get(0).path("value").asText()).isEqualTo("ALL_TIME");
     assertThat(output.path("notes")).isNotEmpty();
   }
 
@@ -97,6 +107,9 @@ class ProblemAgentToolsTest {
         1,
         List.of(new ProblemFilterOption("EASY", "EASY", 1)),
         List.of(new ProblemFilterOption("array", "数组", 1)),
+        List.of(),
+        List.of(),
+        List.of(),
         List.of()));
     ObjectNode arguments = JsonNodeFactory.instance.objectNode().put("includeCounts", false);
 
@@ -115,20 +128,30 @@ class ProblemAgentToolsTest {
         1,
         List.of(new ProblemFilterOption("EASY", "EASY", 1)),
         List.of(new ProblemFilterOption("hash-table", "哈希表", 1)),
-        List.of()));
+        List.of(),
+        List.of(new ProblemFilterOption("tencent", "腾讯", 1)),
+        List.of(new ProblemFilterOption("BACKEND", "Backend", 1)),
+        List.of(new ProblemFilterOption("ALL_TIME", "All Time", 1))));
     when(problemService.findProblems(any())).thenReturn(new ProblemPage<>(List.of(
         new ProblemListItem(
             "two-sum",
             1,
+            "1",
             "两数之和",
             ProblemDifficulty.EASY,
-            List.of(new ProblemTag("array", "数组"), new ProblemTag("hash-table", "哈希表")))
+            List.of(new ProblemTag("array", "数组"), new ProblemTag("hash-table", "哈希表")),
+            "BILINGUAL",
+            new java.math.BigDecimal("100"),
+            1)
     ), 1, 1, 5));
     ObjectNode arguments = JsonNodeFactory.instance.objectNode()
         .put("keyword", "sum")
         .put("difficulty", "EASY")
         .put("tag", "hash-table")
-        .put("sort", "TITLE_ASC")
+        .put("company", "tencent")
+        .put("role", "BACKEND")
+        .put("recencyBucket", "ALL_TIME")
+        .put("sort", "COMPANY_FREQUENCY_DESC")
         .put("locale", "zh-CN")
         .put("page", 1)
         .put("pageSize", 5);
@@ -139,13 +162,21 @@ class ProblemAgentToolsTest {
     assertThat(output.path("page").asInt()).isEqualTo(1);
     assertThat(output.path("pageSize").asInt()).isEqualTo(5);
     assertThat(output.path("items").get(0).path("slug").asText()).isEqualTo("two-sum");
+    assertThat(output.path("items").get(0).path("frontendDisplayId").asText()).isEqualTo("1");
     assertThat(output.path("items").get(0).path("title").asText()).isEqualTo("两数之和");
+    assertThat(output.path("items").get(0).path("contentStatus").asText()).isEqualTo("BILINGUAL");
+    assertThat(output.path("items").get(0).path("companyFrequencyScore").decimalValue())
+        .isEqualByComparingTo("100");
+    assertThat(output.path("items").get(0).path("companySignalCount").asLong()).isEqualTo(1);
     assertThat(output.path("items").get(0).has("titleCn")).isFalse();
     assertThat(output.path("items").get(0).path("tags").get(0).path("value").asText()).isEqualTo("array");
     assertThat(output.path("items").get(0).path("tags").get(0).path("label").asText()).isEqualTo("数组");
     assertThat(output.path("items").get(0).has("contentMarkdown")).isFalse();
     assertThat(output.path("items").get(0).has("python3Template")).isFalse();
     assertThat(output.path("appliedFilters").path("tag").asText()).isEqualTo("hash-table");
+    assertThat(output.path("appliedFilters").path("company").asText()).isEqualTo("tencent");
+    assertThat(output.path("appliedFilters").path("role").asText()).isEqualTo("BACKEND");
+    assertThat(output.path("appliedFilters").path("recencyBucket").asText()).isEqualTo("ALL_TIME");
     assertThat(output.path("appliedFilters").path("locale").asText()).isEqualTo("zh-CN");
 
     ArgumentCaptor<ProblemListRequest> requestCaptor = ArgumentCaptor.forClass(ProblemListRequest.class);
@@ -154,6 +185,9 @@ class ProblemAgentToolsTest {
     assertThat(request.keyword()).isEqualTo("sum");
     assertThat(request.difficulty()).isEqualTo(ProblemDifficulty.EASY);
     assertThat(request.tag()).isEqualTo("hash-table");
+    assertThat(request.company()).isEqualTo("tencent");
+    assertThat(request.role()).isEqualTo("BACKEND");
+    assertThat(request.recencyBucket()).isEqualTo("ALL_TIME");
     assertThat(request.category()).isNull();
     assertThat(request.pageSize()).isEqualTo(5);
     assertThat(request.locale()).isEqualTo(ProblemLocale.ZH_CN);
@@ -165,6 +199,9 @@ class ProblemAgentToolsTest {
         1,
         List.of(new ProblemFilterOption("EASY", "EASY", 1)),
         List.of(new ProblemFilterOption("hash-table", "哈希表", 1)),
+        List.of(),
+        List.of(),
+        List.of(),
         List.of()));
     ObjectNode arguments = JsonNodeFactory.instance.objectNode().put("tag", "HashMap");
 
@@ -180,10 +217,12 @@ class ProblemAgentToolsTest {
     when(problemService.findProblemBySlug("two-sum", ProblemLocale.EN_US)).thenReturn(java.util.Optional.of(new ProblemDetail(
         "two-sum",
         1,
+        "1",
         "Two Sum",
         ProblemDifficulty.EASY,
         List.of(new ProblemTag("array", "Array"), new ProblemTag("hash-table", "Hash Table")),
         "# Two Sum",
+        "BILINGUAL",
         "https://leetcode.com/problems/two-sum/",
         "[2,7,11,15]\n9",
         "class Solution:\n    pass",
@@ -196,7 +235,9 @@ class ProblemAgentToolsTest {
 
     assertThat(output.path("found").asBoolean()).isTrue();
     assertThat(output.path("slug").asText()).isEqualTo("two-sum");
+    assertThat(output.path("frontendDisplayId").asText()).isEqualTo("1");
     assertThat(output.path("title").asText()).isEqualTo("Two Sum");
+    assertThat(output.path("contentStatus").asText()).isEqualTo("BILINGUAL");
     assertThat(output.has("titleCn")).isFalse();
     assertThat(output.path("tags").get(0).path("value").asText()).isEqualTo("array");
     assertThat(output.path("tags").get(0).path("label").asText()).isEqualTo("Array");

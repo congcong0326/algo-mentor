@@ -42,7 +42,32 @@ class ProblemMapperXmlTest {
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.problem.mapper.ProblemMapper.countProblemCategories")).isTrue();
     assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemMapper.countProblemCompanies")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemMapper.countProblemSignalRoles")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemMapper.countProblemSignalRecencyBuckets")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemMapper.clearConflictingFrontendId")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemMapper.clearConflictingFrontendDisplayId")).isTrue();
+    assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.problem.mapper.ProblemMapper.upsertProblem")).isTrue();
+
+    try (Reader reader = Resources.getResourceAsReader("mapper/problem/ProblemCompanyMapper.xml")) {
+      new XMLMapperBuilder(
+          reader,
+          configuration,
+          "mapper/problem/ProblemCompanyMapper.xml",
+          configuration.getSqlFragments()).parse();
+    }
+
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemCompanyMapper.upsertCompany")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemCompanyMapper.upsertSignal")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.problem.mapper.ProblemCompanyMapper.insertImportRun")).isTrue();
   }
 
   @Test

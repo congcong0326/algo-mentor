@@ -14,7 +14,10 @@ import org.congcong.algomentor.api.practice.mapper.PracticeSessionMapper;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewRepository;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeSessionRepository;
 import org.congcong.algomentor.api.problem.mapper.ProblemMapper;
+import org.congcong.algomentor.api.problem.mapper.ProblemCompanyMapper;
+import org.congcong.algomentor.api.problem.repository.MyBatisProblemCompanyRepository;
 import org.congcong.algomentor.api.problem.repository.MyBatisProblemRepository;
+import org.congcong.algomentor.api.problem.repository.ProblemCompanyRepository;
 import org.congcong.algomentor.api.problem.repository.ProblemRepository;
 import org.congcong.algomentor.api.review.mapper.MistakeNoteMapper;
 import org.congcong.algomentor.api.review.mapper.ReviewLogMapper;
@@ -75,6 +78,12 @@ public class MentorApiMyBatisConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
+  public ProblemCompanyMapper problemCompanyMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(ProblemCompanyMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
   public LearningPlanMapper learningPlanMapper(SqlSessionTemplate sqlSessionTemplate) {
     return sqlSessionTemplate.getMapper(LearningPlanMapper.class);
   }
@@ -119,6 +128,12 @@ public class MentorApiMyBatisConfiguration {
   @ConditionalOnMissingBean(ProblemRepository.class)
   public ProblemRepository problemRepository(ProblemMapper problemMapper, DataSource dataSource) {
     return new MyBatisProblemRepository(problemMapper, dataSource);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(ProblemCompanyRepository.class)
+  public ProblemCompanyRepository problemCompanyRepository(ProblemCompanyMapper problemCompanyMapper) {
+    return new MyBatisProblemCompanyRepository(problemCompanyMapper);
   }
 
   @Bean

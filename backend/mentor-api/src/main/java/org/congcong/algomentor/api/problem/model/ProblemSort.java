@@ -6,7 +6,8 @@ public enum ProblemSort {
   FRONTEND_ID_ASC,
   FRONTEND_ID_DESC,
   TITLE_ASC,
-  UPDATED_DESC;
+  UPDATED_DESC,
+  COMPANY_FREQUENCY_DESC;
 
   public static final ProblemSort DEFAULT = FRONTEND_ID_ASC;
 
@@ -18,6 +19,7 @@ public enum ProblemSort {
       case "frontend_id_desc", "id_desc" -> FRONTEND_ID_DESC;
       case "title_asc", "title" -> TITLE_ASC;
       case "updated_desc", "updated" -> UPDATED_DESC;
+      case "company_frequency_desc", "company_frequency" -> COMPANY_FREQUENCY_DESC;
       default -> FRONTEND_ID_ASC;
     };
   }

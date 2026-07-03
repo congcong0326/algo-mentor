@@ -139,6 +139,6 @@ class MistakeNoteDisplayInfoResolverTest {
   }
 
   private static ProblemDetail problem(String slug, String title, ProblemDifficulty difficulty) {
-    return new ProblemDetail(slug, 1, title, difficulty, List.of(), "", "", "", "", "");
+    return new ProblemDetail(slug, 1, "1", title, difficulty, List.of(), "", "BILINGUAL", "", "", "", "");
   }
 }

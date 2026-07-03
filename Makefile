@@ -21,8 +21,12 @@ POSTGRES_USER ?= algo_mentor
 POSTGRES_PASSWORD ?= algo_mentor_dev
 PROBLEM_SOURCE_REPO := https://github.com/fishjar/leetcode-problemset
 PROBLEM_SOURCE_DIR := data/sources/leetcode-problemset
+PROBLEM_INDEX_PATH := data/index/problem_index.jsonl
+PROBLEM_API_CACHE_DIR := data/sources/leetcode-api
 PROBLEM_SEED_DIR := data/seed
 PROBLEM_SEED_ABS_DIR := $(abspath $(PROBLEM_SEED_DIR))
+PROBLEM_COMPANY_SEED_DIR := data/company-seed
+PROBLEM_COMPANY_SEED_ABS_DIR := $(abspath $(PROBLEM_COMPANY_SEED_DIR))
 DB_SEED_URL := jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
 DB_SEED_USER := $(POSTGRES_USER)
 DB_SEED_PASSWORD := $(POSTGRES_PASSWORD)
@@ -154,7 +158,7 @@ problem-source:
 	fi
 
 problem-seed:
-	python3 -m tools.problem_seed.prepare_seed --source-dir "$(PROBLEM_SOURCE_DIR)" --output-dir "$(PROBLEM_SEED_DIR)"
+	python3 -m tools.problem_seed.prepare_seed --index "$(PROBLEM_INDEX_PATH)" --cache-dir "$(PROBLEM_API_CACHE_DIR)" --output-dir "$(PROBLEM_SEED_DIR)"
 
 db-install:
 	@if [ "$$(id -u)" -ne 0 ]; then \
@@ -231,7 +235,7 @@ db-install:
 
 db-seed:
 	API_PORT="$(API_PORT)" SERVER_PORT="$(API_PORT)" $(MAVEN) -pl mentor-api -am -DskipTests spring-boot:run \
-		-Dspring-boot.run.arguments="--algo-mentor.problem.seed.enabled=true --algo-mentor.problem.seed.path=$(PROBLEM_SEED_ABS_DIR) --spring.datasource.url=$(DB_SEED_URL) --spring.datasource.username=$(DB_SEED_USER) --spring.datasource.password=$(DB_SEED_PASSWORD) --spring.flyway.enabled=true" \
+		-Dspring-boot.run.arguments="--algo-mentor.problem.seed.enabled=true --algo-mentor.problem.seed.path=$(PROBLEM_SEED_ABS_DIR) --algo-mentor.problem.company-seed.enabled=true --algo-mentor.problem.company-seed.path=$(PROBLEM_COMPANY_SEED_ABS_DIR) --spring.datasource.url=$(DB_SEED_URL) --spring.datasource.username=$(DB_SEED_USER) --spring.datasource.password=$(DB_SEED_PASSWORD) --spring.flyway.enabled=true" \
 		-Dspring-boot.run.profiles=local
 
 sync-frontend:

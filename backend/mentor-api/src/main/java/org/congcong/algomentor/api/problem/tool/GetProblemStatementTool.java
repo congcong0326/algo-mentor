@@ -1,8 +1,10 @@
 package org.congcong.algomentor.api.problem.tool;
 
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.CONTENT_MARKDOWN;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.CONTENT_STATUS;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.DIFFICULTY;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.FOUND;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.FRONTEND_DISPLAY_ID;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.FRONTEND_ID;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.GET_PROBLEM_STATEMENT;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.LABEL;
@@ -75,8 +77,10 @@ public final class GetProblemStatementTool implements AgentTool {
     } else {
       output.put(FRONTEND_ID, problem.frontendId());
     }
+    ProblemAgentToolSupport.putNullable(output, FRONTEND_DISPLAY_ID, problem.frontendDisplayId());
     ProblemAgentToolSupport.putNullable(output, TITLE, problem.title());
     output.put(DIFFICULTY, problem.difficulty() == null ? null : problem.difficulty().name());
+    ProblemAgentToolSupport.putNullable(output, CONTENT_STATUS, problem.contentStatus());
     ArrayNode tags = output.putArray(TAGS);
     for (ProblemTag tag : problem.tags()) {
       ObjectNode tagNode = tags.addObject();

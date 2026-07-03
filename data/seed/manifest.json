@@ -1,0 +1,15 @@
+{
+  "contentStatusCounts": {
+    "BILINGUAL": 3202,
+    "CN_ONLY": 389
+  },
+  "files": [
+    "problems.jsonl",
+    "problem_categories.jsonl",
+    "problem_category_items.jsonl"
+  ],
+  "generatedAt": "2026-07-03T02:30:57.790885+00:00",
+  "problemCount": 3591,
+  "sourceCommit": "leetcode-api@3e93173fbea1b627f8987d58cb1fcb530671df32",
+  "sourceRepository": "leetcode-api-cache"
+}

@@ -5,6 +5,7 @@ import java.sql.Array;
 public record ProblemUpsertRow(
     String slug,
     Integer frontendId,
+    String frontendDisplayId,
     String titleEn,
     String titleZh,
     String difficulty,
@@ -13,6 +14,8 @@ public record ProblemUpsertRow(
     Array tagLabelsZh,
     String contentMarkdownEn,
     String contentMarkdownZh,
+    String contentStatus,
+    String sourceSite,
     String leetcodeUrl,
     String sampleTestCase,
     String python3Template,

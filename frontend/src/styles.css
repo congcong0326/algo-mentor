@@ -1031,9 +1031,14 @@ a {
   font-size: clamp(30px, 4vw, 44px);
 }
 
-.loading-shell .app-nav-button:disabled {
-  opacity: 1;
-  cursor: default;
+.app-nav-skeleton-item {
+  display: inline-block;
+  flex: 0 0 auto;
+  width: clamp(44px, 6vw, 72px);
+  height: 16px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--surface-muted), var(--surface-soft), var(--surface-muted));
+  opacity: 0.72;
 }
 
 .loading-page-title {
@@ -1632,7 +1637,7 @@ a {
 
 .problem-toolbar {
   display: grid;
-  grid-template-columns: minmax(280px, 1fr) minmax(180px, 220px);
+  grid-template-columns: minmax(260px, 1fr) repeat(5, minmax(140px, 180px));
   gap: 12px;
   align-items: end;
   padding: 16px;
@@ -1755,7 +1760,9 @@ a {
 }
 
 .difficulty-badge,
-.tag-pill {
+.tag-pill,
+.company-hot-badge,
+.content-status-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1787,10 +1794,17 @@ a {
 }
 
 .difficulty-badge.unknown,
-.tag-pill {
+.tag-pill,
+.content-status-badge {
   border-color: var(--border-subtle);
   background: var(--surface-muted);
   color: var(--text-secondary);
+}
+
+.company-hot-badge {
+  border-color: var(--accent-warm-border);
+  background: var(--accent-warm-soft);
+  color: var(--accent-warm-text);
 }
 
 .problem-badge-group {

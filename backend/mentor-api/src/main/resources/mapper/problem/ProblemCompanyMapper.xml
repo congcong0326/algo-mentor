@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.problem.mapper.ProblemCompanyMapper">
+
+  <select id="upsertCompany" resultType="java.lang.Long"
+      parameterType="org.congcong.algomentor.api.problem.mapper.model.CompanyUpsertRow">
+    INSERT INTO company (
+      slug,
+      name,
+      company_market,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{slug},
+      #{name},
+      #{companyMarket},
+      NOW(),
+      NOW()
+    )
+    ON CONFLICT (slug) DO UPDATE
+    SET name = EXCLUDED.name,
+        company_market = EXCLUDED.company_market,
+        updated_at = NOW()
+    RETURNING id
+  </select>
+
+  <insert id="upsertSignal"
+      parameterType="org.congcong.algomentor.api.problem.mapper.model.ProblemCompanySignalUpsertRow">
+    INSERT INTO problem_company_signal (
+      problem_id,
+      company_id,
+      role,
+      recency_bucket,
+      frequency_score,
+      rank,
+      acceptance_rate,
+      source_name,
+      source_url,
+      source_commit,
+      source_problem_url,
+      created_at,
+      updated_at
+    )
+    SELECT
+      p.id,
+      #{companyId},
+      #{role},
+      #{recencyBucket},
+      #{frequencyScore},
+      #{rank},
+      #{acceptanceRate},
+      #{sourceName},
+      #{sourceUrl},
+      #{sourceCommit},
+      #{sourceProblemUrl},
+      NOW(),
+      NOW()
+    FROM problem p
+    WHERE p.slug = #{problemSlug}
+    ON CONFLICT (problem_id, company_id, role, recency_bucket, source_name) DO UPDATE
+    SET frequency_score = EXCLUDED.frequency_score,
+        rank = EXCLUDED.rank,
+        acceptance_rate = EXCLUDED.acceptance_rate,
+        source_url = EXCLUDED.source_url,
+        source_commit = EXCLUDED.source_commit,
+        source_problem_url = EXCLUDED.source_problem_url,
+        updated_at = NOW()
+  </insert>
+
+  <insert id="insertImportRun"
+      parameterType="org.congcong.algomentor.api.problem.mapper.model.ProblemCompanyImportRunRow">
+    INSERT INTO problem_company_import_run (
+      source_name,
+      source_commit,
+      manifest_path,
+      matched_signal_count,
+      skipped_signal_count,
+      error_count,
+      metadata_json,
+      created_at
+    )
+    VALUES (
+      #{sourceName},
+      #{sourceCommit},
+      #{manifestPath},
+      #{matchedSignalCount},
+      #{skippedSignalCount},
+      #{errorCount},
+      CAST(#{metadataJson} AS JSONB),
+      NOW()
+    )
+  </insert>
+</mapper>

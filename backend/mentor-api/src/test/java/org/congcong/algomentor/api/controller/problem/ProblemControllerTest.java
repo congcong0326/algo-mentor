@@ -39,8 +39,8 @@ class ProblemControllerTest {
   @Test
   void listProblemsReturnsPageEnvelope() throws Exception {
     when(problemService.findProblems(any())).thenReturn(new ProblemPage<>(List.of(
-        new ProblemListItem("two-sum", 1, "两数之和", ProblemDifficulty.EASY, List.of(
-            new ProblemTag("array", "数组")))
+        new ProblemListItem("two-sum", 1, "1", "两数之和", ProblemDifficulty.EASY, List.of(
+            new ProblemTag("array", "数组")), "BILINGUAL", null, 0)
     ), 1, 1, 20));
 
     mockMvc.perform(get("/api/admin/problems")
@@ -54,6 +54,8 @@ class ProblemControllerTest {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.total").value(1))
         .andExpect(jsonPath("$.data.items[0].slug").value("two-sum"))
+        .andExpect(jsonPath("$.data.items[0].frontendDisplayId").value("1"))
+        .andExpect(jsonPath("$.data.items[0].contentStatus").value("BILINGUAL"))
         .andExpect(jsonPath("$.data.items[0].title").value("两数之和"))
         .andExpect(jsonPath("$.data.items[0].titleCn").doesNotExist())
         .andExpect(jsonPath("$.data.items[0].tags[0].value").value("array"))
@@ -66,10 +68,12 @@ class ProblemControllerTest {
     when(problemService.findProblemBySlug(eq("two-sum"), eq(ProblemLocale.EN_US))).thenReturn(Optional.of(new ProblemDetail(
         "two-sum",
         1,
+        "1",
         "Two Sum",
         ProblemDifficulty.EASY,
         List.of(new ProblemTag("array", "Array")),
         "# Two Sum",
+        "BILINGUAL",
         "https://leetcode.com/problems/two-sum/",
         "[2,7]\n9",
         "class Solution:\n    pass",

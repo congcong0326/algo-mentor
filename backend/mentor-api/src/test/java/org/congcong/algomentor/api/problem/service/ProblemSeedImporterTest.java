@@ -58,7 +58,14 @@ class ProblemSeedImporterTest {
 
     @Override
     public ProblemFilters findProblemFilters() {
-      return new ProblemFilters(0, java.util.List.of(), java.util.List.of(), java.util.List.of());
+      return new ProblemFilters(
+          0,
+          java.util.List.of(),
+          java.util.List.of(),
+          java.util.List.of(),
+          java.util.List.of(),
+          java.util.List.of(),
+          java.util.List.of());
     }
 
     @Override

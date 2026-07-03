@@ -32,6 +32,7 @@ import type {
   PasswordLoginRequest,
   PasswordRegisterRequest,
   ProblemDetail,
+  ProblemFilters,
   ProblemListItem,
   ProblemListQuery,
   ProblemPage,
@@ -457,6 +458,22 @@ export async function getProblems(
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Problems request failed');
+  }
+
+  return response.json();
+}
+
+export async function getProblemFilters(
+  locale?: ProblemListQuery['locale'],
+  signal?: AbortSignal,
+): Promise<ApiResponse<ProblemFilters>> {
+  const response = await apiFetch(`/api/admin/problems/filters${toQueryString({ locale })}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Problem filters request failed');
   }
 
   return response.json();

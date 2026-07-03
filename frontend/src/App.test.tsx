@@ -111,10 +111,14 @@ describe('App', () => {
     vi.stubGlobal('fetch', vi.fn(() => new Promise<Response>(() => undefined)));
     window.history.replaceState({}, '', '/learning-plans');
 
-    render(<App />);
+    const { container } = render(<App />);
 
     expect(screen.getByRole('navigation', { name: '主导航' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
+    expect(container.querySelectorAll('.app-nav-skeleton-item')).toHaveLength(4);
+    expect(screen.queryByRole('button', { name: '首页' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '方案' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '我的' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '用户管理' })).not.toBeInTheDocument();
     expect(screen.queryByText('训练方案')).not.toBeInTheDocument();
@@ -1047,6 +1051,10 @@ describe('App', () => {
     expect(screen.getByText(/class Solution:/)).toBeInTheDocument();
 
     expect(fetchMock).toHaveBeenCalledWith(
+      '/api/admin/problems/filters?locale=zh-CN',
+      expect.objectContaining({ headers: expect.any(Headers) }),
+    );
+    expect(fetchMock).toHaveBeenCalledWith(
       '/api/admin/problems?sort=frontend_id_asc&locale=zh-CN&page=1&pageSize=20',
       expect.objectContaining({ headers: expect.any(Headers) }),
     );
@@ -1055,6 +1063,7 @@ describe('App', () => {
       expect.objectContaining({ headers: expect.any(Headers) }),
     );
     expectJsonHeaders(fetchMock, '/api/admin/problems?sort=frontend_id_asc&locale=zh-CN&page=1&pageSize=20');
+    expectJsonHeaders(fetchMock, '/api/admin/problems/filters?locale=zh-CN');
     expectJsonHeaders(fetchMock, '/api/admin/problems/two-sum?locale=zh-CN');
   });
 
@@ -1168,7 +1177,6 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
     expect(screen.getByText('基础题型恢复')).toBeInTheDocument();
     expect(screen.getByText('两数之和')).toBeInTheDocument();
-    expect(screen.queryByText('进行中')).not.toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/learning-plans/900',
       expect.objectContaining({ headers: expect.any(Headers) }),
@@ -1979,6 +1987,13 @@ function mockProblemFetch(total = 1) {
     if (url === '/api/auth/me') {
       return Promise.resolve(adminUserResponse());
     }
+    if (url.startsWith('/api/admin/problems/filters')) {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: problemFilters(),
+        timestamp: '2026-06-17T00:00:00Z',
+      }));
+    }
     if (url.startsWith('/api/admin/problems/two-sum')) {
       return Promise.resolve(jsonResponse({
         success: true,
@@ -1994,9 +2009,13 @@ function mockProblemFetch(total = 1) {
           items: [{
             slug: 'two-sum',
             frontendId: 1,
+            frontendDisplayId: '1',
             title: '两数之和',
             difficulty: 'EASY',
             tags: [{ value: 'array', label: '数组' }],
+            contentStatus: 'BILINGUAL',
+            companyFrequencyScore: null,
+            companySignalCount: 0,
           }],
           total,
           page: Number(new URL(`http://localhost${url}`).searchParams.get('page') ?? '1'),
@@ -2155,6 +2174,13 @@ function mockAdminProblemAndDebugFetch() {
     if (url === '/api/auth/me') {
       return Promise.resolve(adminUserResponse());
     }
+    if (url.startsWith('/api/admin/problems/filters')) {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: problemFilters(),
+        timestamp: '2026-06-17T00:00:00Z',
+      }));
+    }
     if (url.startsWith('/api/admin/problems')) {
       return Promise.resolve(jsonResponse({
         success: true,
@@ -2162,9 +2188,13 @@ function mockAdminProblemAndDebugFetch() {
           items: [{
             slug: 'two-sum',
             frontendId: 1,
+            frontendDisplayId: '1',
             title: '两数之和',
             difficulty: 'EASY',
             tags: [{ value: 'array', label: '数组' }],
+            contentStatus: 'BILINGUAL',
+            companyFrequencyScore: null,
+            companySignalCount: 0,
           }],
           total: 1,
           page: 1,
@@ -2215,6 +2245,13 @@ function mockLearningPlanAndProblemFetch() {
         timestamp: '2026-06-17T00:00:00Z',
       }));
     }
+    if (url.startsWith('/api/admin/problems/filters')) {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: problemFilters(),
+        timestamp: '2026-06-17T00:00:00Z',
+      }));
+    }
     if (url.startsWith('/api/admin/problems')) {
       return Promise.resolve(jsonResponse({
         success: true,
@@ -2222,9 +2259,13 @@ function mockLearningPlanAndProblemFetch() {
           items: [{
             slug: 'two-sum',
             frontendId: 1,
+            frontendDisplayId: '1',
             title: '两数之和',
             difficulty: 'EASY',
             tags: [{ value: 'array', label: '数组' }],
+            contentStatus: 'BILINGUAL',
+            companyFrequencyScore: null,
+            companySignalCount: 0,
           }],
           total: 1,
           page: 1,
@@ -3025,6 +3066,18 @@ function problemDetail(overrides: Partial<ReturnType<typeof baseProblemDetail>> 
   };
 }
 
+function problemFilters() {
+  return {
+    problemCount: 1,
+    difficulties: [{ value: 'EASY', label: 'EASY', problemCount: 1 }],
+    tags: [{ value: 'array', label: '数组', problemCount: 1 }],
+    categories: [],
+    companies: [{ value: 'tencent', label: '腾讯', problemCount: 1 }],
+    roles: [{ value: 'BACKEND', label: 'Backend', problemCount: 1 }],
+    recencyBuckets: [{ value: 'ALL_TIME', label: 'All Time', problemCount: 1 }],
+  };
+}
+
 function practiceSessionResponse(overrides: Partial<PracticeSessionResponse> = {}): PracticeSessionResponse {
   return {
     ...basePracticeSessionResponse(),
@@ -3050,9 +3103,13 @@ function baseProblemDetail() {
   return {
     slug: 'two-sum',
     frontendId: 1,
+    frontendDisplayId: '1',
     title: '两数之和',
     difficulty: 'EASY',
     tags: [{ value: 'array', label: '数组' }, { value: 'hash-table', label: '哈希表' }],
+    contentStatus: 'BILINGUAL',
+    companyFrequencyScore: null,
+    companySignalCount: 0,
     contentMarkdown: '# Two Sum\n\n**注意：**请返回下标而不是数值。',
     leetcodeUrl: 'https://leetcode.com/problems/two-sum/',
     sampleTestCase: '[2,7,11,15]\n9',

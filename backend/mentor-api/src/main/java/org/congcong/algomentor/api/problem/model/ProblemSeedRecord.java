@@ -5,6 +5,7 @@ import java.util.List;
 public record ProblemSeedRecord(
     String slug,
     Integer frontendId,
+    String frontendDisplayId,
     String titleEn,
     String titleZh,
     ProblemDifficulty difficulty,
@@ -13,6 +14,8 @@ public record ProblemSeedRecord(
     List<String> tagLabelsZh,
     String contentMarkdownEn,
     String contentMarkdownZh,
+    String contentStatus,
+    String sourceSite,
     String leetcodeUrl,
     String sampleTestCase,
     String python3Template,

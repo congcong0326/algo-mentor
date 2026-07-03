@@ -1,0 +1,31 @@
+{
+  "duplicateSignalCount": 24,
+  "errorCount": 124,
+  "files": [
+    "problem_company_signals.jsonl"
+  ],
+  "generatedAt": "2026-07-03T02:31:35.153087+00:00",
+  "matchedSignalCount": 33138,
+  "signalCount": 33138,
+  "sources": [
+    {
+      "companyCount": 443,
+      "errorCount": 0,
+      "signalCount": 32922,
+      "sourceCommit": "ff477f5d870ffbaeaa9728a152bb3d07d2d207f6",
+      "sourceDir": "data/sources/company-metadata/leetcode-company-wise-problems",
+      "sourceName": "liquidslr/leetcode-company-wise-problems",
+      "sourceRepoUrl": "https://github.com/liquidslr/leetcode-company-wise-problems"
+    },
+    {
+      "companyCount": 9,
+      "errorCount": 124,
+      "signalCount": 2629,
+      "sourceCommit": "7105c17a4d3f61baa242f8a36a7056b5bbd0baf0",
+      "sourceDir": "data/sources/company-metadata/LeetcodeTop",
+      "sourceName": "afatcoder/LeetcodeTop",
+      "sourceRepoUrl": "https://github.com/afatcoder/LeetcodeTop"
+    }
+  ],
+  "unmatchedProblemCount": 482
+}

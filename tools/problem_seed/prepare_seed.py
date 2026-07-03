@@ -1,35 +1,60 @@
 #!/usr/bin/env python3
-"""从本地 leetcode-problemset 源目录生成题库 seed 文件。"""
+"""从本地 LeetCode 官方 API 缓存生成最终题库 seed 文件。"""
 
 from __future__ import annotations
 
 import argparse
-import json
 import re
 import subprocess
+import sys
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Iterable
 
+if __package__ in (None, ""):
+    sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-SOLUTION_HEADING_PATTERN = re.compile(r"(?im)^##\s*solution\b.*$")
-DEFAULT_SOURCE_REPOSITORY = "fishjar/leetcode-problemset"
+from tools.problem_seed.leetcode_api import (
+    CN_SITE,
+    COM_SITE,
+    SITE_BASE_URLS,
+    cache_path,
+    non_empty_text,
+    question_from_response,
+    read_json,
+    read_jsonl,
+    utc_now_iso,
+    write_json,
+    write_jsonl,
+)
+
+
+DEFAULT_INDEX_PATH = Path("data/index/problem_index.jsonl")
+DEFAULT_CACHE_DIR = Path("data/sources/leetcode-api")
+DEFAULT_OUTPUT_DIR = Path("data/seed")
+DEFAULT_SOURCE_REPOSITORY = "leetcode-api-cache"
+CONTENT_STATUS_BILINGUAL = "BILINGUAL"
+CONTENT_STATUS_CN_ONLY = "CN_ONLY"
+SOURCE_SITE_LEETCODE_COM_CN = "LEETCODE_COM_CN"
+SOURCE_SITE_LEETCODE_CN = "LEETCODE_CN"
 
 
 @dataclass(frozen=True)
 class SeedProblem:
     slug: str
     frontend_id: int | None
-    title_en: str
+    frontend_display_id: str | None
+    title_en: str | None
     title_zh: str
     difficulty: str | None
     tag_values: list[str]
     tag_labels_en: list[str]
     tag_labels_zh: list[str]
-    content_markdown_en: str
+    content_markdown_en: str | None
     content_markdown_zh: str
+    content_status: str
+    source_site: str
     leetcode_url: str | None
     sample_test_case: str | None
     python3_template: str | None
@@ -37,127 +62,113 @@ class SeedProblem:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate problem seed jsonl files.")
-    parser.add_argument("--source-dir", default="data/sources/leetcode-problemset")
-    parser.add_argument("--output-dir", default="data/seed")
+    parser = argparse.ArgumentParser(description="Generate final problem seed jsonl files from LeetCode API cache.")
+    parser.add_argument("--index", default=str(DEFAULT_INDEX_PATH))
+    parser.add_argument("--cache-dir", default=str(DEFAULT_CACHE_DIR))
+    parser.add_argument("--output-dir", default=str(DEFAULT_OUTPUT_DIR))
     args = parser.parse_args()
 
-    source_dir = Path(args.source_dir)
-    output_dir = Path(args.output_dir)
-    problems = build_seed(source_dir)
-    write_seed(output_dir, problems, source_commit(source_dir))
+    problems = build_seed(Path(args.index), Path(args.cache_dir))
+    write_seed(Path(args.output_dir), problems, source_commit(Path(args.cache_dir)))
 
 
-def build_seed(source_dir: Path) -> list[SeedProblem]:
-    metadata_by_key = load_problem_metadata(source_dir)
-    markdown_dir = source_dir / "problemset_md"
-    commit = source_commit(source_dir)
+def build_seed(index_path: Path, cache_dir: Path) -> list[SeedProblem]:
     problems: list[SeedProblem] = []
-
-    if not markdown_dir.exists():
-      raise FileNotFoundError(f"Markdown source directory does not exist: {markdown_dir}")
-
-    for markdown_file in sorted(markdown_dir.rglob("*.md")):
-        markdown = markdown_file.read_text(encoding="utf-8")
-        problem_key = problem_key_from_path(markdown_file)
-        metadata = metadata_by_key.get(problem_key, {})
-        seed_problem = parse_problem(markdown_file, markdown, metadata, commit)
+    commit = source_commit(cache_dir)
+    for row in read_jsonl(index_path):
+        seed_problem = build_problem(row, cache_dir, commit)
         if seed_problem is not None:
             problems.append(seed_problem)
-
     return dedupe_by_slug(problems)
 
 
-def load_problem_metadata(source_dir: Path) -> dict[str, dict[str, Any]]:
-    if not source_dir.exists():
-        return {}
-
-    metadata: dict[str, dict[str, Any]] = {}
-    for path in sorted(source_dir.rglob("*.json")):
-        try:
-            raw = json.loads(path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError):
-            continue
-
-        for item in flatten_problem_records(raw):
-            keys = metadata_keys(item, path)
-            for key in keys:
-                existing = metadata.get(key)
-                if existing is None or metadata_score(item) > metadata_score(existing):
-                    metadata[key] = item
-
-    return metadata
+def build_problem(row: dict[str, Any], cache_dir: Path, commit: str | None) -> SeedProblem | None:
+    slug = as_optional_string(row.get("slug"))
+    if slug is None:
+        return None
+    com_question = question_from_response(read_optional(cache_path(cache_dir, slug, COM_SITE)))
+    cn_question = question_from_response(read_optional(cache_path(cache_dir, slug, CN_SITE)))
+    has_com_content = non_empty_text(com_question.get("content") if com_question else None)
+    has_cn_content = non_empty_text(cn_question.get("translatedContent") if cn_question else None)
+    if is_paid_only(row, com_question, cn_question) or not has_cn_content:
+        return None
+    if has_com_content:
+        return bilingual_problem(slug, row, com_question or {}, cn_question or {}, commit)
+    return cn_only_problem(slug, row, cn_question or {}, commit)
 
 
-def flatten_problem_records(raw: Any) -> Iterable[dict[str, Any]]:
-    if isinstance(raw, dict):
-        if isinstance(raw.get("question"), dict):
-            yield raw["question"]
-            return
-        if "stat" in raw or "questionFrontendId" in raw or "titleSlug" in raw:
-            yield raw
-            return
-        for value in raw.values():
-            yield from flatten_problem_records(value)
-    elif isinstance(raw, list):
-        for value in raw:
-            yield from flatten_problem_records(value)
-
-
-def metadata_keys(item: dict[str, Any], path: Path) -> set[str]:
-    stat = item.get("stat") if isinstance(item.get("stat"), dict) else {}
-    frontend_id = first_non_empty(
-        item.get("frontend_question_id"),
-        item.get("frontendId"),
-        item.get("questionFrontendId"),
-        stat.get("frontend_question_id"),
-        stat.get("question_id"),
-    )
-    slug = first_non_empty(
-        item.get("titleSlug"),
-        item.get("title_slug"),
-        item.get("slug"),
-        stat.get("question__title_slug"),
-    )
-
-    keys = {path.stem}
-    if frontend_id is not None:
-        keys.add(str(frontend_id))
-    if slug:
-        keys.add(str(slug))
-    return keys
-
-
-def parse_problem(
-    markdown_file: Path,
-    markdown: str,
-    metadata: dict[str, Any],
+def bilingual_problem(
+    slug: str,
+    row: dict[str, Any],
+    com_question: dict[str, Any],
+    cn_question: dict[str, Any],
     commit: str | None,
 ) -> SeedProblem | None:
-    fallback_markdown = strip_solution(markdown).strip()
-    title_en = read_title(fallback_markdown, metadata)
-    title_zh = read_title_zh(metadata, title_en)
-    slug = read_slug(markdown_file, metadata, title_en)
-    content_markdown_en = read_content_markdown_en(fallback_markdown, metadata, title_en)
-    content_markdown_zh = read_content_markdown_zh(fallback_markdown, metadata, title_zh, title_en)
-    tag_values, tag_labels_en, tag_labels_zh = read_tags(metadata)
-    if not slug or not title_en or not title_zh or not content_markdown_en or not content_markdown_zh:
+    title_en = as_optional_string(first_non_empty(com_question.get("title"), row.get("titleEn")))
+    title_zh = as_optional_string(first_non_empty(
+        cn_question.get("translatedTitle"),
+        cn_question.get("title"),
+        row.get("titleZh"),
+        title_en,
+    ))
+    content_en = as_markdown(title_en, com_question.get("content"))
+    content_zh = as_markdown(title_zh, cn_question.get("translatedContent"))
+    if not title_en or not title_zh or not content_en or not content_zh:
         return None
-
+    tag_values, tag_labels_en, tag_labels_zh = merged_tag_arrays(com_question, cn_question)
     return SeedProblem(
         slug=slug,
-        frontend_id=read_frontend_id(markdown_file, metadata),
+        frontend_id=read_frontend_id(row, com_question, cn_question),
+        frontend_display_id=read_frontend_display_id(row, com_question, cn_question),
         title_en=title_en,
         title_zh=title_zh,
-        difficulty=read_difficulty(metadata),
+        difficulty=read_difficulty(first_mapping(com_question, cn_question, row)),
         tag_values=tag_values,
         tag_labels_en=tag_labels_en,
         tag_labels_zh=tag_labels_zh,
-        content_markdown_en=content_markdown_en,
-        content_markdown_zh=content_markdown_zh,
-        leetcode_url=read_leetcode_url(slug, metadata),
-        sample_test_case=as_optional_string(metadata.get("sampleTestCase") or metadata.get("sample_test_case")),
-        python3_template=read_python3_template(metadata),
+        content_markdown_en=content_en,
+        content_markdown_zh=content_zh,
+        content_status=CONTENT_STATUS_BILINGUAL,
+        source_site=SOURCE_SITE_LEETCODE_COM_CN,
+        leetcode_url=leetcode_url(COM_SITE, slug),
+        sample_test_case=read_sample_test_case(com_question, cn_question),
+        python3_template=read_python3_template(com_question) or read_python3_template(cn_question),
+        source_commit=commit,
+    )
+
+
+def cn_only_problem(
+    slug: str,
+    row: dict[str, Any],
+    cn_question: dict[str, Any],
+    commit: str | None,
+) -> SeedProblem | None:
+    title_zh = as_optional_string(first_non_empty(
+        cn_question.get("translatedTitle"),
+        cn_question.get("title"),
+        row.get("titleZh"),
+    ))
+    content_zh = as_markdown(title_zh, cn_question.get("translatedContent"))
+    if not title_zh or not content_zh:
+        return None
+    tag_values, tag_labels_en, tag_labels_zh = read_tags(cn_question)
+    return SeedProblem(
+        slug=slug,
+        frontend_id=read_frontend_id(row, cn_question),
+        frontend_display_id=read_frontend_display_id(row, cn_question),
+        title_en=None,
+        title_zh=title_zh,
+        difficulty=read_difficulty(first_mapping(cn_question, row)),
+        tag_values=tag_values,
+        tag_labels_en=tag_labels_en,
+        tag_labels_zh=tag_labels_zh,
+        content_markdown_en=None,
+        content_markdown_zh=content_zh,
+        content_status=CONTENT_STATUS_CN_ONLY,
+        source_site=SOURCE_SITE_LEETCODE_CN,
+        leetcode_url=leetcode_url(CN_SITE, slug),
+        sample_test_case=read_sample_test_case(cn_question),
+        python3_template=read_python3_template(cn_question),
         source_commit=commit,
     )
 
@@ -171,26 +182,22 @@ def write_seed(output_dir: Path, problems: list[SeedProblem], commit: str | None
         "sourceRepository": DEFAULT_SOURCE_REPOSITORY,
         "sourceCommit": commit,
         "problemCount": len(problems),
-        "generatedAt": datetime.now(timezone.utc).isoformat(),
+        "contentStatusCounts": content_status_counts(problems),
+        "generatedAt": utc_now_iso(),
         "files": [
             "problems.jsonl",
             "problem_categories.jsonl",
             "problem_category_items.jsonl",
         ],
     }
-    (output_dir / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-
-
-def write_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> None:
-    with path.open("w", encoding="utf-8") as file:
-        for row in rows:
-            file.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n")
+    write_json(output_dir / "manifest.json", manifest)
 
 
 def problem_to_dict(problem: SeedProblem) -> dict[str, Any]:
     return {
         "slug": problem.slug,
         "frontendId": problem.frontend_id,
+        "frontendDisplayId": problem.frontend_display_id,
         "titleEn": problem.title_en,
         "titleZh": problem.title_zh,
         "difficulty": problem.difficulty,
@@ -199,6 +206,8 @@ def problem_to_dict(problem: SeedProblem) -> dict[str, Any]:
         "tagLabelsZh": problem.tag_labels_zh,
         "contentMarkdownEn": problem.content_markdown_en,
         "contentMarkdownZh": problem.content_markdown_zh,
+        "contentStatus": problem.content_status,
+        "sourceSite": problem.source_site,
         "leetcodeUrl": problem.leetcode_url,
         "sampleTestCase": problem.sample_test_case,
         "python3Template": problem.python3_template,
@@ -206,112 +215,20 @@ def problem_to_dict(problem: SeedProblem) -> dict[str, Any]:
     }
 
 
-def strip_solution(markdown: str) -> str:
-    match = SOLUTION_HEADING_PATTERN.search(markdown)
-    if not match:
-        return markdown
-    return markdown[:match.start()]
-
-
-def read_title(markdown: str, metadata: dict[str, Any]) -> str | None:
-    title = first_non_empty(
-        metadata.get("title"),
-        metadata.get("questionTitle"),
-        nested(metadata, "stat", "question__title"),
-    )
-    if title:
-        return str(title).strip()
-
-    for line in markdown.splitlines():
-        if line.startswith("# "):
-            return line[2:].strip()
-    return None
-
-
-def read_slug(markdown_file: Path, metadata: dict[str, Any], title: str | None) -> str | None:
-    slug = first_non_empty(
-        metadata.get("titleSlug"),
-        metadata.get("title_slug"),
-        metadata.get("slug"),
-        nested(metadata, "stat", "question__title_slug"),
-    )
-    if slug:
-        return normalize_slug(str(slug))
-
-    stem = markdown_file.stem
-    if re.fullmatch(r"\d+", stem) and title:
-        return normalize_slug(title)
-    return normalize_slug(stem)
-
-
-def read_frontend_id(markdown_file: Path, metadata: dict[str, Any]) -> int | None:
-    raw = first_non_empty(
-        metadata.get("frontend_question_id"),
-        metadata.get("frontendId"),
-        metadata.get("questionFrontendId"),
-        nested(metadata, "stat", "frontend_question_id"),
-        nested(metadata, "stat", "question_id"),
-        markdown_file.stem if re.fullmatch(r"\d+", markdown_file.stem) else None,
-    )
-    try:
-        return int(str(raw))
-    except (TypeError, ValueError):
-        return None
-
-
-def read_title_zh(metadata: dict[str, Any], title_en: str | None) -> str | None:
-    return as_optional_string(first_non_empty(
-        metadata.get("translatedTitle"),
-        metadata.get("translated_title"),
-        metadata.get("titleCn"),
-        metadata.get("title_cn"),
-        title_en,
-    ))
-
-
-def read_difficulty(metadata: dict[str, Any]) -> str | None:
-    raw = first_non_empty(metadata.get("difficulty"), metadata.get("level"))
-    if isinstance(raw, int):
-        return {1: "EASY", 2: "MEDIUM", 3: "HARD"}.get(raw)
-    if raw is None:
-        return None
-
-    value = str(raw).strip().upper()
-    return {
-        "EASY": "EASY",
-        "MEDIUM": "MEDIUM",
-        "HARD": "HARD",
-        "简单": "EASY",
-        "中等": "MEDIUM",
-        "困难": "HARD",
-    }.get(value, value)
-
-
-def read_content_markdown_en(markdown: str, metadata: dict[str, Any], title_en: str | None) -> str:
-    content = as_optional_string(first_non_empty(metadata.get("content"), metadata.get("content_en")))
-    if content and title_en:
-        return markdown_with_title(title_en, html_to_markdown(content))
-    english, _ = split_markdown_translation(markdown)
-    return english
-
-
-def read_content_markdown_zh(
-    markdown: str,
-    metadata: dict[str, Any],
-    title_zh: str | None,
-    title_en: str | None,
-) -> str:
-    content = as_optional_string(first_non_empty(
-        metadata.get("translatedContent"),
-        metadata.get("translated_content"),
-        metadata.get("content_zh"),
-    ))
-    if content and title_zh:
-        return markdown_with_title(title_zh, html_to_markdown(content))
-    _, translated = split_markdown_translation(markdown)
-    if translated and title_zh:
-        return markdown_with_title(title_zh, translated)
-    return markdown_with_title(title_zh or title_en or "", strip_heading(markdown))
+def merged_tag_arrays(com_question: dict[str, Any], cn_question: dict[str, Any]) -> tuple[list[str], list[str], list[str]]:
+    tag_values, tag_labels_en, fallback_zh = read_tags(com_question)
+    cn_tags = cn_question.get("topicTags")
+    zh_by_slug: dict[str, str] = {}
+    if isinstance(cn_tags, list):
+        for tag in cn_tags:
+            if isinstance(tag, dict) and tag.get("slug"):
+                zh_by_slug[str(tag["slug"])] = str(first_non_empty(
+                    tag.get("translatedName"),
+                    tag.get("name"),
+                    tag.get("slug"),
+                ))
+    tag_labels_zh = [zh_by_slug.get(value, fallback_zh[index]) for index, value in enumerate(tag_values)]
+    return tag_values, tag_labels_en, tag_labels_zh
 
 
 def read_tags(metadata: dict[str, Any]) -> tuple[list[str], list[str], list[str]]:
@@ -340,11 +257,51 @@ def read_tags(metadata: dict[str, Any]) -> tuple[list[str], list[str], list[str]
     return values, [tags[value][0] for value in values], [tags[value][1] for value in values]
 
 
-def read_leetcode_url(slug: str, metadata: dict[str, Any]) -> str | None:
-    raw = as_optional_string(first_non_empty(metadata.get("leetcodeUrl"), metadata.get("url")))
-    if raw:
-        return raw
-    return f"https://leetcode.com/problems/{slug}/"
+def read_frontend_id(*items: dict[str, Any]) -> int | None:
+    raw = read_frontend_display_id(*items)
+    if raw is None or not re.fullmatch(r"\d+", raw):
+        return None
+    return int(raw)
+
+
+def read_frontend_display_id(*items: dict[str, Any]) -> str | None:
+    raw = first_non_empty(*[
+        first_non_empty(
+            item.get("frontendId"),
+            item.get("questionFrontendId"),
+            item.get("frontend_question_id"),
+            item.get("questionId"),
+            item.get("question_id"),
+        )
+        for item in items
+    ])
+    return as_optional_string(raw)
+
+
+def read_difficulty(metadata: dict[str, Any]) -> str | None:
+    raw = first_non_empty(metadata.get("difficulty"), metadata.get("level"))
+    if isinstance(raw, int):
+        return {1: "EASY", 2: "MEDIUM", 3: "HARD"}.get(raw)
+    if raw is None:
+        return None
+
+    value = str(raw).strip().upper()
+    return {
+        "EASY": "EASY",
+        "MEDIUM": "MEDIUM",
+        "HARD": "HARD",
+        "简单": "EASY",
+        "中等": "MEDIUM",
+        "困难": "HARD",
+    }.get(value, value)
+
+
+def read_sample_test_case(*questions: dict[str, Any]) -> str | None:
+    for question in questions:
+        value = as_optional_string(first_non_empty(question.get("sampleTestCase"), question.get("exampleTestcases")))
+        if value:
+            return value
+    return None
 
 
 def read_python3_template(metadata: dict[str, Any]) -> str | None:
@@ -362,45 +319,15 @@ def read_python3_template(metadata: dict[str, Any]) -> str | None:
     return None
 
 
-def source_commit(source_dir: Path) -> str | None:
-    try:
-        result = subprocess.run(
-            ["git", "-C", str(source_dir), "rev-parse", "HEAD"],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-        return result.stdout.strip() or None
-    except (FileNotFoundError, subprocess.CalledProcessError):
+def as_markdown(title: str | None, html: Any) -> str | None:
+    content = as_optional_string(html)
+    if not title or not content:
         return None
+    return markdown_with_title(title, html_to_markdown(content))
 
 
-def problem_key_from_path(markdown_file: Path) -> str:
-    return markdown_file.stem
-
-
-def dedupe_by_slug(problems: list[SeedProblem]) -> list[SeedProblem]:
-    deduped: dict[str, SeedProblem] = {}
-    for problem in problems:
-        deduped.setdefault(problem.slug, problem)
-    return list(deduped.values())
-
-
-def metadata_score(item: dict[str, Any]) -> int:
-    score = 0
-    for key in ("content", "translatedContent", "codeSnippets", "topicTags", "sampleTestCase"):
-        if item.get(key):
-            score += 1
-    return score
-
-
-def split_markdown_translation(markdown: str) -> tuple[str, str | None]:
-    match = re.search(r"(?im)^##\s*翻译\b.*$", markdown)
-    if not match:
-        return markdown.strip(), None
-    english = markdown[:match.start()].strip()
-    translated = markdown[match.end():].strip()
-    return english, translated or None
+def markdown_with_title(title: str, body: str) -> str:
+    return f"# {title.strip()}\n\n{strip_heading(body).strip()}".strip()
 
 
 def strip_heading(markdown: str) -> str:
@@ -410,8 +337,49 @@ def strip_heading(markdown: str) -> str:
     return markdown.strip()
 
 
-def markdown_with_title(title: str, body: str) -> str:
-    return f"# {title.strip()}\n\n{strip_heading(body).strip()}".strip()
+def leetcode_url(site: str, slug: str) -> str:
+    return f"{SITE_BASE_URLS[site]}/problems/{slug}/"
+
+
+def is_paid_only(row: dict[str, Any], *questions: dict[str, Any] | None) -> bool:
+    if bool(row.get("paidOnly")):
+        return True
+    return any(bool(question and question.get("isPaidOnly")) for question in questions)
+
+
+def read_optional(path: Path) -> Any | None:
+    return read_json(path) if path.exists() else None
+
+
+def source_commit(cache_dir: Path) -> str | None:
+    for directory in (cache_dir, Path.cwd()):
+        try:
+            result = subprocess.run(
+                ["git", "-C", str(directory), "rev-parse", "HEAD"],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            commit = result.stdout.strip()
+            if commit:
+                return f"leetcode-api@{commit}"
+        except (FileNotFoundError, subprocess.CalledProcessError):
+            continue
+    return None
+
+
+def dedupe_by_slug(problems: list[SeedProblem]) -> list[SeedProblem]:
+    deduped: dict[str, SeedProblem] = {}
+    for problem in problems:
+        deduped.setdefault(problem.slug, problem)
+    return list(deduped.values())
+
+
+def content_status_counts(problems: Iterable[SeedProblem]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for problem in problems:
+        counts[problem.content_status] = counts.get(problem.content_status, 0) + 1
+    return dict(sorted(counts.items()))
 
 
 class SimpleHtmlMarkdownParser(HTMLParser):
@@ -515,6 +483,13 @@ def normalize_slug(value: str) -> str | None:
     return slug or None
 
 
+def first_mapping(*items: dict[str, Any]) -> dict[str, Any]:
+    for item in items:
+        if item:
+            return item
+    return {}
+
+
 def nested(raw: dict[str, Any], *keys: str) -> Any:
     value: Any = raw
     for key in keys:
@@ -537,8 +512,8 @@ def first_non_empty(*values: Any) -> Any:
 def as_optional_string(value: Any) -> str | None:
     if value is None:
         return None
-    text = str(value)
-    return text if text else None
+    text = str(value).strip()
+    return text or None
 
 
 if __name__ == "__main__":

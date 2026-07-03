@@ -1,9 +1,12 @@
 package org.congcong.algomentor.api.problem.mapper.model;
 
+import java.math.BigDecimal;
+
 public record ProblemRow(
     Long id,
     String slug,
     Integer frontendId,
+    String frontendDisplayId,
     String titleEn,
     String titleZh,
     String difficulty,
@@ -12,9 +15,12 @@ public record ProblemRow(
     String tagLabelsZhText,
     String contentMarkdownEn,
     String contentMarkdownZh,
+    String contentStatus,
     String leetcodeUrl,
     String sampleTestCase,
     String python3Template,
-    String sourceCommit
+    String sourceCommit,
+    BigDecimal companyFrequencyScore,
+    Long companySignalCount
 ) {
 }

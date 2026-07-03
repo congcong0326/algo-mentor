@@ -3,6 +3,7 @@ package org.congcong.algomentor.api.controller.problem;
 import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.problem.model.ProblemDetail;
 import org.congcong.algomentor.api.problem.model.ProblemDifficulty;
+import org.congcong.algomentor.api.problem.model.ProblemFilters;
 import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.api.problem.model.ProblemListItem;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
@@ -34,6 +35,9 @@ public class ProblemController {
       @RequestParam(required = false) String difficulty,
       @RequestParam(required = false) String tag,
       @RequestParam(required = false) String category,
+      @RequestParam(required = false) String company,
+      @RequestParam(required = false) String role,
+      @RequestParam(required = false) String recencyBucket,
       @RequestParam(required = false) String sort,
       @RequestParam(name = ApiContractConstants.PROBLEM_LOCALE_PARAM, required = false) String locale,
       @RequestParam(defaultValue = "1") int page,
@@ -45,11 +49,21 @@ public class ProblemController {
         ProblemDifficulty.parse(difficulty),
         tag,
         category,
+        company,
+        role,
+        recencyBucket,
         ProblemSort.parse(sort),
         page,
         pageSize,
         problemLocale);
     return ApiResponse.success(problemService.findProblems(request));
+  }
+
+  @GetMapping("/filters")
+  public ApiResponse<ProblemFilters> listFilters(
+      @RequestParam(name = ApiContractConstants.PROBLEM_LOCALE_PARAM, required = false) String locale
+  ) {
+    return ApiResponse.success(problemService.findProblemFilters(ProblemLocale.parse(locale)));
   }
 
   @GetMapping("/{slug}")

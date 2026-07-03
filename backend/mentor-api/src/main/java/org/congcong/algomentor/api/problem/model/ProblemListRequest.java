@@ -5,6 +5,9 @@ public record ProblemListRequest(
     ProblemDifficulty difficulty,
     String tag,
     String category,
+    String company,
+    String role,
+    String recencyBucket,
     ProblemSort sort,
     int page,
     int pageSize,
@@ -23,6 +26,9 @@ public record ProblemListRequest(
     keyword = blankToNull(keyword);
     tag = blankToNull(tag);
     category = blankToNull(category);
+    company = blankToNull(company);
+    role = blankToNull(role);
+    recencyBucket = blankToNull(recencyBucket);
   }
 
   public int offset() {

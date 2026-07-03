@@ -51,6 +51,21 @@ public final class ProblemAgentToolNames {
   public static final String CATEGORIES = "categories";
 
   /**
+   * 公司过滤项。
+   */
+  public static final String COMPANIES = "companies";
+
+  /**
+   * 岗位过滤项。
+   */
+  public static final String ROLES = "roles";
+
+  /**
+   * 时间桶过滤项。
+   */
+  public static final String RECENCY_BUCKETS = "recencyBuckets";
+
+  /**
    * 给模型使用工具的简短提示。
    */
   public static final String NOTES = "notes";
@@ -89,6 +104,41 @@ public final class ProblemAgentToolNames {
    * LeetCode 前端编号。
    */
   public static final String FRONTEND_ID = "frontendId";
+
+  /**
+   * 支持非数字题号的展示编号。
+   */
+  public static final String FRONTEND_DISPLAY_ID = "frontendDisplayId";
+
+  /**
+   * 题面内容状态。
+   */
+  public static final String CONTENT_STATUS = "contentStatus";
+
+  /**
+   * 公司过滤值。
+   */
+  public static final String COMPANY = "company";
+
+  /**
+   * 岗位过滤值。
+   */
+  public static final String ROLE = "role";
+
+  /**
+   * 时间桶过滤值。
+   */
+  public static final String RECENCY_BUCKET = "recencyBucket";
+
+  /**
+   * 当前过滤条件下的公司频度。
+   */
+  public static final String COMPANY_FREQUENCY_SCORE = "companyFrequencyScore";
+
+  /**
+   * 当前过滤条件下的公司信号数量。
+   */
+  public static final String COMPANY_SIGNAL_COUNT = "companySignalCount";
 
   /**
    * 英文题名。

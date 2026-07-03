@@ -9,6 +9,7 @@
       <arg column="id" javaType="java.lang.Long"/>
       <arg column="slug" javaType="string"/>
       <arg column="frontend_id" javaType="java.lang.Integer"/>
+      <arg column="frontend_display_id" javaType="string"/>
       <arg column="title_en" javaType="string"/>
       <arg column="title_zh" javaType="string"/>
       <arg column="difficulty" javaType="string"/>
@@ -17,10 +18,13 @@
       <arg column="tag_labels_zh_text" javaType="string"/>
       <arg column="content_markdown_en" javaType="string"/>
       <arg column="content_markdown_zh" javaType="string"/>
+      <arg column="content_status" javaType="string"/>
       <arg column="leetcode_url" javaType="string"/>
       <arg column="sample_test_case" javaType="string"/>
       <arg column="python3_template" javaType="string"/>
       <arg column="source_commit" javaType="string"/>
+      <arg column="company_frequency_score" javaType="java.math.BigDecimal"/>
+      <arg column="company_signal_count" javaType="java.lang.Long"/>
     </constructor>
   </resultMap>
 
@@ -46,6 +50,7 @@
     p.id,
     p.slug,
     p.frontend_id,
+    p.frontend_display_id,
     p.title_en,
     p.title_zh,
     p.difficulty,
@@ -54,10 +59,41 @@
     COALESCE(array_to_string(p.tag_labels_zh, E'\n'), '') AS tag_labels_zh_text,
     p.content_markdown_en,
     p.content_markdown_zh,
+    p.content_status,
     p.leetcode_url,
     p.sample_test_case,
     p.python3_template,
-    p.source_commit
+    p.source_commit,
+    (
+      SELECT MAX(pcs.frequency_score)
+      FROM problem_company_signal pcs
+      JOIN company c ON c.id = pcs.company_id
+      WHERE pcs.problem_id = p.id
+        <if test="company != null and company != ''">
+          AND c.slug = #{company}
+        </if>
+        <if test="role != null and role != ''">
+          AND pcs.role = #{role}
+        </if>
+        <if test="recencyBucket != null and recencyBucket != ''">
+          AND pcs.recency_bucket = #{recencyBucket}
+        </if>
+    ) AS company_frequency_score,
+    (
+      SELECT COUNT(*)
+      FROM problem_company_signal pcs
+      JOIN company c ON c.id = pcs.company_id
+      WHERE pcs.problem_id = p.id
+        <if test="company != null and company != ''">
+          AND c.slug = #{company}
+        </if>
+        <if test="role != null and role != ''">
+          AND pcs.role = #{role}
+        </if>
+        <if test="recencyBucket != null and recencyBucket != ''">
+          AND pcs.recency_bucket = #{recencyBucket}
+        </if>
+    ) AS company_signal_count
   </sql>
 
   <sql id="ProblemFilters">
@@ -68,6 +104,7 @@
           OR p.title_zh ILIKE CONCAT('%', #{keyword}, '%')
           OR p.slug ILIKE CONCAT('%', #{keyword}, '%')
           OR CAST(p.frontend_id AS TEXT) = #{keyword}
+          OR p.frontend_display_id = #{keyword}
         )
       </if>
       <if test="difficulty != null and difficulty != ''">
@@ -84,6 +121,44 @@
           WHERE pci.problem_id = p.id
             AND (pc.slug = #{category} OR pc.name = #{category})
         )
+      </if>
+      <if test="company != null and company != ''">
+        AND EXISTS (
+          SELECT 1
+          FROM problem_company_signal pcs
+          JOIN company c ON c.id = pcs.company_id
+          WHERE pcs.problem_id = p.id
+            AND c.slug = #{company}
+            <if test="role != null and role != ''">
+              AND pcs.role = #{role}
+            </if>
+            <if test="recencyBucket != null and recencyBucket != ''">
+              AND pcs.recency_bucket = #{recencyBucket}
+            </if>
+        )
+      </if>
+      <if test="company == null or company == ''">
+        <if test="role != null and role != ''">
+          AND EXISTS (
+            SELECT 1
+            FROM problem_company_signal pcs
+            WHERE pcs.problem_id = p.id
+              AND pcs.role = #{role}
+              <if test="recencyBucket != null and recencyBucket != ''">
+                AND pcs.recency_bucket = #{recencyBucket}
+              </if>
+          )
+        </if>
+        <if test="role == null or role == ''">
+          <if test="recencyBucket != null and recencyBucket != ''">
+            AND EXISTS (
+              SELECT 1
+              FROM problem_company_signal pcs
+              WHERE pcs.problem_id = p.id
+                AND pcs.recency_bucket = #{recencyBucket}
+            )
+          </if>
+        </if>
       </if>
     </where>
   </sql>
@@ -116,6 +191,9 @@
       <when test="sort == 'UPDATED_DESC'">
         ORDER BY p.updated_at DESC, p.id DESC
       </when>
+      <when test="sort == 'COMPANY_FREQUENCY_DESC'">
+        ORDER BY company_frequency_score DESC NULLS LAST, company_signal_count DESC, p.frontend_id ASC NULLS LAST, p.id ASC
+      </when>
       <otherwise>
         ORDER BY p.frontend_id ASC NULLS LAST, p.id ASC
       </otherwise>
@@ -126,7 +204,25 @@
 
   <select id="findProblemBySlug" resultMap="ProblemRowMap">
     SELECT
-      <include refid="ProblemColumns"/>
+      p.id,
+      p.slug,
+      p.frontend_id,
+      p.frontend_display_id,
+      p.title_en,
+      p.title_zh,
+      p.difficulty,
+      COALESCE(array_to_string(p.tag_values, E'\n'), '') AS tag_values_text,
+      COALESCE(array_to_string(p.tag_labels_en, E'\n'), '') AS tag_labels_en_text,
+      COALESCE(array_to_string(p.tag_labels_zh, E'\n'), '') AS tag_labels_zh_text,
+      p.content_markdown_en,
+      p.content_markdown_zh,
+      p.content_status,
+      p.leetcode_url,
+      p.sample_test_case,
+      p.python3_template,
+      p.source_commit,
+      NULL::NUMERIC AS company_frequency_score,
+      0::BIGINT AS company_signal_count
     FROM problem p
     WHERE p.slug = #{slug}
   </select>
@@ -178,10 +274,58 @@
     ORDER BY pc.name ASC, pc.slug ASC
   </select>
 
+  <select id="countProblemCompanies" resultMap="ProblemFilterCountRowMap">
+    SELECT
+      c.slug AS value,
+      MIN(c.name) AS label,
+      COUNT(DISTINCT pcs.problem_id) AS problem_count
+    FROM company c
+    JOIN problem_company_signal pcs ON pcs.company_id = c.id
+    GROUP BY c.slug
+    ORDER BY COUNT(DISTINCT pcs.problem_id) DESC, MIN(c.name) ASC, c.slug ASC
+  </select>
+
+  <select id="countProblemSignalRoles" resultMap="ProblemFilterCountRowMap">
+    SELECT
+      pcs.role AS value,
+      pcs.role AS label,
+      COUNT(DISTINCT pcs.problem_id) AS problem_count
+    FROM problem_company_signal pcs
+    GROUP BY pcs.role
+    ORDER BY pcs.role ASC
+  </select>
+
+  <select id="countProblemSignalRecencyBuckets" resultMap="ProblemFilterCountRowMap">
+    SELECT
+      pcs.recency_bucket AS value,
+      pcs.recency_bucket AS label,
+      COUNT(DISTINCT pcs.problem_id) AS problem_count
+    FROM problem_company_signal pcs
+    GROUP BY pcs.recency_bucket
+    ORDER BY pcs.recency_bucket ASC
+  </select>
+
+  <update id="clearConflictingFrontendId">
+    UPDATE problem
+    SET frontend_id = NULL,
+        updated_at = NOW()
+    WHERE frontend_id = #{frontendId}
+      AND slug != #{slug}
+  </update>
+
+  <update id="clearConflictingFrontendDisplayId">
+    UPDATE problem
+    SET frontend_display_id = NULL,
+        updated_at = NOW()
+    WHERE frontend_display_id = #{frontendDisplayId}
+      AND slug != #{slug}
+  </update>
+
   <insert id="upsertProblem">
     INSERT INTO problem (
       slug,
       frontend_id,
+      frontend_display_id,
       title_en,
       title_zh,
       difficulty,
@@ -190,6 +334,8 @@
       tag_labels_zh,
       content_markdown_en,
       content_markdown_zh,
+      content_status,
+      source_site,
       leetcode_url,
       sample_test_case,
       python3_template,
@@ -200,6 +346,7 @@
     VALUES (
       #{slug},
       #{frontendId},
+      #{frontendDisplayId},
       #{titleEn},
       #{titleZh},
       #{difficulty},
@@ -208,6 +355,8 @@
       #{tagLabelsZh},
       #{contentMarkdownEn},
       #{contentMarkdownZh},
+      #{contentStatus},
+      #{sourceSite},
       #{leetcodeUrl},
       #{sampleTestCase},
       #{python3Template},
@@ -217,6 +366,7 @@
     )
     ON CONFLICT (slug) DO UPDATE
     SET frontend_id = EXCLUDED.frontend_id,
+        frontend_display_id = EXCLUDED.frontend_display_id,
         title_en = EXCLUDED.title_en,
         title_zh = EXCLUDED.title_zh,
         difficulty = EXCLUDED.difficulty,
@@ -225,6 +375,8 @@
         tag_labels_zh = EXCLUDED.tag_labels_zh,
         content_markdown_en = EXCLUDED.content_markdown_en,
         content_markdown_zh = EXCLUDED.content_markdown_zh,
+        content_status = EXCLUDED.content_status,
+        source_site = EXCLUDED.source_site,
         leetcode_url = EXCLUDED.leetcode_url,
         sample_test_case = EXCLUDED.sample_test_case,
         python3_template = EXCLUDED.python3_template,

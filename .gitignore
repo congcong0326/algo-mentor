@@ -13,7 +13,6 @@ Thumbs.db
 .worktrees
 .worktrees/
 data/sources/
-data/seed/
 
 backend/**/target/
 backend/mentor-api/src/main/resources/static/
@@ -27,6 +26,8 @@ frontend/.vite/
 __pycache__/
 *.py[cod]
 reports/
+!data/reports/
+!data/reports/**
 tests/smoke/reports/*
 !tests/smoke/reports/.gitkeep
 tests/evals/reports/*

@@ -124,7 +124,10 @@ export interface ProblemListQuery {
   difficulty?: ProblemDifficulty | '';
   tag?: string;
   category?: string;
-  sort?: 'frontend_id_asc' | 'frontend_id_desc' | 'title_asc' | 'updated_desc';
+  company?: string;
+  role?: string;
+  recencyBucket?: string;
+  sort?: 'frontend_id_asc' | 'frontend_id_desc' | 'title_asc' | 'updated_desc' | 'company_frequency_desc';
   locale?: 'zh-CN' | 'en-US';
   page?: number;
   pageSize?: number;
@@ -138,9 +141,13 @@ export interface ProblemTag {
 export interface ProblemListItem {
   slug: string;
   frontendId?: number;
+  frontendDisplayId?: string;
   title: string;
   difficulty?: ProblemDifficulty;
   tags: ProblemTag[];
+  contentStatus?: 'BILINGUAL' | 'CN_ONLY';
+  companyFrequencyScore?: number | null;
+  companySignalCount?: number;
 }
 
 export interface ProblemDetail extends ProblemListItem {
@@ -149,6 +156,28 @@ export interface ProblemDetail extends ProblemListItem {
   sampleTestCase?: string;
   python3Template?: string;
   sourceCommit?: string;
+}
+
+export interface ProblemFilterOption {
+  value: string;
+  label: string;
+  problemCount: number;
+}
+
+export interface ProblemCategoryFilterOption {
+  slug: string;
+  name: string;
+  problemCount: number;
+}
+
+export interface ProblemFilters {
+  problemCount: number;
+  difficulties: ProblemFilterOption[];
+  tags: ProblemFilterOption[];
+  categories: ProblemCategoryFilterOption[];
+  companies: ProblemFilterOption[];
+  roles: ProblemFilterOption[];
+  recencyBuckets: ProblemFilterOption[];
 }
 
 export interface ProblemPage<T> {

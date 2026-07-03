@@ -15,7 +15,10 @@ public interface ProblemMapper {
       @Param("keyword") String keyword,
       @Param("difficulty") String difficulty,
       @Param("tag") String tag,
-      @Param("category") String category
+      @Param("category") String category,
+      @Param("company") String company,
+      @Param("role") String role,
+      @Param("recencyBucket") String recencyBucket
   );
 
   List<ProblemRow> findProblems(
@@ -23,6 +26,9 @@ public interface ProblemMapper {
       @Param("difficulty") String difficulty,
       @Param("tag") String tag,
       @Param("category") String category,
+      @Param("company") String company,
+      @Param("role") String role,
+      @Param("recencyBucket") String recencyBucket,
       @Param("sort") String sort,
       @Param("locale") String locale,
       @Param("limit") int limit,
@@ -38,6 +44,19 @@ public interface ProblemMapper {
   List<ProblemFilterCountRow> countProblemsByTag(@Param("locale") String locale);
 
   List<ProblemCategoryFilterRow> countProblemCategories();
+
+  List<ProblemFilterCountRow> countProblemCompanies();
+
+  List<ProblemFilterCountRow> countProblemSignalRoles();
+
+  List<ProblemFilterCountRow> countProblemSignalRecencyBuckets();
+
+  int clearConflictingFrontendId(@Param("slug") String slug, @Param("frontendId") Integer frontendId);
+
+  int clearConflictingFrontendDisplayId(
+      @Param("slug") String slug,
+      @Param("frontendDisplayId") String frontendDisplayId
+  );
 
   int upsertProblem(ProblemUpsertRow row);
 }

@@ -1,6 +1,7 @@
 package org.congcong.algomentor.api.problem.tool;
 
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.CATEGORIES;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.COMPANIES;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.DIFFICULTIES;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.INCLUDE_COUNTS;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.LABEL;
@@ -9,6 +10,8 @@ import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.LOC
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.NAME;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.NOTES;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.PROBLEM_COUNT;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.RECENCY_BUCKETS;
+import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.ROLES;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.SLUG;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.SORTS;
 import static org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames.TAGS;
@@ -76,6 +79,9 @@ public final class ListProblemFiltersTool implements AgentTool {
     output.put(PROBLEM_COUNT, filters.problemCount());
     output.set(DIFFICULTIES, filterOptions(filters.difficulties(), includeCounts));
     output.set(TAGS, filterOptions(filters.tags(), includeCounts));
+    output.set(COMPANIES, filterOptions(filters.companies(), includeCounts));
+    output.set(ROLES, filterOptions(filters.roles(), includeCounts));
+    output.set(RECENCY_BUCKETS, filterOptions(filters.recencyBuckets(), includeCounts));
     output.set(SORTS, sorts());
     output.set(CATEGORIES, categories(filters, includeCounts));
     output.set(NOTES, notes(filters));
@@ -120,7 +126,7 @@ public final class ListProblemFiltersTool implements AgentTool {
 
   private ArrayNode notes(ProblemFilters filters) {
     ArrayNode nodes = JsonNodeFactory.instance.arrayNode();
-    nodes.add("Use difficulty, tag, and sort values exactly as returned by this tool.");
+    nodes.add("Use difficulty, tag, company, role, recency bucket, and sort values exactly as returned by this tool.");
     if (filters.categories().isEmpty()) {
       nodes.add("No category filters are available yet; prefer tag-based search.");
     }

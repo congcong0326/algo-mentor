@@ -264,6 +264,21 @@ export interface LocaleResources {
     difficulty: string;
     difficultyFilter: string;
     allDifficulty: string;
+    company: string;
+    companyFilter: string;
+    allCompanies: string;
+    role: string;
+    roleFilter: string;
+    allRoles: string;
+    recencyBucket: string;
+    recencyBucketFilter: string;
+    allRecencyBuckets: string;
+    sort: string;
+    sortFilter: string;
+    sortFrontendAsc: string;
+    sortCompanyFrequencyDesc: string;
+    companySignalBadge: string;
+    cnOnlyBadge: string;
     listTitle: string;
     totalCount: (count: number) => string;
     loadingList: string;
@@ -275,6 +290,7 @@ export interface LocaleResources {
     pythonTemplate: string;
     selectProblem: string;
     listLoadFailed: string;
+    filtersLoadFailed: string;
     detailLoadFailed: string;
   };
   learningPlans: {
@@ -751,6 +767,21 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       difficulty: '难度',
       difficultyFilter: '难度筛选',
       allDifficulty: '全部难度',
+      company: '公司',
+      companyFilter: '公司筛选',
+      allCompanies: '全部公司',
+      role: '岗位',
+      roleFilter: '岗位筛选',
+      allRoles: '全部岗位',
+      recencyBucket: '时间',
+      recencyBucketFilter: '时间桶筛选',
+      allRecencyBuckets: '全部时间',
+      sort: '排序',
+      sortFilter: '排序方式',
+      sortFrontendAsc: '题号升序',
+      sortCompanyFrequencyDesc: '公司高频',
+      companySignalBadge: '公司题频',
+      cnOnlyBadge: '中文题面',
       listTitle: '题目列表',
       totalCount: (count) => `${count} 题`,
       loadingList: '加载题库...',
@@ -762,6 +793,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       pythonTemplate: 'Python3 模板',
       selectProblem: '选择一道题查看详情',
       listLoadFailed: '题库列表加载失败',
+      filtersLoadFailed: '题库筛选项加载失败',
       detailLoadFailed: '题目详情加载失败',
     },
     learningPlans: {
@@ -1281,6 +1313,21 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       difficulty: 'Difficulty',
       difficultyFilter: 'Difficulty filter',
       allDifficulty: 'All Difficulty',
+      company: 'Company',
+      companyFilter: 'Company filter',
+      allCompanies: 'All Companies',
+      role: 'Role',
+      roleFilter: 'Role filter',
+      allRoles: 'All Roles',
+      recencyBucket: 'Recency',
+      recencyBucketFilter: 'Recency filter',
+      allRecencyBuckets: 'All Recency',
+      sort: 'Sort',
+      sortFilter: 'Sort order',
+      sortFrontendAsc: 'ID ascending',
+      sortCompanyFrequencyDesc: 'Company frequency',
+      companySignalBadge: 'Company signal',
+      cnOnlyBadge: 'Chinese only',
       listTitle: 'Problem List',
       totalCount: (count) => `${count} ${count === 1 ? 'problem' : 'problems'}`,
       loadingList: 'Loading problems...',
@@ -1292,6 +1339,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       pythonTemplate: 'Python3 Template',
       selectProblem: 'Select a problem to view details',
       listLoadFailed: 'Failed to load problem list',
+      filtersLoadFailed: 'Failed to load problem filters',
       detailLoadFailed: 'Failed to load problem details',
     },
     learningPlans: {
