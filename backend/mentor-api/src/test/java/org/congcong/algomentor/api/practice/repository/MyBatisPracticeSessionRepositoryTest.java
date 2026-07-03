@@ -49,6 +49,19 @@ class MyBatisPracticeSessionRepositoryTest {
   }
 
   @Test
+  void progressStatusUpdatesClearStaleTerminalTimestamps() throws Exception {
+    String mapperXml = practiceSessionMapperXml();
+
+    assertThat(mapperXml)
+        .contains("WHEN #{status} = 'COMPLETED' THEN COALESCE(progress.completed_at, NOW())")
+        .contains("WHEN #{status} = 'SKIPPED' THEN COALESCE(progress.skipped_at, NOW())")
+        .contains("ELSE NULL");
+    assertThat(mapperXml)
+        .contains("completed_at = CASE")
+        .contains("skipped_at = NULL");
+  }
+
+  @Test
   void mapsSessionRowToDomainWithPersistedLocale() {
     PracticeSessionMapper mapper = mock(PracticeSessionMapper.class);
     when(mapper.upsertSession(7, 12, 1, "two-sum", "en-US")).thenReturn(sessionRow("en-US"));
@@ -111,5 +124,17 @@ class MyBatisPracticeSessionRepositoryTest {
         CREATED_AT,
         UPDATED_AT,
         locale);
+  }
+
+  private String practiceSessionMapperXml() throws Exception {
+    try (Reader reader = Resources.getResourceAsReader("mapper/practice/PracticeSessionMapper.xml")) {
+      StringBuilder content = new StringBuilder();
+      char[] buffer = new char[1024];
+      int read;
+      while ((read = reader.read(buffer)) != -1) {
+        content.append(buffer, 0, read);
+      }
+      return content.toString();
+    }
   }
 }
