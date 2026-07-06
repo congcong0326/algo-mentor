@@ -3,9 +3,9 @@ package org.congcong.algomentor.api.review.repository;
 import java.util.List;
 import org.congcong.algomentor.api.review.mapper.ReviewLogMapper;
 import org.congcong.algomentor.api.review.mapper.model.ReviewLogInsertRow;
-import org.congcong.algomentor.mentor.application.review.ReviewGrade;
 import org.congcong.algomentor.mentor.application.review.ReviewLogEntry;
 import org.congcong.algomentor.mentor.application.review.ReviewLogRepository;
+import org.congcong.algomentor.mentor.application.review.ReviewRating;
 import org.congcong.algomentor.mentor.application.review.ReviewRecallHistoryItem;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,16 +28,13 @@ public class MyBatisReviewLogRepository implements ReviewLogRepository {
         entry.cardPromptJson(),
         entry.userRecallText(),
         entry.userNoteTransient(),
-        entry.grade().q(),
         entry.rating() == null ? null : entry.rating().name(),
-        entry.gradeSource().name(),
+        entry.ratingSource().name(),
         entry.aiJudgmentJson(),
         entry.practiceCodeReviewId(),
         entry.recallMessageId(),
         entry.intervalBefore(),
         entry.intervalAfter(),
-        entry.easeFactorBefore(),
-        entry.easeFactorAfter(),
         entry.reviewedAt()));
   }
 
@@ -48,7 +45,7 @@ public class MyBatisReviewLogRepository implements ReviewLogRepository {
     return mapper.findRecentRecallHistory(userId, noteId, effectiveLimit).stream()
         .map(row -> new ReviewRecallHistoryItem(
             row.id(),
-            ReviewGrade.ofQ(row.grade()),
+            row.rating() == null ? ReviewRating.HARD : ReviewRating.valueOf(row.rating()),
             row.userRecallText(),
             row.userNoteTransient(),
             row.reviewedAt(),

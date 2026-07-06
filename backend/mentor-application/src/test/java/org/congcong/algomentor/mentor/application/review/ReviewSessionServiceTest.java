@@ -74,10 +74,9 @@ class ReviewSessionServiceTest {
     assertThat(confirmed.aiSuggested()).isFalse();
     assertThat(confirmed.nextDueAt()).isNotNull();
     assertThat(noteRepository.updatedRating).isEqualTo(ReviewRating.HARD);
-    assertThat(noteRepository.updatedGrade).isEqualTo(ReviewGrade.BARELY);
     assertThat(noteRepository.updatedState.fsrsState()).isIn("LEARNING", "REVIEW", "RELEARNING");
     assertThat(logRepository.appended.rating()).isEqualTo(ReviewRating.HARD);
-    assertThat(logRepository.appended.gradeSource()).isEqualTo(GradeSource.SELF);
+    assertThat(logRepository.appended.ratingSource()).isEqualTo(RatingSource.SELF);
     assertThat(logRepository.appended.userRecallText()).isEqualTo("先遍历数组，用哈希表记录 complement。");
   }
 
@@ -98,10 +97,9 @@ class ReviewSessionServiceTest {
     assertThat(confirmed.aiSuggested()).isFalse();
     assertThat(confirmed.nextDueAt()).isNotNull();
     assertThat(noteRepository.updatedRating).isEqualTo(ReviewRating.GOOD);
-    assertThat(noteRepository.updatedGrade).isEqualTo(ReviewGrade.MASTERED);
     assertThat(logRepository.appended.userRecallText()).isNull();
     assertThat(logRepository.appended.userNoteTransient()).isNull();
-    assertThat(logRepository.appended.gradeSource()).isEqualTo(GradeSource.SELF);
+    assertThat(logRepository.appended.ratingSource()).isEqualTo(RatingSource.SELF);
     assertThat(logRepository.appended.aiJudgmentJson()).isNull();
   }
 
@@ -197,7 +195,7 @@ class ReviewSessionServiceTest {
         null,
         null,
         null,
-        new SchedulingState(1, new BigDecimal("2.50"), 1, MasteryState.LEARNING, 0),
+        new SchedulingState(1, 1, 0),
         now,
         null,
         null,
@@ -210,7 +208,6 @@ class ReviewSessionServiceTest {
 
   private final class RecordingMistakeNoteRepository implements MistakeNoteRepository {
     private SchedulingState updatedState;
-    private ReviewGrade updatedGrade;
     private ReviewRating updatedRating;
 
     @Override
@@ -246,7 +243,6 @@ class ReviewSessionServiceTest {
     @Override
     public List<MistakeNote> list(
         long userId,
-        MasteryState state,
         MistakeSource source,
         boolean mistakeOnly,
         String keyword,
@@ -272,21 +268,14 @@ class ReviewSessionServiceTest {
     }
 
     @Override
-    public MistakeNote updateScheduling(long noteId, SchedulingState state, Instant dueAt, ReviewGrade lastGrade, Instant reviewedAt) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
     public MistakeNote updateScheduling(
         long noteId,
         SchedulingState state,
         Instant dueAt,
-        ReviewGrade lastGrade,
         ReviewRating lastRating,
         Instant reviewedAt
     ) {
       updatedState = state;
-      updatedGrade = lastGrade;
       updatedRating = lastRating;
       return note();
     }
@@ -325,7 +314,7 @@ class ReviewSessionServiceTest {
     private ReviewRecallHistoryItem history(long id) {
       return new ReviewRecallHistoryItem(
           id,
-          ReviewGrade.MASTERED,
+          ReviewRating.GOOD,
           "回忆内容 " + id,
           "本次备注 " + id,
           Instant.parse("2026-07-02T0%s:00:00Z".formatted(id)),

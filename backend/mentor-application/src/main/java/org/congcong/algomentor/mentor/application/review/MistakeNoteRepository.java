@@ -22,7 +22,6 @@ public interface MistakeNoteRepository {
 
   List<MistakeNote> list(
       long userId,
-      MasteryState state,
       MistakeSource source,
       boolean mistakeOnly,
       String keyword,
@@ -40,18 +39,7 @@ public interface MistakeNoteRepository {
       long noteId,
       SchedulingState state,
       Instant dueAt,
-      ReviewGrade lastGrade,
       ReviewRating lastRating,
-      Instant reviewedAt
-  ) {
-    return updateScheduling(noteId, state, dueAt, lastGrade, reviewedAt);
-  }
-
-  default MistakeNote updateScheduling(
-      long noteId,
-      SchedulingState state,
-      Instant dueAt,
-      ReviewGrade lastGrade,
       Instant reviewedAt
   ) {
     throw new UnsupportedOperationException();

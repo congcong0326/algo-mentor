@@ -3,6 +3,7 @@ package org.congcong.algomentor.api.review.model;
 import java.util.List;
 import java.util.Locale;
 import org.congcong.algomentor.api.review.service.MistakeNoteDisplayInfoResolver;
+import org.congcong.algomentor.mentor.application.review.FsrsReviewSchedulerService;
 import org.congcong.algomentor.mentor.application.review.MistakeNote;
 import org.congcong.algomentor.mentor.application.review.RecallConfirmResult;
 import org.congcong.algomentor.mentor.application.review.RecallReviewResult;
@@ -31,9 +32,7 @@ public final class MistakeReviewResponseMapper {
         displayInfo.problemDifficulty(),
         note.source().name(),
         note.sourceDetail(),
-        note.scheduling().masteryState().name(),
         note.scheduling().repetitions(),
-        note.scheduling().easeFactor(),
         note.scheduling().intervalDays(),
         note.scheduling().fsrsState(),
         note.scheduling().fsrsStep(),
@@ -42,7 +41,6 @@ public final class MistakeReviewResponseMapper {
         note.dueAt(),
         note.scheduling().lapses(),
         note.lastReviewedAt(),
-        note.lastGrade() == null ? null : note.lastGrade().name(),
         note.lastRating() == null ? null : note.lastRating().name(),
         note.archived(),
         note.userNotePersistent(),
@@ -78,7 +76,7 @@ public final class MistakeReviewResponseMapper {
         detail.recentRecallHistory().stream()
             .map(item -> new ReviewRecallHistoryResponse(
                 item.id(),
-                item.grade().name(),
+                item.rating().name(),
                 item.userRecallText(),
                 item.userNoteTransient(),
                 item.reviewedAt(),
@@ -88,12 +86,11 @@ public final class MistakeReviewResponseMapper {
 
   public static RecallReviewResponse toRecallResponse(RecallReviewResult result) {
     return new RecallReviewResponse(
-        result.judgment().grade().name(),
+        result.judgment().suggestedRating().name(),
         result.judgment().hitPoints(),
         result.judgment().missedPoints(),
         result.judgment().gapSummary(),
         result.nextDueAt(),
-        result.scheduling().masteryState().name(),
         result.scheduling().intervalDays(),
         result.scheduling().repetitions());
   }
@@ -129,12 +126,18 @@ public final class MistakeReviewResponseMapper {
         result.evaluation().gapSummary(),
         result.evaluation().aiSuggested(),
         result.evaluation().createdAt(),
-        result.intervals().stream()
-            .map(interval -> new ReviewIntervalPreviewResponse(
-                interval.rating().name(),
-                interval.dueAt(),
-                interval.intervalDays()))
-            .toList());
+        toIntervalPreviewResponses(result.intervals()));
+  }
+
+  public static List<ReviewIntervalPreviewResponse> toIntervalPreviewResponses(
+      List<FsrsReviewSchedulerService.ReviewIntervalPreview> intervals
+  ) {
+    return intervals.stream()
+        .map(interval -> new ReviewIntervalPreviewResponse(
+            interval.rating().name(),
+            interval.dueAt(),
+            interval.intervalDays()))
+        .toList();
   }
 
   public static RecallConfirmResponse toConfirmResponse(RecallConfirmResult result) {
@@ -142,7 +145,6 @@ public final class MistakeReviewResponseMapper {
         result.rating().name(),
         result.suggestedRating() == null ? null : result.suggestedRating().name(),
         result.nextDueAt(),
-        result.scheduling().masteryState().name(),
         result.scheduling().intervalDays(),
         result.scheduling().repetitions(),
         result.aiSuggested());

@@ -17,10 +17,10 @@ public class MicrometerMistakeReviewMetrics implements MistakeReviewMetrics {
   }
 
   @Override
-  public void recordRecallJudge(ReviewGrade grade, RecallJudgeOutcome outcome) {
+  public void recordRecallJudge(ReviewRating rating, RecallJudgeOutcome outcome) {
     registry.counter(
         "review.recall.judge",
-        "grade", grade == null ? "UNKNOWN" : grade.name(),
+        "rating", rating == null ? "UNKNOWN" : rating.name(),
         "outcome", outcome.name()).increment();
   }
 

@@ -23,7 +23,9 @@ class ReviewSeedPolicyTest {
     assertThat(seed.initialRating()).isEqualTo(ReviewRating.AGAIN);
     assertThat(seed.state().repetitions()).isZero();
     assertThat(seed.state().intervalDays()).isZero();
-    assertThat(seed.state().masteryState()).isEqualTo(MasteryState.NEW);
+    assertThat(seed.state().fsrsState()).isEqualTo("LEARNING");
+    assertThat(seed.state().fsrsStability()).isNull();
+    assertThat(seed.state().fsrsDifficulty()).isNull();
     assertThat(seed.dueAt()).isEqualTo(now);
   }
 
@@ -35,7 +37,9 @@ class ReviewSeedPolicyTest {
     assertThat(seed.initialRating()).isEqualTo(ReviewRating.GOOD);
     assertThat(seed.state().repetitions()).isEqualTo(1);
     assertThat(seed.state().intervalDays()).isEqualTo(3);
-    assertThat(seed.state().masteryState()).isEqualTo(MasteryState.LEARNING);
+    assertThat(seed.state().fsrsState()).isEqualTo("REVIEW");
+    assertThat(seed.state().fsrsStability()).isNotNull();
+    assertThat(seed.state().fsrsDifficulty()).isNotNull();
     assertThat(seed.dueAt()).isEqualTo(Instant.parse("2026-07-05T00:00:00Z"));
   }
 

@@ -2,7 +2,6 @@ package org.congcong.algomentor.mentor.application.review;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,7 @@ class RuleBasedCardComposerTest {
 
   @Test
   void easyMasteredKeepsKeyStepAndComplexityOnly() {
-    ReviewCard card = composer.compose(note(Map.of("difficulty", "EASY"), ReviewGrade.MASTERED, 0));
+    ReviewCard card = composer.compose(note(Map.of("difficulty", "EASY"), ReviewRating.GOOD, 0));
 
     assertThat(card.cardVariant()).isEqualTo(CardVariant.RULE_BASED);
     assertThat(card.prompts()).extracting(ReviewCardPrompt::key)
@@ -23,7 +22,7 @@ class RuleBasedCardComposerTest {
 
   @Test
   void hardProblemGetsFullScaffold() {
-    ReviewCard card = composer.compose(note(Map.of("difficulty", "HARD"), ReviewGrade.BARELY, 0));
+    ReviewCard card = composer.compose(note(Map.of("difficulty", "HARD"), ReviewRating.HARD, 0));
 
     assertThat(card.prompts()).hasSize(4);
     assertThat(card.scaffold()).isNotNull();
@@ -32,7 +31,7 @@ class RuleBasedCardComposerTest {
 
   @Test
   void repeatedLapsesGetScaffold() {
-    ReviewCard card = composer.compose(note(Map.of("difficulty", "MEDIUM"), ReviewGrade.BARELY, 2));
+    ReviewCard card = composer.compose(note(Map.of("difficulty", "MEDIUM"), ReviewRating.HARD, 2));
 
     assertThat(card.prompts()).hasSize(4);
     assertThat(card.scaffold()).isNotNull();
@@ -43,13 +42,13 @@ class RuleBasedCardComposerTest {
     ReviewCard card = composer.compose(note(Map.of(
         "difficulty", "MEDIUM",
         "titleCn", "两数之和",
-        "statementSummary", "给定整数数组和目标值，返回两数下标。"), ReviewGrade.BARELY, 0));
+        "statementSummary", "给定整数数组和目标值，返回两数下标。"), ReviewRating.HARD, 0));
 
     assertThat(card.problemRef().titleCn()).isEqualTo("两数之和");
     assertThat(card.problemStatement().summary()).isEqualTo("给定整数数组和目标值，返回两数下标。");
   }
 
-  private MistakeNote note(Map<String, Object> sourceDetail, ReviewGrade lastGrade, int lapses) {
+  private MistakeNote note(Map<String, Object> sourceDetail, ReviewRating lastRating, int lapses) {
     return new MistakeNote(
         1L,
         7L,
@@ -59,10 +58,10 @@ class RuleBasedCardComposerTest {
         null,
         null,
         null,
-        new SchedulingState(0, new BigDecimal("2.50"), 0, MasteryState.NEW, lapses),
+        new SchedulingState(0, 0, lapses),
         Instant.parse("2026-07-02T00:00:00Z"),
         null,
-        lastGrade,
+        lastRating,
         false,
         "",
         null,

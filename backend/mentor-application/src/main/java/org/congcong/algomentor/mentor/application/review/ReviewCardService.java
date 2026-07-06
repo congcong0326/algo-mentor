@@ -116,7 +116,8 @@ public class ReviewCardService {
         note.problemSlug(),
         note.sourceDetail().getOrDefault("latestReviewId", ""),
         note.sourceDetail().getOrDefault("latestReviewScore", ""),
-        note.scheduling().masteryState(),
+        note.scheduling().fsrsState(),
+        note.lastRating() == null ? "" : note.lastRating().name(),
         note.scheduling().lapses());
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -144,8 +145,9 @@ public class ReviewCardService {
                 题目标题：%s
                 难度：%s
                 题眼摘要：%s
-                掌握状态：%s
+                FSRS 状态：%s
                 lapses：%d
+                上次复习评级：%s
                 上次 Review 分数：%s
                 上次扣分点：%s
                 请生成 1-4 个针对薄弱点的复习问题，并给出不超过 400 字输入上限的 scaffold。
@@ -154,8 +156,9 @@ public class ReviewCardService {
                 note.sourceDetail().getOrDefault(MistakeReviewConstants.METADATA_TITLE_CN, note.problemSlug()),
                 note.sourceDetail().getOrDefault(MistakeReviewConstants.METADATA_DIFFICULTY, "UNKNOWN"),
                 note.sourceDetail().getOrDefault(MistakeReviewConstants.METADATA_STATEMENT_SUMMARY, "未记录"),
-                note.scheduling().masteryState(),
+                note.scheduling().fsrsState(),
                 note.scheduling().lapses(),
+                note.lastRating() == null ? "未知" : note.lastRating().name(),
                 note.sourceDetail().getOrDefault("latestReviewScore", "未知"),
                 note.sourceDetail().getOrDefault("deductionReasons", "未记录")))))
         .responseFormat(new LlmResponseFormat.JsonSchema(

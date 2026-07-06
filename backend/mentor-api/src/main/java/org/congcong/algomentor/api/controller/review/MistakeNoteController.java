@@ -13,6 +13,7 @@ import org.congcong.algomentor.api.review.model.RecallEvaluationResponse;
 import org.congcong.algomentor.api.review.model.RecallConfirmResponse;
 import org.congcong.algomentor.api.review.model.RateRecallRequest;
 import org.congcong.algomentor.api.review.model.ReviewCardResponse;
+import org.congcong.algomentor.api.review.model.ReviewIntervalPreviewResponse;
 import org.congcong.algomentor.api.review.model.ReviewProblemStatementResponse;
 import org.congcong.algomentor.api.review.model.ReviewProblemStatementResponseMapper;
 import org.congcong.algomentor.api.review.model.SubmitRecallRequest;
@@ -22,7 +23,6 @@ import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.common.api.ApiErrorLocales;
 import org.congcong.algomentor.common.api.ApiResponse;
-import org.congcong.algomentor.mentor.application.review.MasteryState;
 import org.congcong.algomentor.mentor.application.review.MistakeNoteService;
 import org.congcong.algomentor.mentor.application.review.MistakeReviewException;
 import org.congcong.algomentor.mentor.application.review.MistakeSource;
@@ -66,7 +66,6 @@ public class MistakeNoteController {
 
   @GetMapping(ApiContractConstants.MISTAKE_NOTES_BASE_PATH)
   public ApiResponse<List<MistakeNoteResponse>> list(
-      @RequestParam(required = false) String state,
       @RequestParam(required = false) String source,
       @RequestParam(defaultValue = "false") boolean mistakeOnly,
       @RequestParam(required = false) String keyword,
@@ -78,7 +77,6 @@ public class MistakeNoteController {
     return ApiResponse.success(MistakeReviewResponseMapper.toNoteResponses(
         requiredMistakeNoteService().list(
             userId,
-            parseState(state),
             parseSource(source),
             mistakeOnly,
             keyword,
@@ -131,6 +129,13 @@ public class MistakeNoteController {
     long userId = requireCurrentUserId();
     return ApiResponse.success(MistakeReviewResponseMapper.toCardResponse(
         requiredReviewSessionService().cardDetail(userId, noteId)));
+  }
+
+  @GetMapping(ApiContractConstants.MISTAKE_NOTES_BASE_PATH + "/{noteId}/recall/intervals")
+  public ApiResponse<List<ReviewIntervalPreviewResponse>> recallIntervals(@PathVariable long noteId) {
+    long userId = requireCurrentUserId();
+    return ApiResponse.success(MistakeReviewResponseMapper.toIntervalPreviewResponses(
+        requiredReviewSessionService().intervalPreviews(userId, noteId)));
   }
 
   @GetMapping(ApiContractConstants.MISTAKE_NOTES_BASE_PATH + "/{noteId}"
@@ -213,17 +218,6 @@ public class MistakeNoteController {
     return reviewProblemCatalog.getIfAvailable(() -> {
       throw new MistakeReviewException("MISTAKE_NOTE_PROBLEM_NOT_FOUND", "未找到题目原文。");
     });
-  }
-
-  private MasteryState parseState(String state) {
-    if (state == null || state.isBlank()) {
-      return null;
-    }
-    try {
-      return MasteryState.valueOf(state.trim());
-    } catch (IllegalArgumentException exception) {
-      throw new MistakeReviewException("MISTAKE_NOTE_INVALID_FILTER", "掌握状态筛选参数不合法。");
-    }
   }
 
   private MistakeSource parseSource(String source) {

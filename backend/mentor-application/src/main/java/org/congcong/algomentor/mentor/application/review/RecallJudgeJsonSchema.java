@@ -17,11 +17,11 @@ public final class RecallJudgeJsonSchema {
     ObjectNode root = object();
     root.put("additionalProperties", false);
     ObjectNode properties = root.putObject("properties");
-    properties.set("grade", stringEnum("FORGOT", "BARELY", "MASTERED", "FLUENT"));
+    properties.set("suggestedRating", stringEnum("AGAIN", "HARD", "GOOD", "EASY"));
     properties.set("hitPoints", stringArray());
     properties.set("missedPoints", stringArray());
     properties.set("gapSummary", string());
-    require(root, "grade", "hitPoints", "missedPoints", "gapSummary");
+    require(root, "suggestedRating", "hitPoints", "missedPoints", "gapSummary");
     return root;
   }
 

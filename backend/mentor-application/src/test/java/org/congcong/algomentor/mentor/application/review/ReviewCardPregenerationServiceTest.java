@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -101,7 +100,7 @@ class ReviewCardPregenerationServiceTest {
         note.scheduling(),
         note.dueAt(),
         note.lastReviewedAt(),
-        note.lastGrade(),
+        note.lastRating(),
         note.archived(),
         note.userNotePersistent(),
         new ReviewCardCache(cardJson, CardVariant.AI_GENERATED, signature, Instant.now(clock)),
@@ -140,7 +139,7 @@ class ReviewCardPregenerationServiceTest {
         null,
         null,
         null,
-        new SchedulingState(0, new BigDecimal("2.50"), 0, MasteryState.NEW, 0),
+        new SchedulingState(0, 0, 0),
         Instant.parse("2026-07-02T00:00:00Z"),
         null,
         null,
@@ -194,7 +193,6 @@ class ReviewCardPregenerationServiceTest {
     @Override
     public List<MistakeNote> list(
         long userId,
-        MasteryState state,
         MistakeSource source,
         boolean mistakeOnly,
         String keyword,
@@ -220,7 +218,13 @@ class ReviewCardPregenerationServiceTest {
     }
 
     @Override
-    public MistakeNote updateScheduling(long noteId, SchedulingState state, Instant dueAt, ReviewGrade lastGrade, Instant reviewedAt) {
+    public MistakeNote updateScheduling(
+        long noteId,
+        SchedulingState state,
+        Instant dueAt,
+        ReviewRating lastRating,
+        Instant reviewedAt
+    ) {
       throw new UnsupportedOperationException();
     }
   }

@@ -30,7 +30,6 @@ public interface MistakeNoteMapper {
 
   List<MistakeNoteRow> list(
       @Param("userId") long userId,
-      @Param("state") String state,
       @Param("source") String source,
       @Param("mistakeOnly") boolean mistakeOnly,
       @Param("keyword") String keyword,
@@ -57,16 +56,13 @@ public interface MistakeNoteMapper {
   MistakeNoteRow updateScheduling(
       @Param("noteId") long noteId,
       @Param("repetitions") int repetitions,
-      @Param("easeFactor") BigDecimal easeFactor,
       @Param("intervalDays") int intervalDays,
       @Param("fsrsState") String fsrsState,
       @Param("fsrsStep") Integer fsrsStep,
       @Param("fsrsStability") BigDecimal fsrsStability,
       @Param("fsrsDifficulty") BigDecimal fsrsDifficulty,
-      @Param("masteryState") String masteryState,
       @Param("lapses") int lapses,
       @Param("dueAt") Instant dueAt,
-      @Param("lastGrade") Integer lastGrade,
       @Param("lastRating") String lastRating,
       @Param("reviewedAt") Instant reviewedAt
   );

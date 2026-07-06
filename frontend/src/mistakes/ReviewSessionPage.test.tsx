@@ -4,6 +4,7 @@ import {
   confirmRecall,
   evaluateRecall,
   getReviewCard,
+  getReviewIntervals,
   getReviewProblemStatement,
   getReviewPreference,
   getReviewQueue,
@@ -16,6 +17,7 @@ vi.mock('../services/api', () => ({
   confirmRecall: vi.fn(),
   evaluateRecall: vi.fn(),
   getReviewCard: vi.fn(),
+  getReviewIntervals: vi.fn(),
   getReviewProblemStatement: vi.fn(),
   getReviewPreference: vi.fn(),
   getReviewQueue: vi.fn(),
@@ -30,6 +32,7 @@ vi.mock('../services/api', () => ({
 
 beforeEach(() => {
   vi.mocked(getReviewPreference).mockResolvedValue(apiResponse(reviewPreference(true)));
+  vi.mocked(getReviewIntervals).mockResolvedValue(apiResponse(intervalPreviews()));
 });
 
 afterEach(() => {
@@ -98,7 +101,6 @@ describe('ReviewSessionPage', () => {
       rating: 'GOOD',
       suggestedRating: 'GOOD',
       nextDueAt: '2026-07-03T00:00:00Z',
-      masteryState: 'MASTERED',
       intervalDays: 1,
       repetitions: 2,
       aiSuggested: true,
@@ -131,6 +133,7 @@ describe('ReviewSessionPage', () => {
     fireEvent.click(screen.getByRole('button', { name: '揭示并评估' }));
 
     expect(await screen.findByText('AI 建议：良好')).toBeInTheDocument();
+    expect(screen.getByText('3 天后复习')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /3\. 良好/ }));
 
     await waitFor(() => expect(confirmRecall).toHaveBeenCalledWith(88, 99, 'GOOD'));
@@ -149,6 +152,7 @@ describe('ReviewSessionPage', () => {
     render(<ReviewSessionPage onNavigate={vi.fn()} />);
 
     expect(await screen.findByRole('button', { name: /1\. 重来/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /2\. 困难/ })).toHaveTextContent('明天复习');
     expect(screen.queryByLabelText('你的复述')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('本次备注')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '揭示并评估' })).not.toBeInTheDocument();
@@ -192,9 +196,7 @@ function mistakeNote(): MistakeNote {
     problemDifficulty: 'EASY',
     source: 'REVIEW_FAILED',
     sourceDetail: {},
-    masteryState: 'LEARNING',
     repetitions: 1,
-    easeFactor: 2.5,
     intervalDays: 1,
     dueAt: '2026-07-02T00:00:00Z',
     lapses: 0,
@@ -252,6 +254,15 @@ function evaluationResult() {
   };
 }
 
+function intervalPreviews() {
+  return [
+    { rating: 'AGAIN' as const, dueAt: '2026-07-02T00:10:00Z', intervalDays: 0 },
+    { rating: 'HARD' as const, dueAt: '2026-07-03T00:00:00Z', intervalDays: 1 },
+    { rating: 'GOOD' as const, dueAt: '2026-07-05T00:00:00Z', intervalDays: 3 },
+    { rating: 'EASY' as const, dueAt: '2026-07-09T00:00:00Z', intervalDays: 7 },
+  ];
+}
+
 function confirmResult(
   rating: 'AGAIN' | 'HARD' | 'GOOD' | 'EASY',
   aiSuggested: boolean,
@@ -261,7 +272,6 @@ function confirmResult(
     rating,
     suggestedRating,
     nextDueAt: '2026-07-03T00:00:00Z',
-    masteryState: 'MASTERED' as const,
     intervalDays: 1,
     repetitions: 2,
     aiSuggested,

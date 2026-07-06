@@ -15,9 +15,7 @@
       <arg column="origin_plan_id" javaType="java.lang.Long"/>
       <arg column="origin_phase_index" javaType="java.lang.Integer"/>
       <arg column="origin_practice_session_id" javaType="java.lang.Long"/>
-      <arg column="mastery_state" javaType="string"/>
       <arg column="repetitions" javaType="_int"/>
-      <arg column="ease_factor" javaType="java.math.BigDecimal"/>
       <arg column="interval_days" javaType="_int"/>
       <arg column="fsrs_state" javaType="string"/>
       <arg column="fsrs_step" javaType="java.lang.Integer"/>
@@ -26,7 +24,6 @@
       <arg column="due_at" javaType="java.time.Instant"/>
       <arg column="lapses" javaType="_int"/>
       <arg column="last_reviewed_at" javaType="java.time.Instant"/>
-      <arg column="last_grade" javaType="java.lang.Integer"/>
       <arg column="last_rating" javaType="string"/>
       <arg column="archived" javaType="_boolean"/>
       <arg column="user_note_persistent" javaType="string"/>
@@ -49,9 +46,7 @@
     origin_plan_id,
     origin_phase_index,
     origin_practice_session_id,
-    mastery_state,
     repetitions,
-    ease_factor,
     interval_days,
     fsrs_state,
     fsrs_step,
@@ -60,7 +55,6 @@
     due_at,
     lapses,
     last_reviewed_at,
-    last_grade,
     last_rating,
     archived,
     user_note_persistent,
@@ -81,9 +75,7 @@
       origin_plan_id,
       origin_phase_index,
       origin_practice_session_id,
-      mastery_state,
       repetitions,
-      ease_factor,
       interval_days,
       fsrs_state,
       fsrs_step,
@@ -99,9 +91,7 @@
       #{originPlanId},
       #{originPhaseIndex},
       #{originPracticeSessionId},
-      #{masteryState},
       #{repetitions},
-      #{easeFactor},
       #{intervalDays},
       #{fsrsState},
       #{fsrsStep},
@@ -126,11 +116,6 @@
         WHEN mistake_note.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
           THEN 0
         ELSE mistake_note.repetitions
-      END,
-      ease_factor = CASE
-        WHEN mistake_note.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
-          THEN GREATEST(mistake_note.ease_factor - 0.32, 1.30)
-        ELSE mistake_note.ease_factor
       END,
       interval_days = CASE
         WHEN mistake_note.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
@@ -158,11 +143,6 @@
         WHEN mistake_note.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
           THEN mistake_note.lapses + 1
         ELSE mistake_note.lapses
-      END,
-      mastery_state = CASE
-        WHEN mistake_note.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
-          THEN 'LAPSED'
-        ELSE mistake_note.mastery_state
       END,
       archived = FALSE,
       updated_at = NOW()
@@ -231,9 +211,6 @@
     SELECT <include refid="MistakeNoteColumns"/>
     FROM mistake_note
     WHERE user_id = #{userId}
-      <if test="state != null">
-        AND mastery_state = #{state}
-      </if>
       <if test="source != null">
         AND source = #{source}
       </if>
@@ -278,16 +255,13 @@
   <select id="updateScheduling" resultMap="MistakeNoteRowMap" affectData="true">
     UPDATE mistake_note
     SET repetitions = #{repetitions},
-        ease_factor = #{easeFactor},
         interval_days = #{intervalDays},
         fsrs_state = #{fsrsState},
         fsrs_step = #{fsrsStep},
         fsrs_stability = #{fsrsStability},
         fsrs_difficulty = #{fsrsDifficulty},
-        mastery_state = #{masteryState},
         lapses = #{lapses},
         due_at = #{dueAt},
-        last_grade = #{lastGrade},
         last_rating = #{lastRating},
         last_reviewed_at = #{reviewedAt},
         updated_at = #{reviewedAt}

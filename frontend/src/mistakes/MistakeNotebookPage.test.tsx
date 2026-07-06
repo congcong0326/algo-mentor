@@ -1,9 +1,10 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   archiveMistake,
   getReviewCard,
   getReviewProblemStatement,
+  getReviewSummary,
   listMistakeNotes,
 } from '../services/api';
 import type { ApiResponse, MistakeNote, ReviewCard } from '../types/api';
@@ -13,6 +14,7 @@ vi.mock('../services/api', () => ({
   archiveMistake: vi.fn(),
   getReviewCard: vi.fn(),
   getReviewProblemStatement: vi.fn(),
+  getReviewSummary: vi.fn(),
   listMistakeNotes: vi.fn(),
   requireApiData: <T,>(response: ApiResponse<T>, message: string) => {
     if (response.data === undefined) {
@@ -22,12 +24,82 @@ vi.mock('../services/api', () => ({
   },
 }));
 
+beforeEach(() => {
+  vi.mocked(getReviewSummary).mockResolvedValue(apiResponse({ dueCount: 1 }));
+});
+
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
 });
 
 describe('MistakeNotebookPage', () => {
+  it('shows the due count in the primary review action', async () => {
+    const onNavigate = vi.fn();
+    vi.mocked(getReviewSummary).mockResolvedValue(apiResponse({ dueCount: 3 }));
+    vi.mocked(listMistakeNotes).mockResolvedValue(apiResponse([mistakeNote()]));
+
+    render(<MistakeNotebookPage onNavigate={onNavigate} />);
+
+    const reviewButton = await screen.findByRole('button', { name: '开始今日复习 3 题' });
+    expect(screen.getByText('今日待复习')).toBeInTheDocument();
+    expect(reviewButton).toBeEnabled();
+
+    fireEvent.click(reviewButton);
+
+    expect(onNavigate).toHaveBeenCalledWith('/mistakes/review');
+  });
+
+  it('disables the primary review action when today has no due cards', async () => {
+    const onNavigate = vi.fn();
+    vi.mocked(getReviewSummary).mockResolvedValue(apiResponse({ dueCount: 0 }));
+    vi.mocked(listMistakeNotes).mockResolvedValue(apiResponse([{
+      ...mistakeNote(),
+      dueAt: '2099-07-02T00:00:00Z',
+    }]));
+
+    render(<MistakeNotebookPage onNavigate={onNavigate} />);
+
+    const reviewButton = await screen.findByRole('button', { name: '今日已完成' });
+    expect(reviewButton).toBeDisabled();
+
+    fireEvent.click(reviewButton);
+
+    expect(onNavigate).not.toHaveBeenCalled();
+  });
+
+  it('shows compact review timing metadata on note cards', async () => {
+    vi.mocked(listMistakeNotes).mockResolvedValue(apiResponse([
+      mistakeNote({
+        dueAt: isoDaysFromNow(-2),
+        lastRating: 'HARD',
+        lapses: 1,
+      }),
+      mistakeNote({
+        id: 89,
+        problemSlug: 'valid-parentheses',
+        problemTitle: '有效的括号',
+        source: 'REVIEW_PASSED',
+        dueAt: isoDaysFromNow(3),
+        problemLocale: 'zh-CN',
+      }),
+    ]));
+
+    render(<MistakeNotebookPage onNavigate={vi.fn()} />);
+
+    expect(await screen.findByText('错题 · 已逾期 2 天')).toBeInTheDocument();
+    expect(screen.getByText('复习 · 3 天后复习')).toBeInTheDocument();
+    expect(screen.queryByLabelText('按掌握阶段筛选')).not.toBeInTheDocument();
+    expect(screen.queryByText('掌握阶段')).not.toBeInTheDocument();
+    expect(screen.queryByText('阶段：已掌握')).not.toBeInTheDocument();
+    expect(screen.getByText(/上次：困难/)).toBeInTheDocument();
+    expect(screen.getByText(/忘记过 1 次/)).toBeInTheDocument();
+    expect(screen.queryByText('全部状态')).not.toBeInTheDocument();
+    expect(screen.queryByText(/lapses/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/zh-CN/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/valid-parentheses ·/)).not.toBeInTheDocument();
+  });
+
   it('shows localized problem titles and opens review card details from the eye button', async () => {
     vi.mocked(listMistakeNotes).mockResolvedValue(apiResponse([mistakeNote()]));
     vi.mocked(getReviewCard).mockResolvedValue(apiResponse(reviewCard()));
@@ -41,7 +113,7 @@ describe('MistakeNotebookPage', () => {
     render(<MistakeNotebookPage onNavigate={vi.fn()} />);
 
     expect(await screen.findByRole('heading', { name: '两数之和' })).toBeInTheDocument();
-    expect(screen.getByText(/two-sum/)).toBeInTheDocument();
+    expect(screen.queryByText(/two-sum/)).not.toBeInTheDocument();
     expect(screen.queryByPlaceholderText('problem-slug')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '加入复习队列' })).not.toBeInTheDocument();
 
@@ -109,7 +181,7 @@ function apiResponse<T>(data: T): ApiResponse<T> {
   return { success: true, data, timestamp: '2026-07-02T00:00:00Z' };
 }
 
-function mistakeNote(): MistakeNote {
+function mistakeNote(overrides: Partial<MistakeNote> = {}): MistakeNote {
   return {
     id: 88,
     problemSlug: 'two-sum',
@@ -118,16 +190,22 @@ function mistakeNote(): MistakeNote {
     problemDifficulty: 'EASY',
     source: 'REVIEW_FAILED',
     sourceDetail: {},
-    masteryState: 'LEARNING',
     repetitions: 1,
-    easeFactor: 2.5,
     intervalDays: 1,
     dueAt: '2026-07-02T00:00:00Z',
     lapses: 0,
     archived: false,
     createdAt: '2026-07-01T00:00:00Z',
     updatedAt: '2026-07-02T00:00:00Z',
+    ...overrides,
   };
+}
+
+function isoDaysFromNow(days: number): string {
+  const date = new Date();
+  date.setHours(12, 0, 0, 0);
+  date.setDate(date.getDate() + days);
+  return date.toISOString();
 }
 
 function reviewCard(): ReviewCard {
@@ -153,7 +231,7 @@ function reviewCard(): ReviewCard {
     userNotePersistent: '总是忘记 complement 要先查再写入。',
     recentRecallHistory: [{
       id: 101,
-      grade: 'MASTERED',
+      rating: 'GOOD',
       userRecallText: '先判断 target - nums[i] 是否已经在 map 中。',
       userNoteTransient: '边界是重复数字。',
       reviewedAt: '2026-07-02T08:00:00Z',

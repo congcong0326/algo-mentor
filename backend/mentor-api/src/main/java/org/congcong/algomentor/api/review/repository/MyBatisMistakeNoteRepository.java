@@ -14,14 +14,12 @@ import org.congcong.algomentor.api.review.mapper.model.MistakeNoteRow;
 import org.congcong.algomentor.api.review.mapper.model.MistakeNoteUpsertRow;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
 import org.congcong.algomentor.mentor.application.review.CardVariant;
-import org.congcong.algomentor.mentor.application.review.MasteryState;
 import org.congcong.algomentor.mentor.application.review.MistakeNote;
 import org.congcong.algomentor.mentor.application.review.MistakeNoteRepository;
 import org.congcong.algomentor.mentor.application.review.MistakeReviewException;
 import org.congcong.algomentor.mentor.application.review.MistakeSource;
 import org.congcong.algomentor.mentor.application.review.ReviewSeed;
 import org.congcong.algomentor.mentor.application.review.ReviewCardCache;
-import org.congcong.algomentor.mentor.application.review.ReviewGrade;
 import org.congcong.algomentor.mentor.application.review.ReviewRating;
 import org.congcong.algomentor.mentor.application.review.SchedulingState;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,13 +49,11 @@ public class MyBatisMistakeNoteRepository implements MistakeNoteRepository {
         review.phaseIndex(),
         review.sessionId(),
         seed.state().repetitions(),
-        seed.state().easeFactor(),
         seed.state().intervalDays(),
         seed.state().fsrsState(),
         seed.state().fsrsStep(),
         seed.state().fsrsStability(),
         seed.state().fsrsDifficulty(),
-        seed.state().masteryState().name(),
         seed.state().lapses(),
         seed.dueAt())));
   }
@@ -66,8 +62,8 @@ public class MyBatisMistakeNoteRepository implements MistakeNoteRepository {
   @Transactional
   public MistakeNote mark(long userId, String problemSlug, MistakeSource source, JsonNode sourceDetail, Instant now) {
     return toNote(mapper.mark(new MistakeNoteUpsertRow(
-        userId, problemSlug, source.name(), sourceDetail, null, null, null, null, null, null,
-        null, null, null, null, null, null, null)));
+        userId, problemSlug, source.name(), sourceDetail, null, null, null, null, null,
+        null, null, null, null, null, null)));
   }
 
   @Override
@@ -93,7 +89,6 @@ public class MyBatisMistakeNoteRepository implements MistakeNoteRepository {
   @Override
   public List<MistakeNote> list(
       long userId,
-      MasteryState state,
       MistakeSource source,
       boolean mistakeOnly,
       String keyword,
@@ -102,7 +97,6 @@ public class MyBatisMistakeNoteRepository implements MistakeNoteRepository {
   ) {
     return mapper.list(
         userId,
-        state == null ? null : state.name(),
         source == null ? null : source.name(),
         mistakeOnly,
         keyword,
@@ -133,23 +127,19 @@ public class MyBatisMistakeNoteRepository implements MistakeNoteRepository {
       long noteId,
       SchedulingState state,
       Instant dueAt,
-      ReviewGrade lastGrade,
       ReviewRating lastRating,
       Instant reviewedAt
   ) {
     return requireRow(mapper.updateScheduling(
         noteId,
         state.repetitions(),
-        state.easeFactor(),
         state.intervalDays(),
         state.fsrsState(),
         state.fsrsStep(),
         state.fsrsStability(),
         state.fsrsDifficulty(),
-        state.masteryState().name(),
         state.lapses(),
         dueAt,
-        lastGrade == null ? null : lastGrade.q(),
         lastRating == null ? null : lastRating.name(),
         reviewedAt));
   }
@@ -179,9 +169,7 @@ public class MyBatisMistakeNoteRepository implements MistakeNoteRepository {
         row.originPracticeSessionId(),
         new SchedulingState(
             row.repetitions(),
-            row.easeFactor(),
             row.intervalDays(),
-            MasteryState.valueOf(row.masteryState()),
             row.lapses(),
             row.fsrsState(),
             row.fsrsStep(),
@@ -189,7 +177,6 @@ public class MyBatisMistakeNoteRepository implements MistakeNoteRepository {
             row.fsrsDifficulty()),
         row.dueAt(),
         row.lastReviewedAt(),
-        row.lastGrade() == null ? null : ReviewGrade.ofQ(row.lastGrade()),
         row.lastRating() == null ? null : ReviewRating.valueOf(row.lastRating()),
         row.archived(),
         row.userNotePersistent(),

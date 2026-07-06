@@ -26,7 +26,6 @@ import type {
   PracticeCodeReviewHistoryResponse,
   PracticeProgressStatus,
   PracticeSessionResponse,
-  MasteryState,
   MistakeNote,
   MistakeSource,
   PasswordLoginRequest,
@@ -40,6 +39,7 @@ import type {
   RecallEvaluationResult,
   RecallReviewResult,
   ReviewCard,
+  ReviewIntervalPreview,
   ReviewPreference,
   ReviewPreferenceRequest,
   ReviewProblemStatementResponse,
@@ -178,7 +178,6 @@ export async function logout(): Promise<void> {
 
 export async function listMistakeNotes(
   query: {
-    state?: MasteryState | '';
     source?: MistakeSource | '';
     mistakeOnly?: boolean;
     keyword?: string;
@@ -285,6 +284,22 @@ export async function getReviewProblemStatement(
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Review problem statement request failed');
+  }
+
+  return response.json();
+}
+
+export async function getReviewIntervals(
+  noteId: number,
+  signal?: AbortSignal,
+): Promise<ApiResponse<ReviewIntervalPreview[]>> {
+  const response = await apiFetch(`/api/mistake-notes/${noteId}/recall/intervals`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Review interval preview request failed');
   }
 
   return response.json();
@@ -999,7 +1014,6 @@ interface PracticeSessionQuery {
 }
 
 interface MistakeNoteListQuery {
-  state?: MasteryState | '';
   source?: MistakeSource | '';
   mistakeOnly?: boolean;
   keyword?: string;

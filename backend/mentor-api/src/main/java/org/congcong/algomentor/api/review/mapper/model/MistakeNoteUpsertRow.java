@@ -13,13 +13,11 @@ public record MistakeNoteUpsertRow(
     Integer originPhaseIndex,
     Long originPracticeSessionId,
     Integer repetitions,
-    BigDecimal easeFactor,
     Integer intervalDays,
     String fsrsState,
     Integer fsrsStep,
     BigDecimal fsrsStability,
     BigDecimal fsrsDifficulty,
-    String masteryState,
     Integer lapses,
     Instant dueAt
 ) {

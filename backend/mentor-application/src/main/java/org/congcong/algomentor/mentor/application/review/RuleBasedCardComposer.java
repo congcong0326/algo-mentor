@@ -19,8 +19,8 @@ public class RuleBasedCardComposer {
   private ReviewCard compose(MistakeNote note, CardVariant variant) {
     String difficulty = sourceText(note, "difficulty", "UNKNOWN").toUpperCase(Locale.ROOT);
     boolean hardOrLapsed = "HARD".equals(difficulty) || note.scheduling().lapses() >= 2;
-    boolean easyMastered = "EASY".equals(difficulty) && note.lastGrade() != null
-        && note.lastGrade().q() >= ReviewGrade.MASTERED.q();
+    boolean easyMastered = "EASY".equals(difficulty)
+        && (note.lastRating() == ReviewRating.GOOD || note.lastRating() == ReviewRating.EASY);
 
     List<ReviewCardPrompt> prompts = new ArrayList<>();
     prompts.add(new ReviewCardPrompt("algo_choice", "你会用什么算法？为什么？", null));

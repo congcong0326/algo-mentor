@@ -4,7 +4,7 @@ public interface MistakeReviewMetrics {
 
   void recordCardGeneration(CardGenerationOutcome outcome);
 
-  void recordRecallJudge(ReviewGrade grade, RecallJudgeOutcome outcome);
+  void recordRecallJudge(ReviewRating rating, RecallJudgeOutcome outcome);
 
   void recordSessionSubmit();
 
@@ -22,7 +22,7 @@ public interface MistakeReviewMetrics {
     }
 
     @Override
-    public void recordRecallJudge(ReviewGrade grade, RecallJudgeOutcome outcome) {
+    public void recordRecallJudge(ReviewRating rating, RecallJudgeOutcome outcome) {
     }
 
     @Override

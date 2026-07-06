@@ -69,7 +69,7 @@ class MistakeNoteServiceTest {
     service.ingestFromReview(review("5.0", false));
 
     assertThat(repository.note.source()).isEqualTo(MistakeSource.REVIEW_FAILED);
-    assertThat(repository.note.scheduling().masteryState()).isEqualTo(MasteryState.LAPSED);
+    assertThat(repository.note.scheduling().fsrsState()).isEqualTo("RELEARNING");
     assertThat(repository.note.scheduling().lapses()).isEqualTo(1);
     assertThat(metrics.ingestOutcome).isEqualTo(NoteIngestOutcome.LAPSED);
   }
@@ -159,10 +159,12 @@ class MistakeNoteServiceTest {
       if (note != null && note.source() == MistakeSource.REVIEW_PASSED && source == MistakeSource.REVIEW_FAILED) {
         state = new SchedulingState(
             0,
-            note.scheduling().easeFactor().subtract(new BigDecimal("0.32")).max(new BigDecimal("1.30")),
             1,
-            MasteryState.LAPSED,
-            note.scheduling().lapses() + 1);
+            note.scheduling().lapses() + 1,
+            "RELEARNING",
+            0,
+            note.scheduling().fsrsStability(),
+            note.scheduling().fsrsDifficulty());
       }
       this.note = new MistakeNote(
           1L,
@@ -176,7 +178,7 @@ class MistakeNoteServiceTest {
           state,
           seed.dueAt(),
           null,
-          null,
+          seed.initialRating(),
           false,
           "",
           null,
@@ -216,7 +218,6 @@ class MistakeNoteServiceTest {
     @Override
     public List<MistakeNote> list(
         long userId,
-        MasteryState state,
         MistakeSource source,
         boolean mistakeOnly,
         String keyword,
@@ -242,7 +243,13 @@ class MistakeNoteServiceTest {
     }
 
     @Override
-    public MistakeNote updateScheduling(long noteId, SchedulingState state, Instant dueAt, ReviewGrade lastGrade, Instant reviewedAt) {
+    public MistakeNote updateScheduling(
+        long noteId,
+        SchedulingState state,
+        Instant dueAt,
+        ReviewRating lastRating,
+        Instant reviewedAt
+    ) {
       throw new UnsupportedOperationException();
     }
 
@@ -262,7 +269,7 @@ class MistakeNoteServiceTest {
     }
 
     @Override
-    public void recordRecallJudge(ReviewGrade grade, RecallJudgeOutcome outcome) {
+    public void recordRecallJudge(ReviewRating rating, RecallJudgeOutcome outcome) {
     }
 
     @Override

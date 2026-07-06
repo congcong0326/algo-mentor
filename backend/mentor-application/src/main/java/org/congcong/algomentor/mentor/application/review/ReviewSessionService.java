@@ -53,35 +53,6 @@ public class ReviewSessionService {
     this.clock = Objects.requireNonNull(clock, "clock must not be null");
   }
 
-  public ReviewSessionService(
-      MistakeNoteRepository noteRepository,
-      ReviewLogRepository logRepository,
-      ReviewSchedulerService ignoredSchedulerService,
-      ReviewCardService cardService,
-      RecallJudgeService judgeService,
-      ReviewCardPregenerationService pregenerationService,
-      ReviewCardProperties cardProperties,
-      ReviewSchedulerProperties schedulerProperties,
-      ObjectMapper objectMapper,
-      MistakeReviewMetrics metrics,
-      Clock clock
-  ) {
-    this(
-        noteRepository,
-        logRepository,
-        new FsrsReviewSchedulerService(schedulerProperties),
-        cardService,
-        judgeService,
-        ReviewRecallEvaluationRepository.memory(),
-        new ReviewPreferenceService(ReviewPreferenceRepository.empty(), schedulerProperties, clock),
-        pregenerationService,
-        cardProperties,
-        schedulerProperties,
-        objectMapper,
-        metrics,
-        clock);
-  }
-
   public ReviewQueue dueQueue(long userId, int limit) {
     Instant now = Instant.now(clock);
     ReviewPreference preference = preferenceService.get(userId);
@@ -117,6 +88,18 @@ public class ReviewSessionService {
         logRepository.findRecentRecallHistory(userId, noteId, 5));
   }
 
+  public List<FsrsReviewSchedulerService.ReviewIntervalPreview> intervalPreviews(long userId, long noteId) {
+    MistakeNote note = noteRepository.findForUser(userId, noteId)
+        .orElseThrow(() -> new MistakeReviewException("MISTAKE_NOTE_NOT_FOUND", "错题记录不存在。"));
+    ReviewPreference preference = preferenceService.get(userId);
+    Instant now = Instant.now(clock);
+    return List.of(
+        schedulerService.preview(note, ReviewRating.AGAIN, preference, now),
+        schedulerService.preview(note, ReviewRating.HARD, preference, now),
+        schedulerService.preview(note, ReviewRating.GOOD, preference, now),
+        schedulerService.preview(note, ReviewRating.EASY, preference, now));
+  }
+
   public RecallReviewResult submitRecall(long userId, long noteId, String recallText, String transientNote) {
     ReviewRecallEvaluationResult evaluation = evaluateRecall(userId, noteId, recallText, transientNote, true);
     RecallConfirmResult confirmed = confirmRecall(
@@ -125,7 +108,7 @@ public class ReviewSessionService {
         evaluation.evaluation().id(),
         evaluation.evaluation().suggestedRating());
     RecallJudgment judgment = new RecallJudgment(
-        confirmed.rating().legacyGrade(),
+        confirmed.rating(),
         evaluation.evaluation().hitPoints(),
         evaluation.evaluation().missedPoints(),
         evaluation.evaluation().gapSummary());
@@ -155,8 +138,8 @@ public class ReviewSessionService {
     boolean useAi = forceAi || preference.aiSuggestionEnabled();
     RecallJudgment judgment = useAi
         ? judgeService.judge(note, effectiveRecall)
-        : new RecallJudgment(ReviewGrade.MASTERED, List.of(), List.of(), "");
-    ReviewRating suggestedRating = useAi ? ReviewRating.fromGrade(judgment.grade()) : null;
+        : new RecallJudgment(ReviewRating.GOOD, List.of(), List.of(), "");
+    ReviewRating suggestedRating = useAi ? judgment.suggestedRating() : null;
     ReviewRecallEvaluation saved = evaluationRepository.save(new ReviewRecallEvaluation(
         0L,
         noteId,
@@ -232,7 +215,6 @@ public class ReviewSessionService {
         noteId,
         scheduled.state(),
         scheduled.dueAt(),
-        finalRating.legacyGrade(),
         finalRating,
         reviewedAt);
     ReviewCard card = cardService.getOrFallback(note);
@@ -245,16 +227,13 @@ public class ReviewSessionService {
         cardJson,
         userRecallText,
         transientNote,
-        finalRating.legacyGrade(),
         finalRating,
-        GradeSource.SELF,
+        RatingSource.SELF,
         aiJudgmentJson,
         null,
         null,
         note.scheduling().intervalDays(),
         scheduled.state().intervalDays(),
-        note.scheduling().easeFactor(),
-        scheduled.state().easeFactor(),
         reviewedAt));
     metrics.recordSessionSubmit();
     pregenerationService.enqueue(noteId);

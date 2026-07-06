@@ -4,7 +4,7 @@ import java.time.Instant;
 
 public record ReviewRecallHistoryResponse(
     long id,
-    String grade,
+    String rating,
     String userRecallText,
     String userNoteTransient,
     Instant reviewedAt,

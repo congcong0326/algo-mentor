@@ -6,6 +6,7 @@ import {
   confirmRecall,
   evaluateRecall,
   getReviewCard,
+  getReviewIntervals,
   getReviewProblemStatement,
   getReviewPreference,
   getReviewQueue,
@@ -47,6 +48,7 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
   const [recallText, setRecallText] = useState('');
   const [transientNote, setTransientNote] = useState('');
   const [reviewPreference, setReviewPreference] = useState<ReviewPreference>();
+  const [intervalPreviews, setIntervalPreviews] = useState<ReviewIntervalPreview[]>([]);
   const [evaluation, setEvaluation] = useState<RecallEvaluationResult>();
   const [confirmation, setConfirmation] = useState<RecallConfirmResult>();
   const [loading, setLoading] = useState(true);
@@ -129,6 +131,7 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
   async function loadCard(noteId: number, signal?: AbortSignal) {
     setError('');
     setCard(undefined);
+    setIntervalPreviews([]);
     setEvaluation(undefined);
     setConfirmation(undefined);
     setRecallText('');
@@ -137,8 +140,12 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
     setStatementError('');
     setStatementLoading(false);
     try {
-      const response = await getReviewCard(noteId, signal);
-      setCard(requireApiData(response, '复习卡加载失败'));
+      const [cardResponse, intervalsResponse] = await Promise.all([
+        getReviewCard(noteId, signal),
+        getReviewIntervals(noteId, signal),
+      ]);
+      setCard(requireApiData(cardResponse, '复习卡加载失败'));
+      setIntervalPreviews(requireApiData(intervalsResponse, '复习间隔预览加载失败'));
     } catch (loadError) {
       if (!(loadError instanceof DOMException && loadError.name === 'AbortError')) {
         setError(loadError instanceof Error ? loadError.message : '复习卡加载失败');
@@ -219,7 +226,8 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
   }
 
   function intervalFor(rating: ReviewRating) {
-    return evaluation?.intervals.find((item) => item.rating === rating);
+    const intervals = evaluation?.intervals ?? intervalPreviews;
+    return intervals.find((item) => item.rating === rating);
   }
 
   return (
@@ -362,7 +370,7 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
           {confirmation && (
             <section className="review-result" aria-label="复习确认结果">
               <h3>{ratingLabels[confirmation.rating]}</h3>
-              <p>下次复习：{confirmation.intervalDays} 天后</p>
+              <p>下次复习：{formatConfirmedDue(confirmation.nextDueAt, confirmation.intervalDays)}</p>
             </section>
           )}
 
@@ -421,14 +429,58 @@ function RatingButton({
 }) {
   return (
     <button
-      className={selected ? 'primary-button compact' : 'secondary-button compact'}
+      className={selected ? 'primary-button compact review-rating-button' : 'secondary-button compact review-rating-button'}
       disabled={submitted || loading}
       onClick={onClick}
       type="button"
     >
       {loading && <Loader2 aria-hidden="true" />}
       <span>{shortcut}. {ratingLabels[rating]}</span>
-      <small>{interval ? `${interval.intervalDays} 天` : ''}</small>
+      <small>{interval ? formatPreviewDue(interval) : '计算中'}</small>
     </button>
   );
+}
+
+function formatPreviewDue(interval: ReviewIntervalPreview) {
+  return formatDueLabel(interval.dueAt, interval.intervalDays);
+}
+
+function formatConfirmedDue(dueAt: string, intervalDays: number) {
+  const dateLabel = formatDateLabel(dueAt);
+  const dueLabel = formatDueLabel(dueAt, intervalDays);
+  return dateLabel ? `${dueLabel}（${dateLabel}）` : dueLabel;
+}
+
+function formatDueLabel(dueAt: string, intervalDays: number) {
+  if (intervalDays <= 0) {
+    const dueTime = new Date(dueAt).getTime();
+    if (!Number.isFinite(dueTime)) {
+      return '今天复习';
+    }
+    const minutes = Math.max(0, Math.round((dueTime - Date.now()) / 60000));
+    if (minutes > 0 && minutes < 60) {
+      return `约 ${minutes} 分钟后`;
+    }
+    const hours = Math.round(minutes / 60);
+    if (hours > 0 && hours < 24) {
+      return `约 ${hours} 小时后`;
+    }
+    return '今天复习';
+  }
+  if (intervalDays === 1) {
+    return '明天复习';
+  }
+  return `${intervalDays} 天后复习`;
+}
+
+function formatDateLabel(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, '0'),
+    String(date.getDate()).padStart(2, '0'),
+  ].join('-');
 }

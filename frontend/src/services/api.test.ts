@@ -12,6 +12,7 @@ import {
   getHealth,
   getLearningPlans,
   getUserAiPreference,
+  listMistakeNotes,
   logout,
   requireApiData,
   setApiLocale,
@@ -232,6 +233,28 @@ describe('api service', () => {
         headers: expect.any(Headers),
       }),
     );
+  });
+
+  it('loads mistake notes without legacy mastery state query parameters', async () => {
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e]) });
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: [],
+      timestamp: '2026-07-02T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await listMistakeNotes({ keyword: 'two-sum', mistakeOnly: true, limit: 80 });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/mistake-notes?keyword=two-sum&mistakeOnly=true&limit=80',
+      expect.objectContaining({
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+      }),
+    );
+    expect(fetchMock.mock.calls[0][0].toString()).not.toContain('masteryState');
+    expect(fetchMock.mock.calls[0][0].toString()).not.toContain('state=');
   });
 
   it('patches admin user status with json csrf and request id headers', async () => {

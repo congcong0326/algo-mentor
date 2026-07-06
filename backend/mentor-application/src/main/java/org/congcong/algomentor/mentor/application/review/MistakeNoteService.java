@@ -75,14 +75,13 @@ public class MistakeNoteService {
 
   public List<MistakeNote> list(
       long userId,
-      MasteryState state,
       MistakeSource source,
       boolean mistakeOnly,
       String keyword,
       int limit,
       int offset
   ) {
-    return repository.list(userId, state, source, mistakeOnly, keyword, clampLimit(limit), Math.max(0, offset));
+    return repository.list(userId, source, mistakeOnly, keyword, clampLimit(limit), Math.max(0, offset));
   }
 
   public MistakeNote archive(long userId, long noteId, boolean archived) {
@@ -151,7 +150,6 @@ public class MistakeNoteService {
     }
     MistakeNote before = previous.get();
     if (source == MistakeSource.REVIEW_FAILED
-        && current.scheduling().masteryState() == MasteryState.LAPSED
         && current.scheduling().lapses() > before.scheduling().lapses()) {
       return NoteIngestOutcome.LAPSED;
     }

@@ -15,7 +15,6 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewEvi
 
 public class ReviewSeedPolicy {
 
-  private static final BigDecimal DEFAULT_EASE_FACTOR = new BigDecimal("2.50");
   private static final BigDecimal MAX_TOTAL_SCORE = BigDecimal.TEN;
 
   private final ReviewSchedulerProperties properties;
@@ -32,7 +31,7 @@ public class ReviewSeedPolicy {
     Objects.requireNonNull(review, "review must not be null");
     Objects.requireNonNull(now, "now must not be null");
     if (!passed) {
-      return seed(0, 0, MasteryState.NEW, now, ReviewSeedBucket.FAILED, false, ReviewRating.AGAIN);
+      return seed(now, ReviewSeedBucket.FAILED, false, ReviewRating.AGAIN);
     }
     if (lowConfidence(review)) {
       return fsrsSeed(ReviewRating.HARD, ReviewSeedBucket.LOW_CONFIDENCE, true, now);
@@ -44,16 +43,13 @@ public class ReviewSeedPolicy {
   }
 
   private ReviewSeed seed(
-      int repetitions,
-      int intervalDays,
-      MasteryState masteryState,
       Instant dueAt,
       ReviewSeedBucket bucket,
       boolean lowConfidence,
       ReviewRating initialRating
   ) {
     return new ReviewSeed(
-        new SchedulingState(repetitions, DEFAULT_EASE_FACTOR, intervalDays, masteryState, 0),
+        new SchedulingState(0, 0, 0, "LEARNING", 0, null, null),
         dueAt,
         bucket,
         lowConfidence,
@@ -73,9 +69,7 @@ public class ReviewSeedPolicy {
     int interval = Math.max(1, (int) java.time.temporal.ChronoUnit.DAYS.between(now, card.getDue()));
     SchedulingState state = new SchedulingState(
         1,
-        DEFAULT_EASE_FACTOR,
         interval,
-        MasteryState.LEARNING,
         0,
         card.getState().name(),
         card.getStep(),

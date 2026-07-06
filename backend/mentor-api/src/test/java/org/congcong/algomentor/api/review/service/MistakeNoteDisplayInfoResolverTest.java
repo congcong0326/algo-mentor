@@ -5,7 +5,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
@@ -19,7 +18,6 @@ import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatu
 import org.congcong.algomentor.mentor.application.practice.PracticeSession;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionStatus;
-import org.congcong.algomentor.mentor.application.review.MasteryState;
 import org.congcong.algomentor.mentor.application.review.MistakeNote;
 import org.congcong.algomentor.mentor.application.review.MistakeReviewConstants;
 import org.congcong.algomentor.mentor.application.review.MistakeSource;
@@ -109,7 +107,7 @@ class MistakeNoteDisplayInfoResolverTest {
         100L,
         1,
         originPracticeSessionId,
-        new SchedulingState(0, new BigDecimal("2.50"), 0, MasteryState.NEW, 0),
+        new SchedulingState(0, 0, 0),
         now,
         null,
         null,

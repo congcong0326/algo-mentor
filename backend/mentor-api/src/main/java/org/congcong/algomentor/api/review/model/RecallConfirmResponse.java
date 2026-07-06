@@ -6,7 +6,6 @@ public record RecallConfirmResponse(
     String rating,
     String suggestedRating,
     Instant nextDueAt,
-    String masteryState,
     int intervalDays,
     int repetitions,
     boolean aiSuggested

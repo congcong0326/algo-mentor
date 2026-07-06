@@ -34,7 +34,7 @@ public class RecallJudgeService {
       RecallJudgment judgment = objectMapper.convertValue(
           llmGateway.complete(request(note, recallText)).structuredOutput(),
           RecallJudgment.class);
-      metrics.recordRecallJudge(judgment.grade(), RecallJudgeOutcome.COMPLETED);
+      metrics.recordRecallJudge(judgment.suggestedRating(), RecallJudgeOutcome.COMPLETED);
       return judgment;
     } catch (RuntimeException exception) {
       if (exception instanceof LlmException llmException) {
@@ -53,11 +53,11 @@ public class RecallJudgeService {
             note.id(), note.userId(), note.problemSlug(), exception.getClass().getSimpleName(), exception);
       }
       RecallJudgment fallback = new RecallJudgment(
-          ReviewGrade.BARELY,
+          ReviewRating.HARD,
           List.of(),
           List.of(),
           "本次判定异常，按保守处理");
-      metrics.recordRecallJudge(fallback.grade(), RecallJudgeOutcome.FAILED);
+      metrics.recordRecallJudge(fallback.suggestedRating(), RecallJudgeOutcome.FAILED);
       return fallback;
     }
   }
@@ -69,7 +69,7 @@ public class RecallJudgeService {
             LlmMessage.system("""
                 你是 algo-mentor 的错题复述判定器。只输出结构化 JSON。
                 按算法选型、关键步骤、复杂度、边界四项判断用户是否真正理解。
-                无官方题解时基于通用算法知识判断；拿不准时偏保守给 BARELY。
+                无官方题解时基于通用算法知识判断；拿不准时偏保守给 HARD。
                 """.stripIndent()),
             LlmMessage.user("""
                 题目 slug：%s

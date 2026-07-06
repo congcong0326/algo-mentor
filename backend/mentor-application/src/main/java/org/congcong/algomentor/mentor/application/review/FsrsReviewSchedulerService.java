@@ -6,14 +6,11 @@ import io.github.openspacedrepetition.Scheduler;
 import io.github.openspacedrepetition.State;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class FsrsReviewSchedulerService {
-
-  private static final BigDecimal DEFAULT_EASE_FACTOR = new BigDecimal("2.50");
 
   private final ReviewSchedulerProperties defaults;
 
@@ -58,9 +55,14 @@ public class FsrsReviewSchedulerService {
 
   private Card toCard(MistakeNote note) {
     SchedulingState state = note.scheduling();
+    State fsrsState = fsrsState(state.fsrsState());
+    if ((fsrsState == State.REVIEW || fsrsState == State.RELEARNING)
+        && (state.fsrsStability() == null || state.fsrsDifficulty() == null)) {
+      fsrsState = State.LEARNING;
+    }
     return Card.builder()
         .cardId(cardId(note.id()))
-        .state(fsrsState(state.fsrsState()))
+        .state(fsrsState)
         .step(state.fsrsStep())
         .stability(toDouble(state.fsrsStability()))
         .difficulty(toDouble(state.fsrsDifficulty()))
@@ -78,40 +80,14 @@ public class FsrsReviewSchedulerService {
     int intervalDays = Math.max(0, (int) ChronoUnit.DAYS.between(now, card.getDue()));
     int repetitions = rating == ReviewRating.AGAIN ? 0 : previous.repetitions() + 1;
     int lapses = previous.lapses() + (rating == ReviewRating.AGAIN && previous.repetitions() > 0 ? 1 : 0);
-    MasteryState masteryState = masteryState(card, repetitions, intervalDays);
     return new SchedulingState(
         repetitions,
-        legacyEase(previous.easeFactor(), rating),
         intervalDays,
-        masteryState,
         lapses,
         card.getState().name(),
         card.getStep(),
         toBigDecimal(card.getStability()),
         toBigDecimal(card.getDifficulty()));
-  }
-
-  private MasteryState masteryState(Card card, int repetitions, int intervalDays) {
-    if (card.getState() == State.RELEARNING) {
-      return MasteryState.LAPSED;
-    }
-    if (card.getState() == State.LEARNING) {
-      return repetitions == 0 ? MasteryState.NEW : MasteryState.LEARNING;
-    }
-    return intervalDays >= defaults.graduationIntervalDays()
-        && repetitions >= defaults.graduationRepetitions()
-        ? MasteryState.MASTERED
-        : MasteryState.LEARNING;
-  }
-
-  private BigDecimal legacyEase(BigDecimal previousEase, ReviewRating rating) {
-    BigDecimal ease = previousEase == null ? DEFAULT_EASE_FACTOR : previousEase;
-    return switch (rating) {
-      case AGAIN -> ease.subtract(new BigDecimal("0.32")).max(new BigDecimal("1.30"));
-      case HARD -> ease.subtract(new BigDecimal("0.14")).max(new BigDecimal("1.30"));
-      case GOOD -> ease;
-      case EASY -> ease.add(new BigDecimal("0.15"));
-    };
   }
 
   private int cardId(long noteId) {

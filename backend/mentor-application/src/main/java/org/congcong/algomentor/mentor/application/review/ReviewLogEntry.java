@@ -1,7 +1,6 @@
 package org.congcong.algomentor.mentor.application.review;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.math.BigDecimal;
 import java.time.Instant;
 
 public record ReviewLogEntry(
@@ -12,16 +11,13 @@ public record ReviewLogEntry(
     JsonNode cardPromptJson,
     String userRecallText,
     String userNoteTransient,
-    ReviewGrade grade,
     ReviewRating rating,
-    GradeSource gradeSource,
+    RatingSource ratingSource,
     JsonNode aiJudgmentJson,
     Long practiceCodeReviewId,
     Long recallMessageId,
     int intervalBefore,
     int intervalAfter,
-    BigDecimal easeFactorBefore,
-    BigDecimal easeFactorAfter,
     Instant reviewedAt
 ) {
 }

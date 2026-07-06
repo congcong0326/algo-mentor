@@ -6,37 +6,19 @@ import io.github.openspacedrepetition.Rating;
  * Anki/FSRS 风格的复习最终评级。
  */
 public enum ReviewRating {
-  AGAIN(Rating.AGAIN, ReviewGrade.FORGOT),
-  HARD(Rating.HARD, ReviewGrade.BARELY),
-  GOOD(Rating.GOOD, ReviewGrade.MASTERED),
-  EASY(Rating.EASY, ReviewGrade.FLUENT);
+  AGAIN(Rating.AGAIN),
+  HARD(Rating.HARD),
+  GOOD(Rating.GOOD),
+  EASY(Rating.EASY);
 
   private final Rating fsrsRating;
-  private final ReviewGrade legacyGrade;
 
-  ReviewRating(Rating fsrsRating, ReviewGrade legacyGrade) {
+  ReviewRating(Rating fsrsRating) {
     this.fsrsRating = fsrsRating;
-    this.legacyGrade = legacyGrade;
   }
 
   public Rating fsrsRating() {
     return fsrsRating;
-  }
-
-  public ReviewGrade legacyGrade() {
-    return legacyGrade;
-  }
-
-  public static ReviewRating fromGrade(ReviewGrade grade) {
-    if (grade == null) {
-      return HARD;
-    }
-    return switch (grade) {
-      case FORGOT -> AGAIN;
-      case BARELY -> HARD;
-      case MASTERED -> GOOD;
-      case FLUENT -> EASY;
-    };
   }
 
   public static ReviewRating parse(String value) {

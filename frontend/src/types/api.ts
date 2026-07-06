@@ -647,9 +647,7 @@ export interface MessageEndData {
   finishReason?: string;
 }
 
-export type MasteryState = 'NEW' | 'LEARNING' | 'MASTERED' | 'LAPSED';
 export type MistakeSource = 'REVIEW_FAILED' | 'REVIEW_PASSED' | 'USER_MARKED' | 'AI_WEAK';
-export type ReviewGrade = 'FORGOT' | 'BARELY' | 'MASTERED' | 'FLUENT';
 export type ReviewRating = 'AGAIN' | 'HARD' | 'GOOD' | 'EASY';
 export type CardVariant = 'STATIC' | 'RULE_BASED' | 'AI_GENERATED';
 
@@ -661,9 +659,7 @@ export interface MistakeNote {
   problemDifficulty?: string | null;
   source: MistakeSource;
   sourceDetail: Record<string, unknown>;
-  masteryState: MasteryState;
   repetitions: number;
-  easeFactor: number;
   intervalDays: number;
   fsrsState?: 'LEARNING' | 'REVIEW' | 'RELEARNING' | string;
   fsrsStep?: number | null;
@@ -672,7 +668,6 @@ export interface MistakeNote {
   dueAt: string;
   lapses: number;
   lastReviewedAt?: string | null;
-  lastGrade?: ReviewGrade | null;
   lastRating?: ReviewRating | null;
   archived: boolean;
   userNotePersistent?: string | null;
@@ -698,7 +693,7 @@ export interface ReviewProblemStatementSummary {
 
 export interface ReviewRecallHistory {
   id: number;
-  grade: ReviewGrade;
+  rating: ReviewRating;
   userRecallText?: string | null;
   userNoteTransient?: string | null;
   reviewedAt: string;
@@ -730,12 +725,11 @@ export interface ReviewProblemStatementResponse {
 }
 
 export interface RecallReviewResult {
-  grade: ReviewGrade;
+  suggestedRating: ReviewRating;
   hitPoints: string[];
   missedPoints: string[];
   gapSummary: string;
   nextDueAt: string;
-  masteryState: MasteryState;
   intervalDays: number;
   repetitions: number;
 }
@@ -761,7 +755,6 @@ export interface RecallConfirmResult {
   rating: ReviewRating;
   suggestedRating?: ReviewRating | null;
   nextDueAt: string;
-  masteryState: MasteryState;
   intervalDays: number;
   repetitions: number;
   aiSuggested: boolean;

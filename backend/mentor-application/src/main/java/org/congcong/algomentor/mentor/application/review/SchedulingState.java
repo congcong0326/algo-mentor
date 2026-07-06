@@ -4,9 +4,7 @@ import java.math.BigDecimal;
 
 public record SchedulingState(
     int repetitions,
-    BigDecimal easeFactor,
     int intervalDays,
-    MasteryState masteryState,
     int lapses,
     String fsrsState,
     Integer fsrsStep,
@@ -15,21 +13,13 @@ public record SchedulingState(
 ) {
   public SchedulingState(
       int repetitions,
-      BigDecimal easeFactor,
       int intervalDays,
-      MasteryState masteryState,
       int lapses
   ) {
-    this(repetitions, easeFactor, intervalDays, masteryState, lapses, "LEARNING", 0, null, null);
+    this(repetitions, intervalDays, lapses, "LEARNING", 0, null, null);
   }
 
   public SchedulingState {
-    if (easeFactor == null) {
-      easeFactor = new BigDecimal("2.50");
-    }
-    if (masteryState == null) {
-      masteryState = MasteryState.NEW;
-    }
     if (fsrsState == null || fsrsState.isBlank()) {
       fsrsState = "LEARNING";
     }

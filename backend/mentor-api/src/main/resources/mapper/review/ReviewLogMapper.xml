@@ -13,16 +13,13 @@
       card_prompt_json,
       user_recall_text,
       user_note_transient,
-      grade,
       rating,
-      grade_source,
+      rating_source,
       ai_judgment_json,
       practice_code_review_id,
       recall_message_id,
       interval_before,
       interval_after,
-      ease_factor_before,
-      ease_factor_after,
       reviewed_at
     ) VALUES (
       #{mistakeNoteId},
@@ -32,16 +29,13 @@
       #{cardPromptJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{userRecallText},
       #{userNoteTransient},
-      #{grade},
       #{rating},
-      #{gradeSource},
+      #{ratingSource},
       #{aiJudgmentJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{practiceCodeReviewId},
       #{recallMessageId},
       #{intervalBefore},
       #{intervalAfter},
-      #{easeFactorBefore},
-      #{easeFactorAfter},
       #{reviewedAt}
     )
   </insert>
@@ -50,7 +44,7 @@
       resultType="org.congcong.algomentor.api.review.mapper.model.ReviewRecallHistoryRow">
     SELECT
       rl.id,
-      rl.grade,
+      rl.rating,
       rl.user_recall_text,
       rl.user_note_transient,
       rl.reviewed_at,

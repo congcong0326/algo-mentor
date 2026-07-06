@@ -7,21 +7,15 @@ import {
   archiveMistake,
   getReviewCard,
   getReviewProblemStatement,
+  getReviewSummary,
   listMistakeNotes,
   requireApiData,
 } from '../services/api';
-import type { MasteryState, MistakeNote, MistakeSource, ReviewCard } from '../types/api';
+import type { MistakeNote, MistakeSource, ReviewCard, ReviewRating } from '../types/api';
 
 interface MistakeNotebookPageProps {
   onNavigate: (path: string) => void;
 }
-
-const stateLabels: Record<MasteryState, string> = {
-  NEW: '新入库',
-  LEARNING: '复习中',
-  MASTERED: '已掌握',
-  LAPSED: '又忘了',
-};
 
 const sourceLabels: Record<MistakeSource, string> = {
   REVIEW_FAILED: '错题',
@@ -30,12 +24,20 @@ const sourceLabels: Record<MistakeSource, string> = {
   AI_WEAK: '薄弱点',
 };
 
+const ratingLabels: Record<ReviewRating, string> = {
+  AGAIN: '重来',
+  HARD: '困难',
+  GOOD: '良好',
+  EASY: '简单',
+};
+
+const dayMs = 24 * 60 * 60 * 1000;
+
 export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageProps) {
   const [items, setItems] = useState<MistakeNote[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [keyword, setKeyword] = useState('');
-  const [state, setState] = useState<MasteryState | ''>('');
   const [mistakeOnly, setMistakeOnly] = useState(false);
   const [actionError, setActionError] = useState('');
   const [detailNote, setDetailNote] = useState<MistakeNote>();
@@ -45,6 +47,7 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
   const [statementCache, setStatementCache] = useState<Map<number, string>>(new Map());
   const [statementLoading, setStatementLoading] = useState(false);
   const [statementError, setStatementError] = useState('');
+  const [summaryDueCount, setSummaryDueCount] = useState<number>();
   const detailRequestId = useRef(0);
   const detailTriggerButtonRef = useRef<HTMLButtonElement | null>(null);
   const detailCloseButtonRef = useRef<HTMLButtonElement>(null);
@@ -55,18 +58,31 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
     const mistakes = active.filter((item) => item.source === 'REVIEW_FAILED' || item.lapses > 0);
     return { active: active.length, due: due.length, mistakes: mistakes.length };
   }, [items]);
+  const todayDueCount = summaryDueCount ?? stats.due;
+  const reviewActionLabel = summaryDueCount === undefined && loading
+    ? '加载今日复习...'
+    : todayDueCount > 0
+    ? `开始今日复习 ${todayDueCount} 题`
+    : '今日已完成';
+  const reviewActionDisabled = summaryDueCount === undefined ? loading && todayDueCount === 0 : todayDueCount === 0;
 
   useEffect(() => {
     const controller = new AbortController();
     void load(controller.signal);
     return () => controller.abort();
-  }, [keyword, state, mistakeOnly]);
+  }, [keyword, mistakeOnly]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void loadSummary(controller.signal);
+    return () => controller.abort();
+  }, []);
 
   async function load(signal?: AbortSignal) {
     setLoading(true);
     setError('');
     try {
-      const response = await listMistakeNotes({ keyword, state, mistakeOnly, limit: 80 }, signal);
+      const response = await listMistakeNotes({ keyword, mistakeOnly, limit: 80 }, signal);
       const notes = requireApiData(response, '复习队列加载失败');
       setItems(notes);
       if (detailNote && !notes.some((item) => item.id === detailNote.id)) {
@@ -83,12 +99,25 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
     }
   }
 
+  async function loadSummary(signal?: AbortSignal) {
+    try {
+      const response = await getReviewSummary(signal);
+      const summary = requireApiData(response, '复习摘要加载失败');
+      setSummaryDueCount(summary.dueCount);
+    } catch (loadError) {
+      if (!(loadError instanceof DOMException && loadError.name === 'AbortError')) {
+        setSummaryDueCount(undefined);
+      }
+    }
+  }
+
   async function handleArchive(note: MistakeNote) {
     setActionError('');
     try {
       const response = await archiveMistake(note.id, !note.archived);
       const updated = requireApiData(response, '更新归档状态失败');
       setItems((current) => current.map((item) => (item.id === updated.id ? updated : item)));
+      void loadSummary();
     } catch (archiveError) {
       setActionError(archiveError instanceof Error ? archiveError.message : '更新归档状态失败');
     }
@@ -152,6 +181,21 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
     return note.problemTitle || note.problemSlug;
   }
 
+  function notePrimaryMetaText(note: MistakeNote) {
+    return [
+      sourceLabels[note.source],
+      dueTimingLabel(note.dueAt),
+    ].join(' · ');
+  }
+
+  function noteHistoryMetaText(note: MistakeNote) {
+    const parts = [
+      note.lastRating ? `上次：${ratingLabels[note.lastRating]}` : '',
+      note.lapses > 0 ? `忘记过 ${note.lapses} 次` : '',
+    ].filter(Boolean);
+    return parts.join(' · ');
+  }
+
   async function loadProblemStatement(noteId: number) {
     if (statementCache.has(noteId) || statementLoading) {
       return;
@@ -180,16 +224,25 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
           <p className="eyebrow">Review Center</p>
           <h1 id="mistake-title">复习中心</h1>
         </div>
-        <button className="primary-button" onClick={() => onNavigate(APP_ROUTES.reviewSession)} type="button">
+        <button
+          className="primary-button"
+          disabled={reviewActionDisabled}
+          onClick={() => {
+            if (todayDueCount > 0) {
+              onNavigate(APP_ROUTES.reviewSession);
+            }
+          }}
+          type="button"
+        >
           <BookOpenCheck aria-hidden="true" />
-          <span>开始复习</span>
+          <span>{reviewActionLabel}</span>
         </button>
       </header>
 
       <section className="mistake-stat-grid" aria-label="复习概览">
         <div>
-          <span>待复习</span>
-          <strong>{stats.due}</strong>
+          <span>今日待复习</span>
+          <strong>{todayDueCount}</strong>
         </div>
         <div>
           <span>复习题</span>
@@ -210,12 +263,6 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
             value={keyword}
           />
         </label>
-        <select onChange={(event) => setState(event.target.value as MasteryState | '')} value={state}>
-          <option value="">全部状态</option>
-          {Object.entries(stateLabels).map(([value, label]) => (
-            <option key={value} value={value}>{label}</option>
-          ))}
-        </select>
         <label className="checkbox-control">
           <input
             checked={mistakeOnly}
@@ -243,15 +290,13 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
                 className="mistake-note-main"
               >
                 <h2>{noteTitle(note)}</h2>
-                <p>
-                  {note.problemTitle && note.problemTitle !== note.problemSlug ? `${note.problemSlug} · ` : ''}
-                  {sourceLabels[note.source]} · {stateLabels[note.masteryState]} · 间隔 {note.intervalDays} 天 · lapses {note.lapses}
-                  {note.problemLocale ? ` · ${note.problemLocale}` : ''}
-                </p>
+                <p>{notePrimaryMetaText(note)}</p>
+                {noteHistoryMetaText(note) && (
+                  <p className="mistake-note-muted">{noteHistoryMetaText(note)}</p>
+                )}
                 {note.userNotePersistent && <p className="mistake-note-text">{note.userNotePersistent}</p>}
               </div>
               <div className="mistake-note-actions">
-                <span className={`mistake-state ${note.masteryState.toLowerCase()}`}>{stateLabels[note.masteryState]}</span>
                 <button
                   aria-label={`查看复习卡详情 ${noteTitle(note)}`}
                   className="icon-button"
@@ -295,7 +340,7 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
                   {detailNote.problemDifficulty ? ` · ${detailNote.problemDifficulty}` : ''}
                   {detailNote.problemLocale ? ` · ${detailNote.problemLocale}` : ''}
                   {' · '}
-                  {sourceLabels[detailNote.source]} · {stateLabels[detailNote.masteryState]}
+                  {sourceLabels[detailNote.source]}
                 </p>
               </div>
               <button
@@ -380,7 +425,7 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
                       {selectedCard.recentRecallHistory.map((history) => (
                         <li key={history.id}>
                           <div className="review-history-meta">
-                            <strong>{gradeLabel(history.grade)}</strong>
+                            <strong>{ratingLabels[history.rating]}</strong>
                             <span>{history.reviewedAt} · 间隔 {history.intervalAfter} 天</span>
                           </div>
                           <p>{history.userRecallText || '本次未记录复述内容。'}</p>
@@ -401,12 +446,29 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
   );
 }
 
-function gradeLabel(grade: ReviewCard['recentRecallHistory'][number]['grade']) {
-  const labels: Record<string, string> = {
-    FORGOT: '忘了',
-    BARELY: '勉强想起',
-    MASTERED: '掌握',
-    FLUENT: '熟练',
-  };
-  return labels[grade] ?? grade;
+function dueTimingLabel(dueAt: string) {
+  const dueTime = new Date(dueAt).getTime();
+  if (Number.isNaN(dueTime)) {
+    return '复习时间待确认';
+  }
+
+  const todayStart = startOfDay(Date.now());
+  const dueStart = startOfDay(dueTime);
+  const diffDays = Math.round((dueStart - todayStart) / dayMs);
+  if (diffDays < 0) {
+    return `已逾期 ${Math.abs(diffDays)} 天`;
+  }
+  if (diffDays === 0) {
+    return '今日到期';
+  }
+  if (diffDays === 1) {
+    return '明天复习';
+  }
+  return `${diffDays} 天后复习`;
+}
+
+function startOfDay(time: number) {
+  const date = new Date(time);
+  date.setHours(0, 0, 0, 0);
+  return date.getTime();
 }
