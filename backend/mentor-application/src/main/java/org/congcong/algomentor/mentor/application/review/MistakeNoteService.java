@@ -112,6 +112,7 @@ public class MistakeNoteService {
     detail.put("language", review.language());
     detail.put("lowConfidence", seed.lowConfidence());
     detail.put("seedBucket", seed.bucket().name());
+    detail.put("initialRating", seed.initialRating().name());
     enrichProblemDetail(review.userId(), review.problemSlug(), detail);
     return objectMapper.valueToTree(detail);
   }

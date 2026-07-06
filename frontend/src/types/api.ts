@@ -650,6 +650,7 @@ export interface MessageEndData {
 export type MasteryState = 'NEW' | 'LEARNING' | 'MASTERED' | 'LAPSED';
 export type MistakeSource = 'REVIEW_FAILED' | 'REVIEW_PASSED' | 'USER_MARKED' | 'AI_WEAK';
 export type ReviewGrade = 'FORGOT' | 'BARELY' | 'MASTERED' | 'FLUENT';
+export type ReviewRating = 'AGAIN' | 'HARD' | 'GOOD' | 'EASY';
 export type CardVariant = 'STATIC' | 'RULE_BASED' | 'AI_GENERATED';
 
 export interface MistakeNote {
@@ -664,10 +665,15 @@ export interface MistakeNote {
   repetitions: number;
   easeFactor: number;
   intervalDays: number;
+  fsrsState?: 'LEARNING' | 'REVIEW' | 'RELEARNING' | string;
+  fsrsStep?: number | null;
+  fsrsStability?: number | null;
+  fsrsDifficulty?: number | null;
   dueAt: string;
   lapses: number;
   lastReviewedAt?: string | null;
   lastGrade?: ReviewGrade | null;
+  lastRating?: ReviewRating | null;
   archived: boolean;
   userNotePersistent?: string | null;
   createdAt: string;
@@ -683,6 +689,11 @@ export interface ReviewCardPrompt {
 export interface ReviewCardScaffold {
   templateMarkdown: string;
   maxInputChars: number;
+}
+
+export interface ReviewProblemStatementSummary {
+  summary: string;
+  hasFullContent: boolean;
 }
 
 export interface ReviewRecallHistory {
@@ -701,6 +712,7 @@ export interface ReviewCard {
     titleCn: string;
     difficulty: string;
   };
+  problemStatement?: ReviewProblemStatementSummary | null;
   contextSummary: string;
   prompts: ReviewCardPrompt[];
   scaffold?: ReviewCardScaffold | null;
@@ -726,6 +738,49 @@ export interface RecallReviewResult {
   masteryState: MasteryState;
   intervalDays: number;
   repetitions: number;
+}
+
+export interface ReviewIntervalPreview {
+  rating: ReviewRating;
+  dueAt: string;
+  intervalDays: number;
+}
+
+export interface RecallEvaluationResult {
+  evaluationId: number;
+  suggestedRating?: ReviewRating | null;
+  hitPoints: string[];
+  missedPoints: string[];
+  gapSummary: string;
+  aiSuggested: boolean;
+  createdAt: string;
+  intervals: ReviewIntervalPreview[];
+}
+
+export interface RecallConfirmResult {
+  rating: ReviewRating;
+  suggestedRating?: ReviewRating | null;
+  nextDueAt: string;
+  masteryState: MasteryState;
+  intervalDays: number;
+  repetitions: number;
+  aiSuggested: boolean;
+}
+
+export interface ReviewPreference {
+  desiredRetention: number;
+  dailyNewLimit: number;
+  dailyLearningLimit: number;
+  dailyReviewLimit: number;
+  aiSuggestionEnabled: boolean;
+}
+
+export interface ReviewPreferenceRequest {
+  desiredRetention?: number;
+  dailyNewLimit?: number;
+  dailyLearningLimit?: number;
+  dailyReviewLimit?: number;
+  aiSuggestionEnabled?: boolean;
 }
 
 export interface ReviewQueueResponse {

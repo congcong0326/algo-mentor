@@ -2,6 +2,7 @@ import {
   Activity,
   AlertCircle,
   BrainCircuit,
+  BookOpenCheck as BookOpenIcon,
   Check,
   Gauge,
   X,
@@ -16,14 +17,18 @@ import AbilityRadarChart from './ability/AbilityRadarChart';
 import { useI18n } from './i18n/I18nProvider';
 import {
   getAbilityProfile,
+  getReviewPreference,
   getUserAiPreference,
   requireApiData,
+  updateReviewPreference,
   updateUserAiPreference,
 } from './services/api';
 import type {
   AbilityProfileResponse,
   AbilityTagScore,
   PracticeCoachStyle,
+  ReviewPreference,
+  ReviewPreferenceRequest,
   UserAiPreference,
   UserAiPreferenceRequest,
 } from './types/api';
@@ -47,11 +52,17 @@ export default function MyPage() {
   const [preferenceSaveError, setPreferenceSaveError] = useState('');
   const [preferenceSaving, setPreferenceSaving] = useState(false);
   const [preferenceSaved, setPreferenceSaved] = useState(false);
+  const [reviewPreference, setReviewPreference] = useState<ReviewPreference>();
+  const [reviewPreferenceLoading, setReviewPreferenceLoading] = useState(true);
+  const [reviewPreferenceError, setReviewPreferenceError] = useState('');
+  const [reviewPreferenceSaveError, setReviewPreferenceSaveError] = useState('');
+  const [reviewPreferenceSaving, setReviewPreferenceSaving] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
     void loadAbilityProfile(controller.signal);
     void loadAiPreference(controller.signal);
+    void loadReviewPreference(controller.signal);
     return () => controller.abort();
   }, []);
 
@@ -124,6 +135,48 @@ export default function MyPage() {
       setPreferenceSaveError(error instanceof Error ? error.message : resources.aiPreference.saveFailed);
     } finally {
       setPreferenceSaving(false);
+    }
+  }
+
+  async function loadReviewPreference(signal?: AbortSignal) {
+    setReviewPreferenceLoading(true);
+    setReviewPreferenceError('');
+    setReviewPreferenceSaveError('');
+    try {
+      const response = await getReviewPreference(signal);
+      setReviewPreference(requireApiData(response, '复习设置加载失败'));
+    } catch (error) {
+      if (signal?.aborted) {
+        return;
+      }
+      setReviewPreferenceError(error instanceof Error ? error.message : '复习设置加载失败');
+    } finally {
+      if (!signal?.aborted) {
+        setReviewPreferenceLoading(false);
+      }
+    }
+  }
+
+  async function saveReviewPreference(update: ReviewPreferenceRequest) {
+    if (!reviewPreference || reviewPreferenceSaving) {
+      return;
+    }
+    const previousPreference = reviewPreference;
+    const nextPreference = {
+      ...reviewPreference,
+      ...update,
+    };
+    setReviewPreference(nextPreference);
+    setReviewPreferenceSaving(true);
+    setReviewPreferenceSaveError('');
+    try {
+      const response = await updateReviewPreference(update);
+      setReviewPreference(requireApiData(response, '复习设置保存失败'));
+    } catch (error) {
+      setReviewPreference(previousPreference);
+      setReviewPreferenceSaveError(error instanceof Error ? error.message : '复习设置保存失败');
+    } finally {
+      setReviewPreferenceSaving(false);
     }
   }
 
@@ -366,6 +419,114 @@ export default function MyPage() {
                 <div className="preference-save-error" role="alert">
                   <AlertCircle aria-hidden="true" />
                   <span>{preferenceSaveError}</span>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </article>
+
+        <article className="my-card ai-preference-card" aria-labelledby="review-preference-title">
+          <div className="my-card-heading">
+            <div className="my-card-title">
+              <span className="my-card-title-icon" aria-hidden="true">
+                <BookOpenIcon />
+              </span>
+              <div>
+                <p className="my-section-eyebrow">FSRS</p>
+                <h2 id="review-preference-title">复习设置</h2>
+              </div>
+            </div>
+            <div className="preference-save-status" aria-live="polite">
+              {reviewPreferenceSaving ? <span>保存中...</span> : null}
+            </div>
+          </div>
+
+          {reviewPreferenceLoading ? (
+            <div className="preference-state" role="status">正在加载复习设置...</div>
+          ) : reviewPreferenceError ? (
+            <div className="preference-state error" role="alert">
+              <AlertCircle aria-hidden="true" />
+              <span>{reviewPreferenceError}</span>
+              <button className="secondary-button compact" onClick={() => void loadReviewPreference()} type="button">
+                {resources.app.retry}
+              </button>
+            </div>
+          ) : reviewPreference ? (
+            <div className="preference-controls">
+              <label className="checkbox-control">
+                <input
+                  checked={reviewPreference.aiSuggestionEnabled}
+                  disabled={reviewPreferenceSaving}
+                  onChange={(event) => void saveReviewPreference({ aiSuggestionEnabled: event.target.checked })}
+                  type="checkbox"
+                />
+                <span>复习后启用 AI 建议评级</span>
+              </label>
+              <fieldset className="preference-control-group">
+                <legend>FSRS 参数</legend>
+                <label className="review-setting-field">
+                  <span>目标记忆率</span>
+                  <input
+                    disabled={reviewPreferenceSaving}
+                    max="0.97"
+                    min="0.70"
+                    onBlur={(event) => void saveReviewPreference({ desiredRetention: Number(event.target.value) })}
+                    step="0.01"
+                    type="number"
+                    value={reviewPreference.desiredRetention}
+                    onChange={(event) => setReviewPreference({
+                      ...reviewPreference,
+                      desiredRetention: Number(event.target.value),
+                    })}
+                  />
+                </label>
+                <label className="review-setting-field">
+                  <span>每日新卡</span>
+                  <input
+                    disabled={reviewPreferenceSaving}
+                    min="0"
+                    onBlur={(event) => void saveReviewPreference({ dailyNewLimit: Number(event.target.value) })}
+                    type="number"
+                    value={reviewPreference.dailyNewLimit}
+                    onChange={(event) => setReviewPreference({
+                      ...reviewPreference,
+                      dailyNewLimit: Number(event.target.value),
+                    })}
+                  />
+                </label>
+                <label className="review-setting-field">
+                  <span>学习中上限</span>
+                  <input
+                    disabled={reviewPreferenceSaving}
+                    min="1"
+                    onBlur={(event) => void saveReviewPreference({ dailyLearningLimit: Number(event.target.value) })}
+                    type="number"
+                    value={reviewPreference.dailyLearningLimit}
+                    onChange={(event) => setReviewPreference({
+                      ...reviewPreference,
+                      dailyLearningLimit: Number(event.target.value),
+                    })}
+                  />
+                </label>
+                <label className="review-setting-field">
+                  <span>复习卡上限</span>
+                  <input
+                    disabled={reviewPreferenceSaving}
+                    min="1"
+                    onBlur={(event) => void saveReviewPreference({ dailyReviewLimit: Number(event.target.value) })}
+                    type="number"
+                    value={reviewPreference.dailyReviewLimit}
+                    onChange={(event) => setReviewPreference({
+                      ...reviewPreference,
+                      dailyReviewLimit: Number(event.target.value),
+                    })}
+                  />
+                </label>
+              </fieldset>
+              {reviewPreferenceSaveError ? (
+                <div className="preference-save-error" role="alert">
+                  <AlertCircle aria-hidden="true" />
+                  <span>{reviewPreferenceSaveError}</span>
                 </div>
               ) : null}
             </div>

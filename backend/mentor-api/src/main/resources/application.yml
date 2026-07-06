@@ -121,3 +121,11 @@ algo-mentor:
     scheduler:
       graduation-interval-days: ${REVIEW_GRADUATION_INTERVAL_DAYS:30}
       graduation-repetitions: ${REVIEW_GRADUATION_REPETITIONS:3}
+      desired-retention: ${REVIEW_DESIRED_RETENTION:0.90}
+      maximum-interval-days: ${REVIEW_MAXIMUM_INTERVAL_DAYS:36500}
+      enable-fuzzing: ${REVIEW_ENABLE_FUZZING:true}
+    queue:
+      daily-cap: ${REVIEW_QUEUE_DAILY_CAP:20}
+      daily-new-limit: ${REVIEW_DAILY_NEW_LIMIT:10}
+      daily-learning-limit: ${REVIEW_DAILY_LEARNING_LIMIT:50}
+      daily-review-limit: ${REVIEW_DAILY_REVIEW_LIMIT:30}

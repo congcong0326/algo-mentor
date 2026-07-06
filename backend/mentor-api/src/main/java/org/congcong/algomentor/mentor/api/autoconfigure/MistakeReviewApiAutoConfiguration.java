@@ -12,11 +12,15 @@ import org.congcong.algomentor.ai.governance.usage.AiDailyUsageStore;
 import org.congcong.algomentor.api.config.ReviewProperties;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.mentor.application.review.MicrometerMistakeReviewMetrics;
+import org.congcong.algomentor.mentor.application.review.FsrsReviewSchedulerService;
 import org.congcong.algomentor.mentor.application.review.MistakeNoteRepository;
 import org.congcong.algomentor.mentor.application.review.MistakeNoteService;
 import org.congcong.algomentor.mentor.application.review.MistakeReviewMetrics;
 import org.congcong.algomentor.mentor.application.review.PracticeCodeReviewObserver;
 import org.congcong.algomentor.mentor.application.review.RecallJudgeService;
+import org.congcong.algomentor.mentor.application.review.ReviewPreferenceRepository;
+import org.congcong.algomentor.mentor.application.review.ReviewPreferenceService;
+import org.congcong.algomentor.mentor.application.review.ReviewRecallEvaluationRepository;
 import org.congcong.algomentor.mentor.application.review.ReviewCardPregenerationService;
 import org.congcong.algomentor.mentor.application.review.ReviewCardProperties;
 import org.congcong.algomentor.mentor.application.review.ReviewCardService;
@@ -24,7 +28,6 @@ import org.congcong.algomentor.mentor.application.review.ReviewLogRepository;
 import org.congcong.algomentor.mentor.application.review.ReviewProblemCatalog;
 import org.congcong.algomentor.mentor.application.review.ReviewProblemSnapshot;
 import org.congcong.algomentor.mentor.application.review.ReviewSchedulerProperties;
-import org.congcong.algomentor.mentor.application.review.ReviewSchedulerService;
 import org.congcong.algomentor.mentor.application.review.ReviewSeedPolicy;
 import org.congcong.algomentor.mentor.application.review.ReviewSessionService;
 import org.congcong.algomentor.mentor.application.review.RuleBasedCardComposer;
@@ -59,7 +62,15 @@ public class MistakeReviewApiAutoConfiguration {
         properties.getSeed().getPassedHighScoreIntervalDays(),
         properties.getSeed().getLowConfidenceIntervalDays(),
         properties.getSeed().getHighScoreRatio(),
-        properties.getQueue().getDailyCap());
+        properties.getQueue().getDailyCap(),
+        properties.getScheduler().getDesiredRetention(),
+        null,
+        null,
+        properties.getScheduler().getMaximumIntervalDays(),
+        properties.getScheduler().isEnableFuzzing(),
+        properties.getQueue().getDailyNewLimit(),
+        properties.getQueue().getDailyLearningLimit(),
+        properties.getQueue().getDailyReviewLimit());
   }
 
   @Bean
@@ -76,8 +87,26 @@ public class MistakeReviewApiAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public ReviewSchedulerService reviewSchedulerService(ReviewSchedulerProperties properties) {
-    return new ReviewSchedulerService(properties);
+  public FsrsReviewSchedulerService reviewSchedulerService(ReviewSchedulerProperties properties) {
+    return new FsrsReviewSchedulerService(properties);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ReviewPreferenceService reviewPreferenceService(
+      ObjectProvider<ReviewPreferenceRepository> repository,
+      ReviewSchedulerProperties properties
+  ) {
+    return new ReviewPreferenceService(
+        repository.getIfAvailable(ReviewPreferenceRepository::empty),
+        properties,
+        Clock.systemUTC());
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ReviewRecallEvaluationRepository reviewRecallEvaluationRepository() {
+    return ReviewRecallEvaluationRepository.memory();
   }
 
   @Bean
@@ -190,9 +219,10 @@ public class MistakeReviewApiAutoConfiguration {
   @ConditionalOnBean({
       MistakeNoteRepository.class,
       ReviewLogRepository.class,
-      ReviewSchedulerService.class,
+      FsrsReviewSchedulerService.class,
       ReviewCardService.class,
       RecallJudgeService.class,
+      ReviewPreferenceService.class,
       ReviewCardPregenerationService.class,
       ReviewSchedulerProperties.class,
       ObjectMapper.class
@@ -201,9 +231,11 @@ public class MistakeReviewApiAutoConfiguration {
   public ReviewSessionService reviewSessionService(
       MistakeNoteRepository noteRepository,
       ReviewLogRepository logRepository,
-      ReviewSchedulerService schedulerService,
+      FsrsReviewSchedulerService schedulerService,
       ReviewCardService cardService,
       RecallJudgeService judgeService,
+      ReviewRecallEvaluationRepository evaluationRepository,
+      ReviewPreferenceService preferenceService,
       ReviewCardPregenerationService pregenerationService,
       ReviewCardProperties cardProperties,
       ReviewSchedulerProperties schedulerProperties,
@@ -216,6 +248,8 @@ public class MistakeReviewApiAutoConfiguration {
         schedulerService,
         cardService,
         judgeService,
+        evaluationRepository,
+        preferenceService,
         pregenerationService,
         cardProperties,
         schedulerProperties,

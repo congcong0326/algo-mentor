@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 class ReviewSessionServiceTest {
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
   private final Clock clock = Clock.fixed(Instant.parse("2026-07-02T00:00:00Z"), ZoneOffset.UTC);
 
   @Test
@@ -42,9 +42,85 @@ class ReviewSessionServiceTest {
     assertThat(logRepository.requestedLimit).isEqualTo(5);
   }
 
+  @Test
+  void evaluateRecallCanSkipAiSuggestionAndConfirmSelfRating() {
+    RecordingMistakeNoteRepository noteRepository = new RecordingMistakeNoteRepository();
+    RecordingReviewLogRepository logRepository = new RecordingReviewLogRepository();
+    ReviewSessionService service = service(
+        noteRepository,
+        logRepository,
+        ReviewRecallEvaluationRepository.memory(),
+        fixedPreferenceRepository(false));
+
+    ReviewRecallEvaluationResult evaluation = service.evaluateRecall(
+        7L,
+        88L,
+        "先遍历数组，用哈希表记录 complement。",
+        "仍需注意返回下标顺序。");
+
+    assertThat(evaluation.evaluation().aiSuggested()).isFalse();
+    assertThat(evaluation.evaluation().suggestedRating()).isNull();
+    assertThat(evaluation.intervals()).extracting(FsrsReviewSchedulerService.ReviewIntervalPreview::rating)
+        .containsExactly(ReviewRating.AGAIN, ReviewRating.HARD, ReviewRating.GOOD, ReviewRating.EASY);
+
+    RecallConfirmResult confirmed = service.confirmRecall(
+        7L,
+        88L,
+        evaluation.evaluation().id(),
+        ReviewRating.HARD);
+
+    assertThat(confirmed.rating()).isEqualTo(ReviewRating.HARD);
+    assertThat(confirmed.suggestedRating()).isNull();
+    assertThat(confirmed.aiSuggested()).isFalse();
+    assertThat(confirmed.nextDueAt()).isNotNull();
+    assertThat(noteRepository.updatedRating).isEqualTo(ReviewRating.HARD);
+    assertThat(noteRepository.updatedGrade).isEqualTo(ReviewGrade.BARELY);
+    assertThat(noteRepository.updatedState.fsrsState()).isIn("LEARNING", "REVIEW", "RELEARNING");
+    assertThat(logRepository.appended.rating()).isEqualTo(ReviewRating.HARD);
+    assertThat(logRepository.appended.gradeSource()).isEqualTo(GradeSource.SELF);
+    assertThat(logRepository.appended.userRecallText()).isEqualTo("先遍历数组，用哈希表记录 complement。");
+  }
+
+  @Test
+  void rateRecallConfirmsSelfRatingWithoutEvaluation() {
+    RecordingMistakeNoteRepository noteRepository = new RecordingMistakeNoteRepository();
+    RecordingReviewLogRepository logRepository = new RecordingReviewLogRepository();
+    ReviewSessionService service = service(
+        noteRepository,
+        logRepository,
+        noEvaluationRepository(),
+        fixedPreferenceRepository(false));
+
+    RecallConfirmResult confirmed = service.rateRecall(7L, 88L, ReviewRating.GOOD);
+
+    assertThat(confirmed.rating()).isEqualTo(ReviewRating.GOOD);
+    assertThat(confirmed.suggestedRating()).isNull();
+    assertThat(confirmed.aiSuggested()).isFalse();
+    assertThat(confirmed.nextDueAt()).isNotNull();
+    assertThat(noteRepository.updatedRating).isEqualTo(ReviewRating.GOOD);
+    assertThat(noteRepository.updatedGrade).isEqualTo(ReviewGrade.MASTERED);
+    assertThat(logRepository.appended.userRecallText()).isNull();
+    assertThat(logRepository.appended.userNoteTransient()).isNull();
+    assertThat(logRepository.appended.gradeSource()).isEqualTo(GradeSource.SELF);
+    assertThat(logRepository.appended.aiJudgmentJson()).isNull();
+  }
+
   private ReviewSessionService service(
       MistakeNoteRepository noteRepository,
       ReviewLogRepository logRepository
+  ) {
+    return service(
+        noteRepository,
+        logRepository,
+        ReviewRecallEvaluationRepository.memory(),
+        ReviewPreferenceRepository.empty());
+  }
+
+  private ReviewSessionService service(
+      MistakeNoteRepository noteRepository,
+      ReviewLogRepository logRepository,
+      ReviewRecallEvaluationRepository evaluationRepository,
+      ReviewPreferenceRepository preferenceRepository
   ) {
     ReviewCardService cardService = new ReviewCardService(
         new FailingGateway(),
@@ -55,15 +131,56 @@ class ReviewSessionServiceTest {
     return new ReviewSessionService(
         noteRepository,
         logRepository,
-        new ReviewSchedulerService(ReviewSchedulerProperties.defaults()),
+        new FsrsReviewSchedulerService(ReviewSchedulerProperties.defaults()),
         cardService,
         new RecallJudgeService(new FailingGateway(), objectMapper, MistakeReviewMetrics.NOOP),
+        evaluationRepository,
+        new ReviewPreferenceService(preferenceRepository, ReviewSchedulerProperties.defaults(), clock),
         new NoopReviewCardPregenerationService(noteRepository, cardService),
         ReviewCardProperties.defaults(),
         ReviewSchedulerProperties.defaults(),
         objectMapper,
         MistakeReviewMetrics.NOOP,
         clock);
+  }
+
+  private ReviewPreferenceRepository fixedPreferenceRepository(boolean aiSuggestionEnabled) {
+    return new ReviewPreferenceRepository() {
+      @Override
+      public Optional<ReviewPreference> findByUserId(long userId) {
+        Instant now = Instant.now(clock);
+        return Optional.of(new ReviewPreference(
+            userId,
+            new BigDecimal("0.90"),
+            10,
+            50,
+            30,
+            aiSuggestionEnabled,
+            36500,
+            false,
+            now,
+            now));
+      }
+
+      @Override
+      public ReviewPreference upsert(ReviewPreference preference) {
+        return preference;
+      }
+    };
+  }
+
+  private ReviewRecallEvaluationRepository noEvaluationRepository() {
+    return new ReviewRecallEvaluationRepository() {
+      @Override
+      public ReviewRecallEvaluation save(ReviewRecallEvaluation evaluation) {
+        throw new AssertionError("Direct self rating should not create recall evaluation");
+      }
+
+      @Override
+      public Optional<ReviewRecallEvaluation> findForUser(long userId, long evaluationId) {
+        throw new AssertionError("Direct self rating should not load recall evaluation");
+      }
+    };
   }
 
   private MistakeNote note() {
@@ -92,6 +209,10 @@ class ReviewSessionServiceTest {
   }
 
   private final class RecordingMistakeNoteRepository implements MistakeNoteRepository {
+    private SchedulingState updatedState;
+    private ReviewGrade updatedGrade;
+    private ReviewRating updatedRating;
+
     @Override
     public MistakeNote upsertForReview(PracticeCodeReview review, MistakeSource source, JsonNode sourceDetail, ReviewSeed seed) {
       throw new UnsupportedOperationException();
@@ -156,6 +277,21 @@ class ReviewSessionServiceTest {
     }
 
     @Override
+    public MistakeNote updateScheduling(
+        long noteId,
+        SchedulingState state,
+        Instant dueAt,
+        ReviewGrade lastGrade,
+        ReviewRating lastRating,
+        Instant reviewedAt
+    ) {
+      updatedState = state;
+      updatedGrade = lastGrade;
+      updatedRating = lastRating;
+      return note();
+    }
+
+    @Override
     public void savePendingCard(long noteId, JsonNode cardJson, CardVariant variant, String signature, Instant generatedAt) {
       throw new UnsupportedOperationException();
     }
@@ -165,10 +301,11 @@ class ReviewSessionServiceTest {
     private long requestedUserId;
     private long requestedNoteId;
     private int requestedLimit;
+    private ReviewLogEntry appended;
 
     @Override
     public void append(ReviewLogEntry entry) {
-      throw new UnsupportedOperationException();
+      appended = entry;
     }
 
     @Override

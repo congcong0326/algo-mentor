@@ -203,6 +203,11 @@ a {
   flex-wrap: wrap;
 }
 
+.review-actions button small {
+  color: inherit;
+  opacity: 0.78;
+}
+
 .search-field {
   display: flex;
   align-items: center;
@@ -374,6 +379,11 @@ a {
 .review-card-summary {
   margin-bottom: 0;
   color: var(--text-secondary);
+}
+
+.review-card-front {
+  display: grid;
+  gap: 10px;
 }
 
 .review-problem-full {
@@ -3945,6 +3955,25 @@ a {
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 760;
+}
+
+.review-setting-field {
+  display: grid;
+  grid-template-columns: minmax(96px, 1fr) minmax(90px, 120px);
+  align-items: center;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.review-setting-field input {
+  width: 100%;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-card);
+  color: var(--text-primary);
 }
 
 .coach-style-grid {

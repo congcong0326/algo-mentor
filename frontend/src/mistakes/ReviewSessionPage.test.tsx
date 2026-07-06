@@ -1,19 +1,25 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  confirmRecall,
+  evaluateRecall,
   getReviewCard,
   getReviewProblemStatement,
+  getReviewPreference,
   getReviewQueue,
-  submitRecall,
+  rateRecall,
 } from '../services/api';
 import type { ApiResponse, MistakeNote, ReviewCard } from '../types/api';
 import ReviewSessionPage from './ReviewSessionPage';
 
 vi.mock('../services/api', () => ({
+  confirmRecall: vi.fn(),
+  evaluateRecall: vi.fn(),
   getReviewCard: vi.fn(),
   getReviewProblemStatement: vi.fn(),
+  getReviewPreference: vi.fn(),
   getReviewQueue: vi.fn(),
-  submitRecall: vi.fn(),
+  rateRecall: vi.fn(),
   requireApiData: <T,>(response: ApiResponse<T>, message: string) => {
     if (response.data === undefined) {
       throw new Error(message);
@@ -22,12 +28,45 @@ vi.mock('../services/api', () => ({
   },
 }));
 
+beforeEach(() => {
+  vi.mocked(getReviewPreference).mockResolvedValue(apiResponse(reviewPreference(true)));
+});
+
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
 });
 
 describe('ReviewSessionPage', () => {
+  it('shows review card front prompts before evaluation', async () => {
+    vi.mocked(getReviewQueue).mockResolvedValue(apiResponse({
+      items: [mistakeNote()],
+      dueCount: 1,
+    }));
+    vi.mocked(getReviewCard).mockResolvedValue(apiResponse(reviewCard({
+      problemStatement: {
+        summary: '给定数组和目标值，返回两个数的下标。',
+        hasFullContent: true,
+      },
+      prompts: [
+        { key: 'algo_choice', label: '你会用什么算法？为什么？', hint: null },
+        { key: 'complexity', label: '时间/空间复杂度', hint: null },
+      ],
+      scaffold: {
+        templateMarkdown: '1. 我的思路是：',
+        maxInputChars: 400,
+      },
+    })));
+
+    render(<ReviewSessionPage onNavigate={vi.fn()} />);
+
+    expect(await screen.findByText(/题面摘要：/)).toBeInTheDocument();
+    expect(screen.getByText('给定数组和目标值，返回两个数的下标。')).toBeInTheDocument();
+    expect(screen.getByText('你会用什么算法？为什么？')).toBeInTheDocument();
+    expect(screen.getByText('时间/空间复杂度')).toBeInTheDocument();
+    expect(screen.getByText('1. 我的思路是：')).toBeInTheDocument();
+  });
+
   it('prefers queue item problemTitle over card title', async () => {
     vi.mocked(getReviewQueue).mockResolvedValue(apiResponse({
       items: [mistakeNote()],
@@ -40,24 +79,103 @@ describe('ReviewSessionPage', () => {
       difficulty: 'EASY',
       contentMarkdown: 'full',
     }));
-    vi.mocked(submitRecall).mockResolvedValue(apiResponse({
-      grade: 'MASTERED',
+    vi.mocked(evaluateRecall).mockResolvedValue(apiResponse({
+      evaluationId: 99,
+      suggestedRating: 'GOOD',
       hitPoints: [],
       missedPoints: [],
       gapSummary: '',
+      aiSuggested: true,
+      createdAt: '2026-07-02T00:00:00Z',
+      intervals: [
+        { rating: 'AGAIN', dueAt: '2026-07-02T00:10:00Z', intervalDays: 0 },
+        { rating: 'HARD', dueAt: '2026-07-03T00:00:00Z', intervalDays: 1 },
+        { rating: 'GOOD', dueAt: '2026-07-05T00:00:00Z', intervalDays: 3 },
+        { rating: 'EASY', dueAt: '2026-07-09T00:00:00Z', intervalDays: 7 },
+      ],
+    }));
+    vi.mocked(confirmRecall).mockResolvedValue(apiResponse({
+      rating: 'GOOD',
+      suggestedRating: 'GOOD',
       nextDueAt: '2026-07-03T00:00:00Z',
       masteryState: 'MASTERED',
       intervalDays: 1,
       repetitions: 2,
+      aiSuggested: true,
     }));
 
     render(<ReviewSessionPage onNavigate={vi.fn()} />);
 
     expect(await screen.findByRole('heading', { name: 'Two Sum' })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('你的复述'), { target: { value: '用哈希表记录已访问数字。' } });
+    fireEvent.click(screen.getByRole('button', { name: '揭示并评估' }));
+    expect(await screen.findByText('AI 建议：良好')).toBeInTheDocument();
     fireEvent.click(screen.getByText('查看题面'));
 
     await waitFor(() => expect(getReviewProblemStatement).toHaveBeenCalledWith(88, undefined));
     expect(await screen.findByText('full')).toBeInTheDocument();
+  });
+
+  it('keeps AI suggestion flow when preference is enabled', async () => {
+    vi.mocked(getReviewQueue).mockResolvedValue(apiResponse({
+      items: [mistakeNote()],
+      dueCount: 1,
+    }));
+    vi.mocked(getReviewCard).mockResolvedValue(apiResponse(reviewCard()));
+    vi.mocked(evaluateRecall).mockResolvedValue(apiResponse(evaluationResult()));
+    vi.mocked(confirmRecall).mockResolvedValue(apiResponse(confirmResult('GOOD', true, 'GOOD')));
+
+    render(<ReviewSessionPage onNavigate={vi.fn()} />);
+
+    fireEvent.change(await screen.findByLabelText('你的复述'), { target: { value: '用哈希表记录已访问数字。' } });
+    fireEvent.click(screen.getByRole('button', { name: '揭示并评估' }));
+
+    expect(await screen.findByText('AI 建议：良好')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /3\. 良好/ }));
+
+    await waitFor(() => expect(confirmRecall).toHaveBeenCalledWith(88, 99, 'GOOD'));
+    expect(rateRecall).not.toHaveBeenCalled();
+  });
+
+  it('shows rating buttons immediately and skips evaluation when AI suggestion is disabled', async () => {
+    vi.mocked(getReviewPreference).mockResolvedValue(apiResponse(reviewPreference(false)));
+    vi.mocked(getReviewQueue).mockResolvedValue(apiResponse({
+      items: [mistakeNote()],
+      dueCount: 1,
+    }));
+    vi.mocked(getReviewCard).mockResolvedValue(apiResponse(reviewCard()));
+    vi.mocked(rateRecall).mockResolvedValue(apiResponse(confirmResult('HARD', false, null)));
+
+    render(<ReviewSessionPage onNavigate={vi.fn()} />);
+
+    expect(await screen.findByRole('button', { name: /1\. 重来/ })).toBeInTheDocument();
+    expect(screen.queryByLabelText('你的复述')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('本次备注')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '揭示并评估' })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /2\. 困难/ }));
+
+    await waitFor(() => expect(rateRecall).toHaveBeenCalledWith(88, 'HARD'));
+    expect(evaluateRecall).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: /下一题/ })).toBeEnabled();
+  });
+
+  it('submits direct self rating with number shortcuts when AI suggestion is disabled', async () => {
+    vi.mocked(getReviewPreference).mockResolvedValue(apiResponse(reviewPreference(false)));
+    vi.mocked(getReviewQueue).mockResolvedValue(apiResponse({
+      items: [mistakeNote()],
+      dueCount: 1,
+    }));
+    vi.mocked(getReviewCard).mockResolvedValue(apiResponse(reviewCard()));
+    vi.mocked(rateRecall).mockResolvedValue(apiResponse(confirmResult('EASY', false, null)));
+
+    render(<ReviewSessionPage onNavigate={vi.fn()} />);
+
+    await screen.findByRole('button', { name: /4\. 简单/ });
+    fireEvent.keyDown(window, { key: '4' });
+
+    await waitFor(() => expect(rateRecall).toHaveBeenCalledWith(88, 'EASY'));
+    expect(screen.getByRole('button', { name: /下一题/ })).toBeEnabled();
   });
 });
 
@@ -86,7 +204,7 @@ function mistakeNote(): MistakeNote {
   };
 }
 
-function reviewCard(): ReviewCard {
+function reviewCard(overrides: Partial<ReviewCard> = {}): ReviewCard {
   return {
     cardVariant: 'RULE_BASED',
     problemRef: {
@@ -94,6 +212,7 @@ function reviewCard(): ReviewCard {
       titleCn: '两数之和',
       difficulty: 'EASY',
     },
+    problemStatement: null,
     contextSummary: '复习上下文',
     prompts: [],
     scaffold: null,
@@ -101,5 +220,50 @@ function reviewCard(): ReviewCard {
     expectedEffort: 'LIGHT',
     userNotePersistent: null,
     recentRecallHistory: [],
+    ...overrides,
+  };
+}
+
+function reviewPreference(aiSuggestionEnabled: boolean) {
+  return {
+    desiredRetention: 0.9,
+    dailyNewLimit: 10,
+    dailyLearningLimit: 50,
+    dailyReviewLimit: 30,
+    aiSuggestionEnabled,
+  };
+}
+
+function evaluationResult() {
+  return {
+    evaluationId: 99,
+    suggestedRating: 'GOOD' as const,
+    hitPoints: [],
+    missedPoints: [],
+    gapSummary: '',
+    aiSuggested: true,
+    createdAt: '2026-07-02T00:00:00Z',
+    intervals: [
+      { rating: 'AGAIN' as const, dueAt: '2026-07-02T00:10:00Z', intervalDays: 0 },
+      { rating: 'HARD' as const, dueAt: '2026-07-03T00:00:00Z', intervalDays: 1 },
+      { rating: 'GOOD' as const, dueAt: '2026-07-05T00:00:00Z', intervalDays: 3 },
+      { rating: 'EASY' as const, dueAt: '2026-07-09T00:00:00Z', intervalDays: 7 },
+    ],
+  };
+}
+
+function confirmResult(
+  rating: 'AGAIN' | 'HARD' | 'GOOD' | 'EASY',
+  aiSuggested: boolean,
+  suggestedRating: 'AGAIN' | 'HARD' | 'GOOD' | 'EASY' | null,
+) {
+  return {
+    rating,
+    suggestedRating,
+    nextDueAt: '2026-07-03T00:00:00Z',
+    masteryState: 'MASTERED' as const,
+    intervalDays: 1,
+    repetitions: 2,
+    aiSuggested,
   };
 }

@@ -60,6 +60,9 @@ public class ReviewProperties {
   public static class Scheduler {
     private int graduationIntervalDays = 30;
     private int graduationRepetitions = 3;
+    private BigDecimal desiredRetention = new BigDecimal("0.90");
+    private int maximumIntervalDays = 36500;
+    private boolean enableFuzzing = true;
 
     public int getGraduationIntervalDays() {
       return graduationIntervalDays;
@@ -75,6 +78,30 @@ public class ReviewProperties {
 
     public void setGraduationRepetitions(int graduationRepetitions) {
       this.graduationRepetitions = graduationRepetitions;
+    }
+
+    public BigDecimal getDesiredRetention() {
+      return desiredRetention;
+    }
+
+    public void setDesiredRetention(BigDecimal desiredRetention) {
+      this.desiredRetention = desiredRetention;
+    }
+
+    public int getMaximumIntervalDays() {
+      return maximumIntervalDays;
+    }
+
+    public void setMaximumIntervalDays(int maximumIntervalDays) {
+      this.maximumIntervalDays = maximumIntervalDays;
+    }
+
+    public boolean isEnableFuzzing() {
+      return enableFuzzing;
+    }
+
+    public void setEnableFuzzing(boolean enableFuzzing) {
+      this.enableFuzzing = enableFuzzing;
     }
   }
 
@@ -119,6 +146,9 @@ public class ReviewProperties {
 
   public static class Queue {
     private int dailyCap = 20;
+    private int dailyNewLimit = 10;
+    private int dailyLearningLimit = 50;
+    private int dailyReviewLimit = 30;
 
     public int getDailyCap() {
       return dailyCap;
@@ -126,6 +156,30 @@ public class ReviewProperties {
 
     public void setDailyCap(int dailyCap) {
       this.dailyCap = dailyCap;
+    }
+
+    public int getDailyNewLimit() {
+      return dailyNewLimit;
+    }
+
+    public void setDailyNewLimit(int dailyNewLimit) {
+      this.dailyNewLimit = dailyNewLimit;
+    }
+
+    public int getDailyLearningLimit() {
+      return dailyLearningLimit;
+    }
+
+    public void setDailyLearningLimit(int dailyLearningLimit) {
+      this.dailyLearningLimit = dailyLearningLimit;
+    }
+
+    public int getDailyReviewLimit() {
+      return dailyReviewLimit;
+    }
+
+    public void setDailyReviewLimit(int dailyReviewLimit) {
+      this.dailyReviewLimit = dailyReviewLimit;
     }
   }
 }

@@ -6,6 +6,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Locale;
 import java.util.Objects;
+import io.github.openspacedrepetition.Card;
+import io.github.openspacedrepetition.CardAndReviewLog;
+import io.github.openspacedrepetition.Scheduler;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewConstants;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewEvidence;
@@ -29,21 +32,15 @@ public class ReviewSeedPolicy {
     Objects.requireNonNull(review, "review must not be null");
     Objects.requireNonNull(now, "now must not be null");
     if (!passed) {
-      return seed(0, 0, MasteryState.NEW, now, ReviewSeedBucket.FAILED, false);
+      return seed(0, 0, MasteryState.NEW, now, ReviewSeedBucket.FAILED, false, ReviewRating.AGAIN);
     }
     if (lowConfidence(review)) {
-      int interval = properties.lowConfidenceIntervalDays();
-      return seed(0, interval, MasteryState.LEARNING, now.plus(Duration.ofDays(interval)),
-          ReviewSeedBucket.LOW_CONFIDENCE, true);
+      return fsrsSeed(ReviewRating.HARD, ReviewSeedBucket.LOW_CONFIDENCE, true, now);
     }
     if (highScore(review) && !hard(difficulty)) {
-      int interval = properties.passedHighScoreIntervalDays();
-      return seed(1, interval, MasteryState.LEARNING, now.plus(Duration.ofDays(interval)),
-          ReviewSeedBucket.HIGH_SCORE, false);
+      return fsrsSeed(ReviewRating.EASY, ReviewSeedBucket.HIGH_SCORE, false, now);
     }
-    int interval = properties.passedFirstIntervalDays();
-    return seed(1, interval, MasteryState.LEARNING, now.plus(Duration.ofDays(interval)),
-        ReviewSeedBucket.NORMAL, false);
+    return fsrsSeed(ReviewRating.GOOD, ReviewSeedBucket.NORMAL, false, now);
   }
 
   private ReviewSeed seed(
@@ -52,13 +49,39 @@ public class ReviewSeedPolicy {
       MasteryState masteryState,
       Instant dueAt,
       ReviewSeedBucket bucket,
-      boolean lowConfidence
+      boolean lowConfidence,
+      ReviewRating initialRating
   ) {
     return new ReviewSeed(
         new SchedulingState(repetitions, DEFAULT_EASE_FACTOR, intervalDays, masteryState, 0),
         dueAt,
         bucket,
-        lowConfidence);
+        lowConfidence,
+        initialRating);
+  }
+
+  private ReviewSeed fsrsSeed(ReviewRating rating, ReviewSeedBucket bucket, boolean lowConfidence, Instant now) {
+    Scheduler scheduler = Scheduler.builder()
+        .desiredRetention(properties.desiredRetention().doubleValue())
+        .learningSteps(new Duration[] {})
+        .relearningSteps(new Duration[] {})
+        .maximumInterval(properties.maximumIntervalDays())
+        .enableFuzzing(false)
+        .build();
+    CardAndReviewLog result = scheduler.reviewCard(Card.builder().cardId(1).due(now).build(), rating.fsrsRating(), now);
+    Card card = result.card();
+    int interval = Math.max(1, (int) java.time.temporal.ChronoUnit.DAYS.between(now, card.getDue()));
+    SchedulingState state = new SchedulingState(
+        1,
+        DEFAULT_EASE_FACTOR,
+        interval,
+        MasteryState.LEARNING,
+        0,
+        card.getState().name(),
+        card.getStep(),
+        BigDecimal.valueOf(card.getStability()).setScale(6, RoundingMode.HALF_UP),
+        BigDecimal.valueOf(card.getDifficulty()).setScale(6, RoundingMode.HALF_UP));
+    return new ReviewSeed(state, card.getDue(), bucket, lowConfidence, rating);
   }
 
   private boolean highScore(PracticeCodeReview review) {

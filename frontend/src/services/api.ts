@@ -36,8 +36,12 @@ import type {
   ProblemListItem,
   ProblemListQuery,
   ProblemPage,
+  RecallConfirmResult,
+  RecallEvaluationResult,
   RecallReviewResult,
   ReviewCard,
+  ReviewPreference,
+  ReviewPreferenceRequest,
   ReviewProblemStatementResponse,
   ReviewQueueResponse,
   ReviewSummaryResponse,
@@ -309,6 +313,74 @@ export async function submitRecall(
   return response.json();
 }
 
+export async function evaluateRecall(
+  noteId: number,
+  recallText: string,
+  transientNote?: string,
+  signal?: AbortSignal,
+): Promise<ApiResponse<RecallEvaluationResult>> {
+  const response = await apiFetch(`/api/mistake-notes/${noteId}/recall/evaluation`, {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ recallText, transientNote }),
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Recall evaluation request failed');
+  }
+
+  return response.json();
+}
+
+export async function confirmRecall(
+  noteId: number,
+  evaluationId: number,
+  rating: string,
+  signal?: AbortSignal,
+): Promise<ApiResponse<RecallConfirmResult>> {
+  const response = await apiFetch(`/api/mistake-notes/${noteId}/recall/confirm`, {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ evaluationId, rating }),
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Recall confirm request failed');
+  }
+
+  return response.json();
+}
+
+export async function rateRecall(
+  noteId: number,
+  rating: string,
+  signal?: AbortSignal,
+): Promise<ApiResponse<RecallConfirmResult>> {
+  const response = await apiFetch(`/api/mistake-notes/${noteId}/recall/rating`, {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ rating }),
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Recall rating request failed');
+  }
+
+  return response.json();
+}
+
 export async function getReviewQueue(limit = 20, signal?: AbortSignal): Promise<ApiResponse<ReviewQueueResponse>> {
   const response = await apiFetch(`/api/review-sessions/queue${toQueryString({ limit })}`, {
     headers: jsonHeaders,
@@ -317,6 +389,40 @@ export async function getReviewQueue(limit = 20, signal?: AbortSignal): Promise<
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Review queue request failed');
+  }
+
+  return response.json();
+}
+
+export async function getReviewPreference(signal?: AbortSignal): Promise<ApiResponse<ReviewPreference>> {
+  const response = await apiFetch('/api/me/review-preferences', {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Review preference request failed');
+  }
+
+  return response.json();
+}
+
+export async function updateReviewPreference(
+  request: ReviewPreferenceRequest,
+  signal?: AbortSignal,
+): Promise<ApiResponse<ReviewPreference>> {
+  const response = await apiFetch('/api/me/review-preferences', {
+    method: 'PATCH',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Review preference update request failed');
   }
 
   return response.json();

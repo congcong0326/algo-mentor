@@ -13,6 +13,7 @@ public record ReviewLogInsertRow(
     String userRecallText,
     String userNoteTransient,
     int grade,
+    String rating,
     String gradeSource,
     JsonNode aiJudgmentJson,
     Long practiceCodeReviewId,

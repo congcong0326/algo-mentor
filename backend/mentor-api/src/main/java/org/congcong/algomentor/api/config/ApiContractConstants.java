@@ -47,6 +47,11 @@ public final class ApiContractConstants {
   public static final String ME_AI_PREFERENCES_PATH = "/api/me/ai-preferences";
 
   /**
+   * 当前用户复习/FSRS 偏好设置路径。
+   */
+  public static final String ME_REVIEW_PREFERENCES_PATH = "/api/me/review-preferences";
+
+  /**
    * 管理员题库查询接口根路径。
    */
   public static final String PROBLEMS_BASE_PATH = "/api/admin/problems";
@@ -160,6 +165,11 @@ public final class ApiContractConstants {
    * 错题题面详情路径后缀。
    */
   public static final String MISTAKE_NOTES_PROBLEM_STATEMENT_PATH_SUFFIX = "/problem-statement";
+
+  /**
+   * 错题复述直接自评提交路径后缀。
+   */
+  public static final String MISTAKE_NOTES_RECALL_RATING_PATH_SUFFIX = "/recall/rating";
 
   /**
    * 复习会话接口根路径。

@@ -13,6 +13,7 @@ public record ReviewLogEntry(
     String userRecallText,
     String userNoteTransient,
     ReviewGrade grade,
+    ReviewRating rating,
     GradeSource gradeSource,
     JsonNode aiJudgmentJson,
     Long practiceCodeReviewId,

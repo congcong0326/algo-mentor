@@ -20,8 +20,12 @@ import org.congcong.algomentor.api.problem.repository.MyBatisProblemRepository;
 import org.congcong.algomentor.api.problem.repository.ProblemCompanyRepository;
 import org.congcong.algomentor.api.problem.repository.ProblemRepository;
 import org.congcong.algomentor.api.review.mapper.MistakeNoteMapper;
+import org.congcong.algomentor.api.review.mapper.ReviewPreferenceMapper;
+import org.congcong.algomentor.api.review.mapper.ReviewRecallEvaluationMapper;
 import org.congcong.algomentor.api.review.mapper.ReviewLogMapper;
 import org.congcong.algomentor.api.review.repository.MyBatisMistakeNoteRepository;
+import org.congcong.algomentor.api.review.repository.MyBatisReviewPreferenceRepository;
+import org.congcong.algomentor.api.review.repository.MyBatisReviewRecallEvaluationRepository;
 import org.congcong.algomentor.api.review.repository.MyBatisReviewLogRepository;
 import org.congcong.algomentor.agent.persistence.postgres.json.AgentMessageRoleTypeHandler;
 import org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler;
@@ -32,6 +36,8 @@ import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRep
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.review.MistakeNoteRepository;
+import org.congcong.algomentor.mentor.application.review.ReviewPreferenceRepository;
+import org.congcong.algomentor.mentor.application.review.ReviewRecallEvaluationRepository;
 import org.congcong.algomentor.mentor.application.review.ReviewLogRepository;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -114,6 +120,18 @@ public class MentorApiMyBatisConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
+  public ReviewPreferenceMapper reviewPreferenceMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(ReviewPreferenceMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ReviewRecallEvaluationMapper reviewRecallEvaluationMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(ReviewRecallEvaluationMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
   public AbilityProfileMapper abilityProfileMapper(SqlSessionTemplate sqlSessionTemplate) {
     return sqlSessionTemplate.getMapper(AbilityProfileMapper.class);
   }
@@ -177,6 +195,21 @@ public class MentorApiMyBatisConfiguration {
   @ConditionalOnMissingBean(ReviewLogRepository.class)
   public ReviewLogRepository reviewLogRepository(ReviewLogMapper mapper) {
     return new MyBatisReviewLogRepository(mapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(ReviewPreferenceRepository.class)
+  public ReviewPreferenceRepository reviewPreferenceRepository(ReviewPreferenceMapper mapper) {
+    return new MyBatisReviewPreferenceRepository(mapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(ReviewRecallEvaluationRepository.class)
+  public ReviewRecallEvaluationRepository reviewRecallEvaluationRepository(
+      ReviewRecallEvaluationMapper mapper,
+      ObjectMapper objectMapper
+  ) {
+    return new MyBatisReviewRecallEvaluationRepository(mapper, objectMapper);
   }
 
   @Bean

@@ -19,10 +19,15 @@
       <arg column="repetitions" javaType="_int"/>
       <arg column="ease_factor" javaType="java.math.BigDecimal"/>
       <arg column="interval_days" javaType="_int"/>
+      <arg column="fsrs_state" javaType="string"/>
+      <arg column="fsrs_step" javaType="java.lang.Integer"/>
+      <arg column="fsrs_stability" javaType="java.math.BigDecimal"/>
+      <arg column="fsrs_difficulty" javaType="java.math.BigDecimal"/>
       <arg column="due_at" javaType="java.time.Instant"/>
       <arg column="lapses" javaType="_int"/>
       <arg column="last_reviewed_at" javaType="java.time.Instant"/>
       <arg column="last_grade" javaType="java.lang.Integer"/>
+      <arg column="last_rating" javaType="string"/>
       <arg column="archived" javaType="_boolean"/>
       <arg column="user_note_persistent" javaType="string"/>
       <arg column="pending_card_json" javaType="com.fasterxml.jackson.databind.JsonNode"
@@ -48,10 +53,15 @@
     repetitions,
     ease_factor,
     interval_days,
+    fsrs_state,
+    fsrs_step,
+    fsrs_stability,
+    fsrs_difficulty,
     due_at,
     lapses,
     last_reviewed_at,
     last_grade,
+    last_rating,
     archived,
     user_note_persistent,
     pending_card_json,
@@ -75,6 +85,10 @@
       repetitions,
       ease_factor,
       interval_days,
+      fsrs_state,
+      fsrs_step,
+      fsrs_stability,
+      fsrs_difficulty,
       due_at,
       lapses
     ) VALUES (
@@ -89,6 +103,10 @@
       #{repetitions},
       #{easeFactor},
       #{intervalDays},
+      #{fsrsState},
+      #{fsrsStep},
+      #{fsrsStability},
+      #{fsrsDifficulty},
       #{dueAt},
       #{lapses}
     )
@@ -119,6 +137,18 @@
           THEN 1
         ELSE mistake_note.interval_days
       END,
+      fsrs_state = CASE
+        WHEN mistake_note.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN 'RELEARNING'
+        ELSE COALESCE(mistake_note.fsrs_state, EXCLUDED.fsrs_state)
+      END,
+      fsrs_step = CASE
+        WHEN mistake_note.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN 0
+        ELSE COALESCE(mistake_note.fsrs_step, EXCLUDED.fsrs_step)
+      END,
+      fsrs_stability = COALESCE(mistake_note.fsrs_stability, EXCLUDED.fsrs_stability),
+      fsrs_difficulty = COALESCE(mistake_note.fsrs_difficulty, EXCLUDED.fsrs_difficulty),
       due_at = CASE
         WHEN mistake_note.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
           THEN NOW() + INTERVAL '1 day'
@@ -184,7 +214,16 @@
     WHERE user_id = #{userId}
       AND archived = FALSE
       AND due_at &lt;= #{now}
-    ORDER BY (source = 'REVIEW_FAILED' OR lapses &gt; 0) DESC, due_at ASC, id ASC
+    ORDER BY
+      CASE fsrs_state
+        WHEN 'RELEARNING' THEN 0
+        WHEN 'LEARNING' THEN 1
+        WHEN 'REVIEW' THEN 2
+        ELSE 3
+      END,
+      (source = 'REVIEW_FAILED' OR lapses &gt; 0) DESC,
+      due_at ASC,
+      id ASC
     LIMIT #{limit}
   </select>
 
@@ -241,10 +280,15 @@
     SET repetitions = #{repetitions},
         ease_factor = #{easeFactor},
         interval_days = #{intervalDays},
+        fsrs_state = #{fsrsState},
+        fsrs_step = #{fsrsStep},
+        fsrs_stability = #{fsrsStability},
+        fsrs_difficulty = #{fsrsDifficulty},
         mastery_state = #{masteryState},
         lapses = #{lapses},
         due_at = #{dueAt},
         last_grade = #{lastGrade},
+        last_rating = #{lastRating},
         last_reviewed_at = #{reviewedAt},
         updated_at = #{reviewedAt}
     WHERE id = #{noteId}

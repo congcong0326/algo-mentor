@@ -29,6 +29,7 @@ public class MyBatisReviewLogRepository implements ReviewLogRepository {
         entry.userRecallText(),
         entry.userNoteTransient(),
         entry.grade().q(),
+        entry.rating() == null ? null : entry.rating().name(),
         entry.gradeSource().name(),
         entry.aiJudgmentJson(),
         entry.practiceCodeReviewId(),

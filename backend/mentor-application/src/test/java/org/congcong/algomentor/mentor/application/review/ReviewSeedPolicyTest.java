@@ -20,6 +20,7 @@ class ReviewSeedPolicyTest {
     ReviewSeed seed = policy.forReview(review("5.5", false), false, now);
 
     assertThat(seed.bucket()).isEqualTo(ReviewSeedBucket.FAILED);
+    assertThat(seed.initialRating()).isEqualTo(ReviewRating.AGAIN);
     assertThat(seed.state().repetitions()).isZero();
     assertThat(seed.state().intervalDays()).isZero();
     assertThat(seed.state().masteryState()).isEqualTo(MasteryState.NEW);
@@ -31,6 +32,7 @@ class ReviewSeedPolicyTest {
     ReviewSeed seed = policy.forReview(review("8.0", true), true, now);
 
     assertThat(seed.bucket()).isEqualTo(ReviewSeedBucket.NORMAL);
+    assertThat(seed.initialRating()).isEqualTo(ReviewRating.GOOD);
     assertThat(seed.state().repetitions()).isEqualTo(1);
     assertThat(seed.state().intervalDays()).isEqualTo(3);
     assertThat(seed.state().masteryState()).isEqualTo(MasteryState.LEARNING);
@@ -42,8 +44,8 @@ class ReviewSeedPolicyTest {
     ReviewSeed seed = policy.forReview(review("9.2", true), true, now, "MEDIUM");
 
     assertThat(seed.bucket()).isEqualTo(ReviewSeedBucket.HIGH_SCORE);
-    assertThat(seed.state().intervalDays()).isEqualTo(4);
-    assertThat(seed.dueAt()).isEqualTo(Instant.parse("2026-07-06T00:00:00Z"));
+    assertThat(seed.initialRating()).isEqualTo(ReviewRating.EASY);
+    assertThat(seed.state().intervalDays()).isGreaterThan(4);
   }
 
   @Test
@@ -51,6 +53,7 @@ class ReviewSeedPolicyTest {
     ReviewSeed seed = policy.forReview(review("9.5", true), true, now, "HARD");
 
     assertThat(seed.bucket()).isEqualTo(ReviewSeedBucket.NORMAL);
+    assertThat(seed.initialRating()).isEqualTo(ReviewRating.GOOD);
     assertThat(seed.state().intervalDays()).isEqualTo(3);
   }
 
@@ -61,8 +64,9 @@ class ReviewSeedPolicyTest {
     ReviewSeed seed = policy.forReview(review, true, now);
 
     assertThat(seed.bucket()).isEqualTo(ReviewSeedBucket.LOW_CONFIDENCE);
+    assertThat(seed.initialRating()).isEqualTo(ReviewRating.HARD);
     assertThat(seed.lowConfidence()).isTrue();
-    assertThat(seed.state().repetitions()).isZero();
+    assertThat(seed.state().repetitions()).isEqualTo(1);
     assertThat(seed.state().intervalDays()).isEqualTo(1);
     assertThat(seed.dueAt()).isEqualTo(Instant.parse("2026-07-03T00:00:00Z"));
   }

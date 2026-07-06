@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.review.mapper.ReviewPreferenceMapper">
+
+  <resultMap id="ReviewPreferenceRowMap" type="org.congcong.algomentor.api.review.mapper.model.ReviewPreferenceRow">
+    <constructor>
+      <arg column="user_id" javaType="_long"/>
+      <arg column="desired_retention" javaType="java.math.BigDecimal"/>
+      <arg column="daily_new_limit" javaType="_int"/>
+      <arg column="daily_learning_limit" javaType="_int"/>
+      <arg column="daily_review_limit" javaType="_int"/>
+      <arg column="ai_suggestion_enabled" javaType="_boolean"/>
+      <arg column="maximum_interval_days" javaType="_int"/>
+      <arg column="enable_fuzzing" javaType="_boolean"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <sql id="ReviewPreferenceColumns">
+    user_id,
+    desired_retention,
+    daily_new_limit,
+    daily_learning_limit,
+    daily_review_limit,
+    ai_suggestion_enabled,
+    maximum_interval_days,
+    enable_fuzzing,
+    created_at,
+    updated_at
+  </sql>
+
+  <select id="findByUserId" resultMap="ReviewPreferenceRowMap">
+    SELECT <include refid="ReviewPreferenceColumns"/>
+    FROM user_review_preference
+    WHERE user_id = #{userId}
+  </select>
+
+  <select id="upsert" resultMap="ReviewPreferenceRowMap" affectData="true">
+    INSERT INTO user_review_preference (
+      user_id,
+      desired_retention,
+      daily_new_limit,
+      daily_learning_limit,
+      daily_review_limit,
+      ai_suggestion_enabled,
+      maximum_interval_days,
+      enable_fuzzing,
+      created_at,
+      updated_at
+    ) VALUES (
+      #{userId},
+      #{desiredRetention},
+      #{dailyNewLimit},
+      #{dailyLearningLimit},
+      #{dailyReviewLimit},
+      #{aiSuggestionEnabled},
+      #{maximumIntervalDays},
+      #{enableFuzzing},
+      #{createdAt},
+      #{updatedAt}
+    )
+    ON CONFLICT (user_id) DO UPDATE SET
+      desired_retention = EXCLUDED.desired_retention,
+      daily_new_limit = EXCLUDED.daily_new_limit,
+      daily_learning_limit = EXCLUDED.daily_learning_limit,
+      daily_review_limit = EXCLUDED.daily_review_limit,
+      ai_suggestion_enabled = EXCLUDED.ai_suggestion_enabled,
+      maximum_interval_days = EXCLUDED.maximum_interval_days,
+      enable_fuzzing = EXCLUDED.enable_fuzzing,
+      updated_at = EXCLUDED.updated_at
+    RETURNING <include refid="ReviewPreferenceColumns"/>
+  </select>
+</mapper>

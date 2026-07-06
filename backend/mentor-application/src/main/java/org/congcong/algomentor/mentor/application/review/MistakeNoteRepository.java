@@ -36,13 +36,26 @@ public interface MistakeNoteRepository {
 
   MistakeNote updatePersistentNote(long userId, long noteId, String text, Instant now);
 
-  MistakeNote updateScheduling(
+  default MistakeNote updateScheduling(
+      long noteId,
+      SchedulingState state,
+      Instant dueAt,
+      ReviewGrade lastGrade,
+      ReviewRating lastRating,
+      Instant reviewedAt
+  ) {
+    return updateScheduling(noteId, state, dueAt, lastGrade, reviewedAt);
+  }
+
+  default MistakeNote updateScheduling(
       long noteId,
       SchedulingState state,
       Instant dueAt,
       ReviewGrade lastGrade,
       Instant reviewedAt
-  );
+  ) {
+    throw new UnsupportedOperationException();
+  }
 
   void savePendingCard(long noteId, JsonNode cardJson, CardVariant variant, String signature, Instant generatedAt);
 }

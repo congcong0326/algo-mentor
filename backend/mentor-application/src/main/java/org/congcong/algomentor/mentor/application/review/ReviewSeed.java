@@ -6,7 +6,8 @@ public record ReviewSeed(
     SchedulingState state,
     Instant dueAt,
     ReviewSeedBucket bucket,
-    boolean lowConfidence
+    boolean lowConfidence,
+    ReviewRating initialRating
 ) {
   public ReviewSeed {
     if (state == null) {
@@ -17,6 +18,9 @@ public record ReviewSeed(
     }
     if (bucket == null) {
       throw new IllegalArgumentException("Review seed bucket must not be null");
+    }
+    if (initialRating == null) {
+      initialRating = ReviewRating.HARD;
     }
   }
 }

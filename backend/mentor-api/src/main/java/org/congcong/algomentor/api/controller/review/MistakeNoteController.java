@@ -4,10 +4,14 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.review.model.ArchiveMistakeRequest;
+import org.congcong.algomentor.api.review.model.ConfirmRecallRequest;
 import org.congcong.algomentor.api.review.model.MarkMistakeRequest;
 import org.congcong.algomentor.api.review.model.MistakeNoteResponse;
 import org.congcong.algomentor.api.review.model.MistakeReviewResponseMapper;
 import org.congcong.algomentor.api.review.model.RecallReviewResponse;
+import org.congcong.algomentor.api.review.model.RecallEvaluationResponse;
+import org.congcong.algomentor.api.review.model.RecallConfirmResponse;
+import org.congcong.algomentor.api.review.model.RateRecallRequest;
 import org.congcong.algomentor.api.review.model.ReviewCardResponse;
 import org.congcong.algomentor.api.review.model.ReviewProblemStatementResponse;
 import org.congcong.algomentor.api.review.model.ReviewProblemStatementResponseMapper;
@@ -23,6 +27,7 @@ import org.congcong.algomentor.mentor.application.review.MistakeNoteService;
 import org.congcong.algomentor.mentor.application.review.MistakeReviewException;
 import org.congcong.algomentor.mentor.application.review.MistakeSource;
 import org.congcong.algomentor.mentor.application.review.ReviewProblemCatalog;
+import org.congcong.algomentor.mentor.application.review.ReviewRating;
 import org.congcong.algomentor.mentor.application.review.ReviewSessionService;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.CacheControl;
@@ -149,6 +154,41 @@ public class MistakeNoteController {
     long userId = requireCurrentUserId();
     return ApiResponse.success(MistakeReviewResponseMapper.toRecallResponse(
         requiredReviewSessionService().submitRecall(userId, noteId, request.recallText(), request.transientNote())));
+  }
+
+  @PostMapping(ApiContractConstants.MISTAKE_NOTES_BASE_PATH + "/{noteId}/recall/evaluation")
+  public ApiResponse<RecallEvaluationResponse> evaluateRecall(
+      @PathVariable long noteId,
+      @Valid @RequestBody SubmitRecallRequest request
+  ) {
+    long userId = requireCurrentUserId();
+    return ApiResponse.success(MistakeReviewResponseMapper.toEvaluationResponse(
+        requiredReviewSessionService().evaluateRecall(userId, noteId, request.recallText(), request.transientNote())));
+  }
+
+  @PostMapping(ApiContractConstants.MISTAKE_NOTES_BASE_PATH + "/{noteId}/recall/confirm")
+  public ApiResponse<RecallConfirmResponse> confirmRecall(
+      @PathVariable long noteId,
+      @Valid @RequestBody ConfirmRecallRequest request
+  ) {
+    long userId = requireCurrentUserId();
+    return ApiResponse.success(MistakeReviewResponseMapper.toConfirmResponse(
+        requiredReviewSessionService().confirmRecall(
+            userId,
+            noteId,
+            request.evaluationId(),
+            ReviewRating.parse(request.rating()))));
+  }
+
+  @PostMapping(ApiContractConstants.MISTAKE_NOTES_BASE_PATH + "/{noteId}"
+      + ApiContractConstants.MISTAKE_NOTES_RECALL_RATING_PATH_SUFFIX)
+  public ApiResponse<RecallConfirmResponse> rateRecall(
+      @PathVariable long noteId,
+      @Valid @RequestBody RateRecallRequest request
+  ) {
+    long userId = requireCurrentUserId();
+    return ApiResponse.success(MistakeReviewResponseMapper.toConfirmResponse(
+        requiredReviewSessionService().rateRecall(userId, noteId, ReviewRating.parse(request.rating()))));
   }
 
   private long requireCurrentUserId() {

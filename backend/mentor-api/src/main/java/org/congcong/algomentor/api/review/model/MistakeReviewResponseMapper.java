@@ -4,7 +4,10 @@ import java.util.List;
 import java.util.Locale;
 import org.congcong.algomentor.api.review.service.MistakeNoteDisplayInfoResolver;
 import org.congcong.algomentor.mentor.application.review.MistakeNote;
+import org.congcong.algomentor.mentor.application.review.RecallConfirmResult;
 import org.congcong.algomentor.mentor.application.review.RecallReviewResult;
+import org.congcong.algomentor.mentor.application.review.ReviewPreference;
+import org.congcong.algomentor.mentor.application.review.ReviewRecallEvaluationResult;
 import org.congcong.algomentor.mentor.application.review.ReviewCard;
 import org.congcong.algomentor.mentor.application.review.ReviewCardDetail;
 import org.congcong.algomentor.mentor.application.review.ReviewQueue;
@@ -32,10 +35,15 @@ public final class MistakeReviewResponseMapper {
         note.scheduling().repetitions(),
         note.scheduling().easeFactor(),
         note.scheduling().intervalDays(),
+        note.scheduling().fsrsState(),
+        note.scheduling().fsrsStep(),
+        note.scheduling().fsrsStability(),
+        note.scheduling().fsrsDifficulty(),
         note.dueAt(),
         note.scheduling().lapses(),
         note.lastReviewedAt(),
         note.lastGrade() == null ? null : note.lastGrade().name(),
+        note.lastRating() == null ? null : note.lastRating().name(),
         note.archived(),
         note.userNotePersistent(),
         note.createdAt(),
@@ -110,6 +118,43 @@ public final class MistakeReviewResponseMapper {
 
   public static ReviewSummaryResponse toSummaryResponse(ReviewSummary summary) {
     return new ReviewSummaryResponse(summary.dueCount());
+  }
+
+  public static RecallEvaluationResponse toEvaluationResponse(ReviewRecallEvaluationResult result) {
+    return new RecallEvaluationResponse(
+        result.evaluation().id(),
+        result.evaluation().suggestedRating() == null ? null : result.evaluation().suggestedRating().name(),
+        result.evaluation().hitPoints(),
+        result.evaluation().missedPoints(),
+        result.evaluation().gapSummary(),
+        result.evaluation().aiSuggested(),
+        result.evaluation().createdAt(),
+        result.intervals().stream()
+            .map(interval -> new ReviewIntervalPreviewResponse(
+                interval.rating().name(),
+                interval.dueAt(),
+                interval.intervalDays()))
+            .toList());
+  }
+
+  public static RecallConfirmResponse toConfirmResponse(RecallConfirmResult result) {
+    return new RecallConfirmResponse(
+        result.rating().name(),
+        result.suggestedRating() == null ? null : result.suggestedRating().name(),
+        result.nextDueAt(),
+        result.scheduling().masteryState().name(),
+        result.scheduling().intervalDays(),
+        result.scheduling().repetitions(),
+        result.aiSuggested());
+  }
+
+  public static ReviewPreferenceResponse toPreferenceResponse(ReviewPreference preference) {
+    return new ReviewPreferenceResponse(
+        preference.desiredRetention(),
+        preference.dailyNewLimit(),
+        preference.dailyLearningLimit(),
+        preference.dailyReviewLimit(),
+        preference.aiSuggestionEnabled());
   }
 
   public static List<MistakeNoteResponse> toNoteResponses(List<MistakeNote> notes) {
