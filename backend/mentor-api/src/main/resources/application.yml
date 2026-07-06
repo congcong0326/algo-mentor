@@ -129,3 +129,7 @@ algo-mentor:
       daily-new-limit: ${REVIEW_DAILY_NEW_LIMIT:10}
       daily-learning-limit: ${REVIEW_DAILY_LEARNING_LIMIT:50}
       daily-review-limit: ${REVIEW_DAILY_REVIEW_LIMIT:30}
+  learning-plan-template:
+    seed:
+      enabled: ${LEARNING_PLAN_TEMPLATE_SEED_ENABLED:false}
+      path: ${LEARNING_PLAN_TEMPLATE_SEED_PATH:data/learning-plan-template-seed}

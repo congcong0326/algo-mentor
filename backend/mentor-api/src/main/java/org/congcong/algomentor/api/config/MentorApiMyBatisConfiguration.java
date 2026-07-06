@@ -5,8 +5,10 @@ import javax.sql.DataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.congcong.algomentor.api.ability.mapper.AbilityProfileMapper;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
+import org.congcong.algomentor.api.learningplan.mapper.LearningPlanTemplateMapper;
 import org.congcong.algomentor.api.learningplan.repository.MyBatisLearningPlanRepository;
 import org.congcong.algomentor.api.learningplan.repository.MyBatisLearningPlanProposalRepository;
+import org.congcong.algomentor.api.learningplan.repository.MyBatisLearningPlanTemplateRepository;
 import org.congcong.algomentor.api.preference.mapper.UserAiPreferenceMapper;
 import org.congcong.algomentor.api.preference.repository.MyBatisUserAiPreferenceRepository;
 import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
@@ -32,6 +34,7 @@ import org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRepository;
+import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateRepository;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
@@ -92,6 +95,12 @@ public class MentorApiMyBatisConfiguration {
   @ConditionalOnMissingBean
   public LearningPlanMapper learningPlanMapper(SqlSessionTemplate sqlSessionTemplate) {
     return sqlSessionTemplate.getMapper(LearningPlanMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanTemplateMapper learningPlanTemplateMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(LearningPlanTemplateMapper.class);
   }
 
   @Bean
@@ -160,6 +169,14 @@ public class MentorApiMyBatisConfiguration {
       LearningPlanMapper learningPlanMapper,
       ObjectMapper objectMapper) {
     return new MyBatisLearningPlanRepository(learningPlanMapper, objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(LearningPlanTemplateRepository.class)
+  public LearningPlanTemplateRepository learningPlanTemplateRepository(
+      LearningPlanTemplateMapper learningPlanTemplateMapper,
+      ObjectMapper objectMapper) {
+    return new MyBatisLearningPlanTemplateRepository(learningPlanTemplateMapper, objectMapper);
   }
 
   @Bean

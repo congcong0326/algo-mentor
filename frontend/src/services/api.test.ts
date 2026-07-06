@@ -10,6 +10,8 @@ import {
   getAdminUserDetail,
   getAdminUsers,
   getHealth,
+  getLearningPlanTemplate,
+  getLearningPlanTemplates,
   getLearningPlans,
   getUserAiPreference,
   listMistakeNotes,
@@ -17,6 +19,7 @@ import {
   requireApiData,
   setApiLocale,
   streamAgentConversation,
+  createLearningPlanDraftFromTemplate,
   streamLearningPlanDraftRevision,
   streamLearningPlanExtensionProposal,
   streamLearningPlanExtensionProposalRevision,
@@ -614,6 +617,175 @@ describe('api request tracing', () => {
       status: 409,
       code: 'TOOL_PERMISSION_REQUEST_EXPIRED',
       message: 'Permission request expired',
+    });
+  });
+});
+
+describe('learning plan template api', () => {
+  it('loads learning plan templates', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: [{
+        templateId: 'neetcode_blind_75_interview_core',
+        title: 'Blind 75',
+        summary: '面试高频基础模板',
+        intent: 'INTERVIEW_SPRINT',
+        defaultDurationWeeks: 4,
+        level: 'INTERMEDIATE',
+        defaultWeeklyHours: 8,
+        difficultyPreference: 'MEDIUM',
+        interviewOriented: true,
+        topicPreferences: ['Array'],
+        targetAudience: '准备算法面试的学习者',
+        difficultyMix: {},
+        expectedOutcome: '掌握核心题型',
+        sourceName: 'neetcode-gh/leetcode',
+        sourceCommit: '9907b7fed441fa55083c0751e208b7197101dbba',
+        problemCount: 75,
+        matchedProblemCount: 69,
+        missingProblemCount: 6,
+      }],
+      timestamp: '2026-06-22T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const response = await getLearningPlanTemplates();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plan-templates',
+      expect.objectContaining({
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+      }),
+    );
+    expect(requestHeaders(fetchMock).get('Accept')).toBe('application/json');
+    expect(response.data?.[0].templateId).toBe('neetcode_blind_75_interview_core');
+  });
+
+  it('loads a learning plan template detail with an encoded id', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        templateId: 'source/template id',
+        title: 'Blind 75',
+        summary: '面试高频基础模板',
+        intent: 'INTERVIEW_SPRINT',
+        goal: '准备算法面试',
+        defaultDurationWeeks: 4,
+        level: 'INTERMEDIATE',
+        defaultWeeklyHours: 8,
+        programmingLanguage: 'Java',
+        difficultyPreference: 'MEDIUM',
+        interviewOriented: true,
+        topicPreferences: ['Array'],
+        targetAudience: '准备算法面试的学习者',
+        difficultyMix: {},
+        prerequisites: [],
+        recommendedFor: [],
+        notRecommendedFor: [],
+        expectedOutcome: '掌握核心题型',
+        sourceName: 'neetcode-gh/leetcode',
+        sourceUrl: 'https://github.com/neetcode-gh/leetcode',
+        sourceCommit: '9907b7fed441fa55083c0751e208b7197101dbba',
+        sourceDataPath: '.problemSiteData.json',
+        sourceDescription: 'source',
+        curationNotes: 'notes',
+        licenseNotice: 'MIT metadata only',
+        problemCount: 75,
+        matchedProblemCount: 69,
+        missingProblemCount: 6,
+        metadata: {},
+        phases: [{
+          phaseIndex: 1,
+          title: '数组与哈希',
+          durationWeeks: 1,
+          focus: 'Array',
+          objectives: [],
+          recommendedTags: ['Array'],
+          acceptanceCriteria: [],
+          reviewAdvice: '复盘边界',
+          problemRefs: [],
+        }],
+      },
+      timestamp: '2026-06-22T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const response = await getLearningPlanTemplate('source/template id');
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plan-templates/source%2Ftemplate%20id',
+      expect.objectContaining({
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+      }),
+    );
+    expect(response.data?.programmingLanguage).toBe('Java');
+  });
+
+  it('creates a learning plan draft from a template', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        draftId: 101,
+        status: 'GENERATED',
+        assistantMessage: '已根据模板生成学习计划草案。',
+        missingFields: [],
+        draftPlan: null,
+      },
+      timestamp: '2026-06-22T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const response = await createLearningPlanDraftFromTemplate({
+      templateId: 'neetcode_blind_75_interview_core',
+      durationWeeks: 4,
+      weeklyHours: 8,
+      programmingLanguage: 'Java',
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/learning-plans/drafts/from-template',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+        body: JSON.stringify({
+          templateId: 'neetcode_blind_75_interview_core',
+          durationWeeks: 4,
+          weeklyHours: 8,
+          programmingLanguage: 'Java',
+        }),
+      }),
+    );
+    const headers = requestHeaders(fetchMock);
+    expect(headers.get('Accept')).toBe('application/json');
+    expect(headers.get('Content-Type')).toBe('application/json');
+    expect(response.data?.draftId).toBe(101);
+  });
+
+  it('preserves server errors when template draft creation fails', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: false,
+      error: {
+        code: 'LEARNING_PLAN_TEMPLATE_NOT_FOUND',
+        messageKey: 'api.error.LEARNING_PLAN_TEMPLATE_NOT_FOUND',
+        message: '学习计划模板不存在。',
+      },
+      timestamp: '2026-06-22T00:00:00Z',
+    }, 404)));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await expect(createLearningPlanDraftFromTemplate({
+      templateId: 'missing',
+      durationWeeks: 4,
+      weeklyHours: 8,
+      programmingLanguage: 'Java',
+    })).rejects.toMatchObject({
+      status: 404,
+      code: 'LEARNING_PLAN_TEMPLATE_NOT_FOUND',
+      messageKey: 'api.error.LEARNING_PLAN_TEMPLATE_NOT_FOUND',
+      message: '学习计划模板不存在。',
     });
   });
 });

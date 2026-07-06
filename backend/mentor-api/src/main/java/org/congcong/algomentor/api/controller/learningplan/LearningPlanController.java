@@ -29,6 +29,7 @@ import org.congcong.algomentor.api.learningplan.model.LearningPlanMessageRequest
 import org.congcong.algomentor.api.learningplan.model.LearningPlanPageResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanResponseMapper;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanRevisionRequest;
+import org.congcong.algomentor.api.learningplan.model.LearningPlanTemplateDraftRequest;
 import org.congcong.algomentor.api.learningplan.service.LearningPlanDraftStreamSseMapper;
 import org.congcong.algomentor.api.learningplan.service.LearningPlanProposalStreamSseMapper;
 import org.congcong.algomentor.api.learningplan.service.SseLearningPlanDraftStreamSubscriber;
@@ -39,6 +40,7 @@ import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionApplyService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalGroupService;
@@ -46,6 +48,7 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.L
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionProposalStreamService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanProposalStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
+import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateDraftService;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
@@ -82,6 +85,7 @@ public class LearningPlanController {
   private final ObjectProvider<LearningPlanExtensionApplyService> extensionApplyServiceProvider;
   private final ObjectProvider<LearningPlanProposalGroupService> proposalGroupServiceProvider;
   private final ObjectProvider<PracticeSessionRepository> practiceSessionRepositoryProvider;
+  private final ObjectProvider<LearningPlanTemplateDraftService> templateDraftServiceProvider;
   private final LearningPlanDraftStreamSseMapper draftStreamSseMapper;
   private final LearningPlanProposalStreamSseMapper proposalStreamSseMapper;
   private final ApiSseProperties sseProperties;
@@ -102,6 +106,7 @@ public class LearningPlanController {
       ObjectProvider<LearningPlanExtensionApplyService> extensionApplyServiceProvider,
       ObjectProvider<LearningPlanProposalGroupService> proposalGroupServiceProvider,
       ObjectProvider<PracticeSessionRepository> practiceSessionRepositoryProvider,
+      ObjectProvider<LearningPlanTemplateDraftService> templateDraftServiceProvider,
       ApiSseProperties sseProperties,
       ObjectProvider<SseOpsRecorder> sseOpsRecorder,
       ObjectProvider<LearningOpsRecorder> learningOpsRecorder) {
@@ -117,6 +122,7 @@ public class LearningPlanController {
     this.extensionApplyServiceProvider = extensionApplyServiceProvider;
     this.proposalGroupServiceProvider = proposalGroupServiceProvider;
     this.practiceSessionRepositoryProvider = practiceSessionRepositoryProvider;
+    this.templateDraftServiceProvider = templateDraftServiceProvider;
     this.draftStreamSseMapper = new LearningPlanDraftStreamSseMapper();
     this.proposalStreamSseMapper = new LearningPlanProposalStreamSseMapper();
     this.sseProperties = sseProperties;
@@ -222,6 +228,14 @@ public class LearningPlanController {
         "learning-plan-draft-" + draftId + "-" + UUID.randomUUID(),
         request.message() == null ? 0 : request.message().getBytes(StandardCharsets.UTF_8).length,
         () -> draftService.continueDraft(userId, draftId, request.message()));
+  }
+
+  @PostMapping(ApiContractConstants.LEARNING_PLAN_DRAFT_FROM_TEMPLATE_PATH)
+  public ApiResponse<LearningPlanDraftResponse> createDraftFromTemplate(
+      @RequestBody LearningPlanTemplateDraftRequest request) {
+    long userId = requireCurrentUserId();
+    LearningPlanDraftResult result = requiredTemplateDraftService().createDraft(userId, request.toCommand());
+    return ApiResponse.success(LearningPlanResponseMapper.toDraftResponse(result));
   }
 
   @PostMapping(ApiContractConstants.LEARNING_PLAN_DRAFTS_PATH
@@ -423,6 +437,14 @@ public class LearningPlanController {
     return proposalGroupServiceProvider.getIfAvailable(() -> {
       throw unavailableGovernance();
     });
+  }
+
+  private LearningPlanTemplateDraftService requiredTemplateDraftService() {
+    LearningPlanTemplateDraftService service = templateDraftServiceProvider.getIfAvailable();
+    if (service == null) {
+      throw new LearningPlanException("LEARNING_PLAN_REPOSITORY_UNAVAILABLE", "学习计划模板服务不可用。");
+    }
+    return service;
   }
 
   private AiRunAdmissionException unavailableGovernance() {

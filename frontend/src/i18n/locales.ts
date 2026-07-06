@@ -354,6 +354,25 @@ export interface LocaleResources {
     generatePlan: string;
     generateDraft: string;
     generating: string;
+    createMode: string;
+    createWithAi: string;
+    createFromTemplate: string;
+    templateLoading: string;
+    templateDetailLoading: string;
+    templateLoadFailed: string;
+    templateDetailLoadFailed: string;
+    templateEmpty: string;
+    templateGenerateStart: string;
+    templateGenerateFailed: string;
+    templateGenerateDraft: string;
+    templateSelected: string;
+    templateDefaultRhythm: (weeks: number, hours: number) => string;
+    templateSourceCommit: (commit: string) => string;
+    templateProblemStats: (matched: number, missing: number, total: number) => string;
+    templateMissingNotice: (missing: number) => string;
+    templateDurationTooShort: (minimumWeeks: number) => string;
+    templateTargetAudience: string;
+    templateExpectedOutcome: string;
     scenario: string;
     duration: string;
     durationInput: string;
@@ -857,6 +876,25 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       generatePlan: '生成训练方案',
       generateDraft: '生成方案草案',
       generating: '生成中',
+      createMode: '创建方式',
+      createWithAi: 'AI 个性化生成',
+      createFromTemplate: '从模板创建',
+      templateLoading: '正在加载模板...',
+      templateDetailLoading: '正在加载模板详情...',
+      templateLoadFailed: '学习计划模板加载失败',
+      templateDetailLoadFailed: '学习计划模板详情加载失败',
+      templateEmpty: '暂无可用模板',
+      templateGenerateStart: '正在按模板生成训练方案',
+      templateGenerateFailed: '按模板生成训练方案失败',
+      templateGenerateDraft: '按模板生成草案',
+      templateSelected: '当前模板',
+      templateDefaultRhythm: (weeks, hours) => `默认 ${weeks} 周 · ${hours}h/周`,
+      templateSourceCommit: (commit) => `来源 commit：${commit}`,
+      templateProblemStats: (matched, missing, total) => `题目匹配 ${matched}/${total}，缺失 ${missing}`,
+      templateMissingNotice: (missing) => `缺失的 ${missing} 道题不会进入草稿推荐题。`,
+      templateDurationTooShort: (minimumWeeks) => `模板周期不能少于 ${minimumWeeks} 周。`,
+      templateTargetAudience: '适合人群',
+      templateExpectedOutcome: '完成目标',
       scenario: '训练场景',
       duration: '周期',
       durationInput: '训练周期',
@@ -1403,6 +1441,25 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       generatePlan: 'Generate Plan',
       generateDraft: 'Generate Draft',
       generating: 'Generating',
+      createMode: 'Creation method',
+      createWithAi: 'AI Personalization',
+      createFromTemplate: 'From Template',
+      templateLoading: 'Loading templates...',
+      templateDetailLoading: 'Loading template details...',
+      templateLoadFailed: 'Failed to load learning plan templates',
+      templateDetailLoadFailed: 'Failed to load learning plan template details',
+      templateEmpty: 'No templates available',
+      templateGenerateStart: 'Generating a plan from the template',
+      templateGenerateFailed: 'Failed to generate a plan from the template',
+      templateGenerateDraft: 'Generate from Template',
+      templateSelected: 'Selected Template',
+      templateDefaultRhythm: (weeks, hours) => `${weeks} ${weeks === 1 ? 'week' : 'weeks'} · ${hours}h/week default`,
+      templateSourceCommit: (commit) => `Source commit: ${commit}`,
+      templateProblemStats: (matched, missing, total) => `${matched}/${total} problems matched, ${missing} missing`,
+      templateMissingNotice: (missing) => `${missing} missing ${missing === 1 ? 'problem is' : 'problems are'} kept out of draft recommendations.`,
+      templateDurationTooShort: (minimumWeeks) => `Template duration must be at least ${minimumWeeks} ${minimumWeeks === 1 ? 'week' : 'weeks'}.`,
+      templateTargetAudience: 'Audience',
+      templateExpectedOutcome: 'Outcome',
       scenario: 'Scenario',
       duration: 'Duration',
       durationInput: 'Training Duration',

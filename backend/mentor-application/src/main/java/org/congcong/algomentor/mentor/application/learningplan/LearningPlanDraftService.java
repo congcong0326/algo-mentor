@@ -59,7 +59,7 @@ public class LearningPlanDraftService {
     if (draft.status() != LearningPlanDraftStatus.GENERATED || draft.draftPlan() == null) {
       throw new LearningPlanException("LEARNING_PLAN_DRAFT_NOT_GENERATED", "只有已生成的学习计划草案可以确认保存。");
     }
-    validator.validateGeneratedPlan(draft.draftPlan());
+    validator.validateConfirmablePlan(draft.draftPlan());
     Instant now = clock.instant();
     LearningPlan savedPlan = planRepository.save(new LearningPlan(
         null,

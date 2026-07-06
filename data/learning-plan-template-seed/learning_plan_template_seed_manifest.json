@@ -1,0 +1,92 @@
+{
+  "files": {
+    "learning_plan_template_problem_refs.jsonl": {
+      "bytes": 102934,
+      "path": "data/learning-plan-template-seed/learning_plan_template_problem_refs.jsonl",
+      "sha256": "23d58d59625cede3b4a880b7662184a39e7130f2e201a6ca80574c02d3444c2e"
+    },
+    "learning_plan_template_seed_metadata.md": {
+      "bytes": 1727,
+      "path": "data/learning-plan-template-seed/learning_plan_template_seed_metadata.md",
+      "sha256": "fb218bdffd501ce543eddbd0a75638e35f614f4e554c02204f4d917f2c7e9b7b"
+    },
+    "learning_plan_templates.jsonl": {
+      "bytes": 14516,
+      "path": "data/learning-plan-template-seed/learning_plan_templates.jsonl",
+      "sha256": "452274a387420ab3498dfb07e3075cb47f7aa86b4c86a21d23134c3367c28d3d"
+    }
+  },
+  "generatedAt": "2026-07-06T14:15:50.359604+00:00",
+  "matchedProblemCount": 212,
+  "missingProblemCount": 13,
+  "problemRefCount": 225,
+  "schemaVersion": 1,
+  "source": {
+    "commit": "9907b7fed441fa55083c0751e208b7197101dbba",
+    "dataPath": ".problemSiteData.json",
+    "name": "neetcode-gh/leetcode",
+    "url": "https://github.com/neetcode-gh/leetcode"
+  },
+  "templateCount": 2,
+  "templates": {
+    "neetcode_150_systematic_interview": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 28,
+          "ratio": 0.1867
+        },
+        "Hard": {
+          "count": 21,
+          "ratio": 0.14
+        },
+        "Medium": {
+          "count": 101,
+          "ratio": 0.6733
+        }
+      },
+      "matchedProblemCount": 143,
+      "missingProblemCount": 7,
+      "missingProblemExamples": [
+        "encode-and-decode-strings",
+        "walls-and-gates",
+        "number-of-connected-components-in-an-undirected-graph",
+        "graph-valid-tree",
+        "alien-dictionary",
+        "meeting-rooms",
+        "meeting-rooms-ii"
+      ],
+      "phaseCount": 12,
+      "problemCount": 150,
+      "title": "NeetCode 150 系统面试计划"
+    },
+    "neetcode_blind_75_interview_core": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 19,
+          "ratio": 0.2533
+        },
+        "Hard": {
+          "count": 7,
+          "ratio": 0.0933
+        },
+        "Medium": {
+          "count": 49,
+          "ratio": 0.6533
+        }
+      },
+      "matchedProblemCount": 69,
+      "missingProblemCount": 6,
+      "missingProblemExamples": [
+        "encode-and-decode-strings",
+        "number-of-connected-components-in-an-undirected-graph",
+        "graph-valid-tree",
+        "alien-dictionary",
+        "meeting-rooms",
+        "meeting-rooms-ii"
+      ],
+      "phaseCount": 4,
+      "problemCount": 75,
+      "title": "NeetCode Blind 75 面试核心计划"
+    }
+  }
+}

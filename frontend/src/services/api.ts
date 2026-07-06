@@ -19,6 +19,9 @@ import type {
   LearningPlanMessageRequest,
   LearningPlanPageResponse,
   LearningPlanRevisionRequest,
+  LearningPlanTemplateDetailResponse,
+  LearningPlanTemplateDraftRequest,
+  LearningPlanTemplateSummaryResponse,
   PracticeMessageRequest,
   PracticeMessage,
   PracticeActiveRun,
@@ -819,6 +822,58 @@ export async function getLearningPlanDetail(
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Learning plan detail request failed');
+  }
+
+  return response.json();
+}
+
+export async function getLearningPlanTemplates(
+  signal?: AbortSignal,
+): Promise<ApiResponse<LearningPlanTemplateSummaryResponse[]>> {
+  const response = await apiFetch('/api/learning-plan-templates', {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan templates request failed');
+  }
+
+  return response.json();
+}
+
+export async function getLearningPlanTemplate(
+  templateId: string,
+  signal?: AbortSignal,
+): Promise<ApiResponse<LearningPlanTemplateDetailResponse>> {
+  const response = await apiFetch(`/api/learning-plan-templates/${encodeURIComponent(templateId)}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan template detail request failed');
+  }
+
+  return response.json();
+}
+
+export async function createLearningPlanDraftFromTemplate(
+  request: LearningPlanTemplateDraftRequest,
+  signal?: AbortSignal,
+): Promise<ApiResponse<LearningPlanDraftResponse>> {
+  const response = await apiFetch('/api/learning-plans/drafts/from-template', {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan template draft request failed');
   }
 
   return response.json();

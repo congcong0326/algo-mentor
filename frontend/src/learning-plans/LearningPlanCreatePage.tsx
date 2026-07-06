@@ -1,6 +1,7 @@
 import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 import {
+  createLearningPlanDraftFromTemplate,
   confirmLearningPlanDraft,
   requireApiData,
   sendLearningPlanDraftMessage,
@@ -14,14 +15,17 @@ import type {
   LearningPlanDraftErrorEvent,
   LearningPlanDraftRevisionReadyEvent,
   LearningPlanDraftResponse,
+  LearningPlanTemplateDraftRequest,
   SseStreamEvent,
 } from '../types/api';
 import { useI18n } from '../i18n/I18nProvider';
 import AgentWorkIndicator from './AgentWorkIndicator';
 import LearningPlanCreateForm from './LearningPlanCreateForm';
 import LearningPlanDraftPanel from './LearningPlanDraftPanel';
+import LearningPlanTemplateCreatePanel from './LearningPlanTemplateCreatePanel';
 
 type LearningPlanCreateState = 'editing' | 'generating' | 'collecting' | 'previewing' | 'confirming';
+type LearningPlanCreateMode = 'ai' | 'template';
 
 interface LearningPlanCreatePageProps {
   onBackToPlans: () => void;
@@ -34,6 +38,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
   const [draft, setDraft] = useState<LearningPlanDraftResponse>();
   const [workEvent, setWorkEvent] = useState<AgentWorkStatusEvent>();
   const [flowState, setFlowState] = useState<LearningPlanCreateState>('editing');
+  const [createMode, setCreateMode] = useState<LearningPlanCreateMode>('ai');
   const [error, setError] = useState('');
 
   async function submitDraft(request: LearningPlanCreateDraftRequest) {
@@ -47,6 +52,26 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
       });
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : resources.learningPlans.generateFailed);
+      setFlowState('editing');
+    }
+  }
+
+  async function submitTemplateDraft(request: LearningPlanTemplateDraftRequest) {
+    setFlowState('generating');
+    setError('');
+    setDraft(undefined);
+    setWorkEvent({ message: resources.learningPlans.templateGenerateStart });
+    try {
+      const nextDraft = requireApiData(
+        await createLearningPlanDraftFromTemplate(request),
+        resources.learningPlans.templateGenerateFailed,
+      );
+      setDraft(nextDraft);
+      setWorkEvent(undefined);
+      setFlowState(nextDraft.status === 'COLLECTING' ? 'collecting' : 'previewing');
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : resources.learningPlans.templateGenerateFailed);
+      setWorkEvent(undefined);
       setFlowState('editing');
     }
   }
@@ -199,17 +224,55 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
         </>
       ) : (
         <article className="learning-panel create-plan-page-panel">
+          <section className="question-block">
+            <strong>{resources.learningPlans.createMode}</strong>
+            <div className="segmented-grid create-mode-switch">
+              <button
+                aria-pressed={createMode === 'ai'}
+                className={createMode === 'ai' ? 'selected' : ''}
+                disabled={flowState === 'generating'}
+                onClick={() => {
+                  setCreateMode('ai');
+                  setError('');
+                }}
+                type="button"
+              >
+                {resources.learningPlans.createWithAi}
+              </button>
+              <button
+                aria-pressed={createMode === 'template'}
+                className={createMode === 'template' ? 'selected' : ''}
+                disabled={flowState === 'generating'}
+                onClick={() => {
+                  setCreateMode('template');
+                  setError('');
+                }}
+                type="button"
+              >
+                {resources.learningPlans.createFromTemplate}
+              </button>
+            </div>
+          </section>
           {flowState === 'generating' && (
             <AgentWorkIndicator active event={workEvent} error={error} />
           )}
-          <LearningPlanCreateForm
-            error={error}
-            key={formKey}
-            loading={flowState === 'generating'}
-            onCancel={onBackToPlans}
-            onSubmit={submitDraft}
-            submitLabel={resources.learningPlans.generatePlan}
-          />
+          {createMode === 'ai' ? (
+            <LearningPlanCreateForm
+              error={error}
+              key={formKey}
+              loading={flowState === 'generating'}
+              onCancel={onBackToPlans}
+              onSubmit={submitDraft}
+              submitLabel={resources.learningPlans.generatePlan}
+            />
+          ) : (
+            <LearningPlanTemplateCreatePanel
+              error={error}
+              loading={flowState === 'generating'}
+              onCancel={onBackToPlans}
+              onSubmit={submitTemplateDraft}
+            />
+          )}
         </article>
       )}
     </section>

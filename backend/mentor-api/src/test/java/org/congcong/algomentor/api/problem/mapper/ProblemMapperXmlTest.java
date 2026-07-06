@@ -113,5 +113,26 @@ class ProblemMapperXmlTest {
         .isTrue();
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper.updatePlanJsonSnapshot")).isTrue();
+
+    try (Reader reader = Resources.getResourceAsReader("mapper/learningplan/LearningPlanTemplateMapper.xml")) {
+      new XMLMapperBuilder(
+          reader,
+          configuration,
+          "mapper/learningplan/LearningPlanTemplateMapper.xml",
+          configuration.getSqlFragments()).parse();
+    }
+
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.learningplan.mapper.LearningPlanTemplateMapper.upsertTemplate")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.learningplan.mapper.LearningPlanTemplateMapper.insertPhase")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.learningplan.mapper.LearningPlanTemplateMapper.insertProblemRef")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.learningplan.mapper.LearningPlanTemplateMapper.findAllTemplates")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.learningplan.mapper.LearningPlanTemplateMapper.findByTemplateId")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.api.learningplan.mapper.LearningPlanTemplateMapper.insertImportRun")).isTrue();
   }
 }

@@ -67,9 +67,19 @@ public final class ApiContractConstants {
   public static final String LEARNING_PLANS_BASE_PATH = "/api/learning-plans";
 
   /**
+   * 学习计划模板接口根路径。
+   */
+  public static final String LEARNING_PLAN_TEMPLATES_BASE_PATH = "/api/learning-plan-templates";
+
+  /**
    * 学习计划草案集合路径。
    */
   public static final String LEARNING_PLAN_DRAFTS_PATH = "/drafts";
+
+  /**
+   * 从学习计划模板生成草案路径。
+   */
+  public static final String LEARNING_PLAN_DRAFT_FROM_TEMPLATE_PATH = "/drafts/from-template";
 
   /**
    * 学习计划草案流式创建路径。

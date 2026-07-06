@@ -27,6 +27,8 @@ PROBLEM_SEED_DIR := data/seed
 PROBLEM_SEED_ABS_DIR := $(abspath $(PROBLEM_SEED_DIR))
 PROBLEM_COMPANY_SEED_DIR := data/company-seed
 PROBLEM_COMPANY_SEED_ABS_DIR := $(abspath $(PROBLEM_COMPANY_SEED_DIR))
+LEARNING_PLAN_TEMPLATE_SEED_DIR := data/learning-plan-template-seed
+LEARNING_PLAN_TEMPLATE_SEED_ABS_DIR := $(abspath $(LEARNING_PLAN_TEMPLATE_SEED_DIR))
 DB_SEED_URL := jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)
 DB_SEED_USER := $(POSTGRES_USER)
 DB_SEED_PASSWORD := $(POSTGRES_PASSWORD)
@@ -235,7 +237,7 @@ db-install:
 
 db-seed:
 	API_PORT="$(API_PORT)" SERVER_PORT="$(API_PORT)" $(MAVEN) -pl mentor-api -am -DskipTests spring-boot:run \
-		-Dspring-boot.run.arguments="--algo-mentor.problem.seed.enabled=true --algo-mentor.problem.seed.path=$(PROBLEM_SEED_ABS_DIR) --algo-mentor.problem.company-seed.enabled=true --algo-mentor.problem.company-seed.path=$(PROBLEM_COMPANY_SEED_ABS_DIR) --spring.datasource.url=$(DB_SEED_URL) --spring.datasource.username=$(DB_SEED_USER) --spring.datasource.password=$(DB_SEED_PASSWORD) --spring.flyway.enabled=true" \
+		-Dspring-boot.run.arguments="--algo-mentor.problem.seed.enabled=true --algo-mentor.problem.seed.path=$(PROBLEM_SEED_ABS_DIR) --algo-mentor.problem.company-seed.enabled=true --algo-mentor.problem.company-seed.path=$(PROBLEM_COMPANY_SEED_ABS_DIR) --algo-mentor.learning-plan-template.seed.enabled=true --algo-mentor.learning-plan-template.seed.path=$(LEARNING_PLAN_TEMPLATE_SEED_ABS_DIR) --spring.datasource.url=$(DB_SEED_URL) --spring.datasource.username=$(DB_SEED_USER) --spring.datasource.password=$(DB_SEED_PASSWORD) --spring.flyway.enabled=true" \
 		-Dspring-boot.run.profiles=local
 
 sync-frontend:

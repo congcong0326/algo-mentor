@@ -341,6 +341,74 @@ export interface LearningPlanCreateDraftRequest {
   topicPreferences: string[];
 }
 
+export interface LearningPlanTemplateSummaryResponse {
+  templateId: string;
+  title: string;
+  summary: string;
+  intent: LearningPlanIntent;
+  defaultDurationWeeks: number;
+  level: LearningPlanLevel;
+  defaultWeeklyHours: number;
+  difficultyPreference: LearningPlanDifficultyPreference;
+  interviewOriented: boolean;
+  topicPreferences: string[];
+  targetAudience: string;
+  difficultyMix: Record<string, unknown>;
+  expectedOutcome: string;
+  sourceName: string;
+  sourceCommit?: string | null;
+  problemCount: number;
+  matchedProblemCount: number;
+  missingProblemCount: number;
+}
+
+export interface LearningPlanTemplateProblemRefResponse {
+  phaseIndex: number;
+  sortOrder: number;
+  sourceOrder: number;
+  problemSlug?: string | null;
+  sourceTitle: string;
+  sourceDifficulty?: string | null;
+  pattern?: string | null;
+  sourceUrl?: string | null;
+  matchedProblem: boolean;
+  metadata: Record<string, unknown>;
+}
+
+export interface LearningPlanTemplatePhaseResponse {
+  phaseIndex: number;
+  title: string;
+  durationWeeks: number;
+  focus: string;
+  objectives: string[];
+  recommendedTags: string[];
+  acceptanceCriteria: string[];
+  reviewAdvice: string;
+  problemRefs: LearningPlanTemplateProblemRefResponse[];
+}
+
+export interface LearningPlanTemplateDetailResponse extends LearningPlanTemplateSummaryResponse {
+  goal: string;
+  programmingLanguage?: string | null;
+  prerequisites: string[];
+  recommendedFor: string[];
+  notRecommendedFor: string[];
+  sourceUrl?: string | null;
+  sourceDataPath?: string | null;
+  sourceDescription: string;
+  curationNotes: string;
+  licenseNotice: string;
+  metadata: Record<string, unknown>;
+  phases: LearningPlanTemplatePhaseResponse[];
+}
+
+export interface LearningPlanTemplateDraftRequest {
+  templateId: string;
+  durationWeeks?: number;
+  weeklyHours?: number;
+  programmingLanguage?: string;
+}
+
 export interface LearningPlanMessageRequest {
   message: string;
 }

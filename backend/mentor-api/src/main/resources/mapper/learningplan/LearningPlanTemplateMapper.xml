@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.learningplan.mapper.LearningPlanTemplateMapper">
+
+  <resultMap id="LearningPlanTemplateRowMap"
+      type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanTemplateRow">
+    <constructor>
+      <arg column="id" javaType="java.lang.Long"/>
+      <arg column="template_id" javaType="string"/>
+      <arg column="title" javaType="string"/>
+      <arg column="summary" javaType="string"/>
+      <arg column="intent" javaType="string"/>
+      <arg column="goal" javaType="string"/>
+      <arg column="default_duration_weeks" javaType="java.lang.Integer"/>
+      <arg column="level" javaType="string"/>
+      <arg column="default_weekly_hours" javaType="java.lang.Integer"/>
+      <arg column="programming_language" javaType="string"/>
+      <arg column="difficulty_preference" javaType="string"/>
+      <arg column="interview_oriented" javaType="java.lang.Boolean"/>
+      <arg column="topic_preferences_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="target_audience" javaType="string"/>
+      <arg column="difficulty_mix_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="prerequisites_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="recommended_for_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="not_recommended_for_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="expected_outcome" javaType="string"/>
+      <arg column="source_name" javaType="string"/>
+      <arg column="source_url" javaType="string"/>
+      <arg column="source_commit" javaType="string"/>
+      <arg column="source_data_path" javaType="string"/>
+      <arg column="source_description" javaType="string"/>
+      <arg column="curation_notes" javaType="string"/>
+      <arg column="license_notice" javaType="string"/>
+      <arg column="problem_count" javaType="java.lang.Integer"/>
+      <arg column="matched_problem_count" javaType="java.lang.Integer"/>
+      <arg column="missing_problem_count" javaType="java.lang.Integer"/>
+      <arg column="metadata_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <resultMap id="LearningPlanTemplatePhaseRowMap"
+      type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanTemplatePhaseRow">
+    <constructor>
+      <arg column="id" javaType="java.lang.Long"/>
+      <arg column="template_id" javaType="java.lang.Long"/>
+      <arg column="phase_index" javaType="java.lang.Integer"/>
+      <arg column="title" javaType="string"/>
+      <arg column="duration_weeks" javaType="java.lang.Integer"/>
+      <arg column="focus" javaType="string"/>
+      <arg column="objectives_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="recommended_tags_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="acceptance_criteria_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="review_advice" javaType="string"/>
+    </constructor>
+  </resultMap>
+
+  <resultMap id="LearningPlanTemplateProblemRefRowMap"
+      type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanTemplateProblemRefRow">
+    <constructor>
+      <arg column="id" javaType="java.lang.Long"/>
+      <arg column="template_id" javaType="java.lang.Long"/>
+      <arg column="phase_id" javaType="java.lang.Long"/>
+      <arg column="phase_index" javaType="java.lang.Integer"/>
+      <arg column="sort_order" javaType="java.lang.Integer"/>
+      <arg column="source_order" javaType="java.lang.Integer"/>
+      <arg column="problem_slug" javaType="string"/>
+      <arg column="source_title" javaType="string"/>
+      <arg column="source_difficulty" javaType="string"/>
+      <arg column="pattern" javaType="string"/>
+      <arg column="source_url" javaType="string"/>
+      <arg column="matched_problem" javaType="java.lang.Boolean"/>
+      <arg column="metadata_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+    </constructor>
+  </resultMap>
+
+  <select id="upsertTemplate" resultType="java.lang.Long" affectData="true">
+    INSERT INTO learning_plan_template (
+      template_id,
+      title,
+      summary,
+      intent,
+      goal,
+      default_duration_weeks,
+      level,
+      default_weekly_hours,
+      programming_language,
+      difficulty_preference,
+      interview_oriented,
+      topic_preferences_json,
+      target_audience,
+      difficulty_mix_json,
+      prerequisites_json,
+      recommended_for_json,
+      not_recommended_for_json,
+      expected_outcome,
+      source_name,
+      source_url,
+      source_commit,
+      source_data_path,
+      source_description,
+      curation_notes,
+      license_notice,
+      problem_count,
+      matched_problem_count,
+      missing_problem_count,
+      metadata_json,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{templateId},
+      #{title},
+      #{summary},
+      #{intent},
+      #{goal},
+      #{defaultDurationWeeks},
+      #{level},
+      #{defaultWeeklyHours},
+      #{programmingLanguage},
+      #{difficultyPreference},
+      #{interviewOriented},
+      #{topicPreferencesJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{targetAudience},
+      #{difficultyMixJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{prerequisitesJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{recommendedForJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{notRecommendedForJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{expectedOutcome},
+      #{sourceName},
+      #{sourceUrl},
+      #{sourceCommit},
+      #{sourceDataPath},
+      #{sourceDescription},
+      #{curationNotes},
+      #{licenseNotice},
+      #{problemCount},
+      #{matchedProblemCount},
+      #{missingProblemCount},
+      #{metadataJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      NOW(),
+      NOW()
+    )
+    ON CONFLICT (template_id) DO UPDATE
+    SET title = EXCLUDED.title,
+        summary = EXCLUDED.summary,
+        intent = EXCLUDED.intent,
+        goal = EXCLUDED.goal,
+        default_duration_weeks = EXCLUDED.default_duration_weeks,
+        level = EXCLUDED.level,
+        default_weekly_hours = EXCLUDED.default_weekly_hours,
+        programming_language = EXCLUDED.programming_language,
+        difficulty_preference = EXCLUDED.difficulty_preference,
+        interview_oriented = EXCLUDED.interview_oriented,
+        topic_preferences_json = EXCLUDED.topic_preferences_json,
+        target_audience = EXCLUDED.target_audience,
+        difficulty_mix_json = EXCLUDED.difficulty_mix_json,
+        prerequisites_json = EXCLUDED.prerequisites_json,
+        recommended_for_json = EXCLUDED.recommended_for_json,
+        not_recommended_for_json = EXCLUDED.not_recommended_for_json,
+        expected_outcome = EXCLUDED.expected_outcome,
+        source_name = EXCLUDED.source_name,
+        source_url = EXCLUDED.source_url,
+        source_commit = EXCLUDED.source_commit,
+        source_data_path = EXCLUDED.source_data_path,
+        source_description = EXCLUDED.source_description,
+        curation_notes = EXCLUDED.curation_notes,
+        license_notice = EXCLUDED.license_notice,
+        problem_count = EXCLUDED.problem_count,
+        matched_problem_count = EXCLUDED.matched_problem_count,
+        missing_problem_count = EXCLUDED.missing_problem_count,
+        metadata_json = EXCLUDED.metadata_json,
+        updated_at = NOW()
+    RETURNING id
+  </select>
+
+  <delete id="deleteProblemRefsByTemplateId">
+    DELETE FROM learning_plan_template_problem_ref
+    WHERE template_id = #{templateDbId}
+  </delete>
+
+  <delete id="deletePhasesByTemplateId">
+    DELETE FROM learning_plan_template_phase
+    WHERE template_id = #{templateDbId}
+  </delete>
+
+  <select id="insertPhase" resultType="java.lang.Long" affectData="true">
+    INSERT INTO learning_plan_template_phase (
+      template_id,
+      phase_index,
+      title,
+      duration_weeks,
+      focus,
+      objectives_json,
+      recommended_tags_json,
+      acceptance_criteria_json,
+      review_advice,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{templateDbId},
+      #{phaseIndex},
+      #{title},
+      #{durationWeeks},
+      #{focus},
+      #{objectivesJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{recommendedTagsJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{acceptanceCriteriaJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{reviewAdvice},
+      NOW(),
+      NOW()
+    )
+    RETURNING id
+  </select>
+
+  <insert id="insertProblemRef">
+    INSERT INTO learning_plan_template_problem_ref (
+      template_id,
+      phase_id,
+      phase_index,
+      sort_order,
+      source_order,
+      problem_slug,
+      source_title,
+      source_difficulty,
+      pattern,
+      source_url,
+      matched_problem,
+      metadata_json,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{templateDbId},
+      #{phaseDbId},
+      #{phaseIndex},
+      #{sortOrder},
+      #{sourceOrder},
+      #{problemSlug},
+      #{sourceTitle},
+      #{sourceDifficulty},
+      #{pattern},
+      #{sourceUrl},
+      #{matchedProblem},
+      #{metadataJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      NOW(),
+      NOW()
+    )
+  </insert>
+
+  <select id="findAllTemplates" resultMap="LearningPlanTemplateRowMap">
+    SELECT
+      id,
+      template_id,
+      title,
+      summary,
+      intent,
+      goal,
+      default_duration_weeks,
+      level,
+      default_weekly_hours,
+      programming_language,
+      difficulty_preference,
+      interview_oriented,
+      topic_preferences_json,
+      target_audience,
+      difficulty_mix_json,
+      prerequisites_json,
+      recommended_for_json,
+      not_recommended_for_json,
+      expected_outcome,
+      source_name,
+      source_url,
+      source_commit,
+      source_data_path,
+      source_description,
+      curation_notes,
+      license_notice,
+      problem_count,
+      matched_problem_count,
+      missing_problem_count,
+      metadata_json,
+      created_at,
+      updated_at
+    FROM learning_plan_template
+    ORDER BY default_duration_weeks ASC, template_id ASC
+  </select>
+
+  <select id="findByTemplateId" resultMap="LearningPlanTemplateRowMap">
+    SELECT
+      id,
+      template_id,
+      title,
+      summary,
+      intent,
+      goal,
+      default_duration_weeks,
+      level,
+      default_weekly_hours,
+      programming_language,
+      difficulty_preference,
+      interview_oriented,
+      topic_preferences_json,
+      target_audience,
+      difficulty_mix_json,
+      prerequisites_json,
+      recommended_for_json,
+      not_recommended_for_json,
+      expected_outcome,
+      source_name,
+      source_url,
+      source_commit,
+      source_data_path,
+      source_description,
+      curation_notes,
+      license_notice,
+      problem_count,
+      matched_problem_count,
+      missing_problem_count,
+      metadata_json,
+      created_at,
+      updated_at
+    FROM learning_plan_template
+    WHERE template_id = #{templateId}
+  </select>
+
+  <select id="findPhasesByTemplateDbId" resultMap="LearningPlanTemplatePhaseRowMap">
+    SELECT
+      id,
+      template_id,
+      phase_index,
+      title,
+      duration_weeks,
+      focus,
+      objectives_json,
+      recommended_tags_json,
+      acceptance_criteria_json,
+      review_advice
+    FROM learning_plan_template_phase
+    WHERE template_id = #{templateDbId}
+    ORDER BY phase_index ASC
+  </select>
+
+  <select id="findProblemRefsByTemplateDbId" resultMap="LearningPlanTemplateProblemRefRowMap">
+    SELECT
+      id,
+      template_id,
+      phase_id,
+      phase_index,
+      sort_order,
+      source_order,
+      problem_slug,
+      source_title,
+      source_difficulty,
+      pattern,
+      source_url,
+      matched_problem,
+      metadata_json
+    FROM learning_plan_template_problem_ref
+    WHERE template_id = #{templateDbId}
+    ORDER BY phase_index ASC, sort_order ASC, id ASC
+  </select>
+
+  <insert id="insertImportRun"
+      parameterType="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanTemplateImportRunRow">
+    INSERT INTO learning_plan_template_import_run (
+      source_name,
+      source_commit,
+      seed_path,
+      manifest_path,
+      metadata_path,
+      checksum,
+      template_count,
+      problem_ref_count,
+      matched_problem_count,
+      missing_problem_count,
+      error_count,
+      metadata_json,
+      created_at
+    )
+    VALUES (
+      #{sourceName},
+      #{sourceCommit},
+      #{seedPath},
+      #{manifestPath},
+      #{metadataPath},
+      #{checksum},
+      #{templateCount},
+      #{problemRefCount},
+      #{matchedProblemCount},
+      #{missingProblemCount},
+      #{errorCount},
+      #{metadataJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      NOW()
+    )
+  </insert>
+</mapper>

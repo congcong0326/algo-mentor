@@ -20,6 +20,8 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.L
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionProposalStreamService;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftPromptBuilder;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
+import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateDraftService;
+import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -181,6 +183,23 @@ public class LearningPlanConfiguration {
   @ConditionalOnMissingBean
   public LearningPlanService learningPlanService(LearningPlanRepository planRepository) {
     return new LearningPlanService(planRepository);
+  }
+
+  @Bean
+  @ConditionalOnBean(LearningPlanTemplateRepository.class)
+  @ConditionalOnMissingBean
+  public LearningPlanTemplateDraftService learningPlanTemplateDraftService(
+      LearningPlanTemplateRepository templateRepository,
+      LearningPlanDraftRepository draftRepository,
+      LearningPlanProblemCatalog problemCatalog,
+      LearningPlanDraftValidator validator,
+      Clock learningPlanClock) {
+    return new LearningPlanTemplateDraftService(
+        templateRepository,
+        draftRepository,
+        problemCatalog,
+        validator,
+        learningPlanClock);
   }
 
   @Bean

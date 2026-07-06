@@ -66,6 +66,8 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.L
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
+import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateDraftCommand;
+import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateDraftService;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
@@ -123,6 +125,9 @@ class LearningPlanControllerTest {
 
   @MockBean
   private PracticeSessionRepository practiceSessionRepository;
+
+  @MockBean
+  private LearningPlanTemplateDraftService templateDraftService;
 
   @MockBean
   private ApiSseProperties sseProperties;
@@ -352,6 +357,36 @@ class LearningPlanControllerTest {
         .andExpect(jsonPath("$.data.planId").value(900))
         .andExpect(jsonPath("$.data.title").value("四周 Java 算法面试冲刺计划"))
         .andExpect(jsonPath("$.data.status").value("ACTIVE"));
+    verifyNoInteractions(admissionService, lifecycleService);
+  }
+
+  @Test
+  void createDraftFromTemplateReturnsGeneratedDraftWithoutAiGovernance() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(templateDraftService.createDraft(eq(42L), any(LearningPlanTemplateDraftCommand.class)))
+        .thenReturn(new LearningPlanDraftResult(
+            101L,
+            LearningPlanDraftStatus.GENERATED,
+            "已根据模板生成学习计划草案。",
+            List.of(),
+            draftPlan()));
+
+    mockMvc.perform(post("/api/learning-plans/drafts/from-template")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "templateId": "neetcode_blind_75_interview_core",
+                  "durationWeeks": 4,
+                  "weeklyHours": 8,
+                  "programmingLanguage": "Java"
+                }
+                """))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.draftId").value(101))
+        .andExpect(jsonPath("$.data.status").value("GENERATED"))
+        .andExpect(jsonPath("$.data.draftPlan.title").value("四周 Java 算法面试冲刺计划"));
+
+    verify(templateDraftService).createDraft(eq(42L), any(LearningPlanTemplateDraftCommand.class));
     verifyNoInteractions(admissionService, lifecycleService);
   }
 

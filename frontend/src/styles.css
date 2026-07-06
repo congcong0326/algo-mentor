@@ -2708,7 +2708,8 @@ a {
 
 .modal-form,
 .question-block,
-.difficulty-control {
+.difficulty-control,
+.template-create-panel {
   display: grid;
   gap: 16px;
 }
@@ -2831,6 +2832,104 @@ a {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+}
+
+.create-mode-switch {
+  width: fit-content;
+}
+
+.template-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.template-card {
+  display: grid;
+  gap: 10px;
+  min-height: 188px;
+  padding: 14px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  text-align: left;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.template-card:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--border-strong);
+  background: var(--surface-muted);
+  box-shadow: var(--shadow-hover);
+}
+
+.template-card.selected {
+  border-color: var(--action-primary);
+  background: var(--accent-warm-soft);
+}
+
+.template-card-title,
+.template-card-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.template-card-title svg,
+.template-card-meta svg {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+}
+
+.template-card-title strong {
+  overflow-wrap: anywhere;
+}
+
+.template-card > span:not(.template-card-title):not(.template-card-meta) {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.template-card-meta {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.template-detail-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.template-detail-strip > div {
+  display: grid;
+  gap: 6px;
+  min-height: 78px;
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-muted);
+}
+
+.template-detail-strip span {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.template-detail-strip strong {
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 .checkbox-row {
@@ -5168,6 +5267,11 @@ a {
   }
 
   .practice-composer {
+    grid-template-columns: 1fr;
+  }
+
+  .template-card-grid,
+  .template-detail-strip {
     grid-template-columns: 1fr;
   }
 
