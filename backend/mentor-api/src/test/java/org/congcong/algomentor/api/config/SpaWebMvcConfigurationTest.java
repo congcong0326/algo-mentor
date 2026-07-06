@@ -55,6 +55,24 @@ class SpaWebMvcConfigurationTest {
   }
 
   @Test
+  void forwardsMistakeRoutesToIndexHtml() throws Exception {
+    mockMvc.perform(get("/mistakes"))
+        .andExpect(status().isOk())
+        .andExpect(forwardedUrl("/" + SpaRoutes.INDEX_HTML));
+
+    mockMvc.perform(get("/mistakes/review"))
+        .andExpect(status().isOk())
+        .andExpect(forwardedUrl("/" + SpaRoutes.INDEX_HTML));
+  }
+
+  @Test
+  void forwardsNewExtensionlessFrontendRoutesToIndexHtml() throws Exception {
+    mockMvc.perform(get("/future-feature/detail"))
+        .andExpect(status().isOk())
+        .andExpect(forwardedUrl("/" + SpaRoutes.INDEX_HTML));
+  }
+
+  @Test
   void doesNotCaptureApiRoutes() throws Exception {
     mockMvc.perform(get("/api/not-a-page"))
         .andExpect(status().isNotFound())
@@ -75,7 +93,7 @@ class SpaWebMvcConfigurationTest {
       WebMvcAutoConfiguration.class,
       ErrorMvcAutoConfiguration.class
   })
-  @Import(SpaWebMvcConfiguration.class)
+  @Import({SpaWebMvcConfiguration.class, SpaFallbackController.class})
   static class TestApplication {
   }
 }

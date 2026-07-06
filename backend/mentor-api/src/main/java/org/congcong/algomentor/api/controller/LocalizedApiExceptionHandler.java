@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 public class LocalizedApiExceptionHandler {
@@ -46,6 +47,7 @@ public class LocalizedApiExceptionHandler {
   public static final String VALIDATION_FAILED_CODE = "VALIDATION_FAILED";
   public static final String REQUEST_BODY_INVALID_CODE = "REQUEST_BODY_INVALID";
   public static final String REQUEST_METHOD_NOT_SUPPORTED_CODE = "REQUEST_METHOD_NOT_SUPPORTED";
+  public static final String RESOURCE_NOT_FOUND_CODE = "RESOURCE_NOT_FOUND";
   public static final String INTERNAL_ERROR_CODE = "INTERNAL_ERROR";
 
   private static final Logger log = LoggerFactory.getLogger(LocalizedApiExceptionHandler.class);
@@ -128,6 +130,11 @@ public class LocalizedApiExceptionHandler {
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
   public ResponseEntity<ApiResponse<Void>> methodNotSupported(HttpRequestMethodNotSupportedException exception) {
     return failure(HttpStatus.METHOD_NOT_ALLOWED, REQUEST_METHOD_NOT_SUPPORTED_CODE, "当前接口不支持该请求方法。");
+  }
+
+  @ExceptionHandler(NoResourceFoundException.class)
+  public ResponseEntity<ApiResponse<Void>> resourceNotFound(NoResourceFoundException exception) {
+    return failure(HttpStatus.NOT_FOUND, RESOURCE_NOT_FOUND_CODE, "请求的资源不存在。");
   }
 
   @ExceptionHandler({
