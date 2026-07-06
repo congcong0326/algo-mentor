@@ -2008,21 +2008,21 @@ a {
 }
 
 .difficulty-badge.easy {
-  border-color: #bbf7d0;
-  background: var(--success-soft);
-  color: var(--success);
+  border-color: #bae6fd;
+  background: #f0f9ff;
+  color: #0369a1;
 }
 
 .difficulty-badge.medium {
-  border-color: var(--accent-warm-border);
-  background: var(--accent-warm-soft);
-  color: var(--accent-warm-text);
+  border-color: #ddd6fe;
+  background: #f5f3ff;
+  color: #6d28d9;
 }
 
 .difficulty-badge.hard {
-  border-color: #fecaca;
-  background: var(--danger-soft);
-  color: var(--danger);
+  border-color: #fbcfe8;
+  background: #fdf2f8;
+  color: #be185d;
 }
 
 .difficulty-badge.unknown,
@@ -2062,6 +2062,12 @@ a {
   white-space: nowrap;
 }
 
+.progress-status-badge.not-started {
+  border-color: var(--border-strong);
+  background: var(--surface-soft);
+  color: var(--text-muted);
+}
+
 .progress-status-badge.in-progress {
   border-color: var(--accent-warm-border);
   background: var(--accent-warm-soft);
@@ -2078,6 +2084,24 @@ a {
   border-color: #fecaca;
   background: var(--danger-soft);
   color: var(--danger);
+}
+
+:root[data-theme="dark"] .difficulty-badge.easy {
+  border-color: rgb(56 189 248 / 38%);
+  background: rgb(14 165 233 / 14%);
+  color: #7dd3fc;
+}
+
+:root[data-theme="dark"] .difficulty-badge.medium {
+  border-color: rgb(167 139 250 / 42%);
+  background: rgb(139 92 246 / 16%);
+  color: #c4b5fd;
+}
+
+:root[data-theme="dark"] .difficulty-badge.hard {
+  border-color: rgb(244 114 182 / 42%);
+  background: rgb(219 39 119 / 16%);
+  color: #f9a8d4;
 }
 
 .pagination-row {
