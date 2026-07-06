@@ -134,7 +134,7 @@ describe('ReviewSessionPage', () => {
 
     expect(await screen.findByText('AI 建议：良好')).toBeInTheDocument();
     expect(screen.getByText('3 天后复习')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /3\. 良好/ }));
+    fireEvent.click(screen.getByRole('button', { name: /良好/ }));
 
     await waitFor(() => expect(confirmRecall).toHaveBeenCalledWith(88, 99, 'GOOD'));
     expect(rateRecall).not.toHaveBeenCalled();
@@ -151,13 +151,22 @@ describe('ReviewSessionPage', () => {
 
     render(<ReviewSessionPage onNavigate={vi.fn()} />);
 
-    expect(await screen.findByRole('button', { name: /1\. 重来/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /2\. 困难/ })).toHaveTextContent('明天复习');
+    const againButton = await screen.findByRole('button', { name: /重来/ });
+    const hardButton = screen.getByRole('button', { name: /困难/ });
+    const goodButton = screen.getByRole('button', { name: /良好/ });
+    const easyButton = screen.getByRole('button', { name: /简单/ });
+    expect(againButton).toHaveAttribute('aria-keyshortcuts', '1');
+    expect(hardButton).toHaveAttribute('aria-keyshortcuts', '2');
+    expect(goodButton).toHaveAttribute('aria-keyshortcuts', '3');
+    expect(easyButton).toHaveAttribute('aria-keyshortcuts', '4');
+    expect(againButton).toHaveTextContent('重来');
+    expect(againButton).not.toHaveTextContent('1. 重来');
+    expect(hardButton).toHaveTextContent('明天复习');
     expect(screen.queryByLabelText('你的复述')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('本次备注')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '揭示并评估' })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /2\. 困难/ }));
+    fireEvent.click(hardButton);
 
     await waitFor(() => expect(rateRecall).toHaveBeenCalledWith(88, 'HARD'));
     expect(evaluateRecall).not.toHaveBeenCalled();
@@ -175,7 +184,7 @@ describe('ReviewSessionPage', () => {
 
     render(<ReviewSessionPage onNavigate={vi.fn()} />);
 
-    await screen.findByRole('button', { name: /4\. 简单/ });
+    expect(await screen.findByRole('button', { name: /简单/ })).toHaveAttribute('aria-keyshortcuts', '4');
     fireEvent.keyDown(window, { key: '4' });
 
     await waitFor(() => expect(rateRecall).toHaveBeenCalledWith(88, 'EASY'));

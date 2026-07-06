@@ -72,11 +72,26 @@ describe('LeetReviewer-inspired visual system', () => {
 
   it('keeps rendered Markdown lists compact and aligned', () => {
     expect(styles).toContain('.practice-message .markdown-view {\n  margin: 0;\n  min-height: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  overflow: visible;');
+    expect(styles).toContain('.review-problem-full .markdown-view {\n  margin-top: 12px;\n  min-height: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  overflow: visible;');
     expect(styles).toContain('line-height: 1.55;\n  white-space: normal;');
     expect(styles).toContain('margin-bottom: 10px;');
     expect(styles).toContain('.practice-message .markdown-view p,\n.practice-message .markdown-view li {\n  color: var(--text-secondary);\n  line-height: 1.55;');
+    expect(styles).toContain('.review-problem-full .markdown-view p,\n.review-problem-full .markdown-view li {\n  color: var(--text-secondary);\n  line-height: 1.55;');
     expect(styles).toContain('.practice-message .markdown-view li {\n  margin: 4px 0;\n  padding-left: 2px;');
+    expect(styles).toContain('.review-problem-full .markdown-view li {\n  margin: 4px 0;\n  padding-left: 2px;');
     expect(styles).toContain('.practice-message .markdown-view li > p {\n  display: inline;');
+    expect(styles).toContain('.review-problem-full .markdown-view li > p {\n  display: inline;');
     expect(styles).toContain('.practice-message .markdown-view > :last-child {\n  margin-bottom: 0;');
+    expect(styles).toContain('.review-problem-full .markdown-view > :last-child {\n  margin-bottom: 0;');
+  });
+
+  it('defines dedicated review rating button states', () => {
+    expect(styles).toContain('.review-rating-button {\n  --rating-color: var(--text-secondary);');
+    expect(styles).toContain('.review-rating-label {\n  font-size: 14px;');
+    expect(styles).toContain('.review-rating-button.is-selected {\n  border-color: var(--rating-color);');
+    expect(styles).toContain('.review-rating-button-again');
+    expect(styles).toContain('.review-rating-button-hard');
+    expect(styles).toContain('.review-rating-button-good');
+    expect(styles).toContain('.review-rating-button-easy');
   });
 });

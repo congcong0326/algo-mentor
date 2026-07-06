@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, CheckCircle2, Eye, Loader2 } from 'lucide-react';
+import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2, Eye, Loader2, RefreshCw, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { APP_ROUTES } from '../app/navigation';
 import MarkdownView from '../components/MarkdownView';
@@ -427,16 +427,30 @@ function RatingButton({
   shortcut: number;
   submitted: boolean;
 }) {
+  const label = ratingLabels[rating];
+  const intervalLabel = interval ? formatPreviewDue(interval) : '计算中';
+  const Icon = rating === 'AGAIN'
+    ? RefreshCw
+    : rating === 'HARD'
+      ? AlertCircle
+      : rating === 'GOOD'
+        ? CheckCircle2
+        : Sparkles;
+
   return (
     <button
-      className={selected ? 'primary-button compact review-rating-button' : 'secondary-button compact review-rating-button'}
+      aria-keyshortcuts={String(shortcut)}
+      aria-label={`${label}，快捷键 ${shortcut}，${intervalLabel}`}
+      className={`review-rating-button review-rating-button-${rating.toLowerCase()}${selected ? ' is-selected' : ''}`}
       disabled={submitted || loading}
       onClick={onClick}
       type="button"
     >
-      {loading && <Loader2 aria-hidden="true" />}
-      <span>{shortcut}. {ratingLabels[rating]}</span>
-      <small>{interval ? formatPreviewDue(interval) : '计算中'}</small>
+      {loading ? <Loader2 aria-hidden="true" className="review-rating-icon" /> : <Icon aria-hidden="true" className="review-rating-icon" />}
+      <span className="review-rating-copy">
+        <span className="review-rating-label">{label}</span>
+        <small>{intervalLabel}</small>
+      </span>
     </button>
   );
 }
