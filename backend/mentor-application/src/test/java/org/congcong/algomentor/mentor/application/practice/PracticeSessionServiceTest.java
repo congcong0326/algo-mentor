@@ -216,7 +216,7 @@ class PracticeSessionServiceTest {
   @Test
   void rejectsInvalidPracticeProgressAndSession() {
     assertThatThrownBy(() -> new PracticeProgress(0, 7, 12, 1, "two-sum",
-        PracticeProgressStatus.IN_PROGRESS, Instant.EPOCH, Instant.EPOCH))
+        PracticeProgressStatus.IN_PROGRESS, Instant.EPOCH, null, null, Instant.EPOCH, Instant.EPOCH))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("progress id");
     assertThatThrownBy(() -> new PracticeSession(50, 0, 12, 1, "two-sum", PracticeSessionStatus.ACTIVE,
@@ -301,7 +301,7 @@ class PracticeSessionServiceTest {
       }
       if (progress.status() == PracticeProgressStatus.NOT_STARTED || progress.status() == PracticeProgressStatus.SKIPPED) {
         progress = new PracticeProgress(progress.id(), userId, planId, phaseIndex, problemSlug,
-            PracticeProgressStatus.IN_PROGRESS, progress.createdAt(), NOW);
+            PracticeProgressStatus.IN_PROGRESS, progress.startedAt(), null, null, progress.createdAt(), NOW);
       }
       return progress;
     }
@@ -341,7 +341,10 @@ class PracticeSessionServiceTest {
     @Override
     public PracticeProgress updateProgressStatus(long sessionId, long userId, PracticeProgressStatus status) {
       progress = new PracticeProgress(progress.id(), progress.userId(), progress.planId(), progress.phaseIndex(),
-          progress.problemSlug(), status, progress.createdAt(), NOW);
+          progress.problemSlug(), status, progress.startedAt(),
+          status == PracticeProgressStatus.COMPLETED ? NOW : null,
+          status == PracticeProgressStatus.SKIPPED ? NOW : null,
+          progress.createdAt(), NOW);
       return progress;
     }
 
@@ -350,7 +353,10 @@ class PracticeSessionServiceTest {
     }
 
     private PracticeProgress progress(PracticeProgressStatus status) {
-      return new PracticeProgress(70, 7, 12, 1, "two-sum", status, NOW, NOW);
+      return new PracticeProgress(70, 7, 12, 1, "two-sum", status, NOW,
+          status == PracticeProgressStatus.COMPLETED ? NOW : null,
+          status == PracticeProgressStatus.SKIPPED ? NOW : null,
+          NOW, NOW);
     }
   }
 

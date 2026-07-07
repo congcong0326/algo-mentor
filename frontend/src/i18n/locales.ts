@@ -367,6 +367,15 @@ export interface LocaleResources {
     templateGenerateDraft: string;
     templateSelected: string;
     templateDefaultRhythm: (weeks: number, hours: number) => string;
+    templateRouteSummary: (problems: number, weeks: number, hours: number, intensity: string) => string;
+    templateRhythm: string;
+    rhythmLabels: Record<'RECOMMENDED' | 'RELAXED' | 'SPRINT', string>;
+    rhythmCompletionLine: (weeks: number, problems: number) => string;
+    rhythmWeeklyTimeLine: (hours: number, minDays: number, maxDays: number) => string;
+    rhythmDailyLine: (minProblems: number, maxProblems: number, hasReview: boolean) => string;
+    rhythmScopeLabels: Record<'FULL_ROUTE' | 'FULL_ROUTE_WITH_REVIEW_BUFFER' | 'FULL_ROUTE_FAST' | 'FIT_USER_BUDGET', string>;
+    rhythmRiskLine: (intensity: string) => string;
+    sprintOverloadWarning: (minProblems: number, maxProblems: number) => string;
     templateSourceCommit: (commit: string) => string;
     templateProblemStats: (matched: number, missing: number, total: number) => string;
     templateMissingNotice: (missing: number) => string;
@@ -377,6 +386,7 @@ export interface LocaleResources {
     duration: string;
     durationInput: string;
     weeklyHours: string;
+    aiBudgetHint: (weeks: number, hours: number, capacity: number) => string;
     level: string;
     programmingLanguage: string;
     topicPreferences: string;
@@ -412,6 +422,41 @@ export interface LocaleResources {
     previewDuration: string;
     previewLevel: string;
     previewTime: string;
+    executionSummary: (weeks: number, days: number, minutes: number) => string;
+    nextTrainingPackage: string;
+    nextTrainingPackageLine: (newProblems: number, minutes: number) => string;
+    nextTrainingPackageReview: (reviewTask: string) => string;
+    nextTrainingPackagePriority: string;
+    planRouteSummary: (problems: number, weeks: number, hours: number, intensity: string) => string;
+    loadSummary: string;
+    loadIntensityLabels: Record<'RELAXED' | 'RECOMMENDED' | 'TIGHT' | 'OVERLOADED', string>;
+    loadSummaryLine: (problems: number, load: number, capacity: number, intensity: string) => string;
+    weeklyBuckets: string;
+    weeklyBucketLine: (week: number, problems: number, load: number) => string;
+    weeklyPlan: string;
+    weeklyPlanTitle: (week: number, title: string) => string;
+    weeklyBucketStats: (problems: number, load: number) => string;
+    weeklyReviewAdvice: (advice: string) => string;
+    weeklyReviewBuffer: string;
+    weeklyMissingProblem: string;
+    phaseDetails: string;
+    routeProgressTitle: string;
+    routeProgressLine: (completed: number, total: number, percent: number) => string;
+    estimatedCompletionDate: (date: string) => string;
+    openProblemsLine: (open: number, skipped: number) => string;
+    visibleStatusLabels: Record<'ON_TRACK' | 'NEEDS_REBALANCE' | 'PAUSED' | 'COMPLETED' | 'CLOSED_OUT', string>;
+    startNextTrainingPackage: string;
+    contractDateMovedEarlier: (date: string) => string;
+    contractDateMovedLater: (date: string) => string;
+    completionSummaryTitle: string;
+    completionSummaryLine: (rate: number, days: number, completed: number, skipped: number, open: number) => string;
+    weakTagsLabel: string;
+    paceTitle: string;
+    paceCurrentWeek: (current: number, total: number) => string;
+    paceCurrentTarget: (problems: number, load: number) => string;
+    paceCurrentCompleted: (completed: number) => string;
+    paceStatusLabels: Record<'AHEAD' | 'ON_TRACK' | 'AT_RISK' | 'BEHIND', string>;
+    paceLoadGap: (gap: number) => string;
     problemTraining: string;
     detailLoadProblemFailed: string;
     statementUnavailable: string;
@@ -889,6 +934,33 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       templateGenerateDraft: '按模板生成草案',
       templateSelected: '当前模板',
       templateDefaultRhythm: (weeks, hours) => `默认 ${weeks} 周 · ${hours}h/周`,
+      templateRouteSummary: (problems, weeks, hours, intensity) => (
+        `${problems} 道可练题 · 推荐 ${weeks} 周 · 每周 ${hours}h · 强度${intensity}`
+      ),
+      templateRhythm: '训练节奏',
+      rhythmLabels: {
+        RECOMMENDED: '标准',
+        RELAXED: '舒缓',
+        SPRINT: '冲刺',
+      },
+      rhythmCompletionLine: (weeks, problems) => `${weeks} 周完成 ${problems} 题`,
+      rhythmWeeklyTimeLine: (hours, minDays, maxDays) => (
+        minDays === maxDays ? `每周 ${hours}h · 训练 ${minDays} 天` : `每周 ${hours}h · 训练 ${minDays}-${maxDays} 天`
+      ),
+      rhythmDailyLine: (minProblems, maxProblems, hasReview) => {
+        const problemText = minProblems === maxProblems ? `每天约 ${minProblems} 题` : `每天约 ${minProblems}-${maxProblems} 题`;
+        return hasReview ? `${problemText} + 复盘` : `${problemText}，复盘压缩`;
+      },
+      rhythmScopeLabels: {
+        FULL_ROUTE: '完整路线，正常复盘',
+        FULL_ROUTE_WITH_REVIEW_BUFFER: '完整路线，增加缓冲/复盘',
+        FULL_ROUTE_FAST: '完整路线高强度，不裁剪题单',
+        FIT_USER_BUDGET: '按当前预算估算路线',
+      },
+      rhythmRiskLine: (intensity) => `强度${intensity}`,
+      sprintOverloadWarning: (minProblems, maxProblems) => (
+        `这是完整路线冲刺版，预计每天需要 ${minProblems === maxProblems ? minProblems : `${minProblems}-${maxProblems}`} 题，强度过载；不建议基础薄弱或时间不稳定用户选择。`
+      ),
       templateSourceCommit: (commit) => `来源 commit：${commit}`,
       templateProblemStats: (matched, missing, total) => `题目匹配 ${matched}/${total}，缺失 ${missing}`,
       templateMissingNotice: (missing) => `缺失的 ${missing} 道题不会进入草稿推荐题。`,
@@ -899,6 +971,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       duration: '周期',
       durationInput: '训练周期',
       weeklyHours: '每周投入',
+      aiBudgetHint: (weeks, hours) => `接下来 ${weeks} 周，每周投入 ${hours} 小时，适合围绕核心题和复盘稳定推进。`,
       level: '当前水平',
       programmingLanguage: '编程语言',
       topicPreferences: '主题偏好',
@@ -934,6 +1007,57 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       previewDuration: '周期',
       previewLevel: '水平',
       previewTime: '时间',
+      executionSummary: (weeks, days, minutes) => `接下来 ${weeks} 周，每周训练 ${days} 天，每天约 ${minutes} 分钟`,
+      nextTrainingPackage: '下一次训练包',
+      nextTrainingPackageLine: (newProblems, minutes) => `新题 ${newProblems} 道 · 预计 ${minutes} 分钟`,
+      nextTrainingPackageReview: (reviewTask) => `复盘任务：${reviewTask}`,
+      nextTrainingPackagePriority: '优先题目',
+      planRouteSummary: (problems, weeks, hours, intensity) => `${problems} 题 · ${weeks} 周 · 每周 ${hours}h · 强度${intensity}`,
+      loadSummary: '强度评估',
+      loadIntensityLabels: {
+        RELAXED: '舒缓',
+        RECOMMENDED: '合理',
+        TIGHT: '偏紧',
+        OVERLOADED: '过载',
+      },
+      loadSummaryLine: (problems, _load, _capacity, intensity) => `${problems} 题 · 强度${intensity}`,
+      weeklyBuckets: '每周目标',
+      weeklyBucketLine: (week, problems) => `第 ${week} 周 · ${problems} 题`,
+      weeklyPlan: '按周执行计划',
+      weeklyPlanTitle: (week, title) => `第 ${week} 周：${title}`,
+      weeklyBucketStats: (problems) => `${problems} 题`,
+      weeklyReviewAdvice: (advice) => `复盘建议：${advice}`,
+      weeklyReviewBuffer: '这周保留为复盘/缓冲，不安排新题。',
+      weeklyMissingProblem: '模板题目暂未匹配，先按 slug 记录。',
+      phaseDetails: '阶段详情',
+      routeProgressTitle: '路线进度',
+      routeProgressLine: (completed, total, percent) => `已完成 ${completed}/${total} 题 · ${percent}%`,
+      estimatedCompletionDate: (date) => `预计学完：${date}`,
+      openProblemsLine: (open, skipped) => `待清 ${open} 题 · 已跳过 ${skipped} 题`,
+      visibleStatusLabels: {
+        ON_TRACK: '正常推进',
+        NEEDS_REBALANCE: '需要回归调整',
+        PAUSED: '暂停中',
+        COMPLETED: '已完成',
+        CLOSED_OUT: '已收尾',
+      },
+      startNextTrainingPackage: '开始下一包',
+      contractDateMovedEarlier: (date) => `预计日前移到 ${date}`,
+      contractDateMovedLater: (date) => `预计日顺延到 ${date}`,
+      completionSummaryTitle: '终点结算',
+      completionSummaryLine: (rate, days, completed, skipped, open) => `完成率 ${rate}% · 用时 ${days} 天 · 完成 ${completed} / 跳过 ${skipped} / 未清 ${open}`,
+      weakTagsLabel: '薄弱标签',
+      paceTitle: '本周节奏',
+      paceCurrentWeek: (current, total) => `第 ${current} 周 / 共 ${total} 周`,
+      paceCurrentTarget: (problems) => `本周目标：${problems} 题`,
+      paceCurrentCompleted: (completed) => `本周已完成：${completed} 题`,
+      paceStatusLabels: {
+        AHEAD: '超前',
+        ON_TRACK: '正常',
+        AT_RISK: '有风险',
+        BEHIND: '落后',
+      },
+      paceLoadGap: (gap) => `进度偏差：${gap > 0 ? '+' : ''}${gap} 小时`,
       problemTraining: '题目训练',
       detailLoadProblemFailed: '题目详情加载失败',
       statementUnavailable: '题面暂未收录。',
@@ -1454,6 +1578,37 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       templateGenerateDraft: 'Generate from Template',
       templateSelected: 'Selected Template',
       templateDefaultRhythm: (weeks, hours) => `${weeks} ${weeks === 1 ? 'week' : 'weeks'} · ${hours}h/week default`,
+      templateRouteSummary: (problems, weeks, hours, intensity) => (
+        `${problems} practice problems · recommended ${weeks} ${weeks === 1 ? 'week' : 'weeks'} · ${hours}h/week · ${intensity} intensity`
+      ),
+      templateRhythm: 'Training Rhythm',
+      rhythmLabels: {
+        RECOMMENDED: 'Standard',
+        RELAXED: 'Relaxed',
+        SPRINT: 'Sprint',
+      },
+      rhythmCompletionLine: (weeks, problems) => (
+        `${weeks} ${weeks === 1 ? 'week' : 'weeks'} to finish ${problems} problems`
+      ),
+      rhythmWeeklyTimeLine: (hours, minDays, maxDays) => (
+        minDays === maxDays ? `${hours}h/week · ${minDays} training days` : `${hours}h/week · ${minDays}-${maxDays} training days`
+      ),
+      rhythmDailyLine: (minProblems, maxProblems, hasReview) => {
+        const problemText = minProblems === maxProblems
+          ? `about ${minProblems} problem/day`
+          : `about ${minProblems}-${maxProblems} problems/day`;
+        return hasReview ? `${problemText} + review` : `${problemText}, compressed review`;
+      },
+      rhythmScopeLabels: {
+        FULL_ROUTE: 'Full route with normal review',
+        FULL_ROUTE_WITH_REVIEW_BUFFER: 'Full route with extra review buffer',
+        FULL_ROUTE_FAST: 'Full high-intensity route, no problem trimming',
+        FIT_USER_BUDGET: 'Route estimated from current budget',
+      },
+      rhythmRiskLine: (intensity) => `${intensity} intensity`,
+      sprintOverloadWarning: (minProblems, maxProblems) => (
+        `This is the full-route sprint version. Expect ${minProblems === maxProblems ? minProblems : `${minProblems}-${maxProblems}`} problems per day; the load is overloaded and is not recommended for learners with weak foundations or unstable time.`
+      ),
       templateSourceCommit: (commit) => `Source commit: ${commit}`,
       templateProblemStats: (matched, missing, total) => `${matched}/${total} problems matched, ${missing} missing`,
       templateMissingNotice: (missing) => `${missing} missing ${missing === 1 ? 'problem is' : 'problems are'} kept out of draft recommendations.`,
@@ -1464,6 +1619,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       duration: 'Duration',
       durationInput: 'Training Duration',
       weeklyHours: 'Weekly Hours',
+      aiBudgetHint: (weeks, hours) => `${weeks} ${weeks === 1 ? 'week' : 'weeks'} at ${hours}h/week is suited for core problems and steady review.`,
       level: 'Current Level',
       programmingLanguage: 'Programming Language',
       topicPreferences: 'Topic Preferences',
@@ -1499,6 +1655,61 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       previewDuration: 'Duration',
       previewLevel: 'Level',
       previewTime: 'Time',
+      executionSummary: (weeks, days, minutes) => (
+        `For the next ${weeks} ${weeks === 1 ? 'week' : 'weeks'}, train ${days} days/week for about ${minutes} minutes/day`
+      ),
+      nextTrainingPackage: 'Next Training Package',
+      nextTrainingPackageLine: (newProblems, minutes) => `${newProblems} new ${newProblems === 1 ? 'problem' : 'problems'} · about ${minutes} minutes`,
+      nextTrainingPackageReview: (reviewTask) => `Review: ${reviewTask}`,
+      nextTrainingPackagePriority: 'Priority problems',
+      planRouteSummary: (problems, weeks, hours, intensity) => (
+        `${problems} problems · ${weeks} ${weeks === 1 ? 'week' : 'weeks'} · ${hours}h/week · ${intensity} intensity`
+      ),
+      loadSummary: 'Intensity',
+      loadIntensityLabels: {
+        RELAXED: 'Relaxed',
+        RECOMMENDED: 'Balanced',
+        TIGHT: 'Tight',
+        OVERLOADED: 'Overloaded',
+      },
+      loadSummaryLine: (problems, _load, _capacity, intensity) => `${problems} problems · ${intensity} intensity`,
+      weeklyBuckets: 'Weekly Targets',
+      weeklyBucketLine: (week, problems) => `Week ${week} · ${problems} problems`,
+      weeklyPlan: 'Weekly Execution Plan',
+      weeklyPlanTitle: (week, title) => `Week ${week}: ${title}`,
+      weeklyBucketStats: (problems) => `${problems} problems`,
+      weeklyReviewAdvice: (advice) => `Review advice: ${advice}`,
+      weeklyReviewBuffer: 'Keep this week for review and buffer work, with no new problems scheduled.',
+      weeklyMissingProblem: 'This template problem is not matched yet, so the slug is shown.',
+      phaseDetails: 'Phase Details',
+      routeProgressTitle: 'Route Progress',
+      routeProgressLine: (completed, total, percent) => `${completed}/${total} completed · ${percent}%`,
+      estimatedCompletionDate: (date) => `Estimated finish: ${date}`,
+      openProblemsLine: (open, skipped) => `${open} open · ${skipped} skipped`,
+      visibleStatusLabels: {
+        ON_TRACK: 'On track',
+        NEEDS_REBALANCE: 'Needs rebalance',
+        PAUSED: 'Paused',
+        COMPLETED: 'Completed',
+        CLOSED_OUT: 'Closed out',
+      },
+      startNextTrainingPackage: 'Start next pack',
+      contractDateMovedEarlier: (date) => `Estimate moved earlier to ${date}`,
+      contractDateMovedLater: (date) => `Estimate moved later to ${date}`,
+      completionSummaryTitle: 'Completion Summary',
+      completionSummaryLine: (rate, days, completed, skipped, open) => `${rate}% complete · ${days} days · ${completed} completed / ${skipped} skipped / ${open} open`,
+      weakTagsLabel: 'Weak tags',
+      paceTitle: 'This Week',
+      paceCurrentWeek: (current, total) => `Week ${current} / ${total}`,
+      paceCurrentTarget: (problems) => `Target: ${problems} problems`,
+      paceCurrentCompleted: (completed) => `Completed this week: ${completed}`,
+      paceStatusLabels: {
+        AHEAD: 'Ahead',
+        ON_TRACK: 'On track',
+        AT_RISK: 'At risk',
+        BEHIND: 'Behind',
+      },
+      paceLoadGap: (gap) => `Progress gap: ${gap > 0 ? '+' : ''}${gap}h`,
       problemTraining: 'Problem Practice',
       detailLoadProblemFailed: 'Failed to load problem details',
       statementUnavailable: 'Problem statement is not available.',

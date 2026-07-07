@@ -62,7 +62,7 @@ public class LearningPlanAgentService {
     }
 
     Map<String, Object> metadata = new LinkedHashMap<>();
-    metadata.put("problemRecommendationIncomplete", incomplete);
+    metadata.put(LearningPlanDraftMetadataKeys.PROBLEM_RECOMMENDATION_INCOMPLETE, incomplete);
 
     return new LearningPlanDraftPlan(
         titleFor(command),

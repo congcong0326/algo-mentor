@@ -16,10 +16,13 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftValidator;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanCoveragePolicy;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCandidate;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmMode;
 
 public class LearningPlanTemplateDraftService {
 
@@ -29,6 +32,7 @@ public class LearningPlanTemplateDraftService {
   private final LearningPlanDraftRepository draftRepository;
   private final LearningPlanProblemCatalog problemCatalog;
   private final LearningPlanDraftValidator validator;
+  private final LearningPlanLoadService loadService;
   private final Clock clock;
 
   public LearningPlanTemplateDraftService(
@@ -36,12 +40,14 @@ public class LearningPlanTemplateDraftService {
       LearningPlanDraftRepository draftRepository,
       LearningPlanProblemCatalog problemCatalog,
       LearningPlanDraftValidator validator,
+      LearningPlanLoadService loadService,
       Clock clock
   ) {
     this.templateRepository = templateRepository;
     this.draftRepository = draftRepository;
     this.problemCatalog = problemCatalog;
     this.validator = validator;
+    this.loadService = loadService;
     this.clock = clock;
   }
 
@@ -56,22 +62,21 @@ public class LearningPlanTemplateDraftService {
 
   public LearningPlanDraftResult createDraft(long userId, LearningPlanTemplateDraftCommand command) {
     LearningPlanTemplate template = getTemplate(command == null ? null : command.templateId());
-    int durationWeeks = positiveOrDefault(command == null ? null : command.durationWeeks(), template.defaultDurationWeeks());
-    int weeklyHours = positiveOrDefault(command == null ? null : command.weeklyHours(), template.defaultWeeklyHours());
+    RhythmSelection rhythm = selectRhythm(template, command);
     String programmingLanguage = command == null || command.programmingLanguage() == null
         ? template.programmingLanguage()
         : command.programmingLanguage();
     LearningPlanDraftCommand draftCommand = new LearningPlanDraftCommand(
         template.intent(),
         template.goal(),
-        durationWeeks,
+        rhythm.durationWeeks(),
         template.level(),
-        weeklyHours,
+        rhythm.weeklyHours(),
         programmingLanguage,
         template.difficultyPreference(),
         template.interviewOriented(),
         template.topicPreferences());
-    LearningPlanDraftPlan draftPlan = buildDraftPlan(template, draftCommand);
+    LearningPlanDraftPlan draftPlan = buildDraftPlan(template, draftCommand, rhythm);
     validator.validateTemplatePlan(draftPlan);
 
     Instant now = clock.instant();
@@ -93,7 +98,8 @@ public class LearningPlanTemplateDraftService {
 
   private LearningPlanDraftPlan buildDraftPlan(
       LearningPlanTemplate template,
-      LearningPlanDraftCommand command
+      LearningPlanDraftCommand command,
+      RhythmSelection rhythm
   ) {
     if (template.phases().isEmpty()) {
       throw new LearningPlanException("LEARNING_PLAN_DRAFT_INVALID", "学习计划模板没有可用阶段。");
@@ -113,7 +119,7 @@ public class LearningPlanTemplateDraftService {
       phases.add(toDraftPhase(index + 1, phaseWeeks.get(index), templatePhase, problems));
     }
 
-    return new LearningPlanDraftPlan(
+    LearningPlanDraftPlan plan = new LearningPlanDraftPlan(
         template.title(),
         template.summary(),
         template.intent(),
@@ -128,6 +134,28 @@ public class LearningPlanTemplateDraftService {
         profileSummary(template, command),
         phases,
         draftMetadata(template, incomplete));
+    return loadService.withLoadMetadata(plan, rhythm.mode(), rhythm.coveragePolicy());
+  }
+
+  private RhythmSelection selectRhythm(
+      LearningPlanTemplate template,
+      LearningPlanTemplateDraftCommand command
+  ) {
+    if (command != null && command.rhythmMode() != null) {
+      var option = loadService.rhythmOption(template, command.rhythmMode());
+      return new RhythmSelection(
+          option.mode(),
+          option.durationWeeks(),
+          option.weeklyHours(),
+          option.coveragePolicy());
+    }
+    int durationWeeks = positiveOrDefault(command == null ? null : command.durationWeeks(), template.defaultDurationWeeks());
+    int weeklyHours = positiveOrDefault(command == null ? null : command.weeklyHours(), template.defaultWeeklyHours());
+    return new RhythmSelection(
+        LearningPlanRhythmMode.RECOMMENDED,
+        durationWeeks,
+        weeklyHours,
+        LearningPlanCoveragePolicy.FULL_ROUTE);
   }
 
   private List<LearningPlanProblemDraft> selectProblems(
@@ -229,5 +257,13 @@ public class LearningPlanTemplateDraftService {
       throw new LearningPlanException("LEARNING_PLAN_TEMPLATE_NOT_FOUND", "学习计划模板不存在。");
     }
     return templateId.trim();
+  }
+
+  private record RhythmSelection(
+      LearningPlanRhythmMode mode,
+      int durationWeeks,
+      int weeklyHours,
+      LearningPlanCoveragePolicy coveragePolicy
+  ) {
   }
 }

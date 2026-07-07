@@ -40,7 +40,11 @@ class LearningPlanTemplateControllerTest {
         .andExpect(jsonPath("$.data[0].templateId").value("neetcode_blind_75_interview_core"))
         .andExpect(jsonPath("$.data[0].defaultDurationWeeks").value(4))
         .andExpect(jsonPath("$.data[0].matchedProblemCount").value(69))
-        .andExpect(jsonPath("$.data[0].missingProblemCount").value(6));
+        .andExpect(jsonPath("$.data[0].missingProblemCount").value(6))
+        .andExpect(jsonPath("$.data[0].defaultLoadSummary.plannedProblemCount").value(1))
+        .andExpect(jsonPath("$.data[0].rhythmOptions[0].mode").value("RECOMMENDED"))
+        .andExpect(jsonPath("$.data[0].rhythmOptions[0].trainingDaysPerWeekMin").value(5))
+        .andExpect(jsonPath("$.data[0].rhythmOptions[2].trainingDaysPerWeekMax").value(7));
   }
 
   @Test
@@ -51,6 +55,9 @@ class LearningPlanTemplateControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.templateId").value("neetcode_blind_75_interview_core"))
         .andExpect(jsonPath("$.data.sourceCommit").value("9907b7fed441fa55083c0751e208b7197101dbba"))
+        .andExpect(jsonPath("$.data.defaultLoadSummary.intensity").exists())
+        .andExpect(jsonPath("$.data.rhythmOptions[1].mode").value("RELAXED"))
+        .andExpect(jsonPath("$.data.rhythmOptions[1].dailyProblemCountMax").exists())
         .andExpect(jsonPath("$.data.phases[0].phaseIndex").value(1))
         .andExpect(jsonPath("$.data.phases[0].problemRefs[0].problemSlug").value("two-sum"))
         .andExpect(jsonPath("$.data.phases[0].problemRefs[0].matchedProblem").value(true));

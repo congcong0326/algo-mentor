@@ -3,11 +3,22 @@ package org.congcong.algomentor.mentor.application.learningplan.stream;
 import java.util.List;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 
 /**
  * 学习计划草案生成 prompt 构造器。
  */
 public class LearningPlanDraftPromptBuilder {
+
+  private final LearningPlanLoadService loadService;
+
+  public LearningPlanDraftPromptBuilder() {
+    this(new LearningPlanLoadService());
+  }
+
+  public LearningPlanDraftPromptBuilder(LearningPlanLoadService loadService) {
+    this.loadService = loadService;
+  }
 
   public List<LlmMessage> build(LearningPlanDraftCommand command) {
     return List.of(
@@ -39,6 +50,10 @@ public class LearningPlanDraftPromptBuilder {
         durationWeeks: %s
         level: %s
         weeklyHours: %s
+        weeklyCapacityPoints: %.1f
+        totalCapacityPoints: %.1f
+        targetLoadRange: %.1f-%.1f
+        loadPolicy: FIT_USER_BUDGET
         programmingLanguage: %s
         difficultyPreference: %s
         interviewOriented: %s
@@ -49,9 +64,30 @@ public class LearningPlanDraftPromptBuilder {
         command.durationWeeks(),
         command.level(),
         command.weeklyHours(),
+        loadService.weeklyCapacityPoints(command.weeklyHours()),
+        totalCapacityPoints(command),
+        targetLoadLower(command),
+        targetLoadUpper(command),
         command.programmingLanguage(),
         command.difficultyPreference(),
         command.interviewOriented(),
         command.topicPreferences());
+  }
+
+  private double totalCapacityPoints(LearningPlanDraftCommand command) {
+    int durationWeeks = command.durationWeeks() == null ? 0 : Math.max(0, command.durationWeeks());
+    return round1(durationWeeks * loadService.weeklyCapacityPoints(command.weeklyHours()));
+  }
+
+  private double targetLoadLower(LearningPlanDraftCommand command) {
+    return round1(totalCapacityPoints(command) * 0.75D);
+  }
+
+  private double targetLoadUpper(LearningPlanDraftCommand command) {
+    return round1(totalCapacityPoints(command) * 1.10D);
+  }
+
+  private double round1(double value) {
+    return Math.round(value * 10D) / 10D;
   }
 }

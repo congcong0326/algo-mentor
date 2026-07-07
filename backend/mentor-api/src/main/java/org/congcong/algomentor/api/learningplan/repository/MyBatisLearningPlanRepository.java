@@ -6,13 +6,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
+import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanContractStateRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanRow;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractState;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractStateRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
@@ -26,7 +30,8 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepos
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
 import org.springframework.transaction.annotation.Transactional;
 
-public class MyBatisLearningPlanRepository implements LearningPlanDraftRepository, LearningPlanRepository {
+public class MyBatisLearningPlanRepository
+    implements LearningPlanDraftRepository, LearningPlanRepository, LearningPlanContractStateRepository {
 
   private static final TypeReference<List<String>> STRING_LIST = new TypeReference<>() {
   };
@@ -105,6 +110,29 @@ public class MyBatisLearningPlanRepository implements LearningPlanDraftRepositor
   @Override
   public Optional<LearningPlan> findPlanByIdForUserForUpdate(long planId, long userId) {
     return Optional.ofNullable(mapper.findPlanByIdForUserForUpdate(planId, userId)).map(this::toPlan);
+  }
+
+  @Override
+  public Optional<LearningPlanContractState> findByPlan(long userId, long planId) {
+    return Optional.ofNullable(mapper.findContractStateByPlan(userId, planId)).map(this::toContractState);
+  }
+
+  @Override
+  @Transactional
+  public LearningPlanContractState pause(long userId, long planId, LocalDate frozenEstimatedCompletionDate) {
+    return toContractState(mapper.pauseContractState(userId, planId, frozenEstimatedCompletionDate));
+  }
+
+  @Override
+  @Transactional
+  public LearningPlanContractState resume(long userId, long planId, Instant noticeAt) {
+    return toContractState(mapper.resumeContractState(userId, planId, noticeAt));
+  }
+
+  @Override
+  @Transactional
+  public LearningPlanContractState closeOut(long userId, long planId, LocalDate frozenEstimatedCompletionDate) {
+    return toContractState(mapper.closeOutContractState(userId, planId, frozenEstimatedCompletionDate));
   }
 
   @Override
@@ -258,6 +286,18 @@ public class MyBatisLearningPlanRepository implements LearningPlanDraftRepositor
         row.userId(),
         LearningPlanStatus.valueOf(row.status()),
         read(row.planJson(), LearningPlanDraftPlan.class),
+        row.createdAt(),
+        row.updatedAt());
+  }
+
+  private LearningPlanContractState toContractState(LearningPlanContractStateRow row) {
+    return new LearningPlanContractState(
+        row.userId(),
+        row.planId(),
+        row.paused(),
+        row.closedOut(),
+        row.frozenEstimatedCompletionDate(),
+        row.lastRebalanceNoticeAt(),
         row.createdAt(),
         row.updatedAt());
   }

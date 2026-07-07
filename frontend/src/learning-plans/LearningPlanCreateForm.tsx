@@ -60,6 +60,7 @@ export default function LearningPlanCreateForm({
   const selectedDifficulty = getDifficultyDistribution(difficultyValue);
   const difficultyPreference: LearningPlanDifficultyPreference = selectedDifficulty.preference;
   const effectiveSubmitLabel = submitLabel ?? resources.learningPlans.generateDraft;
+  const totalCapacityPoints = durationWeeks > 0 && weeklyHours > 0 ? durationWeeks * weeklyHours : 0;
 
   const hasUnsavedInput = useMemo(
     () => intent !== DEFAULT_INTENT
@@ -186,6 +187,10 @@ export default function LearningPlanCreateForm({
             />
           </label>
         </div>
+
+        <p className="load-summary-line">
+          {resources.learningPlans.aiBudgetHint(durationWeeks, weeklyHours, totalCapacityPoints)}
+        </p>
 
         <div className="mini-grid">
           <label className="topic-field">

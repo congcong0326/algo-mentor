@@ -31,7 +31,10 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftValidator;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanCoveragePolicy;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +50,7 @@ public class LearningPlanDraftStreamService {
   private final AgentLoopRunner agentLoopRunner;
   private final LearningPlanDraftPromptBuilder promptBuilder;
   private final LearningPlanDraftStructuredOutputMapper outputMapper;
+  private final LearningPlanLoadService loadService;
   private final ObjectMapper objectMapper;
   private final Clock clock;
 
@@ -57,6 +61,7 @@ public class LearningPlanDraftStreamService {
       LearningPlanDraftPromptBuilder promptBuilder,
       ObjectMapper objectMapper,
       LearningPlanProblemCatalog problemCatalog,
+      LearningPlanLoadService loadService,
       Clock clock
   ) {
     this.draftRepository = draftRepository;
@@ -65,6 +70,7 @@ public class LearningPlanDraftStreamService {
     this.promptBuilder = promptBuilder;
     this.objectMapper = objectMapper;
     this.outputMapper = new LearningPlanDraftStructuredOutputMapper(objectMapper, problemCatalog);
+    this.loadService = loadService;
     this.clock = clock;
   }
 
@@ -245,7 +251,10 @@ public class LearningPlanDraftStreamService {
           throw new LearningPlanException("LEARNING_PLAN_FINAL_OUTPUT_MISSING", "模型未返回学习计划结果。");
         }
         // AgentRunEnd 表示最后一个无工具调用 step 已完成，此时 finalContent 才是可落库的结构化计划。
-        LearningPlanDraftPlan plan = outputMapper.map(objectMapper.readTree(finalContent), command);
+        LearningPlanDraftPlan plan = loadService.withLoadMetadata(
+            outputMapper.map(objectMapper.readTree(finalContent), command),
+            LearningPlanRhythmMode.RECOMMENDED,
+            LearningPlanCoveragePolicy.FIT_USER_BUDGET);
         validator.validateGeneratedPlan(plan);
         // 第二次写库：把模型最终 JSON 规范化后的领域计划写入 draft_plan_json，并把状态置为 GENERATED。
         LearningPlanDraft saved = draftRepository.save(draft.withState(

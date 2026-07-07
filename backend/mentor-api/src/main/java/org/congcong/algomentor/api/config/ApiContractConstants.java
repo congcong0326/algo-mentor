@@ -126,6 +126,21 @@ public final class ApiContractConstants {
       "/{planId}/extension-proposals/{proposalGroupId}/discard";
 
   /**
+   * 学习计划契约暂停路径。
+   */
+  public static final String LEARNING_PLAN_CONTRACT_PAUSE_PATH = "/{planId}/contract/pause";
+
+  /**
+   * 学习计划契约恢复路径。
+   */
+  public static final String LEARNING_PLAN_CONTRACT_RESUME_PATH = "/{planId}/contract/resume";
+
+  /**
+   * 学习计划契约主动收尾路径。
+   */
+  public static final String LEARNING_PLAN_CONTRACT_CLOSE_OUT_PATH = "/{planId}/contract/close-out";
+
+  /**
    * 题目练习会话接口根路径。
    */
   public static final String PRACTICE_SESSIONS_BASE_PATH = "/api/practice-sessions";

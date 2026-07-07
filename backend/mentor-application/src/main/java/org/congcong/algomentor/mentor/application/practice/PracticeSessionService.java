@@ -126,8 +126,8 @@ public class PracticeSessionService {
 
   @Transactional
   public PracticeSession updateProgressStatus(long userId, long sessionId, PracticeProgressStatus status) {
-    if (status != PracticeProgressStatus.COMPLETED) {
-      throw new LearningPlanException("PRACTICE_PROGRESS_STATUS_UNSUPPORTED", "题目聊天页只支持标记完成。");
+    if (status != PracticeProgressStatus.COMPLETED && status != PracticeProgressStatus.SKIPPED) {
+      throw new LearningPlanException("PRACTICE_PROGRESS_STATUS_UNSUPPORTED", "题目聊天页只支持标记完成或跳过。");
     }
     PracticeSession session = practiceSessionRepository.findSessionForUser(sessionId, userId)
         .orElseThrow(() -> new LearningPlanException("PRACTICE_SESSION_NOT_FOUND", "题目练习会话不存在。"));

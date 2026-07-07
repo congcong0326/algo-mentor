@@ -56,6 +56,20 @@
     </constructor>
   </resultMap>
 
+  <resultMap id="LearningPlanContractStateRowMap"
+      type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanContractStateRow">
+    <constructor>
+      <arg column="user_id" javaType="_long"/>
+      <arg column="plan_id" javaType="_long"/>
+      <arg column="paused" javaType="_boolean"/>
+      <arg column="closed_out" javaType="_boolean"/>
+      <arg column="frozen_estimated_completion_date" javaType="java.time.LocalDate"/>
+      <arg column="last_rebalance_notice_at" javaType="java.time.Instant"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
   <resultMap id="LearningPlanDraftRevisionRowMap"
       type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRevisionRow">
     <constructor>
@@ -350,6 +364,130 @@
     WHERE id = #{id}
       AND user_id = #{userId}
     FOR UPDATE
+  </select>
+
+  <select id="findContractStateByPlan" resultMap="LearningPlanContractStateRowMap">
+    SELECT
+      user_id,
+      plan_id,
+      paused,
+      closed_out,
+      frozen_estimated_completion_date,
+      last_rebalance_notice_at,
+      created_at,
+      updated_at
+    FROM learning_plan_contract_state
+    WHERE user_id = #{userId}
+      AND plan_id = #{planId}
+  </select>
+
+  <select id="pauseContractState" resultMap="LearningPlanContractStateRowMap" affectData="true">
+    INSERT INTO learning_plan_contract_state (
+      user_id,
+      plan_id,
+      paused,
+      closed_out,
+      frozen_estimated_completion_date,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{userId},
+      #{planId},
+      TRUE,
+      FALSE,
+      #{frozenEstimatedCompletionDate},
+      NOW(),
+      NOW()
+    )
+    ON CONFLICT (user_id, plan_id) DO UPDATE
+    SET paused = TRUE,
+        closed_out = FALSE,
+        frozen_estimated_completion_date = COALESCE(
+          learning_plan_contract_state.frozen_estimated_completion_date,
+          EXCLUDED.frozen_estimated_completion_date
+        ),
+        updated_at = NOW()
+    RETURNING
+      user_id,
+      plan_id,
+      paused,
+      closed_out,
+      frozen_estimated_completion_date,
+      last_rebalance_notice_at,
+      created_at,
+      updated_at
+  </select>
+
+  <select id="resumeContractState" resultMap="LearningPlanContractStateRowMap" affectData="true">
+    INSERT INTO learning_plan_contract_state (
+      user_id,
+      plan_id,
+      paused,
+      closed_out,
+      last_rebalance_notice_at,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{userId},
+      #{planId},
+      FALSE,
+      FALSE,
+      #{noticeAt},
+      NOW(),
+      NOW()
+    )
+    ON CONFLICT (user_id, plan_id) DO UPDATE
+    SET paused = FALSE,
+        closed_out = FALSE,
+        frozen_estimated_completion_date = NULL,
+        last_rebalance_notice_at = #{noticeAt},
+        updated_at = NOW()
+    RETURNING
+      user_id,
+      plan_id,
+      paused,
+      closed_out,
+      frozen_estimated_completion_date,
+      last_rebalance_notice_at,
+      created_at,
+      updated_at
+  </select>
+
+  <select id="closeOutContractState" resultMap="LearningPlanContractStateRowMap" affectData="true">
+    INSERT INTO learning_plan_contract_state (
+      user_id,
+      plan_id,
+      paused,
+      closed_out,
+      frozen_estimated_completion_date,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{userId},
+      #{planId},
+      FALSE,
+      TRUE,
+      #{frozenEstimatedCompletionDate},
+      NOW(),
+      NOW()
+    )
+    ON CONFLICT (user_id, plan_id) DO UPDATE
+    SET paused = FALSE,
+        closed_out = TRUE,
+        frozen_estimated_completion_date = EXCLUDED.frozen_estimated_completion_date,
+        updated_at = NOW()
+    RETURNING
+      user_id,
+      plan_id,
+      paused,
+      closed_out,
+      frozen_estimated_completion_date,
+      last_rebalance_notice_at,
+      created_at,
+      updated_at
   </select>
 
   <update id="clearConfirmedPlanReferences">

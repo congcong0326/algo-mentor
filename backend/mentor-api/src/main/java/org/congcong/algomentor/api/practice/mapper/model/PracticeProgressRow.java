@@ -9,6 +9,9 @@ public record PracticeProgressRow(
     int phaseIndex,
     String problemSlug,
     String status,
+    Instant startedAt,
+    Instant completedAt,
+    Instant skippedAt,
     Instant createdAt,
     Instant updatedAt
 ) {

@@ -730,7 +730,7 @@ export async function getPracticeSessionReviewDetail(
 
 export async function updatePracticeProgressStatus(
   sessionId: number,
-  status: Extract<PracticeProgressStatus, 'COMPLETED'>,
+  status: Extract<PracticeProgressStatus, 'COMPLETED' | 'SKIPPED'>,
 ): Promise<ApiResponse<PracticeSessionResponse>> {
   const response = await apiFetch(`/api/practice-sessions/${sessionId}/progress-status`, {
     method: 'PATCH',
@@ -822,6 +822,45 @@ export async function getLearningPlanDetail(
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Learning plan detail request failed');
+  }
+
+  return response.json();
+}
+
+export async function pauseLearningPlanContract(planId: number): Promise<ApiResponse<LearningPlanDetailResponse>> {
+  const response = await apiFetch(`/api/learning-plans/${planId}/contract/pause`, {
+    method: 'POST',
+    headers: jsonHeaders,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan contract pause request failed');
+  }
+
+  return response.json();
+}
+
+export async function resumeLearningPlanContract(planId: number): Promise<ApiResponse<LearningPlanDetailResponse>> {
+  const response = await apiFetch(`/api/learning-plans/${planId}/contract/resume`, {
+    method: 'POST',
+    headers: jsonHeaders,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan contract resume request failed');
+  }
+
+  return response.json();
+}
+
+export async function closeOutLearningPlanContract(planId: number): Promise<ApiResponse<LearningPlanDetailResponse>> {
+  const response = await apiFetch(`/api/learning-plans/${planId}/contract/close-out`, {
+    method: 'POST',
+    headers: jsonHeaders,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan contract close-out request failed');
   }
 
   return response.json();

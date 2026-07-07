@@ -80,6 +80,9 @@ public class MyBatisPracticeSessionRepository implements PracticeSessionReposito
         row.phaseIndex(),
         row.problemSlug(),
         PracticeProgressStatus.valueOf(row.status()),
+        row.startedAt(),
+        row.completedAt(),
+        row.skippedAt(),
         row.createdAt(),
         row.updatedAt());
   }

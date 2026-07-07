@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { LearningPlanDetailResponse, LearningPlanDraftPlan } from '../types/api';
 import PlanPreview from './PlanPreview';
@@ -9,7 +9,7 @@ describe('PlanPreview', () => {
   it('renders progress status badges for confirmed plan details', () => {
     render(<PlanPreview plan={detailPlan} />);
 
-    expect(screen.getByText('已完成')).toBeInTheDocument();
+    expect(screen.getAllByText('已完成').length).toBeGreaterThan(0);
     expect(screen.getByText('进行中')).toBeInTheDocument();
     expect(screen.getByText('已跳过')).toBeInTheDocument();
     expect(screen.getByText('未开始')).toBeInTheDocument();
@@ -19,6 +19,32 @@ describe('PlanPreview', () => {
     render(<PlanPreview plan={draftPlan} />);
 
     expect(screen.queryByText('未开始')).not.toBeInTheDocument();
+  });
+
+  it('renders route summary, next training package, and weekly buckets from metadata', () => {
+    render(<PlanPreview plan={draftPlan} />);
+
+    expect(screen.getByText('接下来 2 周，每周训练 5 天，每天约 60 分钟')).toBeInTheDocument();
+    expect(screen.getAllByText('1 题 · 2 周 · 每周 5h · 强度舒缓').length).toBeGreaterThan(0);
+    expect(screen.getByRole('heading', { name: '下一次训练包' })).toBeInTheDocument();
+    expect(screen.getByText('新题 1 道 · 预计 60 分钟')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '阶段详情' })).toBeInTheDocument();
+
+    const weeklyPlan = screen.getByLabelText('按周执行计划');
+    expect(within(weeklyPlan).getByRole('heading', { name: '按周执行计划' })).toBeInTheDocument();
+    expect(within(weeklyPlan).getByRole('heading', { name: '第 1 周：基础阶段' })).toBeInTheDocument();
+    expect(within(weeklyPlan).getByText('1 题')).toBeInTheDocument();
+    expect(within(weeklyPlan).getByText('复盘建议：复盘边界条件')).toBeInTheDocument();
+    expect(within(weeklyPlan).getByText('两数之和')).toBeInTheDocument();
+  });
+
+  it('renders weekly review buffer and falls back to unknown problem slugs', () => {
+    render(<PlanPreview plan={weeklyEdgePlan} />);
+
+    const weeklyPlan = screen.getByLabelText('按周执行计划');
+    expect(within(weeklyPlan).getByText('这周保留为复盘/缓冲，不安排新题。')).toBeInTheDocument();
+    expect(within(weeklyPlan).getByText('unknown-slug')).toBeInTheDocument();
+    expect(within(weeklyPlan).getByText('模板题目暂未匹配，先按 slug 记录。')).toBeInTheDocument();
   });
 });
 
@@ -35,7 +61,36 @@ const draftPlan: LearningPlanDraftPlan = {
   interviewOriented: false,
   topicPreferences: ['Array'],
   profileSummary: '初学者',
-  metadata: {},
+  metadata: {
+    loadSummary: {
+      durationWeeks: 2,
+      weeklyHours: 5,
+      weeklyCapacityPoints: 5,
+      totalCapacityPoints: 10,
+      plannedLoadPoints: 2.5,
+      loadRatio: 0.25,
+      plannedProblemCount: 1,
+      averageProblemsPerWeek: 0.5,
+      intensity: 'RELAXED',
+      reviewBufferIncluded: true,
+      suggestions: ['当前节奏有复盘缓冲，可以稳定推进。'],
+    },
+    weeklyBuckets: [{
+      weekIndex: 1,
+      title: '基础阶段',
+      plannedProblemCount: 1,
+      plannedLoadPoints: 2.5,
+      problemSlugs: ['two-sum'],
+      reviewAdvice: '复盘边界条件',
+    }],
+    nextTrainingPackage: {
+      weekIndex: 1,
+      newProblemCount: 1,
+      reviewTask: '复盘边界条件',
+      estimatedMinutes: 60,
+      priorityProblemSlugs: ['two-sum'],
+    },
+  },
   phases: [{
     phaseIndex: 1,
     title: '基础阶段',
@@ -103,4 +158,28 @@ const detailPlan: LearningPlanDetailResponse = {
       },
     ],
   }],
+};
+
+const weeklyEdgePlan: LearningPlanDraftPlan = {
+  ...draftPlan,
+  metadata: {
+    ...draftPlan.metadata,
+    weeklyBuckets: [
+      {
+        weekIndex: 1,
+        title: '复盘缓冲',
+        plannedProblemCount: 0,
+        plannedLoadPoints: 0,
+        problemSlugs: [],
+      },
+      {
+        weekIndex: 2,
+        title: '补充匹配',
+        plannedProblemCount: 1,
+        plannedLoadPoints: 1,
+        problemSlugs: ['unknown-slug'],
+        reviewAdvice: '确认模板题目是否已入库',
+      },
+    ],
+  },
 };

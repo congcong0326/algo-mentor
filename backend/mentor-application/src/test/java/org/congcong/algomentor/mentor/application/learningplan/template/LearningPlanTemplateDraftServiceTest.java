@@ -25,6 +25,8 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmMode;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCandidate;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
@@ -42,17 +44,20 @@ class LearningPlanTemplateDraftServiceTest {
   private final InMemoryPlanRepository planRepository = new InMemoryPlanRepository();
   private final FakeProblemCatalog problemCatalog = new FakeProblemCatalog();
   private final LearningPlanDraftValidator validator = new LearningPlanDraftValidator();
+  private final LearningPlanLoadService loadService = new LearningPlanLoadService(clock);
   private final LearningPlanTemplateDraftService templateDraftService = new LearningPlanTemplateDraftService(
       templateRepository,
       draftRepository,
       problemCatalog,
       validator,
+      loadService,
       clock);
   private final LearningPlanDraftService draftService = new LearningPlanDraftService(
       draftRepository,
       planRepository,
       new LearningPlanAgentService(problemCatalog),
       validator,
+      loadService,
       clock);
 
   @org.junit.jupiter.api.Test
@@ -74,6 +79,11 @@ class LearningPlanTemplateDraftServiceTest {
         .flatExtracting(LearningPlanPhaseDraft::problems)
         .hasSize(9);
     assertThat(result.draftPlan().metadata()).containsKey("template");
+    assertThat(result.draftPlan().metadata())
+        .containsEntry("rhythmMode", "RECOMMENDED")
+        .containsEntry("coveragePolicy", "FULL_ROUTE")
+        .containsKey("loadSummary")
+        .containsKey("weeklyBuckets");
 
     LearningPlanConfirmResult confirmed = draftService.confirmDraft(7L, result.draftId());
 
@@ -133,6 +143,47 @@ class LearningPlanTemplateDraftServiceTest {
         new LearningPlanTemplateDraftCommand("neetcode_150_systematic_interview", 4, null, null)))
         .isInstanceOf(LearningPlanException.class)
         .hasMessage("模板学习计划周期不能少于阶段数。");
+  }
+
+  @org.junit.jupiter.api.Test
+  void relaxedRhythmExtendsDurationAndAddsReviewBufferMetadata() {
+    templateRepository.saveTemplate(blind75Template());
+
+    LearningPlanDraftResult result = templateDraftService.createDraft(
+        7L,
+        new LearningPlanTemplateDraftCommand(
+            "neetcode_blind_75_interview_core",
+            null,
+            null,
+            "Java",
+            LearningPlanRhythmMode.RELAXED));
+
+    assertThat(result.draftPlan().durationWeeks()).isEqualTo(6);
+    assertThat(result.draftPlan().weeklyHours()).isEqualTo(8);
+    assertThat(result.draftPlan().metadata()).containsEntry("coveragePolicy", "FULL_ROUTE_WITH_REVIEW_BUFFER");
+    Map<?, ?> loadSummary = (Map<?, ?>) result.draftPlan().metadata().get("loadSummary");
+    assertThat(loadSummary.get("reviewBufferIncluded")).isEqualTo(true);
+  }
+
+  @org.junit.jupiter.api.Test
+  void sprintRhythmCompressesDurationAndIncreasesWeeklyHoursWithoutDroppingProblems() {
+    templateRepository.saveTemplate(blind75Template());
+
+    LearningPlanDraftResult result = templateDraftService.createDraft(
+        7L,
+        new LearningPlanTemplateDraftCommand(
+            "neetcode_blind_75_interview_core",
+            null,
+            null,
+            "Java",
+            LearningPlanRhythmMode.SPRINT));
+
+    assertThat(result.draftPlan().durationWeeks()).isEqualTo(4);
+    assertThat(result.draftPlan().weeklyHours()).isEqualTo(12);
+    assertThat(result.draftPlan().metadata()).containsEntry("coveragePolicy", "FULL_ROUTE_FAST");
+    assertThat(result.draftPlan().phases())
+        .flatExtracting(LearningPlanPhaseDraft::problems)
+        .hasSize(9);
   }
 
   private void assertTemplateDraftMatchesLocalRefs(

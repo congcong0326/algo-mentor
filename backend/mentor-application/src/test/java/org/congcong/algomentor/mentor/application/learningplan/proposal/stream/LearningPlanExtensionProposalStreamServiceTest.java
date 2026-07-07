@@ -502,6 +502,9 @@ class LearningPlanExtensionProposalStreamServiceTest {
         "two-sum",
         PracticeProgressStatus.COMPLETED,
         clock.instant(),
+        clock.instant(),
+        null,
+        clock.instant(),
         clock.instant());
   }
 

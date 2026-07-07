@@ -60,6 +60,17 @@ describe('LearningPlanDetail extension orchestration', () => {
     }, expect.any(Object));
   });
 
+  it('renders the weekly pace summary', () => {
+    renderDetail();
+
+    expect(screen.getByText('本周节奏')).toBeInTheDocument();
+    expect(screen.getByText('第 1 周 / 共 2 周')).toBeInTheDocument();
+    expect(screen.getByText('有风险')).toBeInTheDocument();
+    expect(screen.getByText('本周目标：1 题')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '下一次训练包' })).toBeInTheDocument();
+    expect(screen.getByText('建议优先完成 Two Sum。')).toBeInTheDocument();
+  });
+
   it('preserves a work_error message when the stream closes without a terminal event', async () => {
     streamLearningPlanExtensionProposal.mockImplementation(async (_planId, _request, options) => {
       options.onEvent({
@@ -249,6 +260,55 @@ const planFixture: LearningPlanDetailResponse = {
   topicPreferences: ['Array'],
   profileSummary: '初学者',
   metadata: {},
+  loadSummary: {
+    durationWeeks: 2,
+    weeklyHours: 5,
+    weeklyCapacityPoints: 5,
+    totalCapacityPoints: 10,
+    plannedLoadPoints: 2.5,
+    loadRatio: 0.25,
+    plannedProblemCount: 1,
+    averageProblemsPerWeek: 0.5,
+    intensity: 'RELAXED',
+    reviewBufferIncluded: true,
+    suggestions: ['当前节奏有复盘缓冲，可以稳定推进。'],
+  },
+  weeklyBuckets: [{
+    weekIndex: 1,
+    title: '基础阶段',
+    plannedProblemCount: 1,
+    plannedLoadPoints: 2.5,
+    problemSlugs: ['two-sum'],
+    reviewAdvice: '复盘边界条件',
+  }],
+  nextTrainingPackage: {
+    weekIndex: 1,
+    newProblemCount: 1,
+    reviewTask: '复盘边界条件',
+    estimatedMinutes: 60,
+    priorityProblemSlugs: ['two-sum'],
+  },
+  paceSummary: {
+    currentWeek: 1,
+    totalWeeks: 2,
+    currentBucket: {
+      weekIndex: 1,
+      title: '基础阶段',
+      plannedProblemCount: 1,
+      plannedLoadPoints: 2.5,
+      problemSlugs: ['two-sum'],
+      reviewAdvice: '复盘边界条件',
+    },
+    currentWeekCompletedProblemCount: 0,
+    plannedProblemCountToDate: 1,
+    completedProblemCountToDate: 0,
+    skippedProblemCount: 0,
+    plannedLoadPointsToDate: 2.5,
+    completedLoadPoints: 0,
+    loadGapPoints: -2.5,
+    status: 'AT_RISK',
+    recommendation: '建议优先完成 Two Sum。',
+  },
   phases: [
     {
       phaseIndex: 1,

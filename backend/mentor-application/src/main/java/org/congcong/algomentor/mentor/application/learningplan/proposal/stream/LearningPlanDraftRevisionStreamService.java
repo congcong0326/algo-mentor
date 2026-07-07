@@ -33,7 +33,10 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftValidator;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanCoveragePolicy;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmMode;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanDraftRevision;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanDraftRevisionResult;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalGroup;
@@ -66,6 +69,7 @@ public class LearningPlanDraftRevisionStreamService {
   private final AgentLoopRunner agentLoopRunner;
   private final LearningPlanDraftPromptBuilder promptBuilder;
   private final LearningPlanDraftStructuredOutputMapper outputMapper;
+  private final LearningPlanLoadService loadService;
   private final ObjectMapper objectMapper;
   private final TransactionOperations transactionOperations;
   private final Clock clock;
@@ -79,6 +83,7 @@ public class LearningPlanDraftRevisionStreamService {
       LearningPlanDraftPromptBuilder promptBuilder,
       ObjectMapper objectMapper,
       LearningPlanProblemCatalog problemCatalog,
+      LearningPlanLoadService loadService,
       TransactionOperations transactionOperations,
       Clock clock
   ) {
@@ -90,6 +95,7 @@ public class LearningPlanDraftRevisionStreamService {
     this.promptBuilder = Objects.requireNonNull(promptBuilder, "promptBuilder");
     this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper");
     this.outputMapper = new LearningPlanDraftStructuredOutputMapper(objectMapper, problemCatalog);
+    this.loadService = Objects.requireNonNull(loadService, "loadService");
     this.transactionOperations = Objects.requireNonNull(transactionOperations, "transactionOperations");
     this.clock = Objects.requireNonNull(clock, "clock");
   }
@@ -389,7 +395,10 @@ public class LearningPlanDraftRevisionStreamService {
         if (finalContent == null || finalContent.isBlank()) {
           throw new LearningPlanException("LEARNING_PLAN_FINAL_OUTPUT_MISSING", "模型未返回学习计划修订结果。");
         }
-        LearningPlanDraftPlan plan = outputMapper.map(objectMapper.readTree(finalContent), draft.command());
+        LearningPlanDraftPlan plan = loadService.withLoadMetadata(
+            outputMapper.map(objectMapper.readTree(finalContent), draft.command()),
+            LearningPlanRhythmMode.RECOMMENDED,
+            LearningPlanCoveragePolicy.FIT_USER_BUDGET);
         validator.validateGeneratedPlan(plan);
         emitTerminalEvent(transactionOperations.execute(status -> completeReadyTransition(plan)));
       } catch (JsonProcessingException exception) {

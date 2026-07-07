@@ -5,6 +5,8 @@ import java.util.Map;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadSummary;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmOption;
 
 public record LearningPlanTemplateSummaryResponse(
     String templateId,
@@ -24,6 +26,12 @@ public record LearningPlanTemplateSummaryResponse(
     String sourceCommit,
     int problemCount,
     int matchedProblemCount,
-    int missingProblemCount
+    int missingProblemCount,
+    LearningPlanLoadSummary defaultLoadSummary,
+    List<LearningPlanRhythmOption> rhythmOptions
 ) {
+
+  public LearningPlanTemplateSummaryResponse {
+    rhythmOptions = rhythmOptions == null ? List.of() : List.copyOf(rhythmOptions);
+  }
 }

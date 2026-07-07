@@ -1,6 +1,7 @@
 package org.congcong.algomentor.api.learningplan.model;
 
 import java.util.List;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplate;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplatePhase;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateProblemRef;
@@ -8,6 +9,13 @@ import org.congcong.algomentor.mentor.application.learningplan.template.Learning
 public final class LearningPlanTemplateResponseMapper {
 
   public static LearningPlanTemplateSummaryResponse toSummaryResponse(LearningPlanTemplate template) {
+    return toSummaryResponse(template, new LearningPlanLoadService());
+  }
+
+  public static LearningPlanTemplateSummaryResponse toSummaryResponse(
+      LearningPlanTemplate template,
+      LearningPlanLoadService loadService
+  ) {
     return new LearningPlanTemplateSummaryResponse(
         template.templateId(),
         template.title(),
@@ -26,10 +34,19 @@ public final class LearningPlanTemplateResponseMapper {
         template.sourceCommit(),
         template.problemCount(),
         template.matchedProblemCount(),
-        template.missingProblemCount());
+        template.missingProblemCount(),
+        loadService.rhythmOption(template, null).loadSummary(),
+        loadService.rhythmOptions(template));
   }
 
   public static LearningPlanTemplateDetailResponse toDetailResponse(LearningPlanTemplate template) {
+    return toDetailResponse(template, new LearningPlanLoadService());
+  }
+
+  public static LearningPlanTemplateDetailResponse toDetailResponse(
+      LearningPlanTemplate template,
+      LearningPlanLoadService loadService
+  ) {
     return new LearningPlanTemplateDetailResponse(
         template.templateId(),
         template.title(),
@@ -59,6 +76,8 @@ public final class LearningPlanTemplateResponseMapper {
         template.problemCount(),
         template.matchedProblemCount(),
         template.missingProblemCount(),
+        loadService.rhythmOption(template, null).loadSummary(),
+        loadService.rhythmOptions(template),
         template.metadata(),
         template.phases().stream().map(LearningPlanTemplateResponseMapper::toPhaseResponse).toList());
   }
@@ -91,8 +110,15 @@ public final class LearningPlanTemplateResponseMapper {
   }
 
   public static List<LearningPlanTemplateSummaryResponse> toSummaryResponses(List<LearningPlanTemplate> templates) {
+    return toSummaryResponses(templates, new LearningPlanLoadService());
+  }
+
+  public static List<LearningPlanTemplateSummaryResponse> toSummaryResponses(
+      List<LearningPlanTemplate> templates,
+      LearningPlanLoadService loadService
+  ) {
     return templates.stream()
-        .map(LearningPlanTemplateResponseMapper::toSummaryResponse)
+        .map(template -> LearningPlanTemplateResponseMapper.toSummaryResponse(template, loadService))
         .toList();
   }
 

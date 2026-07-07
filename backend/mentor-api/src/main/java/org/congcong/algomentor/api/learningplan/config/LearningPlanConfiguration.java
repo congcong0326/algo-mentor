@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.api.learningplan.repository.UnavailableLearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanAgentService;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftValidator;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
@@ -46,6 +48,20 @@ public class LearningPlanConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
+  public LearningPlanLoadService learningPlanLoadService(Clock learningPlanClock) {
+    return new LearningPlanLoadService(learningPlanClock);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanContractService learningPlanContractService(
+      Clock learningPlanClock,
+      LearningPlanLoadService loadService) {
+    return new LearningPlanContractService(learningPlanClock, loadService);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
   public LearningPlanAgentService learningPlanAgentService(LearningPlanProblemCatalog problemCatalog) {
     return new LearningPlanAgentService(problemCatalog);
   }
@@ -57,14 +73,15 @@ public class LearningPlanConfiguration {
       LearningPlanRepository planRepository,
       LearningPlanAgentService agentService,
       LearningPlanDraftValidator validator,
+      LearningPlanLoadService loadService,
       Clock learningPlanClock) {
-    return new LearningPlanDraftService(draftRepository, planRepository, agentService, validator, learningPlanClock);
+    return new LearningPlanDraftService(draftRepository, planRepository, agentService, validator, loadService, learningPlanClock);
   }
 
   @Bean
   @ConditionalOnMissingBean
-  public LearningPlanDraftPromptBuilder learningPlanDraftPromptBuilder() {
-    return new LearningPlanDraftPromptBuilder();
+  public LearningPlanDraftPromptBuilder learningPlanDraftPromptBuilder(LearningPlanLoadService loadService) {
+    return new LearningPlanDraftPromptBuilder(loadService);
   }
 
   @Bean
@@ -76,6 +93,7 @@ public class LearningPlanConfiguration {
       LearningPlanDraftPromptBuilder promptBuilder,
       ObjectMapper objectMapper,
       LearningPlanProblemCatalog problemCatalog,
+      LearningPlanLoadService loadService,
       Clock learningPlanClock) {
     return new LearningPlanDraftStreamService(
         draftRepository,
@@ -84,6 +102,7 @@ public class LearningPlanConfiguration {
         promptBuilder,
         objectMapper,
         problemCatalog,
+        loadService,
         learningPlanClock);
   }
 
@@ -120,6 +139,7 @@ public class LearningPlanConfiguration {
       LearningPlanDraftPromptBuilder promptBuilder,
       ObjectMapper objectMapper,
       LearningPlanProblemCatalog problemCatalog,
+      LearningPlanLoadService loadService,
       TransactionOperations transactionOperations,
       Clock learningPlanClock) {
     return new LearningPlanDraftRevisionStreamService(
@@ -131,6 +151,7 @@ public class LearningPlanConfiguration {
         promptBuilder,
         objectMapper,
         problemCatalog,
+        loadService,
         transactionOperations,
         learningPlanClock);
   }
@@ -193,12 +214,14 @@ public class LearningPlanConfiguration {
       LearningPlanDraftRepository draftRepository,
       LearningPlanProblemCatalog problemCatalog,
       LearningPlanDraftValidator validator,
+      LearningPlanLoadService loadService,
       Clock learningPlanClock) {
     return new LearningPlanTemplateDraftService(
         templateRepository,
         draftRepository,
         problemCatalog,
         validator,
+        loadService,
         learningPlanClock);
   }
 

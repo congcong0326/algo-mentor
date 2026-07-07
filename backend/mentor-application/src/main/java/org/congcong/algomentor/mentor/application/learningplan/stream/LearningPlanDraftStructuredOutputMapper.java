@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
@@ -74,7 +75,7 @@ public class LearningPlanDraftStructuredOutputMapper {
     }
     Map<String, Object> metadata = new LinkedHashMap<>(rawPlan.metadata());
     if (incomplete) {
-      metadata.put("problemRecommendationIncomplete", true);
+      metadata.put(LearningPlanDraftMetadataKeys.PROBLEM_RECOMMENDATION_INCOMPLETE, true);
     }
     return new LearningPlanDraftPlan(
         rawPlan.title(),

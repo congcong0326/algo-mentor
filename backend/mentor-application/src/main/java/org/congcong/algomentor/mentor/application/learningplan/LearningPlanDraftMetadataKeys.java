@@ -8,6 +8,12 @@ public final class LearningPlanDraftMetadataKeys {
   public static final String PROBLEM_RECOMMENDATION_INCOMPLETE = "problemRecommendationIncomplete";
   public static final String DRAFT_SOURCE = "draftSource";
   public static final String DRAFT_SOURCE_TEMPLATE = "TEMPLATE";
+  public static final String RHYTHM_MODE = "rhythmMode";
+  public static final String COVERAGE_POLICY = "coveragePolicy";
+  public static final String LOAD_SUMMARY = "loadSummary";
+  public static final String WEEKLY_BUCKETS = "weeklyBuckets";
+  public static final String NEXT_TRAINING_PACKAGE = "nextTrainingPackage";
+  public static final String LOAD_RISK = "loadRisk";
   public static final String TEMPLATE = "template";
   public static final String TEMPLATE_ID = "templateId";
   public static final String SOURCE_NAME = "sourceName";

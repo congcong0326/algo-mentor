@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCircle2, ClipboardList, ExternalLink, Info } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ClipboardList, ExternalLink, Info, SkipForward } from 'lucide-react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import MarkdownView from '../components/MarkdownView';
@@ -349,12 +349,14 @@ function nextIdempotencyKey(): string {
 export default function PracticeChatWorkbench({
   onBack,
   onOpenSubmissions,
+  onProgressUpdated,
   phaseIndex,
   plan,
   problemSlug,
 }: {
   onBack: () => void;
   onOpenSubmissions: () => void;
+  onProgressUpdated?: () => Promise<void>;
   phaseIndex: number;
   plan: LearningPlanDetailResponse;
   problemSlug: string;
@@ -447,6 +449,7 @@ export default function PracticeChatWorkbench({
   const leetcodeUrl = localizedLeetCodeUrl(sessionResponse?.problem.leetcodeUrl, locale);
   const difficulty = sessionResponse?.problem.difficulty ?? problem?.difficulty;
   const shouldShowCompletionButton = Boolean(sessionId) && progressStatus !== 'COMPLETED';
+  const shouldShowSkipButton = Boolean(sessionId) && progressStatus !== 'COMPLETED' && progressStatus !== 'SKIPPED';
   const completionDisabled = !completionGate?.canComplete
     || completionUpdating
     || postRunRefreshing
@@ -460,6 +463,11 @@ export default function PracticeChatWorkbench({
     : undefined;
   const composerInputDisabled = !sessionId || status === 'loading' || hasActiveRun;
   const sendDisabled = !sessionId || status === 'loading' || status === 'streaming' || hasActiveRun || !composerValue.trim();
+  const skipDisabled = completionUpdating
+    || postRunRefreshing
+    || status === 'loading'
+    || status === 'streaming'
+    || hasActiveRun;
   const workbenchTitle = practiceProblemLabel(
     sessionResponse,
     problem,
@@ -814,6 +822,43 @@ export default function PracticeChatWorkbench({
       setSessionResponse(nextSessionResponse);
       setMessages(nextSessionResponse.messages);
       setStatus('idle');
+      await onProgressUpdated?.();
+    } catch (error) {
+      if (activeSessionIdRef.current !== activeSessionId || practiceLoadTokenRef.current !== activeLoadToken) {
+        return;
+      }
+      setError(error instanceof Error ? error.message : resources.learningPlans.progressUpdateFailed);
+      setStatus('error');
+    } finally {
+      if (activeSessionIdRef.current === activeSessionId && practiceLoadTokenRef.current === activeLoadToken) {
+        setCompletionUpdating(false);
+      }
+    }
+  }
+
+  async function handleSkipProblem() {
+    if (!sessionId
+      || completionUpdating
+      || progressStatus === 'COMPLETED'
+      || progressStatus === 'SKIPPED'
+      || skipDisabled) {
+      return;
+    }
+
+    const activeSessionId = sessionId;
+    const activeLoadToken = practiceLoadTokenRef.current;
+    setCompletionUpdating(true);
+    setError('');
+    try {
+      const response = await updatePracticeProgressStatus(sessionId, 'SKIPPED');
+      if (activeSessionIdRef.current !== activeSessionId || practiceLoadTokenRef.current !== activeLoadToken) {
+        return;
+      }
+      const nextSessionResponse = requireApiData(response, resources.learningPlans.progressUpdateFailed);
+      setSessionResponse(nextSessionResponse);
+      setMessages(nextSessionResponse.messages);
+      setStatus('idle');
+      await onProgressUpdated?.();
     } catch (error) {
       if (activeSessionIdRef.current !== activeSessionId || practiceLoadTokenRef.current !== activeLoadToken) {
         return;
@@ -947,6 +992,17 @@ export default function PracticeChatWorkbench({
                 </span>
               )}
             </span>
+          )}
+          {shouldShowSkipButton && (
+            <button
+              className="secondary-button compact"
+              disabled={skipDisabled}
+              onClick={handleSkipProblem}
+              type="button"
+            >
+              <SkipForward aria-hidden="true" />
+              <span>{resources.learningPlans.skipped}</span>
+            </button>
           )}
           <button
             className="secondary-button compact"

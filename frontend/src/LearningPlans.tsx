@@ -42,6 +42,7 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
   const { resources } = useI18n();
   const [plansPage, setPlansPage] = useState<LearningPlanPageResponse>(INITIAL_PLANS_PAGE);
   const [planDetail, setPlanDetail] = useState<LearningPlanDetailResponse>();
+  const [contractFeedback, setContractFeedback] = useState('');
   const [page, setPage] = useState(1);
   const [deletingPlanId, setDeletingPlanId] = useState<number>();
   const [error, setError] = useState('');
@@ -98,7 +99,16 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
       await getLearningPlanDetail(planId, signal),
       resources.learningPlans.detailLoadFailed,
     );
+    setContractFeedback((current) => contractEstimateFeedback(planDetail, detail, resources.learningPlans.contractDateMovedEarlier, resources.learningPlans.contractDateMovedLater) || current);
     setPlanDetail(detail);
+  }
+
+  async function refreshCurrentPlanDetail(planId: number) {
+    setError('');
+    await loadPlanDetail(planId).catch((nextError) => {
+      setError(nextError instanceof Error ? nextError.message : resources.learningPlans.detailLoadFailed);
+      throw nextError;
+    });
   }
 
   async function removePlan(planId: number) {
@@ -153,12 +163,17 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
             )}
             >
               <PracticeChatWorkbench
-                onBack={() => onNavigate(learningPlanDetailPath(planDetail.id))}
+                onBack={() => {
+                  void refreshCurrentPlanDetail(planDetail.id).finally(() => {
+                    onNavigate(learningPlanDetailPath(planDetail.id));
+                  });
+                }}
                 onOpenSubmissions={() => onNavigate(learningPlanPracticeSubmissionsPath(
                   planDetail.id,
                   practiceChatRoute.phaseIndex,
                   practiceChatRoute.problemSlug,
                 ))}
+                onProgressUpdated={() => refreshCurrentPlanDetail(planDetail.id)}
                 phaseIndex={practiceChatRoute.phaseIndex}
                 plan={planDetail}
                 problemSlug={practiceChatRoute.problemSlug}
@@ -185,13 +200,11 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
             </Suspense>
           ) : (
             <LearningPlanDetail
+              contractFeedback={contractFeedback}
               onBack={() => onNavigate(APP_ROUTES.learningPlans)}
               onPlanUpdated={() => {
-                setError('');
-                return loadPlanDetail(planDetail.id).catch((nextError) => {
-                  setError(nextError instanceof Error ? nextError.message : resources.learningPlans.detailLoadFailed);
-                  throw nextError;
-                });
+                setContractFeedback('');
+                return refreshCurrentPlanDetail(planDetail.id);
               }}
               onProblemSelect={(phaseIndex, problemSlug) => {
                 onNavigate(learningPlanPracticeChatPath(planDetail.id, phaseIndex, problemSlug));
@@ -221,4 +234,21 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
       />
     </section>
   );
+}
+
+function contractEstimateFeedback(
+  previous: LearningPlanDetailResponse | undefined,
+  next: LearningPlanDetailResponse,
+  movedEarlier: (date: string) => string,
+  movedLater: (date: string) => string,
+) {
+  if (!previous || previous.id !== next.id) {
+    return '';
+  }
+  const previousDate = previous.livingContractSummary?.estimatedCompletionDate;
+  const nextDate = next.livingContractSummary?.estimatedCompletionDate;
+  if (!previousDate || !nextDate || previousDate === nextDate) {
+    return '';
+  }
+  return nextDate < previousDate ? movedEarlier(nextDate) : movedLater(nextDate);
 }

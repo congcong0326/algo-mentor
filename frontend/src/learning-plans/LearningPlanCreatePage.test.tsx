@@ -89,6 +89,14 @@ beforeEach(() => {
                 reason: '建立状态转移手感。',
               }],
             }],
+            weeklyBuckets: [{
+              weekIndex: 1,
+              title: '动态规划基础强化',
+              plannedProblemCount: 1,
+              plannedLoadPoints: 2.5,
+              problemSlugs: ['climbing-stairs'],
+              reviewAdvice: '复盘状态转移方程。',
+            }],
           }),
         }),
       },
@@ -135,21 +143,24 @@ describe('LearningPlanCreatePage', () => {
     expect(screen.getByText('NeetCode 150')).toBeInTheDocument();
     expect(await screen.findByText('缺失的 6 道题不会进入草稿推荐题。')).toBeInTheDocument();
     await waitFor(() => expect(screen.getByRole('combobox', { name: '编程语言' })).toHaveValue('Java'));
+    expect(screen.queryByRole('spinbutton', { name: '训练周期' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('spinbutton', { name: '每周投入' })).not.toBeInTheDocument();
 
-    fireEvent.change(screen.getByRole('spinbutton', { name: '训练周期' }), { target: { value: '6' } });
-    fireEvent.change(screen.getByRole('spinbutton', { name: '每周投入' }), { target: { value: '10' } });
+    fireEvent.click(screen.getByRole('button', { name: '舒缓' }));
+    expect(screen.getByText('6 周完成 69 题')).toBeInTheDocument();
+    expect(screen.getByText('每周 8h · 训练 4 天')).toBeInTheDocument();
+    expect(screen.getByText('完整路线，增加缓冲/复盘')).toBeInTheDocument();
     fireEvent.change(screen.getByRole('combobox', { name: '编程语言' }), { target: { value: 'Python3' } });
     fireEvent.click(screen.getByRole('button', { name: '按模板生成草案' }));
 
     await screen.findByRole('heading', { name: '训练方案' });
     expect(createLearningPlanDraftFromTemplateMock).toHaveBeenCalledWith({
       templateId: 'neetcode_blind_75_interview_core',
-      durationWeeks: 6,
-      weeklyHours: 10,
+      rhythmMode: 'RELAXED',
       programmingLanguage: 'Python3',
     });
-    expect(screen.getByText('基础题型恢复')).toBeInTheDocument();
-    expect(screen.getByText('两数之和')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '第 1 周：基础题型恢复' })).toBeInTheDocument();
+    expect(screen.getAllByText('两数之和').length).toBeGreaterThan(0);
 
     fireEvent.change(screen.getByRole('textbox', { name: '对当前计划不满意？输入调整要求' }), {
       target: { value: '三周内集中突破动态规划面试题' },
@@ -162,23 +173,23 @@ describe('LearningPlanCreatePage', () => {
       expect.objectContaining({ onEvent: expect.any(Function) }),
     ));
     expect(await screen.findByText('动态规划基础强化')).toBeInTheDocument();
-    expect(screen.getByText('爬楼梯')).toBeInTheDocument();
+    expect(screen.getAllByText('爬楼梯').length).toBeGreaterThan(0);
   });
 
-  it('rejects template duration shorter than the template phase count', async () => {
-    getLearningPlanTemplateMock.mockImplementation((templateId) => (
-      Promise.resolve(apiResponse(templateDetail({ templateId, phases: templatePhases(4) })))
-    ));
+  it('submits the sprint rhythm for template drafts', async () => {
     render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
 
     fireEvent.click(screen.getByRole('button', { name: '从模板创建' }));
-    await waitFor(() => expect(screen.getByRole('spinbutton', { name: '训练周期' })).toHaveAttribute('min', '4'));
+    await screen.findByText('Blind 75');
 
-    fireEvent.change(screen.getByRole('spinbutton', { name: '训练周期' }), { target: { value: '2' } });
+    fireEvent.click(screen.getByRole('button', { name: '冲刺' }));
     fireEvent.click(screen.getByRole('button', { name: '按模板生成草案' }));
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('模板周期不能少于 4 周。');
-    expect(createLearningPlanDraftFromTemplateMock).not.toHaveBeenCalled();
+    await waitFor(() => expect(createLearningPlanDraftFromTemplateMock).toHaveBeenCalledWith({
+      templateId: 'neetcode_blind_75_interview_core',
+      rhythmMode: 'SPRINT',
+      programmingLanguage: 'Java',
+    }));
   });
 });
 
@@ -211,6 +222,8 @@ function templateSummaries(): LearningPlanTemplateSummaryResponse[] {
       problemCount: 75,
       matchedProblemCount: 69,
       missingProblemCount: 6,
+      defaultLoadSummary: loadSummary(69, 82, 32, 'OVERLOADED'),
+      rhythmOptions: rhythmOptions(4, 8, 69),
     },
     {
       templateId: 'neetcode_150_interview_full',
@@ -231,6 +244,67 @@ function templateSummaries(): LearningPlanTemplateSummaryResponse[] {
       problemCount: 150,
       matchedProblemCount: 140,
       missingProblemCount: 10,
+      defaultLoadSummary: loadSummary(140, 180, 80, 'OVERLOADED'),
+      rhythmOptions: rhythmOptions(8, 10, 140),
+    },
+  ];
+}
+
+function loadSummary(
+  plannedProblemCount: number,
+  plannedLoadPoints: number,
+  totalCapacityPoints: number,
+  intensity: 'RELAXED' | 'RECOMMENDED' | 'TIGHT' | 'OVERLOADED',
+) {
+  return {
+    durationWeeks: 4,
+    weeklyHours: 8,
+    weeklyCapacityPoints: 8,
+    totalCapacityPoints,
+    plannedLoadPoints,
+    loadRatio: totalCapacityPoints === 0 ? 0 : plannedLoadPoints / totalCapacityPoints,
+    plannedProblemCount,
+    averageProblemsPerWeek: plannedProblemCount / 4,
+    intensity,
+    reviewBufferIncluded: false,
+    suggestions: ['当前节奏过载，建议延长周期、增加每周投入或减少题量。'],
+  };
+}
+
+function rhythmOptions(defaultWeeks: number, defaultHours: number, plannedProblemCount: number) {
+  return [
+    {
+      mode: 'RECOMMENDED' as const,
+      durationWeeks: defaultWeeks,
+      weeklyHours: defaultHours,
+      trainingDaysPerWeekMin: 5,
+      trainingDaysPerWeekMax: 5,
+      dailyProblemCountMin: Math.max(1, Math.floor(plannedProblemCount / Math.max(1, defaultWeeks * 5))),
+      dailyProblemCountMax: Math.max(1, Math.ceil(plannedProblemCount / Math.max(1, defaultWeeks * 5))),
+      coveragePolicy: 'FULL_ROUTE' as const,
+      loadSummary: loadSummary(plannedProblemCount, 82, defaultWeeks * defaultHours, 'OVERLOADED'),
+    },
+    {
+      mode: 'RELAXED' as const,
+      durationWeeks: Math.ceil(defaultWeeks * 1.5),
+      weeklyHours: defaultHours,
+      trainingDaysPerWeekMin: 4,
+      trainingDaysPerWeekMax: 4,
+      dailyProblemCountMin: Math.max(1, Math.floor(plannedProblemCount / Math.max(1, Math.ceil(defaultWeeks * 1.5) * 4))),
+      dailyProblemCountMax: Math.max(1, Math.ceil(plannedProblemCount / Math.max(1, Math.ceil(defaultWeeks * 1.5) * 4))),
+      coveragePolicy: 'FULL_ROUTE_WITH_REVIEW_BUFFER' as const,
+      loadSummary: loadSummary(plannedProblemCount, 82, Math.ceil(defaultWeeks * 1.5) * defaultHours, 'OVERLOADED'),
+    },
+    {
+      mode: 'SPRINT' as const,
+      durationWeeks: Math.max(1, Math.ceil(defaultWeeks * 0.75)),
+      weeklyHours: Math.ceil(defaultHours * 1.5),
+      trainingDaysPerWeekMin: 6,
+      trainingDaysPerWeekMax: 7,
+      dailyProblemCountMin: Math.max(1, Math.floor(plannedProblemCount / Math.max(1, Math.max(1, Math.ceil(defaultWeeks * 0.75)) * 7))),
+      dailyProblemCountMax: Math.max(1, Math.ceil(plannedProblemCount / Math.max(1, Math.max(1, Math.ceil(defaultWeeks * 0.75)) * 6))),
+      coveragePolicy: 'FULL_ROUTE_FAST' as const,
+      loadSummary: loadSummary(plannedProblemCount, 82, Math.max(1, Math.ceil(defaultWeeks * 0.75)) * Math.ceil(defaultHours * 1.5), 'TIGHT'),
     },
   ];
 }
@@ -328,6 +402,22 @@ function learningPlanDraftPlan(overrides: Partial<NonNullable<LearningPlanDraftR
       }],
     }],
     metadata: {},
+    loadSummary: loadSummary(1, 2.5, 32, 'RELAXED'),
+    weeklyBuckets: [{
+      weekIndex: 1,
+      title: '基础题型恢复',
+      plannedProblemCount: 1,
+      plannedLoadPoints: 2.5,
+      problemSlugs: ['two-sum'],
+      reviewAdvice: '整理错误原因。',
+    }],
+    nextTrainingPackage: {
+      weekIndex: 1,
+      newProblemCount: 1,
+      reviewTask: '整理错误原因。',
+      estimatedMinutes: 96,
+      priorityProblemSlugs: ['two-sum'],
+    },
     ...overrides,
   } satisfies NonNullable<LearningPlanDraftResponse['draftPlan']>;
 }

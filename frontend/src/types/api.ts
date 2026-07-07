@@ -320,6 +320,14 @@ export type LearningPlanLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 export type LearningPlanDifficultyPreference = 'EASY' | 'MEDIUM' | 'HARD' | 'MIXED';
 export type LearningPlanDraftStatus = 'COLLECTING' | 'GENERATED' | 'CONFIRMED' | 'GENERATION_FAILED' | 'EXPIRED';
 export type LearningPlanStatus = 'ACTIVE' | 'ARCHIVED';
+export type LearningPlanRhythmMode = 'RECOMMENDED' | 'RELAXED' | 'SPRINT';
+export type LearningPlanCoveragePolicy =
+  | 'FULL_ROUTE'
+  | 'FULL_ROUTE_WITH_REVIEW_BUFFER'
+  | 'FULL_ROUTE_FAST'
+  | 'FIT_USER_BUDGET';
+export type LearningPlanLoadIntensity = 'RELAXED' | 'RECOMMENDED' | 'TIGHT' | 'OVERLOADED';
+export type LearningPlanPaceStatus = 'AHEAD' | 'ON_TRACK' | 'AT_RISK' | 'BEHIND';
 export type LearningPlanProposalRevisionStatus =
   | 'GENERATING'
   | 'READY'
@@ -341,6 +349,92 @@ export interface LearningPlanCreateDraftRequest {
   topicPreferences: string[];
 }
 
+export interface LearningPlanLoadSummary {
+  durationWeeks: number;
+  weeklyHours: number;
+  weeklyCapacityPoints: number;
+  totalCapacityPoints: number;
+  plannedLoadPoints: number;
+  loadRatio: number;
+  plannedProblemCount: number;
+  averageProblemsPerWeek: number;
+  intensity: LearningPlanLoadIntensity | string;
+  reviewBufferIncluded: boolean;
+  suggestions: string[];
+}
+
+export interface LearningPlanWeeklyBucket {
+  weekIndex: number;
+  title: string;
+  plannedProblemCount: number;
+  plannedLoadPoints: number;
+  problemSlugs: string[];
+  reviewAdvice?: string | null;
+}
+
+export interface LearningPlanTrainingPackage {
+  weekIndex: number;
+  newProblemCount: number;
+  reviewTask: string;
+  estimatedMinutes: number;
+  priorityProblemSlugs: string[];
+}
+
+export interface LearningPlanRhythmOption {
+  mode: LearningPlanRhythmMode;
+  durationWeeks: number;
+  weeklyHours: number;
+  trainingDaysPerWeekMin?: number;
+  trainingDaysPerWeekMax?: number;
+  dailyProblemCountMin?: number;
+  dailyProblemCountMax?: number;
+  coveragePolicy: LearningPlanCoveragePolicy;
+  loadSummary: LearningPlanLoadSummary;
+}
+
+export interface LearningPlanPaceSummary {
+  currentWeek: number;
+  totalWeeks: number;
+  currentBucket?: LearningPlanWeeklyBucket | null;
+  currentWeekCompletedProblemCount: number;
+  plannedProblemCountToDate: number;
+  completedProblemCountToDate: number;
+  skippedProblemCount: number;
+  plannedLoadPointsToDate: number;
+  completedLoadPoints: number;
+  loadGapPoints: number;
+  status: LearningPlanPaceStatus;
+  recommendation: string;
+}
+
+export type LearningPlanVisibleStatus = 'ON_TRACK' | 'NEEDS_REBALANCE' | 'PAUSED' | 'COMPLETED' | 'CLOSED_OUT';
+export type LearningPlanEstimationSource = 'COLD_START_PLAN_QUOTA' | 'RECENT_COMPLETION_RATE' | 'FROZEN' | 'COMPLETED';
+
+export interface LearningPlanCompletionSummary {
+  completionRate: number;
+  totalDurationDays: number;
+  completedProblemCount: number;
+  skippedProblemCount: number;
+  openProblemCount: number;
+  strongTags: string[];
+  weakTags: string[];
+  unresolvedProblemSlugs: string[];
+}
+
+export interface LearningPlanLivingContractSummary {
+  totalProblemCount: number;
+  completedProblemCount: number;
+  skippedProblemCount: number;
+  openProblemCount: number;
+  progressPercent: number;
+  estimatedCompletionDate?: string | null;
+  estimationSource: LearningPlanEstimationSource;
+  visibleStatus: LearningPlanVisibleStatus;
+  nextTrainingPackage?: LearningPlanTrainingPackage | null;
+  notice?: string | null;
+  completionSummary?: LearningPlanCompletionSummary | null;
+}
+
 export interface LearningPlanTemplateSummaryResponse {
   templateId: string;
   title: string;
@@ -360,6 +454,8 @@ export interface LearningPlanTemplateSummaryResponse {
   problemCount: number;
   matchedProblemCount: number;
   missingProblemCount: number;
+  defaultLoadSummary?: LearningPlanLoadSummary;
+  rhythmOptions?: LearningPlanRhythmOption[];
 }
 
 export interface LearningPlanTemplateProblemRefResponse {
@@ -407,6 +503,7 @@ export interface LearningPlanTemplateDraftRequest {
   durationWeeks?: number;
   weeklyHours?: number;
   programmingLanguage?: string;
+  rhythmMode?: LearningPlanRhythmMode;
 }
 
 export interface LearningPlanMessageRequest {
@@ -463,6 +560,9 @@ export interface LearningPlanDraftPlan {
   profileSummary: string;
   phases: LearningPlanPhaseDraft[];
   metadata: Record<string, unknown>;
+  loadSummary?: LearningPlanLoadSummary;
+  weeklyBuckets?: LearningPlanWeeklyBucket[];
+  nextTrainingPackage?: LearningPlanTrainingPackage;
 }
 
 export interface LearningPlanDraftResponse {
@@ -511,6 +611,11 @@ export interface LearningPlanDetailResponse extends LearningPlanDraftPlan {
   id: number;
   status: LearningPlanStatus;
   phases: LearningPlanDetailPhaseResponse[];
+  loadSummary?: LearningPlanLoadSummary;
+  weeklyBuckets?: LearningPlanWeeklyBucket[];
+  nextTrainingPackage?: LearningPlanTrainingPackage;
+  paceSummary?: LearningPlanPaceSummary;
+  livingContractSummary?: LearningPlanLivingContractSummary;
   createdAt: string;
   updatedAt: string;
 }

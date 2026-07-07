@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRevisionRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanExtensionRevisionRow;
+import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanContractStateRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanProposalGroupRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanRow;
 
@@ -64,6 +65,23 @@ public interface LearningPlanMapper {
   LearningPlanRow findPlanByIdForUser(@Param("id") long id, @Param("userId") long userId);
 
   LearningPlanRow findPlanByIdForUserForUpdate(@Param("id") long id, @Param("userId") long userId);
+
+  LearningPlanContractStateRow findContractStateByPlan(@Param("userId") long userId, @Param("planId") long planId);
+
+  LearningPlanContractStateRow pauseContractState(
+      @Param("userId") long userId,
+      @Param("planId") long planId,
+      @Param("frozenEstimatedCompletionDate") java.time.LocalDate frozenEstimatedCompletionDate);
+
+  LearningPlanContractStateRow resumeContractState(
+      @Param("userId") long userId,
+      @Param("planId") long planId,
+      @Param("noticeAt") Instant noticeAt);
+
+  LearningPlanContractStateRow closeOutContractState(
+      @Param("userId") long userId,
+      @Param("planId") long planId,
+      @Param("frozenEstimatedCompletionDate") java.time.LocalDate frozenEstimatedCompletionDate);
 
   int clearConfirmedPlanReferences(@Param("userId") long userId, @Param("planId") long planId);
 

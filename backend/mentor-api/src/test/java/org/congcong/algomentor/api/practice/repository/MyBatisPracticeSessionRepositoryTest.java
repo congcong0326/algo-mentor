@@ -100,6 +100,9 @@ class MyBatisPracticeSessionRepositoryTest {
         "two-sum",
         "SKIPPED",
         CREATED_AT,
+        null,
+        UPDATED_AT,
+        CREATED_AT,
         UPDATED_AT));
     MyBatisPracticeSessionRepository repository = new MyBatisPracticeSessionRepository(mapper);
 

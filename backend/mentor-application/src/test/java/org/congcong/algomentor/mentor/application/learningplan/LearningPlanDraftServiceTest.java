@@ -23,6 +23,7 @@ class LearningPlanDraftServiceTest {
       planRepository,
       new LearningPlanAgentService(new FakeProblemCatalog()),
       new LearningPlanDraftValidator(),
+      new LearningPlanLoadService(clock),
       clock);
 
   @Test
@@ -43,6 +44,9 @@ class LearningPlanDraftServiceTest {
     assertThat(generated.status()).isEqualTo(LearningPlanDraftStatus.GENERATED);
     assertThat(generated.draftPlan()).isNotNull();
     assertThat(generated.draftPlan().goal()).isEqualTo("想用 Java 练习数组和哈希表");
+    assertThat(generated.draftPlan().metadata()).containsKeys(
+        LearningPlanDraftMetadataKeys.LOAD_SUMMARY,
+        LearningPlanDraftMetadataKeys.WEEKLY_BUCKETS);
   }
 
   @Test

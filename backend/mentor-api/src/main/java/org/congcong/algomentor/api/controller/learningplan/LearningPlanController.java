@@ -39,8 +39,12 @@ import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractService;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractState;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractStateRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionApplyService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalGroupService;
@@ -85,7 +89,10 @@ public class LearningPlanController {
   private final ObjectProvider<LearningPlanExtensionApplyService> extensionApplyServiceProvider;
   private final ObjectProvider<LearningPlanProposalGroupService> proposalGroupServiceProvider;
   private final ObjectProvider<PracticeSessionRepository> practiceSessionRepositoryProvider;
+  private final ObjectProvider<LearningPlanContractStateRepository> contractStateRepositoryProvider;
   private final ObjectProvider<LearningPlanTemplateDraftService> templateDraftServiceProvider;
+  private final LearningPlanLoadService loadService;
+  private final LearningPlanContractService contractService;
   private final LearningPlanDraftStreamSseMapper draftStreamSseMapper;
   private final LearningPlanProposalStreamSseMapper proposalStreamSseMapper;
   private final ApiSseProperties sseProperties;
@@ -106,7 +113,10 @@ public class LearningPlanController {
       ObjectProvider<LearningPlanExtensionApplyService> extensionApplyServiceProvider,
       ObjectProvider<LearningPlanProposalGroupService> proposalGroupServiceProvider,
       ObjectProvider<PracticeSessionRepository> practiceSessionRepositoryProvider,
+      ObjectProvider<LearningPlanContractStateRepository> contractStateRepositoryProvider,
       ObjectProvider<LearningPlanTemplateDraftService> templateDraftServiceProvider,
+      ObjectProvider<LearningPlanLoadService> loadServiceProvider,
+      ObjectProvider<LearningPlanContractService> contractServiceProvider,
       ApiSseProperties sseProperties,
       ObjectProvider<SseOpsRecorder> sseOpsRecorder,
       ObjectProvider<LearningOpsRecorder> learningOpsRecorder) {
@@ -122,7 +132,10 @@ public class LearningPlanController {
     this.extensionApplyServiceProvider = extensionApplyServiceProvider;
     this.proposalGroupServiceProvider = proposalGroupServiceProvider;
     this.practiceSessionRepositoryProvider = practiceSessionRepositoryProvider;
+    this.contractStateRepositoryProvider = contractStateRepositoryProvider;
     this.templateDraftServiceProvider = templateDraftServiceProvider;
+    this.loadService = loadServiceProvider.getIfAvailable(LearningPlanLoadService::new);
+    this.contractService = contractServiceProvider.getIfAvailable(LearningPlanContractService::new);
     this.draftStreamSseMapper = new LearningPlanDraftStreamSseMapper();
     this.proposalStreamSseMapper = new LearningPlanProposalStreamSseMapper();
     this.sseProperties = sseProperties;
@@ -274,9 +287,36 @@ public class LearningPlanController {
   @GetMapping("/{planId}")
   public ApiResponse<LearningPlanDetailResponse> getPlan(@PathVariable long planId) {
     long userId = requireCurrentUserId();
-    return ApiResponse.success(LearningPlanResponseMapper.toDetailResponse(
-        planService.getPlan(userId, planId),
-        progressByPlan(userId, planId)));
+    return ApiResponse.success(detailResponse(userId, planId));
+  }
+
+  @PostMapping(ApiContractConstants.LEARNING_PLAN_CONTRACT_PAUSE_PATH)
+  public ApiResponse<LearningPlanDetailResponse> pauseContract(@PathVariable long planId) {
+    long userId = requireCurrentUserId();
+    LearningPlanDetailResponse current = detailResponse(userId, planId);
+    requiredContractStateRepository().pause(
+        userId,
+        planId,
+        current.livingContractSummary() == null ? null : current.livingContractSummary().estimatedCompletionDate());
+    return ApiResponse.success(detailResponse(userId, planId));
+  }
+
+  @PostMapping(ApiContractConstants.LEARNING_PLAN_CONTRACT_RESUME_PATH)
+  public ApiResponse<LearningPlanDetailResponse> resumeContract(@PathVariable long planId) {
+    long userId = requireCurrentUserId();
+    requiredContractStateRepository().resume(userId, planId, Instant.now());
+    return ApiResponse.success(detailResponse(userId, planId));
+  }
+
+  @PostMapping(ApiContractConstants.LEARNING_PLAN_CONTRACT_CLOSE_OUT_PATH)
+  public ApiResponse<LearningPlanDetailResponse> closeOutContract(@PathVariable long planId) {
+    long userId = requireCurrentUserId();
+    LearningPlanDetailResponse current = detailResponse(userId, planId);
+    requiredContractStateRepository().closeOut(
+        userId,
+        planId,
+        current.livingContractSummary() == null ? null : current.livingContractSummary().estimatedCompletionDate());
+    return ApiResponse.success(detailResponse(userId, planId));
   }
 
   @DeleteMapping("/{planId}")
@@ -302,6 +342,33 @@ public class LearningPlanController {
     } catch (UnsupportedOperationException exception) {
       return List.of();
     }
+  }
+
+  private LearningPlanDetailResponse detailResponse(long userId, long planId) {
+    List<PracticeProgress> progress = progressByPlan(userId, planId);
+    LearningPlanContractState state = contractStateByPlan(userId, planId);
+    return LearningPlanResponseMapper.toDetailResponse(
+        planService.getPlan(userId, planId),
+        progress,
+        loadService,
+        contractService,
+        state);
+  }
+
+  private LearningPlanContractState contractStateByPlan(long userId, long planId) {
+    LearningPlanContractStateRepository repository = contractStateRepositoryProvider.getIfAvailable();
+    if (repository == null) {
+      return LearningPlanContractState.empty(userId, planId);
+    }
+    return repository.findByPlan(userId, planId).orElseGet(() -> LearningPlanContractState.empty(userId, planId));
+  }
+
+  private LearningPlanContractStateRepository requiredContractStateRepository() {
+    return contractStateRepositoryProvider.getIfAvailable(() -> {
+      throw new LearningPlanException(
+          "LEARNING_PLAN_CONTRACT_STATE_UNAVAILABLE",
+          "学习计划契约状态服务不可用。");
+    });
   }
 
   private ApiResponse<LearningPlanDraftResponse> governedDraft(

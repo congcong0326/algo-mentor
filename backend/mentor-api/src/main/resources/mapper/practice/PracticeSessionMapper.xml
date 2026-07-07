@@ -13,6 +13,9 @@
       <arg column="phase_index" javaType="_int"/>
       <arg column="problem_slug" javaType="string"/>
       <arg column="status" javaType="string"/>
+      <arg column="started_at" javaType="java.time.Instant"/>
+      <arg column="completed_at" javaType="java.time.Instant"/>
+      <arg column="skipped_at" javaType="java.time.Instant"/>
       <arg column="created_at" javaType="java.time.Instant"/>
       <arg column="updated_at" javaType="java.time.Instant"/>
     </constructor>
@@ -44,6 +47,9 @@
     phase_index,
     problem_slug,
     status,
+    started_at,
+    completed_at,
+    skipped_at,
     created_at,
     updated_at
   </sql>
@@ -212,6 +218,9 @@
       progress.phase_index,
       progress.problem_slug,
       progress.status,
+      progress.started_at,
+      progress.completed_at,
+      progress.skipped_at,
       progress.created_at,
       progress.updated_at
   </select>

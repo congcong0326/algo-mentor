@@ -7,6 +7,7 @@ import org.congcong.algomentor.api.learningplan.model.LearningPlanTemplateRespon
 import org.congcong.algomentor.api.learningplan.model.LearningPlanTemplateSummaryResponse;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateDraftService;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,21 +20,28 @@ import org.springframework.web.bind.annotation.RestController;
 public class LearningPlanTemplateController {
 
   private final ObjectProvider<LearningPlanTemplateDraftService> templateDraftServiceProvider;
+  private final LearningPlanLoadService loadService;
 
-  public LearningPlanTemplateController(ObjectProvider<LearningPlanTemplateDraftService> templateDraftServiceProvider) {
+  public LearningPlanTemplateController(
+      ObjectProvider<LearningPlanTemplateDraftService> templateDraftServiceProvider,
+      ObjectProvider<LearningPlanLoadService> loadServiceProvider
+  ) {
     this.templateDraftServiceProvider = templateDraftServiceProvider;
+    this.loadService = loadServiceProvider.getIfAvailable(LearningPlanLoadService::new);
   }
 
   @GetMapping
   public ApiResponse<List<LearningPlanTemplateSummaryResponse>> listTemplates() {
     return ApiResponse.success(LearningPlanTemplateResponseMapper.toSummaryResponses(
-        requiredTemplateDraftService().listTemplates()));
+        requiredTemplateDraftService().listTemplates(),
+        loadService));
   }
 
   @GetMapping("/{templateId}")
   public ApiResponse<LearningPlanTemplateDetailResponse> getTemplate(@PathVariable String templateId) {
     return ApiResponse.success(LearningPlanTemplateResponseMapper.toDetailResponse(
-        requiredTemplateDraftService().getTemplate(templateId)));
+        requiredTemplateDraftService().getTemplate(templateId),
+        loadService));
   }
 
   private LearningPlanTemplateDraftService requiredTemplateDraftService() {

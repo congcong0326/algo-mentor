@@ -49,6 +49,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmMode;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanDraftRevisionResult;
@@ -361,7 +362,7 @@ class LearningPlanControllerTest {
   }
 
   @Test
-  void createDraftFromNonNeetcodeTemplateReturnsGeneratedDraftWithoutAiGovernance() throws Exception {
+  void createDraftFromTemplateAcceptsRhythmModeAndReturnsGeneratedDraftWithoutAiGovernance() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     when(templateDraftService.createDraft(eq(42L), any(LearningPlanTemplateDraftCommand.class)))
         .thenReturn(new LearningPlanDraftResult(
@@ -376,9 +377,8 @@ class LearningPlanControllerTest {
             .content("""
                 {
                   "templateId": "tih_best_practice_50_5weeks",
-                  "durationWeeks": 5,
-                  "weeklyHours": 8,
-                  "programmingLanguage": "Java"
+                  "programmingLanguage": "Java",
+                  "rhythmMode": "RELAXED"
                 }
                 """))
         .andExpect(status().isOk())
@@ -386,7 +386,11 @@ class LearningPlanControllerTest {
         .andExpect(jsonPath("$.data.status").value("GENERATED"))
         .andExpect(jsonPath("$.data.draftPlan.title").value("四周 Java 算法面试冲刺计划"));
 
-    verify(templateDraftService).createDraft(eq(42L), any(LearningPlanTemplateDraftCommand.class));
+    ArgumentCaptor<LearningPlanTemplateDraftCommand> commandCaptor =
+        ArgumentCaptor.forClass(LearningPlanTemplateDraftCommand.class);
+    verify(templateDraftService).createDraft(eq(42L), commandCaptor.capture());
+    org.assertj.core.api.Assertions.assertThat(commandCaptor.getValue().rhythmMode())
+        .isEqualTo(LearningPlanRhythmMode.RELAXED);
     verifyNoInteractions(admissionService, lifecycleService);
   }
 
@@ -420,7 +424,11 @@ class LearningPlanControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.id").value(900))
         .andExpect(jsonPath("$.data.phases[0].title").value("基础题型恢复"))
-        .andExpect(jsonPath("$.data.phases[0].problems[0].progressStatus").value("NOT_STARTED"));
+        .andExpect(jsonPath("$.data.phases[0].problems[0].progressStatus").value("NOT_STARTED"))
+        .andExpect(jsonPath("$.data.loadSummary.plannedProblemCount").value(1))
+        .andExpect(jsonPath("$.data.weeklyBuckets[0].weekIndex").value(1))
+        .andExpect(jsonPath("$.data.nextTrainingPackage.newProblemCount").exists())
+        .andExpect(jsonPath("$.data.paceSummary.currentWeek").exists());
   }
 
   @Test
@@ -444,7 +452,8 @@ class LearningPlanControllerTest {
         .andExpect(jsonPath("$.data.phases[0].problems[0].progressStatus").value("COMPLETED"))
         .andExpect(jsonPath("$.data.phases[0].problems[1].progressStatus").value("IN_PROGRESS"))
         .andExpect(jsonPath("$.data.phases[0].problems[2].progressStatus").value("NOT_STARTED"))
-        .andExpect(jsonPath("$.data.phases[1].problems[0].progressStatus").value("SKIPPED"));
+        .andExpect(jsonPath("$.data.phases[1].problems[0].progressStatus").value("SKIPPED"))
+        .andExpect(jsonPath("$.data.paceSummary.completedProblemCountToDate").exists());
   }
 
   @Test
@@ -645,6 +654,9 @@ class LearningPlanControllerTest {
         phaseIndex,
         problemSlug,
         status,
+        Instant.parse("2026-06-25T00:00:00Z"),
+        status == PracticeProgressStatus.COMPLETED ? Instant.parse("2026-06-25T00:00:00Z") : null,
+        status == PracticeProgressStatus.SKIPPED ? Instant.parse("2026-06-25T00:00:00Z") : null,
         Instant.parse("2026-06-25T00:00:00Z"),
         Instant.parse("2026-06-25T00:00:00Z"));
   }

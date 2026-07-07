@@ -13,6 +13,7 @@ public class LearningPlanDraftService {
   private final LearningPlanRepository planRepository;
   private final LearningPlanAgentService agentService;
   private final LearningPlanDraftValidator validator;
+  private final LearningPlanLoadService loadService;
   private final Clock clock;
 
   public LearningPlanDraftService(
@@ -20,11 +21,13 @@ public class LearningPlanDraftService {
       LearningPlanRepository planRepository,
       LearningPlanAgentService agentService,
       LearningPlanDraftValidator validator,
+      LearningPlanLoadService loadService,
       Clock clock) {
     this.draftRepository = draftRepository;
     this.planRepository = planRepository;
     this.agentService = agentService;
     this.validator = validator;
+    this.loadService = loadService;
     this.clock = clock;
   }
 
@@ -59,13 +62,17 @@ public class LearningPlanDraftService {
     if (draft.status() != LearningPlanDraftStatus.GENERATED || draft.draftPlan() == null) {
       throw new LearningPlanException("LEARNING_PLAN_DRAFT_NOT_GENERATED", "只有已生成的学习计划草案可以确认保存。");
     }
-    validator.validateConfirmablePlan(draft.draftPlan());
+    LearningPlanDraftPlan confirmablePlan = loadService.withLoadMetadata(
+        draft.draftPlan(),
+        null,
+        null);
+    validator.validateConfirmablePlan(confirmablePlan);
     Instant now = clock.instant();
     LearningPlan savedPlan = planRepository.save(new LearningPlan(
         null,
         userId,
         LearningPlanStatus.ACTIVE,
-        draft.draftPlan(),
+        confirmablePlan,
         now,
         now));
     draftRepository.save(draft.withConfirmedPlanId(savedPlan.id(), now));
@@ -85,12 +92,16 @@ public class LearningPlanDraftService {
           now));
     }
     try {
-      validator.validateGeneratedPlan(agentResult.draftPlan());
+      LearningPlanDraftPlan plan = loadService.withLoadMetadata(
+          agentResult.draftPlan(),
+          LearningPlanRhythmMode.RECOMMENDED,
+          LearningPlanCoveragePolicy.FIT_USER_BUDGET);
+      validator.validateGeneratedPlan(plan);
       return draftRepository.save(draft.withState(
           LearningPlanDraftStatus.GENERATED,
           List.of(),
           agentResult.assistantMessage(),
-          agentResult.draftPlan(),
+          plan,
           now));
     } catch (LearningPlanException exception) {
       return draftRepository.save(draft.withState(

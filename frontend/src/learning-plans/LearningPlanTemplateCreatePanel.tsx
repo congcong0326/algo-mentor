@@ -6,6 +6,8 @@ import {
   requireApiData,
 } from '../services/api';
 import type {
+  LearningPlanRhythmMode,
+  LearningPlanRhythmOption,
   LearningPlanTemplateDetailResponse,
   LearningPlanTemplateDraftRequest,
   LearningPlanTemplateSummaryResponse,
@@ -23,6 +25,28 @@ interface LearningPlanTemplateCreatePanelProps {
 
 const DEFAULT_PROGRAMMING_LANGUAGE = 'Java';
 
+function fallbackTrainingDays(mode: LearningPlanRhythmMode): [number, number] {
+  if (mode === 'RELAXED') {
+    return [4, 4];
+  }
+  if (mode === 'SPRINT') {
+    return [6, 7];
+  }
+  return [5, 5];
+}
+
+function fallbackDailyProblems(option: LearningPlanRhythmOption): [number, number] {
+  const [minDays, maxDays] = fallbackTrainingDays(option.mode);
+  const problemCount = option.loadSummary.plannedProblemCount;
+  const min = problemCount <= 0
+    ? 0
+    : Math.max(1, Math.floor(problemCount / Math.max(1, option.durationWeeks * maxDays)));
+  const max = problemCount <= 0
+    ? 0
+    : Math.max(min, Math.ceil(problemCount / Math.max(1, option.durationWeeks * minDays)));
+  return [min, max];
+}
+
 export default function LearningPlanTemplateCreatePanel({
   loading,
   error,
@@ -33,8 +57,7 @@ export default function LearningPlanTemplateCreatePanel({
   const [templates, setTemplates] = useState<LearningPlanTemplateSummaryResponse[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState('');
   const [selectedTemplateDetail, setSelectedTemplateDetail] = useState<LearningPlanTemplateDetailResponse>();
-  const [durationWeeks, setDurationWeeks] = useState(1);
-  const [weeklyHours, setWeeklyHours] = useState(1);
+  const [rhythmMode, setRhythmMode] = useState<LearningPlanRhythmMode>('RECOMMENDED');
   const [programmingLanguage, setProgrammingLanguage] = useState(DEFAULT_PROGRAMMING_LANGUAGE);
   const [listLoading, setListLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -45,7 +68,14 @@ export default function LearningPlanTemplateCreatePanel({
     () => templates.find((template) => template.templateId === selectedTemplateId),
     [selectedTemplateId, templates],
   );
-  const minimumDurationWeeks = selectedTemplateDetail?.phases.length ?? 1;
+  const rhythmOptions = selectedTemplateDetail?.rhythmOptions ?? selectedTemplate?.rhythmOptions ?? [];
+  const selectedRhythm = rhythmOptions.find((option) => option.mode === rhythmMode) ?? rhythmOptions[0];
+  const selectedLoadSummary = selectedRhythm?.loadSummary ?? selectedTemplateDetail?.defaultLoadSummary
+    ?? selectedTemplate?.defaultLoadSummary;
+  const selectedIntensityLabel = selectedLoadSummary
+    ? resources.learningPlans.loadIntensityLabels[selectedLoadSummary.intensity as keyof typeof resources.learningPlans.loadIntensityLabels]
+      ?? String(selectedLoadSummary.intensity)
+    : resources.learningPlans.unspecified;
   const effectiveError = validationError || error || loadError;
   const submitDisabled = loading || listLoading || detailLoading || !selectedTemplate;
 
@@ -61,8 +91,7 @@ export default function LearningPlanTemplateCreatePanel({
         const [firstTemplate] = nextTemplates;
         if (firstTemplate) {
           setSelectedTemplateId(firstTemplate.templateId);
-          setDurationWeeks(firstTemplate.defaultDurationWeeks);
-          setWeeklyHours(firstTemplate.defaultWeeklyHours);
+          setRhythmMode('RECOMMENDED');
         }
       })
       .catch((nextError) => {
@@ -88,8 +117,7 @@ export default function LearningPlanTemplateCreatePanel({
 
     const controller = new AbortController();
     setSelectedTemplateDetail(undefined);
-    setDurationWeeks(selectedTemplate.defaultDurationWeeks);
-    setWeeklyHours(selectedTemplate.defaultWeeklyHours);
+    setRhythmMode('RECOMMENDED');
     setProgrammingLanguage(DEFAULT_PROGRAMMING_LANGUAGE);
     setDetailLoading(true);
     setLoadError('');
@@ -128,20 +156,10 @@ export default function LearningPlanTemplateCreatePanel({
       setValidationError(resources.learningPlans.templateEmpty);
       return;
     }
-    if (!Number.isInteger(durationWeeks) || durationWeeks <= 0 || !Number.isInteger(weeklyHours) || weeklyHours <= 0) {
-      setValidationError(resources.learningPlans.validationPositiveIntegers);
-      return;
-    }
-    if (durationWeeks < minimumDurationWeeks) {
-      setValidationError(resources.learningPlans.templateDurationTooShort(minimumDurationWeeks));
-      return;
-    }
-
     setValidationError('');
     onSubmit({
       templateId: selectedTemplate.templateId,
-      durationWeeks,
-      weeklyHours,
+      rhythmMode,
       programmingLanguage: programmingLanguage.trim() || undefined,
     });
   }
@@ -173,9 +191,13 @@ export default function LearningPlanTemplateCreatePanel({
                 </span>
                 <span>{template.summary}</span>
                 <span className="template-card-meta">
-                  {resources.learningPlans.templateDefaultRhythm(
+                  {resources.learningPlans.templateRouteSummary(
+                    template.defaultLoadSummary?.plannedProblemCount ?? template.matchedProblemCount,
                     template.defaultDurationWeeks,
                     template.defaultWeeklyHours,
+                    resources.learningPlans.loadIntensityLabels[
+                      template.defaultLoadSummary?.intensity as keyof typeof resources.learningPlans.loadIntensityLabels
+                    ] ?? resources.learningPlans.unspecified,
                   )}
                 </span>
                 {template.sourceCommit && (
@@ -221,30 +243,59 @@ export default function LearningPlanTemplateCreatePanel({
               </p>
             )}
 
-            <div className="mini-grid">
-              <label className="topic-field">
-                <span>{resources.learningPlans.duration}</span>
-                <input
-                  aria-label={resources.learningPlans.durationInput}
-                  disabled={loading}
-                  min={minimumDurationWeeks}
-                  onChange={(event) => setDurationWeeks(Number(event.target.value))}
-                  type="number"
-                  value={durationWeeks}
-                />
-              </label>
-              <label className="topic-field">
-                <span>{resources.learningPlans.weeklyHours}</span>
-                <input
-                  aria-label={resources.learningPlans.weeklyHours}
-                  disabled={loading}
-                  min={1}
-                  onChange={(event) => setWeeklyHours(Number(event.target.value))}
-                  type="number"
-                  value={weeklyHours}
-                />
-              </label>
-            </div>
+            <section className="question-block">
+              <strong>{resources.learningPlans.templateRhythm}</strong>
+              <div className="template-rhythm-card-grid">
+                {rhythmOptions.map((option) => {
+                  const [fallbackMinDays, fallbackMaxDays] = fallbackTrainingDays(option.mode);
+                  const minDays = option.trainingDaysPerWeekMin ?? fallbackMinDays;
+                  const maxDays = option.trainingDaysPerWeekMax ?? fallbackMaxDays;
+                  const [fallbackMinProblems, fallbackMaxProblems] = fallbackDailyProblems(option);
+                  const minProblems = option.dailyProblemCountMin ?? fallbackMinProblems;
+                  const maxProblems = option.dailyProblemCountMax ?? fallbackMaxProblems;
+                  const intensity = resources.learningPlans.loadIntensityLabels[
+                    option.loadSummary.intensity as keyof typeof resources.learningPlans.loadIntensityLabels
+                  ] ?? String(option.loadSummary.intensity);
+                  const hasReview = option.coveragePolicy !== 'FULL_ROUTE_FAST';
+                  return (
+                  <button
+                    aria-label={resources.learningPlans.rhythmLabels[option.mode]}
+                    aria-pressed={rhythmMode === option.mode}
+                    className={`template-rhythm-card${rhythmMode === option.mode ? ' selected' : ''}`}
+                    disabled={loading || detailLoading}
+                    key={option.mode}
+                    onClick={() => setRhythmMode(option.mode)}
+                    type="button"
+                  >
+                    <span className="template-rhythm-card-title">
+                      <strong>{resources.learningPlans.rhythmLabels[option.mode]}</strong>
+                      <small>{resources.learningPlans.rhythmRiskLine(intensity)}</small>
+                    </span>
+                    <span>{resources.learningPlans.rhythmCompletionLine(
+                      option.durationWeeks,
+                      option.loadSummary.plannedProblemCount,
+                    )}</span>
+                    <span>{resources.learningPlans.rhythmWeeklyTimeLine(option.weeklyHours, minDays, maxDays)}</span>
+                    <span>{resources.learningPlans.rhythmDailyLine(minProblems, maxProblems, hasReview)}</span>
+                    <span>{resources.learningPlans.rhythmScopeLabels[option.coveragePolicy]}</span>
+                  </button>
+                  );
+                })}
+              </div>
+              {selectedRhythm && selectedRhythm.mode === 'SPRINT' && selectedRhythm.loadSummary.intensity === 'OVERLOADED' && (
+                <p className="load-risk-line overloaded">
+                  {resources.learningPlans.sprintOverloadWarning(
+                    selectedRhythm.dailyProblemCountMin ?? fallbackDailyProblems(selectedRhythm)[0],
+                    selectedRhythm.dailyProblemCountMax ?? fallbackDailyProblems(selectedRhythm)[1],
+                  )}
+                </p>
+              )}
+              {selectedLoadSummary?.suggestions[0] && (
+                <p className={`load-risk-line ${String(selectedLoadSummary.intensity).toLowerCase()}`}>
+                  {resources.learningPlans.rhythmRiskLine(selectedIntensityLabel)}
+                </p>
+              )}
+            </section>
 
             <label className="topic-field">
               <span>{resources.learningPlans.programmingLanguage}</span>

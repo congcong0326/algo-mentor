@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.Map;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanConfirmResult;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractService;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractState;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
@@ -56,10 +59,30 @@ public final class LearningPlanResponseMapper {
   }
 
   public static LearningPlanDetailResponse toDetailResponse(LearningPlan plan) {
-    return toDetailResponse(plan, List.of());
+    LearningPlanLoadService loadService = new LearningPlanLoadService();
+    return toDetailResponse(plan, List.of(), loadService, new LearningPlanContractService(), null);
   }
 
   public static LearningPlanDetailResponse toDetailResponse(LearningPlan plan, List<PracticeProgress> progress) {
+    LearningPlanLoadService loadService = new LearningPlanLoadService();
+    return toDetailResponse(plan, progress, loadService, new LearningPlanContractService(), null);
+  }
+
+  public static LearningPlanDetailResponse toDetailResponse(
+      LearningPlan plan,
+      List<PracticeProgress> progress,
+      LearningPlanLoadService loadService
+  ) {
+    return toDetailResponse(plan, progress, loadService, new LearningPlanContractService(), null);
+  }
+
+  public static LearningPlanDetailResponse toDetailResponse(
+      LearningPlan plan,
+      List<PracticeProgress> progress,
+      LearningPlanLoadService loadService,
+      LearningPlanContractService contractService,
+      LearningPlanContractState contractState
+  ) {
     LearningPlanDraftPlan snapshot = plan.plan();
     Map<ProgressKey, PracticeProgressStatus> progressByProblem = progressByProblem(progress);
     return new LearningPlanDetailResponse(
@@ -103,6 +126,13 @@ public final class LearningPlanResponseMapper {
                     .toList()))
             .toList(),
         snapshot.metadata(),
+        loadService.summarize(snapshot),
+        loadService.weeklyBuckets(snapshot),
+        loadService.nextTrainingPackage(plan, progress),
+        loadService.paceSummary(plan, progress),
+        contractService.summarize(plan, progress, contractState == null
+            ? LearningPlanContractState.empty(plan.userId(), plan.id())
+            : contractState),
         plan.createdAt(),
         plan.updatedAt());
   }

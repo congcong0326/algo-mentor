@@ -26,6 +26,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftValidator;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCandidate;
@@ -57,7 +58,9 @@ class LearningPlanDraftStreamServiceTest {
         .extracting(problem -> problem.slug())
         .containsExactly("two-sum");
     assertThat(ready.draft().draftPlan().metadata())
-        .containsEntry("problemRecommendationIncomplete", true);
+        .containsEntry("problemRecommendationIncomplete", true)
+        .containsKey("loadSummary")
+        .containsKey("weeklyBuckets");
   }
 
   @Test
@@ -91,6 +94,7 @@ class LearningPlanDraftStreamServiceTest {
         new LearningPlanDraftPromptBuilder(),
         new ObjectMapper(),
         problemCatalog,
+        new LearningPlanLoadService(clock),
         clock);
   }
 

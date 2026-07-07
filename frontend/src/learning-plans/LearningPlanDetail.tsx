@@ -15,6 +15,7 @@ import type {
   LearningPlanDetailResponse,
   LearningPlanDraftErrorEvent,
   LearningPlanExtensionReadyEvent,
+  LearningPlanPaceStatus,
   SseStreamEvent,
 } from '../types/api';
 import AgentWorkIndicator from './AgentWorkIndicator';
@@ -22,11 +23,13 @@ import LearningPlanExtensionPanel from './LearningPlanExtensionPanel';
 import PlanPreview from './PlanPreview';
 
 export default function LearningPlanDetail({
+  contractFeedback,
   onBack,
   onPlanUpdated,
   onProblemSelect,
   plan,
 }: {
+  contractFeedback?: string;
   onBack: () => void;
   onPlanUpdated: () => Promise<void>;
   onProblemSelect: (phaseIndex: number, problemSlug: string) => void;
@@ -37,6 +40,12 @@ export default function LearningPlanDetail({
   const [extensionWorkEvent, setExtensionWorkEvent] = useState<AgentWorkStatusEvent>();
   const [extensionLoading, setExtensionLoading] = useState(false);
   const [extensionError, setExtensionError] = useState('');
+  const pace = plan.paceSummary;
+  const contract = plan.livingContractSummary;
+  const nextPackage = contract?.nextTrainingPackage ?? plan.nextTrainingPackage;
+  const nextProblem = nextPackage?.priorityProblemSlugs[0]
+    ? findProblemPhase(plan, nextPackage.priorityProblemSlugs[0])
+    : undefined;
 
   function handleExtensionStreamEvent(event: SseStreamEvent) {
     if (event.eventName.startsWith('work_')) {
@@ -210,6 +219,87 @@ export default function LearningPlanDetail({
           <p>{plan.summary}</p>
         </div>
       </div>
+      {contract && (
+        <section className={`living-contract-panel ${contract.visibleStatus.toLowerCase().replace('_', '-')}`}>
+          <div className="living-contract-main">
+            <div>
+              <span>{resources.learningPlans.routeProgressTitle}</span>
+              <strong>
+                {resources.learningPlans.routeProgressLine(
+                  contract.completedProblemCount,
+                  contract.totalProblemCount,
+                  contract.progressPercent,
+                )}
+              </strong>
+            </div>
+            <div>
+              <span>{resources.learningPlans.visibleStatusLabels[contract.visibleStatus]}</span>
+              <strong>
+                {contract.estimatedCompletionDate
+                  ? resources.learningPlans.estimatedCompletionDate(contract.estimatedCompletionDate)
+                  : resources.learningPlans.unspecified}
+              </strong>
+            </div>
+            <div>
+              <span>{resources.learningPlans.openProblemsLine(contract.openProblemCount, contract.skippedProblemCount)}</span>
+              <strong>{nextPackage ? resources.learningPlans.nextTrainingPackageLine(nextPackage.newProblemCount, nextPackage.estimatedMinutes) : '-'}</strong>
+            </div>
+          </div>
+          {(contract.notice || contractFeedback) && (
+            <p className="living-contract-notice">{contractFeedback || contract.notice}</p>
+          )}
+          {nextProblem && contract.visibleStatus !== 'COMPLETED' && contract.visibleStatus !== 'CLOSED_OUT' && (
+            <button
+              className="primary-button compact"
+              onClick={() => onProblemSelect(nextProblem.phaseIndex, nextProblem.problemSlug)}
+              type="button"
+            >
+              {resources.learningPlans.startNextTrainingPackage}
+            </button>
+          )}
+          {contract.completionSummary && (
+            <div className="completion-summary-panel">
+              <strong>{resources.learningPlans.completionSummaryTitle}</strong>
+              <span>
+                {resources.learningPlans.completionSummaryLine(
+                  contract.completionSummary.completionRate,
+                  contract.completionSummary.totalDurationDays,
+                  contract.completionSummary.completedProblemCount,
+                  contract.completionSummary.skippedProblemCount,
+                  contract.completionSummary.openProblemCount,
+                )}
+              </span>
+              {contract.completionSummary.weakTags.length > 0 && (
+                <span>
+                  {resources.learningPlans.weakTagsLabel}：{contract.completionSummary.weakTags.join(' / ')}
+                </span>
+              )}
+            </div>
+          )}
+        </section>
+      )}
+      {pace && (
+        <section className={`pace-summary-panel ${pace.status.toLowerCase().replace('_', '-')}`}>
+          <div>
+            <span>{resources.learningPlans.paceTitle}</span>
+            <strong>{resources.learningPlans.paceCurrentWeek(pace.currentWeek, pace.totalWeeks)}</strong>
+          </div>
+          <div>
+            <span>{resources.learningPlans.paceStatusLabels[pace.status as LearningPlanPaceStatus]}</span>
+            <strong>
+              {resources.learningPlans.paceCurrentTarget(
+                pace.currentBucket?.plannedProblemCount ?? 0,
+                pace.currentBucket?.plannedLoadPoints ?? 0,
+              )}
+            </strong>
+          </div>
+          <div>
+            <span>{resources.learningPlans.paceCurrentCompleted(pace.currentWeekCompletedProblemCount)}</span>
+            <strong>{resources.learningPlans.paceLoadGap(pace.loadGapPoints)}</strong>
+          </div>
+          {pace.recommendation && <p>{pace.recommendation}</p>}
+        </section>
+      )}
       <PlanPreview onProblemSelect={onProblemSelect} plan={plan} />
       {(extensionLoading || extensionWorkEvent || extensionError) && (
         <AgentWorkIndicator active={extensionLoading} event={extensionWorkEvent} error={extensionError} />
@@ -224,4 +314,13 @@ export default function LearningPlanDetail({
       />
     </article>
   );
+}
+
+function findProblemPhase(plan: LearningPlanDetailResponse, problemSlug: string) {
+  for (const phase of plan.phases) {
+    if (phase.problems.some((problem) => problem.slug === problemSlug)) {
+      return { phaseIndex: phase.phaseIndex, problemSlug };
+    }
+  }
+  return undefined;
 }
