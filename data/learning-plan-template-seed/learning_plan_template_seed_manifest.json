@@ -1,34 +1,196 @@
 {
   "files": {
     "learning_plan_template_problem_refs.jsonl": {
-      "bytes": 102934,
-      "path": "data/learning-plan-template-seed/learning_plan_template_problem_refs.jsonl",
-      "sha256": "23d58d59625cede3b4a880b7662184a39e7130f2e201a6ca80574c02d3444c2e"
+      "bytes": 310403,
+      "path": "learning_plan_template_problem_refs.jsonl",
+      "sha256": "9e549401b7a4a2bf4c27b247dba73d215b3a08b241048c03079409714cb4db83"
+    },
+    "learning_plan_template_seed_manifest.json": {
+      "bytes": 11595,
+      "hashInput": "manifest payload before self file stat insertion",
+      "path": "learning_plan_template_seed_manifest.json",
+      "sha256": "25f28e39bb22a11e3e22683e1b68dba3d433b7e531fb398b21a229341a46cf40"
     },
     "learning_plan_template_seed_metadata.md": {
-      "bytes": 1727,
-      "path": "data/learning-plan-template-seed/learning_plan_template_seed_metadata.md",
-      "sha256": "fb218bdffd501ce543eddbd0a75638e35f614f4e554c02204f4d917f2c7e9b7b"
+      "bytes": 7959,
+      "path": "learning_plan_template_seed_metadata.md",
+      "sha256": "6bb07c0b991013898cf015c2ca4fa542eedc7ed995f4d8232dd49a7048143596"
     },
     "learning_plan_templates.jsonl": {
-      "bytes": 14516,
-      "path": "data/learning-plan-template-seed/learning_plan_templates.jsonl",
-      "sha256": "452274a387420ab3498dfb07e3075cb47f7aa86b4c86a21d23134c3367c28d3d"
+      "bytes": 54010,
+      "path": "learning_plan_templates.jsonl",
+      "sha256": "7465576de8cd3336369e7e4c759d56b4e4d1a7133001bbd55fe3eab02e76e402"
     }
   },
-  "generatedAt": "2026-07-06T14:15:50.359604+00:00",
-  "matchedProblemCount": 212,
-  "missingProblemCount": 13,
-  "problemRefCount": 225,
+  "generatedAt": "2026-07-06T00:00:00+00:00",
+  "matchedProblemCount": 489,
+  "missingProblemCount": 20,
+  "problemRefCount": 509,
   "schemaVersion": 1,
   "source": {
-    "commit": "9907b7fed441fa55083c0751e208b7197101dbba",
-    "dataPath": ".problemSiteData.json",
-    "name": "neetcode-gh/leetcode",
-    "url": "https://github.com/neetcode-gh/leetcode"
+    "commit": "p0-templates-2026-07-06",
+    "dataPath": "tools/learning_plan_template_seed/prepare_template_seed.py",
+    "name": "algo-mentor learning-plan-template-seed",
+    "url": "data/learning-plan-template-seed"
   },
-  "templateCount": 2,
+  "sources": [
+    {
+      "commitOrVersion": "9907b7fed441fa55083c0751e208b7197101dbba",
+      "dataPath": ".problemSiteData.json",
+      "licenseNotice": "MIT License；本 seed 只使用题名、slug、difficulty、pattern、题单标记和来源链接，不包含题解源码或文章内容。",
+      "matchedProblemCount": 212,
+      "missingProblemCount": 13,
+      "name": "neetcode-gh/leetcode",
+      "problemRefCount": 225,
+      "templateIds": [
+        "neetcode_150_systematic_interview",
+        "neetcode_blind_75_interview_core",
+        "topic_sliding_window_two_pointers"
+      ],
+      "url": "https://github.com/neetcode-gh/leetcode"
+    },
+    {
+      "commitOrVersion": "8ee2acb54a05c4add123a824d15e7dfc4e703b2f",
+      "dataPath": "apps/website/contents/best-practice-questions.md",
+      "licenseNotice": "MIT License；本 seed 只解析题名、difficulty、LeetCode URL、周次和 optional/premium 标记，不复制文章正文。",
+      "matchedProblemCount": 55,
+      "missingProblemCount": 6,
+      "name": "yangshun/tech-interview-handbook",
+      "problemRefCount": 61,
+      "templateIds": [
+        "leetcode_top_100_liked_revision",
+        "tih_best_practice_50_5weeks",
+        "topic_sliding_window_two_pointers"
+      ],
+      "url": "https://github.com/yangshun/tech-interview-handbook"
+    },
+    {
+      "commitOrVersion": "3bcc916680298295e06060ca9790304c1f1b78b6",
+      "dataPath": "ctl/meta/*",
+      "licenseNotice": "MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。",
+      "matchedProblemCount": 128,
+      "missingProblemCount": 1,
+      "name": "halfrost/LeetCode-Go",
+      "problemRefCount": 129,
+      "templateIds": [
+        "topic_binary_search_boundaries",
+        "topic_dynamic_programming_foundation",
+        "topic_graph_bfs_dfs",
+        "topic_sliding_window_two_pointers"
+      ],
+      "url": "https://github.com/halfrost/LeetCode-Go"
+    },
+    {
+      "commitOrVersion": "86f78fde8cb62d10c3b5e38b7e6b6e0705850f92",
+      "dataPath": "README.md",
+      "licenseNotice": "未发现仓库 LICENSE；本 seed 只作学习顺序参考，阶段说明、题目组合和复盘建议由 algo-mentor 重建。",
+      "matchedProblemCount": 25,
+      "missingProblemCount": 0,
+      "name": "youngyangyang04/leetcode-master",
+      "problemRefCount": 25,
+      "templateIds": [
+        "cn_algorithm_foundation_12weeks",
+        "topic_graph_bfs_dfs"
+      ],
+      "url": "https://github.com/youngyangyang04/leetcode-master"
+    },
+    {
+      "commitOrVersion": "b1f23cb9605f6146ff78bafad71e795176439b99",
+      "dataPath": "README.md; labuladong.online/algo/",
+      "licenseNotice": "未发现可用于直接内置的 LICENSE；本 seed 只记录为专题结构参考，不复制文章、图示或代码。",
+      "matchedProblemCount": 0,
+      "missingProblemCount": 0,
+      "name": "labuladong/fucking-algorithm",
+      "problemRefCount": 0,
+      "templateIds": [
+        "topic_dynamic_programming_foundation"
+      ],
+      "url": "https://github.com/labuladong/fucking-algorithm"
+    },
+    {
+      "commitOrVersion": "accessed-2026-07-06",
+      "dataPath": "top-100-liked; programming-skills; dynamic-programming; graph-theory; binary-search",
+      "licenseNotice": "官方网页仅作外链和目标参考；本 seed 不复制题面、题解、付费内容或官方题单全文。",
+      "matchedProblemCount": 69,
+      "missingProblemCount": 0,
+      "name": "LeetCode official Study Plan",
+      "problemRefCount": 69,
+      "templateIds": [
+        "cn_algorithm_foundation_12weeks",
+        "leetcode_top_100_liked_revision",
+        "programming_skills_implementation_foundation",
+        "topic_binary_search_boundaries",
+        "topic_dynamic_programming_foundation",
+        "topic_graph_bfs_dfs"
+      ],
+      "url": "https://leetcode.com/studyplan/"
+    },
+    {
+      "commitOrVersion": "local-2026-07-06",
+      "dataPath": "data/seed/problems.jsonl",
+      "licenseNotice": "使用项目本地题库中的 slug、frontendId、标题、difficulty 和 tagValues 组织内部模板。",
+      "matchedProblemCount": 0,
+      "missingProblemCount": 0,
+      "name": "algo-mentor local problem seed",
+      "problemRefCount": 0,
+      "templateIds": [
+        "cn_algorithm_foundation_12weeks",
+        "leetcode_top_100_liked_revision",
+        "programming_skills_implementation_foundation",
+        "topic_binary_search_boundaries",
+        "topic_dynamic_programming_foundation",
+        "topic_graph_bfs_dfs",
+        "topic_sliding_window_two_pointers"
+      ],
+      "url": "data/seed/problems.jsonl"
+    }
+  ],
+  "templateCount": 10,
   "templates": {
+    "cn_algorithm_foundation_12weeks": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 22,
+          "ratio": 0.4783
+        },
+        "Hard": {
+          "count": 1,
+          "ratio": 0.0217
+        },
+        "Medium": {
+          "count": 23,
+          "ratio": 0.5
+        }
+      },
+      "matchedProblemCount": 46,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 9,
+      "problemCount": 46,
+      "title": "中文系统刷题入门计划"
+    },
+    "leetcode_top_100_liked_revision": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 17,
+          "ratio": 0.2537
+        },
+        "Hard": {
+          "count": 4,
+          "ratio": 0.0597
+        },
+        "Medium": {
+          "count": 46,
+          "ratio": 0.6866
+        }
+      },
+      "matchedProblemCount": 67,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 6,
+      "problemCount": 67,
+      "title": "Top 100 Liked 复盘计划"
+    },
     "neetcode_150_systematic_interview": {
       "difficultyMix": {
         "Easy": {
@@ -48,12 +210,12 @@
       "missingProblemCount": 7,
       "missingProblemExamples": [
         "encode-and-decode-strings",
+        "meeting-rooms",
+        "meeting-rooms-ii",
         "walls-and-gates",
         "number-of-connected-components-in-an-undirected-graph",
         "graph-valid-tree",
-        "alien-dictionary",
-        "meeting-rooms",
-        "meeting-rooms-ii"
+        "alien-dictionary"
       ],
       "phaseCount": 12,
       "problemCount": 150,
@@ -78,15 +240,156 @@
       "missingProblemCount": 6,
       "missingProblemExamples": [
         "encode-and-decode-strings",
+        "meeting-rooms",
+        "meeting-rooms-ii",
         "number-of-connected-components-in-an-undirected-graph",
         "graph-valid-tree",
-        "alien-dictionary",
-        "meeting-rooms",
-        "meeting-rooms-ii"
+        "alien-dictionary"
       ],
       "phaseCount": 4,
       "problemCount": 75,
       "title": "NeetCode Blind 75 面试核心计划"
+    },
+    "programming_skills_implementation_foundation": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 30,
+          "ratio": 0.8824
+        },
+        "Hard": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "Medium": {
+          "count": 4,
+          "ratio": 0.1176
+        }
+      },
+      "matchedProblemCount": 34,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 4,
+      "problemCount": 34,
+      "title": "编程基础与实现力计划"
+    },
+    "tih_best_practice_50_5weeks": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 15,
+          "ratio": 0.2459
+        },
+        "Hard": {
+          "count": 7,
+          "ratio": 0.1148
+        },
+        "Medium": {
+          "count": 39,
+          "ratio": 0.6393
+        }
+      },
+      "matchedProblemCount": 55,
+      "missingProblemCount": 6,
+      "missingProblemExamples": [
+        "encode-and-decode-strings",
+        "meeting-rooms",
+        "meeting-rooms-ii",
+        "graph-valid-tree",
+        "number-of-connected-components-in-an-undirected-graph",
+        "alien-dictionary"
+      ],
+      "phaseCount": 5,
+      "problemCount": 61,
+      "title": "5 周面试冲刺计划"
+    },
+    "topic_binary_search_boundaries": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 6,
+          "ratio": 0.3333
+        },
+        "Hard": {
+          "count": 2,
+          "ratio": 0.1111
+        },
+        "Medium": {
+          "count": 10,
+          "ratio": 0.5556
+        }
+      },
+      "matchedProblemCount": 18,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 2,
+      "problemCount": 18,
+      "title": "二分与边界专项计划"
+    },
+    "topic_dynamic_programming_foundation": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 5,
+          "ratio": 0.2174
+        },
+        "Hard": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "Medium": {
+          "count": 18,
+          "ratio": 0.7826
+        }
+      },
+      "matchedProblemCount": 23,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 4,
+      "problemCount": 23,
+      "title": "动态规划专项突破计划"
+    },
+    "topic_graph_bfs_dfs": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "Hard": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "Medium": {
+          "count": 20,
+          "ratio": 1.0
+        }
+      },
+      "matchedProblemCount": 19,
+      "missingProblemCount": 1,
+      "missingProblemExamples": [
+        "alien-dictionary"
+      ],
+      "phaseCount": 4,
+      "problemCount": 20,
+      "title": "图论专项突破计划"
+    },
+    "topic_sliding_window_two_pointers": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 4,
+          "ratio": 0.2667
+        },
+        "Hard": {
+          "count": 3,
+          "ratio": 0.2
+        },
+        "Medium": {
+          "count": 8,
+          "ratio": 0.5333
+        }
+      },
+      "matchedProblemCount": 15,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 2,
+      "problemCount": 15,
+      "title": "滑动窗口与双指针专项计划"
     }
   }
 }

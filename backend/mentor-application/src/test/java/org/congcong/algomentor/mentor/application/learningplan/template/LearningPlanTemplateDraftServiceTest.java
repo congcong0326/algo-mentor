@@ -105,6 +105,26 @@ class LearningPlanTemplateDraftServiceTest {
   }
 
   @org.junit.jupiter.api.Test
+  void twoWeekTemplateCreatesTwoPhaseDraftWithAllMatchedProblems() {
+    assertTemplateDraftMatchesLocalRefs("topic_binary_search_boundaries", 2, 2, 18, 0);
+  }
+
+  @org.junit.jupiter.api.Test
+  void fiveWeekTemplateKeepsMissingProblemsOnlyInMetadata() {
+    assertTemplateDraftMatchesLocalRefs("tih_best_practice_50_5weeks", 5, 5, 61, 6);
+  }
+
+  @org.junit.jupiter.api.Test
+  void sixWeekRevisionTemplateCreatesFullMatchedDraft() {
+    assertTemplateDraftMatchesLocalRefs("leetcode_top_100_liked_revision", 6, 6, 67, 0);
+  }
+
+  @org.junit.jupiter.api.Test
+  void twelveWeekBeginnerTemplateCanUseMoreThanOneWeekPhases() {
+    assertTemplateDraftMatchesLocalRefs("cn_algorithm_foundation_12weeks", 12, 9, 46, 0);
+  }
+
+  @org.junit.jupiter.api.Test
   void templateDurationCannotBeShorterThanPhaseCount() {
     templateRepository.saveTemplate(generatedTemplate("neetcode_150_systematic_interview", 12, 12, 150, 1));
 
@@ -113,6 +133,39 @@ class LearningPlanTemplateDraftServiceTest {
         new LearningPlanTemplateDraftCommand("neetcode_150_systematic_interview", 4, null, null)))
         .isInstanceOf(LearningPlanException.class)
         .hasMessage("模板学习计划周期不能少于阶段数。");
+  }
+
+  private void assertTemplateDraftMatchesLocalRefs(
+      String templateId,
+      int durationWeeks,
+      int phaseCount,
+      int problemCount,
+      int missingProblemCount
+  ) {
+    templateRepository.saveTemplate(generatedTemplate(templateId, durationWeeks, phaseCount, problemCount, missingProblemCount));
+
+    LearningPlanDraftResult result = templateDraftService.createDraft(
+        7L,
+        new LearningPlanTemplateDraftCommand(templateId, null, null, null));
+
+    assertThat(result.status()).isEqualTo(LearningPlanDraftStatus.GENERATED);
+    assertThat(result.draftPlan().durationWeeks()).isEqualTo(durationWeeks);
+    assertThat(result.draftPlan().phases()).hasSize(phaseCount);
+    assertThat(result.draftPlan().phases().stream().mapToInt(LearningPlanPhaseDraft::durationWeeks).sum())
+        .isEqualTo(durationWeeks);
+    assertThat(result.draftPlan().phases())
+        .flatExtracting(LearningPlanPhaseDraft::problems)
+        .extracting(LearningPlanProblemDraft::slug)
+        .allSatisfy(slug -> assertThat((String) slug).doesNotStartWith("missing-problem"));
+    assertThat(result.draftPlan().phases())
+        .flatExtracting(LearningPlanPhaseDraft::problems)
+        .hasSize(problemCount - missingProblemCount);
+    Map<?, ?> metadata = (Map<?, ?>) result.draftPlan().metadata().get("template");
+    assertThat(metadata.get("templateId")).isEqualTo(templateId);
+    assertThat(metadata.get("problemCount")).isEqualTo(problemCount);
+    assertThat(metadata.get("matchedProblemCount")).isEqualTo(problemCount - missingProblemCount);
+    assertThat(metadata.get("missingProblemCount")).isEqualTo(missingProblemCount);
+    assertThat((List<?>) metadata.get("problemRefs")).hasSize(problemCount);
   }
 
   private LearningPlanTemplate blind75Template() {

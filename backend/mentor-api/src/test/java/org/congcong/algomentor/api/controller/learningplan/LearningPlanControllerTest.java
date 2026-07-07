@@ -361,7 +361,7 @@ class LearningPlanControllerTest {
   }
 
   @Test
-  void createDraftFromTemplateReturnsGeneratedDraftWithoutAiGovernance() throws Exception {
+  void createDraftFromNonNeetcodeTemplateReturnsGeneratedDraftWithoutAiGovernance() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     when(templateDraftService.createDraft(eq(42L), any(LearningPlanTemplateDraftCommand.class)))
         .thenReturn(new LearningPlanDraftResult(
@@ -375,8 +375,8 @@ class LearningPlanControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content("""
                 {
-                  "templateId": "neetcode_blind_75_interview_core",
-                  "durationWeeks": 4,
+                  "templateId": "tih_best_practice_50_5weeks",
+                  "durationWeeks": 5,
                   "weeklyHours": 8,
                   "programmingLanguage": "Java"
                 }

@@ -8,21 +8,19 @@ from tools.problem_seed.leetcode_api import read_jsonl
 
 class PrepareTemplateSeedTest(unittest.TestCase):
 
-    def test_build_seed_outputs_two_templates_and_required_metadata(self) -> None:
-        source_rows = [
-            row("Contains Duplicate", "0217-contains-duplicate", "Arrays & Hashing", "Easy", True, True),
-            row("Two Sum", "0001-two-sum", "Arrays & Hashing", "Easy", True, True),
-            row("Valid Parentheses", "0020-valid-parentheses", "Stack", "Easy", True, True),
-            row("Missing Problem", "9999-missing-problem", "Graphs", "Medium", True, True),
-        ]
-        templates, refs, report = seed.build_seed(source_rows, {"contains-duplicate", "two-sum", "valid-parentheses"})
+    def test_build_seed_outputs_ten_templates_and_required_metadata(self) -> None:
+        sources = source_data()
+        index = build_problem_index(exclude={"missing-problem", "encode-and-decode-strings", "alien-dictionary"})
 
-        self.assertEqual(2, len(templates))
-        self.assertEqual({"neetcode_blind_75_interview_core", "neetcode_150_systematic_interview"},
-                         {template["templateId"] for template in templates})
-        self.assertEqual(8, len(refs))
-        self.assertEqual(6, report["matchedProblemCount"])
-        self.assertEqual(2, report["missingProblemCount"])
+        templates, refs, report = seed.build_seed(sources, index)
+
+        self.assertEqual(10, len(templates))
+        self.assertEqual(set(seed.TEMPLATE_ORDER), {template["templateId"] for template in templates})
+        self.assertEqual(10, report["templateCount"])
+        self.assertIn("sources", report)
+        self.assertGreaterEqual(len(report["sources"]), 5)
+        self.assertGreater(report["matchedProblemCount"], 0)
+        self.assertGreaterEqual(report["missingProblemCount"], 4)
         for template in templates:
             self.assertTrue(template["targetAudience"])
             self.assertTrue(template["difficultyMix"])
@@ -41,27 +39,49 @@ class PrepareTemplateSeedTest(unittest.TestCase):
             template for template in templates if template["templateId"] == "neetcode_150_systematic_interview"
         )
         self.assertEqual(12, len(neetcode150["phases"]))
+        graph_refs = [ref for ref in refs if ref["templateId"] == "topic_graph_bfs_dfs"]
+        self.assertIn("alien-dictionary", [ref["problemSlug"] for ref in graph_refs])
+        self.assertFalse(next(ref for ref in graph_refs if ref["problemSlug"] == "alien-dictionary")
+                         ["metadata"]["matchedLocalProblem"])
 
-    def test_write_seed_creates_all_required_files(self) -> None:
-        source_rows = [
-            row("Contains Duplicate", "0217-contains-duplicate", "Arrays & Hashing", "Easy", True, True),
-            row("Two Sum", "0001-two-sum", "Arrays & Hashing", "Easy", True, True),
-        ]
-        templates, refs, report = seed.build_seed(source_rows, {"contains-duplicate"})
+    def test_write_seed_creates_all_required_files_and_stable_output(self) -> None:
+        templates, refs, report = seed.build_seed(
+            source_data(),
+            build_problem_index(exclude={"missing-problem", "encode-and-decode-strings", "alien-dictionary"}),
+        )
 
-        with tempfile.TemporaryDirectory() as temp_dir:
-            output_dir = Path(temp_dir)
-            seed.write_seed(output_dir, templates, refs, report)
+        with tempfile.TemporaryDirectory() as left, tempfile.TemporaryDirectory() as right:
+            left_dir = Path(left)
+            right_dir = Path(right)
+            seed.write_seed(left_dir, templates, refs, report)
+            seed.write_seed(right_dir, templates, refs, report)
 
-            self.assertTrue((output_dir / seed.TEMPLATES_FILE).exists())
-            self.assertTrue((output_dir / seed.PROBLEM_REFS_FILE).exists())
-            self.assertTrue((output_dir / seed.MANIFEST_FILE).exists())
-            self.assertTrue((output_dir / seed.METADATA_FILE).exists())
-            self.assertEqual(2, len(read_jsonl(output_dir / seed.TEMPLATES_FILE)))
-            metadata = (output_dir / seed.METADATA_FILE).read_text(encoding="utf-8")
+            self.assertTrue((left_dir / seed.TEMPLATES_FILE).exists())
+            self.assertTrue((left_dir / seed.PROBLEM_REFS_FILE).exists())
+            self.assertTrue((left_dir / seed.MANIFEST_FILE).exists())
+            self.assertTrue((left_dir / seed.METADATA_FILE).exists())
+            self.assertEqual(10, len(read_jsonl(left_dir / seed.TEMPLATES_FILE)))
+            metadata = (left_dir / seed.METADATA_FILE).read_text(encoding="utf-8")
             self.assertIn("学习计划模板 Seed 元数据", metadata)
             self.assertIn("草稿默认包含所有本地匹配题", metadata)
             self.assertNotIn("草稿每阶段最多推荐 5 道", metadata)
+            manifest = (left_dir / seed.MANIFEST_FILE).read_text(encoding="utf-8")
+            self.assertIn(seed.MANIFEST_FILE, manifest)
+            for file_name in [seed.TEMPLATES_FILE, seed.PROBLEM_REFS_FILE, seed.MANIFEST_FILE, seed.METADATA_FILE]:
+                self.assertEqual(
+                    (left_dir / file_name).read_text(encoding="utf-8"),
+                    (right_dir / file_name).read_text(encoding="utf-8"),
+                )
+
+    def test_parse_tih_best_practice_keeps_optional_and_premium_metadata(self) -> None:
+        rows = seed.parse_tih_best_practice(tih_markdown())
+
+        self.assertEqual(2, len(rows))
+        self.assertFalse(rows[0]["optional"])
+        self.assertFalse(rows[0]["premium"])
+        self.assertTrue(rows[1]["optional"])
+        self.assertTrue(rows[1]["premium"])
+        self.assertEqual("encode-and-decode-strings", rows[1]["slug"])
 
     def test_validate_template_requires_target_audience(self) -> None:
         template = {
@@ -81,14 +101,51 @@ class PrepareTemplateSeedTest(unittest.TestCase):
             seed.validate_template(template)
 
     def test_validate_seed_rejects_problem_ref_with_unknown_phase(self) -> None:
-        source_rows = [
-            row("Contains Duplicate", "0217-contains-duplicate", "Arrays & Hashing", "Easy", True, True),
-        ]
-        templates, refs, _ = seed.build_seed(source_rows, {"contains-duplicate"})
+        templates, refs, _ = seed.build_seed(
+            source_data(),
+            build_problem_index(exclude={"missing-problem", "encode-and-decode-strings", "alien-dictionary"}),
+        )
         refs[0]["phaseIndex"] = 99
 
         with self.assertRaisesRegex(ValueError, "unknown phase"):
             seed.validate_seed(templates, refs)
+
+
+def source_data() -> seed.SourceData:
+    return seed.SourceData(
+        neetcode_rows=[
+            row("Two Sum", "0001-two-sum", "Arrays & Hashing", "Easy", True, True),
+            row("Missing Problem", "9999-missing-problem", "Graphs", "Medium", True, True),
+        ],
+        tih_markdown=tih_markdown(),
+        halfrost_meta={name: "" for name in seed.HALFROST_META_FILES},
+    )
+
+
+def tih_markdown() -> str:
+    return """
+## Week 1 - Sequences
+
+| Question | Difficulty | LeetCode |
+| :-- | --- | --- |
+| Two Sum | Easy | [Link](https://leetcode.com/problems/two-sum/) |
+
+#### Optional
+
+| Question | Difficulty | LeetCode |
+| :-- | --- | --- |
+| Encode and Decode Strings | Medium | [Link](https://leetcode.com/problems/encode-and-decode-strings/) (Premium) |
+"""
+
+
+def build_problem_index(exclude: set[str] | None = None) -> seed.ProblemIndex:
+    excluded = exclude or set()
+    slugs = set()
+    for template in seed.MANUAL_TEMPLATES.values():
+        for phase in template["phases"]:
+            slugs.update(phase["problemSlugs"])
+    slugs.update({"two-sum"})
+    return seed.ProblemIndex.from_slugs(sorted(slugs - excluded))
 
 
 def row(

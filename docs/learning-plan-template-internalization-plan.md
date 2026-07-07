@@ -8,48 +8,96 @@
 
 当前状态：
 
-- 旧版 NeetCode 模板 seed 已移除，`neetcode_blind_75_interview_core` 和 `neetcode_150_systematic_interview` 需要按完整阶段规则重新生成。
+- P0 首批 10 个内部模板已写入 `data/learning-plan-template-seed/`，生成器已从 NeetCode 单源脚本演进为多 source 生成器。
+- 当前 seed manifest 显示：模板数 `10`，题目引用数 `509`，本地匹配 `489`，本地缺失 `20`；其中 NeetCode 基线仍为 `225` refs、匹配 `212`、缺失 `13`。
 - 当前 seed 目录固定为 `data/learning-plan-template-seed/`，包含 `learning_plan_templates.jsonl`、`learning_plan_template_problem_refs.jsonl`、`learning_plan_template_seed_manifest.json`、`learning_plan_template_seed_metadata.md` 四个文件。
 - 后端导入已经要求每个模板有完整 source attribution、非空 phases、至少一个 problem ref；缺失本地题目保留在 refs 和 metadata，但不进入生成草稿。
-- 从模板生成草稿必须满足：阶段周数合计等于总周期；模板阶段承载完整路线；所有本地匹配 refs 默认进入草稿推荐题；缺失 refs 只保留在模板明细和草稿 metadata。
+- 从模板生成草稿必须满足：阶段周数合计等于总周期；模板阶段承载完整路线；所有本地匹配 refs 默认进入草稿推荐题；缺失 refs 只保留在模板明细和草稿 metadata；草稿状态继续落为 `GENERATED`，并复用现有草稿确认流程。
+- 已完成验证：`python3 -m unittest discover -s tools -p '*_test.py'`；`mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository -pl mentor-application,mentor-api -am -Dtest=LearningPlanTemplateDraftServiceTest,LearningPlanTemplateSeedImportServiceTest,LearningPlanControllerTest test`。
 
 实施边界：
 
 - seed 只保存题单元数据、阶段目标、推荐理由和来源归因；不复制第三方题解、文章正文、图示、代码或题面。
 - 模板内部化不是一比一搬运外部计划，而是把高价值路线重建为 algo-mentor 自己的阶段计划。
-- 第一批目标是把内部模板池扩展到 10 个；模板市场、自动推荐排序、商业授权审计和非算法计划放到后续批次。
+- 第一批 P0 目标是先把内部模板池扩展到 10 个可发布模板；这不是全部资料源转换任务上限。更多模式化专项、长周期 CS 路线、SQL/JS/Pandas 等非算法计划放到 P1/P2 后续批次。
 
 ## 待执行列表
 
-状态枚举：`当前已完成`、`进行中`、`待执行`。
+状态枚举：`当前已完成`、`已生成待回归`、`进行中`、`待执行`、`后续批次`。
 
 | 批次 | 状态 | 任务 | 输出 | 验收条件 |
 | --- | --- | --- | --- | --- |
-| P0 | 进行中 | 按完整阶段规则重建 NeetCode seed | 2 个模板、完整 problem refs、manifest、metadata | Python seed 测试、后端导入测试、模板生成草稿测试覆盖 Blind 75 / NeetCode 150，且本地匹配题全部进入草稿 |
-| P0 | 进行中 | 固化第一批 10 个内部模板的实施口径 | 本文档、templateId 列表、数据来源策略、子 agent 模式 | 每个模板都有稳定 ID、标题、周期、intent、level、来源策略和验收重点 |
-| P0 | 待执行 | 把第一批剩余 8 个模板转成 seed | 8 个新增模板行、对应 problem refs、更新 manifest 和 metadata | 每个模板有完整归因、非空 phases、至少一个本地匹配题，缺失题可审计 |
-| P0 | 待执行 | 将 `prepare_template_seed.py` 从 NeetCode 单源脚本演进为多 source 生成器 | source adapter、统一 schema 校验、确定性排序、统计报告 | 相同输入重复生成 hash 稳定；四个 seed 文件一次性生成 |
-| P0 | 待执行 | 验证后端导入和草稿生成 | 后端测试、导入审计、草稿生成样例 | 10 个模板均可查询、可生成草稿、匹配 refs 默认全部进入草稿 |
+| P0 | 当前已完成 | 按完整阶段规则重建 NeetCode seed | 2 个模板、225 条 problem refs、manifest、metadata | 已复跑 Python seed 测试、真实 seed 导入测试、模板生成草稿测试；212 条本地匹配题默认进入草稿 |
+| P0 | 当前已完成 | 固化第一批 10 个内部模板的实施口径 | 本文档、templateId 列表、数据来源策略、子 agent 模式 | 每个模板都有稳定 ID、标题、周期、intent、level、来源策略和验收重点 |
+| P0 | 当前已完成 | 把第一批剩余 8 个模板转成 seed | 8 个新增模板、284 条新增 problem refs、更新 manifest 和 metadata | 每个模板有完整归因、非空 phases、至少一个本地匹配题；新增模板合计匹配 277、缺失 7 |
+| P0 | 当前已完成 | 将 `prepare_template_seed.py` 从 NeetCode 单源脚本演进为多 source 生成器 | source adapter、统一 schema 校验、确定性排序、统计报告 | 相同输入重复生成 hash 稳定；四个 seed 文件一次性生成；metadata 不输出 Java 不可导入的 null |
+| P0 | 当前已完成 | 验证后端导入和草稿生成 | 后端测试、导入审计、草稿生成样例 | 10 个模板均可导入；2/4/5/6/12 周模板可生成草稿；匹配 refs 默认全部进入草稿 |
 | P1 | 待执行 | 扩展专项和模式化模板 | Trees、Backtracking、Heap、Greedy、Bit Manipulation 等专项模板 | 可由能力画像按薄弱标签命中；每个模板题量不低于 15 条 refs |
 | P1 | 待执行 | 增强多来源 manifest 和导入审计 | `sources` 统计、每模板来源版本、每来源匹配率 | import run metadata 能定位每个来源的版本、路径、授权和缺失题 |
 | P1 | 待执行 | 前端模板入口优化 | 模板列表分组、标签筛选、模板详情缺失题提示 | 用户能按面试冲刺、长期学习、专项突破、复盘选择模板 |
-| P2 | 待执行 | 长周期 CS/综合学习模板 | Coding Interview University、CS-Notes、doocs 等参考路线 | 不影响算法刷题主线；明确外链和非题目任务的展示方式 |
-| P2 | 待执行 | 非算法专项模板 | SQL、JavaScript、Pandas 等扩展计划 | 明确题库域、练习入口和现有算法题库不匹配时的降级策略 |
+| P2 | 后续批次 | 长周期 CS/综合学习模板 | Coding Interview University、CS-Notes、doocs 等参考路线 | 不影响算法刷题主线；明确外链和非题目任务的展示方式 |
+| P2 | 后续批次 | 非算法专项模板 | SQL、JavaScript、Pandas 等扩展计划 | 明确题库域、练习入口和现有算法题库不匹配时的降级策略 |
 
 ## 第一批 10 个内部模板
 
+这 10 个是 P0 首批用户可见模板，用来覆盖最高频目标并打通“资料源 -> seed -> 导入 -> 模板草稿 -> 草稿确认”的稳定闭环。它们不是全部仓库转换任务；一个外部仓库可能产出多个模板，一个内部模板也可能融合多个来源。首批先控制在 10 个，是为了保证每个模板都有完整阶段、题目引用、本地匹配统计、授权说明和草稿生成回归，而不是一次性堆大量低质量题单。
+
 | templateId | 状态 | 用户看到的标题 | 参考来源 | 周期 | intent | level | 数据来源策略 | 验收重点 |
 | --- | --- | --- | --- | ---: | --- | --- | --- | --- |
-| `neetcode_150_systematic_interview` | 进行中 | NeetCode 150 系统面试计划 | NeetCode 150、LeetCode Top Interview 150 | 12 周 | `INTERVIEW_SPRINT` | `INTERMEDIATE` | 直接内置；NeetCode MIT 题单元数据固定 commit，LeetCode 官方计划只作目标参考 | 150 refs 按完整阶段规划；本地匹配和缺失统计写入 metadata；生成草稿默认包含全部本地匹配题 |
-| `neetcode_blind_75_interview_core` | 进行中 | NeetCode Blind 75 面试核心计划 | Blind 75、LeetCode 75、NeetCode Blind 75 | 4 周 | `INTERVIEW_SPRINT` | `INTERMEDIATE` | 直接内置；NeetCode MIT 题单元数据固定 commit，官方 LeetCode 75 只作外链参考 | 75 refs 按完整阶段规划；缺失 premium/未收录题不进入草稿，保留审计 |
-| `tih_best_practice_50_5weeks` | 待执行 | 5 周面试冲刺计划 | Tech Interview Handbook Best Practice 50、Grind 75 | 5 周 | `INTERVIEW_SPRINT` | `INTERMEDIATE` | 直接内置 TIH MIT 题单元数据；Grind 75 仅作外链和结构参考 | 每周主题清晰；题目顺序稳定；optional 题进入 refs metadata 但默认草稿优先 core 题 |
-| `cn_algorithm_foundation_12weeks` | 待执行 | 中文系统刷题入门计划 | 代码随想录、LeetCode Programming Skills、NeetCode beginner | 12 周 | `LONG_TERM_LEARNING` | `BEGINNER` | 参考后重建；不复制代码随想录文章、图示或题解，按本地题库重建阶段和题目 | 阶段顺序符合中文学习者习惯；Easy/Medium 比例适合新手；每阶段有可操作复盘建议 |
-| `topic_dynamic_programming_foundation` | 待执行 | 动态规划专项突破计划 | LeetCode Dynamic Programming、labuladong DP、halfrost DP | 4 周 | `TOPIC_BREAKTHROUGH` | `INTERMEDIATE` | halfrost MIT 可直接内置题号/标签；LeetCode 官方和 labuladong 作参考后重建 | 按一维 DP、背包、子序列、状态机/区间拆阶段；题目难度递进；验收关注状态定义和转移复盘 |
-| `topic_graph_bfs_dfs` | 待执行 | 图论专项突破计划 | LeetCode Graph Theory、代码随想录图论、halfrost BFS/DFS/Union Find | 4 周 | `TOPIC_BREAKTHROUGH` | `INTERMEDIATE` | halfrost MIT 题号/标签直接内置；其他来源外链参考和阶段重建 | 覆盖 DFS/BFS、岛屿、拓扑、并查集；缺失题按 frontendId/slug 审计；草稿不推荐未匹配题 |
-| `topic_binary_search_boundaries` | 待执行 | 二分与边界专项计划 | LeetCode Binary Search、halfrost Binary Search | 2 周 | `TOPIC_BREAKTHROUGH` | `INTERMEDIATE` | halfrost 可直接内置；LeetCode 官方计划外链参考 | 2 周草稿生成 2 阶段；覆盖基础二分、旋转数组、答案二分和矩阵/区间变体；边界条件验收明确 |
-| `topic_sliding_window_two_pointers` | 待执行 | 滑动窗口与双指针专项计划 | NeetCode pattern、halfrost Two Pointers / Sliding Window、Tech Interview Handbook | 2 周 | `TOPIC_BREAKTHROUGH` | `INTERMEDIATE` | 多源参考后重建；只内置 slug、题号、标签和自写推荐理由 | 固定窗口、可变窗口、左右指针、排序去重组合分层；推荐题不重复过多经典 easy 题 |
-| `leetcode_top_100_liked_revision` | 待执行 | Top 100 Liked 复盘计划 | LeetCode Top 100 Liked、Tech Interview Handbook essential/recommended | 6 周 | `MISTAKE_REVIEW` | `INTERMEDIATE` | 外链参考和参考后重建；不直接复制官方题单内容，按本地题库和高赞经典标签重组 | 适合二刷和查漏补缺；metadata 标记复盘导向；后续可按用户错题优先重排 |
-| `programming_skills_implementation_foundation` | 待执行 | 编程基础与实现力计划 | LeetCode Programming Skills、本地 Easy/Medium 题库 | 4 周 | `PRACTICE_GOAL` | `BEGINNER` | 外链参考后用本地题库重建；官方计划只作为目标描述和入口 | 覆盖模拟、字符串、数组、矩阵、基础数据结构操作；适合换语言或实现能力薄弱用户 |
+| `neetcode_150_systematic_interview` | 当前已完成 | NeetCode 150 系统面试计划 | NeetCode 150、LeetCode Top Interview 150 | 12 周 | `INTERVIEW_SPRINT` | `INTERMEDIATE` | 直接内置；NeetCode MIT 题单元数据固定 commit，LeetCode 官方计划只作目标参考 | 150 refs，匹配 143、缺失 7；真实 seed 导入和 12 周草稿生成已回归 |
+| `neetcode_blind_75_interview_core` | 当前已完成 | NeetCode Blind 75 面试核心计划 | Blind 75、LeetCode 75、NeetCode Blind 75 | 4 周 | `INTERVIEW_SPRINT` | `INTERMEDIATE` | 直接内置；NeetCode MIT 题单元数据固定 commit，官方 LeetCode 75 只作外链参考 | 75 refs，匹配 69、缺失 6；4 周草稿默认包含全部本地匹配题 |
+| `tih_best_practice_50_5weeks` | 当前已完成 | 5 周面试冲刺计划 | Tech Interview Handbook Best Practice 50、Grind 75 | 5 周 | `INTERVIEW_SPRINT` | `INTERMEDIATE` | 直接内置 TIH MIT 题单元数据；Grind 75 仅作外链和结构参考 | 61 refs，匹配 55、缺失 6；optional 11、premium 6 均可审计 |
+| `cn_algorithm_foundation_12weeks` | 当前已完成 | 中文系统刷题入门计划 | 代码随想录、LeetCode Programming Skills、NeetCode beginner | 12 周 | `LONG_TERM_LEARNING` | `BEGINNER` | 参考后重建；不复制代码随想录文章、图示或题解，按本地题库重建阶段和题目 | 46 refs，匹配 46、缺失 0；12 周 9 阶段草稿生成已覆盖 |
+| `topic_dynamic_programming_foundation` | 当前已完成 | 动态规划专项突破计划 | LeetCode Dynamic Programming、labuladong DP、halfrost DP | 4 周 | `TOPIC_BREAKTHROUGH` | `INTERMEDIATE` | halfrost MIT 可直接内置题号/标签；LeetCode 官方和 labuladong 作参考后重建 | 23 refs，匹配 23、缺失 0；按一维、背包、子序列、状态机/回文拆阶段 |
+| `topic_graph_bfs_dfs` | 当前已完成 | 图论专项突破计划 | LeetCode Graph Theory、代码随想录图论、halfrost BFS/DFS/Union Find | 4 周 | `TOPIC_BREAKTHROUGH` | `INTERMEDIATE` | halfrost MIT 题号/标签直接内置；其他来源外链参考和阶段重建 | 20 refs，匹配 19、缺失 1（`alien-dictionary`）；草稿不推荐未匹配题 |
+| `topic_binary_search_boundaries` | 当前已完成 | 二分与边界专项计划 | LeetCode Binary Search、halfrost Binary Search | 2 周 | `TOPIC_BREAKTHROUGH` | `INTERMEDIATE` | halfrost 可直接内置；LeetCode 官方计划外链参考 | 18 refs，匹配 18、缺失 0；2 周 2 阶段草稿生成已覆盖 |
+| `topic_sliding_window_two_pointers` | 当前已完成 | 滑动窗口与双指针专项计划 | NeetCode pattern、halfrost Two Pointers / Sliding Window、Tech Interview Handbook | 2 周 | `TOPIC_BREAKTHROUGH` | `INTERMEDIATE` | 多源参考后重建；只内置 slug、题号、标签和自写推荐理由 | 15 refs，匹配 15、缺失 0；固定窗口、可变窗口和双指针分层 |
+| `leetcode_top_100_liked_revision` | 当前已完成 | Top 100 Liked 复盘计划 | LeetCode Top 100 Liked、Tech Interview Handbook essential/recommended | 6 周 | `MISTAKE_REVIEW` | `INTERMEDIATE` | 外链参考和参考后重建；不直接复制官方题单内容，按本地题库和高赞经典标签重组 | 67 refs，匹配 67、缺失 0；6 周复盘模板草稿生成已覆盖 |
+| `programming_skills_implementation_foundation` | 当前已完成 | 编程基础与实现力计划 | LeetCode Programming Skills、本地 Easy/Medium 题库 | 4 周 | `PRACTICE_GOAL` | `BEGINNER` | 外链参考后用本地题库重建；官方计划只作为目标描述和入口 | 34 refs，匹配 34、缺失 0；Easy/Medium 基础实现路线完整 |
+
+## 后续模板扩展池
+
+P0 完成后，后续任务按资料源和用户场景继续拆分。以下模板不进入 P0 首批 10 个，但需要在 P1/P2 计划中保留：
+
+| 批次 | 候选模板方向 | 参考来源 | 进入后续批次原因 |
+| --- | --- | --- | --- |
+| P1 | Trees 专项、Backtracking 专项、Heap / Priority Queue 专项、Greedy 专项、Bit Manipulation 专项 | NeetCode pattern、halfrost 标签、TIH algorithm guides | 适合能力画像命中薄弱标签；需要在 P0 专项生成器稳定后批量扩展 |
+| P1 | NeetCode pattern track 系列 | `neetcode-gh/leetcode` | NeetCode 已有 pattern 结构，但 P0 先只发布 75/150 两条高认知路线 |
+| P1 | TIH algorithm essentials / recommended 系列 | `yangshun/tech-interview-handbook` | 适合做专题和复盘模板；需要先完成 Best Practice 50 的 Markdown adapter |
+| P1 | leetcode-patterns Beginner / Experienced Roadmap | `seanprashad/leetcode-patterns` | 路线结构价值高，但 CC-BY-NC-4.0 授权边界需要单独审计，首版只借鉴阶段思想 |
+| P2 | Coding Interview University / CS-Notes 长周期 CS 综合计划 | `jwasham/coding-interview-university`、`CyC2018/CS-Notes` | 范围超过刷题计划，需要非题目任务、外链资源和学习材料模型支持 |
+| P2 | doocs / 剑指 Offer / 面试金典辅助计划 | `doocs/leetcode`、本地题库 | 中文覆盖价值高，但与首批面试/专项模板相比优先级较低 |
+| P2 | SQL 50、Advanced SQL 50、JavaScript 30、Pandas 计划 | LeetCode 官方 Study Plan | 偏离当前算法学习主线，需要题库域和练习入口扩展 |
+
+## 资料源和仓库转换清单
+
+本节和“第一批 10 个内部模板”是输入与输出的关系：
+
+- “第一批 10 个内部模板”定义 P0 要交付给用户选择的模板结果，是产品输出清单。
+- “资料源和仓库转换清单”定义这些模板背后的资料来源、仓库处理方式和子 agent 执行单元，是工程输入和任务派发清单。
+- 两者不是一一对应关系，而是多对多关系：一个资料源可以产出多个模板，一个模板也可以融合多个资料源。
+
+每完成一个来源转换，必须同时更新本节勾选状态、第一批模板表状态、seed manifest 数字和 metadata markdown。`已生成待回归` 只能表示 seed 产物已经存在；只有完成 Python、后端导入、草稿生成三类验证后，才能改为 `当前已完成`。
+
+| 完成标记 | 来源或仓库 | 覆盖模板 | 转换方式 | 子 agent 任务 | 完成时必须记录 |
+| --- | --- | --- | --- | --- | --- |
+| [x] 当前已完成 | `neetcode-gh/leetcode` | `neetcode_blind_75_interview_core`、`neetcode_150_systematic_interview` | 直接内置 MIT 题单元数据，固定 commit `9907b7fed441fa55083c0751e208b7197101dbba` | NeetCode 重建 | 225 refs，匹配 212、缺失 13；缺失题示例已写入 metadata；验证命令见当前状态 |
+| [x] 当前已完成 | `yangshun/tech-interview-handbook` | `tih_best_practice_50_5weeks`，后续可扩展 `tih_algorithm_essentials` | 直接内置 MIT 题单元数据；不复制文章正文，固定 commit `8ee2acb54a05c4add123a824d15e7dfc4e703b2f` | TIH 面试冲刺 | 61 refs，匹配 55、缺失 6；optional 11、premium 6；Markdown 源路径和 MIT notice 已记录 |
+| [x] 当前已完成 | `youngyangyang04/leetcode-master` | `cn_algorithm_foundation_12weeks` | 参考后重建；不复制文章、图示、题解和 README 原文，固定 commit `86f78fde8cb62d10c3b5e38b7e6b6e0705850f92` | 中文入门路线 | 46 refs，匹配 46、缺失 0；阶段顺序和复盘建议均为自写；无 LICENSE 备注已记录 |
+| [x] 当前已完成 | `halfrost/LeetCode-Go` | `topic_dynamic_programming_foundation`、`topic_graph_bfs_dfs`、`topic_binary_search_boundaries`、`topic_sliding_window_two_pointers` | 直接内置 MIT 题号、slug、标签和难度；复杂度只作内部参考，固定 commit `3bcc916680298295e06060ca9790304c1f1b78b6` | 专项模板包 | 四个专项合计 76 refs，匹配 75、缺失 1；每个模板题量不低于 15；MIT notice 已记录 |
+| [x] 当前已完成 | `labuladong/fucking-algorithm` | `topic_dynamic_programming_foundation` 的阶段结构参考，后续可扩展算法思维训练 | 参考后重建；不复制文章正文、图示或代码，固定 commit `b1f23cb9605f6146ff78bafad71e795176439b99` | 专项模板包 | 只记录参考 URL、固定版本、无 LICENSE 备注和自写阶段说明；不直接产生 refs |
+| [x] 当前已完成 | LeetCode 官方 Study Plan | `leetcode_top_100_liked_revision`、`programming_skills_implementation_foundation`，以及 LeetCode 75 / Top Interview 150 的目标描述 | 官方外链参考；用本地题库和开源元数据重建可执行路线，访问日期 `2026-07-06` | 复盘和实现力模板 | 官方 URL、访问日期、未直接复制题面/题解/付费内容说明已写入 metadata |
+| [ ] 待执行 | `seanprashad/leetcode-patterns` | P1 模式化路线、Beginner / Experienced roadmap 参考 | CC-BY-NC-4.0，第一版只借鉴阶段思想并自写说明 | P1 模式化模板 | roadmap 阶段映射、授权边界、是否进入第一批的决策 |
+| [ ] 后续批次 | `doocs/leetcode` | 中文覆盖补充、剑指 Offer / 面试金典辅助计划 | CC-BY-SA-4.0，第一版不作为主模板直接来源 | P2 中文覆盖补充 | 只在 P2 决策时补授权和题库覆盖评估 |
+| [ ] 后续批次 | `jwasham/coding-interview-university`、`CyC2018/CS-Notes` | 长周期 CS/综合学习模板 | 外链参考或任务型路线，不进入当前算法刷题 seed 主线 | P2 综合学习 | 非题目任务展示方式、外链授权备注、是否需要新数据模型 |
+
+### 完成标记规则
+
+1. 子 agent 完成一个来源后，把候选输出交给主 agent，不直接覆盖 `data/learning-plan-template-seed/` 四个固定文件。
+2. 主 agent 合并来源 adapter 后重新生成四个 seed 文件，并更新 manifest、metadata 和本节完成标记。
+3. 每次从 `待执行` 推进到 `已生成待回归`，必须记录模板数、refs 数、matched/missing、缺失题示例和来源版本。
+4. 每次从 `已生成待回归` 推进到 `当前已完成`，必须记录已运行的验证命令和结果；如果只完成 seed 生成但未跑后端测试，不得标记为 `当前已完成`。
+5. 若某来源因授权、匹配率或结构问题被暂停，在完成标记中保留为 `待执行`，并在“完成时必须记录”列补充阻塞原因和下一步。
 
 ## Subagent 执行模式
 
@@ -69,11 +117,31 @@
 | 子任务 | 建议处理者 | 输入 | 输出 | 写入范围 | 验收条件 |
 | --- | --- | --- | --- | --- | --- |
 | NeetCode 重建 | 来源子 agent | 固定 commit、目标两个模板、完整阶段规则 | 完整阶段规划、refs、matched/missing 报告 | 只提交候选片段给主 agent；如需改脚本，由主 agent 合并 | 2 个模板统计可审计；problem refs 排序、阶段归属和 matched/missing 稳定 |
-| TIH 面试冲刺 | 来源子 agent | TIH 仓库固定 commit、Best Practice 50 Markdown、local problems | `tih_best_practice_50_5weeks` 候选模板、refs、license note | 临时候选目录或 PR patch；不直接覆盖 seed 目录 | core/optional 标记清楚；MIT 归因完整；5 周计划生成后为 3 或 4 个有效阶段 |
+| TIH 面试冲刺 | 来源子 agent | TIH 仓库固定 commit、Best Practice 50 Markdown、local problems | `tih_best_practice_50_5weeks` 候选模板、refs、license note | 临时候选目录或 PR patch；不直接覆盖 seed 目录 | core/optional 标记清楚；MIT 归因完整；5 周计划生成 5 个有效阶段 |
 | 中文入门路线 | 来源子 agent | 代码随想录目录、Programming Skills 外链、本地题库标签 | `cn_algorithm_foundation_12weeks` 阶段草案和题目候选 | 临时候选目录；不复制第三方正文 | 阶段顺序可解释；所有推荐理由为自写；无 LICENSE 来源只作为参考后重建 |
 | 专项模板包 | 批次子 agent | halfrost meta、NeetCode pattern、LeetCode 官方专题外链 | DP、图、二分、滑窗/双指针四个专项候选 | 临时候选目录；仅提交候选 JSONL 片段 | 每个模板至少 15 条 refs；2 周模板生成 2 阶段，4 周模板生成约 3 阶段 |
 | 复盘和实现力模板 | 批次子 agent | Top 100 Liked 外链、TIH essential/recommended、本地题库 | Top 100 复盘和编程基础模板候选 | 临时候选目录；不直接写前端 | 复盘模板标记 `MISTAKE_REVIEW`；基础模板 Easy/Medium 结构合理 |
 | 集成验收 | 主 agent | 所有候选片段、脚本、测试 | 四个 seed 文件、测试结果、变更说明 | `tools/learning_plan_template_seed/`、`data/learning-plan-template-seed/`、必要测试文件 | 所有模板可导入、可查询、可生成草稿；manifest/metadata 数字一致 |
+
+### 子 agent 交付格式
+
+每个子 agent 只交付一个来源或一个明确模板包，交付说明必须包含：
+
+- `taskId`：例如 `template-source-tih-best-practice-50`。
+- `templateIds`：本次覆盖的模板 ID。
+- `sourceAudit`：来源名称、URL、固定 commit 或访问日期、源文件路径、许可证、是否直接内置。
+- `candidateOutput`：候选模板 JSON、problem refs JSON、阶段规划说明和缺失题清单；候选文件放在临时目录或补丁中，不直接写 seed 目录。
+- `stats`：模板数、refs 数、matched/missing、premium/optional 数量、每阶段题量。
+- `validation`：已运行命令、结果、未运行原因和剩余风险。
+- `handoffNotes`：需要主 agent 人工确认的 slug/frontendId 映射、授权边界和产品命名问题。
+
+### 长任务质量 checkpoint
+
+- 每个来源转换前，子 agent 必须先按 `.codex/skills/learning-plan-template-integrator/references/source-evaluation-checklist.md` 评估，结构、匹配或归因不过关则只保留为研究备注。
+- 每个来源只在通过本地匹配和阶段周数校验后进入主 agent 合并队列；不得把待人工确认的模糊匹配写入 seed。
+- 主 agent 每合并一个来源就运行 Python seed 单测和最小 schema 校验；后端导入和草稿生成测试至少在 P0 全部来源合并后跑一次。
+- 任何一次合并不得手工编辑 JSONL 统计值；manifest 和 metadata 必须由生成器统一输出。
+- 子 agent 并行时只能读当前 seed 文件，写候选片段；主 agent 串行合并，避免四个固定文件出现排序和 checksum 冲突。
 
 ## Seed 转换规则
 

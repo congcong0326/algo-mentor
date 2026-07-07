@@ -3,10 +3,12 @@ package org.congcong.algomentor.api.learningplan.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,6 +31,31 @@ class LearningPlanTemplateSeedImportServiceTest {
 
   @TempDir
   private Path tempDir;
+
+  @Test
+  void importGeneratedP0SeedMatchesManifestCounts() throws Exception {
+    Path repoRoot = repoRoot();
+    ObjectMapper objectMapper = new ObjectMapper();
+    InMemoryTemplateRepository templateRepository = new InMemoryTemplateRepository();
+    LearningPlanTemplateSeedImportService service = new LearningPlanTemplateSeedImportService(
+        new StaticObjectProvider<>(templateRepository),
+        new StaticObjectProvider<>(new InMemoryProblemRepository(localProblemSlugs(repoRoot, objectMapper))),
+        new LearningPlanTemplateSeedReader(objectMapper),
+        objectMapper);
+
+    LearningPlanTemplateSeedImportResult result = service.importSeed(repoRoot.resolve("data/learning-plan-template-seed"));
+
+    assertThat(result.templateCount()).isEqualTo(10);
+    assertThat(result.problemRefCount()).isEqualTo(509);
+    assertThat(result.matchedProblemCount()).isEqualTo(489);
+    assertThat(result.missingProblemCount()).isEqualTo(20);
+    assertThat(templateRepository.templates).hasSize(10);
+    assertThat(templateRepository.templates)
+        .extracting(LearningPlanTemplate::templateId)
+        .contains("tih_best_practice_50_5weeks", "topic_binary_search_boundaries");
+    Map<?, ?> manifest = (Map<?, ?>) templateRepository.importRuns.get(0).metadata().get("manifest");
+    assertThat((List<?>) manifest.get("sources")).hasSizeGreaterThanOrEqualTo(5);
+  }
 
   @Test
   void importSeedWritesTemplatesAndAuditRunWithMissingProblemCount() throws Exception {
@@ -55,6 +82,44 @@ class LearningPlanTemplateSeedImportServiceTest {
         .containsExactly("two-sum:true", "missing-problem:false");
     assertThat(templateRepository.importRuns).hasSize(1);
     assertThat(templateRepository.importRuns.get(0).checksum()).isNotBlank();
+  }
+
+  @Test
+  void importSeedKeepsMultiSourceManifestInAuditAndUsesRootSourceCommit() throws Exception {
+    writeValidSeed(tempDir);
+    Files.writeString(tempDir.resolve(LearningPlanTemplateSeedConstants.MANIFEST_FILE), """
+        {
+          "source": {
+            "name": "algo-mentor learning-plan-template-seed",
+            "commit": "p0-templates-2026-07-06"
+          },
+          "sources": [
+            {
+              "name": "neetcode-gh/leetcode",
+              "commitOrVersion": "9907b7fed441fa55083c0751e208b7197101dbba",
+              "templateIds": ["neetcode_blind_75_interview_core"]
+            },
+            {
+              "name": "yangshun/tech-interview-handbook",
+              "commitOrVersion": "8ee2acb54a05c4add123a824d15e7dfc4e703b2f",
+              "templateIds": ["tih_best_practice_50_5weeks"]
+            }
+          ]
+        }
+        """);
+    InMemoryTemplateRepository templateRepository = new InMemoryTemplateRepository();
+    LearningPlanTemplateSeedImportService service = new LearningPlanTemplateSeedImportService(
+        new StaticObjectProvider<>(templateRepository),
+        new StaticObjectProvider<>(new InMemoryProblemRepository(Set.of("two-sum"))),
+        new LearningPlanTemplateSeedReader(new ObjectMapper()),
+        new ObjectMapper());
+
+    service.importSeed(tempDir);
+
+    LearningPlanTemplateImportRun importRun = templateRepository.importRuns.get(0);
+    assertThat(importRun.sourceCommit()).isEqualTo("p0-templates-2026-07-06");
+    Map<?, ?> manifest = (Map<?, ?>) importRun.metadata().get("manifest");
+    assertThat((List<?>) manifest.get("sources")).hasSize(2);
   }
 
   @Test
@@ -142,6 +207,33 @@ class LearningPlanTemplateSeedImportServiceTest {
         {"source":{"commit":"9907b7fed441fa55083c0751e208b7197101dbba"}}
         """);
     Files.writeString(dir.resolve(LearningPlanTemplateSeedConstants.METADATA_FILE), "# metadata\n");
+  }
+
+  private Path repoRoot() {
+    Path current = Path.of("").toAbsolutePath();
+    while (current != null) {
+      if (Files.isRegularFile(current.resolve("data/learning-plan-template-seed/"
+          + LearningPlanTemplateSeedConstants.TEMPLATES_FILE))) {
+        return current;
+      }
+      current = current.getParent();
+    }
+    throw new IllegalStateException("Cannot locate repository root from test working directory.");
+  }
+
+  private Set<String> localProblemSlugs(Path repoRoot, ObjectMapper objectMapper) throws Exception {
+    Set<String> slugs = new HashSet<>();
+    for (String line : Files.readAllLines(repoRoot.resolve("data/seed/problems.jsonl"))) {
+      if (line.isBlank()) {
+        continue;
+      }
+      JsonNode node = objectMapper.readTree(line);
+      String slug = node.path("slug").asText("");
+      if (!slug.isBlank()) {
+        slugs.add(slug);
+      }
+    }
+    return slugs;
   }
 
   private static class InMemoryTemplateRepository implements LearningPlanTemplateRepository {

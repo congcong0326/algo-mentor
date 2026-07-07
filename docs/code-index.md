@@ -21,6 +21,8 @@
 - `docs/practice-code-review-technical-design.md`：练习代码 Review 技术设计，说明基于 practice turn orchestrator 与服务端 capability 的结构化 Review、数据模型、完成 gate、API 和前端闭环。
 - `docs/problem-agent-tools-design.md`：题目 Agent 工具体系设计，说明过滤项发现、查题、读取题面的用途、边界、返回内容和后续演进。
 - `docs/learning-plan-template-seed-design.md`：学习计划模板 seed 最小闭环设计，说明 NeetCode 模板 seed、模板表、导入配置、查询 API、从模板生成草稿和项目 Skill 沉淀。
+- `docs/learning-plan-template-source-research.md`：学习计划模板资料源调研，按最终计划价值排序 LeetCode 官方计划、NeetCode、TIH、代码随想录、halfrost、labuladong 等候选来源。
+- `docs/learning-plan-template-internalization-plan.md`：学习计划模板资料源内部化实施计划，定义第一批 10 个模板、资料源转换清单、完成标记、subagent 派发模式、seed 生成和验证门禁。
 - `docs/product-planning/p0-mistake-notebook-spaced-repetition-design.md`：错题本 + 间隔重复复习产品形态设计（P0·3.4），说明 Recall-first、AI 判定驱动调度、C 档 AI 卡片全量 + 异步预生成、每日配额、备注两级和会员切面。
 - `docs/product-planning/p1-4.0-problem-bank-foundation-design.md`：P1-4.0 题库基座官方 API 全量构建与校验设计，说明以 LeetCode 官方（`.com` 英文 + `.cn` 中文，按 slug join）为唯一内容源、退役 fishjar，分三阶段推进（阶段一原始抓取入本地、阶段二数据画像分类 complete/zh_missing/cn_only/premium/deprecated、阶段三数据驱动加工含是否 AI 翻译），含字段映射、校验规则与 `azl397985856`/`LeetcodeTop` 可选交叉校验。
 - `docs/product-planning/p1-4.0-a-company-problem-metadata-design.md`：P1-4.0-A 公司维度题目元数据设计，说明 `liquidslr`（欧美/时间桶）与 `afatcoder/LeetcodeTop`（国内/岗位）双主源、`role` 岗位维度、cn/com 链接归一、公司高频 seed、数据库模型、题库/API/Agent 工具扩展和测试计划。
