@@ -86,7 +86,7 @@ public class LearningPlanContractService {
         estimation.date(),
         estimation.source(),
         status,
-        nextTrainingPackage(snapshot, progressByProblem),
+        loadService.nextTrainingPackage(plan, progress),
         notice(state, status),
         completionSummary);
   }
@@ -194,48 +194,6 @@ public class LearningPlanContractService {
       return LearningPlanVisibleStatus.NEEDS_REBALANCE;
     }
     return LearningPlanVisibleStatus.ON_TRACK;
-  }
-
-  private LearningPlanTrainingPackage nextTrainingPackage(
-      LearningPlanDraftPlan plan,
-      Map<ProblemKey, PracticeProgress> progressByProblem
-  ) {
-    List<LearningPlanProblemDraft> priorityProblems = new ArrayList<>();
-    int weekIndex = 1;
-    String reviewTask = "复盘本次训练中的卡点和错因。";
-    for (LearningPlanPhaseDraft phase : plan.phases()) {
-      if (phase.reviewAdvice() != null && !phase.reviewAdvice().isBlank()) {
-        reviewTask = phase.reviewAdvice();
-      }
-      for (LearningPlanProblemDraft problem : phase.problems()) {
-        PracticeProgress item = progressByProblem.get(new ProblemKey(phase.phaseIndex(), problem.slug()));
-        PracticeProgressStatus status = item == null ? PracticeProgressStatus.NOT_STARTED : item.status();
-        if (status == PracticeProgressStatus.COMPLETED || status == PracticeProgressStatus.SKIPPED) {
-          continue;
-        }
-        priorityProblems.add(problem);
-        if (priorityProblems.size() >= newProblemCount(plan)) {
-          return new LearningPlanTrainingPackage(
-              weekIndex,
-              priorityProblems.size(),
-              reviewTask,
-              estimatedTrainingMinutes(plan),
-              priorityProblems.stream().map(LearningPlanProblemDraft::slug).toList());
-        }
-      }
-      weekIndex += Math.max(1, phase.durationWeeks());
-    }
-    return new LearningPlanTrainingPackage(weekIndex, 0, reviewTask, estimatedTrainingMinutes(plan), List.of());
-  }
-
-  private int newProblemCount(LearningPlanDraftPlan plan) {
-    return Math.max(1, (int) Math.ceil(Math.max(1, plan.phases().stream()
-        .mapToInt(phase -> phase.problems().size())
-        .sum()) / Math.max(1D, plan.durationWeeks() * 5D)));
-  }
-
-  private int estimatedTrainingMinutes(LearningPlanDraftPlan plan) {
-    return (int) Math.ceil(Math.max(1, plan.weeklyHours()) * 60D / 5D);
   }
 
   private LearningPlanCompletionSummary completionSummary(

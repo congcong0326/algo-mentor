@@ -64,7 +64,6 @@ public class LearningPlanDraftService {
     }
     LearningPlanDraftPlan confirmablePlan = loadService.withLoadMetadata(
         draft.draftPlan(),
-        null,
         null);
     validator.validateConfirmablePlan(confirmablePlan);
     Instant now = clock.instant();
@@ -94,7 +93,6 @@ public class LearningPlanDraftService {
     try {
       LearningPlanDraftPlan plan = loadService.withLoadMetadata(
           agentResult.draftPlan(),
-          LearningPlanRhythmMode.RECOMMENDED,
           LearningPlanCoveragePolicy.FIT_USER_BUDGET);
       validator.validateGeneratedPlan(plan);
       return draftRepository.save(draft.withState(

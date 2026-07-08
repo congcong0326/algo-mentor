@@ -367,15 +367,38 @@ export interface LocaleResources {
     templateGenerateDraft: string;
     templateSelected: string;
     templateDefaultRhythm: (weeks: number, hours: number) => string;
-    templateRouteSummary: (problems: number, weeks: number, hours: number, intensity: string) => string;
+    templateRouteSummary: (problems: number, weeks: number, hours: number) => string;
     templateRhythm: string;
+    dailyProblemCount: string;
+    trainingDaysPerWeek: string;
+    rhythmEstimateLine: (problems: number, weeks: number) => string;
+    standardRhythmTitle: string;
+    standardRhythmMainLine: (dailyProblems: number, trainingDays: number, recommendedWeeks: number) => string;
+    standardRhythmReason: (problems: number, recommendedWeeks: number, trainingDays: number) => string;
+    currentRhythmEstimateLine: (
+      dailyProblems: number,
+      trainingDays: number,
+      problems: number,
+      weeks: number,
+    ) => string;
+    standardRhythmRemainingLine: (remainingProblems: number, weeks: number) => string;
+    rhythmFasterThanStandard: (weeks: number) => string;
+    rhythmSlowerThanStandard: (weeks: number) => string;
+    rhythmSameAsStandard: string;
+    rhythmConfigLine: (dailyProblems: number, trainingDays: number) => string;
+    totalProblemCountLine: (problems: number) => string;
+    remainingWeeksLine: (weeks: number) => string;
+    problemCount: (problems: number) => string;
+    adjustRhythm: string;
+    adjustedRhythm: string;
+    saveRhythm: string;
+    savingRhythm: string;
+    rhythmUpdateFailed: string;
     rhythmLabels: Record<'RECOMMENDED' | 'RELAXED' | 'SPRINT', string>;
     rhythmCompletionLine: (weeks: number, problems: number) => string;
     rhythmWeeklyTimeLine: (hours: number, minDays: number, maxDays: number) => string;
     rhythmDailyLine: (minProblems: number, maxProblems: number, hasReview: boolean) => string;
     rhythmScopeLabels: Record<'FULL_ROUTE' | 'FULL_ROUTE_WITH_REVIEW_BUFFER' | 'FULL_ROUTE_FAST' | 'FIT_USER_BUDGET', string>;
-    rhythmRiskLine: (intensity: string) => string;
-    sprintOverloadWarning: (minProblems: number, maxProblems: number) => string;
     templateSourceCommit: (commit: string) => string;
     templateProblemStats: (matched: number, missing: number, total: number) => string;
     templateMissingNotice: (missing: number) => string;
@@ -934,10 +957,38 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       templateGenerateDraft: '按模板生成草案',
       templateSelected: '当前模板',
       templateDefaultRhythm: (weeks, hours) => `默认 ${weeks} 周 · ${hours}h/周`,
-      templateRouteSummary: (problems, weeks, hours, intensity) => (
-        `${problems} 道可练题 · 推荐 ${weeks} 周 · 每周 ${hours}h · 强度${intensity}`
+      templateRouteSummary: (problems, weeks, hours) => (
+        `${problems} 道可练题 · 推荐 ${weeks} 周 · 每周 ${hours}h`
       ),
       templateRhythm: '训练节奏',
+      dailyProblemCount: '每天题目数',
+      trainingDaysPerWeek: '每周训练天数',
+      rhythmEstimateLine: (problems, weeks) => `按这个配置，完成全部 ${problems} 题大约需要 ${weeks} 周`,
+      standardRhythmTitle: '标准方案',
+      standardRhythmMainLine: (dailyProblems, trainingDays, recommendedWeeks) => (
+        `每天 ${dailyProblems} 题 · 每周 ${trainingDays} 天 · 推荐 ${recommendedWeeks} 周`
+      ),
+      standardRhythmReason: (problems, recommendedWeeks, trainingDays) => (
+        `按 ${problems} 题 / 推荐 ${recommendedWeeks} 周 / 每周 ${trainingDays} 天反算，适合作为稳定推进的起点；周内训练，周末留给复盘或缓冲。`
+      ),
+      currentRhythmEstimateLine: (dailyProblems, trainingDays, problems, weeks) => (
+        `你当前选择：每天 ${dailyProblems} 题 · 每周 ${trainingDays} 天，完成全部 ${problems} 题大约需要 ${weeks} 周`
+      ),
+      standardRhythmRemainingLine: (remainingProblems, weeks) => (
+        `当前剩余 ${remainingProblems} 题，按标准大约需要 ${weeks} 周`
+      ),
+      rhythmFasterThanStandard: (weeks) => `比标准约快 ${weeks} 周`,
+      rhythmSlowerThanStandard: (weeks) => `比标准约慢 ${weeks} 周`,
+      rhythmSameAsStandard: '与标准基本一致',
+      rhythmConfigLine: (dailyProblems, trainingDays) => `每天 ${dailyProblems} 题 · 每周 ${trainingDays} 天`,
+      totalProblemCountLine: (problems) => `共 ${problems} 题`,
+      remainingWeeksLine: (weeks) => `还需约 ${weeks} 周`,
+      problemCount: (problems) => `${problems} 题`,
+      adjustRhythm: '调整节奏',
+      adjustedRhythm: '调整后',
+      saveRhythm: '保存节奏',
+      savingRhythm: '保存中',
+      rhythmUpdateFailed: '训练节奏更新失败，请稍后重试。',
       rhythmLabels: {
         RECOMMENDED: '标准',
         RELAXED: '舒缓',
@@ -947,20 +998,15 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       rhythmWeeklyTimeLine: (hours, minDays, maxDays) => (
         minDays === maxDays ? `每周 ${hours}h · 训练 ${minDays} 天` : `每周 ${hours}h · 训练 ${minDays}-${maxDays} 天`
       ),
-      rhythmDailyLine: (minProblems, maxProblems, hasReview) => {
-        const problemText = minProblems === maxProblems ? `每天约 ${minProblems} 题` : `每天约 ${minProblems}-${maxProblems} 题`;
-        return hasReview ? `${problemText} + 复盘` : `${problemText}，复盘压缩`;
+      rhythmDailyLine: (minProblems, maxProblems, _hasReview) => {
+        return minProblems === maxProblems ? `每天约 ${minProblems} 题` : `每天约 ${minProblems}-${maxProblems} 题`;
       },
       rhythmScopeLabels: {
-        FULL_ROUTE: '完整路线，正常复盘',
-        FULL_ROUTE_WITH_REVIEW_BUFFER: '完整路线，增加缓冲/复盘',
-        FULL_ROUTE_FAST: '完整路线高强度，不裁剪题单',
-        FIT_USER_BUDGET: '按当前预算估算路线',
+        FULL_ROUTE: '覆盖完整题单',
+        FULL_ROUTE_WITH_REVIEW_BUFFER: '覆盖完整题单（含缓冲周）',
+        FULL_ROUTE_FAST: '覆盖完整题单，压缩周期',
+        FIT_USER_BUDGET: '按时间预算估算覆盖范围',
       },
-      rhythmRiskLine: (intensity) => `强度${intensity}`,
-      sprintOverloadWarning: (minProblems, maxProblems) => (
-        `这是完整路线冲刺版，预计每天需要 ${minProblems === maxProblems ? minProblems : `${minProblems}-${maxProblems}`} 题，强度过载；不建议基础薄弱或时间不稳定用户选择。`
-      ),
       templateSourceCommit: (commit) => `来源 commit：${commit}`,
       templateProblemStats: (matched, missing, total) => `题目匹配 ${matched}/${total}，缺失 ${missing}`,
       templateMissingNotice: (missing) => `缺失的 ${missing} 道题不会进入草稿推荐题。`,
@@ -1578,10 +1624,38 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       templateGenerateDraft: 'Generate from Template',
       templateSelected: 'Selected Template',
       templateDefaultRhythm: (weeks, hours) => `${weeks} ${weeks === 1 ? 'week' : 'weeks'} · ${hours}h/week default`,
-      templateRouteSummary: (problems, weeks, hours, intensity) => (
-        `${problems} practice problems · recommended ${weeks} ${weeks === 1 ? 'week' : 'weeks'} · ${hours}h/week · ${intensity} intensity`
+      templateRouteSummary: (problems, weeks, hours) => (
+        `${problems} practice problems · recommended ${weeks} ${weeks === 1 ? 'week' : 'weeks'} · ${hours}h/week`
       ),
       templateRhythm: 'Training Rhythm',
+      dailyProblemCount: 'Problems per day',
+      trainingDaysPerWeek: 'Training days/week',
+      rhythmEstimateLine: (problems, weeks) => `At this rhythm, all ${problems} problems take about ${weeks} weeks`,
+      standardRhythmTitle: 'Standard Plan',
+      standardRhythmMainLine: (dailyProblems, trainingDays, recommendedWeeks) => (
+        `${dailyProblems} per day · ${trainingDays} days/week · recommended ${recommendedWeeks} ${recommendedWeeks === 1 ? 'week' : 'weeks'}`
+      ),
+      standardRhythmReason: (problems, recommendedWeeks, trainingDays) => (
+        `Calculated from ${problems} problems / recommended ${recommendedWeeks} ${recommendedWeeks === 1 ? 'week' : 'weeks'} / ${trainingDays} days per week, suitable as a stable starting point with weekends reserved for review or buffer.`
+      ),
+      currentRhythmEstimateLine: (dailyProblems, trainingDays, problems, weeks) => (
+        `Your current choice: ${dailyProblems} per day · ${trainingDays} days/week; all ${problems} problems take about ${weeks} ${weeks === 1 ? 'week' : 'weeks'}`
+      ),
+      standardRhythmRemainingLine: (remainingProblems, weeks) => (
+        `${remainingProblems} ${remainingProblems === 1 ? 'problem' : 'problems'} left; standard pace takes about ${weeks} ${weeks === 1 ? 'week' : 'weeks'}`
+      ),
+      rhythmFasterThanStandard: (weeks) => `About ${weeks} ${weeks === 1 ? 'week' : 'weeks'} faster than standard`,
+      rhythmSlowerThanStandard: (weeks) => `About ${weeks} ${weeks === 1 ? 'week' : 'weeks'} slower than standard`,
+      rhythmSameAsStandard: 'About the same as standard',
+      rhythmConfigLine: (dailyProblems, trainingDays) => `${dailyProblems} per day · ${trainingDays} days/week`,
+      totalProblemCountLine: (problems) => `${problems} total ${problems === 1 ? 'problem' : 'problems'}`,
+      remainingWeeksLine: (weeks) => `About ${weeks} weeks left`,
+      problemCount: (problems) => `${problems} ${problems === 1 ? 'problem' : 'problems'}`,
+      adjustRhythm: 'Adjust Rhythm',
+      adjustedRhythm: 'Adjusted',
+      saveRhythm: 'Save Rhythm',
+      savingRhythm: 'Saving',
+      rhythmUpdateFailed: 'Failed to update training rhythm. Please try again later.',
       rhythmLabels: {
         RECOMMENDED: 'Standard',
         RELAXED: 'Relaxed',
@@ -1593,22 +1667,17 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       rhythmWeeklyTimeLine: (hours, minDays, maxDays) => (
         minDays === maxDays ? `${hours}h/week · ${minDays} training days` : `${hours}h/week · ${minDays}-${maxDays} training days`
       ),
-      rhythmDailyLine: (minProblems, maxProblems, hasReview) => {
-        const problemText = minProblems === maxProblems
+      rhythmDailyLine: (minProblems, maxProblems, _hasReview) => {
+        return minProblems === maxProblems
           ? `about ${minProblems} problem/day`
           : `about ${minProblems}-${maxProblems} problems/day`;
-        return hasReview ? `${problemText} + review` : `${problemText}, compressed review`;
       },
       rhythmScopeLabels: {
-        FULL_ROUTE: 'Full route with normal review',
-        FULL_ROUTE_WITH_REVIEW_BUFFER: 'Full route with extra review buffer',
-        FULL_ROUTE_FAST: 'Full high-intensity route, no problem trimming',
-        FIT_USER_BUDGET: 'Route estimated from current budget',
+        FULL_ROUTE: 'Full problem set',
+        FULL_ROUTE_WITH_REVIEW_BUFFER: 'Full problem set with buffer weeks',
+        FULL_ROUTE_FAST: 'Full problem set, compressed timeline',
+        FIT_USER_BUDGET: 'Coverage estimated from available time',
       },
-      rhythmRiskLine: (intensity) => `${intensity} intensity`,
-      sprintOverloadWarning: (minProblems, maxProblems) => (
-        `This is the full-route sprint version. Expect ${minProblems === maxProblems ? minProblems : `${minProblems}-${maxProblems}`} problems per day; the load is overloaded and is not recommended for learners with weak foundations or unstable time.`
-      ),
       templateSourceCommit: (commit) => `Source commit: ${commit}`,
       templateProblemStats: (matched, missing, total) => `${matched}/${total} problems matched, ${missing} missing`,
       templateMissingNotice: (missing) => `${missing} missing ${missing === 1 ? 'problem is' : 'problems are'} kept out of draft recommendations.`,

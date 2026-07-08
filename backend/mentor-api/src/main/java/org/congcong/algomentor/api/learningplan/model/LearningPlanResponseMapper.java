@@ -129,6 +129,7 @@ public final class LearningPlanResponseMapper {
         loadService.summarize(snapshot),
         loadService.weeklyBuckets(snapshot),
         loadService.nextTrainingPackage(plan, progress),
+        loadService.rhythmSettings(snapshot, progress),
         loadService.paceSummary(plan, progress),
         contractService.summarize(plan, progress, contractState == null
             ? LearningPlanContractState.empty(plan.userId(), plan.id())

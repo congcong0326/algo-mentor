@@ -1,7 +1,7 @@
 import type {
   LearningPlanDraftPlan,
   LearningPlanLoadSummary,
-  LearningPlanRhythmMode,
+  LearningPlanRhythmSettings,
   LearningPlanTrainingPackage,
   LearningPlanWeeklyBucket,
 } from '../types/api';
@@ -33,19 +33,26 @@ export function getPlanNextTrainingPackage(plan: LearningPlanDraftPlan): Learnin
   return isTrainingPackage(value) ? value : undefined;
 }
 
-export function getPlanRhythmMode(plan: LearningPlanDraftPlan): LearningPlanRhythmMode {
-  const value = plan.metadata?.rhythmMode;
-  return value === 'RELAXED' || value === 'SPRINT' || value === 'RECOMMENDED' ? value : 'RECOMMENDED';
-}
-
-export function trainingDaysPerWeek(mode: LearningPlanRhythmMode): [number, number] {
-  if (mode === 'RELAXED') {
-    return [4, 4];
+export function getPlanRhythmSettings(plan: LearningPlanDraftPlan): LearningPlanRhythmSettings {
+  if (plan.rhythmSettings) {
+    return plan.rhythmSettings;
   }
-  if (mode === 'SPRINT') {
-    return [6, 7];
-  }
-  return [5, 5];
+  const dailyProblemCount = numberFromMetadata(plan.metadata?.dailyProblemCount, 1);
+  const trainingDaysPerWeek = numberFromMetadata(plan.metadata?.trainingDaysPerWeek, 5);
+  const totalProblemCount = plan.phases.reduce((sum, phase) => sum + phase.problems.length, 0);
+  const remainingProblemCount = totalProblemCount;
+  const estimatedRemainingWeeks = remainingProblemCount === 0
+    ? 0
+    : Math.ceil(remainingProblemCount / Math.max(1, dailyProblemCount * trainingDaysPerWeek));
+  return {
+    dailyProblemCount,
+    trainingDaysPerWeek,
+    totalProblemCount,
+    completedProblemCount: 0,
+    skippedProblemCount: 0,
+    remainingProblemCount,
+    estimatedRemainingWeeks,
+  };
 }
 
 function isLoadSummary(value: unknown): value is LearningPlanLoadSummary {
@@ -80,4 +87,8 @@ function isTrainingPackage(value: unknown): value is LearningPlanTrainingPackage
     && typeof item.estimatedMinutes === 'number'
     && typeof item.reviewTask === 'string'
     && Array.isArray(item.priorityProblemSlugs);
+}
+
+function numberFromMetadata(value: unknown, fallback: number) {
+  return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
 }

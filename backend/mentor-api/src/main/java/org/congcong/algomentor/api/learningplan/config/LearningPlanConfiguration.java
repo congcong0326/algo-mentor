@@ -202,8 +202,10 @@ public class LearningPlanConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public LearningPlanService learningPlanService(LearningPlanRepository planRepository) {
-    return new LearningPlanService(planRepository);
+  public LearningPlanService learningPlanService(
+      LearningPlanRepository planRepository,
+      LearningPlanLoadService loadService) {
+    return new LearningPlanService(planRepository, loadService);
   }
 
   @Bean

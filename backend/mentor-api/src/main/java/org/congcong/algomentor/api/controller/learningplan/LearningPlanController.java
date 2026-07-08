@@ -28,6 +28,7 @@ import org.congcong.algomentor.api.learningplan.model.LearningPlanExtensionApply
 import org.congcong.algomentor.api.learningplan.model.LearningPlanMessageRequest;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanPageResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanResponseMapper;
+import org.congcong.algomentor.api.learningplan.model.LearningPlanRhythmUpdateRequest;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanRevisionRequest;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanTemplateDraftRequest;
 import org.congcong.algomentor.api.learningplan.service.LearningPlanDraftStreamSseMapper;
@@ -66,6 +67,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -287,6 +289,19 @@ public class LearningPlanController {
   @GetMapping("/{planId}")
   public ApiResponse<LearningPlanDetailResponse> getPlan(@PathVariable long planId) {
     long userId = requireCurrentUserId();
+    return ApiResponse.success(detailResponse(userId, planId));
+  }
+
+  @PatchMapping(ApiContractConstants.LEARNING_PLAN_RHYTHM_PATH)
+  public ApiResponse<LearningPlanDetailResponse> updateRhythm(
+      @PathVariable long planId,
+      @RequestBody LearningPlanRhythmUpdateRequest request) {
+    long userId = requireCurrentUserId();
+    planService.updateRhythm(
+        userId,
+        planId,
+        request == null ? null : request.dailyProblemCount(),
+        request == null ? null : request.trainingDaysPerWeek());
     return ApiResponse.success(detailResponse(userId, planId));
   }
 

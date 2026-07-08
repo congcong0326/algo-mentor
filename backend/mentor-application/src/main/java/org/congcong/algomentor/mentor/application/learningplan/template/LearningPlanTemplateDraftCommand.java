@@ -1,22 +1,17 @@
 package org.congcong.algomentor.mentor.application.learningplan.template;
 
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmMode;
-
 public record LearningPlanTemplateDraftCommand(
     String templateId,
-    Integer durationWeeks,
-    Integer weeklyHours,
     String programmingLanguage,
-    LearningPlanRhythmMode rhythmMode
+    Integer dailyProblemCount,
+    Integer trainingDaysPerWeek
 ) {
 
   public LearningPlanTemplateDraftCommand(
       String templateId,
-      Integer durationWeeks,
-      Integer weeklyHours,
       String programmingLanguage
   ) {
-    this(templateId, durationWeeks, weeklyHours, programmingLanguage, null);
+    this(templateId, programmingLanguage, null, null);
   }
 
   public LearningPlanTemplateDraftCommand {

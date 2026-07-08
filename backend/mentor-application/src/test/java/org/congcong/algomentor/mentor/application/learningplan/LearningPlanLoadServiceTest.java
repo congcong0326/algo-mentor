@@ -32,32 +32,26 @@ class LearningPlanLoadServiceTest {
   }
 
   @Test
-  void mapsTemplateRhythmsWithoutDroppingRouteProblems() {
+  void computesDefaultTemplateRhythmWithoutChangingTemplateDuration() {
     LearningPlanTemplate template = template();
 
-    List<LearningPlanRhythmOption> options = service.rhythmOptions(template);
+    LearningPlanRhythmSettings rhythm = service.defaultRhythmSettings(template);
+    LearningPlanLoadSummary loadSummary = service.defaultLoadSummary(template);
 
-    assertThat(options).extracting(LearningPlanRhythmOption::mode)
-        .containsExactly(
-            LearningPlanRhythmMode.RECOMMENDED,
-            LearningPlanRhythmMode.RELAXED,
-            LearningPlanRhythmMode.SPRINT);
-    assertThat(options.get(0).durationWeeks()).isEqualTo(4);
-    assertThat(options.get(1).durationWeeks()).isEqualTo(6);
-    assertThat(options.get(1).trainingDaysPerWeekMin()).isEqualTo(4);
-    assertThat(options.get(1).dailyProblemCountMin()).isEqualTo(1);
-    assertThat(options.get(1).coveragePolicy()).isEqualTo(LearningPlanCoveragePolicy.FULL_ROUTE_WITH_REVIEW_BUFFER);
-    assertThat(options.get(2).durationWeeks()).isEqualTo(3);
-    assertThat(options.get(2).weeklyHours()).isEqualTo(9);
-    assertThat(options.get(2).trainingDaysPerWeekMax()).isEqualTo(7);
-    assertThat(options.get(2).loadSummary().plannedProblemCount()).isEqualTo(2);
+    assertThat(rhythm.dailyProblemCount()).isEqualTo(1);
+    assertThat(rhythm.trainingDaysPerWeek()).isEqualTo(5);
+    assertThat(rhythm.totalProblemCount()).isEqualTo(2);
+    assertThat(rhythm.remainingProblemCount()).isEqualTo(2);
+    assertThat(rhythm.estimatedRemainingWeeks()).isEqualTo(1);
+    assertThat(loadSummary.durationWeeks()).isEqualTo(4);
+    assertThat(loadSummary.weeklyHours()).isEqualTo(6);
+    assertThat(loadSummary.plannedProblemCount()).isEqualTo(2);
   }
 
   @Test
   void splitsWeeklyBucketsByPhaseOrderAndComputesPace() {
     LearningPlanDraftPlan draftPlan = service.withLoadMetadata(
         plan(4, 3),
-        LearningPlanRhythmMode.RECOMMENDED,
         LearningPlanCoveragePolicy.FIT_USER_BUDGET);
     LearningPlan plan = new LearningPlan(
         900L,
@@ -78,7 +72,36 @@ class LearningPlanLoadServiceTest {
     assertThat(pace.plannedProblemCountToDate()).isEqualTo(2);
     assertThat(pace.completedProblemCountToDate()).isEqualTo(1);
     assertThat(pace.status()).isEqualTo(LearningPlanPaceStatus.AT_RISK);
-    assertThat(draftPlan.metadata()).containsKey("nextTrainingPackage");
+    assertThat(draftPlan.metadata())
+        .containsEntry("dailyProblemCount", 1)
+        .containsEntry("trainingDaysPerWeek", 5)
+        .doesNotContainKeys("nextTrainingPackage", "weeklyBuckets", "rhythmMode");
+  }
+
+  @Test
+  void computesRhythmSettingsAndNextPackageFromCurrentProgress() {
+    LearningPlanDraftPlan draftPlan = service.withRhythmMetadata(plan(4, 3), 2, 3);
+    LearningPlan plan = new LearningPlan(
+        900L,
+        7L,
+        LearningPlanStatus.ACTIVE,
+        draftPlan,
+        Instant.parse("2026-07-01T00:00:00Z"),
+        Instant.parse("2026-07-01T00:00:00Z"));
+
+    List<PracticeProgress> progress = List.of(
+        progress("two-sum", PracticeProgressStatus.COMPLETED));
+    LearningPlanRhythmSettings settings = service.rhythmSettings(draftPlan, progress);
+    LearningPlanTrainingPackage trainingPackage = service.nextTrainingPackage(plan, progress);
+
+    assertThat(settings.dailyProblemCount()).isEqualTo(2);
+    assertThat(settings.trainingDaysPerWeek()).isEqualTo(3);
+    assertThat(settings.totalProblemCount()).isEqualTo(2);
+    assertThat(settings.completedProblemCount()).isEqualTo(1);
+    assertThat(settings.remainingProblemCount()).isEqualTo(1);
+    assertThat(settings.estimatedRemainingWeeks()).isEqualTo(1);
+    assertThat(trainingPackage.newProblemCount()).isEqualTo(1);
+    assertThat(trainingPackage.priorityProblemSlugs()).containsExactly("number-of-islands");
   }
 
   private LearningPlanDraftPlan plan(int durationWeeks, int weeklyHours) {

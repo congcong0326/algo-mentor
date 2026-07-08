@@ -16,13 +16,12 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftValidator;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanCoveragePolicy;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmSettings;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCandidate;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmMode;
 
 public class LearningPlanTemplateDraftService {
 
@@ -62,21 +61,28 @@ public class LearningPlanTemplateDraftService {
 
   public LearningPlanDraftResult createDraft(long userId, LearningPlanTemplateDraftCommand command) {
     LearningPlanTemplate template = getTemplate(command == null ? null : command.templateId());
-    RhythmSelection rhythm = selectRhythm(template, command);
+    LearningPlanRhythmSettings defaultRhythm = loadService.defaultRhythmSettings(template);
+    int dailyProblemCount = command == null || command.dailyProblemCount() == null
+        ? defaultRhythm.dailyProblemCount()
+        : command.dailyProblemCount();
+    int trainingDaysPerWeek = command == null || command.trainingDaysPerWeek() == null
+        ? defaultRhythm.trainingDaysPerWeek()
+        : command.trainingDaysPerWeek();
+    loadService.validateRhythm(dailyProblemCount, trainingDaysPerWeek);
     String programmingLanguage = command == null || command.programmingLanguage() == null
         ? template.programmingLanguage()
         : command.programmingLanguage();
     LearningPlanDraftCommand draftCommand = new LearningPlanDraftCommand(
         template.intent(),
         template.goal(),
-        rhythm.durationWeeks(),
+        template.defaultDurationWeeks(),
         template.level(),
-        rhythm.weeklyHours(),
+        template.defaultWeeklyHours(),
         programmingLanguage,
         template.difficultyPreference(),
         template.interviewOriented(),
         template.topicPreferences());
-    LearningPlanDraftPlan draftPlan = buildDraftPlan(template, draftCommand, rhythm);
+    LearningPlanDraftPlan draftPlan = buildDraftPlan(template, draftCommand, dailyProblemCount, trainingDaysPerWeek);
     validator.validateTemplatePlan(draftPlan);
 
     Instant now = clock.instant();
@@ -99,7 +105,8 @@ public class LearningPlanTemplateDraftService {
   private LearningPlanDraftPlan buildDraftPlan(
       LearningPlanTemplate template,
       LearningPlanDraftCommand command,
-      RhythmSelection rhythm
+      int dailyProblemCount,
+      int trainingDaysPerWeek
   ) {
     if (template.phases().isEmpty()) {
       throw new LearningPlanException("LEARNING_PLAN_DRAFT_INVALID", "学习计划模板没有可用阶段。");
@@ -134,28 +141,7 @@ public class LearningPlanTemplateDraftService {
         profileSummary(template, command),
         phases,
         draftMetadata(template, incomplete));
-    return loadService.withLoadMetadata(plan, rhythm.mode(), rhythm.coveragePolicy());
-  }
-
-  private RhythmSelection selectRhythm(
-      LearningPlanTemplate template,
-      LearningPlanTemplateDraftCommand command
-  ) {
-    if (command != null && command.rhythmMode() != null) {
-      var option = loadService.rhythmOption(template, command.rhythmMode());
-      return new RhythmSelection(
-          option.mode(),
-          option.durationWeeks(),
-          option.weeklyHours(),
-          option.coveragePolicy());
-    }
-    int durationWeeks = positiveOrDefault(command == null ? null : command.durationWeeks(), template.defaultDurationWeeks());
-    int weeklyHours = positiveOrDefault(command == null ? null : command.weeklyHours(), template.defaultWeeklyHours());
-    return new RhythmSelection(
-        LearningPlanRhythmMode.RECOMMENDED,
-        durationWeeks,
-        weeklyHours,
-        LearningPlanCoveragePolicy.FULL_ROUTE);
+    return loadService.withRhythmMetadata(plan, dailyProblemCount, trainingDaysPerWeek);
   }
 
   private List<LearningPlanProblemDraft> selectProblems(
@@ -248,22 +234,10 @@ public class LearningPlanTemplateDraftService {
         + (command.programmingLanguage() == null ? "" : "，语言：" + command.programmingLanguage());
   }
 
-  private int positiveOrDefault(Integer value, int defaultValue) {
-    return value == null || value < 1 ? defaultValue : value;
-  }
-
   private String normalizeTemplateId(String templateId) {
     if (templateId == null || templateId.isBlank()) {
       throw new LearningPlanException("LEARNING_PLAN_TEMPLATE_NOT_FOUND", "学习计划模板不存在。");
     }
     return templateId.trim();
-  }
-
-  private record RhythmSelection(
-      LearningPlanRhythmMode mode,
-      int durationWeeks,
-      int weeklyHours,
-      LearningPlanCoveragePolicy coveragePolicy
-  ) {
   }
 }

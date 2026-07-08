@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as api from '../services/api';
 import type {
@@ -17,6 +17,7 @@ vi.mock('../services/api', async () => {
     discardLearningPlanExtensionProposal: vi.fn(),
     streamLearningPlanExtensionProposal: vi.fn(),
     streamLearningPlanExtensionProposalRevision: vi.fn(),
+    updateLearningPlanRhythm: vi.fn(),
   };
 });
 
@@ -24,6 +25,7 @@ const applyLearningPlanExtensionProposal = vi.mocked(api.applyLearningPlanExtens
 const discardLearningPlanExtensionProposal = vi.mocked(api.discardLearningPlanExtensionProposal);
 const streamLearningPlanExtensionProposal = vi.mocked(api.streamLearningPlanExtensionProposal);
 const streamLearningPlanExtensionProposalRevision = vi.mocked(api.streamLearningPlanExtensionProposalRevision);
+const updateLearningPlanRhythm = vi.mocked(api.updateLearningPlanRhythm);
 
 describe('LearningPlanDetail extension orchestration', () => {
   beforeEach(() => {
@@ -31,6 +33,7 @@ describe('LearningPlanDetail extension orchestration', () => {
     discardLearningPlanExtensionProposal.mockResolvedValue(apiResponse(undefined));
     streamLearningPlanExtensionProposal.mockResolvedValue(undefined);
     streamLearningPlanExtensionProposalRevision.mockResolvedValue(undefined);
+    updateLearningPlanRhythm.mockResolvedValue(apiResponse(planFixture));
   });
 
   afterEach(() => {
@@ -69,6 +72,38 @@ describe('LearningPlanDetail extension orchestration', () => {
     expect(screen.getByText('本周目标：1 题')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '下一次训练包' })).toBeInTheDocument();
     expect(screen.getByText('建议优先完成 Two Sum。')).toBeInTheDocument();
+  });
+
+  it('shows the standard rhythm reference in the adjustment dialog and refreshes the comparison', () => {
+    renderDetail({
+      plan: {
+        ...planFixture,
+        durationWeeks: 12,
+        rhythmSettings: {
+          dailyProblemCount: 3,
+          trainingDaysPerWeek: 5,
+          totalProblemCount: 150,
+          completedProblemCount: 30,
+          skippedProblemCount: 0,
+          remainingProblemCount: 120,
+          estimatedRemainingWeeks: 8,
+        },
+      },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: '调整节奏' }));
+    const dialog = screen.getByRole('dialog', { name: '调整节奏' });
+
+    expect(within(dialog).getByText('每天 3 题 · 每周 5 天 · 推荐 12 周')).toBeInTheDocument();
+    expect(within(dialog).getByText('当前剩余 120 题，按标准大约需要 8 周')).toBeInTheDocument();
+    expect(within(dialog).getAllByText('还需约 8 周')).toHaveLength(2);
+    expect(within(dialog).getByText('与标准基本一致')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole('spinbutton', { name: '每天题目数' }), { target: { value: '5' } });
+    fireEvent.change(screen.getByRole('spinbutton', { name: '每周训练天数' }), { target: { value: '5' } });
+
+    expect(within(dialog).getByText('还需约 5 周')).toBeInTheDocument();
+    expect(within(dialog).getByText('比标准约快 3 周')).toBeInTheDocument();
   });
 
   it('preserves a work_error message when the stream closes without a terminal event', async () => {
@@ -154,15 +189,17 @@ async function renderReadyExtension({
 
 function renderDetail({
   onPlanUpdated = vi.fn(() => Promise.resolve()),
+  plan = planFixture,
 }: {
   onPlanUpdated?: () => Promise<void>;
+  plan?: LearningPlanDetailResponse;
 } = {}) {
   render(
     <LearningPlanDetail
       onBack={vi.fn()}
       onPlanUpdated={onPlanUpdated}
       onProblemSelect={vi.fn()}
-      plan={planFixture}
+      plan={plan}
     />,
   );
 }

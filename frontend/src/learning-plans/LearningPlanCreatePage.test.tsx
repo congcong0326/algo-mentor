@@ -146,20 +146,23 @@ describe('LearningPlanCreatePage', () => {
     expect(screen.queryByRole('spinbutton', { name: '训练周期' })).not.toBeInTheDocument();
     expect(screen.queryByRole('spinbutton', { name: '每周投入' })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '舒缓' }));
-    expect(screen.getByText('6 周完成 69 题')).toBeInTheDocument();
-    expect(screen.getByText('每周 8h · 训练 4 天')).toBeInTheDocument();
-    expect(screen.getByText('完整路线，增加缓冲/复盘')).toBeInTheDocument();
+    expect(screen.getByText('标准方案')).toBeInTheDocument();
+    expect(screen.getByText('每天 4 题 · 每周 5 天 · 推荐 4 周')).toBeInTheDocument();
+    expect(screen.getByText('你当前选择：每天 4 题 · 每周 5 天，完成全部 69 题大约需要 4 周')).toBeInTheDocument();
+    fireEvent.change(screen.getByRole('spinbutton', { name: '每天题目数' }), { target: { value: '3' } });
+    fireEvent.change(screen.getByRole('spinbutton', { name: '每周训练天数' }), { target: { value: '4' } });
+    expect(screen.getByText('你当前选择：每天 3 题 · 每周 4 天，完成全部 69 题大约需要 6 周')).toBeInTheDocument();
     fireEvent.change(screen.getByRole('combobox', { name: '编程语言' }), { target: { value: 'Python3' } });
     fireEvent.click(screen.getByRole('button', { name: '按模板生成草案' }));
 
     await screen.findByRole('heading', { name: '训练方案' });
     expect(createLearningPlanDraftFromTemplateMock).toHaveBeenCalledWith({
       templateId: 'neetcode_blind_75_interview_core',
-      rhythmMode: 'RELAXED',
+      dailyProblemCount: 3,
+      trainingDaysPerWeek: 4,
       programmingLanguage: 'Python3',
     });
-    expect(screen.getByRole('heading', { name: '第 1 周：基础题型恢复' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '基础题型恢复' })).toBeInTheDocument();
     expect(screen.getAllByText('两数之和').length).toBeGreaterThan(0);
 
     fireEvent.change(screen.getByRole('textbox', { name: '对当前计划不满意？输入调整要求' }), {
@@ -176,20 +179,34 @@ describe('LearningPlanCreatePage', () => {
     expect(screen.getAllByText('爬楼梯').length).toBeGreaterThan(0);
   });
 
-  it('submits the sprint rhythm for template drafts', async () => {
+  it('submits custom rhythm settings for template drafts', async () => {
     render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
 
     fireEvent.click(screen.getByRole('button', { name: '从模板创建' }));
     await screen.findByText('Blind 75');
 
-    fireEvent.click(screen.getByRole('button', { name: '冲刺' }));
+    fireEvent.change(screen.getByRole('spinbutton', { name: '每天题目数' }), { target: { value: '5' } });
+    fireEvent.change(screen.getByRole('spinbutton', { name: '每周训练天数' }), { target: { value: '6' } });
     fireEvent.click(screen.getByRole('button', { name: '按模板生成草案' }));
 
     await waitFor(() => expect(createLearningPlanDraftFromTemplateMock).toHaveBeenCalledWith({
       templateId: 'neetcode_blind_75_interview_core',
-      rhythmMode: 'SPRINT',
+      dailyProblemCount: 5,
+      trainingDaysPerWeek: 6,
       programmingLanguage: 'Java',
     }));
+  });
+
+  it('shows the standard rhythm anchor for NeetCode 150 template creation', async () => {
+    render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole('button', { name: '从模板创建' }));
+    fireEvent.click(await screen.findByRole('button', { name: /NeetCode 150/ }));
+
+    expect(await screen.findByText('每天 3 题 · 每周 5 天 · 推荐 12 周')).toBeInTheDocument();
+    expect(screen.getByText(
+      '按 150 题 / 推荐 12 周 / 每周 5 天反算，适合作为稳定推进的起点；周内训练，周末留给复盘或缓冲。',
+    )).toBeInTheDocument();
   });
 });
 
@@ -223,14 +240,14 @@ function templateSummaries(): LearningPlanTemplateSummaryResponse[] {
       matchedProblemCount: 69,
       missingProblemCount: 6,
       defaultLoadSummary: loadSummary(69, 82, 32, 'OVERLOADED'),
-      rhythmOptions: rhythmOptions(4, 8, 69),
+      defaultRhythmSettings: rhythmSettings(4, 5, 69),
     },
     {
       templateId: 'neetcode_150_interview_full',
       title: 'NeetCode 150',
       summary: '覆盖更多专题的面试模板',
       intent: 'INTERVIEW_SPRINT',
-      defaultDurationWeeks: 8,
+      defaultDurationWeeks: 12,
       level: 'INTERMEDIATE',
       defaultWeeklyHours: 10,
       difficultyPreference: 'MIXED',
@@ -242,10 +259,10 @@ function templateSummaries(): LearningPlanTemplateSummaryResponse[] {
       sourceName: 'neetcode-gh/leetcode',
       sourceCommit: '9907b7fed441fa55083c0751e208b7197101dbba',
       problemCount: 150,
-      matchedProblemCount: 140,
-      missingProblemCount: 10,
-      defaultLoadSummary: loadSummary(140, 180, 80, 'OVERLOADED'),
-      rhythmOptions: rhythmOptions(8, 10, 140),
+      matchedProblemCount: 150,
+      missingProblemCount: 0,
+      defaultLoadSummary: loadSummary(150, 180, 120, 'OVERLOADED'),
+      defaultRhythmSettings: rhythmSettings(3, 5, 150),
     },
   ];
 }
@@ -271,42 +288,16 @@ function loadSummary(
   };
 }
 
-function rhythmOptions(defaultWeeks: number, defaultHours: number, plannedProblemCount: number) {
-  return [
-    {
-      mode: 'RECOMMENDED' as const,
-      durationWeeks: defaultWeeks,
-      weeklyHours: defaultHours,
-      trainingDaysPerWeekMin: 5,
-      trainingDaysPerWeekMax: 5,
-      dailyProblemCountMin: Math.max(1, Math.floor(plannedProblemCount / Math.max(1, defaultWeeks * 5))),
-      dailyProblemCountMax: Math.max(1, Math.ceil(plannedProblemCount / Math.max(1, defaultWeeks * 5))),
-      coveragePolicy: 'FULL_ROUTE' as const,
-      loadSummary: loadSummary(plannedProblemCount, 82, defaultWeeks * defaultHours, 'OVERLOADED'),
-    },
-    {
-      mode: 'RELAXED' as const,
-      durationWeeks: Math.ceil(defaultWeeks * 1.5),
-      weeklyHours: defaultHours,
-      trainingDaysPerWeekMin: 4,
-      trainingDaysPerWeekMax: 4,
-      dailyProblemCountMin: Math.max(1, Math.floor(plannedProblemCount / Math.max(1, Math.ceil(defaultWeeks * 1.5) * 4))),
-      dailyProblemCountMax: Math.max(1, Math.ceil(plannedProblemCount / Math.max(1, Math.ceil(defaultWeeks * 1.5) * 4))),
-      coveragePolicy: 'FULL_ROUTE_WITH_REVIEW_BUFFER' as const,
-      loadSummary: loadSummary(plannedProblemCount, 82, Math.ceil(defaultWeeks * 1.5) * defaultHours, 'OVERLOADED'),
-    },
-    {
-      mode: 'SPRINT' as const,
-      durationWeeks: Math.max(1, Math.ceil(defaultWeeks * 0.75)),
-      weeklyHours: Math.ceil(defaultHours * 1.5),
-      trainingDaysPerWeekMin: 6,
-      trainingDaysPerWeekMax: 7,
-      dailyProblemCountMin: Math.max(1, Math.floor(plannedProblemCount / Math.max(1, Math.max(1, Math.ceil(defaultWeeks * 0.75)) * 7))),
-      dailyProblemCountMax: Math.max(1, Math.ceil(plannedProblemCount / Math.max(1, Math.max(1, Math.ceil(defaultWeeks * 0.75)) * 6))),
-      coveragePolicy: 'FULL_ROUTE_FAST' as const,
-      loadSummary: loadSummary(plannedProblemCount, 82, Math.max(1, Math.ceil(defaultWeeks * 0.75)) * Math.ceil(defaultHours * 1.5), 'TIGHT'),
-    },
-  ];
+function rhythmSettings(dailyProblemCount: number, trainingDaysPerWeek: number, totalProblemCount: number) {
+  return {
+    dailyProblemCount,
+    trainingDaysPerWeek,
+    totalProblemCount,
+    completedProblemCount: 0,
+    skippedProblemCount: 0,
+    remainingProblemCount: totalProblemCount,
+    estimatedRemainingWeeks: Math.ceil(totalProblemCount / Math.max(1, dailyProblemCount * trainingDaysPerWeek)),
+  };
 }
 
 function templateDetail(overrides: Partial<LearningPlanTemplateDetailResponse> = {}): LearningPlanTemplateDetailResponse {

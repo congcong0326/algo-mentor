@@ -36,7 +36,6 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanExcep
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanCoveragePolicy;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmMode;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanDraftRevision;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanDraftRevisionResult;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalGroup;
@@ -397,7 +396,6 @@ public class LearningPlanDraftRevisionStreamService {
         }
         LearningPlanDraftPlan plan = loadService.withLoadMetadata(
             outputMapper.map(objectMapper.readTree(finalContent), draft.command()),
-            LearningPlanRhythmMode.RECOMMENDED,
             LearningPlanCoveragePolicy.FIT_USER_BUDGET);
         validator.validateGeneratedPlan(plan);
         emitTerminalEvent(transactionOperations.execute(status -> completeReadyTransition(plan)));

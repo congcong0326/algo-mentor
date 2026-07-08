@@ -739,8 +739,8 @@ describe('learning plan template api', () => {
 
     const response = await createLearningPlanDraftFromTemplate({
       templateId: 'neetcode_blind_75_interview_core',
-      durationWeeks: 4,
-      weeklyHours: 8,
+      dailyProblemCount: 3,
+      trainingDaysPerWeek: 5,
       programmingLanguage: 'Java',
     });
 
@@ -752,8 +752,8 @@ describe('learning plan template api', () => {
         headers: expect.any(Headers),
         body: JSON.stringify({
           templateId: 'neetcode_blind_75_interview_core',
-          durationWeeks: 4,
-          weeklyHours: 8,
+          dailyProblemCount: 3,
+          trainingDaysPerWeek: 5,
           programmingLanguage: 'Java',
         }),
       }),
@@ -778,8 +778,8 @@ describe('learning plan template api', () => {
 
     await expect(createLearningPlanDraftFromTemplate({
       templateId: 'missing',
-      durationWeeks: 4,
-      weeklyHours: 8,
+      dailyProblemCount: 3,
+      trainingDaysPerWeek: 5,
       programmingLanguage: 'Java',
     })).rejects.toMatchObject({
       status: 404,

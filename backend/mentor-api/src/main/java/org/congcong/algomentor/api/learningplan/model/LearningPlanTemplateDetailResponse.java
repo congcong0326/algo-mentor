@@ -6,7 +6,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDiffi
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadSummary;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmOption;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmSettings;
 
 public record LearningPlanTemplateDetailResponse(
     String templateId,
@@ -38,13 +38,12 @@ public record LearningPlanTemplateDetailResponse(
     int matchedProblemCount,
     int missingProblemCount,
     LearningPlanLoadSummary defaultLoadSummary,
-    List<LearningPlanRhythmOption> rhythmOptions,
+    LearningPlanRhythmSettings defaultRhythmSettings,
     Map<String, Object> metadata,
     List<LearningPlanTemplatePhaseResponse> phases
 ) {
 
   public LearningPlanTemplateDetailResponse {
-    rhythmOptions = rhythmOptions == null ? List.of() : List.copyOf(rhythmOptions);
     phases = phases == null ? List.of() : List.copyOf(phases);
   }
 }

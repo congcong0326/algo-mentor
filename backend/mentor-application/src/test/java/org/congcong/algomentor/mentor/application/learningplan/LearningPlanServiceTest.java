@@ -3,7 +3,9 @@ package org.congcong.algomentor.mentor.application.learningplan;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +16,11 @@ import org.junit.jupiter.api.Test;
 class LearningPlanServiceTest {
 
   private final InMemoryPlanRepository planRepository = new InMemoryPlanRepository();
-  private final LearningPlanService service = new LearningPlanService(planRepository);
+  private final Clock clock = Clock.fixed(Instant.parse("2026-06-24T00:00:00Z"), ZoneOffset.UTC);
+  private final LearningPlanService service = new LearningPlanService(
+      planRepository,
+      new LearningPlanLoadService(clock),
+      clock);
 
   @Test
   void listPlansNormalizesPageAndPageSize() {
@@ -70,9 +76,71 @@ class LearningPlanServiceTest {
     assertThat(planRepository.deletedPlans).containsExactly("42:900");
   }
 
+  @Test
+  void updateRhythmPersistsRhythmMetadataAndUpdatedAt() {
+    planRepository.plans.put(900L, plan(900L, 42L, draftPlan()));
+
+    LearningPlan updated = service.updateRhythm(42L, 900L, 3, 4);
+
+    assertThat(updated.plan().metadata())
+        .containsEntry("dailyProblemCount", 3)
+        .containsEntry("trainingDaysPerWeek", 4);
+    assertThat(updated.plan().phases()).hasSize(1);
+    assertThat(updated.updatedAt()).isEqualTo(Instant.parse("2026-06-24T00:00:00Z"));
+    assertThat(planRepository.plans.get(900L)).isSameAs(updated);
+  }
+
+  @Test
+  void updateRhythmRejectsOutOfRangeValues() {
+    planRepository.plans.put(900L, plan(900L, 42L, draftPlan()));
+
+    assertThatThrownBy(() -> service.updateRhythm(42L, 900L, 11, 4))
+        .isInstanceOf(LearningPlanException.class)
+        .hasMessage("每天题目数必须在 1-10 之间。");
+  }
+
   private static LearningPlan plan(long planId, long userId) {
+    return plan(planId, userId, null);
+  }
+
+  private static LearningPlan plan(long planId, long userId, LearningPlanDraftPlan draftPlan) {
     Instant now = Instant.parse("2026-06-23T00:00:00Z");
-    return new LearningPlan(planId, userId, LearningPlanStatus.ACTIVE, null, now, now);
+    return new LearningPlan(planId, userId, LearningPlanStatus.ACTIVE, draftPlan, now, now);
+  }
+
+  private static LearningPlanDraftPlan draftPlan() {
+    return new LearningPlanDraftPlan(
+        "四周训练",
+        "summary",
+        LearningPlanIntent.INTERVIEW_SPRINT,
+        "准备算法面试",
+        4,
+        LearningPlanLevel.INTERMEDIATE,
+        6,
+        "Java",
+        LearningPlanDifficultyPreference.MEDIUM,
+        true,
+        List.of("Array"),
+        "profile",
+        List.of(new LearningPlanPhaseDraft(
+            1,
+            "基础阶段",
+            4,
+            "Array",
+            List.of("完成基础训练"),
+            List.of("Array"),
+            List.of("能复盘"),
+            "记录错题。",
+            List.of(new LearningPlanProblemDraft(
+                "two-sum",
+                1,
+                "Two Sum",
+                "两数之和",
+                "EASY",
+                List.of("Array"),
+                "训练数组。",
+                1)))),
+        Map.of("source", "test"));
   }
 
   private static class InMemoryPlanRepository implements LearningPlanRepository {

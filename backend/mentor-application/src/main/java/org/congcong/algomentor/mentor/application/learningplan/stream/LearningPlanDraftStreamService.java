@@ -34,7 +34,6 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanExcep
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanCoveragePolicy;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -253,7 +252,6 @@ public class LearningPlanDraftStreamService {
         // AgentRunEnd 表示最后一个无工具调用 step 已完成，此时 finalContent 才是可落库的结构化计划。
         LearningPlanDraftPlan plan = loadService.withLoadMetadata(
             outputMapper.map(objectMapper.readTree(finalContent), command),
-            LearningPlanRhythmMode.RECOMMENDED,
             LearningPlanCoveragePolicy.FIT_USER_BUDGET);
         validator.validateGeneratedPlan(plan);
         // 第二次写库：把模型最终 JSON 规范化后的领域计划写入 draft_plan_json，并把状态置为 GENERATED。

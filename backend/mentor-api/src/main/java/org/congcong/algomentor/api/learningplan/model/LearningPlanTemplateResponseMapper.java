@@ -35,8 +35,8 @@ public final class LearningPlanTemplateResponseMapper {
         template.problemCount(),
         template.matchedProblemCount(),
         template.missingProblemCount(),
-        loadService.rhythmOption(template, null).loadSummary(),
-        loadService.rhythmOptions(template));
+        loadService.defaultLoadSummary(template),
+        loadService.defaultRhythmSettings(template));
   }
 
   public static LearningPlanTemplateDetailResponse toDetailResponse(LearningPlanTemplate template) {
@@ -76,8 +76,8 @@ public final class LearningPlanTemplateResponseMapper {
         template.problemCount(),
         template.matchedProblemCount(),
         template.missingProblemCount(),
-        loadService.rhythmOption(template, null).loadSummary(),
-        loadService.rhythmOptions(template),
+        loadService.defaultLoadSummary(template),
+        loadService.defaultRhythmSettings(template),
         template.metadata(),
         template.phases().stream().map(LearningPlanTemplateResponseMapper::toPhaseResponse).toList());
   }

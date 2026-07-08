@@ -46,7 +46,12 @@ class LearningPlanDraftServiceTest {
     assertThat(generated.draftPlan().goal()).isEqualTo("想用 Java 练习数组和哈希表");
     assertThat(generated.draftPlan().metadata()).containsKeys(
         LearningPlanDraftMetadataKeys.LOAD_SUMMARY,
-        LearningPlanDraftMetadataKeys.WEEKLY_BUCKETS);
+        LearningPlanDraftMetadataKeys.DAILY_PROBLEM_COUNT,
+        LearningPlanDraftMetadataKeys.TRAINING_DAYS_PER_WEEK);
+    assertThat(generated.draftPlan().metadata()).doesNotContainKeys(
+        "weeklyBuckets",
+        "nextTrainingPackage",
+        "rhythmMode");
   }
 
   @Test

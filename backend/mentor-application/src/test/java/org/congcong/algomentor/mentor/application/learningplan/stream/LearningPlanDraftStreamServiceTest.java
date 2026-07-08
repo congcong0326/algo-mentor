@@ -60,7 +60,9 @@ class LearningPlanDraftStreamServiceTest {
     assertThat(ready.draft().draftPlan().metadata())
         .containsEntry("problemRecommendationIncomplete", true)
         .containsKey("loadSummary")
-        .containsKey("weeklyBuckets");
+        .containsKey("dailyProblemCount")
+        .containsKey("trainingDaysPerWeek")
+        .doesNotContainKeys("weeklyBuckets", "nextTrainingPackage", "rhythmMode");
   }
 
   @Test

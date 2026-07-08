@@ -20,6 +20,10 @@ public class LearningPlanLoadService {
 
   public static final String LOAD_RISK_NORMAL = "NORMAL";
   public static final String LOAD_RISK_OVERLOADED = "OVERLOADED";
+  public static final int MIN_DAILY_PROBLEM_COUNT = 1;
+  public static final int MAX_DAILY_PROBLEM_COUNT = 10;
+  public static final int MIN_TRAINING_DAYS_PER_WEEK = 1;
+  public static final int MAX_TRAINING_DAYS_PER_WEEK = 7;
 
   private static final double CAPACITY_POINTS_PER_HOUR = 1.0D;
   private static final double SPECIAL_TOPIC_BONUS = 0.5D;
@@ -45,26 +49,82 @@ public class LearningPlanLoadService {
 
   public LearningPlanDraftPlan withLoadMetadata(
       LearningPlanDraftPlan plan,
-      LearningPlanRhythmMode rhythmMode,
       LearningPlanCoveragePolicy coveragePolicy
   ) {
-    LearningPlanCoveragePolicy effectivePolicy = coveragePolicy == null
-        ? coveragePolicyFromMetadata(plan)
-        : coveragePolicy;
-    LearningPlanRhythmMode effectiveRhythm = rhythmMode == null
-        ? rhythmModeFromMetadata(plan)
-        : rhythmMode;
+    return withRhythmMetadata(plan, defaultDailyProblemCount(plan), defaultTrainingDaysPerWeek(), coveragePolicy);
+  }
+
+  public LearningPlanDraftPlan withRhythmMetadata(
+      LearningPlanDraftPlan plan,
+      Integer dailyProblemCount,
+      Integer trainingDaysPerWeek
+  ) {
+    return withRhythmMetadata(plan, dailyProblemCount, trainingDaysPerWeek, null);
+  }
+
+  public LearningPlanDraftPlan withRhythmMetadata(
+      LearningPlanDraftPlan plan,
+      Integer dailyProblemCount,
+      Integer trainingDaysPerWeek,
+      LearningPlanCoveragePolicy coveragePolicy
+  ) {
+    int effectiveDailyProblemCount = validatedDailyProblemCount(dailyProblemCount);
+    int effectiveTrainingDaysPerWeek = validatedTrainingDaysPerWeek(trainingDaysPerWeek);
+    LearningPlanCoveragePolicy effectivePolicy = coveragePolicy == null ? coveragePolicyFromMetadata(plan) : coveragePolicy;
     LearningPlanLoadSummary summary = summarize(plan, effectivePolicy);
-    List<LearningPlanWeeklyBucket> buckets = weeklyBuckets(plan, effectivePolicy);
-    LearningPlanTrainingPackage trainingPackage = nextTrainingPackage(plan, buckets, effectiveRhythm);
     Map<String, Object> metadata = new LinkedHashMap<>(plan.metadata());
-    metadata.put(LearningPlanDraftMetadataKeys.RHYTHM_MODE, effectiveRhythm.name());
+    metadata.put(LearningPlanDraftMetadataKeys.DAILY_PROBLEM_COUNT, effectiveDailyProblemCount);
+    metadata.put(LearningPlanDraftMetadataKeys.TRAINING_DAYS_PER_WEEK, effectiveTrainingDaysPerWeek);
     metadata.put(LearningPlanDraftMetadataKeys.COVERAGE_POLICY, effectivePolicy.name());
     metadata.put(LearningPlanDraftMetadataKeys.LOAD_SUMMARY, toMetadata(summary));
-    metadata.put(LearningPlanDraftMetadataKeys.WEEKLY_BUCKETS, buckets.stream().map(this::toMetadata).toList());
-    metadata.put(LearningPlanDraftMetadataKeys.NEXT_TRAINING_PACKAGE, toMetadata(trainingPackage));
     metadata.put(LearningPlanDraftMetadataKeys.LOAD_RISK, isOverloaded(summary) ? LOAD_RISK_OVERLOADED : LOAD_RISK_NORMAL);
     return copyWithMetadata(plan, metadata);
+  }
+
+  public LearningPlanRhythmSettings defaultRhythmSettings(LearningPlanTemplate template) {
+    int totalProblemCount = template == null ? 0 : Math.max(0, template.matchedProblemCount());
+    int durationWeeks = template == null ? 1 : Math.max(1, template.defaultDurationWeeks());
+    int dailyProblemCount = clampDailyProblemCount((int) Math.ceil(totalProblemCount / Math.max(1D, durationWeeks * 5D)));
+    return rhythmSettings(dailyProblemCount, defaultTrainingDaysPerWeek(), totalProblemCount, 0, 0);
+  }
+
+  public LearningPlanLoadSummary defaultLoadSummary(LearningPlanTemplate template) {
+    return summarizeTemplate(
+        template,
+        Math.max(1, template.defaultDurationWeeks()),
+        Math.max(1, template.defaultWeeklyHours()),
+        LearningPlanCoveragePolicy.FULL_ROUTE);
+  }
+
+  public LearningPlanRhythmSettings rhythmSettings(LearningPlanDraftPlan plan, List<PracticeProgress> progress) {
+    Map<ProblemKey, PracticeProgressStatus> progressByProblem = progressStatusByProblem(progress);
+    int total = 0;
+    int completed = 0;
+    int skipped = 0;
+    for (LearningPlanPhaseDraft phase : plan.phases()) {
+      for (LearningPlanProblemDraft problem : phase.problems()) {
+        total++;
+        PracticeProgressStatus status = progressByProblem.getOrDefault(
+            new ProblemKey(phase.phaseIndex(), problem.slug()),
+            PracticeProgressStatus.NOT_STARTED);
+        if (status == PracticeProgressStatus.COMPLETED) {
+          completed++;
+        } else if (status == PracticeProgressStatus.SKIPPED) {
+          skipped++;
+        }
+      }
+    }
+    return rhythmSettings(
+        dailyProblemCountFromMetadata(plan),
+        trainingDaysPerWeekFromMetadata(plan),
+        total,
+        completed,
+        skipped);
+  }
+
+  public void validateRhythm(Integer dailyProblemCount, Integer trainingDaysPerWeek) {
+    validatedDailyProblemCount(dailyProblemCount);
+    validatedTrainingDaysPerWeek(trainingDaysPerWeek);
   }
 
   public LearningPlanLoadSummary summarize(LearningPlanDraftPlan plan) {
@@ -110,52 +170,6 @@ public class LearningPlanLoadService {
     return summary(durationWeeks, weeklyHours, problemCount, loadPoints, reviewBufferIncluded);
   }
 
-  public List<LearningPlanRhythmOption> rhythmOptions(LearningPlanTemplate template) {
-    return List.of(
-        rhythmOption(template, LearningPlanRhythmMode.RECOMMENDED),
-        rhythmOption(template, LearningPlanRhythmMode.RELAXED),
-        rhythmOption(template, LearningPlanRhythmMode.SPRINT));
-  }
-
-  public LearningPlanRhythmOption rhythmOption(LearningPlanTemplate template, LearningPlanRhythmMode mode) {
-    LearningPlanRhythmMode effectiveMode = mode == null ? LearningPlanRhythmMode.RECOMMENDED : mode;
-    int phaseCount = Math.max(1, template.phases().size());
-    int durationWeeks = switch (effectiveMode) {
-      case RECOMMENDED -> template.defaultDurationWeeks();
-      case RELAXED -> (int) Math.ceil(template.defaultDurationWeeks() * 1.5D);
-      case SPRINT -> Math.max(phaseCount, (int) Math.ceil(template.defaultDurationWeeks() * 0.75D));
-    };
-    int weeklyHours = switch (effectiveMode) {
-      case RECOMMENDED, RELAXED -> template.defaultWeeklyHours();
-      case SPRINT -> (int) Math.ceil(template.defaultWeeklyHours() * 1.5D);
-    };
-    int[] trainingDays = trainingDaysPerWeek(effectiveMode);
-    LearningPlanCoveragePolicy coveragePolicy = switch (effectiveMode) {
-      case RECOMMENDED -> LearningPlanCoveragePolicy.FULL_ROUTE;
-      case RELAXED -> LearningPlanCoveragePolicy.FULL_ROUTE_WITH_REVIEW_BUFFER;
-      case SPRINT -> LearningPlanCoveragePolicy.FULL_ROUTE_FAST;
-    };
-    LearningPlanLoadSummary loadSummary = summarizeTemplate(
-        template,
-        Math.max(phaseCount, Math.max(1, durationWeeks)),
-        Math.max(1, weeklyHours),
-        coveragePolicy);
-    int[] dailyProblems = dailyProblemRange(
-        loadSummary.plannedProblemCount(),
-        Math.max(phaseCount, Math.max(1, durationWeeks)),
-        trainingDays);
-    return new LearningPlanRhythmOption(
-        effectiveMode,
-        Math.max(phaseCount, Math.max(1, durationWeeks)),
-        Math.max(1, weeklyHours),
-        trainingDays[0],
-        trainingDays[1],
-        dailyProblems[0],
-        dailyProblems[1],
-        coveragePolicy,
-        loadSummary);
-  }
-
   public List<LearningPlanWeeklyBucket> weeklyBuckets(LearningPlanDraftPlan plan) {
     return weeklyBuckets(plan, coveragePolicyFromMetadata(plan));
   }
@@ -194,42 +208,57 @@ public class LearningPlanLoadService {
   }
 
   public LearningPlanTrainingPackage nextTrainingPackage(LearningPlanDraftPlan plan) {
-    return nextTrainingPackage(plan, List.of(), clock.instant());
+    return nextTrainingPackage(plan, List.of());
   }
 
   public LearningPlanTrainingPackage nextTrainingPackage(
       LearningPlan plan,
       List<PracticeProgress> progress
   ) {
-    return nextTrainingPackage(plan.plan(), progress, clock.instant());
+    return nextTrainingPackage(plan.plan(), progress);
   }
 
   public LearningPlanTrainingPackage nextTrainingPackage(
       LearningPlanDraftPlan plan,
-      List<PracticeProgress> progress,
-      Instant now
+      List<PracticeProgress> progress
   ) {
-    LearningPlanRhythmMode mode = rhythmModeFromMetadata(plan);
-    List<LearningPlanWeeklyBucket> buckets = weeklyBuckets(plan);
-    if (buckets.isEmpty()) {
-      return nextTrainingPackage(plan, buckets, mode);
+    Map<ProblemKey, PracticeProgressStatus> progressByProblem = progressStatusByProblem(progress);
+    int dailyProblemCount = dailyProblemCountFromMetadata(plan);
+    List<String> prioritySlugs = new ArrayList<>();
+    String reviewTask = "复盘本次训练中的卡点和错因。";
+    int weekIndex = 1;
+    for (LearningPlanPhaseDraft phase : plan.phases()) {
+      if (phase.reviewAdvice() != null && !phase.reviewAdvice().isBlank()) {
+        reviewTask = phase.reviewAdvice();
+      }
+      for (LearningPlanProblemDraft problem : phase.problems()) {
+        PracticeProgressStatus status = progressByProblem.getOrDefault(
+            new ProblemKey(phase.phaseIndex(), problem.slug()),
+            PracticeProgressStatus.NOT_STARTED);
+        if (status == PracticeProgressStatus.COMPLETED || status == PracticeProgressStatus.SKIPPED) {
+          continue;
+        }
+        prioritySlugs.add(problem.slug());
+        if (prioritySlugs.size() >= dailyProblemCount) {
+          return new LearningPlanTrainingPackage(
+              weekIndex,
+              prioritySlugs.size(),
+              reviewTask,
+              estimateTrainingMinutes(plan),
+              prioritySlugs);
+        }
+      }
+      weekIndex += Math.max(1, phase.durationWeeks());
     }
-    Map<String, PracticeProgressStatus> progressBySlug = progressBySlug(progress);
-    LearningPlanWeeklyBucket selectedBucket = buckets.stream()
-        .filter(bucket -> bucket.problemSlugs().stream()
-            .anyMatch(slug -> progressBySlug.getOrDefault(slug, PracticeProgressStatus.NOT_STARTED)
-                != PracticeProgressStatus.COMPLETED
-                && progressBySlug.getOrDefault(slug, PracticeProgressStatus.NOT_STARTED)
-                != PracticeProgressStatus.SKIPPED))
-        .findFirst()
-        .orElse(buckets.get(Math.min(buckets.size(), Math.max(1, currentWeek(null, now, plan.durationWeeks()))) - 1));
-    List<String> remainingSlugs = selectedBucket.problemSlugs().stream()
-        .filter(slug -> progressBySlug.getOrDefault(slug, PracticeProgressStatus.NOT_STARTED)
-            != PracticeProgressStatus.COMPLETED
-            && progressBySlug.getOrDefault(slug, PracticeProgressStatus.NOT_STARTED)
-            != PracticeProgressStatus.SKIPPED)
-        .toList();
-    return packageForBucket(plan, selectedBucket, remainingSlugs, mode);
+    if (!prioritySlugs.isEmpty()) {
+      return new LearningPlanTrainingPackage(
+          weekIndex,
+          prioritySlugs.size(),
+          reviewTask,
+          estimateTrainingMinutes(plan),
+          prioritySlugs);
+    }
+    return new LearningPlanTrainingPackage(weekIndex, 0, reviewTask, estimateTrainingMinutes(plan), List.of());
   }
 
   public LearningPlanPaceSummary paceSummary(
@@ -433,66 +462,111 @@ public class LearningPlanLoadService {
     };
   }
 
-  private LearningPlanTrainingPackage nextTrainingPackage(
-      LearningPlanDraftPlan plan,
-      List<LearningPlanWeeklyBucket> buckets,
-      LearningPlanRhythmMode mode
+  private LearningPlanRhythmSettings rhythmSettings(
+      int dailyProblemCount,
+      int trainingDaysPerWeek,
+      int totalProblemCount,
+      int completedProblemCount,
+      int skippedProblemCount
   ) {
-    if (buckets.isEmpty()) {
-      return new LearningPlanTrainingPackage(1, 0, "建立错题复盘记录。", estimateTrainingMinutes(plan, mode), List.of());
-    }
-    LearningPlanWeeklyBucket bucket = buckets.stream()
-        .filter(item -> !item.problemSlugs().isEmpty())
-        .findFirst()
-        .orElse(buckets.get(0));
-    return packageForBucket(plan, bucket, bucket.problemSlugs(), mode);
-  }
-
-  private LearningPlanTrainingPackage packageForBucket(
-      LearningPlanDraftPlan plan,
-      LearningPlanWeeklyBucket bucket,
-      List<String> candidateSlugs,
-      LearningPlanRhythmMode mode
-  ) {
-    int[] trainingDays = trainingDaysPerWeek(mode);
-    int trainingDaysMax = Math.max(1, trainingDays[1]);
-    int newProblemCount = bucket.plannedProblemCount() <= 0
+    int remainingProblemCount = Math.max(0, totalProblemCount - completedProblemCount - skippedProblemCount);
+    int weeklyCapacity = Math.max(1, dailyProblemCount * trainingDaysPerWeek);
+    int estimatedRemainingWeeks = remainingProblemCount == 0
         ? 0
-        : Math.max(1, (int) Math.ceil((double) bucket.plannedProblemCount() / trainingDaysMax));
-    List<String> prioritySlugs = candidateSlugs.stream()
-        .limit(Math.max(1, newProblemCount))
-        .toList();
-    String reviewTask = bucket.reviewAdvice() == null || bucket.reviewAdvice().isBlank()
-        ? "复盘本次训练中的卡点和错因。"
-        : bucket.reviewAdvice();
-    return new LearningPlanTrainingPackage(
-        bucket.weekIndex(),
-        Math.min(newProblemCount, candidateSlugs.size()),
-        reviewTask,
-        estimateTrainingMinutes(plan, mode),
-        prioritySlugs);
+        : (int) Math.ceil(remainingProblemCount / (double) weeklyCapacity);
+    return new LearningPlanRhythmSettings(
+        dailyProblemCount,
+        trainingDaysPerWeek,
+        totalProblemCount,
+        completedProblemCount,
+        skippedProblemCount,
+        remainingProblemCount,
+        estimatedRemainingWeeks);
   }
 
-  private int estimateTrainingMinutes(LearningPlanDraftPlan plan, LearningPlanRhythmMode mode) {
-    int[] trainingDays = trainingDaysPerWeek(mode);
-    int days = Math.max(1, trainingDays[0]);
+  private int dailyProblemCountFromMetadata(LearningPlanDraftPlan plan) {
+    Object value = plan.metadata().get(LearningPlanDraftMetadataKeys.DAILY_PROBLEM_COUNT);
+    if (value != null) {
+      return validatedDailyProblemCount(value);
+    }
+    return defaultDailyProblemCount(plan);
+  }
+
+  private int trainingDaysPerWeekFromMetadata(LearningPlanDraftPlan plan) {
+    Object value = plan.metadata().get(LearningPlanDraftMetadataKeys.TRAINING_DAYS_PER_WEEK);
+    if (value != null) {
+      return validatedTrainingDaysPerWeek(value);
+    }
+    return defaultTrainingDaysPerWeek();
+  }
+
+  private int defaultDailyProblemCount(LearningPlanDraftPlan plan) {
+    int totalProblemCount = plan == null ? 0 : plan.phases().stream()
+        .mapToInt(phase -> phase.problems().size())
+        .sum();
+    int durationWeeks = plan == null ? 1 : Math.max(1, plan.durationWeeks());
+    return clampDailyProblemCount((int) Math.ceil(totalProblemCount / Math.max(1D, durationWeeks * 5D)));
+  }
+
+  private int defaultTrainingDaysPerWeek() {
+    return 5;
+  }
+
+  private int validatedDailyProblemCount(Object value) {
+    int count = intValue(value, "每天题目数不能为空。");
+    if (count < MIN_DAILY_PROBLEM_COUNT || count > MAX_DAILY_PROBLEM_COUNT) {
+      throw new LearningPlanException(
+          "LEARNING_PLAN_RHYTHM_INVALID",
+          "每天题目数必须在 1-10 之间。");
+    }
+    return count;
+  }
+
+  private int validatedTrainingDaysPerWeek(Object value) {
+    int count = intValue(value, "每周训练天数不能为空。");
+    if (count < MIN_TRAINING_DAYS_PER_WEEK || count > MAX_TRAINING_DAYS_PER_WEEK) {
+      throw new LearningPlanException(
+          "LEARNING_PLAN_RHYTHM_INVALID",
+          "每周训练天数必须在 1-7 之间。");
+    }
+    return count;
+  }
+
+  private int intValue(Object value, String nullMessage) {
+    if (value == null) {
+      throw new LearningPlanException("LEARNING_PLAN_RHYTHM_INVALID", nullMessage);
+    }
+    if (value instanceof Number number) {
+      return number.intValue();
+    }
+    if (value instanceof String text) {
+      try {
+        return Integer.parseInt(text);
+      } catch (NumberFormatException exception) {
+        throw new LearningPlanException("LEARNING_PLAN_RHYTHM_INVALID", "训练节奏参数必须是整数。");
+      }
+    }
+    throw new LearningPlanException("LEARNING_PLAN_RHYTHM_INVALID", "训练节奏参数必须是整数。");
+  }
+
+  private int clampDailyProblemCount(int value) {
+    return Math.max(MIN_DAILY_PROBLEM_COUNT, Math.min(MAX_DAILY_PROBLEM_COUNT, value));
+  }
+
+  private Map<ProblemKey, PracticeProgressStatus> progressStatusByProblem(List<PracticeProgress> progress) {
+    Map<ProblemKey, PracticeProgressStatus> result = new HashMap<>();
+    if (progress == null) {
+      return result;
+    }
+    for (PracticeProgress item : progress) {
+      result.put(new ProblemKey(item.phaseIndex(), item.problemSlug()), item.status());
+    }
+    return result;
+  }
+
+  private int estimateTrainingMinutes(LearningPlanDraftPlan plan) {
+    int days = trainingDaysPerWeekFromMetadata(plan);
     return (int) Math.ceil(Math.max(1, plan.weeklyHours()) * 60D / days);
-  }
-
-  private int[] trainingDaysPerWeek(LearningPlanRhythmMode mode) {
-    return switch (mode == null ? LearningPlanRhythmMode.RECOMMENDED : mode) {
-      case RELAXED -> new int[] {4, 4};
-      case SPRINT -> new int[] {6, 7};
-      case RECOMMENDED -> new int[] {5, 5};
-    };
-  }
-
-  private int[] dailyProblemRange(int problemCount, int durationWeeks, int[] trainingDays) {
-    int minDays = Math.max(1, durationWeeks * Math.max(1, trainingDays[1]));
-    int maxDays = Math.max(1, durationWeeks * Math.max(1, trainingDays[0]));
-    int min = problemCount <= 0 ? 0 : Math.max(1, (int) Math.floor((double) problemCount / minDays));
-    int max = problemCount <= 0 ? 0 : Math.max(min, (int) Math.ceil((double) problemCount / maxDays));
-    return new int[] {min, max};
   }
 
   private boolean reviewBufferIncluded(LearningPlanCoveragePolicy coveragePolicy) {
@@ -512,20 +586,6 @@ public class LearningPlanLoadService {
       }
     }
     return LearningPlanCoveragePolicy.FIT_USER_BUDGET;
-  }
-
-  private LearningPlanRhythmMode rhythmModeFromMetadata(LearningPlanDraftPlan plan) {
-    if (plan != null) {
-      Object value = plan.metadata().get(LearningPlanDraftMetadataKeys.RHYTHM_MODE);
-      if (value instanceof String text) {
-        try {
-          return LearningPlanRhythmMode.valueOf(text);
-        } catch (IllegalArgumentException ignored) {
-          return LearningPlanRhythmMode.RECOMMENDED;
-        }
-      }
-    }
-    return LearningPlanRhythmMode.RECOMMENDED;
   }
 
   private String intensity(double ratio) {
@@ -570,27 +630,6 @@ public class LearningPlanLoadService {
     return metadata;
   }
 
-  private Map<String, Object> toMetadata(LearningPlanWeeklyBucket bucket) {
-    Map<String, Object> metadata = new LinkedHashMap<>();
-    metadata.put("weekIndex", bucket.weekIndex());
-    metadata.put("title", bucket.title());
-    metadata.put("plannedProblemCount", bucket.plannedProblemCount());
-    metadata.put("plannedLoadPoints", bucket.plannedLoadPoints());
-    metadata.put("problemSlugs", bucket.problemSlugs());
-    metadata.put("reviewAdvice", bucket.reviewAdvice());
-    return metadata;
-  }
-
-  private Map<String, Object> toMetadata(LearningPlanTrainingPackage trainingPackage) {
-    Map<String, Object> metadata = new LinkedHashMap<>();
-    metadata.put("weekIndex", trainingPackage.weekIndex());
-    metadata.put("newProblemCount", trainingPackage.newProblemCount());
-    metadata.put("reviewTask", trainingPackage.reviewTask());
-    metadata.put("estimatedMinutes", trainingPackage.estimatedMinutes());
-    metadata.put("priorityProblemSlugs", trainingPackage.priorityProblemSlugs());
-    return metadata;
-  }
-
   private String normalize(String value) {
     return value == null ? "" : value.trim().toUpperCase(Locale.ROOT);
   }
@@ -601,5 +640,8 @@ public class LearningPlanLoadService {
 
   private double round2(double value) {
     return Math.round(value * 100D) / 100D;
+  }
+
+  private record ProblemKey(int phaseIndex, String slug) {
   }
 }

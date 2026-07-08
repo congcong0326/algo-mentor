@@ -49,7 +49,6 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmMode;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanDraftRevisionResult;
@@ -362,7 +361,7 @@ class LearningPlanControllerTest {
   }
 
   @Test
-  void createDraftFromTemplateAcceptsRhythmModeAndReturnsGeneratedDraftWithoutAiGovernance() throws Exception {
+  void createDraftFromTemplateAcceptsRhythmSettingsAndReturnsGeneratedDraftWithoutAiGovernance() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
     when(templateDraftService.createDraft(eq(42L), any(LearningPlanTemplateDraftCommand.class)))
         .thenReturn(new LearningPlanDraftResult(
@@ -378,7 +377,8 @@ class LearningPlanControllerTest {
                 {
                   "templateId": "tih_best_practice_50_5weeks",
                   "programmingLanguage": "Java",
-                  "rhythmMode": "RELAXED"
+                  "dailyProblemCount": 3,
+                  "trainingDaysPerWeek": 4
                 }
                 """))
         .andExpect(status().isOk())
@@ -389,8 +389,8 @@ class LearningPlanControllerTest {
     ArgumentCaptor<LearningPlanTemplateDraftCommand> commandCaptor =
         ArgumentCaptor.forClass(LearningPlanTemplateDraftCommand.class);
     verify(templateDraftService).createDraft(eq(42L), commandCaptor.capture());
-    org.assertj.core.api.Assertions.assertThat(commandCaptor.getValue().rhythmMode())
-        .isEqualTo(LearningPlanRhythmMode.RELAXED);
+    org.assertj.core.api.Assertions.assertThat(commandCaptor.getValue().dailyProblemCount()).isEqualTo(3);
+    org.assertj.core.api.Assertions.assertThat(commandCaptor.getValue().trainingDaysPerWeek()).isEqualTo(4);
     verifyNoInteractions(admissionService, lifecycleService);
   }
 
@@ -426,9 +426,33 @@ class LearningPlanControllerTest {
         .andExpect(jsonPath("$.data.phases[0].title").value("基础题型恢复"))
         .andExpect(jsonPath("$.data.phases[0].problems[0].progressStatus").value("NOT_STARTED"))
         .andExpect(jsonPath("$.data.loadSummary.plannedProblemCount").value(1))
-        .andExpect(jsonPath("$.data.weeklyBuckets[0].weekIndex").value(1))
         .andExpect(jsonPath("$.data.nextTrainingPackage.newProblemCount").exists())
+        .andExpect(jsonPath("$.data.rhythmSettings.dailyProblemCount").value(1))
+        .andExpect(jsonPath("$.data.rhythmSettings.trainingDaysPerWeek").value(5))
         .andExpect(jsonPath("$.data.paceSummary.currentWeek").exists());
+  }
+
+  @Test
+  void updateRhythmUsesCurrentUserAndReturnsRefreshedDetail() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    LearningPlan plan = new LearningPlan(900L, 42L, LearningPlanStatus.ACTIVE, draftPlan(), Instant.now(), Instant.now());
+    when(planService.updateRhythm(42L, 900L, 3, 4)).thenReturn(plan);
+    when(planService.getPlan(42L, 900L)).thenReturn(plan);
+    when(practiceSessionRepository.findProgressByPlan(42L, 900L)).thenReturn(List.of());
+
+    mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch("/api/learning-plans/900/rhythm")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""
+                {
+                  "dailyProblemCount": 3,
+                  "trainingDaysPerWeek": 4
+                }
+                """))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.id").value(900))
+        .andExpect(jsonPath("$.data.rhythmSettings.dailyProblemCount").exists());
+
+    verify(planService).updateRhythm(42L, 900L, 3, 4);
   }
 
   @Test

@@ -19,6 +19,7 @@ import type {
   LearningPlanMessageRequest,
   LearningPlanPageResponse,
   LearningPlanRevisionRequest,
+  LearningPlanRhythmUpdateRequest,
   LearningPlanTemplateDetailResponse,
   LearningPlanTemplateDraftRequest,
   LearningPlanTemplateSummaryResponse,
@@ -861,6 +862,26 @@ export async function closeOutLearningPlanContract(planId: number): Promise<ApiR
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Learning plan contract close-out request failed');
+  }
+
+  return response.json();
+}
+
+export async function updateLearningPlanRhythm(
+  planId: number,
+  request: LearningPlanRhythmUpdateRequest,
+): Promise<ApiResponse<LearningPlanDetailResponse>> {
+  const response = await apiFetch(`/api/learning-plans/${planId}/rhythm`, {
+    method: 'PATCH',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan rhythm update request failed');
   }
 
   return response.json();

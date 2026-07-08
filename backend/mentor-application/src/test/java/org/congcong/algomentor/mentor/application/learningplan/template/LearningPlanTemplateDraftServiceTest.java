@@ -26,7 +26,6 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanExcep
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
-import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmMode;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCandidate;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
@@ -66,7 +65,7 @@ class LearningPlanTemplateDraftServiceTest {
 
     LearningPlanDraftResult result = templateDraftService.createDraft(
         7L,
-        new LearningPlanTemplateDraftCommand("neetcode_blind_75_interview_core", null, null, "Java"));
+        new LearningPlanTemplateDraftCommand("neetcode_blind_75_interview_core", "Java", 2, 5));
 
     assertThat(result.status()).isEqualTo(LearningPlanDraftStatus.GENERATED);
     assertThat(result.draftPlan().durationWeeks()).isEqualTo(4);
@@ -80,10 +79,10 @@ class LearningPlanTemplateDraftServiceTest {
         .hasSize(9);
     assertThat(result.draftPlan().metadata()).containsKey("template");
     assertThat(result.draftPlan().metadata())
-        .containsEntry("rhythmMode", "RECOMMENDED")
-        .containsEntry("coveragePolicy", "FULL_ROUTE")
+        .containsEntry("dailyProblemCount", 2)
+        .containsEntry("trainingDaysPerWeek", 5)
         .containsKey("loadSummary")
-        .containsKey("weeklyBuckets");
+        .doesNotContainKeys("rhythmMode", "weeklyBuckets", "nextTrainingPackage");
 
     LearningPlanConfirmResult confirmed = draftService.confirmDraft(7L, result.draftId());
 
@@ -135,52 +134,33 @@ class LearningPlanTemplateDraftServiceTest {
   }
 
   @org.junit.jupiter.api.Test
-  void templateDurationCannotBeShorterThanPhaseCount() {
+  void invalidRhythmIsRejected() {
     templateRepository.saveTemplate(generatedTemplate("neetcode_150_systematic_interview", 12, 12, 150, 1));
 
     assertThatThrownBy(() -> templateDraftService.createDraft(
         7L,
-        new LearningPlanTemplateDraftCommand("neetcode_150_systematic_interview", 4, null, null)))
+        new LearningPlanTemplateDraftCommand("neetcode_150_systematic_interview", null, 11, 5)))
         .isInstanceOf(LearningPlanException.class)
-        .hasMessage("模板学习计划周期不能少于阶段数。");
+        .hasMessage("每天题目数必须在 1-10 之间。");
   }
 
   @org.junit.jupiter.api.Test
-  void relaxedRhythmExtendsDurationAndAddsReviewBufferMetadata() {
+  void customRhythmWritesDailyProblemCountAndTrainingDaysMetadata() {
     templateRepository.saveTemplate(blind75Template());
 
     LearningPlanDraftResult result = templateDraftService.createDraft(
         7L,
         new LearningPlanTemplateDraftCommand(
             "neetcode_blind_75_interview_core",
-            null,
-            null,
             "Java",
-            LearningPlanRhythmMode.RELAXED));
-
-    assertThat(result.draftPlan().durationWeeks()).isEqualTo(6);
-    assertThat(result.draftPlan().weeklyHours()).isEqualTo(8);
-    assertThat(result.draftPlan().metadata()).containsEntry("coveragePolicy", "FULL_ROUTE_WITH_REVIEW_BUFFER");
-    Map<?, ?> loadSummary = (Map<?, ?>) result.draftPlan().metadata().get("loadSummary");
-    assertThat(loadSummary.get("reviewBufferIncluded")).isEqualTo(true);
-  }
-
-  @org.junit.jupiter.api.Test
-  void sprintRhythmCompressesDurationAndIncreasesWeeklyHoursWithoutDroppingProblems() {
-    templateRepository.saveTemplate(blind75Template());
-
-    LearningPlanDraftResult result = templateDraftService.createDraft(
-        7L,
-        new LearningPlanTemplateDraftCommand(
-            "neetcode_blind_75_interview_core",
-            null,
-            null,
-            "Java",
-            LearningPlanRhythmMode.SPRINT));
+            3,
+            4));
 
     assertThat(result.draftPlan().durationWeeks()).isEqualTo(4);
-    assertThat(result.draftPlan().weeklyHours()).isEqualTo(12);
-    assertThat(result.draftPlan().metadata()).containsEntry("coveragePolicy", "FULL_ROUTE_FAST");
+    assertThat(result.draftPlan().weeklyHours()).isEqualTo(8);
+    assertThat(result.draftPlan().metadata())
+        .containsEntry("dailyProblemCount", 3)
+        .containsEntry("trainingDaysPerWeek", 4);
     assertThat(result.draftPlan().phases())
         .flatExtracting(LearningPlanPhaseDraft::problems)
         .hasSize(9);

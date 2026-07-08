@@ -1,6 +1,9 @@
 package org.congcong.algomentor.mentor.application.learningplan;
 
+import java.time.Clock;
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class LearningPlanService {
 
@@ -9,9 +12,21 @@ public class LearningPlanService {
   private static final int MAX_PAGE_SIZE = 50;
 
   private final LearningPlanRepository planRepository;
+  private final LearningPlanLoadService loadService;
+  private final Clock clock;
 
   public LearningPlanService(LearningPlanRepository planRepository) {
+    this(planRepository, new LearningPlanLoadService());
+  }
+
+  public LearningPlanService(LearningPlanRepository planRepository, LearningPlanLoadService loadService) {
+    this(planRepository, loadService, Clock.systemUTC());
+  }
+
+  public LearningPlanService(LearningPlanRepository planRepository, LearningPlanLoadService loadService, Clock clock) {
     this.planRepository = planRepository;
+    this.loadService = loadService == null ? new LearningPlanLoadService() : loadService;
+    this.clock = clock == null ? Clock.systemUTC() : clock;
   }
 
   public List<LearningPlan> listPlans(long userId) {
@@ -37,5 +52,36 @@ public class LearningPlanService {
     if (!deleted) {
       throw new LearningPlanException("LEARNING_PLAN_NOT_FOUND", "学习计划不存在。");
     }
+  }
+
+  public LearningPlan updateRhythm(long userId, long planId, Integer dailyProblemCount, Integer trainingDaysPerWeek) {
+    loadService.validateRhythm(dailyProblemCount, trainingDaysPerWeek);
+    LearningPlan current = getPlan(userId, planId);
+    LearningPlanDraftPlan snapshot = current.plan();
+    Map<String, Object> metadata = new LinkedHashMap<>(snapshot.metadata());
+    metadata.put(LearningPlanDraftMetadataKeys.DAILY_PROBLEM_COUNT, dailyProblemCount);
+    metadata.put(LearningPlanDraftMetadataKeys.TRAINING_DAYS_PER_WEEK, trainingDaysPerWeek);
+    LearningPlanDraftPlan updatedSnapshot = new LearningPlanDraftPlan(
+        snapshot.title(),
+        snapshot.summary(),
+        snapshot.intent(),
+        snapshot.goal(),
+        snapshot.durationWeeks(),
+        snapshot.level(),
+        snapshot.weeklyHours(),
+        snapshot.programmingLanguage(),
+        snapshot.difficultyPreference(),
+        snapshot.interviewOriented(),
+        snapshot.topicPreferences(),
+        snapshot.profileSummary(),
+        snapshot.phases(),
+        metadata);
+    return planRepository.save(new LearningPlan(
+        current.id(),
+        current.userId(),
+        current.status(),
+        updatedSnapshot,
+        current.createdAt(),
+        clock.instant()));
   }
 }

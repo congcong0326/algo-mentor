@@ -9,6 +9,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLivingContractSummary;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadSummary;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPaceSummary;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmSettings;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanTrainingPackage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanWeeklyBucket;
@@ -33,6 +34,7 @@ public record LearningPlanDetailResponse(
     LearningPlanLoadSummary loadSummary,
     List<LearningPlanWeeklyBucket> weeklyBuckets,
     LearningPlanTrainingPackage nextTrainingPackage,
+    LearningPlanRhythmSettings rhythmSettings,
     LearningPlanPaceSummary paceSummary,
     LearningPlanLivingContractSummary livingContractSummary,
     Instant createdAt,

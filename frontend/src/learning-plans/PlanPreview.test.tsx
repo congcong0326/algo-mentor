@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { LearningPlanDetailResponse, LearningPlanDraftPlan } from '../types/api';
 import PlanPreview from './PlanPreview';
@@ -21,30 +21,25 @@ describe('PlanPreview', () => {
     expect(screen.queryByText('未开始')).not.toBeInTheDocument();
   });
 
-  it('renders route summary, next training package, and weekly buckets from metadata', () => {
+  it('renders rhythm settings without intensity summary cards', () => {
     render(<PlanPreview plan={draftPlan} />);
 
-    expect(screen.getByText('接下来 2 周，每周训练 5 天，每天约 60 分钟')).toBeInTheDocument();
-    expect(screen.getAllByText('1 题 · 2 周 · 每周 5h · 强度舒缓').length).toBeGreaterThan(0);
+    expect(screen.getByText('每天 1 题 · 每周 5 天')).toBeInTheDocument();
+    expect(screen.getByText('共 1 题')).toBeInTheDocument();
+    expect(screen.getAllByText('还需约 1 周').length).toBeGreaterThan(0);
+    expect(screen.queryByText('强度评估')).not.toBeInTheDocument();
+    expect(screen.queryByText('1 题 · 2 周 · 每周 5h · 强度舒缓')).not.toBeInTheDocument();
+    expect(screen.queryByText('当前节奏有复盘缓冲，可以稳定推进。')).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '下一次训练包' })).toBeInTheDocument();
     expect(screen.getByText('新题 1 道 · 预计 60 分钟')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '阶段详情' })).toBeInTheDocument();
-
-    const weeklyPlan = screen.getByLabelText('按周执行计划');
-    expect(within(weeklyPlan).getByRole('heading', { name: '按周执行计划' })).toBeInTheDocument();
-    expect(within(weeklyPlan).getByRole('heading', { name: '第 1 周：基础阶段' })).toBeInTheDocument();
-    expect(within(weeklyPlan).getByText('1 题')).toBeInTheDocument();
-    expect(within(weeklyPlan).getByText('复盘建议：复盘边界条件')).toBeInTheDocument();
-    expect(within(weeklyPlan).getByText('两数之和')).toBeInTheDocument();
   });
 
-  it('renders weekly review buffer and falls back to unknown problem slugs', () => {
+  it('falls back to unknown problem slugs in the next package', () => {
     render(<PlanPreview plan={weeklyEdgePlan} />);
 
-    const weeklyPlan = screen.getByLabelText('按周执行计划');
-    expect(within(weeklyPlan).getByText('这周保留为复盘/缓冲，不安排新题。')).toBeInTheDocument();
-    expect(within(weeklyPlan).getByText('unknown-slug')).toBeInTheDocument();
-    expect(within(weeklyPlan).getByText('模板题目暂未匹配，先按 slug 记录。')).toBeInTheDocument();
+    expect(screen.getByText('unknown-slug')).toBeInTheDocument();
+    expect(screen.getByText('模板题目暂未匹配，先按 slug 记录。')).toBeInTheDocument();
   });
 });
 
@@ -90,6 +85,8 @@ const draftPlan: LearningPlanDraftPlan = {
       estimatedMinutes: 60,
       priorityProblemSlugs: ['two-sum'],
     },
+    dailyProblemCount: 1,
+    trainingDaysPerWeek: 5,
   },
   phases: [{
     phaseIndex: 1,
@@ -164,22 +161,12 @@ const weeklyEdgePlan: LearningPlanDraftPlan = {
   ...draftPlan,
   metadata: {
     ...draftPlan.metadata,
-    weeklyBuckets: [
-      {
-        weekIndex: 1,
-        title: '复盘缓冲',
-        plannedProblemCount: 0,
-        plannedLoadPoints: 0,
-        problemSlugs: [],
-      },
-      {
-        weekIndex: 2,
-        title: '补充匹配',
-        plannedProblemCount: 1,
-        plannedLoadPoints: 1,
-        problemSlugs: ['unknown-slug'],
-        reviewAdvice: '确认模板题目是否已入库',
-      },
-    ],
+    nextTrainingPackage: {
+      weekIndex: 2,
+      newProblemCount: 1,
+      reviewTask: '确认模板题目是否已入库',
+      estimatedMinutes: 45,
+      priorityProblemSlugs: ['unknown-slug'],
+    },
   },
 };

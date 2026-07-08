@@ -20,7 +20,6 @@ function ExtensionPhaseBlock({ phase }: { phase: LearningPlanPhaseDraft }) {
     <section className="phase-block" key={phase.phaseIndex}>
       <div className="phase-heading">
         <h3>{phase.title}</h3>
-        <span>{resources.common.week(phase.durationWeeks)}</span>
       </div>
       <p>{phase.focus}</p>
       <div className="tag-row">

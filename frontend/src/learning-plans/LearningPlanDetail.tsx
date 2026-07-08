@@ -1,4 +1,4 @@
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, SlidersHorizontal } from 'lucide-react';
 import { useState } from 'react';
 import { formatPlanIntent } from '../i18n/formatters';
 import { useI18n } from '../i18n/I18nProvider';
@@ -9,6 +9,7 @@ import {
   requireApiSuccess,
   streamLearningPlanExtensionProposal,
   streamLearningPlanExtensionProposalRevision,
+  updateLearningPlanRhythm,
 } from '../services/api';
 import type {
   AgentWorkStatusEvent,
@@ -21,6 +22,11 @@ import type {
 import AgentWorkIndicator from './AgentWorkIndicator';
 import LearningPlanExtensionPanel from './LearningPlanExtensionPanel';
 import PlanPreview from './PlanPreview';
+import {
+  buildStandardRhythmReference,
+  compareRhythmWeeks,
+  estimateRhythmWeeks,
+} from './learningPlanRhythm';
 
 export default function LearningPlanDetail({
   contractFeedback,
@@ -40,8 +46,32 @@ export default function LearningPlanDetail({
   const [extensionWorkEvent, setExtensionWorkEvent] = useState<AgentWorkStatusEvent>();
   const [extensionLoading, setExtensionLoading] = useState(false);
   const [extensionError, setExtensionError] = useState('');
+  const [rhythmDialogOpen, setRhythmDialogOpen] = useState(false);
+  const [rhythmDailyProblemCount, setRhythmDailyProblemCount] = useState(plan.rhythmSettings?.dailyProblemCount ?? 1);
+  const [rhythmTrainingDaysPerWeek, setRhythmTrainingDaysPerWeek] = useState(
+    plan.rhythmSettings?.trainingDaysPerWeek ?? 5,
+  );
+  const [rhythmUpdating, setRhythmUpdating] = useState(false);
+  const [rhythmError, setRhythmError] = useState('');
   const pace = plan.paceSummary;
   const contract = plan.livingContractSummary;
+  const rhythmSettings = plan.rhythmSettings;
+  const standardRhythm = buildStandardRhythmReference({
+    recommendedWeeks: plan.durationWeeks,
+    settings: undefined,
+    totalProblemCount: rhythmSettings?.totalProblemCount ?? countPlanProblems(plan),
+  });
+  const standardRemainingWeeks = estimateRhythmWeeks(
+    rhythmSettings?.remainingProblemCount ?? 0,
+    standardRhythm.dailyProblemCount,
+    standardRhythm.trainingDaysPerWeek,
+  );
+  const adjustedRemainingWeeks = estimateRhythmWeeks(
+    rhythmSettings?.remainingProblemCount ?? 0,
+    rhythmDailyProblemCount,
+    rhythmTrainingDaysPerWeek,
+  );
+  const adjustedStandardDelta = compareRhythmWeeks(adjustedRemainingWeeks, standardRemainingWeeks);
   const nextPackage = contract?.nextTrainingPackage ?? plan.nextTrainingPackage;
   const nextProblem = nextPackage?.priorityProblemSlugs[0]
     ? findProblemPhase(plan, nextPackage.priorityProblemSlugs[0])
@@ -206,6 +236,33 @@ export default function LearningPlanDetail({
     }
   }
 
+  function openRhythmDialog() {
+    setRhythmDailyProblemCount(rhythmSettings?.dailyProblemCount ?? 1);
+    setRhythmTrainingDaysPerWeek(rhythmSettings?.trainingDaysPerWeek ?? 5);
+    setRhythmError('');
+    setRhythmDialogOpen(true);
+  }
+
+  async function saveRhythm() {
+    setRhythmUpdating(true);
+    setRhythmError('');
+    try {
+      requireApiData(
+        await updateLearningPlanRhythm(plan.id, {
+          dailyProblemCount: rhythmDailyProblemCount,
+          trainingDaysPerWeek: rhythmTrainingDaysPerWeek,
+        }),
+        resources.learningPlans.rhythmUpdateFailed,
+      );
+      await onPlanUpdated();
+      setRhythmDialogOpen(false);
+    } catch (nextError) {
+      setRhythmError(nextError instanceof Error ? nextError.message : resources.learningPlans.rhythmUpdateFailed);
+    } finally {
+      setRhythmUpdating(false);
+    }
+  }
+
   return (
     <article className="learning-panel">
       <button className="secondary-button compact detail-back-button" onClick={onBack} type="button">
@@ -218,6 +275,10 @@ export default function LearningPlanDetail({
           <h2>{plan.title}</h2>
           <p>{plan.summary}</p>
         </div>
+        <button className="secondary-button compact" onClick={openRhythmDialog} type="button">
+          <SlidersHorizontal aria-hidden="true" />
+          <span>{resources.learningPlans.adjustRhythm}</span>
+        </button>
       </div>
       {contract && (
         <section className={`living-contract-panel ${contract.visibleStatus.toLowerCase().replace('_', '-')}`}>
@@ -242,7 +303,7 @@ export default function LearningPlanDetail({
             </div>
             <div>
               <span>{resources.learningPlans.openProblemsLine(contract.openProblemCount, contract.skippedProblemCount)}</span>
-              <strong>{nextPackage ? resources.learningPlans.nextTrainingPackageLine(nextPackage.newProblemCount, nextPackage.estimatedMinutes) : '-'}</strong>
+              <strong>{rhythmSettings ? resources.learningPlans.remainingWeeksLine(rhythmSettings.estimatedRemainingWeeks) : '-'}</strong>
             </div>
           </div>
           {(contract.notice || contractFeedback) && (
@@ -301,6 +362,101 @@ export default function LearningPlanDetail({
         </section>
       )}
       <PlanPreview onProblemSelect={onProblemSelect} plan={plan} />
+      {rhythmDialogOpen && (
+        <div className="modal-backdrop" role="presentation">
+          <section aria-label={resources.learningPlans.adjustRhythm} className="rhythm-dialog" role="dialog">
+            <div className="modal-heading">
+              <div>
+                <p className="eyebrow">{resources.learningPlans.templateRhythm}</p>
+                <h2>{resources.learningPlans.adjustRhythm}</h2>
+              </div>
+            </div>
+            {rhythmError && <p className="error-text" role="alert">{rhythmError}</p>}
+            <div className="rhythm-standard-reference">
+              <span>{resources.learningPlans.standardRhythmTitle}</span>
+              <strong>
+                {resources.learningPlans.standardRhythmMainLine(
+                  standardRhythm.dailyProblemCount,
+                  standardRhythm.trainingDaysPerWeek,
+                  standardRhythm.recommendedWeeks,
+                )}
+              </strong>
+              <small>
+                {resources.learningPlans.standardRhythmRemainingLine(
+                  rhythmSettings?.remainingProblemCount ?? 0,
+                  standardRemainingWeeks,
+                )}
+              </small>
+            </div>
+            <div className="rhythm-compare-grid">
+              <div>
+                <span>{resources.learningPlans.currentRhythm}</span>
+                <strong>
+                  {resources.learningPlans.rhythmConfigLine(
+                    rhythmSettings?.dailyProblemCount ?? 1,
+                    rhythmSettings?.trainingDaysPerWeek ?? 5,
+                  )}
+                </strong>
+                <small>{resources.learningPlans.remainingWeeksLine(rhythmSettings?.estimatedRemainingWeeks ?? 0)}</small>
+              </div>
+              <div>
+                <span>{resources.learningPlans.adjustedRhythm}</span>
+                <strong>{resources.learningPlans.rhythmConfigLine(
+                  rhythmDailyProblemCount,
+                  rhythmTrainingDaysPerWeek,
+                )}</strong>
+                <small>{resources.learningPlans.remainingWeeksLine(adjustedRemainingWeeks)}</small>
+                <small className="rhythm-standard-delta">
+                  {adjustedStandardDelta < 0
+                    ? resources.learningPlans.rhythmFasterThanStandard(Math.abs(adjustedStandardDelta))
+                    : adjustedStandardDelta > 0
+                      ? resources.learningPlans.rhythmSlowerThanStandard(adjustedStandardDelta)
+                      : resources.learningPlans.rhythmSameAsStandard}
+                </small>
+              </div>
+            </div>
+            <div className="rhythm-stepper-grid">
+              <label>
+                <span>{resources.learningPlans.dailyProblemCount}</span>
+                <input
+                  aria-label={resources.learningPlans.dailyProblemCount}
+                  disabled={rhythmUpdating}
+                  max={10}
+                  min={1}
+                  onChange={(event) => setRhythmDailyProblemCount(clampNumber(event.target.valueAsNumber, 1, 10))}
+                  type="number"
+                  value={rhythmDailyProblemCount}
+                />
+              </label>
+              <label>
+                <span>{resources.learningPlans.trainingDaysPerWeek}</span>
+                <input
+                  aria-label={resources.learningPlans.trainingDaysPerWeek}
+                  disabled={rhythmUpdating}
+                  max={7}
+                  min={1}
+                  onChange={(event) => setRhythmTrainingDaysPerWeek(clampNumber(event.target.valueAsNumber, 1, 7))}
+                  type="number"
+                  value={rhythmTrainingDaysPerWeek}
+                />
+              </label>
+            </div>
+            <div className="modal-actions">
+              <button
+                className="secondary-button"
+                disabled={rhythmUpdating}
+                onClick={() => setRhythmDialogOpen(false)}
+                type="button"
+              >
+                {resources.common.cancel}
+              </button>
+              <button className="primary-button" disabled={rhythmUpdating} onClick={() => void saveRhythm()} type="button">
+                {rhythmUpdating ? resources.learningPlans.savingRhythm : resources.learningPlans.saveRhythm}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
       {(extensionLoading || extensionWorkEvent || extensionError) && (
         <AgentWorkIndicator active={extensionLoading} event={extensionWorkEvent} error={extensionError} />
       )}
@@ -314,6 +470,17 @@ export default function LearningPlanDetail({
       />
     </article>
   );
+}
+
+function clampNumber(value: number, min: number, max: number) {
+  if (!Number.isFinite(value)) {
+    return min;
+  }
+  return Math.max(min, Math.min(max, Math.trunc(value)));
+}
+
+function countPlanProblems(plan: LearningPlanDetailResponse) {
+  return plan.phases.reduce((total, phase) => total + phase.problems.length, 0);
 }
 
 function findProblemPhase(plan: LearningPlanDetailResponse, problemSlug: string) {

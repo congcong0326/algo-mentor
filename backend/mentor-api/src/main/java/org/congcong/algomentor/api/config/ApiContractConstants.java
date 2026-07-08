@@ -141,6 +141,11 @@ public final class ApiContractConstants {
   public static final String LEARNING_PLAN_CONTRACT_CLOSE_OUT_PATH = "/{planId}/contract/close-out";
 
   /**
+   * 学习计划训练节奏更新路径。
+   */
+  public static final String LEARNING_PLAN_RHYTHM_PATH = "/{planId}/rhythm";
+
+  /**
    * 题目练习会话接口根路径。
    */
   public static final String PRACTICE_SESSIONS_BASE_PATH = "/api/practice-sessions";

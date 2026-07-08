@@ -1,6 +1,5 @@
 import {
   formatDifficulty,
-  formatPlanLevel,
   formatProblemTitle,
   formatTopicTag,
 } from '../i18n/formatters';
@@ -8,15 +7,11 @@ import { useI18n } from '../i18n/I18nProvider';
 import type {
   LearningPlanDetailProblemResponse,
   LearningPlanDraftPlan,
-  LearningPlanLoadIntensity,
   PracticeProgressStatus,
 } from '../types/api';
 import {
-  getPlanLoadSummary,
   getPlanNextTrainingPackage,
-  getPlanRhythmMode,
-  getPlanWeeklyBuckets,
-  trainingDaysPerWeek,
+  getPlanRhythmSettings,
 } from './load';
 
 type PlanPreviewProblem = LearningPlanDraftPlan['phases'][number]['problems'][number]
@@ -39,11 +34,6 @@ function formatProgressStatus(status: PracticeProgressStatus, resources: ReturnT
     SKIPPED: resources.learningPlans.skipped,
   };
   return labels[status];
-}
-
-function formatLoadIntensity(intensity: string, resources: ReturnType<typeof useI18n>['resources']) {
-  const labels = resources.learningPlans.loadIntensityLabels;
-  return labels[intensity as LearningPlanLoadIntensity] ?? intensity;
 }
 
 function ProblemRowContent({
@@ -142,72 +132,27 @@ export default function PlanPreview({
   plan: LearningPlanDraftPlan;
 }) {
   const { resources } = useI18n();
-  const loadSummary = getPlanLoadSummary(plan);
-  const weeklyBuckets = getPlanWeeklyBuckets(plan);
   const nextTrainingPackage = getPlanNextTrainingPackage(plan);
-  const rhythmMode = getPlanRhythmMode(plan);
-  const [trainingDaysMin] = trainingDaysPerWeek(rhythmMode);
+  const rhythmSettings = getPlanRhythmSettings(plan);
   const problemIndex = buildProblemIndex(plan);
 
   return (
     <div className="plan-preview">
       <section className="execution-summary-strip" aria-label={resources.learningPlans.draftPreview}>
         <strong>
-          {resources.learningPlans.executionSummary(
-            plan.durationWeeks,
-            trainingDaysMin,
-            nextTrainingPackage?.estimatedMinutes ?? Math.ceil(plan.weeklyHours * 60 / trainingDaysMin),
+          {resources.learningPlans.rhythmConfigLine(
+            rhythmSettings.dailyProblemCount,
+            rhythmSettings.trainingDaysPerWeek,
           )}
         </strong>
-        {loadSummary && (
-          <span>
-            {resources.learningPlans.planRouteSummary(
-              loadSummary.plannedProblemCount,
-              plan.durationWeeks,
-              plan.weeklyHours,
-              formatLoadIntensity(String(loadSummary.intensity), resources),
-            )}
-          </span>
-        )}
+        <span>{resources.learningPlans.totalProblemCountLine(rhythmSettings.totalProblemCount)}</span>
+        <span>{resources.learningPlans.remainingWeeksLine(rhythmSettings.estimatedRemainingWeeks)}</span>
       </section>
-      <div className="summary-grid compact-summary">
-        <article className="summary-card">
-          <span>{resources.learningPlans.previewDuration}</span>
-          <strong>{resources.common.week(plan.durationWeeks)}</strong>
-        </article>
-        <article className="summary-card">
-          <span>{resources.learningPlans.previewLevel}</span>
-          <strong>{formatPlanLevel(plan.level, resources)}</strong>
-        </article>
-        <article className="summary-card">
-          <span>{resources.learningPlans.previewTime}</span>
-          <strong>{resources.common.hoursPerWeek(plan.weeklyHours)}</strong>
-        </article>
-        {loadSummary && (
-          <article className="summary-card">
-            <span>{resources.learningPlans.loadSummary}</span>
-            <strong>{formatLoadIntensity(String(loadSummary.intensity), resources)}</strong>
-          </article>
-        )}
-      </div>
-      {loadSummary && (
-        <section className="load-summary-strip" aria-label={resources.learningPlans.loadSummary}>
-          <strong>
-            {resources.learningPlans.planRouteSummary(
-              loadSummary.plannedProblemCount,
-              plan.durationWeeks,
-              plan.weeklyHours,
-              formatLoadIntensity(String(loadSummary.intensity), resources),
-            )}
-          </strong>
-          {loadSummary.suggestions[0] && <span>{loadSummary.suggestions[0]}</span>}
-        </section>
-      )}
       {nextTrainingPackage && (
         <section className="training-package-card" aria-label={resources.learningPlans.nextTrainingPackage}>
           <div className="plan-subsection-heading">
             <h2>{resources.learningPlans.nextTrainingPackage}</h2>
-            <span>{resources.common.week(nextTrainingPackage.weekIndex)}</span>
+            <span>{resources.learningPlans.remainingWeeksLine(rhythmSettings.estimatedRemainingWeeks)}</span>
           </div>
           <p>
             {resources.learningPlans.nextTrainingPackageLine(
@@ -240,50 +185,6 @@ export default function PlanPreview({
           )}
         </section>
       )}
-      {weeklyBuckets.length > 0 && (
-        <section className="weekly-plan-section" aria-label={resources.learningPlans.weeklyPlan}>
-          <div className="plan-subsection-heading">
-            <h2>{resources.learningPlans.weeklyPlan}</h2>
-          </div>
-          {weeklyBuckets.map((bucket) => (
-            <article className="weekly-plan-card" key={bucket.weekIndex}>
-              <div className="weekly-plan-heading">
-                <h3>{resources.learningPlans.weeklyPlanTitle(bucket.weekIndex, bucket.title)}</h3>
-                <span>
-                  {resources.learningPlans.weeklyBucketStats(
-                    bucket.plannedProblemCount,
-                    bucket.plannedLoadPoints,
-                  )}
-                </span>
-              </div>
-              {bucket.reviewAdvice && (
-                <p className="weekly-review-advice">
-                  {resources.learningPlans.weeklyReviewAdvice(bucket.reviewAdvice)}
-                </p>
-              )}
-              {bucket.problemSlugs.length > 0 ? (
-                <div className="problem-list compact-problems weekly-problems">
-                  {bucket.problemSlugs.map((slug, index) => {
-                    const indexedProblem = problemIndex.get(slug);
-                    return indexedProblem ? (
-                      <ProblemRow
-                        key={`${bucket.weekIndex}-${slug}-${index}`}
-                        onProblemSelect={onProblemSelect}
-                        phaseIndex={indexedProblem.phaseIndex}
-                        problem={indexedProblem.problem}
-                      />
-                    ) : (
-                      <MissingProblemRow key={`${bucket.weekIndex}-${slug}-${index}`} slug={slug} />
-                    );
-                  })}
-                </div>
-              ) : (
-                <p className="weekly-empty-note">{resources.learningPlans.weeklyReviewBuffer}</p>
-              )}
-            </article>
-          ))}
-        </section>
-      )}
       <section className="phase-detail-section" aria-label={resources.learningPlans.phaseDetails}>
         <div className="plan-subsection-heading">
           <h2>{resources.learningPlans.phaseDetails}</h2>
@@ -292,7 +193,6 @@ export default function PlanPreview({
           <section className="phase-block" key={phase.phaseIndex}>
             <div className="phase-heading">
               <h3>{phase.title}</h3>
-              <span>{resources.common.week(phase.durationWeeks)}</span>
             </div>
             <p>{phase.focus}</p>
             <div className="tag-row">

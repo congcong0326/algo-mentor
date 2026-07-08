@@ -320,7 +320,6 @@ export type LearningPlanLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
 export type LearningPlanDifficultyPreference = 'EASY' | 'MEDIUM' | 'HARD' | 'MIXED';
 export type LearningPlanDraftStatus = 'COLLECTING' | 'GENERATED' | 'CONFIRMED' | 'GENERATION_FAILED' | 'EXPIRED';
 export type LearningPlanStatus = 'ACTIVE' | 'ARCHIVED';
-export type LearningPlanRhythmMode = 'RECOMMENDED' | 'RELAXED' | 'SPRINT';
 export type LearningPlanCoveragePolicy =
   | 'FULL_ROUTE'
   | 'FULL_ROUTE_WITH_REVIEW_BUFFER'
@@ -380,16 +379,14 @@ export interface LearningPlanTrainingPackage {
   priorityProblemSlugs: string[];
 }
 
-export interface LearningPlanRhythmOption {
-  mode: LearningPlanRhythmMode;
-  durationWeeks: number;
-  weeklyHours: number;
-  trainingDaysPerWeekMin?: number;
-  trainingDaysPerWeekMax?: number;
-  dailyProblemCountMin?: number;
-  dailyProblemCountMax?: number;
-  coveragePolicy: LearningPlanCoveragePolicy;
-  loadSummary: LearningPlanLoadSummary;
+export interface LearningPlanRhythmSettings {
+  dailyProblemCount: number;
+  trainingDaysPerWeek: number;
+  totalProblemCount: number;
+  completedProblemCount: number;
+  skippedProblemCount: number;
+  remainingProblemCount: number;
+  estimatedRemainingWeeks: number;
 }
 
 export interface LearningPlanPaceSummary {
@@ -455,7 +452,7 @@ export interface LearningPlanTemplateSummaryResponse {
   matchedProblemCount: number;
   missingProblemCount: number;
   defaultLoadSummary?: LearningPlanLoadSummary;
-  rhythmOptions?: LearningPlanRhythmOption[];
+  defaultRhythmSettings?: LearningPlanRhythmSettings;
 }
 
 export interface LearningPlanTemplateProblemRefResponse {
@@ -500,10 +497,14 @@ export interface LearningPlanTemplateDetailResponse extends LearningPlanTemplate
 
 export interface LearningPlanTemplateDraftRequest {
   templateId: string;
-  durationWeeks?: number;
-  weeklyHours?: number;
   programmingLanguage?: string;
-  rhythmMode?: LearningPlanRhythmMode;
+  dailyProblemCount?: number;
+  trainingDaysPerWeek?: number;
+}
+
+export interface LearningPlanRhythmUpdateRequest {
+  dailyProblemCount: number;
+  trainingDaysPerWeek: number;
 }
 
 export interface LearningPlanMessageRequest {
@@ -563,6 +564,7 @@ export interface LearningPlanDraftPlan {
   loadSummary?: LearningPlanLoadSummary;
   weeklyBuckets?: LearningPlanWeeklyBucket[];
   nextTrainingPackage?: LearningPlanTrainingPackage;
+  rhythmSettings?: LearningPlanRhythmSettings;
 }
 
 export interface LearningPlanDraftResponse {
@@ -614,6 +616,7 @@ export interface LearningPlanDetailResponse extends LearningPlanDraftPlan {
   loadSummary?: LearningPlanLoadSummary;
   weeklyBuckets?: LearningPlanWeeklyBucket[];
   nextTrainingPackage?: LearningPlanTrainingPackage;
+  rhythmSettings?: LearningPlanRhythmSettings;
   paceSummary?: LearningPlanPaceSummary;
   livingContractSummary?: LearningPlanLivingContractSummary;
   createdAt: string;
