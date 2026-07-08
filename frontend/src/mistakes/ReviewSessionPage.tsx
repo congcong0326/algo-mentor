@@ -68,7 +68,9 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
   const revealed = Boolean(evaluation);
   const preferenceLoaded = Boolean(reviewPreference);
   const directRatingMode = reviewPreference?.aiSuggestionEnabled === false;
-  const canShowRatingButtons = preferenceLoaded && (directRatingMode || Boolean(evaluation));
+  const intervalPreviewsReady = intervalPreviews.length > 0;
+  const canShowRatingButtons = preferenceLoaded
+    && (directRatingMode ? Boolean(card) && intervalPreviewsReady : Boolean(evaluation));
   const progressLabel = useMemo(() => (
     queue.length > 0 ? `${Math.min(index + 1, queue.length)} / ${queue.length}` : '0 / 0'
   ), [index, queue.length]);

@@ -37,6 +37,7 @@ public record LearningPlanDetailResponse(
     LearningPlanRhythmSettings rhythmSettings,
     LearningPlanPaceSummary paceSummary,
     LearningPlanLivingContractSummary livingContractSummary,
+    boolean active,
     Instant createdAt,
     Instant updatedAt
 ) {

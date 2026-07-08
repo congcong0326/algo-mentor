@@ -141,7 +141,7 @@ describe('AppShell', () => {
         target: { value: 'en-US' },
       });
 
-      expect(screen.getByRole('button', { name: 'Dashboard' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Me' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Plans' })).toHaveAttribute('aria-pressed', 'true');
       expect(screen.queryByRole('button', { name: 'Problems' })).not.toBeInTheDocument();

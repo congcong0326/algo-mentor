@@ -993,6 +993,7 @@ function scoreFixture(overrides: Partial<PracticeCodeReviewDetail['scores']> = {
 const planFixture: LearningPlanDetailResponse = {
   id: 7,
   status: 'ACTIVE',
+  active: true,
   createdAt: '2026-06-25T00:00:00Z',
   updatedAt: '2026-06-25T00:00:00Z',
   title: '数组训练',

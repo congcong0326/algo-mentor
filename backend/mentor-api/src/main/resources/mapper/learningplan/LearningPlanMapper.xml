@@ -70,6 +70,17 @@
     </constructor>
   </resultMap>
 
+  <resultMap id="LearningPlanActivationRowMap"
+      type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanActivationRow">
+    <constructor>
+      <arg column="user_id" javaType="_long"/>
+      <arg column="plan_id" javaType="_long"/>
+      <arg column="activated_at" javaType="java.time.Instant"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
   <resultMap id="LearningPlanDraftRevisionRowMap"
       type="org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRevisionRow">
     <constructor>
@@ -379,6 +390,44 @@
     FROM learning_plan_contract_state
     WHERE user_id = #{userId}
       AND plan_id = #{planId}
+  </select>
+
+  <select id="findActiveSelectionByUserId" resultMap="LearningPlanActivationRowMap">
+    SELECT
+      user_id,
+      plan_id,
+      activated_at,
+      created_at,
+      updated_at
+    FROM learning_plan_active_selection
+    WHERE user_id = #{userId}
+  </select>
+
+  <select id="upsertActiveSelection" resultMap="LearningPlanActivationRowMap" affectData="true">
+    INSERT INTO learning_plan_active_selection (
+      user_id,
+      plan_id,
+      activated_at,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      #{userId},
+      #{planId},
+      #{activatedAt},
+      NOW(),
+      NOW()
+    )
+    ON CONFLICT (user_id) DO UPDATE
+    SET plan_id = EXCLUDED.plan_id,
+        activated_at = EXCLUDED.activated_at,
+        updated_at = NOW()
+    RETURNING
+      user_id,
+      plan_id,
+      activated_at,
+      created_at,
+      updated_at
   </select>
 
   <select id="pauseContractState" resultMap="LearningPlanContractStateRowMap" affectData="true">

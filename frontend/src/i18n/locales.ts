@@ -1328,7 +1328,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       validationDisplayNameRequired: 'Enter a display name.',
     },
     nav: {
-      home: 'Dashboard',
+      home: 'Home',
       my: 'Me',
       learningPlans: 'Plans',
       mistakes: 'Review Center',

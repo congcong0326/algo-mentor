@@ -581,6 +581,11 @@ export interface LearningPlanConfirmResponse {
   status: LearningPlanStatus;
 }
 
+export interface LearningPlanActivationResponse {
+  planId: number;
+  activatedAt: string;
+}
+
 export interface LearningPlanSummaryResponse {
   id: number;
   title: string;
@@ -607,6 +612,7 @@ export interface LearningPlanPageResponse {
   activeCount: number;
   archivedCount: number;
   latestCreatedAt?: string | null;
+  activePlanId?: number | null;
 }
 
 export interface LearningPlanDetailResponse extends LearningPlanDraftPlan {
@@ -619,8 +625,60 @@ export interface LearningPlanDetailResponse extends LearningPlanDraftPlan {
   rhythmSettings?: LearningPlanRhythmSettings;
   paceSummary?: LearningPlanPaceSummary;
   livingContractSummary?: LearningPlanLivingContractSummary;
+  active: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export type TodayPackState = 'NO_ACTIVE_PLAN' | 'READY' | 'DONE_TODAY' | 'PLAN_COMPLETED';
+export type TodayPackSectionType = 'CARRYOVER' | 'TODAY' | 'FUTURE';
+
+export interface TodayPackActivePlanResponse {
+  planId: number;
+  title: string;
+  activatedAt: string;
+  dailyProblemCount: number;
+  trainingDaysPerWeek: number;
+  remainingProblemCount: number;
+}
+
+export interface TodayPackRecommendedPlanResponse {
+  templateId: string;
+  title: string;
+  summary: string;
+}
+
+export interface TodayPackProblemResponse {
+  planId: number;
+  phaseIndex: number;
+  slug: string;
+  frontendId?: number | null;
+  title: string;
+  titleCn?: string | null;
+  difficulty?: ProblemDifficulty | string | null;
+  tags: string[];
+  progressStatus: PracticeProgressStatus;
+  scheduledDate: string;
+  carryoverDays: number;
+}
+
+export interface TodayPackSectionResponse {
+  type: TodayPackSectionType;
+  title: string;
+  date?: string | null;
+  problems: TodayPackProblemResponse[];
+}
+
+export interface TodayPackResponse {
+  state: TodayPackState;
+  localDate: string;
+  timezone: string;
+  packOffset: number;
+  activePlan?: TodayPackActivePlanResponse | null;
+  sections: TodayPackSectionResponse[];
+  notice?: string | null;
+  recommendedPlan?: TodayPackRecommendedPlanResponse | null;
+  nextPackDate?: string | null;
 }
 
 export interface LearningPlanExtensionDraft {

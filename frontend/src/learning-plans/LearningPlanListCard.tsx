@@ -1,4 +1,4 @@
-import { Activity, CalendarClock, Eye, Layers3, Plus, Trash2 } from 'lucide-react';
+import { Activity, CalendarClock, CalendarDays, Eye, Layers3, Plus, Trash2 } from 'lucide-react';
 import type {
   LearningPlanPageResponse,
 } from '../types/api';
@@ -16,7 +16,10 @@ interface LearningPlanListCardProps {
   page: LearningPlanPageResponse;
   selectedPlanId?: number;
   deletingPlanId?: number;
+  activatingPlanId?: number;
   onSelect?: (planId: number) => void;
+  onOpenTodayPack?: (planId: number) => void;
+  onActivate?: (planId: number) => void;
   onCreate: () => void;
   onDelete: (planId: number) => void;
   onPageChange: (page: number) => void;
@@ -54,7 +57,10 @@ export default function LearningPlanListCard({
   page,
   selectedPlanId,
   deletingPlanId,
+  activatingPlanId,
   onSelect,
+  onOpenTodayPack,
+  onActivate,
   onCreate,
   onDelete,
   onPageChange,
@@ -114,6 +120,8 @@ export default function LearningPlanListCard({
               <div className="plan-list-stack" role="list" aria-label={resources.learningPlans.listTitle}>
                 {page.items.map((plan) => {
                   const isDeleting = deletingPlanId === plan.id;
+                  const isActivePlan = page.activePlanId === plan.id;
+                  const isActivating = activatingPlanId === plan.id;
 
                   return (
                     <article
@@ -126,6 +134,7 @@ export default function LearningPlanListCard({
                       <div className="plan-row-content">
                         <div className="plan-title-line">
                           <strong>{plan.title}</strong>
+                          {isActivePlan && <span className="status-badge current-plan-badge">当前采用</span>}
                           <span className="status-badge">{formatPlanStatus(plan.status, resources)}</span>
                         </div>
                         <div className="plan-meta-row" aria-label={resources.learningPlans.planParameters}>
@@ -138,6 +147,16 @@ export default function LearningPlanListCard({
                         </div>
                       </div>
                       <div className="plan-row-actions">
+                        {onOpenTodayPack && isActivePlan && (
+                          <button
+                            className="secondary-button compact"
+                            onClick={() => onOpenTodayPack(plan.id)}
+                            type="button"
+                          >
+                            <CalendarDays aria-hidden="true" />
+                            <span>今日题包</span>
+                          </button>
+                        )}
                         {onSelect && (
                           <button
                             aria-label={resources.learningPlans.viewPlan(plan.title)}
@@ -147,6 +166,16 @@ export default function LearningPlanListCard({
                             type="button"
                           >
                             <Eye aria-hidden="true" />
+                          </button>
+                        )}
+                        {onActivate && !isActivePlan && (
+                          <button
+                            className="secondary-button compact"
+                            disabled={isActivating}
+                            onClick={() => onActivate(plan.id)}
+                            type="button"
+                          >
+                            {isActivating ? '切换中' : '采用'}
                           </button>
                         )}
                         <button

@@ -7,12 +7,15 @@ import {
   learningPlanPracticeChatRouteFromPath,
   learningPlanPracticeSubmissionsPath,
   learningPlanPracticeSubmissionsRouteFromPath,
+  learningPlanTodayPackPath,
 } from './app/navigation';
 import LearningPlanCreatePage from './learning-plans/LearningPlanCreatePage';
 import LearningPlanDetail from './learning-plans/LearningPlanDetail';
 import LearningPlanListCard from './learning-plans/LearningPlanListCard';
+import { TodayPackPanel } from './TodayPackPage';
 import { useI18n } from './i18n/I18nProvider';
 import {
+  activateLearningPlan,
   deleteLearningPlan,
   getLearningPlanDetail,
   getLearningPlans,
@@ -22,6 +25,7 @@ import type { LearningPlanConfirmResponse, LearningPlanDetailResponse, LearningP
 
 interface LearningPlansProps {
   pathname: string;
+  search: string;
   onNavigate: (pathname: string, options?: { replace?: boolean }) => void;
 }
 
@@ -38,16 +42,18 @@ const INITIAL_PLANS_PAGE: LearningPlanPageResponse = {
 const PracticeChatWorkbench = lazy(() => import('./learning-plans/PracticeChatWorkbench'));
 const PracticeSubmissionHistoryPage = lazy(() => import('./learning-plans/PracticeSubmissionHistoryPage'));
 
-export default function LearningPlans({ pathname, onNavigate }: LearningPlansProps) {
+export default function LearningPlans({ pathname, search, onNavigate }: LearningPlansProps) {
   const { resources } = useI18n();
   const [plansPage, setPlansPage] = useState<LearningPlanPageResponse>(INITIAL_PLANS_PAGE);
   const [planDetail, setPlanDetail] = useState<LearningPlanDetailResponse>();
   const [contractFeedback, setContractFeedback] = useState('');
   const [page, setPage] = useState(1);
   const [deletingPlanId, setDeletingPlanId] = useState<number>();
+  const [activatingPlanId, setActivatingPlanId] = useState<number>();
   const [error, setError] = useState('');
   const practiceChatRoute = learningPlanPracticeChatRouteFromPath(pathname);
   const practiceSubmissionsRoute = learningPlanPracticeSubmissionsRouteFromPath(pathname);
+  const isTodayPackMode = new URLSearchParams(search).get('pack') === 'today';
   const selectedPlanId = practiceChatRoute?.planId
     ?? practiceSubmissionsRoute?.planId
     ?? learningPlanIdFromPath(pathname);
@@ -84,6 +90,12 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
 
     return () => controller.abort();
   }, [selectedPlanId]);
+
+  useEffect(() => {
+    if (planDetail && isTodayPackMode && !practiceChatRoute && !practiceSubmissionsRoute && !planDetail.active) {
+      onNavigate(learningPlanDetailPath(planDetail.id), { replace: true });
+    }
+  }, [isTodayPackMode, onNavigate, planDetail, practiceChatRoute, practiceSubmissionsRoute]);
 
   async function refreshPlans(nextPage = page, signal?: AbortSignal) {
     const nextPlans = requireApiData(
@@ -130,6 +142,27 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
     }
   }
 
+  async function activatePlan(planId: number) {
+    if (!window.confirm('今日题包将按新计划生成，原计划进度不会被删除。')) {
+      return;
+    }
+
+    setActivatingPlanId(planId);
+    setError('');
+    try {
+      requireApiData(await activateLearningPlan(planId), '学习计划切换失败');
+      if (planDetail?.id === planId) {
+        await refreshCurrentPlanDetail(planId);
+      } else {
+        await refreshPlans(page);
+      }
+    } catch (nextError) {
+      setError(nextError instanceof Error ? nextError.message : '学习计划切换失败');
+    } finally {
+      setActivatingPlanId(undefined);
+    }
+  }
+
   function handlePlanSaved(_confirmed: LearningPlanConfirmResponse) {
     onNavigate(APP_ROUTES.learningPlans, { replace: true });
   }
@@ -165,14 +198,19 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
               <PracticeChatWorkbench
                 onBack={() => {
                   void refreshCurrentPlanDetail(planDetail.id).finally(() => {
-                    onNavigate(learningPlanDetailPath(planDetail.id));
+                    onNavigate(isTodayPackMode
+                      ? learningPlanTodayPackPath(planDetail.id)
+                      : learningPlanDetailPath(planDetail.id));
                   });
                 }}
-                onOpenSubmissions={() => onNavigate(learningPlanPracticeSubmissionsPath(
-                  planDetail.id,
-                  practiceChatRoute.phaseIndex,
-                  practiceChatRoute.problemSlug,
-                ))}
+                onOpenSubmissions={() => {
+                  const submissionsPath = learningPlanPracticeSubmissionsPath(
+                    planDetail.id,
+                    practiceChatRoute.phaseIndex,
+                    practiceChatRoute.problemSlug,
+                  );
+                  onNavigate(isTodayPackMode ? `${submissionsPath}?pack=today` : submissionsPath);
+                }}
                 onProgressUpdated={() => refreshCurrentPlanDetail(planDetail.id)}
                 phaseIndex={practiceChatRoute.phaseIndex}
                 plan={planDetail}
@@ -188,24 +226,37 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
             )}
             >
               <PracticeSubmissionHistoryPage
-                onBackToChat={() => onNavigate(learningPlanPracticeChatPath(
-                  planDetail.id,
-                  practiceSubmissionsRoute.phaseIndex,
-                  practiceSubmissionsRoute.problemSlug,
-                ))}
+                onBackToChat={() => {
+                  const chatPath = learningPlanPracticeChatPath(
+                    planDetail.id,
+                    practiceSubmissionsRoute.phaseIndex,
+                    practiceSubmissionsRoute.problemSlug,
+                  );
+                  onNavigate(isTodayPackMode ? `${chatPath}?pack=today` : chatPath);
+                }}
                 phaseIndex={practiceSubmissionsRoute.phaseIndex}
                 plan={planDetail}
                 problemSlug={practiceSubmissionsRoute.problemSlug}
               />
             </Suspense>
+          ) : isTodayPackMode && planDetail.active ? (
+            <TodayPackPanel
+              contractFeedback={contractFeedback}
+              onNavigate={onNavigate}
+              onPlanUpdated={() => {
+                setContractFeedback('');
+                return refreshCurrentPlanDetail(planDetail.id);
+              }}
+              plan={planDetail}
+            />
           ) : (
             <LearningPlanDetail
-              contractFeedback={contractFeedback}
               onBack={() => onNavigate(APP_ROUTES.learningPlans)}
               onPlanUpdated={() => {
                 setContractFeedback('');
                 return refreshCurrentPlanDetail(planDetail.id);
               }}
+              onActivatePlan={() => activatePlan(planDetail.id)}
               onProblemSelect={(phaseIndex, problemSlug) => {
                 onNavigate(learningPlanPracticeChatPath(planDetail.id, phaseIndex, problemSlug));
               }}
@@ -223,12 +274,15 @@ export default function LearningPlans({ pathname, onNavigate }: LearningPlansPro
 
       <LearningPlanListCard
         deletingPlanId={deletingPlanId}
+        activatingPlanId={activatingPlanId}
         onCreate={() => onNavigate(APP_ROUTES.learningPlanNew)}
+        onActivate={activatePlan}
         onDelete={removePlan}
         onPageChange={(nextPage) => {
           setPage(nextPage);
           void refreshPlans(nextPage);
         }}
+        onOpenTodayPack={(planId) => onNavigate(learningPlanTodayPackPath(planId))}
         onSelect={(planId) => onNavigate(learningPlanDetailPath(planId))}
         page={plansPage}
       />

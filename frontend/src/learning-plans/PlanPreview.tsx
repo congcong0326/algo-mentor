@@ -38,8 +38,10 @@ function formatProgressStatus(status: PracticeProgressStatus, resources: ReturnT
 
 function ProblemRowContent({
   problem,
+  todayPack,
 }: {
   problem: PlanPreviewProblem;
+  todayPack?: boolean;
 }) {
   const { locale, resources } = useI18n();
   const progressStatus = hasProgressStatus(problem) ? problem.progressStatus : undefined;
@@ -60,6 +62,7 @@ function ProblemRowContent({
             {formatProgressStatus(progressStatus, resources)}
           </span>
         ) : null}
+        {todayPack ? <span className="status-badge today-pack-match-badge">此题在今日题包中</span> : null}
       </span>
     </>
   );
@@ -84,10 +87,12 @@ function ProblemRow({
   onProblemSelect,
   phaseIndex,
   problem,
+  todayPack,
 }: {
   onProblemSelect?: (phaseIndex: number, problemSlug: string) => void;
   phaseIndex: number;
   problem: PlanPreviewProblem;
+  todayPack?: boolean;
 }) {
   return onProblemSelect ? (
     <button
@@ -95,11 +100,11 @@ function ProblemRow({
       onClick={() => onProblemSelect(phaseIndex, problem.slug)}
       type="button"
     >
-      <ProblemRowContent problem={problem} />
+      <ProblemRowContent problem={problem} todayPack={todayPack} />
     </button>
   ) : (
     <div className="problem-row">
-      <ProblemRowContent problem={problem} />
+      <ProblemRowContent problem={problem} todayPack={todayPack} />
     </div>
   );
 }
@@ -124,20 +129,24 @@ function MissingProblemRow({
   );
 }
 
-export default function PlanPreview({
-  onProblemSelect,
-  plan,
-}: {
+interface PlanPreviewProps {
   onProblemSelect?: (phaseIndex: number, problemSlug: string) => void;
   plan: LearningPlanDraftPlan;
-}) {
+  todayPackProblemKeys?: ReadonlySet<string>;
+}
+
+export function PlanPackageOverview({
+  onProblemSelect,
+  plan,
+  todayPackProblemKeys,
+}: PlanPreviewProps) {
   const { resources } = useI18n();
   const nextTrainingPackage = getPlanNextTrainingPackage(plan);
   const rhythmSettings = getPlanRhythmSettings(plan);
   const problemIndex = buildProblemIndex(plan);
 
   return (
-    <div className="plan-preview">
+    <div className="plan-package-overview">
       <section className="execution-summary-strip" aria-label={resources.learningPlans.draftPreview}>
         <strong>
           {resources.learningPlans.rhythmConfigLine(
@@ -175,6 +184,7 @@ export default function PlanPreview({
                       onProblemSelect={onProblemSelect}
                       phaseIndex={indexedProblem.phaseIndex}
                       problem={indexedProblem.problem}
+                      todayPack={todayPackProblemKeys?.has(problemKey(plan, indexedProblem.phaseIndex, slug))}
                     />
                   ) : (
                     <MissingProblemRow key={`${slug}-${index}`} slug={slug} />
@@ -185,34 +195,71 @@ export default function PlanPreview({
           )}
         </section>
       )}
-      <section className="phase-detail-section" aria-label={resources.learningPlans.phaseDetails}>
-        <div className="plan-subsection-heading">
-          <h2>{resources.learningPlans.phaseDetails}</h2>
-        </div>
-        {plan.phases.map((phase) => (
-          <section className="phase-block" key={phase.phaseIndex}>
-            <div className="phase-heading">
-              <h3>{phase.title}</h3>
-            </div>
-            <p>{phase.focus}</p>
-            <div className="tag-row">
-              {phase.recommendedTags.map((tag) => (
-                <span className="tag-pill" key={tag}>{formatTopicTag(tag, resources)}</span>
-              ))}
-            </div>
-            <div className="problem-list compact-problems">
-              {phase.problems.map((problem) => (
-                <ProblemRow
-                  key={problem.slug}
-                  onProblemSelect={onProblemSelect}
-                  phaseIndex={phase.phaseIndex}
-                  problem={problem}
-                />
-              ))}
-            </div>
-          </section>
-        ))}
-      </section>
     </div>
   );
+}
+
+export function PlanPhaseDetails({
+  onProblemSelect,
+  plan,
+  todayPackProblemKeys,
+}: PlanPreviewProps) {
+  const { resources } = useI18n();
+
+  return (
+    <section className="phase-detail-section" aria-label={resources.learningPlans.phaseDetails}>
+      <div className="plan-subsection-heading">
+        <h2>{resources.learningPlans.phaseDetails}</h2>
+      </div>
+      {plan.phases.map((phase) => (
+        <section className="phase-block" key={phase.phaseIndex}>
+          <div className="phase-heading">
+            <h3>{phase.title}</h3>
+          </div>
+          <p>{phase.focus}</p>
+          <div className="tag-row">
+            {phase.recommendedTags.map((tag) => (
+              <span className="tag-pill" key={tag}>{formatTopicTag(tag, resources)}</span>
+            ))}
+          </div>
+          <div className="problem-list compact-problems">
+            {phase.problems.map((problem) => (
+              <ProblemRow
+                key={problem.slug}
+                onProblemSelect={onProblemSelect}
+                phaseIndex={phase.phaseIndex}
+                problem={problem}
+                todayPack={todayPackProblemKeys?.has(problemKey(plan, phase.phaseIndex, problem.slug))}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
+    </section>
+  );
+}
+
+export default function PlanPreview({
+  onProblemSelect,
+  plan,
+  todayPackProblemKeys,
+}: PlanPreviewProps) {
+  return (
+    <div className="plan-preview">
+      <PlanPackageOverview
+        onProblemSelect={onProblemSelect}
+        plan={plan}
+        todayPackProblemKeys={todayPackProblemKeys}
+      />
+      <PlanPhaseDetails
+        onProblemSelect={onProblemSelect}
+        plan={plan}
+        todayPackProblemKeys={todayPackProblemKeys}
+      />
+    </div>
+  );
+}
+
+function problemKey(plan: LearningPlanDraftPlan & { id?: number }, phaseIndex: number, slug: string) {
+  return 'id' in plan ? `${plan.id}:${phaseIndex}:${slug}` : `${phaseIndex}:${slug}`;
 }

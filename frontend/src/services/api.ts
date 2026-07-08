@@ -11,6 +11,7 @@ import type {
   CurrentUser,
   HealthStatus,
   LearningPlanConfirmResponse,
+  LearningPlanActivationResponse,
   LearningPlanCreateDraftRequest,
   LearningPlanDetailResponse,
   LearningPlanDraftResponse,
@@ -23,6 +24,7 @@ import type {
   LearningPlanTemplateDetailResponse,
   LearningPlanTemplateDraftRequest,
   LearningPlanTemplateSummaryResponse,
+  TodayPackResponse,
   PracticeMessageRequest,
   PracticeMessage,
   PracticeActiveRun,
@@ -887,6 +889,75 @@ export async function updateLearningPlanRhythm(
   return response.json();
 }
 
+export async function getTodayPack(
+  timezone?: string,
+  packOffset = 0,
+  signal?: AbortSignal,
+): Promise<ApiResponse<TodayPackResponse>> {
+  const response = await apiFetch(`/api/today-pack${toQueryString({ timezone, packOffset })}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Today pack request failed');
+  }
+
+  return response.json();
+}
+
+export async function activateRecommendedTodayPack(
+  timezone?: string,
+): Promise<ApiResponse<TodayPackResponse>> {
+  const response = await apiFetch('/api/today-pack/recommended-activation', {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ timezone }),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Recommended today pack activation request failed');
+  }
+
+  return response.json();
+}
+
+export async function activateLearningPlan(planId: number): Promise<ApiResponse<LearningPlanActivationResponse>> {
+  const response = await apiFetch(`/api/learning-plans/${planId}/activation`, {
+    method: 'POST',
+    headers: jsonHeaders,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learning plan activation request failed');
+  }
+
+  return response.json();
+}
+
+export async function restartTodayPack(
+  planId: number,
+  timezone?: string,
+): Promise<ApiResponse<TodayPackResponse>> {
+  const response = await apiFetch(`/api/learning-plans/${planId}/activation/restart`, {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ timezone }),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Today pack restart request failed');
+  }
+
+  return response.json();
+}
+
 export async function getLearningPlanTemplates(
   signal?: AbortSignal,
 ): Promise<ApiResponse<LearningPlanTemplateSummaryResponse[]>> {
@@ -1136,17 +1207,23 @@ interface MistakeNoteListQuery {
   offset?: number;
 }
 
+interface TodayPackQuery {
+  timezone?: string;
+  packOffset?: number;
+}
+
 type QueryParams =
   | ProblemListQuery
   | LearningPlanListQuery
   | PracticeSessionQuery
   | AdminUserListQuery
-  | MistakeNoteListQuery;
+  | MistakeNoteListQuery
+  | TodayPackQuery;
 
 function toQueryString(query: QueryParams): string {
   const params = new URLSearchParams();
   Object.entries(query).forEach(([key, value]) => {
-    if (value === undefined || value === '') {
+    if (value === undefined || value === null || value === '') {
       return;
     }
     params.set(key, String(value));

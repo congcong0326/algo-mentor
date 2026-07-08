@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanActivationRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRevisionRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanExtensionRevisionRow;
@@ -67,6 +68,13 @@ public interface LearningPlanMapper {
   LearningPlanRow findPlanByIdForUserForUpdate(@Param("id") long id, @Param("userId") long userId);
 
   LearningPlanContractStateRow findContractStateByPlan(@Param("userId") long userId, @Param("planId") long planId);
+
+  LearningPlanActivationRow findActiveSelectionByUserId(@Param("userId") long userId);
+
+  LearningPlanActivationRow upsertActiveSelection(
+      @Param("userId") long userId,
+      @Param("planId") long planId,
+      @Param("activatedAt") Instant activatedAt);
 
   LearningPlanContractStateRow pauseContractState(
       @Param("userId") long userId,

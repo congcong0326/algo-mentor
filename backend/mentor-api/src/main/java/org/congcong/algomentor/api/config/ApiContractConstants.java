@@ -67,6 +67,16 @@ public final class ApiContractConstants {
   public static final String LEARNING_PLANS_BASE_PATH = "/api/learning-plans";
 
   /**
+   * 今日题包接口根路径。
+   */
+  public static final String TODAY_PACK_BASE_PATH = "/api/today-pack";
+
+  /**
+   * 今日题包推荐计划一键生成并激活路径。
+   */
+  public static final String TODAY_PACK_RECOMMENDED_ACTIVATION_PATH = "/recommended-activation";
+
+  /**
    * 学习计划模板接口根路径。
    */
   public static final String LEARNING_PLAN_TEMPLATES_BASE_PATH = "/api/learning-plan-templates";
@@ -144,6 +154,16 @@ public final class ApiContractConstants {
    * 学习计划训练节奏更新路径。
    */
   public static final String LEARNING_PLAN_RHYTHM_PATH = "/{planId}/rhythm";
+
+  /**
+   * 当前采用计划切换路径。
+   */
+  public static final String LEARNING_PLAN_ACTIVATION_PATH = "/{planId}/activation";
+
+  /**
+   * 当前采用计划今日题包重新排布路径。
+   */
+  public static final String LEARNING_PLAN_ACTIVATION_RESTART_PATH = "/{planId}/activation/restart";
 
   /**
    * 题目练习会话接口根路径。

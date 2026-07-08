@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { LearningPlanPageResponse } from '../types/api';
 import LearningPlanListCard from './LearningPlanListCard';
@@ -25,6 +25,7 @@ describe('LearningPlanListCard', () => {
     activeCount: 8,
     archivedCount: 4,
     latestCreatedAt: '2026-06-22T00:00:00Z',
+    activePlanId: 900,
   };
 
   it('renders plan content on the left and actions on the right', () => {
@@ -146,5 +147,47 @@ describe('LearningPlanListCard', () => {
 
     expect(screen.getByRole('button', { name: '删除 四周 Java 算法面试冲刺计划' })).toBeDisabled();
     expect(screen.getByRole('button', { name: '删除 四周 Java 算法面试冲刺计划' })).toHaveAttribute('title', '删除中');
+  });
+
+  it('opens the today pack from the active plan row only', () => {
+    const onOpenTodayPack = vi.fn();
+    render(
+      <LearningPlanListCard
+        deletingPlanId={undefined}
+        onCreate={vi.fn()}
+        onDelete={vi.fn()}
+        onOpenTodayPack={onOpenTodayPack}
+        onPageChange={vi.fn()}
+        onSelect={vi.fn()}
+        page={{
+          ...page,
+          items: [
+            ...page.items,
+            {
+              id: 901,
+              title: '备用动态规划计划',
+              intent: 'TOPIC_BREAKTHROUGH',
+              goal: '补动态规划',
+              durationWeeks: 3,
+              level: 'INTERMEDIATE',
+              programmingLanguage: 'Java',
+              weeklyHours: 4,
+              status: 'ACTIVE',
+              createdAt: '2026-06-23T00:00:00Z',
+            },
+          ],
+          total: 2,
+        }}
+        selectedPlanId={undefined}
+      />,
+    );
+
+    expect(within(screen.getByTestId('learning-plan-row-900')).getByRole('button', { name: '今日题包' }))
+      .toBeInTheDocument();
+    expect(within(screen.getByTestId('learning-plan-row-901')).queryByRole('button', { name: '今日题包' }))
+      .not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '今日题包' }));
+    expect(onOpenTodayPack).toHaveBeenCalledWith(900);
   });
 });

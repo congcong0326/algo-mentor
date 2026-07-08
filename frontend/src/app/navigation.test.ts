@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  learningPlanTodayPackPath,
   learningPlanPracticeSubmissionsPath,
   learningPlanPracticeSubmissionsRouteFromPath,
   pathForView,
@@ -7,6 +8,10 @@ import {
 } from './navigation';
 
 describe('learning plan practice submissions navigation', () => {
+  it('builds the today pack detail entry route', () => {
+    expect(learningPlanTodayPackPath(900)).toBe('/learning-plans/900?pack=today');
+  });
+
   it('builds and parses the practice submissions route', () => {
     const path = learningPlanPracticeSubmissionsPath(900, 1, 'two sum');
 

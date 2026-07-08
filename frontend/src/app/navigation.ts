@@ -132,6 +132,10 @@ export function learningPlanDetailPath(planId: number): string {
   return `${APP_ROUTES.learningPlans}/${planId}`;
 }
 
+export function learningPlanTodayPackPath(planId: number): string {
+  return `${learningPlanDetailPath(planId)}?pack=today`;
+}
+
 export function learningPlanIdFromPath(pathname: string): number | undefined {
   const match = LEARNING_PLAN_DETAIL_PATTERN.exec(pathname);
   if (!match) {

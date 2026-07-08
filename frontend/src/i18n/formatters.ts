@@ -53,7 +53,7 @@ export function formatTopicTag(tag: string, resources: LocaleResources): string 
 }
 
 export function formatDifficulty(
-  difficulty: ProblemDifficulty | LearningPlanDifficultyPreference | string | undefined,
+  difficulty: ProblemDifficulty | LearningPlanDifficultyPreference | string | null | undefined,
   resources: LocaleResources,
 ): string {
   if (!difficulty) {

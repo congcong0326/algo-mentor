@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { LearningPlanDetailResponse, LearningPlanDraftPlan } from '../types/api';
-import PlanPreview from './PlanPreview';
+import PlanPreview, { PlanPhaseDetails } from './PlanPreview';
 
 afterEach(cleanup);
 
@@ -40,6 +40,15 @@ describe('PlanPreview', () => {
 
     expect(screen.getByText('unknown-slug')).toBeInTheDocument();
     expect(screen.getByText('模板题目暂未匹配，先按 slug 记录。')).toBeInTheDocument();
+  });
+
+  it('renders phase details without the package overview when used alone', () => {
+    render(<PlanPhaseDetails plan={draftPlan} />);
+
+    expect(screen.getByRole('heading', { name: '阶段详情' })).toBeInTheDocument();
+    expect(screen.getByText('两数之和')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '下一次训练包' })).not.toBeInTheDocument();
+    expect(screen.queryByText('新题 1 道 · 预计 60 分钟')).not.toBeInTheDocument();
   });
 });
 
@@ -114,6 +123,7 @@ const detailPlan: LearningPlanDetailResponse = {
   ...draftPlan,
   id: 88,
   status: 'ACTIVE',
+  active: true,
   createdAt: '2026-06-25T00:00:00Z',
   updatedAt: '2026-06-25T00:00:00Z',
   phases: [{

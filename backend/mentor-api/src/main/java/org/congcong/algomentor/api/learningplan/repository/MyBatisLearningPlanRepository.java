@@ -11,10 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanMapper;
+import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanActivationRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanContractStateRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanDraftRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanRow;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivation;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivationRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractState;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractStateRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
@@ -31,7 +34,8 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatu
 import org.springframework.transaction.annotation.Transactional;
 
 public class MyBatisLearningPlanRepository
-    implements LearningPlanDraftRepository, LearningPlanRepository, LearningPlanContractStateRepository {
+    implements LearningPlanDraftRepository, LearningPlanRepository, LearningPlanContractStateRepository,
+        LearningPlanActivationRepository {
 
   private static final TypeReference<List<String>> STRING_LIST = new TypeReference<>() {
   };
@@ -115,6 +119,17 @@ public class MyBatisLearningPlanRepository
   @Override
   public Optional<LearningPlanContractState> findByPlan(long userId, long planId) {
     return Optional.ofNullable(mapper.findContractStateByPlan(userId, planId)).map(this::toContractState);
+  }
+
+  @Override
+  public Optional<LearningPlanActivation> findSelectionByUserId(long userId) {
+    return Optional.ofNullable(mapper.findActiveSelectionByUserId(userId)).map(this::toActivation);
+  }
+
+  @Override
+  @Transactional
+  public LearningPlanActivation upsert(long userId, long planId, Instant activatedAt) {
+    return toActivation(mapper.upsertActiveSelection(userId, planId, activatedAt));
   }
 
   @Override
@@ -298,6 +313,15 @@ public class MyBatisLearningPlanRepository
         row.closedOut(),
         row.frozenEstimatedCompletionDate(),
         row.lastRebalanceNoticeAt(),
+        row.createdAt(),
+        row.updatedAt());
+  }
+
+  private LearningPlanActivation toActivation(LearningPlanActivationRow row) {
+    return new LearningPlanActivation(
+        row.userId(),
+        row.planId(),
+        row.activatedAt(),
         row.createdAt(),
         row.updatedAt());
   }

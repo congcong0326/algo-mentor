@@ -48,6 +48,10 @@ public final class LearningPlanResponseMapper {
   }
 
   public static LearningPlanPageResponse toPageResponse(LearningPlanPage page) {
+    return toPageResponse(page, null);
+  }
+
+  public static LearningPlanPageResponse toPageResponse(LearningPlanPage page, Long activePlanId) {
     return new LearningPlanPageResponse(
         page.items().stream().map(LearningPlanResponseMapper::toSummaryResponse).toList(),
         page.total(),
@@ -55,7 +59,8 @@ public final class LearningPlanResponseMapper {
         page.pageSize(),
         page.activeCount(),
         page.archivedCount(),
-        page.latestCreatedAt());
+        page.latestCreatedAt(),
+        activePlanId);
   }
 
   public static LearningPlanDetailResponse toDetailResponse(LearningPlan plan) {
@@ -82,6 +87,17 @@ public final class LearningPlanResponseMapper {
       LearningPlanLoadService loadService,
       LearningPlanContractService contractService,
       LearningPlanContractState contractState
+  ) {
+    return toDetailResponse(plan, progress, loadService, contractService, contractState, false);
+  }
+
+  public static LearningPlanDetailResponse toDetailResponse(
+      LearningPlan plan,
+      List<PracticeProgress> progress,
+      LearningPlanLoadService loadService,
+      LearningPlanContractService contractService,
+      LearningPlanContractState contractState,
+      boolean active
   ) {
     LearningPlanDraftPlan snapshot = plan.plan();
     Map<ProgressKey, PracticeProgressStatus> progressByProblem = progressByProblem(progress);
@@ -134,6 +150,7 @@ public final class LearningPlanResponseMapper {
         contractService.summarize(plan, progress, contractState == null
             ? LearningPlanContractState.empty(plan.userId(), plan.id())
             : contractState),
+        active,
         plan.createdAt(),
         plan.updatedAt());
   }

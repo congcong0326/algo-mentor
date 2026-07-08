@@ -10,6 +10,7 @@ import type {
   PracticeCodeReviewSummary,
   PracticeMessage,
   PracticeSessionResponse,
+  TodayPackResponse,
 } from './types/api';
 
 let stubbedLocalStorage: Storage | undefined;
@@ -201,6 +202,9 @@ describe('App', () => {
         }));
         return Promise.resolve(authenticatedUserResponse());
       }
+      if (isTodayPackUrl(url)) {
+        return Promise.resolve(todayPackApiResponse());
+      }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
     vi.stubGlobal('fetch', fetchMock);
@@ -265,6 +269,9 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(authenticatedUserResponse());
       }
+      if (isTodayPackUrl(url)) {
+        return Promise.resolve(todayPackApiResponse());
+      }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
     vi.stubGlobal('fetch', fetchMock);
@@ -280,7 +287,7 @@ describe('App', () => {
     }));
   });
 
-  it('defaults authenticated users to the dashboard home page', async () => {
+  it('defaults authenticated users to the home entry page', async () => {
     const fetchMock = mockAuthenticatedAppFetch();
     vi.stubGlobal('fetch', fetchMock);
     window.history.replaceState({}, '', '/');
@@ -288,15 +295,58 @@ describe('App', () => {
     render(<App />);
 
     expect(await screen.findByText('User Name')).toBeInTheDocument();
-    expect(screen.getByRole('region', { name: '首页' })).toHaveClass('home-empty');
+    expect(await screen.findByRole('article', { name: '首页' })).toHaveClass('today-pack-home');
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '我的' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '去方案页创建或采用一个' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '一键生成并激活' })).not.toBeInTheDocument();
+    expect(screen.queryByText('两数之和')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Start Reviewing' })).not.toBeInTheDocument();
     expect(screen.queryByRole('img', { name: '能力雷达图' })).not.toBeInTheDocument();
     expect(fetchMock.mock.calls.some(([url]) => url === '/api/abilities/profile')).toBe(false);
     expect(window.location.pathname).toBe('/');
+  });
+
+  it('opens the active plan today pack from the authenticated home page', async () => {
+    const fetchMock = vi.fn((url: string) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(authenticatedUserResponse());
+      }
+      if (isTodayPackUrl(url)) {
+        return Promise.resolve(todayPackApiResponse(activeTodayPack()));
+      }
+      if (url === '/api/learning-plans/900') {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: learningPlanDetail({ active: true }),
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
+      }
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/');
+
+    render(<App />);
+
+    expect(await screen.findByRole('article', { name: '首页' })).toHaveClass('today-pack-home');
+    expect(screen.getByText('今日待练 1 题')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '开始今日训练' }));
+
+    expect(window.location.pathname).toBe('/learning-plans/900');
+    expect(window.location.search).toBe('?pack=today');
+    expect(await screen.findByRole('article', { name: '今日题包' })).toHaveClass('today-pack-page');
+    expect(screen.getByText('路线进度')).toBeInTheDocument();
+    expect(screen.getByText('本周节奏')).toBeInTheDocument();
+    expect(screen.getByText('正常推进')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '调整节奏' }));
+    expect(screen.getByRole('dialog', { name: '调整节奏' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '下一次训练包' })).not.toBeInTheDocument();
+    expect(screen.queryByText('新题 1 道 · 预计 45 分钟')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /两数之和/ })).toHaveLength(1);
   });
 
   it('shows the default hot-tag ability radar on the my page', async () => {
@@ -525,6 +575,9 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(userWithoutDebugPermissionResponse());
       }
+      if (isTodayPackUrl(url)) {
+        return Promise.resolve(todayPackApiResponse());
+      }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
     vi.stubGlobal('fetch', fetchMock);
@@ -533,7 +586,7 @@ describe('App', () => {
     render(<App />);
 
     expect(await screen.findByText('User Name')).toBeInTheDocument();
-    expect(screen.getByRole('region', { name: '首页' })).toHaveClass('home-empty');
+    expect(await screen.findByRole('article', { name: '首页' })).toHaveClass('today-pack-home');
     expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
     expect(window.location.pathname).toBe('/');
   });
@@ -1145,7 +1198,7 @@ describe('App', () => {
 
     expect(screen.getByRole('heading', { name: '训练方案' })).toBeInTheDocument();
     expect(screen.getByText('基础题型恢复')).toBeInTheDocument();
-    expect(screen.getByText('两数之和')).toBeInTheDocument();
+    expect(screen.getAllByText('两数之和').length).toBeGreaterThan(0);
 
     fireEvent.click(screen.getByRole('button', { name: '保存方案' }));
 
@@ -1188,6 +1241,84 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/learning-plans');
     expect(await screen.findByRole('heading', { name: '方案库' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
+  });
+
+  it('opens the today pack from the active plan row while the view button keeps the global detail', async () => {
+    const fetchMock = mockLearningPlanFetch();
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    const planRow = await screen.findByTestId('learning-plan-row-900');
+    fireEvent.click(within(planRow).getByRole('button', { name: '今日题包' }));
+
+    expect(window.location.pathname).toBe('/learning-plans/900');
+    expect(window.location.search).toBe('?pack=today');
+    expect(await screen.findByRole('article', { name: '今日题包' })).toHaveClass('today-pack-page');
+    expect(screen.queryByRole('heading', { name: '下一次训练包' })).not.toBeInTheDocument();
+    expect(screen.getByText('路线进度')).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /两数之和/ })).toHaveLength(1);
+
+    fireEvent.click(screen.getByRole('button', { name: '方案' }));
+    fireEvent.click(await screen.findByRole('button', { name: '查看 四周 Java 算法面试冲刺计划' }));
+
+    expect(window.location.pathname).toBe('/learning-plans/900');
+    expect(window.location.search).toBe('');
+    expect(await screen.findByRole('heading', { name: '基础题型恢复' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '下一次训练包' })).not.toBeInTheDocument();
+    expect(screen.queryByText('此题在今日题包中')).not.toBeInTheDocument();
+  });
+
+  it('renders today pack for an active detail query and global preview without the query', async () => {
+    const fetchMock = mockLearningPlanFetch();
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans/900?pack=today');
+
+    render(<App />);
+
+    expect(await screen.findByRole('article', { name: '今日题包' })).toHaveClass('today-pack-page');
+    expect(screen.queryByRole('heading', { name: '下一次训练包' })).not.toBeInTheDocument();
+    expect(screen.getByText(/开始时间/)).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: '一键清账重新开始说明' })).toBeInTheDocument();
+    expect(screen.getByRole('tooltip', {
+      name: '将题包起点重置为今天，清掉顺延积压；已完成和已跳过记录会保留。',
+    })).toHaveClass('today-pack-restart-tooltip');
+    expect(screen.getAllByRole('button', { name: /两数之和/ })).toHaveLength(1);
+
+    window.history.pushState({}, '', '/learning-plans/900');
+    fireEvent(window, new PopStateEvent('popstate'));
+
+    expect(await screen.findByRole('heading', { name: '基础题型恢复' })).toBeInTheDocument();
+    expect(screen.queryByRole('article', { name: '今日题包' })).not.toBeInTheDocument();
+  });
+
+  it('falls back to the global detail when today pack query targets a non-active plan', async () => {
+    const fetchMock = vi.fn((url: string) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(authenticatedUserResponse());
+      }
+      if (url === '/api/learning-plans/900') {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: learningPlanDetail({ active: false }),
+          timestamp: '2026-06-22T00:00:00Z',
+        }));
+      }
+      if (isTodayPackUrl(url)) {
+        return Promise.resolve(todayPackApiResponse(activeTodayPack()));
+      }
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans/900?pack=today');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: '基础题型恢复' })).toBeInTheDocument();
+    await waitFor(() => expect(window.location.search).toBe(''));
+    expect(window.location.pathname).toBe('/learning-plans/900');
+    expect(screen.queryByRole('article', { name: '今日题包' })).not.toBeInTheDocument();
   });
 
   it('opens the practice chat workbench when selecting a problem from a plan detail page', async () => {
@@ -1278,6 +1409,45 @@ describe('App', () => {
     const progressCall = fetchMock.mock.calls.find(([url]) => url === '/api/practice-sessions/50/progress-status');
     expect(progressCall?.[1]?.body).toBe(JSON.stringify({ status: 'COMPLETED' }));
     expect(fetchMock.mock.calls.some(([url]) => url === '/api/agent/conversations/stream')).toBe(false);
+  });
+
+  it('returns from a today pack practice chat to the today pack detail query', async () => {
+    const fetchMock = mockLearningPlanFetch();
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans/900?pack=today');
+
+    render(<App />);
+
+    await screen.findByRole('article', { name: '今日题包' });
+    fireEvent.click(screen.getAllByRole('button', { name: /两数之和/ })[0]);
+
+    expect(window.location.pathname).toBe('/learning-plans/900/phases/1/problems/two-sum/chat');
+    expect(window.location.search).toBe('?pack=today');
+    expect(await screen.findByRole('heading', { level: 2, name: '1. 两数之和' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '返回方案' }));
+
+    await waitFor(() => expect(window.location.pathname).toBe('/learning-plans/900'));
+    expect(window.location.search).toBe('?pack=today');
+    expect(await screen.findByRole('article', { name: '今日题包' })).toHaveClass('today-pack-page');
+  });
+
+  it('returns from a global detail practice chat without adding a query', async () => {
+    const fetchMock = mockLearningPlanFetch();
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/learning-plans/900');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: /两数之和/ }));
+    expect(window.location.pathname).toBe('/learning-plans/900/phases/1/problems/two-sum/chat');
+    expect(window.location.search).toBe('');
+
+    fireEvent.click(await screen.findByRole('button', { name: '返回方案' }));
+
+    await waitFor(() => expect(window.location.pathname).toBe('/learning-plans/900'));
+    expect(window.location.search).toBe('');
+    expect(await screen.findByRole('heading', { name: '基础题型恢复' })).toBeInTheDocument();
   });
 
   it('opens a standalone practice submission history page and returns to chat', async () => {
@@ -2119,6 +2289,9 @@ function mockAuthenticatedAppFetch() {
     if (url === '/api/abilities/profile') {
       return Promise.resolve(abilityProfileResponse());
     }
+    if (isTodayPackUrl(url)) {
+      return Promise.resolve(todayPackApiResponse());
+    }
     if (isLearningPlanListUrl(url)) {
       return Promise.resolve(jsonResponse({
         success: true,
@@ -2216,6 +2389,9 @@ function mockAuthenticatedUserWithoutUserManageFetch() {
         'practice-session:write:own',
       ], ['USER']));
     }
+    if (isTodayPackUrl(url)) {
+      return Promise.resolve(todayPackApiResponse());
+    }
     return Promise.reject(new Error(`Unexpected URL: ${url}`));
   });
 }
@@ -2230,6 +2406,9 @@ function mockLearningPlanAndProblemFetch() {
     }
     if (url === '/api/abilities/profile') {
       return Promise.resolve(abilityProfileResponse());
+    }
+    if (isTodayPackUrl(url)) {
+      return Promise.resolve(todayPackApiResponse());
     }
     if (isLearningPlanListUrl(url)) {
       return Promise.resolve(jsonResponse({
@@ -2367,6 +2546,10 @@ function mockLearningPlanFetch(options: {
   return vi.fn((url: string, init?: RequestInit) => {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
+    }
+
+    if (isTodayPackUrl(url)) {
+      return Promise.resolve(todayPackApiResponse(activeTodayPack()));
     }
 
     if (isLearningPlanListUrl(url) && (!init || init.method === undefined)) {
@@ -2946,6 +3129,72 @@ function isLearningPlanListUrl(url: string): boolean {
   return url === '/api/learning-plans' || url.startsWith('/api/learning-plans?');
 }
 
+function isTodayPackUrl(url: string): boolean {
+  return url === '/api/today-pack' || url.startsWith('/api/today-pack?');
+}
+
+function todayPackApiResponse(overrides: Partial<TodayPackResponse> = {}) {
+  return jsonResponse({
+    success: true,
+    data: todayPackResponse(overrides),
+    timestamp: '2026-06-22T00:00:00Z',
+  });
+}
+
+function todayPackResponse(overrides: Partial<TodayPackResponse> = {}): TodayPackResponse {
+  return {
+    state: 'NO_ACTIVE_PLAN',
+    localDate: '2026-06-22',
+    timezone: 'UTC',
+    packOffset: 0,
+    activePlan: null,
+    sections: [],
+    notice: null,
+    recommendedPlan: {
+      templateId: 'neetcode_blind_75_interview_core',
+      title: '推荐面试核心计划',
+      summary: '生成一条默认训练路线，并立即作为今日题包执行入口。',
+    },
+    nextPackDate: null,
+    ...overrides,
+  };
+}
+
+function activeTodayPack(overrides: Partial<TodayPackResponse> = {}): Partial<TodayPackResponse> {
+  return {
+    state: 'READY',
+    activePlan: {
+      planId: 900,
+      title: '四周 Java 算法面试冲刺计划',
+      activatedAt: '2026-06-22T00:00:00Z',
+      dailyProblemCount: 1,
+      trainingDaysPerWeek: 5,
+      remainingProblemCount: 12,
+    },
+    recommendedPlan: null,
+    sections: [{
+      type: 'TODAY',
+      title: '今天',
+      date: '2026-06-22',
+      problems: [{
+        planId: 900,
+        phaseIndex: 1,
+        slug: 'two-sum',
+        frontendId: 1,
+        title: 'Two Sum',
+        titleCn: '两数之和',
+        difficulty: 'EASY',
+        tags: ['Array', 'Hash Table'],
+        progressStatus: 'IN_PROGRESS',
+        scheduledDate: '2026-06-22',
+        carryoverDays: 0,
+      }],
+    }],
+    nextPackDate: '2026-06-23',
+    ...overrides,
+  };
+}
+
 async function createCollectingLearningPlanDraft() {
   expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: '新建方案' }));
@@ -2999,6 +3248,7 @@ function learningPlanPage(
 }
 
 function baseLearningPlanPage(items: ReturnType<typeof learningPlanSummary>[]) {
+  const activePlan = items.find((item) => item.id === 900) ?? items[0];
   return {
     items,
     total: items.length,
@@ -3007,6 +3257,7 @@ function baseLearningPlanPage(items: ReturnType<typeof learningPlanSummary>[]) {
     activeCount: items.filter((item) => item.status === 'ACTIVE').length,
     archivedCount: items.filter((item) => item.status === 'ARCHIVED').length,
     latestCreatedAt: items[0]?.createdAt ?? null,
+    activePlanId: activePlan?.id ?? null,
   };
 }
 
@@ -3246,7 +3497,64 @@ function baseLearningPlanDetail() {
         progressStatus: 'IN_PROGRESS',
       }],
     }],
-    metadata: { problemRecommendationIncomplete: false },
+    metadata: {
+      problemRecommendationIncomplete: false,
+      dailyProblemCount: 1,
+      trainingDaysPerWeek: 5,
+    },
+    rhythmSettings: {
+      dailyProblemCount: 1,
+      trainingDaysPerWeek: 5,
+      totalProblemCount: 1,
+      completedProblemCount: 0,
+      skippedProblemCount: 0,
+      remainingProblemCount: 1,
+      estimatedRemainingWeeks: 1,
+    },
+    paceSummary: {
+      currentWeek: 1,
+      totalWeeks: 4,
+      currentBucket: {
+        weekIndex: 1,
+        title: '第 1 周',
+        plannedProblemCount: 1,
+        plannedLoadPoints: 1,
+        problemSlugs: ['two-sum'],
+      },
+      plannedProblemCountToDate: 1,
+      completedProblemCountToDate: 0,
+      plannedLoadPointsToDate: 1,
+      completedLoadPoints: 0,
+      loadGapPoints: 0,
+      status: 'ON_TRACK',
+      recommendation: '保持当前节奏。',
+    },
+    livingContractSummary: {
+      totalProblemCount: 1,
+      completedProblemCount: 0,
+      skippedProblemCount: 0,
+      openProblemCount: 1,
+      progressPercent: 0,
+      estimatedCompletionDate: '2026-07-12',
+      estimationSource: 'COLD_START_PLAN_QUOTA',
+      visibleStatus: 'ON_TRACK',
+      nextTrainingPackage: {
+        weekIndex: 1,
+        newProblemCount: 1,
+        reviewTask: '整理错误原因。',
+        estimatedMinutes: 45,
+        priorityProblemSlugs: ['two-sum'],
+      },
+      notice: '保持当前节奏。',
+    },
+    nextTrainingPackage: {
+      weekIndex: 1,
+      newProblemCount: 1,
+      reviewTask: '整理错误原因。',
+      estimatedMinutes: 45,
+      priorityProblemSlugs: ['two-sum'],
+    },
+    active: true,
     createdAt: '2026-06-22T00:00:00Z',
     updatedAt: '2026-06-22T00:00:00Z',
   };

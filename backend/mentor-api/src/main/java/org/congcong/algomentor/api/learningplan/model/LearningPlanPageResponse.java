@@ -10,5 +10,6 @@ public record LearningPlanPageResponse(
     int pageSize,
     long activeCount,
     long archivedCount,
-    Instant latestCreatedAt) {
+    Instant latestCreatedAt,
+    Long activePlanId) {
 }

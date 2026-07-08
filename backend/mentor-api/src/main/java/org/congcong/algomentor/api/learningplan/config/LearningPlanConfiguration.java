@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.api.learningplan.repository.UnavailableLearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanAgentService;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivationRepository;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivationService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
@@ -13,6 +15,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadS
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
+import org.congcong.algomentor.mentor.application.learningplan.TodayPackService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionApplyService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionValidator;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalGroupService;
@@ -206,6 +209,33 @@ public class LearningPlanConfiguration {
       LearningPlanRepository planRepository,
       LearningPlanLoadService loadService) {
     return new LearningPlanService(planRepository, loadService);
+  }
+
+  @Bean
+  @ConditionalOnBean(LearningPlanActivationRepository.class)
+  @ConditionalOnMissingBean
+  public LearningPlanActivationService learningPlanActivationService(
+      LearningPlanActivationRepository activationRepository,
+      LearningPlanRepository planRepository,
+      Clock learningPlanClock) {
+    return new LearningPlanActivationService(activationRepository, planRepository, learningPlanClock);
+  }
+
+  @Bean
+  @ConditionalOnBean({LearningPlanActivationService.class, PracticeSessionRepository.class})
+  @ConditionalOnMissingBean
+  public TodayPackService todayPackService(
+      LearningPlanActivationService activationService,
+      LearningPlanRepository planRepository,
+      PracticeSessionRepository practiceSessionRepository,
+      LearningPlanLoadService loadService,
+      Clock learningPlanClock) {
+    return new TodayPackService(
+        activationService,
+        planRepository,
+        practiceSessionRepository,
+        loadService,
+        learningPlanClock);
   }
 
   @Bean

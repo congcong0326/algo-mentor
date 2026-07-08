@@ -21,6 +21,7 @@ import org.congcong.algomentor.ai.governance.model.AiUsage;
 import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanConfirmResponse;
+import org.congcong.algomentor.api.learningplan.model.LearningPlanActivationResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanCreateDraftRequest;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanDetailResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanDraftResponse;
@@ -40,6 +41,8 @@ import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivation;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivationService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractState;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractStateRepository;
@@ -93,6 +96,7 @@ public class LearningPlanController {
   private final ObjectProvider<PracticeSessionRepository> practiceSessionRepositoryProvider;
   private final ObjectProvider<LearningPlanContractStateRepository> contractStateRepositoryProvider;
   private final ObjectProvider<LearningPlanTemplateDraftService> templateDraftServiceProvider;
+  private final ObjectProvider<LearningPlanActivationService> activationServiceProvider;
   private final LearningPlanLoadService loadService;
   private final LearningPlanContractService contractService;
   private final LearningPlanDraftStreamSseMapper draftStreamSseMapper;
@@ -117,6 +121,7 @@ public class LearningPlanController {
       ObjectProvider<PracticeSessionRepository> practiceSessionRepositoryProvider,
       ObjectProvider<LearningPlanContractStateRepository> contractStateRepositoryProvider,
       ObjectProvider<LearningPlanTemplateDraftService> templateDraftServiceProvider,
+      ObjectProvider<LearningPlanActivationService> activationServiceProvider,
       ObjectProvider<LearningPlanLoadService> loadServiceProvider,
       ObjectProvider<LearningPlanContractService> contractServiceProvider,
       ApiSseProperties sseProperties,
@@ -136,6 +141,7 @@ public class LearningPlanController {
     this.practiceSessionRepositoryProvider = practiceSessionRepositoryProvider;
     this.contractStateRepositoryProvider = contractStateRepositoryProvider;
     this.templateDraftServiceProvider = templateDraftServiceProvider;
+    this.activationServiceProvider = activationServiceProvider;
     this.loadService = loadServiceProvider.getIfAvailable(LearningPlanLoadService::new);
     this.contractService = contractServiceProvider.getIfAvailable(LearningPlanContractService::new);
     this.draftStreamSseMapper = new LearningPlanDraftStreamSseMapper();
@@ -257,7 +263,9 @@ public class LearningPlanController {
       + ApiContractConstants.LEARNING_PLAN_DRAFT_CONFIRM_PATH)
   public ApiResponse<LearningPlanConfirmResponse> confirmDraft(@PathVariable long draftId) {
     long userId = requireCurrentUserId();
-    return ApiResponse.success(LearningPlanResponseMapper.toConfirmResponse(draftService.confirmDraft(userId, draftId)));
+    LearningPlanConfirmResponse response = LearningPlanResponseMapper.toConfirmResponse(draftService.confirmDraft(userId, draftId));
+    activationServiceProvider.ifAvailable(service -> service.activateIfAbsent(userId, response.planId()));
+    return ApiResponse.success(response);
   }
 
   @PostMapping(ApiContractConstants.LEARNING_PLAN_EXTENSION_PROPOSAL_APPLY_PATH)
@@ -283,7 +291,9 @@ public class LearningPlanController {
       @RequestParam(required = false) Integer page,
       @RequestParam(required = false) Integer pageSize) {
     long userId = requireCurrentUserId();
-    return ApiResponse.success(LearningPlanResponseMapper.toPageResponse(planService.listPlans(userId, page, pageSize)));
+    return ApiResponse.success(LearningPlanResponseMapper.toPageResponse(
+        planService.listPlans(userId, page, pageSize),
+        activePlanId(userId)));
   }
 
   @GetMapping("/{planId}")
@@ -303,6 +313,13 @@ public class LearningPlanController {
         request == null ? null : request.dailyProblemCount(),
         request == null ? null : request.trainingDaysPerWeek());
     return ApiResponse.success(detailResponse(userId, planId));
+  }
+
+  @PostMapping(ApiContractConstants.LEARNING_PLAN_ACTIVATION_PATH)
+  public ApiResponse<LearningPlanActivationResponse> activatePlan(@PathVariable long planId) {
+    long userId = requireCurrentUserId();
+    LearningPlanActivation activation = requiredActivationService().activate(userId, planId);
+    return ApiResponse.success(new LearningPlanActivationResponse(activation.planId(), activation.activatedAt()));
   }
 
   @PostMapping(ApiContractConstants.LEARNING_PLAN_CONTRACT_PAUSE_PATH)
@@ -362,12 +379,22 @@ public class LearningPlanController {
   private LearningPlanDetailResponse detailResponse(long userId, long planId) {
     List<PracticeProgress> progress = progressByPlan(userId, planId);
     LearningPlanContractState state = contractStateByPlan(userId, planId);
+    Long activePlanId = activePlanId(userId);
     return LearningPlanResponseMapper.toDetailResponse(
         planService.getPlan(userId, planId),
         progress,
         loadService,
         contractService,
-        state);
+        state,
+        activePlanId != null && activePlanId == planId);
+  }
+
+  private Long activePlanId(long userId) {
+    LearningPlanActivationService service = activationServiceProvider.getIfAvailable();
+    if (service == null) {
+      return null;
+    }
+    return service.findActivePlanId(userId).orElse(null);
   }
 
   private LearningPlanContractState contractStateByPlan(long userId, long planId) {
@@ -525,6 +552,14 @@ public class LearningPlanController {
     LearningPlanTemplateDraftService service = templateDraftServiceProvider.getIfAvailable();
     if (service == null) {
       throw new LearningPlanException("LEARNING_PLAN_REPOSITORY_UNAVAILABLE", "学习计划模板服务不可用。");
+    }
+    return service;
+  }
+
+  private LearningPlanActivationService requiredActivationService() {
+    LearningPlanActivationService service = activationServiceProvider.getIfAvailable();
+    if (service == null) {
+      throw new LearningPlanException("LEARNING_PLAN_ACTIVE_SELECTION_UNAVAILABLE", "学习计划激活服务不可用。");
     }
     return service;
   }
