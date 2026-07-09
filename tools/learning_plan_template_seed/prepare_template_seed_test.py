@@ -8,15 +8,16 @@ from tools.problem_seed.leetcode_api import read_jsonl
 
 class PrepareTemplateSeedTest(unittest.TestCase):
 
-    def test_build_seed_outputs_ten_templates_and_required_metadata(self) -> None:
+    def test_build_seed_outputs_configured_templates_and_required_metadata(self) -> None:
         sources = source_data()
-        index = build_problem_index(exclude={"missing-problem", "encode-and-decode-strings", "alien-dictionary"})
+        index = build_problem_index(exclude=known_missing_slugs())
+        expected_template_ids = seed.load_template_order(seed.DEFAULT_TEMPLATE_SOURCE_DIR, seed.DEFAULT_TEMPLATE_ORDER_PATH)
 
         templates, refs, report = seed.build_seed(sources, index)
 
-        self.assertEqual(10, len(templates))
-        self.assertEqual(set(seed.TEMPLATE_ORDER), {template["templateId"] for template in templates})
-        self.assertEqual(10, report["templateCount"])
+        self.assertEqual(len(expected_template_ids), len(templates))
+        self.assertEqual(set(expected_template_ids), {template["templateId"] for template in templates})
+        self.assertEqual(len(expected_template_ids), report["templateCount"])
         self.assertIn("sources", report)
         self.assertGreaterEqual(len(report["sources"]), 5)
         self.assertGreater(report["matchedProblemCount"], 0)
@@ -44,11 +45,51 @@ class PrepareTemplateSeedTest(unittest.TestCase):
         self.assertFalse(next(ref for ref in graph_refs if ref["problemSlug"] == "alien-dictionary")
                          ["metadata"]["matchedLocalProblem"])
 
+    def test_template_source_directory_contains_ordered_template_files(self) -> None:
+        expected_template_ids = seed.load_template_order(seed.DEFAULT_TEMPLATE_SOURCE_DIR, seed.DEFAULT_TEMPLATE_ORDER_PATH)
+
+        self.assertEqual(16, len(expected_template_ids))
+        for template_id in expected_template_ids:
+            template_dir = seed.DEFAULT_TEMPLATE_SOURCE_DIR / template_id
+            self.assertTrue((template_dir / seed.TEMPLATE_SOURCE_TEMPLATE_FILE).exists(), template_id)
+            self.assertTrue((template_dir / seed.TEMPLATE_SOURCE_PROBLEM_REFS_FILE).exists(), template_id)
+
+    def test_p1_a_batch_one_templates_meet_topic_breakthrough_thresholds(self) -> None:
+        templates, refs, _ = seed.build_seed(
+            source_data(),
+            build_problem_index(exclude=known_missing_slugs()),
+        )
+        templates_by_id = {template["templateId"]: template for template in templates}
+
+        self.assertEqual(6, len(seed.P1_A_BATCH_ONE_TEMPLATE_IDS))
+        for template_id in seed.P1_A_BATCH_ONE_TEMPLATE_IDS:
+            template = templates_by_id[template_id]
+            template_refs = [ref for ref in refs if ref["templateId"] == template_id]
+
+            self.assertEqual("TOPIC_BREAKTHROUGH", template["intent"])
+            self.assertEqual("INTERMEDIATE", template["level"])
+            self.assertGreaterEqual(len(template_refs), 15)
+            self.assertEqual(
+                template["defaultDurationWeeks"],
+                sum(phase["durationWeeks"] for phase in template["phases"]),
+            )
+            if template["defaultDurationWeeks"] == 2:
+                self.assertEqual(2, len(template["phases"]))
+            if template["defaultDurationWeeks"] == 3:
+                self.assertEqual(3, len(template["phases"]))
+            for phase in template["phases"]:
+                matched_refs = [
+                    ref for ref in template_refs
+                    if ref["phaseIndex"] == phase["phaseIndex"] and ref["metadata"]["matchedLocalProblem"]
+                ]
+                self.assertGreaterEqual(len(matched_refs), 3, f"{template_id} phase {phase['phaseIndex']}")
+
     def test_write_seed_creates_all_required_files_and_stable_output(self) -> None:
         templates, refs, report = seed.build_seed(
             source_data(),
-            build_problem_index(exclude={"missing-problem", "encode-and-decode-strings", "alien-dictionary"}),
+            build_problem_index(exclude=known_missing_slugs()),
         )
+        expected_template_ids = seed.load_template_order(seed.DEFAULT_TEMPLATE_SOURCE_DIR, seed.DEFAULT_TEMPLATE_ORDER_PATH)
 
         with tempfile.TemporaryDirectory() as left, tempfile.TemporaryDirectory() as right:
             left_dir = Path(left)
@@ -60,7 +101,7 @@ class PrepareTemplateSeedTest(unittest.TestCase):
             self.assertTrue((left_dir / seed.PROBLEM_REFS_FILE).exists())
             self.assertTrue((left_dir / seed.MANIFEST_FILE).exists())
             self.assertTrue((left_dir / seed.METADATA_FILE).exists())
-            self.assertEqual(10, len(read_jsonl(left_dir / seed.TEMPLATES_FILE)))
+            self.assertEqual(len(expected_template_ids), len(read_jsonl(left_dir / seed.TEMPLATES_FILE)))
             metadata = (left_dir / seed.METADATA_FILE).read_text(encoding="utf-8")
             self.assertIn("学习计划模板 Seed 元数据", metadata)
             self.assertIn("草稿默认包含所有本地匹配题", metadata)
@@ -103,7 +144,7 @@ class PrepareTemplateSeedTest(unittest.TestCase):
     def test_validate_seed_rejects_problem_ref_with_unknown_phase(self) -> None:
         templates, refs, _ = seed.build_seed(
             source_data(),
-            build_problem_index(exclude={"missing-problem", "encode-and-decode-strings", "alien-dictionary"}),
+            build_problem_index(exclude=known_missing_slugs()),
         )
         refs[0]["phaseIndex"] = 99
 
@@ -141,11 +182,22 @@ def tih_markdown() -> str:
 def build_problem_index(exclude: set[str] | None = None) -> seed.ProblemIndex:
     excluded = exclude or set()
     slugs = set()
-    for template in seed.MANUAL_TEMPLATES.values():
-        for phase in template["phases"]:
-            slugs.update(phase["problemSlugs"])
-    slugs.update({"two-sum"})
+    for refs_path in seed.DEFAULT_TEMPLATE_SOURCE_DIR.glob(f"*/{seed.TEMPLATE_SOURCE_PROBLEM_REFS_FILE}"):
+        for ref in read_jsonl(refs_path):
+            slugs.add(ref["problemSlug"])
     return seed.ProblemIndex.from_slugs(sorted(slugs - excluded))
+
+
+def known_missing_slugs() -> set[str]:
+    return {
+        "alien-dictionary",
+        "encode-and-decode-strings",
+        "graph-valid-tree",
+        "meeting-rooms",
+        "meeting-rooms-ii",
+        "number-of-connected-components-in-an-undirected-graph",
+        "walls-and-gates",
+    }
 
 
 def row(

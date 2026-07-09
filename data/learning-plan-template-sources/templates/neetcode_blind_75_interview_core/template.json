@@ -1,0 +1,167 @@
+{
+  "templateId": "neetcode_blind_75_interview_core",
+  "title": "NeetCode Blind 75 面试核心计划",
+  "summary": "用 4 周跑完面试最核心的 75 道题路线，优先覆盖高频数据结构、图搜索和动态规划基础。",
+  "goal": "用 Blind 75 题单建立算法面试核心题型覆盖。",
+  "intent": "INTERVIEW_SPRINT",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 4,
+  "defaultWeeklyHours": 8,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Arrays & Hashing",
+    "Two Pointers",
+    "Sliding Window",
+    "Stack",
+    "Linked List",
+    "Binary Search",
+    "Intervals",
+    "Trees",
+    "Tries",
+    "Graphs",
+    "Advanced Graphs",
+    "Backtracking",
+    "Heap / Priority Queue",
+    "1-D Dynamic Programming",
+    "2-D Dynamic Programming",
+    "Greedy",
+    "Bit Manipulation",
+    "Math & Geometry"
+  ],
+  "targetAudience": "已有基本编程能力、准备 1 个月左右算法面试冲刺的学习者。",
+  "prerequisites": [
+    "能读写一种主力语言",
+    "理解数组、哈希表、链表、树的基本概念"
+  ],
+  "recommendedFor": [
+    "面试时间较近，需要高频核心题路线",
+    "刷题经验有限但希望快速建立题型地图"
+  ],
+  "notRecommendedFor": [
+    "完全没有数据结构基础",
+    "希望系统覆盖 150 题以上完整路线的学习者"
+  ],
+  "expectedOutcome": "完成后能识别主流面试题型，并能独立复盘高频核心题的解法模板和边界条件。",
+  "sourceName": "neetcode-gh/leetcode",
+  "sourceUrl": "https://github.com/neetcode-gh/leetcode",
+  "sourceCommit": "9907b7fed441fa55083c0751e208b7197101dbba",
+  "sourceDataPath": ".problemSiteData.json",
+  "sourceDescription": "NeetCode 公开仓库的 .problemSiteData.json，包含题名、difficulty、pattern、Blind 75 / NeetCode 150 标记和题目链接。",
+  "curationNotes": "按 NeetCode Blind 75 标记抽取题目，按 pattern 聚合为 4 个完整执行阶段；生成草稿默认保留所有本地匹配题。",
+  "licenseNotice": "MIT License；本 seed 只使用题名、slug、difficulty、pattern、题单标记和来源链接，不包含题解源码或文章内容。",
+  "metadata": {
+    "patternCounts": {
+      "1-D Dynamic Programming": 10,
+      "2-D Dynamic Programming": 2,
+      "Advanced Graphs": 1,
+      "Arrays & Hashing": 8,
+      "Backtracking": 2,
+      "Binary Search": 2,
+      "Bit Manipulation": 5,
+      "Graphs": 6,
+      "Greedy": 2,
+      "Heap / Priority Queue": 1,
+      "Intervals": 5,
+      "Linked List": 6,
+      "Math & Geometry": 3,
+      "Sliding Window": 4,
+      "Stack": 1,
+      "Trees": 11,
+      "Tries": 3,
+      "Two Pointers": 3
+    },
+    "sourceFlag": "blind75",
+    "sourceProblemCount": 75,
+    "sourceStrategy": "direct_metadata"
+  },
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成数组、哈希、双指针、滑窗、栈和链表的完整 Blind 75 训练。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Arrays & Hashing",
+        "Two Pointers",
+        "Sliding Window",
+        "Stack",
+        "Linked List"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "数组、哈希与线性结构"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成二分、区间、树和 Trie 的完整 Blind 75 训练。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Binary Search",
+        "Intervals",
+        "Trees",
+        "Tries"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "二分、区间与树"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成图搜索、回溯和堆相关的完整 Blind 75 训练。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Graphs",
+        "Advanced Graphs",
+        "Backtracking",
+        "Heap / Priority Queue"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "图、回溯与堆"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成动态规划、贪心、位运算和数学几何的完整 Blind 75 训练。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 4,
+      "recommendedTags": [
+        "1-D Dynamic Programming",
+        "2-D Dynamic Programming",
+        "Greedy",
+        "Bit Manipulation",
+        "Math & Geometry"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "动态规划、贪心与综合收尾"
+    }
+  ]
+}

@@ -33,7 +33,7 @@ class LearningPlanTemplateSeedImportServiceTest {
   private Path tempDir;
 
   @Test
-  void importGeneratedP0SeedMatchesManifestCounts() throws Exception {
+  void importGeneratedSeedMatchesManifestCounts() throws Exception {
     Path repoRoot = repoRoot();
     ObjectMapper objectMapper = new ObjectMapper();
     InMemoryTemplateRepository templateRepository = new InMemoryTemplateRepository();
@@ -45,14 +45,18 @@ class LearningPlanTemplateSeedImportServiceTest {
 
     LearningPlanTemplateSeedImportResult result = service.importSeed(repoRoot.resolve("data/learning-plan-template-seed"));
 
-    assertThat(result.templateCount()).isEqualTo(10);
-    assertThat(result.problemRefCount()).isEqualTo(509);
-    assertThat(result.matchedProblemCount()).isEqualTo(489);
+    assertThat(result.templateCount()).isEqualTo(16);
+    assertThat(result.problemRefCount()).isEqualTo(631);
+    assertThat(result.matchedProblemCount()).isEqualTo(611);
     assertThat(result.missingProblemCount()).isEqualTo(20);
-    assertThat(templateRepository.templates).hasSize(10);
+    assertThat(templateRepository.templates).hasSize(16);
     assertThat(templateRepository.templates)
         .extracting(LearningPlanTemplate::templateId)
-        .contains("tih_best_practice_50_5weeks", "topic_binary_search_boundaries");
+        .contains(
+            "tih_best_practice_50_5weeks",
+            "topic_binary_search_boundaries",
+            "topic_tree_binary_tree_foundation",
+            "topic_bit_manipulation");
     Map<?, ?> manifest = (Map<?, ?>) templateRepository.importRuns.get(0).metadata().get("manifest");
     assertThat((List<?>) manifest.get("sources")).hasSizeGreaterThanOrEqualTo(5);
   }

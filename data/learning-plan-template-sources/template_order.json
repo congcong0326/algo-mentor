@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "templateIds": [
+    "neetcode_150_systematic_interview",
+    "neetcode_blind_75_interview_core",
+    "tih_best_practice_50_5weeks",
+    "cn_algorithm_foundation_12weeks",
+    "topic_dynamic_programming_foundation",
+    "topic_graph_bfs_dfs",
+    "topic_binary_search_boundaries",
+    "topic_sliding_window_two_pointers",
+    "topic_tree_binary_tree_foundation",
+    "topic_backtracking_foundation",
+    "topic_heap_priority_queue",
+    "topic_greedy_strategies",
+    "topic_stack_monotonic",
+    "topic_bit_manipulation",
+    "leetcode_top_100_liked_revision",
+    "programming_skills_implementation_foundation"
+  ]
+}

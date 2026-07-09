@@ -1,0 +1,111 @@
+{
+  "templateId": "topic_backtracking_foundation",
+  "title": "回溯专项突破",
+  "summary": "3 周突破回溯搜索，按子集/组合/排列、棋盘与字符串切割、剪枝和约束搜索递进。",
+  "goal": "掌握选择列表、路径状态、撤销选择和剪枝条件的表达方式。",
+  "intent": "TOPIC_BREAKTHROUGH",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 3,
+  "defaultWeeklyHours": 7,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Backtracking",
+    "Array",
+    "String",
+    "Matrix",
+    "Pruning"
+  ],
+  "targetAudience": "能写递归但回溯题容易漏撤销、去重或剪枝条件的学习者。",
+  "prerequisites": [
+    "理解递归和数组/字符串遍历",
+    "能说明基础 DFS 结束条件",
+    "做过至少 20 道 Easy/Medium 题"
+  ],
+  "recommendedFor": [
+    "组合、排列、子集题容易套错模板",
+    "棋盘搜索或字符串切割题缺少系统复盘",
+    "需要面试前集中补强搜索题"
+  ],
+  "notRecommendedFor": [
+    "还不能独立写递归",
+    "只想练 SQL 或实现基础题"
+  ],
+  "expectedOutcome": "完成后能把回溯题拆成选择、约束、终止、去重和剪枝五类复盘项。",
+  "sourceName": "halfrost/LeetCode-Go",
+  "sourceUrl": "https://github.com/halfrost/LeetCode-Go",
+  "sourceCommit": "3bcc916680298295e06060ca9790304c1f1b78b6",
+  "sourceDataPath": "ctl/meta/*",
+  "sourceDescription": "以 halfrost Backtracking 元数据和本地题库 backtracking 标签为基础，按面试常见搜索模式重组。",
+  "curationNotes": "只使用题号、slug、难度、标签和来源链接；不复制题解、文章正文、图示或代码。",
+  "licenseNotice": "MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。",
+  "metadata": {
+    "secondarySources": [
+      "algo-mentor local problem seed",
+      "neetcode-gh/leetcode"
+    ],
+    "sourceProblemCount": 20,
+    "sourceStrategy": "mixed_halfrost_metadata_and_local_tag_rebuild"
+  },
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "先稳定选择树、去重边界和结果收集位置。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Backtracking",
+        "Array"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "子集、组合与排列"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "通过棋盘、括号、IP 和回文切割练习约束判断。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Backtracking",
+        "String",
+        "Matrix"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "棋盘与字符串切割"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "用高约束题训练排序剪枝、状态压缩前置和搜索空间控制。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Backtracking",
+        "Pruning"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "剪枝与约束搜索"
+    }
+  ]
+}

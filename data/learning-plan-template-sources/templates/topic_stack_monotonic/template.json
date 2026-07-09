@@ -1,0 +1,90 @@
+{
+  "templateId": "topic_stack_monotonic",
+  "title": "栈与单调栈专项",
+  "summary": "2 周补齐基础栈、表达式求值、单调栈和单调队列窗口题。",
+  "goal": "掌握栈状态维护、表达式解析和单调结构的入栈/出栈不变量。",
+  "intent": "TOPIC_BREAKTHROUGH",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 2,
+  "defaultWeeklyHours": 6,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Stack",
+    "String",
+    "Monotonic Stack",
+    "Monotonic Queue"
+  ],
+  "targetAudience": "括号、表达式、下一个更大元素或柱状图题容易写乱边界的学习者。",
+  "prerequisites": [
+    "理解数组和字符串遍历",
+    "会使用栈或双端队列",
+    "能写基础括号匹配"
+  ],
+  "recommendedFor": [
+    "单调栈入栈出栈条件不稳定",
+    "表达式题和括号题缺少统一模板",
+    "想补齐窗口最大值和柱状图经典题"
+  ],
+  "notRecommendedFor": [
+    "还不能使用基础数据结构",
+    "主要目标是 SQL 或系统设计"
+  ],
+  "expectedOutcome": "完成后能复述栈保存的状态含义，并能为单调栈题写出不变量和结算时机。",
+  "sourceName": "halfrost/LeetCode-Go",
+  "sourceUrl": "https://github.com/halfrost/LeetCode-Go",
+  "sourceCommit": "3bcc916680298295e06060ca9790304c1f1b78b6",
+  "sourceDataPath": "ctl/meta/*",
+  "sourceDescription": "以 halfrost Stack 元数据和本地题库 stack/monotonic-stack/monotonic-queue 标签重组。",
+  "curationNotes": "直接内置题号、slug、难度和标签；阶段目标、验收和复盘建议由 algo-mentor 自写。",
+  "licenseNotice": "MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。",
+  "metadata": {
+    "secondarySources": [
+      "algo-mentor local problem seed",
+      "neetcode-gh/leetcode"
+    ],
+    "sourceProblemCount": 18,
+    "sourceStrategy": "mixed_halfrost_metadata_and_local_tag_rebuild"
+  },
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "稳定括号匹配、最小栈、路径解析和表达式求值。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Stack",
+        "String"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "基础栈、括号与表达式"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练下一个更大元素、柱状图、接雨水和窗口队列不变量。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Monotonic Stack",
+        "Monotonic Queue"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "单调栈与单调队列"
+    }
+  ]
+}

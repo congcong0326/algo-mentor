@@ -1,0 +1,305 @@
+{
+  "templateId": "neetcode_150_systematic_interview",
+  "title": "NeetCode 150 系统面试计划",
+  "summary": "用 12 周覆盖 NeetCode 150 的主流算法面试模式，适合中期系统备战。",
+  "goal": "用 NeetCode 150 系统覆盖主流算法面试题型。",
+  "intent": "INTERVIEW_SPRINT",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 12,
+  "defaultWeeklyHours": 10,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Arrays & Hashing",
+    "Two Pointers",
+    "Sliding Window",
+    "Stack",
+    "Binary Search",
+    "Linked List",
+    "Intervals",
+    "Trees",
+    "Tries",
+    "Heap / Priority Queue",
+    "Backtracking",
+    "Graphs",
+    "Advanced Graphs",
+    "Greedy",
+    "1-D Dynamic Programming",
+    "2-D Dynamic Programming",
+    "Bit Manipulation",
+    "Math & Geometry"
+  ],
+  "targetAudience": "有 2 到 3 个月准备周期、希望系统覆盖面试算法题型的学习者。",
+  "prerequisites": [
+    "掌握一门主力语言的基础语法",
+    "了解常见数据结构和时间复杂度",
+    "每周能稳定投入 8 小时以上"
+  ],
+  "recommendedFor": [
+    "准备中大型技术面试",
+    "希望按题型模式系统刷题",
+    "刷过少量题但缺少完整路线"
+  ],
+  "notRecommendedFor": [
+    "只剩 1 到 2 周面试准备时间",
+    "只想做单一薄弱专题突破"
+  ],
+  "expectedOutcome": "完成后能按题型建立系统化解题策略，并形成覆盖数组、树、图、动态规划和综合题的面试复盘材料。",
+  "sourceName": "neetcode-gh/leetcode",
+  "sourceUrl": "https://github.com/neetcode-gh/leetcode",
+  "sourceCommit": "9907b7fed441fa55083c0751e208b7197101dbba",
+  "sourceDataPath": ".problemSiteData.json",
+  "sourceDescription": "NeetCode 公开仓库的 .problemSiteData.json，包含题名、difficulty、pattern、Blind 75 / NeetCode 150 标记和题目链接。",
+  "curationNotes": "按 NeetCode 150 标记抽取题目，沿用 pattern 顺序组织为 12 个完整执行阶段；生成草稿默认保留所有本地匹配题。",
+  "licenseNotice": "MIT License；本 seed 只使用题名、slug、difficulty、pattern、题单标记和来源链接，不包含题解源码或文章内容。",
+  "metadata": {
+    "patternCounts": {
+      "1-D Dynamic Programming": 12,
+      "2-D Dynamic Programming": 11,
+      "Advanced Graphs": 6,
+      "Arrays & Hashing": 9,
+      "Backtracking": 9,
+      "Binary Search": 7,
+      "Bit Manipulation": 7,
+      "Graphs": 13,
+      "Greedy": 8,
+      "Heap / Priority Queue": 7,
+      "Intervals": 6,
+      "Linked List": 11,
+      "Math & Geometry": 8,
+      "Sliding Window": 6,
+      "Stack": 7,
+      "Trees": 15,
+      "Tries": 3,
+      "Two Pointers": 5
+    },
+    "sourceFlag": "neetcode150",
+    "sourceProblemCount": 150,
+    "sourceStrategy": "direct_metadata"
+  },
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成 NeetCode 150 中数组与哈希题目，建立频次、去重和分组模型。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Arrays & Hashing"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "数组与哈希"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成双指针和滑窗题目，训练窗口维护、左右边界和收缩条件。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Two Pointers",
+        "Sliding Window"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "双指针与滑动窗口"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成栈和二分题目，训练单调结构、括号状态和边界搜索。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Stack",
+        "Binary Search"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "栈与二分搜索"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成链表和区间题目，训练指针改写、合并、插入和调度边界。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 4,
+      "recommendedTags": [
+        "Linked List",
+        "Intervals"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "链表与区间"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成树题目，训练 DFS/BFS、递归返回值、序列化和二叉搜索树性质。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 5,
+      "recommendedTags": [
+        "Trees"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "树与递归遍历"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成 Trie 和堆题目，训练前缀树建模、Top K 和优先级调度。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 6,
+      "recommendedTags": [
+        "Tries",
+        "Heap / Priority Queue"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "Trie 与堆"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成回溯题目，训练选择树、剪枝和状态恢复。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 7,
+      "recommendedTags": [
+        "Backtracking"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "回溯"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成图搜索题目，训练连通块、拓扑关系、BFS/DFS 和网格建模。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 8,
+      "recommendedTags": [
+        "Graphs"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "图搜索"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成进阶图和贪心题目，训练最短路、并查集和局部最优证明。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 9,
+      "recommendedTags": [
+        "Advanced Graphs",
+        "Greedy"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "进阶图与贪心"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成一维动态规划题目，训练状态定义、转移顺序和滚动优化。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 10,
+      "recommendedTags": [
+        "1-D Dynamic Programming"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "一维动态规划"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成二维动态规划题目，训练网格、区间和多维状态设计。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 11,
+      "recommendedTags": [
+        "2-D Dynamic Programming"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "二维动态规划"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说清本阶段推荐题的主解法和复杂度",
+        "能复盘错题中的边界条件和状态定义"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成位运算、数学几何和综合收尾题目，整理完整路线复盘材料。",
+      "objectives": [
+        "完成本阶段核心题型的一轮训练",
+        "为每类 pattern 记录至少 1 条可复用解题模板"
+      ],
+      "phaseIndex": 12,
+      "recommendedTags": [
+        "Bit Manipulation",
+        "Math & Geometry"
+      ],
+      "reviewAdvice": "按题型整理错题，优先复盘相同 pattern 下重复出错的边界。",
+      "title": "位运算、数学与综合收尾"
+    }
+  ]
+}

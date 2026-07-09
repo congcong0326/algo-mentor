@@ -1,0 +1,158 @@
+{
+  "templateId": "tih_best_practice_50_5weeks",
+  "title": "5 周面试冲刺计划",
+  "summary": "用 5 周完成 Tech Interview Handbook Best Practice 核心路线，按序列、数据结构、树图、进阶结构和 DP 分周推进。",
+  "goal": "在面试倒计时中完成一轮高价值核心题冲刺。",
+  "intent": "INTERVIEW_SPRINT",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 5,
+  "defaultWeeklyHours": 8,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MIXED",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Array",
+    "String",
+    "Hash Table",
+    "Linked List",
+    "Sliding Window",
+    "Graph",
+    "Tree",
+    "Heap",
+    "Intervals",
+    "Trie",
+    "Union Find",
+    "Dynamic Programming",
+    "Greedy"
+  ],
+  "targetAudience": "已有基础题经验、希望用 5 周做面试前高密度复习的学习者。",
+  "prerequisites": [
+    "能完成 Easy/Medium 基础题",
+    "了解数组、链表、树、图和动态规划的常见术语"
+  ],
+  "recommendedFor": [
+    "面试倒计时 4 到 6 周",
+    "需要明确每周题单和复盘节奏"
+  ],
+  "notRecommendedFor": [
+    "刚开始学习编程的新手",
+    "需要 12 周以上系统补基础的学习者"
+  ],
+  "expectedOutcome": "完成后能按周复盘核心题型，并整理出可面试表达的解法模板、复杂度和错题清单。",
+  "sourceName": "yangshun/tech-interview-handbook",
+  "sourceUrl": "https://github.com/yangshun/tech-interview-handbook",
+  "sourceCommit": "8ee2acb54a05c4add123a824d15e7dfc4e703b2f",
+  "sourceDataPath": "apps/website/contents/best-practice-questions.md",
+  "sourceDescription": "Tech Interview Handbook Best Practice 50 的 5 周 Markdown 题单；Grind 75 只作为外链和结构参考。",
+  "curationNotes": "按原 5 周节奏解析题目元数据，optional 和 premium 题保留在 refs metadata 中；阶段目标和复盘建议由 algo-mentor 自写。",
+  "licenseNotice": "MIT License；本 seed 只解析题名、difficulty、LeetCode URL、周次和 optional/premium 标记，不复制文章正文。",
+  "metadata": {
+    "coreProblemCount": 50,
+    "optionalProblemCount": 11,
+    "premiumProblemCount": 6,
+    "sourceProblemCount": 61,
+    "sourceStrategy": "direct_markdown_problem_metadata"
+  },
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能快速判断数组/字符串题的主要数据结构",
+        "optional 题只作为加练项复盘"
+      ],
+      "durationWeeks": 1,
+      "focus": "用数组、字符串、哈希和基础区间题完成热身。",
+      "objectives": [
+        "完成核心 Easy/Medium 序列题",
+        "整理哈希计数、双指针和区间合并的复盘模板"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Array",
+        "String",
+        "Hash Table"
+      ],
+      "reviewAdvice": "按错误类型区分下标、哈希计数和区间边界。",
+      "title": "第 1 周：序列基础"
+    },
+    {
+      "acceptanceCriteria": [
+        "能解释链表题的指针移动顺序",
+        "能说明 BFS/DFS visited 规则"
+      ],
+      "durationWeeks": 1,
+      "focus": "集中练习链表、窗口、图搜索和回文/字符串状态。",
+      "objectives": [
+        "完成链表指针、窗口和基础图搜索题",
+        "复盘指针改写和窗口收缩条件"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Linked List",
+        "Sliding Window",
+        "Graph"
+      ],
+      "reviewAdvice": "把链表、窗口、图搜索错题分开整理。",
+      "title": "第 2 周：基础数据结构"
+    },
+    {
+      "acceptanceCriteria": [
+        "能写出二叉树递归返回值定义",
+        "能说明课程表拓扑建模"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成树、图、堆和区间中的面试高频题。",
+      "objectives": [
+        "完成树递归、拓扑和堆相关核心题",
+        "复盘递归返回值和优先队列使用条件"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Tree",
+        "Graph",
+        "Heap",
+        "Intervals"
+      ],
+      "reviewAdvice": "优先复盘树递归出口和图依赖关系。",
+      "title": "第 3 周：非线性结构"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立描述 Trie 节点结构",
+        "能说明堆和并查集适用条件"
+      ],
+      "durationWeeks": 1,
+      "focus": "补齐 Trie、流式数据结构、并查集和区间变体。",
+      "objectives": [
+        "完成 Trie、数据流、区间插入和连通性题",
+        "明确 premium/optional 题的缺失处理和替代复盘"
+      ],
+      "phaseIndex": 4,
+      "recommendedTags": [
+        "Trie",
+        "Heap",
+        "Union Find"
+      ],
+      "reviewAdvice": "把 optional/premium 题作为同模式延伸，不阻塞主路线。",
+      "title": "第 4 周：进阶结构"
+    },
+    {
+      "acceptanceCriteria": [
+        "能说清每道 DP 题的状态含义和转移顺序",
+        "能在复盘中标注初始化和边界"
+      ],
+      "durationWeeks": 1,
+      "focus": "用一维、背包、序列和路径 DP 完成冲刺收尾。",
+      "objectives": [
+        "完成 DP 核心题并记录状态定义",
+        "把错题按一维、路径、字符串和选择集合分类"
+      ],
+      "phaseIndex": 5,
+      "recommendedTags": [
+        "Dynamic Programming",
+        "Greedy"
+      ],
+      "reviewAdvice": "优先复盘状态定义不清的题，再补同类题。",
+      "title": "第 5 周：动态规划"
+    }
+  ]
+}

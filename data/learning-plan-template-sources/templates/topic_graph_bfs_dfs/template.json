@@ -1,0 +1,132 @@
+{
+  "templateId": "topic_graph_bfs_dfs",
+  "title": "图论专项突破计划",
+  "summary": "4 周覆盖 DFS/BFS、岛屿网格、拓扑排序、并查集和最短路基础，适合补齐图论薄弱项。",
+  "goal": "建立图搜索建模、遍历状态和连通性判断能力。",
+  "intent": "TOPIC_BREAKTHROUGH",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 4,
+  "defaultWeeklyHours": 7,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Graph",
+    "Depth-First Search",
+    "Breadth-First Search",
+    "Matrix",
+    "Topological Sort",
+    "Union Find",
+    "Shortest Path"
+  ],
+  "targetAudience": "对图搜索、拓扑关系或并查集不稳定的中级学习者。",
+  "prerequisites": [
+    "理解队列、栈和递归",
+    "能读写邻接表或网格遍历",
+    "完成过树的 DFS/BFS 基础题"
+  ],
+  "recommendedFor": [
+    "岛屿题、课程表、并查集常出错",
+    "需要按图论专题集中复盘"
+  ],
+  "notRecommendedFor": [
+    "尚未掌握基础树遍历",
+    "只想练一维数组技巧"
+  ],
+  "expectedOutcome": "完成后能区分 DFS/BFS/拓扑/并查集适用场景，并能写出遍历状态和 visited 规则。",
+  "sourceName": "halfrost/LeetCode-Go",
+  "sourceUrl": "https://github.com/halfrost/LeetCode-Go",
+  "sourceCommit": "3bcc916680298295e06060ca9790304c1f1b78b6",
+  "sourceDataPath": "ctl/meta/*",
+  "sourceDescription": "以 halfrost Breadth_First_Search、Depth_First_Search、Union_Find 元数据为主，LeetCode Graph Theory 和代码随想录图论作结构参考。",
+  "curationNotes": "直接内置 halfrost MIT 题号/标签；premium 或本地未收录题只进入缺失审计，不进入生成草稿推荐题。",
+  "licenseNotice": "MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。",
+  "metadata": {
+    "secondarySources": [
+      "LeetCode official Study Plan",
+      "youngyangyang04/leetcode-master",
+      "algo-mentor local problem seed"
+    ],
+    "sourceProblemCount": 20,
+    "sourceStrategy": "mixed_direct_metadata_and_reference_rebuild"
+  },
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成图和网格的基础遍历，明确 visited、边界和层序处理。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Graph",
+        "Depth-First Search",
+        "Breadth-First Search"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "DFS/BFS 遍历基础"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练网格连通块、边界感染和区域归并。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Matrix",
+        "Graph"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "岛屿与区域变体"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "通过课程表和字典序题训练入度、队列和依赖图。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Topological Sort",
+        "Graph"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "拓扑排序与依赖关系"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "用连通性、冗余边和最短路题整理图论工具箱。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 4,
+      "recommendedTags": [
+        "Union Find",
+        "Shortest Path"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "并查集与加权图收尾"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "templateId": "topic_heap_priority_queue",
+  "title": "堆与优先队列专项",
+  "summary": "2 周集中训练 TopK、第 K 大、多路合并、调度和双堆中位数。",
+  "goal": "掌握堆的排序视角、在线维护和多路合并建模方式。",
+  "intent": "TOPIC_BREAKTHROUGH",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 2,
+  "defaultWeeklyHours": 6,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Heap",
+    "Priority Queue",
+    "Sorting",
+    "Design"
+  ],
+  "targetAudience": "知道堆结构但在 TopK、数据流或调度题中不清楚堆元素设计的学习者。",
+  "prerequisites": [
+    "理解数组和排序",
+    "知道最小堆/最大堆基本操作",
+    "能分析 O(log n) 插入删除"
+  ],
+  "recommendedFor": [
+    "TopK、合并链表或数据流题不稳定",
+    "需要快速补齐优先队列面试题",
+    "想训练堆元素设计和懒删除意识"
+  ],
+  "notRecommendedFor": [
+    "还没掌握基础数组和排序",
+    "主要薄弱点是树递归或回溯"
+  ],
+  "expectedOutcome": "完成后能判断何时用堆、堆里放什么字段、何时需要双堆或延迟删除。",
+  "sourceName": "halfrost/LeetCode-Go",
+  "sourceUrl": "https://github.com/halfrost/LeetCode-Go",
+  "sourceCommit": "3bcc916680298295e06060ca9790304c1f1b78b6",
+  "sourceDataPath": "ctl/meta/*",
+  "sourceDescription": "以本地题库 heap-priority-queue 标签为主，并结合 halfrost 可匹配元数据做来源审计。",
+  "curationNotes": "按 TopK/第 K 大、多路合并、调度和双堆重建 2 周计划，只内置结构化题单元数据。",
+  "licenseNotice": "MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。",
+  "metadata": {
+    "secondarySources": [
+      "algo-mentor local problem seed",
+      "neetcode-gh/leetcode",
+      "yangshun/tech-interview-handbook"
+    ],
+    "sourceProblemCount": 18,
+    "sourceStrategy": "local_tag_rebuild_with_halfrost_audit"
+  },
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "用静态数组、矩阵、链表和多列表题稳定堆排序模型。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Heap",
+        "Priority Queue",
+        "Sorting"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "TopK、第 K 大与多路合并"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练动态维护、任务调度、双堆平衡和在线更新。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Heap",
+        "Priority Queue",
+        "Design"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "调度、数据流与双堆"
+    }
+  ]
+}

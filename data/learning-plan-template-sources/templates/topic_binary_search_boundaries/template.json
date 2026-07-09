@@ -1,0 +1,85 @@
+{
+  "templateId": "topic_binary_search_boundaries",
+  "title": "二分与边界专项计划",
+  "summary": "2 周集中训练基础二分、旋转数组、左右边界、答案二分和矩阵变体。",
+  "goal": "掌握二分搜索模板、边界收缩和答案空间建模。",
+  "intent": "TOPIC_BREAKTHROUGH",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 2,
+  "defaultWeeklyHours": 6,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Binary Search",
+    "Matrix"
+  ],
+  "targetAudience": "二分题经常卡在左右边界、循环条件或答案空间的学习者。",
+  "prerequisites": [
+    "理解有序数组和基本循环",
+    "能独立写出基础二分查找"
+  ],
+  "recommendedFor": [
+    "需要短周期提升边界题稳定性",
+    "旋转数组、矩阵搜索或答案二分易错"
+  ],
+  "notRecommendedFor": [
+    "还没掌握数组遍历",
+    "想系统学习所有数据结构"
+  ],
+  "expectedOutcome": "完成后能说清闭区间/半开区间模板，并能识别值域二分和索引二分的差异。",
+  "sourceName": "halfrost/LeetCode-Go",
+  "sourceUrl": "https://github.com/halfrost/LeetCode-Go",
+  "sourceCommit": "3bcc916680298295e06060ca9790304c1f1b78b6",
+  "sourceDataPath": "ctl/meta/*",
+  "sourceDescription": "以 halfrost Binary_Search 元数据为主，LeetCode Binary Search 官方计划只作外链和目标参考。",
+  "curationNotes": "按基础二分、边界/旋转数组、答案二分和矩阵/区间变体重建 2 周计划。",
+  "licenseNotice": "MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。",
+  "metadata": {
+    "secondarySources": [
+      "LeetCode official Study Plan",
+      "algo-mentor local problem seed"
+    ],
+    "sourceProblemCount": 18,
+    "sourceStrategy": "mixed_direct_metadata_and_reference_rebuild"
+  },
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "稳定基础二分、插入位置、开方和左右边界写法。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Binary Search"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "基础模板与边界"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "处理旋转数组、矩阵搜索和容量/速度类答案空间。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Binary Search",
+        "Matrix"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "旋转、矩阵与答案二分"
+    }
+  ]
+}

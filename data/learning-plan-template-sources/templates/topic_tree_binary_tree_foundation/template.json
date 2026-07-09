@@ -1,0 +1,111 @@
+{
+  "templateId": "topic_tree_binary_tree_foundation",
+  "title": "树与二叉树专项",
+  "summary": "3 周系统补齐树与二叉树基础，覆盖遍历、BST 性质、路径/LCA、构造和序列化。",
+  "goal": "建立树递归返回值、层序遍历和二叉搜索树性质的稳定解题能力。",
+  "intent": "TOPIC_BREAKTHROUGH",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 3,
+  "defaultWeeklyHours": 7,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Tree",
+    "Binary Tree",
+    "Breadth-First Search",
+    "Binary Search Tree",
+    "Depth-First Search"
+  ],
+  "targetAudience": "已经做过基础数组和递归题，但树题递归边界、返回值或层序遍历不稳定的学习者。",
+  "prerequisites": [
+    "理解递归调用栈",
+    "了解二叉树节点结构",
+    "能写基础 DFS 或 BFS"
+  ],
+  "recommendedFor": [
+    "树遍历、BST 或路径题容易混淆",
+    "需要面试前补齐二叉树高频题",
+    "希望把递归和队列遍历整理成模板"
+  ],
+  "notRecommendedFor": [
+    "尚未掌握基础函数和递归",
+    "主要薄弱点是字符串窗口或动态规划"
+  ],
+  "expectedOutcome": "完成后能按遍历方式、BST 性质、路径问题和构造/序列化分类复盘树题。",
+  "sourceName": "halfrost/LeetCode-Go",
+  "sourceUrl": "https://github.com/halfrost/LeetCode-Go",
+  "sourceCommit": "3bcc916680298295e06060ca9790304c1f1b78b6",
+  "sourceDataPath": "ctl/meta/*",
+  "sourceDescription": "以 halfrost Tree、Depth_First_Search、Breadth_First_Search 元数据和本地题库 tree/binary-tree 标签为基础重组。",
+  "curationNotes": "直接内置可审计的题号、slug、难度、标签和来源链接；阶段说明、目标和复盘建议由 algo-mentor 自写。",
+  "licenseNotice": "MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。",
+  "metadata": {
+    "secondarySources": [
+      "algo-mentor local problem seed",
+      "LeetCode official Study Plan"
+    ],
+    "sourceProblemCount": 24,
+    "sourceStrategy": "mixed_halfrost_metadata_and_local_tag_rebuild"
+  },
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "用前中后序、层序和深度题稳定递归/队列遍历模板。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Tree",
+        "Binary Tree",
+        "Breadth-First Search"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "遍历与层序基础"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练有序约束、迭代器、LCA 和由遍历序列重建树的边界。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Binary Search Tree",
+        "Tree"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "BST 性质与构造"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "集中处理路径累积、公共祖先、最大路径和树结构序列化。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Tree",
+        "Depth-First Search"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "路径、LCA 与序列化"
+    }
+  ]
+}

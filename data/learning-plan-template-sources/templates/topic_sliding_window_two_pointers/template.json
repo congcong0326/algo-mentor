@@ -1,0 +1,91 @@
+{
+  "templateId": "topic_sliding_window_two_pointers",
+  "title": "滑动窗口与双指针专项计划",
+  "summary": "2 周覆盖固定窗口、可变窗口、相向指针、快慢指针和排序去重组合。",
+  "goal": "提升字符串和数组窗口题的建模与边界维护能力。",
+  "intent": "TOPIC_BREAKTHROUGH",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 2,
+  "defaultWeeklyHours": 6,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Two Pointers",
+    "Array",
+    "Sliding Window",
+    "String",
+    "Queue"
+  ],
+  "targetAudience": "字符串、数组和窗口维护题容易超时或边界出错的学习者。",
+  "prerequisites": [
+    "熟悉数组、字符串和哈希计数",
+    "能写基础排序和双指针循环"
+  ],
+  "recommendedFor": [
+    "需要快速提升数组/字符串面试题正确率",
+    "窗口收缩条件和去重逻辑不稳定"
+  ],
+  "notRecommendedFor": [
+    "还没掌握基础数组遍历",
+    "主要薄弱点是图论或 DP"
+  ],
+  "expectedOutcome": "完成后能区分固定窗口、可变窗口、相向指针和快慢指针，并能复盘窗口不变量。",
+  "sourceName": "halfrost/LeetCode-Go",
+  "sourceUrl": "https://github.com/halfrost/LeetCode-Go",
+  "sourceCommit": "3bcc916680298295e06060ca9790304c1f1b78b6",
+  "sourceDataPath": "ctl/meta/*",
+  "sourceDescription": "以 halfrost Sliding_Window 和 Two_Pointers 元数据为主，NeetCode pattern 与 TIH 只作阶段结构参考。",
+  "curationNotes": "多来源参考后重建；只内置 slug、题号、标签和自写推荐理由，不复制题解或文章。",
+  "licenseNotice": "MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。",
+  "metadata": {
+    "secondarySources": [
+      "neetcode-gh/leetcode",
+      "yangshun/tech-interview-handbook",
+      "algo-mentor local problem seed"
+    ],
+    "sourceProblemCount": 15,
+    "sourceStrategy": "mixed_direct_metadata_and_reference_rebuild"
+  },
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成相向指针、快慢指针和排序后去重组合。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Two Pointers",
+        "Array"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "双指针与排序去重"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练窗口扩张/收缩条件、计数器维护和单调队列窗口。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Sliding Window",
+        "String",
+        "Queue"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "固定与可变窗口"
+    }
+  ]
+}

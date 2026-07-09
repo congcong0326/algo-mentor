@@ -1,0 +1,128 @@
+{
+  "templateId": "topic_dynamic_programming_foundation",
+  "title": "动态规划专项突破计划",
+  "summary": "4 周集中突破 DP，按一维状态、背包与路径、子序列、状态机和区间/回文问题递进。",
+  "goal": "建立动态规划状态定义、转移方程和复盘表达能力。",
+  "intent": "TOPIC_BREAKTHROUGH",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 4,
+  "defaultWeeklyHours": 8,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Dynamic Programming",
+    "Knapsack",
+    "String",
+    "State Machine"
+  ],
+  "targetAudience": "已刷过基础题但动态规划题正确率不稳定的学习者。",
+  "prerequisites": [
+    "理解递归和数组遍历",
+    "能写出基础复杂度分析",
+    "做过至少 30 道 Easy/Medium 题"
+  ],
+  "recommendedFor": [
+    "状态定义不稳定",
+    "背包、子序列或股票题容易混淆",
+    "需要面试前专项补强 DP"
+  ],
+  "notRecommendedFor": [
+    "完全没有数组和递归基础",
+    "只想学习图论或树专题"
+  ],
+  "expectedOutcome": "完成后能按题型说明状态、选择、转移顺序和初始化，并形成 DP 错题分类表。",
+  "sourceName": "halfrost/LeetCode-Go",
+  "sourceUrl": "https://github.com/halfrost/LeetCode-Go",
+  "sourceCommit": "3bcc916680298295e06060ca9790304c1f1b78b6",
+  "sourceDataPath": "ctl/meta/*",
+  "sourceDescription": "以 halfrost Dynamic_Programming 元数据中的题号、难度和标签为主，LeetCode 官方 DP 与 labuladong DP 只作阶段结构参考。",
+  "curationNotes": "直接内置 halfrost MIT 题单元数据中可匹配的题号/标签；阶段说明和推荐理由由 algo-mentor 自写。",
+  "licenseNotice": "MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。",
+  "metadata": {
+    "secondarySources": [
+      "LeetCode official Study Plan",
+      "labuladong/fucking-algorithm",
+      "algo-mentor local problem seed"
+    ],
+    "sourceProblemCount": 23,
+    "sourceStrategy": "mixed_direct_metadata_and_reference_rebuild"
+  },
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "用线性序列题训练 dp[i] 含义、初始化和滚动数组。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Dynamic Programming"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "一维状态与滚动优化"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "通过网格路径和硬币/子集问题训练选择集合和容量维度。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Dynamic Programming",
+        "Knapsack"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "路径、背包与选择"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "集中处理索引双维、匹配关系和字符串切分。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Dynamic Programming",
+        "String"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "子序列与字符串 DP"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练持有/不持有状态、交易约束和回文区间扩展。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 4,
+      "recommendedTags": [
+        "Dynamic Programming",
+        "State Machine"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "状态机、区间与回文"
+    }
+  ]
+}

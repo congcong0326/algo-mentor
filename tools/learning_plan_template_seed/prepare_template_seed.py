@@ -21,13 +21,23 @@ from tools.problem_seed.leetcode_api import read_jsonl, write_json, write_jsonl
 
 
 DEFAULT_OUTPUT_DIR = Path("data/learning-plan-template-seed")
+DEFAULT_TEMPLATE_SOURCE_DIR = Path("data/learning-plan-template-sources/templates")
+DEFAULT_TEMPLATE_ORDER_PATH = Path("data/learning-plan-template-sources/template_order.json")
 DEFAULT_LOCAL_PROBLEMS_PATH = Path("data/seed/problems.jsonl")
-DEFAULT_GENERATED_AT = "2026-07-06T00:00:00+00:00"
+DEFAULT_GENERATED_AT = "2026-07-09T00:00:00+00:00"
 
 TEMPLATES_FILE = "learning_plan_templates.jsonl"
 PROBLEM_REFS_FILE = "learning_plan_template_problem_refs.jsonl"
 MANIFEST_FILE = "learning_plan_template_seed_manifest.json"
 METADATA_FILE = "learning_plan_template_seed_metadata.md"
+TEMPLATE_SOURCE_TEMPLATE_FILE = "template.json"
+TEMPLATE_SOURCE_PROBLEM_REFS_FILE = "problem_refs.jsonl"
+DERIVED_TEMPLATE_METADATA_KEYS = {
+    "matchedProblemCount",
+    "missingProblemCount",
+    "missingProblems",
+    "sourceTags",
+}
 
 NEETCODE_SOURCE = {
     "key": "neetcode",
@@ -86,10 +96,10 @@ LOCAL_SOURCE = {
     "licenseNotice": "使用项目本地题库中的 slug、frontendId、标题、difficulty 和 tagValues 组织内部模板。",
 }
 ROOT_SOURCE = {
-    "name": "algo-mentor learning-plan-template-seed",
-    "url": "data/learning-plan-template-seed",
-    "commit": "p0-templates-2026-07-06",
-    "dataPath": "tools/learning_plan_template_seed/prepare_template_seed.py",
+    "name": "algo-mentor learning-plan-template-sources",
+    "url": "data/learning-plan-template-sources",
+    "commit": "template-source-split-2026-07-09",
+    "dataPath": "data/learning-plan-template-sources/templates/*/{template.json,problem_refs.jsonl}",
 }
 SOURCE_DEFINITIONS = [
     NEETCODE_SOURCE,
@@ -114,11 +124,16 @@ HALFROST_RAW_BASE = (
     f"{HALFROST_SOURCE['commit']}/ctl/meta"
 )
 HALFROST_META_FILES = [
+    "Backtracking",
     "Binary_Search",
+    "Bit_Manipulation",
     "Breadth_First_Search",
     "Depth_First_Search",
     "Dynamic_Programming",
+    "Sorting",
     "Sliding_Window",
+    "Stack",
+    "Tree",
     "Two_Pointers",
     "Union_Find",
 ]
@@ -254,6 +269,8 @@ def phase_spec(
     }
 
 
+# Legacy fallback for runs without data/learning-plan-template-sources/.
+# New template edits should be made in per-template source directories.
 MANUAL_TEMPLATES = {
     "cn_algorithm_foundation_12weeks": {
         "title": "中文系统刷题入门计划",
@@ -456,6 +473,229 @@ MANUAL_TEMPLATES = {
             ]),
         ],
     },
+    "topic_tree_binary_tree_foundation": {
+        "title": "树与二叉树专项",
+        "summary": "3 周系统补齐树与二叉树基础，覆盖遍历、BST 性质、路径/LCA、构造和序列化。",
+        "goal": "建立树递归返回值、层序遍历和二叉搜索树性质的稳定解题能力。",
+        "intent": "TOPIC_BREAKTHROUGH",
+        "level": "INTERMEDIATE",
+        "defaultDurationWeeks": 3,
+        "defaultWeeklyHours": 7,
+        "difficultyPreference": "MEDIUM",
+        "interviewOriented": True,
+        "targetAudience": "已经做过基础数组和递归题，但树题递归边界、返回值或层序遍历不稳定的学习者。",
+        "prerequisites": ["理解递归调用栈", "了解二叉树节点结构", "能写基础 DFS 或 BFS"],
+        "recommendedFor": ["树遍历、BST 或路径题容易混淆", "需要面试前补齐二叉树高频题", "希望把递归和队列遍历整理成模板"],
+        "notRecommendedFor": ["尚未掌握基础函数和递归", "主要薄弱点是字符串窗口或动态规划"],
+        "expectedOutcome": "完成后能按遍历方式、BST 性质、路径问题和构造/序列化分类复盘树题。",
+        "source": HALFROST_SOURCE,
+        "sourceDescription": "以 halfrost Tree、Depth_First_Search、Breadth_First_Search 元数据和本地题库 tree/binary-tree 标签为基础重组。",
+        "curationNotes": "直接内置可审计的题号、slug、难度、标签和来源链接；阶段说明、目标和复盘建议由 algo-mentor 自写。",
+        "metadata": {
+            "sourceStrategy": "mixed_halfrost_metadata_and_local_tag_rebuild",
+            "secondarySources": [LOCAL_SOURCE["name"], LEETCODE_OFFICIAL_SOURCE["name"]],
+        },
+        "phases": [
+            phase_spec("遍历与层序基础", 1, "用前中后序、层序和深度题稳定递归/队列遍历模板。", ["Tree", "Binary Tree", "Breadth-First Search"], [
+                "binary-tree-preorder-traversal", "binary-tree-inorder-traversal", "binary-tree-postorder-traversal",
+                "binary-tree-level-order-traversal", "binary-tree-zigzag-level-order-traversal",
+                "maximum-depth-of-binary-tree", "minimum-depth-of-binary-tree", "invert-binary-tree",
+            ]),
+            phase_spec("BST 性质与构造", 1, "训练有序约束、迭代器、LCA 和由遍历序列重建树的边界。", ["Binary Search Tree", "Tree"], [
+                "validate-binary-search-tree", "kth-smallest-element-in-a-bst",
+                "lowest-common-ancestor-of-a-binary-search-tree", "binary-search-tree-iterator",
+                "convert-sorted-array-to-binary-search-tree",
+                "construct-binary-tree-from-preorder-and-inorder-traversal",
+                "construct-binary-tree-from-inorder-and-postorder-traversal",
+                "serialize-and-deserialize-bst",
+            ]),
+            phase_spec("路径、LCA 与序列化", 1, "集中处理路径累积、公共祖先、最大路径和树结构序列化。", ["Tree", "Depth-First Search"], [
+                "path-sum", "path-sum-ii", "binary-tree-paths", "path-sum-iii",
+                "lowest-common-ancestor-of-a-binary-tree", "binary-tree-maximum-path-sum",
+                "serialize-and-deserialize-binary-tree", "flatten-binary-tree-to-linked-list",
+            ]),
+        ],
+    },
+    "topic_backtracking_foundation": {
+        "title": "回溯专项突破",
+        "summary": "3 周突破回溯搜索，按子集/组合/排列、棋盘与字符串切割、剪枝和约束搜索递进。",
+        "goal": "掌握选择列表、路径状态、撤销选择和剪枝条件的表达方式。",
+        "intent": "TOPIC_BREAKTHROUGH",
+        "level": "INTERMEDIATE",
+        "defaultDurationWeeks": 3,
+        "defaultWeeklyHours": 7,
+        "difficultyPreference": "MEDIUM",
+        "interviewOriented": True,
+        "targetAudience": "能写递归但回溯题容易漏撤销、去重或剪枝条件的学习者。",
+        "prerequisites": ["理解递归和数组/字符串遍历", "能说明基础 DFS 结束条件", "做过至少 20 道 Easy/Medium 题"],
+        "recommendedFor": ["组合、排列、子集题容易套错模板", "棋盘搜索或字符串切割题缺少系统复盘", "需要面试前集中补强搜索题"],
+        "notRecommendedFor": ["还不能独立写递归", "只想练 SQL 或实现基础题"],
+        "expectedOutcome": "完成后能把回溯题拆成选择、约束、终止、去重和剪枝五类复盘项。",
+        "source": HALFROST_SOURCE,
+        "sourceDescription": "以 halfrost Backtracking 元数据和本地题库 backtracking 标签为基础，按面试常见搜索模式重组。",
+        "curationNotes": "只使用题号、slug、难度、标签和来源链接；不复制题解、文章正文、图示或代码。",
+        "metadata": {
+            "sourceStrategy": "mixed_halfrost_metadata_and_local_tag_rebuild",
+            "secondarySources": [LOCAL_SOURCE["name"], NEETCODE_SOURCE["name"]],
+        },
+        "phases": [
+            phase_spec("子集、组合与排列", 1, "先稳定选择树、去重边界和结果收集位置。", ["Backtracking", "Array"], [
+                "subsets", "subsets-ii", "combinations", "combination-sum", "combination-sum-ii", "permutations", "permutations-ii",
+            ]),
+            phase_spec("棋盘与字符串切割", 1, "通过棋盘、括号、IP 和回文切割练习约束判断。", ["Backtracking", "String", "Matrix"], [
+                "n-queens", "n-queens-ii", "sudoku-solver", "word-search", "palindrome-partitioning",
+                "restore-ip-addresses", "generate-parentheses",
+            ]),
+            phase_spec("剪枝与约束搜索", 1, "用高约束题训练排序剪枝、状态压缩前置和搜索空间控制。", ["Backtracking", "Pruning"], [
+                "combination-sum-iii", "letter-combinations-of-a-phone-number", "matchsticks-to-square",
+                "partition-to-k-equal-sum-subsets", "expression-add-operators", "word-search-ii",
+            ]),
+        ],
+    },
+    "topic_heap_priority_queue": {
+        "title": "堆与优先队列专项",
+        "summary": "2 周集中训练 TopK、第 K 大、多路合并、调度和双堆中位数。",
+        "goal": "掌握堆的排序视角、在线维护和多路合并建模方式。",
+        "intent": "TOPIC_BREAKTHROUGH",
+        "level": "INTERMEDIATE",
+        "defaultDurationWeeks": 2,
+        "defaultWeeklyHours": 6,
+        "difficultyPreference": "MEDIUM",
+        "interviewOriented": True,
+        "targetAudience": "知道堆结构但在 TopK、数据流或调度题中不清楚堆元素设计的学习者。",
+        "prerequisites": ["理解数组和排序", "知道最小堆/最大堆基本操作", "能分析 O(log n) 插入删除"],
+        "recommendedFor": ["TopK、合并链表或数据流题不稳定", "需要快速补齐优先队列面试题", "想训练堆元素设计和懒删除意识"],
+        "notRecommendedFor": ["还没掌握基础数组和排序", "主要薄弱点是树递归或回溯"],
+        "expectedOutcome": "完成后能判断何时用堆、堆里放什么字段、何时需要双堆或延迟删除。",
+        "source": HALFROST_SOURCE,
+        "sourceDescription": "以本地题库 heap-priority-queue 标签为主，并结合 halfrost 可匹配元数据做来源审计。",
+        "curationNotes": "按 TopK/第 K 大、多路合并、调度和双堆重建 2 周计划，只内置结构化题单元数据。",
+        "metadata": {
+            "sourceStrategy": "local_tag_rebuild_with_halfrost_audit",
+            "secondarySources": [LOCAL_SOURCE["name"], NEETCODE_SOURCE["name"], TIH_SOURCE["name"]],
+        },
+        "phases": [
+            phase_spec("TopK、第 K 大与多路合并", 1, "用静态数组、矩阵、链表和多列表题稳定堆排序模型。", ["Heap", "Priority Queue", "Sorting"], [
+                "kth-largest-element-in-an-array", "top-k-frequent-elements", "top-k-frequent-words",
+                "k-closest-points-to-origin", "kth-smallest-element-in-a-sorted-matrix", "merge-k-sorted-lists",
+                "find-k-pairs-with-smallest-sums", "smallest-range-covering-elements-from-k-lists",
+                "find-k-closest-elements",
+            ]),
+            phase_spec("调度、数据流与双堆", 1, "训练动态维护、任务调度、双堆平衡和在线更新。", ["Heap", "Priority Queue", "Design"], [
+                "find-median-from-data-stream", "sliding-window-median", "task-scheduler", "reorganize-string",
+                "ipo", "course-schedule-iii", "last-stone-weight", "kth-largest-element-in-a-stream",
+                "reduce-array-size-to-the-half",
+            ]),
+        ],
+    },
+    "topic_greedy_strategies": {
+        "title": "贪心策略专项",
+        "summary": "3 周覆盖区间调度、跳跃/加油站、分配/找零和字符串排序贪心。",
+        "goal": "建立局部最优选择、排序依据和反例检查的贪心证明能力。",
+        "intent": "TOPIC_BREAKTHROUGH",
+        "level": "INTERMEDIATE",
+        "defaultDurationWeeks": 3,
+        "defaultWeeklyHours": 7,
+        "difficultyPreference": "MEDIUM",
+        "interviewOriented": True,
+        "targetAudience": "能写实现但贪心题经常无法证明选择策略或排序依据的学习者。",
+        "prerequisites": ["熟悉数组、排序和基础区间题", "能写简单复杂度分析", "做过若干 Medium 题"],
+        "recommendedFor": ["区间调度、跳跃题或字符串贪心经常靠直觉", "需要面试前整理贪心证明模板", "想补齐排序后选择类题"],
+        "notRecommendedFor": ["还没掌握数组遍历和排序", "主要薄弱点是 DP 状态定义"],
+        "expectedOutcome": "完成后能用排序依据、交换论证、覆盖范围或反例检查说明贪心正确性。",
+        "source": HALFROST_SOURCE,
+        "sourceDescription": "以本地题库 greedy、sorting 和区间相关标签为主，并结合 halfrost Sorting 元数据做来源审计。",
+        "curationNotes": "按区间、跳跃/分配、字符串排序三类重建；不复制第三方题解或文章内容。",
+        "metadata": {
+            "sourceStrategy": "local_tag_rebuild_with_halfrost_audit",
+            "secondarySources": [LOCAL_SOURCE["name"], LEETCODE_MASTER_SOURCE["name"], TIH_SOURCE["name"]],
+        },
+        "phases": [
+            phase_spec("区间调度与覆盖", 1, "用合并、插入、删除、箭数和链式选择题训练排序依据。", ["Greedy", "Intervals", "Sorting"], [
+                "merge-intervals", "insert-interval", "non-overlapping-intervals",
+                "minimum-number-of-arrows-to-burst-balloons", "queue-reconstruction-by-height",
+                "maximum-length-of-pair-chain", "course-schedule-iii", "partition-labels",
+            ]),
+            phase_spec("跳跃、加油站与分配", 1, "通过覆盖范围、资源分配和交易题训练局部最优边界。", ["Greedy", "Array"], [
+                "jump-game", "jump-game-ii", "gas-station", "candy", "assign-cookies", "can-place-flowers",
+                "best-time-to-buy-and-sell-stock-ii", "lemonade-change",
+            ]),
+            phase_spec("字符串与排序贪心", 1, "集中处理字典序、删除、重排和排序后组合的贪心选择。", ["Greedy", "String", "Sorting"], [
+                "remove-duplicate-letters", "remove-k-digits", "reorganize-string", "largest-number",
+                "monotone-increasing-digits", "increasing-triplet-subsequence", "hand-of-straights",
+                "split-array-largest-sum",
+            ]),
+        ],
+    },
+    "topic_stack_monotonic": {
+        "title": "栈与单调栈专项",
+        "summary": "2 周补齐基础栈、表达式求值、单调栈和单调队列窗口题。",
+        "goal": "掌握栈状态维护、表达式解析和单调结构的入栈/出栈不变量。",
+        "intent": "TOPIC_BREAKTHROUGH",
+        "level": "INTERMEDIATE",
+        "defaultDurationWeeks": 2,
+        "defaultWeeklyHours": 6,
+        "difficultyPreference": "MEDIUM",
+        "interviewOriented": True,
+        "targetAudience": "括号、表达式、下一个更大元素或柱状图题容易写乱边界的学习者。",
+        "prerequisites": ["理解数组和字符串遍历", "会使用栈或双端队列", "能写基础括号匹配"],
+        "recommendedFor": ["单调栈入栈出栈条件不稳定", "表达式题和括号题缺少统一模板", "想补齐窗口最大值和柱状图经典题"],
+        "notRecommendedFor": ["还不能使用基础数据结构", "主要目标是 SQL 或系统设计"],
+        "expectedOutcome": "完成后能复述栈保存的状态含义，并能为单调栈题写出不变量和结算时机。",
+        "source": HALFROST_SOURCE,
+        "sourceDescription": "以 halfrost Stack 元数据和本地题库 stack/monotonic-stack/monotonic-queue 标签重组。",
+        "curationNotes": "直接内置题号、slug、难度和标签；阶段目标、验收和复盘建议由 algo-mentor 自写。",
+        "metadata": {
+            "sourceStrategy": "mixed_halfrost_metadata_and_local_tag_rebuild",
+            "secondarySources": [LOCAL_SOURCE["name"], NEETCODE_SOURCE["name"]],
+        },
+        "phases": [
+            phase_spec("基础栈、括号与表达式", 1, "稳定括号匹配、最小栈、路径解析和表达式求值。", ["Stack", "String"], [
+                "valid-parentheses", "min-stack", "implement-stack-using-queues", "implement-queue-using-stacks",
+                "simplify-path", "evaluate-reverse-polish-notation", "basic-calculator", "basic-calculator-ii",
+                "decode-string",
+            ]),
+            phase_spec("单调栈与单调队列", 1, "训练下一个更大元素、柱状图、接雨水和窗口队列不变量。", ["Monotonic Stack", "Monotonic Queue"], [
+                "daily-temperatures", "next-greater-element-i", "next-greater-element-ii",
+                "largest-rectangle-in-histogram", "maximal-rectangle", "trapping-rain-water",
+                "online-stock-span", "sliding-window-maximum", "shortest-subarray-with-sum-at-least-k",
+            ]),
+        ],
+    },
+    "topic_bit_manipulation": {
+        "title": "位运算专项",
+        "summary": "2 周覆盖基础位操作、异或技巧、子集枚举、位掩码和进阶图状态题。",
+        "goal": "掌握常见位操作、异或性质、bitmask 状态表示和枚举边界。",
+        "intent": "TOPIC_BREAKTHROUGH",
+        "level": "INTERMEDIATE",
+        "defaultDurationWeeks": 2,
+        "defaultWeeklyHours": 6,
+        "difficultyPreference": "MEDIUM",
+        "interviewOriented": True,
+        "targetAudience": "位运算语法会用但对异或、mask 枚举和状态压缩缺少系统理解的学习者。",
+        "prerequisites": ["理解二进制表示", "会写数组遍历和哈希计数", "知道与或非异或基础操作"],
+        "recommendedFor": ["Single Number、Counting Bits 或 mask 题经常靠记忆", "需要短周期补齐位运算面试题", "想为状压 DP 打基础"],
+        "notRecommendedFor": ["完全没学过二进制表示", "主要薄弱点是树或字符串窗口"],
+        "expectedOutcome": "完成后能按位测试、位清除、异或分组、mask 枚举和状态压缩分类复盘题目。",
+        "source": HALFROST_SOURCE,
+        "sourceDescription": "以 halfrost Bit_Manipulation 元数据和本地题库 bit-manipulation/bitmask 标签重组。",
+        "curationNotes": "只内置题号、slug、难度、标签和来源链接；不复制任何题解、题面或源码。",
+        "metadata": {
+            "sourceStrategy": "mixed_halfrost_metadata_and_local_tag_rebuild",
+            "secondarySources": [LOCAL_SOURCE["name"], LEETCODE_OFFICIAL_SOURCE["name"]],
+        },
+        "phases": [
+            phase_spec("基础位操作与异或技巧", 1, "用 Single Number、bit count 和幂判断题稳定常见位操作。", ["Bit Manipulation"], [
+                "single-number", "single-number-ii", "single-number-iii", "number-of-1-bits", "reverse-bits",
+                "counting-bits", "power-of-two", "power-of-four", "missing-number",
+            ]),
+            phase_spec("位掩码、子集枚举与进阶状态", 1, "训练子集生成、位与范围、异或 Trie 和状态压缩图搜索。", ["Bit Manipulation", "Bitmask"], [
+                "subsets", "subsets-ii", "gray-code", "maximum-xor-of-two-numbers-in-an-array",
+                "bitwise-and-of-numbers-range", "repeated-dna-sequences", "maximum-product-of-word-lengths",
+                "utf-8-validation", "shortest-path-visiting-all-nodes",
+            ]),
+        ],
+    },
     "leetcode_top_100_liked_revision": {
         "title": "Top 100 Liked 复盘计划",
         "summary": "6 周二刷和查漏补缺路线，覆盖高赞经典题中的数组、链表、树、图、动态规划和综合专题。",
@@ -565,8 +805,23 @@ TEMPLATE_ORDER = [
     "topic_graph_bfs_dfs",
     "topic_binary_search_boundaries",
     "topic_sliding_window_two_pointers",
+    "topic_tree_binary_tree_foundation",
+    "topic_backtracking_foundation",
+    "topic_heap_priority_queue",
+    "topic_greedy_strategies",
+    "topic_stack_monotonic",
+    "topic_bit_manipulation",
     "leetcode_top_100_liked_revision",
     "programming_skills_implementation_foundation",
+]
+
+P1_A_BATCH_ONE_TEMPLATE_IDS = [
+    "topic_tree_binary_tree_foundation",
+    "topic_backtracking_foundation",
+    "topic_heap_priority_queue",
+    "topic_greedy_strategies",
+    "topic_stack_monotonic",
+    "topic_bit_manipulation",
 ]
 
 
@@ -646,6 +901,8 @@ class ProblemIndex:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate learning plan template seed from multiple sources.")
+    parser.add_argument("--template-source-dir", default=str(DEFAULT_TEMPLATE_SOURCE_DIR))
+    parser.add_argument("--template-order", default=str(DEFAULT_TEMPLATE_ORDER_PATH))
     parser.add_argument("--source-json", default="", help="Local NeetCode .problemSiteData.json path.")
     parser.add_argument("--source-url", default=NEETCODE_RAW_URL, help="NeetCode source URL.")
     parser.add_argument("--tih-markdown", default="", help="Local TIH best-practice-questions.md path.")
@@ -656,15 +913,25 @@ def main() -> None:
     parser.add_argument("--generated-at", default=DEFAULT_GENERATED_AT)
     args = parser.parse_args()
 
-    sources = load_source_data(
-        neetcode_path=Path(args.source_json) if args.source_json else None,
-        neetcode_url=args.source_url,
-        tih_path=Path(args.tih_markdown) if args.tih_markdown else None,
-        tih_url=args.tih_url,
-        halfrost_meta_dir=Path(args.halfrost_meta_dir) if args.halfrost_meta_dir else None,
-    )
+    template_source_dir = Path(args.template_source_dir) if args.template_source_dir else None
+    template_order_path = Path(args.template_order) if args.template_order else None
+    sources = SourceData(neetcode_rows=[], tih_markdown="", halfrost_meta={})
+    if not template_source_dir or not template_source_dir.exists():
+        sources = load_source_data(
+            neetcode_path=Path(args.source_json) if args.source_json else None,
+            neetcode_url=args.source_url,
+            tih_path=Path(args.tih_markdown) if args.tih_markdown else None,
+            tih_url=args.tih_url,
+            halfrost_meta_dir=Path(args.halfrost_meta_dir) if args.halfrost_meta_dir else None,
+        )
     problem_index = ProblemIndex.from_path(Path(args.local_problems))
-    templates, refs, report = build_seed(sources, problem_index, args.generated_at)
+    templates, refs, report = build_seed(
+        sources,
+        problem_index,
+        args.generated_at,
+        template_source_dir=template_source_dir,
+        template_order_path=template_order_path,
+    )
     write_seed(Path(args.output_dir), templates, refs, report)
     print({
         "templates": report["templateCount"],
@@ -718,24 +985,133 @@ def build_seed(
     sources: SourceData,
     problem_index: ProblemIndex,
     generated_at: str = DEFAULT_GENERATED_AT,
+    template_source_dir: Path | None = DEFAULT_TEMPLATE_SOURCE_DIR,
+    template_order_path: Path | None = DEFAULT_TEMPLATE_ORDER_PATH,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
-    halfrost_by_frontend_id = parse_halfrost_meta(sources.halfrost_meta)
-    templates_by_id: dict[str, dict[str, Any]] = {}
-    refs_by_template: dict[str, list[dict[str, Any]]] = {}
+    if template_source_dir and template_source_dir.exists():
+        templates, refs = build_seed_from_template_sources(template_source_dir, problem_index, template_order_path)
+    else:
+        halfrost_by_frontend_id = parse_halfrost_meta(sources.halfrost_meta)
+        templates_by_id: dict[str, dict[str, Any]] = {}
+        refs_by_template: dict[str, list[dict[str, Any]]] = {}
 
-    add_neetcode_templates(sources.neetcode_rows, problem_index, templates_by_id, refs_by_template)
-    add_tih_template(sources.tih_markdown, problem_index, templates_by_id, refs_by_template)
-    add_manual_templates(problem_index, halfrost_by_frontend_id, templates_by_id, refs_by_template)
+        add_neetcode_templates(sources.neetcode_rows, problem_index, templates_by_id, refs_by_template)
+        add_tih_template(sources.tih_markdown, problem_index, templates_by_id, refs_by_template)
+        add_manual_templates(problem_index, halfrost_by_frontend_id, templates_by_id, refs_by_template)
 
-    templates = [templates_by_id[template_id] for template_id in TEMPLATE_ORDER]
-    refs = [
-        ref
-        for template_id in TEMPLATE_ORDER
-        for ref in sorted(refs_by_template[template_id], key=lambda item: (item["phaseIndex"], item["sortOrder"], item["sourceOrder"]))
-    ]
+        templates = [templates_by_id[template_id] for template_id in TEMPLATE_ORDER]
+        refs = [
+            ref
+            for template_id in TEMPLATE_ORDER
+            for ref in sorted(refs_by_template[template_id], key=lambda item: (item["phaseIndex"], item["sortOrder"], item["sourceOrder"]))
+        ]
     validate_seed(templates, refs)
     report = build_report(templates, refs, generated_at)
     return templates, refs, report
+
+
+def build_seed_from_template_sources(
+    template_source_dir: Path,
+    problem_index: ProblemIndex,
+    template_order_path: Path | None = None,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    template_order = load_template_order(template_source_dir, template_order_path)
+    templates: list[dict[str, Any]] = []
+    refs_by_template: dict[str, list[dict[str, Any]]] = {}
+    seen_template_ids: set[str] = set()
+    for template_id in template_order:
+        if template_id in seen_template_ids:
+            raise ValueError(f"duplicate templateId in template order: {template_id}")
+        seen_template_ids.add(template_id)
+        template_dir = template_source_dir / template_id
+        template_path = template_dir / TEMPLATE_SOURCE_TEMPLATE_FILE
+        refs_path = template_dir / TEMPLATE_SOURCE_PROBLEM_REFS_FILE
+        if not template_path.exists():
+            raise ValueError(f"missing template source file: {template_path}")
+        if not refs_path.exists():
+            raise ValueError(f"missing template problem refs file: {refs_path}")
+        source_template = json.loads(template_path.read_text(encoding="utf-8"))
+        source_template_id = clean_text(source_template.get("templateId"))
+        if source_template_id != template_id:
+            raise ValueError(f"template directory and templateId differ: {template_id} != {source_template_id}")
+        refs = [
+            build_source_ref(template_id, source_ref, problem_index)
+            for source_ref in read_jsonl(refs_path)
+        ]
+        templates.append(build_template_from_source_template(source_template, refs))
+        refs_by_template[template_id] = refs
+    refs = [
+        ref
+        for template_id in template_order
+        for ref in sorted(refs_by_template[template_id], key=lambda item: (item["phaseIndex"], item["sortOrder"], item["sourceOrder"]))
+    ]
+    return templates, refs
+
+
+def load_template_order(template_source_dir: Path, template_order_path: Path | None = None) -> list[str]:
+    order_path = template_order_path or template_source_dir.parent / "template_order.json"
+    if order_path.exists():
+        payload = json.loads(order_path.read_text(encoding="utf-8"))
+        template_ids = payload.get("templateIds") if isinstance(payload, dict) else payload
+        if not isinstance(template_ids, list):
+            raise ValueError(f"template order must be a list or contain templateIds: {order_path}")
+        return [clean_text(template_id) for template_id in template_ids if clean_text(template_id)]
+    return sorted(path.name for path in template_source_dir.iterdir() if path.is_dir())
+
+
+def build_source_ref(
+    template_id: str,
+    source_ref: dict[str, Any],
+    problem_index: ProblemIndex,
+) -> dict[str, Any]:
+    slug = normalize_slug(clean_text(source_ref.get("problemSlug")))
+    metadata = dict(source_ref.get("metadata") or {})
+    metadata.pop("matchedLocalProblem", None)
+    if "sourceTags" in metadata:
+        metadata["sourceTags"] = problem_index.tag_values(slug)
+    return problem_ref(
+        template_id=template_id,
+        phase_index=int(source_ref.get("phaseIndex", 0)),
+        sort_order=int(source_ref.get("sortOrder", 0)),
+        source_order=int(source_ref.get("sourceOrder", 0)),
+        slug=slug,
+        source_title=clean_text(source_ref.get("sourceTitle")) or problem_index.title(slug),
+        source_difficulty=difficulty(source_ref.get("sourceDifficulty") or problem_index.difficulty(slug)),
+        pattern=clean_text(source_ref.get("pattern")),
+        source_url=clean_text(source_ref.get("sourceUrl")) or leetcode_url(slug),
+        matched=problem_index.has_slug(slug),
+        metadata=metadata,
+    )
+
+
+def build_template_from_source_template(
+    source_template: dict[str, Any],
+    refs: list[dict[str, Any]],
+) -> dict[str, Any]:
+    metadata = dict(source_template.get("metadata") or {})
+    for key in DERIVED_TEMPLATE_METADATA_KEYS:
+        metadata.pop(key, None)
+    matched_count = sum(1 for ref in refs if ref["metadata"]["matchedLocalProblem"])
+    missing = [ref["problemSlug"] for ref in refs if not ref["metadata"]["matchedLocalProblem"]]
+    metadata = {
+        **metadata,
+        "matchedProblemCount": matched_count,
+        "missingProblemCount": len(missing),
+        "missingProblems": missing,
+        "sourceProblemCount": metadata.get("sourceProblemCount", len(refs)),
+        "sourceTags": sorted({tag for ref in refs for tag in ref["metadata"].get("sourceTags", [])}),
+        "sourceStrategy": metadata.get("sourceStrategy", "direct_metadata"),
+    }
+    phases = list(source_template.get("phases") or [])
+    topic_preferences = list(dict.fromkeys(tag for phase in phases for tag in phase.get("recommendedTags", [])))
+    template = {
+        **source_template,
+        "topicPreferences": source_template.get("topicPreferences") or topic_preferences,
+        "difficultyMix": difficulty_mix(refs),
+        "metadata": metadata,
+    }
+    validate_template(template)
+    return template
 
 
 def add_neetcode_templates(
@@ -938,6 +1314,7 @@ def add_manual_templates(
         "topic_graph_bfs_dfs",
         "topic_binary_search_boundaries",
         "topic_sliding_window_two_pointers",
+        *P1_A_BATCH_ONE_TEMPLATE_IDS,
         "leetcode_top_100_liked_revision",
         "programming_skills_implementation_foundation",
     ]:

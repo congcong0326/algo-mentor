@@ -1,0 +1,113 @@
+{
+  "templateId": "topic_greedy_strategies",
+  "title": "贪心策略专项",
+  "summary": "3 周覆盖区间调度、跳跃/加油站、分配/找零和字符串排序贪心。",
+  "goal": "建立局部最优选择、排序依据和反例检查的贪心证明能力。",
+  "intent": "TOPIC_BREAKTHROUGH",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 3,
+  "defaultWeeklyHours": 7,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Greedy",
+    "Intervals",
+    "Sorting",
+    "Array",
+    "String"
+  ],
+  "targetAudience": "能写实现但贪心题经常无法证明选择策略或排序依据的学习者。",
+  "prerequisites": [
+    "熟悉数组、排序和基础区间题",
+    "能写简单复杂度分析",
+    "做过若干 Medium 题"
+  ],
+  "recommendedFor": [
+    "区间调度、跳跃题或字符串贪心经常靠直觉",
+    "需要面试前整理贪心证明模板",
+    "想补齐排序后选择类题"
+  ],
+  "notRecommendedFor": [
+    "还没掌握数组遍历和排序",
+    "主要薄弱点是 DP 状态定义"
+  ],
+  "expectedOutcome": "完成后能用排序依据、交换论证、覆盖范围或反例检查说明贪心正确性。",
+  "sourceName": "halfrost/LeetCode-Go",
+  "sourceUrl": "https://github.com/halfrost/LeetCode-Go",
+  "sourceCommit": "3bcc916680298295e06060ca9790304c1f1b78b6",
+  "sourceDataPath": "ctl/meta/*",
+  "sourceDescription": "以本地题库 greedy、sorting 和区间相关标签为主，并结合 halfrost Sorting 元数据做来源审计。",
+  "curationNotes": "按区间、跳跃/分配、字符串排序三类重建；不复制第三方题解或文章内容。",
+  "licenseNotice": "MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。",
+  "metadata": {
+    "secondarySources": [
+      "algo-mentor local problem seed",
+      "youngyangyang04/leetcode-master",
+      "yangshun/tech-interview-handbook"
+    ],
+    "sourceProblemCount": 24,
+    "sourceStrategy": "local_tag_rebuild_with_halfrost_audit"
+  },
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "用合并、插入、删除、箭数和链式选择题训练排序依据。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Greedy",
+        "Intervals",
+        "Sorting"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "区间调度与覆盖"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "通过覆盖范围、资源分配和交易题训练局部最优边界。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Greedy",
+        "Array"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "跳跃、加油站与分配"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "集中处理字典序、删除、重排和排序后组合的贪心选择。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Greedy",
+        "String",
+        "Sorting"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "字符串与排序贪心"
+    }
+  ]
+}

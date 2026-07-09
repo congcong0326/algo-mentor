@@ -1,0 +1,133 @@
+{
+  "templateId": "programming_skills_implementation_foundation",
+  "title": "编程基础与实现力计划",
+  "summary": "4 周补齐基础实现能力，覆盖模拟、字符串、数组、矩阵、基础数据结构和简单设计题。",
+  "goal": "通过 Easy/Medium 本地题库提升换语言或基础实现薄弱时的编码稳定性。",
+  "intent": "PRACTICE_GOAL",
+  "level": "BEGINNER",
+  "defaultDurationWeeks": 4,
+  "defaultWeeklyHours": 5,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "EASY",
+  "interviewOriented": false,
+  "topicPreferences": [
+    "Simulation",
+    "Array",
+    "String",
+    "Hash Table",
+    "Matrix",
+    "Two Pointers",
+    "Stack",
+    "Queue",
+    "Design"
+  ],
+  "targetAudience": "刚换语言、基础语法不稳或实现细节经常出错的学习者。",
+  "prerequisites": [
+    "能写变量、循环、函数和基础数组操作",
+    "愿意用同一语言反复练习基础实现"
+  ],
+  "recommendedFor": [
+    "想先提升代码熟练度",
+    "Easy 题经常因为语法或边界出错",
+    "准备进入系统刷题前打基础"
+  ],
+  "notRecommendedFor": [
+    "已经稳定完成 Medium/Hard 并只想挑战高阶算法",
+    "主要目标是数据库或前端专项"
+  ],
+  "expectedOutcome": "完成后能稳定实现基础数组、字符串、矩阵、栈和简单设计题，为后续面试路线打底。",
+  "sourceName": "LeetCode official Study Plan",
+  "sourceUrl": "https://leetcode.com/studyplan/",
+  "sourceCommit": "accessed-2026-07-06",
+  "sourceDataPath": "top-100-liked; programming-skills; dynamic-programming; graph-theory; binary-search",
+  "sourceDescription": "LeetCode Programming Skills 官方计划只作目标参考，题目由本地 Easy/Medium 题库重建。",
+  "curationNotes": "官方计划仅作为外链和目标描述；具体路线按本地题库 slug 组织，避免复制官方内容。",
+  "licenseNotice": "官方网页仅作外链和目标参考；本 seed 不复制题面、题解、付费内容或官方题单全文。",
+  "metadata": {
+    "secondarySources": [
+      "algo-mentor local problem seed"
+    ],
+    "sourceProblemCount": 34,
+    "sourceStrategy": "official_reference_after_rebuild"
+  },
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "用短题稳定循环、条件分支、计数和简单数组返回。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Simulation",
+        "Array"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "语法热身与简单模拟"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练字符串遍历、拼接、映射关系和计数字典。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "String",
+        "Hash Table"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "字符串与哈希基础"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "练习下标移动、矩阵遍历、原地修改和基础排序合并。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Array",
+        "Matrix",
+        "Two Pointers"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "数组、矩阵与边界"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成栈、队列、HashMap 和简单设计题，巩固类和状态维护。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 4,
+      "recommendedTags": [
+        "Stack",
+        "Queue",
+        "Design"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "基础数据结构实现"
+    }
+  ]
+}

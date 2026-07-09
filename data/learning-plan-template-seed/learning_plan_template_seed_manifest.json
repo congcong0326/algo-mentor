@@ -1,37 +1,37 @@
 {
   "files": {
     "learning_plan_template_problem_refs.jsonl": {
-      "bytes": 310403,
+      "bytes": 393913,
       "path": "learning_plan_template_problem_refs.jsonl",
-      "sha256": "9e549401b7a4a2bf4c27b247dba73d215b3a08b241048c03079409714cb4db83"
+      "sha256": "ef06dc1c7eed1d3e5c5d8f4c0cecfca6367f30dfaaacf595501ea28e56a2edfc"
     },
     "learning_plan_template_seed_manifest.json": {
-      "bytes": 11595,
+      "bytes": 15357,
       "hashInput": "manifest payload before self file stat insertion",
       "path": "learning_plan_template_seed_manifest.json",
-      "sha256": "25f28e39bb22a11e3e22683e1b68dba3d433b7e531fb398b21a229341a46cf40"
+      "sha256": "5524d33189d8dcfa548c628e63cbb871cb1f35b55914a0030623fbd4366526b3"
     },
     "learning_plan_template_seed_metadata.md": {
-      "bytes": 7959,
+      "bytes": 10326,
       "path": "learning_plan_template_seed_metadata.md",
-      "sha256": "6bb07c0b991013898cf015c2ca4fa542eedc7ed995f4d8232dd49a7048143596"
+      "sha256": "e082c5a196dbcbe5bac5531e31894f1f2da0ef4a45235b2452af2f056e9e3358"
     },
     "learning_plan_templates.jsonl": {
-      "bytes": 54010,
+      "bytes": 76501,
       "path": "learning_plan_templates.jsonl",
-      "sha256": "7465576de8cd3336369e7e4c759d56b4e4d1a7133001bbd55fe3eab02e76e402"
+      "sha256": "53a7bee0e1f39864a989acc2dfe05bd4b4eb84aaca825d2a728069c57ca80849"
     }
   },
-  "generatedAt": "2026-07-06T00:00:00+00:00",
-  "matchedProblemCount": 489,
+  "generatedAt": "2026-07-09T00:00:00+00:00",
+  "matchedProblemCount": 611,
   "missingProblemCount": 20,
-  "problemRefCount": 509,
+  "problemRefCount": 631,
   "schemaVersion": 1,
   "source": {
-    "commit": "p0-templates-2026-07-06",
-    "dataPath": "tools/learning_plan_template_seed/prepare_template_seed.py",
-    "name": "algo-mentor learning-plan-template-seed",
-    "url": "data/learning-plan-template-seed"
+    "commit": "template-source-split-2026-07-09",
+    "dataPath": "data/learning-plan-template-sources/templates/*/{template.json,problem_refs.jsonl}",
+    "name": "algo-mentor learning-plan-template-sources",
+    "url": "data/learning-plan-template-sources"
   },
   "sources": [
     {
@@ -45,7 +45,10 @@
       "templateIds": [
         "neetcode_150_systematic_interview",
         "neetcode_blind_75_interview_core",
-        "topic_sliding_window_two_pointers"
+        "topic_backtracking_foundation",
+        "topic_heap_priority_queue",
+        "topic_sliding_window_two_pointers",
+        "topic_stack_monotonic"
       ],
       "url": "https://github.com/neetcode-gh/leetcode"
     },
@@ -60,6 +63,8 @@
       "templateIds": [
         "leetcode_top_100_liked_revision",
         "tih_best_practice_50_5weeks",
+        "topic_greedy_strategies",
+        "topic_heap_priority_queue",
         "topic_sliding_window_two_pointers"
       ],
       "url": "https://github.com/yangshun/tech-interview-handbook"
@@ -68,15 +73,21 @@
       "commitOrVersion": "3bcc916680298295e06060ca9790304c1f1b78b6",
       "dataPath": "ctl/meta/*",
       "licenseNotice": "MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。",
-      "matchedProblemCount": 128,
+      "matchedProblemCount": 277,
       "missingProblemCount": 1,
       "name": "halfrost/LeetCode-Go",
-      "problemRefCount": 129,
+      "problemRefCount": 278,
       "templateIds": [
+        "topic_backtracking_foundation",
         "topic_binary_search_boundaries",
+        "topic_bit_manipulation",
         "topic_dynamic_programming_foundation",
         "topic_graph_bfs_dfs",
-        "topic_sliding_window_two_pointers"
+        "topic_greedy_strategies",
+        "topic_heap_priority_queue",
+        "topic_sliding_window_two_pointers",
+        "topic_stack_monotonic",
+        "topic_tree_binary_tree_foundation"
       ],
       "url": "https://github.com/halfrost/LeetCode-Go"
     },
@@ -84,13 +95,14 @@
       "commitOrVersion": "86f78fde8cb62d10c3b5e38b7e6b6e0705850f92",
       "dataPath": "README.md",
       "licenseNotice": "未发现仓库 LICENSE；本 seed 只作学习顺序参考，阶段说明、题目组合和复盘建议由 algo-mentor 重建。",
-      "matchedProblemCount": 25,
+      "matchedProblemCount": 15,
       "missingProblemCount": 0,
       "name": "youngyangyang04/leetcode-master",
-      "problemRefCount": 25,
+      "problemRefCount": 15,
       "templateIds": [
         "cn_algorithm_foundation_12weeks",
-        "topic_graph_bfs_dfs"
+        "topic_graph_bfs_dfs",
+        "topic_greedy_strategies"
       ],
       "url": "https://github.com/youngyangyang04/leetcode-master"
     },
@@ -111,17 +123,19 @@
       "commitOrVersion": "accessed-2026-07-06",
       "dataPath": "top-100-liked; programming-skills; dynamic-programming; graph-theory; binary-search",
       "licenseNotice": "官方网页仅作外链和目标参考；本 seed 不复制题面、题解、付费内容或官方题单全文。",
-      "matchedProblemCount": 69,
+      "matchedProblemCount": 52,
       "missingProblemCount": 0,
       "name": "LeetCode official Study Plan",
-      "problemRefCount": 69,
+      "problemRefCount": 52,
       "templateIds": [
         "cn_algorithm_foundation_12weeks",
         "leetcode_top_100_liked_revision",
         "programming_skills_implementation_foundation",
         "topic_binary_search_boundaries",
+        "topic_bit_manipulation",
         "topic_dynamic_programming_foundation",
-        "topic_graph_bfs_dfs"
+        "topic_graph_bfs_dfs",
+        "topic_tree_binary_tree_foundation"
       ],
       "url": "https://leetcode.com/studyplan/"
     },
@@ -137,29 +151,35 @@
         "cn_algorithm_foundation_12weeks",
         "leetcode_top_100_liked_revision",
         "programming_skills_implementation_foundation",
+        "topic_backtracking_foundation",
         "topic_binary_search_boundaries",
+        "topic_bit_manipulation",
         "topic_dynamic_programming_foundation",
         "topic_graph_bfs_dfs",
-        "topic_sliding_window_two_pointers"
+        "topic_greedy_strategies",
+        "topic_heap_priority_queue",
+        "topic_sliding_window_two_pointers",
+        "topic_stack_monotonic",
+        "topic_tree_binary_tree_foundation"
       ],
       "url": "data/seed/problems.jsonl"
     }
   ],
-  "templateCount": 10,
+  "templateCount": 16,
   "templates": {
     "cn_algorithm_foundation_12weeks": {
       "difficultyMix": {
         "Easy": {
-          "count": 22,
-          "ratio": 0.4783
+          "count": 21,
+          "ratio": 0.4565
         },
         "Hard": {
           "count": 1,
           "ratio": 0.0217
         },
         "Medium": {
-          "count": 23,
-          "ratio": 0.5
+          "count": 24,
+          "ratio": 0.5217
         }
       },
       "matchedProblemCount": 46,
@@ -172,16 +192,16 @@
     "leetcode_top_100_liked_revision": {
       "difficultyMix": {
         "Easy": {
-          "count": 17,
-          "ratio": 0.2537
+          "count": 18,
+          "ratio": 0.2687
         },
         "Hard": {
           "count": 4,
           "ratio": 0.0597
         },
         "Medium": {
-          "count": 46,
-          "ratio": 0.6866
+          "count": 45,
+          "ratio": 0.6716
         }
       },
       "matchedProblemCount": 67,
@@ -253,16 +273,16 @@
     "programming_skills_implementation_foundation": {
       "difficultyMix": {
         "Easy": {
-          "count": 30,
-          "ratio": 0.8824
+          "count": 31,
+          "ratio": 0.9118
         },
         "Hard": {
           "count": 0,
           "ratio": 0.0
         },
         "Medium": {
-          "count": 4,
-          "ratio": 0.1176
+          "count": 3,
+          "ratio": 0.0882
         }
       },
       "matchedProblemCount": 34,
@@ -301,6 +321,28 @@
       "problemCount": 61,
       "title": "5 周面试冲刺计划"
     },
+    "topic_backtracking_foundation": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "Hard": {
+          "count": 5,
+          "ratio": 0.25
+        },
+        "Medium": {
+          "count": 15,
+          "ratio": 0.75
+        }
+      },
+      "matchedProblemCount": 20,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 3,
+      "problemCount": 20,
+      "title": "回溯专项突破"
+    },
     "topic_binary_search_boundaries": {
       "difficultyMix": {
         "Easy": {
@@ -322,6 +364,28 @@
       "phaseCount": 2,
       "problemCount": 18,
       "title": "二分与边界专项计划"
+    },
+    "topic_bit_manipulation": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 6,
+          "ratio": 0.3333
+        },
+        "Hard": {
+          "count": 1,
+          "ratio": 0.0556
+        },
+        "Medium": {
+          "count": 11,
+          "ratio": 0.6111
+        }
+      },
+      "matchedProblemCount": 18,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 2,
+      "problemCount": 18,
+      "title": "位运算专项"
     },
     "topic_dynamic_programming_foundation": {
       "difficultyMix": {
@@ -369,6 +433,50 @@
       "problemCount": 20,
       "title": "图论专项突破计划"
     },
+    "topic_greedy_strategies": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 3,
+          "ratio": 0.125
+        },
+        "Hard": {
+          "count": 4,
+          "ratio": 0.1667
+        },
+        "Medium": {
+          "count": 17,
+          "ratio": 0.7083
+        }
+      },
+      "matchedProblemCount": 24,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 3,
+      "problemCount": 24,
+      "title": "贪心策略专项"
+    },
+    "topic_heap_priority_queue": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 2,
+          "ratio": 0.1111
+        },
+        "Hard": {
+          "count": 6,
+          "ratio": 0.3333
+        },
+        "Medium": {
+          "count": 10,
+          "ratio": 0.5556
+        }
+      },
+      "matchedProblemCount": 18,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 2,
+      "problemCount": 18,
+      "title": "堆与优先队列专项"
+    },
     "topic_sliding_window_two_pointers": {
       "difficultyMix": {
         "Easy": {
@@ -390,6 +498,50 @@
       "phaseCount": 2,
       "problemCount": 15,
       "title": "滑动窗口与双指针专项计划"
+    },
+    "topic_stack_monotonic": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 5,
+          "ratio": 0.2778
+        },
+        "Hard": {
+          "count": 5,
+          "ratio": 0.2778
+        },
+        "Medium": {
+          "count": 8,
+          "ratio": 0.4444
+        }
+      },
+      "matchedProblemCount": 18,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 2,
+      "problemCount": 18,
+      "title": "栈与单调栈专项"
+    },
+    "topic_tree_binary_tree_foundation": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 8,
+          "ratio": 0.3333
+        },
+        "Hard": {
+          "count": 3,
+          "ratio": 0.125
+        },
+        "Medium": {
+          "count": 13,
+          "ratio": 0.5417
+        }
+      },
+      "matchedProblemCount": 24,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 3,
+      "problemCount": 24,
+      "title": "树与二叉树专项"
     }
   }
 }

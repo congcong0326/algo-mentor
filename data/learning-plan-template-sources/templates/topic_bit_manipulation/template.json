@@ -1,0 +1,87 @@
+{
+  "templateId": "topic_bit_manipulation",
+  "title": "位运算专项",
+  "summary": "2 周覆盖基础位操作、异或技巧、子集枚举、位掩码和进阶图状态题。",
+  "goal": "掌握常见位操作、异或性质、bitmask 状态表示和枚举边界。",
+  "intent": "TOPIC_BREAKTHROUGH",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 2,
+  "defaultWeeklyHours": 6,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Bit Manipulation",
+    "Bitmask"
+  ],
+  "targetAudience": "位运算语法会用但对异或、mask 枚举和状态压缩缺少系统理解的学习者。",
+  "prerequisites": [
+    "理解二进制表示",
+    "会写数组遍历和哈希计数",
+    "知道与或非异或基础操作"
+  ],
+  "recommendedFor": [
+    "Single Number、Counting Bits 或 mask 题经常靠记忆",
+    "需要短周期补齐位运算面试题",
+    "想为状压 DP 打基础"
+  ],
+  "notRecommendedFor": [
+    "完全没学过二进制表示",
+    "主要薄弱点是树或字符串窗口"
+  ],
+  "expectedOutcome": "完成后能按位测试、位清除、异或分组、mask 枚举和状态压缩分类复盘题目。",
+  "sourceName": "halfrost/LeetCode-Go",
+  "sourceUrl": "https://github.com/halfrost/LeetCode-Go",
+  "sourceCommit": "3bcc916680298295e06060ca9790304c1f1b78b6",
+  "sourceDataPath": "ctl/meta/*",
+  "sourceDescription": "以 halfrost Bit_Manipulation 元数据和本地题库 bit-manipulation/bitmask 标签重组。",
+  "curationNotes": "只内置题号、slug、难度、标签和来源链接；不复制任何题解、题面或源码。",
+  "licenseNotice": "MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。",
+  "metadata": {
+    "secondarySources": [
+      "algo-mentor local problem seed",
+      "LeetCode official Study Plan"
+    ],
+    "sourceProblemCount": 18,
+    "sourceStrategy": "mixed_halfrost_metadata_and_local_tag_rebuild"
+  },
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "用 Single Number、bit count 和幂判断题稳定常见位操作。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Bit Manipulation"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "基础位操作与异或技巧"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练子集生成、位与范围、异或 Trie 和状态压缩图搜索。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Bit Manipulation",
+        "Bitmask"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "位掩码、子集枚举与进阶状态"
+    }
+  ]
+}

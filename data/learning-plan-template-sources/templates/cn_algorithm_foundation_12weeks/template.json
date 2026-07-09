@@ -1,0 +1,234 @@
+{
+  "templateId": "cn_algorithm_foundation_12weeks",
+  "title": "中文系统刷题入门计划",
+  "summary": "面向中文初学者的 12 周系统路线，按数组、链表、哈希、字符串、树、回溯、贪心、动态规划和图论逐步推进。",
+  "goal": "用中文学习习惯友好的顺序建立算法刷题基础。",
+  "intent": "LONG_TERM_LEARNING",
+  "level": "BEGINNER",
+  "defaultDurationWeeks": 12,
+  "defaultWeeklyHours": 6,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MIXED",
+  "interviewOriented": false,
+  "topicPreferences": [
+    "Array",
+    "Matrix",
+    "Linked List",
+    "Two Pointers",
+    "Hash Table",
+    "String",
+    "Stack",
+    "Queue",
+    "Tree",
+    "Binary Tree",
+    "Backtracking",
+    "Greedy",
+    "Intervals",
+    "Dynamic Programming",
+    "Graph",
+    "Breadth-First Search",
+    "Depth-First Search"
+  ],
+  "targetAudience": "刚开始系统刷题、偏好中文路线、希望逐步建立知识脉络的学习者。",
+  "prerequisites": [
+    "能使用一种语言写基础循环和函数",
+    "愿意按周复盘错题和模板"
+  ],
+  "recommendedFor": [
+    "刷题路线不清楚的新手",
+    "需要中文语境下的系统推进节奏",
+    "希望先用 Easy/Medium 打基础"
+  ],
+  "notRecommendedFor": [
+    "已经完成 150 题以上并只想专项突破",
+    "两周内必须面试冲刺的学习者"
+  ],
+  "expectedOutcome": "完成后能理解常见数据结构和算法题型的学习顺序，并沉淀一套可继续扩展的错题复盘框架。",
+  "sourceName": "youngyangyang04/leetcode-master",
+  "sourceUrl": "https://github.com/youngyangyang04/leetcode-master",
+  "sourceCommit": "86f78fde8cb62d10c3b5e38b7e6b6e0705850f92",
+  "sourceDataPath": "README.md",
+  "sourceDescription": "以代码随想录 README 的知识脉络为参考，并结合 LeetCode Programming Skills 和本地题库重建执行路线。",
+  "curationNotes": "不复制代码随想录文章、图示、题解或 README 原文；阶段目标、验收条件、复盘建议和题目组合均由 algo-mentor 自写。",
+  "licenseNotice": "未发现仓库 LICENSE；本 seed 只作学习顺序参考，阶段说明、题目组合和复盘建议由 algo-mentor 重建。",
+  "metadata": {
+    "secondarySources": [
+      "LeetCode official Study Plan",
+      "algo-mentor local problem seed"
+    ],
+    "sourceProblemCount": 46,
+    "sourceStrategy": "reference_after_rebuild"
+  },
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成数组下标、双指针前置和矩阵遍历基础。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Array",
+        "Matrix"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "数组与矩阵基础"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练链表节点改写、快慢指针和删除边界。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Linked List",
+        "Two Pointers"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "链表指针操作"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "用哈希表处理计数、去重、集合交集和两数关系。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Hash Table"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "哈希与集合建模"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "补齐字符串处理、括号匹配和基础队列/栈实现。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 4,
+      "recommendedTags": [
+        "String",
+        "Stack",
+        "Queue"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "字符串、栈与队列"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 2,
+      "focus": "系统练习 DFS/BFS 遍历、树高、路径和 BST 校验。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 5,
+      "recommendedTags": [
+        "Tree",
+        "Binary Tree"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "二叉树遍历与性质"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练选择列表、撤销选择、剪枝和网格搜索。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 6,
+      "recommendedTags": [
+        "Backtracking"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "回溯搜索"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 1,
+      "focus": "通过局部最优和区间边界建立贪心证明意识。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 7,
+      "recommendedTags": [
+        "Greedy",
+        "Intervals"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "贪心与区间直觉"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 2,
+      "focus": "从一维状态到背包和字符串 DP，强调状态定义和转移顺序。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 8,
+      "recommendedTags": [
+        "Dynamic Programming"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "动态规划入门"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立复述本阶段每类题的适用条件",
+        "能写出错题的边界条件、复杂度和可迁移模板"
+      ],
+      "durationWeeks": 2,
+      "focus": "完成网格 BFS/DFS、拓扑排序和连通性基础。",
+      "objectives": [
+        "完成本阶段推荐题并记录每题的核心建模方式",
+        "整理本阶段至少 2 条高频错因和复盘策略"
+      ],
+      "phaseIndex": 9,
+      "recommendedTags": [
+        "Graph",
+        "Breadth-First Search",
+        "Depth-First Search"
+      ],
+      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
+      "title": "图论基础收尾"
+    }
+  ]
+}

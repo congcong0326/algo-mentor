@@ -1,10 +1,10 @@
 # 学习计划模板 Seed 元数据
 
-- 生成时间：`2026-07-06T00:00:00+00:00`
-- 根来源：`algo-mentor learning-plan-template-seed`
-- 模板数：`10`
-- 题目引用数：`509`
-- 本地题库匹配：`489`
+- 生成时间：`2026-07-09T00:00:00+00:00`
+- 根来源：`algo-mentor learning-plan-template-sources`
+- 模板数：`16`
+- 题目引用数：`631`
+- 本地题库匹配：`611`
 - 本地题库缺失：`20`
 
 ## 来源归因
@@ -14,7 +14,7 @@
 - URL：https://github.com/neetcode-gh/leetcode
 - 固定版本：`9907b7fed441fa55083c0751e208b7197101dbba`
 - 源路径：`.problemSiteData.json`
-- 覆盖模板：`neetcode_150_systematic_interview, neetcode_blind_75_interview_core, topic_sliding_window_two_pointers`
+- 覆盖模板：`neetcode_150_systematic_interview, neetcode_blind_75_interview_core, topic_backtracking_foundation, topic_heap_priority_queue, topic_sliding_window_two_pointers, topic_stack_monotonic`
 - refs / matched / missing：`225 / 212 / 13`
 - 授权备注：MIT License；本 seed 只使用题名、slug、difficulty、pattern、题单标记和来源链接，不包含题解源码或文章内容。
 
@@ -23,7 +23,7 @@
 - URL：https://github.com/yangshun/tech-interview-handbook
 - 固定版本：`8ee2acb54a05c4add123a824d15e7dfc4e703b2f`
 - 源路径：`apps/website/contents/best-practice-questions.md`
-- 覆盖模板：`leetcode_top_100_liked_revision, tih_best_practice_50_5weeks, topic_sliding_window_two_pointers`
+- 覆盖模板：`leetcode_top_100_liked_revision, tih_best_practice_50_5weeks, topic_greedy_strategies, topic_heap_priority_queue, topic_sliding_window_two_pointers`
 - refs / matched / missing：`61 / 55 / 6`
 - 授权备注：MIT License；本 seed 只解析题名、difficulty、LeetCode URL、周次和 optional/premium 标记，不复制文章正文。
 
@@ -32,8 +32,8 @@
 - URL：https://github.com/halfrost/LeetCode-Go
 - 固定版本：`3bcc916680298295e06060ca9790304c1f1b78b6`
 - 源路径：`ctl/meta/*`
-- 覆盖模板：`topic_binary_search_boundaries, topic_dynamic_programming_foundation, topic_graph_bfs_dfs, topic_sliding_window_two_pointers`
-- refs / matched / missing：`129 / 128 / 1`
+- 覆盖模板：`topic_backtracking_foundation, topic_binary_search_boundaries, topic_bit_manipulation, topic_dynamic_programming_foundation, topic_graph_bfs_dfs, topic_greedy_strategies, topic_heap_priority_queue, topic_sliding_window_two_pointers, topic_stack_monotonic, topic_tree_binary_tree_foundation`
+- refs / matched / missing：`278 / 277 / 1`
 - 授权备注：MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。
 
 ### youngyangyang04/leetcode-master
@@ -41,8 +41,8 @@
 - URL：https://github.com/youngyangyang04/leetcode-master
 - 固定版本：`86f78fde8cb62d10c3b5e38b7e6b6e0705850f92`
 - 源路径：`README.md`
-- 覆盖模板：`cn_algorithm_foundation_12weeks, topic_graph_bfs_dfs`
-- refs / matched / missing：`25 / 25 / 0`
+- 覆盖模板：`cn_algorithm_foundation_12weeks, topic_graph_bfs_dfs, topic_greedy_strategies`
+- refs / matched / missing：`15 / 15 / 0`
 - 授权备注：未发现仓库 LICENSE；本 seed 只作学习顺序参考，阶段说明、题目组合和复盘建议由 algo-mentor 重建。
 
 ### labuladong/fucking-algorithm
@@ -59,8 +59,8 @@
 - URL：https://leetcode.com/studyplan/
 - 固定版本：`accessed-2026-07-06`
 - 源路径：`top-100-liked; programming-skills; dynamic-programming; graph-theory; binary-search`
-- 覆盖模板：`cn_algorithm_foundation_12weeks, leetcode_top_100_liked_revision, programming_skills_implementation_foundation, topic_binary_search_boundaries, topic_dynamic_programming_foundation, topic_graph_bfs_dfs`
-- refs / matched / missing：`69 / 69 / 0`
+- 覆盖模板：`cn_algorithm_foundation_12weeks, leetcode_top_100_liked_revision, programming_skills_implementation_foundation, topic_binary_search_boundaries, topic_bit_manipulation, topic_dynamic_programming_foundation, topic_graph_bfs_dfs, topic_tree_binary_tree_foundation`
+- refs / matched / missing：`52 / 52 / 0`
 - 授权备注：官方网页仅作外链和目标参考；本 seed 不复制题面、题解、付费内容或官方题单全文。
 
 ### algo-mentor local problem seed
@@ -68,7 +68,7 @@
 - URL：data/seed/problems.jsonl
 - 固定版本：`local-2026-07-06`
 - 源路径：`data/seed/problems.jsonl`
-- 覆盖模板：`cn_algorithm_foundation_12weeks, leetcode_top_100_liked_revision, programming_skills_implementation_foundation, topic_binary_search_boundaries, topic_dynamic_programming_foundation, topic_graph_bfs_dfs, topic_sliding_window_two_pointers`
+- 覆盖模板：`cn_algorithm_foundation_12weeks, leetcode_top_100_liked_revision, programming_skills_implementation_foundation, topic_backtracking_foundation, topic_binary_search_boundaries, topic_bit_manipulation, topic_dynamic_programming_foundation, topic_graph_bfs_dfs, topic_greedy_strategies, topic_heap_priority_queue, topic_sliding_window_two_pointers, topic_stack_monotonic, topic_tree_binary_tree_foundation`
 - refs / matched / missing：`0 / 0 / 0`
 - 授权备注：使用项目本地题库中的 slug、frontendId、标题、difficulty 和 tagValues 组织内部模板。
 
@@ -112,7 +112,7 @@
 - 匹配题：`46`
 - 缺失题：`0`
 - 缺失题示例：`无`
-- 难度分布：`{"Easy": {"count": 22, "ratio": 0.4783}, "Medium": {"count": 23, "ratio": 0.5}, "Hard": {"count": 1, "ratio": 0.0217}}`
+- 难度分布：`{"Easy": {"count": 21, "ratio": 0.4565}, "Medium": {"count": 24, "ratio": 0.5217}, "Hard": {"count": 1, "ratio": 0.0217}}`
 
 ### topic_dynamic_programming_foundation
 
@@ -154,6 +154,66 @@
 - 缺失题示例：`无`
 - 难度分布：`{"Easy": {"count": 4, "ratio": 0.2667}, "Medium": {"count": 8, "ratio": 0.5333}, "Hard": {"count": 3, "ratio": 0.2}}`
 
+### topic_tree_binary_tree_foundation
+
+- 标题：树与二叉树专项
+- 题目数：`24`
+- 阶段数：`3`
+- 匹配题：`24`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 8, "ratio": 0.3333}, "Medium": {"count": 13, "ratio": 0.5417}, "Hard": {"count": 3, "ratio": 0.125}}`
+
+### topic_backtracking_foundation
+
+- 标题：回溯专项突破
+- 题目数：`20`
+- 阶段数：`3`
+- 匹配题：`20`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 0, "ratio": 0.0}, "Medium": {"count": 15, "ratio": 0.75}, "Hard": {"count": 5, "ratio": 0.25}}`
+
+### topic_heap_priority_queue
+
+- 标题：堆与优先队列专项
+- 题目数：`18`
+- 阶段数：`2`
+- 匹配题：`18`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 2, "ratio": 0.1111}, "Medium": {"count": 10, "ratio": 0.5556}, "Hard": {"count": 6, "ratio": 0.3333}}`
+
+### topic_greedy_strategies
+
+- 标题：贪心策略专项
+- 题目数：`24`
+- 阶段数：`3`
+- 匹配题：`24`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 3, "ratio": 0.125}, "Medium": {"count": 17, "ratio": 0.7083}, "Hard": {"count": 4, "ratio": 0.1667}}`
+
+### topic_stack_monotonic
+
+- 标题：栈与单调栈专项
+- 题目数：`18`
+- 阶段数：`2`
+- 匹配题：`18`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 5, "ratio": 0.2778}, "Medium": {"count": 8, "ratio": 0.4444}, "Hard": {"count": 5, "ratio": 0.2778}}`
+
+### topic_bit_manipulation
+
+- 标题：位运算专项
+- 题目数：`18`
+- 阶段数：`2`
+- 匹配题：`18`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 6, "ratio": 0.3333}, "Medium": {"count": 11, "ratio": 0.6111}, "Hard": {"count": 1, "ratio": 0.0556}}`
+
 ### leetcode_top_100_liked_revision
 
 - 标题：Top 100 Liked 复盘计划
@@ -162,7 +222,7 @@
 - 匹配题：`67`
 - 缺失题：`0`
 - 缺失题示例：`无`
-- 难度分布：`{"Easy": {"count": 17, "ratio": 0.2537}, "Medium": {"count": 46, "ratio": 0.6866}, "Hard": {"count": 4, "ratio": 0.0597}}`
+- 难度分布：`{"Easy": {"count": 18, "ratio": 0.2687}, "Medium": {"count": 45, "ratio": 0.6716}, "Hard": {"count": 4, "ratio": 0.0597}}`
 
 ### programming_skills_implementation_foundation
 
@@ -172,7 +232,7 @@
 - 匹配题：`34`
 - 缺失题：`0`
 - 缺失题示例：`无`
-- 难度分布：`{"Easy": {"count": 30, "ratio": 0.8824}, "Medium": {"count": 4, "ratio": 0.1176}, "Hard": {"count": 0, "ratio": 0.0}}`
+- 难度分布：`{"Easy": {"count": 31, "ratio": 0.9118}, "Medium": {"count": 3, "ratio": 0.0882}, "Hard": {"count": 0, "ratio": 0.0}}`
 
 ## 已知限制
 

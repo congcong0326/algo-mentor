@@ -11,9 +11,21 @@
 - 从模板生成草稿是确定性流程，默认应保留所有本地匹配题；缺失本地题库的题只保留在模板 refs、manifest、metadata 和导入审计中。
 - AI 个性化可以在草稿生成后通过现有修订流程调整，但第一版模板 seed 必须稳定、可复现、可审计。
 
+## 模板源数据
+
+人工维护入口：`data/learning-plan-template-sources/`。
+
+目录约定：
+
+- `template_order.json`：声明进入聚合 seed 的模板顺序。
+- `templates/<templateId>/template.json`：单个模板的主体字段、用户边界、来源归因和阶段规划。
+- `templates/<templateId>/problem_refs.jsonl`：单个模板的题目引用明细。
+
+源目录按模板拆分，不再把所有模板手工维护在一个 JSONL 中。`template.json` 不维护 `difficultyMix`、本地匹配数、缺失题列表和 `sourceTags` 这类派生统计；`problem_refs.jsonl` 不维护 `metadata.matchedLocalProblem`。生成器会根据当前 `data/seed/problems.jsonl` 重新计算这些字段。
+
 ## Seed 产物
 
-目录：`data/learning-plan-template-seed/`。
+聚合产物目录：`data/learning-plan-template-seed/`。
 
 每次生成必须同时产出：
 
@@ -21,6 +33,8 @@
 - `learning_plan_template_problem_refs.jsonl`
 - `learning_plan_template_seed_manifest.json`
 - `learning_plan_template_seed_metadata.md`
+
+这四个文件是后端导入使用的运行时 seed，必须由 `tools/learning_plan_template_seed/prepare_template_seed.py` 从模板源目录聚合生成，不应手工编辑。
 
 模板 JSONL 必须包含目标人群、级别、难度分布、前置基础、适用和不适用边界、完成目标、来源说明、整理口径和授权说明。
 
