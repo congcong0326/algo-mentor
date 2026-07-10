@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "partition-array-for-maximum-sum",
+    "reasonEN": "A medium interval DP problem that tries each allowed final block while tracking its maximum value. It trains partition-state design and local aggregate maintenance, making it a standard introduction to bounded-length segmentation DP.",
+    "reasonZH": "这是一道中等区间 DP 题，枚举最后一段的合法长度并维护段内最大值。它训练分割状态设计和局部聚合维护，是定长分段 DP 的经典入门题。"
+  },
+  {
+    "slug": "partition-array-for-maximum-xor-and-and",
+    "reasonEN": "A hard bitwise partition problem that balances XOR and AND contributions across groups. It trains exploiting bitwise monotonicity, candidate enumeration, and greedy structural choices, offering advanced practice in non-additive optimization.",
+    "reasonZH": "这是高难度位运算分组题，需要平衡各组的 XOR 与 AND 贡献。它训练利用位运算单调性、候选枚举和贪心结构选择，是非加性优化的进阶练习。"
+  },
+  {
+    "slug": "partition-array-into-disjoint-intervals",
+    "reasonEN": "A medium array partition problem that finds the earliest split where every left value is no larger than every right value. It trains prefix maxima and suffix minima reasoning, a reusable method for separating global constraints.",
+    "reasonZH": "这是一道中等数组划分题，寻找满足左侧所有值不大于右侧所有值的最早分界。它训练前缀最大值和后缀最小值思想，可复用于全局约束分离。"
+  },
+  {
+    "slug": "partition-array-into-k-distinct-groups",
+    "reasonEN": "A medium counting and hash-table problem that groups array values under distinctness constraints. It trains frequency analysis and feasibility reasoning before construction, which is useful for many constrained partition tasks.",
+    "reasonZH": "这是一道中等计数哈希题，需要在互异性约束下对数组元素分组。它训练频次分析和构造前的可行性判断，适合各类受限划分问题。"
+  },
+  {
+    "slug": "partition-array-into-three-parts-with-equal-sum",
+    "reasonEN": "An easy greedy prefix-sum problem that identifies three consecutive segments with the same target sum. It trains divisibility checks and one-pass milestone detection, a clean pattern for equal-sum partitioning.",
+    "reasonZH": "这是一道简单贪心前缀和题，需要识别三个连续且和相等的分段。它训练整除性判断和一次遍历中的里程碑检测，是等和划分的简洁模式。"
+  },
+  {
+    "slug": "partition-array-into-two-arrays-to-minimize-sum-difference",
+    "reasonEN": "A hard meet-in-the-middle problem that enumerates subset sums by selected size and binary-searches compatible halves. It trains exponential-state splitting and closest-sum search, a landmark technique for balanced partition optimization.",
+    "reasonZH": "这是高难度折半搜索题，按选取元素数量枚举子集和，再二分查找可匹配的另一半。它训练指数状态拆分和最近和搜索，是平衡划分优化的标志性技巧。"
+  },
+  {
+    "slug": "partition-array-into-two-equal-product-subsets",
+    "reasonEN": "A medium recursive enumeration problem that tests whether a product can be split into two equal-product subsets. It trains subset-state exploration, divisibility pruning, and careful product reasoning, useful for multiplicative partition variants.",
+    "reasonZH": "这是一道中等递归枚举题，需要判断乘积能否拆为两个等积子集。它训练子集状态搜索、整除剪枝和乘法约束推理，适合处理乘积型划分变体。"
+  },
+  {
+    "slug": "partition-array-such-that-maximum-difference-is-k",
+    "reasonEN": "A medium sorting greedy problem that starts a new group only when the current range exceeds the limit. It trains recognizing that sorted adjacency is sufficient and deriving an optimal local decision for grouping problems.",
+    "reasonZH": "这是一道中等排序贪心题，只有当前组的值域超过限制时才开启新组。它训练识别排序后的相邻关系已足够，并为分组问题推导最优局部决策。"
+  },
+  {
+    "slug": "partition-array-to-minimize-xor",
+    "reasonEN": "A medium prefix-XOR DP problem that optimizes a partition objective over subarray boundaries. It trains transforming segments with prefix operations and retaining only meaningful bitwise states, valuable for XOR partition problems.",
+    "reasonZH": "这是一道中等前缀异或 DP 题，需要在子数组边界上优化分割目标。它训练利用前缀操作表示区间，并保留关键位状态，适合异或分割问题。"
+  },
+  {
+    "slug": "partition-equal-subset-sum",
+    "reasonEN": "A foundational 0/1 knapsack problem that asks whether a target half-sum is reachable. It trains reverse capacity iteration and boolean-state compression, forming an essential basis for subset-sum and partition DP.",
+    "reasonZH": "这是基础的 0/1 背包题，核心是判断目标半和是否可达。它训练容量逆序遍历和布尔状态压缩，是子集和与划分 DP 的必备基础。"
+  },
+  {
+    "slug": "partition-labels",
+    "reasonEN": "A classic greedy string partition problem that closes a segment at the farthest last occurrence seen so far. It trains interval expansion through last-position maps and is a highly reusable pattern for character-range segmentation.",
+    "reasonZH": "这是经典贪心字符串划分题，在当前字符集合的最远末次出现位置处结束分段。它训练利用最后位置表扩展区间，是字符范围分割的高复用模式。"
+  },
+  {
+    "slug": "partition-list",
+    "reasonEN": "A medium linked-list rearrangement problem that builds two stable chains and reconnects them safely. It trains pointer ownership, dummy-node usage, and tail termination, all essential details in in-place list manipulation.",
+    "reasonZH": "这是一道中等链表重排题，需要构建两个稳定链并安全拼接。它训练指针归属、哑节点使用和尾部断链，是原地链表操作的重要细节。"
+  },
+  {
+    "slug": "partition-list-lcci",
+    "reasonEN": "This medium linked-list partition problem separates nodes by a pivot while preserving their relative order. It trains two-chain pointer construction and null-termination discipline, making it practical practice for interview-style list transformations.",
+    "reasonZH": "这道中等链表划分题按枢轴分离节点并保持相对顺序。它训练双链构造和尾指针置空，是面试中常见链表变换的实用练习。"
+  },
+  {
+    "slug": "partition-string",
+    "reasonEN": "A medium string simulation problem that partitions input according to repeated-prefix or dictionary-style constraints. It trains incremental state tracking and efficient substring lookup, useful for recognizing parsing and trie-assisted segmentation patterns.",
+    "reasonZH": "这是一道中等字符串模拟题，需要按重复前缀或字典式约束完成分割。它训练增量状态维护和高效子串查找，有助于掌握解析及 Trie 辅助分段模式。"
+  },
+  {
+    "slug": "partition-string-into-minimum-beautiful-substrings",
+    "reasonEN": "A medium string DP problem that minimizes cuts while validating binary segments against a special value set. It trains substring feasibility checks, leading-zero handling, and shortest-partition transitions, a useful constrained segmentation template.",
+    "reasonZH": "这是一道中等字符串 DP 题，需要在特殊数值集合约束下最小化切分次数。它训练子串可行性判断、前导零处理和最短分割转移，是受限分段的实用模板。"
+  },
+  {
+    "slug": "partition-string-into-substrings-with-values-at-most-k",
+    "reasonEN": "A medium greedy string partition problem that extends each numeric segment as far as its value permits. It trains overflow-aware accumulation and proof of the farthest-valid-cut choice, a compact pattern for bounded-value parsing.",
+    "reasonZH": "这是一道中等贪心字符串划分题，每段数字在不超过 K 的前提下尽量延长。它训练防溢出累积和最远合法切分的证明，是有界数值解析的紧凑模式。"
+  },
+  {
+    "slug": "partition-to-k-equal-sum-subsets",
+    "reasonEN": "A medium backtracking and bitmask DP problem that fills equal-target buckets while avoiding symmetric states. It trains pruning, memoization, and subset-state design, making it a core challenge for multi-group partition search.",
+    "reasonZH": "这是中等难度的回溯与位掩码 DP 题，需要填充等目标和的桶并避免对称状态。它训练剪枝、记忆化和子集状态设计，是多组划分搜索的核心挑战。"
+  },
+  {
+    "slug": "partitioning-into-minimum-number-of-deci-binary-numbers",
+    "reasonEN": "A medium greedy observation problem where the answer is determined by the largest decimal digit. It trains extracting a constructive lower bound and matching it directly, demonstrating how representation constraints can collapse a problem to one scan.",
+    "reasonZH": "这是一道中等贪心观察题，答案由十进制表示中的最大数字直接决定。它训练构造下界并与之匹配，展示表示约束如何将问题简化为一次扫描。"
+  },
+  {
+    "slug": "pascals-triangle",
+    "reasonEN": "An easy array DP exercise that generates each row from adjacent values in the previous row. It reinforces base-case construction and local recurrence thinking, serving as a clean introduction to dynamic programming tables.",
+    "reasonZH": "这是一道简单数组 DP 题，每一行由上一行相邻元素生成。它巩固基础状态构造和局部递推思维，是动态规划表格的清晰入门。"
+  },
+  {
+    "slug": "pascals-triangle-ii",
+    "reasonEN": "An easy dynamic-programming problem that computes one Pascal row with in-place reverse updates. It trains space compression and update-order awareness, making it a concise lesson in turning a 2D recurrence into 1D state.",
+    "reasonZH": "这是一道简单动态规划题，通过原地逆序更新计算杨辉三角的单行。它训练空间压缩和更新顺序意识，是将二维递推化为一维状态的简洁示例。"
+  },
+  {
+    "slug": "pass-the-pillow",
+    "reasonEN": "An easy math and simulation problem whose back-and-forth motion repeats with a fixed period. It trains cycle decomposition and reflected-index calculation, replacing step-by-step simulation with constant-time arithmetic.",
+    "reasonZH": "这是一道简单数学模拟题，往返传递具有固定周期。它训练周期分解和镜像下标计算，用常数时间算术替代逐步模拟。"
+  },
+  {
+    "slug": "password-strength",
+    "reasonEN": "A medium string and hash-table validation problem that evaluates password character categories and repetition constraints. It trains systematic rule aggregation and normalization, useful for robust input-validation implementations.",
+    "reasonZH": "这是一道中等字符串哈希校验题，需要评估密码字符类别和重复约束。它训练系统化规则聚合与规范化处理，适合健壮的输入校验实现。"
+  },
+  {
+    "slug": "patching-array",
+    "reasonEN": "A hard greedy coverage problem that maintains the smallest unreachable sum and patches exactly that gap when needed. It trains interval-coverage invariants and exponential range expansion, a celebrated example of proof-driven greedy design.",
+    "reasonZH": "这是高难度贪心覆盖题，维护最小不可达和，并在需要时恰好补上该缺口。它训练区间覆盖不变量和指数式范围扩展，是证明驱动贪心设计的经典题。"
+  },
+  {
+    "slug": "path-crossing",
+    "reasonEN": "An easy coordinate simulation problem that records every visited grid point in a hash set. It trains incremental position encoding and duplicate detection, a reusable technique for path and movement history problems.",
+    "reasonZH": "这是一道简单坐标模拟题，将每个访问过的网格点记录在哈希集合中。它训练增量位置编码和重复检测，是路径与移动历史问题的可复用技巧。"
+  },
+  {
+    "slug": "path-existence-queries-in-a-graph-i",
+    "reasonEN": "A medium graph-query problem that uses connectivity structure and threshold reasoning to answer path existence efficiently. It trains union-find modeling and ordered-query analysis, useful for offline connectivity questions.",
+    "reasonZH": "这是一道中等图查询题，利用连通结构和阈值关系高效回答路径存在性。它训练并查集建模和有序查询分析，适合离线连通性问题。"
+  },
+  {
+    "slug": "path-existence-queries-in-a-graph-ii",
+    "reasonEN": "A hard graph-query optimization problem that combines sorted structure, bitwise states, and dynamic reasoning. It trains reducing many reachability questions through shared preprocessing, an important approach when per-query traversal is too costly.",
+    "reasonZH": "这是高难度图查询优化题，结合排序结构、位状态和动态推理。它训练通过共享预处理压缩大量可达性查询，是逐查询遍历代价过高时的重要方法。"
+  },
+  {
+    "slug": "path-in-zigzag-labelled-binary-tree",
+    "reasonEN": "A medium binary-tree math problem that maps zigzag labels to normal level positions before moving to parents. It trains level-range reflection formulas and ancestor reconstruction, valuable for implicit-tree indexing tasks.",
+    "reasonZH": "这是一道中等二叉树数学题，需要先将之字形编号映射到普通层序位置再向上找父节点。它训练层区间镜像公式和祖先回溯，适合隐式树索引问题。"
+  },
+  {
+    "slug": "path-sum",
+    "reasonEN": "An easy tree traversal problem that carries a remaining target through each root-to-leaf path. It trains DFS or BFS state propagation and leaf-condition handling, forming a fundamental template for tree path queries.",
+    "reasonZH": "这是一道简单树遍历题，需要沿根到叶路径传递剩余目标和。它训练 DFS 或 BFS 的状态传递和叶节点判断，是树路径查询的基础模板。"
+  },
+  {
+    "slug": "path-sum-ii",
+    "reasonEN": "A medium tree backtracking problem that records every root-to-leaf path meeting the target. It trains path push-pop discipline and result copying at leaves, essential details for enumerating recursive solutions.",
+    "reasonZH": "这是一道中等树回溯题，需要记录所有满足目标和的根到叶路径。它训练路径压入弹出纪律和叶节点结果拷贝，是递归枚举的重要细节。"
+  },
+  {
+    "slug": "path-sum-iii",
+    "reasonEN": "A medium tree prefix-sum problem that counts downward paths ending at every node. It trains maintaining ancestor-sum frequencies during DFS and backtracking them correctly, a powerful technique for path-counting problems.",
+    "reasonZH": "这是一道中等树前缀和题，需要统计以每个节点结尾的向下路径。它训练 DFS 中维护祖先和频次并正确回溯，是路径计数问题的强力技巧。"
+  }
+]

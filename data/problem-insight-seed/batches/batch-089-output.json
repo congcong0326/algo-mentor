@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "monotone-increasing-digits",
+    "reasonEN": "A greedy digit-DP style problem that trains borrowing from the first decreasing digit and repairing the suffix. It builds intuition for proving local digit adjustments globally optimal.",
+    "reasonZH": "经典的数位贪心题，训练从首个递减位置向前借位并将后缀补成 9 的处理。它能建立局部数位调整为何保证全局最优的证明意识。"
+  },
+  {
+    "slug": "monotonic-array",
+    "reasonEN": "An entry-level array invariant exercise focused on detecting nondecreasing and nonincreasing violations in one pass. It is useful for learning how simple flags replace unnecessary sorting or copying.",
+    "reasonZH": "基础数组不变量题，核心是在一次扫描中分别识别非递减和非递增条件的破坏点。它适合训练用状态标记替代排序或复制等多余操作。"
+  },
+  {
+    "slug": "monthly-transactions-i",
+    "reasonEN": "A foundational SQL aggregation problem covering date bucketing, conditional counts, and conditional sums. It reinforces how to express reporting metrics accurately with GROUP BY and CASE logic.",
+    "reasonZH": "基础 SQL 聚合题，覆盖按月份分组、条件计数和条件求和。它能强化用 GROUP BY 与 CASE 准确表达报表指标的能力。"
+  },
+  {
+    "slug": "most-beautiful-item-for-each-query",
+    "reasonEN": "A sorting plus binary-search problem where prefix maxima turn independent queries into fast lookups. It teaches the reusable offline-query pattern of preprocessing a monotone answer frontier.",
+    "reasonZH": "排序结合二分查找的典型题，通过前缀最大值把多个独立查询转成快速查表。它训练离线预处理单调答案边界这一可复用模式。"
+  },
+  {
+    "slug": "most-common-course-pairs",
+    "reasonEN": "A hard data-analysis problem centered on constructing pair relationships and aggregating their frequencies. It develops careful thinking about canonical pair ordering, duplicate prevention, and tie handling.",
+    "reasonZH": "高难度数据分析题，核心是构造课程两两关系并聚合其出现频次。它训练组合规范化、去重以及并列结果处理等容易遗漏的细节。"
+  },
+  {
+    "slug": "most-common-word",
+    "reasonEN": "A practical string and hash-counting exercise that combines token normalization with exclusion filtering. It builds reliable habits for parsing punctuation, case handling, and frequency statistics.",
+    "reasonZH": "实用的字符串哈希计数题，结合单词规范化与禁用词过滤。它能培养处理标点、大小写和频率统计时的稳健实现习惯。"
+  },
+  {
+    "slug": "most-frequent-even-element",
+    "reasonEN": "A compact frequency-counting problem with a meaningful tie-break rule. It reinforces filtering during traversal and encoding comparison priorities cleanly instead of postprocessing loosely.",
+    "reasonZH": "简洁但带有并列规则的频率统计题，重点是遍历时筛选偶数并维护最优答案。它训练把比较优先级清晰编码，而不是在最后含糊补救。"
+  },
+  {
+    "slug": "most-frequent-ids",
+    "reasonEN": "A dynamic frequency-maintenance problem that pairs a hash map with a heap or ordered structure. It highlights lazy deletion and stale-entry handling, essential techniques for streaming top-frequency queries.",
+    "reasonZH": "动态频次维护题，结合哈希表与堆或有序集合。它重点训练懒删除和过期堆元素处理，这是流式最高频查询的重要技巧。"
+  },
+  {
+    "slug": "most-frequent-number-following-key-in-an-array",
+    "reasonEN": "A straightforward adjacency-counting exercise that extracts information from neighboring array elements. It is valuable for practicing precise scan bounds and lightweight hash aggregation.",
+    "reasonZH": "直接的相邻元素计数题，从数组邻接关系中提取统计信息。它适合练习准确控制扫描边界和轻量级哈希聚合。"
+  },
+  {
+    "slug": "most-frequent-prime",
+    "reasonEN": "A matrix-enumeration and number-theory problem that generates directional digit sequences before counting primes. It develops disciplined state expansion and efficient primality validation under many candidates.",
+    "reasonZH": "矩阵枚举与数论结合题，需要沿多个方向生成数字并统计质数。它训练有条理地扩展状态，以及在大量候选值下高效判断质数。"
+  },
+  {
+    "slug": "most-frequent-subtree-sum",
+    "reasonEN": "A tree DFS representative problem where postorder traversal naturally computes subtree aggregates. It reinforces returning values through recursion while recording global frequency information.",
+    "reasonZH": "树形 DFS 代表题，后序遍历可自然计算每棵子树的聚合值。它训练递归返回局部结果，同时维护全局频率统计。"
+  },
+  {
+    "slug": "most-popular-video-creator",
+    "reasonEN": "A multi-criteria aggregation problem involving creator totals, per-creator best videos, and lexical tie-breaking. It is useful for learning how to maintain several related summaries in one pass.",
+    "reasonZH": "多条件聚合题，需要同时维护创作者总播放量、个人最佳视频和字典序并列规则。它训练在一次遍历中维护多个关联统计量。"
+  },
+  {
+    "slug": "most-profit-assigning-work",
+    "reasonEN": "A sorting and greedy matching problem that scans jobs and workers in order while carrying the best available profit. It teaches how monotonic preprocessing removes repeated binary-search work.",
+    "reasonZH": "排序与贪心匹配题，按能力和难度有序扫描并持续维护当前最高收益。它展示了单调预处理如何避免对每个工人重复搜索。"
+  },
+  {
+    "slug": "most-profitable-path-in-a-tree",
+    "reasonEN": "A tree-path problem that separates one player's fixed route from the other's DFS choices. It trains timing-based value adjustment on paths and clean reasoning about simultaneous movement.",
+    "reasonZH": "树上路径博弈题，需要分离一方固定路线与另一方的 DFS 选择。它训练按到达时间修正节点收益，并清晰推理同步移动关系。"
+  },
+  {
+    "slug": "most-stones-removed-with-same-row-or-column",
+    "reasonEN": "A connected-components problem with a highly reusable union-find formulation over shared rows and columns. It builds the key insight that each component can retain exactly one stone.",
+    "reasonZH": "连通分量与并查集经典题，可通过同行同列关系建立连通性。它强化每个连通块最终只能保留一块石头这一核心转化。"
+  },
+  {
+    "slug": "most-visited-sector-in-a-circular-track",
+    "reasonEN": "A light simulation problem whose circular traversal has a simpler interval interpretation. It trains recognizing when direct simulation can be replaced by reasoning about endpoints and wraparound.",
+    "reasonZH": "轻量模拟题，圆环行进过程实际上可化为更简单的区间判断。它训练识别何时应从逐步模拟转向端点与环绕关系的推理。"
+  },
+  {
+    "slug": "move-pieces-to-obtain-a-string",
+    "reasonEN": "A two-pointer string transformation problem that separates relative-order constraints from movement-direction constraints. It develops a precise way to ignore blanks while proving reachability.",
+    "reasonZH": "双指针字符串变换题，需要区分字符相对顺序约束和移动方向约束。它训练跳过空位后严谨判断状态是否可达。"
+  },
+  {
+    "slug": "move-zeroes",
+    "reasonEN": "A canonical in-place two-pointer problem for stable compaction. It establishes the basic pattern of maintaining a write position while preserving the order of retained elements.",
+    "reasonZH": "原地双指针的入门模板题，核心是稳定压缩非零元素。它帮助建立维护写入位置且保持保留元素相对顺序的基本模式。"
+  },
+  {
+    "slug": "movement-of-robots",
+    "reasonEN": "A sorting and prefix-sum problem that turns robot collisions into an order-preserving distance calculation. It is valuable for spotting when a complicated simulation has an invariant-based simplification.",
+    "reasonZH": "排序与前缀和题，利用碰撞后顺序等价的性质计算两两距离。它训练从复杂模拟中识别可由不变量简化的数学结构。"
+  },
+  {
+    "slug": "movie-rating",
+    "reasonEN": "A medium SQL query problem combining joins, grouped averages, date filtering, and deterministic ranking. It strengthens the ability to translate layered business rules into readable query stages.",
+    "reasonZH": "中等 SQL 查询题，综合连接、分组平均值、日期过滤和确定性排序。它训练将多层业务规则拆解为清晰查询逻辑的能力。"
+  },
+  {
+    "slug": "moving-stones-until-consecutive",
+    "reasonEN": "A mathematical case-analysis problem that distinguishes minimum moves from maximum moves. It sharpens the ability to derive formulas from gaps and identify exceptional boundary configurations.",
+    "reasonZH": "数学分类讨论题，需要分别求最少和最多移动次数。它训练从间隔推导公式，并识别特殊边界构型。"
+  },
+  {
+    "slug": "moving-stones-until-consecutive-ii",
+    "reasonEN": "A refined sliding-window and gap-analysis problem for optimizing stone placement. It teaches how a nearly full window may require a special-case correction beyond the standard formula.",
+    "reasonZH": "进阶滑动窗口与间隔分析题，用于优化石子的连续摆放。它强调接近填满的窗口可能需要超出标准公式的特殊修正。"
+  },
+  {
+    "slug": "ms70jA",
+    "reasonEN": "A maximum-XOR representative problem that uses a binary trie or bitwise prefix strategy to make greedy bit decisions. It is a key exercise for connecting binary representation with data-structure design.",
+    "reasonZH": "最大异或值代表题，可用二进制字典树或位前缀策略逐位贪心。它是理解二进制表示如何驱动数据结构设计的关键练习。"
+  },
+  {
+    "slug": "multi-search-lcci",
+    "reasonEN": "A multi-pattern string-search problem suited to trie-based matching and position collection. It builds intuition for sharing prefixes across queries instead of repeatedly scanning for every small pattern.",
+    "reasonZH": "多模式字符串搜索题，适合使用字典树匹配并收集出现位置。它训练利用模式间公共前缀，避免为每个短串重复扫描大文本。"
+  },
+  {
+    "slug": "multi-source-flood-fill",
+    "reasonEN": "A multi-source BFS grid problem that expands all active cells layer by layer. It reinforces queue initialization, wavefront propagation, and the difference between single-source and simultaneous reachability.",
+    "reasonZH": "多源 BFS 网格题，需要将所有起点同时入队并按层扩展。它强化队列初始化、波前传播以及单源和同步可达性的区别。"
+  },
+  {
+    "slug": "multiply-strings",
+    "reasonEN": "A string simulation classic that implements grade-school multiplication without numeric conversion. It trains digit indexing, carry propagation, and careful normalization of leading zeroes.",
+    "reasonZH": "字符串模拟经典题，在不直接转数值的前提下实现竖式乘法。它训练数字下标定位、进位传播和前导零规范化。"
+  },
+  {
+    "slug": "my-calendar-i",
+    "reasonEN": "A calendar-design problem centered on interval overlap detection with ordered data. It introduces the practical invariant that only neighboring bookings need checking after ordered insertion.",
+    "reasonZH": "日程设计题，核心是借助有序结构判断区间重叠。它引入一个实用不变量：按序插入后通常只需检查相邻预约。"
+  },
+  {
+    "slug": "my-calendar-ii",
+    "reasonEN": "An interval-booking problem that permits double bookings but forbids triple overlaps. It develops sweep-line thinking and the useful separation between booked intervals and already-overlapped intervals.",
+    "reasonZH": "区间预约进阶题，允许双重预约但禁止三重重叠。它训练扫描线思维，以及将全部预约和已重叠区间分层维护的技巧。"
+  },
+  {
+    "slug": "my-calendar-iii",
+    "reasonEN": "A hard interval-overlap design problem requiring the maximum concurrent booking count after every insertion. It is a strong application of sweep lines, ordered maps, or dynamic segment trees.",
+    "reasonZH": "高难度区间重叠设计题，每次插入后都要返回最大并发预约数。它是扫描线、有序映射或动态线段树的典型应用。"
+  },
+  {
+    "slug": "n-ary-tree-level-order-traversal",
+    "reasonEN": "A BFS traversal template adapted from binary trees to arbitrary child lists. It reinforces level boundaries, queue-size control, and writing traversal code against a generalized tree structure.",
+    "reasonZH": "从二叉树扩展到任意子节点列表的 BFS 层序遍历模板题。它训练层级边界控制、队列长度处理以及面向通用树结构的遍历实现。"
+  }
+]

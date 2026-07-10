@@ -1,0 +1,718 @@
+[
+  {
+    "slug": "maximum-value-after-insertion",
+    "frontendDisplayId": "1881",
+    "titleEn": "Maximum Value after Insertion",
+    "titleZh": "插入后的最大值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-value-after-insertion/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-value-at-a-given-index-in-a-bounded-array",
+    "frontendDisplayId": "1802",
+    "titleEn": "Maximum Value at a Given Index in a Bounded Array",
+    "titleZh": "有界数组中指定下标处的最大值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-value-at-a-given-index-in-a-bounded-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-value-of-a-string-in-an-array",
+    "frontendDisplayId": "2496",
+    "titleEn": "Maximum Value of a String in an Array",
+    "titleZh": "数组中字符串的最大值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-value-of-a-string-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-value-of-an-ordered-triplet-i",
+    "frontendDisplayId": "2873",
+    "titleEn": "Maximum Value of an Ordered Triplet I",
+    "titleZh": "有序三元组中的最大值 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-value-of-an-ordered-triplet-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-value-of-an-ordered-triplet-ii",
+    "frontendDisplayId": "2874",
+    "titleEn": "Maximum Value of an Ordered Triplet II",
+    "titleZh": "有序三元组中的最大值 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-value-of-an-ordered-triplet-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-value-of-concatenated-binary-segments",
+    "frontendDisplayId": "3897",
+    "titleEn": "Maximum Value of Concatenated Binary Segments",
+    "titleZh": "连接二进制片段得到的最大值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-value-of-concatenated-binary-segments/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-value-of-k-coins-from-piles",
+    "frontendDisplayId": "2218",
+    "titleEn": "Maximum Value of K Coins From Piles",
+    "titleZh": "从栈中取出 K 个硬币的最大面值和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-value-of-k-coins-from-piles/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-value-sum-by-placing-three-rooks-i",
+    "frontendDisplayId": "3256",
+    "titleEn": "Maximum Value Sum by Placing Three Rooks I",
+    "titleZh": "放三个车的价值之和最大 I",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Enumeration",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "枚举",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-value-sum-by-placing-three-rooks-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-value-sum-by-placing-three-rooks-ii",
+    "frontendDisplayId": "3257",
+    "titleEn": "Maximum Value Sum by Placing Three Rooks II",
+    "titleZh": "放三个车的价值之和最大 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Enumeration",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "枚举",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-value-sum-by-placing-three-rooks-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-walls-destroyed-by-robots",
+    "frontendDisplayId": "3661",
+    "titleEn": "Maximum Walls Destroyed by Robots",
+    "titleZh": "可以被机器人摧毁的最大墙壁数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-walls-destroyed-by-robots/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-weighted-k-edge-path",
+    "frontendDisplayId": "3543",
+    "titleEn": "Maximum Weighted K-Edge Path",
+    "titleZh": "K 条边路径的最大边权和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Graph Theory",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "图",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-weighted-k-edge-path/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-white-tiles-covered-by-a-carpet",
+    "frontendDisplayId": "2271",
+    "titleEn": "Maximum White Tiles Covered by a Carpet",
+    "titleZh": "毯子覆盖的最多白色砖块数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Prefix Sum",
+      "Sliding Window",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "前缀和",
+      "滑动窗口",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-white-tiles-covered-by-a-carpet/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-width-of-binary-tree",
+    "frontendDisplayId": "662",
+    "titleEn": "Maximum Width of Binary Tree",
+    "titleZh": "二叉树最大宽度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-width-of-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-width-ramp",
+    "frontendDisplayId": "962",
+    "titleEn": "Maximum Width Ramp",
+    "titleZh": "最大宽度坡",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Stack",
+      "Stack",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调栈",
+      "栈",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-width-ramp/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-xor-after-operations",
+    "frontendDisplayId": "2317",
+    "titleEn": "Maximum XOR After Operations",
+    "titleZh": "操作后的最大异或和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-xor-after-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-xor-for-each-query",
+    "frontendDisplayId": "1829",
+    "titleEn": "Maximum XOR for Each Query",
+    "titleZh": "每个查询的最大异或值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-xor-for-each-query/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-xor-of-subsequences",
+    "frontendDisplayId": "3681",
+    "titleEn": "Maximum XOR of Subsequences",
+    "titleZh": "子序列最大 XOR 值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-xor-of-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-xor-of-two-numbers-in-an-array",
+    "frontendDisplayId": "421",
+    "titleEn": "Maximum XOR of Two Numbers in an Array",
+    "titleZh": "数组中两个数的最大异或值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-xor-product",
+    "frontendDisplayId": "2939",
+    "titleEn": "Maximum Xor Product",
+    "titleZh": "最大异或乘积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-xor-product/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-xor-score-subarray-queries",
+    "frontendDisplayId": "3277",
+    "titleEn": "Maximum XOR Score Subarray Queries",
+    "titleZh": "查询子数组最大异或分数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-xor-score-subarray-queries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-xor-with-an-element-from-array",
+    "frontendDisplayId": "1707",
+    "titleEn": "Maximum XOR With an Element From Array",
+    "titleZh": "与数组中元素的最大异或值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-xor-with-an-element-from-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "meChtZ",
+    "frontendDisplayId": "LCP 20",
+    "titleEn": null,
+    "titleZh": "快速公交",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "记忆化"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/meChtZ/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "mean-of-array-after-removing-some-elements",
+    "frontendDisplayId": "1619",
+    "titleEn": "Mean of Array After Removing Some Elements",
+    "titleZh": "删除某些元素后的数组均值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/mean-of-array-after-removing-some-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "median-of-two-sorted-arrays",
+    "frontendDisplayId": "4",
+    "titleEn": "Median of Two Sorted Arrays",
+    "titleZh": "寻找两个正序数组的中位数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Divide and Conquer"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "分治"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/median-of-two-sorted-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "meeting-rooms-iii",
+    "frontendDisplayId": "2402",
+    "titleEn": "Meeting Rooms III",
+    "titleZh": "会议室 III",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Simulation",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "堆（优先队列）",
+      "模拟",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/meeting-rooms-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "memoize",
+    "frontendDisplayId": "2623",
+    "titleEn": "Memoize",
+    "titleZh": "记忆函数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/memoize/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "memoize-ii",
+    "frontendDisplayId": "2630",
+    "titleEn": "Memoize II",
+    "titleZh": "记忆函数 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/memoize-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "merge-adjacent-equal-elements",
+    "frontendDisplayId": "3834",
+    "titleEn": "Merge Adjacent Equal Elements",
+    "titleZh": "合并相邻且相等的元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-adjacent-equal-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "merge-bsts-to-create-single-bst",
+    "frontendDisplayId": "1932",
+    "titleEn": "Merge BSTs to Create Single BST",
+    "titleZh": "合并多棵二叉搜索树",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-bsts-to-create-single-bst/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "merge-close-characters",
+    "frontendDisplayId": "3853",
+    "titleEn": "Merge Close Characters",
+    "titleZh": "合并靠近字符",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-close-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-075",
+    "claimedAt": "2026-07-10T06:18:35.023457+00:00",
+    "completedAt": null
+  }
+]

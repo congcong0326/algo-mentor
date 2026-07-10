@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "number-of-subsequences-that-satisfy-the-given-sum-condition",
+    "reasonEN": "A medium sorting and two-pointer counting problem that fixes the minimum element and counts all valid choices for the maximum. It trains monotonic boundary movement and precomputed powers of two, a core pattern for subsequence counting.",
+    "reasonZH": "这是一道中等难度的排序双指针计数题，固定最小值后统计所有合法最大值对应的选择。它训练单调边界移动与 2 的幂预处理，是子序列计数的核心模式。"
+  },
+  {
+    "slug": "number-of-substrings-containing-all-three-characters",
+    "reasonEN": "This is a canonical sliding-window counting problem that turns a valid character cover into a batch of valid suffixes. It trains frequency maintenance and left-boundary contraction, making it valuable for substring-counting variants.",
+    "reasonZH": "这是经典滑动窗口计数题，将满足字符覆盖条件的窗口转化为一批合法后缀。它训练频次维护与左边界收缩，是掌握子串计数变体的重要练习。"
+  },
+  {
+    "slug": "number-of-substrings-with-only-1s",
+    "reasonEN": "A medium string-counting problem that accumulates contributions from consecutive runs of ones. It trains the triangular-number interpretation of run lengths and modular arithmetic, providing a compact alternative to enumerating substrings.",
+    "reasonZH": "这是一道中等字符串计数题，通过连续 1 段的贡献累积答案。它训练用三角数理解连续段长度及取模计算，避免直接枚举所有子串。"
+  },
+  {
+    "slug": "number-of-times-binary-string-is-prefix-aligned",
+    "reasonEN": "A medium array invariant problem where a prefix becomes aligned exactly when the running maximum matches its length. It trains reducing a global state condition to one scalar invariant, a useful skill for permutation processes.",
+    "reasonZH": "这是一道中等数组不变量题，当运行最大值等于当前前缀长度时前缀恰好对齐。它训练将全局状态条件压缩为单个标量不变量，适合处理排列过程。"
+  },
+  {
+    "slug": "number-of-unequal-triplets-in-array",
+    "reasonEN": "An easy frequency-counting problem that counts distinct-value triplets through grouped occurrences. It trains converting cubic enumeration into prefix and suffix counts, demonstrating how sorting or hashing exposes combinatorial structure.",
+    "reasonZH": "这是一道简单频次计数题，通过相同数值分组来统计互不相等的三元组。它训练将三重枚举转化为前后缀计数，展示排序或哈希如何揭示组合结构。"
+  },
+  {
+    "slug": "number-of-unique-good-subsequences",
+    "reasonEN": "A hard string DP problem that deduplicates binary subsequences by tracking the last ending digit. It trains state-based duplicate elimination and zero-prefix handling, making it a strong representative of distinct-subsequence DP.",
+    "reasonZH": "这是高难度字符串 DP 题，通过维护末位状态为二进制子序列去重。它训练基于状态的重复消除和前导零处理，是不同子序列 DP 的代表题。"
+  },
+  {
+    "slug": "number-of-unique-subjects-taught-by-each-teacher",
+    "reasonEN": "An easy SQL aggregation exercise centered on grouping teachers and counting distinct subjects. It reinforces GROUP BY with COUNT(DISTINCT ...), a common and essential reporting-query pattern.",
+    "reasonZH": "这是一道简单 SQL 聚合题，按教师分组并统计去重后的科目数量。它巩固 GROUP BY 与 COUNT(DISTINCT ...) 的组合，是常见报表查询模式。"
+  },
+  {
+    "slug": "number-of-unique-xor-triplets-i",
+    "reasonEN": "A medium bit-manipulation enumeration problem that reasons about distinct XOR outcomes of triplets. It trains XOR algebra and set-based deduplication, providing a foundation for recognizing small-domain bitwise counting problems.",
+    "reasonZH": "这是一道中等位运算枚举题，关注三元组异或结果的去重计数。它训练 XOR 代数性质和集合去重，是识别小值域位运算计数问题的基础。"
+  },
+  {
+    "slug": "number-of-unique-xor-triplets-ii",
+    "reasonEN": "This medium XOR counting problem extends unique-triplet reasoning to a broader enumeration setting. It trains compressing reachable bitwise states instead of retaining every tuple, which is crucial when direct triple loops become expensive.",
+    "reasonZH": "这道中等异或计数题将不同三元组的推理扩展到更大的枚举场景。它训练压缩可达位状态而非保存每个元组，在三重循环代价过高时尤为关键。"
+  },
+  {
+    "slug": "number-of-valid-clock-times",
+    "reasonEN": "An easy string enumeration problem that validates wildcard hour and minute combinations independently. It trains bounded case analysis and format-aware parsing, useful for compact time and pattern validation tasks.",
+    "reasonZH": "这是一道简单字符串枚举题，需要分别校验带通配符的小时和分钟组合。它训练有界分类讨论与格式感知解析，适合时间和模式校验任务。"
+  },
+  {
+    "slug": "number-of-valid-move-combinations-on-chessboard",
+    "reasonEN": "A hard backtracking and simulation problem that enumerates piece directions and movement durations while checking collisions over time. It trains exhaustive-state design and temporal conflict validation, making it a demanding simulation exercise.",
+    "reasonZH": "这是高难度回溯模拟题，需要枚举棋子的方向和移动时长，并检查全过程中的碰撞。它训练完整状态设计和时间维度冲突校验，是高质量模拟题练习。"
+  },
+  {
+    "slug": "number-of-valid-words-for-each-puzzle",
+    "reasonEN": "A hard bitmask and hash-table problem that matches word letter sets against puzzle constraints. It trains subset enumeration, mandatory-bit filtering, and frequency aggregation, a landmark technique for alphabet-sized state spaces.",
+    "reasonZH": "这是一道高难度位掩码哈希题，需要将单词字母集合与谜题约束匹配。它训练子集枚举、必含位过滤和频次聚合，是字母集状态空间中的标志性技巧。"
+  },
+  {
+    "slug": "number-of-valid-words-in-a-sentence",
+    "reasonEN": "An easy string-parsing problem that validates tokens against punctuation, hyphen, and digit rules. It trains precise finite-rule checking and token boundary handling, which are frequent sources of parser edge cases.",
+    "reasonZH": "这是一道简单字符串解析题，需要按标点、连字符和数字规则校验单词。它训练精确的有限规则判断和词元边界处理，能覆盖解析器常见边界情况。"
+  },
+  {
+    "slug": "number-of-visible-people-in-a-queue",
+    "reasonEN": "A hard monotonic-stack problem that resolves visibility by removing blocked shorter heights. It trains stack invariants and the final blocker contribution, making it essential practice for next-greater-element style reasoning.",
+    "reasonZH": "这是高难度单调栈题，通过弹出被遮挡的较矮高度来计算可见人数。它训练栈不变量和最后遮挡者的贡献，是掌握下一个更大元素类思维的重要练习。"
+  },
+  {
+    "slug": "number-of-ways-of-cutting-a-pizza",
+    "reasonEN": "A hard matrix DP problem that combines suffix prefix sums with recursive cut states. It trains constant-time region validation, memoized transitions, and valid-cut pruning, a powerful pattern for grid partition counting.",
+    "reasonZH": "这是一道高难度矩阵 DP 题，结合二维前缀和与切分状态递推。它训练 O(1) 区域校验、记忆化转移和合法切割剪枝，是网格分割计数的重要模式。"
+  },
+  {
+    "slug": "number-of-ways-to-arrive-at-destination",
+    "reasonEN": "A medium shortest-path counting problem that augments Dijkstra with equal-distance path accumulation. It trains relaxing distances and ways together, which is central when optimization and counting share the same graph traversal.",
+    "reasonZH": "这是一道中等最短路计数题，在 Dijkstra 过程中同时维护距离和最短路径方案数。它训练联合松弛距离与计数，是图上优化和计数结合的核心方法。"
+  },
+  {
+    "slug": "number-of-ways-to-assign-edge-weights-i",
+    "reasonEN": "A medium tree and math problem that reduces edge-weight assignments to structural properties discovered by DFS. It trains extracting path constraints from a tree and converting them into a compact counting formula.",
+    "reasonZH": "这是一道中等树与数学题，通过 DFS 提取树结构性质，再将边权分配转化为计数公式。它训练从树路径约束归纳结构并进行组合计数。"
+  },
+  {
+    "slug": "number-of-ways-to-assign-edge-weights-ii",
+    "reasonEN": "A hard tree DP and bitwise counting problem that extends edge-weight assignment constraints across multiple queries or states. It trains DFS-derived structure, modular combinatorics, and reusable state aggregation for large instances.",
+    "reasonZH": "这是高难度树 DP 与位计数题，将边权分配约束扩展到多状态或多查询场景。它训练基于 DFS 的结构提取、模组合计数和可复用状态聚合。"
+  },
+  {
+    "slug": "number-of-ways-to-buy-pens-and-pencils",
+    "reasonEN": "A medium arithmetic enumeration problem that fixes one purchase count and derives the valid range of the other. It trains integer-division bounds and systematic counting, a dependable pattern for two-variable budget constraints.",
+    "reasonZH": "这是一道中等数学枚举题，固定一种购买数量后推导另一种的可选范围。它训练整数除法边界和系统计数，是二变量预算约束的可靠模式。"
+  },
+  {
+    "slug": "number-of-ways-to-divide-a-long-corridor",
+    "reasonEN": "A hard string counting problem that multiplies the choices between consecutive seat pairs. It trains identifying independent combinatorial gaps and modular multiplication, turning an apparent DP problem into a concise product formula.",
+    "reasonZH": "这是高难度字符串计数题，核心是累乘相邻座位对之间的可分隔位置。它训练识别独立组合间隙与取模乘法，将表面 DP 问题化为简洁乘积公式。"
+  },
+  {
+    "slug": "number-of-ways-to-earn-points",
+    "reasonEN": "A hard bounded-knapsack DP problem that counts score combinations under per-type limits. It trains capacity transitions, loop ordering, and modulo handling, making it a valuable template for constrained selection counts.",
+    "reasonZH": "这是一道高难度有界背包 DP 题，需要在每类数量限制下统计得分方案。它训练容量转移、循环顺序和取模处理，是受限选择计数的实用模板。"
+  },
+  {
+    "slug": "number-of-ways-to-form-a-target-string-given-a-dictionary",
+    "reasonEN": "A hard string DP problem that precomputes per-column character frequencies before matching the target. It trains dimensional reduction and reverse-order transitions, a key approach for counting constructions from aligned sources.",
+    "reasonZH": "这是高难度字符串 DP 题，先预处理每列字符频次，再匹配目标串。它训练维度压缩和逆序转移，是从对齐来源构造字符串时的关键方法。"
+  },
+  {
+    "slug": "number-of-ways-to-paint-n-3-grid",
+    "reasonEN": "A hard state-compression DP problem that classifies each row by its color-pattern type. It trains grouping symmetric states and deriving a tiny transition matrix, an important lesson in reducing combinatorial grid coloring.",
+    "reasonZH": "这是一道高难度状态压缩 DP 题，将每一行按颜色模式分类。它训练合并对称状态并推导小型转移矩阵，是降低网格染色组合复杂度的重要方法。"
+  },
+  {
+    "slug": "number-of-ways-to-reach-a-position-after-exactly-k-steps",
+    "reasonEN": "A medium combinatorics and DP problem that reduces exact-step reachability to displacement parity and binomial choices. It trains recognizing when a walk can be counted directly instead of simulating every path.",
+    "reasonZH": "这是一道中等组合数学与 DP 题，将恰好走 K 步的可达性归结为位移奇偶性和组合选择。它训练识别何时可直接计数而非模拟每条路径。"
+  },
+  {
+    "slug": "number-of-ways-to-rearrange-sticks-with-k-sticks-visible",
+    "reasonEN": "A hard combinatorial DP problem whose recurrence considers whether the next tallest stick is visible or hidden among existing positions. It trains insertion-based state transitions and connects directly to unsigned Stirling-number reasoning.",
+    "reasonZH": "这是一道高难度组合 DP 题，递推关键在于新木棍可见或插入现有位置被遮挡。它训练插入式状态转移，并连接到第一类无符号斯特林数思想。"
+  },
+  {
+    "slug": "number-of-ways-to-reconstruct-a-tree",
+    "reasonEN": "A hard graph-to-tree reconstruction problem that infers parent relationships from pairwise connectivity sets. It trains set containment reasoning, ambiguity detection, and structural validation, making it excellent practice for inverse graph problems.",
+    "reasonZH": "这是高难度图到树重构题，需要从点对连通集合推断父子关系。它训练集合包含关系、歧义检测和结构校验，是逆向图结构问题的优秀练习。"
+  },
+  {
+    "slug": "number-of-ways-to-reorder-array-to-get-same-bst",
+    "reasonEN": "A hard divide-and-conquer counting problem that preserves BST relative order while interleaving left and right subsequences. It trains binomial-coefficient precomputation and recursive composition, a classic combination of trees and combinatorics.",
+    "reasonZH": "这是一道高难度分治计数题，在保持 BST 相对顺序的前提下交错合并左右子序列。它训练组合数预处理和递归组合，是树与组合数学结合的经典题。"
+  },
+  {
+    "slug": "number-of-ways-to-select-buildings",
+    "reasonEN": "A medium subsequence-counting problem that tracks partial binary patterns while scanning the string. It trains prefix-suffix counting or compact DP states, which generalize well to fixed-pattern subsequence queries.",
+    "reasonZH": "这是一道中等子序列计数题，扫描字符串时维护部分二进制模式。它训练前后缀计数或紧凑 DP 状态，可推广到固定模式子序列查询。"
+  },
+  {
+    "slug": "number-of-ways-to-separate-numbers",
+    "reasonEN": "A hard string DP problem that counts nondecreasing numeric partitions without converting long segments to integers. It trains longest-common-prefix comparison, prefix-sum acceleration, and leading-zero control, all advanced partition-DP techniques.",
+    "reasonZH": "这是高难度字符串 DP 题，需要在不转换超长数字的前提下统计非递减分割。它训练最长公共前缀比较、前缀和加速和前导零控制，是进阶分割 DP 技巧。"
+  },
+  {
+    "slug": "number-of-ways-to-split-a-string",
+    "reasonEN": "A medium mathematical counting problem that distributes all ones evenly across three parts. It trains divisibility case analysis and gap-product counting, illustrating how structural observations can replace explicit partition enumeration.",
+    "reasonZH": "这是一道中等数学计数题，需要将所有 1 均匀分配到三段。它训练整除分类讨论和间隙乘积计数，展示结构观察如何替代显式分割枚举。"
+  }
+]

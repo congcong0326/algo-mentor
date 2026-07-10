@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "largest-multiple-of-three",
+    "reasonEN": "A hard greedy and remainder-management problem that constructs the lexicographically largest valid number. It trains using modulo classes to remove the minimum necessary digits while preserving descending order.",
+    "reasonZH": "高难贪心余数题，需要构造字典序最大的合法数字。它训练利用模类删除最少必要数字，同时保持降序结构。"
+  },
+  {
+    "slug": "largest-number",
+    "reasonEN": "A medium custom-sorting problem where numeric order must be replaced by concatenation order. It trains designing comparators from the target objective and handling the all-zero edge case.",
+    "reasonZH": "中等自定义排序题，不能按数值大小排序，而要比较拼接顺序。它训练从目标函数设计比较器，并处理全零结果这一边界情况。"
+  },
+  {
+    "slug": "largest-number-after-digit-swaps-by-parity",
+    "reasonEN": "An easy greedy digit-rearrangement problem constrained by parity classes. It trains separating independently swappable resources and placing the largest available compatible digit at each position.",
+    "reasonZH": "简单贪心数字重排题，交换受奇偶类别约束。它训练分离可独立交换的资源，并在每个位置放置最大的兼容数字。"
+  },
+  {
+    "slug": "largest-number-after-mutating-substring",
+    "reasonEN": "A medium greedy string problem that chooses one contiguous mutation segment. It trains identifying the first beneficial change and stopping exactly when further changes would reduce the leading lexicographic value.",
+    "reasonZH": "中等贪心字符串题，只能选择一段连续子串进行变换。它训练找到第一个有利改动，并在后续变换会降低前缀字典序时准确停止。"
+  },
+  {
+    "slug": "largest-number-at-least-twice-of-others",
+    "reasonEN": "An easy array selection problem that reduces the condition to comparing the maximum with the runner-up. It reinforces one-pass extreme-value tracking and concise proof of a global dominance rule.",
+    "reasonZH": "简单数组选择题，可将条件归结为最大值与次大值的比较。它巩固单次遍历维护极值，并练习证明全局支配条件。"
+  },
+  {
+    "slug": "largest-odd-number-in-string",
+    "reasonEN": "An easy greedy string problem based on the fact that an odd decimal number must end in an odd digit. It trains scanning from the right to preserve the longest possible prefix.",
+    "reasonZH": "简单贪心字符串题，关键是十进制奇数必须以奇数字符结尾。它训练从右向左扫描，以保留尽可能长的前缀。"
+  },
+  {
+    "slug": "largest-palindrome-product",
+    "reasonEN": "A hard mathematical enumeration problem that generates palindromes before testing factor pairs. It trains exploiting symmetry to shrink the search space and applying divisibility bounds to prune candidates.",
+    "reasonZH": "高难数学枚举题，先生成回文数再检验因子对。它训练利用对称性缩小搜索空间，并通过整除边界剪枝候选。"
+  },
+  {
+    "slug": "largest-palindromic-number",
+    "reasonEN": "A medium counting-and-greedy construction problem that builds a palindrome from digit pairs. It trains prioritizing high digits, handling the center separately, and preventing leading-zero artifacts.",
+    "reasonZH": "中等计数贪心构造题，需要从数字对构造回文数。它训练优先使用高位数字、单独处理中心位，并避免前导零问题。"
+  },
+  {
+    "slug": "largest-perimeter-triangle",
+    "reasonEN": "An easy greedy geometry problem solved by checking adjacent triples after sorting. It trains using the triangle inequality and recognizing why the first valid triple in descending order maximizes the perimeter.",
+    "reasonZH": "简单贪心几何题，排序后检查相邻三元组即可。它训练三角形不等式，并理解为何降序中第一个合法三元组就具有最大周长。"
+  },
+  {
+    "slug": "largest-plus-sign",
+    "reasonEN": "A medium grid-DP problem that combines directional run lengths for four arms. It trains multi-pass dynamic programming and taking the minimum directional support at each cell to measure a shape.",
+    "reasonZH": "中等网格 DP 题，需要合并四个方向的连续长度。它训练多次扫描动态规划，并通过每格四向最小支撑值衡量十字形大小。"
+  },
+  {
+    "slug": "largest-positive-integer-that-exists-with-its-negative",
+    "reasonEN": "An easy set-membership problem that looks for values whose negation also exists. It reinforces constant-time complement checks and simple maximum tracking.",
+    "reasonZH": "简单集合成员判断题，寻找其相反数也存在的正数。它巩固常数时间的互补值查询和基础最大值维护。"
+  },
+  {
+    "slug": "largest-prime-from-consecutive-prime-sum",
+    "reasonEN": "A medium number-theory problem combining prime generation with consecutive-sum testing. It trains sieve preprocessing, prefix sums, and efficient primality validation for derived candidates.",
+    "reasonZH": "中等数论题，结合质数生成与连续和检验。它训练筛法预处理、前缀和，以及对推导候选进行高效质数验证。"
+  },
+  {
+    "slug": "largest-rectangle-in-histogram",
+    "reasonEN": "A canonical hard monotonic-stack problem that finds each bar's maximal expansion range. It trains locating the first smaller boundary on both sides and using sentinels to simplify edge handling.",
+    "reasonZH": "经典高难单调栈题，求每根柱子的最大扩展范围。它训练寻找左右第一个更小边界，并使用哨兵简化边界处理。"
+  },
+  {
+    "slug": "largest-submatrix-with-rearrangements",
+    "reasonEN": "A medium matrix-greedy problem that accumulates vertical heights and sorts each row independently. It trains recognizing when column rearrangement makes row-local ordering sufficient for global area optimization.",
+    "reasonZH": "中等矩阵贪心题，累计竖向高度后独立排序每一行。它训练理解列可重排时，行内排序为何足以优化全局矩形面积。"
+  },
+  {
+    "slug": "largest-substring-between-two-equal-characters",
+    "reasonEN": "An easy string-indexing problem that records first occurrences to maximize later distance. It reinforces the principle that retaining the earliest position is optimal for widest matching endpoints.",
+    "reasonZH": "简单字符串索引题，记录字符首次出现位置以最大化后续距离。它巩固保留最早位置能够得到最宽匹配端点的原则。"
+  },
+  {
+    "slug": "largest-sum-of-averages",
+    "reasonEN": "A medium partition-DP problem that combines prefix sums with group-count states. It trains selecting the last segment boundary and optimizing over all feasible partitions.",
+    "reasonZH": "中等分组 DP 题，结合前缀和与分组数量状态。它训练选择最后一段的起点，并在所有可行划分中取最优值。"
+  },
+  {
+    "slug": "largest-time-for-given-digits",
+    "reasonEN": "A medium enumeration problem that tests digit permutations against time validity. It trains constrained candidate generation and selecting the maximum under a structured format constraint.",
+    "reasonZH": "中等枚举题，需要检验数字排列是否构成有效时间。它训练受约束候选生成，并在结构化格式限制下选择最大结果。"
+  },
+  {
+    "slug": "largest-triangle-area",
+    "reasonEN": "An easy computational-geometry problem that enumerates point triples and uses the cross product. It trains area computation without floating-point slope cases and reinforces geometric determinant reasoning.",
+    "reasonZH": "简单计算几何题，枚举点三元组并使用叉积计算面积。它训练避免斜率带来的浮点问题，并巩固几何行列式推理。"
+  },
+  {
+    "slug": "largest-values-from-labels",
+    "reasonEN": "A medium greedy selection problem with per-label quotas. It trains sorting values globally, tracking resource usage by category, and accepting an item only when its local capacity remains available.",
+    "reasonZH": "中等贪心选择题，带有每个标签的使用上限。它训练全局按价值排序、按类别记录资源使用，并仅在局部容量允许时选择元素。"
+  },
+  {
+    "slug": "last-day-where-you-can-still-cross",
+    "reasonEN": "A hard monotonic-connectivity problem solvable by binary-searching days with BFS or by reversing time with union-find. It trains recognizing feasibility monotonicity and choosing the right connectivity formulation.",
+    "reasonZH": "高难单调连通性题，可二分天数配合 BFS，或逆序时间配合并查集。它训练识别可行性的单调性，并选择合适的连通性建模方式。"
+  },
+  {
+    "slug": "last-moment-before-all-ants-fall-out-of-a-plank",
+    "reasonEN": "A medium insight problem where ant collisions can be treated as identities passing through each other. It trains replacing a complicated simulation with an invariant and reducing the answer to extreme distances.",
+    "reasonZH": "中等思维题，蚂蚁碰撞可等价看作彼此穿过。它训练用不变量替代复杂模拟，并将答案简化为到边缘的极值距离。"
+  },
+  {
+    "slug": "last-person-to-fit-in-the-bus",
+    "reasonEN": "A medium SQL running-total problem that identifies the final row under a capacity limit. It trains ordered window aggregation and filtering on cumulative state rather than individual values.",
+    "reasonZH": "中等 SQL 滚动总和题，需要在容量限制下找出最后满足条件的记录。它训练有序窗口聚合，并基于累计状态而非单行数值进行筛选。"
+  },
+  {
+    "slug": "last-remaining-integer-after-alternating-deletion-operations",
+    "reasonEN": "A hard mathematical recurrence problem that compresses repeated deletion rounds into direction, head, step, and remaining-count state. It trains discovering state transitions instead of simulating an exponentially shrinking sequence.",
+    "reasonZH": "高难数学递推题，将反复删除压缩为方向、首项、步长和剩余数量等状态。它训练推导状态转移，而不是模拟不断缩小的序列。"
+  },
+  {
+    "slug": "last-stone-weight",
+    "reasonEN": "An easy heap simulation problem that repeatedly extracts the two largest weights. It reinforces max-heap operations and faithful implementation of iterative reduction rules.",
+    "reasonZH": "简单堆模拟题，反复取出两块最大重量的石头。它巩固最大堆操作，并训练准确实现迭代消减规则。"
+  },
+  {
+    "slug": "last-stone-weight-ii",
+    "reasonEN": "A medium subset-sum DP problem that reframes smashing stones as partitioning total weight into two balanced groups. It trains the key reduction from a destructive process to a knapsack objective.",
+    "reasonZH": "中等子集和 DP 题，将粉碎石头重构为把总重量划分为尽量平衡的两组。它训练把动态过程归约为背包优化目标的关键能力。"
+  },
+  {
+    "slug": "last-substring-in-lexicographical-order",
+    "reasonEN": "A hard two-pointer string problem that eliminates dominated suffix candidates in linear time. It trains lexicographic comparison with offset jumps and careful candidate-discard reasoning.",
+    "reasonZH": "高难双指针字符串题，在线性时间内淘汰被支配的后缀候选。它训练带偏移跳转的字典序比较，以及严谨的候选排除推理。"
+  },
+  {
+    "slug": "last-visited-integers",
+    "reasonEN": "An easy simulation problem that combines a history list with a counter for repeated retrieval requests. It trains modeling stateful commands and resetting query-local state at the correct time.",
+    "reasonZH": "简单模拟题，结合历史列表与连续查询计数器。它训练建模有状态命令，并在正确时机重置查询相关状态。"
+  },
+  {
+    "slug": "latest-time-by-replacing-hidden-digits",
+    "reasonEN": "An easy greedy formatting problem that fills unknown clock digits from most significant to least significant. It trains respecting dependent range constraints between hour positions.",
+    "reasonZH": "简单贪心格式题，按从高位到低位填充未知的时钟数字。它训练处理小时各位置之间相互依赖的范围约束。"
+  },
+  {
+    "slug": "latest-time-you-can-obtain-after-replacing-characters",
+    "reasonEN": "An easy constrained-enumeration problem for a clock format. It trains checking a small valid domain exhaustively and choosing the lexicographically latest feasible replacement.",
+    "reasonZH": "简单受约束枚举题，围绕时钟格式寻找结果。它训练穷举很小的合法范围，并选择字典序最晚的可行替换。"
+  },
+  {
+    "slug": "leaf-similar-trees",
+    "reasonEN": "An easy tree DFS comparison problem that extracts leaf sequences before matching them. It trains separating traversal from comparison and preserving left-to-right order in recursive output.",
+    "reasonZH": "简单树 DFS 比较题，先提取叶节点序列再进行匹配。它训练分离遍历与比较逻辑，并在递归输出中保持从左到右的顺序。"
+  }
+]

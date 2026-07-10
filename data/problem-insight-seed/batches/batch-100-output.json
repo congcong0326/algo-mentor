@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "print-zero-even-odd",
+    "reasonEN": "A medium concurrency coordination problem that enforces a precise zero-odd-even output order across threads. It trains semaphore or condition-variable handoffs and state-based synchronization, making it a practical introduction to deterministic multithreading.",
+    "reasonZH": "这是一道中等并发协作题，需要让多个线程严格按零、奇数、偶数的顺序输出。它训练信号量或条件变量交接及状态同步，是确定性多线程的实用入门。"
+  },
+  {
+    "slug": "prison-cells-after-n-days",
+    "reasonEN": "A medium state-simulation problem whose finite binary configurations eventually repeat. It trains cycle detection, state encoding, and modular fast-forwarding, a reusable approach for large-step cellular simulations.",
+    "reasonZH": "这是一道中等状态模拟题，有限的二进制配置最终会进入循环。它训练环检测、状态编码和取模跳转，适合处理大步数的元胞模拟。"
+  },
+  {
+    "slug": "probability-of-a-two-boxes-having-the-same-number-of-distinct-balls",
+    "reasonEN": "A hard probability and combinatorics problem that distributes each color count between two boxes and weights each allocation correctly. It trains backtracking over count vectors, multinomial reasoning, and favorable-outcome accumulation, offering deep practice in exact probability DP.",
+    "reasonZH": "这是高难度概率组合题，需要将每种颜色的球分配到两个盒子并正确计算方案权重。它训练计数向量回溯、多项式组合推理和有利结果累加，是精确概率 DP 的深度练习。"
+  },
+  {
+    "slug": "process-restricted-friend-requests",
+    "reasonEN": "A hard union-find problem that must evaluate restrictions against evolving connected components before merging them. It trains component-level constraint checking and careful online updates, making it valuable for dynamic graph feasibility reasoning.",
+    "reasonZH": "这是一道高难度并查集题，需要在合并连通块前根据不断变化的组件判断限制条件。它训练组件级约束检查和在线更新，是动态图可行性推理的重要练习。"
+  },
+  {
+    "slug": "process-string-with-special-operations-i",
+    "reasonEN": "A medium string simulation problem that applies special operations in sequence while preserving the current representation. It trains explicit state transitions and operation-order discipline, providing a clean foundation for transformation simulators.",
+    "reasonZH": "这是一道中等字符串模拟题，需要按顺序应用特殊操作并维护当前表示。它训练显式状态转移和操作顺序纪律，是构建转换模拟器的基础。"
+  },
+  {
+    "slug": "process-string-with-special-operations-ii",
+    "reasonEN": "A hard string simulation problem that requires deriving the result of many special operations without materializing every intermediate string. It trains reverse reasoning, index mapping, and compressed state tracking, crucial for large transformation sequences.",
+    "reasonZH": "这是高难度字符串模拟题，需要避免构造所有中间字符串而推导多次特殊操作的结果。它训练逆向推理、下标映射和压缩状态维护，适合大规模转换序列。"
+  },
+  {
+    "slug": "process-tasks-using-servers",
+    "reasonEN": "A medium scheduling problem that uses priority queues for both available servers and future release times. It trains dual-heap event simulation and tie-breaking rules, a standard pattern for resource allocation systems.",
+    "reasonZH": "这是一道中等调度题，需要分别用优先队列维护可用服务器和未来释放时间。它训练双堆事件模拟与并列规则处理，是资源分配系统的标准模式。"
+  },
+  {
+    "slug": "product-of-array-except-self",
+    "reasonEN": "A canonical medium array problem that combines prefix and suffix products without division. It trains directional accumulation and O(1) auxiliary-space refinement, making it an essential interview pattern for aggregate-except-self queries.",
+    "reasonZH": "这是经典中等数组题，通过前缀积和后缀积在不用除法的情况下得到答案。它训练双向累积和 O(1) 额外空间优化，是除自身外聚合查询的必备模式。"
+  },
+  {
+    "slug": "product-of-the-last-k-numbers",
+    "reasonEN": "A medium data-stream design problem that answers rolling product queries with prefix products and zero resets. It trains API state design, division-based query recovery, and special-case handling for zeros, useful in online aggregation structures.",
+    "reasonZH": "这是一道中等数据流设计题，通过前缀积和零值重置回答滑动乘积查询。它训练 API 状态设计、除法还原查询和零值特判，适合在线聚合结构。"
+  },
+  {
+    "slug": "product-price-at-a-given-date",
+    "reasonEN": "A medium SQL temporal-query problem that selects each product's latest price record on or before a target date. It trains grouped maximum-date logic and default-value handling, both common in effective-dated data models.",
+    "reasonZH": "这是一道中等 SQL 时态查询题，需要选出目标日期前每个产品最新的价格记录。它训练分组最大日期逻辑和默认值处理，适用于生效日期数据模型。"
+  },
+  {
+    "slug": "product-sales-analysis-i",
+    "reasonEN": "An easy SQL join problem that combines sales rows with product metadata to produce a focused report. It reinforces join keys and projection selection, serving as basic but essential relational-query practice.",
+    "reasonZH": "这是一道简单 SQL 连接题，将销售记录与产品信息结合生成指定报表。它巩固连接键和字段投影选择，是基础但必要的关系查询练习。"
+  },
+  {
+    "slug": "product-sales-analysis-iii",
+    "reasonEN": "A medium SQL grouping problem that identifies records associated with the first sale date for each product. It trains per-group minimum selection and joining aggregate results back to detail rows, a frequent analytical-query pattern.",
+    "reasonZH": "这是一道中等 SQL 分组题，需要找出每个产品首次销售日期对应的记录。它训练分组最小值选择及将聚合结果回连明细，是常见分析查询模式。"
+  },
+  {
+    "slug": "profitable-schemes",
+    "reasonEN": "A hard multi-dimensional knapsack DP problem that counts selections under both member and profit constraints. It trains capped profit states, reverse iteration, and modular counting, making it a strong template for constrained subset enumeration.",
+    "reasonZH": "这是高难度多维背包 DP 题，需要在成员数和利润双重约束下统计选择方案。它训练利润状态截断、逆序遍历和取模计数，是受限子集枚举的强力模板。"
+  },
+  {
+    "slug": "programmable-robot",
+    "reasonEN": "A medium simulation and hash-table problem that exploits the robot command cycle to test reachability and obstacles. It trains cycle decomposition, coordinate normalization, and prefix-position lookup, useful for repetitive movement systems.",
+    "reasonZH": "这是一道中等模拟哈希题，利用机器人指令循环判断可达性和障碍物影响。它训练周期分解、坐标规范化和前缀位置查询，适合重复移动系统。"
+  },
+  {
+    "slug": "project-employees-i",
+    "reasonEN": "An easy SQL aggregation task that joins project assignments to employee experience and computes per-project averages. It reinforces JOIN with GROUP BY and AVG, a direct foundation for operational reporting queries.",
+    "reasonZH": "这是一道简单 SQL 聚合题，连接项目分配和员工经验并计算每个项目的平均值。它巩固 JOIN、GROUP BY 和 AVG，是运营报表查询的直接基础。"
+  },
+  {
+    "slug": "projection-area-of-3d-shapes",
+    "reasonEN": "An easy matrix geometry problem that sums top, front, and side projections independently. It trains decomposing a 3D quantity into orthogonal 2D contributions, a clean technique for grid-based geometry calculations.",
+    "reasonZH": "这是一道简单矩阵几何题，需要分别累加俯视、正视和侧视投影。它训练将三维量拆解为正交二维贡献，是网格几何计算的清晰技巧。"
+  },
+  {
+    "slug": "promise-time-limit",
+    "reasonEN": "A medium asynchronous JavaScript design problem that races a promise against a timeout rejection. It trains Promise wrapping, timer cleanup, and error propagation, which are core concerns in reliable client-side async control flow.",
+    "reasonZH": "这是一道中等异步 JavaScript 设计题，需要让 Promise 与超时拒绝竞争。它训练 Promise 封装、定时器清理和错误传播，是可靠异步流程控制的核心能力。"
+  },
+  {
+    "slug": "properties-graph",
+    "reasonEN": "A medium graph connectivity problem that links objects sharing a property and counts resulting components. It trains choosing between BFS, DFS, and union-find plus hash-based adjacency construction, a common model for implicit graphs.",
+    "reasonZH": "这是一道中等图连通性题，将共享属性的对象连接并统计最终连通块。它训练在 BFS、DFS、并查集之间选择，以及用哈希构造隐式邻接关系。"
+  },
+  {
+    "slug": "pseudo-palindromic-paths-in-a-binary-tree",
+    "reasonEN": "A medium tree traversal problem that represents digit parity on a path with a bitmask. It trains XOR toggling and the at-most-one-set-bit palindrome test, a compact technique for parity-constrained path queries.",
+    "reasonZH": "这是一道中等树遍历题，用位掩码表示路径上数字出现次数的奇偶性。它训练 XOR 翻转和至多一个置位的回文判定，是奇偶约束路径查询的紧凑技巧。"
+  },
+  {
+    "slug": "push-dominoes",
+    "reasonEN": "A medium two-pointer simulation problem that resolves each interval between opposing forces as a whole. It trains sentinel boundaries, directional force reasoning, and balanced-center handling, avoiding fragile step-by-step simulation.",
+    "reasonZH": "这是一道中等双指针模拟题，需要整体处理相反作用力之间的区间。它训练哨兵边界、方向力推理和中点平衡处理，避免脆弱的逐步模拟。"
+  },
+  {
+    "slug": "put-marbles-in-bags",
+    "reasonEN": "A hard greedy sorting problem that reduces every partition score to selected adjacent-pair costs. It trains algebraic simplification before optimization and choosing extreme boundary contributions, a valuable pattern for partition scoring tasks.",
+    "reasonZH": "这是高难度贪心排序题，将分组得分化简为若干相邻对成本的选择。它训练先做代数化简再优化，并选择极值边界贡献，是分割评分问题的重要模式。"
+  },
+  {
+    "slug": "pyramid-transition-matrix",
+    "reasonEN": "A medium backtracking problem that builds each pyramid row from allowed adjacent triples. It trains transition indexing, recursive row generation, and memoized feasibility checks, making it useful for layered constraint search.",
+    "reasonZH": "这是一道中等回溯题，需要根据允许的相邻三元组构造金字塔下一层。它训练转移索引、递归生成行和记忆化可行性检查，适合分层约束搜索。"
+  },
+  {
+    "slug": "pythagorean-distance-nodes-in-a-tree",
+    "reasonEN": "A medium tree traversal problem that searches node distances under a Pythagorean-number condition. It trains breadth-first distance layering and translating arithmetic predicates into graph exploration, useful for distance-constrained tree queries.",
+    "reasonZH": "这是一道中等树遍历题，需要在勾股数距离条件下搜索节点。它训练 BFS 距离分层和将算术谓词转化为图搜索，适合距离受限的树查询。"
+  },
+  {
+    "slug": "qIsx9U",
+    "reasonEN": "An easy data-stream design problem that maintains a fixed-size queue and running sum for moving averages. It trains amortized O(1) updates and eviction handling, a fundamental pattern for streaming-window analytics.",
+    "reasonZH": "这是一道简单数据流设计题，用固定大小队列和运行和维护移动平均值。它训练均摊 O(1) 更新和过期元素移除，是流式窗口分析的基础模式。"
+  },
+  {
+    "slug": "qJnOS7",
+    "reasonEN": "A medium string DP problem that compares prefixes to build the longest common subsequence length. It trains match-versus-skip transitions and table-space optimization, making it one of the most important sequence-alignment templates.",
+    "reasonZH": "这是一道中等字符串 DP 题，通过比较前缀构建最长公共子序列长度。它训练匹配与跳过两类转移及表格空间优化，是最重要的序列对齐模板之一。"
+  },
+  {
+    "slug": "qi-wang-ge-shu-tong-ji",
+    "reasonEN": "An easy array and hash-set problem that counts distinct observed values to obtain the expected-value statistic. It trains deduplication and direct set modeling, a concise foundation for elementary probability-related counting.",
+    "reasonZH": "这是一道简单数组哈希题，通过统计不同观测值获得对应的期望数量。它训练去重和集合直接建模，是基础概率计数的简洁练习。"
+  },
+  {
+    "slug": "qie-fen-shu-zu",
+    "reasonEN": "A hard array DP and number-theory problem that partitions based on prime-factor compatibility. It trains preprocessing arithmetic properties, reachability transitions, and pruning impossible cuts, which are central to value-constrained segmentation.",
+    "reasonZH": "这是高难度数组 DP 与数论题，需要依据质因子兼容性进行划分。它训练预处理算术性质、可达性转移和不可行切分剪枝，是数值约束分段的核心方法。"
+  },
+  {
+    "slug": "qing-wa-tiao-tai-jie-wen-ti-lcof",
+    "reasonEN": "An easy dynamic-programming problem whose jump-count recurrence follows Fibonacci structure. It trains identifying overlapping subproblems, base cases, and constant-space iteration, providing a foundational introduction to linear DP.",
+    "reasonZH": "这是一道简单动态规划题，跳法计数递推呈现斐波那契结构。它训练识别重叠子问题、设置基础状态和常数空间迭代，是线性 DP 的基础入门。"
+  },
+  {
+    "slug": "qiu-12n-lcof",
+    "reasonEN": "A medium recursion and bit-manipulation problem that computes a range sum under restricted control-flow operations. It trains short-circuit recursion and bitwise arithmetic alternatives, making it useful for understanding language-level expression behavior.",
+    "reasonZH": "这是一道中等递归位运算题，需要在受限控制流条件下计算区间和。它训练短路递归和位运算替代算术，适合理解语言表达式层面的行为。"
+  },
+  {
+    "slug": "qn8gGX",
+    "reasonEN": "A medium heap problem that enumerates the smallest-sum pairs from two ordered arrays without exploring the full Cartesian product. It trains frontier expansion, duplicate avoidance, and priority-queue ordering, a key pattern for top-K combinations.",
+    "reasonZH": "这是一道中等堆题，需要从两个有序数组中枚举最小和的 K 对数而不遍历完整笛卡尔积。它训练前沿扩展、去重和优先队列排序，是 Top-K 组合的关键模式。"
+  }
+]

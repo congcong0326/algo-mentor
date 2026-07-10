@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "longest-balanced-subarray-ii",
+    "reasonEN": "A hard range-query problem that combines prefix-state reasoning with segment-tree or divide-and-conquer optimization. It trains turning a global balance constraint into efficiently searchable interval boundaries.",
+    "reasonZH": "高难区间查询题，结合前缀状态推理与线段树或分治优化。它训练将全局平衡约束转化为可高效检索的区间边界。"
+  },
+  {
+    "slug": "longest-balanced-substring-after-one-swap",
+    "reasonEN": "This medium prefix-sum string problem adds a single-edit decision to balance analysis. It trains tracking how one swap changes local deficits and selecting the longest repairable interval.",
+    "reasonZH": "中等前缀和字符串题，在平衡分析中加入一次交换决策。它训练跟踪一次交换如何改变局部缺口，并寻找最长可修复区间。"
+  },
+  {
+    "slug": "longest-balanced-substring-i",
+    "reasonEN": "A medium enumeration and counting problem that establishes the balance condition directly on substrings. It trains organizing character-frequency checks and provides a clear baseline before prefix-sum optimization.",
+    "reasonZH": "中等枚举计数题，直接在子串上检验平衡条件。它训练组织字符频次判断，并为前缀和优化建立清晰的基础。"
+  },
+  {
+    "slug": "longest-balanced-substring-ii",
+    "reasonEN": "A medium prefix-state problem that replaces repeated substring counting with hash-based state matching. It trains encoding balance differences compactly and reusing earliest occurrences to maximize interval length.",
+    "reasonZH": "中等前缀状态题，用哈希状态匹配替代重复子串计数。它训练紧凑编码平衡差值，并复用最早出现位置最大化区间长度。"
+  },
+  {
+    "slug": "longest-binary-subsequence-less-than-or-equal-to-k",
+    "reasonEN": "A medium greedy binary-string problem that keeps low-cost zeros and selectively includes significant ones. It trains reasoning about positional weights and why choices near the least significant end dominate feasibility.",
+    "reasonZH": "中等贪心二进制字符串题，保留低成本的零并选择性加入高位的一。它训练理解位置权重，以及为何低位选择主导可行性。"
+  },
+  {
+    "slug": "longest-chunked-palindrome-decomposition",
+    "reasonEN": "A hard string-decomposition problem that greedily matches equal chunks from both ends. It trains two-sided comparison, rolling-hash acceleration, and proving why taking the shortest matching outer chunks is safe.",
+    "reasonZH": "高难字符串分解题，从两端贪心匹配相等片段。它训练双端比较、滚动哈希加速，并证明为何优先取最短匹配外层片段是正确的。"
+  },
+  {
+    "slug": "longest-common-prefix",
+    "reasonEN": "A foundational easy string problem that finds the shared prefix across a collection. It trains vertical scanning or prefix shrinking and clarifies when a trie is useful versus unnecessary.",
+    "reasonZH": "基础简单字符串题，求一组字符串的公共前缀。它训练纵向扫描或逐步缩短前缀，并帮助判断何时需要字典树、何时并不需要。"
+  },
+  {
+    "slug": "longest-common-prefix-between-adjacent-strings-after-removals",
+    "reasonEN": "A medium adjacent-pair analysis problem with removal queries. It trains precomputing local common-prefix values and maintaining the affected neighborhood rather than recomputing all comparisons.",
+    "reasonZH": "中等相邻对分析题，带有删除查询。它训练预计算局部公共前缀值，并只维护受影响的邻域，而不是重复计算全部比较。"
+  },
+  {
+    "slug": "longest-common-prefix-of-k-strings-after-removal",
+    "reasonEN": "A hard trie-query problem that asks for robust prefix depth after excluding one string. It trains count maintenance along trie paths and identifying which depths remain supported by at least k strings.",
+    "reasonZH": "高难字典树查询题，要求排除一个字符串后仍求稳定公共前缀深度。它训练维护 Trie 路径计数，并识别仍被至少 k 个字符串支持的深度。"
+  },
+  {
+    "slug": "longest-common-subpath",
+    "reasonEN": "A hard multi-sequence matching problem solved by binary-searching length and intersecting rolling hashes. It trains converting an optimization target into a monotonic feasibility check while controlling hash collisions.",
+    "reasonZH": "高难多序列匹配题，可二分长度并求滚动哈希交集。它训练将优化目标转化为单调可行性检查，同时注意哈希碰撞控制。"
+  },
+  {
+    "slug": "longest-common-subsequence",
+    "reasonEN": "A canonical medium dynamic-programming problem based on prefix pairs. It trains the match-or-skip recurrence, table interpretation, and the distinction between subsequences and contiguous substrings.",
+    "reasonZH": "经典中等动态规划题，状态建立在两个前缀对上。它训练匹配或跳过的递推关系、表格含义，以及子序列与连续子串的区别。"
+  },
+  {
+    "slug": "longest-common-suffix-queries",
+    "reasonEN": "A hard string-query problem that reverses words to turn suffix matching into trie prefix matching. It trains storing the best candidate at each node and resolving ties by length and original index.",
+    "reasonZH": "高难字符串查询题，将单词反转后把后缀匹配转化为 Trie 前缀匹配。它训练在节点保存最优候选，并按长度和原始下标处理并列情况。"
+  },
+  {
+    "slug": "longest-consecutive-sequence",
+    "reasonEN": "A foundational medium hashing problem that starts expansion only from sequence beginnings. It trains using a set to avoid sorting and ensures each number participates in at most constant expected work.",
+    "reasonZH": "基础中等哈希题，只从连续序列起点开始扩展。它训练用集合避免排序，并保证每个数字只承担常数期望工作量。"
+  },
+  {
+    "slug": "longest-continuous-increasing-subsequence",
+    "reasonEN": "An easy linear-scan problem that maintains the current increasing run. It reinforces reset-on-break logic and the difference between a contiguous subarray and a general subsequence.",
+    "reasonZH": "简单线性扫描题，维护当前连续递增长度。它巩固遇到断点时重置状态的逻辑，并区分连续子数组与一般子序列。"
+  },
+  {
+    "slug": "longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit",
+    "reasonEN": "A medium sliding-window problem that needs both the current minimum and maximum. It trains monotonic deques, expiring indices correctly, and shrinking the window exactly when its range violates the limit.",
+    "reasonZH": "中等滑动窗口题，需要同时维护当前最小值和最大值。它训练单调队列、正确淘汰过期下标，并在区间范围超限时准确收缩窗口。"
+  },
+  {
+    "slug": "longest-cycle-in-a-graph",
+    "reasonEN": "A hard directed-graph problem where each node has limited outgoing structure. It trains timestamp-based traversal or topological pruning to isolate cycles and calculate their lengths without repeated searches.",
+    "reasonZH": "高难有向图题，每个节点的出边结构受限。它训练时间戳遍历或拓扑剥离，以隔离环并计算其长度，避免重复搜索。"
+  },
+  {
+    "slug": "longest-duplicate-substring",
+    "reasonEN": "A hard string-search problem that combines binary search on length with rolling-hash duplicate detection. It trains monotonic feasibility design, hash-window updates, and collision-aware substring comparison.",
+    "reasonZH": "高难字符串搜索题，结合长度二分与滚动哈希重复检测。它训练构造单调可行性、更新哈希窗口，并进行关注碰撞的子串比较。"
+  },
+  {
+    "slug": "longest-even-odd-subarray-with-threshold",
+    "reasonEN": "An easy constrained-run problem that scans for segments with a valid start, alternating parity, and bounded values. It trains expressing multiple local rules as clear extension and reset conditions.",
+    "reasonZH": "简单受约束连续段题，需要满足合法起点、奇偶交替和数值上限。它训练将多个局部规则表达为清晰的扩展与重置条件。"
+  },
+  {
+    "slug": "longest-fibonacci-subarray",
+    "reasonEN": "A medium array-pattern problem that detects the longest contiguous run satisfying a Fibonacci-style recurrence. It trains maintaining the necessary recent values and resetting precisely when the local relation fails.",
+    "reasonZH": "中等数组模式题，检测满足斐波那契式递推的最长连续段。它训练维护必要的最近值，并在局部关系失效时精确重置。"
+  },
+  {
+    "slug": "longest-happy-prefix",
+    "reasonEN": "A hard string-matching problem seeking the longest proper prefix that is also a suffix. It trains KMP prefix-function reasoning or rolling hashes, both central tools for self-overlap analysis.",
+    "reasonZH": "高难字符串匹配题，寻找最长的真前缀兼后缀。它训练 KMP 前缀函数推理或滚动哈希，两者都是分析自重叠结构的核心工具。"
+  },
+  {
+    "slug": "longest-happy-string",
+    "reasonEN": "A medium greedy construction problem that avoids three identical consecutive characters. It trains max-heap selection, temporarily deferring an unusable top choice, and preserving future construction capacity.",
+    "reasonZH": "中等贪心构造题，需要避免连续三个相同字符。它训练最大堆选择、暂缓当前不可用的最大候选，并为后续构造保留空间。"
+  },
+  {
+    "slug": "longest-harmonious-subsequence",
+    "reasonEN": "An easy frequency problem that maximizes the combined count of values differing by one. It trains transforming a subsequence definition into adjacent-key aggregation over a histogram.",
+    "reasonZH": "简单频次题，最大化数值差为一的两类元素总数量。它训练将子序列定义转化为频次表上相邻键的聚合。"
+  },
+  {
+    "slug": "longest-ideal-subsequence",
+    "reasonEN": "A medium character-DP problem that keeps the best subsequence ending in each letter. It trains restricting transitions to a local alphabet neighborhood and compressing a two-dimensional recurrence into fixed-size state.",
+    "reasonZH": "中等字符 DP 题，维护以每个字母结尾的最优子序列。它训练将转移限制在字母表局部邻域，并把二维递推压缩为固定大小状态。"
+  },
+  {
+    "slug": "longest-increasing-path-in-a-matrix",
+    "reasonEN": "A hard matrix-DAG problem solved with memoized DFS or topological layers. It trains viewing increasing moves as acyclic edges and caching each cell's best continuation to avoid exponential exploration.",
+    "reasonZH": "高难矩阵 DAG 题，可用记忆化 DFS 或拓扑分层求解。它训练将递增移动看作无环边，并缓存每格的最优延续以避免指数搜索。"
+  },
+  {
+    "slug": "longest-increasing-subsequence",
+    "reasonEN": "A canonical medium sequence-DP problem with an O(n log n) patience-sorting optimization. It trains the meaning of minimal tails and using binary search without confusing the tails array with an actual solution.",
+    "reasonZH": "经典中等序列 DP 题，拥有 O(n log n) 的耐心排序优化。它训练最小结尾值的含义，并避免把 tails 数组误认为真实解序列。"
+  },
+  {
+    "slug": "longest-increasing-subsequence-ii",
+    "reasonEN": "A hard constrained-LIS problem that replaces simple binary search with range-maximum queries. It trains mapping values to segment-tree states and querying only predecessors within the allowed difference band.",
+    "reasonZH": "高难受约束 LIS 题，用区间最大值查询取代普通二分。它训练将数值映射为线段树状态，并只查询允许差值范围内的前驱。"
+  },
+  {
+    "slug": "longest-mountain-in-array",
+    "reasonEN": "A medium array-shape problem that identifies a strict rise followed by a strict fall. It trains peak-based expansion or dual directional DP and prevents counting monotonic runs as mountains.",
+    "reasonZH": "中等数组形状题，识别严格上升后严格下降的片段。它训练以峰顶扩展或双向 DP，并避免将单调段误计为山脉。"
+  },
+  {
+    "slug": "longest-nice-subarray",
+    "reasonEN": "A medium bitwise sliding-window problem where no bit may be shared by two elements. It trains maintaining a bitmask invariant and removing left values with XOR as soon as a conflict appears.",
+    "reasonZH": "中等位运算滑动窗口题，窗口内任意两个元素不能共享置位。它训练维护位掩码不变量，并在发生冲突时用异或移除左侧元素。"
+  },
+  {
+    "slug": "longest-nice-substring",
+    "reasonEN": "An easy divide-and-conquer string problem whose invalid character splits every possible answer. It trains using lowercase-uppercase presence as an invariant and recursively discarding impossible regions.",
+    "reasonZH": "简单分治字符串题，任何不满足大小写共存的字符都会切断答案区间。它训练将大小写出现情况作为不变量，并递归舍弃不可能区域。"
+  },
+  {
+    "slug": "longest-non-decreasing-subarray-after-replacing-at-most-one-element",
+    "reasonEN": "A medium array-DP problem that permits one repair at a descent. It trains tracking states with and without a replacement and checking whether neighboring values can be bridged by a legal substitute.",
+    "reasonZH": "中等数组 DP 题，允许在下降位置进行一次修复。它训练同时跟踪未替换和已替换状态，并判断相邻值能否通过合法替代元素衔接。"
+  }
+]

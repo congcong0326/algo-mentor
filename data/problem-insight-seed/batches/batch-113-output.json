@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "sort-of-stacks-lcci",
+    "reasonEN": "A medium stack-design problem that simulates sorting with restricted auxiliary storage. It trains monotonic-stack ordering, transfer invariants, and API-consistent data-structure operations, which are central to constrained stack manipulation.",
+    "reasonZH": "中等难度的栈设计题，需要在受限辅助空间下模拟排序；它训练单调栈顺序、元素转移不变量和一致的接口操作，是受限栈操作的核心练习。"
+  },
+  {
+    "slug": "sort-the-jumbled-numbers",
+    "reasonEN": "A medium custom-sorting problem that maps digits before comparing original values. It practices stable ordering, key extraction, and handling zero correctly, useful for data normalization followed by ranking.",
+    "reasonZH": "中等难度的自定义排序题，先映射数位再比较原始数值；它训练稳定排序、排序键提取和零值处理，适合掌握数据规范化后的排序流程。"
+  },
+  {
+    "slug": "sort-the-matrix-diagonally",
+    "reasonEN": "A matrix-sorting exercise organized around the invariant that cells on one diagonal share a row-column difference. It develops coordinate grouping and write-back discipline, a reusable pattern for structured matrix transformations.",
+    "reasonZH": "以对角线为单位的矩阵排序题，核心不变量是同一对角线的行列差相同；它训练坐标分组与回写控制，是结构化矩阵变换的可复用模式。"
+  },
+  {
+    "slug": "sort-the-people",
+    "reasonEN": "An easy paired-array sorting problem that keeps names aligned with sortable attributes. It reinforces record modeling and comparator use, providing a clean foundation for ranking data with associated labels.",
+    "reasonZH": "简单的配对数组排序题，需要让姓名与可排序属性保持同步；它巩固记录建模和比较器使用，是处理带标签排名数据的基础。"
+  },
+  {
+    "slug": "sort-the-students-by-their-kth-score",
+    "reasonEN": "A medium matrix-sorting problem whose comparator is driven by a selected column. It practices row-as-record reasoning and non-mutating comparison logic, useful for tabular-data ranking tasks.",
+    "reasonZH": "中等难度的矩阵排序题，比较器由指定列驱动；它训练将行视为记录的思维和非破坏性比较逻辑，适用于表格数据排序。"
+  },
+  {
+    "slug": "sort-vowels-by-frequency",
+    "reasonEN": "A medium counting-and-sorting string problem that ranks a filtered character set by occurrence count. It develops frequency aggregation, tie-aware ordering, and selective reconstruction, useful for text transformation pipelines.",
+    "reasonZH": "中等难度的计数排序字符串题，需要按出现次数排序筛选出的字符集合；它训练频次聚合、并列排序和选择性重建，适用于文本变换流程。"
+  },
+  {
+    "slug": "sort-vowels-in-a-string",
+    "reasonEN": "A medium string-reconstruction problem that sorts only designated characters while preserving every other position. It sharpens extract-sort-reinsert workflow and index control, a common pattern in selective transformations.",
+    "reasonZH": "中等难度的字符串重建题，只排序指定字符并保持其他位置不变；它训练提取、排序、回填的流程和下标控制，是选择性变换的常见模式。"
+  },
+  {
+    "slug": "sorted-gcd-pair-queries",
+    "reasonEN": "A hard number-theory query problem that counts pair GCDs through divisor multiples and inclusion-exclusion. It combines frequency sieving, prefix counts, and binary search, making it advanced practice in offline order-statistic queries.",
+    "reasonZH": "高难度数论查询题，通过约数倍数统计和容斥计算数对 GCD；它结合频次筛、前缀计数与二分查找，是离线顺序统计查询的进阶练习。"
+  },
+  {
+    "slug": "sorted-matrix-search-lcci",
+    "reasonEN": "A medium ordered-matrix search problem where each comparison can eliminate an entire row or column. It trains monotonicity reasoning and boundary movement, a canonical technique beyond ordinary binary search.",
+    "reasonZH": "中等难度有序矩阵搜索题，每次比较都能排除整行或整列；它训练单调性推理和边界移动，是超越普通二分的经典技巧。"
+  },
+  {
+    "slug": "sorted-merge-lcci",
+    "reasonEN": "An easy two-pointer merge problem that writes from the end to avoid overwriting unread values. It reinforces reverse traversal and buffer-aware updates, essential for in-place merging tasks.",
+    "reasonZH": "简单的双指针合并题，从尾部写入以避免覆盖未读取的数据；它巩固逆向遍历和缓冲区感知更新，是原地合并的基础技巧。"
+  },
+  {
+    "slug": "sorting-the-sentence",
+    "reasonEN": "A lightweight string-parsing and sorting exercise based on embedded positional markers. It practices tokenization, key extraction, and ordered reconstruction, offering a concise introduction to structured-text processing.",
+    "reasonZH": "轻量的字符串解析排序题，依据嵌入式位置标记恢复顺序；它训练分词、键提取和有序重建，是结构化文本处理的简洁入门。"
+  },
+  {
+    "slug": "sorting-three-groups",
+    "reasonEN": "A medium dynamic-programming problem that finds the minimum edits needed to preserve a small ordered alphabet. It develops state compression and transition design, a useful bridge between sequence DP and monotonic subsequences.",
+    "reasonZH": "中等难度动态规划题，求保持小型有序类别所需的最少修改；它训练状态压缩和转移设计，是序列 DP 与单调子序列思维之间的有效桥梁。"
+  },
+  {
+    "slug": "soup-servings",
+    "reasonEN": "A medium probability-DP problem with a finite set of transitions and a useful large-input cutoff. It trains expectation-state modeling, memoization, and asymptotic simplification, all valuable for probabilistic algorithms.",
+    "reasonZH": "中等难度概率 DP 题，具有有限转移状态和可利用的大输入截断；它训练期望状态建模、记忆化和渐近简化，适合概率算法入门。"
+  },
+  {
+    "slug": "sparse-array-search-lcci",
+    "reasonEN": "An easy binary-search variant where empty strings obscure the midpoint comparison. It teaches midpoint recovery and interval preservation, useful for searching partially missing or sparse ordered data.",
+    "reasonZH": "简单的二分变体题，空字符串会干扰中点比较；它训练中点恢复和区间不变量维护，适用于部分缺失的稀疏有序数据搜索。"
+  },
+  {
+    "slug": "sparse-similarity-lcci",
+    "reasonEN": "A hard sparse-data problem that computes set intersections efficiently across many documents. It develops inverted-index thinking, pairwise count accumulation, and careful similarity aggregation, directly relevant to retrieval systems.",
+    "reasonZH": "高难度稀疏数据题，需要高效计算多文档集合交集；它训练倒排索引思维、数对交集计数和相似度聚合，可直接迁移到检索系统。"
+  },
+  {
+    "slug": "special-array-i",
+    "reasonEN": "An easy array-validation problem based on checking adjacent parity relationships. It reinforces local invariant scans and early termination, forming a clean template for sequence-property verification.",
+    "reasonZH": "简单的数组验证题，核心是检查相邻元素的奇偶关系；它巩固局部不变量扫描和提前终止，是序列性质校验的清晰模板。"
+  },
+  {
+    "slug": "special-array-ii",
+    "reasonEN": "A medium range-query extension that preprocesses invalid adjacent relationships for fast answers. It teaches prefix-sum encoding of boolean events and endpoint reasoning, a highly reusable offline-query technique.",
+    "reasonZH": "中等难度区间查询进阶题，预处理相邻元素的不合法关系以快速回答查询；它训练用前缀和编码布尔事件和端点推理，是高度可复用的离线查询技巧。"
+  },
+  {
+    "slug": "special-array-with-x-elements-greater-than-or-equal-x",
+    "reasonEN": "An easy sorting-and-counting problem that looks for a self-consistent threshold. It develops boundary counting and candidate validation, a useful pattern for fixed-point conditions in ordered data.",
+    "reasonZH": "简单的排序计数题，需要寻找满足自洽条件的阈值；它训练边界计数和候选验证，是有序数据中固定点条件的常用模式。"
+  },
+  {
+    "slug": "special-binary-string",
+    "reasonEN": "A hard recursive string-construction problem that decomposes balanced binary blocks and orders them greedily. It combines divide and conquer with lexicographic sorting, making it a strong exercise in recursive canonicalization.",
+    "reasonZH": "高难度递归字符串构造题，将平衡二进制块分解后按贪心顺序排列；它结合分治与字典序排序，是递归规范化的高质量练习。"
+  },
+  {
+    "slug": "special-permutations",
+    "reasonEN": "A medium bitmask-DP problem that counts permutations under adjacency divisibility constraints. It trains subset-state representation, last-element transitions, and exponential-state optimization, which are core skills for permutation DP.",
+    "reasonZH": "中等难度状态压缩 DP 题，统计满足相邻整除约束的排列；它训练子集状态表示、末尾元素转移和指数状态优化，是排列 DP 的核心能力。"
+  },
+  {
+    "slug": "special-positions-in-a-binary-matrix",
+    "reasonEN": "An easy matrix-counting problem that combines row and column aggregates. It reinforces preprocessing directional statistics before validation, a dependable approach for grid constraint checks.",
+    "reasonZH": "简单的矩阵计数题，结合行与列的聚合信息进行判断；它训练先预处理方向统计再验证，是网格约束检查的可靠方法。"
+  },
+  {
+    "slug": "spiral-matrix",
+    "reasonEN": "A classic medium matrix-simulation problem organized around shrinking boundaries. It develops traversal-order control and degenerate-layer handling, a fundamental milestone for grid implementation accuracy.",
+    "reasonZH": "经典的中等矩阵模拟题，围绕不断收缩的边界组织遍历；它训练访问顺序控制和退化层处理，是提升网格实现准确性的基础题。"
+  },
+  {
+    "slug": "spiral-matrix-ii",
+    "reasonEN": "A medium constructive simulation problem that fills a grid in spiral order. It reinforces boundary updates after each directional pass and provides a direct counterpart to spiral traversal.",
+    "reasonZH": "中等难度构造模拟题，按螺旋顺序填充网格；它巩固每次方向遍历后的边界更新，并与螺旋读取形成直接对照。"
+  },
+  {
+    "slug": "spiral-matrix-iii",
+    "reasonEN": "A medium simulation problem that expands a spiral path beyond grid boundaries while recording valid cells only. It trains step-length scheduling, direction cycles, and out-of-bounds filtering, useful for path-generation tasks.",
+    "reasonZH": "中等难度模拟题，螺旋路径会扩展到网格边界之外但只记录有效单元；它训练步长安排、方向循环和越界过滤，适合路径生成类问题。"
+  },
+  {
+    "slug": "spiral-matrix-iv",
+    "reasonEN": "A medium linked-list and matrix simulation problem that consumes a sequential source during spiral filling. It combines pointer advancement with boundary management, strengthening coordination across two data structures.",
+    "reasonZH": "中等难度链表矩阵模拟题，在螺旋填充过程中消费顺序数据源；它结合指针推进与边界管理，训练两种数据结构之间的协同控制。"
+  },
+  {
+    "slug": "split-a-string-in-balanced-strings",
+    "reasonEN": "An easy greedy counting problem where every earliest zero balance forms an optimal split. It teaches balance invariants and why local completion is globally safe, a valuable introduction to proof-backed greedy choices.",
+    "reasonZH": "简单的贪心计数题，每次最早回到零平衡的位置都构成最优切分；它训练平衡不变量，并理解局部完成为何全局安全。"
+  },
+  {
+    "slug": "split-a-string-into-the-max-number-of-unique-substrings",
+    "reasonEN": "A medium backtracking problem that maximizes partitions while maintaining a uniqueness set. It develops branching design, state rollback, and pruning by remaining length, essential skills for combinatorial search.",
+    "reasonZH": "中等难度回溯题，在维护唯一子串集合的同时最大化切分数量；它训练分支设计、状态回滚和剩余长度剪枝，是组合搜索的核心能力。"
+  },
+  {
+    "slug": "split-and-merge-array-transformation",
+    "reasonEN": "A medium state-space search problem that models legal split-and-merge operations as graph transitions. It practices canonical state encoding, BFS frontier management, and visited-state deduplication for transformation puzzles.",
+    "reasonZH": "中等难度状态空间搜索题，将合法拆分与合并操作建模为图转移；它训练状态规范编码、BFS 队列管理和访问去重，适合变换谜题。"
+  },
+  {
+    "slug": "split-array-by-prime-indices",
+    "reasonEN": "A medium array-and-number-theory problem that classifies positions using primality. It reinforces sieve-based preprocessing and separate aggregate maintenance, useful whenever index properties drive partitioning.",
+    "reasonZH": "中等难度数组数论题，按下标是否为质数进行分类；它训练筛法预处理和分组聚合维护，适用于由下标性质驱动的划分问题。"
+  },
+  {
+    "slug": "split-array-into-consecutive-subsequences",
+    "reasonEN": "A representative medium greedy problem that extends existing subsequences before starting new ones. It teaches frequency and demand accounting, a powerful invariant for partitioning sorted values into valid chains.",
+    "reasonZH": "代表性的中等贪心题，优先延长已有子序列而非新开序列；它训练频次与需求量统计，是将有序值划分为合法连续链的强力不变量。"
+  }
+]

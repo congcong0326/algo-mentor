@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "reverse-odd-levels-of-binary-tree",
+    "reasonEN": "A medium tree traversal problem that swaps mirrored node values on alternating levels. It trains level-order grouping or symmetric DFS and careful pairing across a perfect tree, useful for structure-aware tree transformations.",
+    "reasonZH": "这是一道中等树遍历题，需要在交替层交换镜像节点的值。它训练层序分组或对称 DFS 以及完全树中的成对处理，适合结构感知的树变换。"
+  },
+  {
+    "slug": "reverse-only-letters",
+    "reasonEN": "An easy two-pointer string problem that swaps alphabetic characters while skipping all other symbols. It trains predicate-driven pointer movement and in-place exchange, a compact template for selective reversal tasks.",
+    "reasonZH": "这是一道简单双指针字符串题，只交换字母字符并跳过其他符号。它训练谓词驱动的指针移动和原地交换，是选择性反转任务的紧凑模板。"
+  },
+  {
+    "slug": "reverse-pairs",
+    "reasonEN": "A hard divide-and-conquer counting problem that counts cross-half inequality pairs during merge sort. It trains ordered-range counting, overflow-safe comparisons, and merge-based aggregation, a major technique for inversion-style problems.",
+    "reasonZH": "这是高难度分治计数题，在归并排序中统计跨半区的不等式对。它训练有序区间计数、防溢出比较和归并聚合，是逆序对类问题的重要技巧。"
+  },
+  {
+    "slug": "reverse-prefix-of-word",
+    "reasonEN": "An easy string operation problem that locates a marker and reverses the prefix ending there. It trains index search and bounded in-place reversal, providing basic practice for prefix transformation operations.",
+    "reasonZH": "这是一道简单字符串操作题，定位标记字符后反转到该位置的前缀。它训练下标查找和有界原地反转，是前缀变换操作的基础练习。"
+  },
+  {
+    "slug": "reverse-string",
+    "reasonEN": "A foundational easy two-pointer problem that reverses a character array in place. It trains symmetric boundary movement and swap invariants, making it an essential primitive for many array and string algorithms.",
+    "reasonZH": "这是基础的简单双指针题，需要原地反转字符数组。它训练对称边界移动和交换不变量，是大量数组与字符串算法的基本原语。"
+  },
+  {
+    "slug": "reverse-string-ii",
+    "reasonEN": "An easy block-processing string problem that reverses the first portion of every fixed-size segment. It trains modular indexing and correct handling of incomplete tail blocks, useful for periodic transformation logic.",
+    "reasonZH": "这是一道简单分块字符串题，需要反转每个固定长度段的前半部分。它训练模索引和不完整尾段处理，适合周期性转换逻辑。"
+  },
+  {
+    "slug": "reverse-string-prefix",
+    "reasonEN": "An easy two-pointer string transformation problem that reverses a designated prefix while preserving the suffix. It trains delimiting the affected range and applying an in-place reversal, a useful building block for string editing.",
+    "reasonZH": "这是一道简单双指针字符串变换题，反转指定前缀并保持后缀不变。它训练确定受影响范围和原地反转，是字符串编辑的实用基础。"
+  },
+  {
+    "slug": "reverse-subarray-to-maximize-array-value",
+    "reasonEN": "A hard greedy array problem that analyzes how reversing one segment changes only its boundary contributions. It trains objective-delta derivation and maximizing local gain without trying all intervals, a powerful optimization pattern.",
+    "reasonZH": "这是高难度贪心数组题，核心是分析反转一个区间只会改变哪些边界贡献。它训练目标增量推导和无需枚举所有区间的局部增益最大化，是强力优化模式。"
+  },
+  {
+    "slug": "reverse-substrings-between-each-pair-of-parentheses",
+    "reasonEN": "A medium nested-string problem that reverses content according to matched parentheses. It trains stack-based scope handling or paired-index traversal, making it useful for understanding nested transformation rules.",
+    "reasonZH": "这是一道中等嵌套字符串题，需要按匹配括号反转其中内容。它训练栈式作用域处理或配对下标遍历，有助于理解嵌套转换规则。"
+  },
+  {
+    "slug": "reverse-vowels-of-a-string",
+    "reasonEN": "An easy selective-reversal problem that exchanges only vowels from opposite ends of the string. It trains membership predicates and two-pointer skipping, a clean exercise in constrained character manipulation.",
+    "reasonZH": "这是一道简单选择性反转题，只交换字符串两端的元音字母。它训练成员谓词和双指针跳过，是受限字符操作的清晰练习。"
+  },
+  {
+    "slug": "reverse-words-in-a-string",
+    "reasonEN": "A medium string normalization problem that reverses word order while collapsing irregular whitespace. It trains tokenization, output reconstruction, and boundary cleanup, all important in robust text-processing workflows.",
+    "reasonZH": "这是一道中等字符串规范化题，需要反转单词顺序并压缩不规则空白。它训练词元切分、输出重建和边界清理，是稳健文本处理的重要能力。"
+  },
+  {
+    "slug": "reverse-words-in-a-string-iii",
+    "reasonEN": "An easy string traversal problem that reverses each word independently without changing word order. It trains locating token boundaries and applying local reversal, a useful contrast with whole-sentence transformations.",
+    "reasonZH": "这是一道简单字符串遍历题，需要独立反转每个单词但不改变单词顺序。它训练定位词元边界和局部反转，可与整句变换形成对照。"
+  },
+  {
+    "slug": "reverse-words-with-same-vowel-count",
+    "reasonEN": "A medium string simulation problem that groups words by vowel counts before applying a constrained reversal. It trains feature extraction, indexed grouping, and controlled permutation, useful for attribute-based text transformations.",
+    "reasonZH": "这是一道中等字符串模拟题，需要按元音数量分组后执行受限反转。它训练特征提取、下标分组和受控置换，适合基于属性的文本变换。"
+  },
+  {
+    "slug": "reward-top-k-students",
+    "reasonEN": "A medium scoring and ranking problem that converts report words into weighted student scores before selecting the top results. It trains hash-set lookup, stable tie-breaking, and heap or sort selection, a practical leaderboard pattern.",
+    "reasonZH": "这是一道中等评分排名题，需要将报告词语转换为学生加权得分后选出前 K 名。它训练哈希集合查找、稳定并列规则和堆或排序选择，是实用排行榜模式。"
+  },
+  {
+    "slug": "richest-customer-wealth",
+    "reasonEN": "An easy matrix aggregation problem that computes each row sum and keeps the maximum. It trains nested traversal and running-extreme maintenance, serving as a basic template for per-entity matrix summaries.",
+    "reasonZH": "这是一道简单矩阵聚合题，计算每行总和并维护最大值。它训练嵌套遍历和运行极值维护，是按实体汇总矩阵数据的基础模板。"
+  },
+  {
+    "slug": "right-triangles",
+    "reasonEN": "A medium combinatorial grid problem that counts right triangles through independent row and column choices. It trains precomputing line frequencies and multiplying local contributions, an efficient alternative to enumerating point triples.",
+    "reasonZH": "这是一道中等组合网格题，通过独立选择同行和同列点来统计直角三角形。它训练预处理行列频次并乘法累积局部贡献，避免枚举所有点三元组。"
+  },
+  {
+    "slug": "rings-and-rods",
+    "reasonEN": "An easy hash-table problem that records the set of colors assigned to each rod. It trains compact state encoding and category-completeness checks, a simple but useful model for grouped attribute tracking.",
+    "reasonZH": "这是一道简单哈希题，记录每根杆上出现的颜色集合。它训练紧凑状态编码和类别完备性检查，是分组属性跟踪的简单实用模型。"
+  },
+  {
+    "slug": "rising-temperature",
+    "reasonEN": "An easy SQL self-join problem that compares each day's temperature with the prior calendar day. It trains date-offset join conditions and row-to-row comparisons, a foundational pattern for time-series queries.",
+    "reasonZH": "这是一道简单 SQL 自连接题，需要比较每天温度与前一个日历日的温度。它训练日期偏移连接条件和行间比较，是时间序列查询的基础模式。"
+  },
+  {
+    "slug": "rle-iterator",
+    "reasonEN": "A medium iterator-design problem that consumes run-length encoded segments across repeated requests. It trains persistent cursor state, partial-run exhaustion, and amortized traversal, useful for streaming compressed data.",
+    "reasonZH": "这是一道中等迭代器设计题，需要在多次请求中消费游程编码片段。它训练持久游标状态、部分段耗尽和均摊遍历，适合压缩数据流处理。"
+  },
+  {
+    "slug": "robot-bounded-in-circle",
+    "reasonEN": "A medium simulation problem where one instruction cycle determines whether repeated execution remains bounded. It trains direction-state modeling and using final position plus orientation as a long-term invariant, a key insight for periodic motion.",
+    "reasonZH": "这是一道中等模拟题，一轮指令的结果即可决定重复执行是否有界。它训练方向状态建模，并以终点位置和朝向作为长期不变量，是周期运动的重要洞察。"
+  },
+  {
+    "slug": "robot-collisions",
+    "reasonEN": "A hard sorting and stack simulation problem that resolves collisions in spatial order rather than physical time steps. It trains preserving original indices, stack-based opposing-direction handling, and survivor updates, a strong model for one-dimensional interactions.",
+    "reasonZH": "这是高难度排序栈模拟题，按空间顺序而非物理时间步解决碰撞。它训练保留原下标、栈式相向处理和幸存状态更新，是一维交互问题的强力模型。"
+  },
+  {
+    "slug": "robot-in-a-grid-lcci",
+    "reasonEN": "A medium grid pathfinding problem that seeks a valid route around blocked cells. It trains DFS or DP reachability states, path reconstruction, and dead-end memoization, providing core practice for obstacle-grid navigation.",
+    "reasonZH": "这是一道中等网格寻路题，需要绕开障碍找到一条合法路线。它训练 DFS 或 DP 可达状态、路径重建和死路记忆化，是障碍网格导航的核心练习。"
+  },
+  {
+    "slug": "robot-return-to-origin",
+    "reasonEN": "An easy movement simulation problem that reduces a command sequence to horizontal and vertical displacement counts. It trains coordinate accumulation and invariant-based final-state checking, a compact introduction to grid navigation logic.",
+    "reasonZH": "这是一道简单移动模拟题，将指令序列归结为水平和垂直位移计数。它训练坐标累积和基于不变量的终态判断，是网格导航逻辑的紧凑入门。"
+  },
+  {
+    "slug": "roman-to-integer",
+    "reasonEN": "An easy parsing problem that converts Roman symbols using additive values and subtractive pairs. It trains lookup-table design and neighboring-value comparison, providing a clear lesson in rule-based numeral parsing.",
+    "reasonZH": "这是一道简单解析题，通过加法值和减法对转换罗马数字。它训练查表设计和相邻值比较，是基于规则的数字解析的清晰练习。"
+  },
+  {
+    "slug": "root-equals-sum-of-children",
+    "reasonEN": "An easy binary-tree validation problem that checks a local relationship between a root and its children. It trains direct tree-node access and null-safe structural assumptions, useful as a basic tree API exercise.",
+    "reasonZH": "这是一道简单二叉树校验题，检查根节点与子节点之间的局部关系。它训练直接访问树节点和空值安全的结构假设，是基础树 API 练习。"
+  },
+  {
+    "slug": "rotate-array",
+    "reasonEN": "A medium array transformation problem that rotates elements in place through cyclic reversals or modular cycles. It trains modular indexing and multi-step reversal composition, an essential technique for space-efficient permutation operations.",
+    "reasonZH": "这是一道中等数组变换题，可通过三次反转或模环原地轮转元素。它训练模索引和多步反转组合，是空间高效置换操作的重要技巧。"
+  },
+  {
+    "slug": "rotate-function",
+    "reasonEN": "A medium recurrence problem that updates a weighted rotation score from the previous score in O(1). It trains algebraic delta derivation and avoiding repeated full recomputation, a valuable optimization pattern for cyclic arrays.",
+    "reasonZH": "这是一道中等递推题，可以从前一次加权旋转得分在 O(1) 时间更新下一次。它训练代数增量推导并避免重复全量计算，是循环数组优化的实用模式。"
+  },
+  {
+    "slug": "rotate-image",
+    "reasonEN": "A medium matrix transformation problem that rotates a square image in place by transposing and reversing rows. It trains coordinate mapping, layer reasoning, and mutation order, a canonical exercise in 2D array manipulation.",
+    "reasonZH": "这是一道中等矩阵变换题，通过转置再反转行原地旋转方阵图像。它训练坐标映射、分层思维和修改顺序，是二维数组操作的经典练习。"
+  },
+  {
+    "slug": "rotate-list",
+    "reasonEN": "A medium linked-list problem that turns the list into a cycle briefly and cuts it at the new tail. It trains length calculation, modulo reduction, and pointer reconnection, essential for circular list transformations.",
+    "reasonZH": "这是一道中等链表题，先暂时将链表连成环，再在新尾部断开。它训练长度计算、取模化简和指针重连，是循环链表变换的重要技巧。"
+  },
+  {
+    "slug": "rotate-matrix-lcci",
+    "reasonEN": "A medium in-place matrix rotation problem that maps four symmetric cells in each layer. It trains layer-by-layer coordinate cycles and temporary-value management, providing solid practice for square-matrix mutation.",
+    "reasonZH": "这是一道中等原地矩阵旋转题，需要在每层映射四个对称位置。它训练逐层坐标循环和临时值管理，是方阵修改的扎实练习。"
+  }
+]

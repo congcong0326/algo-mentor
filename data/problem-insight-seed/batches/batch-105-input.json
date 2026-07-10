@@ -1,0 +1,660 @@
+[
+  {
+    "slug": "replace-elements-with-greatest-element-on-right-side",
+    "frontendDisplayId": "1299",
+    "titleEn": "Replace Elements with Greatest Element on Right Side",
+    "titleZh": "将每个元素替换为右侧最大元素",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/replace-elements-with-greatest-element-on-right-side/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "replace-employee-id-with-the-unique-identifier",
+    "frontendDisplayId": "1378",
+    "titleEn": "Replace Employee ID With The Unique Identifier",
+    "titleZh": "使用唯一标识码替换员工ID",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/replace-employee-id-with-the-unique-identifier/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "replace-non-coprime-numbers-in-array",
+    "frontendDisplayId": "2197",
+    "titleEn": "Replace Non-Coprime Numbers in Array",
+    "titleZh": "替换数组中的非互质数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/replace-non-coprime-numbers-in-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "replace-question-marks-in-string-to-minimize-its-value",
+    "frontendDisplayId": "3081",
+    "titleEn": "Replace Question Marks in String to Minimize Its Value",
+    "titleZh": "替换字符串中的问号使分数最小",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Greedy",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "贪心",
+      "哈希表",
+      "堆（优先队列）",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/replace-question-marks-in-string-to-minimize-its-value/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "replace-the-substring-for-balanced-string",
+    "frontendDisplayId": "1234",
+    "titleEn": "Replace the Substring for Balanced String",
+    "titleZh": "替换子串得到平衡字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/replace-the-substring-for-balanced-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "replace-words",
+    "frontendDisplayId": "648",
+    "titleEn": "Replace Words",
+    "titleZh": "单词替换",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/replace-words/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "report-spam-message",
+    "frontendDisplayId": "3295",
+    "titleEn": "Report Spam Message",
+    "titleZh": "举报垃圾信息",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/report-spam-message/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reschedule-meetings-for-maximum-free-time-i",
+    "frontendDisplayId": "3439",
+    "titleEn": "Reschedule Meetings for Maximum Free Time I",
+    "titleZh": "重新安排会议得到最多空余时间 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reschedule-meetings-for-maximum-free-time-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reschedule-meetings-for-maximum-free-time-ii",
+    "frontendDisplayId": "3440",
+    "titleEn": "Reschedule Meetings for Maximum Free Time II",
+    "titleZh": "重新安排会议得到最多空余时间 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reschedule-meetings-for-maximum-free-time-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reshape-data-concatenate",
+    "frontendDisplayId": "2888",
+    "titleEn": "Reshape Data: Concatenate",
+    "titleZh": "重塑数据：连结",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reshape-data-concatenate/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reshape-data-melt",
+    "frontendDisplayId": "2890",
+    "titleEn": "Reshape Data: Melt",
+    "titleZh": "重塑数据：融合",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reshape-data-melt/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reshape-data-pivot",
+    "frontendDisplayId": "2889",
+    "titleEn": "Reshape Data: Pivot",
+    "titleZh": "数据重塑：透视",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reshape-data-pivot/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reshape-the-matrix",
+    "frontendDisplayId": "566",
+    "titleEn": "Reshape the Matrix",
+    "titleZh": "重塑矩阵",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reshape-the-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "restaurant-growth",
+    "frontendDisplayId": "1321",
+    "titleEn": "Restaurant Growth",
+    "titleZh": "餐馆营业额变化增长",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/restaurant-growth/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "restore-finishing-order",
+    "frontendDisplayId": "3668",
+    "titleEn": "Restore Finishing Order",
+    "titleZh": "重排完成顺序",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/restore-finishing-order/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "restore-ip-addresses",
+    "frontendDisplayId": "93",
+    "titleEn": "Restore IP Addresses",
+    "titleZh": "复原 IP 地址",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/restore-ip-addresses/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "restore-the-array",
+    "frontendDisplayId": "1416",
+    "titleEn": "Restore The Array",
+    "titleZh": "恢复数组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/restore-the-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "restore-the-array-from-adjacent-pairs",
+    "frontendDisplayId": "1743",
+    "titleEn": "Restore the Array From Adjacent Pairs",
+    "titleZh": "从相邻元素对还原数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/restore-the-array-from-adjacent-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "resulting-string-after-adjacent-removals",
+    "frontendDisplayId": "3561",
+    "titleEn": "Resulting String After Adjacent Removals",
+    "titleZh": "移除相邻字符",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Simulation",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/resulting-string-after-adjacent-removals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "return-length-of-arguments-passed",
+    "frontendDisplayId": "2703",
+    "titleEn": "Return Length of Arguments Passed",
+    "titleZh": "返回传递的参数的长度",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/return-length-of-arguments-passed/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reveal-cards-in-increasing-order",
+    "frontendDisplayId": "950",
+    "titleEn": "Reveal Cards In Increasing Order",
+    "titleZh": "按递增顺序显示卡牌",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Queue",
+      "Simulation",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "队列",
+      "模拟",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reveal-cards-in-increasing-order/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-bits",
+    "frontendDisplayId": "190",
+    "titleEn": "Reverse Bits",
+    "titleZh": "颠倒二进制位",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Divide and Conquer"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "分治"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-bits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-bits-lcci",
+    "frontendDisplayId": "面试题 05.03",
+    "titleEn": null,
+    "titleZh": "翻转数位",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "动态规划"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/reverse-bits-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-degree-of-a-string",
+    "frontendDisplayId": "3498",
+    "titleEn": "Reverse Degree of a String",
+    "titleZh": "字符串的反转度",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-degree-of-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-integer",
+    "frontendDisplayId": "7",
+    "titleEn": "Reverse Integer",
+    "titleZh": "整数反转",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-integer/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-letters-then-special-characters-in-a-string",
+    "frontendDisplayId": "3823",
+    "titleEn": "Reverse Letters Then Special Characters in a String",
+    "titleZh": "反转一个字符串里的字母后反转特殊字符",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Simulation",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-letters-then-special-characters-in-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-linked-list",
+    "frontendDisplayId": "206",
+    "titleEn": "Reverse Linked List",
+    "titleZh": "反转链表",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Linked List",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-linked-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-linked-list-ii",
+    "frontendDisplayId": "92",
+    "titleEn": "Reverse Linked List II",
+    "titleZh": "反转链表 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-linked-list-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-nodes-in-even-length-groups",
+    "frontendDisplayId": "2074",
+    "titleEn": "Reverse Nodes in Even Length Groups",
+    "titleZh": "反转偶数长度组的节点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-nodes-in-even-length-groups/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-nodes-in-k-group",
+    "frontendDisplayId": "25",
+    "titleEn": "Reverse Nodes in k-Group",
+    "titleZh": "K 个一组翻转链表",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Linked List",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-nodes-in-k-group/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-105",
+    "claimedAt": "2026-07-10T07:14:07.517354+00:00",
+    "completedAt": null
+  }
+]

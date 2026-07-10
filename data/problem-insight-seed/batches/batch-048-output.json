@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "find-the-smallest-divisor-given-a-threshold",
+    "reasonEN": "A parametric binary-search problem that turns a monotonic feasibility condition into an answer search. It trains careful ceiling-division arithmetic and search-bound design, making it a strong template for threshold-constrained optimization.",
+    "reasonZH": "这是一道参数二分题，利用可行性随除数单调变化来搜索答案。它训练向上取整除法、边界设计与判定函数构造，是阈值约束优化问题的重要模板。"
+  },
+  {
+    "slug": "find-the-string-with-lcp",
+    "reasonEN": "This hard constructive string problem combines LCP-matrix consistency checks with greedy character assignment. It develops the ability to translate pairwise constraints into local invariants and validate a construction rigorously.",
+    "reasonZH": "该困难构造题围绕 LCP 矩阵的一致性校验与贪心字符分配展开。它训练将成对约束转化为局部不变量，并严谨验证构造结果的能力。"
+  },
+  {
+    "slug": "find-the-student-that-will-replace-the-chalk",
+    "reasonEN": "A prefix-sum and binary-search exercise with an important cycle-reduction step. It reinforces overflow awareness, modular reduction, and locating the first prefix that crosses a target.",
+    "reasonZH": "这是一道前缀和结合二分查找的题目，关键在于先通过取模消去完整循环。它训练溢出意识、周期化简以及寻找首个超过目标值的前缀位置。"
+  },
+  {
+    "slug": "find-the-substring-with-maximum-cost",
+    "reasonEN": "This is Kadane's algorithm in a character-mapping setting, with custom values supplied by a hash map. It sharpens the maximum-subarray recurrence and the decision of when to restart a running contribution.",
+    "reasonZH": "本题将自定义字符权值映射到最大子数组模型，是 Kadane 算法的直接应用。它训练状态转移中保留还是重启当前贡献的判断，并巩固哈希映射建模。"
+  },
+  {
+    "slug": "find-the-sum-of-encrypted-integers",
+    "reasonEN": "A lightweight digit-simulation problem focused on extracting a number's maximum digit and preserving its length. It is useful for building reliable digit decomposition habits and handling numeric edge cases cleanly.",
+    "reasonZH": "这是一道轻量级数位模拟题，核心是提取最大数位并保持原数字长度。它适合建立可靠的拆位习惯，并练习对数值边界情况的细致处理。"
+  },
+  {
+    "slug": "find-the-sum-of-subsequence-powers",
+    "reasonEN": "A hard sorted-DP problem that counts subsequences while tracking the minimum adjacent gap that determines their power. It teaches how sorting exposes order structure and how combinational choices can be compressed into dynamic-programming states.",
+    "reasonZH": "该困难题通过排序和动态规划统计子序列，并跟踪决定能量的最小相邻差值。它训练利用排序显露顺序结构，以及把组合选择压缩为 DP 状态的能力。"
+  },
+  {
+    "slug": "find-the-sum-of-the-power-of-all-subsequences",
+    "reasonEN": "This subset-sum counting problem uses dynamic programming to separate reaching a target from freely choosing remaining elements. It is a valuable lesson in counting-state design and modular arithmetic for exponential choice spaces.",
+    "reasonZH": "本题是子集和计数 DP，重点是区分凑出目标和后的方案与其余元素的自由选择。它训练计数状态设计，以及在指数级选择空间中使用模运算的技巧。"
+  },
+  {
+    "slug": "find-the-town-judge",
+    "reasonEN": "A canonical directed-graph degree problem with a concise score-counting solution. It reinforces the distinction between in-degree and out-degree and shows how graph relations can often be reduced to aggregate invariants.",
+    "reasonZH": "这是经典的有向图度数题，可用简洁的分数计数完成。它巩固入度与出度的区别，并展示如何把图关系归约为聚合不变量。"
+  },
+  {
+    "slug": "find-the-value-of-the-partition",
+    "reasonEN": "A sorting-based greedy problem where the optimal partition is revealed by adjacent differences in sorted order. It builds intuition for exchange arguments and for reducing a global split decision to a local comparison.",
+    "reasonZH": "该排序贪心题的最优划分由有序数组中的相邻差值揭示。它培养交换论证的直觉，并训练将全局划分决策归约为局部比较。"
+  },
+  {
+    "slug": "find-the-width-of-columns-of-a-grid",
+    "reasonEN": "A straightforward matrix traversal problem centered on measuring each column independently. It is good practice for row-column indexing, signed-number formatting details, and writing clean aggregation loops.",
+    "reasonZH": "这是一道直接的矩阵遍历题，核心是独立统计每一列的显示宽度。它适合练习行列索引、负数符号带来的长度细节，以及清晰的聚合循环。"
+  },
+  {
+    "slug": "find-the-winner-of-an-array-game",
+    "reasonEN": "This simulation problem reveals that only the current champion and its consecutive wins need to be tracked. It teaches state compression and the useful stopping bound derived from the maximum element.",
+    "reasonZH": "本题的模拟过程只需维护当前擂主及其连胜次数。它训练状态压缩，并理解由最大元素导出的有效终止上界。"
+  },
+  {
+    "slug": "find-the-winner-of-the-circular-game",
+    "reasonEN": "A Josephus-style elimination problem that can be solved by queue simulation or a recurrence. It connects circular indexing with recursive position mapping and is a useful comparison of simulation versus mathematical reduction.",
+    "reasonZH": "这是约瑟夫环式淘汰问题，可用队列模拟或递推公式求解。它连接循环下标与递归位置映射，并适合比较模拟法和数学化简法。"
+  },
+  {
+    "slug": "find-the-winning-player-in-coin-game",
+    "reasonEN": "A compact game-theory simulation where each move consumes resources in a fixed ratio. It trains recognizing forced play, deriving the move count directly, and mapping parity to the winner.",
+    "reasonZH": "这是一道简洁的博弈模拟题，每一步都会按固定比例消耗资源。它训练识别强制走法、直接推导可执行步数，以及用奇偶性判断胜负。"
+  },
+  {
+    "slug": "find-the-xor-of-numbers-which-appear-twice",
+    "reasonEN": "This easy bit-manipulation task pairs frequency tracking with XOR aggregation. It reinforces the cancellation properties of XOR and the disciplined choice between a hash map and a fixed-range counter.",
+    "reasonZH": "该位运算题结合频次统计与异或聚合完成。它巩固 XOR 的消去性质，并训练在哈希表和定长计数数组之间作出合适选择。"
+  },
+  {
+    "slug": "find-three-consecutive-integers-that-sum-to-a-given-number",
+    "reasonEN": "A number-theory observation problem whose solution follows from expressing three consecutive integers around their middle value. It develops algebraic simplification and divisibility-based feasibility checks.",
+    "reasonZH": "这是一道数论观察题，将三个连续整数表示为围绕中间值的形式即可化简。它训练代数化简，以及通过整除性判断可行性的思路。"
+  },
+  {
+    "slug": "find-total-time-spent-by-each-employee",
+    "reasonEN": "A foundational SQL aggregation problem that groups work records and sums interval durations. It reinforces correct GROUP BY usage, date-time arithmetic, and presenting one result per business entity.",
+    "reasonZH": "这是基础 SQL 聚合题，需要按员工分组并累加工作时长区间。它巩固 GROUP BY、时间差计算，以及按业务实体输出单行结果的能力。"
+  },
+  {
+    "slug": "find-triangular-sum-of-an-array",
+    "reasonEN": "This iterative reduction problem highlights the relationship between repeated adjacent combination and binomial coefficients. It offers practice with in-place simulation first, then invites a mathematical optimization using modular arithmetic.",
+    "reasonZH": "本题的迭代归约过程揭示了相邻合并与二项式系数之间的联系。它先训练原地模拟，再引导使用模运算进行数学优化。"
+  },
+  {
+    "slug": "find-two-non-overlapping-sub-arrays-each-with-target-sum",
+    "reasonEN": "A medium sliding-window problem that combines target-sum discovery with prefix and suffix best-length information. It teaches how to preserve non-overlap through directional DP rather than relying on local greedy choices.",
+    "reasonZH": "这是一道中等难度的滑动窗口题，需要结合目标和区间发现与前后缀最优长度信息。它训练通过方向性 DP 保证不重叠，而不是依赖局部贪心。"
+  },
+  {
+    "slug": "find-unique-binary-string",
+    "reasonEN": "This constructive problem has several instructive approaches, especially diagonalization and bitmask enumeration. It builds fluency in proving uniqueness and choosing a construction that avoids unnecessary search.",
+    "reasonZH": "该构造题有多种有启发性的解法，尤其是对角线构造和位掩码枚举。它训练唯一性证明，并帮助选择能避免无谓搜索的构造策略。"
+  },
+  {
+    "slug": "find-users-with-high-token-usage",
+    "reasonEN": "A SQL reporting task centered on filtering, aggregation, and ranking users by token consumption. It develops precise use of conditional predicates and grouped metrics in an operational analytics setting.",
+    "reasonZH": "这是一道 SQL 报表题，围绕筛选、聚合和按 token 消耗评估用户展开。它训练条件谓词与分组指标的精确使用，贴近实际运营分析场景。"
+  },
+  {
+    "slug": "find-users-with-persistent-behavior-patterns",
+    "reasonEN": "This hard SQL sequence-analysis problem requires expressing repeated user behavior across ordered events. It is valuable practice for window functions, temporal grouping, and turning a behavioral rule into a robust query predicate.",
+    "reasonZH": "该困难 SQL 序列分析题要求在有序事件中识别持续的用户行为。它重点训练窗口函数、时间序列分组，以及将行为规则转化为稳健查询条件。"
+  },
+  {
+    "slug": "find-users-with-valid-e-mails",
+    "reasonEN": "A SQL validation exercise focused on pattern matching and the exact boundary rules of an email format. It builds care with regular expressions or LIKE predicates and exposes common mistakes in overly permissive filters.",
+    "reasonZH": "这是一道 SQL 格式校验题，重点是模式匹配与邮箱格式的边界规则。它训练正则或 LIKE 条件的细致使用，并帮助识别过度宽松筛选的常见错误。"
+  },
+  {
+    "slug": "find-valid-emails",
+    "reasonEN": "This database string-filtering problem tests whether validation logic matches a specification exactly. It reinforces regular-expression construction, case handling, and the difference between substring matches and full-format checks.",
+    "reasonZH": "本题是数据库字符串筛选题，考查校验逻辑是否严格符合规范。它巩固正则表达式构造、大小写处理，以及子串匹配和完整格式校验之间的区别。"
+  },
+  {
+    "slug": "find-valid-matrix-given-row-and-column-sums",
+    "reasonEN": "A matrix-construction problem driven by greedy allocation of the smaller remaining row and column demand. It demonstrates why local saturation is safe and trains maintaining conservation invariants throughout a construction.",
+    "reasonZH": "这是一道矩阵构造题，每次贪心分配当前行和列剩余需求中的较小值。它说明局部饱和为何安全，并训练在构造过程中维护守恒不变量。"
+  },
+  {
+    "slug": "find-valid-pair-of-adjacent-digits-in-string",
+    "reasonEN": "A counting and string-scan problem where digit frequencies must agree with an adjacent-pair condition. It sharpens separation of global frequency information from local adjacency checks.",
+    "reasonZH": "该字符串扫描题要求数字总频次与相邻字符条件同时成立。它训练区分全局频率信息和局部相邻判断，避免把两类约束混在一起。"
+  },
+  {
+    "slug": "find-weighted-median-node-in-tree",
+    "reasonEN": "This hard tree optimization problem uses subtree weights to identify a weighted median under distance cost. It teaches rerooting-style reasoning, centroid-like balance conditions, and how local weight bounds certify global optimality.",
+    "reasonZH": "该困难树优化题通过子树权重寻找距离代价下的加权中位节点。它训练换根式推理、类似重心的平衡条件，以及如何用局部权重界证明全局最优。"
+  },
+  {
+    "slug": "find-winner-on-a-tic-tac-toe-game",
+    "reasonEN": "A compact board-state simulation that checks rows, columns, and diagonals from recorded moves. It is useful for disciplined state representation and for covering all winning lines without duplicated logic.",
+    "reasonZH": "这是一道紧凑的棋盘状态模拟题，需要从落子记录中检查行、列和对角线。它训练规范的状态表示，以及不重复逻辑地覆盖全部获胜线路。"
+  },
+  {
+    "slug": "find-words-containing-character",
+    "reasonEN": "A basic string-filtering task that isolates the essential scan-and-collect pattern. It provides clean practice in preserving original indices while using library search operations appropriately.",
+    "reasonZH": "本题是基础字符串筛选题，提炼出扫描并收集结果的核心模式。它适合练习保留原始下标，并恰当地使用字符串查找操作。"
+  },
+  {
+    "slug": "find-words-that-can-be-formed-by-characters",
+    "reasonEN": "A frequency-accounting problem that compares each candidate word against a reusable character inventory. It reinforces counter-array design, resetting temporary state correctly, and recognizing independent feasibility checks.",
+    "reasonZH": "该频次统计题需要将每个候选单词与可复用字符库存逐一比较。它训练计数数组设计、临时状态的正确重置，以及识别相互独立的可行性检查。"
+  },
+  {
+    "slug": "find-x-sum-of-all-k-long-subarrays-i",
+    "reasonEN": "A small-constraint sliding-window problem that recomputes frequency ranks for each window. It develops the frequency-and-order model behind top-X selection and prepares learners for the more optimized heap-based variant.",
+    "reasonZH": "这是一道小数据范围的滑动窗口题，需要为每个窗口重算频次排名。它训练理解 Top-X 选择背后的频次与排序模型，并为堆优化版本打下基础。"
+  }
+]

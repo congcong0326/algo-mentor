@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "n-ary-tree-postorder-traversal",
+    "reasonEN": "A foundational N-ary tree traversal exercise that emphasizes visiting every child before its parent. It reinforces recursive DFS structure and the reverse-order discipline needed to build an iterative stack solution.",
+    "reasonZH": "N 叉树后序遍历的基础题，核心是先处理全部子节点再访问父节点。它训练递归 DFS 的结构，并帮助理解用栈实现迭代时的逆序处理技巧。"
+  },
+  {
+    "slug": "n-ary-tree-preorder-traversal",
+    "reasonEN": "This entry-level tree traversal problem focuses on processing a node before its children while preserving child order. It is a compact way to master recursive DFS and stack push order for iterative traversal.",
+    "reasonZH": "这是一道入门级树遍历题，考查先访问节点再遍历子节点且保持子节点顺序。它适合掌握递归 DFS，并训练迭代实现中栈压入顺序的细节。"
+  },
+  {
+    "slug": "n-queens",
+    "reasonEN": "A classic hard backtracking problem that combines state-space search with row, column, and diagonal pruning. It develops the ability to model constraints incrementally and recover choices cleanly during exhaustive search.",
+    "reasonZH": "经典的高难回溯题，将状态空间搜索与行、列、对角线剪枝结合。它训练逐步建模约束、快速判冲突，以及在枚举搜索中正确撤销选择的能力。"
+  },
+  {
+    "slug": "n-queens-ii",
+    "reasonEN": "The counting variant of N-Queens strips away board construction and exposes the efficiency of backtracking pruning. It is valuable for learning compact occupancy representations and distinguishing enumeration from solution counting.",
+    "reasonZH": "N 皇后的计数变体去除了棋盘构造，更突出回溯剪枝效率。它适合学习紧凑的占用状态表示，并理解枚举所有解与统计解数量之间的实现差异。"
+  },
+  {
+    "slug": "n-repeated-element-in-size-2n-array",
+    "reasonEN": "An elementary array and hash-table pattern for detecting a highly repeated value. It teaches how frequency constraints can simplify a general counting task into a direct membership check.",
+    "reasonZH": "基础的数组与哈希表题型，用于识别高频重复元素。它说明如何利用题目的频次约束，把通用计数问题简化为直接的成员检测。"
+  },
+  {
+    "slug": "n-th-tribonacci-number",
+    "reasonEN": "A gentle dynamic-programming recurrence that extends Fibonacci from two dependencies to three. It builds fluency in defining base cases and compressing DP state to constant space.",
+    "reasonZH": "由斐波那契扩展而来的基础动态规划递推题，状态依赖从两个扩展到三个。它训练边界条件定义，并帮助掌握将 DP 状态压缩到常数空间的方法。"
+  },
+  {
+    "slug": "nGK0Fy",
+    "reasonEN": "A lightweight math and simulation problem centered on extracting an invariant from repeated commands. It trains translating a process description into aggregate state changes instead of simulating unnecessary detail.",
+    "reasonZH": "轻量级数学模拟题，核心是从重复指令中提炼不变量。它训练把过程描述转换为整体状态变化，避免进行不必要的逐步模拟。"
+  },
+  {
+    "slug": "nZZqjQ",
+    "reasonEN": "A standard answer-space binary search problem where feasibility is monotonic with respect to speed. It sharpens boundary selection, predicate design, and overflow-aware accumulation for binary-search solutions.",
+    "reasonZH": "标准的答案二分题，速度越高时可行性具有单调性。它训练二分边界选择、判定函数设计，以及累计计算时的溢出意识。"
+  },
+  {
+    "slug": "na-ying-bi",
+    "reasonEN": "A concise greedy and arithmetic exercise based on grouping operations optimally. It demonstrates how recognizing a fixed operation capacity leads directly to a ceiling-division solution.",
+    "reasonZH": "简洁的贪心与数学题，关键在于按操作容量进行最优分组。它展示了识别固定处理能力后，如何直接推导出向上取整除法。"
+  },
+  {
+    "slug": "naming-a-company",
+    "reasonEN": "A hard string-combinatorics problem that groups suffixes by initial letter and counts valid cross-group swaps. It develops set-based deduplication and pairwise contribution counting beyond brute-force enumeration.",
+    "reasonZH": "高难字符串组合计数题，通过按首字母分组后缀并统计跨组交换。它训练集合去重与两两贡献计算，突破暴力枚举的复杂度瓶颈。"
+  },
+  {
+    "slug": "nearest-exit-from-entrance-in-maze",
+    "reasonEN": "A grid BFS template problem where the first discovered valid boundary cell guarantees the shortest path. It reinforces layer-order traversal, visited-state timing, and careful exclusion of the entrance itself.",
+    "reasonZH": "网格 BFS 模板题，第一个到达的合法边界格必然对应最短路径。它训练按层遍历、访问标记时机，以及排除入口本身这一边界细节。"
+  },
+  {
+    "slug": "neighboring-bitwise-xor",
+    "reasonEN": "This medium bit-manipulation problem converts local XOR relations into a global consistency condition. It is useful for learning how XOR cancellation reveals cycle constraints without reconstructing every candidate array.",
+    "reasonZH": "这道中等位运算题将局部异或关系转化为全局一致性条件。它帮助理解异或抵消如何揭示环形约束，而无需重建所有候选数组。"
+  },
+  {
+    "slug": "neither-minimum-nor-maximum",
+    "reasonEN": "A small array-selection problem that highlights the difference between finding extrema and finding any interior value. It encourages choosing the simplest sufficient strategy, such as inspecting or sorting a tiny sample.",
+    "reasonZH": "小型数组选择题，突出寻找极值与寻找任意中间值的差别。它训练选择足够简单的策略，例如检查或排序少量元素即可完成判断。"
+  },
+  {
+    "slug": "nested-array-generator",
+    "reasonEN": "A JavaScript generator exercise that requires traversing arbitrarily nested arrays lazily. It teaches recursive generator composition with yield* and clarifies the distinction between producing values on demand and materializing a result.",
+    "reasonZH": "JavaScript 生成器题，需要惰性遍历任意层级的嵌套数组。它训练递归生成器与 yield* 的组合，并厘清按需产出值和一次性构造结果之间的区别。"
+  },
+  {
+    "slug": "network-delay-time",
+    "reasonEN": "A canonical single-source shortest-path problem for Dijkstra's algorithm on weighted directed graphs. It builds priority-queue relaxation skills and reinforces why stale heap entries must be handled correctly.",
+    "reasonZH": "加权有向图单源最短路的经典题，适合掌握 Dijkstra 算法。它训练优先队列松弛过程，并强化正确处理堆中失效条目的必要性。"
+  },
+  {
+    "slug": "network-recovery-pathways",
+    "reasonEN": "A hard graph-DP problem that combines shortest-path structure, topological ordering, and constrained optimization. It is valuable for practicing how to build dynamic transitions over an acyclic dependency relation derived from graph distances.",
+    "reasonZH": "高难图论动态规划题，结合最短路结构、拓扑顺序与受限优化。它训练从图距离导出的无环依赖关系上构建动态转移。"
+  },
+  {
+    "slug": "new-21-game",
+    "reasonEN": "A probability DP problem whose naive transition is too slow until transformed with a sliding-window sum. It develops recurrence modeling for random processes and the optimization of consecutive DP ranges.",
+    "reasonZH": "概率动态规划题，朴素转移会超时，需要用滑动窗口维护区间和。它训练随机过程的递推建模，以及连续 DP 转移范围的优化。"
+  },
+  {
+    "slug": "next-greater-element-i",
+    "reasonEN": "A core monotonic-stack introduction that precomputes each value's next greater element for fast queries. It teaches the decreasing-stack invariant and the useful hash-map bridge from preprocessing to lookup.",
+    "reasonZH": "单调栈的核心入门题，预处理每个值的下一个更大元素以支持快速查询。它训练递减栈不变量，并掌握用哈希表连接预处理与查询的方法。"
+  },
+  {
+    "slug": "next-greater-element-ii",
+    "reasonEN": "The circular-array extension of the next-greater pattern requires simulating two passes without duplicating storage. It strengthens monotonic-stack reasoning around wraparound indices and unresolved positions.",
+    "reasonZH": "下一个更大元素的循环数组变体，需要模拟两轮扫描而不复制数组。它强化环绕下标处理，以及单调栈中未决位置维护的思维。"
+  },
+  {
+    "slug": "next-greater-element-iii",
+    "reasonEN": "A number-manipulation version of next permutation that hinges on locating a pivot, selecting the right successor, and reversing a suffix. It is especially valuable for mastering lexicographic construction and overflow checks.",
+    "reasonZH": "数字形式的下一个排列题，关键是定位转折点、选择恰当后继并反转后缀。它训练字典序构造过程，并强调结果溢出检查。"
+  },
+  {
+    "slug": "next-greater-element-iv",
+    "reasonEN": "A hard monotonic-stack problem for the second greater value, often solved with two waiting structures. It develops the ability to stage unresolved elements by state and coordinate stack or heap transitions efficiently.",
+    "reasonZH": "求第二个更大元素的高难单调栈题，常需维护两组等待状态。它训练按状态分层管理未决元素，并高效协调栈或堆中的转移。"
+  },
+  {
+    "slug": "next-greater-node-in-linked-list",
+    "reasonEN": "This linked-list adaptation of the next-greater pattern first linearizes node values, then applies a monotonic stack. It demonstrates a practical technique for bringing random-access algorithms to sequential data structures.",
+    "reasonZH": "链表版下一个更大元素题，先将节点值线性化再应用单调栈。它展示了如何把依赖随机访问的算法迁移到顺序数据结构上。"
+  },
+  {
+    "slug": "next-greater-numerically-balanced-number",
+    "reasonEN": "A constrained enumeration problem where digit frequencies must equal their digit values. It trains backtracking with frequency pruning and shows when precomputing a small structured candidate set is preferable to searching numbers directly.",
+    "reasonZH": "受限枚举题，要求每个数字的出现次数等于其数值。它训练带频次剪枝的回溯，并说明何时预生成小规模结构化候选集优于直接搜索数字。"
+  },
+  {
+    "slug": "next-permutation",
+    "reasonEN": "A must-know array transformation that produces the next lexicographic ordering in place. It teaches the pivot-successor-suffix reversal sequence, a reusable pattern for permutation and greedy ordering problems.",
+    "reasonZH": "必须掌握的原地数组变换题，用于生成下一个字典序排列。它训练转折点、后继元素、后缀反转三步法，是排列和贪心排序题中的通用模式。"
+  },
+  {
+    "slug": "next-special-palindrome-number",
+    "reasonEN": "A hard constructive search problem combining palindrome structure with digit constraints and bitmask-style state tracking. It develops disciplined candidate generation and pruning for numeric backtracking problems.",
+    "reasonZH": "高难构造搜索题，结合回文结构、数字约束与位掩码式状态记录。它训练数值回溯中的候选生成、约束维护与有效剪枝。"
+  },
+  {
+    "slug": "nge-tou-zi-de-dian-shu-lcof",
+    "reasonEN": "A probability-distribution DP that convolves outcomes as dice are added. It builds intuition for state transition counts, normalization, and rolling-array optimization in discrete probability problems.",
+    "reasonZH": "概率分布动态规划题，通过逐个加入骰子完成结果分布的卷积。它训练状态转移计数、概率归一化，以及离散概率问题中的滚动数组优化。"
+  },
+  {
+    "slug": "nim-game",
+    "reasonEN": "A classic introductory game-theory problem built around losing positions and modular invariants. It teaches how to replace move simulation with a concise proof about winning and losing states.",
+    "reasonZH": "经典博弈论入门题，核心是识别必败态及其模运算不变量。它训练用简洁的胜负状态证明替代逐步模拟走法。"
+  },
+  {
+    "slug": "node-with-highest-edge-score",
+    "reasonEN": "A directed-graph aggregation problem where incoming contributions are accumulated for each node. It reinforces choosing an array-based frequency accumulator and handling ties deterministically during a single scan.",
+    "reasonZH": "有向图聚合题，需要为每个节点累计入边贡献。它训练选用数组进行频次累加，并在一次扫描中稳定处理并列结果。"
+  },
+  {
+    "slug": "non-decreasing-array",
+    "reasonEN": "A greedy array-validation problem allowing one modification, with the key challenge being which neighboring value to adjust. It sharpens local inversion analysis and the boundary cases that make superficially similar repairs invalid.",
+    "reasonZH": "允许一次修改的贪心数组判定题，难点在于遇到逆序时应调整哪一个相邻值。它训练局部逆序分析，以及看似可修复但会破坏边界条件的情况。"
+  },
+  {
+    "slug": "non-decreasing-subsequences",
+    "reasonEN": "A backtracking problem for enumerating ordered subsequences while removing duplicate branches at each depth. It teaches path-state maintenance, monotonic extension checks, and per-level deduplication.",
+    "reasonZH": "枚举有序子序列的回溯题，需要在每一层去除重复分支。它训练路径状态维护、非递减扩展判断，以及按层去重的技巧。"
+  }
+]

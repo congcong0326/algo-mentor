@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "find-the-least-frequent-digit",
+    "reasonEN": "A compact counting-and-tie-breaking exercise that trains frequency tables over a fixed digit domain. It reinforces deterministic selection rules and is a useful warm-up for hash-based counting problems.",
+    "reasonZH": "一道紧凑的计数与平局处理练习，训练在固定数字域内建立频率表。它强化确定性选择规则，是进入哈希计数类问题前很好的热身题。"
+  },
+  {
+    "slug": "find-the-length-of-the-longest-common-prefix",
+    "reasonEN": "This medium trie problem turns decimal representations into prefix paths, with the key choice being how to share prefixes across two arrays efficiently. It develops the ability to recognize when string conversion plus a trie beats pairwise comparison.",
+    "reasonZH": "这是一道中等难度的字典树题，将十进制表示转化为前缀路径，关键在于高效复用两组数组的公共前缀。它训练识别“字符串转换加字典树”何时优于两两比较的能力。"
+  },
+  {
+    "slug": "find-the-lexicographically-largest-string-from-the-box-i",
+    "reasonEN": "An enumeration-driven string problem centered on identifying the candidate substring that can dominate lexicographic order. It sharpens boundary reasoning for substring lengths and gives a clear entry point into greedy string comparisons.",
+    "reasonZH": "这道枚举型字符串题的核心是识别能够取得字典序优势的候选子串。它训练子串长度的边界推理，并为贪心式字符串比较提供清晰的入门案例。"
+  },
+  {
+    "slug": "find-the-lexicographically-smallest-valid-sequence",
+    "reasonEN": "A subtle greedy subsequence problem where lexicographic choices must leave enough room to finish under an allowed mismatch. It teaches suffix feasibility checks and the discipline of proving that a locally smallest choice remains globally valid.",
+    "reasonZH": "这是一道细腻的贪心子序列题，字典序选择必须为允许的失配以及后续匹配保留足够空间。它训练后缀可行性判断，以及证明局部最小选择仍能保持全局合法的能力。"
+  },
+  {
+    "slug": "find-the-longest-balanced-substring-of-a-binary-string",
+    "reasonEN": "A foundational run-length string scan focused on adjacent blocks of zeros and ones. It builds intuition for extracting answers from local run information instead of repeatedly examining every substring.",
+    "reasonZH": "这是基础的字符串连续段扫描题，关注相邻的 0 段和 1 段。它帮助建立从局部连续段信息直接得出答案的直觉，避免反复枚举每个子串。"
+  },
+  {
+    "slug": "find-the-longest-equal-subarray",
+    "reasonEN": "This grouped sliding-window problem measures the gaps that must be deleted between equal values. It practices combining value-to-index lists with a window invariant, a reusable pattern for sparse subsequence windows.",
+    "reasonZH": "这道按值分组的滑动窗口题衡量相等元素之间需要删除的间隔。它训练将值到下标列表与窗口不变量结合，是稀疏子序列窗口的可复用模式。"
+  },
+  {
+    "slug": "find-the-longest-semi-repetitive-substring",
+    "reasonEN": "A precise variable-window exercise in which the state is the number of adjacent equal pairs, not simply distinct characters. It strengthens the habit of updating a local violation count correctly when both window endpoints move.",
+    "reasonZH": "这是一道精确的可变窗口练习，窗口状态是相邻相等对的数量，而不是简单的不同字符数。它训练在左右端点移动时正确维护局部违规计数的习惯。"
+  },
+  {
+    "slug": "find-the-longest-substring-containing-vowels-in-even-counts",
+    "reasonEN": "A classic prefix-mask problem that encodes vowel parities as a five-bit state and records each state's earliest position. It is a milestone for learning how prefix-state equality converts parity constraints into longest-subarray queries.",
+    "reasonZH": "这是经典的前缀掩码题，用五位状态编码元音出现次数的奇偶性，并记录每个状态的最早位置。它是理解“相同前缀状态如何将奇偶约束转为最长子数组查询”的里程碑题。"
+  },
+  {
+    "slug": "find-the-longest-valid-obstacle-course-at-each-position",
+    "reasonEN": "A hard variant of longest nondecreasing subsequence that requires an answer at every position. It drills the upper-bound binary-search detail in patience sorting and clarifies why duplicate handling changes the search condition.",
+    "reasonZH": "这是最长非递减子序列的困难变体，需要给出每个位置的答案。它重点训练耐心排序中的 upper_bound 二分细节，并厘清重复值为何会改变搜索条件。"
+  },
+  {
+    "slug": "find-the-losers-of-the-circular-game",
+    "reasonEN": "A straightforward circular simulation that emphasizes modular indexing and visited-state tracking. Its teaching value lies in making cyclic transitions and termination conditions explicit before tackling more complex simulations.",
+    "reasonZH": "这是一道直接的环形模拟题，强调模运算下标和访问状态记录。它的教学价值在于先把循环转移与终止条件写清楚，再处理更复杂的模拟问题。"
+  },
+  {
+    "slug": "find-the-maximum-achievable-number",
+    "reasonEN": "An elementary algebra problem that reduces repeated operations to a closed-form expression. It encourages deriving the invariant behind a process instead of simulating it, an essential habit for recognizing constant-time solutions.",
+    "reasonZH": "这是一道初等代数题，可将重复操作化为闭式表达式。它鼓励从过程背后推导不变量而非模拟，是识别常数时间解法的重要习惯。"
+  },
+  {
+    "slug": "find-the-maximum-divisibility-score",
+    "reasonEN": "A clean array-scanning problem that combines divisor counting with a smallest-value tie-break. It reinforces writing comparison updates that preserve all ordering rules, a frequent source of errors in simple selection tasks.",
+    "reasonZH": "这是一道清晰的数组扫描题，结合整除计数和最小值平局规则。它强化在更新最优解时完整保留所有排序条件的写法，这是简单选择题中常见的失误点。"
+  },
+  {
+    "slug": "find-the-maximum-factor-score-of-array",
+    "reasonEN": "A number-theory array problem built around the relationship between GCD, LCM, and product. It practices maintaining prefix and suffix aggregates so that removing each candidate can be evaluated without recomputing the whole array.",
+    "reasonZH": "这是一道数论数组题，核心是 GCD、LCM 与乘积之间的关系。它训练维护前后缀聚合值，从而在不重算整个数组的前提下评估删除每个候选元素的结果。"
+  },
+  {
+    "slug": "find-the-maximum-length-of-a-good-subsequence-i",
+    "reasonEN": "This introductory dynamic-programming version models subsequences by their ending value and the number of allowed transitions. It builds the state-design intuition needed before optimizing the same recurrence for larger constraints.",
+    "reasonZH": "这是入门版动态规划题，按子序列末尾值与允许的变化次数建模。它建立状态设计直觉，为在更大约束下优化同一递推关系打好基础。"
+  },
+  {
+    "slug": "find-the-maximum-length-of-a-good-subsequence-ii",
+    "reasonEN": "The hard follow-up demands optimizing the good-subsequence DP by retaining the best states per transition budget. It teaches how to compress a quadratic transition into value-indexed aggregates while handling the exclusion of the same ending value.",
+    "reasonZH": "这道困难进阶题要求通过保留每个变化预算下的最优状态来优化好子序列 DP。它训练将二次转移压缩为按值聚合的状态，并正确处理不能重复使用同一末尾值的排除条件。"
+  },
+  {
+    "slug": "find-the-maximum-length-of-valid-subsequence-i",
+    "reasonEN": "A modular-pattern subsequence DP where only parity relationships matter. It is valuable for learning to shrink a large value space into a small residue-state machine and derive transitions from the sequence validity rule.",
+    "reasonZH": "这是一道模模式子序列 DP，真正相关的只有奇偶关系。它训练把庞大的数值空间缩减为很小的余数状态机，并从合法性规则推导转移。"
+  },
+  {
+    "slug": "find-the-maximum-length-of-valid-subsequence-ii",
+    "reasonEN": "This generalized modular subsequence problem extends parity-state DP to every possible target remainder. It develops systematic residue-based state design and highlights the time-space tradeoff imposed by the modulus bound.",
+    "reasonZH": "这道广义模子序列题将奇偶状态 DP 扩展到每个可能的目标余数。它训练系统化的余数状态设计，并突出模数范围带来的时间与空间权衡。"
+  },
+  {
+    "slug": "find-the-maximum-number-of-elements-in-subset",
+    "reasonEN": "A frequency-map and enumeration problem based on chaining values through repeated squaring. It exercises special handling for the value one, chain termination, and counting symmetric layers, making it a useful number-pattern case study.",
+    "reasonZH": "这是一道基于频率表和枚举的题，通过反复平方构造数值链。它训练对数字 1 的特殊处理、链的终止条件与对称层计数，是很好的数值模式案例。"
+  },
+  {
+    "slug": "find-the-maximum-number-of-fruits-collected",
+    "reasonEN": "A hard grid dynamic-programming problem that decomposes constrained routes into independent path optimizations. It strengthens the ability to exploit movement geometry, define valid DP regions, and avoid double-counting collection states.",
+    "reasonZH": "这是一道困难的网格动态规划题，将受限路径拆分为独立的路径优化问题。它训练利用移动几何性质、定义有效 DP 区域，并避免重复计入收集状态的能力。"
+  },
+  {
+    "slug": "find-the-maximum-number-of-marked-indices",
+    "reasonEN": "A sorting-and-two-pointers greedy problem that pairs small values with feasible large values. It teaches the exchange argument behind greedy matching and offers a practical comparison between direct pairing and binary-search feasibility.",
+    "reasonZH": "这是一道排序加双指针的贪心配对题，将较小元素与可行的较大元素匹配。它训练贪心匹配背后的交换论证，并可比较直接配对与二分可行性的思路。"
+  },
+  {
+    "slug": "find-the-maximum-sequence-value-of-array",
+    "reasonEN": "A challenging bitwise DP that tracks attainable OR values for subsequences on both sides of a split. It develops state compression over a bounded bit domain and the crucial combination step using XOR across independent halves.",
+    "reasonZH": "这是一道有挑战性的位运算 DP，跟踪分割点两侧子序列可达的 OR 值。它训练在有限位域上压缩状态，以及将独立两半通过 XOR 组合的关键步骤。"
+  },
+  {
+    "slug": "find-the-maximum-sum-of-node-values",
+    "reasonEN": "Despite its tree setting, this hard problem reduces to selecting an even number of beneficial XOR gains. It is excellent for spotting structural constraints that collapse a graph problem into greedy or parity DP over independent node contributions.",
+    "reasonZH": "尽管题目以树为背景，这道困难题可归结为选择偶数个有收益的 XOR 增量。它很适合训练识别结构约束如何将图问题化简为独立节点贡献上的贪心或奇偶 DP。"
+  },
+  {
+    "slug": "find-the-median-of-the-uniqueness-array",
+    "reasonEN": "A hard answer-space binary-search problem whose predicate counts subarrays with at most a given number of distinct values. It connects median order statistics with sliding-window counting, a powerful pattern for converting implicit distributions into monotone decisions.",
+    "reasonZH": "这是困难的答案空间二分题，其判定条件是统计不同元素数不超过给定值的子数组数量。它连接中位数顺序统计与滑动窗口计数，是将隐式分布转化为单调决策的强大模式。"
+  },
+  {
+    "slug": "find-the-middle-index-in-array",
+    "reasonEN": "A canonical prefix-sum balance problem that compares the accumulated left sum with the remaining right sum. It reinforces the one-pass invariant behind equilibrium-index tasks and provides a dependable foundation for range-sum reasoning.",
+    "reasonZH": "这是经典的前缀和均衡题，比较已累计的左侧和与剩余的右侧和。它强化平衡下标题的一次遍历不变量，并为区间和推理提供可靠基础。"
+  },
+  {
+    "slug": "find-the-minimum-amount-of-time-to-brew-potions",
+    "reasonEN": "A scheduling simulation with prefix-style recurrence, where each worker must start as early as both resource and order constraints permit. It trains max-based time transitions and is a useful bridge from simple prefix sums to flow-shop scheduling DP.",
+    "reasonZH": "这是一道带前缀递推的调度模拟题，每位工人必须在资源和顺序约束都满足后尽早开始。它训练基于 max 的时间转移，是从简单前缀和过渡到流水车间调度 DP 的好题。"
+  },
+  {
+    "slug": "find-the-minimum-and-maximum-number-of-nodes-between-critical-points",
+    "reasonEN": "A linked-list traversal problem focused on detecting local extrema and retaining only the first and previous critical positions. It teaches how minimal state yields both nearest-gap and farthest-gap answers in one pass.",
+    "reasonZH": "这是一道链表遍历题，重点是识别局部极值，并只保留首个和上一个临界点位置。它训练如何用极少状态在一次遍历中同时得到最近间距和最远间距。"
+  },
+  {
+    "slug": "find-the-minimum-area-to-cover-all-ones-i",
+    "reasonEN": "A matrix boundary-scan problem that finds the extremal rows and columns containing ones. It reinforces the bounding-box abstraction, which recurs in grid geometry, image processing, and region summarization tasks.",
+    "reasonZH": "这是一道矩阵边界扫描题，找出包含 1 的最外层行与列。它强化包围盒抽象，这一思路会反复出现在网格几何、图像处理和区域汇总问题中。"
+  },
+  {
+    "slug": "find-the-minimum-area-to-cover-all-ones-ii",
+    "reasonEN": "This hard matrix-enumeration problem partitions the grid into three rectangles and optimizes their bounding areas. It develops disciplined case splitting over horizontal and vertical cuts, plus efficient reuse of rectangle-area calculations.",
+    "reasonZH": "这道困难的矩阵枚举题将网格划分为三个矩形并优化其包围面积。它训练对横竖切分进行严谨分类，并高效复用矩形面积计算。"
+  },
+  {
+    "slug": "find-the-minimum-cost-array-permutation",
+    "reasonEN": "A classic bitmask DP for constructing a minimum-cost Hamiltonian-style ordering with lexicographic tie-breaking. It practices subset-state transitions, path reconstruction, and incorporating secondary ordering requirements into an optimization DP.",
+    "reasonZH": "这是经典的位掩码 DP，用于构造最小代价的哈密顿式排列并处理字典序平局。它训练子集状态转移、路径恢复，以及如何在优化 DP 中纳入次级排序要求。"
+  },
+  {
+    "slug": "find-the-minimum-number-of-fibonacci-numbers-whose-sum-is-k",
+    "reasonEN": "A greedy number-theory problem justified by the structure behind Zeckendorf-style Fibonacci decompositions. It trains choosing the largest feasible unit repeatedly and recognizing when a representation theorem makes greedy optimal.",
+    "reasonZH": "这是一道由 Zeckendorf 式斐波那契分解结构支撑的贪心数论题。它训练反复选择不超过目标的最大单元，并识别何时表示定理能够保证贪心最优。"
+  }
+]

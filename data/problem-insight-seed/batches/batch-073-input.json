@@ -1,0 +1,796 @@
+[
+  {
+    "slug": "maximum-score-with-co-prime-element",
+    "frontendDisplayId": "3953",
+    "titleEn": "Maximum Score with Co-Prime Element",
+    "titleZh": "互质元素的最大得分",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Enumeration",
+      "Hash Table",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "枚举",
+      "哈希表",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-score-with-co-prime-element/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-score-words-formed-by-letters",
+    "frontendDisplayId": "1255",
+    "titleEn": "Maximum Score Words Formed by Letters",
+    "titleZh": "得分最高的单词集合",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Bitmask",
+      "Counting",
+      "Dynamic Programming",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "位掩码",
+      "计数",
+      "动态规划",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-score-words-formed-by-letters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-segment-sum-after-removals",
+    "frontendDisplayId": "2382",
+    "titleEn": "Maximum Segment Sum After Removals",
+    "titleZh": "删除操作后的最大子段和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Ordered Set",
+      "Prefix Sum",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "有序集合",
+      "前缀和",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-segment-sum-after-removals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-side-length-of-a-square-with-sum-less-than-or-equal-to-threshold",
+    "frontendDisplayId": "1292",
+    "titleEn": "Maximum Side Length of a Square with Sum Less than or Equal to Threshold",
+    "titleZh": "元素和小于等于阈值的正方形的最大边长",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-side-length-of-a-square-with-sum-less-than-or-equal-to-threshold/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-size-of-a-set-after-removals",
+    "frontendDisplayId": "3002",
+    "titleEn": "Maximum Size of a Set After Removals",
+    "titleZh": "移除后集合的最多元素数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-size-of-a-set-after-removals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-spending-after-buying-items",
+    "frontendDisplayId": "2931",
+    "titleEn": "Maximum Spending After Buying Items",
+    "titleZh": "购买物品的最大开销",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Matrix",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）",
+      "矩阵",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-spending-after-buying-items/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-split-of-positive-even-integers",
+    "frontendDisplayId": "2178",
+    "titleEn": "Maximum Split of Positive Even Integers",
+    "titleZh": "拆分成最多数目的正偶数之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-split-of-positive-even-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-square-area-by-removing-fences-from-a-field",
+    "frontendDisplayId": "2975",
+    "titleEn": "Maximum Square Area by Removing Fences From a Field",
+    "titleZh": "移除栅栏得到的正方形田地的最大面积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-square-area-by-removing-fences-from-a-field/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-star-sum-of-a-graph",
+    "frontendDisplayId": "2497",
+    "titleEn": "Maximum Star Sum of a Graph",
+    "titleZh": "图中最大星和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "贪心",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-star-sum-of-a-graph/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-strength-of-a-group",
+    "frontendDisplayId": "2708",
+    "titleEn": "Maximum Strength of a Group",
+    "titleZh": "一个小组的最大实力值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Dynamic Programming",
+      "Enumeration",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "动态规划",
+      "枚举",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-strength-of-a-group/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-strength-of-k-disjoint-subarrays",
+    "frontendDisplayId": "3077",
+    "titleEn": "Maximum Strength of K Disjoint Subarrays",
+    "titleZh": "K 个不相交子数组的最大能量值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-strength-of-k-disjoint-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-strictly-increasing-cells-in-a-matrix",
+    "frontendDisplayId": "2713",
+    "titleEn": "Maximum Strictly Increasing Cells in a Matrix",
+    "titleZh": "矩阵中严格递增的单元格数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Hash Table",
+      "Matrix",
+      "Memoization",
+      "Ordered Set",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "哈希表",
+      "矩阵",
+      "记忆化",
+      "有序集合",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-strictly-increasing-cells-in-a-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-strong-pair-xor-i",
+    "frontendDisplayId": "2932",
+    "titleEn": "Maximum Strong Pair XOR I",
+    "titleZh": "找出强数对的最大异或值 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table",
+      "Sliding Window",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表",
+      "滑动窗口",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-strong-pair-xor-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-strong-pair-xor-ii",
+    "frontendDisplayId": "2935",
+    "titleEn": "Maximum Strong Pair XOR II",
+    "titleZh": "找出强数对的最大异或值 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table",
+      "Sliding Window",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表",
+      "滑动窗口",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-strong-pair-xor-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-students-taking-exam",
+    "frontendDisplayId": "1349",
+    "titleEn": "Maximum Students Taking Exam",
+    "titleZh": "参加考试的最大学生数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-students-taking-exam/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-subarray",
+    "frontendDisplayId": "53",
+    "titleEn": "Maximum Subarray",
+    "titleZh": "最大子数组和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-subarray/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-subarray-min-product",
+    "frontendDisplayId": "1856",
+    "titleEn": "Maximum Subarray Min-Product",
+    "titleZh": "子数组最小乘积的最大值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Stack",
+      "Prefix Sum",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调栈",
+      "前缀和",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-subarray-min-product/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-subarray-sum-after-at-most-k-swaps",
+    "frontendDisplayId": "3962",
+    "titleEn": "Maximum Subarray Sum After at Most K Swaps",
+    "titleZh": "至多 K 次交换后最大子数组和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-subarray-sum-after-at-most-k-swaps/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-subarray-sum-after-multiplier",
+    "frontendDisplayId": "3976",
+    "titleEn": "Maximum Subarray Sum After Multiplier",
+    "titleZh": "乘以系数后最大子数组和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-subarray-sum-after-multiplier/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-subarray-sum-with-length-divisible-by-k",
+    "frontendDisplayId": "3381",
+    "titleEn": "Maximum Subarray Sum With Length Divisible by K",
+    "titleZh": "长度可被 K 整除的子数组的最大元素和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-subarray-sum-with-length-divisible-by-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-subarray-sum-with-one-deletion",
+    "frontendDisplayId": "1186",
+    "titleEn": "Maximum Subarray Sum with One Deletion",
+    "titleZh": "删除一次得到子数组最大和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-subarray-sum-with-one-deletion/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-subarray-with-equal-products",
+    "frontendDisplayId": "3411",
+    "titleEn": "Maximum Subarray With Equal Products",
+    "titleZh": "最长乘积等价子数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Math",
+      "Number Theory",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "数学",
+      "数论",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-subarray-with-equal-products/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-subarray-xor-with-bounded-range",
+    "frontendDisplayId": "3845",
+    "titleEn": "Maximum Subarray XOR with Bounded Range",
+    "titleZh": "最大子数组异或值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Monotonic Queue",
+      "Prefix Sum",
+      "Queue",
+      "Sliding Window",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "单调队列",
+      "前缀和",
+      "队列",
+      "滑动窗口",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-subarray-xor-with-bounded-range/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-subgraph-score-in-a-tree",
+    "frontendDisplayId": "3772",
+    "titleEn": "Maximum Subgraph Score in a Tree",
+    "titleZh": "树中子图的最大得分",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-subgraph-score-in-a-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-subsequence-score",
+    "frontendDisplayId": "2542",
+    "titleEn": "Maximum Subsequence Score",
+    "titleZh": "最大子序列的分数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-subsequence-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-substrings-with-distinct-start",
+    "frontendDisplayId": "3760",
+    "titleEn": "Maximum Substrings With Distinct Start",
+    "titleZh": "不同首字母的子字符串数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-substrings-with-distinct-start/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-sum-bst-in-binary-tree",
+    "frontendDisplayId": "1373",
+    "titleEn": "Maximum Sum BST in Binary Tree",
+    "titleZh": "二叉搜索子树的最大键值和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-sum-bst-in-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-sum-circular-subarray",
+    "frontendDisplayId": "918",
+    "titleEn": "Maximum Sum Circular Subarray",
+    "titleZh": "环形子数组的最大和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Dynamic Programming",
+      "Monotonic Queue",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "动态规划",
+      "单调队列",
+      "队列"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-sum-circular-subarray/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-sum-obtained-of-any-permutation",
+    "frontendDisplayId": "1589",
+    "titleEn": "Maximum Sum Obtained of Any Permutation",
+    "titleZh": "所有排列中的最大和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Prefix Sum",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "前缀和",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-sum-obtained-of-any-permutation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-sum-of-3-non-overlapping-subarrays",
+    "frontendDisplayId": "689",
+    "titleEn": "Maximum Sum of 3 Non-Overlapping Subarrays",
+    "titleZh": "三个无重叠子数组的最大和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Prefix Sum",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "前缀和",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-sum-of-3-non-overlapping-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-073",
+    "claimedAt": "2026-07-10T06:18:17.907256+00:00",
+    "completedAt": null
+  }
+]

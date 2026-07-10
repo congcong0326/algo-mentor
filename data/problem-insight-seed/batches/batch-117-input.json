@@ -1,0 +1,746 @@
+[
+  {
+    "slug": "sum-of-digits-in-base-k",
+    "frontendDisplayId": "1837",
+    "titleEn": "Sum of Digits in Base K",
+    "titleZh": "K 进制表示下的各位数字总和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-digits-in-base-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-digits-of-string-after-convert",
+    "frontendDisplayId": "1945",
+    "titleEn": "Sum of Digits of String After Convert",
+    "titleZh": "字符串转化后的各位数字之和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-digits-of-string-after-convert/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-distances",
+    "frontendDisplayId": "2615",
+    "titleEn": "Sum of Distances",
+    "titleZh": "等值距离和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-distances/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-distances-in-tree",
+    "frontendDisplayId": "834",
+    "titleEn": "Sum of Distances in Tree",
+    "titleZh": "树中距离之和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Graph Theory",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "动态规划",
+      "图",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-distances-in-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-elements-with-frequency-divisible-by-k",
+    "frontendDisplayId": "3712",
+    "titleEn": "Sum of Elements With Frequency Divisible by K",
+    "titleZh": "出现次数能被 K 整除的元素总和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-elements-with-frequency-divisible-by-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-even-numbers-after-queries",
+    "frontendDisplayId": "985",
+    "titleEn": "Sum of Even Numbers After Queries",
+    "titleZh": "查询后的偶数和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-even-numbers-after-queries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-floored-pairs",
+    "frontendDisplayId": "1862",
+    "titleEn": "Sum of Floored Pairs",
+    "titleZh": "向下取整数对和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Counting",
+      "Enumeration",
+      "Math",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "计数",
+      "枚举",
+      "数学",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-floored-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-gcd-of-formed-pairs",
+    "frontendDisplayId": "3867",
+    "titleEn": "Sum of GCD of Formed Pairs",
+    "titleZh": "数对的最大公约数之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory",
+      "Simulation",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论",
+      "模拟",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-gcd-of-formed-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-good-numbers",
+    "frontendDisplayId": "3452",
+    "titleEn": "Sum of Good Numbers",
+    "titleZh": "好数字之和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-good-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-good-subsequences",
+    "frontendDisplayId": "3351",
+    "titleEn": "Sum of Good Subsequences",
+    "titleZh": "好子序列的元素之和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-good-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-imbalance-numbers-of-all-subarrays",
+    "frontendDisplayId": "2763",
+    "titleEn": "Sum of Imbalance Numbers of All Subarrays",
+    "titleZh": "所有子数组中不平衡数字之和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-imbalance-numbers-of-all-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-k-digit-numbers-in-a-range",
+    "frontendDisplayId": "3855",
+    "titleEn": "Sum of K-Digit Numbers in a Range",
+    "titleZh": "给定范围内 K 位数字之和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Divide and Conquer",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "分治",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-k-digit-numbers-in-a-range/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-k-mirror-numbers",
+    "frontendDisplayId": "2081",
+    "titleEn": "Sum of k-Mirror Numbers",
+    "titleZh": "k 镜像数字的和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-k-mirror-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-k-subarrays-with-length-at-least-m",
+    "frontendDisplayId": "3473",
+    "titleEn": "Sum of K Subarrays With Length at Least M",
+    "titleZh": "长度至少为 M 的 K 个子数组之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-k-subarrays-with-length-at-least-m/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-largest-prime-substrings",
+    "frontendDisplayId": "3556",
+    "titleEn": "Sum of Largest Prime Substrings",
+    "titleZh": "最大质数子字符串之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Math",
+      "Number Theory",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "数学",
+      "数论",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-largest-prime-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-left-leaves",
+    "frontendDisplayId": "404",
+    "titleEn": "Sum of Left Leaves",
+    "titleZh": "左叶子之和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-left-leaves/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-matrix-after-queries",
+    "frontendDisplayId": "2718",
+    "titleEn": "Sum of Matrix After Queries",
+    "titleZh": "查询后矩阵的和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-matrix-after-queries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-mutated-array-closest-to-target",
+    "frontendDisplayId": "1300",
+    "titleEn": "Sum of Mutated Array Closest to Target",
+    "titleZh": "转变数组后最接近目标值的数组和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-mutated-array-closest-to-target/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-nodes-with-even-valued-grandparent",
+    "frontendDisplayId": "1315",
+    "titleEn": "Sum of Nodes with Even-Valued Grandparent",
+    "titleZh": "祖父节点值为偶数的节点和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-nodes-with-even-valued-grandparent/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-number-and-its-reverse",
+    "frontendDisplayId": "2443",
+    "titleEn": "Sum of Number and Its Reverse",
+    "titleZh": "反转之后的数字和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-number-and-its-reverse/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-numbers-with-units-digit-k",
+    "frontendDisplayId": "2310",
+    "titleEn": "Sum of Numbers With Units Digit K",
+    "titleZh": "个位数字为 K 的整数之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Enumeration",
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "枚举",
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-numbers-with-units-digit-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-perfect-square-ancestors",
+    "frontendDisplayId": "3715",
+    "titleEn": "Sum of Perfect Square Ancestors",
+    "titleZh": "完全平方数的祖先个数总和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Depth-First Search",
+      "Hash Table",
+      "Math",
+      "Number Theory",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "深度优先搜索",
+      "哈希表",
+      "数学",
+      "数论",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-perfect-square-ancestors/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-prefix-scores-of-strings",
+    "frontendDisplayId": "2416",
+    "titleEn": "Sum of Prefix Scores of Strings",
+    "titleZh": "字符串的前缀分数和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-prefix-scores-of-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-primes-between-number-and-its-reverse",
+    "frontendDisplayId": "3918",
+    "titleEn": "Sum of Primes Between Number and Its Reverse",
+    "titleZh": "数与其逆序数之间的质数和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-primes-between-number-and-its-reverse/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-root-to-leaf-binary-numbers",
+    "frontendDisplayId": "1022",
+    "titleEn": "Sum of Root To Leaf Binary Numbers",
+    "titleZh": "从根到叶的二进制数之和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-root-to-leaf-binary-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-scores-of-built-strings",
+    "frontendDisplayId": "2223",
+    "titleEn": "Sum of Scores of Built Strings",
+    "titleZh": "构造字符串的总得分和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Hash Function",
+      "Rolling Hash",
+      "String",
+      "String Matching",
+      "Suffix Array"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "哈希函数",
+      "滚动哈希",
+      "字符串",
+      "字符串匹配",
+      "后缀数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-scores-of-built-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-sortable-integers",
+    "frontendDisplayId": "3886",
+    "titleEn": "Sum of Sortable Integers",
+    "titleZh": "可排序整数求和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-sortable-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-square-numbers",
+    "frontendDisplayId": "633",
+    "titleEn": "Sum of Square Numbers",
+    "titleZh": "平方数之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Math",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "数学",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-square-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-squares-of-special-elements",
+    "frontendDisplayId": "2778",
+    "titleEn": "Sum of Squares of Special Elements",
+    "titleZh": "特殊元素平方和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-squares-of-special-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-subarray-minimums",
+    "frontendDisplayId": "907",
+    "titleEn": "Sum of Subarray Minimums",
+    "titleZh": "子数组的最小值之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-subarray-minimums/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-117",
+    "claimedAt": "2026-07-10T08:06:27.004232+00:00",
+    "completedAt": null
+  }
+]

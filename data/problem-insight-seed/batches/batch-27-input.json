@@ -1,0 +1,716 @@
+[
+  {
+    "slug": "decrease-elements-to-make-array-zigzag",
+    "frontendDisplayId": "1144",
+    "titleEn": "Decrease Elements To Make Array Zigzag",
+    "titleZh": "递减元素使数组呈锯齿状",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/decrease-elements-to-make-array-zigzag/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "decremental-string-concatenation",
+    "frontendDisplayId": "2746",
+    "titleEn": "Decremental String Concatenation",
+    "titleZh": "字符串连接删减字母",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/decremental-string-concatenation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "decrypt-string-from-alphabet-to-integer-mapping",
+    "frontendDisplayId": "1309",
+    "titleEn": "Decrypt String from Alphabet to Integer Mapping",
+    "titleZh": "解码字母到整数映射",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/decrypt-string-from-alphabet-to-integer-mapping/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "deep-dark-fraction",
+    "frontendDisplayId": "LCP 02",
+    "titleEn": null,
+    "titleZh": "分式化简",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论",
+      "模拟"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/deep-dark-fraction/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "deepest-leaves-sum",
+    "frontendDisplayId": "1302",
+    "titleEn": "Deepest Leaves Sum",
+    "titleZh": "层数最深叶子节点的和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/deepest-leaves-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "defanging-an-ip-address",
+    "frontendDisplayId": "1108",
+    "titleEn": "Defanging an IP Address",
+    "titleZh": "IP 地址无效化",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/defanging-an-ip-address/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "defuse-the-bomb",
+    "frontendDisplayId": "1652",
+    "titleEn": "Defuse the Bomb",
+    "titleZh": "拆炸弹",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/defuse-the-bomb/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "degree-of-an-array",
+    "frontendDisplayId": "697",
+    "titleEn": "Degree of an Array",
+    "titleZh": "数组的度",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/degree-of-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-and-earn",
+    "frontendDisplayId": "740",
+    "titleEn": "Delete and Earn",
+    "titleZh": "删除并获得点数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-and-earn/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-characters-to-make-fancy-string",
+    "frontendDisplayId": "1957",
+    "titleEn": "Delete Characters to Make Fancy String",
+    "titleZh": "删除字符使字符串变好",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-characters-to-make-fancy-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-columns-to-make-sorted",
+    "frontendDisplayId": "944",
+    "titleEn": "Delete Columns to Make Sorted",
+    "titleZh": "删列造序",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-columns-to-make-sorted/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-columns-to-make-sorted-ii",
+    "frontendDisplayId": "955",
+    "titleEn": "Delete Columns to Make Sorted II",
+    "titleZh": "删列造序 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-columns-to-make-sorted-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-columns-to-make-sorted-iii",
+    "frontendDisplayId": "960",
+    "titleEn": "Delete Columns to Make Sorted III",
+    "titleZh": "删列造序 III",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-columns-to-make-sorted-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-duplicate-emails",
+    "frontendDisplayId": "196",
+    "titleEn": "Delete Duplicate Emails",
+    "titleZh": "删除重复的电子邮箱",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-duplicate-emails/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-duplicate-folders-in-system",
+    "frontendDisplayId": "1948",
+    "titleEn": "Delete Duplicate Folders in System",
+    "titleZh": "删除系统中的重复文件夹",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Hash Function",
+      "Hash Table",
+      "Sorting",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "哈希函数",
+      "哈希表",
+      "排序",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-duplicate-folders-in-system/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-greatest-value-in-each-row",
+    "frontendDisplayId": "2500",
+    "titleEn": "Delete Greatest Value in Each Row",
+    "titleZh": "删除每行中的最大值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Matrix",
+      "Simulation",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "矩阵",
+      "模拟",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-greatest-value-in-each-row/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-leaves-with-a-given-value",
+    "frontendDisplayId": "1325",
+    "titleEn": "Delete Leaves With a Given Value",
+    "titleZh": "删除给定值的叶子节点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-leaves-with-a-given-value/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-middle-node-lcci",
+    "frontendDisplayId": "面试题 02.03",
+    "titleEn": null,
+    "titleZh": "删除中间节点",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "链表"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/delete-middle-node-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-node-in-a-bst",
+    "frontendDisplayId": "450",
+    "titleEn": "Delete Node in a BST",
+    "titleZh": "删除二叉搜索树中的节点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-node-in-a-bst/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-node-in-a-linked-list",
+    "frontendDisplayId": "237",
+    "titleEn": "Delete Node in a Linked List",
+    "titleZh": "删除链表中的节点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-node-in-a-linked-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-nodes-and-return-forest",
+    "frontendDisplayId": "1110",
+    "titleEn": "Delete Nodes And Return Forest",
+    "titleZh": "删点成林",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Tree",
+      "Depth-First Search",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉树",
+      "深度优先搜索",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-nodes-and-return-forest/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-nodes-from-linked-list-present-in-array",
+    "frontendDisplayId": "3217",
+    "titleEn": "Delete Nodes From Linked List Present in Array",
+    "titleZh": "从链表中移除在数组中存在的节点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-nodes-from-linked-list-present-in-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-operation-for-two-strings",
+    "frontendDisplayId": "583",
+    "titleEn": "Delete Operation for Two Strings",
+    "titleZh": "两个字符串的删除操作",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-operation-for-two-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delete-the-middle-node-of-a-linked-list",
+    "frontendDisplayId": "2095",
+    "titleEn": "Delete the Middle Node of a Linked List",
+    "titleZh": "删除链表的中间节点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "delivering-boxes-from-storage-to-ports",
+    "frontendDisplayId": "1687",
+    "titleEn": "Delivering Boxes from Storage to Ports",
+    "titleZh": "从仓库到码头运输箱子",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Heap (Priority Queue)",
+      "Monotonic Queue",
+      "Prefix Sum",
+      "Queue",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "堆（优先队列）",
+      "单调队列",
+      "前缀和",
+      "队列",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/delivering-boxes-from-storage-to-ports/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "department-highest-salary",
+    "frontendDisplayId": "184",
+    "titleEn": "Department Highest Salary",
+    "titleZh": "部门工资最高的员工",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/department-highest-salary/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "department-top-three-salaries",
+    "frontendDisplayId": "185",
+    "titleEn": "Department Top Three Salaries",
+    "titleZh": "部门工资前三高的所有员工",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/department-top-three-salaries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "describe-the-painting",
+    "frontendDisplayId": "1943",
+    "titleEn": "Describe the Painting",
+    "titleZh": "描述绘画结果",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/describe-the-painting/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-a-food-rating-system",
+    "frontendDisplayId": "2353",
+    "titleEn": "Design a Food Rating System",
+    "titleZh": "设计食物评分系统",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Ordered Set",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希表",
+      "堆（优先队列）",
+      "有序集合",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-a-food-rating-system/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-a-number-container-system",
+    "frontendDisplayId": "2349",
+    "titleEn": "Design a Number Container System",
+    "titleZh": "设计数字容器系统",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Ordered Set"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "哈希表",
+      "堆（优先队列）",
+      "有序集合"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-a-number-container-system/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-27",
+    "claimedAt": "2026-07-10T02:07:52.265525+00:00",
+    "completedAt": null
+  }
+]

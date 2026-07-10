@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "maximum-product-of-subsequences-with-an-alternating-sum-equal-to-k",
+    "reasonEN": "A hard subsequence DP problem with an exact alternating-sum constraint. It trains designing sparse states over position, parity, and sum while preserving the best multiplicative value, a valuable pattern for constrained optimization.",
+    "reasonZH": "这是一道带精确交错和约束的困难子序列 DP 题。它训练围绕位置、奇偶性和和设计稀疏状态，并保留最优乘积值，是受约束优化中的重要模式。"
+  },
+  {
+    "slug": "maximum-product-of-the-length-of-two-palindromic-subsequences",
+    "reasonEN": "A bitmask-and-backtracking palindrome problem with disjointness as the key constraint. It practices enumerating subsequences, checking palindromic masks, and combining complementary states for a global optimum.",
+    "reasonZH": "这是一道以互不重叠为核心约束的位掩码回溯回文题。它训练枚举子序列、检查回文掩码，并组合互补状态得到全局最优。"
+  },
+  {
+    "slug": "maximum-product-of-the-length-of-two-palindromic-substrings",
+    "reasonEN": "A hard string-optimization problem centered on locating palindromic ranges efficiently. It develops the use of palindrome radii or rolling hashes to summarize prefix and suffix candidates before pairing them.",
+    "reasonZH": "这是一道核心在于高效定位回文区间的困难字符串优化题。它训练使用回文半径或滚动哈希汇总前缀和后缀候选，再进行配对。"
+  },
+  {
+    "slug": "maximum-product-of-three-elements-after-one-replacement",
+    "reasonEN": "A greedy extremal-value problem where sign combinations determine the answer. It reinforces reducing a large array to a few largest and smallest candidates, then reasoning about how one replacement changes the boundary cases.",
+    "reasonZH": "这是一道由符号组合决定答案的贪心极值题。它训练把大数组缩减为少数最大和最小候选，并分析一次替换如何改变边界情况。"
+  },
+  {
+    "slug": "maximum-product-of-three-numbers",
+    "reasonEN": "An essential easy sorting problem for learning sign-aware maximization. It teaches comparing the top three values with the product of the largest value and two most negative values, preventing a common greedy mistake.",
+    "reasonZH": "这是学习符号感知最大化的经典简单排序题。它训练比较三个最大值与最大值乘两个最小负数的方案，避免常见的贪心误判。"
+  },
+  {
+    "slug": "maximum-product-of-two-digits",
+    "reasonEN": "A lightweight digit-processing problem with a simple maximum-selection core. It provides focused practice in extracting decimal digits and tracking the two best candidates without unnecessary data structures.",
+    "reasonZH": "这是一道以简单最大值选择为核心的轻量数位处理题。它提供提取十进制数位并维护两个最优候选的针对性练习，无需复杂数据结构。"
+  },
+  {
+    "slug": "maximum-product-of-two-elements-in-an-array",
+    "reasonEN": "A basic top-two selection problem that admits sorting, a heap, or one-pass scanning. It builds the habit of matching the implementation to the required information rather than overengineering an easy array task.",
+    "reasonZH": "这是一道基础的前两大元素选择题，可用排序、堆或一次扫描解决。它培养按所需信息选择实现方式的习惯，避免在简单数组题中过度设计。"
+  },
+  {
+    "slug": "maximum-product-of-two-integers-with-no-common-bits",
+    "reasonEN": "A medium bitmask optimization problem based on pairwise compatibility. It trains interpreting disjoint set bits as a mask condition and using state compression or subset DP to avoid naive pair enumeration.",
+    "reasonZH": "这是一道基于两数兼容性的中等位掩码优化题。它训练将无公共置位理解为掩码条件，并利用状态压缩或子集 DP 避免朴素的两两枚举。"
+  },
+  {
+    "slug": "maximum-product-of-word-lengths",
+    "reasonEN": "A canonical string-to-bitmask problem with a clear compatibility test. It teaches encoding each word's alphabet set into an integer so disjoint-letter checks become constant-time bit operations.",
+    "reasonZH": "这是经典的字符串转位掩码题，兼容性判断非常清晰。它训练把单词字母集合编码为整数，使无公共字母检查变成常数时间的位运算。"
+  },
+  {
+    "slug": "maximum-product-subarray",
+    "reasonEN": "A cornerstone DP problem where negative values invert optimization roles. It trains carrying both the maximum and minimum product ending at each position, an indispensable technique for sign-sensitive recurrences.",
+    "reasonZH": "这是负数会反转优化角色的核心 DP 题。它训练同时维护每个位置结尾的最大和最小乘积，是处理符号敏感递推的必备技巧。"
+  },
+  {
+    "slug": "maximum-profit-from-trading-stocks-with-discounts",
+    "reasonEN": "A hard tree DP problem coupling hierarchical eligibility with a limited budget. It develops knapsack-style merges across children and clear state distinctions for whether a parent purchase unlocks a discount.",
+    "reasonZH": "这是一道将层级资格与有限预算结合的困难树形 DP 题。它训练跨子节点进行背包式合并，并清晰区分父节点购买是否解锁折扣的状态。"
+  },
+  {
+    "slug": "maximum-profit-from-valid-topological-order-in-dag",
+    "reasonEN": "A hard graph DP problem that turns topological constraints into bitmask transitions. It practices checking predecessor availability for each state and maximizing accumulated profit over all valid order prefixes.",
+    "reasonZH": "这是一道将拓扑约束转化为位掩码转移的困难图 DP 题。它训练检查每个状态下前驱是否已就绪，并在所有合法顺序前缀上最大化累计利润。"
+  },
+  {
+    "slug": "maximum-profit-in-job-scheduling",
+    "reasonEN": "A benchmark weighted-interval scheduling problem combining sorting, binary search, and DP. It teaches locating the last compatible job and writing a take-or-skip recurrence that generalizes to many scheduling tasks.",
+    "reasonZH": "这是结合排序、二分和 DP 的标杆加权区间调度题。它训练定位最后一个兼容工作，并写出选取或跳过的递推，可迁移到大量调度问题。"
+  },
+  {
+    "slug": "maximum-profit-of-operating-a-centennial-wheel",
+    "reasonEN": "A simulation problem where correct event ordering matters more than advanced algorithms. It trains maintaining a waiting queue, updating cumulative profit per round, and recording the earliest round at the best value.",
+    "reasonZH": "这是一道正确事件顺序比高级算法更重要的模拟题。它训练维护等待队列、按轮更新累计利润，并记录达到最佳值的最早轮次。"
+  },
+  {
+    "slug": "maximum-repeating-substring",
+    "reasonEN": "An approachable string-matching problem that can be solved by repeated checks or DP. It reinforces recognizing periodic concatenation and choosing a simple method that respects the input limits.",
+    "reasonZH": "这是一道可用重复检查或 DP 解决的入门字符串匹配题。它强化识别周期性拼接，并根据数据范围选择足够简单的方法。"
+  },
+  {
+    "slug": "maximum-rows-covered-by-columns",
+    "reasonEN": "A compact matrix subset-enumeration problem well suited to bitmasks. It trains encoding rows and selected columns consistently, then testing coverage with bitwise containment instead of nested scans.",
+    "reasonZH": "这是一道非常适合位掩码的紧凑矩阵子集枚举题。它训练一致地编码行和选中列，并用按位包含关系替代嵌套扫描来判断覆盖。"
+  },
+  {
+    "slug": "maximum-running-time-of-n-computers",
+    "reasonEN": "A hard binary-search-on-answer problem with a resource-feasibility predicate. It teaches capping each battery's contribution at a proposed runtime and proving monotonicity before searching the maximum feasible duration.",
+    "reasonZH": "这是一道带资源可行性判定的困难二分答案题。它训练将每块电池的贡献截断为候选运行时间，并在搜索最大可行时长前证明单调性。"
+  },
+  {
+    "slug": "maximum-score-after-applying-operations-on-a-tree",
+    "reasonEN": "A tree DP problem driven by the requirement that every root-to-leaf path retain value. It develops the choose-versus-preserve recurrence and shows how a subtree's minimum protected cost controls the global score.",
+    "reasonZH": "这是一道由每条根到叶路径都需保留数值驱动的树形 DP 题。它训练选取与保留的递推，并展示子树最小保护代价如何决定全局得分。"
+  },
+  {
+    "slug": "maximum-score-after-binary-swaps",
+    "reasonEN": "A greedy binary-string optimization problem with exchange decisions across positions. It trains identifying the highest-value swaps under ordering constraints and using a heap when future candidates must be compared dynamically.",
+    "reasonZH": "这是一道带位置交换决策的贪心二进制字符串优化题。它训练在顺序约束下识别价值最高的交换，并在需要动态比较后续候选时使用堆。"
+  },
+  {
+    "slug": "maximum-score-after-splitting-a-string",
+    "reasonEN": "A fundamental prefix-suffix scoring problem that reduces to one scan. It reinforces maintaining left-side zeros and right-side ones incrementally, a reusable alternative to recomputing every split.",
+    "reasonZH": "这是可化为一次扫描的基础前后缀评分题。它训练增量维护左侧零数和右侧一数，是避免重复计算每个分割点的可复用方法。"
+  },
+  {
+    "slug": "maximum-score-from-grid-operations",
+    "reasonEN": "A hard matrix DP problem where column choices interact through adjacent boundaries. It trains preprocessing prefix sums and designing transitions that summarize the previous column's selected height without quadratic recomputation.",
+    "reasonZH": "这是一道列选择会通过相邻边界相互影响的困难矩阵 DP 题。它训练预处理前缀和，并设计用前一列选择高度概括状态的转移，避免二次重复计算。"
+  },
+  {
+    "slug": "maximum-score-from-performing-multiplication-operations",
+    "reasonEN": "A classic interval DP problem with exactly one decision per operation. It trains deriving the remaining right boundary from the operation count and left picks, which compresses a seemingly three-dimensional state.",
+    "reasonZH": "这是每次操作都要做一次选择的经典区间 DP 题。它训练通过操作次数和左侧取数次数推导剩余右边界，从而压缩看似三维的状态。"
+  },
+  {
+    "slug": "maximum-score-from-removing-stones",
+    "reasonEN": "A greedy resource-balancing problem with both heap and mathematical solutions. It teaches repeatedly consuming the two largest piles and recognizing the closed-form limit imposed by the total and largest pile.",
+    "reasonZH": "这是一道既可用堆也可用数学解决的贪心资源平衡题。它训练反复消耗两个最大石堆，并识别总数和最大石堆所决定的闭式上限。"
+  },
+  {
+    "slug": "maximum-score-from-removing-substrings",
+    "reasonEN": "A greedy stack problem where removal order determines the optimum. It trains taking the higher-value pattern first, processing the residual string, and justifying why this local priority cannot reduce the final score.",
+    "reasonZH": "这是一道删除顺序决定最优值的贪心栈题。它训练优先删除分值更高的模式、处理剩余字符串，并论证该局部优先级不会降低最终得分。"
+  },
+  {
+    "slug": "maximum-score-of-a-good-subarray",
+    "reasonEN": "A hard subarray optimization problem anchored at a required index. It develops expanding toward the larger neighboring value to preserve the current minimum, and connects two pointers with monotonic-stack reasoning.",
+    "reasonZH": "这是一道以指定下标为锚点的困难子数组优化题。它训练向较大相邻值扩展以维持当前最小值，并连接双指针与单调栈的思考方式。"
+  },
+  {
+    "slug": "maximum-score-of-a-node-sequence",
+    "reasonEN": "A hard graph-enumeration problem made tractable by retaining only top neighbor candidates. It teaches pruning each adjacency list to its highest scores, then checking a small number of valid four-node combinations.",
+    "reasonZH": "这是一道通过保留顶级邻居候选而变得可解的困难图枚举题。它训练将每个邻接表裁剪为分数最高的若干节点，再检查少量有效的四节点组合。"
+  },
+  {
+    "slug": "maximum-score-of-a-split",
+    "reasonEN": "A medium prefix-sum partition problem with a simple but useful objective transformation. It trains expressing each split through a running prefix and total sum, making all candidate scores available in linear time.",
+    "reasonZH": "这是一道具有实用目标变形的中等前缀和分割题。它训练用运行前缀和与总和表示每个分割，使所有候选得分在线性时间内可得。"
+  },
+  {
+    "slug": "maximum-score-of-non-overlapping-intervals",
+    "reasonEN": "A hard weighted interval DP problem with tie-sensitive reconstruction. It practices sorting by endpoints, binary-searching compatible predecessors, and preserving enough state to compare equal-score interval selections correctly.",
+    "reasonZH": "这是一道带并列重建要求的困难加权区间 DP 题。它训练按端点排序、二分兼容前驱，并保留足够状态以正确比较同分区间选择。"
+  },
+  {
+    "slug": "maximum-score-of-spliced-array",
+    "reasonEN": "A difference-array DP problem that reframes one subarray swap as a maximum-gain segment. It teaches converting a two-array operation into Kadane's algorithm on directional differences, a powerful optimization reduction.",
+    "reasonZH": "这是一道将一次子数组交换重构为最大增益区间的差分数组 DP 题。它训练把双数组操作转化为方向差分上的 Kadane 算法，是强有力的优化归约技巧。"
+  },
+  {
+    "slug": "maximum-score-using-exactly-k-pairs",
+    "reasonEN": "A hard sequence DP problem with an exact pair-count constraint. It trains separating the state for how many pairs are formed from positional progress, preventing greedy choices from violating future feasibility.",
+    "reasonZH": "这是一道带恰好配对数量约束的困难序列 DP 题。它训练将已形成配对数与位置进度分开建模，避免贪心选择破坏后续可行性。"
+  }
+]

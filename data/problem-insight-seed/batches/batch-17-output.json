@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "consecutive-numbers-sum",
+    "reasonEN": "A hard number-theory enumeration problem that turns consecutive-sum representations into factor and parity constraints. It sharpens divisor reasoning and algebraic transformations, making it a strong bridge from brute-force search to mathematical pruning.",
+    "reasonZH": "这是一道高难度数论枚举题，将连续和表示转化为因子与奇偶性约束。它训练代数变形和因数分析能力，是从暴力枚举过渡到数学剪枝的重要题目。"
+  },
+  {
+    "slug": "constrained-subsequence-sum",
+    "reasonEN": "This is a representative DP optimization problem where a monotonic deque maintains the best transition within a bounded window. It teaches how to reduce an otherwise quadratic recurrence to linear time, a reusable technique for constrained sequence DP.",
+    "reasonZH": "本题是单调队列优化动态规划的代表题，需要维护限制窗口内的最优转移值。它训练把原本可能平方复杂度的递推降到线性复杂度，是受限序列 DP 的可复用技巧。"
+  },
+  {
+    "slug": "construct-2d-grid-matching-graph-layout",
+    "reasonEN": "A challenging graph-construction task that requires recovering grid geometry from adjacency structure. It develops careful degree analysis, boundary identification, and traversal design, which are valuable for inverse graph modeling problems.",
+    "reasonZH": "这是一道高难度图构造题，需要从邻接关系还原二维网格结构。它训练度数分析、边界识别和遍历设计，对逆向图建模问题很有价值。"
+  },
+  {
+    "slug": "construct-binary-search-tree-from-preorder-traversal",
+    "reasonEN": "This BST reconstruction problem highlights how preorder order and BST bounds determine subtree placement. It practices recursive interval invariants or monotonic-stack construction, both essential patterns for tree parsing and reconstruction.",
+    "reasonZH": "本题利用前序顺序与 BST 值域边界确定子树归属。它训练递归区间不变量或单调栈构造方法，是树解析与重建中的核心模式。"
+  },
+  {
+    "slug": "construct-binary-tree-from-inorder-and-postorder-traversal",
+    "reasonEN": "A foundational divide-and-conquer tree reconstruction problem using inorder partitions and postorder roots. It reinforces traversal index management and hash-map acceleration, making recursive tree decomposition concrete and reliable.",
+    "reasonZH": "这是一道基础的分治建树题，利用中序划分子树并从后序定位根节点。它训练遍历下标管理和哈希表加速，能扎实掌握递归拆分树结构的方法。"
+  },
+  {
+    "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
+    "reasonEN": "This classic reconstruction template uses preorder to select roots and inorder to split subtrees. It trains precise recursive boundary handling and lookup optimization, a prerequisite for many traversal-based tree problems.",
+    "reasonZH": "这道经典建树模板题以前序确定根、中序划分左右子树。它训练递归边界的精确处理与索引查询优化，是解决遍历序列建树问题的必备基础。"
+  },
+  {
+    "slug": "construct-binary-tree-from-preorder-and-postorder-traversal",
+    "reasonEN": "Unlike uniquely determined traversal pairs, this construction problem exposes ambiguity in tree reconstruction. It teaches how to use subtree roots and sizes carefully while understanding when multiple valid structures can exist.",
+    "reasonZH": "不同于可唯一确定树的遍历组合，本题体现了重建结果可能存在歧义。它训练通过子树根和规模完成递归划分，同时理解多种有效结构并存的场景。"
+  },
+  {
+    "slug": "construct-k-palindrome-strings",
+    "reasonEN": "A concise counting-and-greedy problem centered on odd-frequency characters as feasibility constraints. It builds the habit of extracting construction conditions from character counts instead of simulating strings unnecessarily.",
+    "reasonZH": "本题是计数贪心题，核心在于将奇数频次字符视为构造可行性的约束。它培养从频次条件推导构造结论的习惯，避免无必要的字符串模拟。"
+  },
+  {
+    "slug": "construct-product-matrix",
+    "reasonEN": "This matrix construction exercise applies prefix and suffix products under modular arithmetic. It practices flattening two-dimensional data and preserving boundary cases, a useful extension of the product-except-self pattern.",
+    "reasonZH": "这道矩阵构造题在模运算下应用前后缀乘积。它训练二维数据扁平化与边界处理，是“除自身以外数组乘积”模式在矩阵中的实用延伸。"
+  },
+  {
+    "slug": "construct-quad-tree",
+    "reasonEN": "A divide-and-conquer tree problem that recursively compresses uniform matrix regions into quadtree nodes. It develops region-state design and recursive partitioning, useful for spatial indexing and image-style data compression.",
+    "reasonZH": "本题是分治树题，通过递归将均匀矩阵区域压缩为四叉树节点。它训练区域状态设计和递归划分能力，对空间索引与图像式数据压缩很有启发。"
+  },
+  {
+    "slug": "construct-smallest-number-from-di-string",
+    "reasonEN": "This greedy stack problem reveals how descending runs should be delayed and reversed to obtain the smallest valid permutation. It strengthens lexicographic construction reasoning and the practical use of a stack for local order correction.",
+    "reasonZH": "这是一道贪心栈题，需要延后并反转连续下降段以得到最小的合法排列。它训练字典序构造思维，以及用栈修正局部顺序的实战能力。"
+  },
+  {
+    "slug": "construct-string-from-binary-tree",
+    "reasonEN": "A focused DFS serialization problem that requires emitting parentheses only when structural information must be preserved. It teaches recursive output formatting and the subtle distinction between omitted and required empty children.",
+    "reasonZH": "本题是针对性的 DFS 序列化题，只有在必须保留结构信息时才输出括号。它训练递归格式化输出，以及空子节点何时可省略、何时必须保留的细节判断。"
+  },
+  {
+    "slug": "construct-string-with-minimum-cost",
+    "reasonEN": "This hard string DP combines prefix reachability with efficient matching of dictionary fragments. It challenges you to choose the right string-indexing or hashing optimization, making it valuable practice for high-performance text construction problems.",
+    "reasonZH": "这是一道高难度字符串 DP 题，需要结合前缀可达性与词片段的高效匹配。它训练选择合适的字符串索引或哈希优化方案，对高性能文本构造问题很有价值。"
+  },
+  {
+    "slug": "construct-string-with-repeat-limit",
+    "reasonEN": "A greedy priority-queue construction problem that balances lexicographic maximality against run-length limits. It teaches when to temporarily insert a separator character, a common pattern in constrained greedy scheduling.",
+    "reasonZH": "本题是优先队列贪心构造题，需要在字典序最大化和连续重复限制之间平衡。它训练何时临时插入分隔字符，这是受约束贪心调度中的常见模式。"
+  },
+  {
+    "slug": "construct-target-array-with-multiple-sums",
+    "reasonEN": "This hard reverse-greedy problem replaces explosive forward operations with a max-heap and modular rollback. It develops the key insight of solving construction problems backward, especially when one operation dominates the current state.",
+    "reasonZH": "这是一道高难度逆向贪心题，用最大堆和取模回退替代指数爆炸的正向操作。它训练从终态反推构造过程的关键洞见，尤其适用于单次操作主导当前状态的问题。"
+  },
+  {
+    "slug": "construct-the-lexicographically-largest-valid-sequence",
+    "reasonEN": "A backtracking construction problem where trying larger values first aligns search order with the lexicographic objective. It practices constraint placement, pruning, and deterministic search ordering in permutation-style problems.",
+    "reasonZH": "本题是回溯构造题，优先尝试较大值可使搜索顺序与字典序目标一致。它训练约束放置、剪枝和确定性搜索顺序，是排列类问题的重要能力。"
+  },
+  {
+    "slug": "construct-the-longest-new-string",
+    "reasonEN": "This problem turns an apparent construction puzzle into a counting invariant and greedy arrangement. It trains identifying which local concatenations are actually limiting, an important skill for simplifying combinatorial DP or simulation tasks.",
+    "reasonZH": "本题将表面上的构造谜题转化为计数不变量与贪心安排。它训练识别真正限制答案的局部拼接关系，有助于简化组合 DP 或模拟问题。"
+  },
+  {
+    "slug": "construct-the-minimum-bitwise-array-i",
+    "reasonEN": "An approachable bit-manipulation construction task that asks for the smallest predecessor satisfying an OR relation. It reinforces binary-pattern inspection and edge-case detection, providing a clear entry point to inverse bitwise reasoning.",
+    "reasonZH": "这是一道入门级位运算构造题，要求找出满足或运算关系的最小前驱值。它训练二进制模式观察和边界判定，是理解逆向位运算推理的清晰切入点。"
+  },
+  {
+    "slug": "construct-the-minimum-bitwise-array-ii",
+    "reasonEN": "This follow-up bitwise problem requires deriving the minimum valid value from the position of the least significant zero. It deepens binary invariant reasoning and shows how a local bit change controls a global OR condition.",
+    "reasonZH": "作为进阶位运算题，本题需要从最低位零的位置推导最小合法值。它深化二进制不变量推理，并展示局部位变化如何控制整体或运算条件。"
+  },
+  {
+    "slug": "construct-the-rectangle",
+    "reasonEN": "A compact math problem that reduces geometric constraints to factor-pair search near the square root. It teaches choosing the right search direction and using divisibility to avoid unnecessary enumeration.",
+    "reasonZH": "这是一道紧凑的数学题，将几何约束转化为接近平方根的因子对搜索。它训练选择正确的搜索方向，并利用整除性避免无效枚举。"
+  },
+  {
+    "slug": "construct-uniform-parity-array-i",
+    "reasonEN": "This easy constructive math problem emphasizes recognizing parity as the only relevant invariant. It trains replacing search with a direct witness construction, a useful habit for elementary constructive algorithms.",
+    "reasonZH": "本题是简单构造数学题，关键在于识别奇偶性是唯一相关的不变量。它训练用直接构造代替搜索，是基础构造算法中很实用的习惯。"
+  },
+  {
+    "slug": "construct-uniform-parity-array-ii",
+    "reasonEN": "A medium constructive problem that extends parity-based reasoning to stricter feasibility conditions. It practices translating arithmetic constraints into a valid array design, strengthening systematic constructive thinking beyond the introductory version.",
+    "reasonZH": "这是一道中等构造题，将基于奇偶性的推理扩展到更严格的可行条件。它训练把算术约束转化为合法数组设计，进一步强化系统化构造思维。"
+  },
+  {
+    "slug": "contain-virus",
+    "reasonEN": "A demanding grid simulation that repeatedly finds infected components, counts threatened cells, and builds containment walls. It develops disciplined BFS or DFS state management across rounds, mirroring complex multi-phase simulations.",
+    "reasonZH": "本题是高难度网格模拟，需要反复识别感染连通块、统计威胁区域并修建隔离墙。它训练多轮 BFS 或 DFS 的状态管理，贴近复杂多阶段模拟的实现方式。"
+  },
+  {
+    "slug": "container-with-most-water",
+    "reasonEN": "This canonical two-pointer problem proves that moving the shorter boundary is the only productive choice. It builds proof-driven pointer movement intuition and is one of the most important templates for optimizing pair searches from quadratic time.",
+    "reasonZH": "这是一道经典双指针题，核心证明是只有移动较短边才可能改进答案。它训练有依据地移动指针的直觉，是将二次枚举优化为线性配对搜索的重要模板。"
+  },
+  {
+    "slug": "contains-duplicate",
+    "reasonEN": "An essential hash-set baseline problem for duplicate detection. It reinforces the time-space tradeoff between hashing and sorting, and establishes a simple reusable pattern for membership checks in arrays.",
+    "reasonZH": "本题是重复检测的哈希集合基础题。它强化哈希与排序之间的时间空间权衡，并建立数组成员查找的简洁可复用模式。"
+  },
+  {
+    "slug": "contains-duplicate-ii",
+    "reasonEN": "This sliding-window hash problem adds an index-distance constraint to basic duplicate detection. It teaches maintaining a bounded set or last-seen index map, a common pattern for proximity queries in sequences.",
+    "reasonZH": "本题在重复检测基础上加入下标距离约束，是典型的滑动窗口哈希题。它训练维护有界集合或最近位置映射，是序列邻近查询中的常见模式。"
+  },
+  {
+    "slug": "contains-duplicate-iii",
+    "reasonEN": "A hard proximity-search problem that combines value-range and index-range constraints through buckets or ordered sets. It teaches careful bucket sizing and eviction logic, making it a strong example of multidimensional sliding-window reasoning.",
+    "reasonZH": "这是一道高难度邻近搜索题，需要用桶或有序集合同时处理数值范围与下标范围。它训练桶宽选择和窗口淘汰逻辑，是多维滑动窗口推理的代表题。"
+  },
+  {
+    "slug": "contiguous-array",
+    "reasonEN": "This prefix-sum hashing problem maps two categories to opposite values so equal-count subarrays become repeated prefix sums. It develops a powerful transformation technique used broadly in balance, parity, and frequency-difference problems.",
+    "reasonZH": "本题通过将两类元素映射为相反数，把等数量子数组转化为重复前缀和。它训练强大的问题变换技巧，广泛适用于平衡、奇偶和频次差问题。"
+  },
+  {
+    "slug": "contiguous-sequence-lcci",
+    "reasonEN": "A core maximum-subarray exercise that distills dynamic programming into the choice between extending or restarting a segment. It builds the Kadane-style invariant and provides a foundation for divide-and-conquer and sequence DP variations.",
+    "reasonZH": "本题是最大子数组和的核心练习，将动态规划浓缩为“延续当前段”或“从当前位置重启”的选择。它建立 Kadane 式不变量，是分治和序列 DP 变体的基础。"
+  },
+  {
+    "slug": "continuous-median-lcci",
+    "reasonEN": "This streaming-data design problem uses two heaps to keep the lower and upper halves balanced. It trains heap invariants, rebalancing operations, and online query design, all central to real-time percentile and median systems.",
+    "reasonZH": "本题是数据流设计题，使用双堆维持较小半区与较大半区的平衡。它训练堆不变量、再平衡操作和在线查询设计，是实时中位数与分位数系统的核心基础。"
+  }
+]

@@ -1,0 +1,710 @@
+[
+  {
+    "slug": "airplane-seat-assignment-probability",
+    "frontendDisplayId": "1227",
+    "titleEn": "Airplane Seat Assignment Probability",
+    "titleZh": "飞机座位分配概率",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Brainteaser",
+      "Dynamic Programming",
+      "Math",
+      "Probability and Statistics"
+    ],
+    "tagLabelsZh": [
+      "脑筋急转弯",
+      "动态规划",
+      "数学",
+      "概率与统计"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/airplane-seat-assignment-probability/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "alert-using-same-key-card-three-or-more-times-in-a-one-hour-period",
+    "frontendDisplayId": "1604",
+    "titleEn": "Alert Using Same Key-Card Three or More Times in a One Hour Period",
+    "titleZh": "警告一小时内使用相同员工卡大于等于三次的人",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/alert-using-same-key-card-three-or-more-times-in-a-one-hour-period/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "alice-and-bob-playing-flower-game",
+    "frontendDisplayId": "3021",
+    "titleEn": "Alice and Bob Playing Flower Game",
+    "titleZh": "Alice 和 Bob 玩鲜花游戏",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/alice-and-bob-playing-flower-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "all-ancestors-of-a-node-in-a-directed-acyclic-graph",
+    "frontendDisplayId": "2192",
+    "titleEn": "All Ancestors of a Node in a Directed Acyclic Graph",
+    "titleZh": "有向无环图中一个节点的所有祖先",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/all-ancestors-of-a-node-in-a-directed-acyclic-graph/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "all-divisions-with-the-highest-score-of-a-binary-array",
+    "frontendDisplayId": "2155",
+    "titleEn": "All Divisions With the Highest Score of a Binary Array",
+    "titleZh": "分组得分最高的所有下标",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/all-divisions-with-the-highest-score-of-a-binary-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "all-elements-in-two-binary-search-trees",
+    "frontendDisplayId": "1305",
+    "titleEn": "All Elements in Two Binary Search Trees",
+    "titleZh": "两棵二叉搜索树中的所有元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Sorting",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "排序",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/all-elements-in-two-binary-search-trees/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "all-nodes-distance-k-in-binary-tree",
+    "frontendDisplayId": "863",
+    "titleEn": "All Nodes Distance K in Binary Tree",
+    "titleZh": "二叉树中所有距离为 K 的结点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/all-nodes-distance-k-in-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "all-oone-data-structure",
+    "frontendDisplayId": "432",
+    "titleEn": "All O`one Data Structure",
+    "titleZh": "全 O(1) 的数据结构",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Design",
+      "Doubly-Linked List",
+      "Hash Table",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "双向链表",
+      "哈希表",
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/all-oone-data-structure/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "all-paths-from-source-to-target",
+    "frontendDisplayId": "797",
+    "titleEn": "All Paths From Source to Target",
+    "titleZh": "所有可能的路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "广度优先搜索",
+      "深度优先搜索",
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/all-paths-from-source-to-target/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "all-possible-full-binary-trees",
+    "frontendDisplayId": "894",
+    "titleEn": "All Possible Full Binary Trees",
+    "titleZh": "所有可能的真二叉树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Dynamic Programming",
+      "Memoization",
+      "Recursion",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "动态规划",
+      "记忆化",
+      "递归",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/all-possible-full-binary-trees/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "allocate-mailboxes",
+    "frontendDisplayId": "1478",
+    "titleEn": "Allocate Mailboxes",
+    "titleZh": "安排邮筒",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/allocate-mailboxes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "allow-one-function-call",
+    "frontendDisplayId": "2666",
+    "titleEn": "Allow One Function Call",
+    "titleZh": "只允许一次函数调用",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/allow-one-function-call/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "alphabet-board-path",
+    "frontendDisplayId": "1138",
+    "titleEn": "Alphabet Board Path",
+    "titleZh": "字母板上的路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/alphabet-board-path/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "alternating-digit-sum",
+    "frontendDisplayId": "2544",
+    "titleEn": "Alternating Digit Sum",
+    "titleZh": "交替数字和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/alternating-digit-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "alternating-groups-i",
+    "frontendDisplayId": "3206",
+    "titleEn": "Alternating Groups I",
+    "titleZh": "交替组 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/alternating-groups-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "alternating-groups-ii",
+    "frontendDisplayId": "3208",
+    "titleEn": "Alternating Groups II",
+    "titleZh": "交替组 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/alternating-groups-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "alternating-groups-iii",
+    "frontendDisplayId": "3245",
+    "titleEn": "Alternating Groups III",
+    "titleZh": "交替组 III",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Ordered Set"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "有序集合"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/alternating-groups-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ambiguous-coordinates",
+    "frontendDisplayId": "816",
+    "titleEn": "Ambiguous Coordinates",
+    "titleZh": "模糊坐标",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Enumeration",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "枚举",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/ambiguous-coordinates/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "amount-of-time-for-binary-tree-to-be-infected",
+    "frontendDisplayId": "2385",
+    "titleEn": "Amount of Time for Binary Tree to Be Infected",
+    "titleZh": "感染二叉树需要的总时间",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/amount-of-time-for-binary-tree-to-be-infected/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "analyze-organization-hierarchy",
+    "frontendDisplayId": "3482",
+    "titleEn": "Analyze Organization Hierarchy",
+    "titleZh": "分析组织层级",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/analyze-organization-hierarchy/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "analyze-subscription-conversion",
+    "frontendDisplayId": "3497",
+    "titleEn": "Analyze Subscription Conversion",
+    "titleZh": "分析订阅转化",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/analyze-subscription-conversion/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "angle-between-hands-of-a-clock",
+    "frontendDisplayId": "1344",
+    "titleEn": "Angle Between Hands of a Clock",
+    "titleZh": "时钟指针的夹角",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/angle-between-hands-of-a-clock/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "angles-of-a-triangle",
+    "frontendDisplayId": "3899",
+    "titleEn": "Angles of a Triangle",
+    "titleZh": "三角形的内角度数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/angles-of-a-triangle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "animal-shelter-lcci",
+    "frontendDisplayId": "面试题 03.06",
+    "titleEn": null,
+    "titleZh": "动物收容所",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Design",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "队列"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/animal-shelter-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ant-on-the-boundary",
+    "frontendDisplayId": "3028",
+    "titleEn": "Ant on the Boundary",
+    "titleZh": "边界上的蚂蚁",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/ant-on-the-boundary/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "append-characters-to-string-to-make-subsequence",
+    "frontendDisplayId": "2486",
+    "titleEn": "Append Characters to String to Make Subsequence",
+    "titleZh": "追加字符以获得子序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/append-characters-to-string-to-make-subsequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "append-k-integers-with-minimal-sum",
+    "frontendDisplayId": "2195",
+    "titleEn": "Append K Integers With Minimal Sum",
+    "titleZh": "向数组中追加 K 个整数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/append-k-integers-with-minimal-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "apple-redistribution-into-boxes",
+    "frontendDisplayId": "3074",
+    "titleEn": "Apple Redistribution into Boxes",
+    "titleZh": "重新分装苹果",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/apple-redistribution-into-boxes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "apply-bitwise-operations-to-make-strings-equal",
+    "frontendDisplayId": "2546",
+    "titleEn": "Apply Bitwise Operations to Make Strings Equal",
+    "titleZh": "执行逐位运算使字符串相等",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/apply-bitwise-operations-to-make-strings-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "apply-discount-every-n-orders",
+    "frontendDisplayId": "1357",
+    "titleEn": "Apply Discount Every n Orders",
+    "titleZh": "每隔 n 个顾客打折",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/apply-discount-every-n-orders/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-06",
+    "claimedAt": "2026-07-09T13:57:08.894278+00:00",
+    "completedAt": null
+  }
+]

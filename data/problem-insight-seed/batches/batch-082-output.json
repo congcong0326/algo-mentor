@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "minimum-money-required-before-transactions",
+    "reasonEN": "A hard transaction-ordering greedy problem that separates unavoidable losses from the final transaction's required reserve. It teaches deriving a worst-case initial-capital bound and proving why transaction order determines the peak requirement.",
+    "reasonZH": "高难度交易排序贪心题，需要区分不可避免的损失与最后一笔交易所需保留资金。它能训练推导最坏初始资金下界，并证明交易顺序为何决定峰值需求。"
+  },
+  {
+    "slug": "minimum-moves-to-balance-circular-array",
+    "reasonEN": "A circular-array balancing problem that uses sorted deficits and surpluses to minimize redistribution work. It develops conservation-based greedy reasoning and the care needed when linearizing a cyclic structure.",
+    "reasonZH": "循环数组平衡题，利用排序后的盈余与亏空匹配来最小化搬运次数。它能训练守恒量驱动的贪心推理，以及将环形结构线性化时的边界处理。"
+  },
+  {
+    "slug": "minimum-moves-to-capture-the-queen",
+    "reasonEN": "A compact chess-geometry problem that checks rook and bishop attack lines while accounting for blocking pieces. It reinforces coordinate alignment tests and precise obstruction conditions without full board simulation.",
+    "reasonZH": "简洁的棋盘几何题，需要检查车和象的攻击线并考虑阻挡棋子。它能训练坐标对齐判断和精确的遮挡条件，无需完整模拟棋盘。"
+  },
+  {
+    "slug": "minimum-moves-to-clean-the-classroom",
+    "reasonEN": "A grid shortest-path problem with collectible-state tracking, typically modeled as BFS over position and a bitmask of cleaned targets. It develops state augmentation and recognizing when ordinary coordinate BFS is insufficient.",
+    "reasonZH": "带收集状态的网格最短路题，通常以位置和已清理目标的位掩码作为 BFS 状态。它能训练状态扩展，并理解何时普通坐标 BFS 无法表达任务进度。"
+  },
+  {
+    "slug": "minimum-moves-to-convert-string",
+    "reasonEN": "An easy greedy string scan that converts from the first uncovered mismatch and skips the positions affected by that operation. It establishes interval-effect simulation and the proof that delaying a necessary operation cannot help.",
+    "reasonZH": "入门字符串贪心扫描题，从首个未覆盖的失配位置开始转换，并跳过该操作影响的后续字符。它能建立区间影响模拟，以及必要操作无需延后的贪心证明。"
+  },
+  {
+    "slug": "minimum-moves-to-equal-array-elements",
+    "reasonEN": "A mathematical array problem whose increment-all-but-one operation is equivalent to decreasing one element. It teaches reframing operations and deriving the answer directly from the total sum and minimum value.",
+    "reasonZH": "数学数组题，将每次给除一个元素外的所有元素加一，等价改写为给一个元素减一。它能训练重构操作语义，并从总和与最小值直接推导答案。"
+  },
+  {
+    "slug": "minimum-moves-to-equal-array-elements-ii",
+    "reasonEN": "An L1 minimization problem where any median minimizes the sum of absolute deviations. It reinforces median optimality, sorting as a proof tool, and efficient pairwise-difference accumulation.",
+    "reasonZH": "L1 距离最小化题，任一中位数都能最小化绝对偏差之和。它能训练中位数最优性、排序作为证明工具，以及高效累计成对差值。"
+  },
+  {
+    "slug": "minimum-moves-to-equal-array-elements-iii",
+    "reasonEN": "An easy arithmetic array problem that identifies the invariant created by its allowed equalization operation. It is useful for translating repeated moves into a closed-form difference or divisibility calculation.",
+    "reasonZH": "入门算术数组题，关键是识别允许操作带来的不变量。它能训练将重复移动转化为闭式差值或整除计算，而不是逐步模拟。"
+  },
+  {
+    "slug": "minimum-moves-to-make-array-complementary",
+    "reasonEN": "A difference-array optimization problem that records how each symmetric pair changes the cost over all possible target sums. It teaches range-add modeling, prefix recovery, and replacing per-target simulation with aggregate events.",
+    "reasonZH": "差分数组优化题，记录每个对称数对在所有目标和上的成本变化区间。它能训练区间加法建模、前缀恢复，以及用聚合事件替代逐目标模拟。"
+  },
+  {
+    "slug": "minimum-moves-to-move-a-box-to-their-target-location",
+    "reasonEN": "A hard push-box search problem that distinguishes cheap player walking from costly box pushes, often solved with layered BFS or Dijkstra states. It develops state modeling with orientation and the correct optimization objective for constrained movement.",
+    "reasonZH": "高难度推箱子搜索题，需要区分玩家行走与推动箱子的代价，常用分层 BFS 或 Dijkstra 状态求解。它能训练包含朝向的状态建模，以及受约束移动中正确的优化目标。"
+  },
+  {
+    "slug": "minimum-moves-to-pick-k-ones",
+    "reasonEN": "A hard positional-cost optimization problem that combines a sliding window over one positions with prefix sums for median-distance costs. It teaches choosing a contiguous target group and balancing direct collection against special operations.",
+    "reasonZH": "高难度位置成本优化题，结合 1 的位置滑动窗口与前缀和计算到中位数的移动成本。它能训练选择连续目标组，并权衡直接收集和特殊操作。"
+  },
+  {
+    "slug": "minimum-moves-to-reach-target-in-grid",
+    "reasonEN": "A hard mathematical reachability problem that derives the minimum move count from coordinate differences and move invariants. It develops parity and distance reasoning that replaces exhaustive grid traversal with a direct formula.",
+    "reasonZH": "高难度数学可达性题，需要从坐标差和移动不变量推导最少步数。它能训练奇偶性与距离分析，用直接公式替代网格枚举搜索。"
+  },
+  {
+    "slug": "minimum-moves-to-reach-target-score",
+    "reasonEN": "A reverse greedy problem that works backward from the target, using division whenever limited doubling operations can be saved. It teaches why reversing an operation sequence often exposes forced optimal choices.",
+    "reasonZH": "逆向贪心题，从目标值反推，在可节省有限翻倍次数时优先做除法。它能训练理解为何反向操作序列常能暴露被迫的最优选择。"
+  },
+  {
+    "slug": "minimum-moves-to-reach-target-with-rotations",
+    "reasonEN": "A hard grid BFS problem whose state includes both the snake position and orientation, with translation and rotation transitions. It is a strong exercise in encoding composite states and validating every occupied cell during movement.",
+    "reasonZH": "高难度网格 BFS 题，状态同时包含蛇的位置和朝向，并枚举平移与旋转转移。它能训练复合状态编码，以及移动时验证所有占用单元的能力。"
+  },
+  {
+    "slug": "minimum-moves-to-spread-stones-over-grid",
+    "reasonEN": "A small-grid assignment problem that matches surplus stones to empty cells through backtracking or bitmask DP. It develops minimum-cost matching intuition and the advantage of exhaustive state search under tiny constraints.",
+    "reasonZH": "小规模网格分配题，需要通过回溯或位压缩 DP 将多余石头匹配到空格。它能训练最小成本匹配直觉，以及小约束下穷举状态搜索的优势。"
+  },
+  {
+    "slug": "minimum-non-zero-product-of-the-array-elements",
+    "reasonEN": "A bitwise mathematical construction that pairs complementary values to minimize a nonzero product, then uses fast modular exponentiation. It teaches deriving extremal arrangements from binary complements and implementing large powers safely.",
+    "reasonZH": "位运算数学构造题，通过配对二进制互补数最小化非零乘积，再使用快速模幂计算。它能训练从二进制互补关系推导极值构造，并安全处理大指数。"
+  },
+  {
+    "slug": "minimum-number-game",
+    "reasonEN": "An easy sorting simulation that repeatedly takes the two smallest values and appends them in the required swapped order. It reinforces extracting a global ordering before implementing deterministic pair operations.",
+    "reasonZH": "入门排序模拟题，反复取出两个最小值并按要求的交换顺序写入结果。它能训练先获得全局顺序，再实现确定性成对操作的思路。"
+  },
+  {
+    "slug": "minimum-number-of-arrows-to-burst-balloons",
+    "reasonEN": "A canonical interval-stabbing greedy problem that sorts by right endpoint and fires an arrow at the earliest possible end. It proves why an earliest-ending choice maximizes overlap with future intervals.",
+    "reasonZH": "经典区间刺点贪心题，按右端点排序并在最早可行终点射箭。它能训练证明最早结束选择为何能与更多后续区间重叠。"
+  },
+  {
+    "slug": "minimum-number-of-chairs-in-a-waiting-room",
+    "reasonEN": "A simple event simulation that tracks the current number of occupants and records its maximum. It establishes the running-balance pattern behind capacity planning, sweep lines, and resource counters.",
+    "reasonZH": "简单事件模拟题，维护当前人数并记录其最大值。它能建立运行余额模式，是容量规划、扫描线和资源计数的基础。"
+  },
+  {
+    "slug": "minimum-number-of-changes-to-make-binary-string-beautiful",
+    "reasonEN": "A string pairing problem that inspects each fixed adjacent block and counts mismatches requiring one change. It reinforces recognizing independent local constraints and reducing a global condition to disjoint pairs.",
+    "reasonZH": "字符串配对题，检查每个固定相邻块并统计需要一次修改的失配块。它能训练识别独立局部约束，将全局条件化简为互不相交的数对。"
+  },
+  {
+    "slug": "minimum-number-of-coins-for-fruits",
+    "reasonEN": "A DP optimization problem with a moving eligibility range, accelerated by a monotonic queue or heap. It teaches turning purchase rules into transitions and maintaining the minimum candidate state as the range slides.",
+    "reasonZH": "带滑动可选范围的 DP 优化题，可用单调队列或堆加速最小状态查询。它能训练将购买规则转化为转移，并在范围移动时维护最优候选。"
+  },
+  {
+    "slug": "minimum-number-of-coins-to-be-added",
+    "reasonEN": "A coverage-interval greedy problem that maintains the largest consecutive sum range currently constructible and patches the first gap when needed. It is a core exercise in proving greedy coin augmentation by induction.",
+    "reasonZH": "覆盖区间贪心题，维护当前可构造的连续和范围，并在出现首个缺口时补入硬币。它是训练通过归纳证明贪心补币策略的核心题。"
+  },
+  {
+    "slug": "minimum-number-of-days-to-disconnect-island",
+    "reasonEN": "A hard connectivity problem that first counts islands, then tests the impact of removing critical land cells. It develops articulation-point intuition on grids and the observation that a small number of removals always suffices.",
+    "reasonZH": "高难度连通性题，先统计岛屿数量，再测试移除关键陆地单元的影响。它能训练网格上的割点直觉，并理解只需少量删除即可完成断开的性质。"
+  },
+  {
+    "slug": "minimum-number-of-days-to-eat-n-oranges",
+    "reasonEN": "A memoized recurrence problem that compares paying remainders to make a number divisible by two or three before consuming a large fraction. It teaches reducing huge numeric states through divide-and-conquer transitions.",
+    "reasonZH": "记忆化递推题，需要比较先吃掉余数以凑成可被二或三整除，再大量消耗的代价。它能训练通过分治式转移压缩巨大数值状态。"
+  },
+  {
+    "slug": "minimum-number-of-days-to-make-m-bouquets",
+    "reasonEN": "A binary-search-on-answer problem with a linear feasibility scan that counts consecutive bloomed flowers. It reinforces monotone predicates, tight bounds, and resetting runs after an unavailable flower.",
+    "reasonZH": "二分答案题，通过线性扫描统计连续开放花朵来判断可行性。它能训练单调谓词、紧致边界，以及遇到不可用花朵后重置连续段。"
+  },
+  {
+    "slug": "minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix",
+    "reasonEN": "A hard state-space BFS problem that encodes the entire small binary matrix as a bitmask and flips local neighborhoods per move. It builds fluency with bit-level state transitions and shortest paths in implicit graphs.",
+    "reasonZH": "高难度状态空间 BFS 题，将小型二进制矩阵编码为位掩码，并在每步翻转局部邻域。它能训练位级状态转移，以及隐式图上的最短路搜索。"
+  },
+  {
+    "slug": "minimum-number-of-flips-to-make-binary-grid-palindromic-i",
+    "reasonEN": "A matrix symmetry problem that compares mirrored cell pairs along candidate row or column palindromic axes. It teaches decomposing flip costs into independent two-cell decisions and choosing the better orientation.",
+    "reasonZH": "矩阵对称性题，比较候选行或列回文轴两侧的镜像单元对。它能训练将翻转成本分解为独立的两单元决策，并选择更优方向。"
+  },
+  {
+    "slug": "minimum-number-of-flips-to-make-binary-grid-palindromic-ii",
+    "reasonEN": "A symmetry-counting matrix problem that groups four rotationally related cells and handles central row or column residues separately. It develops orbit-based reasoning and the subtle parity constraints left after local minimization.",
+    "reasonZH": "矩阵对称计数题，将旋转相关的四个单元分组，并单独处理中心行或中心列残余。它能训练轨道分组思维，以及局部最小化后仍需满足的细微奇偶约束。"
+  },
+  {
+    "slug": "minimum-number-of-flips-to-make-the-binary-string-alternating",
+    "reasonEN": "A circular-string sliding-window problem that compares each length-n window against both alternating patterns after doubling the string. It teaches rotation handling through duplication and incremental mismatch maintenance.",
+    "reasonZH": "环形字符串滑动窗口题，将字符串复制一遍后，对每个长度为 n 的窗口比较两种交替模式。它能训练通过复制处理旋转，以及增量维护失配数量。"
+  },
+  {
+    "slug": "minimum-number-of-flips-to-reverse-binary-string",
+    "reasonEN": "An easy two-pointer string comparison problem that pairs symmetric positions with their required reversed counterparts. It reinforces extracting independent mismatch contributions and using bitwise or character comparisons cleanly.",
+    "reasonZH": "入门双指针字符串比较题，将对称位置与其反转后应匹配的字符配对检查。它能训练提取独立失配贡献，并清晰使用字符或位运算比较。"
+  }
+]

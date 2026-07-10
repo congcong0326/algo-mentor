@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "count-non-decreasing-subarrays-after-k-operations",
+    "reasonEN": "A hard sliding-window and monotonic-stack problem that maintains the cost of repairing a window into non-decreasing order. It trains amortized updates, grouped contributions, and budget-based boundary movement, making it a strong advanced pattern for array optimization.",
+    "reasonZH": "这是一道高难度的滑动窗口与单调栈综合题，核心是维护把窗口修复为非递减序列所需的代价。它训练分组贡献、均摊更新和预算驱动的边界移动，是进阶数组优化思维的代表题。"
+  },
+  {
+    "slug": "count-number-of-bad-pairs",
+    "reasonEN": "This medium counting problem turns a pair condition into grouping by an invariant such as nums[i] - i. It reinforces algebraic transformation and online frequency accumulation, a reusable technique for reducing quadratic pair counting to linear time.",
+    "reasonZH": "本题是中等难度的哈希计数题，关键在于将数对条件变形为按 nums[i] - i 分组。它训练代数化简与在线频次统计，是把平方级数对枚举降为线性复杂度的通用技巧。"
+  },
+  {
+    "slug": "count-number-of-balanced-permutations",
+    "reasonEN": "A hard combinatorics DP problem centered on distributing repeated digits between position groups with equal sums. It develops frequency-based state design, combination counting, and modular arithmetic, which are essential for duplicate-aware permutation problems.",
+    "reasonZH": "这是一道高难度组合数学 DP 题，核心是将重复数字分配到两组位置并保持数位和相等。它训练按频次设计状态、组合计数和模运算处理，是掌握含重复元素排列计数的重要题目。"
+  },
+  {
+    "slug": "count-number-of-distinct-integers-after-reverse-operations",
+    "reasonEN": "This medium hashing exercise uses digit reversal as a normalization transform before deduplication. It highlights representation details such as leading zeros and shows how a set can make closure-style transformations straightforward to implement.",
+    "reasonZH": "本题是中等难度的哈希集合练习，通过数字反转这一变换后再去重。它强调前导零等表示细节，并展示了如何用集合简洁处理元素变换后的闭包计数。"
+  },
+  {
+    "slug": "count-number-of-homogenous-substrings",
+    "reasonEN": "A compact string-counting problem based on maximal equal-character runs and triangular-number contributions. It builds the habit of converting local structure into aggregate counts while handling modular arithmetic correctly.",
+    "reasonZH": "这是一道简洁的字符串计数题，利用连续相同字符段及其三角数贡献完成统计。它训练从局部结构推导整体数量，并巩固模运算下的计数实现。"
+  },
+  {
+    "slug": "count-number-of-maximum-bitwise-or-subsets",
+    "reasonEN": "This medium backtracking problem uses the global OR target to count qualifying subsets. It strengthens subset enumeration, incremental bitwise-state updates, and the distinction between optimizing a value and counting all ways to attain it.",
+    "reasonZH": "本题是中等难度的回溯枚举题，先确定全局按位或目标，再统计达到目标的子集。它训练子集枚举、位运算状态递推，以及区分最优值与最优方案数的能力。"
+  },
+  {
+    "slug": "count-number-of-nice-subarrays",
+    "reasonEN": "A canonical exact-K subarray counting problem, solvable through odd-count prefix frequencies or an at-most sliding-window transformation. It is valuable for learning how parity features convert subarray conditions into reusable counting templates.",
+    "reasonZH": "这是一道经典的恰好 K 类子数组计数题，可用奇数个数前缀和频次或至多 K 的滑动窗口转化求解。它训练将奇偶特征转化为通用子数组计数模板的能力。"
+  },
+  {
+    "slug": "count-number-of-pairs-with-absolute-difference-k",
+    "reasonEN": "An easy frequency-counting problem that replaces pair enumeration with lookup of compatible values. It teaches one-pass hash-table counting and the important duplicate-handling edge case when k equals zero.",
+    "reasonZH": "本题是入门级频次统计题，用查找满足差值的历史元素代替数对枚举。它训练单遍哈希计数，并强调 k 为零时重复元素的边界处理。"
+  },
+  {
+    "slug": "count-number-of-possible-root-nodes",
+    "reasonEN": "This hard tree rerooting problem computes one root's score and updates it when crossing each edge. It develops directional-edge modeling, DFS traversal, and reroot DP, a powerful pattern for evaluating every possible tree root efficiently.",
+    "reasonZH": "这是一道高难度树形换根题，先计算一个根的猜测得分，再沿边换根时增量修正。它训练有向边建模、DFS 遍历和换根 DP，是高效评估所有树根的核心模式。"
+  },
+  {
+    "slug": "count-number-of-rectangles-containing-each-point",
+    "reasonEN": "A medium offline-query problem that groups rectangles by one dimension and uses binary search or frequency accumulation on the other. It teaches how bounded coordinates and sorting can turn geometric containment queries into efficient counting.",
+    "reasonZH": "本题是中等难度离线查询题，按一个维度分组矩形，再对另一个维度进行二分或频次累计。它训练利用坐标范围和排序，把几何包含查询转化为高效计数。"
+  },
+  {
+    "slug": "count-number-of-special-subsequences",
+    "reasonEN": "This hard DP problem models subsequences with a small ordered state machine. Careful update order is the key point, making it excellent practice for counting subsequences without accidentally reusing the current element.",
+    "reasonZH": "这是一道高难度动态规划题，用有限的有序状态机描述目标子序列。状态更新顺序是关键，能有效训练避免当前元素被重复使用的子序列计数技巧。"
+  },
+  {
+    "slug": "count-number-of-teams",
+    "reasonEN": "A medium order-statistics problem that counts smaller and larger elements on both sides of each pivot. It strengthens coordinate compression and Fenwick-tree reasoning, with a clear contrast to the simpler quadratic baseline.",
+    "reasonZH": "本题是中等难度的顺序统计题，需要统计每个枢轴左右两侧更小和更大的元素数。它训练坐标压缩与树状数组思维，并能清晰理解相对朴素平方枚举的优化过程。"
+  },
+  {
+    "slug": "count-number-of-texts",
+    "reasonEN": "This medium run-length DP problem turns repeated keypad presses into short recurrence relations. It reinforces segmentation counting, modular DP, and adapting transitions when different symbols have different maximum group sizes.",
+    "reasonZH": "这是一道中等难度的连续段 DP 题，将连续按键转化为简短递推关系。它训练分段计数、模 DP，以及根据不同按键最大分组长度调整转移。"
+  },
+  {
+    "slug": "count-number-of-trapezoids-i",
+    "reasonEN": "A medium geometry-counting problem that aggregates horizontal segment choices by y-coordinate. It teaches how to replace point quadruple enumeration with combinations of line-level counts, a useful geometric counting reduction.",
+    "reasonZH": "本题是中等难度的几何计数题，按 y 坐标聚合同一水平线上的线段选择。它训练用直线层面的组合计数替代四点枚举，是几何计数降维的实用方法。"
+  },
+  {
+    "slug": "count-number-of-trapezoids-ii",
+    "reasonEN": "This hard geometry problem requires grouping parallel segments by normalized direction while correcting degenerate overcounts. It develops robust slope representation, combinatorial aggregation, and duplicate-structure handling in advanced plane geometry.",
+    "reasonZH": "这是一道高难度几何题，需要按规范化方向聚合平行线段，并修正退化结构造成的重复计数。它训练斜率表示、组合聚合与复杂平面几何中的去重处理。"
+  },
+  {
+    "slug": "count-number-of-ways-to-place-houses",
+    "reasonEN": "A medium linear DP problem whose no-adjacent-placement constraint yields a Fibonacci-style recurrence. It demonstrates state compression and the independence of the two street sides, making a small model produce a complete counting solution.",
+    "reasonZH": "本题是中等难度的一维 DP 题，相邻不能放置的约束自然导出 Fibonacci 型递推。它训练状态压缩，并利用街道两侧相互独立完成组合计数。"
+  },
+  {
+    "slug": "count-numbers-with-non-decreasing-digits",
+    "reasonEN": "A hard digit-DP problem that tracks tightness and the previous chosen digit to enforce monotonic digits. It is a valuable bridge from simple digit enumeration to range counting under positional constraints.",
+    "reasonZH": "这是一道高难度数位 DP 题，通过记录是否贴上界和上一位数字来保证数位非递减。它是从简单数位枚举过渡到带位置约束区间计数的重要练习。"
+  },
+  {
+    "slug": "count-numbers-with-unique-digits",
+    "reasonEN": "This medium combinatorial DP problem counts valid digit prefixes while respecting the limited digit alphabet. It teaches permutation-style multiplication, boundary handling when length exceeds ten, and the connection between backtracking and DP counting.",
+    "reasonZH": "本题是中等难度组合 DP 题，在有限数字集合中统计各位互异的合法前缀。它训练排列式乘法、长度超过十的边界处理，以及回溯与 DP 计数之间的联系。"
+  },
+  {
+    "slug": "count-odd-numbers-in-an-interval-range",
+    "reasonEN": "An easy arithmetic problem that derives an inclusive range count from endpoint parity rather than iteration. It sharpens formula construction and off-by-one discipline, both foundational skills for range problems.",
+    "reasonZH": "这是一道入门级数学题，通过端点奇偶性直接推导闭区间计数，无需逐项遍历。它训练公式构造与边界加一判断，是区间问题的基础能力。"
+  },
+  {
+    "slug": "count-of-integers",
+    "reasonEN": "A hard bounded digit-DP problem that combines numeric tightness with digit-sum states and range subtraction. It trains reusable count-up-to helpers, leading-zero treatment, and modular memoization for constrained integer ranges.",
+    "reasonZH": "本题是高难度有界数位 DP 题，结合贴上界状态、数位和状态与区间相减。它训练可复用的前缀计数函数、前导零处理和受限整数范围的记忆化设计。"
+  },
+  {
+    "slug": "count-of-interesting-subarrays",
+    "reasonEN": "A medium prefix-modulo counting problem that maps each element to whether it contributes to a residue. It reinforces modular prefix invariants, frequency maps, and normalization of negative remainders.",
+    "reasonZH": "这是一道中等难度前缀模计数题，将元素映射为是否对余数产生贡献。它训练模前缀不变量、频次哈希表，以及负余数规范化等细节。"
+  },
+  {
+    "slug": "count-of-matches-in-tournament",
+    "reasonEN": "This easy simulation problem reveals the invariant that every elimination consumes exactly one match. It is useful for practicing direct process modeling and recognizing when a global invariant can replace case-by-case simulation.",
+    "reasonZH": "本题是入门级模拟题，核心不变量是每淘汰一支队伍恰好产生一场比赛。它训练直接过程建模，并帮助识别何时可用全局不变量替代分情况模拟。"
+  },
+  {
+    "slug": "count-of-range-sum",
+    "reasonEN": "A hard prefix-sum and divide-and-conquer problem that counts valid cross-half pairs during merge sort. It develops sorted-window pointer techniques, long-integer safety, and a classic way to solve constrained range-sum counting.",
+    "reasonZH": "这是一道高难度前缀和与分治题，在归并排序过程中统计跨区间的合法数对。它训练有序窗口双指针、长整型边界意识，以及受限区间和计数的经典解法。"
+  },
+  {
+    "slug": "count-of-smaller-numbers-after-self",
+    "reasonEN": "This hard order-statistics problem counts right-side smaller values through merge-sort indices or a Fenwick tree. It is a cornerstone exercise for preserving positional information while accumulating inversion-like contributions.",
+    "reasonZH": "本题是高难度顺序统计题，可借助归并排序索引或树状数组统计右侧更小元素。它训练在排序过程中保留原位置，并累计类似逆序对贡献的核心能力。"
+  },
+  {
+    "slug": "count-of-sub-multisets-with-bounded-sum",
+    "reasonEN": "A hard bounded-knapsack counting problem that compresses equal values and optimizes transitions with residue-class sliding windows. It teaches frequency compression, multiplicity-aware DP, and how to avoid repeated work in bounded sums.",
+    "reasonZH": "这是一道高难度有界背包计数题，通过压缩相同元素，并用按余数分类的滑动窗口优化转移。它训练频次压缩、考虑重数的 DP，以及避免有界和重复计算的方法。"
+  },
+  {
+    "slug": "count-of-substrings-containing-every-vowel-and-k-consonants-i",
+    "reasonEN": "A medium string-window problem that tracks vowel coverage together with an exact consonant count. It builds reliable frequency-map maintenance and boundary reasoning for substring constraints involving several simultaneous conditions.",
+    "reasonZH": "本题是中等难度字符串窗口题，同时维护元音覆盖情况和恰好 K 个辅音的条件。它训练频次表维护与边界推理，适合掌握多条件子串约束。"
+  },
+  {
+    "slug": "count-of-substrings-containing-every-vowel-and-k-consonants-ii",
+    "reasonEN": "This medium advanced sliding-window problem derives exact-K counts from two at-most windows while preserving all-vowel coverage. It sharpens monotonic-condition counting and demonstrates how a mathematical subtraction unlocks linear time.",
+    "reasonZH": "这是一道中等难度进阶滑动窗口题，通过两个至多 K 窗口相减得到恰好 K 的计数，同时保持全部元音覆盖。它训练单调条件计数，并展示数学转化如何实现线性复杂度。"
+  },
+  {
+    "slug": "count-operations-to-obtain-zero",
+    "reasonEN": "An easy simulation problem based on repeated subtraction, with a natural connection to the Euclidean algorithm. It reinforces loop invariants and invites comparison between literal simulation and quotient-based optimization.",
+    "reasonZH": "本题是入门级模拟题，基于反复相减过程，并可自然关联到欧几里得算法。它训练循环不变量，也适合比较直接模拟与按商优化的差异。"
+  },
+  {
+    "slug": "count-pairs-of-connectable-servers-in-a-weighted-tree-network",
+    "reasonEN": "A medium tree DFS problem that counts divisible-distance nodes separately in each branch of a chosen center. It teaches branch isolation, path-distance accumulation, and incremental pair combination without double counting.",
+    "reasonZH": "这是一道中等难度树形 DFS 题，针对每个中心分别统计各分支中距离可整除的节点。它训练分支隔离、路径距离累积和增量组合数对，避免重复计数。"
+  },
+  {
+    "slug": "count-pairs-of-nodes",
+    "reasonEN": "A hard graph-counting problem that combines degree sums, sorting, two pointers, and corrections for repeated edges. It develops the important skill of separating a global count from local duplicate adjustments in dense graph queries.",
+    "reasonZH": "本题是高难度图计数题，结合度数和、排序、双指针与重复边修正。它训练先得到全局计数再处理局部重复影响的思路，适合掌握稠密图查询优化。"
+  }
+]

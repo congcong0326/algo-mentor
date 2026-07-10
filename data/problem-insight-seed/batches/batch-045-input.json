@@ -1,0 +1,726 @@
+[
+  {
+    "slug": "find-the-closest-palindrome",
+    "frontendDisplayId": "564",
+    "titleEn": "Find the Closest Palindrome",
+    "titleZh": "寻找最近的回文数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-closest-palindrome/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-count-of-good-integers",
+    "frontendDisplayId": "3272",
+    "titleEn": "Find the Count of Good Integers",
+    "titleZh": "统计好整数的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Enumeration",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "枚举",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-count-of-good-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-count-of-monotonic-pairs-i",
+    "frontendDisplayId": "3250",
+    "titleEn": "Find the Count of Monotonic Pairs I",
+    "titleZh": "单调数组对的数目 I",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "动态规划",
+      "数学",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-count-of-monotonic-pairs-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-count-of-monotonic-pairs-ii",
+    "frontendDisplayId": "3251",
+    "titleEn": "Find the Count of Monotonic Pairs II",
+    "titleZh": "单调数组对的数目 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "动态规划",
+      "数学",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-count-of-monotonic-pairs-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-count-of-numbers-which-are-not-special",
+    "frontendDisplayId": "3233",
+    "titleEn": "Find the Count of Numbers Which Are Not Special",
+    "titleZh": "统计不是特殊数字的数字数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-count-of-numbers-which-are-not-special/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-degree-of-each-vertex",
+    "frontendDisplayId": "3898",
+    "titleEn": "Find the Degree of Each Vertex",
+    "titleZh": "统计每个顶点的度",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-degree-of-each-vertex/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-difference",
+    "frontendDisplayId": "389",
+    "titleEn": "Find the Difference",
+    "titleZh": "找不同",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-difference/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-difference-of-two-arrays",
+    "frontendDisplayId": "2215",
+    "titleEn": "Find the Difference of Two Arrays",
+    "titleZh": "找出两数组的不同",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-difference-of-two-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-distance-value-between-two-arrays",
+    "frontendDisplayId": "1385",
+    "titleEn": "Find the Distance Value Between Two Arrays",
+    "titleZh": "两个数组间的距离值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-distance-value-between-two-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-distinct-difference-array",
+    "frontendDisplayId": "2670",
+    "titleEn": "Find the Distinct Difference Array",
+    "titleZh": "找出不同元素数目差数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-distinct-difference-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-divisibility-array-of-a-string",
+    "frontendDisplayId": "2575",
+    "titleEn": "Find the Divisibility Array of a String",
+    "titleZh": "找出字符串的可整除数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-divisibility-array-of-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-duplicate-number",
+    "frontendDisplayId": "287",
+    "titleEn": "Find the Duplicate Number",
+    "titleZh": "寻找重复数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Bit Manipulation",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "位运算",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-duplicate-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-encrypted-string",
+    "frontendDisplayId": "3210",
+    "titleEn": "Find the Encrypted String",
+    "titleZh": "找出加密后的字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-encrypted-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-first-player-to-win-k-games-in-a-row",
+    "frontendDisplayId": "3175",
+    "titleEn": "Find The First Player to win K Games in a Row",
+    "titleZh": "找到连续赢 K 场比赛的第一位玩家",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-first-player-to-win-k-games-in-a-row/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-grid-of-region-average",
+    "frontendDisplayId": "3030",
+    "titleEn": "Find the Grid of Region Average",
+    "titleZh": "找出网格的区域平均强度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-grid-of-region-average/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-highest-altitude",
+    "frontendDisplayId": "1732",
+    "titleEn": "Find the Highest Altitude",
+    "titleZh": "找到最高海拔",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-highest-altitude/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-index-of-the-first-occurrence-in-a-string",
+    "frontendDisplayId": "28",
+    "titleEn": "Find the Index of the First Occurrence in a String",
+    "titleZh": "找出字符串中第一个匹配项的下标",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "String Matching",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "字符串匹配",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-integer-added-to-array-i",
+    "frontendDisplayId": "3131",
+    "titleEn": "Find the Integer Added to Array I",
+    "titleZh": "找出与数组相加的整数 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-integer-added-to-array-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-integer-added-to-array-ii",
+    "frontendDisplayId": "3132",
+    "titleEn": "Find the Integer Added to Array II",
+    "titleZh": "找出与数组相加的整数 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-integer-added-to-array-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-k-beauty-of-a-number",
+    "frontendDisplayId": "2269",
+    "titleEn": "Find the K-Beauty of a Number",
+    "titleZh": "找到一个数字的 K 美丽值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-k-beauty-of-a-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-k-or-of-an-array",
+    "frontendDisplayId": "2917",
+    "titleEn": "Find the K-or of an Array",
+    "titleZh": "找出数组中的 K-or 值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-k-or-of-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-k-sum-of-an-array",
+    "frontendDisplayId": "2386",
+    "titleEn": "Find the K-Sum of an Array",
+    "titleZh": "找出数组的第 K 大和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-k-sum-of-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-k-th-character-in-string-game-i",
+    "frontendDisplayId": "3304",
+    "titleEn": "Find the K-th Character in String Game I",
+    "titleZh": "找出第 K 个字符 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math",
+      "Recursion",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学",
+      "递归",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-k-th-character-in-string-game-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-k-th-character-in-string-game-ii",
+    "frontendDisplayId": "3307",
+    "titleEn": "Find the K-th Character in String Game II",
+    "titleZh": "找出第 K 个字符 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-k-th-character-in-string-game-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-key-of-the-numbers",
+    "frontendDisplayId": "3270",
+    "titleEn": "Find the Key of the Numbers",
+    "titleZh": "求出数字答案",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-key-of-the-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-kth-largest-integer-in-the-array",
+    "frontendDisplayId": "1985",
+    "titleEn": "Find the Kth Largest Integer in the Array",
+    "titleZh": "找出数组中的第 K 大整数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Heap (Priority Queue)",
+      "Quickselect",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "堆（优先队列）",
+      "快速选择",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-kth-largest-integer-in-the-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows",
+    "frontendDisplayId": "1439",
+    "titleEn": "Find the Kth Smallest Sum of a Matrix With Sorted Rows",
+    "titleZh": "有序矩阵中的第 k 个最小数组和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Heap (Priority Queue)",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "堆（优先队列）",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-largest-almost-missing-integer",
+    "frontendDisplayId": "3471",
+    "titleEn": "Find the Largest Almost Missing Integer",
+    "titleZh": "找出最大的几近缺失整数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-largest-almost-missing-integer/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-largest-area-of-square-inside-two-rectangles",
+    "frontendDisplayId": "3047",
+    "titleEn": "Find the Largest Area of Square Inside Two Rectangles",
+    "titleZh": "求交集区域内的最大正方形面积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-largest-area-of-square-inside-two-rectangles/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-largest-palindrome-divisible-by-k",
+    "frontendDisplayId": "3260",
+    "titleEn": "Find the Largest Palindrome Divisible by K",
+    "titleZh": "找出最大的 N 位 K 回文数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Greedy",
+      "Math",
+      "Number Theory",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "贪心",
+      "数学",
+      "数论",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-largest-palindrome-divisible-by-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-045",
+    "claimedAt": "2026-07-10T03:08:10.502224+00:00",
+    "completedAt": null
+  }
+]

@@ -1,0 +1,680 @@
+[
+  {
+    "slug": "combination-sum-ii",
+    "frontendDisplayId": "40",
+    "titleEn": "Combination Sum II",
+    "titleZh": "组合总和 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/combination-sum-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "combination-sum-iii",
+    "frontendDisplayId": "216",
+    "titleEn": "Combination Sum III",
+    "titleZh": "组合总和 III",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/combination-sum-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "combination-sum-iv",
+    "frontendDisplayId": "377",
+    "titleEn": "Combination Sum IV",
+    "titleZh": "组合总和 Ⅳ",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/combination-sum-iv/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "combinations",
+    "frontendDisplayId": "77",
+    "titleEn": "Combinations",
+    "titleZh": "组合",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking"
+    ],
+    "tagLabelsZh": [
+      "回溯"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/combinations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "combine-two-tables",
+    "frontendDisplayId": "175",
+    "titleEn": "Combine Two Tables",
+    "titleZh": "组合两个表",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/combine-two-tables/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "compact-object",
+    "frontendDisplayId": "2705",
+    "titleEn": "Compact Object",
+    "titleZh": "精简对象",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/compact-object/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "compare-strings-by-frequency-of-the-smallest-character",
+    "frontendDisplayId": "1170",
+    "titleEn": "Compare Strings by Frequency of the Smallest Character",
+    "titleZh": "比较字符串最小字母出现频次",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/compare-strings-by-frequency-of-the-smallest-character/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "compare-sums-of-bitonic-parts",
+    "frontendDisplayId": "3909",
+    "titleEn": "Compare Sums of Bitonic Parts",
+    "titleZh": "比较双调部分的和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "Array"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/compare-sums-of-bitonic-parts/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "compare-version-numbers",
+    "frontendDisplayId": "165",
+    "titleEn": "Compare Version Numbers",
+    "titleZh": "比较版本号",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/compare-version-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "complement-of-base-10-integer",
+    "frontendDisplayId": "1009",
+    "titleEn": "Complement of Base 10 Integer",
+    "titleZh": "十进制整数的反码",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/complement-of-base-10-integer/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "complete-binary-tree-inserter",
+    "frontendDisplayId": "919",
+    "titleEn": "Complete Binary Tree Inserter",
+    "titleZh": "完全二叉树插入器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Design",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "设计",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/complete-binary-tree-inserter/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "complete-prime-number",
+    "frontendDisplayId": "3765",
+    "titleEn": "Complete Prime Number",
+    "titleZh": "完全质数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/complete-prime-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "complex-number-multiplication",
+    "frontendDisplayId": "537",
+    "titleEn": "Complex Number Multiplication",
+    "titleZh": "复数乘法",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/complex-number-multiplication/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "compress-string-lcci",
+    "frontendDisplayId": "面试题 01.06",
+    "titleEn": null,
+    "titleZh": "字符串压缩",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/compress-string-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "compute-alternating-sum",
+    "frontendDisplayId": "3701",
+    "titleEn": "Compute Alternating Sum",
+    "titleZh": "计算交替和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/compute-alternating-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "compute-decimal-representation",
+    "frontendDisplayId": "3697",
+    "titleEn": "Compute Decimal Representation",
+    "titleZh": "计算十进制表示",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/compute-decimal-representation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "concatenate-array-with-reverse",
+    "frontendDisplayId": "3925",
+    "titleEn": "Concatenate Array With Reverse",
+    "titleZh": "连接逆序数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/concatenate-array-with-reverse/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "concatenate-non-zero-digits-and-multiply-by-sum-i",
+    "frontendDisplayId": "3754",
+    "titleEn": "Concatenate Non-Zero Digits and Multiply by Sum I",
+    "titleZh": "连接非零数字并乘以其数字和 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/concatenate-non-zero-digits-and-multiply-by-sum-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "concatenate-non-zero-digits-and-multiply-by-sum-ii",
+    "frontendDisplayId": "3756",
+    "titleEn": "Concatenate Non-Zero Digits and Multiply by Sum II",
+    "titleZh": "连接非零数字并乘以其数字和 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/concatenate-non-zero-digits-and-multiply-by-sum-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "concatenated-divisibility",
+    "frontendDisplayId": "3533",
+    "titleEn": "Concatenated Divisibility",
+    "titleZh": "判断连接可整除性",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/concatenated-divisibility/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "concatenated-words",
+    "frontendDisplayId": "472",
+    "titleEn": "Concatenated Words",
+    "titleZh": "连接词",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Sorting",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "动态规划",
+      "排序",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/concatenated-words/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "concatenation-of-array",
+    "frontendDisplayId": "1929",
+    "titleEn": "Concatenation of Array",
+    "titleZh": "数组串联",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/concatenation-of-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "concatenation-of-consecutive-binary-numbers",
+    "frontendDisplayId": "1680",
+    "titleEn": "Concatenation of Consecutive Binary Numbers",
+    "titleZh": "连接连续二进制数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/concatenation-of-consecutive-binary-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "confirmation-rate",
+    "frontendDisplayId": "1934",
+    "titleEn": "Confirmation Rate",
+    "titleZh": "确认率",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/confirmation-rate/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cong-shang-dao-xia-da-yin-er-cha-shu-ii-lcof",
+    "frontendDisplayId": "LCR 150",
+    "titleEn": null,
+    "titleZh": "彩灯装饰记录 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/cong-shang-dao-xia-da-yin-er-cha-shu-ii-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cong-shang-dao-xia-da-yin-er-cha-shu-iii-lcof",
+    "frontendDisplayId": "LCR 151",
+    "titleEn": null,
+    "titleZh": "彩灯装饰记录 III",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/cong-shang-dao-xia-da-yin-er-cha-shu-iii-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cong-shang-dao-xia-da-yin-er-cha-shu-lcof",
+    "frontendDisplayId": "LCR 149",
+    "titleEn": null,
+    "titleZh": "彩灯装饰记录 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/cong-shang-dao-xia-da-yin-er-cha-shu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cong-wei-dao-tou-da-yin-lian-biao-lcof",
+    "frontendDisplayId": "LCR 123",
+    "titleEn": null,
+    "titleZh": "图书整理 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Linked List",
+      "Recursion",
+      "Stack",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "递归",
+      "栈",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "consecutive-characters",
+    "frontendDisplayId": "1446",
+    "titleEn": "Consecutive Characters",
+    "titleZh": "连续字符",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/consecutive-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "consecutive-numbers",
+    "frontendDisplayId": "180",
+    "titleEn": "Consecutive Numbers",
+    "titleZh": "连续出现的数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/consecutive-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-16",
+    "claimedAt": "2026-07-10T01:49:58.339699+00:00",
+    "completedAt": null
+  }
+]

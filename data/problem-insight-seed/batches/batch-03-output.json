@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "IY6buf",
+    "reasonEN": "A medium dynamic programming string problem that trains two-dimensional state transitions and boundary initialization; it is valuable for mastering interleaving and sequence-matching DP.",
+    "reasonZH": "中等难度的字符串动态规划题，重点训练二维状态转移和边界初始化，是掌握交错匹配类 DP 的典型练习。"
+  },
+  {
+    "slug": "IlPe0q",
+    "reasonEN": "Triangle path DP is a compact medium array problem that emphasizes bottom-up state compression and local optimal transitions; it builds confidence for grid-like path optimization.",
+    "reasonZH": "三角形路径 DP 是紧凑的中等数组题，核心在自底向上的状态压缩和局部最优转移，适合巩固路径优化类问题。"
+  },
+  {
+    "slug": "JEj789",
+    "reasonEN": "This medium array DP problem focuses on choosing among constrained neighboring states; it is useful for learning how to encode exclusion rules cleanly in recurrence formulas.",
+    "reasonZH": "该中等数组动态规划题聚焦相邻状态互斥选择，能训练把限制条件清晰写入状态转移方程的能力。"
+  },
+  {
+    "slug": "JFETK5",
+    "reasonEN": "An easy simulation and string exercise that reinforces carry handling, reverse traversal, and binary arithmetic; it is a practical warm-up for low-level digit manipulation.",
+    "reasonZH": "简单的字符串模拟题，重点巩固进位处理、逆序遍历和二进制运算，是练习底层数字操作的实用热身题。"
+  },
+  {
+    "slug": "Jf1JuT",
+    "reasonEN": "A hard graph and topological sort problem over strings, requiring careful edge extraction and invalid-prefix detection; it connects algorithmic ordering with real dependency inference.",
+    "reasonZH": "困难级字符串图论与拓扑排序题，关键在字符先后关系建边和非法前缀判断，能把排序算法映射到依赖推断场景。"
+  },
+  {
+    "slug": "Ju9Xwi",
+    "reasonEN": "This easy greedy and math-style problem highlights how doubling progress reduces operations; it is good for training shortcut reasoning before reaching for heavier DP.",
+    "reasonZH": "这道简单的贪心与数学题强调通过倍增进度减少操作次数，适合训练在使用复杂 DP 前先寻找结构性捷径。"
+  },
+  {
+    "slug": "K8GULz",
+    "reasonEN": "A hard composite problem involving arrays, bit operations, heaps, and union-find; it is valuable for practicing how to combine data structures under circular constraints.",
+    "reasonZH": "困难级综合题，融合数组、位运算、堆和并查集，适合练习在环形约束下组合多种数据结构解决问题。"
+  },
+  {
+    "slug": "KnLfVT",
+    "reasonEN": "A medium tree traversal problem that can be approached with BFS or DFS; it sharpens level-order thinking and tree transformation implementation details.",
+    "reasonZH": "中等难度树遍历题，可用 BFS 或 DFS 处理，重点训练层序思维和树结构改造时的实现细节。"
+  },
+  {
+    "slug": "LGjMqU",
+    "reasonEN": "Reordering a linked list is a medium pointer-manipulation task that combines two pointers, reversal, and merging; it is a strong test of in-place list operations.",
+    "reasonZH": "重排链表是中等难度指针操作题，融合快慢指针、链表反转和合并，能有效检验原地链表处理能力。"
+  },
+  {
+    "slug": "LwUNpT",
+    "reasonEN": "A medium binary tree search problem centered on level depth and leftmost selection; it helps compare BFS clarity with DFS depth tracking.",
+    "reasonZH": "中等难度二叉树搜索题，核心是深度层级和最左节点选择，适合比较 BFS 层序写法与 DFS 深度记录。"
+  },
+  {
+    "slug": "M1oyTv",
+    "reasonEN": "A hard sliding window classic with hash-count bookkeeping and strict shrink conditions; it is essential for mastering minimum covering substring patterns.",
+    "reasonZH": "困难级滑动窗口经典题，考查哈希计数维护和收缩窗口条件，是掌握最小覆盖子串模型的关键题。"
+  },
+  {
+    "slug": "M99OJA",
+    "reasonEN": "Palindrome partitioning is a medium search problem that blends DFS choices with reusable validity checks; it is useful for practicing backtracking over string cuts.",
+    "reasonZH": "分割回文串是中等搜索题，结合 DFS 选择和可复用的合法性判断，适合练习字符串切分场景下的回溯。"
+  },
+  {
+    "slug": "MPnaiL",
+    "reasonEN": "A medium fixed-window string problem that uses hash counts and two-pointer movement; it reinforces permutation matching without generating permutations.",
+    "reasonZH": "中等难度定长滑动窗口题，通过哈希计数和双指针移动完成排列匹配，能训练不枚举排列的判定思路。"
+  },
+  {
+    "slug": "N6YdxV",
+    "reasonEN": "An easy binary search template problem on arrays, emphasizing boundary selection and insertion semantics; it is ideal for stabilizing half-open or closed interval habits.",
+    "reasonZH": "简单数组二分模板题，重点在边界选择和插入位置语义，适合稳定左闭右闭或左闭右开区间写法。"
+  },
+  {
+    "slug": "NUPfPr",
+    "reasonEN": "An easy-rated equal-partition problem that encourages reasoning about sums and feasibility states; it is a useful bridge from simple simulation to subset decision thinking.",
+    "reasonZH": "简单标注的等和分割题，核心在总和与可行状态判断，适合作为从模拟思维过渡到子集决策问题的练习。"
+  },
+  {
+    "slug": "NYBBNL",
+    "reasonEN": "A straightforward BST traversal exercise that turns inorder order into a new tree shape; it reinforces recursion, stack alternatives, and pointer rewiring.",
+    "reasonZH": "直接的二叉搜索树遍历题，把中序有序性转化为新的树形结构，能巩固递归、栈写法和指针重连。"
+  },
+  {
+    "slug": "NaqhDT",
+    "reasonEN": "A medium design problem for complete binary trees, centered on maintaining insertion candidates with BFS order; it builds practical stateful data-structure design skills.",
+    "reasonZH": "中等难度完全二叉树设计题，关键是按 BFS 顺序维护可插入节点队列，能训练有状态数据结构的设计能力。"
+  },
+  {
+    "slug": "NfY1m5",
+    "reasonEN": "A hard array DP problem with nontrivial transition modeling; it is valuable for improving problem decomposition when constraints make greedy choices unreliable.",
+    "reasonZH": "困难级数组动态规划题，状态转移建模要求较高，适合提升在贪心不稳定时拆解约束和设计 DP 的能力。"
+  },
+  {
+    "slug": "Nsibyl",
+    "reasonEN": "A medium contest-style problem with limited metadata, best treated as a modeling exercise first; it is useful for practicing how to infer structure before choosing an algorithm.",
+    "reasonZH": "中等难度竞赛风格题，元信息较少，更适合先做建模分析，训练在选算法前识别问题结构的能力。"
+  },
+  {
+    "slug": "O4NDxx",
+    "reasonEN": "A medium matrix design problem based on two-dimensional prefix sums; it teaches how preprocessing trades space for constant-time region queries.",
+    "reasonZH": "中等难度矩阵设计题，核心是二维前缀和预处理，能训练用空间和预计算换取常数时间区域查询。"
+  },
+  {
+    "slug": "OrIXps",
+    "reasonEN": "LRU Cache is a medium design staple combining hash tables and doubly linked lists; it tests whether operations remain truly O(1) under updates and eviction.",
+    "reasonZH": "LRU 缓存是中等难度设计经典题，结合哈希表和双向链表，重点检验更新与淘汰操作是否都能保持 O(1)。"
+  },
+  {
+    "slug": "P5rCT8",
+    "reasonEN": "A medium BST problem about inorder successor logic, highlighting ordered-tree properties and ancestor tracking; it deepens understanding beyond plain traversal.",
+    "reasonZH": "中等难度 BST 中序后继题，强调有序树性质和祖先节点记录，能把理解从普通遍历推进到顺序关系推导。"
+  },
+  {
+    "slug": "PLYXKQ",
+    "reasonEN": "A hard matrix and monotonic-stack problem that reduces rows to histogram areas; it is a milestone for connecting dynamic accumulation with stack boundaries.",
+    "reasonZH": "困难级矩阵与单调栈题，通过把每一行转化为柱状图面积问题，训练动态累积与栈边界计算的结合。"
+  },
+  {
+    "slug": "PTXy4P",
+    "reasonEN": "An easy array problem that focuses on direct aggregation and boundary awareness; it is suitable for warming up implementation accuracy on simple contest tasks.",
+    "reasonZH": "简单数组题，重点在直接统计和边界意识，适合作为竞赛简单题实现准确性的热身训练。"
+  },
+  {
+    "slug": "PzWKhm",
+    "reasonEN": "House Robber II is a medium DP problem where the circular constraint splits the case space; it teaches how to reduce ring problems into linear subproblems.",
+    "reasonZH": "打家劫舍 II 是中等动态规划题，环形限制要求拆分情况，适合训练把环问题转化为线性子问题的技巧。"
+  },
+  {
+    "slug": "Q91FMA",
+    "reasonEN": "A medium array DP problem enhanced by hash lookup, requiring pair-based states for Fibonacci-like growth; it sharpens sequence DP beyond adjacent transitions.",
+    "reasonZH": "中等数组 DP 题，借助哈希查找维护斐波那契式增长的二元状态，能拓展对非相邻序列转移的理解。"
+  },
+  {
+    "slug": "QA2IGt",
+    "reasonEN": "A medium topological sort template over course dependencies, testing indegree management and cycle detection; it maps directly to scheduling and build-order problems.",
+    "reasonZH": "中等难度拓扑排序模板题，考查入度维护和环检测，可直接对应课程安排、任务调度和构建顺序规划。"
+  },
+  {
+    "slug": "QC3q1f",
+    "reasonEN": "Implementing Trie is a medium design problem for prefix queries, emphasizing node representation and operation invariants; it is foundational for search and autocomplete systems.",
+    "reasonZH": "实现 Trie 是中等难度前缀查询设计题，重点在节点表示和操作不变量，是搜索、补全等场景的基础结构。"
+  },
+  {
+    "slug": "QO5KpG",
+    "reasonEN": "A medium BST coloring problem with interval-style updates and ordered structures; it is useful for comparing tree traversal, binary search, and segment-style thinking.",
+    "reasonZH": "中等难度二叉搜索树染色题，包含区间式更新和有序结构思维，适合比较树遍历、二分和线段树思路。"
+  },
+  {
+    "slug": "QTMn0o",
+    "reasonEN": "A medium prefix-sum and hash-table classic, focused on counting subarrays by previous sums; it is essential for handling negative numbers where sliding windows fail.",
+    "reasonZH": "中等难度前缀和与哈希表经典题，通过历史前缀和计数统计子数组，能解决含负数时滑动窗口失效的问题。"
+  }
+]

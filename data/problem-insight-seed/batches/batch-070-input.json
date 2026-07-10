@@ -1,0 +1,780 @@
+[
+  {
+    "slug": "maximum-number-of-darts-inside-of-a-circular-dartboard",
+    "frontendDisplayId": "1453",
+    "titleEn": "Maximum Number of Darts Inside of a Circular Dartboard",
+    "titleZh": "圆形靶内的最大飞镖数量",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-darts-inside-of-a-circular-dartboard/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-distinct-elements-after-operations",
+    "frontendDisplayId": "3397",
+    "titleEn": "Maximum Number of Distinct Elements After Operations",
+    "titleZh": "执行操作后不同元素的最大数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-distinct-elements-after-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-eaten-apples",
+    "frontendDisplayId": "1705",
+    "titleEn": "Maximum Number of Eaten Apples",
+    "titleZh": "吃苹果的最大数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-eaten-apples/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-events-that-can-be-attended",
+    "frontendDisplayId": "1353",
+    "titleEn": "Maximum Number of Events That Can Be Attended",
+    "titleZh": "最多可以参加的会议数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-events-that-can-be-attended/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-events-that-can-be-attended-ii",
+    "frontendDisplayId": "1751",
+    "titleEn": "Maximum Number of Events That Can Be Attended II",
+    "titleZh": "最多可以参加的会议数目 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-events-that-can-be-attended-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-fish-in-a-grid",
+    "frontendDisplayId": "2658",
+    "titleEn": "Maximum Number of Fish in a Grid",
+    "titleZh": "网格图中鱼的最大数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-fish-in-a-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-groups-entering-a-competition",
+    "frontendDisplayId": "2358",
+    "titleEn": "Maximum Number of Groups Entering a Competition",
+    "titleZh": "分组的最大数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-groups-entering-a-competition/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-groups-getting-fresh-donuts",
+    "frontendDisplayId": "1815",
+    "titleEn": "Maximum Number of Groups Getting Fresh Donuts",
+    "titleZh": "得到新鲜甜甜圈的最多组数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "记忆化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-groups-getting-fresh-donuts/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-groups-with-increasing-length",
+    "frontendDisplayId": "2790",
+    "titleEn": "Maximum Number of Groups With Increasing Length",
+    "titleZh": "长度递增组的最大数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-groups-with-increasing-length/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-integers-to-choose-from-a-range-i",
+    "frontendDisplayId": "2554",
+    "titleEn": "Maximum Number of Integers to Choose From a Range I",
+    "titleZh": "从一个范围内选择最多整数 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-integers-to-choose-from-a-range-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-items-from-sale-i",
+    "frontendDisplayId": "3946",
+    "titleEn": "Maximum Number of Items From Sale I",
+    "titleZh": "购买最多物品数目 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-items-from-sale-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-items-from-sale-ii",
+    "frontendDisplayId": "3947",
+    "titleEn": "Maximum Number of Items From Sale II",
+    "titleZh": "购买最多物品数目 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-items-from-sale-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-jumps-to-reach-the-last-index",
+    "frontendDisplayId": "2770",
+    "titleEn": "Maximum Number of Jumps to Reach the Last Index",
+    "titleZh": "达到末尾下标所需的最大跳跃次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-jumps-to-reach-the-last-index/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-k-divisible-components",
+    "frontendDisplayId": "2872",
+    "titleEn": "Maximum Number of K-Divisible Components",
+    "titleZh": "可以被 K 整除连通块的最大数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-k-divisible-components/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-moves-in-a-grid",
+    "frontendDisplayId": "2684",
+    "titleEn": "Maximum Number of Moves in a Grid",
+    "titleZh": "矩阵中移动的最大次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-moves-in-a-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-moves-to-kill-all-pawns",
+    "frontendDisplayId": "3283",
+    "titleEn": "Maximum Number of Moves to Kill All Pawns",
+    "titleZh": "吃掉所有兵需要的最多移动次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Breadth-First Search",
+      "Game Theory",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "广度优先搜索",
+      "博弈",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-moves-to-kill-all-pawns/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-non-overlapping-palindrome-substrings",
+    "frontendDisplayId": "2472",
+    "titleEn": "Maximum Number of Non-overlapping Palindrome Substrings",
+    "titleZh": "不重叠回文子字符串的最大数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Greedy",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "贪心",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-non-overlapping-palindrome-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-non-overlapping-subarrays-with-sum-equals-target",
+    "frontendDisplayId": "1546",
+    "titleEn": "Maximum Number of Non-Overlapping Subarrays With Sum Equals Target",
+    "titleZh": "和为目标值且不重叠的非空子数组的最大数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-non-overlapping-subarrays-with-sum-equals-target/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-non-overlapping-substrings",
+    "frontendDisplayId": "1520",
+    "titleEn": "Maximum Number of Non-Overlapping Substrings",
+    "titleZh": "最多的不重叠子字符串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Greedy",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-non-overlapping-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-occurrences-of-a-substring",
+    "frontendDisplayId": "1297",
+    "titleEn": "Maximum Number of Occurrences of a Substring",
+    "titleZh": "子串的最大出现次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-occurrences-of-a-substring/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-operations-to-move-ones-to-the-end",
+    "frontendDisplayId": "3228",
+    "titleEn": "Maximum Number of Operations to Move Ones to the End",
+    "titleZh": "将 1 移动到末尾的最大操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-operations-to-move-ones-to-the-end/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-operations-with-the-same-score-i",
+    "frontendDisplayId": "3038",
+    "titleEn": "Maximum Number of Operations With the Same Score I",
+    "titleZh": "相同分数的最大操作数目 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-operations-with-the-same-score-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-operations-with-the-same-score-ii",
+    "frontendDisplayId": "3040",
+    "titleEn": "Maximum Number of Operations With the Same Score II",
+    "titleZh": "相同分数的最大操作数目 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "记忆化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-operations-with-the-same-score-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-pairs-in-array",
+    "frontendDisplayId": "2341",
+    "titleEn": "Maximum Number of Pairs in Array",
+    "titleZh": "数组能形成多少数对",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-pairs-in-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-points-from-grid-queries",
+    "frontendDisplayId": "2503",
+    "titleEn": "Maximum Number of Points From Grid Queries",
+    "titleZh": "矩阵查询可获得的最大分数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Heap (Priority Queue)",
+      "Matrix",
+      "Sorting",
+      "Two Pointers",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "堆（优先队列）",
+      "矩阵",
+      "排序",
+      "双指针",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-points-from-grid-queries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-points-with-cost",
+    "frontendDisplayId": "1937",
+    "titleEn": "Maximum Number of Points with Cost",
+    "titleZh": "扣分后的最大得分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-points-with-cost/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-removable-characters",
+    "frontendDisplayId": "1898",
+    "titleEn": "Maximum Number of Removable Characters",
+    "titleZh": "可移除字符的最大数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-removable-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-robots-within-budget",
+    "frontendDisplayId": "2398",
+    "titleEn": "Maximum Number of Robots Within Budget",
+    "titleZh": "预算内的最多机器人数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Heap (Priority Queue)",
+      "Monotonic Queue",
+      "Prefix Sum",
+      "Queue",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "堆（优先队列）",
+      "单调队列",
+      "前缀和",
+      "队列",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-robots-within-budget/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-subsequences-after-one-inserting",
+    "frontendDisplayId": "3628",
+    "titleEn": "Maximum Number of Subsequences After One Inserting",
+    "titleZh": "插入一个字母的最大子序列数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Greedy",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "贪心",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-subsequences-after-one-inserting/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-tasks-you-can-assign",
+    "frontendDisplayId": "2071",
+    "titleEn": "Maximum Number of Tasks You Can Assign",
+    "titleZh": "你可以安排的最多任务数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Monotonic Queue",
+      "Queue",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "单调队列",
+      "队列",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-tasks-you-can-assign/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-070",
+    "claimedAt": "2026-07-10T06:14:10.658014+00:00",
+    "completedAt": null
+  }
+]

@@ -1,0 +1,690 @@
+[
+  {
+    "slug": "evaluate-boolean-binary-tree",
+    "frontendDisplayId": "2331",
+    "titleEn": "Evaluate Boolean Binary Tree",
+    "titleZh": "计算布尔二叉树的值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/evaluate-boolean-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "evaluate-division",
+    "frontendDisplayId": "399",
+    "titleEn": "Evaluate Division",
+    "titleZh": "除法求值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Shortest Path",
+      "String",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "最短路",
+      "字符串",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/evaluate-division/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "evaluate-reverse-polish-notation",
+    "frontendDisplayId": "150",
+    "titleEn": "Evaluate Reverse Polish Notation",
+    "titleZh": "逆波兰表达式求值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/evaluate-reverse-polish-notation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "evaluate-the-bracket-pairs-of-a-string",
+    "frontendDisplayId": "1807",
+    "titleEn": "Evaluate the Bracket Pairs of a String",
+    "titleZh": "替换字符串中的括号内容",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/evaluate-the-bracket-pairs-of-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "even-odd-tree",
+    "frontendDisplayId": "1609",
+    "titleEn": "Even Odd Tree",
+    "titleZh": "奇偶树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/even-odd-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "event-emitter",
+    "frontendDisplayId": "2694",
+    "titleEn": "Event Emitter",
+    "titleZh": "事件发射器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/event-emitter/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "exactly-one-consecutive-set-bits-pair",
+    "frontendDisplayId": "3950",
+    "titleEn": "Exactly One Consecutive Set Bits Pair",
+    "titleZh": "恰好一对连续置位",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/exactly-one-consecutive-set-bits-pair/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "exam-room",
+    "frontendDisplayId": "855",
+    "titleEn": "Exam Room",
+    "titleZh": "考场就座",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Heap (Priority Queue)",
+      "Ordered Set"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "堆（优先队列）",
+      "有序集合"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/exam-room/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "excel-sheet-column-number",
+    "frontendDisplayId": "171",
+    "titleEn": "Excel Sheet Column Number",
+    "titleZh": "Excel 表列序号",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/excel-sheet-column-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "excel-sheet-column-title",
+    "frontendDisplayId": "168",
+    "titleEn": "Excel Sheet Column Title",
+    "titleZh": "Excel 表列名称",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/excel-sheet-column-title/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "exchange-lcci",
+    "frontendDisplayId": "面试题 05.07",
+    "titleEn": null,
+    "titleZh": "配对交换",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "位运算"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/exchange-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "exchange-seats",
+    "frontendDisplayId": "626",
+    "titleEn": "Exchange Seats",
+    "titleZh": "换座位",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/exchange-seats/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "exclusive-time-of-functions",
+    "frontendDisplayId": "636",
+    "titleEn": "Exclusive Time of Functions",
+    "titleZh": "函数的独占时间",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/exclusive-time-of-functions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "execute-asynchronous-functions-in-parallel",
+    "frontendDisplayId": "2721",
+    "titleEn": "Execute Asynchronous Functions in Parallel",
+    "titleZh": "并行执行异步函数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/execute-asynchronous-functions-in-parallel/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "execution-of-all-suffix-instructions-staying-in-a-grid",
+    "frontendDisplayId": "2120",
+    "titleEn": "Execution of All Suffix Instructions Staying in a Grid",
+    "titleZh": "执行所有后缀指令",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/execution-of-all-suffix-instructions-staying-in-a-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "existence-of-a-substring-in-a-string-and-its-reverse",
+    "frontendDisplayId": "3083",
+    "titleEn": "Existence of a Substring in a String and Its Reverse",
+    "titleZh": "字符串及其反转中是否存在同一子字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/existence-of-a-substring-in-a-string-and-its-reverse/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "expression-add-operators",
+    "frontendDisplayId": "282",
+    "titleEn": "Expression Add Operators",
+    "titleZh": "给表达式添加运算符",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/expression-add-operators/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "expressive-words",
+    "frontendDisplayId": "809",
+    "titleEn": "Expressive Words",
+    "titleZh": "情感丰富的文字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/expressive-words/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "extra-characters-in-a-string",
+    "frontendDisplayId": "2707",
+    "titleEn": "Extra Characters in a String",
+    "titleZh": "字符串中的额外字符",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Table",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希表",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/extra-characters-in-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fHi6rV",
+    "frontendDisplayId": "LCP 41",
+    "titleEn": null,
+    "titleZh": "黑白翻转棋",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "矩阵"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/fHi6rV/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "factorial-trailing-zeroes",
+    "frontendDisplayId": "172",
+    "titleEn": "Factorial Trailing Zeroes",
+    "titleZh": "阶乘后的零",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/factorial-trailing-zeroes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "factorial-zeros-lcci",
+    "frontendDisplayId": "面试题 16.05",
+    "titleEn": null,
+    "titleZh": "阶乘尾数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/factorial-zeros-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fair-candy-swap",
+    "frontendDisplayId": "888",
+    "titleEn": "Fair Candy Swap",
+    "titleZh": "公平的糖果交换",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/fair-candy-swap/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fair-distribution-of-cookies",
+    "frontendDisplayId": "2305",
+    "titleEn": "Fair Distribution of Cookies",
+    "titleZh": "公平分发饼干",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "位掩码",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/fair-distribution-of-cookies/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "falling-squares",
+    "frontendDisplayId": "699",
+    "titleEn": "Falling Squares",
+    "titleZh": "掉落的方块",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Ordered Set",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "有序集合",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/falling-squares/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fan-zhuan-dan-ci-shun-xu-lcof",
+    "frontendDisplayId": "LCR 181",
+    "titleEn": null,
+    "titleZh": "字符串中的单词反转",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/fan-zhuan-dan-ci-shun-xu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fan-zhuan-lian-biao-lcof",
+    "frontendDisplayId": "LCR 141",
+    "titleEn": null,
+    "titleZh": "训练计划 III",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Linked List",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "递归"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/fan-zhuan-lian-biao-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fancy-sequence",
+    "frontendDisplayId": "1622",
+    "titleEn": "Fancy Sequence",
+    "titleZh": "奇妙序列",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Design",
+      "Math",
+      "Number Theory",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "数学",
+      "数论",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/fancy-sequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "faulty-keyboard",
+    "frontendDisplayId": "2810",
+    "titleEn": "Faulty Keyboard",
+    "titleZh": "故障键盘",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/faulty-keyboard/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fei-bo-na-qi-shu-lie-lcof",
+    "frontendDisplayId": "LCR 126",
+    "titleEn": null,
+    "titleZh": "斐波那契数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "记忆化"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/fei-bo-na-qi-shu-lie-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-033",
+    "claimedAt": "2026-07-10T02:23:42.732856+00:00",
+    "completedAt": null
+  }
+]

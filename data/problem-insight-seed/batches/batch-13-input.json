@@ -1,0 +1,714 @@
+[
+  {
+    "slug": "check-if-a-parentheses-string-can-be-valid",
+    "frontendDisplayId": "2116",
+    "titleEn": "Check if a Parentheses String Can Be Valid",
+    "titleZh": "判断一个括号字符串是否有效",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-a-parentheses-string-can-be-valid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-a-string-can-break-another-string",
+    "frontendDisplayId": "1433",
+    "titleEn": "Check If a String Can Break Another String",
+    "titleZh": "检查一个字符串是否可以打破另一个字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-a-string-can-break-another-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-a-string-contains-all-binary-codes-of-size-k",
+    "frontendDisplayId": "1461",
+    "titleEn": "Check If a String Contains All Binary Codes of Size K",
+    "titleZh": "检查一个字符串是否包含所有长度为 K 的二进制子串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Hash Function",
+      "Hash Table",
+      "Rolling Hash",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "哈希函数",
+      "哈希表",
+      "滚动哈希",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-a-string-contains-all-binary-codes-of-size-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-a-string-is-an-acronym-of-words",
+    "frontendDisplayId": "2828",
+    "titleEn": "Check if a String Is an Acronym of Words",
+    "titleZh": "判别首字母缩略词",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-a-string-is-an-acronym-of-words/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-a-word-occurs-as-a-prefix-of-any-word-in-a-sentence",
+    "frontendDisplayId": "1455",
+    "titleEn": "Check If a Word Occurs As a Prefix of Any Word in a Sentence",
+    "titleZh": "检查单词是否为句中其他单词的前缀",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "String Matching",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "字符串匹配",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-a-word-occurs-as-a-prefix-of-any-word-in-a-sentence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-all-1s-are-at-least-length-k-places-away",
+    "frontendDisplayId": "1437",
+    "titleEn": "Check If All 1's Are at Least Length K Places Away",
+    "titleZh": "是否所有 1 都至少相隔 k 个元素",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-all-1s-are-at-least-length-k-places-away/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-all-as-appears-before-all-bs",
+    "frontendDisplayId": "2124",
+    "titleEn": "Check if All A's Appears Before All B's",
+    "titleZh": "检查是否所有 A 都在 B 之前",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-all-as-appears-before-all-bs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-all-characters-have-equal-number-of-occurrences",
+    "frontendDisplayId": "1941",
+    "titleEn": "Check if All Characters Have Equal Number of Occurrences",
+    "titleZh": "检查是否所有字符出现次数相同",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-all-characters-have-equal-number-of-occurrences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-all-the-integers-in-a-range-are-covered",
+    "frontendDisplayId": "1893",
+    "titleEn": "Check if All the Integers in a Range Are Covered",
+    "titleZh": "检查是否区域内所有整数都被覆盖",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-all-the-integers-in-a-range-are-covered/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-an-original-string-exists-given-two-encoded-strings",
+    "frontendDisplayId": "2060",
+    "titleEn": "Check if an Original String Exists Given Two Encoded Strings",
+    "titleZh": "同源字符串检测",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-an-original-string-exists-given-two-encoded-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-any-element-has-prime-frequency",
+    "frontendDisplayId": "3591",
+    "titleEn": "Check if Any Element Has Prime Frequency",
+    "titleZh": "检查元素频次是否为质数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-any-element-has-prime-frequency/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-array-is-good",
+    "frontendDisplayId": "2784",
+    "titleEn": "Check if Array is Good",
+    "titleZh": "检查数组是否是好的",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-array-is-good/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-array-is-sorted-and-rotated",
+    "frontendDisplayId": "1752",
+    "titleEn": "Check if Array Is Sorted and Rotated",
+    "titleZh": "检查数组是否经排序和轮转得到",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-array-is-sorted-and-rotated/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-array-pairs-are-divisible-by-k",
+    "frontendDisplayId": "1497",
+    "titleEn": "Check If Array Pairs Are Divisible by k",
+    "titleZh": "检查数组对是否可以被 k 整除",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-array-pairs-are-divisible-by-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-binary-string-has-at-most-one-segment-of-ones",
+    "frontendDisplayId": "1784",
+    "titleEn": "Check if Binary String Has at Most One Segment of Ones",
+    "titleZh": "检查二进制字符串字段",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-binary-string-has-at-most-one-segment-of-ones/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-bitwise-or-has-trailing-zeros",
+    "frontendDisplayId": "2980",
+    "titleEn": "Check if Bitwise OR Has Trailing Zeros",
+    "titleZh": "检查按位或是否存在尾随零",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-bitwise-or-has-trailing-zeros/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-dfs-strings-are-palindromes",
+    "frontendDisplayId": "3327",
+    "titleEn": "Check if DFS Strings Are Palindromes",
+    "titleZh": "判断 DFS 字符串是否是回文串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Hash Function",
+      "Hash Table",
+      "String",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "哈希函数",
+      "哈希表",
+      "字符串",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-dfs-strings-are-palindromes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-digits-are-equal-in-string-after-operations-i",
+    "frontendDisplayId": "3461",
+    "titleEn": "Check If Digits Are Equal in String After Operations I",
+    "titleZh": "判断操作后字符串中的数字是否相等 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Math",
+      "Number Theory",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "数学",
+      "数论",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-digits-are-equal-in-string-after-operations-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-digits-are-equal-in-string-after-operations-ii",
+    "frontendDisplayId": "3463",
+    "titleEn": "Check If Digits Are Equal in String After Operations II",
+    "titleZh": "判断操作后字符串中的数字是否相等 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Math",
+      "Number Theory",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "数学",
+      "数论",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-digits-are-equal-in-string-after-operations-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-every-row-and-column-contains-all-numbers",
+    "frontendDisplayId": "2133",
+    "titleEn": "Check if Every Row and Column Contains All Numbers",
+    "titleZh": "检查是否每一行每一列都包含全部整数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-every-row-and-column-contains-all-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-grid-can-be-cut-into-sections",
+    "frontendDisplayId": "3394",
+    "titleEn": "Check if Grid can be Cut into Sections",
+    "titleZh": "判断网格图能否被切割成块",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-grid-can-be-cut-into-sections/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-grid-satisfies-conditions",
+    "frontendDisplayId": "3142",
+    "titleEn": "Check if Grid Satisfies Conditions",
+    "titleZh": "判断矩阵是否满足条件",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-grid-satisfies-conditions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-it-is-a-good-array",
+    "frontendDisplayId": "1250",
+    "titleEn": "Check If It Is a Good Array",
+    "titleZh": "检查「好数组」",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-it-is-a-good-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-it-is-a-straight-line",
+    "frontendDisplayId": "1232",
+    "titleEn": "Check If It Is a Straight Line",
+    "titleZh": "缀点成线",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-it-is-a-straight-line/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-it-is-possible-to-split-array",
+    "frontendDisplayId": "2811",
+    "titleEn": "Check if it is Possible to Split Array",
+    "titleZh": "判断是否能拆分数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-it-is-possible-to-split-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-matrix-is-x-matrix",
+    "frontendDisplayId": "2319",
+    "titleEn": "Check if Matrix Is X-Matrix",
+    "titleZh": "判断矩阵是否是一个 X 矩阵",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-matrix-is-x-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-move-is-legal",
+    "frontendDisplayId": "1958",
+    "titleEn": "Check if Move is Legal",
+    "titleZh": "检查操作是否合法",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-move-is-legal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-n-and-its-double-exist",
+    "frontendDisplayId": "1346",
+    "titleEn": "Check If N and Its Double Exist",
+    "titleZh": "检查整数及其两倍数是否存在",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Hash Table",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "哈希表",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-n-and-its-double-exist/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-number-has-equal-digit-count-and-digit-value",
+    "frontendDisplayId": "2283",
+    "titleEn": "Check if Number Has Equal Digit Count and Digit Value",
+    "titleZh": "判断一个数的数字计数是否等于数位的值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-number-has-equal-digit-count-and-digit-value/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-if-number-is-a-sum-of-powers-of-three",
+    "frontendDisplayId": "1780",
+    "titleEn": "Check if Number is a Sum of Powers of Three",
+    "titleZh": "判断一个数字是否可以表示成三的幂的和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-if-number-is-a-sum-of-powers-of-three/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-13",
+    "claimedAt": "2026-07-10T01:49:57.755123+00:00",
+    "completedAt": null
+  }
+]

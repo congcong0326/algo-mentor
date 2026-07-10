@@ -1,0 +1,714 @@
+[
+  {
+    "slug": "sum-of-subarray-ranges",
+    "frontendDisplayId": "2104",
+    "titleEn": "Sum of Subarray Ranges",
+    "titleZh": "子数组范围和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-subarray-ranges/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-subsequence-widths",
+    "frontendDisplayId": "891",
+    "titleEn": "Sum of Subsequence Widths",
+    "titleZh": "子序列宽度之和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-subsequence-widths/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-total-strength-of-wizards",
+    "frontendDisplayId": "2281",
+    "titleEn": "Sum of Total Strength of Wizards",
+    "titleZh": "巫师的总力量和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Stack",
+      "Prefix Sum",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调栈",
+      "前缀和",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-total-strength-of-wizards/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-two-integers",
+    "frontendDisplayId": "371",
+    "titleEn": "Sum of Two Integers",
+    "titleZh": "两整数之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-two-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-unique-elements",
+    "frontendDisplayId": "1748",
+    "titleEn": "Sum of Unique Elements",
+    "titleZh": "唯一元素的和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-unique-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-values-at-indices-with-k-set-bits",
+    "frontendDisplayId": "2859",
+    "titleEn": "Sum of Values at Indices With K Set Bits",
+    "titleZh": "计算 K 置位下标对应元素的和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-values-at-indices-with-k-set-bits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-variable-length-subarrays",
+    "frontendDisplayId": "3427",
+    "titleEn": "Sum of Variable Length Subarrays",
+    "titleZh": "变长子数组求和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-variable-length-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-root-to-leaf-numbers",
+    "frontendDisplayId": "129",
+    "titleEn": "Sum Root to Leaf Numbers",
+    "titleZh": "求根节点到叶节点数字之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-root-to-leaf-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-swap-lcci",
+    "frontendDisplayId": "面试题 16.21",
+    "titleEn": null,
+    "titleZh": "交换和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/sum-swap-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "summary-ranges",
+    "frontendDisplayId": "228",
+    "titleEn": "Summary Ranges",
+    "titleZh": "汇总区间",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/summary-ranges/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "super-egg-drop",
+    "frontendDisplayId": "887",
+    "titleEn": "Super Egg Drop",
+    "titleZh": "鸡蛋掉落",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/super-egg-drop/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "super-palindromes",
+    "frontendDisplayId": "906",
+    "titleEn": "Super Palindromes",
+    "titleZh": "超级回文数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/super-palindromes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "super-pow",
+    "frontendDisplayId": "372",
+    "titleEn": "Super Pow",
+    "titleZh": "超级次方",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Divide and Conquer",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "分治",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/super-pow/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "super-ugly-number",
+    "frontendDisplayId": "313",
+    "titleEn": "Super Ugly Number",
+    "titleZh": "超级丑数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/super-ugly-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "super-washing-machines",
+    "frontendDisplayId": "517",
+    "titleEn": "Super Washing Machines",
+    "titleZh": "超级洗衣机",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/super-washing-machines/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "surface-area-of-3d-shapes",
+    "frontendDisplayId": "892",
+    "titleEn": "Surface Area of 3D Shapes",
+    "titleZh": "三维形体的表面积",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Math",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "数学",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/surface-area-of-3d-shapes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "surrounded-regions",
+    "frontendDisplayId": "130",
+    "titleEn": "Surrounded Regions",
+    "titleZh": "被围绕的区域",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/surrounded-regions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "swap-adjacent-in-lr-string",
+    "frontendDisplayId": "777",
+    "titleEn": "Swap Adjacent in LR String",
+    "titleZh": "在 LR 字符串中交换相邻字符",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/swap-adjacent-in-lr-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "swap-for-longest-repeated-character-substring",
+    "frontendDisplayId": "1156",
+    "titleEn": "Swap For Longest Repeated Character Substring",
+    "titleZh": "单字符重复子串的最大长度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/swap-for-longest-repeated-character-substring/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "swap-nodes-in-pairs",
+    "frontendDisplayId": "24",
+    "titleEn": "Swap Nodes in Pairs",
+    "titleZh": "两两交换链表中的节点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/swap-nodes-in-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "swap-numbers-lcci",
+    "frontendDisplayId": "面试题 16.01",
+    "titleEn": null,
+    "titleZh": "交换数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/swap-numbers-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "swap-sex-of-employees",
+    "frontendDisplayId": "627",
+    "titleEn": "Swap Sex of Employees",
+    "titleZh": "变更性别",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/swap-sex-of-employees/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "swapping-nodes-in-a-linked-list",
+    "frontendDisplayId": "1721",
+    "titleEn": "Swapping Nodes in a Linked List",
+    "titleZh": "交换链表中的节点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/swapping-nodes-in-a-linked-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "swim-in-rising-water",
+    "frontendDisplayId": "778",
+    "titleEn": "Swim in Rising Water",
+    "titleZh": "水位上升的泳池中游泳",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Heap (Priority Queue)",
+      "Matrix",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "广度优先搜索",
+      "深度优先搜索",
+      "堆（优先队列）",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/swim-in-rising-water/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "symmetric-tree",
+    "frontendDisplayId": "101",
+    "titleEn": "Symmetric Tree",
+    "titleZh": "对称二叉树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/symmetric-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "t3fKg1",
+    "frontendDisplayId": "LCP 32",
+    "titleEn": null,
+    "titleZh": "批量处理任务",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/t3fKg1/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "t9-lcci",
+    "frontendDisplayId": "面试题 16.20",
+    "titleEn": null,
+    "titleZh": "T9键盘",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/t9-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "tag-validator",
+    "frontendDisplayId": "591",
+    "titleEn": "Tag Validator",
+    "titleZh": "标签验证器",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/tag-validator/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "take-gifts-from-the-richest-pile",
+    "frontendDisplayId": "2558",
+    "titleEn": "Take Gifts From the Richest Pile",
+    "titleZh": "从数量最多的堆取走礼物",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/take-gifts-from-the-richest-pile/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "take-k-of-each-character-from-left-and-right",
+    "frontendDisplayId": "2516",
+    "titleEn": "Take K of Each Character From Left and Right",
+    "titleZh": "每种字符至少取 K 个",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/take-k-of-each-character-from-left-and-right/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-118",
+    "claimedAt": "2026-07-10T08:06:27.206367+00:00",
+    "completedAt": null
+  }
+]

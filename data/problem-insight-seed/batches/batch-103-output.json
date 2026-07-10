@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "reduction-operations-to-make-the-array-elements-equal",
+    "reasonEN": "A medium sorting problem that counts how many lower elements must be reduced as distinct value levels are crossed. It trains grouping equal values and deriving cumulative operation counts, a useful pattern for rank-based transformations.",
+    "reasonZH": "这是一道中等排序题，跨越不同数值层级时统计需要被降低的元素数量。它训练相同值分组和累积操作计数，适合处理基于排名的转换问题。"
+  },
+  {
+    "slug": "redundant-connection",
+    "reasonEN": "A medium graph problem that detects the edge closing a cycle in an otherwise tree-like structure. It trains union-find cycle detection and component merging, making it a foundational application of disjoint-set data structures.",
+    "reasonZH": "这是一道中等图题，需要找出在近似树结构中形成环的边。它训练并查集判环和连通块合并，是不相交集合数据结构的基础应用。"
+  },
+  {
+    "slug": "redundant-connection-ii",
+    "reasonEN": "A hard directed-graph problem that must distinguish an extra parent edge from a cycle edge. It trains combining indegree analysis with union-find and handling competing failure cases, a classic exercise in directed-tree reconstruction.",
+    "reasonZH": "这是高难度有向图题，需要区分额外父边与成环边。它训练结合入度分析和并查集，并处理相互竞争的异常情况，是有向树重构的经典练习。"
+  },
+  {
+    "slug": "reformat-date",
+    "reasonEN": "An easy string-parsing problem that converts human-readable date tokens into a normalized numeric format. It trains token extraction, month mapping, and zero padding, useful for reliable text-to-date transformations.",
+    "reasonZH": "这是一道简单字符串解析题，将可读日期词元转换为标准数字格式。它训练词元提取、月份映射和零填充，适合可靠的文本日期转换。"
+  },
+  {
+    "slug": "reformat-department-table",
+    "reasonEN": "An easy SQL pivoting exercise that turns row-based monthly revenue into fixed output columns. It trains conditional aggregation and NULL-aware reporting, a common technique for reshaping analytical data.",
+    "reasonZH": "这是一道简单 SQL 透视题，将按行存储的月收入转换为固定输出列。它训练条件聚合和 NULL 感知报表，是重塑分析数据的常用技巧。"
+  },
+  {
+    "slug": "reformat-phone-number",
+    "reasonEN": "An easy string formatting problem that strips separators before rebuilding digit groups under special final-block rules. It trains normalization followed by structured output assembly, a useful pattern for data-cleaning tasks.",
+    "reasonZH": "这是一道简单字符串格式化题，先去除分隔符，再按末尾分组规则重建号码。它训练先规范化后结构化输出，是数据清洗任务的实用模式。"
+  },
+  {
+    "slug": "reformat-the-string",
+    "reasonEN": "An easy string construction problem that alternates letters and digits when their counts permit. It trains feasibility checks, bucketed character collection, and controlled interleaving, a compact exercise in constrained rearrangement.",
+    "reasonZH": "这是一道简单字符串构造题，在数量允许时交替放置字母和数字。它训练可行性判断、字符分类收集和受控交错，是受限重排的紧凑练习。"
+  },
+  {
+    "slug": "regions-cut-by-slashes",
+    "reasonEN": "A medium grid-connectivity problem that expands each cell or divides it into subregions to model slash barriers. It trains geometric discretization and union-find or flood-fill traversal, a key technique for converting visual regions into graph components.",
+    "reasonZH": "这是一道中等网格连通性题，通过放大单元格或拆分子区域来表示斜杠障碍。它训练几何离散化及并查集或洪泛遍历，是将视觉区域转化为图连通块的关键技巧。"
+  },
+  {
+    "slug": "regular-expression-matching",
+    "reasonEN": "A classic hard string DP problem that handles literal characters, wildcards, and Kleene-star repetition. It trains precise state semantics and empty-prefix transitions, making it a milestone problem for recursive memoization and pattern matching.",
+    "reasonZH": "这是经典高难度字符串 DP 题，需要处理普通字符、通配符和星号重复。它训练精确的状态语义和空前缀转移，是递归记忆化与模式匹配的里程碑题。"
+  },
+  {
+    "slug": "relative-ranks",
+    "reasonEN": "An easy sorting problem that maps original indices to ordered scores and medal labels. It trains preserving identity through sorting and rank reconstruction, a basic but frequent pattern in leaderboard tasks.",
+    "reasonZH": "这是一道简单排序题，需要将原下标映射到排序后的分数和奖牌标签。它训练排序时保留身份信息及排名还原，是排行榜任务中的常见模式。"
+  },
+  {
+    "slug": "relative-sort-array",
+    "reasonEN": "An easy counting-sort problem that prioritizes values according to a reference order before sorting the remainder. It trains frequency-table construction and custom ordering, useful whenever one dataset defines another's precedence.",
+    "reasonZH": "这是一道简单计数排序题，先按参考数组定义的顺序排列元素，再处理剩余值。它训练频次表构造和自定义排序，在一组数据定义另一组优先级时很有用。"
+  },
+  {
+    "slug": "relocate-marbles",
+    "reasonEN": "A medium hash-set simulation problem that updates occupied positions through relocation operations. It trains modeling presence rather than individual identities and sorting the final state, a practical approach for set-like movement rules.",
+    "reasonZH": "这是一道中等哈希集合模拟题，需要通过移动操作更新被占据的位置。它训练建模位置存在性而非单个对象身份，并排序最终状态，适合集合式移动规则。"
+  },
+  {
+    "slug": "remove-adjacent-almost-equal-characters",
+    "reasonEN": "A medium greedy string problem that resolves each conflicting adjacent pair with the minimum number of edits. It trains local conflict consumption and why non-overlapping greedy choices are sufficient, useful for edit-minimization scans.",
+    "reasonZH": "这是一道中等贪心字符串题，需要以最少修改解决相邻近似字符冲突。它训练局部冲突消解及非重叠贪心为何足够，适合最小编辑扫描问题。"
+  },
+  {
+    "slug": "remove-all-adjacent-duplicates-in-string",
+    "reasonEN": "An easy stack problem that removes a pair whenever the current character matches the stack top. It trains cancellation invariants and amortized linear processing, providing a reusable template for cascading elimination tasks.",
+    "reasonZH": "这是一道简单栈题，当前字符与栈顶相同就消除该对字符。它训练抵消不变量和均摊线性处理，是连锁消除问题的可复用模板。"
+  },
+  {
+    "slug": "remove-all-adjacent-duplicates-in-string-ii",
+    "reasonEN": "A medium counted-stack problem that repeatedly removes runs reaching a specified size. It trains pairing characters with run lengths and handling cascaded merges, an essential extension of simple adjacent-cancellation logic.",
+    "reasonZH": "这是一道中等计数栈题，需要反复删除达到指定长度的连续字符段。它训练字符与段长度配对维护及级联合并处理，是相邻消除逻辑的重要扩展。"
+  },
+  {
+    "slug": "remove-all-occurrences-of-a-substring",
+    "reasonEN": "A medium string simulation problem that removes newly formed target occurrences as characters are appended. It trains stack-style output construction and suffix matching, avoiding repeated global replacement scans.",
+    "reasonZH": "这是一道中等字符串模拟题，在追加字符时即时删除新形成的目标子串。它训练栈式输出构造和后缀匹配，避免重复扫描整个字符串。"
+  },
+  {
+    "slug": "remove-boxes",
+    "reasonEN": "A hard interval DP problem that carries the count of same-colored boxes merged with one boundary. It trains non-obvious state augmentation and delayed-removal decisions, making it a landmark example of advanced memoized recursion.",
+    "reasonZH": "这是高难度区间 DP 题，需要携带与边界同色盒子合并的数量作为状态。它训练非常规状态扩展和延迟删除决策，是高级记忆化递归的里程碑题。"
+  },
+  {
+    "slug": "remove-colored-pieces-if-both-neighbors-are-the-same-color",
+    "reasonEN": "A medium game-theory counting problem where each player's useful moves depend only on long same-color runs. It trains reducing alternating play to independent move counts, showing how structural invariants can replace game-tree search.",
+    "reasonZH": "这是一道中等博弈计数题，每位玩家的有效操作只取决于长连续同色段。它训练将交替博弈化为独立可行动作数，展示结构不变量如何替代博弈树搜索。"
+  },
+  {
+    "slug": "remove-comments",
+    "reasonEN": "A medium parser simulation problem that tracks whether scanning is inside a block comment across lines. It trains lexical state machines, boundary recognition, and output buffering, which are foundational skills for source-code processing.",
+    "reasonZH": "这是一道中等解析模拟题，需要跨行跟踪是否位于块注释中。它训练词法状态机、边界识别和输出缓冲，是源码处理的基础能力。"
+  },
+  {
+    "slug": "remove-covered-intervals",
+    "reasonEN": "A medium interval sorting problem that detects coverage by maintaining the farthest right endpoint seen. It trains tie-breaking sort orders and one-pass dominance checks, a standard approach for nested-range filtering.",
+    "reasonZH": "这是一道中等区间排序题，通过维护已见最远右端点识别被覆盖区间。它训练排序并列规则和一次遍历支配判断，是嵌套范围过滤的标准方法。"
+  },
+  {
+    "slug": "remove-digit-from-number-to-maximize-result",
+    "reasonEN": "An easy greedy string problem that removes the first eligible digit before a larger following digit, or the last occurrence otherwise. It trains lexicographic optimization through local comparison, a concise pattern for maximizing decimal strings.",
+    "reasonZH": "这是一道简单贪心字符串题，优先删除后继更大的首个指定数字，否则删除最后一次出现。它训练通过局部比较进行字典序优化，是最大化十进制字符串的简洁模式。"
+  },
+  {
+    "slug": "remove-duplicate-letters",
+    "reasonEN": "A medium monotonic-stack problem that constructs the lexicographically smallest subsequence containing each letter once. It trains last-occurrence awareness, membership tracking, and reversible greedy pops, a key pattern for canonical string construction.",
+    "reasonZH": "这是一道中等单调栈题，需要构造每个字母恰好一次且字典序最小的子序列。它训练最后出现位置、成员标记和可逆贪心弹栈，是规范字符串构造的关键模式。"
+  },
+  {
+    "slug": "remove-duplicate-node-lcci",
+    "reasonEN": "An easy linked-list deduplication problem that preserves the first occurrence of each value. It trains hash-set membership checks and pointer relinking, providing practical practice for mutable list filtering.",
+    "reasonZH": "这是一道简单链表去重题，需要保留每个值的首次出现节点。它训练哈希集合成员检查和指针重连，是可变链表过滤的实用练习。"
+  },
+  {
+    "slug": "remove-duplicates-from-sorted-array",
+    "reasonEN": "A foundational two-pointer array problem that compacts unique values in place. It trains read-write pointer separation and respecting the returned logical length, an essential idiom for in-place array filtering.",
+    "reasonZH": "这是基础双指针数组题，需要原地压缩不同元素。它训练读写指针分离和正确处理返回的逻辑长度，是原地数组过滤的必备写法。"
+  },
+  {
+    "slug": "remove-duplicates-from-sorted-array-ii",
+    "reasonEN": "A medium two-pointer compaction problem that retains at most a fixed number of equal values. It trains using a lagging write position as the admissibility check, a flexible extension of basic sorted-array deduplication.",
+    "reasonZH": "这是一道中等双指针压缩题，需要最多保留固定数量的重复值。它训练利用滞后写入位置判断可保留性，是基础有序数组去重的灵活扩展。"
+  },
+  {
+    "slug": "remove-duplicates-from-sorted-list",
+    "reasonEN": "An easy linked-list traversal problem that removes repeated neighbors from a sorted list. It trains local pointer bypassing and null-safe iteration, making it a basic template for list cleanup operations.",
+    "reasonZH": "这是一道简单链表遍历题，需要从有序链表中移除相邻重复节点。它训练局部指针跳过和空值安全遍历，是链表清理操作的基础模板。"
+  },
+  {
+    "slug": "remove-duplicates-from-sorted-list-ii",
+    "reasonEN": "A medium linked-list filtering problem that deletes every value appearing more than once. It trains dummy-head usage, duplicate-run detection, and predecessor control, which are critical for robust list surgery.",
+    "reasonZH": "这是一道中等链表过滤题，需要删除所有出现超过一次的值。它训练哑头节点、重复段检测和前驱指针控制，是稳健链表操作的关键。"
+  },
+  {
+    "slug": "remove-element",
+    "reasonEN": "An easy in-place array filtering problem that overwrites unwanted values with later kept values. It trains linear two-pointer compaction and logical-length contracts, a foundational technique for mutable arrays.",
+    "reasonZH": "这是一道简单原地数组过滤题，用后续保留值覆盖不需要的元素。它训练线性双指针压缩和逻辑长度约定，是可变数组的基础技巧。"
+  },
+  {
+    "slug": "remove-invalid-parentheses",
+    "reasonEN": "A hard search problem that removes the minimum number of parentheses while avoiding duplicate results. It trains BFS-level optimality or pruned backtracking with balance invariants, making it excellent practice for constrained string generation.",
+    "reasonZH": "这是高难度搜索题，需要以最少删除次数移除无效括号并避免重复结果。它训练 BFS 层级最优性或带平衡不变量的剪枝回溯，是受限字符串生成的优秀练习。"
+  },
+  {
+    "slug": "remove-k-balanced-substrings",
+    "reasonEN": "A medium stack-based string simulation problem that repeatedly identifies and removes substrings satisfying a balance rule. It trains incremental balance tracking, cascade handling, and choosing an appropriate mutable representation for deletions.",
+    "reasonZH": "这是一道中等栈式字符串模拟题，需要反复识别并删除满足平衡规则的子串。它训练增量平衡维护、级联处理和选择适合删除操作的可变表示。"
+  }
+]

@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "continuous-subarray-sum",
+    "reasonEN": "A medium prefix-sum and modular-arithmetic problem. It trains storing the earliest index for each remainder and handling the minimum-length constraint without losing valid subarrays. The pattern generalizes to divisibility and repeated-prefix queries in array problems.",
+    "reasonZH": "中等难度的前缀和与模运算题。它训练按余数记录最早下标，并在不遗漏合法子数组的前提下处理最小长度限制。该模式可迁移到数组中的整除性与重复前缀查询。"
+  },
+  {
+    "slug": "continuous-subarrays",
+    "reasonEN": "A sliding-window problem centered on maintaining the current value range. It exercises monotonic queues or ordered structures for synchronized maximum and minimum updates while shrinking the window precisely. This is a strong bridge from basic two pointers to range-constrained windows.",
+    "reasonZH": "围绕维护窗口值域的滑动窗口题。它考查用单调队列或有序结构同步更新最大最小值，并精确收缩窗口。该题是从基础双指针进阶到值域约束窗口的重要练习。"
+  },
+  {
+    "slug": "convert-1d-array-into-2d-array",
+    "reasonEN": "An easy array and matrix simulation exercise. It reinforces dimension validation and the row-column to linear-index mapping that prevents off-by-one mistakes. The concise transformation is useful preparation for more involved matrix reshaping tasks.",
+    "reasonZH": "简单的数组与矩阵模拟题。它强化维度合法性检查，以及行列坐标到线性下标的映射，避免边界偏移错误。这个简洁变换为更复杂的矩阵重排题打下基础。"
+  },
+  {
+    "slug": "convert-a-number-to-hexadecimal",
+    "reasonEN": "A bit-manipulation conversion problem with signed-integer edge cases. It practices extracting four-bit groups, mapping digits, and using unsigned shifts to preserve a negative value's representation. It builds reliable intuition for low-level numeric formatting.",
+    "reasonZH": "带有有符号整数边界的位运算转换题。它训练提取四位分组、映射十六进制字符，并用无符号右移保留负数表示。该题能建立可靠的底层数值格式化直觉。"
+  },
+  {
+    "slug": "convert-an-array-into-a-2d-array-with-conditions",
+    "reasonEN": "A medium construction problem using frequency counting. It trains turning multiplicities into rows while preserving the invariant that each row contains distinct values. The task demonstrates how a hash table can guide a minimal greedy arrangement.",
+    "reasonZH": "利用频次统计的中等构造题。它训练将重复次数拆分到多行，同时保持每行元素互异的不变量。该题展示了哈希表如何指导最小化的贪心安排。"
+  },
+  {
+    "slug": "convert-binary-number-in-a-linked-list-to-integer",
+    "reasonEN": "An introductory linked-list traversal problem with binary accumulation. It reinforces the left-shift-and-add recurrence and careful sequential processing of nodes. This is a compact exercise for recognizing numeric state hidden in a list representation.",
+    "reasonZH": "入门级链表遍历与二进制累积题。它强化左移再累加的递推关系，以及按节点顺序处理状态的习惯。该题适合识别链表表示中隐含的数值状态。"
+  },
+  {
+    "slug": "convert-bst-to-greater-tree",
+    "reasonEN": "A BST transformation built on reverse inorder traversal. It trains exploiting descending key order with a running suffix sum and separating traversal state from node mutation. The technique is foundational for ordered-tree aggregate queries.",
+    "reasonZH": "基于反向中序遍历的 BST 变换题。它训练利用键值降序维护后缀累加和，并分离遍历状态与节点修改。该技巧是有序树聚合查询的基础。"
+  },
+  {
+    "slug": "convert-date-to-binary",
+    "reasonEN": "An easy string and arithmetic formatting task. It practices parsing fixed delimiters, converting independent numeric components, and preserving the requested output structure. Its value lies in writing robust, low-overhead conversion code.",
+    "reasonZH": "简单的字符串与数值格式化题。它训练解析固定分隔符、分别转换数值分量并保持目标输出结构。其价值在于编写健壮且开销低的转换代码。"
+  },
+  {
+    "slug": "convert-integer-lcci",
+    "reasonEN": "A bit-manipulation staple that reduces integer conversion to XOR and population count. It trains recognizing differing bits directly instead of simulating changes one at a time. The idea transfers to Hamming distance, masks, and binary-state comparison.",
+    "reasonZH": "将整数转换归约为异或与位计数的经典位运算题。它训练直接识别不同位，而非逐步模拟修改。该思路可迁移到汉明距离、掩码和二进制状态比较。"
+  },
+  {
+    "slug": "convert-integer-to-the-sum-of-two-no-zero-integers",
+    "reasonEN": "An easy constructive number-theory problem. It exercises a bounded enumeration paired with digit inspection, especially the rule that decimal zero invalidates a candidate. The problem is useful for practicing simple search with a clear feasibility predicate.",
+    "reasonZH": "简单的构造型数论题。它训练有界枚举结合数字检查，尤其是十进制中出现零即非法的判定规则。该题适合练习带清晰可行性条件的简单搜索。"
+  },
+  {
+    "slug": "convert-sorted-array-to-binary-search-tree",
+    "reasonEN": "A divide-and-conquer tree construction problem. It trains choosing a midpoint to preserve BST ordering and balance, then defining recursion over half-open or closed intervals consistently. This is a core template for sorted-data-to-tree transformations.",
+    "reasonZH": "分治式树构造题。它训练选择中点以同时保持 BST 有序性与平衡性，并一致地定义闭区间或半开区间递归。该题是有序数据转树的核心模板。"
+  },
+  {
+    "slug": "convert-sorted-list-to-binary-search-tree",
+    "reasonEN": "A medium divide-and-conquer problem that combines linked-list access constraints with balanced BST construction. It highlights the slow-fast pointer split and the need to cut sublists before recursion. The contrast with the array version sharpens data-structure-aware algorithm design.",
+    "reasonZH": "结合链表访问限制与平衡 BST 构造的中等分治题。它考查快慢指针寻找中点，以及递归前断开子链表。与数组版本的对照能加深面向数据结构的算法设计能力。"
+  },
+  {
+    "slug": "convert-the-temperature",
+    "reasonEN": "A basic arithmetic conversion exercise. It reinforces applying formulas in the correct order, retaining fractional precision, and returning values in a prescribed arrangement. This is useful for establishing disciplined handling of numerical interfaces.",
+    "reasonZH": "基础的算术转换题。它强化按正确顺序应用公式、保留小数精度并按规定顺序返回结果。该题适合建立严谨处理数值接口的习惯。"
+  },
+  {
+    "slug": "convert-to-base-2",
+    "reasonEN": "A medium numeral-system conversion problem with a negative radix. It trains deriving a nonnegative remainder under negative division and updating the quotient without breaking termination. The problem deepens understanding beyond ordinary positive-base representation.",
+    "reasonZH": "使用负进制的中等进制转换题。它训练在负数除法下构造非负余数，并更新商以保证过程收敛。该题能突破普通正进制表示的理解边界。"
+  },
+  {
+    "slug": "coordinate-with-maximum-network-quality",
+    "reasonEN": "A bounded-enumeration geometry problem. It trains converting distance-based scoring into a direct simulation, managing floor operations accurately, and applying deterministic tie breaking. It is a practical example of preferring exhaustive search when constraints make it safe.",
+    "reasonZH": "有界枚举的几何模拟题。它训练将距离评分转化为直接模拟，准确处理向下取整，并落实确定性的并列规则。该题体现了约束允许时优先采用穷举的工程判断。"
+  },
+  {
+    "slug": "copy-list-with-random-pointer",
+    "reasonEN": "A classic linked-list cloning problem with nonlocal references. It trains building an original-to-copy mapping or interleaving copied nodes so random pointers can be restored correctly. The pattern is essential for copying graph-like structures without aliasing bugs.",
+    "reasonZH": "带非局部引用的经典链表复制题。它训练建立原节点到副本的映射，或交错插入副本节点以正确恢复随机指针。该模式对无别名错误地复制图状结构至关重要。"
+  },
+  {
+    "slug": "corporate-flight-bookings",
+    "reasonEN": "A range-update prefix-sum template problem. It teaches recording only interval boundaries in a difference array, then reconstructing final counts with one scan. This is a high-value optimization pattern for many batched update workloads.",
+    "reasonZH": "区间更新的前缀和模板题。它训练只在区间边界记录增减量，再通过一次扫描还原最终计数。该题是处理大量批量更新的高价值优化模式。"
+  },
+  {
+    "slug": "count-all-possible-routes",
+    "reasonEN": "A hard memoized dynamic-programming problem whose state is location plus remaining fuel. It trains modeling revisits without cycles in the state graph, counting routes modulo a constant, and accounting for the destination before continuing. The problem is excellent practice for resource-constrained path counting.",
+    "reasonZH": "状态为当前位置加剩余燃料的困难记忆化动态规划题。它训练在状态图中建模可重复访问、进行模计数，并在继续转移前计入到达终点的方案。该题非常适合资源约束路径计数训练。"
+  },
+  {
+    "slug": "count-all-valid-pickup-and-delivery-options",
+    "reasonEN": "A hard combinatorics problem with an elegant recurrence. It trains counting legal insertion positions for each pickup-delivery pair and applying modular multiplication safely. The derivation turns a sequencing constraint into a reusable counting formula.",
+    "reasonZH": "具有优雅递推的困难组合数学题。它训练计算每对取件与送件的合法插入位置，并安全进行模乘。该推导将序列约束转化为可复用的计数公式。"
+  },
+  {
+    "slug": "count-almost-equal-pairs-i",
+    "reasonEN": "A medium enumeration and hashing problem over digit transformations. It exercises generating each permitted one-swap variant, normalizing numeric representations, and counting matches without double counting. This is a useful introduction to transformation-based pair counting.",
+    "reasonZH": "围绕数字变换的中等枚举与哈希题。它训练生成每个允许的一次交换变体、规范化数值表示，并避免重复计数。该题是变换式数对计数的良好入门。"
+  },
+  {
+    "slug": "count-almost-equal-pairs-ii",
+    "reasonEN": "A hard extension of digit-transformation pair counting. It requires organizing variants from up to two swaps and using hashes or sorting to aggregate compatible values efficiently. The problem develops the ability to scale a brute-force relation through canonical generation.",
+    "reasonZH": "数字变换数对计数的困难进阶题。它需要组织至多两次交换产生的变体，并用哈希或排序高效聚合兼容值。该题训练通过规范化生成扩展暴力关系的能力。"
+  },
+  {
+    "slug": "count-alternating-subarrays",
+    "reasonEN": "A medium linear-scan counting problem based on maximal alternating runs. It trains maintaining the length of the current valid suffix and adding its contribution at every position. The recurrence is a reusable way to count subarrays defined by adjacent relationships.",
+    "reasonZH": "基于最长交替段的中等线性扫描计数题。它训练维护当前合法后缀长度，并在每个位置累加其贡献。该递推是统计由相邻关系定义的子数组的可复用方法。"
+  },
+  {
+    "slug": "count-anagrams",
+    "reasonEN": "A hard combinatorics and string-counting problem. It trains factoring each word's arrangements through factorials and duplicate frequencies, then using modular inverses for division. The solution is a key template for permutation counts under repeated characters.",
+    "reasonZH": "困难的组合数学与字符串计数题。它训练通过阶乘和重复字符频次分解每个单词的排列数，并用模逆完成除法。该解法是含重复字符排列计数的关键模板。"
+  },
+  {
+    "slug": "count-and-say",
+    "reasonEN": "A medium string-simulation problem driven by run-length encoding. It trains scanning contiguous groups, flushing counts at group boundaries, and building the next sequence without index errors. The exercise is valuable for mastering grouped traversal patterns.",
+    "reasonZH": "由游程编码驱动的中等字符串模拟题。它训练扫描连续分组、在分组边界输出计数，并无下标错误地构造下一项。该练习有助于掌握分组遍历模式。"
+  },
+  {
+    "slug": "count-array-pairs-divisible-by-k",
+    "reasonEN": "A hard number-theory counting problem using gcd classification. It trains reducing each value to its gcd with k, deriving compatibility through divisibility, and aggregating frequencies instead of testing all pairs. This pattern is powerful for multiplicative constraints under large input sizes.",
+    "reasonZH": "利用最大公约数分类的困难数论计数题。它训练将每个值缩减为与 k 的 gcd、通过整除关系推导兼容性，并以频次聚合替代两两枚举。该模式适合处理大规模乘法约束。"
+  },
+  {
+    "slug": "count-artifacts-that-can-be-extracted",
+    "reasonEN": "A medium grid simulation and lookup problem. It trains encoding excavated cells for constant-time membership checks and verifying every cell of each rectangular artifact. The solution illustrates how representation choices simplify multi-cell validation.",
+    "reasonZH": "中等难度的网格模拟与查找题。它训练编码已挖掘单元以进行常数时间成员查询，并验证每个矩形工件的全部格子。该解法展示了表示方式如何简化多单元校验。"
+  },
+  {
+    "slug": "count-asterisks",
+    "reasonEN": "An easy string-scanning problem with state toggling. It trains tracking whether the scan is inside a delimiter-bounded segment and counting only characters visible outside it. This is a concise introduction to finite-state parsing of structured strings.",
+    "reasonZH": "带状态切换的简单字符串扫描题。它训练跟踪扫描是否位于分隔符包围的片段内，只统计片段外可见字符。该题是结构化字符串有限状态解析的简洁入门。"
+  },
+  {
+    "slug": "count-beautiful-numbers",
+    "reasonEN": "A hard digit-DP counting problem. It trains designing states that capture prefix bounds and digit-derived validity conditions, while treating leading zeros consistently. The problem is valuable for learning how to count constrained integers over large ranges.",
+    "reasonZH": "困难的数位 DP 计数题。它训练设计同时表达前缀上界与数字派生合法条件的状态，并一致处理前导零。该题有助于掌握大范围受限整数的计数方法。"
+  },
+  {
+    "slug": "count-beautiful-splits-in-an-array",
+    "reasonEN": "A medium array-splitting problem with dynamic-programming flavor. It trains comparing candidate segments under split constraints and organizing reusable prefix information to avoid repeated work. The task develops disciplined reasoning about partition boundaries and equality conditions.",
+    "reasonZH": "带动态规划色彩的中等数组分割题。它训练在分割约束下比较候选片段，并组织可复用的前缀信息以避免重复计算。该题能培养对分段边界与相等条件的严谨推理。"
+  },
+  {
+    "slug": "count-beautiful-substrings-i",
+    "reasonEN": "A medium enumeration problem combining strings, prefix balances, and divisibility. It trains translating vowel-consonant balance into prefix states and checking the arithmetic condition for each candidate substring. This is a useful stepping stone toward optimized prefix-state counting.",
+    "reasonZH": "结合字符串、前缀平衡与整除条件的中等枚举题。它训练将元音辅音平衡转化为前缀状态，并检查每个候选子串的算术条件。该题是进阶前缀状态计数的良好铺垫。"
+  }
+]

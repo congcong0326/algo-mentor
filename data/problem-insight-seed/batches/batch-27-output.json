@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "decrease-elements-to-make-array-zigzag",
+    "reasonEN": "A medium greedy problem that separates the two possible zigzag parity patterns and computes local decrements independently, sharpening reasoning about constraints that only permit reduction.",
+    "reasonZH": "中等难度贪心题，分别考察两种锯齿奇偶模式并独立计算局部递减代价，训练在只能减小元素的约束下进行推导。"
+  },
+  {
+    "slug": "decremental-string-concatenation",
+    "reasonEN": "This medium string DP tracks the first and last characters of the assembled string, demonstrating how boundary-state compression avoids constructing exponentially many concatenations.",
+    "reasonZH": "中等难度字符串动态规划题，维护已拼接字符串的首尾字符，展示如何用边界状态压缩避免构造指数级拼接结果。"
+  },
+  {
+    "slug": "decrypt-string-from-alphabet-to-integer-mapping",
+    "reasonEN": "An easy parsing problem that scans backward to distinguish one- and two-digit codes, reinforcing index control and delimiter-aware string decoding.",
+    "reasonZH": "字符串解析入门题，通过逆向扫描区分一位和两位编码，训练下标控制与分隔符感知的解码实现。"
+  },
+  {
+    "slug": "deep-dark-fraction",
+    "reasonEN": "A lightweight number-theory simulation problem that applies arithmetic invariants to fraction states, useful for practicing exact integer reasoning and edge-case validation.",
+    "reasonZH": "轻量级数论模拟题，将算术不变量应用于分数状态，适合练习精确整数推导与边界情况校验。"
+  },
+  {
+    "slug": "deepest-leaves-sum",
+    "reasonEN": "A medium tree-traversal problem that isolates the deepest level through BFS or depth tracking, providing clean practice in level aggregation and traversal state design.",
+    "reasonZH": "中等难度树遍历题，通过 BFS 或深度记录定位最深层，适合练习层级聚合与遍历状态设计。"
+  },
+  {
+    "slug": "defanging-an-ip-address",
+    "reasonEN": "A concise string-transformation exercise focused on safe character replacement, serving as a quick check of basic scanning and immutable-string construction.",
+    "reasonZH": "简洁的字符串变换题，核心是安全替换指定字符，可快速巩固基础扫描与不可变字符串构造。"
+  },
+  {
+    "slug": "defuse-the-bomb",
+    "reasonEN": "This easy circular sliding-window problem handles positive and negative directions with modular indexing, making it valuable practice for wraparound windows and initialization details.",
+    "reasonZH": "简单的环形滑动窗口题，借助模运算处理正反两个方向，重点训练循环窗口与初始值处理。"
+  },
+  {
+    "slug": "degree-of-an-array",
+    "reasonEN": "A frequency-and-index tracking problem that records first occurrence, last occurrence, and count together, illustrating how summary statistics recover the shortest qualifying subarray.",
+    "reasonZH": "频次与下标统计题，同时记录首次位置、末次位置和出现次数，展示如何由摘要信息恢复最短满足条件的子数组。"
+  },
+  {
+    "slug": "delete-and-earn",
+    "reasonEN": "A classic value-compression DP problem that reduces conflicting numbers to the House Robber recurrence, teaching how adjacency in values can replace adjacency in positions.",
+    "reasonZH": "经典的值域压缩动态规划题，将数值冲突转化为打家劫舍递推，训练理解数值相邻如何替代位置相邻。"
+  },
+  {
+    "slug": "delete-characters-to-make-fancy-string",
+    "reasonEN": "An easy greedy string filter that keeps only a bounded run length, reinforcing one-pass construction and the use of recent-output state instead of repeated edits.",
+    "reasonZH": "简单的贪心字符串过滤题，只保留受限长度的连续字符，训练一次扫描构造与维护近期输出状态。"
+  },
+  {
+    "slug": "delete-columns-to-make-sorted",
+    "reasonEN": "A direct column-validation problem that checks each vertical sequence independently, offering a clear baseline for matrix-like string ordering constraints.",
+    "reasonZH": "直接的列校验题，逐列独立检查纵向序列是否有序，是理解矩阵式字符串排序约束的清晰基线。"
+  },
+  {
+    "slug": "delete-columns-to-make-sorted-ii",
+    "reasonEN": "This medium greedy problem preserves already-resolved adjacent row pairs while scanning columns, a strong exercise in maintaining partial ordering invariants.",
+    "reasonZH": "中等难度贪心题，扫描列时保留已经确定顺序的相邻行对，重点训练维护部分有序不变量。"
+  },
+  {
+    "slug": "delete-columns-to-make-sorted-iii",
+    "reasonEN": "A hard subsequence-DP problem that finds the longest compatible column sequence, connecting lexicographic constraints with longest-increasing-subsequence-style transitions.",
+    "reasonZH": "高难度子序列动态规划题，寻找最长兼容列序列，将字典序约束与类似最长递增子序列的转移结合起来。"
+  },
+  {
+    "slug": "delete-duplicate-emails",
+    "reasonEN": "A foundational SQL cleanup task that uses row identity with partitioned duplicate detection, teaching deterministic retention of one record per repeated value.",
+    "reasonZH": "SQL 数据清理基础题，利用行标识与分组重复检测，每组保留一条记录，训练确定性的去重删除逻辑。"
+  },
+  {
+    "slug": "delete-duplicate-folders-in-system",
+    "reasonEN": "This hard trie and serialization problem fingerprints subtree structure before removal, demonstrating how canonical encodings reveal duplicate hierarchical data.",
+    "reasonZH": "高难度 Trie 与序列化题，先为子树生成结构指纹再删除重复项，展示规范编码如何识别重复层级数据。"
+  },
+  {
+    "slug": "delete-greatest-value-in-each-row",
+    "reasonEN": "An easy matrix simulation problem that sorts rows and aggregates aligned selections, reinforcing the difference between local row operations and global round results.",
+    "reasonZH": "简单的矩阵模拟题，先排序各行再聚合对齐位置的选择，训练区分局部行操作与全局轮次结果。"
+  },
+  {
+    "slug": "delete-leaves-with-a-given-value",
+    "reasonEN": "A medium postorder tree-pruning problem where parent decisions depend on transformed children, making it an essential exercise in recursive deletion semantics.",
+    "reasonZH": "中等难度后序树剪枝题，父节点是否删除依赖已处理的子节点，是掌握递归删除语义的关键练习。"
+  },
+  {
+    "slug": "delete-middle-node-lcci",
+    "reasonEN": "A focused linked-list mutation problem that removes a non-tail node by copying its successor, highlighting pointer-side effects and the limits of local node access.",
+    "reasonZH": "聚焦链表原地修改的问题，通过复制后继节点完成非尾节点删除，重点理解指针副作用与局部节点访问的限制。"
+  },
+  {
+    "slug": "delete-node-in-a-bst",
+    "reasonEN": "A medium BST surgery problem that separates leaf, one-child, and two-child cases, reinforcing ordered-tree invariants during successor or predecessor replacement.",
+    "reasonZH": "中等难度 BST 删除题，需要区分叶子、单子节点和双子节点情形，训练用后继或前驱替换时保持有序树不变量。"
+  },
+  {
+    "slug": "delete-node-in-a-linked-list",
+    "reasonEN": "This linked-list mutation exercise removes a node without head access by overwriting it with its successor, building intuition for reference aliasing and problem constraints.",
+    "reasonZH": "链表原地修改题，在无法访问头节点时用后继覆盖当前节点，帮助理解引用别名和题目约束带来的实现变化。"
+  },
+  {
+    "slug": "delete-nodes-and-return-forest",
+    "reasonEN": "A medium DFS forest-construction problem that propagates whether a node becomes a root after deletion, teaching recursive rewiring and result collection together.",
+    "reasonZH": "中等难度 DFS 森林构造题，通过向下传递节点是否成为新根的状态，训练递归断链与结果收集的协同处理。"
+  },
+  {
+    "slug": "delete-nodes-from-linked-list-present-in-array",
+    "reasonEN": "A medium linked-list filtering problem that combines a hash set with a sentinel head, providing a reusable pattern for safe removal of arbitrary matching nodes.",
+    "reasonZH": "中等难度链表过滤题，结合哈希集合与哨兵头节点，形成安全删除任意匹配节点的可复用模式。"
+  },
+  {
+    "slug": "delete-operation-for-two-strings",
+    "reasonEN": "A medium string DP problem that derives minimum deletions from the longest common subsequence, reinforcing the equivalence between alignment and edit operations.",
+    "reasonZH": "中等难度字符串动态规划题，通过最长公共子序列推导最少删除次数，训练理解序列对齐与编辑操作之间的等价关系。"
+  },
+  {
+    "slug": "delete-the-middle-node-of-a-linked-list",
+    "reasonEN": "A medium two-pointer linked-list problem that locates the middle while preserving its predecessor, sharpening fast-slow pointer invariants and deletion edge cases.",
+    "reasonZH": "中等难度快慢指针链表题，在定位中点时保留其前驱，训练快慢指针不变量与删除边界处理。"
+  },
+  {
+    "slug": "delivering-boxes-from-storage-to-ports",
+    "reasonEN": "This hard DP optimization problem combines prefix sums with a monotonic deque to minimize delivery trips, a high-value pattern for optimizing transitions over a moving range.",
+    "reasonZH": "高难度动态规划优化题，结合前缀和与单调队列最小化运输次数，是优化滑动区间状态转移的高价值模板。"
+  },
+  {
+    "slug": "department-highest-salary",
+    "reasonEN": "A practical SQL ranking problem that compares each employee with the department maximum, reinforcing grouped aggregation and tie-preserving result selection.",
+    "reasonZH": "实用的 SQL 排名题，将员工薪资与部门最大值比较，训练分组聚合以及保留并列结果的筛选方式。"
+  },
+  {
+    "slug": "department-top-three-salaries",
+    "reasonEN": "A hard SQL window-function problem that uses dense ranking within departments, teaching how to select top distinct values while retaining salary ties.",
+    "reasonZH": "高难度 SQL 窗口函数题，按部门使用稠密排名筛选前三个不同薪资，训练在保留并列时处理 Top-K 查询。"
+  },
+  {
+    "slug": "describe-the-painting",
+    "reasonEN": "A medium sweep-line problem that records color-sum deltas at interval endpoints, demonstrating how difference maps convert overlapping range updates into ordered segments.",
+    "reasonZH": "中等难度扫描线题，在区间端点记录颜色和的增量，展示差分映射如何把重叠区间更新转化为有序线段。"
+  },
+  {
+    "slug": "design-a-food-rating-system",
+    "reasonEN": "A medium data-structure design problem that coordinates food metadata with per-cuisine ordered rankings, emphasizing update consistency and lexicographic tie-breaking.",
+    "reasonZH": "中等难度数据结构设计题，协调食物元数据与各菜系有序排名，重点训练更新一致性和字典序并列规则。"
+  },
+  {
+    "slug": "design-a-number-container-system",
+    "reasonEN": "This medium lazy-deletion design problem maps indices to numbers and numbers to candidate heaps, teaching how stale entries can be safely deferred until query time.",
+    "reasonZH": "中等难度惰性删除设计题，同时维护下标到数字和数字到候选堆的映射，训练如何将过期条目安全延迟到查询时清理。"
+  }
+]

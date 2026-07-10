@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "Qv1Da2",
+    "reasonEN": "A medium linked-list and DFS exercise that emphasizes recursive flattening, tail tracking, and careful rewiring of prev, next, and child pointers. It is valuable for building confidence with structural transformations and pointer invariants.",
+    "reasonZH": "中等难度的链表与深度优先搜索题，重点训练递归展开、尾节点回传，以及 prev、next、child 指针的安全重连。它适合用来巩固复杂链表结构改造中的指针不变量。"
+  },
+  {
+    "slug": "RQku0D",
+    "reasonEN": "An accessible two-pointers and greedy string problem centered on one allowed deletion and precise boundary handling. It is a strong warm-up for learning how local choices can replace exhaustive string checks.",
+    "reasonZH": "入门级双指针与贪心字符串题，核心在于允许删除一次时如何分支判断并处理边界。它适合作为从暴力枚举过渡到局部决策优化的练习。"
+  },
+  {
+    "slug": "SLwz0R",
+    "reasonEN": "A classic medium linked-list problem that tests the fast-slow pointer pattern, dummy nodes, and deletion around head-edge cases. It is essential practice for converting positional constraints into pointer distance invariants.",
+    "reasonZH": "经典中等链表题，考查快慢指针、虚拟头节点，以及删除头节点等边界情况。它能帮助学习者把倒数位置约束转化为稳定的指针距离不变量。"
+  },
+  {
+    "slug": "SNJvJP",
+    "reasonEN": "A medium math problem that rewards pattern extraction and coordinate-based reasoning instead of simulation. It is useful for training formula derivation, layer analysis, and careful handling of large input ranges.",
+    "reasonZH": "中等难度数学题，重点不是模拟，而是从位置关系中提炼规律并转化为公式。它适合训练分层分析、坐标推导和大范围数据下的边界处理能力。"
+  },
+  {
+    "slug": "SsGoHC",
+    "reasonEN": "A canonical medium interval problem built on sorting and one-pass merging. It trains ordering assumptions, overlap detection, and in-place result construction, making it a must-have pattern for array preprocessing tasks.",
+    "reasonZH": "标准中等区间合并题，以排序和单次扫描为核心。它训练排序后不变量、重叠判断和结果构造，是掌握区间类数组预处理的基础题型。"
+  },
+  {
+    "slug": "TVdhkn",
+    "reasonEN": "A medium subset-generation problem that connects backtracking with bitmask enumeration. It is valuable for understanding decision trees, state restoration, and the relationship between recursive search and binary representation.",
+    "reasonZH": "中等难度子集生成题，同时连接回溯和位运算枚举两种思路。它适合训练选择树建模、状态恢复，以及递归搜索与二进制表示之间的对应关系。"
+  },
+  {
+    "slug": "U7WvvU",
+    "reasonEN": "A medium tree DP and DFS problem where each node state must capture the effect of operations across a subtree. It is useful for practicing state design, transition completeness, and avoiding local greedy traps on trees.",
+    "reasonZH": "中等难度树形动态规划题，需要用节点状态刻画操作对子树的影响。它适合训练状态设计、转移完备性，以及避免在树结构上做局部贪心判断。"
+  },
+  {
+    "slug": "UEcfPD",
+    "reasonEN": "An easy enumeration problem that can be solved through backtracking or bitmasking over a small array. It is a compact exercise for comparing exhaustive-search styles and validating constraints cleanly.",
+    "reasonZH": "简单枚举题，可用回溯或位运算遍历小规模数组状态。它适合作为穷举方法对比练习，重点在于约束校验和状态表达的简洁性。"
+  },
+  {
+    "slug": "UHnkqh",
+    "reasonEN": "A foundational linked-list problem that contrasts iterative pointer reversal with recursive decomposition. It is high-value practice for mastering pointer order, null handling, and the mental model behind list recursion.",
+    "reasonZH": "基础链表题，可同时练习迭代反转和递归拆解。它的价值在于强化指针更新顺序、空指针处理，以及链表递归返回关系的理解。"
+  },
+  {
+    "slug": "US1pGT",
+    "reasonEN": "A medium design problem combining trie, string search, and controlled mismatch counting. It is excellent for learning how to encode query semantics inside a data structure rather than scanning every word naively.",
+    "reasonZH": "中等难度设计题，融合字典树、字符串搜索和一次差异计数。它适合训练把查询语义下沉到数据结构中，而不是对所有单词做朴素扫描。"
+  },
+  {
+    "slug": "Uh984O",
+    "reasonEN": "A hard combinatorics and dynamic programming problem that stresses counting states, transition constraints, and modular arithmetic discipline. It is valuable for learners ready to move beyond standard DP templates into combinatorial modeling.",
+    "reasonZH": "困难组合数学与动态规划题，重点考查计数状态、转移约束和取模细节。它适合已经掌握常规 DP 后，进一步训练组合建模能力的学习者。"
+  },
+  {
+    "slug": "UhWRSj",
+    "reasonEN": "A medium trie and string-processing problem focused on prefix matching and early termination. It is useful for seeing when a trie outperforms repeated hash lookups and how to structure word-level text transformation.",
+    "reasonZH": "中等难度字典树与字符串处理题，核心在前缀匹配和提前终止。它适合理解字典树相较重复哈希查找的优势，并训练按单词粒度处理文本。"
+  },
+  {
+    "slug": "UlBDOe",
+    "reasonEN": "A medium dynamic programming problem on strings where phase definition and transition direction matter more than raw implementation. It is good practice for turning a target pattern into minimal-change DP states.",
+    "reasonZH": "中等难度字符串动态规划题，关键在阶段划分和转移方向，而不是代码量。它适合训练把目标形态抽象为最小修改代价状态的能力。"
+  },
+  {
+    "slug": "Up5XYM",
+    "reasonEN": "A hard array DP problem with sorting, resource grouping, and nontrivial state compression pressure. It is valuable for practicing how ordering simplifies transitions and how to control state explosion in optimization problems.",
+    "reasonZH": "困难数组动态规划题，结合排序、资源分组和较强的状态压缩要求。它适合训练如何利用顺序简化转移，并控制优化问题中的状态规模膨胀。"
+  },
+  {
+    "slug": "VabMRr",
+    "reasonEN": "A medium sliding-window problem that tests frequency counting, fixed-length windows, and efficient anagram detection. It is a core pattern for replacing repeated substring sorting with incremental hash-table updates.",
+    "reasonZH": "中等难度滑动窗口题，重点训练频次统计、定长窗口和异位词判定。它是用增量哈希计数替代反复排序子串的典型模板。"
+  },
+  {
+    "slug": "VvJkup",
+    "reasonEN": "A standard medium backtracking problem centered on permutations, used-state tracking, and clean restoration after each choice. It is essential for understanding search trees before tackling pruning-heavy enumeration tasks.",
+    "reasonZH": "标准中等回溯题，围绕排列生成、已选状态标记和每次选择后的恢复展开。它是理解搜索树结构、进入带剪枝枚举题前的基础训练。"
+  },
+  {
+    "slug": "W2ZX4X",
+    "reasonEN": "An easy contest-style problem that rewards extracting a simple ordering or counting rule from limited metadata. It is useful as a low-cost exercise in translating constraints into a concise implementation.",
+    "reasonZH": "简单竞赛题，重点在于从有限条件中提炼排序或计数规律。它适合作为低成本练习，训练把约束快速转化为简洁实现的能力。"
+  },
+  {
+    "slug": "WGki4K",
+    "reasonEN": "A medium bit-manipulation problem that moves beyond simple XOR and requires reasoning about per-bit occurrence counts. It is valuable for mastering numeric invariants under repeated elements and constant-space constraints.",
+    "reasonZH": "中等难度位运算题，不止考查异或，而是要求按位统计出现次数并还原结果。它适合训练重复元素场景下的数字不变量和常数空间思维。"
+  },
+  {
+    "slug": "WHnhjV",
+    "reasonEN": "An easy simulation problem that emphasizes faithfully applying array operations and preserving total-state consistency. It is a good starter exercise for clean loop structure and mutation reasoning.",
+    "reasonZH": "简单模拟题，重点在于按规则更新数组并保持整体状态一致。它适合作为练习清晰循环结构和可变状态推演的入门题。"
+  },
+  {
+    "slug": "WInSav",
+    "reasonEN": "A hard tree DP problem that demands careful subtree state modeling and transition composition. It is strong practice for handling optimization on binary trees where each local decision affects multiple downstream states.",
+    "reasonZH": "困难树形动态规划题，需要严谨设计子树状态并组合转移。它适合训练二叉树优化问题中局部决策影响多个后续状态的建模能力。"
+  },
+  {
+    "slug": "WNC0Lk",
+    "reasonEN": "A medium binary-tree traversal problem that can be solved with BFS level order or DFS depth priority. It is useful for comparing traversal strategies and understanding how view constraints map to depth-indexed state.",
+    "reasonZH": "中等难度二叉树遍历题，可用层序 BFS 或按深度优先的 DFS 解决。它适合对比遍历策略，并理解视图类约束如何映射到深度状态。"
+  },
+  {
+    "slug": "WhsWhI",
+    "reasonEN": "A medium hash-table or union-find problem focused on detecting sequence boundaries efficiently. It is a key exercise for reducing an apparent sorting task to near-linear set-based reasoning.",
+    "reasonZH": "中等难度哈希表或并查集题，核心在于高效识别连续序列边界。它适合训练把看似依赖排序的问题转化为近线性的集合推理。"
+  },
+  {
+    "slug": "WqXACV",
+    "reasonEN": "An easy greedy counting problem built on frequency aggregation and sorting. It is useful for learning how to pick high-impact categories first while keeping the implementation compact and verifiable.",
+    "reasonZH": "简单贪心计数题，以频次统计和排序为核心。它适合训练优先选择贡献最大的类别，并保持实现简洁、结果易验证。"
+  },
+  {
+    "slug": "XagZNi",
+    "reasonEN": "A medium stack simulation problem where collisions are resolved by maintaining a stable frontier. It is valuable for practicing while-loop stack reduction, direction-based cases, and complete boundary coverage.",
+    "reasonZH": "中等难度栈模拟题，通过维护稳定前沿来处理碰撞关系。它适合训练 while 循环消栈、方向分类讨论和边界情况覆盖。"
+  },
+  {
+    "slug": "XltzEq",
+    "reasonEN": "An easy two-pointers string problem that focuses on normalization, character filtering, and symmetric comparison. It is a practical warm-up for writing robust string scans without extra memory.",
+    "reasonZH": "简单双指针字符串题，重点训练字符规范化、过滤无关字符和对称比较。它适合作为无额外空间字符串扫描的实用入门练习。"
+  },
+  {
+    "slug": "XxZZjK",
+    "reasonEN": "A hard array and math problem that requires identifying the governing formula behind the data rather than iterating naively. It is useful for strengthening algebraic simplification and edge-case reasoning under large constraints.",
+    "reasonZH": "困难数组与数学题，关键是找到数据背后的主导公式，而不是朴素遍历。它适合强化代数化简、大范围约束分析和边界推理能力。"
+  },
+  {
+    "slug": "Y1VbOX",
+    "reasonEN": "A hard dynamic programming problem over arrays and strings with state transitions shaped by multiple interacting choices. It is valuable for practicing state compression, transition completeness, and careful interpretation of sequential constraints.",
+    "reasonZH": "困难动态规划题，结合数组与字符串，状态转移受多个选择共同影响。它适合训练状态压缩、转移完备性，以及对顺序约束的精确建模。"
+  },
+  {
+    "slug": "YaVDxD",
+    "reasonEN": "A medium dynamic programming problem that transforms sign assignment into a subset-sum style formulation. It is excellent for connecting backtracking intuition with optimized DP and for handling parity and range edge cases.",
+    "reasonZH": "中等难度动态规划题，可将正负号选择转化为子集和模型。它适合把回溯直觉升级为 DP 解法，并训练奇偶性与取值范围边界处理。"
+  },
+  {
+    "slug": "YesdPw",
+    "reasonEN": "A medium grid connectivity problem that supports DFS, BFS, or union-find solutions. It is valuable for comparing traversal and set-union approaches while practicing visited-state design on matrices.",
+    "reasonZH": "中等难度矩阵连通性题，可用 DFS、BFS 或并查集解决。它适合对比遍历与集合合并思路，并训练矩阵访问标记和区域建模。"
+  },
+  {
+    "slug": "Ygoe9J",
+    "reasonEN": "A medium backtracking problem focused on combination search, repeated choices, and pruning by remaining target. It is a core template for teaching how candidate ordering and recursion parameters control duplicate-free enumeration.",
+    "reasonZH": "中等难度回溯题，围绕组合搜索、可重复选择和剩余目标剪枝展开。它是讲解候选顺序、递归参数设计和去重枚举控制的核心模板。"
+  }
+]

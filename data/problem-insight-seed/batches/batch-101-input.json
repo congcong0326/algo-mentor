@@ -1,0 +1,770 @@
+[
+  {
+    "slug": "qoQAMX",
+    "frontendDisplayId": "LCP 80",
+    "titleEn": null,
+    "titleZh": "生物进化录",
+    "difficulty": "HARD",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/qoQAMX/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "que-shi-de-shu-zi-lcof",
+    "frontendDisplayId": "LCR 173",
+    "titleEn": null,
+    "titleZh": "点名",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Bit Manipulation",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "位运算",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/que-shi-de-shu-zi-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "queens-that-can-attack-the-king",
+    "frontendDisplayId": "1222",
+    "titleEn": "Queens That Can Attack the King",
+    "titleZh": "可以攻击国王的皇后",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/queens-that-can-attack-the-king/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "queries-on-a-permutation-with-key",
+    "frontendDisplayId": "1409",
+    "titleEn": "Queries on a Permutation With Key",
+    "titleZh": "查询带键的排列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/queries-on-a-permutation-with-key/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "queries-on-number-of-points-inside-a-circle",
+    "frontendDisplayId": "1828",
+    "titleEn": "Queries on Number of Points Inside a Circle",
+    "titleZh": "统计一个圆中点的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/queries-on-number-of-points-inside-a-circle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "queries-quality-and-percentage",
+    "frontendDisplayId": "1211",
+    "titleEn": "Queries Quality and Percentage",
+    "titleZh": "查询结果的质量和占比",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/queries-quality-and-percentage/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "query-kth-smallest-trimmed-number",
+    "frontendDisplayId": "2343",
+    "titleEn": "Query Kth Smallest Trimmed Number",
+    "titleZh": "裁剪数字后查询第 K 小的数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Heap (Priority Queue)",
+      "Quickselect",
+      "Radix Sort",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "堆（优先队列）",
+      "快速选择",
+      "基数排序",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/query-kth-smallest-trimmed-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "queue-reconstruction-by-height",
+    "frontendDisplayId": "406",
+    "titleEn": "Queue Reconstruction by Height",
+    "titleZh": "根据身高重建队列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Segment Tree",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "线段树",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/queue-reconstruction-by-height/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rMeRt2",
+    "frontendDisplayId": "LCP 69",
+    "titleEn": null,
+    "titleZh": "Hello LeetCode!",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/rMeRt2/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rabbits-in-forest",
+    "frontendDisplayId": "781",
+    "titleEn": "Rabbits in Forest",
+    "titleZh": "森林中的兔子",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rabbits-in-forest/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "race-car",
+    "frontendDisplayId": "818",
+    "titleEn": "Race Car",
+    "titleZh": "赛车",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/race-car/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "random-flip-matrix",
+    "frontendDisplayId": "519",
+    "titleEn": "Random Flip Matrix",
+    "titleZh": "随机翻转矩阵",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Math",
+      "Randomized",
+      "Reservoir Sampling"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "数学",
+      "随机化",
+      "水塘抽样"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/random-flip-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "random-pick-index",
+    "frontendDisplayId": "398",
+    "titleEn": "Random Pick Index",
+    "titleZh": "随机数索引",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Math",
+      "Randomized",
+      "Reservoir Sampling"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "数学",
+      "随机化",
+      "水塘抽样"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/random-pick-index/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "random-pick-with-blacklist",
+    "frontendDisplayId": "710",
+    "titleEn": "Random Pick with Blacklist",
+    "titleZh": "黑名单中的随机数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Hash Table",
+      "Math",
+      "Randomized",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "哈希表",
+      "数学",
+      "随机化",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/random-pick-with-blacklist/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "random-pick-with-weight",
+    "frontendDisplayId": "528",
+    "titleEn": "Random Pick with Weight",
+    "titleZh": "按权重随机选择",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Math",
+      "Prefix Sum",
+      "Randomized"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "数学",
+      "前缀和",
+      "随机化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/random-pick-with-weight/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "random-point-in-non-overlapping-rectangles",
+    "frontendDisplayId": "497",
+    "titleEn": "Random Point in Non-overlapping Rectangles",
+    "titleZh": "非重叠矩形中的随机点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Math",
+      "Ordered Set",
+      "Prefix Sum",
+      "Randomized",
+      "Reservoir Sampling"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "数学",
+      "有序集合",
+      "前缀和",
+      "随机化",
+      "水塘抽样"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/random-point-in-non-overlapping-rectangles/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "range-addition-ii",
+    "frontendDisplayId": "598",
+    "titleEn": "Range Addition II",
+    "titleZh": "区间加法 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/range-addition-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "range-frequency-queries",
+    "frontendDisplayId": "2080",
+    "titleEn": "Range Frequency Queries",
+    "titleZh": "区间内查询数字的频率",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Design",
+      "Hash Table",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "设计",
+      "哈希表",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/range-frequency-queries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "range-module",
+    "frontendDisplayId": "715",
+    "titleEn": "Range Module",
+    "titleZh": "Range 模块",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Design",
+      "Ordered Set",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "有序集合",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/range-module/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "range-product-queries-of-powers",
+    "frontendDisplayId": "2438",
+    "titleEn": "Range Product Queries of Powers",
+    "titleZh": "二的幂数组中查询范围内的乘积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/range-product-queries-of-powers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "range-sum-of-bst",
+    "frontendDisplayId": "938",
+    "titleEn": "Range Sum of BST",
+    "titleZh": "二叉搜索树的范围和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/range-sum-of-bst/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "range-sum-of-sorted-subarray-sums",
+    "frontendDisplayId": "1508",
+    "titleEn": "Range Sum of Sorted Subarray Sums",
+    "titleZh": "子数组和排序后的区间和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/range-sum-of-sorted-subarray-sums/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "range-sum-query-2d-immutable",
+    "frontendDisplayId": "304",
+    "titleEn": "Range Sum Query 2D - Immutable",
+    "titleZh": "二维区域和检索 - 矩阵不可变",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/range-sum-query-2d-immutable/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "range-sum-query-immutable",
+    "frontendDisplayId": "303",
+    "titleEn": "Range Sum Query - Immutable",
+    "titleZh": "区域和检索 - 数组不可变",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/range-sum-query-immutable/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "range-sum-query-mutable",
+    "frontendDisplayId": "307",
+    "titleEn": "Range Sum Query - Mutable",
+    "titleZh": "区域和检索 - 数组可修改",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Design",
+      "Divide and Conquer",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "设计",
+      "分治",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/range-sum-query-mutable/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rank-from-stream-lcci",
+    "frontendDisplayId": "面试题 10.10",
+    "titleEn": null,
+    "titleZh": "数字流的秩",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Indexed Tree",
+      "Binary Search",
+      "Data Stream",
+      "Design"
+    ],
+    "tagLabelsZh": [
+      "树状数组",
+      "二分查找",
+      "数据流",
+      "设计"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/rank-from-stream-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rank-scores",
+    "frontendDisplayId": "178",
+    "titleEn": "Rank Scores",
+    "titleZh": "分数排名",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rank-scores/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rank-teams-by-votes",
+    "frontendDisplayId": "1366",
+    "titleEn": "Rank Teams by Votes",
+    "titleZh": "通过投票对团队排名",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rank-teams-by-votes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rank-transform-of-a-matrix",
+    "frontendDisplayId": "1632",
+    "titleEn": "Rank Transform of a Matrix",
+    "titleZh": "矩阵转换后的排名",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Matrix",
+      "Sorting",
+      "Topological Sort",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "矩阵",
+      "排序",
+      "拓扑排序",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rank-transform-of-a-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rank-transform-of-an-array",
+    "frontendDisplayId": "1331",
+    "titleEn": "Rank Transform of an Array",
+    "titleZh": "数组序号转换",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rank-transform-of-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-101",
+    "claimedAt": "2026-07-10T07:05:33.132077+00:00",
+    "completedAt": null
+  }
+]

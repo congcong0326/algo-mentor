@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "maximum-value-after-insertion",
+    "reasonEN": "A concise greedy string problem built on lexicographic order. It trains choosing the earliest insertion point that improves the signed number, with negative values exposing the crucial reversal of the comparison rule.",
+    "reasonZH": "这是一道基于字典序的简洁贪心字符串题。它训练选择最早能改善有符号数的插入位置，其中负数会考验比较规则的反转。"
+  },
+  {
+    "slug": "maximum-value-at-a-given-index-in-a-bounded-array",
+    "reasonEN": "A binary-search-on-answer problem with a pyramid-shaped feasibility calculation. It develops deriving minimum side sums under adjacent-difference constraints and proving the predicate is monotone.",
+    "reasonZH": "这是一道带金字塔形可行性计算的二分答案题。它训练在相邻差约束下推导两侧最小和，并证明判定条件具有单调性。"
+  },
+  {
+    "slug": "maximum-value-of-a-string-in-an-array",
+    "reasonEN": "An easy parsing problem that cleanly separates numeric strings from alphabetic ones. It reinforces validating character content before choosing between integer conversion and length, a useful input-classification habit.",
+    "reasonZH": "这是一道清晰区分数字串与字母串的简单解析题。它强化在整数转换和取长度之间选择前先校验字符内容的输入分类习惯。"
+  },
+  {
+    "slug": "maximum-value-of-an-ordered-triplet-i",
+    "reasonEN": "A direct enumeration baseline for ordered-triplet optimization. It trains respecting index order while evaluating a compound objective, providing a clear reference point before learning the linear optimization.",
+    "reasonZH": "这是有序三元组优化的直接枚举基准题。它训练在计算复合目标时遵守下标顺序，并为后续线性优化建立清晰参照。"
+  },
+  {
+    "slug": "maximum-value-of-an-ordered-triplet-ii",
+    "reasonEN": "The optimized counterpart to a triplet-enumeration problem. It teaches maintaining the best left-side difference and combining it with each right value, a reusable prefix-state compression technique.",
+    "reasonZH": "这是三元组枚举题的优化版本。它训练维护左侧最优差值并与每个右侧值结合，是可复用的前缀状态压缩技巧。"
+  },
+  {
+    "slug": "maximum-value-of-concatenated-binary-segments",
+    "reasonEN": "A hard ordering problem where binary concatenation requires a custom comparison. It develops exchange-argument reasoning for sorting segments and highlights how representation length changes lexicographic priorities.",
+    "reasonZH": "这是一道二进制拼接需要自定义比较器的困难排序题。它训练用交换论证确定片段顺序，并突出表示长度如何改变字典序优先级。"
+  },
+  {
+    "slug": "maximum-value-of-k-coins-from-piles",
+    "reasonEN": "A representative grouped-knapsack DP problem with prefix sums inside each pile. It practices merging one pile at a time and accounting for every possible number of top coins, a common constrained-selection pattern.",
+    "reasonZH": "这是典型的分组背包 DP 题，每个硬币堆内部结合前缀和。它训练逐堆合并并枚举取出的顶部硬币数量，是常见的受限选择模式。"
+  },
+  {
+    "slug": "maximum-value-sum-by-placing-three-rooks-i",
+    "reasonEN": "A hard matrix-placement problem with row and column exclusivity. It trains enumerating one rook position while retaining the best compatible choices, building intuition for small-cardinality assignment optimization.",
+    "reasonZH": "这是一道带行列互斥约束的困难矩阵放置题。它训练枚举一个车的位置并保留最优兼容选择，建立小数量分配优化的直觉。"
+  },
+  {
+    "slug": "maximum-value-sum-by-placing-three-rooks-ii",
+    "reasonEN": "An advanced three-rook optimization problem that demands stronger candidate pruning. It develops combining row-wise top values with compatibility checks, showing how fixed-size selections can avoid cubic matrix scans.",
+    "reasonZH": "这是一道需要更强候选裁剪的进阶三车优化题。它训练结合每行顶级值与兼容性检查，展示固定数量选择如何避免三次矩阵扫描。"
+  },
+  {
+    "slug": "maximum-walls-destroyed-by-robots",
+    "reasonEN": "A hard sorted DP problem with reachability transitions and binary-search boundaries. It practices compressing prior robot outcomes into searchable states, a useful approach for interval-like resource interactions.",
+    "reasonZH": "这是一道带可达性转移和二分边界的困难排序 DP 题。它训练将先前机器人的结果压缩为可搜索状态，适用于区间式资源交互。"
+  },
+  {
+    "slug": "maximum-weighted-k-edge-path",
+    "reasonEN": "A graph DP problem with an exact edge-count constraint. It teaches storing the best score for each endpoint and path length, then extending edges carefully without confusing walks, paths, and repeated states.",
+    "reasonZH": "这是一道带精确边数约束的图 DP 题。它训练为每个终点和路径长度保存最优分数，并谨慎扩展边以区分游走、路径和重复状态。"
+  },
+  {
+    "slug": "maximum-white-tiles-covered-by-a-carpet",
+    "reasonEN": "A sorted-interval sliding-window problem with a partially covered final interval. It trains combining prefix sums or two pointers with precise endpoint arithmetic, a frequent source of off-by-one errors.",
+    "reasonZH": "这是一道末尾区间可能被部分覆盖的排序区间滑动窗口题。它训练结合前缀和或双指针进行精确端点计算，能有效锻炼边界处理。"
+  },
+  {
+    "slug": "maximum-width-of-binary-tree",
+    "reasonEN": "A level-order tree traversal problem that uses virtual complete-tree indices. It teaches normalizing indices at each level to prevent overflow while preserving the gaps needed to measure structural width.",
+    "reasonZH": "这是一道使用虚拟完全二叉树下标的层序遍历题。它训练每层归一化下标以防溢出，同时保留计算结构宽度所需的空位信息。"
+  },
+  {
+    "slug": "maximum-width-ramp",
+    "reasonEN": "A canonical monotonic-stack problem for maximizing distance under an inequality. It trains building decreasing left candidates and scanning from the right to discharge them, a reusable delayed-matching pattern.",
+    "reasonZH": "这是在不等式约束下最大化距离的经典单调栈题。它训练构建递减左侧候选并从右向左消解，是可复用的延迟匹配模式。"
+  },
+  {
+    "slug": "maximum-xor-after-operations",
+    "reasonEN": "A bitwise invariant problem where independent operations collapse into a simple OR result. It develops reasoning per bit rather than simulating operations, an important shift for XOR and AND transformation tasks.",
+    "reasonZH": "这是一道独立操作可化简为 OR 结果的位运算不变量题。它训练按位推理而非模拟操作，是处理 XOR 与 AND 变换题的重要思维转变。"
+  },
+  {
+    "slug": "maximum-xor-for-each-query",
+    "reasonEN": "A prefix-XOR problem with a complement construction at each step. It reinforces maintaining the cumulative XOR while removing values in reverse order and using a bit mask to force the maximum result.",
+    "reasonZH": "这是一道每步构造补码的前缀 XOR 题。它训练在逆序移除元素时维护累计异或值，并用位掩码强制得到最大结果。"
+  },
+  {
+    "slug": "maximum-xor-of-subsequences",
+    "reasonEN": "A hard bitwise-greedy problem focused on identifying independently attainable bits. It trains proving that a global OR captures the maximum subsequence XOR under the operation rules, avoiding exponential subset search.",
+    "reasonZH": "这是一道重点识别可独立获得位的困难位贪心题。它训练证明全局 OR 能在操作规则下表示最大子序列 XOR，从而避免指数级子集搜索。"
+  },
+  {
+    "slug": "maximum-xor-of-two-numbers-in-an-array",
+    "reasonEN": "A foundational binary-trie problem for pairwise XOR maximization. It teaches greedily preferring the opposite bit at each level and provides a core template for many online bitwise-query problems.",
+    "reasonZH": "这是两数 XOR 最大化的基础二进制字典树题。它训练在每一位贪心选择相反位，并提供许多在线位查询问题的核心模板。"
+  },
+  {
+    "slug": "maximum-xor-product",
+    "reasonEN": "A bitwise greedy optimization problem that balances two factors after shared XOR choices. It develops processing bits from high to low, assigning flexible bits to the smaller side, and handling modular multiplication safely.",
+    "reasonZH": "这是一道在共享 XOR 选择后平衡两个因子的位贪心优化题。它训练从高位到低位处理、将灵活位分给较小一侧，并安全处理模乘。"
+  },
+  {
+    "slug": "maximum-xor-score-subarray-queries",
+    "reasonEN": "A hard interval DP problem with many range queries. It trains deriving a recurrence for XOR scores of nested subarrays, then precomputing interval maxima so each query is answered in constant time.",
+    "reasonZH": "这是一道带大量区间查询的困难区间 DP 题。它训练推导嵌套子数组 XOR 分数的递推，并预计算区间最大值以常数时间回答查询。"
+  },
+  {
+    "slug": "maximum-xor-with-an-element-from-array",
+    "reasonEN": "An offline-query trie problem with an upper-bound filter. It practices sorting queries by their limit, incrementally inserting eligible numbers, and separating eligibility management from maximum-XOR lookup.",
+    "reasonZH": "这是一道带上界过滤的离线字典树查询题。它训练按限制值排序查询、增量插入合格数字，并将资格管理与最大 XOR 查找分离。"
+  },
+  {
+    "slug": "meChtZ",
+    "reasonEN": "A hard memoized DP problem for reaching a target with costly special jumps. It trains recursing around the nearest divisible states, balancing overshoot against backward adjustment, and caching large coordinate states efficiently.",
+    "reasonZH": "这是一道通过高成本特殊跳跃到达目标的困难记忆化 DP 题。它训练围绕最近可整除状态递归，权衡越过目标与回退调整，并高效缓存大坐标状态。"
+  },
+  {
+    "slug": "mean-of-array-after-removing-some-elements",
+    "reasonEN": "An easy array-cleaning problem centered on trimming extremes. It reinforces sorting, selecting the retained middle range, and using accurate aggregation after a percentage-based removal rule.",
+    "reasonZH": "这是一道围绕去除极值的简单数组清洗题。它训练排序、选取保留的中间区间，并在按比例删除后进行准确聚合。"
+  },
+  {
+    "slug": "median-of-two-sorted-arrays",
+    "reasonEN": "A landmark divide-and-conquer problem that finds a valid partition instead of merging arrays. It develops binary search on the shorter array, boundary-sentinel handling, and precise reasoning about median conditions.",
+    "reasonZH": "这是通过寻找合法分割而非合并数组的里程碑分治题。它训练在较短数组上二分、处理边界哨兵，并精确推理中位数条件。"
+  },
+  {
+    "slug": "meeting-rooms-iii",
+    "reasonEN": "A hard scheduling simulation that coordinates idle and busy priority queues. It trains processing meetings chronologically, delaying work to the earliest released room, and applying tie-breaking rules consistently.",
+    "reasonZH": "这是一道协调空闲与忙碌优先队列的困难调度模拟题。它训练按时间顺序处理会议、将延迟任务安排到最早释放的会议室，并一致执行并列规则。"
+  },
+  {
+    "slug": "memoize",
+    "reasonEN": "A practical function-caching exercise that introduces memoization as an API behavior. It trains selecting stable argument keys, preserving return values, and distinguishing cache hits from repeated evaluation.",
+    "reasonZH": "这是一道将记忆化作为 API 行为介绍的实用函数缓存题。它训练选择稳定的参数键、保留返回值，并区分缓存命中和重复计算。"
+  },
+  {
+    "slug": "memoize-ii",
+    "reasonEN": "An advanced memoization design problem that requires cache keys for object identity and arbitrary argument lists. It develops trie-like nested maps and careful handling of reference versus primitive keys in real JavaScript APIs.",
+    "reasonZH": "这是一道需要支持对象身份和任意参数列表的进阶记忆化设计题。它训练使用类字典树的嵌套映射，并谨慎处理真实 JavaScript API 中的引用键与基本类型键。"
+  },
+  {
+    "slug": "merge-adjacent-equal-elements",
+    "reasonEN": "A simulation problem where local merges can cascade across earlier positions. It teaches using a stack to maintain the reduced sequence and repeatedly combining the top when a new equal value arrives.",
+    "reasonZH": "这是一道局部合并会向前连锁传播的模拟题。它训练用栈维护已化简序列，并在新相等值到来时反复合并栈顶。"
+  },
+  {
+    "slug": "merge-bsts-to-create-single-bst",
+    "reasonEN": "A hard tree-construction problem that combines hash-based root lookup with BST validation. It trains grafting only at leaves, verifying a unique global root, and carrying valid value bounds during DFS.",
+    "reasonZH": "这是一道结合哈希根节点查找与 BST 验证的困难树构造题。它训练只在叶子处嫁接、确认唯一全局根，并在 DFS 中传递合法数值边界。"
+  },
+  {
+    "slug": "merge-close-characters",
+    "reasonEN": "A string-grouping problem driven by character frequencies and adjacency in alphabet order. It trains aggregating counts first, then modeling which nearby characters can merge without losing the intended grouping invariant.",
+    "reasonZH": "这是一道由字符频次和字母顺序相邻性驱动的字符串分组题。它训练先聚合计数，再建模哪些相近字符可以合并且不破坏分组不变量。"
+  }
+]

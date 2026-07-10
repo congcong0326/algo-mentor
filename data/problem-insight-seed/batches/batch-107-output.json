@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "rotate-non-negative-elements",
+    "reasonEN": "A medium array-simulation exercise centered on preserving relative positions while rotating only an eligible subset. It sharpens index bookkeeping and in-place update discipline, which are essential for reliable conditional array transformations.",
+    "reasonZH": "中等难度的数组模拟题，核心是仅对符合条件的元素进行轮替并保持其余位置稳定；它训练索引记录与原地更新的边界控制，是掌握条件化数组变换的实用练习。"
+  },
+  {
+    "slug": "rotate-string",
+    "reasonEN": "A concise string-matching starter that turns cyclic rotation into a containment check. It builds the useful habit of recognizing when a structural transformation can be reduced to a standard string operation.",
+    "reasonZH": "简洁的字符串匹配入门题，将循环旋转转化为包含关系判断；它训练识别结构变换并将其归约为标准字符串操作的能力。"
+  },
+  {
+    "slug": "rotated-digits",
+    "reasonEN": "This medium digit-DP problem classifies numbers by how each digit changes under rotation. It develops state-based counting and careful handling of valid versus value-changing digit choices, a useful bridge from brute force to digit dynamic programming.",
+    "reasonZH": "中等难度的数位动态规划题，需要按数字旋转后的状态分类计数；它训练有效数字与发生变化数字的状态管理，是从枚举走向数位 DP 的重要过渡。"
+  },
+  {
+    "slug": "rotating-the-box",
+    "reasonEN": "A matrix-simulation problem where gravity and rotation must be ordered correctly. It practices two-pointer compaction within rows and coordinate reasoning after transformation, both common sources of implementation errors.",
+    "reasonZH": "矩阵模拟题，关键在于正确安排重力下落与旋转的先后顺序；它训练行内双指针压缩及变换后的坐标推理，能有效减少矩阵实现中的常见错误。"
+  },
+  {
+    "slug": "rotting-oranges",
+    "reasonEN": "A canonical multi-source BFS problem for medium-level graph traversal. It teaches layer-by-layer time propagation, queue initialization from multiple sources, and unreachable-state detection, patterns reused in contagion and shortest-step models.",
+    "reasonZH": "经典的多源 BFS 中等题，考查按层扩散的时间语义；它训练多起点队列初始化、层序遍历和不可达状态判断，可直接迁移到传播与最短步数模型。"
+  },
+  {
+    "slug": "route-between-nodes-lcci",
+    "reasonEN": "A fundamental graph-reachability exercise using BFS or DFS. It reinforces visited-state management and early termination, providing a dependable template for dependency checks and connectivity queries.",
+    "reasonZH": "基础的图可达性题，可用 BFS 或 DFS 求解；它巩固访问状态维护和提前终止策略，是依赖检查与连通性查询的可靠模板。"
+  },
+  {
+    "slug": "row-with-maximum-ones",
+    "reasonEN": "An easy matrix-scanning problem that emphasizes a clean linear aggregation pass. It is useful for practicing row-level statistics, tie handling, and writing direct solutions without unnecessary abstraction.",
+    "reasonZH": "简单的矩阵扫描题，核心是一次线性聚合每行统计值；它适合练习行级统计、并列结果处理，以及避免过度设计的直接实现。"
+  },
+  {
+    "slug": "running-sum-of-1d-array",
+    "reasonEN": "A foundational prefix-sum exercise with minimal syntax overhead. It establishes the accumulation invariant behind range-query techniques and trains careful choices between in-place and auxiliary-array updates.",
+    "reasonZH": "前缀和的基础题，语法负担很小但累积不变量非常清晰；它建立区间查询技术的核心直觉，并训练原地更新与额外数组方案的取舍。"
+  },
+  {
+    "slug": "russian-doll-envelopes",
+    "reasonEN": "A hard optimization classic that reduces two-dimensional nesting to LIS after a carefully chosen sort order. It teaches the critical equal-width tie rule and binary-search LIS technique, making it a milestone for dimensionality reduction in DP.",
+    "reasonZH": "高难度优化经典题，通过精心设计的排序把二维嵌套归约为 LIS；它重点训练等宽信封的排序规避规则和二分求 LIS，是理解 DP 降维的重要里程碑。"
+  },
+  {
+    "slug": "ryfUiz",
+    "reasonEN": "A hard logic-and-bitwise puzzle that rewards turning local AND/NOT constraints into global invariants. It develops algebraic reasoning over bits and disciplined case analysis, valuable for tackling unfamiliar constructive problems.",
+    "reasonZH": "高难度的逻辑与位运算谜题，关键是把局部与非约束提炼为全局不变量；它训练按位代数推理和严谨分类讨论，适合提升陌生构造题的拆解能力。"
+  },
+  {
+    "slug": "s5kipK",
+    "reasonEN": "An advanced graph problem built around biconnected-component structure. It exercises articulation-point analysis and component decomposition, offering strong preparation for network resilience and critical-vertex problems.",
+    "reasonZH": "围绕双连通分量结构的高阶图论题，考查割点分析与分量分解；它为网络连通可靠性和关键节点类问题提供扎实训练。"
+  },
+  {
+    "slug": "sZ59z6",
+    "reasonEN": "An easy tree-traversal problem that combines structural exploration with value lookup. It reinforces choosing DFS or BFS based on the information needed and using a hash table to keep tree processing efficient.",
+    "reasonZH": "简单的树遍历题，结合结构搜索与值查询；它训练依据所需信息选择 DFS 或 BFS，并用哈希表保持树处理效率。"
+  },
+  {
+    "slug": "sales-analysis-iii",
+    "reasonEN": "A practical SQL filtering problem centered on grouping products and excluding records outside a target condition. It strengthens HAVING-based aggregate logic and anti-condition modeling, both common in analytical queries.",
+    "reasonZH": "实用的 SQL 筛选题，核心是按商品分组并排除不满足目标条件的记录；它训练 HAVING 聚合判断和反条件建模，是分析型查询中的常用能力。"
+  },
+  {
+    "slug": "sales-person",
+    "reasonEN": "An introductory relational-query problem that uses joins together with exclusion logic. It practices expressing “never associated with” requirements via subqueries or anti-joins, a frequent pattern in business reporting.",
+    "reasonZH": "入门级关系查询题，结合多表连接与排除逻辑；它练习用子查询或反连接表达“从未关联过”的需求，是业务报表中的高频模式。"
+  },
+  {
+    "slug": "same-tree",
+    "reasonEN": "A core easy tree-recursion problem that compares structure and values in lockstep. It teaches the null-base cases precisely and provides a reusable template for synchronized traversal of two trees.",
+    "reasonZH": "核心的简单树递归题，需要同步比较两棵树的结构与节点值；它训练精确处理空节点基例，并提供双树同步遍历的可复用模板。"
+  },
+  {
+    "slug": "satisfiability-of-equality-equations",
+    "reasonEN": "A representative union-find problem that models equalities as connected components before checking inequalities. It teaches the separation of union and validation phases, a powerful pattern for equivalence-constraint systems.",
+    "reasonZH": "典型的并查集题，将相等关系建模为连通分量后再检查不等关系；它训练合并阶段与验证阶段分离的思路，适用于各类等价约束系统。"
+  },
+  {
+    "slug": "score-after-flipping-matrix",
+    "reasonEN": "A medium greedy bit-manipulation problem where the highest-order bit determines each local decision. It develops proof-oriented greedy reasoning and column-wise counting after normalization, both useful for binary optimization tasks.",
+    "reasonZH": "中等难度的贪心位运算题，高位权重决定局部翻转决策；它训练带证明意识的贪心推导，以及规范化后的按列计数，适合二进制优化问题。"
+  },
+  {
+    "slug": "score-of-a-string",
+    "reasonEN": "A lightweight string-iteration exercise focused on adjacent-character differences. It builds fluency with pairwise scans and boundary handling, making it a good warm-up for more involved string processing.",
+    "reasonZH": "轻量级字符串遍历题，核心是计算相邻字符的差值；它提升成对扫描和边界处理的熟练度，是进入复杂字符串处理前的合适热身。"
+  },
+  {
+    "slug": "score-of-parentheses",
+    "reasonEN": "A medium stack problem that encodes nested structure into composable scores. It trains matching-depth reasoning and stack-based reduction, concepts that transfer directly to parsing and expression evaluation.",
+    "reasonZH": "中等难度的栈题，将嵌套括号结构转化为可组合的分数；它训练匹配深度推理与栈式归约，可直接迁移到语法解析和表达式求值。"
+  },
+  {
+    "slug": "score-validator",
+    "reasonEN": "An easy simulation-and-parsing problem that demands exact implementation of validation rules. It reinforces token handling, state checks, and edge-case coverage, which are central to robust input-processing code.",
+    "reasonZH": "简单的模拟与解析题，重点是精确落实验证规则；它训练标记处理、状态检查和边界覆盖，是编写健壮输入处理代码的基础。"
+  },
+  {
+    "slug": "scramble-string",
+    "reasonEN": "A hard interval-DP problem with recursive partition choices and strong pruning opportunities. It develops memoized state design, substring frequency checks, and split enumeration, making it a demanding exercise in structured string DP.",
+    "reasonZH": "高难度区间 DP 题，包含递归切分选择和有效剪枝空间；它训练记忆化状态设计、子串频次校验与切分枚举，是结构化字符串 DP 的高质量练习。"
+  },
+  {
+    "slug": "search-a-2d-matrix",
+    "reasonEN": "A medium binary-search problem that exploits global ordering across matrix rows. It teaches flattening two-dimensional indices or performing boundary-aware search, both useful ways to preserve logarithmic complexity.",
+    "reasonZH": "中等难度的二分查找题，利用矩阵行间的全局有序性；它训练二维下标扁平化或边界感知搜索，从而保持对数级复杂度。"
+  },
+  {
+    "slug": "search-a-2d-matrix-ii",
+    "reasonEN": "A classic ordered-matrix search problem where each move eliminates an entire row or column. It sharpens monotonicity reasoning and contrasts an O(m+n) strategy with divide-and-conquer alternatives.",
+    "reasonZH": "经典的有序矩阵搜索题，每一步都能排除整行或整列；它强化单调性推理，并帮助理解 O(m+n) 解法与分治方案的取舍。"
+  },
+  {
+    "slug": "search-in-a-binary-search-tree",
+    "reasonEN": "An essential BST operation that uses ordering to discard half of the remaining search space at each step. It builds the recursive and iterative traversal template underlying many binary-search-tree operations.",
+    "reasonZH": "二叉搜索树的基础操作，利用有序性持续排除一半搜索空间；它建立递归与迭代两种 BST 遍历模板，是后续树操作的核心基础。"
+  },
+  {
+    "slug": "search-in-rotated-sorted-array",
+    "reasonEN": "A signature medium binary-search variant that identifies which half remains ordered before narrowing the range. It trains invariant maintenance under a discontinuity, an important step beyond ordinary binary search.",
+    "reasonZH": "标志性的中等二分变体，需要先识别哪一半仍保持有序再缩小区间；它训练在断点存在时维持搜索不变量，是突破普通二分的重要一步。"
+  },
+  {
+    "slug": "search-in-rotated-sorted-array-ii",
+    "reasonEN": "This rotated-array binary search adds duplicates, making ordered-half detection ambiguous. It teaches the necessary boundary shrinking rule and clarifies why duplicates can weaken worst-case performance.",
+    "reasonZH": "旋转数组二分题加入重复值后，有序半区的判断会变得模糊；它训练必要的边界收缩规则，并说明重复元素为何会削弱最坏情况性能。"
+  },
+  {
+    "slug": "search-insert-position",
+    "reasonEN": "A foundational lower-bound binary-search problem that returns a position rather than only a match. It establishes the interval invariant used in insertion, ranking, and first-valid-position searches.",
+    "reasonZH": "基础的下界二分题，目标是返回位置而非仅判断是否命中；它建立插入、排序排名和首个合法位置搜索中通用的区间不变量。"
+  },
+  {
+    "slug": "search-rotate-array-lcci",
+    "reasonEN": "A medium rotated-array search variant that tests binary-search reasoning in the presence of repeated values. It reinforces ordered-segment detection, duplicate-boundary handling, and correctness over overly optimistic complexity assumptions.",
+    "reasonZH": "中等难度的旋转数组搜索变体，考查重复元素存在时的二分推理；它巩固有序区间识别、重复边界处理，以及优先保证正确性的复杂度判断。"
+  },
+  {
+    "slug": "search-suggestions-system",
+    "reasonEN": "A medium search-system design problem that combines lexicographic sorting with prefix lookup. It compares binary-search ranges and trie-based retrieval while training efficient top-k suggestion maintenance.",
+    "reasonZH": "中等难度的搜索推荐系统题，结合字典序排序与前缀查找；它对比二分区间和 Trie 检索，并训练高效维护前 k 个推荐结果。"
+  },
+  {
+    "slug": "seasonal-sales-analysis",
+    "reasonEN": "A medium SQL analytics problem focused on deriving seasonal groups and aggregating sales consistently. It practices conditional aggregation, date-based categorization, and readable reporting-query design.",
+    "reasonZH": "中等难度的 SQL 分析题，核心是派生季节分组并一致地聚合销售数据；它训练条件聚合、日期分类和可读性良好的报表查询设计。"
+  }
+]

@@ -1,0 +1,728 @@
+[
+  {
+    "slug": "minimum-money-required-before-transactions",
+    "frontendDisplayId": "2412",
+    "titleEn": "Minimum Money Required Before Transactions",
+    "titleZh": "完成所有交易的初始最少钱数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-money-required-before-transactions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-moves-to-balance-circular-array",
+    "frontendDisplayId": "3776",
+    "titleEn": "Minimum Moves to Balance Circular Array",
+    "titleZh": "使循环数组余额非负的最少移动次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-moves-to-balance-circular-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-moves-to-capture-the-queen",
+    "frontendDisplayId": "3001",
+    "titleEn": "Minimum Moves to Capture The Queen",
+    "titleZh": "捕获黑皇后需要的最少移动次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-moves-to-capture-the-queen/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-moves-to-clean-the-classroom",
+    "frontendDisplayId": "3568",
+    "titleEn": "Minimum Moves to Clean the Classroom",
+    "titleZh": "清理教室的最少移动",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Breadth-First Search",
+      "Hash Table",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "广度优先搜索",
+      "哈希表",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-moves-to-clean-the-classroom/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-moves-to-convert-string",
+    "frontendDisplayId": "2027",
+    "titleEn": "Minimum Moves to Convert String",
+    "titleZh": "转换字符串的最少操作次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-moves-to-convert-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-moves-to-equal-array-elements",
+    "frontendDisplayId": "453",
+    "titleEn": "Minimum Moves to Equal Array Elements",
+    "titleZh": "最小操作次数使数组元素相等",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-moves-to-equal-array-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-moves-to-equal-array-elements-ii",
+    "frontendDisplayId": "462",
+    "titleEn": "Minimum Moves to Equal Array Elements II",
+    "titleZh": "最小操作次数使数组元素相等 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-moves-to-equal-array-elements-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-moves-to-equal-array-elements-iii",
+    "frontendDisplayId": "3736",
+    "titleEn": "Minimum Moves to Equal Array Elements III",
+    "titleZh": "最小操作次数使数组元素相等 III",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-moves-to-equal-array-elements-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-moves-to-make-array-complementary",
+    "frontendDisplayId": "1674",
+    "titleEn": "Minimum Moves to Make Array Complementary",
+    "titleZh": "使数组互补的最少操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-moves-to-make-array-complementary/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-moves-to-move-a-box-to-their-target-location",
+    "frontendDisplayId": "1263",
+    "titleEn": "Minimum Moves to Move a Box to Their Target Location",
+    "titleZh": "推箱子",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Heap (Priority Queue)",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "堆（优先队列）",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-moves-to-move-a-box-to-their-target-location/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-moves-to-pick-k-ones",
+    "frontendDisplayId": "3086",
+    "titleEn": "Minimum Moves to Pick K Ones",
+    "titleZh": "拾起 K 个 1 需要的最少行动次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Prefix Sum",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "前缀和",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-moves-to-pick-k-ones/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-moves-to-reach-target-in-grid",
+    "frontendDisplayId": "3609",
+    "titleEn": "Minimum Moves to Reach Target in Grid",
+    "titleZh": "到达目标点的最小移动次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-moves-to-reach-target-in-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-moves-to-reach-target-score",
+    "frontendDisplayId": "2139",
+    "titleEn": "Minimum Moves to Reach Target Score",
+    "titleZh": "得到目标值的最少行动次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-moves-to-reach-target-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-moves-to-reach-target-with-rotations",
+    "frontendDisplayId": "1210",
+    "titleEn": "Minimum Moves to Reach Target with Rotations",
+    "titleZh": "穿过迷宫的最少移动次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-moves-to-reach-target-with-rotations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-moves-to-spread-stones-over-grid",
+    "frontendDisplayId": "2850",
+    "titleEn": "Minimum Moves to Spread Stones Over Grid",
+    "titleZh": "将石头分散到网格图的最少移动次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-moves-to-spread-stones-over-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-non-zero-product-of-the-array-elements",
+    "frontendDisplayId": "1969",
+    "titleEn": "Minimum Non-Zero Product of the Array Elements",
+    "titleZh": "数组元素的最小非零乘积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-non-zero-product-of-the-array-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-game",
+    "frontendDisplayId": "2974",
+    "titleEn": "Minimum Number Game",
+    "titleZh": "最小数字游戏",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Simulation",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "模拟",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-arrows-to-burst-balloons",
+    "frontendDisplayId": "452",
+    "titleEn": "Minimum Number of Arrows to Burst Balloons",
+    "titleZh": "用最少数量的箭引爆气球",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-chairs-in-a-waiting-room",
+    "frontendDisplayId": "3168",
+    "titleEn": "Minimum Number of Chairs in a Waiting Room",
+    "titleZh": "候诊室中的最少椅子数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-chairs-in-a-waiting-room/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-changes-to-make-binary-string-beautiful",
+    "frontendDisplayId": "2914",
+    "titleEn": "Minimum Number of Changes to Make Binary String Beautiful",
+    "titleZh": "使二进制字符串变美丽的最少修改次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-changes-to-make-binary-string-beautiful/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-coins-for-fruits",
+    "frontendDisplayId": "2944",
+    "titleEn": "Minimum Number of Coins for Fruits",
+    "titleZh": "购买水果需要的最少金币数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Heap (Priority Queue)",
+      "Monotonic Queue",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "堆（优先队列）",
+      "单调队列",
+      "队列"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-coins-for-fruits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-coins-to-be-added",
+    "frontendDisplayId": "2952",
+    "titleEn": "Minimum Number of Coins to be Added",
+    "titleZh": "需要添加的硬币的最小数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-coins-to-be-added/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-days-to-disconnect-island",
+    "frontendDisplayId": "1568",
+    "titleEn": "Minimum Number of Days to Disconnect Island",
+    "titleZh": "使陆地分离的最少天数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix",
+      "Strongly Connected Component"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵",
+      "强连通分量"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-days-to-disconnect-island/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-days-to-eat-n-oranges",
+    "frontendDisplayId": "1553",
+    "titleEn": "Minimum Number of Days to Eat N Oranges",
+    "titleZh": "吃掉 N 个橘子的最少天数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "记忆化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-days-to-eat-n-oranges/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-days-to-make-m-bouquets",
+    "frontendDisplayId": "1482",
+    "titleEn": "Minimum Number of Days to Make m Bouquets",
+    "titleZh": "制作 m 束花所需的最少天数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix",
+    "frontendDisplayId": "1284",
+    "titleEn": "Minimum Number of Flips to Convert Binary Matrix to Zero Matrix",
+    "titleZh": "转化为全零矩阵的最少反转次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Breadth-First Search",
+      "Hash Table",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "广度优先搜索",
+      "哈希表",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-flips-to-convert-binary-matrix-to-zero-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-flips-to-make-binary-grid-palindromic-i",
+    "frontendDisplayId": "3239",
+    "titleEn": "Minimum Number of Flips to Make Binary Grid Palindromic I",
+    "titleZh": "最少翻转次数使二进制矩阵回文 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-flips-to-make-binary-grid-palindromic-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-flips-to-make-binary-grid-palindromic-ii",
+    "frontendDisplayId": "3240",
+    "titleEn": "Minimum Number of Flips to Make Binary Grid Palindromic II",
+    "titleZh": "最少翻转次数使二进制矩阵回文 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-flips-to-make-binary-grid-palindromic-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-flips-to-make-the-binary-string-alternating",
+    "frontendDisplayId": "1888",
+    "titleEn": "Minimum Number of Flips to Make the Binary String Alternating",
+    "titleZh": "使二进制字符串字符交替的最少反转次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-flips-to-make-the-binary-string-alternating/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-flips-to-reverse-binary-string",
+    "frontendDisplayId": "3750",
+    "titleEn": "Minimum Number of Flips to Reverse Binary String",
+    "titleZh": "最少翻转次数得到反转二进制字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-flips-to-reverse-binary-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-082",
+    "claimedAt": "2026-07-10T06:31:53.381973+00:00",
+    "completedAt": null
+  }
+]

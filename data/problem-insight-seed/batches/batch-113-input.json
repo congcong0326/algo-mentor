@@ -1,0 +1,730 @@
+[
+  {
+    "slug": "sort-of-stacks-lcci",
+    "frontendDisplayId": "面试题 03.05",
+    "titleEn": null,
+    "titleZh": "栈排序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/sort-of-stacks-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-the-jumbled-numbers",
+    "frontendDisplayId": "2191",
+    "titleEn": "Sort the Jumbled Numbers",
+    "titleZh": "将杂乱无章的数字排序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-the-jumbled-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-the-matrix-diagonally",
+    "frontendDisplayId": "1329",
+    "titleEn": "Sort the Matrix Diagonally",
+    "titleZh": "将矩阵按对角线排序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-the-matrix-diagonally/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-the-people",
+    "frontendDisplayId": "2418",
+    "titleEn": "Sort the People",
+    "titleZh": "按身高排序",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-the-people/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-the-students-by-their-kth-score",
+    "frontendDisplayId": "2545",
+    "titleEn": "Sort the Students by Their Kth Score",
+    "titleZh": "根据第 K 场考试的分数排序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-the-students-by-their-kth-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-vowels-by-frequency",
+    "frontendDisplayId": "3913",
+    "titleEn": "Sort Vowels by Frequency",
+    "titleZh": "按频率对元音排序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "Counting",
+      "Sorting",
+      "String"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-vowels-by-frequency/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-vowels-in-a-string",
+    "frontendDisplayId": "2785",
+    "titleEn": "Sort Vowels in a String",
+    "titleZh": "将字符串中的元音字母排序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-vowels-in-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sorted-gcd-pair-queries",
+    "frontendDisplayId": "3312",
+    "titleEn": "Sorted GCD Pair Queries",
+    "titleZh": "查询排序后的最大公约数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Combinatorics",
+      "Counting",
+      "Hash Table",
+      "Math",
+      "Number Theory",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "组合数学",
+      "计数",
+      "哈希表",
+      "数学",
+      "数论",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sorted-gcd-pair-queries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sorted-matrix-search-lcci",
+    "frontendDisplayId": "面试题 10.09",
+    "titleEn": null,
+    "titleZh": "排序矩阵查找",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Divide and Conquer",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "分治",
+      "矩阵"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/sorted-matrix-search-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sorted-merge-lcci",
+    "frontendDisplayId": "面试题 10.01",
+    "titleEn": null,
+    "titleZh": "合并排序的数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/sorted-merge-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sorting-the-sentence",
+    "frontendDisplayId": "1859",
+    "titleEn": "Sorting the Sentence",
+    "titleZh": "将句子排序",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sorting-the-sentence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sorting-three-groups",
+    "frontendDisplayId": "2826",
+    "titleEn": "Sorting Three Groups",
+    "titleZh": "将三个组排序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sorting-three-groups/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "soup-servings",
+    "frontendDisplayId": "808",
+    "titleEn": "Soup Servings",
+    "titleZh": "分汤",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "Probability and Statistics"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "概率与统计"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/soup-servings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sparse-array-search-lcci",
+    "frontendDisplayId": "面试题 10.05",
+    "titleEn": null,
+    "titleZh": "稀疏数组搜索",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/sparse-array-search-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sparse-similarity-lcci",
+    "frontendDisplayId": "面试题 17.26",
+    "titleEn": null,
+    "titleZh": "稀疏相似度",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/sparse-similarity-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "special-array-i",
+    "frontendDisplayId": "3151",
+    "titleEn": "Special Array I",
+    "titleZh": "特殊数组 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/special-array-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "special-array-ii",
+    "frontendDisplayId": "3152",
+    "titleEn": "Special Array II",
+    "titleZh": "特殊数组 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/special-array-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "special-array-with-x-elements-greater-than-or-equal-x",
+    "frontendDisplayId": "1608",
+    "titleEn": "Special Array With X Elements Greater Than or Equal X",
+    "titleZh": "特殊数组的特征值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/special-array-with-x-elements-greater-than-or-equal-x/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "special-binary-string",
+    "frontendDisplayId": "761",
+    "titleEn": "Special Binary String",
+    "titleZh": "特殊的二进制字符串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Divide and Conquer",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "分治",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/special-binary-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "special-permutations",
+    "frontendDisplayId": "2741",
+    "titleEn": "Special Permutations",
+    "titleZh": "特别的排列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/special-permutations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "special-positions-in-a-binary-matrix",
+    "frontendDisplayId": "1582",
+    "titleEn": "Special Positions in a Binary Matrix",
+    "titleZh": "二进制矩阵中的特殊位置",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/special-positions-in-a-binary-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "spiral-matrix",
+    "frontendDisplayId": "54",
+    "titleEn": "Spiral Matrix",
+    "titleZh": "螺旋矩阵",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/spiral-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "spiral-matrix-ii",
+    "frontendDisplayId": "59",
+    "titleEn": "Spiral Matrix II",
+    "titleZh": "螺旋矩阵 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/spiral-matrix-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "spiral-matrix-iii",
+    "frontendDisplayId": "885",
+    "titleEn": "Spiral Matrix III",
+    "titleZh": "螺旋矩阵 III",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/spiral-matrix-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "spiral-matrix-iv",
+    "frontendDisplayId": "2326",
+    "titleEn": "Spiral Matrix IV",
+    "titleZh": "螺旋矩阵 IV",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Linked List",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "链表",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/spiral-matrix-iv/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "split-a-string-in-balanced-strings",
+    "frontendDisplayId": "1221",
+    "titleEn": "Split a String in Balanced Strings",
+    "titleZh": "分割平衡字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/split-a-string-in-balanced-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "split-a-string-into-the-max-number-of-unique-substrings",
+    "frontendDisplayId": "1593",
+    "titleEn": "Split a String Into the Max Number of Unique Substrings",
+    "titleZh": "拆分字符串使唯一子字符串的数目最大",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/split-a-string-into-the-max-number-of-unique-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "split-and-merge-array-transformation",
+    "frontendDisplayId": "3690",
+    "titleEn": "Split and Merge Array Transformation",
+    "titleZh": "拆分合并数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "Array",
+      "Breadth-First Search",
+      "Hash Table"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/split-and-merge-array-transformation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "split-array-by-prime-indices",
+    "frontendDisplayId": "3618",
+    "titleEn": "Split Array by Prime Indices",
+    "titleZh": "根据质数下标分割数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/split-array-by-prime-indices/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "split-array-into-consecutive-subsequences",
+    "frontendDisplayId": "659",
+    "titleEn": "Split Array into Consecutive Subsequences",
+    "titleZh": "分割数组为连续子序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/split-array-into-consecutive-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-113",
+    "claimedAt": "2026-07-10T07:52:59.277716+00:00",
+    "completedAt": null
+  }
+]

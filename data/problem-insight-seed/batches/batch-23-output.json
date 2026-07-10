@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "count-sub-islands",
+    "reasonEN": "A medium grid-connectivity problem that pairs flood fill or Union-Find with component containment checks. It trains marking an entire island while propagating whether every covered cell remains valid, a useful pattern for matrix component comparison.",
+    "reasonZH": "这是一道中等难度的网格连通性题，结合 DFS/BFS 或并查集与连通块包含关系判断。它训练在遍历整块区域时同步维护有效性标记，是比较矩阵连通块的重要模式。"
+  },
+  {
+    "slug": "count-subarrays-of-length-three-with-a-condition",
+    "reasonEN": "This easy fixed-window counting exercise focuses on translating a local relation into a direct scan. It reinforces clean boundary handling and is a good entry point for recognizing when no heavier sliding-window machinery is needed.",
+    "reasonZH": "这道简单的定长窗口计数题，核心是把局部条件直接转化为一次扫描。它强化边界处理能力，也有助于识别不必引入复杂滑动窗口的场景。"
+  },
+  {
+    "slug": "count-subarrays-where-max-element-appears-at-least-k-times",
+    "reasonEN": "A medium sliding-window counting pattern built around occurrences of a distinguished value. Maintaining the minimum valid left boundary and counting all compatible extensions develops a reusable technique for \"at least K times\" subarray problems.",
+    "reasonZH": "这是一道中等难度的滑动窗口计数题，围绕特定值的出现次数维护窗口。通过确定最小合法左边界并累计可扩展区间，可掌握“至少出现 K 次”子数组的通用计数技巧。"
+  },
+  {
+    "slug": "count-subarrays-with-cost-less-than-or-equal-to-k",
+    "reasonEN": "This medium problem combines subarray counting with a monotonic queue for efficiently maintaining a cost-related extremum. It is valuable practice in turning a costly recomputation into amortized linear window maintenance.",
+    "reasonZH": "这道中等题将子数组计数与单调队列结合，用于高效维护与开销相关的极值。它训练把重复计算转化为均摊线性的窗口维护，是单调队列的重要应用。"
+  },
+  {
+    "slug": "count-subarrays-with-fixed-bounds",
+    "reasonEN": "A hard boundary-accounting problem that requires tracking the latest invalid position and the latest occurrences of both required bounds. It sharpens the precise index reasoning behind linear-time subarray counting.",
+    "reasonZH": "这是一道高难度的边界计数题，需要同时追踪最近的非法位置以及两个必要边界的最近出现位置。它能强化线性子数组计数中最关键的下标推理能力。"
+  },
+  {
+    "slug": "count-subarrays-with-k-distinct-integers",
+    "reasonEN": "This hard sliding-window classic reduces an exact-count condition to the difference between two \"at most\" counts. It teaches frequency-map maintenance and a broadly applicable transformation for exact subarray constraints.",
+    "reasonZH": "这道高难度滑动窗口经典题，把“恰好 K 种”转化为两个“至多 K 种”结果之差。它训练频次表维护，并沉淀精确子数组约束的通用转换方法。"
+  },
+  {
+    "slug": "count-subarrays-with-majority-element-i",
+    "reasonEN": "A medium advanced counting problem that converts majority conditions into prefix-balance comparisons. It introduces how prefix sums can be paired with offline ordering or range-query structures to count nonlocal relationships.",
+    "reasonZH": "这是一道中等难度的进阶计数题，将主要元素条件转化为前缀平衡值之间的比较。它展示了如何结合前缀和与离线排序或区间查询结构来统计非局部关系。"
+  },
+  {
+    "slug": "count-subarrays-with-majority-element-ii",
+    "reasonEN": "This hard extension demands a more scalable treatment of majority-based subarray counting, typically through prefix transformations and efficient ordered queries. It is excellent practice for upgrading a combinatorial observation into a high-performance data-structure solution.",
+    "reasonZH": "这道高难度进阶题要求以更可扩展的方式统计主要元素子数组，通常需要前缀变换配合高效有序查询。它训练将组合观察提升为高性能数据结构解法。"
+  },
+  {
+    "slug": "count-subarrays-with-median-k",
+    "reasonEN": "A hard prefix-sum transformation problem that recasts a median condition as a balance around a pivot value. Matching balances on both sides of the pivot is a memorable technique for handling rank-style constraints without sorting every subarray.",
+    "reasonZH": "这是一道高难度的前缀和变换题，将中位数条件转化为围绕枢轴值的平衡关系。通过匹配枢轴两侧的平衡值，可避免逐个子数组排序，是处理排名类约束的经典技巧。"
+  },
+  {
+    "slug": "count-subarrays-with-score-less-than-k",
+    "reasonEN": "This hard counting problem applies the positive-array sliding-window invariant to a composite score. It reinforces when monotonicity permits two pointers, and how each valid right endpoint contributes a batch of subarrays.",
+    "reasonZH": "这道高难度计数题利用正数数组上的滑动窗口单调性处理复合得分。它训练判断何时可使用双指针，并掌握每个合法右端点批量贡献子数组的计数方式。"
+  },
+  {
+    "slug": "count-submatrices-with-all-ones",
+    "reasonEN": "A medium matrix-DP and monotonic-stack representative problem that turns each row into histogram heights. It teaches how to reuse one-dimensional stack reasoning to count two-dimensional all-one structures efficiently.",
+    "reasonZH": "这是一道中等难度的矩阵 DP 与单调栈代表题，可将每一行转化为柱状图高度。它训练复用一维单调栈思路，高效统计二维全 1 结构。"
+  },
+  {
+    "slug": "count-submatrices-with-equal-frequency-of-x-and-y",
+    "reasonEN": "This medium prefix-sum matrix problem models equal frequencies as a running balance while preserving an additional feasibility condition. It develops the ability to design compact two-dimensional prefix states for character-count constraints.",
+    "reasonZH": "这道中等题将字符频率相等建模为前缀平衡值，同时保留额外的可行性条件。它训练为字符计数约束设计紧凑的二维前缀状态。"
+  },
+  {
+    "slug": "count-submatrices-with-top-left-element-and-sum-less-than-k",
+    "reasonEN": "A medium two-dimensional prefix-sum exercise centered on anchored submatrices. It builds fluency in prefix-table construction and shows how fixed geometry can simplify what would otherwise be a costly matrix enumeration.",
+    "reasonZH": "这是一道中等难度的二维前缀和题，聚焦固定左上角的子矩阵。它强化前缀表构建能力，并展示固定几何约束如何简化原本高成本的矩阵枚举。"
+  },
+  {
+    "slug": "count-substrings-divisible-by-last-digit",
+    "reasonEN": "A hard digit-DP problem that tracks remainders under changing divisors. It trains careful state design, transition handling for appended digits, and the special cases that make modular string problems subtle.",
+    "reasonZH": "这是一道高难度数位 DP 题，需要在变化的除数下维护余数状态。它训练状态设计、追加数字后的转移处理，以及模运算字符串题中的特殊边界。"
+  },
+  {
+    "slug": "count-substrings-starting-and-ending-with-given-character",
+    "reasonEN": "This medium counting problem turns endpoint pairing into an incremental combinatorial count. It is a concise lesson in recognizing that each newly seen matching character contributes a predictable number of substrings.",
+    "reasonZH": "这道中等计数题将端点配对转化为增量组合计数。它帮助理解每次遇到新的匹配字符时，如何直接计算新增子串数量。"
+  },
+  {
+    "slug": "count-substrings-that-can-be-rearranged-to-contain-a-string-i",
+    "reasonEN": "A medium frequency-window problem where feasibility is defined by componentwise character counts rather than exact equality. Shrinking to the minimal valid window and counting its extensions builds a key pattern for multiset containment.",
+    "reasonZH": "这是一道中等难度的频次滑动窗口题，可行性由逐字符频次覆盖而非完全相等决定。将窗口收缩到最小合法状态后统计扩展，能掌握多重集合包含关系的核心模式。"
+  },
+  {
+    "slug": "count-substrings-that-can-be-rearranged-to-contain-a-string-ii",
+    "reasonEN": "This hard-scale version of multiset containment requires a strictly linear frequency-window implementation. It is useful for refining invariants, avoiding redundant scans, and making the counting argument robust under large constraints.",
+    "reasonZH": "这道高难度的大规模多重集合包含题，需要严格线性的频次滑动窗口实现。它训练维护不变量、避免重复扫描，并使计数逻辑能够应对更大的数据范围。"
+  },
+  {
+    "slug": "count-substrings-that-differ-by-one-character",
+    "reasonEN": "A medium string-DP problem that decomposes each mismatch into matching lengths on its left and right. It teaches a powerful contribution-counting view of dynamic programming instead of comparing every substring pair directly.",
+    "reasonZH": "这是一道中等难度的字符串 DP 题，将每个失配点拆解为左右两侧的匹配长度。它训练用贡献计数的视角理解动态规划，避免直接比较所有子串对。"
+  },
+  {
+    "slug": "count-substrings-that-satisfy-k-constraint-i",
+    "reasonEN": "An easy binary-string sliding-window problem with a clear validity invariant. It is ideal for practicing how to move the left pointer only when both character counts violate the constraint, then accumulate valid endings.",
+    "reasonZH": "这是一道简单的二进制字符串滑动窗口题，合法性不变量十分清晰。它适合练习仅在两类字符计数都违反约束时移动左指针，再累计合法结尾数量。"
+  },
+  {
+    "slug": "count-substrings-that-satisfy-k-constraint-ii",
+    "reasonEN": "This hard query extension combines preprocessing with sliding-window boundaries, prefix sums, and binary search. It demonstrates how to convert per-query substring counting into reusable indexed information.",
+    "reasonZH": "这道高难度查询进阶题结合预处理、滑动窗口边界、前缀和与二分查找。它展示如何将逐查询的子串统计转化为可复用的索引信息。"
+  },
+  {
+    "slug": "count-substrings-with-k-frequency-characters-i",
+    "reasonEN": "A medium frequency-threshold sliding-window problem that counts windows once any character reaches the target frequency. It develops the complementary counting technique of adding all suffix extensions after a minimal valid window is found.",
+    "reasonZH": "这是一道中等难度的频次阈值滑动窗口题，在任一字符达到目标次数后统计窗口。它训练找到最小合法窗口后，一次性累加所有后缀扩展的补集计数技巧。"
+  },
+  {
+    "slug": "count-subtrees-with-max-distance-between-cities",
+    "reasonEN": "A hard small-tree enumeration problem that combines bitmasks, connectivity validation, and diameter computation. It is valuable for learning when exponential subset enumeration is feasible and how tree structure keeps it manageable.",
+    "reasonZH": "这是一道高难度的小规模树枚举题，结合位掩码、连通性校验与直径计算。它帮助理解何时可以使用指数级子集枚举，以及如何借助树结构控制复杂度。"
+  },
+  {
+    "slug": "count-symmetric-integers",
+    "reasonEN": "This easy digit-enumeration problem focuses on extracting digits and checking a compact arithmetic invariant. It is useful foundational practice for implementation accuracy in number-based simulations.",
+    "reasonZH": "这道简单的数位枚举题，核心是提取各位数字并验证简洁的算术不变量。它适合作为数字类模拟题的实现准确性基础训练。"
+  },
+  {
+    "slug": "count-tested-devices-after-test-operations",
+    "reasonEN": "A straightforward simulation problem where earlier actions alter the effective state of later positions. It reinforces identifying the minimal running state needed to avoid performing every decrement explicitly.",
+    "reasonZH": "这是一道直接的模拟题，前序操作会改变后续位置的有效状态。它训练识别所需的最小运行状态，从而避免显式执行每一次递减。"
+  },
+  {
+    "slug": "count-the-digits-that-divide-a-number",
+    "reasonEN": "An easy arithmetic scan that isolates digits and tests divisibility while handling zero safely. It provides a compact drill in modular arithmetic, digit extraction, and defensive edge-case reasoning.",
+    "reasonZH": "这道简单的算术扫描题，需要逐位提取数字并测试整除关系，同时安全处理零位。它是模运算、数位提取和边界防御思维的紧凑练习。"
+  },
+  {
+    "slug": "count-the-hidden-sequences",
+    "reasonEN": "A medium prefix-sum range problem that converts all possible starting values into an interval intersection. Tracking the minimum and maximum cumulative displacement reveals a clean way to count feasible initial states.",
+    "reasonZH": "这是一道中等难度的前缀和范围题，将所有可能初值转化为区间交集。追踪累计位移的最小值和最大值，可简洁统计可行的初始状态。"
+  },
+  {
+    "slug": "count-the-number-of-arrays-with-k-matching-adjacent-elements",
+    "reasonEN": "A hard combinatorics problem that separates the choice of matching boundaries from the assignment of values. It develops the product-rule and binomial-coefficient reasoning needed to count structured arrays without construction.",
+    "reasonZH": "这是一道高难度组合数学题，将相等相邻边界的选择与数值赋值拆开处理。它训练乘法原理和组合数推导，无需构造即可统计结构化数组。"
+  },
+  {
+    "slug": "count-the-number-of-beautiful-subarrays",
+    "reasonEN": "A medium bitwise prefix-XOR counting problem based on matching equal prefix states. It reinforces the algebraic cancellation property of XOR and the hash-map frequency pattern behind many zero-XOR subarray tasks.",
+    "reasonZH": "这是一道中等难度的位运算前缀异或计数题，核心是匹配相同的前缀状态。它强化异或的抵消性质，以及大量零异或子数组题通用的哈希频次模式。"
+  },
+  {
+    "slug": "count-the-number-of-complete-components",
+    "reasonEN": "A medium graph-component verification problem using DFS, BFS, or Union-Find. Comparing each component's edge count with the complete-graph formula trains the important distinction between connectivity and full completeness.",
+    "reasonZH": "这是一道中等难度的图连通块验证题，可使用 DFS、BFS 或并查集。将每个连通块的边数与完全图公式比较，能训练区分“连通”和“完全连通”的关键能力。"
+  },
+  {
+    "slug": "count-the-number-of-computer-unlocking-permutations",
+    "reasonEN": "This medium combinatorial reasoning problem asks for the ordering invariant hidden behind the unlocking rule. It is valuable for learning to replace permutation simulation with a proof-driven counting formula.",
+    "reasonZH": "这是一道中等难度的组合推理题，关键在于找出解锁规则背后的顺序不变量。它训练用证明驱动的计数公式替代排列模拟。"
+  }
+]

@@ -1,0 +1,730 @@
+[
+  {
+    "slug": "optimal-partition-of-string",
+    "frontendDisplayId": "2405",
+    "titleEn": "Optimal Partition of String",
+    "titleZh": "子字符串的最优划分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/optimal-partition-of-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "orderly-queue",
+    "frontendDisplayId": "899",
+    "titleEn": "Orderly Queue",
+    "titleZh": "有序队列",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Math",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/orderly-queue/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "out-of-boundary-paths",
+    "frontendDisplayId": "576",
+    "titleEn": "Out of Boundary Paths",
+    "titleZh": "出界的路径数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/out-of-boundary-paths/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "p0NxJO",
+    "frontendDisplayId": "LCP 30",
+    "titleEn": null,
+    "titleZh": "魔塔游戏",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/p0NxJO/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "pOCWxh",
+    "frontendDisplayId": "LCR 047",
+    "titleEn": null,
+    "titleZh": "二叉树剪枝",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/pOCWxh/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "pacific-atlantic-water-flow",
+    "frontendDisplayId": "417",
+    "titleEn": "Pacific Atlantic Water Flow",
+    "titleZh": "太平洋大西洋水流问题",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/pacific-atlantic-water-flow/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "paint-house-iii",
+    "frontendDisplayId": "1473",
+    "titleEn": "Paint House III",
+    "titleZh": "粉刷房子 III",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/paint-house-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "paint-house-iv",
+    "frontendDisplayId": "3429",
+    "titleEn": "Paint House IV",
+    "titleZh": "粉刷房子 IV",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/paint-house-iv/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "painting-a-grid-with-three-different-colors",
+    "frontendDisplayId": "1931",
+    "titleEn": "Painting a Grid With Three Different Colors",
+    "titleZh": "用三种不同颜色为网格涂色",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/painting-a-grid-with-three-different-colors/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "painting-the-walls",
+    "frontendDisplayId": "2742",
+    "titleEn": "Painting the Walls",
+    "titleZh": "给墙壁刷油漆",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/painting-the-walls/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "pairs-of-songs-with-total-durations-divisible-by-60",
+    "frontendDisplayId": "1010",
+    "titleEn": "Pairs of Songs With Total Durations Divisible by 60",
+    "titleZh": "总持续时间可被 60 整除的歌曲",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/pairs-of-songs-with-total-durations-divisible-by-60/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "pairs-with-sum-lcci",
+    "frontendDisplayId": "面试题 16.24",
+    "titleEn": null,
+    "titleZh": "数对和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/pairs-with-sum-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "palindrome-linked-list",
+    "frontendDisplayId": "234",
+    "titleEn": "Palindrome Linked List",
+    "titleZh": "回文链表",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Linked List",
+      "Recursion",
+      "Stack",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "递归",
+      "栈",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/palindrome-linked-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "palindrome-linked-list-lcci",
+    "frontendDisplayId": "面试题 02.06",
+    "titleEn": null,
+    "titleZh": "回文链表",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Linked List",
+      "Recursion",
+      "Stack",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "递归",
+      "栈",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/palindrome-linked-list-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "palindrome-number",
+    "frontendDisplayId": "9",
+    "titleEn": "Palindrome Number",
+    "titleZh": "回文数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/palindrome-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "palindrome-pairs",
+    "frontendDisplayId": "336",
+    "titleEn": "Palindrome Pairs",
+    "titleZh": "回文对",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Function",
+      "Hash Table",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希函数",
+      "哈希表",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/palindrome-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "palindrome-partitioning",
+    "frontendDisplayId": "131",
+    "titleEn": "Palindrome Partitioning",
+    "titleZh": "分割回文串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/palindrome-partitioning/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "palindrome-partitioning-ii",
+    "frontendDisplayId": "132",
+    "titleEn": "Palindrome Partitioning II",
+    "titleZh": "分割回文串 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/palindrome-partitioning-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "palindrome-partitioning-iii",
+    "frontendDisplayId": "1278",
+    "titleEn": "Palindrome Partitioning III",
+    "titleZh": "分割回文串 III",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/palindrome-partitioning-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "palindrome-partitioning-iv",
+    "frontendDisplayId": "1745",
+    "titleEn": "Palindrome Partitioning IV",
+    "titleZh": "分割回文串 IV",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/palindrome-partitioning-iv/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "palindrome-permutation-lcci",
+    "frontendDisplayId": "面试题 01.04",
+    "titleEn": null,
+    "titleZh": "回文排列",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/palindrome-permutation-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "palindrome-rearrangement-queries",
+    "frontendDisplayId": "2983",
+    "titleEn": "Palindrome Rearrangement Queries",
+    "titleZh": "回文串重新排列查询",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/palindrome-rearrangement-queries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "palindromic-path-queries-in-a-tree",
+    "frontendDisplayId": "3841",
+    "titleEn": "Palindromic Path Queries in a Tree",
+    "titleZh": "查询树上回文路径",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Depth-First Search",
+      "Divide and Conquer",
+      "Segment Tree",
+      "String",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "深度优先搜索",
+      "分治",
+      "线段树",
+      "字符串",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/palindromic-path-queries-in-a-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "palindromic-substrings",
+    "frontendDisplayId": "647",
+    "titleEn": "Palindromic Substrings",
+    "titleZh": "回文子串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/palindromic-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "pancake-sorting",
+    "frontendDisplayId": "969",
+    "titleEn": "Pancake Sorting",
+    "titleZh": "煎饼排序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/pancake-sorting/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "parallel-courses-ii",
+    "frontendDisplayId": "1494",
+    "titleEn": "Parallel Courses II",
+    "titleZh": "并行课程 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/parallel-courses-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "parallel-courses-iii",
+    "frontendDisplayId": "2050",
+    "titleEn": "Parallel Courses III",
+    "titleZh": "并行课程 III",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Graph Theory",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "图",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/parallel-courses-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "parse-lisp-expression",
+    "frontendDisplayId": "736",
+    "titleEn": "Parse Lisp Expression",
+    "titleZh": "Lisp 语法解析",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Recursion",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "递归",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/parse-lisp-expression/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "parsing-a-boolean-expression",
+    "frontendDisplayId": "1106",
+    "titleEn": "Parsing A Boolean Expression",
+    "titleZh": "解析布尔表达式",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Recursion",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "递归",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/parsing-a-boolean-expression/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-array-according-to-given-pivot",
+    "frontendDisplayId": "2161",
+    "titleEn": "Partition Array According to Given Pivot",
+    "titleZh": "根据给定数字划分数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-array-according-to-given-pivot/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-096",
+    "claimedAt": "2026-07-10T07:00:53.550264+00:00",
+    "completedAt": null
+  }
+]

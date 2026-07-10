@@ -1,0 +1,712 @@
+[
+  {
+    "slug": "cinema-seat-allocation",
+    "frontendDisplayId": "1386",
+    "titleEn": "Cinema Seat Allocation",
+    "titleZh": "安排电影院座位",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Greedy",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "贪心",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/cinema-seat-allocation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "circle-and-rectangle-overlapping",
+    "frontendDisplayId": "1401",
+    "titleEn": "Circle and Rectangle Overlapping",
+    "titleZh": "圆和矩形是否有重叠",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Geometry",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "几何",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/circle-and-rectangle-overlapping/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "circular-array-loop",
+    "frontendDisplayId": "457",
+    "titleEn": "Circular Array Loop",
+    "titleZh": "环形数组是否存在循环",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/circular-array-loop/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "circular-permutation-in-binary-representation",
+    "frontendDisplayId": "1238",
+    "titleEn": "Circular Permutation in Binary Representation",
+    "titleZh": "循环码排列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Bit Manipulation",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "位运算",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/circular-permutation-in-binary-representation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "circular-sentence",
+    "frontendDisplayId": "2490",
+    "titleEn": "Circular Sentence",
+    "titleZh": "回环句",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/circular-sentence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "circus-tower-lcci",
+    "frontendDisplayId": "面试题 17.08",
+    "titleEn": null,
+    "titleZh": "马戏团人塔",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/circus-tower-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "classes-with-at-least-5-students",
+    "frontendDisplayId": "596",
+    "titleEn": "Classes With at Least 5 Students",
+    "titleZh": "超过 5 名学生的课",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/classes-with-at-least-5-students/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "clear-digits",
+    "frontendDisplayId": "3174",
+    "titleEn": "Clear Digits",
+    "titleZh": "清除数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Simulation",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/clear-digits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "climbing-stairs",
+    "frontendDisplayId": "70",
+    "titleEn": "Climbing Stairs",
+    "titleZh": "爬楼梯",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "记忆化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/climbing-stairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "climbing-stairs-ii",
+    "frontendDisplayId": "3693",
+    "titleEn": "Climbing Stairs II",
+    "titleZh": "爬楼梯 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/climbing-stairs-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "clone-graph",
+    "frontendDisplayId": "133",
+    "titleEn": "Clone Graph",
+    "titleZh": "克隆图",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/clone-graph/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "closed-number-lcci",
+    "frontendDisplayId": "面试题 05.04",
+    "titleEn": null,
+    "titleZh": "下一个数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "位运算"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/closed-number-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "closest-dessert-cost",
+    "frontendDisplayId": "1774",
+    "titleEn": "Closest Dessert Cost",
+    "titleZh": "最接近目标价格的甜点成本",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/closest-dessert-cost/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "closest-divisors",
+    "frontendDisplayId": "1362",
+    "titleEn": "Closest Divisors",
+    "titleZh": "最接近的因数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/closest-divisors/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "closest-equal-element-queries",
+    "frontendDisplayId": "3488",
+    "titleEn": "Closest Equal Element Queries",
+    "titleZh": "距离最小相等元素查询",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/closest-equal-element-queries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "closest-nodes-queries-in-a-binary-search-tree",
+    "frontendDisplayId": "2476",
+    "titleEn": "Closest Nodes Queries in a Binary Search Tree",
+    "titleZh": "二叉搜索树最近节点查询",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/closest-nodes-queries-in-a-binary-search-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "closest-prime-numbers-in-range",
+    "frontendDisplayId": "2523",
+    "titleEn": "Closest Prime Numbers in Range",
+    "titleZh": "范围内最接近的两个质数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/closest-prime-numbers-in-range/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "closest-room",
+    "frontendDisplayId": "1847",
+    "titleEn": "Closest Room",
+    "titleZh": "最近的房间",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Ordered Set",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "有序集合",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/closest-room/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "closest-subsequence-sum",
+    "frontendDisplayId": "1755",
+    "titleEn": "Closest Subsequence Sum",
+    "titleZh": "最接近目标值的子序列和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/closest-subsequence-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "clumsy-factorial",
+    "frontendDisplayId": "1006",
+    "titleEn": "Clumsy Factorial",
+    "titleZh": "笨阶乘",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/clumsy-factorial/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cnHoX6",
+    "frontendDisplayId": "LCP 82",
+    "titleEn": null,
+    "titleZh": "万灵之树",
+    "difficulty": "HARD",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/cnHoX6/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "coin-bonus",
+    "frontendDisplayId": "LCP 05",
+    "titleEn": null,
+    "titleZh": "发 LeetCoin",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "线段树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/coin-bonus/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "coin-change",
+    "frontendDisplayId": "322",
+    "titleEn": "Coin Change",
+    "titleZh": "零钱兑换",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/coin-change/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "coin-change-ii",
+    "frontendDisplayId": "518",
+    "titleEn": "Coin Change II",
+    "titleZh": "零钱兑换 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/coin-change-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "coin-lcci",
+    "frontendDisplayId": "面试题 08.11",
+    "titleEn": null,
+    "titleZh": "硬币",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/coin-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "collect-coins-in-a-tree",
+    "frontendDisplayId": "2603",
+    "titleEn": "Collect Coins in a Tree",
+    "titleZh": "收集树中金币",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Topological Sort",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "拓扑排序",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/collect-coins-in-a-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "collecting-chocolates",
+    "frontendDisplayId": "2735",
+    "titleEn": "Collecting Chocolates",
+    "titleZh": "收集巧克力",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/collecting-chocolates/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "color-fill-lcci",
+    "frontendDisplayId": "面试题 08.10",
+    "titleEn": null,
+    "titleZh": "颜色填充",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/color-fill-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "coloring-a-border",
+    "frontendDisplayId": "1034",
+    "titleEn": "Coloring A Border",
+    "titleZh": "边界着色",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/coloring-a-border/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "combination-sum",
+    "frontendDisplayId": "39",
+    "titleEn": "Combination Sum",
+    "titleZh": "组合总和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/combination-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-15",
+    "claimedAt": "2026-07-10T01:49:58.140940+00:00",
+    "completedAt": null
+  }
+]

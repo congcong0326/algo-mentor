@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "count-the-number-of-consistent-strings",
+    "reasonEN": "An easy string-filtering problem that represents the allowed alphabet with a set or bitmask. It reinforces membership testing and compact character-state encoding, making it a useful entry point to bit manipulation on strings.",
+    "reasonZH": "这是一道入门级字符串筛选题，可用集合或位掩码表示允许的字符集。它训练成员判断和紧凑的字符状态编码，是学习字符串位运算的良好起点。"
+  },
+  {
+    "slug": "count-the-number-of-fair-pairs",
+    "reasonEN": "This medium sorting problem counts pairs in a sum interval by reducing it to two upper-bound queries. It develops sorted-array two pointers or binary search, and teaches the reusable count-at-most transformation for range constraints.",
+    "reasonZH": "本题是中等难度排序题，将和落在区间内的数对转化为两次上界计数之差。它训练有序数组上的双指针或二分，并掌握区间约束转至多计数的通用变形。"
+  },
+  {
+    "slug": "count-the-number-of-good-nodes",
+    "reasonEN": "A medium tree DFS problem that derives subtree sizes and compares sibling subtrees at each node. It strengthens postorder aggregation and structural validation, two core habits for recursive tree analysis.",
+    "reasonZH": "这是一道中等难度树形 DFS 题，需要计算子树大小并比较同一节点各子树的规模。它训练后序聚合和结构性质判断，是递归分析树的重要基本功。"
+  },
+  {
+    "slug": "count-the-number-of-good-partitions",
+    "reasonEN": "This hard interval-and-combinatorics problem merges value occurrence spans into indivisible blocks. It teaches first-and-last occurrence modeling and explains why each gap between independent blocks contributes a binary partition choice.",
+    "reasonZH": "本题是高难度区间与组合计数题，将相同值的首末出现位置合并为不可拆分的块。它训练首末位置建模，并说明独立块之间的每个间隙为何提供二元分割选择。"
+  },
+  {
+    "slug": "count-the-number-of-good-subarrays",
+    "reasonEN": "A medium variable-window problem that maintains the number of equal-value pairs as frequencies change. It sharpens incremental contribution updates and the counting rule that every valid left boundary contributes a batch of right extensions.",
+    "reasonZH": "这是一道中等难度可变窗口题，随着频次变化维护相等元素对的数量。它训练增量贡献更新，以及每个合法左边界可批量贡献右端扩展方案的计数规律。"
+  },
+  {
+    "slug": "count-the-number-of-houses-at-a-certain-distance-i",
+    "reasonEN": "A medium graph-distance baseline that computes shortest paths over a small path graph with one extra edge. It is valuable for practicing BFS-based all-pairs aggregation before moving to the formula-driven large-constraint version.",
+    "reasonZH": "本题是中等难度图距离基准题，在带一条额外边的小路径图上计算最短路。它训练基于 BFS 的全对距离汇总，也为理解大规模版本的公式解法建立基线。"
+  },
+  {
+    "slug": "count-the-number-of-houses-at-a-certain-distance-ii",
+    "reasonEN": "This hard graph-counting problem replaces all-pairs shortest paths with interval contributions induced by a shortcut edge. It develops distance-case decomposition and difference-array accumulation, a key technique for scaling pair counts.",
+    "reasonZH": "这是一道高难度图计数题，用捷径边带来的区间贡献替代全对最短路计算。它训练距离分类讨论和差分数组累计，是扩展数对计数规模的关键技巧。"
+  },
+  {
+    "slug": "count-the-number-of-ideal-arrays",
+    "reasonEN": "A hard number-theory and combinatorics problem that factorizes the terminal value and distributes prime exponents across positions. It builds fluency with sieve preprocessing, stars-and-bars counting, and modular combinations.",
+    "reasonZH": "本题是高难度数论与组合数学题，对末尾值分解质因数并将指数分配到各位置。它训练筛法预处理、隔板法计数和模组合数计算。"
+  },
+  {
+    "slug": "count-the-number-of-incremovable-subarrays-i",
+    "reasonEN": "An easy enumeration problem that validates whether removing each candidate interval leaves a strictly increasing sequence. It teaches precise boundary checks and provides a clear brute-force reference for the optimized companion problem.",
+    "reasonZH": "这是一道入门级枚举题，逐个验证删除候选区间后剩余序列是否严格递增。它训练精确的边界检查，并为优化版本建立清晰的暴力基准。"
+  },
+  {
+    "slug": "count-the-number-of-incremovable-subarrays-ii",
+    "reasonEN": "This hard two-pointer problem joins a maximal increasing prefix with a maximal increasing suffix while counting removable gaps. It develops monotone boundary movement and bridge-condition reasoning, an elegant upgrade from quadratic enumeration.",
+    "reasonZH": "本题是高难度双指针题，连接最长递增前缀和最长递增后缀并统计可删除间隔。它训练单调边界移动和连接条件推理，是从平方枚举升级到线性解法的典型题。"
+  },
+  {
+    "slug": "count-the-number-of-infection-sequences",
+    "reasonEN": "A hard combinatorics problem that splits healthy positions into independent gaps around initially fixed points. It trains multinomial interleaving, internal-gap ordering counts, and factorial-based modular arithmetic for process-counting problems.",
+    "reasonZH": "这是一道高难度组合计数题，将健康位置按初始固定点分成相互独立的间隔。它训练多项式交错计数、内部间隔的传播顺序计算和阶乘型模运算。"
+  },
+  {
+    "slug": "count-the-number-of-inversions",
+    "reasonEN": "A hard permutation DP problem that tracks attainable inversion counts under prefix requirements. It reinforces state feasibility, prefix-sum transition optimization, and the relationship between inserting an element and creating new inversions.",
+    "reasonZH": "本题是高难度排列 DP 题，在前缀约束下跟踪可达到的逆序对数量。它训练状态可行性、前缀和优化转移，以及插入元素与新增逆序对之间的关系。"
+  },
+  {
+    "slug": "count-the-number-of-powerful-integers",
+    "reasonEN": "This hard digit-DP problem combines an upper bound, a per-digit limit, and a fixed suffix constraint. It develops count-up-to decomposition and careful treatment of leading positions, making it strong practice for constrained range counting.",
+    "reasonZH": "这是一道高难度数位 DP 题，同时包含上界、每位限制和固定后缀约束。它训练前缀计数分解与首位处理，是受限区间计数的高质量练习。"
+  },
+  {
+    "slug": "count-the-number-of-special-characters-i",
+    "reasonEN": "An easy character-set problem that checks whether both cases of each letter occur. It reinforces simple presence tracking and gives a clean example of using fixed-size alphabet state instead of heavier data structures.",
+    "reasonZH": "本题是入门级字符集合题，判断每个字母的大小写是否都出现。它训练基础存在性记录，并展示了如何用固定字母表状态替代更重的数据结构。"
+  },
+  {
+    "slug": "count-the-number-of-special-characters-ii",
+    "reasonEN": "A medium string-ordering problem that requires comparing the first lowercase position with the last uppercase position for each letter. It develops positional summary techniques and highlights why mere set membership is insufficient when order matters.",
+    "reasonZH": "这是一道中等难度字符串顺序题，需要比较每个字母首次小写出现位置与最后大写出现位置。它训练位置摘要技巧，并强调顺序相关时仅记录集合成员并不够。"
+  },
+  {
+    "slug": "count-the-number-of-square-free-subsets",
+    "reasonEN": "This medium number-theory bitmask DP maps each valid number to its prime-factor mask and combines only disjoint masks. It teaches square-factor filtering, reverse subset transitions, and the special multiplicative role of ones.",
+    "reasonZH": "本题是中等难度数论位掩码 DP，将每个合法数字映射为质因子掩码，只合并互不冲突的掩码。它训练平方因子过滤、逆序子集转移，以及数字 1 的特殊乘法贡献。"
+  },
+  {
+    "slug": "count-the-number-of-substrings-with-dominant-ones",
+    "reasonEN": "A medium enumeration problem that exploits the quadratic relation between zero and one counts. It develops zero-position indexing and square-root-style case splitting, a useful pattern when one count bounds another nonlinearly.",
+    "reasonZH": "本题是中等难度枚举题，利用零和一数量之间的二次关系缩小搜索范围。它训练零位置索引和根号级分类讨论，适合掌握非线性计数约束下的优化思路。"
+  },
+  {
+    "slug": "count-the-number-of-vowel-strings-in-range",
+    "reasonEN": "An easy array scan that applies a small predicate to words within inclusive boundaries. It reinforces clear range handling and constant-time endpoint classification, useful habits for reliable string filtering.",
+    "reasonZH": "这是一道入门级数组扫描题，对指定闭区间内的单词应用简单谓词判断。它训练清晰的范围处理和常数时间端点分类，是可靠字符串筛选的基础。"
+  },
+  {
+    "slug": "count-the-number-of-winning-sequences",
+    "reasonEN": "A hard sequence DP problem that tracks the previous move and the current score difference under transition restrictions. It develops offset-indexed score states and careful modulo transitions for adversarial sequence counting.",
+    "reasonZH": "本题是高难度序列 DP 题，在转移限制下记录上一手选择和当前分差。它训练偏移索引的分数状态，以及对抗序列计数中的严谨模转移。"
+  },
+  {
+    "slug": "count-the-repetitions",
+    "reasonEN": "This hard repeated-string matching problem detects cycles in the target-pointer state while scanning source blocks. It teaches state compression, cycle acceleration, and two-pointer simulation beyond what direct repetition can handle.",
+    "reasonZH": "这是一道高难度重复字符串匹配题，在扫描源串块时检测目标指针状态的循环。它训练状态压缩、循环加速和双指针模拟，突破直接重复的规模限制。"
+  },
+  {
+    "slug": "count-total-number-of-colored-cells",
+    "reasonEN": "A medium mathematical growth problem whose expanding layers form a simple quadratic formula. It trains pattern extraction from simulation and safe arithmetic evaluation, showing how geometric processes often collapse into closed forms.",
+    "reasonZH": "本题是中等难度数学增长题，扩张层的数量可归纳为简洁的二次公式。它训练从模拟中提炼规律和安全算术计算，展示几何过程如何化为闭式解。"
+  },
+  {
+    "slug": "count-triplets-that-can-form-two-arrays-of-equal-xor",
+    "reasonEN": "A medium prefix-XOR counting problem that turns equal XOR segments into equal prefix values. It develops algebraic cancellation, occurrence-count accumulation, and index-sum bookkeeping for counting all valid split points efficiently.",
+    "reasonZH": "这是一道中等难度前缀异或计数题，将两段异或相等转化为前缀异或值相等。它训练异或消去规律、出现次数累计和索引和维护，从而高效统计所有分割点。"
+  },
+  {
+    "slug": "count-unguarded-cells-in-the-grid",
+    "reasonEN": "A medium grid-simulation problem that propagates guard visibility in four directions until blocked. It reinforces state marking, obstacle boundaries, and the distinction between a blocked cell and a merely observed cell.",
+    "reasonZH": "本题是中等难度网格模拟题，从守卫向四个方向传播视线直到遇到阻挡。它训练状态标记、障碍边界处理，以及阻挡格和仅被观察格之间的区分。"
+  },
+  {
+    "slug": "count-unhappy-friends",
+    "reasonEN": "This medium preference-simulation problem preprocesses ranking positions, then tests whether a blocking pair exists. It teaches preference-to-rank conversion and precise bidirectional condition checking in matching-style problems.",
+    "reasonZH": "本题是中等难度偏好模拟题，先预处理偏好排名，再判断是否存在阻塞对。它训练将偏好表转为排名表，以及匹配类问题中严谨的双向条件检查。"
+  },
+  {
+    "slug": "count-unique-characters-of-all-substrings-of-a-given-string",
+    "reasonEN": "A hard contribution-counting string problem where each occurrence owns substrings determined by its neighboring equal characters. It develops last-two-position tracking and the powerful shift from enumerating substrings to summing per-character contributions.",
+    "reasonZH": "这是一道高难度贡献计数字符串题，每次字符出现所贡献的子串由相邻同字符位置决定。它训练记录前两次出现位置，并掌握从枚举子串转向按字符累加贡献的重要转化。"
+  },
+  {
+    "slug": "count-unreachable-pairs-of-nodes-in-an-undirected-graph",
+    "reasonEN": "A medium connected-components problem solved with DFS, BFS, or union-find and incremental component-size products. It reinforces component aggregation and long-integer counting for graph pair totals.",
+    "reasonZH": "本题是中等难度连通分量题，可用 DFS、BFS 或并查集，并通过分量大小增量相乘统计数对。它训练连通块聚合，以及图中数对总数的长整型计数。"
+  },
+  {
+    "slug": "count-valid-paths-in-a-tree",
+    "reasonEN": "A hard tree and number-theory problem that treats prime-valued nodes as separators between non-prime components. It develops sieve preprocessing, component-size aggregation, and path counting with an exact-one-special-node constraint.",
+    "reasonZH": "本题是高难度树与数论综合题，将质数节点视为非质数连通块之间的分隔点。它训练筛法预处理、分量大小聚合，以及恰含一个特殊节点的路径计数。"
+  },
+  {
+    "slug": "count-valid-word-occurrences",
+    "reasonEN": "A medium string-counting problem that applies a validity predicate while aggregating repeated word occurrences. It reinforces token-level parsing, frequency maps, and careful separation of normalization rules from final counting logic.",
+    "reasonZH": "本题是中等难度字符串计数题，对单词应用有效性判定后聚合重复出现次数。它训练词元级解析、频次哈希表，以及将规范化规则与最终计数逻辑清晰分离。"
+  },
+  {
+    "slug": "count-visited-nodes-in-a-directed-graph",
+    "reasonEN": "This hard functional-graph problem peels acyclic nodes by indegree, sizes cycles, and propagates answers backward. It develops topological trimming, cycle detection, and DP on reverse dependencies for directed graphs with one outgoing edge.",
+    "reasonZH": "这是一道高难度函数图题，通过入度剥离去除非环节点、计算环长并反向传播答案。它训练拓扑裁剪、环检测，以及单出边有向图上的反向依赖 DP。"
+  },
+  {
+    "slug": "count-vowel-strings-in-ranges",
+    "reasonEN": "A medium static-query problem that preprocesses a prefix sum of words satisfying a vowel-endpoint predicate. It teaches query-friendly preprocessing and inclusive-range subtraction, a foundational pattern for repeated array queries.",
+    "reasonZH": "本题是中等难度静态查询题，预处理满足元音端点条件的单词前缀和。它训练面向查询的预处理和闭区间差分，是重复数组查询的基础模式。"
+  }
+]

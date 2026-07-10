@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "shifting-letters",
+    "reasonEN": "A medium prefix-sum string problem that turns repeated range effects into one accumulated pass. It drills suffix aggregation, modular alphabet handling, and boundary-safe reconstruction, making it a clean introduction to difference-style thinking.",
+    "reasonZH": "这是一道中等难度的前缀和字符串题，把多次区间影响转化为一次累计扫描。它训练后缀累加、字母模运算与边界重建，是理解差分思想的简洁入门题。"
+  },
+  {
+    "slug": "shifting-letters-ii",
+    "reasonEN": "This medium extension is a difference-array application on strings. Recording directional range updates and restoring prefix effects tests sign conventions and endpoint handling, which are essential for scalable interval-update problems.",
+    "reasonZH": "作为进阶中等题，它将差分数组应用到字符串区间操作中。通过记录正反方向更新并恢复前缀影响，重点训练符号约定与端点处理，是掌握高效区间修改的重要练习。"
+  },
+  {
+    "slug": "shopping-offers",
+    "reasonEN": "A medium state-search dynamic programming problem centered on memoized backtracking. Modeling remaining needs, rejecting non-progressing bundles, and caching equivalent states teach how to control exponential choices with a compact state space.",
+    "reasonZH": "这道中等状态搜索动态规划题以记忆化回溯为核心。建模剩余需求、排除无收益套餐并缓存等价状态，训练如何用紧凑状态空间控制指数级选择。"
+  },
+  {
+    "slug": "short-encoding-of-words",
+    "reasonEN": "A medium trie and hash-table problem built around suffix deduplication. Reversing words exposes shared suffixes as common trie prefixes, demonstrating how a representation change can simplify string compression logic.",
+    "reasonZH": "这是围绕后缀去重的中等难度字典树与哈希题。将单词反转后，共享后缀会变成字典树中的公共前缀，体现了表示转换如何简化字符串压缩问题。"
+  },
+  {
+    "slug": "shortest-and-lexicographically-smallest-beautiful-string",
+    "reasonEN": "A medium sliding-window selection problem with a lexicographic tie-breaker. Maintaining the required character count while shrinking valid windows trains precise window invariants and disciplined comparison of equal-length candidates.",
+    "reasonZH": "这是一道带字典序次关键字的中等滑动窗口题。维护目标字符计数并收缩合法窗口，训练严谨的窗口不变量以及等长候选答案的比较逻辑。"
+  },
+  {
+    "slug": "shortest-bridge",
+    "reasonEN": "This medium matrix-graph classic combines DFS marking with multi-source BFS expansion. Separating island identification from layer-by-layer crossing reinforces component preprocessing and the shortest-path guarantee of BFS.",
+    "reasonZH": "这道中等网格图经典题结合 DFS 标记与多源 BFS 扩展。先识别连通块、再按层跨越，能巩固连通分量预处理与 BFS 最短路保证的理解。"
+  },
+  {
+    "slug": "shortest-common-supersequence",
+    "reasonEN": "A hard string DP reconstruction problem based on longest-common-subsequence structure. It requires both a correct two-dimensional recurrence and careful backtracking of unmatched characters, making it valuable for learning how optimization DP produces an actual sequence.",
+    "reasonZH": "这是一道基于最长公共子序列结构的困难字符串 DP 重构题。既要写对二维状态转移，也要谨慎回溯未匹配字符，适合学习如何从最优化 DP 还原具体序列。"
+  },
+  {
+    "slug": "shortest-completing-word",
+    "reasonEN": "An easy frequency-counting string problem that emphasizes normalization before comparison. Building a required letter profile and checking candidates without being distracted by case or irrelevant characters develops reliable hash-table basics.",
+    "reasonZH": "这道简单字符串计数题强调比较前的规范化处理。先构造所需字母频次，再过滤大小写和无关字符检查候选词，能打牢哈希计数的实现基础。"
+  },
+  {
+    "slug": "shortest-cycle-in-a-graph",
+    "reasonEN": "A hard graph-theory problem that applies BFS from multiple sources to detect minimum cycles. Correctly distinguishing parent edges and combining distance layers trains the subtle bookkeeping behind unweighted graph cycle searches.",
+    "reasonZH": "这是一道通过多次 BFS 寻找最小环的困难图论题。正确区分父边并结合层级距离，训练无权图环检测中容易出错的状态维护细节。"
+  },
+  {
+    "slug": "shortest-distance-after-road-addition-queries-i",
+    "reasonEN": "A medium online graph-update problem where BFS can be recomputed after each insertion. It clarifies how adjacency changes affect unweighted shortest paths and provides a useful baseline before optimizing dynamic queries.",
+    "reasonZH": "这道中等在线图更新题可在每次加边后重新执行 BFS。它帮助理解邻接关系变化如何影响无权最短路，并为后续动态查询优化建立可靠基线。"
+  },
+  {
+    "slug": "shortest-distance-after-road-addition-queries-ii",
+    "reasonEN": "This hard dynamic graph problem relies on greedy reasoning and an ordered set to skip obsolete path segments. It trains recognition of structural constraints that permit incremental maintenance instead of repeated shortest-path searches.",
+    "reasonZH": "这是一道借助贪心与有序集合跳过失效路径段的困难动态图题。它训练识别可增量维护的结构性约束，从而避免反复执行最短路搜索。"
+  },
+  {
+    "slug": "shortest-distance-to-a-character",
+    "reasonEN": "An easy two-pass distance problem that uses left-to-right and right-to-left scans. Combining nearest occurrences from both directions is a compact lesson in turning local distance information into a complete array solution.",
+    "reasonZH": "这道简单距离题通过从左到右、从右到左两次扫描完成。合并两个方向最近出现位置的距离，是将局部信息组织成完整数组答案的经典练习。"
+  },
+  {
+    "slug": "shortest-distance-to-target-string-in-a-circular-array",
+    "reasonEN": "A simple circular-array problem focused on modular distance reasoning. Evaluating both directions and handling wraparound cleanly builds intuition for cyclic indexing, a common source of off-by-one errors.",
+    "reasonZH": "这是一道聚焦循环数组距离计算的简单题。比较两个方向并正确处理回绕，能建立循环下标的直觉，减少常见的边界与 off-by-one 错误。"
+  },
+  {
+    "slug": "shortest-impossible-sequence-of-rolls",
+    "reasonEN": "A hard greedy segmentation problem driven by coverage of all face values. Resetting a seen set exactly when a complete set is formed reveals a powerful way to convert subsequence existence into counting completed phases.",
+    "reasonZH": "这道困难贪心分段题围绕骰子面值的完整覆盖展开。每凑齐一组全部面值便重置集合，展现了如何将子序列存在性转化为完整阶段计数。"
+  },
+  {
+    "slug": "shortest-matching-substring",
+    "reasonEN": "A hard string-matching optimization problem combining occurrence search, two pointers, and binary-search-style feasibility reasoning. Coordinating ordered match positions while minimizing a span develops reusable techniques for constrained pattern matching.",
+    "reasonZH": "这是一道结合匹配位置搜索、双指针与二分可行性思维的困难字符串优化题。协调有序匹配位置并最小化覆盖区间，能训练受约束模式匹配中的通用技巧。"
+  },
+  {
+    "slug": "shortest-palindrome",
+    "reasonEN": "A hard string-matching problem centered on finding the longest palindromic prefix. Hashing or prefix-function techniques must handle collisions or separators carefully, making it a strong exercise in linear-time palindrome construction.",
+    "reasonZH": "这是一道寻找最长回文前缀的困难字符串匹配题。无论采用哈希还是前缀函数，都要谨慎处理冲突或分隔符，是练习线性构造回文串的代表题。"
+  },
+  {
+    "slug": "shortest-path-in-a-grid-with-obstacles-elimination",
+    "reasonEN": "This hard grid BFS expands the state space with the remaining obstacle-removal budget. Pruning dominated states is the key lesson, showing why position alone is insufficient when path resources affect future reachability.",
+    "reasonZH": "这道困难网格 BFS 题将剩余消除障碍次数纳入状态。剪除被支配状态是核心，它说明当路径资源影响后续可达性时，仅记录坐标并不充分。"
+  },
+  {
+    "slug": "shortest-path-in-a-weighted-tree",
+    "reasonEN": "A hard tree query problem that combines DFS-based tree structure with Fenwick or segment-tree maintenance. It trains decomposition of path information and efficient propagation of weighted updates, a key transition from static trees to online queries.",
+    "reasonZH": "这是一道结合 DFS 树结构与树状数组或线段树维护的困难树查询题。它训练路径信息拆分和带权更新的高效传播，是从静态树走向在线查询的重要进阶。"
+  },
+  {
+    "slug": "shortest-path-in-binary-matrix",
+    "reasonEN": "A medium matrix BFS template problem with eight-direction movement. Layered traversal, visited-state timing, and start/end boundary checks make it an excellent foundation for shortest paths on implicit grids.",
+    "reasonZH": "这是包含八方向移动的中等网格 BFS 模板题。分层遍历、访问标记时机和起终点边界检查都很典型，适合作为隐式网格最短路的基础训练。"
+  },
+  {
+    "slug": "shortest-path-to-get-all-keys",
+    "reasonEN": "A hard state-compressed BFS problem where position and key mask jointly define a state. Correctly applying key acquisition and lock constraints demonstrates how bitmasks make combinatorial collection tasks tractable.",
+    "reasonZH": "这是一道将位置与钥匙掩码共同作为状态的困难状态压缩 BFS 题。正确处理获取钥匙和通过锁的约束，能理解位掩码如何让组合收集问题变得可求解。"
+  },
+  {
+    "slug": "shortest-path-visiting-all-nodes",
+    "reasonEN": "A hard graph traversal classic using multi-source BFS over node-mask states. Treating each visited subset as part of the state builds the bridge between shortest paths and subset dynamic programming.",
+    "reasonZH": "这是一道在节点掩码状态上执行多源 BFS 的困难图论经典题。把已访问集合纳入状态，能建立最短路方法与子集动态规划之间的联系。"
+  },
+  {
+    "slug": "shortest-path-with-alternating-colors",
+    "reasonEN": "A medium BFS problem in an expanded state graph where the last edge color matters. Keeping separate visited states by incoming color teaches how to encode transition constraints without losing valid paths.",
+    "reasonZH": "这道中等 BFS 题在扩展状态图中记录上一条边的颜色。按入边颜色分别维护访问状态，训练如何编码转移约束而不误删合法路径。"
+  },
+  {
+    "slug": "shortest-path-with-at-most-k-consecutive-identical-characters",
+    "reasonEN": "A medium constrained shortest-path problem that uses a priority queue over augmented string states. Tracking the current character run alongside distance develops the habit of modeling every condition that changes future transitions.",
+    "reasonZH": "这是一道在扩展字符串状态上使用优先队列的中等受限最短路题。将当前连续字符段与距离一并记录，训练把影响后续转移的条件完整纳入状态。"
+  },
+  {
+    "slug": "shortest-string-that-contains-three-strings",
+    "reasonEN": "A medium enumeration and greedy overlap problem with only a few permutations. Eliminating contained strings and maximizing pairwise suffix-prefix overlap teach how exhaustive search becomes practical when the combinatorial dimension is tightly bounded.",
+    "reasonZH": "这是一道仅需枚举少量排列的中等字符串贪心题。去除被包含字符串并最大化后缀与前缀重叠，能理解在组合维度很小的场景下如何高效使用穷举。"
+  },
+  {
+    "slug": "shortest-subarray-to-be-removed-to-make-array-sorted",
+    "reasonEN": "A medium ordered-array problem that combines monotonic prefix/suffix detection with two pointers or binary search. Joining the retained sides while preserving order is the main challenge and a valuable pattern for minimal-deletion tasks.",
+    "reasonZH": "这是一道结合单调前后缀、双指针或二分的中等有序数组题。如何连接保留的两侧并维持整体有序是关键，适合掌握最小删除类问题的通用模式。"
+  },
+  {
+    "slug": "shortest-subarray-with-or-at-least-k-i",
+    "reasonEN": "An easy bitwise sliding-window baseline problem. It introduces the monotonic behavior of bitwise OR and trains direct window evaluation, providing the conceptual setup for the optimized follow-up.",
+    "reasonZH": "这是一道简单的位运算滑动窗口基础题。它引入按位或的单调性质并训练直接评估窗口，为理解后续优化版本建立概念基础。"
+  },
+  {
+    "slug": "shortest-subarray-with-or-at-least-k-ii",
+    "reasonEN": "This medium sliding-window problem requires maintaining bit frequencies so OR can be updated when the left boundary moves. It is a key exercise in making a non-invertible aggregate support efficient deletions.",
+    "reasonZH": "这道中等滑动窗口题需要维护各二进制位频次，才能在左边界移动时更新按位或。它重点训练如何让原本不可逆的聚合操作支持高效删除。"
+  },
+  {
+    "slug": "shortest-subarray-with-sum-at-least-k",
+    "reasonEN": "A hard prefix-sum and monotonic-queue benchmark that remains valid with negative values. Maintaining increasing prefix sums and removing dominated candidates teaches one of the most important deque optimization patterns.",
+    "reasonZH": "这是一道在含负数场景下仍然成立的困难前缀和单调队列代表题。维护递增前缀和并移除被支配候选，能掌握最重要的双端队列优化模式之一。"
+  },
+  {
+    "slug": "shortest-supersequence-lcci",
+    "reasonEN": "A medium minimum-cover sliding-window problem over an array. Frequency deficits determine when a window is valid, and greedy shrinking trains the standard invariant behind shortest covering-range algorithms.",
+    "reasonZH": "这是一道数组上的中等最小覆盖滑动窗口题。通过频次缺口判断窗口是否合法，再贪心收缩窗口，训练最短覆盖区间算法的标准不变量。"
+  },
+  {
+    "slug": "shortest-uncommon-substring-in-an-array",
+    "reasonEN": "A medium string-indexing problem using hashes or tries to distinguish local substrings from shared ones. Enumerating candidates by length while tracking ownership develops a practical approach to uniqueness queries across multiple strings.",
+    "reasonZH": "这是一道用哈希或字典树区分局部子串与共享子串的中等字符串索引题。按长度枚举候选并记录归属，能训练多字符串唯一性查询的实用处理方法。"
+  }
+]

@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "minimum-deletions-to-make-array-beautiful",
+    "reasonEN": "A medium greedy subsequence-construction problem; scan in pairs and discard only elements that violate the required parity-position relation; it teaches maintaining output invariants while minimizing removals.",
+    "reasonZH": "中等难度的贪心子序列构造题，按成对位置扫描，只删除破坏位置关系的元素；训练在最少删除下维护输出不变量；适合巩固序列贪心。"
+  },
+  {
+    "slug": "minimum-deletions-to-make-array-divisible",
+    "reasonEN": "A hard number-theory filtering problem; compute the gcd of the target array and find the first sorted candidate that divides it; it connects divisibility constraints with a minimal-deletion ordering argument.",
+    "reasonZH": "困难的数论筛选题，先计算目标数组的最大公约数，再在排序候选中寻找首个能整除它的值；训练整除约束与最少删除排序论证的结合。"
+  },
+  {
+    "slug": "minimum-deletions-to-make-character-frequencies-unique",
+    "reasonEN": "A medium frequency greedy problem; lower colliding counts until each positive frequency is unused; it practices resolving resource conflicts with locally minimal reductions.",
+    "reasonZH": "中等难度的频次贪心题，将冲突频次不断降低直到每个正频次唯一；训练用局部最小削减解决资源冲突；是哈希统计贪心的典型题。"
+  },
+  {
+    "slug": "minimum-deletions-to-make-string-balanced",
+    "reasonEN": "A medium string DP problem; balance the cost of deleting earlier B characters against deleting the current A character; it develops one-pass state compression for ordered-character constraints.",
+    "reasonZH": "中等难度的字符串动态规划题，需要权衡删除此前 B 与删除当前 A 的代价；训练有序字符约束下的一次扫描状态压缩；是字符串 DP 的经典模型。"
+  },
+  {
+    "slug": "minimum-deletions-to-make-string-k-special",
+    "reasonEN": "A medium frequency-range greedy problem; enumerate a base frequency and delete counts that fall outside its permitted K-width band; it teaches converting a global spread condition into sorted threshold choices.",
+    "reasonZH": "中等难度的频次范围贪心题，枚举基准频次并删除落在允许 K 宽度区间外的计数；训练将全局差距条件转化为排序阈值选择；建模价值很高。"
+  },
+  {
+    "slug": "minimum-depth-of-binary-tree",
+    "reasonEN": "An easy tree traversal problem; use BFS to stop at the first leaf or DFS with careful single-child handling; it highlights why minimum depth is not a naive height calculation.",
+    "reasonZH": "简单的树遍历题，可用 BFS 在第一个叶子处停止，或用 DFS 谨慎处理单子节点；训练理解最小深度并非直接取子树最小高度；是树边界题的基础。"
+  },
+  {
+    "slug": "minimum-difference-between-highest-and-lowest-of-k-scores",
+    "reasonEN": "An easy sort-and-window problem; inspect every sorted block of size k and compare its endpoints; it demonstrates how ordering makes group spread measurable in constant time per window.",
+    "reasonZH": "简单的排序窗口题，检查排序后每个长度为 k 的连续块并比较两端；训练有序性如何让分组跨度可被快速计算；是定长窗口入门题。"
+  },
+  {
+    "slug": "minimum-difference-between-largest-and-smallest-value-in-three-moves",
+    "reasonEN": "A medium extrema-removal greedy problem; after sorting, enumerate the few ways to remove values from the two ends; it teaches reducing a seemingly broad operation space to boundary cases.",
+    "reasonZH": "中等难度的极值删除贪心题，排序后枚举从两端删除元素的少数方案；训练将看似庞大的操作空间缩减为边界情形；很适合培养化简能力。"
+  },
+  {
+    "slug": "minimum-difference-in-sums-after-removal-of-elements",
+    "reasonEN": "A hard dual-heap optimization problem; maintain the smallest possible left selection and largest possible right selection around every split; it develops prefix-suffix optimization with complementary priority queues.",
+    "reasonZH": "困难的双堆优化题，围绕每个切分点维护左侧最小可选和与右侧最大可选和；训练前后缀优化与互补优先队列；是堆综合题的代表。"
+  },
+  {
+    "slug": "minimum-difficulty-of-a-job-schedule",
+    "reasonEN": "A hard partition DP problem; split jobs into ordered days while carrying the maximum difficulty of the current segment; it reinforces state design for contiguous scheduling constraints.",
+    "reasonZH": "困难的分段动态规划题，将任务按顺序切分到各天，并维护当前段的最大难度；训练连续分段约束下的状态设计；是调度 DP 的经典题。"
+  },
+  {
+    "slug": "minimum-discards-to-balance-inventory",
+    "reasonEN": "A medium counting and sliding-window problem; track inventory frequencies across candidate ranges and simulate the minimum discards needed for balance; it practices converting inventory rules into window validity.",
+    "reasonZH": "中等难度的计数滑动窗口题，维护候选范围内的库存频次并模拟达到平衡所需的最少丢弃；训练将库存规则转化为窗口有效性；适合掌握统计建模。"
+  },
+  {
+    "slug": "minimum-distance-between-bst-nodes",
+    "reasonEN": "An easy BST inorder-traversal problem; compare consecutive visited values in sorted order; it reinforces the direct link between tree ordering and adjacent-difference optimization.",
+    "reasonZH": "简单的 BST 中序遍历题，在有序访问序列中比较相邻值；训练二叉搜索树顺序性质与相邻差值优化的直接联系；是 BST 基础应用。"
+  },
+  {
+    "slug": "minimum-distance-between-three-equal-elements-i",
+    "reasonEN": "An easy hash-map enumeration problem; store occurrence positions for each value and evaluate triples as they appear; it practices grouping equal elements before measuring index spans.",
+    "reasonZH": "简单的哈希表枚举题，按值记录出现位置并在形成三元组时计算跨度；训练先分组相等元素再衡量下标距离；适合巩固位置统计。"
+  },
+  {
+    "slug": "minimum-distance-between-three-equal-elements-ii",
+    "reasonEN": "A medium streaming frequency-position problem; retain just the relevant recent occurrences for every value and update the best triple span online; it develops memory-efficient occurrence tracking at scale.",
+    "reasonZH": "中等难度的流式频次位置题，为每个值仅保留必要的最近出现位置并在线更新最优三元组跨度；训练大规模数据下的精简位置维护。"
+  },
+  {
+    "slug": "minimum-distance-to-the-target-element",
+    "reasonEN": "An easy linear array scan; compare every target occurrence with the start index and retain the smallest distance; it reinforces straightforward predicate filtering and minimum tracking.",
+    "reasonZH": "简单的线性数组扫描题，比较每个目标元素位置与起点的距离并维护最小值；训练谓词筛选与最值维护；适合巩固基础遍历。"
+  },
+  {
+    "slug": "minimum-distance-to-type-a-word-using-two-fingers",
+    "reasonEN": "A hard keyboard-state DP problem; track one finger explicitly while inferring the other from the typed prefix, then choose the cheaper move; it is a superb exercise in reducing symmetric state dimensions.",
+    "reasonZH": "困难的键盘状态动态规划题，显式记录一根手指位置并由已输入前缀推断另一根，再选择较小移动代价；训练对称状态降维；是状态压缩 DP 的优秀代表。"
+  },
+  {
+    "slug": "minimum-division-operations-to-make-array-non-decreasing",
+    "reasonEN": "A medium right-to-left greedy number-theory problem; reduce a violating value through its smallest prime factor only when needed; it teaches preserving a suffix invariant under restricted operations.",
+    "reasonZH": "中等难度的从右向左数论贪心题，仅在发生逆序时用最小质因子降低当前值；训练受限操作下维护后缀不变量；适合巩固质因数分解应用。"
+  },
+  {
+    "slug": "minimum-domino-rotations-for-equal-row",
+    "reasonEN": "A medium candidate-elimination greedy problem; test the only values that can fill every column and count rotations for each; it demonstrates how one local position sharply narrows global possibilities.",
+    "reasonZH": "中等难度的候选消除贪心题，只测试可能填满所有列的少数数值并统计旋转次数；训练利用一个局部位置大幅缩小全局可能性；是约束筛选经典题。"
+  },
+  {
+    "slug": "minimum-edge-reversals-so-every-node-is-reachable",
+    "reasonEN": "A hard rerooting DP problem on a directed tree; compute one root's reversal cost, then propagate answers by adjusting the traversed edge contribution; it teaches elegant all-roots optimization.",
+    "reasonZH": "困难的有向树换根 DP 题，先计算一个根的反转成本，再沿边调整贡献传播所有根的答案；训练优雅的全根优化；是换根动态规划代表题。"
+  },
+  {
+    "slug": "minimum-edge-toggles-on-a-tree",
+    "reasonEN": "A hard tree-state propagation problem; orient dependencies through traversal and resolve edge-toggle choices in an order that preserves subtree requirements; it develops constraint propagation on acyclic graphs.",
+    "reasonZH": "困难的树状态传播题，需要通过遍历确定依赖方向，并按保持子树需求的顺序处理边翻转选择；训练无环图上的约束传播；适合提升树图建模能力。"
+  },
+  {
+    "slug": "minimum-edge-weight-equilibrium-queries-in-a-tree",
+    "reasonEN": "A hard tree-path query problem; use root paths and LCA-style aggregation to count edge weights on each query path, then retain the dominant count; it develops path-frequency compression for repeated queries.",
+    "reasonZH": "困难的树路径查询题，利用根路径与 LCA 式聚合统计每条查询路径上的边权频次，再保留出现最多的权重；训练重复路径查询的频次压缩。"
+  },
+  {
+    "slug": "minimum-element-after-replacement-with-digit-sum",
+    "reasonEN": "An easy digit-processing problem; replace each value by its digit sum and track the resulting minimum; it practices translating a numeric transformation into a simple streaming aggregate.",
+    "reasonZH": "简单的数位处理题，将每个值替换为数位和后维护最小结果；训练把数字变换转化为流式聚合；适合巩固基础数学模拟。"
+  },
+  {
+    "slug": "minimum-elements-to-add-to-form-a-given-sum",
+    "reasonEN": "A medium arithmetic greedy problem; compute the remaining difference and cover it with the largest allowed contribution per added element; it teaches ceiling division as an optimal counting argument.",
+    "reasonZH": "中等难度的算术贪心题，计算剩余差值并让每个新增元素贡献允许的最大绝对值；训练用向上取整证明最少数量；是数学贪心基础题。"
+  },
+  {
+    "slug": "minimum-energy-to-maintain-brightness",
+    "reasonEN": "A medium sorting optimization problem; order brightness requirements so cumulative energy is spent in the least costly sequence; it practices recognizing when an exchange argument determines the optimal order.",
+    "reasonZH": "中等难度的排序优化题，按使累计能量最小的顺序安排亮度需求；训练识别何时可由交换论证确定最优次序；适合学习排序贪心。"
+  },
+  {
+    "slug": "minimum-equal-sum-of-two-arrays-after-replacing-zeros",
+    "reasonEN": "A medium greedy feasibility problem; compare the base sums after replacing zeros by one and use zero counts to absorb any remaining gap; it teaches separating mandatory minimum cost from adjustable capacity.",
+    "reasonZH": "中等难度的贪心可行性题，先把零替换为一比较基础和，再利用零的数量吸收剩余差距；训练区分必需最小成本与可调容量；建模非常实用。"
+  },
+  {
+    "slug": "minimum-falling-path-sum",
+    "reasonEN": "A medium matrix DP problem; transition each cell from the three reachable cells in the preceding row; it establishes the local-neighbor recurrence used in many grid path tasks.",
+    "reasonZH": "中等难度的矩阵动态规划题，每个单元从上一行三个可达邻居转移；训练局部邻接递推；是网格路径 DP 的核心模板。"
+  },
+  {
+    "slug": "minimum-falling-path-sum-ii",
+    "reasonEN": "A hard matrix DP optimization problem; retain the smallest and second-smallest values from the previous row to exclude the same column efficiently; it teaches removing a forbidden transition without quadratic rescans.",
+    "reasonZH": "困难的矩阵 DP 优化题，维护上一行最小值和次小值以高效排除同列转移；训练在禁止转移下避免二次重扫；是状态优化的典型技巧。"
+  },
+  {
+    "slug": "minimum-flips-to-make-a-or-b-equal-to-c",
+    "reasonEN": "A medium bitwise simulation problem; inspect each bit of all three numbers and count exactly the flips required by the OR truth table; it reinforces local independence across binary positions.",
+    "reasonZH": "中等难度的位运算模拟题，逐位检查三个数字并根据 OR 真值表统计必要翻转；训练二进制位之间的局部独立性；适合巩固按位逻辑。"
+  },
+  {
+    "slug": "minimum-flips-to-make-binary-string-coherent",
+    "reasonEN": "A medium binary-string consistency problem; identify the allowed local pattern and count the smallest set of character flips that repairs violations; it practices turning a string condition into local transition costs.",
+    "reasonZH": "中等难度的二进制字符串一致性题，识别允许的局部模式并统计修复违例所需的最少翻转；训练将字符串条件转化为局部转移代价；适合基础字符串优化。"
+  },
+  {
+    "slug": "minimum-fuel-cost-to-report-to-the-capital",
+    "reasonEN": "A medium tree aggregation problem; postorder-traverse the roads, sum representatives in each subtree, and charge ceiling-divided cars on every edge; it connects subtree sizes to transportation cost.",
+    "reasonZH": "中等难度的树聚合题，后序遍历道路并汇总各子树代表人数，对每条边计算向上取整后的车辆数；训练子树规模与运输成本的对应；是树 DFS 实用题。"
+  }
+]

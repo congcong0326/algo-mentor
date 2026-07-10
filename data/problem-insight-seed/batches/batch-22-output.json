@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "count-pairs-of-points-with-distance-k",
+    "reasonEN": "A medium XOR-geometry counting problem that converts the distance condition into bitwise masks, enumerates valid splits of k, and uses a frequency map to avoid quadratic pairing.",
+    "reasonZH": "中等难度的异或几何计数题，将距离条件转化为位掩码关系，枚举 k 的有效拆分并用哈希表累计频次，训练从公式到高效计数的转换能力。"
+  },
+  {
+    "slug": "count-pairs-of-similar-strings",
+    "reasonEN": "This easy bitmasking exercise encodes each word's character set as a signature, then counts equal signatures with a hash map, making it a clean introduction to set compression.",
+    "reasonZH": "这是一道位掩码入门计数题，把单词的字符集合压缩为特征签名，再通过哈希表统计相同签名，适合建立集合压缩的思维。"
+  },
+  {
+    "slug": "count-pairs-that-form-a-complete-day-i",
+    "reasonEN": "A foundational remainder-counting problem that pairs each duration with its complement modulo 24 and emphasizes updating frequencies in the correct traversal order.",
+    "reasonZH": "作为余数计数基础题，它利用模 24 的互补余数配对，并强调遍历时先查询再更新频次的顺序，是同余配对模型的典型练习。"
+  },
+  {
+    "slug": "count-pairs-that-form-a-complete-day-ii",
+    "reasonEN": "This medium-scale extension of modular pair counting requires replacing brute force with remainder frequencies, reinforcing how a bounded key space yields linear-time aggregation.",
+    "reasonZH": "这道中等题将整天配对扩展到更大数据规模，需要用余数频次数组替代暴力枚举，训练利用有限键空间完成线性聚合。"
+  },
+  {
+    "slug": "count-pairs-whose-sum-is-less-than-target",
+    "reasonEN": "A classic sorted two-pointer counting problem that turns a pair-sum inequality into a whole block of valid pairs, sharpening monotonicity reasoning and boundary handling.",
+    "reasonZH": "经典的排序双指针计数题，利用和的单调性一次计入一整段合法配对，重点训练不等式转化、指针移动与边界处理。"
+  },
+  {
+    "slug": "count-pairs-with-xor-in-a-range",
+    "reasonEN": "This hard binary-trie problem reduces a range query to two prefix-bounded XOR counts, testing bitwise trie traversal, strict inequality handling, and online pair aggregation.",
+    "reasonZH": "高难度的二进制字典树题，将区间异或计数拆成两个上界计数，系统训练按位 Trie 查询、严格不等式边界和在线统计。"
+  },
+  {
+    "slug": "count-palindromic-subsequences",
+    "reasonEN": "A hard string-DP counting problem that decomposes palindromic structure around matched endpoints and requires careful state design to prevent duplicated subsequence counts.",
+    "reasonZH": "这是一道高难度字符串动态规划计数题，围绕匹配端点拆解回文结构，并要求严谨设计状态以避免对子序列重复计数。"
+  },
+  {
+    "slug": "count-partitions-with-even-sum-difference",
+    "reasonEN": "A deceptively simple parity problem that derives the partition condition from total and prefix sums, teaching when algebra can eliminate unnecessary prefix-sum simulation.",
+    "reasonZH": "看似简单的奇偶性题，通过总和与前缀和推导分割条件，训练用代数和模运算消除不必要模拟的能力。"
+  },
+  {
+    "slug": "count-partitions-with-max-min-difference-at-most-k",
+    "reasonEN": "This medium DP-plus-window problem maintains feasible segment starts with monotonic deques and sums prior DP states, a valuable pattern for constrained partition counting.",
+    "reasonZH": "中等难度的 DP 与滑动窗口结合题，用单调队列维护满足极差限制的分段起点，再聚合历史 DP 值，是受约束分割计数的重要模型。"
+  },
+  {
+    "slug": "count-paths-that-can-form-a-palindrome-in-a-tree",
+    "reasonEN": "A hard tree-mask problem that represents root-path letter parity as XOR masks and counts masks differing by at most one bit, connecting DFS, parity invariants, and hashing.",
+    "reasonZH": "高难度树上状态压缩题，用异或掩码表示根路径字符奇偶性，统计至多一位不同的状态，串联 DFS、奇偶不变量与哈希计数。"
+  },
+  {
+    "slug": "count-paths-with-the-given-xor-value",
+    "reasonEN": "This grid DP problem tracks both position and accumulated XOR state, providing focused practice in expanding DP state dimensions while controlling transition complexity.",
+    "reasonZH": "矩阵路径动态规划题，需要同时维护位置和累计异或值状态，训练扩展 DP 维度、设计状态转移并控制复杂度。"
+  },
+  {
+    "slug": "count-prefix-and-suffix-pairs-i",
+    "reasonEN": "An easy string-matching baseline that checks prefix and suffix relationships directly, clarifying the predicate before progressing to indexed trie or hashing optimizations.",
+    "reasonZH": "字符串匹配的基础题，直接验证前缀与后缀关系，适合先厘清判定条件，再为 Trie 或哈希优化建立正确基线。"
+  },
+  {
+    "slug": "count-prefix-and-suffix-pairs-ii",
+    "reasonEN": "The hard version demands scalable string indexing through paired-prefix trie states or robust hashing, teaching how to preserve both directional constraints during online counting.",
+    "reasonZH": "高难度进阶版需要通过成对前缀 Trie 状态或可靠哈希实现可扩展索引，训练在线计数时同时保留前缀和后缀约束。"
+  },
+  {
+    "slug": "count-prefixes-of-a-given-string",
+    "reasonEN": "A concise easy string problem centered on precise prefix comparison, useful for solidifying API-level string operations and simple linear scans.",
+    "reasonZH": "简洁的字符串基础题，核心是准确完成前缀比较，适合巩固字符串 API 使用和线性扫描的实现细节。"
+  },
+  {
+    "slug": "count-prime-gap-balanced-subarrays",
+    "reasonEN": "This medium number-theory sliding-window problem combines prime preprocessing with monotonic window maintenance, making it strong practice for converting a numeric constraint into range counting.",
+    "reasonZH": "中等难度的数论滑动窗口题，结合质数预处理与窗口单调维护，将数值约束转化为区间计数，训练复合条件下的窗口建模。"
+  },
+  {
+    "slug": "count-primes",
+    "reasonEN": "A core number-theory problem built around the Sieve of Eratosthenes, reinforcing composite marking order, starting from squares, and practical complexity analysis.",
+    "reasonZH": "数论核心模板题，以埃氏筛为主线，训练合数标记顺序、从平方开始筛除的优化及实际复杂度分析。"
+  },
+  {
+    "slug": "count-residue-prefixes",
+    "reasonEN": "This easy hash-based string counting task focuses on maintaining compact prefix residue signatures, offering practical practice in incremental state updates and frequency lookup.",
+    "reasonZH": "哈希字符串计数入门题，核心是维护紧凑的前缀残差签名，适合练习增量更新状态与按签名查询频次。"
+  },
+  {
+    "slug": "count-routes-to-climb-a-rectangular-grid",
+    "reasonEN": "A hard grid-counting DP that combines matrix transitions with prefix-sum acceleration, teaching how to compress repeated route contributions without losing boundary correctness.",
+    "reasonZH": "高难度网格计数动态规划题，结合矩阵状态转移与前缀和加速，训练压缩重复路径贡献并严谨处理边界。"
+  },
+  {
+    "slug": "count-salary-categories",
+    "reasonEN": "A practical SQL aggregation exercise that uses conditional counts to produce required categories, reinforcing CASE expressions, zero-count output, and report-shaped queries.",
+    "reasonZH": "实用的 SQL 聚合题，通过条件计数生成指定分类，重点训练 CASE 表达式、零计数类别输出和报表型查询组织。"
+  },
+  {
+    "slug": "count-sequences-to-k",
+    "reasonEN": "This hard combinatorial DP problem pairs memoization with number-theoretic factor structure, challenging you to identify a compact state space before counting sequences.",
+    "reasonZH": "高难度组合 DP 题，结合记忆化搜索与数论因子结构，重点训练先提炼紧凑状态空间，再完成序列计数。"
+  },
+  {
+    "slug": "count-servers-that-communicate",
+    "reasonEN": "A medium matrix-counting problem where row and column frequencies identify communicable servers, demonstrating how aggregate statistics can replace explicit graph traversal.",
+    "reasonZH": "中等难度矩阵计数题，通过行列频次识别可通信服务器，展示如何用聚合统计替代显式图遍历。"
+  },
+  {
+    "slug": "count-sorted-vowel-strings",
+    "reasonEN": "This combinatorics-and-DP classic counts nondecreasing choices through stars and bars or compact transitions, building intuition for the equivalence between DP and closed forms.",
+    "reasonZH": "组合数学与动态规划经典题，可用隔板法或紧凑状态转移统计非递减选择，帮助理解 DP 与组合闭式之间的对应关系。"
+  },
+  {
+    "slug": "count-special-integers",
+    "reasonEN": "A canonical digit-DP problem that tracks used digits, tightness, and leading zeros, making it essential practice for counting constrained integers up to a bound.",
+    "reasonZH": "数字 DP 的代表题，需要维护已用数字、贴边状态和前导零，是掌握上界内受限整数计数的关键练习。"
+  },
+  {
+    "slug": "count-special-quadruplets",
+    "reasonEN": "An easy enumeration-to-hashing problem that progressively fixes indices and stores complementary values, illustrating how frequency tables reduce nested-loop work.",
+    "reasonZH": "从枚举到哈希优化的入门题，逐步固定下标并维护互补数值频次，直观展示频率表如何减少多层循环。"
+  },
+  {
+    "slug": "count-special-subsequences",
+    "reasonEN": "This medium sequence-counting problem uses hashable arithmetic invariants to group compatible index pairs, training the replacement of high-order enumeration with incremental aggregation.",
+    "reasonZH": "中等难度序列计数题，利用可哈希的算术不变量聚合兼容下标对，训练用增量统计替代高阶枚举。"
+  },
+  {
+    "slug": "count-special-triplets",
+    "reasonEN": "A medium frequency-counting problem that combines left and right occurrence statistics around a pivot, sharpening the standard prefix-suffix decomposition for triplet counting.",
+    "reasonZH": "中等难度频次计数题，以中心位置为枢纽结合左右出现次数，强化三元组统计中前缀与后缀分解的标准套路。"
+  },
+  {
+    "slug": "count-square-submatrices-with-all-ones",
+    "reasonEN": "A matrix-DP staple where each cell records the largest all-one square ending there and contributes that many smaller squares, teaching local-state accumulation elegantly.",
+    "reasonZH": "矩阵 DP 经典题，每个单元记录以其为右下角的最大全 1 正方形边长，并累加其包含的小正方形数量，体现局部状态累积。"
+  },
+  {
+    "slug": "count-square-sum-triples",
+    "reasonEN": "A straightforward mathematical enumeration problem that checks square-sum identities efficiently, useful for practicing constraint-based loops and integer-square validation.",
+    "reasonZH": "直接的数学枚举题，通过高效验证平方和等式完成计数，适合练习约束驱动的循环设计和整数平方判定。"
+  },
+  {
+    "slug": "count-stable-subarrays",
+    "reasonEN": "This hard prefix-sum and binary-search problem turns subarray stability into searchable prefix constraints, offering strong practice in deriving monotone query conditions.",
+    "reasonZH": "高难度前缀和与二分题，将子数组稳定性转化为可搜索的前缀约束，重点训练推导单调查询条件。"
+  },
+  {
+    "slug": "count-stepping-numbers-in-range",
+    "reasonEN": "A hard digit-DP range-counting problem that enforces adjacency constraints while managing tight bounds and leading zeros, a complete exercise in digit-DP subtraction.",
+    "reasonZH": "高难度区间数字 DP 题，在处理贴边限制和前导零的同时约束相邻数字关系，是练习前缀计数相减的完整范例。"
+  }
+]

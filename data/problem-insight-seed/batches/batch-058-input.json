@@ -1,0 +1,720 @@
+[
+  {
+    "slug": "largest-multiple-of-three",
+    "frontendDisplayId": "1363",
+    "titleEn": "Largest Multiple of Three",
+    "titleZh": "形成三的最大倍数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-multiple-of-three/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-number",
+    "frontendDisplayId": "179",
+    "titleEn": "Largest Number",
+    "titleZh": "最大数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-number-after-digit-swaps-by-parity",
+    "frontendDisplayId": "2231",
+    "titleEn": "Largest Number After Digit Swaps by Parity",
+    "titleZh": "按奇偶性交换后的最大数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-number-after-digit-swaps-by-parity/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-number-after-mutating-substring",
+    "frontendDisplayId": "1946",
+    "titleEn": "Largest Number After Mutating Substring",
+    "titleZh": "子字符串突变后可能得到的最大整数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-number-after-mutating-substring/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-number-at-least-twice-of-others",
+    "frontendDisplayId": "747",
+    "titleEn": "Largest Number At Least Twice of Others",
+    "titleZh": "至少是其他数字两倍的最大数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-number-at-least-twice-of-others/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-odd-number-in-string",
+    "frontendDisplayId": "1903",
+    "titleEn": "Largest Odd Number in String",
+    "titleZh": "字符串中的最大奇数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-odd-number-in-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-palindrome-product",
+    "frontendDisplayId": "479",
+    "titleEn": "Largest Palindrome Product",
+    "titleZh": "最大回文数乘积",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-palindrome-product/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-palindromic-number",
+    "frontendDisplayId": "2384",
+    "titleEn": "Largest Palindromic Number",
+    "titleZh": "最大回文数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Greedy",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "贪心",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-palindromic-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-perimeter-triangle",
+    "frontendDisplayId": "976",
+    "titleEn": "Largest Perimeter Triangle",
+    "titleZh": "三角形的最大周长",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-perimeter-triangle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-plus-sign",
+    "frontendDisplayId": "764",
+    "titleEn": "Largest Plus Sign",
+    "titleZh": "最大加号标志",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-plus-sign/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-positive-integer-that-exists-with-its-negative",
+    "frontendDisplayId": "2441",
+    "titleEn": "Largest Positive Integer That Exists With Its Negative",
+    "titleZh": "与对应负数同时存在的最大正整数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-positive-integer-that-exists-with-its-negative/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-prime-from-consecutive-prime-sum",
+    "frontendDisplayId": "3770",
+    "titleEn": "Largest Prime from Consecutive Prime Sum",
+    "titleZh": "可表示为连续质数和的最大质数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-prime-from-consecutive-prime-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-rectangle-in-histogram",
+    "frontendDisplayId": "84",
+    "titleEn": "Largest Rectangle in Histogram",
+    "titleZh": "柱状图中最大的矩形",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-rectangle-in-histogram/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-submatrix-with-rearrangements",
+    "frontendDisplayId": "1727",
+    "titleEn": "Largest Submatrix With Rearrangements",
+    "titleZh": "重新排列后的最大子矩阵",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Matrix",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "矩阵",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-submatrix-with-rearrangements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-substring-between-two-equal-characters",
+    "frontendDisplayId": "1624",
+    "titleEn": "Largest Substring Between Two Equal Characters",
+    "titleZh": "两个相同字符之间的最长子字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-substring-between-two-equal-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-sum-of-averages",
+    "frontendDisplayId": "813",
+    "titleEn": "Largest Sum of Averages",
+    "titleZh": "最大平均值和的分组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-sum-of-averages/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-time-for-given-digits",
+    "frontendDisplayId": "949",
+    "titleEn": "Largest Time for Given Digits",
+    "titleZh": "给定数字能组成的最大时间",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Enumeration",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "枚举",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-time-for-given-digits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-triangle-area",
+    "frontendDisplayId": "812",
+    "titleEn": "Largest Triangle Area",
+    "titleZh": "最大三角形面积",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-triangle-area/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-values-from-labels",
+    "frontendDisplayId": "1090",
+    "titleEn": "Largest Values From Labels",
+    "titleZh": "受标签影响的最大值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Greedy",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "贪心",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-values-from-labels/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "last-day-where-you-can-still-cross",
+    "frontendDisplayId": "1970",
+    "titleEn": "Last Day Where You Can Still Cross",
+    "titleZh": "你能穿过矩阵的最后一天",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/last-day-where-you-can-still-cross/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "last-moment-before-all-ants-fall-out-of-a-plank",
+    "frontendDisplayId": "1503",
+    "titleEn": "Last Moment Before All Ants Fall Out of a Plank",
+    "titleZh": "所有蚂蚁掉下来前的最后一刻",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Brainteaser",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "脑筋急转弯",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/last-moment-before-all-ants-fall-out-of-a-plank/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "last-person-to-fit-in-the-bus",
+    "frontendDisplayId": "1204",
+    "titleEn": "Last Person to Fit in the Bus",
+    "titleZh": "最后一个能进入巴士的人",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/last-person-to-fit-in-the-bus/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "last-remaining-integer-after-alternating-deletion-operations",
+    "frontendDisplayId": "3782",
+    "titleEn": "Last Remaining Integer After Alternating Deletion Operations",
+    "titleZh": "交替删除操作后最后剩下的整数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/last-remaining-integer-after-alternating-deletion-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "last-stone-weight",
+    "frontendDisplayId": "1046",
+    "titleEn": "Last Stone Weight",
+    "titleZh": "最后一块石头的重量",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/last-stone-weight/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "last-stone-weight-ii",
+    "frontendDisplayId": "1049",
+    "titleEn": "Last Stone Weight II",
+    "titleZh": "最后一块石头的重量 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/last-stone-weight-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "last-substring-in-lexicographical-order",
+    "frontendDisplayId": "1163",
+    "titleEn": "Last Substring in Lexicographical Order",
+    "titleZh": "按字典序排在最后的子串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/last-substring-in-lexicographical-order/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "last-visited-integers",
+    "frontendDisplayId": "2899",
+    "titleEn": "Last Visited Integers",
+    "titleZh": "上一个遍历的整数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/last-visited-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "latest-time-by-replacing-hidden-digits",
+    "frontendDisplayId": "1736",
+    "titleEn": "Latest Time by Replacing Hidden Digits",
+    "titleZh": "替换隐藏数字得到的最晚时间",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/latest-time-by-replacing-hidden-digits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "latest-time-you-can-obtain-after-replacing-characters",
+    "frontendDisplayId": "3114",
+    "titleEn": "Latest Time You Can Obtain After Replacing Characters",
+    "titleZh": "替换字符可以得到的最晚时间",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Enumeration",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/latest-time-you-can-obtain-after-replacing-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "leaf-similar-trees",
+    "frontendDisplayId": "872",
+    "titleEn": "Leaf-Similar Trees",
+    "titleZh": "叶子相似的树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/leaf-similar-trees/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-058",
+    "claimedAt": "2026-07-10T03:59:51.690819+00:00",
+    "completedAt": null
+  }
+]

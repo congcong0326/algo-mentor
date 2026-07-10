@@ -1,0 +1,758 @@
+[
+  {
+    "slug": "consecutive-numbers-sum",
+    "frontendDisplayId": "829",
+    "titleEn": "Consecutive Numbers Sum",
+    "titleZh": "连续整数求和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/consecutive-numbers-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "constrained-subsequence-sum",
+    "frontendDisplayId": "1425",
+    "titleEn": "Constrained Subsequence Sum",
+    "titleZh": "带限制的子序列和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Heap (Priority Queue)",
+      "Monotonic Queue",
+      "Queue",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "堆（优先队列）",
+      "单调队列",
+      "队列",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/constrained-subsequence-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-2d-grid-matching-graph-layout",
+    "frontendDisplayId": "3311",
+    "titleEn": "Construct 2D Grid Matching Graph Layout",
+    "titleZh": "构造符合图结构的二维矩阵",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Hash Table",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "哈希表",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-2d-grid-matching-graph-layout/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-binary-search-tree-from-preorder-traversal",
+    "frontendDisplayId": "1008",
+    "titleEn": "Construct Binary Search Tree from Preorder Traversal",
+    "titleZh": "前序遍历构造二叉搜索树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search Tree",
+      "Binary Tree",
+      "Monotonic Stack",
+      "Stack",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉搜索树",
+      "二叉树",
+      "单调栈",
+      "栈",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-binary-tree-from-inorder-and-postorder-traversal",
+    "frontendDisplayId": "106",
+    "titleEn": "Construct Binary Tree from Inorder and Postorder Traversal",
+    "titleZh": "从中序与后序遍历序列构造二叉树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Tree",
+      "Divide and Conquer",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉树",
+      "分治",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
+    "frontendDisplayId": "105",
+    "titleEn": "Construct Binary Tree from Preorder and Inorder Traversal",
+    "titleZh": "从前序与中序遍历序列构造二叉树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Tree",
+      "Divide and Conquer",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉树",
+      "分治",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-binary-tree-from-preorder-and-postorder-traversal",
+    "frontendDisplayId": "889",
+    "titleEn": "Construct Binary Tree from Preorder and Postorder Traversal",
+    "titleZh": "根据前序和后序遍历构造二叉树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Tree",
+      "Divide and Conquer",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉树",
+      "分治",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-binary-tree-from-preorder-and-postorder-traversal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-k-palindrome-strings",
+    "frontendDisplayId": "1400",
+    "titleEn": "Construct K Palindrome Strings",
+    "titleZh": "构造 K 个回文字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Greedy",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "贪心",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-k-palindrome-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-product-matrix",
+    "frontendDisplayId": "2906",
+    "titleEn": "Construct Product Matrix",
+    "titleZh": "构造乘积矩阵",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-product-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-quad-tree",
+    "frontendDisplayId": "427",
+    "titleEn": "Construct Quad Tree",
+    "titleZh": "建立四叉树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Matrix",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "矩阵",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-quad-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-smallest-number-from-di-string",
+    "frontendDisplayId": "2375",
+    "titleEn": "Construct Smallest Number From DI String",
+    "titleZh": "根据模式串构造最小数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Greedy",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "贪心",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-smallest-number-from-di-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-string-from-binary-tree",
+    "frontendDisplayId": "606",
+    "titleEn": "Construct String from Binary Tree",
+    "titleZh": "根据二叉树创建字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "String",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "字符串",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-string-from-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-string-with-minimum-cost",
+    "frontendDisplayId": "3213",
+    "titleEn": "Construct String with Minimum Cost",
+    "titleZh": "最小代价构造字符串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "String",
+      "Suffix Array"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "字符串",
+      "后缀数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-string-with-minimum-cost/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-string-with-repeat-limit",
+    "frontendDisplayId": "2182",
+    "titleEn": "Construct String With Repeat Limit",
+    "titleZh": "构造限制重复的字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Greedy",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "贪心",
+      "哈希表",
+      "堆（优先队列）",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-string-with-repeat-limit/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-target-array-with-multiple-sums",
+    "frontendDisplayId": "1354",
+    "titleEn": "Construct Target Array With Multiple Sums",
+    "titleZh": "多次求和构造目标数组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-target-array-with-multiple-sums/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-the-lexicographically-largest-valid-sequence",
+    "frontendDisplayId": "1718",
+    "titleEn": "Construct the Lexicographically Largest Valid Sequence",
+    "titleZh": "构建字典序最大的可行序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-the-lexicographically-largest-valid-sequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-the-longest-new-string",
+    "frontendDisplayId": "2745",
+    "titleEn": "Construct the Longest New String",
+    "titleZh": "构造最长的新字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Brainteaser",
+      "Dynamic Programming",
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "脑筋急转弯",
+      "动态规划",
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-the-longest-new-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-the-minimum-bitwise-array-i",
+    "frontendDisplayId": "3314",
+    "titleEn": "Construct the Minimum Bitwise Array I",
+    "titleZh": "构造最小位运算数组 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-the-minimum-bitwise-array-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-the-minimum-bitwise-array-ii",
+    "frontendDisplayId": "3315",
+    "titleEn": "Construct the Minimum Bitwise Array II",
+    "titleZh": "构造最小位运算数组 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-the-minimum-bitwise-array-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-the-rectangle",
+    "frontendDisplayId": "492",
+    "titleEn": "Construct the Rectangle",
+    "titleZh": "构造矩形",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-the-rectangle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-uniform-parity-array-i",
+    "frontendDisplayId": "3875",
+    "titleEn": "Construct Uniform Parity Array I",
+    "titleZh": "构造奇偶一致的数组 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-uniform-parity-array-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "construct-uniform-parity-array-ii",
+    "frontendDisplayId": "3876",
+    "titleEn": "Construct Uniform Parity Array II",
+    "titleZh": "构造奇偶一致的数组 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/construct-uniform-parity-array-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "contain-virus",
+    "frontendDisplayId": "749",
+    "titleEn": "Contain Virus",
+    "titleZh": "隔离病毒",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/contain-virus/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "container-with-most-water",
+    "frontendDisplayId": "11",
+    "titleEn": "Container With Most Water",
+    "titleZh": "盛最多水的容器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/container-with-most-water/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "contains-duplicate",
+    "frontendDisplayId": "217",
+    "titleEn": "Contains Duplicate",
+    "titleZh": "存在重复元素",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/contains-duplicate/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "contains-duplicate-ii",
+    "frontendDisplayId": "219",
+    "titleEn": "Contains Duplicate II",
+    "titleZh": "存在重复元素 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/contains-duplicate-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "contains-duplicate-iii",
+    "frontendDisplayId": "220",
+    "titleEn": "Contains Duplicate III",
+    "titleZh": "存在重复元素 III",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bucket Sort",
+      "Ordered Set",
+      "Sliding Window",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "桶排序",
+      "有序集合",
+      "滑动窗口",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/contains-duplicate-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "contiguous-array",
+    "frontendDisplayId": "525",
+    "titleEn": "Contiguous Array",
+    "titleZh": "连续数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/contiguous-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "contiguous-sequence-lcci",
+    "frontendDisplayId": "面试题 16.17",
+    "titleEn": null,
+    "titleZh": "连续数列",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "动态规划"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/contiguous-sequence-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "continuous-median-lcci",
+    "frontendDisplayId": "面试题 17.20",
+    "titleEn": null,
+    "titleZh": "连续中值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Data Stream",
+      "Design",
+      "Heap (Priority Queue)",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数据流",
+      "设计",
+      "堆（优先队列）",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/continuous-median-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-17",
+    "claimedAt": "2026-07-10T01:49:58.535116+00:00",
+    "completedAt": null
+  }
+]

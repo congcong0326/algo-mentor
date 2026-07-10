@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "evaluate-boolean-binary-tree",
+    "reasonEN": "An entry-level tree DFS exercise that trains postorder evaluation and the distinction between leaf values and operator nodes, making it a clean introduction to recursive tree semantics.",
+    "reasonZH": "入门级二叉树 DFS 题，训练后序求值以及叶子节点与运算节点的区分，是理解递归树语义的简洁起点。"
+  },
+  {
+    "slug": "evaluate-division",
+    "reasonEN": "A graph modeling problem that turns equations into weighted edges and practices DFS/BFS path-product traversal, while showing how relation queries can be solved through connectivity.",
+    "reasonZH": "图建模代表题，将等式转成带权边并训练 DFS/BFS 的路径乘积计算，帮助理解关系查询如何归结为连通性问题。"
+  },
+  {
+    "slug": "evaluate-reverse-polish-notation",
+    "reasonEN": "A classic stack simulation problem that trains operand ordering, token parsing, and immediate reduction, providing a foundational model for expression evaluators.",
+    "reasonZH": "经典栈模拟题，训练操作数顺序、记号解析与即时归约，是掌握表达式求值器实现的基础题。"
+  },
+  {
+    "slug": "evaluate-the-bracket-pairs-of-a-string",
+    "reasonEN": "A practical string-parsing exercise that combines delimiter scanning with hash lookup and boundary handling, useful for building reliable lightweight parsers.",
+    "reasonZH": "实用的字符串解析题，结合分隔符扫描、哈希查找和边界处理，适合训练轻量解析器的可靠实现。"
+  },
+  {
+    "slug": "even-odd-tree",
+    "reasonEN": "A level-order tree validation problem that pairs BFS with per-level parity and monotonicity invariants, sharpening the habit of checking multiple constraints together.",
+    "reasonZH": "层序遍历验证题，将 BFS 与每层的奇偶性、单调性不变量结合，训练同时维护多项约束的能力。"
+  },
+  {
+    "slug": "event-emitter",
+    "reasonEN": "A design-oriented implementation exercise that practices event registration, subscription removal, and ordered callback dispatch, directly reflecting a common frontend and systems abstraction.",
+    "reasonZH": "偏设计的实现题，训练事件注册、订阅移除和有序回调分发，直接对应前端与系统编程中的常见抽象。"
+  },
+  {
+    "slug": "exactly-one-consecutive-set-bits-pair",
+    "reasonEN": "A focused bit-manipulation problem that trains scanning adjacent set bits and counting pattern occurrences, reinforcing precise binary-state reasoning.",
+    "reasonZH": "聚焦位运算的基础题，训练扫描相邻置位并统计模式出现次数，强化精确的二进制状态推理。"
+  },
+  {
+    "slug": "exam-room",
+    "reasonEN": "A stateful design problem built around ordered intervals, where selecting the best seat and updating split ranges exercises priority-queue invariants and edge-case discipline.",
+    "reasonZH": "基于有序区间的状态设计题，最优座位选择与区间拆分更新会系统训练优先队列不变量和边界处理能力。"
+  },
+  {
+    "slug": "excel-sheet-column-number",
+    "reasonEN": "A concise base-conversion exercise that treats alphabetic labels as a 1-indexed numeral system, helping establish the recurrence behind positional encoding.",
+    "reasonZH": "简洁的进制转换题，将字母标签视为从 1 开始的进位制，帮助建立位置编码的递推思维。"
+  },
+  {
+    "slug": "excel-sheet-column-title",
+    "reasonEN": "A nonstandard base-conversion staple that trains the crucial decrement-before-modulo adjustment for 1-indexed digits, a frequent source of off-by-one mistakes.",
+    "reasonZH": "非标准进制转换经典题，训练一进制数字在取模前先减一的关键调整，能有效规避常见的 off-by-one 错误。"
+  },
+  {
+    "slug": "exchange-lcci",
+    "reasonEN": "A compact bit-manipulation exercise that swaps alternating bit positions through masks and shifts, making bitwise grouping and recombination concrete.",
+    "reasonZH": "紧凑的位运算题，通过掩码和移位交换相邻位，直观训练二进制分组、提取与重组。"
+  },
+  {
+    "slug": "exchange-seats",
+    "reasonEN": "A SQL transformation problem that practices conditional row remapping and the special handling of an unmatched final row, useful for mastering CASE-based updates.",
+    "reasonZH": "SQL 行转换题，训练用条件逻辑重映射行号并处理末尾未配对记录，适合掌握 CASE 驱动的数据更新。"
+  },
+  {
+    "slug": "exclusive-time-of-functions",
+    "reasonEN": "A stack-based log parsing problem that tracks nested call frames and elapsed intervals, teaching how to separate inclusive timestamps from exclusive execution time.",
+    "reasonZH": "栈式日志解析题，跟踪嵌套调用帧和时间区间，训练区分包含时间戳与函数独占执行时间。"
+  },
+  {
+    "slug": "execute-asynchronous-functions-in-parallel",
+    "reasonEN": "An asynchronous programming exercise that coordinates concurrent promises while preserving result order and failure behavior, covering a core JavaScript concurrency pattern.",
+    "reasonZH": "异步编程基础题，训练并发协调 Promise、保持结果顺序并正确传播失败，覆盖 JavaScript 并发的核心模式。"
+  },
+  {
+    "slug": "execution-of-all-suffix-instructions-staying-in-a-grid",
+    "reasonEN": "A simulation problem that repeatedly executes suffixes under grid boundaries, practicing state reset, directional updates, and careful complexity assessment.",
+    "reasonZH": "网格后缀模拟题，训练每次重置状态、更新方向坐标和评估直接模拟复杂度，适合夯实边界控制能力。"
+  },
+  {
+    "slug": "existence-of-a-substring-in-a-string-and-its-reverse",
+    "reasonEN": "A lightweight string and hashing exercise that reduces reversal symmetry to checking short patterns, illustrating how a small observation can simplify brute-force search.",
+    "reasonZH": "轻量字符串与哈希题，将反转对称性归结为短模式检查，展示如何用关键观察简化暴力搜索。"
+  },
+  {
+    "slug": "expression-add-operators",
+    "reasonEN": "A demanding backtracking problem that combines expression construction with precedence-aware running values, especially training leading-zero pruning and multiplication rollback.",
+    "reasonZH": "高质量回溯难题，结合表达式构造与优先级感知的累计值维护，重点训练前导零剪枝和乘法回溯处理。"
+  },
+  {
+    "slug": "expressive-words",
+    "reasonEN": "A run-length comparison problem that uses two pointers to align character groups and validate stretch rules, strengthening grouped-string reasoning.",
+    "reasonZH": "字符分组比较题，利用双指针对齐连续字符段并验证伸缩规则，训练按组处理字符串的思维。"
+  },
+  {
+    "slug": "extra-characters-in-a-string",
+    "reasonEN": "A string segmentation DP problem that balances skip decisions with dictionary matches, offering a strong bridge from quadratic transitions to trie-based optimization.",
+    "reasonZH": "字符串切分 DP 题，在跳过字符与匹配词典之间做状态转移，是从朴素平方转移过渡到字典树优化的好题。"
+  },
+  {
+    "slug": "fHi6rV",
+    "reasonEN": "A board-search simulation problem that explores directional captures from every placement and uses BFS-style expansion, training local state propagation on grids.",
+    "reasonZH": "棋盘搜索模拟题，从每个落点向多方向探索翻转并进行扩展，训练网格中的局部状态传播能力。"
+  },
+  {
+    "slug": "factorial-trailing-zeroes",
+    "reasonEN": "A number-theory counting classic that replaces factorial construction with counting factors of five, teaching the value of analyzing a result's prime-factor source.",
+    "reasonZH": "数论计数经典题，用统计因子 5 取代直接计算阶乘，训练从结果的质因数来源切入问题。"
+  },
+  {
+    "slug": "factorial-zeros-lcci",
+    "reasonEN": "An approachable mathematical counting problem that accumulates powers of five instead of computing huge factorials, reinforcing logarithmic decomposition.",
+    "reasonZH": "易上手的数学计数题，通过累加 5 的幂次避免计算巨大阶乘，强化对数级分解思维。"
+  },
+  {
+    "slug": "fair-candy-swap",
+    "reasonEN": "An algebra-and-hash-set exercise that derives the required exchange difference before constant-time lookup, demonstrating how equations can remove pair enumeration.",
+    "reasonZH": "代数结合哈希集合的题目，先推导所需交换差值再做常数时间查找，展示方程如何消除配对枚举。"
+  },
+  {
+    "slug": "fair-distribution-of-cookies",
+    "reasonEN": "A combinatorial backtracking problem that minimizes the maximum load and rewards symmetry pruning, making it valuable practice for branch-and-bound search design.",
+    "reasonZH": "组合回溯题，以最小化最大负载为目标并依赖对称性剪枝，是训练分支限界搜索设计的好题。"
+  },
+  {
+    "slug": "falling-squares",
+    "reasonEN": "A segment-tree interval-update problem that models stacking heights through range maximum queries and assignments, providing a concrete application of coordinate compression.",
+    "reasonZH": "线段树区间更新题，用区间最大值查询和赋值模拟堆叠高度，是坐标压缩与区间数据结构的典型应用。"
+  },
+  {
+    "slug": "fan-zhuan-dan-ci-shun-xu-lcof",
+    "reasonEN": "A two-pointer string-processing problem that normalizes spaces and reverses word order, training in-place scanning and delimiter-boundary control.",
+    "reasonZH": "双指针字符串处理题，规范空格后反转单词顺序，训练原地扫描和分隔符边界控制。"
+  },
+  {
+    "slug": "fan-zhuan-lian-biao-lcof",
+    "reasonEN": "A foundational linked-list problem that iteratively reverses pointers or applies recursion, establishing the reference-update discipline needed for more complex list operations.",
+    "reasonZH": "链表基础题，通过迭代改指针或递归完成反转，建立复杂链表操作所需的引用更新基本功。"
+  },
+  {
+    "slug": "fancy-sequence",
+    "reasonEN": "An advanced lazy-design problem that represents bulk affine updates with global coefficients and modular inverses, training algebraic state compression under online queries.",
+    "reasonZH": "高阶惰性设计题，用全局系数和模逆表示批量仿射更新，训练在线查询场景下的代数状态压缩。"
+  },
+  {
+    "slug": "faulty-keyboard",
+    "reasonEN": "A simple but instructive simulation problem that handles repeated direction reversals efficiently with a deque or parity flag, highlighting the cost of naive string concatenation.",
+    "reasonZH": "简单但有启发性的模拟题，通过双端队列或方向奇偶标记处理多次反转，突出朴素字符串拼接的性能问题。"
+  },
+  {
+    "slug": "fei-bo-na-qi-shu-lie-lcof",
+    "reasonEN": "A canonical dynamic-programming starter that reduces recursion to constant-space iteration and introduces modular arithmetic in state transitions.",
+    "reasonZH": "动态规划入门经典题，将递归化为常数空间迭代，并引入状态转移中的取模处理。"
+  }
+]

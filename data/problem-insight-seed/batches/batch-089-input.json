@@ -1,0 +1,744 @@
+[
+  {
+    "slug": "monotone-increasing-digits",
+    "frontendDisplayId": "738",
+    "titleEn": "Monotone Increasing Digits",
+    "titleZh": "单调递增的数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/monotone-increasing-digits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "monotonic-array",
+    "frontendDisplayId": "896",
+    "titleEn": "Monotonic Array",
+    "titleZh": "单调数列",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/monotonic-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "monthly-transactions-i",
+    "frontendDisplayId": "1193",
+    "titleEn": "Monthly Transactions I",
+    "titleZh": "每月交易 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/monthly-transactions-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "most-beautiful-item-for-each-query",
+    "frontendDisplayId": "2070",
+    "titleEn": "Most Beautiful Item for Each Query",
+    "titleZh": "每一个查询的最大美丽值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/most-beautiful-item-for-each-query/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "most-common-course-pairs",
+    "frontendDisplayId": "3764",
+    "titleEn": "Most Common Course Pairs",
+    "titleZh": "最常见的课程组合",
+    "difficulty": "HARD",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/most-common-course-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "most-common-word",
+    "frontendDisplayId": "819",
+    "titleEn": "Most Common Word",
+    "titleZh": "最常见的单词",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/most-common-word/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "most-frequent-even-element",
+    "frontendDisplayId": "2404",
+    "titleEn": "Most Frequent Even Element",
+    "titleZh": "出现最频繁的偶数元素",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/most-frequent-even-element/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "most-frequent-ids",
+    "frontendDisplayId": "3092",
+    "titleEn": "Most Frequent IDs",
+    "titleZh": "最高频率的 ID",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Ordered Set"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "堆（优先队列）",
+      "有序集合"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/most-frequent-ids/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "most-frequent-number-following-key-in-an-array",
+    "frontendDisplayId": "2190",
+    "titleEn": "Most Frequent Number Following Key In an Array",
+    "titleZh": "数组中紧跟 key 之后出现最频繁的数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/most-frequent-number-following-key-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "most-frequent-prime",
+    "frontendDisplayId": "3044",
+    "titleEn": "Most Frequent Prime",
+    "titleZh": "出现频率最高的质数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Enumeration",
+      "Hash Table",
+      "Math",
+      "Matrix",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "枚举",
+      "哈希表",
+      "数学",
+      "矩阵",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/most-frequent-prime/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "most-frequent-subtree-sum",
+    "frontendDisplayId": "508",
+    "titleEn": "Most Frequent Subtree Sum",
+    "titleZh": "出现次数最多的子树元素和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/most-frequent-subtree-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "most-popular-video-creator",
+    "frontendDisplayId": "2456",
+    "titleEn": "Most Popular Video Creator",
+    "titleZh": "最流行的视频创作者",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "堆（优先队列）",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/most-popular-video-creator/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "most-profit-assigning-work",
+    "frontendDisplayId": "826",
+    "titleEn": "Most Profit Assigning Work",
+    "titleZh": "安排工作以达到最大收益",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/most-profit-assigning-work/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "most-profitable-path-in-a-tree",
+    "frontendDisplayId": "2467",
+    "titleEn": "Most Profitable Path in a Tree",
+    "titleZh": "树上最大得分和路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/most-profitable-path-in-a-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "most-stones-removed-with-same-row-or-column",
+    "frontendDisplayId": "947",
+    "titleEn": "Most Stones Removed with Same Row or Column",
+    "titleZh": "移除最多的同行或同列石头",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Graph Theory",
+      "Hash Table",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "图",
+      "哈希表",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/most-stones-removed-with-same-row-or-column/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "most-visited-sector-in-a-circular-track",
+    "frontendDisplayId": "1560",
+    "titleEn": "Most Visited Sector in  a Circular Track",
+    "titleZh": "圆形赛道上经过次数最多的扇区",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/most-visited-sector-in-a-circular-track/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "move-pieces-to-obtain-a-string",
+    "frontendDisplayId": "2337",
+    "titleEn": "Move Pieces to Obtain a String",
+    "titleZh": "移动片段得到字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/move-pieces-to-obtain-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "move-zeroes",
+    "frontendDisplayId": "283",
+    "titleEn": "Move Zeroes",
+    "titleZh": "移动零",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/move-zeroes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "movement-of-robots",
+    "frontendDisplayId": "2731",
+    "titleEn": "Movement of Robots",
+    "titleZh": "移动机器人",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Brainteaser",
+      "Prefix Sum",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "脑筋急转弯",
+      "前缀和",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/movement-of-robots/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "movie-rating",
+    "frontendDisplayId": "1341",
+    "titleEn": "Movie Rating",
+    "titleZh": "电影评分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/movie-rating/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "moving-stones-until-consecutive",
+    "frontendDisplayId": "1033",
+    "titleEn": "Moving Stones Until Consecutive",
+    "titleZh": "移动石子直到连续",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Brainteaser",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "脑筋急转弯",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/moving-stones-until-consecutive/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "moving-stones-until-consecutive-ii",
+    "frontendDisplayId": "1040",
+    "titleEn": "Moving Stones Until Consecutive II",
+    "titleZh": "移动石子直到连续 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Sliding Window",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "滑动窗口",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/moving-stones-until-consecutive-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ms70jA",
+    "frontendDisplayId": "LCR 067",
+    "titleEn": null,
+    "titleZh": "数组中两个数的最大异或值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表",
+      "字典树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/ms70jA/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "multi-search-lcci",
+    "frontendDisplayId": "面试题 17.17",
+    "titleEn": null,
+    "titleZh": "多次搜索",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sliding Window",
+      "String",
+      "String Matching",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "滑动窗口",
+      "字符串",
+      "字符串匹配",
+      "字典树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/multi-search-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "multi-source-flood-fill",
+    "frontendDisplayId": "3905",
+    "titleEn": "Multi Source Flood Fill",
+    "titleZh": "多源图像渲染",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/multi-source-flood-fill/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "multiply-strings",
+    "frontendDisplayId": "43",
+    "titleEn": "Multiply Strings",
+    "titleZh": "字符串相乘",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/multiply-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "my-calendar-i",
+    "frontendDisplayId": "729",
+    "titleEn": "My Calendar I",
+    "titleZh": "我的日程安排表 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Design",
+      "Ordered Set",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "设计",
+      "有序集合",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/my-calendar-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "my-calendar-ii",
+    "frontendDisplayId": "731",
+    "titleEn": "My Calendar II",
+    "titleZh": "我的日程安排表 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Design",
+      "Ordered Set",
+      "Prefix Sum",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "设计",
+      "有序集合",
+      "前缀和",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/my-calendar-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "my-calendar-iii",
+    "frontendDisplayId": "732",
+    "titleEn": "My Calendar III",
+    "titleZh": "我的日程安排表 III",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Design",
+      "Ordered Set",
+      "Prefix Sum",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "设计",
+      "有序集合",
+      "前缀和",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/my-calendar-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "n-ary-tree-level-order-traversal",
+    "frontendDisplayId": "429",
+    "titleEn": "N-ary Tree Level Order Traversal",
+    "titleZh": "N 叉树的层序遍历",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/n-ary-tree-level-order-traversal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-089",
+    "claimedAt": "2026-07-10T06:43:23.011954+00:00",
+    "completedAt": null
+  }
+]

@@ -1,0 +1,708 @@
+[
+  {
+    "slug": "01-matrix",
+    "frontendDisplayId": "542",
+    "titleEn": "01 Matrix",
+    "titleZh": "01 矩阵",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/01-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "05ZEDJ",
+    "frontendDisplayId": "LCP 46",
+    "titleEn": null,
+    "titleZh": "志愿者调配",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Graph",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/05ZEDJ/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "0H97ZC",
+    "frontendDisplayId": "LCR 075",
+    "titleEn": null,
+    "titleZh": "数组的相对排序",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting Sort",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数排序",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/0H97ZC/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "0Zeoeg",
+    "frontendDisplayId": "LCP 73",
+    "titleEn": null,
+    "titleZh": "探险营地",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/0Zeoeg/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "0i0mDW",
+    "frontendDisplayId": "LCR 099",
+    "titleEn": null,
+    "titleZh": "最小路径和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/0i0mDW/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "0jQkd0",
+    "frontendDisplayId": "LCP 39",
+    "titleEn": null,
+    "titleZh": "无人机方阵",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "矩阵"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/0jQkd0/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "0on3uN",
+    "frontendDisplayId": "LCR 087",
+    "titleEn": null,
+    "titleZh": "复原 IP 地址",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/0on3uN/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "0ynMMM",
+    "frontendDisplayId": "LCR 039",
+    "titleEn": null,
+    "titleZh": "柱状图中最大的矩形",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/0ynMMM/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "1-bit-and-2-bit-characters",
+    "frontendDisplayId": "717",
+    "titleEn": "1-bit and 2-bit Characters",
+    "titleZh": "1 比特与 2 比特字符",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/1-bit-and-2-bit-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "132-pattern",
+    "frontendDisplayId": "456",
+    "titleEn": "132 Pattern",
+    "titleZh": "132 模式",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Monotonic Stack",
+      "Ordered Set",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "单调栈",
+      "有序集合",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/132-pattern/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "1GxJYY",
+    "frontendDisplayId": "LCP 68",
+    "titleEn": null,
+    "titleZh": "美观的花束",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "滑动窗口"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/1GxJYY/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "1fGaJU",
+    "frontendDisplayId": "LCR 007",
+    "titleEn": null,
+    "titleZh": "三数之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/1fGaJU/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof",
+    "frontendDisplayId": "LCR 162",
+    "titleEn": null,
+    "titleZh": "数字 1 的个数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "1ybDKD",
+    "frontendDisplayId": "LCP 76",
+    "titleEn": null,
+    "titleZh": "魔法棋盘",
+    "difficulty": "HARD",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/1ybDKD/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "2-keys-keyboard",
+    "frontendDisplayId": "650",
+    "titleEn": "2 Keys Keyboard",
+    "titleZh": "两个键的键盘",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/2-keys-keyboard/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "21dk04",
+    "frontendDisplayId": "LCR 097",
+    "titleEn": null,
+    "titleZh": "不同的子序列",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/21dk04/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "24-game",
+    "frontendDisplayId": "679",
+    "titleEn": "24 Game",
+    "titleZh": "24 点游戏",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/24-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "2AoeFn",
+    "frontendDisplayId": "LCR 098",
+    "titleEn": null,
+    "titleZh": "不同路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/2AoeFn/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "2VG8Kg",
+    "frontendDisplayId": "LCR 008",
+    "titleEn": null,
+    "titleZh": "长度最小的子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和",
+      "滑动窗口"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/2VG8Kg/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "2bCMpM",
+    "frontendDisplayId": "LCR 107",
+    "titleEn": null,
+    "titleZh": "01 矩阵",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/2bCMpM/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "2vYnGI",
+    "frontendDisplayId": "LCP 18",
+    "titleEn": null,
+    "titleZh": "早餐组合",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/2vYnGI/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "3Etpl5",
+    "frontendDisplayId": "LCR 049",
+    "titleEn": null,
+    "titleZh": "求根节点到叶节点数字之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/3Etpl5/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "3aqs1c",
+    "frontendDisplayId": "LCP 65",
+    "titleEn": null,
+    "titleZh": "舒适的湿度",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/3aqs1c/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "3sum",
+    "frontendDisplayId": "15",
+    "titleEn": "3Sum",
+    "titleZh": "三数之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/3sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "3sum-closest",
+    "frontendDisplayId": "16",
+    "titleEn": "3Sum Closest",
+    "titleZh": "最接近的三数之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/3sum-closest/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "3sum-with-multiplicity",
+    "frontendDisplayId": "923",
+    "titleEn": "3Sum With Multiplicity",
+    "titleZh": "三数之和的多种可能",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/3sum-with-multiplicity/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "3u1WK4",
+    "frontendDisplayId": "LCR 023",
+    "titleEn": null,
+    "titleZh": "相交链表",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Linked List",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "链表",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/3u1WK4/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "4sjJUc",
+    "frontendDisplayId": "LCR 082",
+    "titleEn": null,
+    "titleZh": "组合总和 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/4sjJUc/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "4sum",
+    "frontendDisplayId": "18",
+    "titleEn": "4Sum",
+    "titleZh": "四数之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/4sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "4sum-ii",
+    "frontendDisplayId": "454",
+    "titleEn": "4Sum II",
+    "titleZh": "四数相加 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/4sum-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-01",
+    "claimedAt": "2026-07-09T13:57:07.791143+00:00",
+    "completedAt": null
+  }
+]

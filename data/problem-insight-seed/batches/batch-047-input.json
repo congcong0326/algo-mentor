@@ -1,0 +1,718 @@
+[
+  {
+    "slug": "find-the-minimum-possible-sum-of-a-beautiful-array",
+    "frontendDisplayId": "2834",
+    "titleEn": "Find the Minimum Possible Sum of a Beautiful Array",
+    "titleZh": "找出美丽数组的最小和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-minimum-possible-sum-of-a-beautiful-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-most-common-response",
+    "frontendDisplayId": "3527",
+    "titleEn": "Find the Most Common Response",
+    "titleZh": "找到最常见的回答",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-most-common-response/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-most-competitive-subsequence",
+    "frontendDisplayId": "1673",
+    "titleEn": "Find the Most Competitive Subsequence",
+    "titleZh": "找出最具竞争力的子序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-most-competitive-subsequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-n-th-value-after-k-seconds",
+    "frontendDisplayId": "3179",
+    "titleEn": "Find the N-th Value After K Seconds",
+    "titleZh": "K 秒后第 N 个元素的值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Math",
+      "Prefix Sum",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "数学",
+      "前缀和",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-n-th-value-after-k-seconds/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-number-of-copy-arrays",
+    "frontendDisplayId": "3468",
+    "titleEn": "Find the Number of Copy Arrays",
+    "titleZh": "可行数组的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-number-of-copy-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-number-of-distinct-colors-among-the-balls",
+    "frontendDisplayId": "3160",
+    "titleEn": "Find the Number of Distinct Colors Among the Balls",
+    "titleZh": "所有球里面不同颜色的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-number-of-distinct-colors-among-the-balls/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-number-of-good-pairs-i",
+    "frontendDisplayId": "3162",
+    "titleEn": "Find the Number of Good Pairs I",
+    "titleZh": "优质数对的总数 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-number-of-good-pairs-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-number-of-good-pairs-ii",
+    "frontendDisplayId": "3164",
+    "titleEn": "Find the Number of Good Pairs II",
+    "titleZh": "优质数对的总数 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-number-of-good-pairs-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-number-of-possible-ways-for-an-event",
+    "frontendDisplayId": "3317",
+    "titleEn": "Find the Number of Possible Ways for an Event",
+    "titleZh": "安排活动的方案数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-number-of-possible-ways-for-an-event/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-number-of-subarrays-where-boundary-elements-are-maximum",
+    "frontendDisplayId": "3113",
+    "titleEn": "Find the Number of Subarrays Where Boundary Elements Are Maximum",
+    "titleZh": "边界元素是最大值的子数组数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-number-of-subarrays-where-boundary-elements-are-maximum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-number-of-subsequences-with-equal-gcd",
+    "frontendDisplayId": "3336",
+    "titleEn": "Find the Number of Subsequences With Equal GCD",
+    "titleZh": "最大公约数相等的子序列数量",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-number-of-subsequences-with-equal-gcd/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-number-of-ways-to-place-people-i",
+    "frontendDisplayId": "3025",
+    "titleEn": "Find the Number of Ways to Place People I",
+    "titleZh": "人员站位的方案数 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Geometry",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "几何",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-number-of-ways-to-place-people-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-number-of-ways-to-place-people-ii",
+    "frontendDisplayId": "3027",
+    "titleEn": "Find the Number of Ways to Place People II",
+    "titleZh": "人员站位的方案数 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Geometry",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "几何",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-number-of-ways-to-place-people-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-number-of-winning-players",
+    "frontendDisplayId": "3238",
+    "titleEn": "Find the Number of Winning Players",
+    "titleZh": "求出胜利玩家的数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-number-of-winning-players/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-occurrence-of-first-almost-equal-substring",
+    "frontendDisplayId": "3303",
+    "titleEn": "Find the Occurrence of First Almost Equal Substring",
+    "titleZh": "第一个几乎相等子字符串的下标",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "String",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "字符串匹配"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-occurrence-of-first-almost-equal-substring/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-original-array-of-prefix-xor",
+    "frontendDisplayId": "2433",
+    "titleEn": "Find The Original Array of Prefix Xor",
+    "titleZh": "找出前缀异或的原始数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-original-array-of-prefix-xor/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-original-typed-string-i",
+    "frontendDisplayId": "3330",
+    "titleEn": "Find the Original Typed String I",
+    "titleZh": "找到初始输入字符串 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-original-typed-string-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-original-typed-string-ii",
+    "frontendDisplayId": "3333",
+    "titleEn": "Find the Original Typed String II",
+    "titleZh": "找到初始输入字符串 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-original-typed-string-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-peaks",
+    "frontendDisplayId": "2951",
+    "titleEn": "Find the Peaks",
+    "titleZh": "找出峰值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-peaks/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-pivot-integer",
+    "frontendDisplayId": "2485",
+    "titleEn": "Find the Pivot Integer",
+    "titleZh": "找出中枢整数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-pivot-integer/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-power-of-k-size-subarrays-i",
+    "frontendDisplayId": "3254",
+    "titleEn": "Find the Power of K-Size Subarrays I",
+    "titleZh": "长度为 K 的子数组的能量值 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-power-of-k-size-subarrays-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-power-of-k-size-subarrays-ii",
+    "frontendDisplayId": "3255",
+    "titleEn": "Find the Power of K-Size Subarrays II",
+    "titleZh": "长度为 K 的子数组的能量值 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-power-of-k-size-subarrays-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-prefix-common-array-of-two-arrays",
+    "frontendDisplayId": "2657",
+    "titleEn": "Find the Prefix Common Array of Two Arrays",
+    "titleZh": "找到两个数组的前缀公共数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-prefix-common-array-of-two-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-punishment-number-of-an-integer",
+    "frontendDisplayId": "2698",
+    "titleEn": "Find the Punishment Number of an Integer",
+    "titleZh": "求一个整数的惩罚数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-punishment-number-of-an-integer/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-safest-path-in-a-grid",
+    "frontendDisplayId": "2812",
+    "titleEn": "Find the Safest Path in a Grid",
+    "titleZh": "找出最安全路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Breadth-First Search",
+      "Heap (Priority Queue)",
+      "Matrix",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "广度优先搜索",
+      "堆（优先队列）",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-safest-path-in-a-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-score-difference-in-a-game",
+    "frontendDisplayId": "3847",
+    "titleEn": "Find the Score Difference in a Game",
+    "titleZh": "计算比赛分数差",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-score-difference-in-a-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-score-of-all-prefixes-of-an-array",
+    "frontendDisplayId": "2640",
+    "titleEn": "Find the Score of All Prefixes of an Array",
+    "titleZh": "一个数组所有前缀的分数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-score-of-all-prefixes-of-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-sequence-of-strings-appeared-on-the-screen",
+    "frontendDisplayId": "3324",
+    "titleEn": "Find the Sequence of Strings Appeared on the Screen",
+    "titleZh": "出现在屏幕上的字符串序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-sequence-of-strings-appeared-on-the-screen/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-shortest-superstring",
+    "frontendDisplayId": "943",
+    "titleEn": "Find the Shortest Superstring",
+    "titleZh": "最短超级串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-shortest-superstring/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-smallest-balanced-index",
+    "frontendDisplayId": "3862",
+    "titleEn": "Find the Smallest Balanced Index",
+    "titleZh": "找出最小平衡下标",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-smallest-balanced-index/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-047",
+    "claimedAt": "2026-07-10T03:39:14.623495+00:00",
+    "completedAt": null
+  }
+]

@@ -1,0 +1,746 @@
+[
+  {
+    "slug": "make-array-zero-by-subtracting-equal-amounts",
+    "frontendDisplayId": "2357",
+    "titleEn": "Make Array Zero by Subtracting Equal Amounts",
+    "titleZh": "使数组中所有元素都等于零",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Simulation",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表",
+      "堆（优先队列）",
+      "模拟",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-array-zero-by-subtracting-equal-amounts/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "make-costs-of-paths-equal-in-a-binary-tree",
+    "frontendDisplayId": "2673",
+    "titleEn": "Make Costs of Paths Equal in a Binary Tree",
+    "titleZh": "使二叉树所有路径值相等的最小代价",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Tree",
+      "Dynamic Programming",
+      "Greedy",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉树",
+      "动态规划",
+      "贪心",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-costs-of-paths-equal-in-a-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "make-k-subarray-sums-equal",
+    "frontendDisplayId": "2607",
+    "titleEn": "Make K-Subarray Sums Equal",
+    "titleZh": "使子数组元素和相等",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Math",
+      "Number Theory",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "数学",
+      "数论",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-k-subarray-sums-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "make-lexicographically-smallest-array-by-swapping-elements",
+    "frontendDisplayId": "2948",
+    "titleEn": "Make Lexicographically Smallest Array by Swapping Elements",
+    "titleZh": "交换得到字典序最小的数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-lexicographically-smallest-array-by-swapping-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "make-number-of-distinct-characters-equal",
+    "frontendDisplayId": "2531",
+    "titleEn": "Make Number of Distinct Characters Equal",
+    "titleZh": "使字符串中不同字符的数目相等",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-number-of-distinct-characters-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "make-string-a-subsequence-using-cyclic-increments",
+    "frontendDisplayId": "2825",
+    "titleEn": "Make String a Subsequence Using Cyclic Increments",
+    "titleZh": "循环增长使字符串子序列等于另一个字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-string-a-subsequence-using-cyclic-increments/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "make-sum-divisible-by-p",
+    "frontendDisplayId": "1590",
+    "titleEn": "Make Sum Divisible by P",
+    "titleZh": "使数组和能被 P 整除",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-sum-divisible-by-p/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "make-the-string-great",
+    "frontendDisplayId": "1544",
+    "titleEn": "Make The String Great",
+    "titleZh": "整理字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-the-string-great/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "make-the-xor-of-all-segments-equal-to-zero",
+    "frontendDisplayId": "1787",
+    "titleEn": "Make the XOR of All Segments Equal to Zero",
+    "titleZh": "使所有区间的异或结果为零",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Counting",
+      "Dynamic Programming",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "计数",
+      "动态规划",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-the-xor-of-all-segments-equal-to-zero/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "make-three-strings-equal",
+    "frontendDisplayId": "2937",
+    "titleEn": "Make Three Strings Equal",
+    "titleZh": "使三个字符串相等",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-three-strings-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "make-two-arrays-equal-by-reversing-subarrays",
+    "frontendDisplayId": "1460",
+    "titleEn": "Make Two Arrays Equal by Reversing Subarrays",
+    "titleZh": "通过翻转子数组使两个数组相等",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-two-arrays-equal-by-reversing-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "making-a-large-island",
+    "frontendDisplayId": "827",
+    "titleEn": "Making A Large Island",
+    "titleZh": "最大人工岛",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/making-a-large-island/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "making-file-names-unique",
+    "frontendDisplayId": "1487",
+    "titleEn": "Making File Names Unique",
+    "titleZh": "保证文件名唯一",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/making-file-names-unique/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "managers-with-at-least-5-direct-reports",
+    "frontendDisplayId": "570",
+    "titleEn": "Managers with at Least 5 Direct Reports",
+    "titleZh": "至少有5名直接下属的经理",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/managers-with-at-least-5-direct-reports/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "manhattan-distances-of-all-arrangements-of-pieces",
+    "frontendDisplayId": "3426",
+    "titleEn": "Manhattan Distances of All Arrangements of Pieces",
+    "titleZh": "所有安放棋子方案的曼哈顿距离",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/manhattan-distances-of-all-arrangements-of-pieces/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "map-of-highest-peak",
+    "frontendDisplayId": "1765",
+    "titleEn": "Map of Highest Peak",
+    "titleZh": "地图中的最高点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/map-of-highest-peak/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "map-sum-pairs",
+    "frontendDisplayId": "677",
+    "titleEn": "Map Sum Pairs",
+    "titleZh": "键值映射",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Hash Table",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "哈希表",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/map-sum-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "mark-elements-on-array-by-performing-queries",
+    "frontendDisplayId": "3080",
+    "titleEn": "Mark Elements on Array by Performing Queries",
+    "titleZh": "执行操作标记数组中的元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Simulation",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "堆（优先队列）",
+      "模拟",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/mark-elements-on-array-by-performing-queries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "market-analysis-i",
+    "frontendDisplayId": "1158",
+    "titleEn": "Market Analysis I",
+    "titleZh": "市场分析 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/market-analysis-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "masking-personal-information",
+    "frontendDisplayId": "831",
+    "titleEn": "Masking Personal Information",
+    "titleZh": "隐藏个人信息",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/masking-personal-information/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "master-mind-lcci",
+    "frontendDisplayId": "面试题 16.15",
+    "titleEn": null,
+    "titleZh": "珠玑妙算",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/master-mind-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "match-substring-after-replacement",
+    "frontendDisplayId": "2301",
+    "titleEn": "Match Substring After Replacement",
+    "titleZh": "替换字符后匹配",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串",
+      "字符串匹配"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/match-substring-after-replacement/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "matchsticks-to-square",
+    "frontendDisplayId": "473",
+    "titleEn": "Matchsticks to Square",
+    "titleZh": "火柴拼正方形",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "位掩码",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/matchsticks-to-square/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "matrix-block-sum",
+    "frontendDisplayId": "1314",
+    "titleEn": "Matrix Block Sum",
+    "titleZh": "矩阵区域和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/matrix-block-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "matrix-cells-in-distance-order",
+    "frontendDisplayId": "1030",
+    "titleEn": "Matrix Cells in Distance Order",
+    "titleZh": "距离顺序排列矩阵单元格",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Math",
+      "Matrix",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "数学",
+      "矩阵",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/matrix-cells-in-distance-order/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "matrix-diagonal-sum",
+    "frontendDisplayId": "1572",
+    "titleEn": "Matrix Diagonal Sum",
+    "titleZh": "矩阵对角线元素的和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/matrix-diagonal-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "matrix-similarity-after-cyclic-shifts",
+    "frontendDisplayId": "2946",
+    "titleEn": "Matrix Similarity After Cyclic Shifts",
+    "titleZh": "循环移位后的矩阵相似检查",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/matrix-similarity-after-cyclic-shifts/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "max-area-of-island",
+    "frontendDisplayId": "695",
+    "titleEn": "Max Area of Island",
+    "titleZh": "岛屿的最大面积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/max-area-of-island/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "max-black-square-lcci",
+    "frontendDisplayId": "面试题 17.23",
+    "titleEn": null,
+    "titleZh": "最大黑方阵",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/max-black-square-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "max-chunks-to-make-sorted",
+    "frontendDisplayId": "769",
+    "titleEn": "Max Chunks To Make Sorted",
+    "titleZh": "最多能完成排序的块",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Monotonic Stack",
+      "Sorting",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "单调栈",
+      "排序",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/max-chunks-to-make-sorted/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-064",
+    "claimedAt": "2026-07-10T04:11:03.150080+00:00",
+    "completedAt": null
+  }
+]

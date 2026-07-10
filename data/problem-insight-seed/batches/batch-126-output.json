@@ -1,0 +1,107 @@
+[
+  {
+    "slug": "yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof",
+    "reasonEN": "An easy math and recursion problem built on the Josephus recurrence; translating the survivor index between smaller and larger circles is a classic exercise in compact recursive reasoning.",
+    "reasonZH": "这道简单数学递归题建立在约瑟夫环递推之上；在大小不同的圆圈间转换幸存者下标，是紧凑递归推理的经典练习。"
+  },
+  {
+    "slug": "z1R5dt",
+    "reasonEN": "A medium trie-design problem for key-value prefix queries; maintaining aggregate values along character paths develops a reusable pattern for prefix-indexed services.",
+    "reasonZH": "这道中等字典树设计题用于键值前缀查询；沿字符路径维护聚合值，可训练可复用的前缀索引服务模式。"
+  },
+  {
+    "slug": "zai-pai-xu-shu-zu-zhong-cha-zhao-shu-zi-lcof",
+    "reasonEN": "An easy sorted-array problem that counts a target through boundary binary searches; locating the first and last valid positions reinforces a fundamental range-query technique.",
+    "reasonZH": "这道简单有序数组题通过边界二分统计目标出现次数；定位首个和最后一个有效位置，可巩固基础的区间查询技巧。"
+  },
+  {
+    "slug": "zero-array-transformation-i",
+    "reasonEN": "A medium array and prefix-sum problem that validates range-operation capacity; converting interval effects into a difference array is essential practice for efficient offline updates.",
+    "reasonZH": "这道中等数组前缀和题校验区间操作的可用容量；将区间影响转化为差分数组，是高效离线更新的必备训练。"
+  },
+  {
+    "slug": "zero-array-transformation-ii",
+    "reasonEN": "This medium feasibility problem combines prefix sums with binary search or two pointers; finding the earliest sufficient operation prefix develops monotonic-answer search skills.",
+    "reasonZH": "这道中等可行性题结合前缀和与二分或双指针；寻找最早足够的操作前缀，可训练单调答案搜索能力。"
+  },
+  {
+    "slug": "zero-array-transformation-iii",
+    "reasonEN": "A medium greedy interval-selection problem using sorting, heaps, and prefix accounting; retaining only the necessary coverage develops strong resource-allocation intuition.",
+    "reasonZH": "这道中等贪心区间选择题使用排序、堆和前缀统计；只保留必要覆盖，可训练强大的资源分配直觉。"
+  },
+  {
+    "slug": "zero-array-transformation-iv",
+    "reasonEN": "A medium array DP problem that models whether transformations can satisfy each target state; carefully defining feasible partial states builds disciplined constraint-DP reasoning.",
+    "reasonZH": "这道中等数组 DP 题建模变换能否满足各目标状态；严谨定义可行的部分状态，可训练约束型 DP 推理。"
+  },
+  {
+    "slug": "zero-matrix-lcci",
+    "reasonEN": "A medium matrix problem that propagates zero markers across rows and columns; contrasting auxiliary sets with in-place first-row and first-column markers develops space-optimization skill.",
+    "reasonZH": "这道中等矩阵题将零标记扩散到整行整列；对比辅助集合与首行首列原地标记，可训练空间优化能力。"
+  },
+  {
+    "slug": "zhan-de-ya-ru-dan-chu-xu-lie-lcof",
+    "reasonEN": "A medium stack-simulation problem that verifies a constrained output order; synchronizing pushes with all possible immediate pops is core practice for stack semantics.",
+    "reasonZH": "这道中等栈模拟题验证受约束的输出顺序；将入栈与所有可立即发生的出栈同步，是掌握栈语义的核心训练。"
+  },
+  {
+    "slug": "zheng-ze-biao-da-shi-pi-pei-lcof",
+    "reasonEN": "A hard string DP problem for pattern matching with wildcard repetition; separating direct matches from star transitions develops a foundational two-dimensional state recurrence.",
+    "reasonZH": "这是一道困难的字符串 DP 题，处理带重复通配符的模式匹配；区分直接匹配与星号转移，可训练基础的二维状态递推。"
+  },
+  {
+    "slug": "zhong-jian-er-cha-shu-lcof",
+    "reasonEN": "A medium divide-and-conquer tree-construction problem that uses traversal boundaries and a value index map; partitioning each subtree correctly builds essential reconstruction skills.",
+    "reasonZH": "这道中等分治建树题使用遍历边界和值索引表；正确划分每棵子树，是树重建的必备能力。"
+  },
+  {
+    "slug": "zi-fu-chuan-de-pai-lie-lcof",
+    "reasonEN": "A medium string backtracking problem that generates permutations while avoiding duplicate branches; choosing unused characters with per-level deduplication is valuable search practice.",
+    "reasonZH": "这道中等字符串回溯题生成排列并避免重复分支；通过逐层去重选择未使用字符，是重要的搜索训练。"
+  },
+  {
+    "slug": "zigzag-conversion",
+    "reasonEN": "This medium string simulation problem routes characters through rows with a changing direction; modeling row transitions cleanly reinforces structured output construction.",
+    "reasonZH": "这道中等字符串模拟题按不断变化的方向将字符分配到各行；清晰建模行间转移，可强化结构化结果构造。"
+  },
+  {
+    "slug": "zigzag-grid-traversal-with-skip",
+    "reasonEN": "An easy matrix simulation problem combining alternating row direction with skip logic; maintaining traversal parity is a concise exercise in coordinate-control accuracy.",
+    "reasonZH": "这道简单矩阵模拟题结合交替行方向与跳过逻辑；维护遍历奇偶状态，是坐标控制准确性的紧凑练习。"
+  },
+  {
+    "slug": "zlDJc7",
+    "reasonEN": "A medium BFS state-space problem that explores lock configurations by one-step digit changes; visited-state control and dead-end filtering build a standard shortest-transformation template.",
+    "reasonZH": "这道中等 BFS 状态空间题通过单步数字变化探索锁的配置；访问状态控制和死锁过滤，可建立标准的最短变换模板。"
+  },
+  {
+    "slug": "zui-chang-bu-han-zhong-fu-zi-fu-de-zi-zi-fu-chuan-lcof",
+    "reasonEN": "A classic medium sliding-window string problem that maintains uniqueness while expanding; updating the left boundary from last-seen positions is a key reusable window technique.",
+    "reasonZH": "经典的中等滑动窗口字符串题在扩展时维护唯一性；根据上次出现位置更新左边界，是可复用的窗口核心技巧。"
+  },
+  {
+    "slug": "zui-xiao-de-kge-shu-lcof",
+    "reasonEN": "An easy selection problem with sorting, heaps, and quickselect alternatives; choosing the appropriate top-K strategy develops practical time-space tradeoff judgment.",
+    "reasonZH": "这道简单选择题可用排序、堆或快速选择处理；选择合适的 Top-K 策略，可训练实际的时间空间权衡判断。"
+  },
+  {
+    "slug": "zui-xiao-ju-xing-mian-ji",
+    "reasonEN": "A hard geometry and combinatorics problem that optimizes a rectangle under point constraints; organizing coordinates and exploiting geometric structure develops advanced spatial optimization reasoning.",
+    "reasonZH": "这是一道困难的几何组合题，需要在点约束下优化矩形；组织坐标并利用几何结构，可训练进阶空间优化推理。"
+  },
+  {
+    "slug": "zui-xiao-tiao-yue-ci-shu",
+    "reasonEN": "A hard array shortest-path problem combining BFS, DP, and range acceleration; controlling reachable intervals efficiently is valuable practice for high-performance state exploration.",
+    "reasonZH": "这是一道困难的数组最短路题，结合 BFS、DP 和区间加速；高效控制可达区间，是高性能状态搜索的重要训练。"
+  },
+  {
+    "slug": "zuma-game",
+    "reasonEN": "A hard memoized search problem over string and inventory states; collapsing removable groups and caching normalized boards develops advanced branching and state-compression technique.",
+    "reasonZH": "这是一道困难的记忆化搜索题，状态包含字符串与库存；消除可移除分组并缓存规范化棋盘，可训练进阶分支搜索和状态压缩技巧。"
+  },
+  {
+    "slug": "zuo-xuan-zhuan-zi-fu-chuan-lcof",
+    "reasonEN": "An easy string rotation problem that uses modular split positions or two pointers; handling the rotation boundary cleanly reinforces cyclic sequence manipulation.",
+    "reasonZH": "这道简单字符串旋转题使用模运算切分位置或双指针；清晰处理旋转边界，可巩固循环序列操作。"
+  }
+]

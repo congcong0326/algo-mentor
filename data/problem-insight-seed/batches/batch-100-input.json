@@ -1,0 +1,710 @@
+[
+  {
+    "slug": "print-zero-even-odd",
+    "frontendDisplayId": "1116",
+    "titleEn": "Print Zero Even Odd",
+    "titleZh": "打印零与奇偶数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Concurrency"
+    ],
+    "tagLabelsZh": [
+      "多线程"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/print-zero-even-odd/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "prison-cells-after-n-days",
+    "frontendDisplayId": "957",
+    "titleEn": "Prison Cells After N Days",
+    "titleZh": "N 天后的牢房",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/prison-cells-after-n-days/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "probability-of-a-two-boxes-having-the-same-number-of-distinct-balls",
+    "frontendDisplayId": "1467",
+    "titleEn": "Probability of a Two Boxes Having The Same Number of Distinct Balls",
+    "titleZh": "两个盒子中球的颜色数相同的概率",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math",
+      "Probability and Statistics"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "组合数学",
+      "动态规划",
+      "数学",
+      "概率与统计"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/probability-of-a-two-boxes-having-the-same-number-of-distinct-balls/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "process-restricted-friend-requests",
+    "frontendDisplayId": "2076",
+    "titleEn": "Process Restricted Friend Requests",
+    "titleZh": "处理含限制条件的好友请求",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Graph Theory",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "图",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/process-restricted-friend-requests/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "process-string-with-special-operations-i",
+    "frontendDisplayId": "3612",
+    "titleEn": "Process String with Special Operations I",
+    "titleZh": "用特殊操作处理字符串 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/process-string-with-special-operations-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "process-string-with-special-operations-ii",
+    "frontendDisplayId": "3614",
+    "titleEn": "Process String with Special Operations II",
+    "titleZh": "用特殊操作处理字符串 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/process-string-with-special-operations-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "process-tasks-using-servers",
+    "frontendDisplayId": "1882",
+    "titleEn": "Process Tasks Using Servers",
+    "titleZh": "使用服务器处理任务",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/process-tasks-using-servers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "product-of-array-except-self",
+    "frontendDisplayId": "238",
+    "titleEn": "Product of Array Except Self",
+    "titleZh": "除了自身以外数组的乘积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/product-of-array-except-self/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "product-of-the-last-k-numbers",
+    "frontendDisplayId": "1352",
+    "titleEn": "Product of the Last K Numbers",
+    "titleZh": "最后 K 个数的乘积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Data Stream",
+      "Design",
+      "Math",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数据流",
+      "设计",
+      "数学",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/product-of-the-last-k-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "product-price-at-a-given-date",
+    "frontendDisplayId": "1164",
+    "titleEn": "Product Price at a Given Date",
+    "titleZh": "指定日期的产品价格",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/product-price-at-a-given-date/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "product-sales-analysis-i",
+    "frontendDisplayId": "1068",
+    "titleEn": "Product Sales Analysis I",
+    "titleZh": "产品销售分析 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/product-sales-analysis-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "product-sales-analysis-iii",
+    "frontendDisplayId": "1070",
+    "titleEn": "Product Sales Analysis III",
+    "titleZh": "产品销售分析 III",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/product-sales-analysis-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "profitable-schemes",
+    "frontendDisplayId": "879",
+    "titleEn": "Profitable Schemes",
+    "titleZh": "盈利计划",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/profitable-schemes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "programmable-robot",
+    "frontendDisplayId": "LCP 03",
+    "titleEn": null,
+    "titleZh": "机器人大冒险",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "模拟"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/programmable-robot/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "project-employees-i",
+    "frontendDisplayId": "1075",
+    "titleEn": "Project Employees I",
+    "titleZh": "项目员工 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/project-employees-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "projection-area-of-3d-shapes",
+    "frontendDisplayId": "883",
+    "titleEn": "Projection Area of 3D Shapes",
+    "titleZh": "三维形体投影面积",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Math",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "数学",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/projection-area-of-3d-shapes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "promise-time-limit",
+    "frontendDisplayId": "2637",
+    "titleEn": "Promise Time Limit",
+    "titleZh": "有时间限制的 Promise 对象",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/promise-time-limit/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "properties-graph",
+    "frontendDisplayId": "3493",
+    "titleEn": "Properties Graph",
+    "titleZh": "属性图",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Hash Table",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "哈希表",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/properties-graph/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "pseudo-palindromic-paths-in-a-binary-tree",
+    "frontendDisplayId": "1457",
+    "titleEn": "Pseudo-Palindromic Paths in a Binary Tree",
+    "titleZh": "二叉树中的伪回文路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Bit Manipulation",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "位运算",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/pseudo-palindromic-paths-in-a-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "push-dominoes",
+    "frontendDisplayId": "838",
+    "titleEn": "Push Dominoes",
+    "titleZh": "推多米诺",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/push-dominoes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "put-marbles-in-bags",
+    "frontendDisplayId": "2551",
+    "titleEn": "Put Marbles in Bags",
+    "titleZh": "将珠子放入背包中",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/put-marbles-in-bags/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "pyramid-transition-matrix",
+    "frontendDisplayId": "756",
+    "titleEn": "Pyramid Transition Matrix",
+    "titleZh": "金字塔转换矩阵",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Bit Manipulation",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "位运算",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/pyramid-transition-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "pythagorean-distance-nodes-in-a-tree",
+    "frontendDisplayId": "3820",
+    "titleEn": "Pythagorean Distance Nodes in a Tree",
+    "titleZh": "树上的勾股距离节点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/pythagorean-distance-nodes-in-a-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "qIsx9U",
+    "frontendDisplayId": "LCR 041",
+    "titleEn": null,
+    "titleZh": "数据流中的移动平均值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Data Stream",
+      "Design",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数据流",
+      "设计",
+      "队列"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/qIsx9U/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "qJnOS7",
+    "frontendDisplayId": "LCR 095",
+    "titleEn": null,
+    "titleZh": "最长公共子序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/qJnOS7/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "qi-wang-ge-shu-tong-ji",
+    "frontendDisplayId": "LCP 11",
+    "titleEn": null,
+    "titleZh": "期望个数统计",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Math",
+      "Probability and Statistics"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "数学",
+      "概率与统计"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/qi-wang-ge-shu-tong-ji/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "qie-fen-shu-zu",
+    "frontendDisplayId": "LCP 14",
+    "titleEn": null,
+    "titleZh": "切分数组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/qie-fen-shu-zu/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "qing-wa-tiao-tai-jie-wen-ti-lcof",
+    "frontendDisplayId": "LCR 127",
+    "titleEn": null,
+    "titleZh": "跳跃训练",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "记忆化"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "qiu-12n-lcof",
+    "frontendDisplayId": "LCR 189",
+    "titleEn": null,
+    "titleZh": "设计机械累加器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Brainteaser",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "脑筋急转弯",
+      "递归"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/qiu-12n-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "qn8gGX",
+    "frontendDisplayId": "LCR 061",
+    "titleEn": null,
+    "titleZh": "查找和最小的 K 对数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/qn8gGX/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-100",
+    "claimedAt": "2026-07-10T07:05:32.912590+00:00",
+    "completedAt": null
+  }
+]

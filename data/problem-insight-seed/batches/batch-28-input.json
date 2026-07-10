@@ -1,0 +1,778 @@
+[
+  {
+    "slug": "design-a-stack-with-increment-operation",
+    "frontendDisplayId": "1381",
+    "titleEn": "Design a Stack With Increment Operation",
+    "titleZh": "设计一个支持增量操作的栈",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-a-stack-with-increment-operation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-a-text-editor",
+    "frontendDisplayId": "2296",
+    "titleEn": "Design a Text Editor",
+    "titleZh": "设计一个文本编辑器",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Design",
+      "Doubly-Linked List",
+      "Linked List",
+      "Simulation",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "双向链表",
+      "链表",
+      "模拟",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-a-text-editor/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-add-and-search-words-data-structure",
+    "frontendDisplayId": "211",
+    "titleEn": "Design Add and Search Words Data Structure",
+    "titleZh": "添加与搜索单词 - 数据结构设计",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Design",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "设计",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-add-and-search-words-data-structure/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-an-atm-machine",
+    "frontendDisplayId": "2241",
+    "titleEn": "Design an ATM Machine",
+    "titleZh": "设计一个 ATM 机器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-an-atm-machine/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-an-ordered-stream",
+    "frontendDisplayId": "1656",
+    "titleEn": "Design an Ordered Stream",
+    "titleZh": "设计有序流",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Data Stream",
+      "Design",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数据流",
+      "设计",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-an-ordered-stream/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-auction-system",
+    "frontendDisplayId": "3815",
+    "titleEn": "Design Auction System",
+    "titleZh": "设计拍卖系统",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Ordered Set"
+    ],
+    "tagLabelsZh": [
+      "Design",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Ordered Set"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-auction-system/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-authentication-manager",
+    "frontendDisplayId": "1797",
+    "titleEn": "Design Authentication Manager",
+    "titleZh": "设计一个验证系统",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Doubly-Linked List",
+      "Hash Table",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "双向链表",
+      "哈希表",
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-authentication-manager/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-bitset",
+    "frontendDisplayId": "2166",
+    "titleEn": "Design Bitset",
+    "titleZh": "设计位集",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-bitset/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-browser-history",
+    "frontendDisplayId": "1472",
+    "titleEn": "Design Browser History",
+    "titleZh": "设计浏览器历史记录",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Data Stream",
+      "Design",
+      "Doubly-Linked List",
+      "Linked List",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数据流",
+      "设计",
+      "双向链表",
+      "链表",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-browser-history/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-cancellable-function",
+    "frontendDisplayId": "2650",
+    "titleEn": "Design Cancellable Function",
+    "titleZh": "设计可取消函数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-cancellable-function/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-circular-deque",
+    "frontendDisplayId": "641",
+    "titleEn": "Design Circular Deque",
+    "titleZh": "设计循环双端队列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Linked List",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "链表",
+      "队列"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-circular-deque/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-circular-queue",
+    "frontendDisplayId": "622",
+    "titleEn": "Design Circular Queue",
+    "titleZh": "设计循环队列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Linked List",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "链表",
+      "队列"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-circular-queue/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-event-manager",
+    "frontendDisplayId": "3885",
+    "titleEn": "Design Event Manager",
+    "titleZh": "设计事件管理器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Ordered Set"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希表",
+      "堆（优先队列）",
+      "有序集合"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-event-manager/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-exam-scores-tracker",
+    "frontendDisplayId": "3709",
+    "titleEn": "Design Exam Scores Tracker",
+    "titleZh": "设计考试分数记录器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Design",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "设计",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-exam-scores-tracker/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-front-middle-back-queue",
+    "frontendDisplayId": "1670",
+    "titleEn": "Design Front Middle Back Queue",
+    "titleZh": "设计前中后队列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Data Stream",
+      "Design",
+      "Doubly-Linked List",
+      "Linked List",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数据流",
+      "设计",
+      "双向链表",
+      "链表",
+      "队列"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-front-middle-back-queue/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-graph-with-shortest-path-calculator",
+    "frontendDisplayId": "2642",
+    "titleEn": "Design Graph With Shortest Path Calculator",
+    "titleZh": "设计可以求最短路径的图类",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Design",
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "图",
+      "堆（优先队列）",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-graph-with-shortest-path-calculator/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-hashmap",
+    "frontendDisplayId": "706",
+    "titleEn": "Design HashMap",
+    "titleZh": "设计哈希映射",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Function",
+      "Hash Table",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希函数",
+      "哈希表",
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-hashmap/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-hashset",
+    "frontendDisplayId": "705",
+    "titleEn": "Design HashSet",
+    "titleZh": "设计哈希集合",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Function",
+      "Hash Table",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希函数",
+      "哈希表",
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-hashset/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-linked-list",
+    "frontendDisplayId": "707",
+    "titleEn": "Design Linked List",
+    "titleZh": "设计链表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-linked-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-memory-allocator",
+    "frontendDisplayId": "2502",
+    "titleEn": "Design Memory Allocator",
+    "titleZh": "设计内存分配器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Table",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希表",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-memory-allocator/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-movie-rental-system",
+    "frontendDisplayId": "1912",
+    "titleEn": "Design Movie Rental System",
+    "titleZh": "设计电影租借系统",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Ordered Set"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希表",
+      "堆（优先队列）",
+      "有序集合"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-movie-rental-system/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-neighbor-sum-service",
+    "frontendDisplayId": "3242",
+    "titleEn": "Design Neighbor Sum Service",
+    "titleZh": "设计相邻元素求和服务",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Table",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希表",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-neighbor-sum-service/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-parking-system",
+    "frontendDisplayId": "1603",
+    "titleEn": "Design Parking System",
+    "titleZh": "设计停车系统",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Design",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "设计",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-parking-system/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-ride-sharing-system",
+    "frontendDisplayId": "3829",
+    "titleEn": "Design Ride Sharing System",
+    "titleZh": "设计共享出行系统",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Data Stream",
+      "Design",
+      "Hash Table",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "数据流",
+      "设计",
+      "哈希表",
+      "队列"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-ride-sharing-system/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-skiplist",
+    "frontendDisplayId": "1206",
+    "titleEn": "Design Skiplist",
+    "titleZh": "设计跳表",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Design",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-skiplist/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-spreadsheet",
+    "frontendDisplayId": "3484",
+    "titleEn": "Design Spreadsheet",
+    "titleZh": "设计电子表格",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Table",
+      "Matrix",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希表",
+      "矩阵",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-spreadsheet/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-task-manager",
+    "frontendDisplayId": "3408",
+    "titleEn": "Design Task Manager",
+    "titleZh": "设计任务管理器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Ordered Set"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "哈希表",
+      "堆（优先队列）",
+      "有序集合"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-task-manager/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-twitter",
+    "frontendDisplayId": "355",
+    "titleEn": "Design Twitter",
+    "titleZh": "设计推特",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "哈希表",
+      "堆（优先队列）",
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-twitter/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "design-underground-system",
+    "frontendDisplayId": "1396",
+    "titleEn": "Design Underground System",
+    "titleZh": "设计地铁系统",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/design-underground-system/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "destination-city",
+    "frontendDisplayId": "1436",
+    "titleEn": "Destination City",
+    "titleZh": "旅行终点站",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/destination-city/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-28",
+    "claimedAt": "2026-07-10T02:07:52.460971+00:00",
+    "completedAt": null
+  }
+]

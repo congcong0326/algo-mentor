@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "qoQAMX",
+    "reasonEN": "A hard state-space optimization problem built around modeling evolutionary choices and their dependencies. It develops the ability to identify compact decision states, preserve feasibility constraints, and optimize over staged transitions.",
+    "reasonZH": "这是一道困难状态空间优化题，需要对进化选择及其依赖关系建模。它训练识别紧凑决策状态、维护可行性约束，并在分阶段转移中求最优。"
+  },
+  {
+    "slug": "que-shi-de-shu-zi-lcof",
+    "reasonEN": "A sorted-array search problem that finds the first index where value and index no longer agree. It reinforces the binary-search invariant behind locating a missing element without scanning the full sequence.",
+    "reasonZH": "这是一道有序数组搜索题，寻找数值与下标首次不再一致的位置。它训练二分查找不变量，从而无需完整扫描即可定位缺失元素。"
+  },
+  {
+    "slug": "queens-that-can-attack-the-king",
+    "reasonEN": "A board-simulation problem that scans the eight ray directions from the king and stops at the first queen. It teaches directional traversal, boundary checks, and why nearest blockers determine line-of-sight results.",
+    "reasonZH": "该棋盘模拟题从国王向八个方向射线扫描，并在遇到第一枚皇后时停止。它训练方向遍历、边界检查，以及最近阻挡者决定视线结果的原理。"
+  },
+  {
+    "slug": "queries-on-a-permutation-with-key",
+    "reasonEN": "A dynamic-order query problem that can be simulated directly or accelerated with a Fenwick tree over moving positions. It develops the technique of turning move-to-front operations into rank queries and point updates.",
+    "reasonZH": "这是一道动态顺序查询题，可直接模拟，或用树状数组加速移动位置。它训练将前移操作转化为秩查询和单点更新。"
+  },
+  {
+    "slug": "queries-on-number-of-points-inside-a-circle",
+    "reasonEN": "A geometry counting exercise that compares squared distances with squared radii to avoid floating-point error. It reinforces translating geometric membership into exact integer arithmetic.",
+    "reasonZH": "该几何计数题比较距离平方与半径平方，以避免浮点误差。它训练将几何包含关系转化为精确的整数运算。"
+  },
+  {
+    "slug": "queries-quality-and-percentage",
+    "reasonEN": "A database aggregation problem that computes grouped averages and conditional percentages in one result set. It teaches combining arithmetic expressions, CASE conditions, and rounding rules in SQL summaries.",
+    "reasonZH": "该数据库聚合题在一组结果中计算分组平均值和条件百分比。它训练在 SQL 汇总中结合算术表达式、CASE 条件和舍入规则。"
+  },
+  {
+    "slug": "query-kth-smallest-trimmed-number",
+    "reasonEN": "A multi-query ordering problem where stable radix sorting can reuse progressively longer suffix keys. It teaches how fixed-width string structure enables preprocessing that avoids repeating a full comparison sort per query.",
+    "reasonZH": "这是一道多查询排序题，稳定基数排序可复用逐步变长的后缀键。它训练利用定长字符串结构预处理，避免每次查询都完整比较排序。"
+  },
+  {
+    "slug": "queue-reconstruction-by-height",
+    "reasonEN": "A greedy ordering problem that sorts taller people first and inserts each at its required index. It is a classic proof exercise: once taller people are fixed, shorter insertions cannot invalidate their counts.",
+    "reasonZH": "该贪心排序题先处理较高的人，再将其插入指定下标。它是经典证明题：高个位置固定后，插入矮个不会破坏他们前方人数。"
+  },
+  {
+    "slug": "rMeRt2",
+    "reasonEN": "This hard bitmask DP models character or fragment choices with a compact subset state. It develops the ability to encode combinatorial availability as bits and build valid strings through carefully constrained transitions.",
+    "reasonZH": "这道困难位压缩 DP 用紧凑的子集状态表示字符或片段选择。它训练用位编码组合可用性，并通过受约束转移构造合法字符串。"
+  },
+  {
+    "slug": "rabbits-in-forest",
+    "reasonEN": "A greedy grouping problem where each reported count implies a fixed maximum group size. It teaches rounding frequency totals into complete groups and recognizing when identical local answers can share one hidden category.",
+    "reasonZH": "这是一道贪心分组题，每个回答都隐含固定的最大组大小。它训练将频次总量向上补齐为完整组，并理解相同局部回答如何共享隐藏类别。"
+  },
+  {
+    "slug": "race-car",
+    "reasonEN": "A hard target-reaching DP that analyzes runs of acceleration and strategically placed reversals. It develops recurrence design around overshooting versus stopping short, rather than searching an unbounded simulation space blindly.",
+    "reasonZH": "该困难到达目标 DP 分析连续加速段和策略性反向。它训练围绕越过目标与提前停下两类情况设计递推，而非盲目搜索无界模拟空间。"
+  },
+  {
+    "slug": "random-flip-matrix",
+    "reasonEN": "A randomized design problem that samples from the remaining unflipped cells and uses a hash remapping to simulate swaps. It teaches uniform sampling without materializing or shuffling an entire large matrix.",
+    "reasonZH": "这是随机化设计题，从未翻转单元中采样，并通过哈希重映射模拟交换。它训练无需实体化或打乱整个大矩阵即可实现均匀随机抽样。"
+  },
+  {
+    "slug": "random-pick-index",
+    "reasonEN": "A reservoir-sampling problem that gives every matching index equal probability during a single scan. It provides a precise probabilistic invariant and avoids storing all candidate positions.",
+    "reasonZH": "该水塘抽样题在一次扫描中让每个匹配下标具有相同被选概率。它提供严谨的概率不变量，并避免存储所有候选位置。"
+  },
+  {
+    "slug": "random-pick-with-blacklist",
+    "reasonEN": "This hard randomized mapping problem samples uniformly from a compact valid prefix and remaps blacklisted values there to valid tail values. It is a key lesson in preserving a uniform distribution while excluding forbidden elements.",
+    "reasonZH": "这道困难随机映射题从紧凑合法前缀均匀采样，并将其中黑名单值重映射到合法尾部。它训练在排除禁用元素时仍保持均匀分布。"
+  },
+  {
+    "slug": "random-pick-with-weight",
+    "reasonEN": "A weighted-random selection problem that maps a uniform integer into prefix-sum intervals by binary search. It teaches how cumulative weights transform probability mass into deterministic searchable ranges.",
+    "reasonZH": "该加权随机选择题把均匀整数通过二分映射到前缀和区间。它训练如何将概率质量转化为可确定搜索的累积范围。"
+  },
+  {
+    "slug": "random-point-in-non-overlapping-rectangles",
+    "reasonEN": "A geometry sampling problem that weights each non-overlapping rectangle by its lattice-point count, then samples coordinates inside it. It reinforces composing two uniform choices to obtain a globally uniform distribution.",
+    "reasonZH": "该几何采样题按每个不重叠矩形的格点数加权选择，再在内部随机坐标。它训练组合两次均匀选择以得到全局均匀分布。"
+  },
+  {
+    "slug": "range-addition-ii",
+    "reasonEN": "A concise intersection-invariant problem where every incremented maximum cell lies in the common overlap of all operations. It teaches looking for shared geometry that removes the need to simulate range updates.",
+    "reasonZH": "这是一道简洁的交集不变量题，所有达到最大值的单元都位于全部操作的公共重叠区域。它训练寻找共享几何结构，从而免去区间更新模拟。"
+  },
+  {
+    "slug": "range-frequency-queries",
+    "reasonEN": "A query-design problem that stores sorted occurrence positions for each value and answers counts with two binary searches. It demonstrates how static data can trade preprocessing for fast repeated range queries.",
+    "reasonZH": "该查询设计题为每个值保存有序出现位置，并用两次二分回答频次。它展示静态数据如何通过预处理换取高效的重复区间查询。"
+  },
+  {
+    "slug": "range-module",
+    "reasonEN": "A hard interval-data-structure design problem supporting coverage additions, removals, and containment queries. It develops rigorous half-open interval semantics and the merge-split invariants required by ordered maps or segment trees.",
+    "reasonZH": "这是一道困难区间数据结构设计题，支持覆盖添加、删除和包含查询。它训练严谨的左闭右开区间语义，以及有序映射或线段树所需的合并拆分不变量。"
+  },
+  {
+    "slug": "range-product-queries-of-powers",
+    "reasonEN": "A bit-decomposition query problem that extracts set-bit powers and answers products through prefix exponents. It reinforces converting multiplicative range queries into additive prefix sums under modular arithmetic.",
+    "reasonZH": "该位分解查询题提取置位对应的二的幂，并通过前缀指数回答乘积。它训练在模运算下将乘法区间查询转化为加法前缀和。"
+  },
+  {
+    "slug": "range-sum-of-bst",
+    "reasonEN": "A BST traversal problem that prunes the entire left or right subtree when a node falls outside the target range. It teaches exploiting ordering invariants to make DFS more selective than a full tree scan.",
+    "reasonZH": "该 BST 遍历题在节点落出目标范围时剪去整个左或右子树。它训练利用有序不变量，让 DFS 比完整树扫描更具选择性。"
+  },
+  {
+    "slug": "range-sum-of-sorted-subarray-sums",
+    "reasonEN": "A subarray-sum ordering problem that exposes the link between prefix sums, sorting, and rank-based aggregation. It develops the ability to choose between direct enumeration and threshold counting based on input constraints.",
+    "reasonZH": "该子数组和排序题揭示了前缀和、排序与按排名聚合之间的联系。它训练根据数据范围在直接枚举与阈值计数之间选择方案。"
+  },
+  {
+    "slug": "range-sum-query-2d-immutable",
+    "reasonEN": "A two-dimensional prefix-sum design problem that answers any rectangle with inclusion-exclusion of four corners. It establishes the standard preprocessing tradeoff of linear construction work for constant-time immutable queries.",
+    "reasonZH": "这是二维前缀和设计题，通过四个角的容斥回答任意矩形区域。它建立标准预处理权衡：一次构建成本换取不可变查询的常数时间。"
+  },
+  {
+    "slug": "range-sum-query-immutable",
+    "reasonEN": "A foundational prefix-sum API design problem where each range sum is the difference of two cumulative totals. It reinforces endpoint conventions and the value of preprocessing when updates are absent.",
+    "reasonZH": "这是基础前缀和 API 设计题，每个区间和都是两个累计和之差。它训练端点约定，并理解没有更新时预处理的价值。"
+  },
+  {
+    "slug": "range-sum-query-mutable",
+    "reasonEN": "A dynamic range-sum problem that pairs point updates with Fenwick-tree or segment-tree queries. It is essential practice for maintaining aggregate information under change in logarithmic time.",
+    "reasonZH": "该动态区间和题将单点修改与树状数组或线段树查询结合。它是训练在变化中以对数时间维护聚合信息的关键题。"
+  },
+  {
+    "slug": "rank-from-stream-lcci",
+    "reasonEN": "A streaming order-statistics design problem that maintains frequencies and queries how many values are no greater than a target. It teaches selecting a Fenwick tree or augmented search structure for online rank maintenance.",
+    "reasonZH": "这是数据流顺序统计设计题，维护频次并查询不大于目标的元素数。它训练选择树状数组或增强搜索结构来在线维护秩。"
+  },
+  {
+    "slug": "rank-scores",
+    "reasonEN": "A SQL ranking exercise that requires dense ranks so equal scores share a rank without gaps. It teaches the semantic difference among ranking functions and how ordering rules shape analytical results.",
+    "reasonZH": "该 SQL 排名题要求使用密集排名，使相同分数共享名次且不留空档。它训练区分不同排名函数的语义，以及排序规则如何影响分析结果。"
+  },
+  {
+    "slug": "rank-teams-by-votes",
+    "reasonEN": "A custom-comparator problem that counts votes at every rank and resolves ties lexicographically. It develops multi-key ordering logic and careful construction of comparison precedence.",
+    "reasonZH": "这是一道自定义比较器题，统计各名次票数并按字典序处理平局。它训练多关键字排序逻辑，以及严谨构造比较优先级。"
+  },
+  {
+    "slug": "rank-transform-of-a-matrix",
+    "reasonEN": "This hard matrix-ordering problem processes equal values in groups, unions row-column dependencies, and updates ranks only after a group is resolved. It is a milestone exercise in combining sorting, union-find, and delayed state commits.",
+    "reasonZH": "该困难矩阵排序题按相等值分组处理，合并行列依赖，并在整组解决后才更新排名。它训练组合排序、并查集和延迟提交状态的能力。"
+  },
+  {
+    "slug": "rank-transform-of-an-array",
+    "reasonEN": "A straightforward coordinate-compression problem that sorts unique values and maps each original value to its rank. It provides a reusable preprocessing pattern for replacing arbitrary magnitudes with compact ordered indices.",
+    "reasonZH": "这是一道直接的坐标压缩题，排序去重后将原值映射为排名。它提供可复用的预处理模式，用紧凑有序下标替代任意数值范围。"
+  }
+]

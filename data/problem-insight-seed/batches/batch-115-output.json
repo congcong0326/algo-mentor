@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "stone-game-vi",
+    "reasonEN": "A medium greedy game problem. Sorting stones by combined value captures turn priority and teaches how competitive utilities produce an ordering rule.",
+    "reasonZH": "这是一道中等博弈贪心题。按双方价值之和排序能确定回合优先级，训练从竞争收益中推导排序规则。"
+  },
+  {
+    "slug": "stone-game-vii",
+    "reasonEN": "A medium interval game DP. Using score difference, prefix sums, and two endpoint choices builds the standard model for optimal adversarial play.",
+    "reasonZH": "这是一道中等区间博弈 DP 题。以分数差、前缀和和两端选择建模，能掌握最优对抗的标准状态设计。"
+  },
+  {
+    "slug": "stone-game-viii",
+    "reasonEN": "A hard prefix-sum game DP. Deriving a reverse recurrence from merge choices trains simplification of complex-looking game states.",
+    "reasonZH": "这是一道困难前缀和博弈 DP 题。从合并选择推导逆向递推，训练化简复杂博弈状态的能力。"
+  },
+  {
+    "slug": "stone-removal-game",
+    "reasonEN": "An easy math simulation game. Tracking the decreasing removal requirement and stop condition gives concise practice with deterministic turn logic.",
+    "reasonZH": "这是一道简单数学模拟博弈题。跟踪递减的移除需求与终止条件，适合练习确定性回合逻辑。"
+  },
+  {
+    "slug": "strange-printer",
+    "reasonEN": "A hard interval string DP classic. Merging equal-character print operations across split points develops nonlocal transition reasoning.",
+    "reasonZH": "这是困难区间字符串 DP 经典题。跨分割点合并相同字符的打印操作，训练非局部状态转移思维。"
+  },
+  {
+    "slug": "strange-printer-ii",
+    "reasonEN": "A hard matrix dependency problem. Turning color bounding-box overlaps into a DAG and topologically sorting it teaches geometric ordering constraints.",
+    "reasonZH": "这是一道困难矩阵依赖题。将颜色包围盒重叠转化为 DAG 并拓扑排序，训练几何关系中的顺序约束提取。"
+  },
+  {
+    "slug": "stream-of-characters",
+    "reasonEN": "A hard streaming design problem using a reversed trie. Backward suffix queries over recent input show how to adapt a dictionary for online matching.",
+    "reasonZH": "这是一道使用反向字典树的困难数据流设计题。对近期输入逆向查询后缀，训练词典结构的在线匹配应用。"
+  },
+  {
+    "slug": "strictly-palindromic-number",
+    "reasonEN": "A medium mathematical observation problem. Finding the decisive base-related counterexample is more valuable than simulating every representation.",
+    "reasonZH": "这是一道中等数学观察题。寻找进制相关的决定性反例比逐个模拟表示更重要，训练命题检验能力。"
+  },
+  {
+    "slug": "string-compression",
+    "reasonEN": "A medium in-place string problem with read and write pointers. Separating run detection from emission trains mutation control and count encoding.",
+    "reasonZH": "这是一道读写双指针的中等原地字符串题。分离连续段识别与写入，训练修改控制和计数编码。"
+  },
+  {
+    "slug": "string-compression-ii",
+    "reasonEN": "A hard string DP balancing deletions against encoding length. Modeling remaining deletions and run extensions trains high-dimensional state design.",
+    "reasonZH": "这是一道权衡删除次数与编码长度的困难字符串 DP 题。建模剩余删除和连续段延长，训练高维状态设计。"
+  },
+  {
+    "slug": "string-compression-iii",
+    "reasonEN": "A medium run-encoding simulation problem. Splitting long runs at the format limit teaches precise chunked serialization.",
+    "reasonZH": "这是一道中等游程编码模拟题。按格式上限拆分长连续段，训练精确的分块序列化处理。"
+  },
+  {
+    "slug": "string-matching-in-an-array",
+    "reasonEN": "An easy array string-matching problem. Pairwise containment checks reinforce substring operations and direct search baselines.",
+    "reasonZH": "这是一道简单数组字符串匹配题。两两检查包含关系，能巩固子串操作和直接搜索基线。"
+  },
+  {
+    "slug": "string-rotation-lcci",
+    "reasonEN": "An easy string-matching reduction. Testing containment in a doubled string after checking length turns cyclic rotation into ordinary search.",
+    "reasonZH": "这是一道简单字符串匹配归约题。先验证长度，再在双倍字符串中检查包含，将循环轮转转化为普通搜索。"
+  },
+  {
+    "slug": "string-to-integer-atoi",
+    "reasonEN": "A medium parser implementation problem. Processing whitespace, sign, digits, and overflow as states builds robust numeric-conversion habits.",
+    "reasonZH": "这是一道中等解析实现题。将空白、符号、数字和溢出作为状态处理，训练健壮的数值转换习惯。"
+  },
+  {
+    "slug": "string-to-url-lcci",
+    "reasonEN": "An easy string transformation problem. Writing backward during in-place expansion prevents overwriting unread characters and sharpens buffer handling.",
+    "reasonZH": "这是一道简单字符串转换题。原地扩容时从后向前写入可避免覆盖未读字符，训练缓冲区处理。"
+  },
+  {
+    "slug": "string-transformation",
+    "reasonEN": "A hard string-matching and DP problem. Separating valid rotations from transition counts develops algebraic state compression.",
+    "reasonZH": "这是一道困难字符串匹配与 DP 题。分离合法轮转与转移方案数，训练代数化状态压缩。"
+  },
+  {
+    "slug": "string-without-aaa-or-bbb",
+    "reasonEN": "A medium greedy construction problem with run constraints. Selecting the abundant character without forming an invalid triple trains local feasibility reasoning.",
+    "reasonZH": "这是一道带连续段限制的中等贪心构造题。在不形成非法三连的前提下选择较多字符，训练局部可行性判断。"
+  },
+  {
+    "slug": "strong-password-checker",
+    "reasonEN": "A hard greedy validation problem combining length, character classes, and repeated runs. Prioritizing deletions by their replacement savings trains global operation optimization.",
+    "reasonZH": "这是一道统筹长度、字符类别和重复段的困难贪心校验题。按替换收益安排删除操作，训练全局操作优化。"
+  },
+  {
+    "slug": "strong-password-checker-ii",
+    "reasonEN": "An easy string validation problem. Aggregating category checks and adjacent-duplicate detection in one scan builds predicate-tracking discipline.",
+    "reasonZH": "这是一道简单字符串校验题。一次扫描聚合类别检查和相邻重复检测，训练条件跟踪能力。"
+  },
+  {
+    "slug": "student-attendance-record-i",
+    "reasonEN": "An easy rule-checking string problem. Tracking total absences and consecutive lateness in one pass builds basic finite-state discipline.",
+    "reasonZH": "这是一道简单字符串规则检查题。一次遍历跟踪缺勤总数和连续迟到，训练基础有限状态维护。"
+  },
+  {
+    "slug": "student-attendance-record-ii",
+    "reasonEN": "A hard sequence-counting DP. Encoding used absences and trailing lateness yields a compact recurrence for finite-state counting.",
+    "reasonZH": "这是一道困难序列计数 DP 题。编码已用缺勤次数与末尾迟到长度，可得到紧凑的有限状态递推。"
+  },
+  {
+    "slug": "students-and-examinations",
+    "reasonEN": "An easy database aggregation problem. Constructing all student-subject pairs before a left join teaches zero-count reporting in SQL.",
+    "reasonZH": "这是一道简单数据库聚合题。先构造全部学生科目组合再左连接，训练 SQL 中零次数记录的报表模式。"
+  },
+  {
+    "slug": "sub-sort-lcci",
+    "reasonEN": "A medium minimal-range sorting problem. Detecting prefix and suffix order violations with scans or stacks identifies the smallest repair interval.",
+    "reasonZH": "这是一道中等最小排序区间题。通过扫描或单调栈定位前后缀有序性违例，找出最小修复范围。"
+  },
+  {
+    "slug": "subarray-product-less-than-k",
+    "reasonEN": "A medium positive-array sliding-window counting problem. Product monotonicity lets each valid right endpoint contribute a range of starts.",
+    "reasonZH": "这是一道正数数组上的中等滑动窗口计数题。乘积单调性使每个合法右端点贡献一段起点范围。"
+  },
+  {
+    "slug": "subarray-sum-equals-k",
+    "reasonEN": "A medium prefix-sum hash-table cornerstone that supports negative values. Counting prior needed prefixes teaches algebraic subarray counting.",
+    "reasonZH": "这是支持负数的中等前缀和哈希表基石题。统计所需历史前缀和，训练子数组计数的代数变换。"
+  },
+  {
+    "slug": "subarray-sums-divisible-by-k",
+    "reasonEN": "A medium modular prefix-sum counting problem. Normalizing remainders and counting equal classes gives a reusable divisibility technique.",
+    "reasonZH": "这是一道中等模前缀和计数题。规范化余数并统计相同余数类，能掌握子数组整除的通用技巧。"
+  },
+  {
+    "slug": "subarray-with-elements-greater-than-varying-threshold",
+    "reasonEN": "A hard threshold-range problem using monotonic stacks or Union-Find. Relating each value to its maximal supporting span trains range-feasibility reasoning.",
+    "reasonZH": "这是一道使用单调栈或并查集的困难阈值区间题。将每个值关联到最大支撑跨度，训练区间可行性思维。"
+  },
+  {
+    "slug": "subarrays-distinct-element-sum-of-squares-i",
+    "reasonEN": "An easy subarray enumeration problem with hash-table distinct counts. Direct scoring establishes the baseline before advanced range optimizations.",
+    "reasonZH": "这是一道用哈希表统计不同元素数的简单子数组枚举题。直接计算得分可建立基础，再理解高级区间优化。"
+  },
+  {
+    "slug": "subarrays-distinct-element-sum-of-squares-ii",
+    "reasonEN": "A hard range-update problem using last occurrences with Fenwick or segment trees. Updating many start positions at once trains nonlinear aggregate maintenance.",
+    "reasonZH": "这是一道结合最近出现位置与树状数组或线段树的困难区间更新题。批量更新多个起点贡献，训练非线性聚合维护。"
+  },
+  {
+    "slug": "subarrays-with-k-different-integers",
+    "reasonEN": "A hard sliding-window counting classic. Computing exactly K as at-most K minus at-most K-1 teaches a broadly reusable exact-constraint reduction.",
+    "reasonZH": "这是困难滑动窗口计数经典题。用至多 K 减至多 K-1 求恰好 K，训练精确约束计数的通用归约。"
+  }
+]

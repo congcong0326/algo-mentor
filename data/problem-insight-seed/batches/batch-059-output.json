@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "least-number-of-unique-integers-after-k-removals",
+    "reasonEN": "A medium counting-and-greedy problem that removes the cheapest frequency groups first. It trains building a frequency table, sorting marginal removal costs, and proving why local minimum-frequency choices minimize the remaining distinct values.",
+    "reasonZH": "这是一道中等难度的计数与贪心题，优先删除频次最低的元素组。它训练构建频次表、排序边际删除代价，并证明局部选择最小频次为何能最小化剩余不同整数数量。"
+  },
+  {
+    "slug": "least-operators-to-express-number",
+    "reasonEN": "This hard math DP problem represents the target through base-x digits while tracking borrow and carry alternatives. It develops memoized state design and cost comparison between positive and negative contributions, an advanced lesson in digit DP reasoning.",
+    "reasonZH": "本题是困难的数学 DP 题，通过 x 进制数位表示目标值，并追踪借位与进位两种选择。它训练记忆化状态设计，以及正负贡献的代价比较，是数位 DP 推理的进阶练习。"
+  },
+  {
+    "slug": "left-and-right-sum-differences",
+    "reasonEN": "An easy prefix-sum problem that derives each right-side sum from a running left sum and the total. It reinforces one-pass aggregate maintenance and avoids constructing redundant prefix and suffix arrays.",
+    "reasonZH": "这是一道简单的前缀和题，用运行中的左侧和与总和推导每个右侧和。它训练一次遍历维护聚合量，避免构造冗余的前缀和后缀数组。"
+  },
+  {
+    "slug": "legal-binary-search-tree-lcci",
+    "reasonEN": "A medium BST validation problem that carries strict lower and upper bounds through DFS. It trains checking global ordering constraints rather than only parent-child comparisons, a critical correctness distinction in tree validation.",
+    "reasonZH": "本题是中等难度的 BST 验证题，需要在 DFS 中传递严格的上下界。它训练检查全局有序约束而非只比较父子节点，这是树验证中至关重要的正确性区别。"
+  },
+  {
+    "slug": "lemonade-change",
+    "reasonEN": "This easy greedy simulation maintains the available denominations while serving customers in sequence. It teaches preserving scarce small bills and selecting change combinations that keep future transactions feasible.",
+    "reasonZH": "这是一道简单的贪心模拟题，按顺序服务时维护可用面额。它训练保留稀缺的小额钞票，并选择能让后续交易保持可行的找零组合。"
+  },
+  {
+    "slug": "length-of-last-word",
+    "reasonEN": "A concise easy string-scan problem that skips trailing spaces before counting the final token. It practices reverse traversal and boundary handling, which are useful for robust whitespace-sensitive parsing.",
+    "reasonZH": "本题是简洁的简单字符串扫描题，先跳过末尾空格再统计最后一个单词。它训练逆向遍历和边界处理，适合掌握可靠的空白敏感解析。"
+  },
+  {
+    "slug": "length-of-longest-fibonacci-subsequence",
+    "reasonEN": "This medium array DP problem extends a pair only when its required predecessor exists in an index map. It trains pair-state transitions, value-to-index lookup, and the relationship between additive recurrences and subsequence structure.",
+    "reasonZH": "这是一道中等难度的数组 DP 题，只有所需前驱存在于索引映射中时才能扩展数对。它训练数对状态转移、值到下标查询，以及加法递推与子序列结构之间的联系。"
+  },
+  {
+    "slug": "length-of-longest-subarray-with-at-most-k-frequency",
+    "reasonEN": "A medium variable sliding-window problem that contracts only when one value exceeds its allowed frequency. It develops frequency-map updates and a precise validity invariant, a standard pattern for longest constrained subarrays.",
+    "reasonZH": "本题是中等难度的可变滑动窗口题，只有某个值超过允许频次时才收缩窗口。它训练频次表更新和精确的有效性不变量，是最长受限子数组的标准模式。"
+  },
+  {
+    "slug": "length-of-longest-v-shaped-diagonal-segment",
+    "reasonEN": "A hard matrix DP problem that tracks diagonal direction, sequence phase, and whether the single turn has been used. It trains memoizing multidimensional movement states and handling geometric direction changes without repeated exploration.",
+    "reasonZH": "这是一道困难的矩阵 DP 题，需要跟踪对角线方向、序列阶段以及唯一转向是否已使用。它训练记忆化多维移动状态，并在不重复探索的情况下处理几何方向变化。"
+  },
+  {
+    "slug": "length-of-the-longest-alphabetical-continuous-substring",
+    "reasonEN": "An easy-to-medium string streak problem that checks whether adjacent characters advance by one alphabet position. It reinforces local-transition scanning and reset logic, a lightweight but reusable form of one-dimensional DP.",
+    "reasonZH": "本题是简单到中等难度的字符串连续段题，检查相邻字符是否按字母表位置递增一位。它训练局部转移扫描和重置逻辑，是轻量但可复用的一维 DP 形式。"
+  },
+  {
+    "slug": "length-of-the-longest-increasing-path",
+    "reasonEN": "This hard ordered-points problem reduces increasing-path constraints to a sorted sweep with binary-search LIS maintenance. It teaches tie-safe ordering, coordinate dominance reasoning, and combining prefix and suffix path information around a required point.",
+    "reasonZH": "本题是困难的有序点集题，将递增路径约束化为排序扫描与二分维护 LIS。它训练防止同值串联的安全排序、坐标支配关系推理，以及围绕指定点组合前后路径信息。"
+  },
+  {
+    "slug": "length-of-the-longest-subsequence-that-sums-to-target",
+    "reasonEN": "A medium knapsack-style DP problem that maximizes selected length for every attainable sum. It trains reverse sum iteration for zero-one selection, unreachable-state initialization, and optimizing a secondary objective under an exact-sum constraint.",
+    "reasonZH": "这是一道中等难度的背包式 DP 题，为每个可达和最大化已选长度。它训练零一选择的逆序和遍历、不可达状态初始化，以及在精确和约束下优化次级目标。"
+  },
+  {
+    "slug": "length-of-the-longest-valid-substring",
+    "reasonEN": "A hard string sliding-window problem that moves the left boundary whenever a short forbidden suffix appears. It develops bounded-length pattern checks, hash-set lookup, and the subtle rule that only recent suffixes can invalidate the current window.",
+    "reasonZH": "本题是困难的字符串滑动窗口题，短禁用后缀出现时需要移动左边界。它训练有界长度模式检查、哈希集合查询，以及只有最近后缀会使当前窗口失效这一关键规律。"
+  },
+  {
+    "slug": "letter-case-permutation",
+    "reasonEN": "A medium backtracking problem that branches only at alphabetic positions while preserving digits. It trains in-place choice and restoration or bitmask enumeration, making it a clear introduction to controlled binary decision trees.",
+    "reasonZH": "本题是中等难度的回溯题，只在字母位置分支并保持数字不变。它训练原地选择与恢复或位掩码枚举，是理解受控二叉决策树的清晰入门。"
+  },
+  {
+    "slug": "letter-combinations-of-a-phone-number",
+    "reasonEN": "A classic medium backtracking template that builds one output character per input digit. It reinforces recursion depth as construction progress, mapping lookup, and the correct empty-input boundary behavior.",
+    "reasonZH": "这是一道经典的中等难度回溯模板题，每个输入数字扩展一个输出字符。它训练将递归深度视为构造进度、映射查询，以及空输入边界的正确处理。"
+  },
+  {
+    "slug": "letter-tile-possibilities",
+    "reasonEN": "This medium counting backtracking problem generates nonempty sequences while preventing duplicate branches from repeated letters. It trains frequency-based choice enumeration and shows why state counts are often cleaner than permuting raw positions.",
+    "reasonZH": "本题是中等难度的计数回溯题，需要生成非空序列并避免重复字母导致的重复分支。它训练基于频次的选择枚举，并说明为何状态计数通常比排列原始位置更简洁。"
+  },
+  {
+    "slug": "lexicographical-numbers",
+    "reasonEN": "A medium implicit-trie traversal problem that emits decimal prefixes in preorder without sorting all integers. It trains controlled descent, sibling advancement, and backtracking when a prefix exceeds the upper bound.",
+    "reasonZH": "本题是中等难度的隐式字典树遍历题，无需排序全部整数即可按先序输出十进制前缀。它训练受控向下扩展、同层前进，以及前缀超出上界时的回退。"
+  },
+  {
+    "slug": "lexicographically-maximum-mex-array",
+    "reasonEN": "A hard greedy construction problem that manages available values and deferred candidates to maximize each earliest MEX result. It trains queue-based availability tracking and lexicographic priority decisions under global frequency constraints.",
+    "reasonZH": "这是一道困难的贪心构造题，需要管理可用值和延迟候选以最大化每个最早位置的 MEX。它训练基于队列的可用性跟踪，以及全局频次约束下的字典序优先决策。"
+  },
+  {
+    "slug": "lexicographically-minimum-string-after-removing-stars",
+    "reasonEN": "This medium greedy string problem deletes the smallest eligible prior character for every star, with a tie rule based on position. It develops character-priority management and lazy deletion, a useful pattern for online lexicographic optimization.",
+    "reasonZH": "本题是中等难度的贪心字符串题，每个星号都删除之前最小的可选字符，并按位置处理并列。它训练字符优先级管理和惰性删除，是在线字典序优化的实用模式。"
+  },
+  {
+    "slug": "lexicographically-smallest-beautiful-string",
+    "reasonEN": "A hard greedy successor-construction problem that increments the rightmost feasible character and fills the suffix minimally. It trains lexicographic carry logic and local validity checks against recent characters, a sophisticated constructive-string technique.",
+    "reasonZH": "本题是困难的贪心后继构造题，递增最右侧可行字符后用最小字符填充后缀。它训练字典序进位逻辑和针对最近字符的局部合法性检查，是高级字符串构造技巧。"
+  },
+  {
+    "slug": "lexicographically-smallest-equivalent-string",
+    "reasonEN": "This medium union-find problem merges character equivalence classes while retaining their smallest representative. It teaches component canonicalization and demonstrates how DSU can solve symbolic substitution problems, not only connectivity queries.",
+    "reasonZH": "本题是中等难度的并查集题，合并字符等价类时保留其中最小的代表元。它训练连通分量规范化，并展示并查集不仅能处理连通性查询，也能解决符号替换问题。"
+  },
+  {
+    "slug": "lexicographically-smallest-generated-string",
+    "reasonEN": "A hard greedy string-matching construction problem that satisfies forced occurrence and nonoccurrence constraints simultaneously. It trains marking fixed positions, filling flexible slots with the smallest letters, and validating overlap-sensitive patterns efficiently.",
+    "reasonZH": "本题是困难的贪心字符串匹配构造题，需要同时满足强制出现和强制不出现约束。它训练标记固定位置、用最小字符填充弹性位置，以及高效验证对重叠敏感的模式。"
+  },
+  {
+    "slug": "lexicographically-smallest-negated-permutation-that-sums-to-target",
+    "reasonEN": "This medium greedy math construction transforms sign choices into an exact subset-sum adjustment from a known base total. It develops parity feasibility checks and lexicographic-aware selection, showing how algebra can simplify permutation constraints.",
+    "reasonZH": "本题是中等难度的贪心数学构造题，将符号选择转化为从固定基准和出发的精确子集调整。它训练奇偶可行性检查和兼顾字典序的选择，展示代数如何简化排列约束。"
+  },
+  {
+    "slug": "lexicographically-smallest-palindrome",
+    "reasonEN": "An easy two-pointer greedy problem that independently minimizes every mirrored character pair. It reinforces the palindrome symmetry invariant and illustrates when local lexicographic choices are globally optimal.",
+    "reasonZH": "这是一道简单的双指针贪心题，独立最小化每一对镜像字符。它训练回文对称不变量，并说明何时局部字典序选择能够保证全局最优。"
+  },
+  {
+    "slug": "lexicographically-smallest-palindromic-permutation-greater-than-target",
+    "reasonEN": "A hard palindrome construction problem that operates on the first half, finds the next feasible multiset permutation, and mirrors it back. It trains comparison against a target, duplicate-aware next-permutation logic, and symmetry-preserving reconstruction.",
+    "reasonZH": "本题是困难的回文构造题，在前半部分上寻找可行的下一组多重集排列后再镜像还原。它训练与目标串比较、考虑重复字符的下一个排列逻辑，以及保持对称性的重建。"
+  },
+  {
+    "slug": "lexicographically-smallest-permutation-greater-than-target",
+    "reasonEN": "This medium greedy counting problem follows the target prefix while possible, then chooses the smallest larger available character and minimizes the suffix. It teaches tight-prefix reasoning and frequency-map updates for multiset lexicographic construction.",
+    "reasonZH": "这是一道中等难度的贪心计数题，在可行时跟随目标前缀，随后选择最小的更大可用字符并最小化后缀。它训练紧前缀推理和多重集字典序构造中的频次表更新。"
+  },
+  {
+    "slug": "lexicographically-smallest-string-after-a-swap",
+    "reasonEN": "An easy greedy string problem that identifies the first improving adjacent swap permitted by the parity rule. It trains recognizing that the earliest lexicographic improvement dominates later choices and enforcing operation-specific compatibility.",
+    "reasonZH": "本题是简单的贪心字符串题，需要找到满足奇偶规则的首个可改进相邻交换。它训练理解最早的字典序改进优先于后续选择，并严格遵守操作兼容条件。"
+  },
+  {
+    "slug": "lexicographically-smallest-string-after-adjacent-removals",
+    "reasonEN": "A hard interval-style string DP problem that evaluates which removals preserve future deletion opportunities while minimizing the surviving sequence. It develops feasibility states, transition ordering, and lexicographic optimization under interacting local operations.",
+    "reasonZH": "本题是困难的区间式字符串 DP 题，需要评估哪些删除会保留后续删除机会并最小化剩余序列。它训练可行性状态、转移顺序，以及相互影响的局部操作下的字典序优化。"
+  },
+  {
+    "slug": "lexicographically-smallest-string-after-applying-operations",
+    "reasonEN": "This medium state-space search problem explores reachable strings under digit additions and rotations while tracking visited states. It trains BFS or DFS enumeration, cycle avoidance, and comparing generated configurations for a global lexicographic minimum.",
+    "reasonZH": "本题是中等难度的状态空间搜索题，在数字加法与旋转操作下探索可达字符串并记录访问状态。它训练 BFS 或 DFS 枚举、避免状态循环，以及比较生成配置以取得全局字典序最小值。"
+  },
+  {
+    "slug": "lexicographically-smallest-string-after-deleting-duplicate-characters",
+    "reasonEN": "A hard greedy monotonic-stack problem that keeps one copy of each required character while removing larger reversible choices. It trains remaining-frequency tracking, membership state, and the exact pop condition behind canonical minimal subsequences.",
+    "reasonZH": "本题是困难的贪心单调栈题，需要在保留每个必需字符一份的同时移除可恢复的较大选择。它训练剩余频次跟踪、成员状态维护，以及构造规范最小子序列的精确弹栈条件。"
+  }
+]

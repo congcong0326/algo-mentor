@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "apply-discount-to-prices",
+    "reasonEN": "A medium string-processing exercise centered on token parsing, numeric validation, and formatted replacement. It builds discipline around text boundaries and output precision, which are common sources of implementation bugs.",
+    "reasonZH": "中等难度的字符串处理题，核心是分词解析、数字合法性判断和格式化替换。它能训练文本边界与输出精度控制，是提升实现严谨性的好题。"
+  },
+  {
+    "slug": "apply-operations-on-array-to-maximize-sum-of-squares",
+    "reasonEN": "A hard greedy bit-manipulation problem that turns array operations into per-bit contribution counting and value reconstruction. It is valuable for learning how to convert opaque operations into an optimal bitwise allocation model.",
+    "reasonZH": "困难级贪心与位运算题，关键是把数组操作转化为按位贡献统计与数值重构。适合训练将复杂操作抽象成最优位分配模型的能力。"
+  },
+  {
+    "slug": "apply-operations-to-an-array",
+    "reasonEN": "An easy array simulation task with a clean two-pointer finish. It reinforces in-place transformation order, zero movement, and stable traversal logic for basic implementation fluency.",
+    "reasonZH": "简单数组模拟题，配合双指针完成结果整理。它能巩固原地更新顺序、零元素移动和稳定遍历逻辑，适合作为基础实现训练。"
+  },
+  {
+    "slug": "apply-operations-to-make-all-array-elements-equal-to-zero",
+    "reasonEN": "A medium prefix-sum problem where range operation effects must be tracked efficiently. It teaches difference-array style reasoning and feasibility checks under sequential constraints.",
+    "reasonZH": "中等难度前缀和题，重点是高效维护区间操作影响。它能训练差分思维和顺序约束下的可行性判断。"
+  },
+  {
+    "slug": "apply-operations-to-make-string-empty",
+    "reasonEN": "A medium counting and hash-table problem focused on character frequencies and final-state reconstruction. It is useful for practicing how repeated deletion processes can be reduced to count and order analysis.",
+    "reasonZH": "中等难度计数与哈希题，核心在字符频次统计和最终状态还原。它适合训练将重复删除过程压缩为频次与顺序分析的思路。"
+  },
+  {
+    "slug": "apply-operations-to-make-sum-of-array-greater-than-or-equal-to-k",
+    "reasonEN": "A medium math-greedy exercise that rewards enumerating the right operation split instead of simulating blindly. It sharpens optimization intuition for small formula-driven operation models.",
+    "reasonZH": "中等难度数学贪心题，关键不是盲目模拟，而是枚举合适的操作分配。它能强化对公式化操作模型的优化直觉。"
+  },
+  {
+    "slug": "apply-operations-to-make-two-strings-equal",
+    "reasonEN": "A medium string dynamic-programming problem built around mismatch positions and transition costs. It is a strong exercise in compressing string differences before applying DP.",
+    "reasonZH": "中等难度字符串动态规划题，核心是围绕不匹配位置和转移代价建模。它适合训练先压缩字符串差异、再进行 DP 求解的思路。"
+  },
+  {
+    "slug": "apply-operations-to-maximize-frequency-score",
+    "reasonEN": "A hard sorted-array optimization problem combining prefix sums, sliding windows, and binary search. It is excellent practice for deriving window costs and maximizing a frequency-like objective under a budget.",
+    "reasonZH": "困难级排序数组优化题，融合前缀和、滑动窗口与二分查找。它很适合训练窗口代价推导，以及在预算约束下最大化频率类目标。"
+  },
+  {
+    "slug": "apply-operations-to-maximize-score",
+    "reasonEN": "A hard greedy problem that combines number theory, monotonic stacks, sorting, and contribution counting. It is valuable because it links prime-factor scoring with interval dominance and global selection strategy.",
+    "reasonZH": "困难级综合贪心题，结合数论、单调栈、排序和贡献统计。它的价值在于把质因子评分、区间支配关系和全局选择策略串联起来。"
+  },
+  {
+    "slug": "apply-transform-over-each-element-in-array",
+    "reasonEN": "An easy array transformation exercise for JavaScript-style callback thinking. It reinforces callback parameters, result construction, and functional iteration semantics.",
+    "reasonZH": "简单数组转换题，侧重 JavaScript 回调式思维。它能巩固回调参数、结果构造和函数式遍历语义。"
+  },
+  {
+    "slug": "arithmetic-slices",
+    "reasonEN": "A medium dynamic-programming and sliding-window classic based on consecutive equal differences. It teaches how local arithmetic runs accumulate into global subarray counts.",
+    "reasonZH": "中等难度动态规划与滑动窗口经典题，核心是连续相同差值的识别。它能训练如何由局部等差段累积出全局子数组数量。"
+  },
+  {
+    "slug": "arithmetic-slices-ii-subsequence",
+    "reasonEN": "A hard subsequence DP problem that tracks arithmetic differences per index. It is a milestone for understanding state maps, duplicate values, and overflow-sensitive difference handling.",
+    "reasonZH": "困难级子序列动态规划题，需要按下标维护等差差值状态。它是理解状态哈希、重复值处理和差值溢出风险的关键练习。"
+  },
+  {
+    "slug": "arithmetic-subarrays",
+    "reasonEN": "A medium query-processing problem using sorting or hash-based checks for arithmetic structure. It is useful for comparing straightforward per-query validation with more optimized property-based reasoning.",
+    "reasonZH": "中等难度查询处理题，可通过排序或哈希检查等差结构。它适合训练按查询直接验证与基于性质优化之间的取舍。"
+  },
+  {
+    "slug": "arranging-coins",
+    "reasonEN": "An easy math and binary-search problem based on triangular numbers. It helps learners practice monotonic predicates, overflow awareness, and closed-form reasoning.",
+    "reasonZH": "简单数学与二分查找题，核心是三角数模型。它能训练单调性判断、溢出意识和公式推导能力。"
+  },
+  {
+    "slug": "array-nesting",
+    "reasonEN": "A medium array-as-graph problem where indices form directed chains or cycles. It builds intuition for visited marking, DFS-style traversal, and cycle-length optimization.",
+    "reasonZH": "中等难度数组图建模题，下标关系会形成链或环。它能训练访问标记、DFS 式遍历和环长度优化思维。"
+  },
+  {
+    "slug": "array-of-doubled-pairs",
+    "reasonEN": "A medium greedy counting problem where ordering is essential, especially around negatives and zero. It is strong practice for pairing constraints with hash-table frequencies after sorting.",
+    "reasonZH": "中等难度贪心计数题，排序顺序非常关键，尤其要处理负数和零。它适合训练排序后结合哈希频次解决配对约束。"
+  },
+  {
+    "slug": "array-partition",
+    "reasonEN": "An easy greedy sorting problem with a simple but important pairing invariant. It teaches why adjacent pairing after ordering maximizes the sum of selected minima.",
+    "reasonZH": "简单贪心排序题，核心是一个清晰的配对不变量。它能帮助理解为什么排序后相邻配对可以最大化每组较小值之和。"
+  },
+  {
+    "slug": "array-prototype-last",
+    "reasonEN": "An easy JavaScript array API exercise focused on prototype extension and empty-array behavior. It is useful for practicing language-level method design and edge-case contracts.",
+    "reasonZH": "简单 JavaScript 数组 API 题，重点是原型扩展和空数组行为。它适合训练语言级方法设计与边界契约意识。"
+  },
+  {
+    "slug": "array-reduce-transformation",
+    "reasonEN": "An easy functional-programming exercise centered on reducer callbacks and accumulator flow. It reinforces callback order, initial values, and deterministic array reduction.",
+    "reasonZH": "简单函数式编程题，核心是 reducer 回调与累加器流转。它能巩固回调顺序、初始值处理和数组归约语义。"
+  },
+  {
+    "slug": "array-with-elements-not-equal-to-average-of-neighbors",
+    "reasonEN": "A medium constructive greedy problem that uses sorting to avoid local average conflicts. It is valuable for learning how arrangement patterns can satisfy neighbor constraints without exhaustive search.",
+    "reasonZH": "中等难度构造贪心题，通过排序后的排列方式规避相邻平均值冲突。它能训练用构造模式满足局部约束，而不是依赖暴力搜索。"
+  },
+  {
+    "slug": "array-wrapper",
+    "reasonEN": "An easy JavaScript object-behavior problem about wrapping arrays and defining conversion semantics. It is useful for understanding value coercion, method contracts, and operator interaction.",
+    "reasonZH": "简单 JavaScript 对象行为题，围绕数组包装和类型转换语义展开。它适合理解值转换、方法契约和运算符交互。"
+  },
+  {
+    "slug": "article-views-i",
+    "reasonEN": "An easy database query problem focused on filtering, distinct selection, and ordered output. It is a compact SQL drill for translating a simple business rule into a precise result set.",
+    "reasonZH": "简单数据库查询题，重点是过滤、去重和有序输出。它是将业务规则准确转化为 SQL 结果集的基础练习。"
+  },
+  {
+    "slug": "as-far-from-land-as-possible",
+    "reasonEN": "A medium matrix traversal problem where multi-source BFS or dynamic programming models distance propagation. It is excellent for practicing grid boundaries, all-source initialization, and impossible cases.",
+    "reasonZH": "中等难度矩阵遍历题，可用多源 BFS 或动态规划建模距离扩散。它很适合训练网格边界、多源初始化和特殊不可行情况处理。"
+  },
+  {
+    "slug": "aseY1I",
+    "reasonEN": "A medium bit-manipulation and string problem that represents character sets with compact masks. It teaches how to replace repeated string comparisons with fast disjointness checks.",
+    "reasonZH": "中等难度位运算与字符串题，核心是用紧凑位掩码表示字符集合。它能训练用快速无交集判断替代重复字符串比较。"
+  },
+  {
+    "slug": "assign-cookies",
+    "reasonEN": "An easy greedy two-pointer problem based on matching sorted demands with sorted resources. It is a fundamental exercise for proving local optimal choices in allocation tasks.",
+    "reasonZH": "简单贪心双指针题，核心是将排序后的需求与资源进行匹配。它是练习分配类问题中局部最优证明的基础题。"
+  },
+  {
+    "slug": "assign-elements-to-groups-with-constraints",
+    "reasonEN": "A medium array and hash-table problem focused on preprocessing constraints for efficient assignment. It is useful for practicing lookup-driven optimization instead of repeated full scans.",
+    "reasonZH": "中等难度数组与哈希题，重点是预处理约束以提升分配效率。它适合训练用查表优化替代反复全量扫描的思路。"
+  },
+  {
+    "slug": "asteroid-collision",
+    "reasonEN": "A medium stack simulation problem with precise directional collision rules. It strengthens while-loop control, equal-case handling, and stack-based resolution of sequential conflicts.",
+    "reasonZH": "中等难度栈模拟题，核心是精确处理方向相关的碰撞规则。它能强化 while 循环控制、相等情况处理和用栈解决连续冲突的能力。"
+  },
+  {
+    "slug": "available-captures-for-rook",
+    "reasonEN": "An easy matrix simulation problem based on directional scanning with blockers. It is a good grid-traversal warm-up for boundary checks and first-hit logic.",
+    "reasonZH": "简单矩阵模拟题，核心是带阻挡物的四方向扫描。它适合作为网格遍历入门，训练边界判断和首次命中逻辑。"
+  },
+  {
+    "slug": "average-of-levels-in-binary-tree",
+    "reasonEN": "An easy tree traversal problem centered on level-wise aggregation. It reinforces BFS queue sizing or DFS depth grouping while also highlighting numeric precision in averages.",
+    "reasonZH": "简单树遍历题，重点是按层聚合数据。它能巩固 BFS 队列分层或 DFS 深度分组，并提醒平均值计算中的数值精度问题。"
+  },
+  {
+    "slug": "average-salary-excluding-the-minimum-and-maximum-salary",
+    "reasonEN": "An easy array arithmetic problem that can be solved by tracking sum, minimum, and maximum in one pass. It is a concise exercise in avoiding unnecessary sorting and handling numeric averages cleanly.",
+    "reasonZH": "简单数组计算题，可通过一次遍历维护总和、最小值和最大值。它能训练避免不必要排序，并清晰处理平均值计算。"
+  }
+]

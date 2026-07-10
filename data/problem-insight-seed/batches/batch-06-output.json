@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "airplane-seat-assignment-probability",
+    "reasonEN": "A medium probability brainteaser with a compact math core, it trains recognizing invariants instead of simulating every seating state. It is valuable for learning when dynamic programming can be collapsed into a simple probabilistic argument.",
+    "reasonZH": "中等难度的概率脑筋急转弯题，核心在于识别随机过程中的不变量，而不是枚举所有座位状态。它适合训练把动态规划思路压缩成简洁概率结论的能力。"
+  },
+  {
+    "slug": "alert-using-same-key-card-three-or-more-times-in-a-one-hour-period",
+    "reasonEN": "Useful as a medium hash-table and sorting exercise, it focuses on grouping records by key and scanning time windows carefully. It builds practical skill in log-style data processing and boundary handling.",
+    "reasonZH": "这是一道实用的中等哈希表与排序题，重点是按员工分组并精确扫描一小时窗口。它很适合训练日志类数据处理、时间字符串排序和边界判断能力。"
+  },
+  {
+    "slug": "alice-and-bob-playing-flower-game",
+    "reasonEN": "A compact medium math problem, it asks for parity reasoning rather than search or simulation. It is a good drill for converting game conditions into counting formulas.",
+    "reasonZH": "典型的中等数学题，关键不在模拟对局，而在把胜负条件转化为奇偶性计数。它适合训练从游戏规则中提炼公式的能力。"
+  },
+  {
+    "slug": "all-ancestors-of-a-node-in-a-directed-acyclic-graph",
+    "reasonEN": "For DAG practice, this medium graph problem combines traversal, ancestor propagation, and sorted result management. It is valuable for strengthening topological thinking and dependency analysis.",
+    "reasonZH": "面向 DAG 的中等图题，融合遍历、祖先集合传播和结果有序化处理。它适合巩固拓扑排序思维，并能映射到依赖关系分析场景。"
+  },
+  {
+    "slug": "all-divisions-with-the-highest-score-of-a-binary-array",
+    "reasonEN": "This medium array problem emphasizes prefix-style score maintenance with very small state. It is useful for practicing one-pass optimization and avoiding repeated recomputation.",
+    "reasonZH": "这道中等数组题强调用前缀式状态维护分割得分。它适合训练一次扫描优化，并避免对每个分割点重复统计。"
+  },
+  {
+    "slug": "all-elements-in-two-binary-search-trees",
+    "reasonEN": "A medium BST and sorting exercise, it reinforces inorder traversal and merging ordered sequences. It is a strong bridge between tree properties and classic array merge patterns.",
+    "reasonZH": "中等难度的二叉搜索树与排序题，重点训练中序遍历和有序序列合并。它能很好地连接树结构性质与数组归并技巧。"
+  },
+  {
+    "slug": "all-nodes-distance-k-in-binary-tree",
+    "reasonEN": "As a medium binary-tree search problem, it tests converting parent-child structure into an undirected traversal space. It is valuable for learning how hash maps support BFS or DFS beyond the root direction.",
+    "reasonZH": "这是中等二叉树搜索题，核心是把父子结构转化为可双向遍历的图。它适合训练用哈希表补充父节点信息，再进行 BFS 或 DFS 的能力。"
+  },
+  {
+    "slug": "all-oone-data-structure",
+    "reasonEN": "A hard design problem centered on strict O(1) operations, it combines hash tables with a doubly linked bucket structure. It is a high-value drill for maintaining min/max state under frequent updates.",
+    "reasonZH": "高难度数据结构设计题，目标是所有操作保持 O(1)，需要结合哈希表和双向链表桶。它非常适合训练在频繁更新下维护最大值、最小值状态的能力。"
+  },
+  {
+    "slug": "all-paths-from-source-to-target",
+    "reasonEN": "A medium graph traversal problem, it focuses on enumerating paths in a DAG through DFS, BFS, or backtracking. It is useful for understanding search-state construction and path-copying costs.",
+    "reasonZH": "中等图遍历题，重点是在 DAG 中用 DFS、BFS 或回溯枚举完整路径。它适合训练搜索状态构造，以及路径复制带来的复杂度意识。"
+  },
+  {
+    "slug": "all-possible-full-binary-trees",
+    "reasonEN": "This medium recursion and memoization problem trains splitting tree size into valid subproblems. It is valuable for seeing how dynamic programming generates structured objects, not only numeric answers.",
+    "reasonZH": "这道中等递归与记忆化题，重点是把节点数拆成合法的左右子树规模。它适合理解动态规划不仅能求数值，也能生成结构化结果。"
+  },
+  {
+    "slug": "allocate-mailboxes",
+    "reasonEN": "A hard dynamic programming problem with sorting and distance precomputation, it tests interval cost modeling before state transition design. It is excellent for practicing optimization over grouped positions.",
+    "reasonZH": "高难度动态规划题，结合排序、区间代价预处理和状态转移设计。它很适合训练如何对分组位置问题建立最优代价模型。"
+  },
+  {
+    "slug": "allow-one-function-call",
+    "reasonEN": "An easy function-control problem, it centers on preserving call state and blocking repeated execution. It is a concise exercise in wrapper design and stateful behavior.",
+    "reasonZH": "简单的函数控制题，核心是保存调用状态并阻止重复执行。它适合练习函数包装、状态闭包和接口行为约束。"
+  },
+  {
+    "slug": "alphabet-board-path",
+    "reasonEN": "A medium string and coordinate-mapping problem, it trains deterministic path construction with special attention to irregular board edges. It is useful for improving simulation discipline and order-sensitive moves.",
+    "reasonZH": "中等字符串与坐标映射题，重点是构造确定性的移动路径，并处理不规则边界。它适合训练模拟题中的移动顺序和特殊位置处理。"
+  },
+  {
+    "slug": "alternating-digit-sum",
+    "reasonEN": "A lightweight math problem, it reinforces digit extraction and alternating-sign accumulation. It is useful as a quick drill for translating positional rules into simple arithmetic.",
+    "reasonZH": "轻量级数学题，重点训练数字拆分与交替符号累加。它适合作为把位置信息转成简单算术规则的入门练习。"
+  },
+  {
+    "slug": "alternating-groups-i",
+    "reasonEN": "An easy array and sliding-window problem, it focuses on recognizing local alternating patterns. It is a good starter for circular or adjacent-state reasoning in arrays.",
+    "reasonZH": "简单数组与滑动窗口题，核心是识别局部交替模式。它适合入门训练数组相邻状态判断，以及环形条件下的模式统计。"
+  },
+  {
+    "slug": "alternating-groups-ii",
+    "reasonEN": "A medium sliding-window extension, it raises the bar from local checks to counting longer alternating groups. It is useful for practicing window maintenance on cyclic arrays.",
+    "reasonZH": "中等滑动窗口进阶题，从局部判断扩展到统计更长的交替分组。它适合训练环形数组上的窗口维护与边界处理。"
+  },
+  {
+    "slug": "alternating-groups-iii",
+    "reasonEN": "A hard array query problem, it combines alternating-run maintenance with ordered sets or Binary Indexed Trees. It is valuable for learning how dynamic updates change counting logic.",
+    "reasonZH": "高难度数组查询题，结合交替段维护、有序集合或树状数组。它适合训练动态更新场景下如何维护区间结构与统计答案。"
+  },
+  {
+    "slug": "ambiguous-coordinates",
+    "reasonEN": "A medium string enumeration problem, it tests generating valid numeric formats while pruning invalid leading and trailing zero cases. It is useful for disciplined backtracking and format validation.",
+    "reasonZH": "中等字符串枚举题，重点是生成合法数字形式，并剪掉前导零、尾随零等非法情况。它适合训练回溯枚举与格式校验的细节控制。"
+  },
+  {
+    "slug": "amount-of-time-for-binary-tree-to-be-infected",
+    "reasonEN": "A medium tree traversal problem, it models infection spread as BFS or DFS over an undirected version of the tree. It is valuable for connecting binary-tree problems with graph-distance thinking.",
+    "reasonZH": "中等树遍历题，核心是把感染扩散建模为树上的无向 BFS 或 DFS。它适合训练从二叉树结构切换到图距离思维的能力。"
+  },
+  {
+    "slug": "analyze-organization-hierarchy",
+    "reasonEN": "A hard database problem, it targets hierarchical data analysis and careful aggregation across reporting relationships. It is valuable for practicing recursive or multi-level query reasoning in SQL-style tasks.",
+    "reasonZH": "高难度数据库题，聚焦组织层级分析以及上下级关系中的聚合统计。它适合训练递归查询、多层关系展开和 SQL 结果整理能力。"
+  },
+  {
+    "slug": "analyze-subscription-conversion",
+    "reasonEN": "A medium database analytics problem, it focuses on subscription-funnel metrics and grouped conversion calculations. It is useful for practicing business-style SQL aggregation and ratio handling.",
+    "reasonZH": "中等数据库分析题，重点是订阅漏斗指标与分组转化率计算。它适合训练业务 SQL 中的聚合、筛选和比例计算。"
+  },
+  {
+    "slug": "angle-between-hands-of-a-clock",
+    "reasonEN": "A medium math problem, it requires translating hour and minute positions into angles and taking the smaller difference. It is a concise drill for formula accuracy and edge-case handling around 12-hour wraparound.",
+    "reasonZH": "中等数学题，核心是把时针和分针位置转化为角度，并取较小夹角。它适合训练公式精度以及 12 小时环形边界处理。"
+  },
+  {
+    "slug": "angles-of-a-triangle",
+    "reasonEN": "A medium geometry and math problem, it emphasizes deriving triangle angles from array-based point or side data. It is useful for practicing geometric formulas and numeric robustness.",
+    "reasonZH": "中等几何与数学题，重点是根据数组形式的数据推导三角形角度。它适合训练几何公式应用和数值精度意识。"
+  },
+  {
+    "slug": "animal-shelter-lcci",
+    "reasonEN": "An easy queue-design problem, it focuses on preserving arrival order while supporting category-specific dequeue operations. It is valuable for understanding how simple data structures enforce real-world service rules.",
+    "reasonZH": "简单队列设计题，核心是在保持入队顺序的同时支持按类别出队。它适合训练用基础数据结构表达真实业务规则的能力。"
+  },
+  {
+    "slug": "ant-on-the-boundary",
+    "reasonEN": "An easy prefix-sum simulation problem, it tracks cumulative movement and counts returns to the boundary. It is useful for practicing state accumulation with minimal implementation overhead.",
+    "reasonZH": "简单前缀和与模拟题，重点是跟踪累计位移并统计回到边界的次数。它适合作为状态累加和条件计数的基础练习。"
+  },
+  {
+    "slug": "append-characters-to-string-to-make-subsequence",
+    "reasonEN": "A medium greedy string problem, it trains using two pointers to measure the longest matched prefix of a target subsequence. It is useful for clarifying when appending the unmatched suffix is optimal.",
+    "reasonZH": "中等贪心字符串题，重点是用双指针衡量目标串已匹配的最长前缀。它适合训练子序列匹配，以及判断追加剩余后缀为何最优。"
+  },
+  {
+    "slug": "append-k-integers-with-minimal-sum",
+    "reasonEN": "A medium greedy math problem, it combines sorting with arithmetic-series sums to choose missing positive integers efficiently. It is valuable for learning how to avoid step-by-step selection when ranges can be compressed.",
+    "reasonZH": "中等贪心与数学题，结合排序和等差数列求和来高效选择缺失正整数。它适合训练把逐个选择压缩成区间计算的能力。"
+  },
+  {
+    "slug": "apple-redistribution-into-boxes",
+    "reasonEN": "An easy greedy sorting problem, it asks you to fill capacity from the largest boxes until the total need is covered. It is a quick exercise in proving why locally taking maximum capacity works.",
+    "reasonZH": "简单贪心排序题，核心是优先使用容量最大的盒子直到满足总需求。它适合练习局部最优选择的正确性理解。"
+  },
+  {
+    "slug": "apply-bitwise-operations-to-make-strings-equal",
+    "reasonEN": "A medium bit-manipulation and string problem, it centers on identifying the invariant behind possible transformations. It is useful for learning to replace operation simulation with state-condition reasoning.",
+    "reasonZH": "中等位运算与字符串题，关键是找出变换可达性的状态不变量。它适合训练用条件判断替代操作模拟的思维。"
+  },
+  {
+    "slug": "apply-discount-every-n-orders",
+    "reasonEN": "A medium design and hash-table problem, it combines product lookup, order counting, and periodic discount logic. It is useful for practicing small stateful APIs with clear pricing rules.",
+    "reasonZH": "中等设计与哈希表题，结合商品查询、订单计数和周期性折扣逻辑。它适合训练带状态的小型 API 设计和价格规则实现。"
+  }
+]

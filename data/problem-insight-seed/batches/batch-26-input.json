@@ -1,0 +1,684 @@
+[
+  {
+    "slug": "create-sorted-array-through-instructions",
+    "frontendDisplayId": "1649",
+    "titleEn": "Create Sorted Array through Instructions",
+    "titleZh": "通过指令创建有序数组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Binary Search",
+      "Divide and Conquer",
+      "Merge Sort",
+      "Ordered Set",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "二分查找",
+      "分治",
+      "归并排序",
+      "有序集合",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/create-sorted-array-through-instructions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "create-target-array-in-the-given-order",
+    "frontendDisplayId": "1389",
+    "titleEn": "Create Target Array in the Given Order",
+    "titleZh": "按既定顺序创建目标数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/create-target-array-in-the-given-order/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "critical-connections-in-a-network",
+    "frontendDisplayId": "1192",
+    "titleEn": "Critical Connections in a Network",
+    "titleZh": "查找集群内的关键连接",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Biconnected Component",
+      "Depth-First Search",
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "双连通分量",
+      "深度优先搜索",
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/critical-connections-in-a-network/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "custom-sort-string",
+    "frontendDisplayId": "791",
+    "titleEn": "Custom Sort String",
+    "titleZh": "自定义字符串排序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/custom-sort-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "customer-placing-the-largest-number-of-orders",
+    "frontendDisplayId": "586",
+    "titleEn": "Customer Placing the Largest Number of Orders",
+    "titleZh": "订单最多的客户",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/customer-placing-the-largest-number-of-orders/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "customer-who-visited-but-did-not-make-any-transactions",
+    "frontendDisplayId": "1581",
+    "titleEn": "Customer Who Visited but Did Not Make Any Transactions",
+    "titleZh": "进店却未进行过交易的顾客",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/customer-who-visited-but-did-not-make-any-transactions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "customers-who-bought-all-products",
+    "frontendDisplayId": "1045",
+    "titleEn": "Customers Who Bought All Products",
+    "titleZh": "买下所有产品的客户",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/customers-who-bought-all-products/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "customers-who-never-order",
+    "frontendDisplayId": "183",
+    "titleEn": "Customers Who Never Order",
+    "titleZh": "从不订购的客户",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/customers-who-never-order/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cut-off-trees-for-golf-event",
+    "frontendDisplayId": "675",
+    "titleEn": "Cut Off Trees for Golf Event",
+    "titleZh": "为高尔夫比赛砍树",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Heap (Priority Queue)",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "堆（优先队列）",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/cut-off-trees-for-golf-event/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cuyjEf",
+    "frontendDisplayId": "LCR 071",
+    "titleEn": null,
+    "titleZh": "按权重随机选择",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Math",
+      "Prefix Sum",
+      "Randomized"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "数学",
+      "前缀和",
+      "随机化"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/cuyjEf/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cyJERH",
+    "frontendDisplayId": "LCR 092",
+    "titleEn": null,
+    "titleZh": "将字符串翻转到单调递增",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/cyJERH/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cycle-length-queries-in-a-tree",
+    "frontendDisplayId": "2509",
+    "titleEn": "Cycle Length Queries in a Tree",
+    "titleZh": "查询树中环的长度",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Tree",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉树",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/cycle-length-queries-in-a-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cyclically-rotating-a-grid",
+    "frontendDisplayId": "1914",
+    "titleEn": "Cyclically Rotating a Grid",
+    "titleZh": "循环轮转矩阵",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/cyclically-rotating-a-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "dKk3P7",
+    "frontendDisplayId": "LCR 032",
+    "titleEn": null,
+    "titleZh": "有效的字母异位词",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/dKk3P7/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "da-yin-cong-1dao-zui-da-de-nwei-shu-lcof",
+    "frontendDisplayId": "LCR 135",
+    "titleEn": null,
+    "titleZh": "报数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/da-yin-cong-1dao-zui-da-de-nwei-shu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "daily-leads-and-partners",
+    "frontendDisplayId": "1693",
+    "titleEn": "Daily Leads and Partners",
+    "titleZh": "每天的领导和合伙人",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/daily-leads-and-partners/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "daily-temperatures",
+    "frontendDisplayId": "739",
+    "titleEn": "Daily Temperatures",
+    "titleZh": "每日温度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/daily-temperatures/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "data-stream-as-disjoint-intervals",
+    "frontendDisplayId": "352",
+    "titleEn": "Data Stream as Disjoint Intervals",
+    "titleZh": "将数据流变为多个不相交区间",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Data Stream",
+      "Design",
+      "Hash Table",
+      "Ordered Set",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "数据流",
+      "设计",
+      "哈希表",
+      "有序集合",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/data-stream-as-disjoint-intervals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "day-of-the-week",
+    "frontendDisplayId": "1185",
+    "titleEn": "Day of the Week",
+    "titleZh": "一周中的第几天",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/day-of-the-week/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "day-of-the-year",
+    "frontendDisplayId": "1154",
+    "titleEn": "Day of the Year",
+    "titleZh": "一年中的第几天",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/day-of-the-year/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "debounce",
+    "frontendDisplayId": "2627",
+    "titleEn": "Debounce",
+    "titleZh": "函数防抖",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/debounce/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "decode-string",
+    "frontendDisplayId": "394",
+    "titleEn": "Decode String",
+    "titleZh": "字符串解码",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Recursion",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "递归",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/decode-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "decode-the-message",
+    "frontendDisplayId": "2325",
+    "titleEn": "Decode the Message",
+    "titleZh": "解密消息",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/decode-the-message/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "decode-the-slanted-ciphertext",
+    "frontendDisplayId": "2075",
+    "titleEn": "Decode the Slanted Ciphertext",
+    "titleZh": "解码斜向换位密码",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/decode-the-slanted-ciphertext/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "decode-ways",
+    "frontendDisplayId": "91",
+    "titleEn": "Decode Ways",
+    "titleZh": "解码方法",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/decode-ways/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "decode-ways-ii",
+    "frontendDisplayId": "639",
+    "titleEn": "Decode Ways II",
+    "titleZh": "解码方法 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/decode-ways-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "decode-xored-array",
+    "frontendDisplayId": "1720",
+    "titleEn": "Decode XORed Array",
+    "titleZh": "解码异或后的数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/decode-xored-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "decode-xored-permutation",
+    "frontendDisplayId": "1734",
+    "titleEn": "Decode XORed Permutation",
+    "titleZh": "解码异或后的排列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/decode-xored-permutation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "decoded-string-at-index",
+    "frontendDisplayId": "880",
+    "titleEn": "Decoded String at Index",
+    "titleZh": "索引处的解码字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/decoded-string-at-index/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "decompress-run-length-encoded-list",
+    "frontendDisplayId": "1313",
+    "titleEn": "Decompress Run-Length Encoded List",
+    "titleZh": "解压缩编码列表",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/decompress-run-length-encoded-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-26",
+    "claimedAt": "2026-07-10T02:07:52.068561+00:00",
+    "completedAt": null
+  }
+]

@@ -1,0 +1,758 @@
+[
+  {
+    "slug": "word-break",
+    "frontendDisplayId": "139",
+    "titleEn": "Word Break",
+    "titleZh": "单词拆分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Table",
+      "Memoization",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希表",
+      "记忆化",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/word-break/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "word-break-ii",
+    "frontendDisplayId": "140",
+    "titleEn": "Word Break II",
+    "titleZh": "单词拆分 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Dynamic Programming",
+      "Hash Table",
+      "Memoization",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "动态规划",
+      "哈希表",
+      "记忆化",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/word-break-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "word-frequency",
+    "frontendDisplayId": "192",
+    "titleEn": "Word Frequency",
+    "titleZh": "统计词频",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Shell"
+    ],
+    "tagLabelsZh": [
+      "Shell"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/word-frequency/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "word-ladder",
+    "frontendDisplayId": "127",
+    "titleEn": "Word Ladder",
+    "titleZh": "单词接龙",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/word-ladder/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "word-ladder-ii",
+    "frontendDisplayId": "126",
+    "titleEn": "Word Ladder II",
+    "titleZh": "单词接龙 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Breadth-First Search",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "广度优先搜索",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/word-ladder-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "word-pattern",
+    "frontendDisplayId": "290",
+    "titleEn": "Word Pattern",
+    "titleZh": "单词规律",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/word-pattern/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "word-rectangle-lcci",
+    "frontendDisplayId": "面试题 17.25",
+    "titleEn": null,
+    "titleZh": "单词矩阵",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/word-rectangle-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "word-search",
+    "frontendDisplayId": "79",
+    "titleEn": "Word Search",
+    "titleZh": "单词搜索",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Depth-First Search",
+      "Matrix",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "深度优先搜索",
+      "矩阵",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/word-search/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "word-search-ii",
+    "frontendDisplayId": "212",
+    "titleEn": "Word Search II",
+    "titleZh": "单词搜索 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Matrix",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "矩阵",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/word-search-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "word-squares-ii",
+    "frontendDisplayId": "3799",
+    "titleEn": "Word Squares II",
+    "titleZh": "单词方块 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Enumeration",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "枚举",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/word-squares-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "word-subsets",
+    "frontendDisplayId": "916",
+    "titleEn": "Word Subsets",
+    "titleZh": "单词子集",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/word-subsets/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "word-transformer-lcci",
+    "frontendDisplayId": "面试题 17.22",
+    "titleEn": null,
+    "titleZh": "单词转换",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Breadth-First Search",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "广度优先搜索",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/word-transformer-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "words-frequency-lcci",
+    "frontendDisplayId": "面试题 16.02",
+    "titleEn": null,
+    "titleZh": "单词频率",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Table",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希表",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/words-frequency-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "words-within-two-edits-of-dictionary",
+    "frontendDisplayId": "2452",
+    "titleEn": "Words Within Two Edits of Dictionary",
+    "titleZh": "距离字典两次编辑以内的单词",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/words-within-two-edits-of-dictionary/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "wtcaE1",
+    "frontendDisplayId": "LCR 016",
+    "titleEn": null,
+    "titleZh": "无重复字符的最长子串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/wtcaE1/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "x-of-a-kind-in-a-deck-of-cards",
+    "frontendDisplayId": "914",
+    "titleEn": "X of a Kind in a Deck of Cards",
+    "titleZh": "卡牌分组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "xepqZ5",
+    "frontendDisplayId": "LCP 74",
+    "titleEn": null,
+    "titleZh": "最强祝福力场",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/xepqZ5/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "xiao-zhang-shua-ti-ji-hua",
+    "frontendDisplayId": "LCP 12",
+    "titleEn": null,
+    "titleZh": "小张刷题计划",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/xiao-zhang-shua-ti-ji-hua/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "xoh6Oh",
+    "frontendDisplayId": "LCR 001",
+    "titleEn": null,
+    "titleZh": "两数相除",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/xoh6Oh/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "xor-after-range-multiplication-queries-i",
+    "frontendDisplayId": "3653",
+    "titleEn": "XOR After Range Multiplication Queries I",
+    "titleZh": "区间乘法查询后的异或 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Prefix Sum",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "前缀和",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/xor-after-range-multiplication-queries-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "xor-after-range-multiplication-queries-ii",
+    "frontendDisplayId": "3655",
+    "titleEn": "XOR After Range Multiplication Queries II",
+    "titleZh": "区间乘法查询后的异或 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/xor-after-range-multiplication-queries-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "xor-operation-in-an-array",
+    "frontendDisplayId": "1486",
+    "titleEn": "XOR Operation in an Array",
+    "titleZh": "数组异或操作",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/xor-operation-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "xor-queries-of-a-subarray",
+    "frontendDisplayId": "1310",
+    "titleEn": "XOR Queries of a Subarray",
+    "titleZh": "子数组异或查询",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/xor-queries-of-a-subarray/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "xu-lie-hua-er-cha-shu-lcof",
+    "frontendDisplayId": "LCR 156",
+    "titleEn": null,
+    "titleZh": "序列化与反序列化二叉树",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Design",
+      "String",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "设计",
+      "字符串",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/xu-lie-hua-er-cha-shu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "xuan-zhuan-shu-zu-de-zui-xiao-shu-zi-lcof",
+    "frontendDisplayId": "LCR 128",
+    "titleEn": null,
+    "titleZh": "库存管理 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/xuan-zhuan-shu-zu-de-zui-xiao-shu-zi-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "xun-bao",
+    "frontendDisplayId": "LCP 13",
+    "titleEn": null,
+    "titleZh": "寻宝",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Breadth-First Search",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "广度优先搜索",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/xun-bao/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "xx4gT2",
+    "frontendDisplayId": "LCR 076",
+    "titleEn": null,
+    "titleZh": "数组中的第 K 个最大元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Heap (Priority Queue)",
+      "Quickselect",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "堆（优先队列）",
+      "快速选择",
+      "排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/xx4gT2/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "yong-liang-ge-zhan-shi-xian-dui-lie-lcof",
+    "frontendDisplayId": "LCR 125",
+    "titleEn": null,
+    "titleZh": "图书整理 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Design",
+      "Queue",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "队列",
+      "栈"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "you-le-yuan-de-mi-gong",
+    "frontendDisplayId": "LCP 15",
+    "titleEn": null,
+    "titleZh": "游乐园的迷宫",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/you-le-yuan-de-mi-gong/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "you-le-yuan-de-you-lan-ji-hua",
+    "frontendDisplayId": "LCP 16",
+    "titleEn": null,
+    "titleZh": "游乐园的游览计划",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Geometry",
+      "Graph",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "几何",
+      "图",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/you-le-yuan-de-you-lan-ji-hua/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-125",
+    "claimedAt": "2026-07-10T08:16:35.106208+00:00",
+    "completedAt": null
+  }
+]

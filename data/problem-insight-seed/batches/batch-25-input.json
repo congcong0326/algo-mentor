@@ -1,0 +1,718 @@
+[
+  {
+    "slug": "count-vowel-substrings-of-a-string",
+    "frontendDisplayId": "2062",
+    "titleEn": "Count Vowel Substrings of a String",
+    "titleZh": "统计字符串中的元音子字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-vowel-substrings-of-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-vowels-permutation",
+    "frontendDisplayId": "1220",
+    "titleEn": "Count Vowels Permutation",
+    "titleZh": "统计元音字母序列的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-vowels-permutation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-ways-to-build-good-strings",
+    "frontendDisplayId": "2466",
+    "titleEn": "Count Ways To Build Good Strings",
+    "titleZh": "统计构造好字符串的方案数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-ways-to-build-good-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-ways-to-build-rooms-in-an-ant-colony",
+    "frontendDisplayId": "1916",
+    "titleEn": "Count Ways to Build Rooms in an Ant Colony",
+    "titleZh": "统计为蚁群构筑房间的不同顺序",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Graph Theory",
+      "Math",
+      "Topological Sort",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "深度优先搜索",
+      "动态规划",
+      "图",
+      "数学",
+      "拓扑排序",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-ways-to-build-rooms-in-an-ant-colony/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-ways-to-choose-coprime-integers-from-rows",
+    "frontendDisplayId": "3725",
+    "titleEn": "Count Ways to Choose Coprime Integers from Rows",
+    "titleZh": "统计每一行选择互质整数的方案数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math",
+      "Matrix",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "动态规划",
+      "数学",
+      "矩阵",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-ways-to-choose-coprime-integers-from-rows/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-ways-to-group-overlapping-ranges",
+    "frontendDisplayId": "2580",
+    "titleEn": "Count Ways to Group Overlapping Ranges",
+    "titleZh": "统计将重叠区间合并成组的方案数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-ways-to-group-overlapping-ranges/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-ways-to-make-array-with-product",
+    "frontendDisplayId": "1735",
+    "titleEn": "Count Ways to Make Array With Product",
+    "titleZh": "生成乘积数组的方案数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "动态规划",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-ways-to-make-array-with-product/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-words-obtained-after-adding-a-letter",
+    "frontendDisplayId": "2135",
+    "titleEn": "Count Words Obtained After Adding a Letter",
+    "titleZh": "统计追加字母可以获得的单词数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-words-obtained-after-adding-a-letter/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-zero-request-servers",
+    "frontendDisplayId": "2747",
+    "titleEn": "Count Zero Request Servers",
+    "titleZh": "统计没有收到请求的服务器数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sliding Window",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "滑动窗口",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-zero-request-servers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "counter",
+    "frontendDisplayId": "2620",
+    "titleEn": "Counter",
+    "titleZh": "计数器",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/counter/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "counter-ii",
+    "frontendDisplayId": "2665",
+    "titleEn": "Counter II",
+    "titleZh": "计数器 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/counter-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "counting-bits",
+    "frontendDisplayId": "338",
+    "titleEn": "Counting Bits",
+    "titleZh": "比特位计数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/counting-bits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "counting-words-with-a-given-prefix",
+    "frontendDisplayId": "2185",
+    "titleEn": "Counting Words With a Given Prefix",
+    "titleZh": "统计包含给定前缀的字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "String",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串",
+      "字符串匹配"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/counting-words-with-a-given-prefix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "couples-holding-hands",
+    "frontendDisplayId": "765",
+    "titleEn": "Couples Holding Hands",
+    "titleZh": "情侣牵手",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Greedy",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "贪心",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/couples-holding-hands/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "coupon-code-validator",
+    "frontendDisplayId": "3606",
+    "titleEn": "Coupon Code Validator",
+    "titleZh": "优惠券校验器",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/coupon-code-validator/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "course-schedule",
+    "frontendDisplayId": "207",
+    "titleEn": "Course Schedule",
+    "titleZh": "课程表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/course-schedule/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "course-schedule-ii",
+    "frontendDisplayId": "210",
+    "titleEn": "Course Schedule II",
+    "titleZh": "课程表 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/course-schedule-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "course-schedule-iii",
+    "frontendDisplayId": "630",
+    "titleEn": "Course Schedule III",
+    "titleZh": "课程表 III",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/course-schedule-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "course-schedule-iv",
+    "frontendDisplayId": "1462",
+    "titleEn": "Course Schedule IV",
+    "titleZh": "课程表 IV",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/course-schedule-iv/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cousins-in-binary-tree",
+    "frontendDisplayId": "993",
+    "titleEn": "Cousins in Binary Tree",
+    "titleZh": "二叉树的堂兄弟节点",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/cousins-in-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cousins-in-binary-tree-ii",
+    "frontendDisplayId": "2641",
+    "titleEn": "Cousins in Binary Tree II",
+    "titleZh": "二叉树的堂兄弟节点 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/cousins-in-binary-tree-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cracking-the-safe",
+    "frontendDisplayId": "753",
+    "titleEn": "Cracking the Safe",
+    "titleZh": "破解保险箱",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Eulerian Circuit",
+      "Graph Theory",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "欧拉回路",
+      "图",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/cracking-the-safe/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "crawler-log-folder",
+    "frontendDisplayId": "1598",
+    "titleEn": "Crawler Log Folder",
+    "titleZh": "文件夹操作日志搜集器",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/crawler-log-folder/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "create-a-dataframe-from-list",
+    "frontendDisplayId": "2877",
+    "titleEn": "Create a DataFrame from List",
+    "titleZh": "从表中创建 DataFrame",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/create-a-dataframe-from-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "create-a-new-column",
+    "frontendDisplayId": "2881",
+    "titleEn": "Create a New Column",
+    "titleZh": "创建新列",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/create-a-new-column/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "create-binary-tree-from-descriptions",
+    "frontendDisplayId": "2196",
+    "titleEn": "Create Binary Tree From Descriptions",
+    "titleZh": "根据描述创建二叉树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Tree",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉树",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/create-binary-tree-from-descriptions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "create-components-with-same-value",
+    "frontendDisplayId": "2440",
+    "titleEn": "Create Components With Same Value",
+    "titleZh": "创建价值相同的连通块",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Enumeration",
+      "Math",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "枚举",
+      "数学",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/create-components-with-same-value/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "create-grid-with-exactly-one-path",
+    "frontendDisplayId": "3963",
+    "titleEn": "Create Grid With Exactly One Path",
+    "titleZh": "构造恰好一条路径的网格",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/create-grid-with-exactly-one-path/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "create-hello-world-function",
+    "frontendDisplayId": "2667",
+    "titleEn": "Create Hello World Function",
+    "titleZh": "创建 Hello World 函数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/create-hello-world-function/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "create-maximum-number",
+    "frontendDisplayId": "321",
+    "titleEn": "Create Maximum Number",
+    "titleZh": "拼接最大数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Monotonic Stack",
+      "Stack",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "单调栈",
+      "栈",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/create-maximum-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-25",
+    "claimedAt": "2026-07-10T02:07:51.864610+00:00",
+    "completedAt": null
+  }
+]

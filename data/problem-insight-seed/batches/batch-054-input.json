@@ -1,0 +1,736 @@
+[
+  {
+    "slug": "implement-queue-using-stacks-lcci",
+    "frontendDisplayId": "面试题 03.04",
+    "titleEn": null,
+    "titleZh": "化栈为队",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Design",
+      "Queue",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "队列",
+      "栈"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/implement-queue-using-stacks-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "implement-rand10-using-rand7",
+    "frontendDisplayId": "470",
+    "titleEn": "Implement Rand10() Using Rand7()",
+    "titleZh": "用 Rand7() 实现 Rand10()",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Probability and Statistics",
+      "Randomized",
+      "Rejection Sampling"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "概率与统计",
+      "随机化",
+      "拒绝采样"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/implement-rand10-using-rand7/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "implement-router",
+    "frontendDisplayId": "3508",
+    "titleEn": "Implement Router",
+    "titleZh": "设计路由器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Design",
+      "Hash Table",
+      "Ordered Set",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "设计",
+      "哈希表",
+      "有序集合",
+      "队列"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/implement-router/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "implement-stack-using-queues",
+    "frontendDisplayId": "225",
+    "titleEn": "Implement Stack using Queues",
+    "titleZh": "用队列实现栈",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Design",
+      "Queue",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "队列",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/implement-stack-using-queues/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "implement-trie-prefix-tree",
+    "frontendDisplayId": "208",
+    "titleEn": "Implement Trie (Prefix Tree)",
+    "titleZh": "实现 Trie (前缀树)",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Hash Table",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "哈希表",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/implement-trie-prefix-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "increasing-decreasing-string",
+    "frontendDisplayId": "1370",
+    "titleEn": "Increasing Decreasing String",
+    "titleZh": "上升下降字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/increasing-decreasing-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "increasing-order-search-tree",
+    "frontendDisplayId": "897",
+    "titleEn": "Increasing Order Search Tree",
+    "titleZh": "递增顺序搜索树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Stack",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "栈",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/increasing-order-search-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "increasing-triplet-subsequence",
+    "frontendDisplayId": "334",
+    "titleEn": "Increasing Triplet Subsequence",
+    "titleZh": "递增的三元子序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/increasing-triplet-subsequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "increment-submatrices-by-one",
+    "frontendDisplayId": "2536",
+    "titleEn": "Increment Submatrices by One",
+    "titleZh": "子矩阵元素加 1",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/increment-submatrices-by-one/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "incremental-even-weighted-cycle-queries",
+    "frontendDisplayId": "3887",
+    "titleEn": "Incremental Even-Weighted Cycle Queries",
+    "titleZh": "增量偶权环查询",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Graph Theory",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "Graph Theory",
+      "Union-Find"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/incremental-even-weighted-cycle-queries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "incremental-memory-leak",
+    "frontendDisplayId": "1860",
+    "titleEn": "Incremental Memory Leak",
+    "titleZh": "增长的内存泄露",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/incremental-memory-leak/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "insert-delete-getrandom-o1",
+    "frontendDisplayId": "380",
+    "titleEn": "Insert Delete GetRandom O(1)",
+    "titleZh": "O(1) 时间插入、删除和获取随机元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Table",
+      "Math",
+      "Randomized"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希表",
+      "数学",
+      "随机化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/insert-delete-getrandom-o1/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "insert-delete-getrandom-o1-duplicates-allowed",
+    "frontendDisplayId": "381",
+    "titleEn": "Insert Delete GetRandom O(1) - Duplicates allowed",
+    "titleZh": "O(1) 时间插入、删除和获取随机元素 - 允许重复",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Table",
+      "Math",
+      "Randomized"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希表",
+      "数学",
+      "随机化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/insert-delete-getrandom-o1-duplicates-allowed/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "insert-greatest-common-divisors-in-linked-list",
+    "frontendDisplayId": "2807",
+    "titleEn": "Insert Greatest Common Divisors in Linked List",
+    "titleZh": "在链表中插入最大公约数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/insert-greatest-common-divisors-in-linked-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "insert-interval",
+    "frontendDisplayId": "57",
+    "titleEn": "Insert Interval",
+    "titleZh": "插入区间",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/insert-interval/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "insert-into-a-binary-search-tree",
+    "frontendDisplayId": "701",
+    "titleEn": "Insert into a Binary Search Tree",
+    "titleZh": "二叉搜索树中的插入操作",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/insert-into-a-binary-search-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "insert-into-bits-lcci",
+    "frontendDisplayId": "面试题 05.01",
+    "titleEn": null,
+    "titleZh": "插入",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "位运算"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/insert-into-bits-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "insertion-sort-list",
+    "frontendDisplayId": "147",
+    "titleEn": "Insertion Sort List",
+    "titleZh": "对链表进行插入排序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/insertion-sort-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "insufficient-nodes-in-root-to-leaf-paths",
+    "frontendDisplayId": "1080",
+    "titleEn": "Insufficient Nodes in Root to Leaf Paths",
+    "titleZh": "根到叶路径上的不足节点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/insufficient-nodes-in-root-to-leaf-paths/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "integer-break",
+    "frontendDisplayId": "343",
+    "titleEn": "Integer Break",
+    "titleZh": "整数拆分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/integer-break/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "integer-replacement",
+    "frontendDisplayId": "397",
+    "titleEn": "Integer Replacement",
+    "titleZh": "整数替换",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Dynamic Programming",
+      "Greedy",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "动态规划",
+      "贪心",
+      "记忆化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/integer-replacement/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "integer-to-english-words",
+    "frontendDisplayId": "273",
+    "titleEn": "Integer to English Words",
+    "titleZh": "整数转换英文表示",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Math",
+      "Recursion",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "递归",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/integer-to-english-words/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "integer-to-roman",
+    "frontendDisplayId": "12",
+    "titleEn": "Integer to Roman",
+    "titleZh": "整数转罗马数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/integer-to-roman/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "integers-with-multiple-sum-of-two-cubes",
+    "frontendDisplayId": "3890",
+    "titleEn": "Integers With Multiple Sum of Two Cubes",
+    "titleZh": "可由多种立方和构造的整数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Enumeration",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "枚举",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/integers-with-multiple-sum-of-two-cubes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "interleaving-string",
+    "frontendDisplayId": "97",
+    "titleEn": "Interleaving String",
+    "titleZh": "交错字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/interleaving-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "intersection-lcci",
+    "frontendDisplayId": "面试题 16.03",
+    "titleEn": null,
+    "titleZh": "交点",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Geometry",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "几何",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/intersection-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "intersection-of-multiple-arrays",
+    "frontendDisplayId": "2248",
+    "titleEn": "Intersection of Multiple Arrays",
+    "titleZh": "多个数组求交集",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/intersection-of-multiple-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "intersection-of-two-arrays",
+    "frontendDisplayId": "349",
+    "titleEn": "Intersection of Two Arrays",
+    "titleZh": "两个数组的交集",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Hash Table",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "哈希表",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/intersection-of-two-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "intersection-of-two-arrays-ii",
+    "frontendDisplayId": "350",
+    "titleEn": "Intersection of Two Arrays II",
+    "titleZh": "两个数组的交集 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Hash Table",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "哈希表",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/intersection-of-two-arrays-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "intersection-of-two-linked-lists",
+    "frontendDisplayId": "160",
+    "titleEn": "Intersection of Two Linked Lists",
+    "titleZh": "相交链表",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Linked List",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "链表",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/intersection-of-two-linked-lists/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-054",
+    "claimedAt": "2026-07-10T03:53:35.139089+00:00",
+    "completedAt": null
+  }
+]

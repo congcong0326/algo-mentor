@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "design-a-stack-with-increment-operation",
+    "reasonEN": "A medium stack-design problem that uses lazy increments instead of updating many elements eagerly. Propagating pending additions during pop trains an important amortized-data-structure technique for range-like operations.",
+    "reasonZH": "这是一道中等难度的栈设计题，通过延迟增量避免逐个更新大量元素。在弹栈时传递待加值，能训练区间类操作中的重要均摊数据结构技巧。"
+  },
+  {
+    "slug": "design-a-text-editor",
+    "reasonEN": "This hard editor simulation problem models a cursor and local text mutations with two stacks or a linked structure. It develops the ability to choose a representation that makes cursor movement and insertion-deletion operations efficient.",
+    "reasonZH": "这是一道高难度的编辑器模拟题，可用双栈或链表表示光标与局部文本修改。它训练选择合适的数据表示，使光标移动和插入删除操作保持高效。"
+  },
+  {
+    "slug": "design-add-and-search-words-data-structure",
+    "reasonEN": "A medium Trie design problem extended with wildcard matching. Combining prefix storage with DFS branching at wildcard positions teaches how a data structure and search procedure cooperate for pattern queries.",
+    "reasonZH": "这是一道中等难度的 Trie 设计题，扩展了通配符匹配。将前缀存储与通配符位置的 DFS 分支结合，能理解数据结构与搜索过程如何协作处理模式查询。"
+  },
+  {
+    "slug": "design-an-atm-machine",
+    "reasonEN": "A medium stateful simulation problem that applies a fixed-denomination greedy withdrawal policy. It reinforces inventory updates, descending-choice logic, and the need to roll back temporary choices when a request cannot be completed.",
+    "reasonZH": "这是一道中等难度的有状态模拟题，按固定面额执行贪心取款。它训练库存更新、从大到小的选择逻辑，以及请求无法完成时回滚临时选择的处理。"
+  },
+  {
+    "slug": "design-an-ordered-stream",
+    "reasonEN": "This easy stream-design problem stores out-of-order values and advances a single release pointer. It teaches the minimal state needed to turn arbitrary arrivals into contiguous ordered output.",
+    "reasonZH": "这道简单的数据流设计题存储乱序到达的值，并推进唯一的输出指针。它训练用最小状态将任意到达顺序转化为连续的有序输出。"
+  },
+  {
+    "slug": "design-auction-system",
+    "reasonEN": "A medium system-design problem that coordinates item state, participant records, and rank-based retrieval through hash maps and ordered structures. It is useful practice in maintaining consistent updates across several indexed views of mutable data.",
+    "reasonZH": "这是一道中等难度的系统设计题，需要通过哈希表和有序结构协同维护物品状态、参与者记录与排名查询。它训练在可变数据的多个索引视图之间保持更新一致性。"
+  },
+  {
+    "slug": "design-authentication-manager",
+    "reasonEN": "A medium expiration-management design problem centered on token timestamps. Correctly renewing only live tokens and removing expired records develops precise time-based state reasoning common in session systems.",
+    "reasonZH": "这是一道中等难度的过期管理设计题，核心是维护令牌时间戳。仅续期仍有效的令牌并清理过期记录，可训练会话系统中精确的时间状态推理。"
+  },
+  {
+    "slug": "design-bitset",
+    "reasonEN": "This medium bitset-design problem supports bulk flips without rewriting every bit. Maintaining a logical inversion flag and counts of set bits teaches representation-level optimization for lazy global updates.",
+    "reasonZH": "这是一道中等难度的位集设计题，需要支持全量翻转而不逐位重写。维护逻辑翻转标记和置位数量，可训练延迟全局更新的表示层优化。"
+  },
+  {
+    "slug": "design-browser-history",
+    "reasonEN": "A medium navigation-history design problem captures the invariant that visiting a new page invalidates forward history. It provides practical practice with cursor-based arrays, stacks, or doubly linked lists for reversible actions.",
+    "reasonZH": "这是一道中等难度的导航历史设计题，关键不变量是访问新页面会使前进历史失效。它适合练习用带游标数组、栈或双向链表实现可逆操作。"
+  },
+  {
+    "slug": "design-cancellable-function",
+    "reasonEN": "A hard asynchronous JavaScript design problem that races scheduled execution against cancellation. Managing timer handles, cancellation state, and promise settlement builds rigorous intuition for event-loop timing and resource cleanup.",
+    "reasonZH": "这是一道高难度的异步 JavaScript 设计题，需要让已调度执行与取消操作竞争。管理定时器句柄、取消状态和 Promise 结算，可建立对事件循环时序与资源清理的严谨理解。"
+  },
+  {
+    "slug": "design-circular-deque",
+    "reasonEN": "A medium bounded-deque design problem that relies on circular indexing or sentinel links. It trains front-rear updates, full-empty distinctions, and the boundary invariants that make fixed-capacity structures reliable.",
+    "reasonZH": "这是一道中等难度的有界双端队列设计题，依赖循环下标或哨兵链表。它训练首尾更新、满空状态区分，以及保证定长结构可靠性的边界不变量。"
+  },
+  {
+    "slug": "design-circular-queue",
+    "reasonEN": "This medium queue-design exercise implements FIFO behavior in fixed space through modular indices. It is a focused lesson in avoiding wasted slots and making capacity, head, tail, and size semantics unambiguous.",
+    "reasonZH": "这道中等难度的队列设计题通过模下标在固定空间中实现 FIFO。它集中训练避免浪费槽位，并明确容量、队首、队尾和长度的语义。"
+  },
+  {
+    "slug": "design-event-manager",
+    "reasonEN": "A medium event-system design problem combines mutable event records with priority or ordered retrieval. It develops the discipline of synchronizing hash-map state with ranked containers, including stale-entry handling after updates.",
+    "reasonZH": "这是一道中等难度的事件系统设计题，结合可变事件记录与优先级或有序检索。它训练同步哈希表状态和排序容器，并处理更新后的过期条目。"
+  },
+  {
+    "slug": "design-exam-scores-tracker",
+    "reasonEN": "A medium statistics-service design problem uses ordered scores, prefix sums, and binary search to answer aggregate queries. It teaches how preprocessing and monotone lookup can keep repeated score analysis efficient.",
+    "reasonZH": "这是一道中等难度的统计服务设计题，利用有序分数、前缀和和二分查找回答聚合查询。它训练如何通过预处理与单调查找高效应对重复的分数分析。"
+  },
+  {
+    "slug": "design-front-middle-back-queue",
+    "reasonEN": "A medium deque-balancing design problem that splits the sequence into two halves. Rebalancing their sizes after every operation makes middle access constant time and teaches a durable invariant for positional data structures.",
+    "reasonZH": "这是一道中等难度的双端队列平衡设计题，将序列拆成两个半区。每次操作后重新平衡两侧长度，可使中间访问保持常数时间，并训练位置型数据结构的稳定不变量。"
+  },
+  {
+    "slug": "design-graph-with-shortest-path-calculator",
+    "reasonEN": "A hard graph-service design problem exposing edge insertion and shortest-path queries. Choosing Dijkstra per query or precomputed all-pairs distances according to constraints teaches the tradeoff between update cost and query latency.",
+    "reasonZH": "这是一道高难度的图服务设计题，提供加边和最短路查询。根据约束选择逐查询 Dijkstra 或预计算全源最短路，可训练更新成本与查询延迟之间的权衡。"
+  },
+  {
+    "slug": "design-hashmap",
+    "reasonEN": "This easy foundational design problem implements key-value storage with hashing and collision resolution. It reinforces bucket selection, update-versus-insert semantics, and linked-list chaining as the core mechanics behind hash maps.",
+    "reasonZH": "这是一道简单的基础设计题，实现基于哈希和冲突处理的键值存储。它强化桶定位、更新与插入的语义区分，以及链地址法作为哈希映射核心机制的理解。"
+  },
+  {
+    "slug": "design-hashset",
+    "reasonEN": "An easy hash-table design problem focused on membership rather than values. Handling collisions, duplicate insertion, and deletion cleanly builds the implementation intuition behind set abstractions.",
+    "reasonZH": "这是一道简单的哈希表设计题，聚焦成员关系而非键值映射。正确处理冲突、重复插入和删除，可建立集合抽象背后的实现直觉。"
+  },
+  {
+    "slug": "design-linked-list",
+    "reasonEN": "A medium linked-list implementation problem that exercises positional traversal and pointer rewiring. It is valuable for mastering sentinel nodes and the edge cases around head, tail, empty, and out-of-range operations.",
+    "reasonZH": "这是一道中等难度的链表实现题，考查按位置遍历和指针重连。它有助于掌握哨兵节点，以及头尾、空链表和越界操作等边界情况。"
+  },
+  {
+    "slug": "design-memory-allocator",
+    "reasonEN": "A medium allocator simulation problem that tracks contiguous free space and ownership labels. It develops careful interval scanning, allocation-state updates, and release logic that mirrors real resource-management concerns.",
+    "reasonZH": "这是一道中等难度的分配器模拟题，需要跟踪连续空闲空间和所有者标识。它训练区间扫描、分配状态更新与释放逻辑，贴近真实资源管理问题。"
+  },
+  {
+    "slug": "design-movie-rental-system",
+    "reasonEN": "A hard multi-index design problem requiring fast rental, return, search, and report operations. Coordinating maps with ordered sets teaches how to maintain several sorted projections of the same mutable records without inconsistency.",
+    "reasonZH": "这是一道高难度的多索引设计题，需要高效支持租借、归还、搜索和报表操作。协调映射与有序集合，可训练为同一份可变记录维护多个排序视图而不失一致性。"
+  },
+  {
+    "slug": "design-neighbor-sum-service",
+    "reasonEN": "An easy matrix-service design problem that precomputes each value's coordinates for constant-time neighbor queries. It reinforces mapping domain values to positions and applying fixed directional offsets safely.",
+    "reasonZH": "这是一道简单的矩阵服务设计题，预先记录每个值的坐标以常数时间查询邻居和。它训练将领域值映射到位置，并安全应用固定方向偏移。"
+  },
+  {
+    "slug": "design-parking-system",
+    "reasonEN": "This easy counting-based design problem maintains remaining capacity by vehicle type. It is a concise exercise in encoding business rules as state transitions and rejecting requests before state underflows.",
+    "reasonZH": "这道简单的计数型设计题按车型维护剩余容量。它适合练习将业务规则编码为状态转移，并在容量不足前拒绝请求。"
+  },
+  {
+    "slug": "design-ride-sharing-system",
+    "reasonEN": "A medium streaming-system design problem coordinates ride state, matching queues, and participant lookup. It develops clean lifecycle modeling and efficient transitions between waiting, assigned, and completed records.",
+    "reasonZH": "这是一道中等难度的数据流系统设计题，需要协调行程状态、匹配队列和参与者查询。它训练清晰的生命周期建模，以及等待、已分配和已完成记录之间的高效转换。"
+  },
+  {
+    "slug": "design-skiplist",
+    "reasonEN": "A hard probabilistic ordered-structure problem implementing layered linked lists. Random promotion and multi-level traversal teach how skip lists achieve expected logarithmic search, insertion, and deletion without tree rotations.",
+    "reasonZH": "这是一道高难度的概率有序结构题，实现分层链表。随机提升与多层遍历展示了跳表如何无需树旋转，就以期望对数复杂度完成查找、插入和删除。"
+  },
+  {
+    "slug": "design-spreadsheet",
+    "reasonEN": "A medium table-model design problem that parses cell references and stores sparse cell state. It trains separating coordinate decoding, formula evaluation, and data access into clear operations for stateful services.",
+    "reasonZH": "这是一道中等难度的表格模型设计题，需要解析单元格引用并存储稀疏状态。它训练将坐标解码、公式求值和数据访问拆分为清晰的有状态服务操作。"
+  },
+  {
+    "slug": "design-task-manager",
+    "reasonEN": "A medium priority-service design problem combines direct task lookup with ranked execution selection. It is strong practice for heap-based lazy deletion or ordered-set updates when priorities and task metadata can change.",
+    "reasonZH": "这是一道中等难度的优先级服务设计题，结合任务直接查找与按排名执行选择。当优先级和任务元数据会变化时，它适合练习基于堆的惰性删除或有序集合更新。"
+  },
+  {
+    "slug": "design-twitter",
+    "reasonEN": "This medium social-feed design problem merges recent posts from followed users with a priority queue. It teaches timestamp ordering, bounded retrieval, and the tradeoff between fan-out on write and fan-out on read.",
+    "reasonZH": "这是一道中等难度的社交信息流设计题，使用优先队列合并关注用户的近期动态。它训练时间戳排序、有界检索，以及写时分发和读时聚合之间的权衡。"
+  },
+  {
+    "slug": "design-underground-system",
+    "reasonEN": "A medium transit-analytics design problem joins check-in records with route-level aggregates. Maintaining active trips and cumulative duration-count pairs develops sound state modeling for streaming performance metrics.",
+    "reasonZH": "这是一道中等难度的交通分析设计题，将进站记录与线路级聚合关联。维护活跃行程及累计时长-次数对，可训练流式性能指标的可靠状态建模。"
+  },
+  {
+    "slug": "destination-city",
+    "reasonEN": "An easy graph-endpoint problem that identifies the only destination absent from all source nodes. It reinforces using a hash set to represent directed reachability roles and extract a terminal node in linear time.",
+    "reasonZH": "这是一道简单的图终点题，找出从未作为出发点出现的唯一目的地。它训练用哈希集合表示有向可达关系中的角色，并在线性时间提取终止节点。"
+  }
+]

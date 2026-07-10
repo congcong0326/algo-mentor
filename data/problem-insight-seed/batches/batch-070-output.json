@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "maximum-number-of-darts-inside-of-a-circular-dartboard",
+    "reasonEN": "A hard computational-geometry problem built around candidate circle centers from point pairs. It trains numerical boundary handling and the reduction from continuous placement to a finite set of meaningful candidates."
+    ,"reasonZH": "高难度计算几何题，核心是由点对构造候选圆心并统计覆盖点数。它能训练连续几何问题的有限候选化思维，以及浮点边界处理能力。"
+  },
+  {
+    "slug": "maximum-number-of-distinct-elements-after-operations",
+    "reasonEN": "A sorting-greedy allocation problem that assigns each value to an available position in its adjustment interval. It develops the exchange argument behind processing small values first and maintaining feasible choices."
+    ,"reasonZH": "排序贪心分配题，需要在每个元素的可调整区间内选择互异位置。它能训练从小到大处理的交换论证，以及可行位置维护的能力。"
+  },
+  {
+    "slug": "maximum-number-of-eaten-apples",
+    "reasonEN": "A deadline-scheduling greedy problem where a min-heap always exposes the apple batch that expires first. It reinforces the earliest-deadline-first principle and lazy removal of expired entries."
+    ,"reasonZH": "带截止日期的贪心调度题，利用小根堆优先处理最早过期的苹果批次。它能巩固最早截止时间优先原则，以及过期元素延迟清理的细节。"
+  },
+  {
+    "slug": "maximum-number-of-events-that-can-be-attended",
+    "reasonEN": "This interval-scheduling template sorts events by start day and selects the earliest finishing active event with a heap. It is essential practice for sweep-line greedy decisions and day-boundary updates."
+    ,"reasonZH": "区间调度模板题，按开始时间扫描并用堆选择当前最早结束的会议。它能训练扫描线贪心决策，以及日期推进和堆维护的边界处理。"
+  },
+  {
+    "slug": "maximum-number-of-events-that-can-be-attended-ii",
+    "reasonEN": "A weighted interval scheduling problem that combines sorted events, binary search for the next compatible event, and DP over choices. It teaches the standard pattern for optimizing values rather than merely counting intervals."
+    ,"reasonZH": "带权区间调度代表题，结合事件排序、二分寻找下一个兼容事件和动态规划。它能训练从最大数量的区间贪心升级到最大价值的区间 DP。"
+  },
+  {
+    "slug": "maximum-number-of-fish-in-a-grid",
+    "reasonEN": "A connected-component traversal problem on a matrix: flood-fill each unvisited water region and accumulate its weight. It builds reliable DFS or BFS habits for visitation state, neighbor bounds, and component aggregation."
+    ,"reasonZH": "矩阵连通块搜索题，对每个未访问区域进行 DFS 或 BFS 并累计权重。它能训练访问标记、邻居边界判断和连通分量聚合等基础图搜索能力。"
+  },
+  {
+    "slug": "maximum-number-of-groups-entering-a-competition",
+    "reasonEN": "A math-driven greedy problem that converts increasing group sizes into a triangular-number feasibility condition. It is useful for recognizing when a constructive process can be solved directly or with binary search."
+    ,"reasonZH": "数学贪心题，将递增分组规模转化为三角数形式的可行性条件。它能训练识别构造过程背后的数值规律，并掌握直接求解或二分求解的选择。"
+  },
+  {
+    "slug": "maximum-number-of-groups-getting-fresh-donuts",
+    "reasonEN": "A hard remainder-state DP problem that first extracts obvious complementary groups, then memoizes the remaining residue counts. It is strong practice for state compression and choosing a sufficient summary of history."
+    ,"reasonZH": "高难度余数状态动态规划题，先贪心消去可直接配对的余数组，再记忆化搜索剩余计数状态。它能训练状态压缩，以及提取足够历史信息的能力。"
+  },
+  {
+    "slug": "maximum-number-of-groups-with-increasing-length",
+    "reasonEN": "A hard greedy feasibility problem where sorted usage limits must support a sequence of strictly increasing group sizes. It develops aggregate-capacity reasoning and the ability to replace explicit construction with an invariant."
+    ,"reasonZH": "高难度贪心可行性题，需要让排序后的使用上限支持严格递增的组大小序列。它能训练总容量不变量分析，并将显式构造转化为可行性判断。"
+  },
+  {
+    "slug": "maximum-number-of-integers-to-choose-from-a-range-i",
+    "reasonEN": "A simple selection greedy: skip banned values and take the smallest feasible integers while the budget permits. It reinforces why ascending cost order maximizes item count and how membership checks support the scan."
+    ,"reasonZH": "基础选择贪心题，跳过禁用值后按从小到大选取仍在预算内的整数。它能巩固最小成本优先为何能最大化数量，并练习集合查找配合扫描。"
+  },
+  {
+    "slug": "maximum-number-of-items-from-sale-i",
+    "reasonEN": "A budget-constrained selection problem that weighs purchase order against sale rules using greedy or DP state design. It is useful for distinguishing when local cheapest-first choices are sufficient and when resource states matter."
+    ,"reasonZH": "预算约束下的商品选择题，需要结合促销规则设计贪心或动态规划状态。它能训练判断最便宜优先何时成立，以及资源状态何时必须进入转移。"
+  },
+  {
+    "slug": "maximum-number-of-items-from-sale-ii",
+    "reasonEN": "This sale-optimization variant uses sorting and a priority queue to make the currently best affordable choice under changing conditions. It develops online greedy selection and careful treatment of cost updates."
+    ,"reasonZH": "该促销优化变体通过排序和优先队列维护当前最优的可购买选择。它能训练动态条件下的在线贪心决策，以及价格变化时的状态更新。"
+  },
+  {
+    "slug": "maximum-number-of-jumps-to-reach-the-last-index",
+    "reasonEN": "An array DP reachability problem that maximizes jump count rather than minimizing it. It reinforces using an unreachable sentinel, enumerating valid predecessors, and separating transition legality from optimization direction."
+    ,"reasonZH": "数组可达性动态规划题，目标是最大化跳跃次数而非最小化。它能训练不可达哨兵值设计、合法前驱枚举，以及区分转移条件与优化方向。"
+  },
+  {
+    "slug": "maximum-number-of-k-divisible-components",
+    "reasonEN": "A tree postorder aggregation problem: return each subtree sum modulo k and cut whenever the remainder becomes zero. It teaches how a global partition objective can emerge naturally from local DFS returns."
+    ,"reasonZH": "树形后序聚合题，向上返回子树和的模 k 余数，并在余数为零时切分连通块。它能训练如何由局部 DFS 返回值自然构造全局划分结果。"
+  },
+  {
+    "slug": "maximum-number-of-moves-in-a-grid",
+    "reasonEN": "A directed-grid DP problem where increasing-value moves create an acyclic transition order. It builds fluency with column-wise state propagation and recognizing when graph search and DP are equivalent."
+    ,"reasonZH": "有向矩阵动态规划题，严格递增的移动关系天然形成无环转移。它能训练按列传播状态，并理解图搜索与 DP 在有向无环结构中的等价性。"
+  },
+  {
+    "slug": "maximum-number-of-moves-to-kill-all-pawns",
+    "reasonEN": "A hard game-search problem that precomputes knight distances with BFS and then applies minimax over bitmask states. It is valuable practice for combining board shortest paths, subset DP, and alternating objectives."
+    ,"reasonZH": "高难度博弈搜索题，先用 BFS 预处理马的最短距离，再在位掩码状态上执行极大极小搜索。它能训练棋盘最短路、状态压缩和交替目标的组合建模。"
+  },
+  {
+    "slug": "maximum-number-of-non-overlapping-palindrome-substrings",
+    "reasonEN": "A palindrome-selection problem that couples local expansion or DP checks with a non-overlap optimization strategy. It develops the key insight that short qualifying palindromes can support an efficient greedy or prefix-DP solution."
+    ,"reasonZH": "回文串选择优化题，需要将局部回文判定与不重叠数量最大化结合。它能训练利用短回文性质设计高效贪心或前缀 DP 的关键思路。"
+  },
+  {
+    "slug": "maximum-number-of-non-overlapping-subarrays-with-sum-equals-target",
+    "reasonEN": "A prefix-sum greedy problem that resets the seen-sum state after completing the earliest valid segment. It teaches why taking an earliest endpoint preserves room for future non-overlapping choices."
+    ,"reasonZH": "前缀和贪心题，找到满足目标和的最早结束区间后需重置已见前缀状态。它能训练证明最早结束选择会为后续不重叠区间保留最大空间。"
+  },
+  {
+    "slug": "maximum-number-of-non-overlapping-substrings",
+    "reasonEN": "A hard string-interval greedy problem that expands character occurrence ranges into minimal valid substrings, then selects compatible intervals. It strengthens interval closure reasoning and earliest-finish selection."
+    ,"reasonZH": "高难度字符串区间贪心题，需要把字符出现范围扩展为最小合法子串，再选择相容区间。它能训练区间闭包推导，以及最早结束区间选择策略。"
+  },
+  {
+    "slug": "maximum-number-of-occurrences-of-a-substring",
+    "reasonEN": "A sliding-window counting problem whose key reduction is that only the minimum allowed length needs inspection. It teaches how constraints on distinct characters can eliminate seemingly necessary substring enumeration."
+    ,"reasonZH": "滑动窗口计数题，关键化简是只需检查最小允许长度的子串。它能训练利用不同字符数约束消除看似必要的多长度枚举。"
+  },
+  {
+    "slug": "maximum-number-of-operations-to-move-ones-to-the-end",
+    "reasonEN": "A counting-greedy string problem that accumulates the contribution of preceding ones across movable zero positions. It builds the ability to replace operation simulation with inversion-style contribution analysis."
+    ,"reasonZH": "字符串计数贪心题，累计每个可移动零位置前方的 1 所带来的操作贡献。它能训练用类似逆序对的贡献分析替代逐步操作模拟。"
+  },
+  {
+    "slug": "maximum-number-of-operations-with-the-same-score-i",
+    "reasonEN": "An easy simulation problem that fixes the first operation's score and checks subsequent adjacent pairs against it. It is useful for practicing direct control flow and terminating at the first invariant violation."
+    ,"reasonZH": "入门模拟题，先固定首次操作的分数，再依次检查后续相邻数对是否一致。它能训练直接控制流程，以及在不变量首次失效时正确终止。"
+  },
+  {
+    "slug": "maximum-number-of-operations-with-the-same-score-ii",
+    "reasonEN": "An interval memoization problem that branches on allowable endpoint-pair removals while preserving a fixed target score. It develops three-choice interval DP design and cache-key discipline."
+    ,"reasonZH": "区间记忆化搜索题，在固定目标分数下枚举合法的端点数对删除方式。它能训练三分支区间 DP 的状态设计，以及缓存键与边界的一致性。"
+  },
+  {
+    "slug": "maximum-number-of-pairs-in-array",
+    "reasonEN": "A basic frequency-counting exercise: each value contributes half of its count to pairs and its parity to leftovers. It establishes the habit of converting pairing operations into independent count arithmetic."
+    ,"reasonZH": "基础频次统计题，每种数值的计数一半贡献数对，奇偶性决定剩余元素。它能帮助建立将配对操作拆解为独立计数运算的思维。"
+  },
+  {
+    "slug": "maximum-number-of-points-from-grid-queries",
+    "reasonEN": "A hard offline-query grid traversal problem that processes thresholds in ascending order and expands a min-heap frontier only when values qualify. It is excellent practice for monotone query ordering and incremental BFS state reuse."
+    ,"reasonZH": "高难度离线矩阵查询题，按阈值升序处理，并仅在数值满足条件时扩展小根堆边界。它能训练利用查询单调性复用 BFS 状态和增量计算结果。"
+  },
+  {
+    "slug": "maximum-number-of-points-with-cost",
+    "reasonEN": "A row-by-row DP optimization problem where left and right sweeps replace a quadratic transition over columns. It teaches the powerful technique of absorbing linear movement penalties into directional running maxima."
+    ,"reasonZH": "逐行动态规划优化题，通过左右两次扫描将列间的二次转移降为线性。它能训练把线性移动代价吸收到方向性前缀最优值中的技巧。"
+  },
+  {
+    "slug": "maximum-number-of-removable-characters",
+    "reasonEN": "A binary-search-on-answer string problem with a two-pointer subsequence feasibility check. It reinforces identifying monotonicity and implementing repeated validation without rebuilding unnecessary structures."
+    ,"reasonZH": "二分答案字符串题，用双指针验证删除前缀操作后目标串是否仍为子序列。它能训练识别单调性，并高效实现重复可行性校验。"
+  },
+  {
+    "slug": "maximum-number-of-robots-within-budget",
+    "reasonEN": "A hard sliding-window optimization problem combining a monotonic deque for the window maximum with a running-cost sum. It develops multi-aggregate window maintenance and precise budget inequality handling."
+    ,"reasonZH": "高难度滑动窗口题，使用单调队列维护窗口最大启动费用，并维护运行费用之和。它能训练多种窗口聚合量的同步维护，以及预算不等式的精确处理。"
+  },
+  {
+    "slug": "maximum-number-of-subsequences-after-one-inserting",
+    "reasonEN": "A string counting greedy problem that evaluates the contribution of inserting either endpoint character using prefix and suffix counts. It teaches how one local edit can be optimized through precomputed subsequence contributions."
+    ,"reasonZH": "字符串计数贪心题，通过前后缀计数分别评估插入两类端点字符的新增子序列贡献。它能训练用预处理贡献来优化一次局部编辑。"
+  },
+  {
+    "slug": "maximum-number-of-tasks-you-can-assign",
+    "reasonEN": "A hard assignment problem solved by binary-searching the answer and greedily matching workers to a feasible task set with limited boosts. It is a benchmark for feasibility proofs, sorted matching, and deque-based resource allocation."
+    ,"reasonZH": "高难度任务分配题，二分可完成任务数后，用贪心为工人匹配任务并分配有限强化资源。它是训练可行性证明、排序匹配和双端队列资源分配的代表题。"
+  }
+]

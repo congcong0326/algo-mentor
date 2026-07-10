@@ -1,0 +1,746 @@
+[
+  {
+    "slug": "maximum-number-of-visible-points",
+    "frontendDisplayId": "1610",
+    "titleEn": "Maximum Number of Visible Points",
+    "titleZh": "可见点的最大数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Math",
+      "Sliding Window",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "数学",
+      "滑动窗口",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-visible-points/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-vowels-in-a-substring-of-given-length",
+    "frontendDisplayId": "1456",
+    "titleEn": "Maximum Number of Vowels in a Substring of Given Length",
+    "titleZh": "定长子串中元音的最大数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-ways-to-partition-an-array",
+    "frontendDisplayId": "2025",
+    "titleEn": "Maximum Number of Ways to Partition an Array",
+    "titleZh": "分割数组的最多方案数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Enumeration",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "枚举",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-ways-to-partition-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-weeks-for-which-you-can-work",
+    "frontendDisplayId": "1953",
+    "titleEn": "Maximum Number of Weeks for Which You Can Work",
+    "titleZh": "你可以工作的最大周数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-weeks-for-which-you-can-work/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-words-found-in-sentences",
+    "frontendDisplayId": "2114",
+    "titleEn": "Maximum Number of Words Found in Sentences",
+    "titleZh": "句子中的最多单词数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-words-found-in-sentences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-words-you-can-type",
+    "frontendDisplayId": "1935",
+    "titleEn": "Maximum Number of Words You Can Type",
+    "titleZh": "可以输入的最大单词数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-words-you-can-type/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-that-sum-of-the-prices-is-less-than-or-equal-to-k",
+    "frontendDisplayId": "3007",
+    "titleEn": "Maximum Number That Sum of the Prices Is Less Than or Equal to K",
+    "titleZh": "价值和小于等于 K 的最大数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Bit Manipulation",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "位运算",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-that-sum-of-the-prices-is-less-than-or-equal-to-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-odd-binary-number",
+    "frontendDisplayId": "2864",
+    "titleEn": "Maximum Odd Binary Number",
+    "titleZh": "最大二进制奇数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-odd-binary-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-of-absolute-value-expression",
+    "frontendDisplayId": "1131",
+    "titleEn": "Maximum of Absolute Value Expression",
+    "titleZh": "绝对值表达式的最大值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-of-absolute-value-expression/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-or",
+    "frontendDisplayId": "2680",
+    "titleEn": "Maximum OR",
+    "titleZh": "最大或值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Greedy",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "贪心",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-or/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-palindromes-after-operations",
+    "frontendDisplayId": "3035",
+    "titleEn": "Maximum Palindromes After Operations",
+    "titleZh": "回文字符串的最大数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Greedy",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "贪心",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-palindromes-after-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-partition-factor",
+    "frontendDisplayId": "3710",
+    "titleEn": "Maximum Partition Factor",
+    "titleZh": "最大划分因子",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-partition-factor/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-path-intersection-sum-in-a-grid",
+    "frontendDisplayId": "3938",
+    "titleEn": "Maximum Path Intersection Sum in a Grid",
+    "titleZh": "矩阵中最大共享路径和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-path-intersection-sum-in-a-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-path-quality-of-a-graph",
+    "frontendDisplayId": "2065",
+    "titleEn": "Maximum Path Quality of a Graph",
+    "titleZh": "最大化一张图中的路径价值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-path-quality-of-a-graph/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-path-score-in-a-grid",
+    "frontendDisplayId": "3742",
+    "titleEn": "Maximum Path Score in a Grid",
+    "titleZh": "网格中得分最大的路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-path-score-in-a-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-performance-of-a-team",
+    "frontendDisplayId": "1383",
+    "titleEn": "Maximum Performance of a Team",
+    "titleZh": "最大的团队表现值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-performance-of-a-team/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-points-activated-with-one-addition",
+    "frontendDisplayId": "3873",
+    "titleEn": "Maximum Points Activated with One Addition",
+    "titleZh": "添加一个点后可激活的最大点数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-points-activated-with-one-addition/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-points-after-collecting-coins-from-all-nodes",
+    "frontendDisplayId": "2920",
+    "titleEn": "Maximum Points After Collecting Coins From All Nodes",
+    "titleZh": "收集所有金币可获得的最大积分",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Memoization",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "深度优先搜索",
+      "动态规划",
+      "记忆化",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-points-after-collecting-coins-from-all-nodes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-points-after-enemy-battles",
+    "frontendDisplayId": "3207",
+    "titleEn": "Maximum Points After Enemy Battles",
+    "titleZh": "与敌人战斗后的最大分数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-points-after-enemy-battles/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-points-in-an-archery-competition",
+    "frontendDisplayId": "2212",
+    "titleEn": "Maximum Points in an Archery Competition",
+    "titleZh": "射箭比赛中的最大得分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-points-in-an-archery-competition/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-points-inside-the-square",
+    "frontendDisplayId": "3143",
+    "titleEn": "Maximum Points Inside the Square",
+    "titleZh": "正方形中的最多点数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-points-inside-the-square/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-points-tourist-can-earn",
+    "frontendDisplayId": "3332",
+    "titleEn": "Maximum Points Tourist Can Earn",
+    "titleZh": "旅客可以得到的最多点数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-points-tourist-can-earn/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-points-you-can-obtain-from-cards",
+    "frontendDisplayId": "1423",
+    "titleEn": "Maximum Points You Can Obtain from Cards",
+    "titleZh": "可获得的最大点数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-points-you-can-obtain-from-cards/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-population-year",
+    "frontendDisplayId": "1854",
+    "titleEn": "Maximum Population Year",
+    "titleZh": "人口最多的年份",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-population-year/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-possible-number-by-binary-concatenation",
+    "frontendDisplayId": "3309",
+    "titleEn": "Maximum Possible Number by Binary Concatenation",
+    "titleZh": "连接二进制表示可形成的最大数值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-possible-number-by-binary-concatenation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-prime-difference",
+    "frontendDisplayId": "3115",
+    "titleEn": "Maximum Prime Difference",
+    "titleZh": "质数的最大距离",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-prime-difference/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-product-after-k-increments",
+    "frontendDisplayId": "2233",
+    "titleEn": "Maximum Product After K Increments",
+    "titleZh": "K 次增加后的最大乘积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-product-after-k-increments/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-product-difference-between-two-pairs",
+    "frontendDisplayId": "1913",
+    "titleEn": "Maximum Product Difference Between Two Pairs",
+    "titleZh": "两个数对之间的最大乘积差",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-product-difference-between-two-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-product-of-first-and-last-elements-of-a-subsequence",
+    "frontendDisplayId": "3584",
+    "titleEn": "Maximum Product of First and Last Elements of a Subsequence",
+    "titleZh": "子序列首尾元素的最大乘积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-product-of-first-and-last-elements-of-a-subsequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-product-of-splitted-binary-tree",
+    "frontendDisplayId": "1339",
+    "titleEn": "Maximum Product of Splitted Binary Tree",
+    "titleZh": "分裂二叉树的最大乘积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-product-of-splitted-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-071",
+    "claimedAt": "2026-07-10T06:14:18.707912+00:00",
+    "completedAt": null
+  }
+]

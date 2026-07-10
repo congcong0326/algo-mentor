@@ -1,0 +1,722 @@
+[
+  {
+    "slug": "fi9suh",
+    "frontendDisplayId": "LCR 058",
+    "titleEn": null,
+    "titleZh": "我的日程安排表 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Design",
+      "Ordered Set",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "设计",
+      "有序集合",
+      "线段树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/fi9suh/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fibonacci-number",
+    "frontendDisplayId": "509",
+    "titleEn": "Fibonacci Number",
+    "titleZh": "斐波那契数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "Memoization",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "记忆化",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/fibonacci-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fill-a-special-grid",
+    "frontendDisplayId": "3537",
+    "titleEn": "Fill a Special Grid",
+    "titleZh": "填充特殊网格",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/fill-a-special-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fill-missing-data",
+    "frontendDisplayId": "2887",
+    "titleEn": "Fill Missing Data",
+    "titleZh": "填充缺失值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/fill-missing-data/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "filling-bookcase-shelves",
+    "frontendDisplayId": "1105",
+    "titleEn": "Filling Bookcase Shelves",
+    "titleZh": "填充书架",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/filling-bookcase-shelves/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "filter-elements-from-array",
+    "frontendDisplayId": "2634",
+    "titleEn": "Filter Elements from Array",
+    "titleZh": "过滤数组中的元素",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/filter-elements-from-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "filter-occupied-intervals",
+    "frontendDisplayId": "3975",
+    "titleEn": "Filter Occupied Intervals",
+    "titleZh": "筛选忙碌区间",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/filter-occupied-intervals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "filter-restaurants-by-vegan-friendly-price-and-distance",
+    "frontendDisplayId": "1333",
+    "titleEn": "Filter Restaurants by Vegan-Friendly, Price and Distance",
+    "titleZh": "餐厅过滤器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/filter-restaurants-by-vegan-friendly-price-and-distance/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "final-array-state-after-k-multiplication-operations-i",
+    "frontendDisplayId": "3264",
+    "titleEn": "Final Array State After K Multiplication Operations I",
+    "titleZh": "K 次乘运算后的最终数组 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/final-array-state-after-k-multiplication-operations-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "final-array-state-after-k-multiplication-operations-ii",
+    "frontendDisplayId": "3266",
+    "titleEn": "Final Array State After K Multiplication Operations II",
+    "titleZh": "K 次乘运算后的最终数组 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/final-array-state-after-k-multiplication-operations-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "final-element-after-subarray-deletions",
+    "frontendDisplayId": "3828",
+    "titleEn": "Final Element After Subarray Deletions",
+    "titleZh": "删除子数组后的最终元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Brainteaser",
+      "Game Theory",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "脑筋急转弯",
+      "博弈",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/final-element-after-subarray-deletions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "final-prices-with-a-special-discount-in-a-shop",
+    "frontendDisplayId": "1475",
+    "titleEn": "Final Prices With a Special Discount in a Shop",
+    "titleZh": "商品折扣后的最终价格",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/final-prices-with-a-special-discount-in-a-shop/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "final-value-of-variable-after-performing-operations",
+    "frontendDisplayId": "2011",
+    "titleEn": "Final Value of Variable After Performing Operations",
+    "titleZh": "执行操作后的变量值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/final-value-of-variable-after-performing-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree",
+    "frontendDisplayId": "1379",
+    "titleEn": "Find a Corresponding Node of a Binary Tree in a Clone of That Tree",
+    "titleZh": "找出克隆二叉树中的相同节点",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-a-good-subset-of-the-matrix",
+    "frontendDisplayId": "2732",
+    "titleEn": "Find a Good Subset of the Matrix",
+    "titleZh": "找到矩阵中的好子集",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-a-good-subset-of-the-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-a-peak-element-ii",
+    "frontendDisplayId": "1901",
+    "titleEn": "Find a Peak Element II",
+    "titleZh": "寻找峰值 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-a-peak-element-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-a-safe-walk-through-a-grid",
+    "frontendDisplayId": "3286",
+    "titleEn": "Find a Safe Walk Through a Grid",
+    "titleZh": "穿越网格图的安全路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Matrix",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "图",
+      "堆（优先队列）",
+      "矩阵",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-a-safe-walk-through-a-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-a-value-of-a-mysterious-function-closest-to-target",
+    "frontendDisplayId": "1521",
+    "titleEn": "Find a Value of a Mysterious Function Closest to Target",
+    "titleZh": "找到最接近目标值的函数值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Bit Manipulation",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "位运算",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-a-value-of-a-mysterious-function-closest-to-target/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-all-anagrams-in-a-string",
+    "frontendDisplayId": "438",
+    "titleEn": "Find All Anagrams in a String",
+    "titleZh": "找到字符串中所有字母异位词",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-all-anagrams-in-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-all-duplicates-in-an-array",
+    "frontendDisplayId": "442",
+    "titleEn": "Find All Duplicates in an Array",
+    "titleZh": "数组中重复的数据",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-all-duplicates-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-all-good-indices",
+    "frontendDisplayId": "2420",
+    "titleEn": "Find All Good Indices",
+    "titleZh": "找到所有好下标",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-all-good-indices/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-all-good-strings",
+    "frontendDisplayId": "1397",
+    "titleEn": "Find All Good Strings",
+    "titleZh": "找到所有好字符串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串",
+      "字符串匹配"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-all-good-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-all-groups-of-farmland",
+    "frontendDisplayId": "1992",
+    "titleEn": "Find All Groups of Farmland",
+    "titleZh": "找到所有的农场组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-all-groups-of-farmland/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-all-k-distant-indices-in-an-array",
+    "frontendDisplayId": "2200",
+    "titleEn": "Find All K-Distant Indices in an Array",
+    "titleZh": "找出数组中的所有 K 近邻下标",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-all-k-distant-indices-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-all-lonely-numbers-in-the-array",
+    "frontendDisplayId": "2150",
+    "titleEn": "Find All Lonely Numbers in the Array",
+    "titleZh": "找出数组中的所有孤独数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-all-lonely-numbers-in-the-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-all-numbers-disappeared-in-an-array",
+    "frontendDisplayId": "448",
+    "titleEn": "Find All Numbers Disappeared in an Array",
+    "titleZh": "找到所有数组中消失的数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-all-people-with-secret",
+    "frontendDisplayId": "2092",
+    "titleEn": "Find All People With Secret",
+    "titleZh": "找出知晓秘密的所有专家",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Sorting",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "排序",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-all-people-with-secret/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-all-possible-recipes-from-given-supplies",
+    "frontendDisplayId": "2115",
+    "titleEn": "Find All Possible Recipes from Given Supplies",
+    "titleZh": "从给定原材料中找到所有可以做出的菜",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Hash Table",
+      "String",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "哈希表",
+      "字符串",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-all-possible-recipes-from-given-supplies/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-all-possible-stable-binary-arrays-i",
+    "frontendDisplayId": "3129",
+    "titleEn": "Find All Possible Stable Binary Arrays I",
+    "titleZh": "找出所有稳定的二进制数组 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-all-possible-stable-binary-arrays-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-all-possible-stable-binary-arrays-ii",
+    "frontendDisplayId": "3130",
+    "titleEn": "Find All Possible Stable Binary Arrays II",
+    "titleZh": "找出所有稳定的二进制数组 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-all-possible-stable-binary-arrays-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-040",
+    "claimedAt": "2026-07-10T02:42:39.540259+00:00",
+    "completedAt": null
+  }
+]

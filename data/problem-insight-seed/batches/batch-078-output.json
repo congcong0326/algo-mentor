@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "minimum-area-rectangle",
+    "reasonEN": "A coordinate-geometry hashing problem for axis-aligned rectangles. It trains grouping points by one coordinate and remembering prior pairs, which turns a quadratic corner search into structured rectangle detection.",
+    "reasonZH": "这是一道用于轴对齐矩形的坐标几何哈希题。它训练按一个坐标分组并记录已出现的点对，将二次角点搜索转化为结构化的矩形检测。"
+  },
+  {
+    "slug": "minimum-area-rectangle-ii",
+    "reasonEN": "A geometry problem for rotated rectangles built around diagonal invariants. It develops hashing pairs by shared midpoint and squared diagonal length, then recovering area through vector cross products.",
+    "reasonZH": "这是一道围绕对角线不变量构造旋转矩形的几何题。它训练用共同中点和对角线长度平方为点对建哈希，再通过向量叉积求面积。"
+  },
+  {
+    "slug": "minimum-array-changes-to-make-differences-equal",
+    "reasonEN": "A difference-array optimization problem that aggregates the cost of every target difference. It teaches using range updates to record one-change and two-change regions, then scanning prefix sums for the global minimum.",
+    "reasonZH": "这是一道聚合所有目标差值代价的差分数组优化题。它训练用区间更新记录一次和两次修改区域，再扫描前缀和寻找全局最小值。"
+  },
+  {
+    "slug": "minimum-array-end",
+    "reasonEN": "A bit-construction problem that exposes how AND constraints preserve fixed one bits. It trains filling the zero-bit positions of the base value with the bits of n minus one, avoiding costly sequence simulation.",
+    "reasonZH": "这是一道揭示 AND 约束如何保留固定置位的位构造题。它训练将 n 减一的二进制位填入基值的零位，避免代价高的序列模拟。"
+  },
+  {
+    "slug": "minimum-array-length-after-pair-removals",
+    "reasonEN": "A sorted-array greedy problem governed by the most frequent value. It trains pairing dominant occurrences with distinct values and deriving the leftover count from frequency imbalance, with two pointers as a constructive view.",
+    "reasonZH": "这是一道由最高频值主导的有序数组贪心题。它训练将主导值与不同值配对，并由频次失衡推导剩余数量，双指针提供了构造视角。"
+  },
+  {
+    "slug": "minimum-array-sum",
+    "reasonEN": "A medium DP problem with limited uses of value-reduction operations. It practices tracking how many times each operation has been consumed and evaluating both application orders, a key detail in bounded-operation optimization.",
+    "reasonZH": "这是一道操作使用次数受限的中等 DP 题。它训练跟踪每种操作已使用次数并评估两种应用顺序，是有限操作优化中的关键细节。"
+  },
+  {
+    "slug": "minimum-ascii-delete-sum-for-two-strings",
+    "reasonEN": "A weighted edit-style string DP problem. It teaches aligning equal characters for free and charging ASCII values for deletions, extending the familiar longest-common-subsequence recurrence into a cost minimization model.",
+    "reasonZH": "这是一道带权编辑型字符串 DP 题。它训练免费对齐相等字符、为删除计入 ASCII 值，将熟悉的最长公共子序列递推扩展为代价最小化模型。"
+  },
+  {
+    "slug": "minimum-average-difference",
+    "reasonEN": "A prefix-sum scanning problem with integer-division boundaries. It reinforces maintaining the left sum and deriving the right sum from the total, while handling empty suffixes and tie-breaking correctly.",
+    "reasonZH": "这是一道带整数除法边界的前缀和扫描题。它训练维护左侧和并由总和推导右侧和，同时正确处理空后缀与并列规则。"
+  },
+  {
+    "slug": "minimum-average-of-smallest-and-largest-elements",
+    "reasonEN": "An easy sort-and-pair problem based on symmetric extremes. It trains recognizing that sorted endpoints form the required pairs and using two pointers to evaluate all averages with minimal implementation overhead.",
+    "reasonZH": "这是一道基于对称极值配对的简单排序题。它训练识别排序后两端元素构成所需数对，并用双指针以很低实现成本计算所有平均值。"
+  },
+  {
+    "slug": "minimum-bit-flips-to-convert-number",
+    "reasonEN": "A fundamental XOR-and-popcount exercise. It teaches that differing bits are exactly the set bits of start XOR goal, providing a compact bridge between bitwise algebra and Hamming distance.",
+    "reasonZH": "这是基础的 XOR 与位计数练习。它训练认识到不同位恰好是 start XOR goal 的置位，将位运算代数与汉明距离紧凑地联系起来。"
+  },
+  {
+    "slug": "minimum-bitwise-or-from-grid",
+    "reasonEN": "A bitwise greedy matrix problem that builds the answer from low-cost bits. It trains testing whether each candidate bit can remain zero under the grid constraints, a useful feasibility-first approach to OR minimization.",
+    "reasonZH": "这是一道从低代价位构造答案的位贪心矩阵题。它训练测试每个候选位能否在网格约束下保持为零，是最小化 OR 的实用可行性优先方法。"
+  },
+  {
+    "slug": "minimum-capacity-box",
+    "reasonEN": "A simple capacity-selection problem that rewards identifying the governing aggregate. It trains reducing item requirements to the relevant total or maximum and selecting the smallest box that satisfies the resulting bound.",
+    "reasonZH": "这是一道考验识别主导聚合量的简单容量选择题。它训练将物品需求化简为相关的总量或最大值，并选择满足该界限的最小箱子。"
+  },
+  {
+    "slug": "minimum-changes-to-make-alternating-binary-string",
+    "reasonEN": "An introductory pattern-matching problem with only two valid targets. It teaches counting mismatches against both alternating templates and taking the smaller count, a clean complement-based simplification.",
+    "reasonZH": "这是一道只有两个合法目标的入门模式匹配题。它训练分别统计与两种交替模板的失配数并取较小值，是清晰的互补化简思路。"
+  },
+  {
+    "slug": "minimum-changes-to-make-k-semi-palindromes",
+    "reasonEN": "A hard partition DP problem with divisor-based palindrome costs. It develops precomputing transformation costs for every substring and period, then partitioning into exactly k segments without recomputing comparisons.",
+    "reasonZH": "这是一道带因子周期回文代价的困难分割 DP 题。它训练预计算每个子串和周期的转换代价，再划分为恰好 k 段而不重复比较。"
+  },
+  {
+    "slug": "minimum-common-value",
+    "reasonEN": "A basic sorted-intersection problem with a particularly clean two-pointer proof. It trains advancing only the smaller value, ensuring the first match is globally minimal and reinforcing ordered-stream reasoning.",
+    "reasonZH": "这是一道证明非常清晰的基础有序交集双指针题。它训练只推进较小值，保证第一个匹配就是全局最小，并强化有序流处理思维。"
+  },
+  {
+    "slug": "minimum-consecutive-cards-to-pick-up",
+    "reasonEN": "A concise hash-map window problem for nearest repeated values. It teaches storing the latest index of each card and updating the shortest inclusive distance immediately, avoiding explicit window maintenance.",
+    "reasonZH": "这是一道寻找最近重复值的简洁哈希窗口题。它训练存储每张卡牌的最新下标并立即更新最短含端点距离，避免显式维护窗口。"
+  },
+  {
+    "slug": "minimum-cost-for-cutting-cake-i",
+    "reasonEN": "A greedy cutting-cost problem whose small constraints also allow DP verification. It trains sorting cut costs descending and paying expensive cuts early, when they are multiplied by the fewest existing segments.",
+    "reasonZH": "这是一道小数据范围下也可用 DP 验证的贪心切割成本题。它训练按降序处理切割代价，使昂贵切割在现有段数最少时支付。"
+  },
+  {
+    "slug": "minimum-cost-for-cutting-cake-ii",
+    "reasonEN": "A large-constraint greedy proof problem for board cutting. It reinforces the exchange argument behind sorting both cut lists in descending order and correctly updating the crosswise segment multiplier.",
+    "reasonZH": "这是一道大规模棋盘切割的贪心证明题。它强化将两类切割代价降序排序的交换论证，并正确更新交叉方向的段数乘子。"
+  },
+  {
+    "slug": "minimum-cost-for-tickets",
+    "reasonEN": "A calendar DP problem with sparse travel days. It teaches defining cost by day or travel index and comparing pass durations, a compact template for time-based coverage optimization.",
+    "reasonZH": "这是一道旅行日期稀疏的日历 DP 题。它训练按日期或旅行下标定义代价并比较不同通票时长，是时间覆盖优化的紧凑模板。"
+  },
+  {
+    "slug": "minimum-cost-good-caption",
+    "reasonEN": "A hard string DP problem with block-validity and lexicographic tie-breaking. It develops carrying enough state for the current character run and reconstructing the cheapest valid caption without losing ordering requirements.",
+    "reasonZH": "这是一道带分块合法性和字典序并列规则的困难字符串 DP 题。它训练为当前字符连续段保留足够状态，并重建代价最低且满足排序要求的合法标题。"
+  },
+  {
+    "slug": "minimum-cost-homecoming-of-a-robot-in-a-grid",
+    "reasonEN": "A grid-cost problem where path order is irrelevant because each row and column crossing is unavoidable. It trains separating independent directional contributions and rejecting unnecessary shortest-path machinery.",
+    "reasonZH": "这是一道因每次跨行跨列都不可避免而与路径顺序无关的网格代价题。它训练拆分独立的方向贡献，并避免引入不必要的最短路工具。"
+  },
+  {
+    "slug": "minimum-cost-of-a-path-with-special-roads",
+    "reasonEN": "A shortest-path problem over compressed geometric states. It teaches treating special-road endpoints as graph nodes, adding Manhattan travel edges, and using Dijkstra to combine optional shortcuts safely.",
+    "reasonZH": "这是一道在压缩几何状态图上求最短路的问题。它训练将特殊道路端点视为图节点、加入曼哈顿移动边，并用 Dijkstra 安全组合可选捷径。"
+  },
+  {
+    "slug": "minimum-cost-of-buying-candies-with-discount",
+    "reasonEN": "An easy discount-greedy problem with a transparent grouping rule. It trains sorting prices descending so every third candy is free at the highest possible value, a standard way to exploit buy-two-get-one offers.",
+    "reasonZH": "这是一道分组规则透明的简单折扣贪心题。它训练将价格降序排序，使每第三颗免费糖果的价值尽可能高，是利用买二送一优惠的标准方法。"
+  },
+  {
+    "slug": "minimum-cost-path-with-alternating-directions-ii",
+    "reasonEN": "A matrix DP problem where movement direction alternates by step parity. It trains encoding the directional phase in the state and writing transitions that preserve both position and movement-rule constraints.",
+    "reasonZH": "这是一道移动方向随步数奇偶交替的矩阵 DP 题。它训练将方向阶段编码进状态，并写出同时保持位置与移动规则约束的转移。"
+  },
+  {
+    "slug": "minimum-cost-path-with-edge-reversals",
+    "reasonEN": "A shortest-path modeling problem with optional edge reversals as weighted actions. It teaches expanding each directed relation into forward and reversal-cost transitions, then applying Dijkstra on the transformed graph.",
+    "reasonZH": "这是一道将可选边反转建模为带权动作的最短路题。它训练把每条有向关系扩展为正向和反转代价转移，再在转换图上使用 Dijkstra。"
+  },
+  {
+    "slug": "minimum-cost-path-with-teleportations",
+    "reasonEN": "A hard grid DP problem where teleport links create nonlocal transitions. It develops summarizing the best prior teleport-enabled states so portal use is integrated into the recurrence without repeatedly scanning the board.",
+    "reasonZH": "这是一道传送连接引入非局部转移的困难网格 DP 题。它训练汇总最优的历史传送状态，使传送门融入递推而无需重复扫描棋盘。"
+  },
+  {
+    "slug": "minimum-cost-to-acquire-required-items",
+    "reasonEN": "A greedy purchasing problem centered on bundle arithmetic. It trains comparing unit and grouped acquisition costs, then using quotient-and-remainder reasoning to minimize total spending without simulation.",
+    "reasonZH": "这是一道以组合算术为核心的贪心采购题。它训练比较单件与组合获取成本，再用商和余数推理最小化总花费而无需模拟。"
+  },
+  {
+    "slug": "minimum-cost-to-buy-apples-ii",
+    "reasonEN": "A hard graph shortest-path problem with an extra return-cost dimension. It teaches running Dijkstra from each relevant source or reversed destination perspective, then combining transport and purchase costs efficiently.",
+    "reasonZH": "这是一道带额外返程成本维度的困难图最短路题。它训练从每个相关起点或反向终点视角运行 Dijkstra，再高效合并运输与购买成本。"
+  },
+  {
+    "slug": "minimum-cost-to-change-the-final-value-of-expression",
+    "reasonEN": "A hard expression-tree DP problem with boolean values and flip costs. It trains parsing precedence with stacks while keeping the minimum cost to force each subexpression to zero or one, a strong syntax-and-DP integration exercise.",
+    "reasonZH": "这是一道同时处理布尔值与翻转代价的困难表达式树 DP 题。它训练用栈解析优先级，并维护让每个子表达式变为零或一的最小代价，是语法与 DP 结合的高价值练习。"
+  },
+  {
+    "slug": "minimum-cost-to-connect-two-groups-of-points",
+    "reasonEN": "A classic bitmask DP for bipartite coverage with asymmetric group sizes. It teaches tracking which points in the smaller group are connected and adding the residual cheapest links after processing the other side.",
+    "reasonZH": "这是处理两组点双边覆盖的经典位掩码 DP 题，适合两侧规模不对称的场景。它训练跟踪较小组中已连接的点，并在处理另一组后补上剩余最便宜连接。"
+  }
+]

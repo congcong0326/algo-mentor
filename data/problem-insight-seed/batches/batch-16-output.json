@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "combination-sum-ii",
+    "reasonEN": "A duplicate-aware backtracking problem that trains sorting, candidate pruning, and same-level deduplication. It is a key exercise for learning how recursion avoids repeated combinations while retaining complete search coverage.",
+    "reasonZH": "去重型回溯的经典中等题，训练排序、候选剪枝与同层去重。它能建立在保证搜索完整性的同时避免重复组合的递归思维。"
+  },
+  {
+    "slug": "combination-sum-iii",
+    "reasonEN": "This constrained combination search sharpens fixed-length backtracking with increasing choices and sum-bound pruning. Its compact state space makes it ideal for practicing precise recursion invariants.",
+    "reasonZH": "固定长度约束下的组合搜索题，考查递增选择与和的上下界剪枝。状态空间紧凑，适合练习严谨的递归状态设计。"
+  },
+  {
+    "slug": "combination-sum-iv",
+    "reasonEN": "A fundamental counting dynamic-programming problem that distinguishes ordered sequences from unordered combinations. It reinforces state definition, transition direction, and overflow awareness in combinatorial DP.",
+    "reasonZH": "组合计数动态规划代表题，重点区分有序序列与无序组合。它能训练状态定义、转移方向以及组合计数溢出意识。"
+  },
+  {
+    "slug": "combinations",
+    "reasonEN": "This is the canonical choose-or-skip backtracking template for fixed-size subsets. It teaches ordered decision paths, remaining-capacity pruning, and a reusable foundation for permutation and subset problems.",
+    "reasonZH": "固定大小子集的标准回溯模板题，训练有序决策路径与剩余容量剪枝。掌握后可迁移到排列、子集等多类搜索问题。"
+  },
+  {
+    "slug": "combine-two-tables",
+    "reasonEN": "A foundational SQL join exercise centered on preserving unmatched rows with a LEFT JOIN. It builds the relational thinking needed to select join direction and handle nullable result columns correctly.",
+    "reasonZH": "SQL 连接基础题，核心是通过 LEFT JOIN 保留未匹配记录。它训练连接方向选择与空值结果处理，是关系型查询的必备基础。"
+  },
+  {
+    "slug": "compact-object",
+    "reasonEN": "This recursive data-transformation problem practices traversing heterogeneous JSON arrays and objects while applying truthiness rules consistently. It is valuable for understanding immutable-style structural cleanup and edge-case handling in JavaScript.",
+    "reasonZH": "递归数据转换题，训练遍历异构 JSON 数组和对象，并一致地应用真值判断。它对理解 JavaScript 的结构化清洗与边界处理很有价值。"
+  },
+  {
+    "slug": "compare-strings-by-frequency-of-the-smallest-character",
+    "reasonEN": "A sort-and-binary-search classification problem that separates feature extraction from batch comparison. It trains converting strings into comparable numeric keys and using ordered thresholds efficiently.",
+    "reasonZH": "排序加二分的分类题，重点是将字符串特征提取与批量比较分离。它训练把字符串映射为可比较数值键，并高效利用有序阈值。"
+  },
+  {
+    "slug": "compare-sums-of-bitonic-parts",
+    "reasonEN": "This array-analysis problem emphasizes locating a bitonic structure and maintaining independent segment aggregates. It is useful for practicing index-boundary reasoning around turning points.",
+    "reasonZH": "数组结构分析题，考查定位双调结构并分别维护两侧区间和。它能强化拐点附近的下标边界推理能力。"
+  },
+  {
+    "slug": "compare-version-numbers",
+    "reasonEN": "A string parsing and two-pointer staple that requires comparing numeric components without relying on lexical order. It sharpens delimiter scanning, leading-zero handling, and uneven-length boundary control.",
+    "reasonZH": "字符串解析与双指针经典题，要求按数值而非字典序比较版本段。它训练分隔符扫描、前导零处理和不等长度边界控制。"
+  },
+  {
+    "slug": "complement-of-base-10-integer",
+    "reasonEN": "A concise bit-manipulation exercise focused on building the correct significant-bit mask before flipping bits. It reinforces binary representation and the special boundary case of zero.",
+    "reasonZH": "简洁的位运算入门题，核心是先构造有效位掩码再翻转比特。它能巩固二进制表示理解，并覆盖零值这一特殊边界。"
+  },
+  {
+    "slug": "complete-binary-tree-inserter",
+    "reasonEN": "A design-oriented BFS problem that maintains insertion candidates for a complete binary tree. It teaches how queue invariants turn repeated structural updates into efficient operations.",
+    "reasonZH": "面向设计的 BFS 题，核心是维护完全二叉树的可插入节点队列。它训练用队列不变量把重复结构更新优化为高效操作。"
+  },
+  {
+    "slug": "complete-prime-number",
+    "reasonEN": "This number-theory enumeration problem combines digit-level construction with repeated primality verification. It is useful for practicing mathematically sound search bounds and reusable primality tests.",
+    "reasonZH": "数论枚举题，将数字构造与多次素性判定结合。它训练合理设置搜索边界，并复用可靠的素数检测方法。"
+  },
+  {
+    "slug": "complex-number-multiplication",
+    "reasonEN": "A parsing-and-simulation problem that maps a compact string format to algebraic components. It reinforces robust token extraction, sign handling, and translating formulas directly into implementation.",
+    "reasonZH": "解析加模拟题，将紧凑字符串格式还原为代数分量。它训练稳健的字段提取、符号处理，以及把公式直接映射为实现。"
+  },
+  {
+    "slug": "compress-string-lcci",
+    "reasonEN": "This run-length encoding exercise uses linear scanning to group adjacent equal characters and compare output cost. It builds a clean foundation for pointer-based string compression and length-sensitive decisions.",
+    "reasonZH": "游程编码基础题，通过线性扫描聚合连续相同字符并比较压缩代价。它能打好双指针字符串压缩与长度决策的基础。"
+  },
+  {
+    "slug": "compute-alternating-sum",
+    "reasonEN": "A lightweight array simulation that trains expressing alternating signs through index parity. It is a useful correctness drill for loop initialization and accumulator updates.",
+    "reasonZH": "轻量级数组模拟题，训练用下标奇偶表达交替符号。它适合检查循环初始化和累加器更新是否准确。"
+  },
+  {
+    "slug": "compute-decimal-representation",
+    "reasonEN": "This math-and-array problem focuses on decomposing a value according to decimal-place structure. It develops careful digit extraction, place-value reconstruction, and numerical boundary awareness.",
+    "reasonZH": "数学与数组题，核心是按十进制位结构分解数值。它训练数字提取、位值重建以及数值边界意识。"
+  },
+  {
+    "slug": "concatenate-array-with-reverse",
+    "reasonEN": "A direct array-construction task that pairs forward traversal with reverse indexing. It is a compact exercise in output layout, index arithmetic, and avoiding unnecessary extra transformations.",
+    "reasonZH": "直接的数组构造题，结合正向遍历和逆向下标访问。它适合练习输出布局、下标运算，并避免多余的数据转换。"
+  },
+  {
+    "slug": "concatenate-non-zero-digits-and-multiply-by-sum-i",
+    "reasonEN": "A digit-processing simulation that separates filtering, concatenation, and aggregation into clear passes. It strengthens decimal manipulation and attention to zero-related edge cases.",
+    "reasonZH": "数字处理模拟题，将过滤、拼接和求和拆成清晰步骤。它能强化十进制操作能力，并训练零值相关边界处理。"
+  },
+  {
+    "slug": "concatenate-non-zero-digits-and-multiply-by-sum-ii",
+    "reasonEN": "This optimized digit-concatenation problem introduces prefix sums to avoid recomputing contributions across many positions. It demonstrates how algebraic decomposition converts a direct simulation into scalable string processing.",
+    "reasonZH": "进阶数字拼接题，通过前缀和避免重复计算多个位置的贡献。它展示了如何用代数拆分把直接模拟优化为可扩展的字符串处理。"
+  },
+  {
+    "slug": "concatenated-divisibility",
+    "reasonEN": "A hard bitmask DP problem that tracks both chosen elements and concatenation remainders. It is an excellent study in state compression, modular transitions, and controlling exponential search.",
+    "reasonZH": "困难的位掩码动态规划题，需要同时维护已选元素和拼接余数。它适合深入学习状态压缩、模运算转移与指数搜索控制。"
+  },
+  {
+    "slug": "concatenated-words",
+    "reasonEN": "This trie and dynamic-programming problem determines whether a word can be assembled from earlier words. It teaches sorting by length, prefix matching, and composing local word-break states into an efficient solution.",
+    "reasonZH": "字典树结合动态规划的代表题，判断单词能否由更短单词拼接而成。它训练按长度排序、前缀匹配和单词拆分状态组合。"
+  },
+  {
+    "slug": "concatenation-of-array",
+    "reasonEN": "A basic array simulation problem that reinforces deterministic indexing and preallocated output layout. Its simple logic makes it useful for verifying implementation discipline before harder transformations.",
+    "reasonZH": "基础数组模拟题，强调确定性的下标映射和预分配输出布局。逻辑简单，适合在更复杂变换前检验实现基本功。"
+  },
+  {
+    "slug": "concatenation-of-consecutive-binary-numbers",
+    "reasonEN": "A bit-manipulation and modular-arithmetic problem where appending a binary value becomes a shift plus addition. It teaches detecting bit-length changes and preventing overflow with modular updates.",
+    "reasonZH": "位运算与模运算结合题，二进制拼接可转化为左移加法。它训练识别位数变化，并通过模更新避免溢出。"
+  },
+  {
+    "slug": "confirmation-rate",
+    "reasonEN": "An SQL aggregation problem requiring a LEFT JOIN so users without matching actions remain represented. It sharpens conditional aggregation, null-safe counting, and ratio calculation over grouped records.",
+    "reasonZH": "SQL 聚合题，必须通过 LEFT JOIN 保留没有匹配行为的用户。它训练条件聚合、空值安全计数和分组后的比率计算。"
+  },
+  {
+    "slug": "cong-shang-dao-xia-da-yin-er-cha-shu-ii-lcof",
+    "reasonEN": "A breadth-first tree traversal problem that groups nodes by depth rather than flattening the visit order. It reinforces level boundaries, queue management, and structured traversal output.",
+    "reasonZH": "按层分组的二叉树 BFS 题，不是简单地展开访问顺序。它训练层级边界识别、队列管理和结构化遍历输出。"
+  },
+  {
+    "slug": "cong-shang-dao-xia-da-yin-er-cha-shu-iii-lcof",
+    "reasonEN": "This zigzag level-order traversal extends standard BFS with direction-aware placement per layer. It is valuable for learning how a stable traversal invariant accommodates alternating output requirements.",
+    "reasonZH": "锯齿形层序遍历在标准 BFS 上加入每层方向控制。它训练在保持遍历不变量的同时满足交替输出要求。"
+  },
+  {
+    "slug": "cong-shang-dao-xia-da-yin-er-cha-shu-lcof",
+    "reasonEN": "A core breadth-first traversal template for binary trees that uses a queue to preserve top-down order. It establishes the traversal primitive behind many shortest-path and level-processing problems.",
+    "reasonZH": "二叉树层序遍历模板题，用队列保持从上到下的访问顺序。它是许多最短路径和按层处理问题的基础遍历原语。"
+  },
+  {
+    "slug": "cong-wei-dao-tou-da-yin-lian-biao-lcof",
+    "reasonEN": "A linked-list reversal-output problem that contrasts recursion, stacks, and in-place reversal strategies. It develops awareness of traversal direction, auxiliary space, and mutation tradeoffs.",
+    "reasonZH": "链表逆序输出题，对比递归、栈和原地反转三种思路。它训练遍历方向、额外空间与修改原链表之间的权衡。"
+  },
+  {
+    "slug": "consecutive-characters",
+    "reasonEN": "A one-pass string scanning problem centered on maintaining the current run length and global maximum. It is a clean drill for reset conditions and adjacent-character boundary handling.",
+    "reasonZH": "一次扫描的字符串题，核心是维护当前连续段长度和全局最大值。它适合练习重置条件与相邻字符边界处理。"
+  },
+  {
+    "slug": "consecutive-numbers",
+    "reasonEN": "A SQL sequence-detection problem that identifies repeated values across neighboring ordered rows. It develops practical techniques with self joins or window functions and careful adjacency conditions.",
+    "reasonZH": "SQL 连续序列检测题，用于识别有序相邻记录中的重复值。它训练自连接或窗口函数的实战用法，以及相邻条件的严谨表达。"
+  }
+]

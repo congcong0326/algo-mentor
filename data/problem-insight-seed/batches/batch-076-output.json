@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "merge-in-between-linked-lists",
+    "reasonEN": "A linked-list splicing problem that locates the two cut boundaries, reconnects the replacement list, and preserves the trailing suffix. It builds pointer discipline and clear handling of predecessor nodes at interval boundaries.",
+    "reasonZH": "链表拼接题，需要定位两个切断边界，接入替换链表并保留后缀。它能训练指针操作的严谨性，以及区间前驱节点和边界连接的处理。"
+  },
+  {
+    "slug": "merge-intervals",
+    "reasonEN": "The canonical interval-merging problem: sort by start position and extend the current interval whenever overlap occurs. It establishes the essential sort-and-scan invariant used throughout scheduling and range problems.",
+    "reasonZH": "经典区间合并题，按起点排序后在发生重叠时扩展当前区间。它能建立区间题中最核心的排序扫描不变量，是调度与范围问题的基础模板。"
+  },
+  {
+    "slug": "merge-k-sorted-lists",
+    "reasonEN": "A hard multiway merge problem that repeatedly extracts the smallest current node using a min-heap, or combines lists by divide and conquer. It teaches how to scale two-way merging while controlling time and pointer complexity.",
+    "reasonZH": "高难度多路归并题，可用小根堆反复取出最小当前节点，或采用分治两两合并。它能训练如何扩展二路合并并控制时间复杂度与指针复杂度。"
+  },
+  {
+    "slug": "merge-nodes-in-between-zeros",
+    "reasonEN": "A linked-list simulation problem that accumulates a segment sum until a delimiter and emits one result node per segment. It reinforces one-pass traversal, sentinel-based segmentation, and output-list construction.",
+    "reasonZH": "链表模拟题，在分隔节点之间累计段和，并为每一段生成一个结果节点。它能训练一次遍历、哨兵分段和输出链表构造的基本技巧。"
+  },
+  {
+    "slug": "merge-operations-for-minimum-travel-time",
+    "reasonEN": "A hard sequence-partition DP problem that evaluates merge decisions through prefix-sum range costs. It develops interval-state reasoning and the ability to turn cumulative travel effects into efficient transitions.",
+    "reasonZH": "高难度序列分段动态规划题，需要借助前缀和评估合并决策的区间代价。它能训练区间状态推理，以及将累计旅行影响转化为高效转移的能力。"
+  },
+  {
+    "slug": "merge-similar-items",
+    "reasonEN": "An easy aggregation problem that groups equal keys, sums their weights, and outputs keys in order. It is useful practice for choosing between hash accumulation plus sorting and an ordered-map approach.",
+    "reasonZH": "入门聚合题，按相同键汇总权重并按键有序输出。它能练习在哈希累加后排序与直接使用有序映射两种方案之间做选择。"
+  },
+  {
+    "slug": "merge-sorted-array",
+    "reasonEN": "A foundational reverse two-pointer merge that fills spare capacity from the end to avoid overwriting unprocessed values. It teaches in-place array manipulation and why traversal direction can eliminate extra storage.",
+    "reasonZH": "基础的逆向双指针归并题，从尾部填充空位以避免覆盖尚未处理的数据。它能训练原地数组操作，并理解遍历方向如何省去额外空间。"
+  },
+  {
+    "slug": "merge-strings-alternately",
+    "reasonEN": "A simple two-pointer string construction exercise that alternates sources and then appends the remaining suffix. It reinforces index-boundary handling and efficient sequential output building.",
+    "reasonZH": "简单的双指针字符串构造题，交替取用两个来源后追加剩余后缀。它能训练下标边界处理和高效顺序输出的基本功。"
+  },
+  {
+    "slug": "merge-triplets-to-form-target-triplet",
+    "reasonEN": "A greedy filtering problem where triplets exceeding any target coordinate are discarded, and valid triplets are checked for covering each coordinate. It teaches how componentwise maximum operations create independent feasibility conditions.",
+    "reasonZH": "贪心筛选题，先丢弃任一坐标超过目标的三元组，再检查剩余三元组能否分别覆盖目标坐标。它能训练理解逐坐标最大值操作如何形成独立的可行性条件。"
+  },
+  {
+    "slug": "merge-two-2d-arrays-by-summing-values",
+    "reasonEN": "An easy keyed-merge problem that either accumulates values in a map or advances two ordered pointers. It builds fluency with joining sorted records and preserving output order after aggregation.",
+    "reasonZH": "入门键值归并题，可用哈希表累计数值，或用两个有序指针同步推进。它能训练有序记录连接，以及聚合后保持输出顺序的能力。"
+  },
+  {
+    "slug": "merge-two-binary-trees",
+    "reasonEN": "A recursive tree-combination problem that aligns corresponding nodes and treats missing children as identity cases. It is valuable practice for structural recursion and deciding when nodes can be reused versus newly created.",
+    "reasonZH": "递归二叉树合并题，对齐对应节点并将缺失子树作为恒等情形处理。它能训练结构递归，以及判断节点何时可复用或需要新建的能力。"
+  },
+  {
+    "slug": "merge-two-sorted-lists",
+    "reasonEN": "The essential linked-list merge template compares two heads and advances the chosen tail one node at a time. It establishes dummy-head usage, stable ordering, and the recursive alternative for list problems.",
+    "reasonZH": "链表归并的核心模板，比较两个头节点并逐步推进结果尾指针。它能建立虚拟头节点、稳定顺序和递归替代写法等链表基础。"
+  },
+  {
+    "slug": "method-chaining",
+    "reasonEN": "A lightweight API-design exercise centered on returning the same object from each operation while preserving accumulated state. It reinforces fluent-interface conventions, callback sequencing, and the distinction between mutation and returned values.",
+    "reasonZH": "轻量级 API 设计题，核心是每个操作返回同一对象并保留累计状态。它能训练流式接口约定、回调执行顺序，以及对象变更与返回值之间的区分。"
+  },
+  {
+    "slug": "mice-and-cheese",
+    "reasonEN": "A difference-based greedy problem: start from one assignment and give the limited special choices to the largest gain differences. It teaches reducing two-option allocation to ranking marginal benefits.",
+    "reasonZH": "差值贪心题，先以一种分配作为基线，再将有限特殊选择给收益差最大的项目。它能训练把双选项分配化简为边际收益排序。"
+  },
+  {
+    "slug": "middle-of-the-linked-list",
+    "reasonEN": "A classic fast-slow pointer problem where one pointer advances twice as quickly as the other. It is a fundamental linked-list technique for finding relative positions without counting nodes or using extra memory.",
+    "reasonZH": "经典快慢指针题，快指针每次走两步、慢指针每次走一步。它是无需计数和额外空间定位链表相对位置的基础技巧。"
+  },
+  {
+    "slug": "min-cost-climbing-stairs",
+    "reasonEN": "An introductory one-dimensional DP problem in which each step inherits the cheaper of two preceding routes. It develops recurrence formulation, base-case selection, and constant-space state compression.",
+    "reasonZH": "入门一维动态规划题，每一级台阶继承两条前序路径中成本更低的一条。它能训练递推式设计、初始条件选择和常数空间状态压缩。"
+  },
+  {
+    "slug": "min-cost-to-connect-all-points",
+    "reasonEN": "A minimum-spanning-tree problem on an implicit complete graph with Manhattan edge weights. It teaches Prim or Kruskal selection, component connectivity, and how to avoid materializing unnecessary graph structure.",
+    "reasonZH": "隐式完全图上的最小生成树题，边权为曼哈顿距离。它能训练 Prim 或 Kruskal 的选边逻辑、连通分量维护，以及避免显式构造冗余图结构。"
+  },
+  {
+    "slug": "min-max-game",
+    "reasonEN": "A direct array simulation that repeatedly compresses adjacent pairs using alternating minimum and maximum rules. It is useful for practicing round-based state reduction and ensuring the operator parity resets correctly each round.",
+    "reasonZH": "直接数组模拟题，反复按交替的最小值和最大值规则压缩相邻数对。它能训练轮次式状态缩减，并注意每轮运算符奇偶规则的正确重置。"
+  },
+  {
+    "slug": "min-stack",
+    "reasonEN": "A stack-design problem that supports constant-time minimum queries by storing a parallel minimum or value-min pair per depth. It establishes the invariant that every stack level carries enough history for O(1) rollback.",
+    "reasonZH": "栈设计题，通过平行最小值栈或每层存储值与最小值对，实现常数时间最小值查询。它能建立每层保存足够历史以支持 O(1) 回滚的不变量。"
+  },
+  {
+    "slug": "min-stack-lcci",
+    "reasonEN": "An entry-level data-structure design problem requiring push, pop, top, and minimum retrieval in constant time. It reinforces auxiliary-state invariants and the boundary behavior of an empty stack.",
+    "reasonZH": "入门数据结构设计题，要求以常数时间完成入栈、出栈、取顶和取最小值。它能训练辅助状态不变量，以及空栈边界行为的处理。"
+  },
+  {
+    "slug": "minesweeper",
+    "reasonEN": "A matrix flood-fill simulation that counts adjacent mines and expands only through empty cells. It develops reliable DFS or BFS visitation logic, eight-direction traversal, and separation of reveal conditions.",
+    "reasonZH": "矩阵泛洪填充模拟题，需要统计周边地雷，并只从空白单元继续扩展。它能训练 DFS 或 BFS 访问控制、八方向遍历和揭示条件的区分。"
+  },
+  {
+    "slug": "mini-parser",
+    "reasonEN": "A nested-structure parsing problem that uses a stack or recursive descent to match brackets and accumulate numbers. It teaches token-boundary handling, nesting-state management, and building structured values from a character stream.",
+    "reasonZH": "嵌套结构解析题，可用栈或递归下降匹配括号并累积数字。它能训练词法边界处理、嵌套状态管理，以及从字符流构建结构化对象的能力。"
+  },
+  {
+    "slug": "minimize-array-sum-using-divisible-replacements",
+    "reasonEN": "A number-theoretic greedy optimization problem that exploits divisibility relations to choose replacements with the greatest total reduction. It develops factor-based candidate modeling and careful reasoning about operation order and reuse.",
+    "reasonZH": "数论贪心优化题，利用整除关系选择能带来最大总降幅的替换。它能训练因子关系建模，以及对操作顺序和可复用性的严谨推理。"
+  },
+  {
+    "slug": "minimize-deviation-in-array",
+    "reasonEN": "A hard heap-greedy problem that first normalizes numbers upward when possible, then repeatedly lowers the current maximum while tracking the minimum. It is a benchmark for proving a one-direction search over reachable values.",
+    "reasonZH": "高难度堆贪心题，先将可扩展数值统一上调，再反复降低当前最大值并维护最小值。它是训练证明可达值单向搜索和堆维护的代表题。"
+  },
+  {
+    "slug": "minimize-hamming-distance-after-swap-operations",
+    "reasonEN": "A union-find component problem where freely swappable indices share a multiset of values. It teaches modeling transitive swap permissions as connectivity and canceling matches with per-component frequency counts.",
+    "reasonZH": "并查集连通分量题，可任意交换的下标共享同一个数值多重集合。它能训练将传递交换权限建模为连通性，并用分量内频次抵消匹配项。"
+  },
+  {
+    "slug": "minimize-length-of-array-using-operations",
+    "reasonEN": "A number-theory greedy problem whose answer follows from the smallest value and divisibility structure of the array. It develops the habit of reducing repeated operations to gcd and remainder invariants instead of simulating them.",
+    "reasonZH": "数论贪心题，答案由数组最小值及其整除结构决定。它能训练将反复操作化简为 gcd 和余数不变量，而不是进行逐步模拟。"
+  },
+  {
+    "slug": "minimize-malware-spread",
+    "reasonEN": "A graph-component optimization problem that groups nodes with union-find and measures which infected node uniquely threatens each component. It teaches component-size accounting and deterministic tie handling in removal decisions.",
+    "reasonZH": "图连通分量优化题，利用并查集分组并衡量每个感染节点是否唯一威胁某个分量。它能训练分量大小统计，以及删除决策中的确定性并列处理。"
+  },
+  {
+    "slug": "minimize-malware-spread-ii",
+    "reasonEN": "A harder infection-source analysis problem that explores clean components and records every initial source that can reach them. It develops multi-source influence accounting and avoids the incorrect assumption that all components can be treated independently.",
+    "reasonZH": "更高难度的感染源分析题，需要遍历干净分量并记录所有能够到达它们的初始感染源。它能训练多源影响统计，避免错误地将所有分量简单视为相互独立。"
+  },
+  {
+    "slug": "minimize-manhattan-distances",
+    "reasonEN": "A hard Manhattan-geometry problem that transforms pairwise distances into extrema of x+y and x-y, then evaluates removing critical points. It teaches coordinate transformation and maintaining first and second extremes for deletion queries.",
+    "reasonZH": "高难度曼哈顿几何题，将点对距离转化为 x+y 与 x-y 的极值差，再评估删除关键点的结果。它能训练坐标变换，以及为删除查询维护第一和第二极值。"
+  },
+  {
+    "slug": "minimize-maximum-component-cost",
+    "reasonEN": "A graph optimization problem that binary-searches a maximum allowed component cost and checks feasibility through sorted edges and union-find. It reinforces monotone decision tests and threshold-based connectivity construction.",
+    "reasonZH": "图优化题，二分允许的最大连通分量成本，并通过边排序和并查集检查可行性。它能训练单调判定设计，以及阈值驱动的连通性构造。"
+  }
+]

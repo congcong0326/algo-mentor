@@ -1,0 +1,736 @@
+[
+  {
+    "slug": "count-the-number-of-consistent-strings",
+    "frontendDisplayId": "1684",
+    "titleEn": "Count the Number of Consistent Strings",
+    "titleZh": "统计一致字符串的数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-consistent-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-fair-pairs",
+    "frontendDisplayId": "2563",
+    "titleEn": "Count the Number of Fair Pairs",
+    "titleZh": "统计公平数对的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-fair-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-good-nodes",
+    "frontendDisplayId": "3249",
+    "titleEn": "Count the Number of Good Nodes",
+    "titleZh": "统计好节点的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-good-nodes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-good-partitions",
+    "frontendDisplayId": "2963",
+    "titleEn": "Count the Number of Good Partitions",
+    "titleZh": "统计好分割方案的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-good-partitions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-good-subarrays",
+    "frontendDisplayId": "2537",
+    "titleEn": "Count the Number of Good Subarrays",
+    "titleZh": "统计好子数组的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-good-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-houses-at-a-certain-distance-i",
+    "frontendDisplayId": "3015",
+    "titleEn": "Count the Number of Houses at a Certain Distance I",
+    "titleZh": "按距离统计房屋对数目 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Graph Theory",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "图",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-houses-at-a-certain-distance-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-houses-at-a-certain-distance-ii",
+    "frontendDisplayId": "3017",
+    "titleEn": "Count the Number of Houses at a Certain Distance II",
+    "titleZh": "按距离统计房屋对数目 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Graph Theory",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "图",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-houses-at-a-certain-distance-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-ideal-arrays",
+    "frontendDisplayId": "2338",
+    "titleEn": "Count the Number of Ideal Arrays",
+    "titleZh": "统计理想数组的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "动态规划",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-ideal-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-incremovable-subarrays-i",
+    "frontendDisplayId": "2970",
+    "titleEn": "Count the Number of Incremovable Subarrays I",
+    "titleZh": "统计移除递增子数组的数目 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Enumeration",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "枚举",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-incremovable-subarrays-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-incremovable-subarrays-ii",
+    "frontendDisplayId": "2972",
+    "titleEn": "Count the Number of Incremovable Subarrays II",
+    "titleZh": "统计移除递增子数组的数目 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-incremovable-subarrays-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-infection-sequences",
+    "frontendDisplayId": "2954",
+    "titleEn": "Count the Number of Infection Sequences",
+    "titleZh": "统计感冒序列的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-infection-sequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-inversions",
+    "frontendDisplayId": "3193",
+    "titleEn": "Count the Number of Inversions",
+    "titleZh": "统计逆序对的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-inversions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-powerful-integers",
+    "frontendDisplayId": "2999",
+    "titleEn": "Count the Number of Powerful Integers",
+    "titleZh": "统计强大整数的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-powerful-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-special-characters-i",
+    "frontendDisplayId": "3120",
+    "titleEn": "Count the Number of Special Characters I",
+    "titleZh": "统计特殊字母的数量 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-special-characters-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-special-characters-ii",
+    "frontendDisplayId": "3121",
+    "titleEn": "Count the Number of Special Characters II",
+    "titleZh": "统计特殊字母的数量 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-special-characters-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-square-free-subsets",
+    "frontendDisplayId": "2572",
+    "titleEn": "Count the Number of Square-Free Subsets",
+    "titleZh": "无平方子集计数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-square-free-subsets/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-substrings-with-dominant-ones",
+    "frontendDisplayId": "3234",
+    "titleEn": "Count the Number of Substrings With Dominant Ones",
+    "titleZh": "统计 1 显著的字符串的数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Enumeration",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-substrings-with-dominant-ones/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-vowel-strings-in-range",
+    "frontendDisplayId": "2586",
+    "titleEn": "Count the Number of Vowel Strings in Range",
+    "titleZh": "统计范围内的元音字符串数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-vowel-strings-in-range/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-winning-sequences",
+    "frontendDisplayId": "3320",
+    "titleEn": "Count The Number of Winning Sequences",
+    "titleZh": "统计能获胜的出招序列数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-winning-sequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-repetitions",
+    "frontendDisplayId": "466",
+    "titleEn": "Count The Repetitions",
+    "titleZh": "统计重复个数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-repetitions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-total-number-of-colored-cells",
+    "frontendDisplayId": "2579",
+    "titleEn": "Count Total Number of Colored Cells",
+    "titleZh": "统计染色格子数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-total-number-of-colored-cells/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-triplets-that-can-form-two-arrays-of-equal-xor",
+    "frontendDisplayId": "1442",
+    "titleEn": "Count Triplets That Can Form Two Arrays of Equal XOR",
+    "titleZh": "形成两个异或相等数组的三元组数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table",
+      "Math",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表",
+      "数学",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-triplets-that-can-form-two-arrays-of-equal-xor/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-unguarded-cells-in-the-grid",
+    "frontendDisplayId": "2257",
+    "titleEn": "Count Unguarded Cells in the Grid",
+    "titleZh": "统计网格图中没有被保卫的格子数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-unguarded-cells-in-the-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-unhappy-friends",
+    "frontendDisplayId": "1583",
+    "titleEn": "Count Unhappy Friends",
+    "titleZh": "统计不开心的朋友",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-unhappy-friends/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-unique-characters-of-all-substrings-of-a-given-string",
+    "frontendDisplayId": "828",
+    "titleEn": "Count Unique Characters of All Substrings of a Given String",
+    "titleZh": "统计子串中的唯一字符",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-unique-characters-of-all-substrings-of-a-given-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-unreachable-pairs-of-nodes-in-an-undirected-graph",
+    "frontendDisplayId": "2316",
+    "titleEn": "Count Unreachable Pairs of Nodes in an Undirected Graph",
+    "titleZh": "统计无向图中无法互相到达点对数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-unreachable-pairs-of-nodes-in-an-undirected-graph/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-valid-paths-in-a-tree",
+    "frontendDisplayId": "2867",
+    "titleEn": "Count Valid Paths in a Tree",
+    "titleZh": "统计树中的合法路径数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Math",
+      "Number Theory",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "动态规划",
+      "数学",
+      "数论",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-valid-paths-in-a-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-valid-word-occurrences",
+    "frontendDisplayId": "3926",
+    "titleEn": "Count Valid Word Occurrences",
+    "titleZh": "有效单词计数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-valid-word-occurrences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-visited-nodes-in-a-directed-graph",
+    "frontendDisplayId": "2876",
+    "titleEn": "Count Visited Nodes in a Directed Graph",
+    "titleZh": "有向图访问计数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Graph Theory",
+      "Memoization",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "动态规划",
+      "图",
+      "记忆化",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-visited-nodes-in-a-directed-graph/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-vowel-strings-in-ranges",
+    "frontendDisplayId": "2559",
+    "titleEn": "Count Vowel Strings in Ranges",
+    "titleZh": "统计范围内的元音字符串数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-vowel-strings-in-ranges/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-24",
+    "claimedAt": "2026-07-10T02:07:51.658096+00:00",
+    "completedAt": null
+  }
+]

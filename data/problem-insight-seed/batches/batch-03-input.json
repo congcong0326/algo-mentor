@@ -1,0 +1,746 @@
+[
+  {
+    "slug": "IY6buf",
+    "frontendDisplayId": "LCR 096",
+    "titleEn": null,
+    "titleZh": "交错字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/IY6buf/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "IlPe0q",
+    "frontendDisplayId": "LCR 100",
+    "titleEn": null,
+    "titleZh": "三角形最小路径和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/IlPe0q/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "JEj789",
+    "frontendDisplayId": "LCR 091",
+    "titleEn": null,
+    "titleZh": "粉刷房子",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/JEj789/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "JFETK5",
+    "frontendDisplayId": "LCR 002",
+    "titleEn": null,
+    "titleZh": "二进制求和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/JFETK5/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "Jf1JuT",
+    "frontendDisplayId": "LCR 114",
+    "titleEn": null,
+    "titleZh": "火星词典",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph",
+      "String",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "字符串",
+      "拓扑排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/Jf1JuT/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "Ju9Xwi",
+    "frontendDisplayId": "LCS 01",
+    "titleEn": null,
+    "titleZh": "下载插件",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/Ju9Xwi/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "K8GULz",
+    "frontendDisplayId": "LCP 49",
+    "titleEn": null,
+    "titleZh": "环形闯关游戏",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Heap (Priority Queue)",
+      "Union Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "堆（优先队列）",
+      "并查集"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/K8GULz/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "KnLfVT",
+    "frontendDisplayId": "LCP 67",
+    "titleEn": null,
+    "titleZh": "装饰树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/KnLfVT/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "LGjMqU",
+    "frontendDisplayId": "LCR 026",
+    "titleEn": null,
+    "titleZh": "重排链表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Recursion",
+      "Stack",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "递归",
+      "栈",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/LGjMqU/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "LwUNpT",
+    "frontendDisplayId": "LCR 045",
+    "titleEn": null,
+    "titleZh": "找树左下角的值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/LwUNpT/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "M1oyTv",
+    "frontendDisplayId": "LCR 017",
+    "titleEn": null,
+    "titleZh": "最小覆盖子串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/M1oyTv/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "M99OJA",
+    "frontendDisplayId": "LCR 086",
+    "titleEn": null,
+    "titleZh": "分割回文串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "哈希表"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/M99OJA/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "MPnaiL",
+    "frontendDisplayId": "LCR 014",
+    "titleEn": null,
+    "titleZh": "字符串的排列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/MPnaiL/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "N6YdxV",
+    "frontendDisplayId": "LCR 068",
+    "titleEn": null,
+    "titleZh": "搜索插入位置",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/N6YdxV/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "NUPfPr",
+    "frontendDisplayId": "LCR 101",
+    "titleEn": null,
+    "titleZh": "分割等和子集",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/NUPfPr/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "NYBBNL",
+    "frontendDisplayId": "LCR 052",
+    "titleEn": null,
+    "titleZh": "递增顺序搜索树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Stack",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "栈",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/NYBBNL/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "NaqhDT",
+    "frontendDisplayId": "LCR 043",
+    "titleEn": null,
+    "titleZh": "完全二叉树插入器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Design",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "设计",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/NaqhDT/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "NfY1m5",
+    "frontendDisplayId": "LCP 59",
+    "titleEn": null,
+    "titleZh": "搭桥过河",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/NfY1m5/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "Nsibyl",
+    "frontendDisplayId": "LCP 78",
+    "titleEn": null,
+    "titleZh": "城墙防线",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/Nsibyl/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "O4NDxx",
+    "frontendDisplayId": "LCR 013",
+    "titleEn": null,
+    "titleZh": "二维区域和检索 - 矩阵不可变",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/O4NDxx/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "OrIXps",
+    "frontendDisplayId": "LCR 031",
+    "titleEn": null,
+    "titleZh": "LRU 缓存",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Doubly-Linked List",
+      "Hash Table",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "双向链表",
+      "哈希表",
+      "链表"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/OrIXps/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "P5rCT8",
+    "frontendDisplayId": "LCR 053",
+    "titleEn": null,
+    "titleZh": "二叉搜索树中的中序后继",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/P5rCT8/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "PLYXKQ",
+    "frontendDisplayId": "LCR 040",
+    "titleEn": null,
+    "titleZh": "最大矩形",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/PLYXKQ/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "PTXy4P",
+    "frontendDisplayId": "LCP 55",
+    "titleEn": null,
+    "titleZh": "采集果实",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/PTXy4P/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "PzWKhm",
+    "frontendDisplayId": "LCR 090",
+    "titleEn": null,
+    "titleZh": "打家劫舍 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/PzWKhm/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "Q91FMA",
+    "frontendDisplayId": "LCR 093",
+    "titleEn": null,
+    "titleZh": "最长的斐波那契子序列的长度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希表"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/Q91FMA/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "QA2IGt",
+    "frontendDisplayId": "LCR 113",
+    "titleEn": null,
+    "titleZh": "课程表 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "拓扑排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/QA2IGt/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "QC3q1f",
+    "frontendDisplayId": "LCR 062",
+    "titleEn": null,
+    "titleZh": "实现 Trie (前缀树)",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Hash Table",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "哈希表",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/QC3q1f/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "QO5KpG",
+    "frontendDisplayId": "LCP 52",
+    "titleEn": null,
+    "titleZh": "二叉搜索树染色",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Binary Search Tree",
+      "Binary Tree",
+      "Ordered Set",
+      "Segment Tree",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "二叉搜索树",
+      "二叉树",
+      "有序集合",
+      "线段树",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/QO5KpG/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "QTMn0o",
+    "frontendDisplayId": "LCR 010",
+    "titleEn": null,
+    "titleZh": "和为 K 的子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/QTMn0o/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-03",
+    "claimedAt": "2026-07-09T13:57:08.192041+00:00",
+    "completedAt": null
+  }
+]

@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "number-of-distinct-averages",
+    "reasonEN": "A concise sorting and two-pointer exercise that pairs extremes and normalizes their averages in a set. It reinforces how ordering can expose a hidden invariant and turn duplicate detection into a linear scan.",
+    "reasonZH": "一道精炼的排序与双指针题，通过配对两端元素并用集合去重平均值。它训练从有序结构中发现不变量，将重复统计转化为线性扫描。"
+  },
+  {
+    "slug": "number-of-distinct-roll-sequences",
+    "reasonEN": "This hard state-compression DP models the last dice outcomes while enforcing adjacency and coprimality constraints. It is valuable practice for choosing the minimum history needed by a recurrence and handling modular transitions.",
+    "reasonZH": "这道困难状态压缩 DP 题需保留最近骰子结果以满足相邻与互质约束。它训练为递推选择最小必要历史状态，并严谨处理模运算转移。"
+  },
+  {
+    "slug": "number-of-effective-subsequences",
+    "reasonEN": "A hard combinatorial DP problem that combines bit-level properties with subsequence counting. It develops the ability to translate a global validity condition into maintainable state transitions and count equivalent choices efficiently.",
+    "reasonZH": "这是一道结合位性质与子序列计数的困难组合 DP 题。它训练把全局有效条件拆解为可维护的状态转移，并高效统计等价选择。"
+  },
+  {
+    "slug": "number-of-employees-who-met-the-target",
+    "reasonEN": "A basic array-filtering problem centered on one clear predicate and accurate counting. It is useful for establishing clean traversal habits and recognizing when a direct one-pass solution is the right level of complexity.",
+    "reasonZH": "一道围绕单一判断条件的基础数组计数题，重点是准确筛选与累加。它适合建立清晰遍历习惯，并理解何时应选择直接的一次扫描。"
+  },
+  {
+    "slug": "number-of-enclaves",
+    "reasonEN": "This grid traversal problem uses boundary flood fill to identify cells that cannot be enclosed. It teaches the powerful complement strategy of eliminating reachable boundary regions before counting the remainder.",
+    "reasonZH": "该网格搜索题通过从边界洪泛标记来排除非飞地。它训练“先处理补集”的思路：去除可从边界到达的区域后再统计剩余部分。"
+  },
+  {
+    "slug": "number-of-equivalent-domino-pairs",
+    "reasonEN": "A compact hashing and counting problem based on canonicalizing an unordered pair. It strengthens the recurring technique of mapping equivalent objects to one key, then accumulating pair contributions online.",
+    "reasonZH": "一道紧凑的哈希计数题，核心是把无序骨牌对规范化为统一键。它训练将等价对象映射到同一表示，并在线累加数对贡献的通用技巧。"
+  },
+  {
+    "slug": "number-of-even-and-odd-bits",
+    "reasonEN": "A focused bit-manipulation warm-up that scans binary positions and separates parity classes. It builds confidence with shifts, masks, and the distinction between a bit value and its index.",
+    "reasonZH": "这是一道聚焦二进制位扫描的位运算入门题，需要按下标奇偶分类计数。它训练移位、掩码，以及区分位值和位下标的基本功。"
+  },
+  {
+    "slug": "number-of-excellent-pairs",
+    "reasonEN": "A hard bit-counting problem that reduces pair compatibility to popcount sums after deduplication. It is an excellent lesson in replacing value-level comparisons with compact feature statistics and threshold counting.",
+    "reasonZH": "这道困难位计数题先去重，再把数对条件归约为二进制 1 的个数之和。它训练用紧凑特征统计替代逐值比较，并完成阈值计数。"
+  },
+  {
+    "slug": "number-of-flowers-in-full-bloom",
+    "reasonEN": "This interval-query classic can be solved with sorted endpoints and binary search or a sweep-line difference view. It develops the ability to convert inclusive time intervals into efficient offline query counts.",
+    "reasonZH": "这是区间查询经典题，可用端点排序加二分，或扫描线差分处理。它训练将闭区间时间关系转化为高效离线查询计数。"
+  },
+  {
+    "slug": "number-of-good-leaf-nodes-pairs",
+    "reasonEN": "A tree DP problem where postorder DFS returns distance distributions from each subtree. It teaches how to merge local summaries at a node and count cross-subtree pairs without enumerating paths directly.",
+    "reasonZH": "该树形 DP 题通过后序 DFS 返回子树叶子距离分布。它训练在节点处合并局部摘要，并避免直接枚举路径来统计跨子树叶子对。"
+  },
+  {
+    "slug": "number-of-good-pairs",
+    "reasonEN": "A fundamental frequency-counting problem where each new occurrence contributes the number seen before it. It provides a clean introduction to online combinatorial counting with hash maps or fixed-size counters.",
+    "reasonZH": "这是一道基础频次计数题，每出现一个新元素就贡献此前相同元素的数量。它适合入门哈希表或定长计数器的在线组合计数思路。"
+  },
+  {
+    "slug": "number-of-good-paths",
+    "reasonEN": "A hard union-find problem processed in value order, with equal-valued nodes counted within newly connected components. It is a milestone exercise for combining sorting, component activation, and group-level combinatorics.",
+    "reasonZH": "这道困难并查集题按节点值递增处理，并在新连通分量内统计相同值节点。它训练排序、连通分量激活和分组组合计数的协同使用。"
+  },
+  {
+    "slug": "number-of-good-ways-to-split-a-string",
+    "reasonEN": "This string counting problem tracks distinct characters on both sides of every cut. It reinforces prefix-suffix thinking and the importance of updating the two summaries in the correct order.",
+    "reasonZH": "该字符串计数题需要维护每个切分点左右两侧的不同字符数。它训练前后缀思想，以及双侧统计更新顺序这一常见细节。"
+  },
+  {
+    "slug": "number-of-great-partitions",
+    "reasonEN": "A hard knapsack-counting problem that counts all partitions and subtracts those with an undersized side. It demonstrates a reusable complement-counting transformation and careful bounded-sum DP design.",
+    "reasonZH": "这道困难背包计数题先统计全部划分，再扣除某一侧和不足的非法情况。它展示了可复用的补集计数变换，以及有界和 DP 的设计方法。"
+  },
+  {
+    "slug": "number-of-increasing-paths-in-a-grid",
+    "reasonEN": "This hard grid DP treats strictly increasing moves as a DAG and counts paths by memoized DFS or topological order. It strengthens the ability to recognize implicit acyclic graphs inside matrix problems.",
+    "reasonZH": "该困难网格 DP 将严格递增移动视为 DAG，可用记忆化 DFS 或拓扑序计数。它训练在矩阵题中识别隐式无环图并建立路径递推。"
+  },
+  {
+    "slug": "number-of-integers-with-popcount-depth-equal-to-k-i",
+    "reasonEN": "A hard digit-DP and combinatorics problem built around repeated popcount transitions. It teaches how to count binary numbers below a bound by fixing set-bit totals, then map those totals to depth classes.",
+    "reasonZH": "这是一道围绕重复 popcount 变换的困难数位 DP 与组合题。它训练按置位数统计上界内二进制数，再将置位数映射到对应深度类别。"
+  },
+  {
+    "slug": "number-of-integers-with-popcount-depth-equal-to-k-ii",
+    "reasonEN": "This advanced dynamic-query variant combines array updates with range-counting structures such as Fenwick or segment trees. It develops the ability to maintain aggregate classifications under updates instead of recomputing them.",
+    "reasonZH": "该进阶动态查询题结合数组更新与树状数组或线段树等范围统计结构。它训练在修改过程中维护聚合分类结果，而不是每次重新计算。"
+  },
+  {
+    "slug": "number-of-islands",
+    "reasonEN": "A canonical connected-components problem on a grid, solved with DFS, BFS, or union-find. It establishes the traversal template of discovering an unvisited component, marking it, and counting it once.",
+    "reasonZH": "这是网格连通分量的经典题，可用 DFS、BFS 或并查集解决。它建立了发现未访问分量、完成标记并只计数一次的标准搜索模板。"
+  },
+  {
+    "slug": "number-of-laser-beams-in-a-bank",
+    "reasonEN": "A linear matrix-scan problem that reduces the geometry to counts in consecutive nonempty rows. It teaches how recognizing the right aggregate can eliminate unnecessary pair enumeration.",
+    "reasonZH": "这道线性矩阵扫描题将几何关系归约为相邻非空行设备数的乘积。它训练识别正确聚合量，从而避免不必要的数对枚举。"
+  },
+  {
+    "slug": "number-of-lines-to-write-string",
+    "reasonEN": "A straightforward simulation problem that maintains the current line width and handles wrap boundaries precisely. It is useful practice for stateful scanning and off-by-one-safe condition ordering.",
+    "reasonZH": "这是一道直接模拟题，需要维护当前行宽并精确处理换行边界。它适合训练带状态扫描，以及避免边界条件和判断顺序错误。"
+  },
+  {
+    "slug": "number-of-longest-increasing-subsequence",
+    "reasonEN": "This classic DP extension tracks both the best increasing length and how many ways achieve it. It teaches that optimization DP often needs an accompanying count state, with equal-length merges handled carefully.",
+    "reasonZH": "该经典 DP 进阶题同时维护最长递增长度及其方案数。它训练优化型 DP 常需配套计数状态，并谨慎处理等长最优解的合并。"
+  },
+  {
+    "slug": "number-of-matching-subsequences",
+    "reasonEN": "A multi-query subsequence problem that benefits from character-position indexes or waiting buckets. It develops the key skill of sharing one source-string scan across many candidate words instead of matching each independently.",
+    "reasonZH": "这是一道多查询子序列题，可用字符位置索引或等待桶优化。它训练让多个候选单词共享一次源字符串扫描，而非逐个独立匹配。"
+  },
+  {
+    "slug": "number-of-music-playlists",
+    "reasonEN": "A hard combinatorial DP where the state captures playlist length and the number of distinct songs used. It is valuable for learning how availability counts change between introducing a new item and reusing an eligible one.",
+    "reasonZH": "这道困难组合 DP 以播放列表长度和已使用不同歌曲数为状态。它训练区分加入新元素与复用可选元素时，候选数量如何变化。"
+  },
+  {
+    "slug": "number-of-nodes-in-the-sub-tree-with-the-same-label",
+    "reasonEN": "A rooted-tree aggregation problem that uses postorder DFS to merge label frequencies from children. It strengthens the general pattern of computing subtree answers from child summaries and reading the local result afterward.",
+    "reasonZH": "该有根树聚合题通过后序 DFS 合并子节点的标签频次。它训练从子树摘要计算父节点答案，并在聚合后读取局部结果的通用模式。"
+  },
+  {
+    "slug": "number-of-operations-to-make-network-connected",
+    "reasonEN": "A graph-connectivity problem centered on union-find components and surplus edges. It teaches the feasibility check based on edge count, then the direct relation between remaining components and required operations.",
+    "reasonZH": "这道图连通性题围绕并查集分量与冗余边展开。它训练先根据边数判断可行性，再理解剩余连通分量数与所需操作次数的直接关系。"
+  },
+  {
+    "slug": "number-of-orders-in-the-backlog",
+    "reasonEN": "This order-book simulation uses a max-heap for buys and a min-heap for sells to repeatedly match the best prices. It is strong practice for dual-priority-queue invariants, partial fills, and modular aggregation.",
+    "reasonZH": "该订单簿模拟题用大根堆维护买单、用小根堆维护卖单，并持续撮合最优价格。它训练双优先队列不变量、部分成交和模聚合处理。"
+  },
+  {
+    "slug": "number-of-pairs-after-increment",
+    "reasonEN": "A hard array-counting problem that combines value frequencies with divide-and-conquer reasoning around increment effects. It develops the ability to isolate how a local transformation changes pair contributions rather than recounting every pair.",
+    "reasonZH": "这是一道困难数组计数题，结合值频次与分治分析递增操作的影响。它训练拆解局部变换如何改变数对贡献，而不是每次重新统计所有数对。"
+  },
+  {
+    "slug": "number-of-pairs-of-interchangeable-rectangles",
+    "reasonEN": "A ratio-normalization counting problem that reduces each rectangle by its gcd before hashing. It reinforces using canonical number-theoretic representations to group equivalent objects and accumulate combinations incrementally.",
+    "reasonZH": "该比例归一化计数题需先用最大公约数约分矩形边比，再进行哈希。它训练使用数论规范表示聚合等价对象，并增量累计组合数。"
+  },
+  {
+    "slug": "number-of-pairs-of-strings-with-concatenation-equal-to-target",
+    "reasonEN": "A string-hashing problem that checks valid target splits and counts matching complements by frequency. It teaches how to replace ordered pair enumeration with prefix-suffix decomposition and directional lookup.",
+    "reasonZH": "这道字符串哈希题枚举目标串的有效切分，并按频次查找对应补串。它训练用前后缀分解和有方向的查找替代有序数对枚举。"
+  },
+  {
+    "slug": "number-of-pairs-satisfying-inequality",
+    "reasonEN": "A hard pair-counting problem that transforms the inequality into an ordered-prefix query, then applies merge sort counting or a Fenwick tree. It is essential practice for converting two-index constraints into logarithmic data-structure operations.",
+    "reasonZH": "该困难数对计数题先将不等式变形为有序前缀查询，再用归并计数或树状数组求解。它训练把双下标约束转化为对数复杂度的数据结构操作。"
+  }
+]

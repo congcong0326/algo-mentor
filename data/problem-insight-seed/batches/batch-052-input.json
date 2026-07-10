@@ -1,0 +1,716 @@
+[
+  {
+    "slug": "gray-code",
+    "frontendDisplayId": "89",
+    "titleEn": "Gray Code",
+    "titleZh": "格雷编码",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Bit Manipulation",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "位运算",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/gray-code/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "greatest-common-divisor-of-strings",
+    "frontendDisplayId": "1071",
+    "titleEn": "Greatest Common Divisor of Strings",
+    "titleZh": "字符串的最大公因子",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/greatest-common-divisor-of-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "greatest-common-divisor-traversal",
+    "frontendDisplayId": "2709",
+    "titleEn": "Greatest Common Divisor Traversal",
+    "titleZh": "最大公约数遍历",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/greatest-common-divisor-traversal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "greatest-english-letter-in-upper-and-lower-case",
+    "frontendDisplayId": "2309",
+    "titleEn": "Greatest English Letter in Upper and Lower Case",
+    "titleZh": "兼具大小写的最好英文字母",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/greatest-english-letter-in-upper-and-lower-case/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "greatest-sum-divisible-by-three",
+    "frontendDisplayId": "1262",
+    "titleEn": "Greatest Sum Divisible by Three",
+    "titleZh": "可被三整除的最大和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/greatest-sum-divisible-by-three/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "grid-game",
+    "frontendDisplayId": "2017",
+    "titleEn": "Grid Game",
+    "titleZh": "网格游戏",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/grid-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "grid-illumination",
+    "frontendDisplayId": "1001",
+    "titleEn": "Grid Illumination",
+    "titleZh": "网格照明",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/grid-illumination/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "grid-teleportation-traversal",
+    "frontendDisplayId": "3552",
+    "titleEn": "Grid Teleportation Traversal",
+    "titleZh": "网格传送门旅游",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Hash Table",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "哈希表",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/grid-teleportation-traversal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "group-anagrams",
+    "frontendDisplayId": "49",
+    "titleEn": "Group Anagrams",
+    "titleZh": "字母异位词分组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/group-anagrams/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "group-anagrams-lcci",
+    "frontendDisplayId": "面试题 10.02",
+    "titleEn": null,
+    "titleZh": "变位词组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/group-anagrams-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "group-by",
+    "frontendDisplayId": "2631",
+    "titleEn": "Group By",
+    "titleZh": "分组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/group-by/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "group-sold-products-by-the-date",
+    "frontendDisplayId": "1484",
+    "titleEn": "Group Sold Products By The Date",
+    "titleZh": "按日期分组销售产品",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/group-sold-products-by-the-date/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "group-the-people-given-the-group-size-they-belong-to",
+    "frontendDisplayId": "1282",
+    "titleEn": "Group the People Given the Group Size They Belong To",
+    "titleZh": "用户分组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/group-the-people-given-the-group-size-they-belong-to/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "groups-of-special-equivalent-strings",
+    "frontendDisplayId": "893",
+    "titleEn": "Groups of Special-Equivalent Strings",
+    "titleZh": "特殊等价字符串组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/groups-of-special-equivalent-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "groups-of-strings",
+    "frontendDisplayId": "2157",
+    "titleEn": "Groups of Strings",
+    "titleZh": "字符串分组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table",
+      "String",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表",
+      "字符串",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/groups-of-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "grumpy-bookstore-owner",
+    "frontendDisplayId": "1052",
+    "titleEn": "Grumpy Bookstore Owner",
+    "titleZh": "爱生气的书店老板",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/grumpy-bookstore-owner/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "gu-piao-de-zui-da-li-run-lcof",
+    "frontendDisplayId": "LCR 188",
+    "titleEn": null,
+    "titleZh": "买卖芯片的最佳时机",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/gu-piao-de-zui-da-li-run-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "guess-number-higher-or-lower",
+    "frontendDisplayId": "374",
+    "titleEn": "Guess Number Higher or Lower",
+    "titleZh": "猜数字大小",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Interactive"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "交互"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/guess-number-higher-or-lower/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "guess-number-higher-or-lower-ii",
+    "frontendDisplayId": "375",
+    "titleEn": "Guess Number Higher or Lower II",
+    "titleZh": "猜数字大小 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Game Theory",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "博弈",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/guess-number-higher-or-lower-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "guess-numbers",
+    "frontendDisplayId": "LCP 01",
+    "titleEn": null,
+    "titleZh": "猜数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/guess-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "guess-the-word",
+    "frontendDisplayId": "843",
+    "titleEn": "Guess the Word",
+    "titleZh": "猜猜这个单词",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Game Theory",
+      "Interactive",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "博弈",
+      "交互",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/guess-the-word/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "h-index",
+    "frontendDisplayId": "274",
+    "titleEn": "H-Index",
+    "titleZh": "H 指数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting Sort",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数排序",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/h-index/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "h-index-ii",
+    "frontendDisplayId": "275",
+    "titleEn": "H-Index II",
+    "titleZh": "H 指数 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/h-index-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "h54YBf",
+    "frontendDisplayId": "LCR 048",
+    "titleEn": null,
+    "titleZh": "二叉树的序列化与反序列化",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Design",
+      "String",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "设计",
+      "字符串",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/h54YBf/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "hPov7L",
+    "frontendDisplayId": "LCR 044",
+    "titleEn": null,
+    "titleZh": "在每个树行中找最大值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/hPov7L/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "hSRGyL",
+    "frontendDisplayId": "LCP 26",
+    "titleEn": null,
+    "titleZh": "导航装置",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/hSRGyL/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "hamming-distance",
+    "frontendDisplayId": "461",
+    "titleEn": "Hamming Distance",
+    "titleZh": "汉明距离",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/hamming-distance/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "hand-of-straights",
+    "frontendDisplayId": "846",
+    "titleEn": "Hand of Straights",
+    "titleZh": "一手顺子",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/hand-of-straights/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "handling-sum-queries-after-update",
+    "frontendDisplayId": "2569",
+    "titleEn": "Handling Sum Queries After Update",
+    "titleZh": "更新数组后处理求和查询",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/handling-sum-queries-after-update/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "hanota-lcci",
+    "frontendDisplayId": "面试题 08.06",
+    "titleEn": null,
+    "titleZh": "汉诺塔问题",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "递归"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/hanota-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-052",
+    "claimedAt": "2026-07-10T03:47:04.235362+00:00",
+    "completedAt": null
+  }
+]

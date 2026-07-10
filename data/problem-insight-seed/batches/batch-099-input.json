@@ -1,0 +1,736 @@
+[
+  {
+    "slug": "points-that-intersect-with-cars",
+    "frontendDisplayId": "2848",
+    "titleEn": "Points That Intersect With Cars",
+    "titleZh": "与车相交的点",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/points-that-intersect-with-cars/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "pond-sizes-lcci",
+    "frontendDisplayId": "面试题 16.19",
+    "titleEn": null,
+    "titleZh": "水域大小",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix",
+      "Union Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/pond-sizes-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "poor-pigs",
+    "frontendDisplayId": "458",
+    "titleEn": "Poor Pigs",
+    "titleZh": "可怜的小猪",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/poor-pigs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "populating-next-right-pointers-in-each-node",
+    "frontendDisplayId": "116",
+    "titleEn": "Populating Next Right Pointers in Each Node",
+    "titleZh": "填充每个节点的下一个右侧节点指针",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Linked List",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "链表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/populating-next-right-pointers-in-each-node/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "populating-next-right-pointers-in-each-node-ii",
+    "frontendDisplayId": "117",
+    "titleEn": "Populating Next Right Pointers in Each Node II",
+    "titleZh": "填充每个节点的下一个右侧节点指针 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Linked List",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "链表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "positions-of-large-groups",
+    "frontendDisplayId": "830",
+    "titleEn": "Positions of Large Groups",
+    "titleZh": "较大分组的位置",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/positions-of-large-groups/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "possible-bipartition",
+    "frontendDisplayId": "886",
+    "titleEn": "Possible Bipartition",
+    "titleZh": "可能的二分法",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/possible-bipartition/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "power-grid-maintenance",
+    "frontendDisplayId": "3607",
+    "titleEn": "Power Grid Maintenance",
+    "titleZh": "电网维护",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Ordered Set",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "哈希表",
+      "堆（优先队列）",
+      "有序集合",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/power-grid-maintenance/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "power-of-four",
+    "frontendDisplayId": "342",
+    "titleEn": "Power of Four",
+    "titleZh": "4的幂",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/power-of-four/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "power-of-heroes",
+    "frontendDisplayId": "2681",
+    "titleEn": "Power of Heroes",
+    "titleZh": "英雄的力量",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Math",
+      "Prefix Sum",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "数学",
+      "前缀和",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/power-of-heroes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "power-of-three",
+    "frontendDisplayId": "326",
+    "titleEn": "Power of Three",
+    "titleZh": "3 的幂",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/power-of-three/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "power-of-two",
+    "frontendDisplayId": "231",
+    "titleEn": "Power of Two",
+    "titleZh": "2 的幂",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/power-of-two/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "power-set-lcci",
+    "frontendDisplayId": "面试题 08.04",
+    "titleEn": null,
+    "titleZh": "幂集",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/power-set-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "powerful-integers",
+    "frontendDisplayId": "970",
+    "titleEn": "Powerful Integers",
+    "titleZh": "强整数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/powerful-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "powx-n",
+    "frontendDisplayId": "50",
+    "titleEn": "Pow(x, n)",
+    "titleZh": "Pow(x, n)",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/powx-n/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "predict-the-winner",
+    "frontendDisplayId": "486",
+    "titleEn": "Predict the Winner",
+    "titleZh": "预测赢家",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Game Theory",
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "博弈",
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/predict-the-winner/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "prefix-and-suffix-search",
+    "frontendDisplayId": "745",
+    "titleEn": "Prefix and Suffix Search",
+    "titleZh": "前缀和后缀搜索",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Table",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希表",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/prefix-and-suffix-search/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "preimage-size-of-factorial-zeroes-function",
+    "frontendDisplayId": "793",
+    "titleEn": "Preimage Size of Factorial Zeroes Function",
+    "titleZh": "阶乘函数后 K 个零",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/preimage-size-of-factorial-zeroes-function/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "previous-permutation-with-one-swap",
+    "frontendDisplayId": "1053",
+    "titleEn": "Previous Permutation With One Swap",
+    "titleZh": "交换一次的先前排列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/previous-permutation-with-one-swap/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "primary-department-for-each-employee",
+    "frontendDisplayId": "1789",
+    "titleEn": "Primary Department for Each Employee",
+    "titleZh": "员工的直属部门",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/primary-department-for-each-employee/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "prime-arrangements",
+    "frontendDisplayId": "1175",
+    "titleEn": "Prime Arrangements",
+    "titleZh": "质数排列",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/prime-arrangements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "prime-in-diagonal",
+    "frontendDisplayId": "2614",
+    "titleEn": "Prime In Diagonal",
+    "titleZh": "对角线上的质数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Matrix",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "矩阵",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/prime-in-diagonal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "prime-number-of-set-bits-in-binary-representation",
+    "frontendDisplayId": "762",
+    "titleEn": "Prime Number of Set Bits in Binary Representation",
+    "titleZh": "二进制表示中质数个计算置位",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/prime-number-of-set-bits-in-binary-representation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "prime-pairs-with-target-sum",
+    "frontendDisplayId": "2761",
+    "titleEn": "Prime Pairs With Target Sum",
+    "titleZh": "和等于目标值的质数对",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/prime-pairs-with-target-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "prime-palindrome",
+    "frontendDisplayId": "866",
+    "titleEn": "Prime Palindrome",
+    "titleZh": "回文质数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/prime-palindrome/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "prime-subtraction-operation",
+    "frontendDisplayId": "2601",
+    "titleEn": "Prime Subtraction Operation",
+    "titleZh": "质数减法运算",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/prime-subtraction-operation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "print-binary-tree",
+    "frontendDisplayId": "655",
+    "titleEn": "Print Binary Tree",
+    "titleZh": "输出二叉树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/print-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "print-foobar-alternately",
+    "frontendDisplayId": "1115",
+    "titleEn": "Print FooBar Alternately",
+    "titleZh": "交替打印 FooBar",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Concurrency"
+    ],
+    "tagLabelsZh": [
+      "多线程"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/print-foobar-alternately/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "print-in-order",
+    "frontendDisplayId": "1114",
+    "titleEn": "Print in Order",
+    "titleZh": "按序打印",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Concurrency"
+    ],
+    "tagLabelsZh": [
+      "多线程"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/print-in-order/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "print-words-vertically",
+    "frontendDisplayId": "1324",
+    "titleEn": "Print Words Vertically",
+    "titleZh": "竖直打印单词",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/print-words-vertically/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-099",
+    "claimedAt": "2026-07-10T07:05:32.701463+00:00",
+    "completedAt": null
+  }
+]

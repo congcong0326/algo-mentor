@@ -1,0 +1,716 @@
+[
+  {
+    "slug": "utf-8-validation",
+    "frontendDisplayId": "393",
+    "titleEn": "UTF-8 Validation",
+    "titleZh": "UTF-8 编码验证",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/utf-8-validation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "vEAB3K",
+    "frontendDisplayId": "LCR 106",
+    "titleEn": null,
+    "titleZh": "判断二分图",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph",
+      "Union Find"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "并查集"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/vEAB3K/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "vFjcfV",
+    "frontendDisplayId": "LCP 42",
+    "titleEn": null,
+    "titleZh": "玩具套圈",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Geometry",
+      "Hash Table",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "几何",
+      "哈希表",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/vFjcfV/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-anagram",
+    "frontendDisplayId": "242",
+    "titleEn": "Valid Anagram",
+    "titleZh": "有效的字母异位词",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-anagram/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-arrangement-of-pairs",
+    "frontendDisplayId": "2097",
+    "titleEn": "Valid Arrangement of Pairs",
+    "titleZh": "合法重新排列数对",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Eulerian Circuit",
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "欧拉回路",
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-arrangement-of-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-binary-strings-with-cost-limit",
+    "frontendDisplayId": "3955",
+    "titleEn": "Valid Binary Strings With Cost Limit",
+    "titleZh": "成本限制的有效二进制字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Bit Manipulation",
+      "Enumeration",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "位运算",
+      "枚举",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-binary-strings-with-cost-limit/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-boomerang",
+    "frontendDisplayId": "1037",
+    "titleEn": "Valid Boomerang",
+    "titleZh": "有效的回旋镖",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-boomerang/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-digit-number",
+    "frontendDisplayId": "3908",
+    "titleEn": "Valid Digit Number",
+    "titleZh": "有效数字整数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-digit-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-elements-in-an-array",
+    "frontendDisplayId": "3912",
+    "titleEn": "Valid Elements in an Array",
+    "titleZh": "数组中的有效元素",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-elements-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-mountain-array",
+    "frontendDisplayId": "941",
+    "titleEn": "Valid Mountain Array",
+    "titleZh": "有效的山脉数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-mountain-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-number",
+    "frontendDisplayId": "65",
+    "titleEn": "Valid Number",
+    "titleZh": "有效数字",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-palindrome",
+    "frontendDisplayId": "125",
+    "titleEn": "Valid Palindrome",
+    "titleZh": "验证回文串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-palindrome/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-palindrome-ii",
+    "frontendDisplayId": "680",
+    "titleEn": "Valid Palindrome II",
+    "titleZh": "验证回文串 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Greedy",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-palindrome-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-parentheses",
+    "frontendDisplayId": "20",
+    "titleEn": "Valid Parentheses",
+    "titleZh": "有效的括号",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-parentheses/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-parenthesis-string",
+    "frontendDisplayId": "678",
+    "titleEn": "Valid Parenthesis String",
+    "titleZh": "有效的括号字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Greedy",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "贪心",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-parenthesis-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-perfect-square",
+    "frontendDisplayId": "367",
+    "titleEn": "Valid Perfect Square",
+    "titleZh": "有效的完全平方数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-perfect-square/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-permutations-for-di-sequence",
+    "frontendDisplayId": "903",
+    "titleEn": "Valid Permutations for DI Sequence",
+    "titleZh": "DI 序列的有效排列",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-permutations-for-di-sequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-phone-numbers",
+    "frontendDisplayId": "193",
+    "titleEn": "Valid Phone Numbers",
+    "titleZh": "有效电话号码",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Shell"
+    ],
+    "tagLabelsZh": [
+      "Shell"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-phone-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-square",
+    "frontendDisplayId": "593",
+    "titleEn": "Valid Square",
+    "titleZh": "有效的正方形",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Geometry",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "几何",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-square/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-subarrays-with-matching-sum-digits-i",
+    "frontendDisplayId": "3969",
+    "titleEn": "Valid Subarrays With Matching Sum Digits I",
+    "titleZh": "求和后首尾数字相同的有效子数组 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Hash Table",
+      "Prefix Sum",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "哈希表",
+      "前缀和",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-subarrays-with-matching-sum-digits-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-sudoku",
+    "frontendDisplayId": "36",
+    "titleEn": "Valid Sudoku",
+    "titleZh": "有效的数独",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-sudoku/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-tic-tac-toe-state",
+    "frontendDisplayId": "794",
+    "titleEn": "Valid Tic-Tac-Toe State",
+    "titleZh": "有效的井字游戏",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-tic-tac-toe-state/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-triangle-number",
+    "frontendDisplayId": "611",
+    "titleEn": "Valid Triangle Number",
+    "titleZh": "有效三角形的个数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-triangle-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "valid-word",
+    "frontendDisplayId": "3136",
+    "titleEn": "Valid Word",
+    "titleZh": "有效单词",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/valid-word/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "validate-binary-search-tree",
+    "frontendDisplayId": "98",
+    "titleEn": "Validate Binary Search Tree",
+    "titleZh": "验证二叉搜索树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/validate-binary-search-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "validate-binary-tree-nodes",
+    "frontendDisplayId": "1361",
+    "titleEn": "Validate Binary Tree Nodes",
+    "titleZh": "验证二叉树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Tree",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "树",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/validate-binary-tree-nodes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "validate-ip-address",
+    "frontendDisplayId": "468",
+    "titleEn": "Validate IP Address",
+    "titleZh": "验证IP地址",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/validate-ip-address/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "validate-stack-sequences",
+    "frontendDisplayId": "946",
+    "titleEn": "Validate Stack Sequences",
+    "titleZh": "验证栈序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/validate-stack-sequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "verbal-arithmetic-puzzle",
+    "frontendDisplayId": "1307",
+    "titleEn": "Verbal Arithmetic Puzzle",
+    "titleZh": "口算难题",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/verbal-arithmetic-puzzle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "verify-preorder-serialization-of-a-binary-tree",
+    "frontendDisplayId": "331",
+    "titleEn": "Verify Preorder Serialization of a Binary Tree",
+    "titleZh": "验证二叉树的前序序列化",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Stack",
+      "String",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "栈",
+      "字符串",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/verify-preorder-serialization-of-a-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-123",
+    "claimedAt": "2026-07-10T08:12:38.534469+00:00",
+    "completedAt": null
+  }
+]

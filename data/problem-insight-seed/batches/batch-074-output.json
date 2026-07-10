@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "maximum-sum-of-almost-unique-subarray",
+    "reasonEN": "A medium fixed-window optimization problem; maintain the window sum and frequency map while checking the distinct-count threshold; it strengthens the combination of sliding windows with validity constraints.",
+    "reasonZH": "中等难度的定长窗口优化题，需要维护窗口和与频次表，并检查不同元素数量阈值；训练滑动窗口与有效性约束的结合；是频率统计窗口题的典型练习。"
+  },
+  {
+    "slug": "maximum-sum-of-alternating-subsequence-with-distance-at-least-k",
+    "reasonEN": "A hard constrained subsequence DP problem; use segment-tree states to query compatible earlier positions while preserving alternation; it develops data-structure acceleration for long-range transitions.",
+    "reasonZH": "困难的受间距约束子序列 DP 题，需要用线段树状态查询兼容的历史位置并保持交替关系；训练远距离转移的数据结构加速；适合进阶动态规划。"
+  },
+  {
+    "slug": "maximum-sum-of-an-hourglass",
+    "reasonEN": "A medium matrix pattern-enumeration problem; evaluate each valid hourglass with direct accumulation or prefix sums; it practices clean two-dimensional boundary handling for fixed shapes.",
+    "reasonZH": "中等难度的矩阵形状枚举题，可直接累加或借助前缀和计算每个合法沙漏；训练二维固定形状的边界处理；适合巩固矩阵扫描。"
+  },
+  {
+    "slug": "maximum-sum-of-distinct-subarrays-with-length-k",
+    "reasonEN": "A medium fixed-size sliding-window problem; track both the running sum and element frequencies to enforce uniqueness; it is a core template for distinct-window maximization.",
+    "reasonZH": "中等难度的定长滑动窗口题，同时维护窗口和与元素频次以保证互异；训练双状态窗口维护；是无重复窗口求最值的核心模板。"
+  },
+  {
+    "slug": "maximum-sum-of-edge-values-in-a-graph",
+    "reasonEN": "A hard graph and greedy optimization problem; translate edge contributions into node-level weights and assign values by marginal gain; it teaches finding separable structure inside graph objectives.",
+    "reasonZH": "困难的图论贪心优化题，需要将边贡献转化为节点层面的权重并按边际收益分配数值；训练从图目标中提取可分离结构；建模价值很高。"
+  },
+  {
+    "slug": "maximum-sum-of-m-non-overlapping-subarrays-i",
+    "reasonEN": "A hard multi-interval dynamic-programming problem; combine prefix sums with monotonic-queue optimization to choose compatible segments; it develops efficient take-or-skip transitions under non-overlap constraints.",
+    "reasonZH": "困难的多区间动态规划题，结合前缀和与单调队列优化选择互不重叠的区间；训练不重叠约束下的取舍转移；适合掌握区间 DP 优化。"
+  },
+  {
+    "slug": "maximum-sum-of-m-non-overlapping-subarrays-ii",
+    "reasonEN": "A hard scalable variant of non-overlapping interval selection; use prefix sums, DP, and monotonic structures to control transition costs; it tests how to preserve the same recurrence under tighter limits.",
+    "reasonZH": "困难的非重叠区间选择进阶题，需要以前缀和、DP 和单调结构控制转移成本；训练在更强限制下保持同一递推思想；有助于提升复杂度优化能力。"
+  },
+  {
+    "slug": "maximum-sum-of-subsequence-with-non-adjacent-elements",
+    "reasonEN": "A hard dynamic segment-tree problem; store boundary-selection DP states in each node and merge them after updates; it is a landmark pattern for maintaining house-robber-style answers online.",
+    "reasonZH": "困难的动态线段树题，需要在每个节点保存端点选取状态并在更新后合并 DP；训练在线维护打家劫舍型答案；是线段树状态设计的代表题。"
+  },
+  {
+    "slug": "maximum-sum-of-three-numbers-divisible-by-three",
+    "reasonEN": "A medium remainder-class greedy problem; group candidates by modulo three and compare the few feasible remainder combinations; it sharpens modular classification before local maximization.",
+    "reasonZH": "中等难度的余数分类贪心题，按模 3 分组并比较少数可行的余数组合；训练先做模分类再局部取最优；适合巩固整除约束建模。"
+  },
+  {
+    "slug": "maximum-sum-of-two-non-overlapping-subarrays",
+    "reasonEN": "A medium two-window DP problem; precompute the best fixed-length sum before each split and combine it with the opposite window; it teaches directional prefix optimization for disjoint choices.",
+    "reasonZH": "中等难度的双窗口动态规划题，预处理每个切分点之前的最佳定长和，再与另一侧窗口组合；训练方向性前缀优化；是无重叠选择的经典技巧。"
+  },
+  {
+    "slug": "maximum-sum-queries",
+    "reasonEN": "A hard offline query problem; sort points and queries by one threshold, then maintain the best second-coordinate frontier with a segment tree or monotonic stack; it develops multidimensional dominance-query techniques.",
+    "reasonZH": "困难的离线查询题，按一个阈值排序点和查询，再用线段树或单调栈维护另一维的最优前沿；训练二维支配查询；是离线数据结构题的典型代表。"
+  },
+  {
+    "slug": "maximum-sum-with-at-most-k-elements",
+    "reasonEN": "A medium matrix greedy-selection problem; reduce each row to its permitted candidates and select the global best values with sorting or a heap; it practices respecting local caps before global optimization.",
+    "reasonZH": "中等难度的矩阵贪心选择题，先将每行缩减为允许候选，再用排序或堆选取全局最优元素；训练先满足局部上限再做全局优化；很适合掌握分层贪心。"
+  },
+  {
+    "slug": "maximum-sum-with-exactly-k-elements",
+    "reasonEN": "An easy greedy accumulation problem; repeatedly take and update the current maximum according to the operation rule; it reinforces identifying when repeated local improvement is globally optimal.",
+    "reasonZH": "简单的贪心累加题，按操作规则反复选择并更新当前最大值；训练识别重复局部改进何时构成全局最优；适合建立基础贪心直觉。"
+  },
+  {
+    "slug": "maximum-swap",
+    "reasonEN": "A medium digit-greedy problem; record the rightmost occurrence of each digit and make the earliest beneficial swap; it teaches why a high-position improvement dominates all later choices.",
+    "reasonZH": "中等难度的数位贪心题，记录每个数字最靠右的位置并进行最早的有利交换；训练高位改进优先于低位选择的原则；是数位贪心经典题。"
+  },
+  {
+    "slug": "maximum-tastiness-of-candy-basket",
+    "reasonEN": "A medium binary-search-on-answer problem; sort values and greedily test whether a proposed minimum separation can select enough items; it is a canonical feasibility-check pattern.",
+    "reasonZH": "中等难度的答案二分题，排序后贪心检查给定最小间距能否选出足够元素；训练单调可行性判断；是二分答案的经典模板。"
+  },
+  {
+    "slug": "maximum-total-beauty-of-the-gardens",
+    "reasonEN": "A hard sorting and resource-allocation problem; enumerate the number of completed gardens and use prefix sums to raise the remaining minimum efficiently; it develops balancing two competing reward components.",
+    "reasonZH": "困难的排序资源分配题，枚举达到满值的花园数量，并用前缀和高效抬升其余花园的最小值；训练平衡两类收益；是枚举加贪心的高质量题目。"
+  },
+  {
+    "slug": "maximum-total-damage-with-spell-casting",
+    "reasonEN": "A medium value-compression DP problem; aggregate equal damage values, sort them, and transition only from compatible earlier powers; it generalizes the delete-and-earn pattern to wider exclusion ranges.",
+    "reasonZH": "中等难度的数值压缩动态规划题，聚合相同伤害值并排序，只从兼容的较早数值转移；训练将删除并获得模式推广到更宽的排斥范围；很有迁移价值。"
+  },
+  {
+    "slug": "maximum-total-from-optimal-activation-order",
+    "reasonEN": "A medium ordering-and-greedy optimization problem; sort or prioritize activations by their marginal contribution to later choices; it trains exchange arguments for choosing an optimal execution order.",
+    "reasonZH": "中等难度的顺序贪心优化题，需要按对后续选择的边际贡献排序或优先激活；训练最优执行顺序的交换论证；适合理解调度类贪心。"
+  },
+  {
+    "slug": "maximum-total-importance-of-roads",
+    "reasonEN": "A medium graph-degree greedy problem; assign larger labels to higher-degree cities after counting incidences; it demonstrates rearrangement reasoning in a graph setting.",
+    "reasonZH": "中等难度的图度数贪心题，统计连接次数后把更大标签分给度数更高的城市；训练图场景中的重排不等式思维；是图论贪心入门题。"
+  },
+  {
+    "slug": "maximum-total-reward-using-operations-i",
+    "reasonEN": "A medium bitset dynamic-programming problem; process sorted rewards and shift reachable-sum states under the strict eligibility condition; it teaches compact subset-state transitions.",
+    "reasonZH": "中等难度的位集动态规划题，按奖励排序后在严格可选条件下移位更新可达和；训练紧凑的子集状态转移；适合掌握 bitset 优化。"
+  },
+  {
+    "slug": "maximum-total-reward-using-operations-ii",
+    "reasonEN": "A hard large-constraint extension of reward-state DP; use bit manipulation to maintain reachable sums without expanding a quadratic table; it demonstrates how representation choice determines DP scalability.",
+    "reasonZH": "困难的大数据范围奖励状态 DP 题，需要用位运算维护可达和而不展开二次表；训练通过状态表示提升 DP 可扩展性；是位集优化的进阶练习。"
+  },
+  {
+    "slug": "maximum-total-subarray-value-i",
+    "reasonEN": "A medium array greedy problem; identify the extrema that control each selected subarray contribution and aggregate them correctly; it trains simplifying interval objectives before optimizing them.",
+    "reasonZH": "中等难度的数组贪心题，需要识别控制各选中子数组贡献的极值并正确聚合；训练先化简区间目标再优化；有助于提升题意转化能力。"
+  },
+  {
+    "slug": "maximum-total-subarray-value-ii",
+    "reasonEN": "A hard dynamic range-optimization problem; combine greedy interval insight with heaps or a segment tree to support the larger operation space; it practices turning a static argument into an online structure.",
+    "reasonZH": "困难的动态区间优化题，需要结合贪心区间洞见与堆或线段树应对更大的操作空间；训练将静态结论转化为在线数据结构；适合进阶区间维护。"
+  },
+  {
+    "slug": "maximum-total-sum-of-k-selected-elements",
+    "reasonEN": "A medium sorting-and-greedy selection problem; order candidates by contribution and choose the best feasible k under the selection rule; it reinforces ranking-based optimization with constraints.",
+    "reasonZH": "中等难度的排序贪心选择题，按贡献排序并在规则约束下选取最优的 k 个元素；训练带约束的排序选择；是基础贪心的实用变体。"
+  },
+  {
+    "slug": "maximum-total-value",
+    "reasonEN": "A hard greedy and binary-search optimization problem; formulate the target total as a monotone feasibility condition and maximize it through threshold testing; it develops proof-oriented answer-search reasoning.",
+    "reasonZH": "困难的贪心与二分优化题，需要把目标总价值表述为单调可行条件并通过阈值测试求最大值；训练带证明的答案搜索；适合提升二分建模能力。"
+  },
+  {
+    "slug": "maximum-total-value-of-covered-indices",
+    "reasonEN": "A medium coverage DP problem; encode which indices become covered as selections are made and choose transitions by marginal value; it trains modeling overlapping benefits without double counting.",
+    "reasonZH": "中等难度的覆盖动态规划题，需要编码选择后哪些下标被覆盖，并按边际价值进行转移；训练避免重叠收益重复计算的建模；适合学习覆盖类 DP。"
+  },
+  {
+    "slug": "maximum-trailing-zeros-in-a-cornered-path",
+    "reasonEN": "A medium matrix prefix-sum problem; factor values into counts of twos and fives, then evaluate each L-shaped path from directional sums; it teaches decomposition of multiplicative objectives into additive statistics.",
+    "reasonZH": "中等难度的矩阵前缀和题，先分解每个值中 2 和 5 的个数，再用方向前缀和计算各 L 形路径；训练把乘法目标拆成可加统计量；是因子分解建模的经典题。"
+  },
+  {
+    "slug": "maximum-twin-sum-of-a-linked-list",
+    "reasonEN": "A medium linked-list symmetry problem; find the midpoint and reverse the second half before pairing mirrored nodes; it practices in-place reversal and slow-fast pointer coordination.",
+    "reasonZH": "中等难度的链表对称配对题，先找中点并反转后半段，再比较镜像节点；训练原地反转与快慢指针配合；是链表操作的核心模板。"
+  },
+  {
+    "slug": "maximum-unique-subarray-sum-after-deletion",
+    "reasonEN": "An easy greedy and hash-based selection problem; retain each beneficial distinct value once while discarding harmful duplicates or negatives as allowed; it reinforces reasoning about deletion freedom and contribution signs.",
+    "reasonZH": "简单的贪心哈希选择题，在允许删除的条件下保留每个有益的不同值一次，并舍弃有害重复项或负值；训练删除自由度与贡献正负的判断；适合巩固集合贪心。"
+  },
+  {
+    "slug": "maximum-units-on-a-truck",
+    "reasonEN": "An easy capacity greedy problem; sort box types by units per box and load the highest-value types first; it is the canonical fractional-knapsack-style ordering pattern without splitting items.",
+    "reasonZH": "简单的容量贪心题，按每箱单元数排序并优先装载价值最高的类型；训练容量受限下的价值密度排序；是背包式贪心的经典入门。"
+  }
+]

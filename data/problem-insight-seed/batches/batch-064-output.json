@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "make-array-zero-by-subtracting-equal-amounts",
+    "reasonEN": "An easy greedy observation problem where each distinct positive value requires one operation. It trains looking past simulation to identify the invariant that determines the answer directly.",
+    "reasonZH": "简单贪心观察题，每个不同的正数恰好对应一次操作。它训练跳出模拟过程，直接识别决定答案的不变量。"
+  },
+  {
+    "slug": "make-costs-of-paths-equal-in-a-binary-tree",
+    "reasonEN": "A medium bottom-up tree DP problem that equalizes root-to-leaf path sums. It trains propagating the larger child path upward while charging the smaller side for the required increment.",
+    "reasonZH": "中等自底向上树形 DP 题，需要使所有根到叶路径和相等。它训练向上返回较大的子路径值，并为较小一侧累加必要增量。"
+  },
+  {
+    "slug": "make-k-subarray-sums-equal",
+    "reasonEN": "A medium number-theory greedy problem that decomposes indices into gcd-based cycles. It trains minimizing absolute adjustments by moving each cycle to its median, a reusable L1 optimization pattern.",
+    "reasonZH": "中等数论贪心题，按 gcd 将下标分解为若干环。它训练将每个环调整到中位数以最小化绝对值代价，这是可复用的 L1 优化模式。"
+  },
+  {
+    "slug": "make-lexicographically-smallest-array-by-swapping-elements",
+    "reasonEN": "A medium sorting and connectivity problem that groups values linked by allowable swaps. It trains identifying exchangeable components and assigning sorted values to sorted positions for lexicographic optimality.",
+    "reasonZH": "中等排序连通性题，将可通过合法交换连接的值分组。它训练识别可交换连通块，并把排序后的值分配给排序后的下标以获得最小字典序。"
+  },
+  {
+    "slug": "make-number-of-distinct-characters-equal",
+    "reasonEN": "A medium frequency-enumeration problem that tests one character transfer between strings. It trains modeling how a move changes distinct counts, especially when a source count drops to zero or a target is new.",
+    "reasonZH": "中等频次枚举题，检验两个字符串间转移一个字符。它训练建模一次移动如何改变不同字符数，尤其是源字符归零或目标字符新出现的情况。"
+  },
+  {
+    "slug": "make-string-a-subsequence-using-cyclic-increments",
+    "reasonEN": "A medium two-pointer string problem with a one-step cyclic character transformation. It trains greedy subsequence matching and precise wraparound comparison from z to a.",
+    "reasonZH": "中等双指针字符串题，允许字符循环增加一步。它训练贪心匹配子序列，并精确处理从 z 回绕到 a 的比较。"
+  },
+  {
+    "slug": "make-sum-divisible-by-p",
+    "reasonEN": "A medium prefix-remainder problem that removes the shortest subarray with the required modulo. It trains deriving the needed previous remainder and storing the latest index for optimal length.",
+    "reasonZH": "中等前缀余数题，需要删除最短子数组以满足指定模值。它训练推导所需的历史余数，并保存最新下标以优化长度。"
+  },
+  {
+    "slug": "make-the-string-great",
+    "reasonEN": "An easy stack-based string reduction problem that cancels adjacent letters differing only by case. It reinforces using a stack to resolve cascading local conflicts in linear time.",
+    "reasonZH": "简单栈式字符串消减题，消除仅大小写不同的相邻字母。它巩固用栈在线性时间内处理级联局部冲突。"
+  },
+  {
+    "slug": "make-the-xor-of-all-segments-equal-to-zero",
+    "reasonEN": "A hard grouped-DP problem that exploits periodic index classes and XOR state transitions. It trains minimizing edits across frequency groups while using a fallback transition for states without a matching value.",
+    "reasonZH": "高难分组 DP 题，利用周期性下标类别和异或状态转移。它训练在频次组间最小化修改次数，并为没有匹配值的状态设计兜底转移。"
+  },
+  {
+    "slug": "make-three-strings-equal",
+    "reasonEN": "An easy common-prefix problem where deletions preserve only prefixes. It trains scanning three strings in lockstep and recognizing impossibility as soon as their shared prefix becomes empty.",
+    "reasonZH": "简单公共前缀题，删除操作只能保留前缀。它训练同步扫描三个字符串，并在公共前缀为空时立即判断无解。"
+  },
+  {
+    "slug": "make-two-arrays-equal-by-reversing-subarrays",
+    "reasonEN": "An easy multiset-equivalence problem based on the freedom created by arbitrary reversals. It trains reducing an operation question to frequency comparison or sorted-array equality.",
+    "reasonZH": "简单多重集合等价题，利用任意子数组翻转带来的重排自由度。它训练将操作问题归约为频次比较或排序后数组相等性。"
+  },
+  {
+    "slug": "making-a-large-island",
+    "reasonEN": "A hard grid-connectivity problem that labels existing islands before considering one flip. It trains component sizing and deduplicating neighboring component IDs when evaluating each water cell.",
+    "reasonZH": "高难网格连通性题，先标记已有岛屿，再考虑翻转一个格子。它训练计算连通块大小，并在评估水格时对相邻岛屿编号去重。"
+  },
+  {
+    "slug": "making-file-names-unique",
+    "reasonEN": "A medium hash-map simulation problem for allocating the next available suffixed filename. It trains storing both used names and the next candidate suffix to avoid repeated probing.",
+    "reasonZH": "中等哈希表模拟题，为文件名分配下一个可用后缀。它训练同时存储已用名称和下次候选后缀，避免反复试探。"
+  },
+  {
+    "slug": "managers-with-at-least-5-direct-reports",
+    "reasonEN": "A medium SQL grouping problem that counts direct reports by manager. It reinforces self-joins, GROUP BY, and HAVING for threshold filtering over organizational data.",
+    "reasonZH": "中等 SQL 分组题，按经理统计直接下属数量。它巩固自连接、GROUP BY 和 HAVING 在组织数据阈值筛选中的使用。"
+  },
+  {
+    "slug": "manhattan-distances-of-all-arrangements-of-pieces",
+    "reasonEN": "A hard combinatorics problem that sums coordinate-wise Manhattan contributions across all placements. It trains separating dimensions, counting pair participation, and applying modular combinatorial factors.",
+    "reasonZH": "高难组合数学题，汇总所有摆放方案中的坐标维度曼哈顿贡献。它训练拆分两个维度、计算点对参与次数，并应用模意义下的组合系数。"
+  },
+  {
+    "slug": "map-of-highest-peak",
+    "reasonEN": "A medium multi-source BFS problem that assigns each cell its distance from water. It trains initializing all sources together and relies on BFS layers to satisfy local height-difference constraints naturally.",
+    "reasonZH": "中等多源 BFS 题，为每个格子赋予到水源的距离。它训练同时初始化全部源点，并利用 BFS 分层自然满足相邻高度差约束。"
+  },
+  {
+    "slug": "map-sum-pairs",
+    "reasonEN": "A medium trie-design problem supporting key updates and prefix-sum queries. It trains tracking prior values so updates apply deltas along a prefix path rather than incorrectly accumulating replacements.",
+    "reasonZH": "中等 Trie 设计题，支持键更新和前缀和查询。它训练记录旧值，使更新以增量形式沿前缀路径传播，而不会错误累加替换值。"
+  },
+  {
+    "slug": "mark-elements-on-array-by-performing-queries",
+    "reasonEN": "A medium heap simulation problem that marks explicit indices plus the smallest remaining values. It trains lazy removal of stale heap entries and maintaining a running unmarked sum efficiently.",
+    "reasonZH": "中等堆模拟题，需要标记指定下标及剩余最小值。它训练懒删除过期堆项，并高效维护未标记元素的滚动和。"
+  },
+  {
+    "slug": "market-analysis-i",
+    "reasonEN": "A medium SQL reporting problem that joins users with yearly order activity while retaining users without matching orders. It trains conditional aggregation and correct left-join semantics in cohort-style reports.",
+    "reasonZH": "中等 SQL 报表题，连接用户与指定年份订单，同时保留没有匹配订单的用户。它训练条件聚合，以及队列分析报表中正确的左连接语义。"
+  },
+  {
+    "slug": "masking-personal-information",
+    "reasonEN": "A medium string-formatting problem with separate email and phone normalization rules. It trains robust parsing, case normalization, and constructing privacy-preserving output under fixed formatting contracts.",
+    "reasonZH": "中等字符串格式化题，分别处理邮箱和电话的规范化规则。它训练稳健解析、大小写统一，以及按固定格式契约构造隐私保护输出。"
+  },
+  {
+    "slug": "master-mind-lcci",
+    "reasonEN": "An easy counting problem that separates exact-position matches from color-only matches. It trains removing exact hits before comparing residual frequencies, which prevents double counting.",
+    "reasonZH": "简单计数题，需要区分位置和颜色都匹配与仅颜色匹配。它训练先移除精确命中，再比较剩余频次，从而避免重复计数。"
+  },
+  {
+    "slug": "match-substring-after-replacement",
+    "reasonEN": "A hard pattern-matching problem with directed character substitutions. It trains encoding allowed replacements as fast lookup sets and verifying each alignment under asymmetric compatibility rules.",
+    "reasonZH": "高难模式匹配题，带有有向字符替换关系。它训练将允许替换编码为快速查找集合，并按非对称兼容规则验证每个对齐位置。"
+  },
+  {
+    "slug": "matchsticks-to-square",
+    "reasonEN": "A medium backtracking partition problem that assigns matchsticks to four equal sides. It trains descending-order pruning, symmetric-state elimination, and feasibility checks based on the target side length.",
+    "reasonZH": "中等回溯划分题，将火柴分配到四条等长边。它训练降序剪枝、对称状态消除，以及基于目标边长的可行性检查。"
+  },
+  {
+    "slug": "matrix-block-sum",
+    "reasonEN": "A medium two-dimensional prefix-sum problem for repeated rectangular aggregates. It trains inclusion-exclusion indexing and clipping query boundaries at matrix edges.",
+    "reasonZH": "中等二维前缀和题，用于重复计算矩形区域聚合。它训练容斥索引，并在矩阵边缘正确裁剪查询边界。"
+  },
+  {
+    "slug": "matrix-cells-in-distance-order",
+    "reasonEN": "An easy geometry and sorting problem that orders cells by Manhattan distance from an origin. It trains translating a distance definition into a sortable key and handling ties without affecting validity.",
+    "reasonZH": "简单几何排序题，按到原点的曼哈顿距离排列单元格。它训练将距离定义转化为排序键，并理解并列距离不影响结果合法性。"
+  },
+  {
+    "slug": "matrix-diagonal-sum",
+    "reasonEN": "An easy matrix traversal problem that adds both diagonals while accounting for a shared center. It reinforces index symmetry and the common odd-dimension double-counting edge case.",
+    "reasonZH": "简单矩阵遍历题，累加两条对角线并处理共享中心格。它巩固下标对称性，以及奇数维矩阵中心重复计数这一常见边界。"
+  },
+  {
+    "slug": "matrix-similarity-after-cyclic-shifts",
+    "reasonEN": "An easy matrix simulation problem based on modular index mapping within each row. It trains expressing cyclic shifts without constructing intermediate arrays and checking parity-dependent directions.",
+    "reasonZH": "简单矩阵模拟题，基于每行的模下标映射。它训练无需构造中间数组即可表达循环移位，并检查与行奇偶相关的方向。"
+  },
+  {
+    "slug": "max-area-of-island",
+    "reasonEN": "A foundational medium grid traversal problem that computes connected-component sizes. It trains DFS or BFS visitation discipline and provides a core template for flood-fill and island labeling tasks.",
+    "reasonZH": "基础中等网格遍历题，计算连通块面积。它训练 DFS 或 BFS 的访问控制，并提供洪泛填充和岛屿标记任务的核心模板。"
+  },
+  {
+    "slug": "max-black-square-lcci",
+    "reasonEN": "A medium matrix-DP problem that locates the largest square with black borders. It trains precomputing directional consecutive counts and validating a candidate square in constant time per corner.",
+    "reasonZH": "中等矩阵 DP 题，寻找边框均为黑色的最大正方形。它训练预计算方向连续计数，并对每个候选角点进行常数时间验证。"
+  },
+  {
+    "slug": "max-chunks-to-make-sorted",
+    "reasonEN": "A medium greedy partition problem for a permutation array. It trains using the running maximum to detect when every value required by a prefix has arrived, allowing a safe chunk boundary.",
+    "reasonZH": "中等贪心分块题，面向排列数组。它训练利用前缀最大值判断当前前缀所需元素是否全部到位，从而确定安全分块边界。"
+  }
+]

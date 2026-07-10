@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "fi9suh",
+    "reasonEN": "A foundational interval-booking design problem that compares ordered-set and segment-tree approaches. It trains overlap detection, boundary handling, and data-structure selection for online scheduling systems.",
+    "reasonZH": "区间预订设计的基础题，可对比有序集合与线段树两种实现。它训练重叠检测、边界处理和在线日程系统中的数据结构选型能力。"
+  },
+  {
+    "slug": "fibonacci-number",
+    "reasonEN": "A compact entry point to recursion, memoization, and bottom-up dynamic programming. Comparing equivalent recurrences makes time-space tradeoffs and state reuse immediately visible.",
+    "reasonZH": "递归、记忆化与自底向上动态规划的紧凑入门题。对比同一递推关系的不同实现，能直观看到时间空间权衡和状态复用。"
+  },
+  {
+    "slug": "fill-a-special-grid",
+    "reasonEN": "A divide-and-conquer matrix construction problem with a strong recursive structure. It develops the ability to map quadrant rules into coordinates and verify recursive invariants.",
+    "reasonZH": "递归结构鲜明的分治矩阵构造题。它训练将象限规则映射为坐标关系，并验证递归不变量的能力。"
+  },
+  {
+    "slug": "fill-missing-data",
+    "reasonEN": "A practical SQL data-cleaning exercise centered on ordered records and missing-value propagation. It reinforces window-function thinking and the distinction between row order and stored values.",
+    "reasonZH": "面向数据清洗的 SQL 练习，核心是有序记录中的缺失值填充。它强化窗口函数思维，以及行顺序和实际值之间的区分。"
+  },
+  {
+    "slug": "filling-bookcase-shelves",
+    "reasonEN": "An interval dynamic-programming problem where each ending position tries a bounded previous segment. It teaches how to preserve cumulative height constraints while minimizing a global layout cost.",
+    "reasonZH": "按结尾位置划分的区间动态规划题，需要枚举受限的前一段书籍。它训练在保留累计高度约束的同时最小化整体布局代价。"
+  },
+  {
+    "slug": "filter-elements-from-array",
+    "reasonEN": "A concise JavaScript higher-order-function exercise focused on predicate-driven array traversal. It is useful for understanding callback contracts, index-aware filtering, and functional collection APIs.",
+    "reasonZH": "聚焦高阶函数的 JavaScript 简洁练习，通过谓词遍历筛选数组。它有助于理解回调约定、依赖下标的筛选逻辑和函数式集合 API。"
+  },
+  {
+    "slug": "filter-occupied-intervals",
+    "reasonEN": "A sorting-based interval problem that emphasizes turning local comparisons into a linear scan. It sharpens reasoning about containment, ordering ties, and which interval state must be retained.",
+    "reasonZH": "以排序为核心的区间题，重点是将局部比较转化为一次线性扫描。它训练区间包含关系、排序并列情况，以及需要维护何种状态的判断。"
+  },
+  {
+    "slug": "filter-restaurants-by-vegan-friendly-price-and-distance",
+    "reasonEN": "A clean multi-criteria filtering and sorting problem. It builds discipline around applying eligibility filters first, then implementing lexicographic ordering exactly as specified.",
+    "reasonZH": "清晰的多条件过滤与排序题。它培养先执行资格过滤、再严格实现多关键字排序规则的工程化习惯。"
+  },
+  {
+    "slug": "final-array-state-after-k-multiplication-operations-i",
+    "reasonEN": "A direct heap-simulation problem for repeatedly selecting the current minimum. It establishes the priority-queue pattern and makes tie handling and repeated state updates explicit.",
+    "reasonZH": "反复选择当前最小值的直接堆模拟题。它建立优先队列的基本模式，并明确训练并列处理和重复状态更新。"
+  },
+  {
+    "slug": "final-array-state-after-k-multiplication-operations-ii",
+    "reasonEN": "A hard optimization of repeated minimum selection that combines a heap with mathematical batching. It teaches how to identify the simulation phase boundary and avoid iterating through an enormous operation count.",
+    "reasonZH": "针对重复取最小值的困难优化题，结合堆与数学分批处理。它训练识别模拟阶段的临界点，避免对极大操作次数逐次迭代。"
+  },
+  {
+    "slug": "final-element-after-subarray-deletions",
+    "reasonEN": "A deceptively simple game-theory and invariant problem about what deletions can preserve. It develops the habit of replacing operation simulation with reachability and structural reasoning.",
+    "reasonZH": "看似简单但考查博弈与不变量的删除操作题，关注哪些元素能够被保留。它训练用可达性和结构推理替代逐步模拟。"
+  },
+  {
+    "slug": "final-prices-with-a-special-discount-in-a-shop",
+    "reasonEN": "A classic monotonic-stack application for finding the next qualifying value to the right. It is an efficient introduction to stack invariants and amortized linear-time scans.",
+    "reasonZH": "寻找右侧下一个满足条件元素的经典单调栈题。它高效入门栈不变量与均摊线性扫描的思维方式。"
+  },
+  {
+    "slug": "final-value-of-variable-after-performing-operations",
+    "reasonEN": "A beginner-friendly string simulation that rewards recognizing the invariant shared by several operation spellings. It builds confidence in concise parsing and state updates.",
+    "reasonZH": "适合入门的字符串模拟题，关键在于识别多种操作写法共享的增减不变量。它帮助建立简洁解析和状态更新的基本功。"
+  },
+  {
+    "slug": "find-a-corresponding-node-of-a-binary-tree-in-a-clone-of-that-tree",
+    "reasonEN": "A focused tree traversal exercise where node identity matters more than node value. It reinforces DFS or BFS traversal templates and correspondence tracking across isomorphic trees.",
+    "reasonZH": "强调节点身份而非节点值的树遍历练习。它巩固 DFS 或 BFS 模板，以及同构树之间对应关系的追踪方法。"
+  },
+  {
+    "slug": "find-a-good-subset-of-the-matrix",
+    "reasonEN": "A bitmask-based matrix problem that compresses each binary row into a compact state. It demonstrates how small feature dimensions can turn an apparently hard subset search into efficient compatibility checks.",
+    "reasonZH": "将二进制矩阵行压缩为位掩码状态的题目。它展示了特征维度较小时，如何把看似困难的子集搜索转化为高效兼容性判断。"
+  },
+  {
+    "slug": "find-a-peak-element-ii",
+    "reasonEN": "A two-dimensional binary-search problem that relies on eliminating a half-space from row maxima. It is valuable for learning how one-dimensional monotonic reasoning generalizes to matrices.",
+    "reasonZH": "通过行最大值排除半个搜索空间的二维二分题。它帮助理解一维单调性推理如何推广到矩阵场景。"
+  },
+  {
+    "slug": "find-a-safe-walk-through-a-grid",
+    "reasonEN": "A grid shortest-path problem where the path resource is remaining health rather than distance alone. It trains state design for graph search and the choice between BFS, best-first search, and dominance pruning.",
+    "reasonZH": "路径资源是剩余生命值而非单纯距离的网格最短路题。它训练图搜索中的状态设计，以及 BFS、优先搜索和支配剪枝的选择。"
+  },
+  {
+    "slug": "find-a-value-of-a-mysterious-function-closest-to-target",
+    "reasonEN": "An advanced subarray bitwise-AND problem built on the fact that distinct AND values shrink rapidly. It teaches how algebraic monotonicity can replace brute-force interval enumeration.",
+    "reasonZH": "利用子数组按位与不同结果快速收缩性质的高阶题。它训练借助代数单调性替代暴力区间枚举。"
+  },
+  {
+    "slug": "find-all-anagrams-in-a-string",
+    "reasonEN": "A canonical fixed-size sliding-window problem using frequency balance. It sharpens window movement, count maintenance, and the recognition of permutation matching patterns.",
+    "reasonZH": "使用频次数组维护平衡的经典定长滑动窗口题。它训练窗口移动、计数维护，以及识别排列匹配模式的能力。"
+  },
+  {
+    "slug": "find-all-duplicates-in-an-array",
+    "reasonEN": "A useful in-place array-marking problem that exploits the constrained value range. It highlights the tradeoff between extra memory and carefully controlled mutation of the input array.",
+    "reasonZH": "利用值域限制进行原地标记的数组题。它突出额外空间与谨慎修改输入数组之间的权衡。"
+  },
+  {
+    "slug": "find-all-good-indices",
+    "reasonEN": "A prefix-and-suffix preprocessing problem for testing monotonic neighborhoods in constant time. It demonstrates how directional summaries eliminate repeated local scans.",
+    "reasonZH": "通过前后缀预处理在常数时间判断单调邻域的题目。它展示了方向性摘要如何消除重复的局部扫描。"
+  },
+  {
+    "slug": "find-all-good-strings",
+    "reasonEN": "A challenging digit-DP-style string problem combining range bounds with KMP automaton states. It is a strong exercise in encoding multiple constraints into a compact dynamic-programming state.",
+    "reasonZH": "结合范围边界与 KMP 自动机状态的困难字符串动态规划题。它是将多重约束编码进紧凑 DP 状态的高质量训练。"
+  },
+  {
+    "slug": "find-all-groups-of-farmland",
+    "reasonEN": "A matrix connected-component problem with rectangular structure. It reinforces DFS or BFS visitation discipline and shows how input guarantees can simplify component boundary extraction.",
+    "reasonZH": "带有矩形结构保证的矩阵连通块题。它巩固 DFS 或 BFS 的访问纪律，并展示输入性质如何简化连通块边界提取。"
+  },
+  {
+    "slug": "find-all-k-distant-indices-in-an-array",
+    "reasonEN": "A simple but instructive interval-union scanning problem around matching positions. It trains two-pointer coverage management and avoiding duplicate output from overlapping ranges.",
+    "reasonZH": "围绕匹配位置合并覆盖区间的简洁题。它训练双指针维护覆盖范围，并避免重叠区间产生重复输出。"
+  },
+  {
+    "slug": "find-all-lonely-numbers-in-the-array",
+    "reasonEN": "A counting and hash-table problem that separates frequency checks from neighboring-value checks. It provides a clear pattern for converting local numeric conditions into constant-time lookups.",
+    "reasonZH": "将出现次数判断与相邻数值判断分离的计数哈希题。它提供了把局部数值条件转化为常数时间查询的清晰模式。"
+  },
+  {
+    "slug": "find-all-numbers-disappeared-in-an-array",
+    "reasonEN": "A classic cyclic-placement or sign-marking problem for finding missing values without extra space. It strengthens index-as-storage reasoning under strict space constraints.",
+    "reasonZH": "可用循环置换或符号标记解决的经典原地缺失数题。它强化在严格空间限制下将下标当作存储空间的思维。"
+  },
+  {
+    "slug": "find-all-people-with-secret",
+    "reasonEN": "A time-ordered graph propagation problem where connectivity is valid only within each meeting time group. It teaches offline sorting, temporary union-find state, and temporal graph semantics.",
+    "reasonZH": "连通性只在同一会议时间组内有效的时序图传播题。它训练离线排序、临时并查集状态和时序图语义。"
+  },
+  {
+    "slug": "find-all-possible-recipes-from-given-supplies",
+    "reasonEN": "A topological-sort problem disguised as recipe dependency resolution. It connects indegree reduction to practical build systems and teaches how initial resources seed a dependency graph.",
+    "reasonZH": "伪装成菜谱依赖解析的拓扑排序题。它将入度消减联系到实际构建系统，并训练如何用初始资源启动依赖图。"
+  },
+  {
+    "slug": "find-all-possible-stable-binary-arrays-i",
+    "reasonEN": "A constrained counting DP that tracks remaining zeroes, ones, and the latest run. It develops state modeling for sequence restrictions before introducing faster prefix-sum transitions.",
+    "reasonZH": "跟踪剩余零、一数量及末尾连续段的受限计数 DP 题。它训练序列限制下的状态建模，并为更快的前缀和转移打下基础。"
+  },
+  {
+    "slug": "find-all-possible-stable-binary-arrays-ii",
+    "reasonEN": "The optimized version of stable binary-array counting, where prefix sums remove an inner transition loop. It is valuable for learning to derive recurrence acceleration from a baseline dynamic program.",
+    "reasonZH": "稳定二进制数组计数的优化版，利用前缀和消除内层转移循环。它训练从基础动态规划推导递推加速的方法。"
+  }
+]

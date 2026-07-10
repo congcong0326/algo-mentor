@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "average-selling-price",
+    "reasonEN": "A focused Easy SQL aggregation problem, it trains interval joins, weighted averages, and null-safe division, making it valuable for mastering business-style reporting queries.",
+    "reasonZH": "典型的简单 SQL 聚合题，训练区间连接、加权平均和空值兜底处理，适合巩固业务报表类查询的核心写法。"
+  },
+  {
+    "slug": "average-time-of-process-per-machine",
+    "reasonEN": "This Easy database exercise targets event-log analysis, requiring start/end pairing and grouped averaging, which is a useful pattern for processing lifecycle records.",
+    "reasonZH": "面向事件日志分析的简单数据库题，重点在于配对 start/end 记录并分组求平均，能沉淀处理生命周期数据的常用 SQL 模式。"
+  },
+  {
+    "slug": "average-value-of-even-numbers-that-are-divisible-by-three",
+    "reasonEN": "A basic array-and-math filter problem, it emphasizes clean condition composition, accumulator maintenance, and empty-result handling, making it a good warm-up for implementation accuracy.",
+    "reasonZH": "基础数组与数学筛选题，重点训练复合条件判断、累加计数和空结果处理，是提升实现准确性的热身题。"
+  },
+  {
+    "slug": "average-waiting-time",
+    "reasonEN": "This Medium simulation problem centers on timeline state management, especially idle gaps and cumulative waiting time, making it useful for building precise process-simulation thinking.",
+    "reasonZH": "中等难度模拟题，核心是维护时间线状态，尤其要处理空闲间隔和等待时间累加，适合训练精确的流程模拟能力。"
+  },
+  {
+    "slug": "avoid-flood-in-the-city",
+    "reasonEN": "A strong Medium greedy scheduling problem, it combines hash maps with ordered dry-day selection, testing whether each local choice prevents future conflicts.",
+    "reasonZH": "高质量中等贪心调度题，结合哈希表和有序集合选择抽干日期，重点考查如何用局部决策规避未来冲突。"
+  },
+  {
+    "slug": "bLyHh0",
+    "reasonEN": "A classic connected-components problem on graphs, it supports DFS, BFS, and Union Find solutions, making it a compact template for understanding connectivity from an adjacency matrix.",
+    "reasonZH": "经典图连通分量题，可用 DFS、BFS 或并查集求解，是从邻接矩阵理解连通性和组件统计的基础模板题。"
+  },
+  {
+    "slug": "bP4bmD",
+    "reasonEN": "This Medium graph path-enumeration problem highlights DFS backtracking over a directed graph, helping learners separate traversal state from result construction.",
+    "reasonZH": "中等图路径枚举题，重点训练在有向图上进行 DFS 回溯，帮助区分遍历状态维护与答案路径构造。"
+  },
+  {
+    "slug": "ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof",
+    "reasonEN": "A compact dynamic-programming string problem, it trains two-character transition checks and boundary initialization, which are essential for decoding-style DP tasks.",
+    "reasonZH": "短小精炼的字符串动态规划题，训练双字符转移判断和边界初始化，是掌握解码类 DP 的基础题型。"
+  },
+  {
+    "slug": "ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof",
+    "reasonEN": "This Medium greedy sorting problem relies on a custom comparator over concatenated strings, making it valuable for learning how local ordering rules define a global minimum.",
+    "reasonZH": "中等贪心排序题，核心是基于字符串拼接结果设计比较器，适合理解局部排序规则如何推出全局最优。"
+  },
+  {
+    "slug": "ba-zi-fu-chuan-zhuan-huan-cheng-zheng-shu-lcof",
+    "reasonEN": "A detailed string-parsing problem, it stresses whitespace, sign, digit scanning, and overflow boundaries, making it excellent practice for robust input handling.",
+    "reasonZH": "细节密集的字符串解析题，重点覆盖空格、符号、数字扫描和溢出边界，是训练健壮输入处理的经典题。"
+  },
+  {
+    "slug": "baby-names-lcci",
+    "reasonEN": "This Medium union-and-counting problem combines synonym grouping with frequency aggregation, testing both graph connectivity modeling and careful string-to-count mapping.",
+    "reasonZH": "中等并查集与计数题，将同义名合并和频次聚合结合起来，重点考查连通关系建模以及字符串到计数的映射维护。"
+  },
+  {
+    "slug": "backspace-string-compare",
+    "reasonEN": "A practical Easy string problem, it can be solved with a stack or reverse two pointers, highlighting the tradeoff between straightforward simulation and space optimization.",
+    "reasonZH": "实用的简单字符串题，可用栈模拟或反向双指针完成，适合比较直观实现与空间优化之间的取舍。"
+  },
+  {
+    "slug": "bag-of-tokens",
+    "reasonEN": "This Medium greedy two-pointer problem trains sorting-based resource exchange, where spending small tokens and reclaiming power from large ones builds a clear greedy strategy.",
+    "reasonZH": "中等贪心双指针题，训练排序后的资源交换策略，通过小令牌换分、大令牌回收能量来理解贪心决策。"
+  },
+  {
+    "slug": "balance-a-binary-search-tree",
+    "reasonEN": "A representative BST reconstruction problem, it connects inorder traversal with divide-and-conquer rebuilding, reinforcing how sorted order enables balanced tree construction.",
+    "reasonZH": "典型二叉搜索树重构题，将中序遍历和分治建树串联起来，能强化利用有序序列构造平衡树的思路。"
+  },
+  {
+    "slug": "balanced-binary-tree",
+    "reasonEN": "A fundamental tree DFS problem, it teaches bottom-up height calculation and early imbalance detection, serving as a key checkpoint for recursive tree reasoning.",
+    "reasonZH": "基础树形 DFS 题，训练自底向上计算高度并提前发现失衡，是检验递归处理二叉树能力的关键题。"
+  },
+  {
+    "slug": "balanced-k-factor-decomposition",
+    "reasonEN": "This Medium number-theory backtracking problem focuses on factor search and balance constraints, making it useful for pruning, divisor enumeration, and combinatorial reasoning.",
+    "reasonZH": "中等数论回溯题，核心在因子搜索与均衡约束，适合训练剪枝、约数枚举和组合搜索思维。"
+  },
+  {
+    "slug": "bank-account-summary-ii",
+    "reasonEN": "An Easy SQL grouping problem, it reinforces joins, transaction aggregation, and threshold filtering, which are common building blocks in financial summary queries.",
+    "reasonZH": "简单 SQL 分组题，巩固连接、交易金额聚合和阈值过滤，是金融账户汇总类查询的常见基础模块。"
+  },
+  {
+    "slug": "bao-han-minhan-shu-de-zhan-lcof",
+    "reasonEN": "A classic stack design problem, it requires maintaining minimum values alongside normal push and pop operations, making it a must-know pattern for auxiliary-state data structures.",
+    "reasonZH": "经典栈设计题，要求在常规入栈出栈的同时维护最小值，是掌握辅助状态数据结构设计的必刷模式。"
+  },
+  {
+    "slug": "base-7",
+    "reasonEN": "A concise math-and-string conversion problem, it trains repeated division, sign handling, and reverse construction, making it a clean exercise in base representation.",
+    "reasonZH": "简洁的数学与字符串转换题，训练短除法、负号处理和反向构造，是理解进制表示的基础练习。"
+  },
+  {
+    "slug": "baseball-game",
+    "reasonEN": "This Easy stack simulation problem emphasizes reversible score operations and ordered state updates, making it a good introduction to stack-backed command processing.",
+    "reasonZH": "简单栈模拟题，重点在可撤销计分操作和顺序状态更新，适合作为栈驱动命令处理的入门练习。"
+  },
+  {
+    "slug": "basic-calculator",
+    "reasonEN": "A hard expression-parsing problem, it centers on parentheses, signs, and stack-based state restoration, making it a milestone for mastering calculator-style parsing.",
+    "reasonZH": "困难表达式解析题，核心处理括号、符号和基于栈的状态恢复，是掌握计算器类解析问题的里程碑题。"
+  },
+  {
+    "slug": "basic-calculator-ii",
+    "reasonEN": "This Medium calculator problem focuses on operator precedence without parentheses, training delayed addition, multiplication/division handling, and disciplined string scanning.",
+    "reasonZH": "中等计算器题，重点处理无括号场景下的运算优先级，训练延迟加法、乘除即时处理和严谨的字符串扫描。"
+  },
+  {
+    "slug": "basic-calculator-iv",
+    "reasonEN": "An advanced symbolic-expression problem, it combines parsing, recursion, hash-based polynomial terms, and ordering rules, making it valuable for high-difficulty implementation training.",
+    "reasonZH": "进阶符号表达式题，融合解析、递归、哈希维护多项式项和排序规则，适合提升高难度实现与抽象能力。"
+  },
+  {
+    "slug": "battleships-in-a-board",
+    "reasonEN": "A neat matrix traversal problem, it rewards recognizing ship heads instead of flood-filling every cell, teaching how structural constraints can simplify counting.",
+    "reasonZH": "精巧的矩阵遍历题，关键是识别战舰起点而不是对每个格子 flood fill，能训练利用结构约束简化计数。"
+  },
+  {
+    "slug": "beautiful-arrangement",
+    "reasonEN": "This Medium combinatorial search problem trains backtracking with divisibility constraints, and its bitmask DP variant helps connect brute-force pruning with state compression.",
+    "reasonZH": "中等组合搜索题，训练带整除约束的回溯；位掩码 DP 解法还能帮助建立剪枝搜索与状态压缩之间的联系。"
+  },
+  {
+    "slug": "beautiful-arrangement-ii",
+    "reasonEN": "A constructive array problem with a math flavor, it teaches how alternating low and high choices can create exactly controlled adjacent differences.",
+    "reasonZH": "带数学构造味道的数组题，训练通过高低交替选择来精确控制相邻差值种类，是构造题思维的好样本。"
+  },
+  {
+    "slug": "beautiful-array",
+    "reasonEN": "This Medium divide-and-conquer construction problem highlights parity separation and recursive composition, offering a strong example of preserving global constraints through structure.",
+    "reasonZH": "中等分治构造题，核心是奇偶拆分与递归组合，能展示如何通过结构设计保持全局约束不被破坏。"
+  },
+  {
+    "slug": "beautiful-towers-i",
+    "reasonEN": "A Medium array problem around peak selection, it introduces monotonic-stack thinking through height constraints and cumulative tower sums, preparing learners for its optimized version.",
+    "reasonZH": "围绕峰值选择的中等数组题，通过高度约束和塔高总和引入单调栈思维，适合作为进阶优化版本的铺垫。"
+  },
+  {
+    "slug": "beautiful-towers-ii",
+    "reasonEN": "This Medium monotonic-stack problem refines the tower-sum idea with efficient prefix and suffix contributions, making it a strong exercise in amortized stack computation.",
+    "reasonZH": "中等单调栈题，将塔高总和问题优化为前后缀贡献计算，适合训练摊还复杂度下的栈式统计能力。"
+  },
+  {
+    "slug": "best-line-lcci",
+    "reasonEN": "A Medium geometry-and-hash problem, it tests normalized slope representation, duplicate handling, and deterministic tie-breaking, making it useful for robust computational geometry practice.",
+    "reasonZH": "中等几何与哈希题，重点考查斜率规范化、重复点处理和确定性 tie-break，是训练稳健计算几何实现的好题。"
+  }
+]

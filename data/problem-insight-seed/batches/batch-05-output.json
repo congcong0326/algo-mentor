@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "ZL6zAn",
+    "reasonEN": "A medium matrix connectivity problem centered on flood-fill traversal; it trains DFS/BFS boundary handling, visited marking, and component-area accumulation, with Union Find as a useful alternative; it is a strong template problem for grid graph fundamentals.",
+    "reasonZH": "中等难度的矩阵连通块题型，核心在于用 DFS/BFS 做泛洪遍历、处理边界与访问标记，也可对照并查集思路；适合作为网格图基础能力的模板题。"
+  },
+  {
+    "slug": "ZVAVXX",
+    "reasonEN": "A classic medium sliding-window counting problem; the key move is maintaining a valid product window while moving the left boundary precisely, then converting each right endpoint into a count contribution; it builds reliable intuition for variable-size windows.",
+    "reasonZH": "经典中等滑动窗口计数题，重点是维护乘积合法区间、准确移动左边界，并把每个右端点转化为贡献数量；很适合训练可变窗口的计数思维。"
+  },
+  {
+    "slug": "Za25hA",
+    "reasonEN": "A hard graph reasoning problem rather than a plain traversal exercise; it combines BFS/DFS distance analysis with topological or structural pruning, and forces careful modeling of chase and escape conditions; it is valuable for moving beyond graph templates into state-based reasoning.",
+    "reasonZH": "高难度图论推理题，不只是遍历模板，而是结合 BFS/DFS 距离分析、拓扑或结构性剪枝来判断追逐与逃脱条件；适合提升复杂图状态建模能力。"
+  },
+  {
+    "slug": "ZbAuEH",
+    "reasonEN": "A hard event-sequence dynamic programming problem on array and matrix data; sorting events, validating reachability between states, and controlling transition complexity are the main pressure points; it is useful for practicing DP under temporal and spatial constraints.",
+    "reasonZH": "高难度事件序列动态规划题，围绕数组与矩阵状态展开，关键在于排序事件、判断状态可达性并控制转移复杂度；适合训练带时间和空间约束的 DP 建模。"
+  },
+  {
+    "slug": "a-number-after-a-double-reversal",
+    "reasonEN": "A lightweight math problem with an edge-case focus; the essential observation is how trailing zeros affect reversibility after two operations; it is a concise drill for turning simulation-looking tasks into simple numeric rules.",
+    "reasonZH": "轻量数学题，考点集中在尾随零对两次反转结果的影响；它能训练把看似模拟的问题提炼成简单数值规则的能力。"
+  },
+  {
+    "slug": "a7VOhD",
+    "reasonEN": "A medium string dynamic programming problem for palindrome recognition; it emphasizes interval state definition, transition ordering, and base-case coverage; it is a foundational exercise for later palindrome DP and center-expansion comparisons.",
+    "reasonZH": "中等字符串动态规划题，核心是回文区间状态定义、转移顺序和边界初始化；适合作为回文类 DP 与中心扩展思路对比的基础题。"
+  },
+  {
+    "slug": "aMhZSa",
+    "reasonEN": "An easy linked-list palindrome problem with multiple implementation paths; two pointers, stack simulation, or recursion all expose different tradeoffs in space and pointer mutation; it is a good checkpoint for linked-list manipulation discipline.",
+    "reasonZH": "简单链表回文题，双指针、栈和递归都能求解，能清楚体现空间开销与链表修改之间的取舍；适合作为链表指针操作规范性的检查题。"
+  },
+  {
+    "slug": "abbreviating-the-product-of-a-range",
+    "reasonEN": "A hard math and number theory problem about representing huge products compactly; it requires separating trailing-zero counting, low-digit maintenance, and leading-digit estimation; it is valuable for practicing numerical stability and modular reasoning together.",
+    "reasonZH": "高难度数学与数论题，目标是压缩表示巨大乘积，关键在于拆分尾零统计、低位维护和高位估算；适合训练数值稳定性与取模推理的结合。"
+  },
+  {
+    "slug": "absolute-difference-between-maximum-and-minimum-k-elements",
+    "reasonEN": "An easy array-sorting warm-up; the core action is identifying how sorted order exposes the smallest and largest k-element groups directly; it is useful for reinforcing when sorting turns selection logic into constant-time indexing.",
+    "reasonZH": "简单数组排序入门题，核心是利用排序后的位置关系直接定位最小与最大 K 个元素集合；适合强化“排序后用下标化简选择逻辑”的思路。"
+  },
+  {
+    "slug": "account-balance-after-rounded-purchase",
+    "reasonEN": "A simple math rule problem centered on rounding behavior; the main pitfall is handling halfway cases consistently before subtracting from the fixed balance; it is a quick exercise in precise integer arithmetic.",
+    "reasonZH": "简单数学规则题，重点在于正确处理取整尤其是临界值，再从固定余额中扣除；适合练习精确的整数运算和规则翻译。"
+  },
+  {
+    "slug": "accounts-merge",
+    "reasonEN": "A representative medium Union-Find and graph connectivity problem; it trains mapping strings to nodes, merging accounts through shared emails, and sorting normalized components; it is a practical bridge from abstract DSU to real data deduplication.",
+    "reasonZH": "代表性的中等并查集与图连通题，训练把邮箱字符串映射为节点、按共享邮箱合并账户并排序输出连通分量；很适合把抽象 DSU 能力迁移到实际数据去重场景。"
+  },
+  {
+    "slug": "actors-and-directors-who-cooperated-at-least-three-times",
+    "reasonEN": "An easy database aggregation problem; grouping by the actor-director pair and filtering with a count threshold are the core operations; it is a clean SQL exercise for mastering GROUP BY and HAVING.",
+    "reasonZH": "简单数据库聚合题，核心操作是按演员与导演组合分组，并用次数阈值过滤；适合作为 GROUP BY 与 HAVING 的标准练习。"
+  },
+  {
+    "slug": "add-binary",
+    "reasonEN": "A basic string simulation problem with binary carry handling; scanning from right to left and managing different lengths are the important implementation details; it builds the foundation for many digit-by-digit arithmetic problems.",
+    "reasonZH": "基础字符串模拟题，核心是从右向左处理二进制进位，并兼顾两个字符串长度不同的情况；适合打牢逐位运算类题目的实现基础。"
+  },
+  {
+    "slug": "add-digits",
+    "reasonEN": "A compact math problem that contrasts simulation with number theory; repeated digit summing is straightforward, but the digital-root formula reveals the invariant; it is useful for learning how modular patterns replace loops.",
+    "reasonZH": "短小的数学题，既能用模拟反复求各位和，也能通过数根公式发现不变量；适合训练用取模规律替代循环过程的意识。"
+  },
+  {
+    "slug": "add-edges-to-make-degrees-of-all-nodes-even",
+    "reasonEN": "A hard graph-theory decision problem driven by vertex parity; the key is reducing the task to the count and pairability of odd-degree nodes while checking existing edges; it sharpens parity reasoning in graph construction.",
+    "reasonZH": "高难度图论判定题，核心由节点度数奇偶性驱动，需要把问题化简为奇度点数量、配对可能性以及已有边检查；适合强化图构造中的奇偶性推理。"
+  },
+  {
+    "slug": "add-minimum-number-of-rungs",
+    "reasonEN": "A medium greedy array problem with local gap repair; each adjacent height gap independently determines how many rungs must be inserted; it is a useful exercise in deriving greedy formulas from constraints.",
+    "reasonZH": "中等贪心数组题，关键是把相邻高度差视为独立缺口，并直接计算需要补充的台阶数；适合训练从约束中推导贪心公式。"
+  },
+  {
+    "slug": "add-one-row-to-tree",
+    "reasonEN": "A medium binary-tree construction problem; BFS or DFS must stop at the parent layer and reconnect children without losing subtrees; it is a good drill for controlled tree mutation by depth.",
+    "reasonZH": "中等二叉树构造题，BFS 或 DFS 都需要停在目标父层，并在插入新节点时正确重连原子树；适合练习按深度精确修改树结构。"
+  },
+  {
+    "slug": "add-strings",
+    "reasonEN": "A fundamental string arithmetic problem; manual carry propagation, unequal lengths, and result reversal or front insertion are the main details; it is an essential baseline for big-integer simulation.",
+    "reasonZH": "基础字符串加法题，重点是手动进位、处理不同长度以及结果构造顺序；它是大整数模拟类题目的必备入门题。"
+  },
+  {
+    "slug": "add-to-array-form-of-integer",
+    "reasonEN": "An easy array-based arithmetic simulation; adding an integer into digit storage tests carry propagation across both the array and the remaining number; it reinforces a reusable pattern for numeric arrays.",
+    "reasonZH": "简单数组形式加法模拟题，把整数加到数字数组中时，需要同时处理数组位与剩余进位；适合巩固数字数组类运算的通用模板。"
+  },
+  {
+    "slug": "add-two-integers",
+    "reasonEN": "A minimal math warm-up focused on expression correctness; while algorithmically trivial, it verifies basic function structure and return semantics; it is best used as an entry point for environment and syntax practice.",
+    "reasonZH": "极简数学热身题，算法上没有复杂度，但能检查函数结构、返回值和基础语法是否准确；适合作为熟悉环境与提交流程的入口题。"
+  },
+  {
+    "slug": "add-two-numbers",
+    "reasonEN": "A canonical medium linked-list arithmetic problem; it combines digit-by-digit addition, carry propagation, and dynamic node creation; it is one of the best exercises for connecting math simulation with pointer handling.",
+    "reasonZH": "经典中等链表加法题，结合逐位相加、进位传递和新节点构造；非常适合训练把数学模拟落到链表指针操作上的能力。"
+  },
+  {
+    "slug": "add-two-numbers-ii",
+    "reasonEN": "A medium linked-list arithmetic variant with forward-order digits; stacks or list reversal are the main techniques for recovering least-significant-first processing; it deepens understanding of order constraints in linked-list simulations.",
+    "reasonZH": "中等链表加法变体，数字按正序存储，通常需要用栈或反转链表来恢复从低位开始处理；适合深化对链表模拟中顺序约束的理解。"
+  },
+  {
+    "slug": "add-two-promises",
+    "reasonEN": "A JavaScript async-control warm-up; the core skill is composing two Promise results and returning a new asynchronous value correctly; it is useful for checking basic fluency with Promise resolution and async functions.",
+    "reasonZH": "JavaScript 异步控制入门题，核心是组合两个 Promise 的结果并正确返回新的异步值；适合检查 Promise 解析与 async 函数的基础熟练度。"
+  },
+  {
+    "slug": "add-without-plus-lcci",
+    "reasonEN": "A classic bit-manipulation math problem; XOR handles sum without carry while AND plus shifting propagates carry bits; it is a compact exercise in understanding addition at the binary-operation level.",
+    "reasonZH": "经典位运算数学题，用异或表示无进位和，用与运算加左移表示进位传递；适合从二进制操作层面理解加法本质。"
+  },
+  {
+    "slug": "adding-spaces-to-a-string",
+    "reasonEN": "A medium string simulation problem with two-pointer flavor; merging the source string with sorted insertion positions efficiently is the central technique; it is a practical drill for linear construction without repeated costly insertion.",
+    "reasonZH": "中等字符串模拟题，带有双指针合并思想，核心是高效合并原字符串与空格插入位置；适合练习避免反复插入、改用线性构造的实现方式。"
+  },
+  {
+    "slug": "adding-two-negabinary-numbers",
+    "reasonEN": "A medium array and math problem with an unusual base; carry handling in base -2 differs from standard addition and is the main source of mistakes; it is valuable for expanding digit simulation beyond positive bases.",
+    "reasonZH": "中等数组与数学题，使用特殊的负二进制进制，进位规则与普通加法明显不同；适合拓展逐位模拟在非正进制下的处理能力。"
+  },
+  {
+    "slug": "additive-number",
+    "reasonEN": "A medium backtracking string problem centered on numeric sequence validation; choosing the first two numbers, rejecting leading zeros, and checking overflow or length growth are the key details; it is a solid exercise in pruning search space.",
+    "reasonZH": "中等回溯字符串题，核心是枚举前两个数字并验证后续累加关系，易错点包括前导零、数值范围和长度增长；适合练习搜索空间剪枝。"
+  },
+  {
+    "slug": "adjacent-increasing-subarrays-detection-i",
+    "reasonEN": "An easy array pattern-detection problem; tracking lengths of consecutive increasing runs is enough to test adjacent subarray feasibility; it is a concise exercise for turning local monotonicity into state variables.",
+    "reasonZH": "简单数组模式检测题，通过维护连续递增段长度即可判断相邻递增子数组是否存在；适合训练把局部单调性转化为状态变量。"
+  },
+  {
+    "slug": "adjacent-increasing-subarrays-detection-ii",
+    "reasonEN": "A medium extension of increasing-run analysis; it asks for stronger reasoning over adjacent run lengths, with binary search as an optional way to frame feasibility; it is useful for scaling a simple pattern check into an optimization problem.",
+    "reasonZH": "中等递增段分析扩展题，需要基于相邻递增段长度做更强的可行性判断，也可用二分组织答案空间；适合从简单检测过渡到优化型数组问题。"
+  },
+  {
+    "slug": "advantage-shuffle",
+    "reasonEN": "A representative medium greedy sorting problem; the winning move is matching the smallest number that can beat each target and sacrificing the weakest leftovers when it cannot; it builds strong intuition for ordered greedy pairing.",
+    "reasonZH": "代表性的中等贪心排序题，关键是用能刚好取胜的最小元素匹配对手，无法取胜时用最弱元素消耗；适合训练有序配对类贪心思维。"
+  }
+]

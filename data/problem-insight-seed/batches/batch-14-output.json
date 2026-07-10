@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "check-if-numbers-are-ascending-in-a-sentence",
+    "reasonEN": "An easy string-parsing exercise centered on tokenization and ordered-state validation. It trains extracting numeric tokens safely, maintaining the previous value, and turning a natural-language condition into a linear scan.",
+    "reasonZH": "基础字符串解析题，核心是分词并维护前一个数字完成递增校验。它训练从文本中安全提取数值、处理边界，并将自然语言条件落实为一次线性扫描。"
+  },
+  {
+    "slug": "check-if-object-instance-of-class",
+    "reasonEN": "A practical JavaScript type-system problem that examines prototype-chain traversal rather than superficial constructor checks. It reinforces inheritance semantics, null boundaries, and reliable runtime instance detection.",
+    "reasonZH": "面向 JavaScript 运行时类型系统的题目，重点在原型链遍历而非表层的构造函数比较。它帮助理解继承语义、null 边界以及可靠的实例判断方式。"
+  },
+  {
+    "slug": "check-if-one-string-swap-can-make-strings-equal",
+    "reasonEN": "This is a compact mismatch-analysis pattern for strings. It teaches recording only differing positions, verifying the cross-match condition, and recognizing when a direct scan is stronger than unnecessary sorting or hashing.",
+    "reasonZH": "典型的字符串失配分析题，只需记录不同字符的位置并验证交叉匹配关系。它训练用一次扫描定位关键差异，避免不必要的排序或哈希操作。"
+  },
+  {
+    "slug": "check-if-point-is-reachable",
+    "reasonEN": "A hard number-theory reduction that converts geometric moves into a gcd and power-of-two invariant. It is valuable for learning to replace exponential state search with algebraic reachability criteria.",
+    "reasonZH": "高难数论化简题，将几何移动关系转化为最大公约数和二的幂不变量。它展示了如何用代数可达性判定替代指数级状态搜索。"
+  },
+  {
+    "slug": "check-if-string-is-a-prefix-of-array",
+    "reasonEN": "A straightforward two-pointer string simulation that emphasizes boundary control across multiple words. It builds the habit of matching incrementally without allocating an avoidable concatenated string.",
+    "reasonZH": "直接的双指针字符串模拟题，重点是跨多个单词时的下标和边界控制。它训练增量匹配思路，避免为了比较而额外拼接完整字符串。"
+  },
+  {
+    "slug": "check-if-string-is-transformable-with-substring-sort-operations",
+    "reasonEN": "This hard greedy-string problem relies on queues of digit positions and a blocking invariant for smaller digits. It is an excellent exercise in proving why local consumption order determines global transformability.",
+    "reasonZH": "高难贪心字符串题，利用各数字位置队列和较小数字的阻塞不变量判断可转换性。它训练证明局部取用顺序为何能决定整体变换是否成立。"
+  },
+  {
+    "slug": "check-if-strings-can-be-made-equal-with-operations-i",
+    "reasonEN": "An easy invariant-discovery problem where allowed swaps partition character positions into independent groups. It trains reducing operations to the exact positions whose values may be permuted.",
+    "reasonZH": "不变量发现题，允许的交换会把字符位置划分为彼此独立的分组。它训练把操作规则归约为哪些位置能够互相置换的本质条件。"
+  },
+  {
+    "slug": "check-if-strings-can-be-made-equal-with-operations-ii",
+    "reasonEN": "This medium string-equivalence problem generalizes positional invariants into parity-based frequency comparison. It teaches how unrestricted repeated operations often collapse to comparing multisets within independent classes.",
+    "reasonZH": "中等字符串等价题，将位置不变量推广为按奇偶下标统计频次。它训练识别重复操作最终会归约为独立分组内多重集合比较的规律。"
+  },
+  {
+    "slug": "check-if-the-number-is-fascinating",
+    "reasonEN": "A small arithmetic-and-counting exercise that turns a digit property into a frequency validation. It reinforces careful construction of derived values and concise duplicate or missing-digit checks.",
+    "reasonZH": "轻量的数学计数题，将数字性质转化为各位数字频次校验。它训练构造派生数值，并简洁地检查重复数字和缺失数字。"
+  },
+  {
+    "slug": "check-if-the-rectangle-corner-is-reachable",
+    "reasonEN": "A hard geometry connectivity problem modeled with union-find over intersecting circles and rectangle boundaries. It develops the key insight that blocking regions form barriers when they connect the relevant sides.",
+    "reasonZH": "高难几何连通性题，可将相交圆和矩形边界建模为并查集。它训练识别障碍区域一旦连通到相关边界便会形成不可跨越屏障的关键洞见。"
+  },
+  {
+    "slug": "check-if-the-sentence-is-pangram",
+    "reasonEN": "A foundational character-set coverage problem suited to boolean arrays or bitmasks. It trains mapping symbols to compact state and recognizing when a fixed alphabet permits constant-space solutions.",
+    "reasonZH": "基础字符集覆盖题，适合使用布尔数组或位掩码实现。它训练将字符映射到紧凑状态，并理解固定字母表可实现常数空间校验。"
+  },
+  {
+    "slug": "check-if-there-is-a-valid-parentheses-string-path",
+    "reasonEN": "This hard grid DP tracks the attainable parenthesis balance at each cell instead of enumerating paths. It teaches state pruning through path-length parity and the nonnegative-balance invariant.",
+    "reasonZH": "高难网格动态规划题，在每个格子维护可达的括号余额而非枚举全部路径。它训练借助路径长度奇偶性和余额非负不变量进行状态剪枝。"
+  },
+  {
+    "slug": "check-if-there-is-a-valid-partition-for-the-array",
+    "reasonEN": "A clean one-dimensional dynamic-programming template based on valid suffix blocks. It reinforces defining reachable prefixes, checking short transition patterns, and handling small-array boundaries precisely.",
+    "reasonZH": "清晰的一维动态规划模板题，以合法后缀分块构造可达前缀。它训练设计前缀状态、检查短区间转移模式，以及准确处理小数组边界。"
+  },
+  {
+    "slug": "check-if-there-is-a-valid-path-in-a-grid",
+    "reasonEN": "A medium graph traversal problem where each grid cell exposes constrained directional connections. It trains modeling local compatibility, preventing invalid reverse moves, and choosing DFS, BFS, or union-find appropriately.",
+    "reasonZH": "中等图遍历题，每个网格单元都有受限的方向连接。它训练建模局部连通兼容性、防止非法反向移动，并在 DFS、BFS 与并查集之间选择合适方案。"
+  },
+  {
+    "slug": "check-if-two-chessboard-squares-have-the-same-color",
+    "reasonEN": "A concise coordinate-parity problem that reveals the invariant behind chessboard coloring. It builds fluency in encoding two-dimensional alternating patterns with modular arithmetic.",
+    "reasonZH": "简洁的坐标奇偶性题，揭示棋盘染色背后的不变量。它训练用模运算编码二维交替模式，是坐标映射的基础练习。"
+  },
+  {
+    "slug": "check-if-two-string-arrays-are-equivalent",
+    "reasonEN": "This easy comparison task highlights two useful strategies: direct concatenation and streaming two-pointer matching. It is valuable for practicing cross-array index movement and avoiding unnecessary extra space.",
+    "reasonZH": "基础字符串比较题，既可直接拼接，也可用流式双指针匹配。它训练跨数组移动下标的技巧，以及避免不必要额外空间的意识。"
+  },
+  {
+    "slug": "check-if-word-can-be-placed-in-crossword",
+    "reasonEN": "A matrix-enumeration problem that rewards careful segment boundary detection in both directions. It trains validating fit, fixed-letter compatibility, and reversed placement without missing edge cells.",
+    "reasonZH": "矩阵枚举题，需要在横纵两个方向精确识别可用片段的边界。它训练校验长度、固定字符兼容性和反向放置，同时避免遗漏边缘格子。"
+  },
+  {
+    "slug": "check-if-word-equals-summation-of-two-words",
+    "reasonEN": "An easy representation-conversion exercise that maps letters to positional numeric values. It reinforces base-ten accumulation and the value of isolating a reusable string-to-number transformation.",
+    "reasonZH": "基础表示转换题，将字母映射为对应的位权数值。它训练十进制累积计算，并理解将字符串转数值的逻辑抽成独立转换函数的价值。"
+  },
+  {
+    "slug": "check-if-word-is-valid-after-substitutions",
+    "reasonEN": "This medium stack problem uses local reduction to validate a recursively generated string language. It teaches recognizing cancellable patterns, preserving order, and avoiding fragile repeated substring replacement.",
+    "reasonZH": "中等栈题，通过局部消去验证递归生成的字符串语言。它训练识别可消除模式、保持字符顺序，并避免脆弱的反复子串替换方案。"
+  },
+  {
+    "slug": "check-knight-tour-configuration",
+    "reasonEN": "A simulation and matrix-validation problem centered on reconstructing the sequence of knight positions. It reinforces coordinate indexing, legal-move checks, and validating a global traversal through local transitions.",
+    "reasonZH": "模拟与矩阵校验题，核心是按编号重建骑士所在位置序列。它训练坐标索引、合法跳跃判断，以及通过局部转移验证全局遍历。"
+  },
+  {
+    "slug": "check-permutation-lcci",
+    "reasonEN": "A classic anagram-equivalence problem that contrasts sorting with frequency counting. It trains selecting the right representation for character multisets and checking length before deeper comparison.",
+    "reasonZH": "经典字符重排等价题，可对比排序与频次统计两种方案。它训练为字符多重集合选择合适表示，并在深入比较前先完成长度剪枝。"
+  },
+  {
+    "slug": "check-subtree-lcci",
+    "reasonEN": "A medium tree-matching problem that compares structural equality while searching candidate roots. It develops recursive decomposition, null-node semantics, and the link between subtree checks and serialization or hashing alternatives.",
+    "reasonZH": "中等树匹配题，在寻找候选根节点的同时比较子树结构是否完全相等。它训练递归分解、空节点语义，以及子树判断与序列化、哈希方案之间的联系。"
+  },
+  {
+    "slug": "check-whether-two-strings-are-almost-equivalent",
+    "reasonEN": "This easy counting problem focuses on comparing per-character frequency deltas against a tight threshold. It is useful for practicing fixed-alphabet counters and translating a global edit constraint into local checks.",
+    "reasonZH": "基础计数题，核心是比较每个字符的频次差是否在阈值内。它训练固定字母表计数，并将全局编辑限制转化为逐字符的局部校验。"
+  },
+  {
+    "slug": "checking-existence-of-edge-length-limited-paths",
+    "reasonEN": "A hard offline-query template combining sorted edges, sorted queries, and union-find. It teaches sweeping by threshold, maintaining connectivity incrementally, and separating query order from answer order.",
+    "reasonZH": "高难离线查询模板题，结合边排序、查询排序和并查集。它训练按阈值扫描并增量维护连通性，同时分离查询处理顺序与答案原始顺序。"
+  },
+  {
+    "slug": "cherry-pickup",
+    "reasonEN": "A landmark hard dynamic-programming problem that reinterprets two trips as two synchronized walkers. It trains state compression, overlap handling, and escaping an apparent round-trip dependency with a layered DP model.",
+    "reasonZH": "标志性的高难动态规划题，将往返过程重新解释为两个同步行走者。它训练状态压缩、重叠格子处理，以及用分层 DP 消除表面上的往返依赖。"
+  },
+  {
+    "slug": "cherry-pickup-ii",
+    "reasonEN": "This hard matrix DP coordinates two robots moving row by row with a joint column state. It strengthens transition design, collision accounting, and optimization of multi-agent path collection problems.",
+    "reasonZH": "高难矩阵动态规划题，用两个机器人的联合列状态描述逐行移动。它强化转移设计、相遇时的收益去重，以及多智能体路径收集问题的优化思维。"
+  },
+  {
+    "slug": "choose-k-elements-with-maximum-sum",
+    "reasonEN": "A medium greedy selection problem where sorting or a heap exposes the best eligible values efficiently. It reinforces choosing between full ordering and top-k maintenance based on the input constraints.",
+    "reasonZH": "中等贪心选择题，通过排序或堆高效找出最优的可选元素。它训练根据数据规模在全量排序和维护 top-k 堆之间做出恰当选择。"
+  },
+  {
+    "slug": "chou-shu-lcof",
+    "reasonEN": "A classic ugly-number generation problem that compares heap-based deduplication with multi-pointer dynamic programming. It teaches monotone sequence construction and how to prevent duplicate candidates systematically.",
+    "reasonZH": "经典丑数生成题，可对比堆去重和多指针动态规划。它训练构造单调序列，并系统地避免候选值重复生成。"
+  },
+  {
+    "slug": "chuan-di-xin-xi",
+    "reasonEN": "A graph-counting problem that asks for paths with an exact number of steps rather than simple reachability. It trains layered BFS or dynamic programming and makes the time dimension explicit in graph state.",
+    "reasonZH": "图路径计数题，关注恰好经过指定步数的传递方案而非单纯可达性。它训练分层 BFS 或动态规划，并将时间维度显式纳入图状态。"
+  },
+  {
+    "slug": "chunk-array",
+    "reasonEN": "An easy array-manipulation task focused on stable chunk boundaries and final partial groups. It is useful for practicing API-style data transformation with precise loop increments and edge-case handling.",
+    "reasonZH": "基础数组处理题，重点是稳定地确定分块边界并处理末尾不足一块的元素。它训练 API 风格的数据转换、精确的循环步长和边界情况处理。"
+  }
+]

@@ -1,0 +1,726 @@
+[
+  {
+    "slug": "minimum-deletions-to-make-array-beautiful",
+    "frontendDisplayId": "2216",
+    "titleEn": "Minimum Deletions to Make Array Beautiful",
+    "titleZh": "美化数组的最少删除数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-deletions-to-make-array-beautiful/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-deletions-to-make-array-divisible",
+    "frontendDisplayId": "2344",
+    "titleEn": "Minimum Deletions to Make Array Divisible",
+    "titleZh": "使数组可以被整除的最少删除次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Math",
+      "Number Theory",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "数学",
+      "数论",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-deletions-to-make-array-divisible/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-deletions-to-make-character-frequencies-unique",
+    "frontendDisplayId": "1647",
+    "titleEn": "Minimum Deletions to Make Character Frequencies Unique",
+    "titleZh": "字符频次唯一的最小删除次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-deletions-to-make-character-frequencies-unique/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-deletions-to-make-string-balanced",
+    "frontendDisplayId": "1653",
+    "titleEn": "Minimum Deletions to Make String Balanced",
+    "titleZh": "使字符串平衡的最少删除次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-deletions-to-make-string-balanced/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-deletions-to-make-string-k-special",
+    "frontendDisplayId": "3085",
+    "titleEn": "Minimum Deletions to Make String K-Special",
+    "titleZh": "成为 K 特殊字符串需要删除的最少字符数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Greedy",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "贪心",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-deletions-to-make-string-k-special/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-depth-of-binary-tree",
+    "frontendDisplayId": "111",
+    "titleEn": "Minimum Depth of Binary Tree",
+    "titleZh": "二叉树的最小深度",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-depth-of-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-difference-between-highest-and-lowest-of-k-scores",
+    "frontendDisplayId": "1984",
+    "titleEn": "Minimum Difference Between Highest and Lowest of K Scores",
+    "titleZh": "学生分数的最小差值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sliding Window",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "滑动窗口",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-difference-between-highest-and-lowest-of-k-scores/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-difference-between-largest-and-smallest-value-in-three-moves",
+    "frontendDisplayId": "1509",
+    "titleEn": "Minimum Difference Between Largest and Smallest Value in Three Moves",
+    "titleZh": "三次操作后最大值与最小值的最小差",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-difference-between-largest-and-smallest-value-in-three-moves/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-difference-in-sums-after-removal-of-elements",
+    "frontendDisplayId": "2163",
+    "titleEn": "Minimum Difference in Sums After Removal of Elements",
+    "titleZh": "删除元素后和的最小差值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-difference-in-sums-after-removal-of-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-difficulty-of-a-job-schedule",
+    "frontendDisplayId": "1335",
+    "titleEn": "Minimum Difficulty of a Job Schedule",
+    "titleZh": "工作计划的最低难度",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-difficulty-of-a-job-schedule/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-discards-to-balance-inventory",
+    "frontendDisplayId": "3679",
+    "titleEn": "Minimum Discards to Balance Inventory",
+    "titleZh": "使库存平衡的最少丢弃次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Simulation",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "模拟",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-discards-to-balance-inventory/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-distance-between-bst-nodes",
+    "frontendDisplayId": "783",
+    "titleEn": "Minimum Distance Between BST Nodes",
+    "titleZh": "二叉搜索树节点最小距离",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-distance-between-bst-nodes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-distance-between-three-equal-elements-i",
+    "frontendDisplayId": "3740",
+    "titleEn": "Minimum Distance Between Three Equal Elements I",
+    "titleZh": "三个相等元素之间的最小距离 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-distance-between-three-equal-elements-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-distance-between-three-equal-elements-ii",
+    "frontendDisplayId": "3741",
+    "titleEn": "Minimum Distance Between Three Equal Elements II",
+    "titleZh": "三个相等元素之间的最小距离 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-distance-between-three-equal-elements-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-distance-to-the-target-element",
+    "frontendDisplayId": "1848",
+    "titleEn": "Minimum Distance to the Target Element",
+    "titleZh": "到目标元素的最小距离",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-distance-to-the-target-element/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-distance-to-type-a-word-using-two-fingers",
+    "frontendDisplayId": "1320",
+    "titleEn": "Minimum Distance to Type a Word Using Two Fingers",
+    "titleZh": "二指输入的的最小距离",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-distance-to-type-a-word-using-two-fingers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-division-operations-to-make-array-non-decreasing",
+    "frontendDisplayId": "3326",
+    "titleEn": "Minimum Division Operations to Make Array Non Decreasing",
+    "titleZh": "使数组非递减的最少除法操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-division-operations-to-make-array-non-decreasing/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-domino-rotations-for-equal-row",
+    "frontendDisplayId": "1007",
+    "titleEn": "Minimum Domino Rotations For Equal Row",
+    "titleZh": "行相等的最少多米诺旋转",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-domino-rotations-for-equal-row/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-edge-reversals-so-every-node-is-reachable",
+    "frontendDisplayId": "2858",
+    "titleEn": "Minimum Edge Reversals So Every Node Is Reachable",
+    "titleZh": "可以到达每一个节点的最少边反转次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "动态规划",
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-edge-reversals-so-every-node-is-reachable/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-edge-toggles-on-a-tree",
+    "frontendDisplayId": "3812",
+    "titleEn": "Minimum Edge Toggles on a Tree",
+    "titleZh": "翻转树上最少边",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Graph Theory",
+      "Sorting",
+      "Topological Sort",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "图",
+      "排序",
+      "拓扑排序",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-edge-toggles-on-a-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-edge-weight-equilibrium-queries-in-a-tree",
+    "frontendDisplayId": "2846",
+    "titleEn": "Minimum Edge Weight Equilibrium Queries in a Tree",
+    "titleZh": "边权重均等查询",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "深度优先搜索",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-edge-weight-equilibrium-queries-in-a-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-element-after-replacement-with-digit-sum",
+    "frontendDisplayId": "3300",
+    "titleEn": "Minimum Element After Replacement With Digit Sum",
+    "titleZh": "替换为数位和以后的最小元素",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-element-after-replacement-with-digit-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-elements-to-add-to-form-a-given-sum",
+    "frontendDisplayId": "1785",
+    "titleEn": "Minimum Elements to Add to Form a Given Sum",
+    "titleZh": "构成特定和需要添加的最少元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-elements-to-add-to-form-a-given-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-energy-to-maintain-brightness",
+    "frontendDisplayId": "3951",
+    "titleEn": "Minimum Energy to Maintain Brightness",
+    "titleZh": "维持亮度的最小总能量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-energy-to-maintain-brightness/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-equal-sum-of-two-arrays-after-replacing-zeros",
+    "frontendDisplayId": "2918",
+    "titleEn": "Minimum Equal Sum of Two Arrays After Replacing Zeros",
+    "titleZh": "数组的最小相等和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-equal-sum-of-two-arrays-after-replacing-zeros/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-falling-path-sum",
+    "frontendDisplayId": "931",
+    "titleEn": "Minimum Falling Path Sum",
+    "titleZh": "下降路径最小和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-falling-path-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-falling-path-sum-ii",
+    "frontendDisplayId": "1289",
+    "titleEn": "Minimum Falling Path Sum II",
+    "titleZh": "下降路径最小和  II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-falling-path-sum-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-flips-to-make-a-or-b-equal-to-c",
+    "frontendDisplayId": "1318",
+    "titleEn": "Minimum Flips to Make a OR b Equal to c",
+    "titleZh": "或运算的最小翻转次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-flips-to-make-a-or-b-equal-to-c/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-flips-to-make-binary-string-coherent",
+    "frontendDisplayId": "3922",
+    "titleEn": "Minimum Flips to Make Binary String Coherent",
+    "titleZh": "使二进制字符串连贯的最少翻转次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-flips-to-make-binary-string-coherent/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-fuel-cost-to-report-to-the-capital",
+    "frontendDisplayId": "2477",
+    "titleEn": "Minimum Fuel Cost to Report to the Capital",
+    "titleZh": "到达首都的最少油耗",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-fuel-cost-to-report-to-the-capital/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-080",
+    "claimedAt": "2026-07-10T06:26:15.589275+00:00",
+    "completedAt": null
+  }
+]

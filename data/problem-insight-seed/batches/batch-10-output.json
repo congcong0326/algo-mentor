@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "binary-tree-maximum-path-sum",
+    "reasonEN": "A hard tree-DP benchmark that trains postorder gains, negative-branch pruning, and global-answer updates; it is essential for separating returned state from complete path candidates.",
+    "reasonZH": "高难树形 DP 代表题，训练后序贡献值、负分支舍弃与全局答案更新，是区分返回状态和完整路径候选的关键练习。"
+  },
+  {
+    "slug": "binary-tree-paths",
+    "reasonEN": "An entry-level DFS/backtracking problem focused on path state, leaf detection, and string assembly; it is a practical warm-up for tree path enumeration patterns.",
+    "reasonZH": "入门级 DFS/回溯题，重点训练路径状态维护、叶子判断和字符串拼接，适合作为二叉树路径枚举类问题的热身。"
+  },
+  {
+    "slug": "binary-tree-postorder-traversal",
+    "reasonEN": "A fundamental tree traversal template that reinforces left-right-root ordering, iterative stack simulation, and result timing; it builds the base for postorder aggregation problems.",
+    "reasonZH": "基础二叉树遍历模板题，巩固左右根顺序、栈模拟和结果写入时机，为后序聚合类递归题打底。"
+  },
+  {
+    "slug": "binary-tree-preorder-traversal",
+    "reasonEN": "A classic DFS and stack exercise centered on root-left-right ordering and iterative traversal mechanics; it sharpens the most reusable tree visitation pattern.",
+    "reasonZH": "经典 DFS 与栈练习，围绕根左右访问顺序和迭代遍历机制展开，能强化最常复用的二叉树访问模板。"
+  },
+  {
+    "slug": "binary-tree-pruning",
+    "reasonEN": "A medium postorder tree-transformation problem that tests subtree return values and child pruning after recursion; it is valuable for learning safe recursive mutation.",
+    "reasonZH": "中等难度后序树改造题，考查递归返回子树、回溯后剪除子节点的处理方式，适合训练安全的递归修改思维。"
+  },
+  {
+    "slug": "binary-tree-right-side-view",
+    "reasonEN": "A medium tree-view pattern problem that can be solved by level BFS or depth-prioritized DFS; it teaches how traversal order maps to visible-state selection.",
+    "reasonZH": "中等难度树视图题，可用层序 BFS 或按深度优先的 DFS 处理，训练把遍历顺序转化为可见节点选择的能力。"
+  },
+  {
+    "slug": "binary-tree-tilt",
+    "reasonEN": "A compact postorder aggregation task that combines subtree sums with an external accumulator; it clarifies how local metrics compose into a whole-tree answer.",
+    "reasonZH": "简洁的后序聚合题，将子树和计算与外部答案累加结合起来，适合理解局部指标如何汇总成整棵树结果。"
+  },
+  {
+    "slug": "binary-tree-zigzag-level-order-traversal",
+    "reasonEN": "A canonical BFS level-order variant that adds direction toggling and stable per-level collection; it strengthens queue-based traversal and output-shaping skills.",
+    "reasonZH": "典型层序遍历变形题，在 BFS 基础上加入方向切换和逐层收集，能强化队列遍历与结果组织能力。"
+  },
+  {
+    "slug": "binary-trees-with-factors",
+    "reasonEN": "A medium sorted-DP counting problem using factor-pair lookup, hash indexing, and modular accumulation; it is a strong exercise in counting structured combinations.",
+    "reasonZH": "中等难度排序 DP 计数题，依赖因子对查找、哈希定位和取模累加，适合训练结构化组合计数思维。"
+  },
+  {
+    "slug": "binary-watch",
+    "reasonEN": "A light bit-enumeration and backtracking task centered on popcount filtering and valid time formatting; it is a concise warm-up for bitmask search.",
+    "reasonZH": "轻量级位枚举/回溯题，核心是二进制计数筛选和合法时间格式化，适合作为位掩码搜索的入门练习。"
+  },
+  {
+    "slug": "binode-lcci",
+    "reasonEN": "A BST-to-list conversion exercise that relies on inorder traversal, pointer rewiring, and clearing left links; it trains in-place tree-to-linear transformations.",
+    "reasonZH": "二叉搜索树转链表练习，依赖中序遍历、指针重连和左指针清理，适合训练树结构到线性结构的原地改造。"
+  },
+  {
+    "slug": "bisect-squares-lcci",
+    "reasonEN": "A medium geometry problem focused on center-line reasoning, boundary intersections, and vertical-line edge cases; it improves precision in formula-based implementation.",
+    "reasonZH": "中等难度几何题，重点是中心连线、边界交点和垂直线等边界情况，能提升公式推导到代码实现的严谨性。"
+  },
+  {
+    "slug": "bitwise-and-of-numbers-range",
+    "reasonEN": "A classic bit-prefix problem that finds the common high-order prefix by shifting or clearing low bits; it teaches the stability of bits across ranges.",
+    "reasonZH": "经典公共位前缀题，通过移位或清除低位寻找区间共有高位，帮助理解连续数字范围内按位与的稳定性。"
+  },
+  {
+    "slug": "bitwise-or-of-even-numbers-in-an-array",
+    "reasonEN": "An easy array and bit simulation problem built on parity filtering and OR accumulation; it is a clean starter for basic bitwise aggregation.",
+    "reasonZH": "简单数组与位运算模拟题，围绕偶数筛选和按位或累积展开，适合作为基础位聚合操作的起步题。"
+  },
+  {
+    "slug": "bitwise-ors-of-subarrays",
+    "reasonEN": "A medium bit-DP compression problem where OR states ending at each index stay bounded by bit growth; it teaches how to control subarray state explosion.",
+    "reasonZH": "中等难度位运算 DP 压缩题，利用按位或状态随比特增长受限的特性，训练控制子数组状态爆炸的方法。"
+  },
+  {
+    "slug": "bitwise-xor-of-all-pairings",
+    "reasonEN": "A parity-based bitwise brainteaser that reduces pairwise XOR contributions to array-length parity; it is useful for building algebraic simplification instincts.",
+    "reasonZH": "基于奇偶性的位运算脑筋急转弯，将所有配对异或贡献化简为数组长度奇偶判断，适合培养代数化简直觉。"
+  },
+  {
+    "slug": "block-placement-queries",
+    "reasonEN": "A hard online-query data structure problem combining ordered gaps with segment tree or Fenwick maximum queries; it is valuable for dynamic interval maintenance.",
+    "reasonZH": "高难在线查询数据结构题，结合有序间隔维护与线段树或树状数组最大值查询，适合训练动态区间信息维护。"
+  },
+  {
+    "slug": "boats-to-save-people",
+    "reasonEN": "A standard greedy two-pointer problem that pairs the heaviest feasible person with the lightest after sorting; it strengthens exchange-argument reasoning.",
+    "reasonZH": "标准贪心双指针题，排序后尝试让最重者与最轻可行者配对，能强化贪心交换论证和边界移动判断。"
+  },
+  {
+    "slug": "booking-concert-tickets-in-groups",
+    "reasonEN": "A hard design problem requiring segment-tree tracking of row maxima and remaining sums; it trains complex query APIs with both gather and scatter semantics.",
+    "reasonZH": "高难设计与线段树题，需要维护每排连续空位最大值和剩余座位总量，适合训练同时支持 gather/scatter 的复杂查询接口。"
+  },
+  {
+    "slug": "boolean-evaluation-lcci",
+    "reasonEN": "A medium interval-DP and memoization problem that counts true and false outcomes across operator splits; it is a strong template for expression DP.",
+    "reasonZH": "中等难度区间 DP/记忆化题，围绕运算符切分统计真假结果数量，是表达式动态规划的典型训练模板。"
+  },
+  {
+    "slug": "brace-expansion-ii",
+    "reasonEN": "A hard expression parsing and enumeration problem involving grammar structure, union, Cartesian product, de-duplication, and sorting; it builds robust parser thinking.",
+    "reasonZH": "高难表达式解析与枚举题，涉及语法结构、并集、笛卡尔积、去重和排序，能训练更完整的解析器思维。"
+  },
+  {
+    "slug": "bracket-lcci",
+    "reasonEN": "A medium generation/backtracking template based on open-close balance invariants and pruning invalid prefixes; it is foundational for constrained string construction.",
+    "reasonZH": "中等难度生成回溯模板题，依赖左右括号数量不变量和非法前缀剪枝，是约束字符串构造的基础练习。"
+  },
+  {
+    "slug": "break-a-palindrome",
+    "reasonEN": "A compact greedy string problem focused on lexicographically minimal single edits, middle-position exceptions, and all-a edge cases; it sharpens local-choice reasoning.",
+    "reasonZH": "简洁的贪心字符串题，重点处理字典序最小单点修改、中间位例外和全 a 边界，适合训练局部选择正确性。"
+  },
+  {
+    "slug": "brick-wall",
+    "reasonEN": "A hash-counting transformation problem that counts aligned internal edges instead of scanning every column; it teaches reframing a minimization target into frequency maximization.",
+    "reasonZH": "哈希计数转化题，通过统计内部边界对齐次数替代逐列扫描，训练把最小化目标改写为频次最大化的思路。"
+  },
+  {
+    "slug": "bricks-falling-when-hit",
+    "reasonEN": "A hard reverse-process union-find problem using offline hit handling and a roof sentinel; it is a milestone for learning connectivity restoration techniques.",
+    "reasonZH": "高难逆序并查集题，利用离线处理打击操作和屋顶虚拟节点，适合作为学习连通性恢复技巧的里程碑题。"
+  },
+  {
+    "slug": "broken-board-dominoes",
+    "reasonEN": "A hard board-covering problem that can be modeled with bipartite matching or bitmask DP; it trains graph abstraction and state-compression choices.",
+    "reasonZH": "高难棋盘覆盖题，可建模为二分图匹配或状态压缩 DP，能训练图建模能力和状态表示方案选择。"
+  },
+  {
+    "slug": "broken-calculator",
+    "reasonEN": "A reverse greedy math problem that works backward with halving even targets and incrementing odd targets; it develops inverse-operation thinking for shortest-step problems.",
+    "reasonZH": "逆向贪心数学题，从目标反推并处理偶数减半、奇数加一，适合训练最少步数问题中的反向操作思维。"
+  },
+  {
+    "slug": "bst-sequences-lcci",
+    "reasonEN": "A hard recursive backtracking problem that weaves left and right subsequences while preserving internal order; it teaches enumeration under partial-order constraints.",
+    "reasonZH": "高难递归回溯题，需要在保持左右子序列内部顺序的前提下交织结果，适合训练偏序约束下的枚举能力。"
+  },
+  {
+    "slug": "bu-ke-pai-zhong-de-shun-zi-lcof",
+    "reasonEN": "An easy array-sorting validation task that practices duplicate checks, gap counting, and fixed-length boundary constraints; it is a clean warm-up for consecutiveness tests.",
+    "reasonZH": "简单数组排序判定题，训练去重、缺口统计和固定长度边界约束，适合作为连续性检查类问题的入门练习。"
+  },
+  {
+    "slug": "bu-yong-jia-jian-cheng-chu-zuo-jia-fa-lcof",
+    "reasonEN": "An easy bitwise arithmetic exercise using XOR for carry-free sums and shifted AND for carries; it clarifies how addition can be decomposed at bit level.",
+    "reasonZH": "简单位运算算术题，使用异或表示无进位和、左移与运算表示进位，能帮助理解加法在比特层面的分解。"
+  }
+]

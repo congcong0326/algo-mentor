@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "number-of-ways-to-split-array",
+    "reasonEN": "A prefix-sum partition problem that compares each running left sum with the remaining total. It reinforces deriving right-side aggregates from one total and scanning every valid cut in linear time.",
+    "reasonZH": "一道前缀和分割题，通过比较运行中的左侧和与剩余总和判断切分点。它训练由总和快速得到右侧聚合值，并在线性时间枚举合法分割。"
+  },
+  {
+    "slug": "number-of-ways-to-stay-in-the-same-place-after-some-steps",
+    "reasonEN": "This hard positional DP counts moves by step and current index while bounding unreachable positions. It is valuable practice for reducing a seemingly large state space with movement-distance constraints and modular transitions.",
+    "reasonZH": "这道困难位置 DP 按步数和当前位置计数，并裁剪不可能到达的下标。它训练利用移动距离约束压缩看似庞大的状态空间，并处理模运算转移。"
+  },
+  {
+    "slug": "number-of-ways-to-wear-different-hats-to-each-other",
+    "reasonEN": "A classic assignment bitmask DP that processes hats and records which people are already assigned. It teaches how swapping the smaller dimension into a mask makes exponential-state search practical.",
+    "reasonZH": "这是经典的分配型位压缩 DP，按帽子处理并记录已分配人员集合。它训练将较小维度放入掩码，使指数状态搜索能够落地。"
+  },
+  {
+    "slug": "number-of-ways-where-square-of-number-is-equal-to-product-of-two-numbers",
+    "reasonEN": "This multiplicative pair-counting problem combines sorting or hashing with careful duplicate handling. It develops the habit of turning nonlinear numeric relations into searchable products while guarding against overflow and repeated values.",
+    "reasonZH": "该乘法数对计数题结合排序或哈希，并需细致处理重复值。它训练将非线性数值关系转化为可查找的乘积，同时防范溢出与重复计数。"
+  },
+  {
+    "slug": "number-of-wonderful-substrings",
+    "reasonEN": "A parity-mask prefix problem where a substring is valid when its character mask differs in at most one bit. It is a key lesson in encoding odd-even frequencies as XOR states and querying compatible historical prefixes.",
+    "reasonZH": "这是一道奇偶掩码前缀题，合法子串对应的字符状态至多相差一位。它训练用 XOR 编码字符频次奇偶性，并查询兼容的历史前缀状态。"
+  },
+  {
+    "slug": "number-of-zero-filled-subarrays",
+    "reasonEN": "A linear run-length counting problem in which every extra zero extends the number of valid endings by one. It provides a clean demonstration of accumulating subarray counts from contiguous segment lengths.",
+    "reasonZH": "该线性连续段计数题中，每多一个零都会新增对应数量的合法结尾。它清晰展示了如何从连续段长度增量累计子数组数目。"
+  },
+  {
+    "slug": "number-of-zigzag-arrays-i",
+    "reasonEN": "This hard sequence-counting DP separates the last comparison direction and accelerates value transitions with prefix sums. It is useful for learning how order constraints lead to cumulative-state optimizations.",
+    "reasonZH": "这道困难序列计数 DP 区分最后一次比较方向，并用前缀和加速数值转移。它训练从大小关系约束推导累积状态优化。"
+  },
+  {
+    "slug": "number-of-zigzag-arrays-ii",
+    "reasonEN": "An advanced combinatorial DP problem that counts alternating-order arrays through recurrence structure and arithmetic simplification. It develops the ability to move from a direct transition model to a scalable closed-form or optimized recurrence.",
+    "reasonZH": "该进阶组合 DP 题通过递推结构和数学化简统计交替大小关系数组。它训练从直接转移模型推进到可扩展的优化递推或公式。"
+  },
+  {
+    "slug": "numbers-at-most-n-given-digit-set",
+    "reasonEN": "A foundational digit-DP problem that counts shorter lengths first, then follows the upper bound digit by digit. It teaches the tight-prefix invariant behind many bounded-number counting problems.",
+    "reasonZH": "这是基础数位 DP 题，先统计较短长度，再逐位跟随上界。它训练众多数值上界计数问题共有的紧前缀不变量。"
+  },
+  {
+    "slug": "numbers-with-repeated-digits",
+    "reasonEN": "This hard digit-DP problem is best approached by counting numbers with all distinct digits and taking the complement. It reinforces mask-based digit usage, leading-zero handling, and complement counting under an upper bound.",
+    "reasonZH": "这道困难数位 DP 更适合先统计所有位互异的数字再取补集。它训练位掩码记录数字使用情况、前导零处理，以及上界下的补集计数。"
+  },
+  {
+    "slug": "numbers-with-same-consecutive-differences",
+    "reasonEN": "A constrained number-generation problem suited to BFS or backtracking from each leading digit. It strengthens state-expansion discipline, especially deduplicating the zero-difference branch and excluding leading zeros.",
+    "reasonZH": "该受约束数字生成题适合从每个首位数字进行 BFS 或回溯。它训练状态扩展的严谨性，尤其是差为零时去重和排除前导零。"
+  },
+  {
+    "slug": "o8SXZn",
+    "reasonEN": "A greedy resource-allocation problem that balances bucket upgrades against repeated filling operations. It develops the ability to identify a monotone cost tradeoff and use a priority queue or bounded enumeration to minimize it.",
+    "reasonZH": "这是一道贪心资源分配题，需要权衡升级桶容量与重复蓄水操作。它训练识别单调的成本取舍，并用优先队列或有界枚举求最优值。"
+  },
+  {
+    "slug": "oPs9Bm",
+    "reasonEN": "This hard array DP models the feasible inspection-state transitions across people and checkpoints. It is valuable practice for compressing sequential choices into a small set of reachable counts and preserving transition boundaries.",
+    "reasonZH": "该困难数组 DP 对人员与检查点之间的可行状态转移建模。它训练将顺序决策压缩为少量可达计数状态，并严谨维护转移边界。"
+  },
+  {
+    "slug": "occurrences-after-bigram",
+    "reasonEN": "A simple token-stream matching problem that checks adjacent word pairs while scanning once. It establishes reliable string tokenization and index-boundary habits for sequence-pattern tasks.",
+    "reasonZH": "这是一道简单的词元流匹配题，在一次扫描中检查相邻单词对。它建立字符串分词和下标边界处理的可靠习惯。"
+  },
+  {
+    "slug": "odd-and-even-transactions",
+    "reasonEN": "A database aggregation exercise centered on conditional grouping by transaction parity. It teaches expressive SQL filtering and aggregation patterns for producing multiple categorized metrics in one query.",
+    "reasonZH": "该数据库聚合题围绕按交易奇偶性进行条件分组。它训练用 SQL 的过滤与聚合模式，在一次查询中产出多个分类指标。"
+  },
+  {
+    "slug": "odd-even-jump",
+    "reasonEN": "A hard DP problem that first computes next greater-or-equal and next smaller-or-equal destinations using sorting and monotonic stacks. It is a landmark exercise in converting ordered-value jumps into backward reachability states.",
+    "reasonZH": "这道困难 DP 题先借助排序和单调栈求出下一个不小与不大目标。它训练将有序值跳转关系转化为从后向前的可达性状态。"
+  },
+  {
+    "slug": "odd-even-linked-list",
+    "reasonEN": "An in-place linked-list reordering problem that maintains two chains and reconnects them at the end. It strengthens pointer-update sequencing and shows how stable partitioning can be done with constant extra space.",
+    "reasonZH": "该原地链表重排题维护奇偶两条链并在最后连接。它训练指针更新顺序，并展示如何以常数额外空间完成稳定分组。"
+  },
+  {
+    "slug": "odd-string-difference",
+    "reasonEN": "A lightweight signature-classification problem that encodes each word by adjacent character differences. It reinforces designing a representation that exposes the outlier, then identifying it with frequency counting.",
+    "reasonZH": "这是一道轻量特征分类题，将单词编码为相邻字符差值序列。它训练设计能暴露异常项的表示，并通过频次统计定位异常。"
+  },
+  {
+    "slug": "om3reC",
+    "reasonEN": "A shortest-transformation graph problem solved by BFS over one-letter mutations with dictionary membership checks. It teaches level-order search, visited-state management, and efficient implicit-neighbor generation.",
+    "reasonZH": "该最短转换图题通过 BFS 枚举单字符变换，并检查字典成员资格。它训练分层搜索、访问状态管理和隐式邻居的高效生成。"
+  },
+  {
+    "slug": "omKAoA",
+    "reasonEN": "This hard string DP precomputes palindrome intervals and then minimizes cuts over prefix endpoints. It is essential practice for separating a reusable interval predicate from an optimization recurrence.",
+    "reasonZH": "这道困难字符串 DP 先预处理回文区间，再按前缀终点最小化切割次数。它训练将可复用的区间判定与优化递推分离。"
+  },
+  {
+    "slug": "one-away-lcci",
+    "reasonEN": "A two-pointer edit-distance special case that compares strings while allowing at most one mismatch or skip. It sharpens length prechecks and the pointer-advance choices that distinguish replacement from insertion or deletion.",
+    "reasonZH": "这是一道双指针编辑距离特例题，比较两个字符串时最多允许一次不匹配或跳过。它训练长度预检查，以及区分替换、插入和删除时的指针推进。"
+  },
+  {
+    "slug": "ones-and-zeroes",
+    "reasonEN": "A two-capacity 0/1 knapsack problem where each binary string consumes zero and one budgets. It teaches multidimensional state design and reverse iteration to prevent one item from being reused in the same round.",
+    "reasonZH": "该题是双容量 0/1 背包，每个二进制字符串消耗零和一的预算。它训练多维状态设计，以及逆序遍历以防同一物品在一轮中被重复使用。"
+  },
+  {
+    "slug": "online-election",
+    "reasonEN": "A time-indexed design problem that records the current leader at each vote and answers queries with binary search. It demonstrates preprocessing event snapshots so online queries become logarithmic lookups.",
+    "reasonZH": "这是时间索引设计题，记录每次投票后的当前领先者，并用二分回答查询。它展示预处理事件快照后，将在线查询降为对数查找的思路。"
+  },
+  {
+    "slug": "online-majority-element-in-subarray",
+    "reasonEN": "This hard range-query design problem combines candidate selection with position indexes for verification. It develops the important separation between finding a plausible majority candidate and proving its frequency within a queried interval.",
+    "reasonZH": "该困难区间查询设计题结合候选元素选择与位置索引验证。它训练区分“找到可能的多数候选”与“证明其在查询区间内频次达标”两个步骤。"
+  },
+  {
+    "slug": "online-stock-span",
+    "reasonEN": "A streaming monotonic-stack problem that stores unresolved higher-price boundaries with aggregated spans. It is the canonical lesson in amortized analysis: each price is pushed and popped at most once.",
+    "reasonZH": "这是一道数据流单调栈题，保存尚未被更高价格截断的边界及其累计跨度。它是均摊分析的经典案例：每个价格至多入栈和出栈一次。"
+  },
+  {
+    "slug": "opLdQZ",
+    "reasonEN": "A target-pair search problem that benefits from preserving an ordered traversal and moving two pointers by sum comparison. It reinforces reducing structured search to a monotone decision process instead of testing all pairs.",
+    "reasonZH": "该目标数对搜索题适合保留有序遍历结果，并按和的比较移动双指针。它训练把结构化搜索化为单调决策过程，避免枚举全部数对。"
+  },
+  {
+    "slug": "open-the-lock",
+    "reasonEN": "A shortest-path BFS over an implicit four-wheel state graph, with deadends treated as blocked states. It teaches systematic neighbor generation, early visited marking, and level-based distance accounting.",
+    "reasonZH": "这是隐式四轮状态图上的最短路 BFS，将死亡状态视为不可访问节点。它训练系统生成邻居、提前标记访问状态和按层统计距离。"
+  },
+  {
+    "slug": "operations-lcci",
+    "reasonEN": "A constrained arithmetic design problem that reconstructs subtraction, multiplication, and division from permitted primitive operations. It develops low-level numerical reasoning around signs, doubling, overflow, and boundary values.",
+    "reasonZH": "该受限算术设计题要求仅用允许的原始操作重建减法、乘法和除法。它训练符号、倍增、溢出及边界值等底层数值推理。"
+  },
+  {
+    "slug": "operations-on-tree",
+    "reasonEN": "A stateful tree-design problem that coordinates node locks with ancestor checks and descendant cleanup during upgrades. It is valuable for maintaining cross-node invariants and choosing traversals that reflect operation semantics.",
+    "reasonZH": "这是一道有状态的树设计题，需要在升级时协调节点锁、祖先检查与后代解锁。它训练维护跨节点不变量，并选择贴合操作语义的遍历方式。"
+  },
+  {
+    "slug": "optimal-division",
+    "reasonEN": "A math-driven optimization problem where the expression structure reveals that one parenthesization dominates all others. It teaches looking past generic interval DP to prove a greedy formatting rule from operator monotonicity.",
+    "reasonZH": "该数学优化题中，表达式结构可证明某一种括号方式始终最优。它训练跳出通用区间 DP，从运算单调性推导贪心构造规则。"
+  }
+]

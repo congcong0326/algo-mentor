@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "destroy-sequential-targets",
+    "reasonEN": "A medium remainder-grouping problem that buckets values by modulo class and selects the best group with the smallest valid starter, reinforcing modular invariants in optimization.",
+    "reasonZH": "中等难度余数分组题，按模类聚合数值并在最佳分组中选择最小起始值，训练利用同余不变量完成优化。"
+  },
+  {
+    "slug": "destroying-asteroids",
+    "reasonEN": "This medium greedy simulation sorts asteroids by mass and grows capacity monotonically, illustrating when ordering converts an apparently dynamic process into a simple proof-backed scan.",
+    "reasonZH": "中等难度贪心模拟题，按质量排序后单调增长自身容量，展示排序如何将动态过程转化为可证明的线性扫描。"
+  },
+  {
+    "slug": "detect-capital",
+    "reasonEN": "A compact string-validation problem that classifies capitalization patterns, useful for practicing character predicates and concise case analysis.",
+    "reasonZH": "简洁的字符串校验题，分类判断大小写模式，适合练习字符谓词与精炼的分类讨论。"
+  },
+  {
+    "slug": "detect-cycles-in-2d-grid",
+    "reasonEN": "A medium grid-graph cycle-detection problem that tracks the traversal parent while following equal-valued neighbors, strengthening DFS/BFS invariants in undirected graphs.",
+    "reasonZH": "中等难度网格图环检测题，沿相同字符邻居遍历时记录父节点，训练无向图 DFS/BFS 的环判定不变量。"
+  },
+  {
+    "slug": "detect-pattern-of-length-m-repeated-k-or-more-times",
+    "reasonEN": "An easy bounded-enumeration problem that compares positions one period apart, offering direct practice in translating repeated-pattern definitions into index arithmetic.",
+    "reasonZH": "简单的有界枚举题，通过比较相隔一个周期的位置，训练将重复模式定义转化为下标运算。"
+  },
+  {
+    "slug": "detect-squares",
+    "reasonEN": "A medium streaming-count design problem that stores point multiplicities and enumerates compatible diagonals, teaching how geometric constraints become hash-based counting queries.",
+    "reasonZH": "中等难度数据流计数设计题，保存点的重数并枚举兼容对角点，训练将几何约束转化为基于哈希的计数查询。"
+  },
+  {
+    "slug": "determine-color-of-a-chessboard-square",
+    "reasonEN": "A tiny coordinate-parity problem that maps board color to row-column parity, reinforcing the use of algebraic invariants instead of explicit board simulation.",
+    "reasonZH": "小型坐标奇偶性题，将棋盘颜色映射为行列奇偶关系，训练用代数不变量代替显式棋盘模拟。"
+  },
+  {
+    "slug": "determine-if-a-cell-is-reachable-at-a-given-time",
+    "reasonEN": "This medium geometry problem derives reachability from Chebyshev distance and isolates the same-cell timing exception, sharpening proof-based handling of movement rules.",
+    "reasonZH": "中等难度几何题，通过切比雪夫距离推导可达性，并单独处理原地停留的时间例外，训练基于证明处理移动规则。"
+  },
+  {
+    "slug": "determine-if-string-halves-are-alike",
+    "reasonEN": "An easy counting problem that compares vowel totals across two fixed ranges, providing clean practice in character classification and balanced partition checks.",
+    "reasonZH": "简单的计数题，比较两个固定区间的元音总数，适合练习字符分类和均衡分割判断。"
+  },
+  {
+    "slug": "determine-if-two-events-have-conflict",
+    "reasonEN": "A concise interval-overlap problem that relies on normalized time strings or endpoint comparisons, reinforcing inclusive-boundary reasoning in schedule validation.",
+    "reasonZH": "简洁的区间重叠题，可利用规范时间字符串或端点比较判断冲突，重点训练日程校验中的闭区间边界意识。"
+  },
+  {
+    "slug": "determine-if-two-strings-are-close",
+    "reasonEN": "A medium frequency-signature problem that compares both character availability and the multiset of counts, illustrating how allowed operations define the right invariant.",
+    "reasonZH": "中等难度频次签名题，同时比较字符集合和频次数多重集，展示如何从允许操作中提炼正确不变量。"
+  },
+  {
+    "slug": "determine-the-minimum-sum-of-a-k-avoiding-array",
+    "reasonEN": "This medium greedy construction chooses the smallest currently legal values while blocking complementary sums, building intuition for exchange arguments and avoidance sets.",
+    "reasonZH": "中等难度贪心构造题，每次选择当前最小合法值并屏蔽互补和，训练交换论证与禁用集合的思维。"
+  },
+  {
+    "slug": "determine-the-winner-of-a-bowling-game",
+    "reasonEN": "An easy simulation task that applies scoring multipliers based on recent throws, emphasizing compact rolling state and faithful implementation of layered rules.",
+    "reasonZH": "简单的规则模拟题，根据近期投球应用得分倍率，重点训练紧凑滚动状态与多层规则的准确实现。"
+  },
+  {
+    "slug": "determine-whether-matrix-can-be-obtained-by-rotation",
+    "reasonEN": "A matrix-simulation problem that checks a fixed number of 90-degree rotations, reinforcing coordinate transforms and the choice between in-place and copied rotation logic.",
+    "reasonZH": "矩阵模拟题，检查有限次九十度旋转，训练坐标变换以及原地旋转与拷贝旋转的实现取舍。"
+  },
+  {
+    "slug": "detonate-the-maximum-bombs",
+    "reasonEN": "A medium geometry-to-graph problem that creates directed reachability edges and launches DFS from each source, strengthening modeling of chain reactions as graph traversal.",
+    "reasonZH": "中等难度几何建图题，将爆炸可达关系转为有向边并从每个起点 DFS，训练把连锁反应建模为图遍历。"
+  },
+  {
+    "slug": "di-string-match",
+    "reasonEN": "A classic two-pointer greedy construction that assigns the current minimum or maximum according to each relation, offering a direct lesson in preserving future feasibility.",
+    "reasonZH": "经典双指针贪心构造题，依据关系符选择当前最小或最大值，直观训练在构造中保留后续可行性。"
+  },
+  {
+    "slug": "di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof",
+    "reasonEN": "A foundational unique-character problem that combines frequency counting with a second ordered scan, teaching why occurrence statistics and discovery order are separate concerns.",
+    "reasonZH": "基础的首个唯一字符题，结合频次统计与第二次顺序扫描，训练区分出现次数信息与发现顺序信息。"
+  },
+  {
+    "slug": "diagonal-traverse",
+    "reasonEN": "A medium matrix simulation that walks diagonal boundaries with alternating directions, providing valuable practice in coordinate updates and edge-triggered direction changes.",
+    "reasonZH": "中等难度矩阵模拟题，沿对角线边界交替方向行走，训练坐标更新与触边换向的细节控制。"
+  },
+  {
+    "slug": "diagonal-traverse-ii",
+    "reasonEN": "This medium irregular-matrix traversal groups elements by row-plus-column or uses a heap, showing how a geometric ordering can be recovered from sparse input.",
+    "reasonZH": "中等难度不规则矩阵遍历题，按行列和分组或使用堆恢复对角顺序，展示如何从稀疏输入重建几何排序。"
+  },
+  {
+    "slug": "diameter-of-binary-tree",
+    "reasonEN": "A canonical tree DP problem that updates the answer from left and right subtree depths, essential for separating recursive return values from global path objectives.",
+    "reasonZH": "树形动态规划代表题，用左右子树深度更新答案，是理解递归返回值与全局路径目标分离的必练题。"
+  },
+  {
+    "slug": "diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof",
+    "reasonEN": "An easy parity-partition problem that moves odd and even values with two pointers, reinforcing in-place rearrangement and pointer-crossing invariants.",
+    "reasonZH": "简单的奇偶分区题，用双指针交换奇数与偶数，训练原地重排和指针相遇时的不变量维护。"
+  },
+  {
+    "slug": "dice-roll-simulation",
+    "reasonEN": "A hard sequence-DP problem that tracks the last face and its consecutive run length, teaching state expansion for history-dependent transition constraints.",
+    "reasonZH": "高难度序列动态规划题，记录最后骰子点数及其连续长度，训练为依赖历史的转移约束扩展状态。"
+  },
+  {
+    "slug": "difference-between-element-sum-and-digit-sum-of-an-array",
+    "reasonEN": "A straightforward arithmetic scan that separates whole-number totals from digit totals, useful for practicing digit extraction and invariant-based aggregation.",
+    "reasonZH": "直接的算术扫描题，分别累加元素总和与数位总和，适合练习数位提取和基于不变量的聚合。"
+  },
+  {
+    "slug": "difference-between-maximum-and-minimum-price-sum",
+    "reasonEN": "This hard tree DP problem propagates path-value states through each root choice, offering advanced practice in rerooting-style reasoning and independent contribution tracking.",
+    "reasonZH": "高难度树形动态规划题，围绕不同根选择传播路径价值状态，训练换根式推理与独立贡献状态维护。"
+  },
+  {
+    "slug": "difference-between-ones-and-zeros-in-row-and-column",
+    "reasonEN": "A medium matrix-aggregation problem that precomputes row and column balances before filling answers, demonstrating how shared summaries eliminate repeated scans.",
+    "reasonZH": "中等难度矩阵聚合题，预先计算行列平衡值再填写答案，展示共享摘要如何消除重复扫描。"
+  },
+  {
+    "slug": "difference-of-number-of-distinct-values-on-diagonals",
+    "reasonEN": "This medium diagonal-scan problem maintains distinct-value sets in forward and reverse passes, reinforcing directional preprocessing and per-cell exclusion logic.",
+    "reasonZH": "中等难度对角线扫描题，正反两个方向维护不同值集合，训练方向预处理与逐格排除自身的逻辑。"
+  },
+  {
+    "slug": "different-ways-to-add-parentheses",
+    "reasonEN": "A medium divide-and-conquer memoization problem that splits at every operator and combines subexpression results, making it a core example of recursive expression enumeration.",
+    "reasonZH": "中等难度分治记忆化题，在每个运算符处分割并组合子表达式结果，是递归枚举表达式结果的核心范例。"
+  },
+  {
+    "slug": "digit-frequency-score",
+    "reasonEN": "An easy digit-frequency counting problem that derives a numeric score from compact occurrence statistics, useful for practicing digit decomposition and hash-based aggregation.",
+    "reasonZH": "简单的数位频次计数题，从紧凑的出现统计推导数值评分，适合练习数位拆分与哈希聚合。"
+  },
+  {
+    "slug": "digit-operations-to-make-two-integers-equal",
+    "reasonEN": "A medium implicit-graph shortest-path problem that treats legal digit changes as weighted transitions and uses Dijkstra's algorithm, strengthening state-space search with number-theory filters.",
+    "reasonZH": "中等难度隐式图最短路题，将合法数位修改视为带权转移并使用 Dijkstra，训练结合数论过滤的状态空间搜索。"
+  },
+  {
+    "slug": "dinner-plate-stacks",
+    "reasonEN": "A hard data-structure design problem that coordinates bounded stacks with heaps for the leftmost available and rightmost nonempty choices, testing lazy cleanup and invariant maintenance.",
+    "reasonZH": "高难度数据结构设计题，用堆协调容量受限栈中的最左可用和最右非空位置，重点训练惰性清理与不变量维护。"
+  }
+]

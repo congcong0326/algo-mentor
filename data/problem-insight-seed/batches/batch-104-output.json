@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "remove-k-digits",
+    "reasonEN": "A greedy monotonic-stack problem that removes earlier larger digits whenever a smaller future digit arrives. It is the canonical exercise for proving local deletions produce the lexicographically smallest remaining number and for handling leading zeros.",
+    "reasonZH": "这是一道贪心单调栈题，遇到更小的后续数字时删除此前较大的数字。它训练证明局部删除可得到字典序最小结果，并处理前导零。"
+  },
+  {
+    "slug": "remove-letter-to-equalize-frequency",
+    "reasonEN": "A small frequency-analysis problem that tests whether removing one occurrence can make all remaining positive counts equal. It reinforces precise counting cases instead of relying on an informal inspection of character frequencies.",
+    "reasonZH": "该频次分析题判断删除一次出现后，所有剩余正频次能否相等。它训练精确枚举计数情况，而不是凭直觉观察字符频率。"
+  },
+  {
+    "slug": "remove-linked-list-elements",
+    "reasonEN": "A foundational linked-list filtering problem best handled with a dummy head or recursive return values. It teaches safe predecessor management, especially when the original head itself must be deleted.",
+    "reasonZH": "这是基础链表过滤题，适合使用哑节点或递归返回值。它训练安全维护前驱节点，尤其是原头节点也需要删除的情况。"
+  },
+  {
+    "slug": "remove-max-number-of-edges-to-keep-graph-fully-traversable",
+    "reasonEN": "This hard union-find problem processes shared edges first, then builds separate connectivity for both users. It develops the crucial greedy priority of preserving edges with dual value and validating both final component counts.",
+    "reasonZH": "该困难并查集题先处理双方共享边，再分别构建两套连通性。它训练优先保留双重价值边的贪心策略，并验证两个最终连通分量数。"
+  },
+  {
+    "slug": "remove-methods-from-project",
+    "reasonEN": "A directed-graph reachability problem that identifies methods reachable from a suspicious source, then checks whether outside callers depend on them. It teaches separating propagation of a mark from validation of a removal condition.",
+    "reasonZH": "该有向图可达性题先标记从可疑方法可达的节点，再检查外部调用是否依赖它们。它训练区分标记传播与删除条件验证。"
+  },
+  {
+    "slug": "remove-nodes-from-linked-list",
+    "reasonEN": "A linked-list dominance problem that can be solved by reversing and tracking the suffix maximum or by a monotonic stack. It develops the insight that a future-value condition becomes local after reversing traversal direction.",
+    "reasonZH": "该链表支配关系题可通过反转后维护后缀最大值，或使用单调栈解决。它训练理解面向未来的条件在反向遍历后会变成局部判断。"
+  },
+  {
+    "slug": "remove-nth-node-from-end-of-list",
+    "reasonEN": "A two-pointer linked-list template that maintains a fixed gap so one pass finds the predecessor of the target. It reinforces dummy-head usage and exact pointer-gap initialization at boundary positions.",
+    "reasonZH": "这是双指针链表模板题，通过保持固定间隔在一次遍历中找到目标前驱。它训练哑节点使用，以及边界位置下指针间隔的准确初始化。"
+  },
+  {
+    "slug": "remove-one-element-to-make-the-array-strictly-increasing",
+    "reasonEN": "A linear array-validation problem that permits one repair at the first inversion and tests both deletion consequences. It teaches local violation analysis and why comparing against the element before the previous one matters.",
+    "reasonZH": "该线性数组校验题在首次逆序处允许一次修复，并检查两种删除后果。它训练局部违例分析，以及为何要与前前一个元素比较。"
+  },
+  {
+    "slug": "remove-outermost-parentheses",
+    "reasonEN": "A balanced-parentheses scan that uses nesting depth to distinguish primitive boundaries from inner characters. It is a clean exercise in maintaining a counter invariant before or after consuming each parenthesis.",
+    "reasonZH": "这是一道括号平衡扫描题，用嵌套深度区分原语边界和内部字符。它适合训练在处理每个括号前后维护计数器不变量。"
+  },
+  {
+    "slug": "remove-palindromic-subsequences",
+    "reasonEN": "A deceptively simple string-observation problem where the binary alphabet sharply limits the answer. It teaches stepping back from procedural deletion and using a global palindrome property to derive the minimum directly.",
+    "reasonZH": "该字符串观察题看似简单，但二元字母表极大限制了答案。它训练跳出过程化删除，利用全局回文性质直接推出最小操作数。"
+  },
+  {
+    "slug": "remove-stones-to-minimize-the-total",
+    "reasonEN": "A greedy priority-queue problem that repeatedly applies the operation to the current largest pile. It reinforces exchange reasoning: the largest available reduction always gives the best immediate and future total decrease.",
+    "reasonZH": "这是一道贪心优先队列题，每次对当前最大石堆执行操作。它训练交换论证：最大可减量始终带来最优的当前和后续总量下降。"
+  },
+  {
+    "slug": "remove-sub-folders-from-the-filesystem",
+    "reasonEN": "A path-hierarchy problem solved by lexicographic sorting and prefix-boundary checks, or by a trie. It teaches that string prefixes require delimiter validation so similarly named sibling folders are not confused with descendants.",
+    "reasonZH": "该路径层级题可用字典序排序加前缀边界检查，或用字典树解决。它训练字符串前缀必须验证分隔符，避免将同名前缀的兄弟目录误判为子目录。"
+  },
+  {
+    "slug": "remove-trailing-zeros-from-a-string",
+    "reasonEN": "A direct string-boundary problem that locates the final nonzero character and keeps the necessary prefix. It reinforces choosing an index-based scan when only a suffix property matters.",
+    "reasonZH": "这是一道直接字符串边界题，定位最后一个非零字符并保留所需前缀。它训练当只关心后缀性质时选择基于下标的扫描。"
+  },
+  {
+    "slug": "remove-zero-sum-consecutive-nodes-from-linked-list",
+    "reasonEN": "A prefix-sum linked-list problem that maps each cumulative sum to its last node, then bypasses zero-sum spans. It demonstrates how equal prefix states reveal removable intervals and why a dummy head simplifies the zero prefix.",
+    "reasonZH": "该前缀和链表题将每个累计和映射到最后一个节点，再跳过和为零的区间。它展示相等前缀状态如何揭示可删除区间，以及哑节点如何简化零前缀。"
+  },
+  {
+    "slug": "remove-zeros-in-decimal-representation",
+    "reasonEN": "A number-simulation problem that rebuilds decimal digits while skipping zero positions. It provides practice in digit extraction order, reconstruction, and the difference between numeric and string representations.",
+    "reasonZH": "这是数字模拟题，在重建十进制位时跳过零位置。它训练数字提取顺序、重建过程，以及数值表示与字符串表示的区别。"
+  },
+  {
+    "slug": "removing-minimum-and-maximum-from-array",
+    "reasonEN": "A small greedy case-analysis problem that compares removing both extrema from the left, right, or opposite ends. It teaches reducing an operational process to a complete set of endpoint cost formulas.",
+    "reasonZH": "该小型贪心分类题比较从左、从右或从两端删除两个极值的成本。它训练将操作过程化简为完整的端点成本公式集合。"
+  },
+  {
+    "slug": "removing-minimum-number-of-magic-beans",
+    "reasonEN": "A sorting and enumeration problem that chooses a target nonempty pile size and removes everything else accordingly. It teaches evaluating candidates through kept totals and using sorted values to avoid exploring arbitrary targets.",
+    "reasonZH": "该排序枚举题选择一个目标非空石堆大小，再按此移除其余豆子。它训练通过保留总量评估候选值，并利用排序避免枚举任意目标。"
+  },
+  {
+    "slug": "removing-stars-from-a-string",
+    "reasonEN": "A stack-simulation problem where each star cancels the nearest unresolved character to its left. It establishes the standard cancellation pattern and shows when a mutable output buffer can act as a stack.",
+    "reasonZH": "这是一道栈模拟题，每个星号消除左侧最近的未处理字符。它建立标准的抵消模式，并展示可变输出缓冲区何时可充当栈。"
+  },
+  {
+    "slug": "rename-columns",
+    "reasonEN": "A database schema operation that applies a precise column rename while preserving the table's data contract. It reinforces distinguishing data-definition statements from data-update statements in SQL workflows.",
+    "reasonZH": "该数据库模式操作要求精确重命名列，同时保持表的数据契约。它训练区分 SQL 工作流中的数据定义语句与数据更新语句。"
+  },
+  {
+    "slug": "reorder-data-in-log-files",
+    "reasonEN": "A custom sorting problem that separates letter logs from digit logs and compares identifiers only after content ties. It develops multi-stage comparator design and the importance of stable preservation for an exempt category.",
+    "reasonZH": "该自定义排序题先区分字母日志与数字日志，并在内容相同时比较标识符。它训练多阶段比较器设计，以及对豁免类别保持稳定顺序的重要性。"
+  },
+  {
+    "slug": "reorder-list",
+    "reasonEN": "A linked-list transformation that finds the midpoint, reverses the second half, and alternately merges both halves. It combines three essential list techniques and demands careful termination to avoid cycles.",
+    "reasonZH": "该链表变换题需寻找中点、反转后半段并交替合并两部分。它结合三项核心链表技巧，并要求谨慎收尾以避免成环。"
+  },
+  {
+    "slug": "reorder-routes-to-make-all-paths-lead-to-the-city-zero",
+    "reasonEN": "A tree traversal problem that stores each road in both directions with a reversal-cost flag. It teaches encoding directional information into an undirected DFS or BFS so every required reversal is counted exactly once.",
+    "reasonZH": "该树遍历题将每条道路以双向形式存储，并附带是否需反转的标记。它训练在无向 DFS 或 BFS 中编码方向信息，从而恰好统计每条必要反转。"
+  },
+  {
+    "slug": "reordered-power-of-2",
+    "reasonEN": "A digit-signature classification problem that compares the frequency vector of the input with those of powers of two. It reinforces canonical representations for permutation equivalence and bounded enumeration of candidates.",
+    "reasonZH": "该数字特征分类题比较输入与二的幂的数字频次数组。它训练为排列等价性选择规范表示，并对候选进行有界枚举。"
+  },
+  {
+    "slug": "reorganize-string",
+    "reasonEN": "A greedy string-construction problem that repeatedly selects the most frequent available character while avoiding the previous one. It teaches max-heap scheduling, feasibility checks, and how to defer one conflicting item safely.",
+    "reasonZH": "该贪心字符串构造题反复选择当前频次最高且不等于前一字符的元素。它训练大根堆调度、可行性检查，以及如何安全延迟一个冲突元素。"
+  },
+  {
+    "slug": "repeated-dna-sequences",
+    "reasonEN": "A fixed-window duplicate-detection problem that uses hashing or a compact rolling two-bit encoding for DNA characters. It develops the ability to exploit a tiny alphabet for memory-efficient substring tracking.",
+    "reasonZH": "这是一道定长窗口重复检测题，可用哈希或 DNA 字符的紧凑滚动二位编码。它训练利用小字母表实现节省内存的子串追踪。"
+  },
+  {
+    "slug": "repeated-string-match",
+    "reasonEN": "A string-matching problem that repeats the source only until the target length is covered, then checks one extra boundary case. It teaches deriving a tight repetition bound instead of extending strings without justification.",
+    "reasonZH": "该字符串匹配题只将源串重复到覆盖目标长度，再检查一个额外边界情况。它训练推导紧凑的重复上界，而非无依据地持续拼接。"
+  },
+  {
+    "slug": "repeated-substring-pattern",
+    "reasonEN": "A periodic-string recognition problem approachable through prefix-function reasoning or the doubled-string observation. It reinforces how self-overlap reveals whether a string is composed of a shorter repeating unit.",
+    "reasonZH": "该周期字符串识别题可用前缀函数推理或双倍字符串观察解决。它训练理解自重叠如何揭示字符串是否由更短重复单元构成。"
+  },
+  {
+    "slug": "replace-all-digits-with-characters",
+    "reasonEN": "A simple character-transformation scan that interprets digit positions relative to their preceding letters. It reinforces alternating-index assumptions and safe character-code arithmetic.",
+    "reasonZH": "这是一道简单字符转换扫描题，根据前一个字母解释数字位置。它训练交替下标假设，以及安全的字符编码运算。"
+  },
+  {
+    "slug": "replace-all-s-to-avoid-consecutive-repeating-characters",
+    "reasonEN": "A local greedy replacement problem where each question mark only needs a character different from its immediate neighbors. It demonstrates why a small alphabet is sufficient when constraints are strictly adjacent.",
+    "reasonZH": "该局部贪心替换题中，每个问号只需选择与相邻字符不同的字母。它展示当约束仅限相邻关系时，小字母表为何已足够。"
+  },
+  {
+    "slug": "replace-elements-in-an-array",
+    "reasonEN": "A value-location simulation problem that maintains a map from current value to index for constant-time replacements. It teaches keeping an auxiliary index synchronized whenever the primary array is mutated.",
+    "reasonZH": "该值位置模拟题维护当前值到下标的映射，以常数时间完成替换。它训练主数组发生修改时同步维护辅助索引。"
+  }
+]

@@ -1,0 +1,732 @@
+[
+  {
+    "slug": "ransom-note",
+    "frontendDisplayId": "383",
+    "titleEn": "Ransom Note",
+    "titleZh": "赎金信",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/ransom-note/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rdmXM7",
+    "frontendDisplayId": "LCP 75",
+    "titleEn": null,
+    "titleZh": "传送卷轴",
+    "difficulty": "HARD",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/rdmXM7/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "re-space-lcci",
+    "frontendDisplayId": "面试题 17.13",
+    "titleEn": null,
+    "titleZh": "恢复空格",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Function",
+      "Hash Table",
+      "Rolling Hash",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希函数",
+      "哈希表",
+      "滚动哈希",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/re-space-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reach-a-number",
+    "frontendDisplayId": "754",
+    "titleEn": "Reach a Number",
+    "titleZh": "到达终点数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reach-a-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reach-end-of-array-with-max-score",
+    "frontendDisplayId": "3282",
+    "titleEn": "Reach End of Array With Max Score",
+    "titleZh": "到达数组末尾的最大得分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reach-end-of-array-with-max-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reachable-nodes-in-subdivided-graph",
+    "frontendDisplayId": "882",
+    "titleEn": "Reachable Nodes In Subdivided Graph",
+    "titleZh": "细分图中的可到达节点",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "图",
+      "堆（优先队列）",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reachable-nodes-in-subdivided-graph/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reachable-nodes-with-restrictions",
+    "frontendDisplayId": "2368",
+    "titleEn": "Reachable Nodes With Restrictions",
+    "titleZh": "受限条件下可到达节点的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Hash Table",
+      "Tree",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "哈希表",
+      "树",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reachable-nodes-with-restrictions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reaching-points",
+    "frontendDisplayId": "780",
+    "titleEn": "Reaching Points",
+    "titleZh": "到达终点",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reaching-points/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rearrange-array-elements-by-sign",
+    "frontendDisplayId": "2149",
+    "titleEn": "Rearrange Array Elements by Sign",
+    "titleZh": "按符号重排数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rearrange-array-elements-by-sign/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rearrange-array-to-maximize-prefix-score",
+    "frontendDisplayId": "2587",
+    "titleEn": "Rearrange Array to Maximize Prefix Score",
+    "titleZh": "重排数组以得到最大前缀分数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Prefix Sum",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "前缀和",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rearrange-array-to-maximize-prefix-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rearrange-characters-to-make-target-string",
+    "frontendDisplayId": "2287",
+    "titleEn": "Rearrange Characters to Make Target String",
+    "titleZh": "重排字符形成目标字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rearrange-characters-to-make-target-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rearrange-k-substrings-to-form-target-string",
+    "frontendDisplayId": "3365",
+    "titleEn": "Rearrange K Substrings to Form Target String",
+    "titleZh": "重排子字符串以形成目标字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rearrange-k-substrings-to-form-target-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rearrange-products-table",
+    "frontendDisplayId": "1795",
+    "titleEn": "Rearrange Products Table",
+    "titleZh": "每个产品在不同商店的价格",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rearrange-products-table/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rearrange-spaces-between-words",
+    "frontendDisplayId": "1592",
+    "titleEn": "Rearrange Spaces Between Words",
+    "titleZh": "重新排列单词间的空格",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rearrange-spaces-between-words/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rearrange-words-in-a-sentence",
+    "frontendDisplayId": "1451",
+    "titleEn": "Rearrange Words in a Sentence",
+    "titleZh": "重新排列句子中的单词",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rearrange-words-in-a-sentence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rearranging-fruits",
+    "frontendDisplayId": "2561",
+    "titleEn": "Rearranging Fruits",
+    "titleZh": "重排水果",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table",
+      "Sort"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rearranging-fruits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reconstruct-a-2-row-binary-matrix",
+    "frontendDisplayId": "1253",
+    "titleEn": "Reconstruct a 2-Row Binary Matrix",
+    "titleZh": "重构 2 行二进制矩阵",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reconstruct-a-2-row-binary-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reconstruct-itinerary",
+    "frontendDisplayId": "332",
+    "titleEn": "Reconstruct Itinerary",
+    "titleZh": "重新安排行程",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Eulerian Circuit",
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "欧拉回路",
+      "图",
+      "堆（优先队列）",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reconstruct-itinerary/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reconstruct-original-digits-from-english",
+    "frontendDisplayId": "423",
+    "titleEn": "Reconstruct Original Digits from English",
+    "titleZh": "从英文中重建数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reconstruct-original-digits-from-english/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "recover-a-tree-from-preorder-traversal",
+    "frontendDisplayId": "1028",
+    "titleEn": "Recover a Tree From Preorder Traversal",
+    "titleZh": "从先序遍历还原二叉树",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "String",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "字符串",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/recover-a-tree-from-preorder-traversal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "recover-binary-search-tree",
+    "frontendDisplayId": "99",
+    "titleEn": "Recover Binary Search Tree",
+    "titleZh": "恢复二叉搜索树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/recover-binary-search-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "recover-the-original-array",
+    "frontendDisplayId": "2122",
+    "titleEn": "Recover the Original Array",
+    "titleZh": "还原原数组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Hash Table",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "哈希表",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/recover-the-original-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rectangle-area",
+    "frontendDisplayId": "223",
+    "titleEn": "Rectangle Area",
+    "titleZh": "矩形面积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Geometry",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "几何",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rectangle-area/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rectangle-area-ii",
+    "frontendDisplayId": "850",
+    "titleEn": "Rectangle Area II",
+    "titleZh": "矩形面积 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Sweep Line",
+      "Ordered Set",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "扫描线",
+      "有序集合",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rectangle-area-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rectangle-overlap",
+    "frontendDisplayId": "836",
+    "titleEn": "Rectangle Overlap",
+    "titleZh": "矩形重叠",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Geometry",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "几何",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rectangle-overlap/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "recursive-mulitply-lcci",
+    "frontendDisplayId": "面试题 08.05",
+    "titleEn": null,
+    "titleZh": "递归乘法",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/recursive-mulitply-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "recyclable-and-low-fat-products",
+    "frontendDisplayId": "1757",
+    "titleEn": "Recyclable and Low Fat Products",
+    "titleZh": "可回收且低脂的产品",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/recyclable-and-low-fat-products/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "redistribute-characters-to-make-all-strings-equal",
+    "frontendDisplayId": "1897",
+    "titleEn": "Redistribute Characters to Make All Strings Equal",
+    "titleZh": "重新分配字符使所有字符串都相等",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/redistribute-characters-to-make-all-strings-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reduce-array-size-to-the-half",
+    "frontendDisplayId": "1338",
+    "titleEn": "Reduce Array Size to The Half",
+    "titleZh": "数组大小减半",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reduce-array-size-to-the-half/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reducing-dishes",
+    "frontendDisplayId": "1402",
+    "titleEn": "Reducing Dishes",
+    "titleZh": "做菜顺序",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reducing-dishes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-102",
+    "claimedAt": "2026-07-10T07:10:27.266158+00:00",
+    "completedAt": null
+  }
+]

@@ -1,0 +1,748 @@
+[
+  {
+    "slug": "subdomain-visit-count",
+    "frontendDisplayId": "811",
+    "titleEn": "Subdomain Visit Count",
+    "titleZh": "子域名访问计数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subdomain-visit-count/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subrectangle-queries",
+    "frontendDisplayId": "1476",
+    "titleEn": "Subrectangle Queries",
+    "titleZh": "子矩形查询",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subrectangle-queries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subsequence-sum-after-capping-elements",
+    "frontendDisplayId": "3685",
+    "titleEn": "Subsequence Sum After Capping Elements",
+    "titleZh": "含上限元素的子序列和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subsequence-sum-after-capping-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subsequence-with-the-minimum-score",
+    "frontendDisplayId": "2565",
+    "titleEn": "Subsequence With the Minimum Score",
+    "titleZh": "最少得分子序列",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Search",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subsequence-with-the-minimum-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subsequences-with-a-unique-middle-mode-i",
+    "frontendDisplayId": "3395",
+    "titleEn": "Subsequences with a Unique Middle Mode I",
+    "titleZh": "唯一中间众数子序列 I",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subsequences-with-a-unique-middle-mode-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subsets",
+    "frontendDisplayId": "78",
+    "titleEn": "Subsets",
+    "titleZh": "子集",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subsets/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subsets-ii",
+    "frontendDisplayId": "90",
+    "titleEn": "Subsets II",
+    "titleZh": "子集 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subsets-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "substring-matching-pattern",
+    "frontendDisplayId": "3407",
+    "titleEn": "Substring Matching Pattern",
+    "titleZh": "子字符串匹配模式",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "字符串匹配"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/substring-matching-pattern/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "substring-with-concatenation-of-all-words",
+    "frontendDisplayId": "30",
+    "titleEn": "Substring with Concatenation of All Words",
+    "titleZh": "串联所有单词的子串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/substring-with-concatenation-of-all-words/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "substring-with-largest-variance",
+    "frontendDisplayId": "2272",
+    "titleEn": "Substring With Largest Variance",
+    "titleZh": "最大波动的子字符串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Enumeration",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "枚举",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/substring-with-largest-variance/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "substring-xor-queries",
+    "frontendDisplayId": "2564",
+    "titleEn": "Substring XOR Queries",
+    "titleZh": "子字符串异或查询",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/substring-xor-queries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "substrings-of-size-three-with-distinct-characters",
+    "frontendDisplayId": "1876",
+    "titleEn": "Substrings of Size Three with Distinct Characters",
+    "titleZh": "长度为三且各字符不同的子字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/substrings-of-size-three-with-distinct-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subtract-the-product-and-sum-of-digits-of-an-integer",
+    "frontendDisplayId": "1281",
+    "titleEn": "Subtract the Product and Sum of Digits of an Integer",
+    "titleZh": "整数的各位积和之差",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subtract-the-product-and-sum-of-digits-of-an-integer/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subtree-inversion-sum",
+    "frontendDisplayId": "3544",
+    "titleEn": "Subtree Inversion Sum",
+    "titleZh": "子树反转和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subtree-inversion-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subtree-of-another-tree",
+    "frontendDisplayId": "572",
+    "titleEn": "Subtree of Another Tree",
+    "titleZh": "另一棵树的子树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Hash Function",
+      "String Matching",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "哈希函数",
+      "字符串匹配",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subtree-of-another-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "successful-pairs-of-spells-and-potions",
+    "frontendDisplayId": "2300",
+    "titleEn": "Successful Pairs of Spells and Potions",
+    "titleZh": "咒语和药水的成功对数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/successful-pairs-of-spells-and-potions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "successor-lcci",
+    "frontendDisplayId": "面试题 04.06",
+    "titleEn": null,
+    "titleZh": "后继者",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/successor-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sudoku-solver",
+    "frontendDisplayId": "37",
+    "titleEn": "Sudoku Solver",
+    "titleZh": "解数独",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Hash Table",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "哈希表",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sudoku-solver/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-game",
+    "frontendDisplayId": "1927",
+    "titleEn": "Sum Game",
+    "titleZh": "求和游戏",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Game Theory",
+      "Greedy",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "博弈",
+      "贪心",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-in-a-matrix",
+    "frontendDisplayId": "2679",
+    "titleEn": "Sum in a Matrix",
+    "titleZh": "矩阵中的和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Matrix",
+      "Simulation",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "矩阵",
+      "模拟",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-in-a-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-lists-lcci",
+    "frontendDisplayId": "面试题 02.05",
+    "titleEn": null,
+    "titleZh": "链表求和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/sum-lists-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-multiples",
+    "frontendDisplayId": "2652",
+    "titleEn": "Sum Multiples",
+    "titleZh": "倍数求和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-multiples/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-absolute-differences-in-a-sorted-array",
+    "frontendDisplayId": "1685",
+    "titleEn": "Sum of Absolute Differences in a Sorted Array",
+    "titleZh": "有序数组中差绝对值之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-absolute-differences-in-a-sorted-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-all-odd-length-subarrays",
+    "frontendDisplayId": "1588",
+    "titleEn": "Sum of All Odd Length Subarrays",
+    "titleZh": "所有奇数长度子数组的和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-all-odd-length-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-all-subset-xor-totals",
+    "frontendDisplayId": "1863",
+    "titleEn": "Sum of All Subset XOR Totals",
+    "titleZh": "找出所有子集的异或总和再求和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Combinatorics",
+      "Enumeration",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "组合数学",
+      "枚举",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-all-subset-xor-totals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-beautiful-subsequences",
+    "frontendDisplayId": "3671",
+    "titleEn": "Sum of Beautiful Subsequences",
+    "titleZh": "子序列美丽值求和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-beautiful-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-beauty-in-the-array",
+    "frontendDisplayId": "2012",
+    "titleEn": "Sum of Beauty in the Array",
+    "titleZh": "数组美丽值求和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-beauty-in-the-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-beauty-of-all-substrings",
+    "frontendDisplayId": "1781",
+    "titleEn": "Sum of Beauty of All Substrings",
+    "titleZh": "所有子字符串美丽值之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-beauty-of-all-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-compatible-numbers-in-range-i",
+    "frontendDisplayId": "3954",
+    "titleEn": "Sum of Compatible Numbers in Range I",
+    "titleZh": "区间内的兼容数字之和 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Dynamic Programming",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "动态规划",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-compatible-numbers-in-range-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sum-of-digit-differences-of-all-pairs",
+    "frontendDisplayId": "3153",
+    "titleEn": "Sum of Digit Differences of All Pairs",
+    "titleZh": "所有数对中数位差之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sum-of-digit-differences-of-all-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-116",
+    "claimedAt": "2026-07-10T08:06:26.802852+00:00",
+    "completedAt": null
+  }
+]

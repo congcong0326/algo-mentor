@@ -1,0 +1,774 @@
+[
+  {
+    "slug": "longest-unequal-adjacent-groups-subsequence-i",
+    "frontendDisplayId": "2900",
+    "titleEn": "Longest Unequal Adjacent Groups Subsequence I",
+    "titleZh": "最长相邻不相等子序列 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-unequal-adjacent-groups-subsequence-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-unequal-adjacent-groups-subsequence-ii",
+    "frontendDisplayId": "2901",
+    "titleEn": "Longest Unequal Adjacent Groups Subsequence II",
+    "titleZh": "最长相邻不相等子序列 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-unequal-adjacent-groups-subsequence-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-univalue-path",
+    "frontendDisplayId": "687",
+    "titleEn": "Longest Univalue Path",
+    "titleZh": "最长同值路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-univalue-path/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-uploaded-prefix",
+    "frontendDisplayId": "2424",
+    "titleEn": "Longest Uploaded Prefix",
+    "titleZh": "最长上传前缀",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Indexed Tree",
+      "Binary Search",
+      "Design",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Ordered Set",
+      "Segment Tree",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "树状数组",
+      "二分查找",
+      "设计",
+      "哈希表",
+      "堆（优先队列）",
+      "有序集合",
+      "线段树",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-uploaded-prefix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-valid-parentheses",
+    "frontendDisplayId": "32",
+    "titleEn": "Longest Valid Parentheses",
+    "titleZh": "最长有效括号",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-valid-parentheses/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-well-performing-interval",
+    "frontendDisplayId": "1124",
+    "titleEn": "Longest Well-Performing Interval",
+    "titleZh": "表现良好的最长时间段",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Monotonic Stack",
+      "Prefix Sum",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "单调栈",
+      "前缀和",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-well-performing-interval/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-word-in-dictionary",
+    "frontendDisplayId": "720",
+    "titleEn": "Longest Word in Dictionary",
+    "titleZh": "词典中最长的单词",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-word-in-dictionary/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-word-in-dictionary-through-deleting",
+    "frontendDisplayId": "524",
+    "titleEn": "Longest Word in Dictionary through Deleting",
+    "titleZh": "通过删除字母匹配到字典里最长单词",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-word-in-dictionary-through-deleting/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-word-lcci",
+    "frontendDisplayId": "面试题 17.15",
+    "titleEn": null,
+    "titleZh": "最长单词",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/longest-word-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-zigzag-path-in-a-binary-tree",
+    "frontendDisplayId": "1372",
+    "titleEn": "Longest ZigZag Path in a Binary Tree",
+    "titleZh": "二叉树中的最长交错路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-zigzag-path-in-a-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "loud-and-rich",
+    "frontendDisplayId": "851",
+    "titleEn": "Loud and Rich",
+    "titleZh": "喧闹和富有",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Graph Theory",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "图",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/loud-and-rich/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lowest-common-ancestor-of-a-binary-search-tree",
+    "frontendDisplayId": "235",
+    "titleEn": "Lowest Common Ancestor of a Binary Search Tree",
+    "titleZh": "二叉搜索树的最近公共祖先",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lowest-common-ancestor-of-a-binary-tree",
+    "frontendDisplayId": "236",
+    "titleEn": "Lowest Common Ancestor of a Binary Tree",
+    "titleZh": "二叉树的最近公共祖先",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lowest-common-ancestor-of-deepest-leaves",
+    "frontendDisplayId": "1123",
+    "titleEn": "Lowest Common Ancestor of Deepest Leaves",
+    "titleZh": "最深叶节点的最近公共祖先",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lowest-common-ancestor-of-deepest-leaves/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lru-cache",
+    "frontendDisplayId": "146",
+    "titleEn": "LRU Cache",
+    "titleZh": "LRU 缓存",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Doubly-Linked List",
+      "Hash Table",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "双向链表",
+      "哈希表",
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lru-cache/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lru-cache-lcci",
+    "frontendDisplayId": "面试题 16.25",
+    "titleEn": null,
+    "titleZh": "LRU 缓存",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Doubly-Linked List",
+      "Hash Table",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "双向链表",
+      "哈希表",
+      "链表"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/lru-cache-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lucky-numbers-in-a-matrix",
+    "frontendDisplayId": "1380",
+    "titleEn": "Lucky Numbers in a Matrix",
+    "titleZh": "矩阵中的幸运数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lucky-numbers-in-a-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lwyVBB",
+    "frontendDisplayId": "LCR 034",
+    "titleEn": null,
+    "titleZh": "验证外星语词典",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/lwyVBB/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "magic-index-lcci",
+    "frontendDisplayId": "面试题 08.03",
+    "titleEn": null,
+    "titleZh": "魔术索引",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/magic-index-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "magic-squares-in-grid",
+    "frontendDisplayId": "840",
+    "titleEn": "Magic Squares In Grid",
+    "titleZh": "矩阵中的幻方",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Math",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "数学",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/magic-squares-in-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "magical-string",
+    "frontendDisplayId": "481",
+    "titleEn": "Magical String",
+    "titleZh": "神奇字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/magical-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "magnetic-force-between-two-balls",
+    "frontendDisplayId": "1552",
+    "titleEn": "Magnetic Force Between Two Balls",
+    "titleZh": "两球之间的磁力",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/magnetic-force-between-two-balls/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "majority-element",
+    "frontendDisplayId": "169",
+    "titleEn": "Majority Element",
+    "titleZh": "多数元素",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Divide and Conquer",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "分治",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/majority-element/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "majority-element-ii",
+    "frontendDisplayId": "229",
+    "titleEn": "Majority Element II",
+    "titleZh": "多数元素 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/majority-element-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "majority-frequency-characters",
+    "frontendDisplayId": "3692",
+    "titleEn": "Majority Frequency Characters",
+    "titleZh": "众数频率字符",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/majority-frequency-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "make-a-square-with-the-same-color",
+    "frontendDisplayId": "3127",
+    "titleEn": "Make a Square with the Same Color",
+    "titleZh": "构造相同颜色的正方形",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-a-square-with-the-same-color/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "make-array-elements-equal-to-zero",
+    "frontendDisplayId": "3354",
+    "titleEn": "Make Array Elements Equal to Zero",
+    "titleZh": "使数组元素等于零",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-array-elements-equal-to-zero/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "make-array-empty",
+    "frontendDisplayId": "2659",
+    "titleEn": "Make Array Empty",
+    "titleZh": "将数组清空",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Binary Search",
+      "Greedy",
+      "Ordered Set",
+      "Segment Tree",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "二分查找",
+      "贪心",
+      "有序集合",
+      "线段树",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-array-empty/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "make-array-non-decreasing",
+    "frontendDisplayId": "3523",
+    "titleEn": "Make Array Non-decreasing",
+    "titleZh": "非递减数组的最大长度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-array-non-decreasing/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "make-array-strictly-increasing",
+    "frontendDisplayId": "1187",
+    "titleEn": "Make Array Strictly Increasing",
+    "titleZh": "使数组严格递增",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/make-array-strictly-increasing/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-063",
+    "claimedAt": "2026-07-10T04:11:02.936933+00:00",
+    "completedAt": null
+  }
+]

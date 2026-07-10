@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "non-negative-integers-without-consecutive-ones",
+    "reasonEN": "A hard digit-DP and bitwise counting problem that builds valid binary prefixes under a consecutive-one constraint. It trains Fibonacci-style state transitions and careful handling of the upper-bound prefix, making it a key bridge from ordinary DP to digit DP.",
+    "reasonZH": "这是一道高难度的数位 DP 与位计数题，核心是按二进制前缀维护不出现连续 1 的合法状态。它训练斐波那契式状态转移及上界前缀处理，是从普通 DP 进阶到数位 DP 的关键题。"
+  },
+  {
+    "slug": "non-overlapping-intervals",
+    "reasonEN": "This is a foundational interval greedy problem centered on sorting by end time and preserving the next compatible interval. It sharpens the exchange argument behind greedy choices and is essential practice for interval scheduling variants.",
+    "reasonZH": "作为经典区间贪心题，核心是按结束时间排序并保留最早结束的兼容区间。它训练贪心选择背后的交换论证，也是掌握区间调度变体的重要基础。"
+  },
+  {
+    "slug": "not-boring-movies",
+    "reasonEN": "An introductory SQL filtering exercise that combines predicate construction with ordered result output. It reinforces WHERE conditions, modulo-based filtering, and ORDER BY, providing practical practice for concise query composition.",
+    "reasonZH": "这是一道入门级 SQL 筛选题，结合条件过滤与结果排序。它巩固 WHERE、取模条件和 ORDER BY 的配合使用，适合训练简洁准确的查询表达。"
+  },
+  {
+    "slug": "nth-digit",
+    "reasonEN": "A medium mathematical binary-search problem that locates the digit-length block before resolving an index within it. It trains range counting, overflow-aware arithmetic, and index conversion, which recur in sequence-location tasks.",
+    "reasonZH": "这是一道中等难度的数学定位题，先确定目标位所在的数字长度区间，再计算区间内偏移。它训练分段计数、溢出意识和下标转换，适合掌握序列定位类问题。"
+  },
+  {
+    "slug": "nth-highest-salary",
+    "reasonEN": "This SQL ranking problem focuses on returning a distinct rank while handling absent results correctly. It exercises LIMIT/OFFSET or ranking functions and NULL semantics, making it useful for common reporting-query patterns.",
+    "reasonZH": "该 SQL 排名题要求取得去重后的第 N 高结果，并正确处理不存在排名的情况。它训练 LIMIT/OFFSET 或窗口函数以及 NULL 语义，是报表查询中的常见能力。"
+  },
+  {
+    "slug": "nth-magical-number",
+    "reasonEN": "A hard binary-search-on-answer problem that counts divisible values through inclusion-exclusion. It develops monotonic feasibility reasoning, LCM computation, and modular-result handling, all central to advanced counting problems.",
+    "reasonZH": "这是一道高难度的答案二分题，通过容斥原理统计可整除数量。它训练单调性判断、最小公倍数计算和取模处理，是进阶计数问题的核心方法。"
+  },
+  {
+    "slug": "number-complement",
+    "reasonEN": "A compact bit-manipulation exercise built around constructing a mask for the significant binary width. It highlights the difference between flipping meaningful bits and using an unrestricted complement, making it valuable for bit-boundary discipline.",
+    "reasonZH": "这是一道简洁的位运算题，关键是为有效二进制位宽构造掩码。它强调只翻转有效位而非直接使用无限位补码，适合建立严谨的位边界意识。"
+  },
+  {
+    "slug": "number-of-1-bits",
+    "reasonEN": "A canonical bit-counting problem that compares repeated low-bit removal with other popcount techniques. It trains recognition of the n & (n - 1) pattern and provides a reusable primitive for masks and subset algorithms.",
+    "reasonZH": "这是位计数的经典题，核心是利用 n & (n - 1) 不断消去最低位的 1。它训练常用位技巧识别能力，并为掩码和子集算法提供可复用基础。"
+  },
+  {
+    "slug": "number-of-2s-in-range-lcci",
+    "reasonEN": "A hard digit-counting problem that decomposes each decimal position into high, current, and low parts. It trains positional formula derivation and boundary analysis, offering a concise alternative to enumerating every number.",
+    "reasonZH": "这是一道高难度数字计数题，按十进制位拆分高位、当前位和低位贡献。它训练位值公式推导与边界分析，帮助摆脱逐个枚举的思路。"
+  },
+  {
+    "slug": "number-of-adjacent-elements-with-the-same-color",
+    "reasonEN": "This medium array update problem maintains a local adjacency invariant after each assignment. It trains delta-based updates and neighbor checks, a useful technique for avoiding repeated full-array scans in online operations.",
+    "reasonZH": "这道中等数组更新题要求在每次赋值后维护局部相邻关系。它训练增量更新和左右邻居检查，是在线操作中避免重复扫描整个数组的实用技巧。"
+  },
+  {
+    "slug": "number-of-alternating-xor-partitions",
+    "reasonEN": "A medium DP and hash-table counting problem that models alternating XOR states across partition boundaries. It trains prefix-state compression and frequency aggregation, making it useful for recognizing XOR partition patterns.",
+    "reasonZH": "这是一道中等难度的 DP 与哈希计数题，需要围绕分割边界维护交替异或状态。它训练前缀状态压缩和频次聚合，有助于识别异或分割类问题。"
+  },
+  {
+    "slug": "number-of-arithmetic-triplets",
+    "reasonEN": "An easy enumeration problem where ordered values allow direct membership checks for arithmetic offsets. It reinforces choosing between a hash set and two pointers, serving as clean practice for exploiting sorted-array structure.",
+    "reasonZH": "这是一道简单枚举题，利用有序数值可直接检查等差偏移是否存在。它训练哈希集合与双指针方案的选择，适合学习利用有序数组结构。"
+  },
+  {
+    "slug": "number-of-atoms",
+    "reasonEN": "A hard string-parsing and stack problem that evaluates nested chemical groups with multiplicities. It develops tokenization, scope aggregation, and ordered output construction, making it an excellent parser-design exercise.",
+    "reasonZH": "这是高难度的字符串解析与栈题，需要处理嵌套分组及其倍数。它训练词元识别、作用域内计数聚合和有序输出构造，是很好的解析器设计练习。"
+  },
+  {
+    "slug": "number-of-balanced-integers-in-a-range",
+    "reasonEN": "A hard range digit-DP problem that tracks positional digit balance while respecting an upper bound. It trains state design for leading zeros and digit-sum constraints, which are the central difficulties of bounded counting.",
+    "reasonZH": "这是一道高难度区间数位 DP 题，需要在上界限制下跟踪各位置的数字平衡。它训练前导零与数字和约束的状态设计，覆盖有界计数的核心难点。"
+  },
+  {
+    "slug": "number-of-beautiful-integers-in-the-range",
+    "reasonEN": "This hard digit-DP problem combines digit parity balance with divisibility constraints over a numeric interval. It trains multidimensional state compression and range subtraction, making it a strong advanced digit-DP representative.",
+    "reasonZH": "这道高难度数位 DP 题同时结合数字奇偶平衡和整除约束，并通过区间相减得到答案。它训练多维状态压缩，是进阶数位 DP 的代表题。"
+  },
+  {
+    "slug": "number-of-beautiful-pairs",
+    "reasonEN": "An easy number-theory counting problem that reduces pair validity to the gcd of endpoint digits. It trains extracting decimal features and using a small frequency table, demonstrating how number theory can simplify pair enumeration.",
+    "reasonZH": "这是一道简单数论计数题，将下标对是否合法归结为首尾数字的最大公约数。它训练十进制特征提取和小规模频次统计，展示数论如何简化配对枚举。"
+  },
+  {
+    "slug": "number-of-beautiful-partitions",
+    "reasonEN": "A hard string DP problem that counts valid segmentations under endpoint and length constraints. It trains boundary eligibility, prefix-sum optimization, and transition pruning, which are valuable techniques for partition-counting problems.",
+    "reasonZH": "这是高难度字符串分割 DP 题，需要在端点和长度约束下统计合法方案。它训练分割边界判定、前缀和优化和转移剪枝，是分段计数问题的重要方法。"
+  },
+  {
+    "slug": "number-of-bit-changes-to-make-two-integers-equal",
+    "reasonEN": "A focused bit-manipulation problem that checks directional bit feasibility before counting required changes. It reinforces AND-mask reasoning and the distinction between allowed and impossible transformations, useful in binary-state constraints.",
+    "reasonZH": "这是一道聚焦的位运算题，先判断按位变化是否可行，再统计所需修改次数。它巩固 AND 掩码推理及可行与不可行转换的区别，适合二进制状态约束练习。"
+  },
+  {
+    "slug": "number-of-black-blocks",
+    "reasonEN": "A medium sparse-grid counting problem that updates only the 2x2 blocks affected by each marked cell. It trains local contribution enumeration and hash-based aggregation, a scalable alternative to materializing a huge matrix.",
+    "reasonZH": "这道中等稀疏网格计数题只更新每个黑格影响到的 2x2 子块。它训练局部贡献枚举和哈希聚合，是避免构造超大矩阵的可扩展方法。"
+  },
+  {
+    "slug": "number-of-boomerangs",
+    "reasonEN": "A medium geometry and hash-table problem that groups points by squared distance from each center. It trains per-anchor frequency counting and ordered-pair accumulation, a standard pattern for point-set counting tasks.",
+    "reasonZH": "这是一道中等几何哈希题，以每个点为中心按平方距离分组其他点。它训练逐锚点频次统计和有序对累加，是点集计数问题的标准模式。"
+  },
+  {
+    "slug": "number-of-burgers-with-no-waste-of-ingredients",
+    "reasonEN": "This medium algebra problem translates resource counts into a two-variable linear system. It trains deriving closed-form integer solutions and validating parity and nonnegativity, useful for many feasibility problems.",
+    "reasonZH": "该中等数学题将原料数量转化为二元一次方程组。它训练推导闭式整数解，并校验奇偶性与非负性，适合掌握资源可行性问题的建模。"
+  },
+  {
+    "slug": "number-of-centered-subarrays",
+    "reasonEN": "A medium array enumeration problem that identifies subarrays through a center-dependent balance condition. It trains transforming local relationships into countable states and using hash aggregation to avoid brute-force interval checks.",
+    "reasonZH": "这是一道中等数组枚举题，需要围绕中心相关的平衡条件识别子数组。它训练将局部关系转化为可计数状态，并用哈希聚合避免暴力区间检查。"
+  },
+  {
+    "slug": "number-of-changing-keys",
+    "reasonEN": "An easy string-scanning problem that compares adjacent characters after normalizing case. It reinforces one-pass state maintenance and input normalization, providing a compact template for transition-counting tasks.",
+    "reasonZH": "这是一道简单字符串扫描题，对字符统一大小写后比较相邻位置。它训练一次遍历中的状态维护和输入规范化，是转移次数统计的紧凑模板。"
+  },
+  {
+    "slug": "number-of-closed-islands",
+    "reasonEN": "A medium grid traversal problem that distinguishes enclosed components from those touching the boundary. It trains DFS, BFS, or union-find boundary handling and is a core variation of flood-fill reasoning.",
+    "reasonZH": "这是一道中等网格遍历题，关键是区分封闭连通块与接触边界的区域。它训练 DFS、BFS 或并查集的边界处理，是洪泛填充思想的重要变体。"
+  },
+  {
+    "slug": "number-of-common-factors",
+    "reasonEN": "An easy number-theory exercise that counts shared divisors through bounded enumeration or gcd reduction. It reinforces divisor-pair reasoning and complexity-aware loop bounds, forming a useful arithmetic foundation.",
+    "reasonZH": "这是一道简单数论题，可通过有限枚举或先求最大公约数来统计公因子。它巩固因子成对出现规律和循环边界意识，是基础算术建模训练。"
+  },
+  {
+    "slug": "number-of-days-between-two-dates",
+    "reasonEN": "A practical date-arithmetic problem that converts calendar values into comparable day counts. It trains leap-year rules, date normalization, and edge-case testing, which are common sources of implementation errors.",
+    "reasonZH": "这是一道实用的日期计算题，需要将日历日期转换为可比较的天数。它训练闰年规则、日期规范化和边界测试，能覆盖实现中常见的错误点。"
+  },
+  {
+    "slug": "number-of-dice-rolls-with-target-sum",
+    "reasonEN": "A medium combinatorial DP problem that accumulates ways by dice count and partial sum. It trains recurrence design, modular arithmetic, and transition optimization, making it a standard model for bounded-choice counting.",
+    "reasonZH": "这是一道中等组合 DP 题，按骰子数量和当前点数累积方案数。它训练递推设计、取模计算和转移优化，是有限选择计数的标准模型。"
+  },
+  {
+    "slug": "number-of-different-integers-in-a-string",
+    "reasonEN": "An easy string and hash-set problem that tokenizes digit runs and canonicalizes leading zeros. It trains boundary detection and representation normalization, both essential when comparing textual numeric values.",
+    "reasonZH": "这是一道简单字符串哈希题，需要切分连续数字并规范化前导零。它训练边界识别与表示标准化，是比较文本数字值时的基础能力。"
+  },
+  {
+    "slug": "number-of-different-subsequences-gcds",
+    "reasonEN": "A hard number-theory counting problem that enumerates candidate gcd values through their multiples. It trains the inverse viewpoint of scanning divisors rather than subsequences and reveals a powerful sieve-like aggregation technique.",
+    "reasonZH": "这是一道高难度数论计数题，通过枚举候选最大公约数及其倍数来判断可达性。它训练从枚举子序列转向枚举因子的逆向视角，体现筛法式聚合技巧。"
+  },
+  {
+    "slug": "number-of-digit-one",
+    "reasonEN": "A classic hard digit-counting problem that computes each decimal position's contribution independently. It trains high-current-low decomposition and special-case boundaries, providing a durable template for digit-frequency queries.",
+    "reasonZH": "这是经典高难度数字计数题，独立计算每个十进制位对答案的贡献。它训练高位、当前位、低位拆分及特殊边界处理，可复用于数字频次查询。"
+  }
+]

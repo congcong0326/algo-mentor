@@ -1,0 +1,732 @@
+[
+  {
+    "slug": "average-selling-price",
+    "frontendDisplayId": "1251",
+    "titleEn": "Average Selling Price",
+    "titleZh": "平均售价",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/average-selling-price/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "average-time-of-process-per-machine",
+    "frontendDisplayId": "1661",
+    "titleEn": "Average Time of Process per Machine",
+    "titleZh": "每台机器的进程平均运行时间",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/average-time-of-process-per-machine/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "average-value-of-even-numbers-that-are-divisible-by-three",
+    "frontendDisplayId": "2455",
+    "titleEn": "Average Value of Even Numbers That Are Divisible by Three",
+    "titleZh": "可被三整除的偶数的平均值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/average-value-of-even-numbers-that-are-divisible-by-three/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "average-waiting-time",
+    "frontendDisplayId": "1701",
+    "titleEn": "Average Waiting Time",
+    "titleZh": "平均等待时间",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/average-waiting-time/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "avoid-flood-in-the-city",
+    "frontendDisplayId": "1488",
+    "titleEn": "Avoid Flood in The City",
+    "titleZh": "避免洪水泛滥",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Hash Table",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "哈希表",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/avoid-flood-in-the-city/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "bLyHh0",
+    "frontendDisplayId": "LCR 116",
+    "titleEn": null,
+    "titleZh": "省份数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph",
+      "Union Find"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "并查集"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/bLyHh0/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "bP4bmD",
+    "frontendDisplayId": "LCR 110",
+    "titleEn": null,
+    "titleZh": "所有可能的路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "广度优先搜索",
+      "深度优先搜索",
+      "图"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/bP4bmD/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof",
+    "frontendDisplayId": "LCR 165",
+    "titleEn": null,
+    "titleZh": "解密数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/ba-shu-zi-fan-yi-cheng-zi-fu-chuan-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof",
+    "frontendDisplayId": "LCR 164",
+    "titleEn": null,
+    "titleZh": "破解闯关密码",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ba-zi-fu-chuan-zhuan-huan-cheng-zheng-shu-lcof",
+    "frontendDisplayId": "LCR 192",
+    "titleEn": null,
+    "titleZh": "把字符串转换成整数 (atoi)",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/ba-zi-fu-chuan-zhuan-huan-cheng-zheng-shu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "baby-names-lcci",
+    "frontendDisplayId": "面试题 17.07",
+    "titleEn": null,
+    "titleZh": "婴儿名字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Counting",
+      "Depth-First Search",
+      "Hash Table",
+      "String",
+      "Union Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "计数",
+      "深度优先搜索",
+      "哈希表",
+      "字符串",
+      "并查集"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/baby-names-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "backspace-string-compare",
+    "frontendDisplayId": "844",
+    "titleEn": "Backspace String Compare",
+    "titleZh": "比较含退格的字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Simulation",
+      "Stack",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "栈",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/backspace-string-compare/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "bag-of-tokens",
+    "frontendDisplayId": "948",
+    "titleEn": "Bag of Tokens",
+    "titleZh": "令牌放置",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/bag-of-tokens/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "balance-a-binary-search-tree",
+    "frontendDisplayId": "1382",
+    "titleEn": "Balance a Binary Search Tree",
+    "titleZh": "将二叉搜索树变平衡",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Divide and Conquer",
+      "Greedy",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "分治",
+      "贪心",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/balance-a-binary-search-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "balanced-binary-tree",
+    "frontendDisplayId": "110",
+    "titleEn": "Balanced Binary Tree",
+    "titleZh": "平衡二叉树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/balanced-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "balanced-k-factor-decomposition",
+    "frontendDisplayId": "3669",
+    "titleEn": "Balanced K-Factor Decomposition",
+    "titleZh": "K 因数分解",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/balanced-k-factor-decomposition/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "bank-account-summary-ii",
+    "frontendDisplayId": "1587",
+    "titleEn": "Bank Account Summary II",
+    "titleZh": "银行账户概要 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/bank-account-summary-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "bao-han-minhan-shu-de-zhan-lcof",
+    "frontendDisplayId": "LCR 147",
+    "titleEn": null,
+    "titleZh": "最小栈",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Design",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "栈"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/bao-han-minhan-shu-de-zhan-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "base-7",
+    "frontendDisplayId": "504",
+    "titleEn": "Base 7",
+    "titleZh": "七进制数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/base-7/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "baseball-game",
+    "frontendDisplayId": "682",
+    "titleEn": "Baseball Game",
+    "titleZh": "棒球比赛",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/baseball-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "basic-calculator",
+    "frontendDisplayId": "224",
+    "titleEn": "Basic Calculator",
+    "titleZh": "基本计算器",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Math",
+      "Recursion",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "递归",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/basic-calculator/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "basic-calculator-ii",
+    "frontendDisplayId": "227",
+    "titleEn": "Basic Calculator II",
+    "titleZh": "基本计算器 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/basic-calculator-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "basic-calculator-iv",
+    "frontendDisplayId": "770",
+    "titleEn": "Basic Calculator IV",
+    "titleZh": "基本计算器 IV",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Math",
+      "Recursion",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "数学",
+      "递归",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/basic-calculator-iv/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "battleships-in-a-board",
+    "frontendDisplayId": "419",
+    "titleEn": "Battleships in a Board",
+    "titleZh": "棋盘上的战舰",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/battleships-in-a-board/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "beautiful-arrangement",
+    "frontendDisplayId": "526",
+    "titleEn": "Beautiful Arrangement",
+    "titleZh": "优美的排列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "位掩码",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/beautiful-arrangement/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "beautiful-arrangement-ii",
+    "frontendDisplayId": "667",
+    "titleEn": "Beautiful Arrangement II",
+    "titleZh": "优美的排列 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/beautiful-arrangement-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "beautiful-array",
+    "frontendDisplayId": "932",
+    "titleEn": "Beautiful Array",
+    "titleZh": "漂亮数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/beautiful-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "beautiful-towers-i",
+    "frontendDisplayId": "2865",
+    "titleEn": "Beautiful Towers I",
+    "titleZh": "美丽塔 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/beautiful-towers-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "beautiful-towers-ii",
+    "frontendDisplayId": "2866",
+    "titleEn": "Beautiful Towers II",
+    "titleZh": "美丽塔 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/beautiful-towers-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "best-line-lcci",
+    "frontendDisplayId": "面试题 16.14",
+    "titleEn": null,
+    "titleZh": "最佳直线",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/best-line-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-08",
+    "claimedAt": "2026-07-09T13:57:09.300978+00:00",
+    "completedAt": null
+  }
+]

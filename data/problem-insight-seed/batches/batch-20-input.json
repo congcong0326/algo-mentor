@@ -1,0 +1,726 @@
+[
+  {
+    "slug": "count-fertile-pyramids-in-a-land",
+    "frontendDisplayId": "2088",
+    "titleEn": "Count Fertile Pyramids in a Land",
+    "titleZh": "统计农场中肥沃金字塔的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-fertile-pyramids-in-a-land/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-good-integers-in-a-range",
+    "frontendDisplayId": "3966",
+    "titleEn": "Count Good Integers in a Range",
+    "titleZh": "统计范围内的好整数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-good-integers-in-a-range/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-good-integers-on-a-grid-path",
+    "frontendDisplayId": "3906",
+    "titleEn": "Count Good Integers on a Grid Path",
+    "titleZh": "统计网格路径中好整数的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-good-integers-on-a-grid-path/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-good-meals",
+    "frontendDisplayId": "1711",
+    "titleEn": "Count Good Meals",
+    "titleZh": "大餐计数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-good-meals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-good-nodes-in-binary-tree",
+    "frontendDisplayId": "1448",
+    "titleEn": "Count Good Nodes in Binary Tree",
+    "titleZh": "统计二叉树中好节点的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-good-nodes-in-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-good-numbers",
+    "frontendDisplayId": "1922",
+    "titleEn": "Count Good Numbers",
+    "titleZh": "统计好数字的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-good-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-good-subarrays",
+    "frontendDisplayId": "3878",
+    "titleEn": "Count Good Subarrays",
+    "titleZh": "统计好子数组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-good-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-good-triplets",
+    "frontendDisplayId": "1534",
+    "titleEn": "Count Good Triplets",
+    "titleZh": "统计好三元组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-good-triplets/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-good-triplets-in-an-array",
+    "frontendDisplayId": "2179",
+    "titleEn": "Count Good Triplets in an Array",
+    "titleZh": "统计数组中好三元组数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Binary Search",
+      "Divide and Conquer",
+      "Merge Sort",
+      "Ordered Set",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "二分查找",
+      "分治",
+      "归并排序",
+      "有序集合",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-good-triplets-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-hills-and-valleys-in-an-array",
+    "frontendDisplayId": "2210",
+    "titleEn": "Count Hills and Valleys in an Array",
+    "titleZh": "统计数组中峰和谷的数量",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-hills-and-valleys-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-increasing-quadruplets",
+    "frontendDisplayId": "2552",
+    "titleEn": "Count Increasing Quadruplets",
+    "titleZh": "统计上升四元组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Dynamic Programming",
+      "Enumeration",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "动态规划",
+      "枚举",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-increasing-quadruplets/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-indices-with-opposite-parity",
+    "frontendDisplayId": "3917",
+    "titleEn": "Count Indices With Opposite Parity",
+    "titleZh": "统计下标的相反奇偶性得分",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-indices-with-opposite-parity/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-integers-in-intervals",
+    "frontendDisplayId": "2276",
+    "titleEn": "Count Integers in Intervals",
+    "titleZh": "统计区间中的整数数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Design",
+      "Ordered Set",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "有序集合",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-integers-in-intervals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-integers-with-even-digit-sum",
+    "frontendDisplayId": "2180",
+    "titleEn": "Count Integers With Even Digit Sum",
+    "titleZh": "统计各位数字之和为偶数的整数个数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-integers-with-even-digit-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-islands-with-total-value-divisible-by-k",
+    "frontendDisplayId": "3619",
+    "titleEn": "Count Islands With Total Value Divisible by K",
+    "titleZh": "总价值可以被 K 整除的岛屿数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-islands-with-total-value-divisible-by-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-items-matching-a-rule",
+    "frontendDisplayId": "1773",
+    "titleEn": "Count Items Matching a Rule",
+    "titleZh": "统计匹配检索规则的物品数量",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-items-matching-a-rule/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-k-reducible-numbers-less-than-n",
+    "frontendDisplayId": "3352",
+    "titleEn": "Count K-Reducible Numbers Less Than N",
+    "titleZh": "统计小于 N 的 K 可约简整数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "动态规划",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-k-reducible-numbers-less-than-n/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-k-subsequences-of-a-string-with-maximum-beauty",
+    "frontendDisplayId": "2842",
+    "titleEn": "Count K-Subsequences of a String With Maximum Beauty",
+    "titleZh": "统计一个字符串的 k 子序列美丽值最大的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Greedy",
+      "Hash Table",
+      "Math",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "贪心",
+      "哈希表",
+      "数学",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-k-subsequences-of-a-string-with-maximum-beauty/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-k-th-roots-in-a-range",
+    "frontendDisplayId": "3932",
+    "titleEn": "Count K-th Roots in a Range",
+    "titleZh": "统计区间内的完全 K 次幂数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-k-th-roots-in-a-range/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-largest-group",
+    "frontendDisplayId": "1399",
+    "titleEn": "Count Largest Group",
+    "titleZh": "统计最大组的数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-largest-group/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-lattice-points-inside-a-circle",
+    "frontendDisplayId": "2249",
+    "titleEn": "Count Lattice Points Inside a Circle",
+    "titleZh": "统计圆内格点数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Geometry",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "几何",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-lattice-points-inside-a-circle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-mentions-per-user",
+    "frontendDisplayId": "3433",
+    "titleEn": "Count Mentions Per User",
+    "titleZh": "统计用户被提及情况",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Simulation",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "模拟",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-mentions-per-user/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-monobit-integers",
+    "frontendDisplayId": "3827",
+    "titleEn": "Count Monobit Integers",
+    "titleZh": "统计单比特整数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-monobit-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-negative-numbers-in-a-sorted-matrix",
+    "frontendDisplayId": "1351",
+    "titleEn": "Count Negative Numbers in a Sorted Matrix",
+    "titleZh": "统计有序矩阵中的负数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-negative-numbers-in-a-sorted-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-nice-pairs-in-an-array",
+    "frontendDisplayId": "1814",
+    "titleEn": "Count Nice Pairs in an Array",
+    "titleZh": "统计一个数组中好对子的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-nice-pairs-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-no-zero-pairs-that-sum-to-n",
+    "frontendDisplayId": "3704",
+    "titleEn": "Count No-Zero Pairs That Sum to N",
+    "titleZh": "统计和为 N 的无零数对",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-no-zero-pairs-that-sum-to-n/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-nodes-equal-to-average-of-subtree",
+    "frontendDisplayId": "2265",
+    "titleEn": "Count Nodes Equal to Average of Subtree",
+    "titleZh": "统计值等于子树平均值的节点数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-nodes-equal-to-average-of-subtree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-nodes-with-the-highest-score",
+    "frontendDisplayId": "2049",
+    "titleEn": "Count Nodes With the Highest Score",
+    "titleZh": "统计最高分的节点数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-nodes-with-the-highest-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-non-adjacent-subsets-in-a-rooted-tree",
+    "frontendDisplayId": "3939",
+    "titleEn": "Count Non Adjacent Subsets in a Rooted Tree",
+    "titleZh": "统计有根树中不相邻子集的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-non-adjacent-subsets-in-a-rooted-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-non-decreasing-arrays-with-given-digit-sums",
+    "frontendDisplayId": "3883",
+    "titleEn": "Count Non Decreasing Arrays With Given Digit Sums",
+    "titleZh": "统计满足数位和数组的非递减数组数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-non-decreasing-arrays-with-given-digit-sums/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-20",
+    "claimedAt": "2026-07-10T01:49:59.118410+00:00",
+    "completedAt": null
+  }
+]

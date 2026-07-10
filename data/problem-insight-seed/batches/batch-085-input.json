@@ -1,0 +1,746 @@
+[
+  {
+    "slug": "minimum-operations-to-make-array-modulo-alternating-i",
+    "frontendDisplayId": "3937",
+    "titleEn": "Minimum Operations to Make Array Modulo Alternating I",
+    "titleZh": "使数组变为模交替数组的最少操作次数 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-array-modulo-alternating-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-make-array-non-decreasing",
+    "frontendDisplayId": "3914",
+    "titleEn": "Minimum Operations to Make Array Non Decreasing",
+    "titleZh": "使数组非递减需要的最小累计值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-array-non-decreasing/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-make-array-parity-alternating",
+    "frontendDisplayId": "3854",
+    "titleEn": "Minimum Operations to Make Array Parity Alternating",
+    "titleZh": "使数组奇偶交替的最少操作",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-array-parity-alternating/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-make-array-sum-divisible-by-k",
+    "frontendDisplayId": "3512",
+    "titleEn": "Minimum Operations to Make Array Sum Divisible by K",
+    "titleZh": "使数组和能被 K 整除的最少操作次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-array-sum-divisible-by-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-make-array-values-equal-to-k",
+    "frontendDisplayId": "3375",
+    "titleEn": "Minimum Operations to Make Array Values Equal to K",
+    "titleZh": "使数组的值全部为 K 的最少操作次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-array-values-equal-to-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-make-binary-array-elements-equal-to-one-i",
+    "frontendDisplayId": "3191",
+    "titleEn": "Minimum Operations to Make Binary Array Elements Equal to One I",
+    "titleZh": "使二进制数组全部等于 1 的最少操作次数 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Prefix Sum",
+      "Queue",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "前缀和",
+      "队列",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-binary-array-elements-equal-to-one-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-make-binary-array-elements-equal-to-one-ii",
+    "frontendDisplayId": "3192",
+    "titleEn": "Minimum Operations to Make Binary Array Elements Equal to One II",
+    "titleZh": "使二进制数组全部等于 1 的最少操作次数 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-binary-array-elements-equal-to-one-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-make-binary-palindrome",
+    "frontendDisplayId": "3766",
+    "titleEn": "Minimum Operations to Make Binary Palindrome",
+    "titleZh": "将数字变成二进制回文数的最少操作",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Bit Manipulation",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "位运算",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-binary-palindrome/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-make-character-frequencies-equal",
+    "frontendDisplayId": "3389",
+    "titleEn": "Minimum Operations to Make Character Frequencies Equal",
+    "titleZh": "使字符频率相等的最少操作次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Counting",
+      "Dynamic Programming",
+      "Enumeration",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "动态规划",
+      "枚举",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-character-frequencies-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-make-columns-strictly-increasing",
+    "frontendDisplayId": "3402",
+    "titleEn": "Minimum Operations to Make Columns Strictly Increasing",
+    "titleZh": "使每一列严格递增的最少操作次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-columns-strictly-increasing/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-make-elements-within-k-subarrays-equal",
+    "frontendDisplayId": "3505",
+    "titleEn": "Minimum Operations to Make Elements Within K Subarrays Equal",
+    "titleZh": "使 K 个子数组内元素相等的最少操作数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Math",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希表",
+      "堆（优先队列）",
+      "数学",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-elements-within-k-subarrays-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-make-median-of-array-equal-to-k",
+    "frontendDisplayId": "3107",
+    "titleEn": "Minimum Operations to Make Median of Array Equal to K",
+    "titleZh": "使数组中位数等于 K 的最少操作数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-median-of-array-equal-to-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-make-the-array-alternating",
+    "frontendDisplayId": "2170",
+    "titleEn": "Minimum Operations to Make the Array Alternating",
+    "titleZh": "使数组变成交替数组的最少操作数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Greedy",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "贪心",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-the-array-alternating/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-make-the-array-increasing",
+    "frontendDisplayId": "1827",
+    "titleEn": "Minimum Operations to Make the Array Increasing",
+    "titleZh": "最少操作使数组递增",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-the-array-increasing/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-make-the-array-k-increasing",
+    "frontendDisplayId": "2111",
+    "titleEn": "Minimum Operations to Make the Array K-Increasing",
+    "titleZh": "使数组 K 递增的最少操作次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-the-array-k-increasing/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-make-the-integer-zero",
+    "frontendDisplayId": "2749",
+    "titleEn": "Minimum Operations to Make the Integer Zero",
+    "titleZh": "得到整数零需要执行的最少操作数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Brainteaser",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "脑筋急转弯",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-make-the-integer-zero/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-maximize-last-elements-in-arrays",
+    "frontendDisplayId": "2934",
+    "titleEn": "Minimum Operations to Maximize Last Elements in Arrays",
+    "titleZh": "最大化数组末位元素的最少操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-maximize-last-elements-in-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-reach-target-array",
+    "frontendDisplayId": "3810",
+    "titleEn": "Minimum Operations to Reach Target Array",
+    "titleZh": "变成目标数组的最少操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-reach-target-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-reduce-an-integer-to-0",
+    "frontendDisplayId": "2571",
+    "titleEn": "Minimum Operations to Reduce an Integer to 0",
+    "titleZh": "将整数减少到零需要的最少操作数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Dynamic Programming",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "动态规划",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-reduce-an-integer-to-0/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-reduce-x-to-zero",
+    "frontendDisplayId": "1658",
+    "titleEn": "Minimum Operations to Reduce X to Zero",
+    "titleZh": "将 x 减到 0 的最小操作数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Hash Table",
+      "Prefix Sum",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "哈希表",
+      "前缀和",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-reduce-x-to-zero/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-sort-a-permutation",
+    "frontendDisplayId": "3942",
+    "titleEn": "Minimum Operations to Sort a Permutation",
+    "titleZh": "排序排列的最少操作数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-sort-a-permutation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-sort-a-string",
+    "frontendDisplayId": "3863",
+    "titleEn": "Minimum Operations to Sort a String",
+    "titleZh": "将一个字符串排序的最小操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-sort-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-transform-array",
+    "frontendDisplayId": "3724",
+    "titleEn": "Minimum Operations to Transform Array",
+    "titleZh": "转换数组的最少操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-transform-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-transform-array-into-alternating-prime",
+    "frontendDisplayId": "3896",
+    "titleEn": "Minimum Operations to Transform Array into Alternating Prime",
+    "titleZh": "将数组转换为交替质数数组的最少操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Math",
+      "Number Theory",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "数学",
+      "数论",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-transform-array-into-alternating-prime/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-transform-string",
+    "frontendDisplayId": "3675",
+    "titleEn": "Minimum Operations to Transform String",
+    "titleZh": "转换字符串的最小操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-transform-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-operations-to-write-the-letter-y-on-a-grid",
+    "frontendDisplayId": "3071",
+    "titleEn": "Minimum Operations to Write the Letter Y on a Grid",
+    "titleZh": "在矩阵上写出字母 Y 所需的最少操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-operations-to-write-the-letter-y-on-a-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-pair-removal-to-sort-array-i",
+    "frontendDisplayId": "3507",
+    "titleEn": "Minimum Pair Removal to Sort Array I",
+    "titleZh": "移除最小数对使数组有序 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Doubly-Linked List",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Linked List",
+      "Ordered Set",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "双向链表",
+      "哈希表",
+      "堆（优先队列）",
+      "链表",
+      "有序集合",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-pair-removal-to-sort-array-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-pair-removal-to-sort-array-ii",
+    "frontendDisplayId": "3510",
+    "titleEn": "Minimum Pair Removal to Sort Array II",
+    "titleZh": "移除最小数对使数组有序 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Doubly-Linked List",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Linked List",
+      "Ordered Set",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "双向链表",
+      "哈希表",
+      "堆（优先队列）",
+      "链表",
+      "有序集合",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-pair-removal-to-sort-array-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-partition-score",
+    "frontendDisplayId": "3826",
+    "titleEn": "Minimum Partition Score",
+    "titleZh": "最小分割分数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Dynamic Programming",
+      "Monotonic Queue",
+      "Prefix Sum",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "动态规划",
+      "单调队列",
+      "前缀和",
+      "队列"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-partition-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-path-cost-in-a-grid",
+    "frontendDisplayId": "2304",
+    "titleEn": "Minimum Path Cost in a Grid",
+    "titleZh": "网格中的最小路径代价",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-path-cost-in-a-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-085",
+    "claimedAt": "2026-07-10T06:36:40.231566+00:00",
+    "completedAt": null
+  }
+]

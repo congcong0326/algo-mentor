@@ -1,0 +1,756 @@
+[
+  {
+    "slug": "count-pairs-of-points-with-distance-k",
+    "frontendDisplayId": "2857",
+    "titleEn": "Count Pairs of Points With Distance k",
+    "titleZh": "统计距离为 k 的点对",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-pairs-of-points-with-distance-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-pairs-of-similar-strings",
+    "frontendDisplayId": "2506",
+    "titleEn": "Count Pairs Of Similar Strings",
+    "titleZh": "统计相似字符串对的数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-pairs-of-similar-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-pairs-that-form-a-complete-day-i",
+    "frontendDisplayId": "3184",
+    "titleEn": "Count Pairs That Form a Complete Day I",
+    "titleZh": "构成整天的下标对数目 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-pairs-that-form-a-complete-day-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-pairs-that-form-a-complete-day-ii",
+    "frontendDisplayId": "3185",
+    "titleEn": "Count Pairs That Form a Complete Day II",
+    "titleZh": "构成整天的下标对数目 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-pairs-that-form-a-complete-day-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-pairs-whose-sum-is-less-than-target",
+    "frontendDisplayId": "2824",
+    "titleEn": "Count Pairs Whose Sum is Less than Target",
+    "titleZh": "统计和小于目标的下标对数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-pairs-whose-sum-is-less-than-target/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-pairs-with-xor-in-a-range",
+    "frontendDisplayId": "1803",
+    "titleEn": "Count Pairs With XOR in a Range",
+    "titleZh": "统计异或值在范围内的数对有多少",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-pairs-with-xor-in-a-range/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-palindromic-subsequences",
+    "frontendDisplayId": "2484",
+    "titleEn": "Count Palindromic Subsequences",
+    "titleZh": "统计回文子序列数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-palindromic-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-partitions-with-even-sum-difference",
+    "frontendDisplayId": "3432",
+    "titleEn": "Count Partitions with Even Sum Difference",
+    "titleZh": "统计元素和差值为偶数的分区方案",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-partitions-with-even-sum-difference/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-partitions-with-max-min-difference-at-most-k",
+    "frontendDisplayId": "3578",
+    "titleEn": "Count Partitions With Max-Min Difference at Most K",
+    "titleZh": "统计极差最大为 K 的分割方式数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Monotonic Queue",
+      "Prefix Sum",
+      "Queue",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "单调队列",
+      "前缀和",
+      "队列",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-partitions-with-max-min-difference-at-most-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-paths-that-can-form-a-palindrome-in-a-tree",
+    "frontendDisplayId": "2791",
+    "titleEn": "Count Paths That Can Form a Palindrome in a Tree",
+    "titleZh": "树中可以形成回文的路径数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Depth-First Search",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "深度优先搜索",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-paths-that-can-form-a-palindrome-in-a-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-paths-with-the-given-xor-value",
+    "frontendDisplayId": "3393",
+    "titleEn": "Count Paths With the Given XOR Value",
+    "titleZh": "统计异或值为给定值的路径数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-paths-with-the-given-xor-value/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-prefix-and-suffix-pairs-i",
+    "frontendDisplayId": "3042",
+    "titleEn": "Count Prefix and Suffix Pairs I",
+    "titleZh": "统计前后缀下标对 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Function",
+      "Rolling Hash",
+      "String",
+      "String Matching",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希函数",
+      "滚动哈希",
+      "字符串",
+      "字符串匹配",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-prefix-and-suffix-pairs-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-prefix-and-suffix-pairs-ii",
+    "frontendDisplayId": "3045",
+    "titleEn": "Count Prefix and Suffix Pairs II",
+    "titleZh": "统计前后缀下标对 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Function",
+      "Rolling Hash",
+      "String",
+      "String Matching",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希函数",
+      "滚动哈希",
+      "字符串",
+      "字符串匹配",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-prefix-and-suffix-pairs-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-prefixes-of-a-given-string",
+    "frontendDisplayId": "2255",
+    "titleEn": "Count Prefixes of a Given String",
+    "titleZh": "统计是给定字符串前缀的字符串数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-prefixes-of-a-given-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-prime-gap-balanced-subarrays",
+    "frontendDisplayId": "3589",
+    "titleEn": "Count Prime-Gap Balanced Subarrays",
+    "titleZh": "计数质数间隔平衡子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Monotonic Queue",
+      "Number Theory",
+      "Queue",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "单调队列",
+      "数论",
+      "队列",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-prime-gap-balanced-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-primes",
+    "frontendDisplayId": "204",
+    "titleEn": "Count Primes",
+    "titleZh": "计数质数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-primes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-residue-prefixes",
+    "frontendDisplayId": "3803",
+    "titleEn": "Count Residue Prefixes",
+    "titleZh": "统计残差前缀",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-residue-prefixes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-routes-to-climb-a-rectangular-grid",
+    "frontendDisplayId": "3797",
+    "titleEn": "Count Routes to Climb a Rectangular Grid",
+    "titleZh": "统计在矩形格子里移动的路径数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-routes-to-climb-a-rectangular-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-salary-categories",
+    "frontendDisplayId": "1907",
+    "titleEn": "Count Salary Categories",
+    "titleZh": "按分类统计薪水",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-salary-categories/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-sequences-to-k",
+    "frontendDisplayId": "3850",
+    "titleEn": "Count Sequences to K",
+    "titleZh": "统计结果等于 K 的序列数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Math",
+      "Memoization",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "数学",
+      "记忆化",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-sequences-to-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-servers-that-communicate",
+    "frontendDisplayId": "1267",
+    "titleEn": "Count Servers that Communicate",
+    "titleZh": "统计参与通信的服务器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Counting",
+      "Depth-First Search",
+      "Matrix",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "计数",
+      "深度优先搜索",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-servers-that-communicate/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-sorted-vowel-strings",
+    "frontendDisplayId": "1641",
+    "titleEn": "Count Sorted Vowel Strings",
+    "titleZh": "统计字典序元音字符串的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-sorted-vowel-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-special-integers",
+    "frontendDisplayId": "2376",
+    "titleEn": "Count Special Integers",
+    "titleZh": "统计特殊整数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-special-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-special-quadruplets",
+    "frontendDisplayId": "1995",
+    "titleEn": "Count Special Quadruplets",
+    "titleZh": "统计特殊四元组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-special-quadruplets/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-special-subsequences",
+    "frontendDisplayId": "3404",
+    "titleEn": "Count Special Subsequences",
+    "titleZh": "统计特殊子序列的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-special-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-special-triplets",
+    "frontendDisplayId": "3583",
+    "titleEn": "Count Special Triplets",
+    "titleZh": "统计特殊三元组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-special-triplets/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-square-submatrices-with-all-ones",
+    "frontendDisplayId": "1277",
+    "titleEn": "Count Square Submatrices with All Ones",
+    "titleZh": "统计全为 1 的正方形子矩阵",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-square-submatrices-with-all-ones/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-square-sum-triples",
+    "frontendDisplayId": "1925",
+    "titleEn": "Count Square Sum Triples",
+    "titleZh": "统计平方和三元组的数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-square-sum-triples/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-stable-subarrays",
+    "frontendDisplayId": "3748",
+    "titleEn": "Count Stable Subarrays",
+    "titleZh": "统计稳定子数组的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-stable-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-stepping-numbers-in-range",
+    "frontendDisplayId": "2801",
+    "titleEn": "Count Stepping Numbers in Range",
+    "titleZh": "统计范围内的步进数字数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-stepping-numbers-in-range/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-22",
+    "claimedAt": "2026-07-10T02:07:51.252610+00:00",
+    "completedAt": null
+  }
+]

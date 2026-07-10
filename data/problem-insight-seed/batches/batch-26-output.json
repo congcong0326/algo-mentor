@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "create-sorted-array-through-instructions",
+    "reasonEN": "A hard order-statistics problem centered on Binary Indexed Trees or segment trees. Querying how many prior values are smaller and greater before each insertion trains coordinate compression and online rank counting, both essential for dynamic sequence costs.",
+    "reasonZH": "这是一道高难度的顺序统计题，核心是树状数组或线段树。每次插入前查询已有元素中较小和较大的数量，训练坐标压缩与在线排名统计，是处理动态序列代价的重要能力。"
+  },
+  {
+    "slug": "create-target-array-in-the-given-order",
+    "reasonEN": "This easy array simulation problem focuses on preserving insertion order and index semantics. It is a compact exercise in choosing direct list operations when constraints make a simple implementation the clearest solution.",
+    "reasonZH": "这道简单的数组模拟题聚焦插入顺序与下标语义。它适合练习在数据范围允许时，使用直接的列表操作写出最清晰的解法。"
+  },
+  {
+    "slug": "critical-connections-in-a-network",
+    "reasonEN": "A hard graph-theory classic for Tarjan's bridge algorithm. Maintaining discovery times and low-link values during DFS teaches exactly how back edges determine whether removing an edge disconnects a network.",
+    "reasonZH": "这是一道高难度图论经典题，核心为 Tarjan 割边算法。通过 DFS 维护访问时间和 low-link 值，可准确判断删除一条边是否会断开网络。"
+  },
+  {
+    "slug": "custom-sort-string",
+    "reasonEN": "A medium string-ordering problem that maps a custom precedence into counts or sort keys. It reinforces the distinction between defining an order relation and efficiently materializing the reordered result.",
+    "reasonZH": "这是一道中等难度的字符串排序题，需要把自定义优先级转化为计数或排序键。它训练区分“定义顺序关系”与“高效生成排序结果”两个环节。"
+  },
+  {
+    "slug": "customer-placing-the-largest-number-of-orders",
+    "reasonEN": "This easy SQL aggregation problem combines GROUP BY, COUNT, and ordering or limiting. It builds the basic analytical-query pattern for identifying the leading entity from transactional records.",
+    "reasonZH": "这道简单 SQL 聚合题结合 GROUP BY、COUNT 与排序或限制操作。它建立从交易记录中找出领先实体的基础分析查询模式。"
+  },
+  {
+    "slug": "customer-who-visited-but-did-not-make-any-transactions",
+    "reasonEN": "An easy SQL anti-join exercise that distinguishes unmatched visits from completed transactions. It trains using LEFT JOIN with null filtering or NOT EXISTS, a practical pattern for absence-based reporting.",
+    "reasonZH": "这是一道简单的 SQL 反连接题，需要区分未匹配的到访与已完成交易。它训练使用 LEFT JOIN 加空值筛选或 NOT EXISTS，是按缺失关系生成报表的实用模式。"
+  },
+  {
+    "slug": "customers-who-bought-all-products",
+    "reasonEN": "A medium relational-division query that compares each customer's distinct purchases with the total product universe. It develops precise GROUP BY and HAVING reasoning for universal conditions in SQL.",
+    "reasonZH": "这是一道中等难度的关系除法查询题，需要将每位客户的去重购买数与商品全集规模比较。它训练用 GROUP BY 和 HAVING 精确表达“购买全部”这类全称条件。"
+  },
+  {
+    "slug": "customers-who-never-order",
+    "reasonEN": "This easy database problem is a foundational anti-join pattern. Expressing nonexistence with NOT EXISTS, NOT IN under safe null assumptions, or a LEFT JOIN strengthens everyday SQL data-quality querying.",
+    "reasonZH": "这道简单数据库题是反连接的基础模板。通过 NOT EXISTS、在空值安全前提下的 NOT IN，或 LEFT JOIN 表达不存在关系，可强化日常 SQL 数据筛查能力。"
+  },
+  {
+    "slug": "cut-off-trees-for-golf-event",
+    "reasonEN": "A hard grid shortest-path problem that orders targets by height and runs BFS between consecutive targets. It teaches decomposing a global routing task into reachable local searches and handling failure paths correctly.",
+    "reasonZH": "这是一道高难度网格最短路题，按高度排序目标后在相邻目标间执行 BFS。它训练将全局路径任务拆成可达的局部搜索，并正确处理无法到达的情况。"
+  },
+  {
+    "slug": "cuyjEf",
+    "reasonEN": "A medium randomized-selection problem using prefix sums and binary search. Mapping each weight to an interval and sampling a uniform target demonstrates the standard reduction from weighted probability to discrete range lookup.",
+    "reasonZH": "这是一道中等难度的随机选择题，结合前缀和与二分查找。将每个权重映射为区间并随机采样目标值，体现了把加权概率转化为离散范围查询的标准方法。"
+  },
+  {
+    "slug": "cyJERH",
+    "reasonEN": "This medium string-DP problem minimizes edits under a monotonic-state constraint. Its two-state transition exposes how dynamic programming can summarize all prior choices with a small, interpretable invariant.",
+    "reasonZH": "这是一道中等难度的字符串 DP 题，在单调状态约束下最小化修改次数。其双状态转移展示了动态规划如何用少量可解释的不变量概括全部历史选择。"
+  },
+  {
+    "slug": "cycle-length-queries-in-a-tree",
+    "reasonEN": "A hard implicit-tree query problem solved by repeatedly lifting both nodes toward their lowest common ancestor. It trains recognizing binary-heap parent structure and replacing explicit tree construction with arithmetic navigation.",
+    "reasonZH": "这是一道高难度的隐式树查询题，通过不断上跳两个节点直到最低公共祖先求解。它训练识别二叉堆式父子结构，并用算术导航替代显式建树。"
+  },
+  {
+    "slug": "cyclically-rotating-a-grid",
+    "reasonEN": "A medium matrix-simulation problem that treats each perimeter layer as a one-dimensional cycle. Extracting, rotating, and writing back a ring develops reliable coordinate traversal for layered grids.",
+    "reasonZH": "这是一道中等难度的矩阵模拟题，将每一层边界视为一维环。通过提取、轮转和回写环形序列，可训练分层网格的可靠坐标遍历能力。"
+  },
+  {
+    "slug": "dKk3P7",
+    "reasonEN": "This easy anagram-validation problem compares character multisets through frequency counts or sorting. It reinforces selecting a linear counting solution when the alphabet is bounded and clarifies the role of duplicate characters.",
+    "reasonZH": "这道简单的异位词验证题，可通过字符频次或排序比较多重集合。它训练在字符集有限时选择线性计数方案，并理解重复字符的处理要点。"
+  },
+  {
+    "slug": "da-yin-cong-1dao-zui-da-de-nwei-shu-lcof",
+    "reasonEN": "An easy numeric-generation task that turns a digit-width bound into an output range. It provides focused practice in exponent bounds, iteration limits, and avoiding off-by-one errors in enumeration.",
+    "reasonZH": "这是一道简单的数字生成题，需要把位数上限转化为输出范围。它适合练习幂次边界、迭代范围以及枚举中的 off-by-one 错误规避。"
+  },
+  {
+    "slug": "daily-leads-and-partners",
+    "reasonEN": "This easy SQL grouping problem requires counting distinct values within each day. It reinforces the interaction of GROUP BY and COUNT(DISTINCT ...), a common requirement in product and event analytics.",
+    "reasonZH": "这道简单 SQL 分组题要求按日期统计去重值数量。它强化 GROUP BY 与 COUNT(DISTINCT ...) 的配合，是产品和事件分析中的常见需求。"
+  },
+  {
+    "slug": "daily-temperatures",
+    "reasonEN": "A medium monotonic-stack cornerstone problem that finds the next greater element for every position. Maintaining unresolved indices in decreasing order teaches the reusable stack invariant behind many nearest-element queries.",
+    "reasonZH": "这是一道中等难度的单调栈核心题，需要为每个位置寻找下一个更大元素。维护单调递减的未决下标，可掌握大量最近元素查询题通用的栈不变量。"
+  },
+  {
+    "slug": "data-stream-as-disjoint-intervals",
+    "reasonEN": "A hard stream-design problem that incrementally merges adjacent intervals while supporting ordered summaries. It develops ordered-set reasoning, duplicate handling, and the interface design needed for mutable online data.",
+    "reasonZH": "这是一道高难度的数据流设计题，需要增量合并相邻区间并支持有序摘要查询。它训练有序集合思维、重复数据处理，以及可变在线数据的接口设计。"
+  },
+  {
+    "slug": "day-of-the-week",
+    "reasonEN": "An easy calendar-arithmetic problem based on converting a date into an offset from a known reference. It builds careful leap-year handling and modular indexing, useful for date logic without library support.",
+    "reasonZH": "这是一道简单的日历算术题，通过把日期转换为相对已知基准日的偏移量求解。它训练闰年处理与模索引，是不依赖日期库时的重要日期逻辑基础。"
+  },
+  {
+    "slug": "day-of-the-year",
+    "reasonEN": "This easy date-parsing exercise accumulates month lengths with a leap-year adjustment. It is useful practice in converting formatted input into a calendar index while keeping exceptional-year rules explicit.",
+    "reasonZH": "这道简单的日期解析题，需要累加各月天数并进行闰年修正。它训练将格式化输入转换为日历序号，同时清晰处理特殊年份规则。"
+  },
+  {
+    "slug": "debounce",
+    "reasonEN": "A medium asynchronous JavaScript design problem that coalesces rapid calls into one delayed execution. Managing timer replacement, argument capture, and execution timing builds practical command over event-driven UI behavior.",
+    "reasonZH": "这是一道中等难度的异步 JavaScript 设计题，将密集调用合并为一次延迟执行。管理定时器替换、参数捕获和执行时机，可建立事件驱动 UI 行为的实战能力。"
+  },
+  {
+    "slug": "decode-string",
+    "reasonEN": "A medium nested-structure parsing problem suited to a stack or recursive descent. Saving the prior string and repetition count at each bracket boundary teaches a general pattern for decoding hierarchical expressions.",
+    "reasonZH": "这是一道中等难度的嵌套结构解析题，适合使用栈或递归下降。每遇到括号边界保存此前字符串和重复次数，可掌握解码层级表达式的通用模式。"
+  },
+  {
+    "slug": "decode-the-message",
+    "reasonEN": "An easy substitution-cipher problem that builds a one-to-one mapping from first appearances. It reinforces hash-map construction, stable traversal, and separating key derivation from message transformation.",
+    "reasonZH": "这是一道简单的替换密码题，需要按首次出现顺序建立一一映射。它训练哈希映射构建、稳定遍历，以及将密钥推导与消息转换分离。"
+  },
+  {
+    "slug": "decode-the-slanted-ciphertext",
+    "reasonEN": "A medium index-mapping simulation problem that reconstructs diagonal reads from a rectangular layout. It sharpens row-column coordinate reasoning and careful trimming of representation-only trailing spaces.",
+    "reasonZH": "这是一道中等难度的下标映射模拟题，需要从矩形布局中还原对角线读取顺序。它强化行列坐标推理，以及对仅用于表示的尾随空格的谨慎处理。"
+  },
+  {
+    "slug": "decode-ways",
+    "reasonEN": "A medium one-dimensional dynamic-programming classic that counts valid one- and two-digit transitions. Handling zero and invalid pairs precisely makes it an excellent introduction to state validity in string DP.",
+    "reasonZH": "这是一道中等难度的一维动态规划经典题，统计合法的一位和两位转移。精确处理零和非法组合，使它成为理解字符串 DP 状态合法性的优秀入门题。"
+  },
+  {
+    "slug": "decode-ways-ii",
+    "reasonEN": "This hard DP extension adds wildcard multiplicities and modular arithmetic to the decoding recurrence. It trains exhaustive local-case accounting while preserving a compact linear-state solution under large counts.",
+    "reasonZH": "这道高难度 DP 进阶题将通配符的多种取值和模运算加入解码递推。它训练穷尽局部情况计数，同时在巨大方案数下保持紧凑的线性状态。"
+  },
+  {
+    "slug": "decode-xored-array",
+    "reasonEN": "An easy bit-manipulation reconstruction problem based on XOR's self-inverse property. Applying the recurrence from a known initial value builds intuition for deriving sequences from adjacent XOR relations.",
+    "reasonZH": "这是一道简单的位运算还原题，利用异或的自反性质即可递推。由已知初值恢复序列，能建立从相邻异或关系推导数组的直觉。"
+  },
+  {
+    "slug": "decode-xored-permutation",
+    "reasonEN": "A medium XOR deduction problem that combines total permutation XOR with alternating encoded values. It is valuable for practicing global XOR cancellation and deriving a missing anchor before linear reconstruction.",
+    "reasonZH": "这是一道中等难度的异或推导题，结合排列全集异或和交替编码值。它训练全局异或抵消，并在确定缺失锚点后进行线性恢复。"
+  },
+  {
+    "slug": "decoded-string-at-index",
+    "reasonEN": "A medium reverse-simulation problem that avoids materializing an exponentially expanded string. Tracking decoded length forward, then reducing the target index backward, teaches a powerful strategy for implicit huge sequences.",
+    "reasonZH": "这是一道中等难度的逆向模拟题，避免实际构造指数膨胀后的字符串。先正向追踪解码长度，再逆向缩减目标下标，是处理隐式超大序列的强力策略。"
+  },
+  {
+    "slug": "decompress-run-length-encoded-list",
+    "reasonEN": "This easy array simulation task expands frequency-value pairs with direct iteration. It reinforces reading paired encodings correctly and selecting a simple linear construction when output size already dominates complexity.",
+    "reasonZH": "这道简单的数组模拟题通过直接迭代展开频次-数值对。它训练正确读取成对编码，并理解当输出规模已主导复杂度时，线性构造就是合适选择。"
+  }
+]

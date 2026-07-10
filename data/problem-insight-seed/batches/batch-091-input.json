@@ -1,0 +1,688 @@
+[
+  {
+    "slug": "non-negative-integers-without-consecutive-ones",
+    "frontendDisplayId": "600",
+    "titleEn": "Non-negative Integers without Consecutive Ones",
+    "titleZh": "不含连续1的非负整数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/non-negative-integers-without-consecutive-ones/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "non-overlapping-intervals",
+    "frontendDisplayId": "435",
+    "titleEn": "Non-overlapping Intervals",
+    "titleZh": "无重叠区间",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/non-overlapping-intervals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "not-boring-movies",
+    "frontendDisplayId": "620",
+    "titleEn": "Not Boring Movies",
+    "titleZh": "有趣的电影",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/not-boring-movies/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "nth-digit",
+    "frontendDisplayId": "400",
+    "titleEn": "Nth Digit",
+    "titleZh": "第 N 位数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/nth-digit/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "nth-highest-salary",
+    "frontendDisplayId": "177",
+    "titleEn": "Nth Highest Salary",
+    "titleZh": "第N高的薪水",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/nth-highest-salary/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "nth-magical-number",
+    "frontendDisplayId": "878",
+    "titleEn": "Nth Magical Number",
+    "titleZh": "第 N 个神奇数字",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/nth-magical-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-complement",
+    "frontendDisplayId": "476",
+    "titleEn": "Number Complement",
+    "titleZh": "数字的补数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-complement/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-1-bits",
+    "frontendDisplayId": "191",
+    "titleEn": "Number of 1 Bits",
+    "titleZh": "位1的个数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Divide and Conquer"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "分治"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-1-bits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-2s-in-range-lcci",
+    "frontendDisplayId": "面试题 17.06",
+    "titleEn": null,
+    "titleZh": "2出现的次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/number-of-2s-in-range-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-adjacent-elements-with-the-same-color",
+    "frontendDisplayId": "2672",
+    "titleEn": "Number of Adjacent Elements With the Same Color",
+    "titleZh": "有相同颜色的相邻元素数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-adjacent-elements-with-the-same-color/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-alternating-xor-partitions",
+    "frontendDisplayId": "3811",
+    "titleEn": "Number of Alternating XOR Partitions",
+    "titleZh": "交替按位异或分割的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Dynamic Programming",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "动态规划",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-alternating-xor-partitions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-arithmetic-triplets",
+    "frontendDisplayId": "2367",
+    "titleEn": "Number of Arithmetic Triplets",
+    "titleZh": "等差三元组的数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Hash Table",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "哈希表",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-arithmetic-triplets/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-atoms",
+    "frontendDisplayId": "726",
+    "titleEn": "Number of Atoms",
+    "titleZh": "原子的数量",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sorting",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "排序",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-atoms/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-balanced-integers-in-a-range",
+    "frontendDisplayId": "3791",
+    "titleEn": "Number of Balanced Integers in a Range",
+    "titleZh": "给定范围内平衡整数的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-balanced-integers-in-a-range/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-beautiful-integers-in-the-range",
+    "frontendDisplayId": "2827",
+    "titleEn": "Number of Beautiful Integers in the Range",
+    "titleZh": "范围中美丽整数的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-beautiful-integers-in-the-range/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-beautiful-pairs",
+    "frontendDisplayId": "2748",
+    "titleEn": "Number of Beautiful Pairs",
+    "titleZh": "美丽下标对的数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-beautiful-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-beautiful-partitions",
+    "frontendDisplayId": "2478",
+    "titleEn": "Number of Beautiful Partitions",
+    "titleZh": "完美分割的方案数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-beautiful-partitions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-bit-changes-to-make-two-integers-equal",
+    "frontendDisplayId": "3226",
+    "titleEn": "Number of Bit Changes to Make Two Integers Equal",
+    "titleZh": "使两个整数相等的位更改次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-bit-changes-to-make-two-integers-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-black-blocks",
+    "frontendDisplayId": "2768",
+    "titleEn": "Number of Black Blocks",
+    "titleZh": "黑格子的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-black-blocks/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-boomerangs",
+    "frontendDisplayId": "447",
+    "titleEn": "Number of Boomerangs",
+    "titleZh": "回旋镖的数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-boomerangs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-burgers-with-no-waste-of-ingredients",
+    "frontendDisplayId": "1276",
+    "titleEn": "Number of Burgers with No Waste of Ingredients",
+    "titleZh": "不浪费原料的汉堡制作方案",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-burgers-with-no-waste-of-ingredients/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-centered-subarrays",
+    "frontendDisplayId": "3804",
+    "titleEn": "Number of Centered Subarrays",
+    "titleZh": "中心子数组的数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-centered-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-changing-keys",
+    "frontendDisplayId": "3019",
+    "titleEn": "Number of Changing Keys",
+    "titleZh": "按键变更的次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-changing-keys/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-closed-islands",
+    "frontendDisplayId": "1254",
+    "titleEn": "Number of Closed Islands",
+    "titleZh": "统计封闭岛屿的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-closed-islands/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-common-factors",
+    "frontendDisplayId": "2427",
+    "titleEn": "Number of Common Factors",
+    "titleZh": "公因子的数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-common-factors/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-days-between-two-dates",
+    "frontendDisplayId": "1360",
+    "titleEn": "Number of Days Between Two Dates",
+    "titleZh": "日期之间隔几天",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-days-between-two-dates/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-dice-rolls-with-target-sum",
+    "frontendDisplayId": "1155",
+    "titleEn": "Number of Dice Rolls With Target Sum",
+    "titleZh": "掷骰子等于目标和的方法数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-dice-rolls-with-target-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-different-integers-in-a-string",
+    "frontendDisplayId": "1805",
+    "titleEn": "Number of Different Integers in a String",
+    "titleZh": "字符串中不同整数的数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-different-integers-in-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-different-subsequences-gcds",
+    "frontendDisplayId": "1819",
+    "titleEn": "Number of Different Subsequences GCDs",
+    "titleZh": "序列中不同最大公约数的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-different-subsequences-gcds/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-digit-one",
+    "frontendDisplayId": "233",
+    "titleEn": "Number of Digit One",
+    "titleZh": "数字 1 的个数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-digit-one/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-091",
+    "claimedAt": "2026-07-10T06:50:40.173791+00:00",
+    "completedAt": null
+  }
+]

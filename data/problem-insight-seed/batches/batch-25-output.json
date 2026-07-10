@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "count-vowel-substrings-of-a-string",
+    "reasonEN": "An easy substring-enumeration problem that combines vowel-only window boundaries with distinct-character tracking, making it useful practice for turning string predicates into compact scans.",
+    "reasonZH": "字符串子串枚举入门题，结合纯元音窗口边界与字符去重判断，训练将复合字符串条件压缩为高效扫描。"
+  },
+  {
+    "slug": "count-vowels-permutation",
+    "reasonEN": "This hard state-DP problem models allowed vowel transitions as a small directed graph, reinforcing transition-table design and modular accumulation for sequence counting.",
+    "reasonZH": "高难度状态动态规划题，将元音转移关系建模为小型有向图，训练转移表设计与模数下的序列计数累加。"
+  },
+  {
+    "slug": "count-ways-to-build-good-strings",
+    "reasonEN": "A medium one-dimensional DP problem that accumulates construction counts by reachable lengths, providing a clean template for range summation and modulo handling.",
+    "reasonZH": "中等难度一维动态规划题，按可达长度累加构造方案，适合掌握区间求和与模运算下计数的标准模板。"
+  },
+  {
+    "slug": "count-ways-to-build-rooms-in-an-ant-colony",
+    "reasonEN": "A hard tree combinatorics problem that merges subtree orders with binomial coefficients, teaching how DFS sizes and modular inverses count valid topological arrangements.",
+    "reasonZH": "高难度树形组合计数题，通过二项式系数合并子树建造顺序，训练利用 DFS 子树大小和模逆统计合法拓扑排列。"
+  },
+  {
+    "slug": "count-ways-to-choose-coprime-integers-from-rows",
+    "reasonEN": "This hard combinatorial DP problem compresses number-theoretic compatibility into reusable states, challenging you to combine coprimality checks, row choices, and inclusion constraints efficiently.",
+    "reasonZH": "高难度组合动态规划题，将数论互质关系压缩为可复用状态，训练高效结合互质判定、逐行选择与包含约束。"
+  },
+  {
+    "slug": "count-ways-to-group-overlapping-ranges",
+    "reasonEN": "A medium interval-sorting problem that counts independent merged components and applies a power-of-two choice rule, clarifying the link between interval union and combinatorics.",
+    "reasonZH": "中等难度区间排序题，统计彼此独立的合并区间组后应用二的幂计数，清晰连接区间并集与组合选择。"
+  },
+  {
+    "slug": "count-ways-to-make-array-with-product",
+    "reasonEN": "A hard prime-factorization and combinatorics problem that distributes prime exponents with stars and bars, building fluency with precomputed combinations under modular arithmetic.",
+    "reasonZH": "高难度质因数分解与组合计数题，用隔板法分配质因子指数，训练模运算下预处理组合数的能力。"
+  },
+  {
+    "slug": "count-words-obtained-after-adding-a-letter",
+    "reasonEN": "This medium bitmask-signature problem normalizes words by their character sets and tests one-bit extensions, illustrating how set operations can replace repeated string matching.",
+    "reasonZH": "中等难度位掩码签名题，将单词字符集合规范化后检测单比特扩展，展示集合运算如何替代重复字符串匹配。"
+  },
+  {
+    "slug": "count-zero-request-servers",
+    "reasonEN": "A medium offline-query sliding-window problem that sorts logs and queries together, maintaining active-server frequencies to answer many time windows efficiently.",
+    "reasonZH": "中等难度离线查询滑动窗口题，将日志与查询排序后维护活跃服务器频次，高效回答多个时间窗口。"
+  },
+  {
+    "slug": "counter",
+    "reasonEN": "A foundational JavaScript closure exercise that captures mutable state in a returned function, establishing the scope and invocation model used by many functional APIs.",
+    "reasonZH": "JavaScript 闭包基础题，在返回函数中捕获可变状态，帮助建立函数作用域与调用模型的核心认识。"
+  },
+  {
+    "slug": "counter-ii",
+    "reasonEN": "This easy JavaScript object-and-closure problem exposes controlled increment, decrement, and reset operations, reinforcing encapsulation through lexical state.",
+    "reasonZH": "JavaScript 对象与闭包基础题，通过词法作用域封装加一、减一和重置操作，训练轻量级状态封装。"
+  },
+  {
+    "slug": "counting-bits",
+    "reasonEN": "A classic easy bit-DP problem that reuses the relation between a number and its shifted predecessor, teaching how binary structure yields linear preprocessing.",
+    "reasonZH": "经典位运算动态规划题，复用数字与右移前驱之间的关系，训练从二进制结构推导线性预处理。"
+  },
+  {
+    "slug": "counting-words-with-a-given-prefix",
+    "reasonEN": "A concise string-matching exercise centered on reliable prefix checks, useful for mastering direct library operations before introducing trie-based indexing.",
+    "reasonZH": "简洁的字符串匹配题，核心是可靠完成前缀判断，适合先掌握直接 API 操作，再过渡到 Trie 索引。"
+  },
+  {
+    "slug": "couples-holding-hands",
+    "reasonEN": "A hard permutation-repair problem solvable through greedy swaps or connected components, highlighting how partner positions and component structure determine the minimum operations.",
+    "reasonZH": "高难度排列修复题，可用贪心交换或连通分量求解，重点理解伴侣位置与分量结构如何决定最少操作次数。"
+  },
+  {
+    "slug": "coupon-code-validator",
+    "reasonEN": "An easy validation-and-sorting task that separates syntax checks from eligibility filtering and final ordering, providing practical practice in implementing layered business rules.",
+    "reasonZH": "简单的校验与排序题，将格式检查、资格筛选和最终排序分层处理，适合练习实现多阶段业务规则。"
+  },
+  {
+    "slug": "course-schedule",
+    "reasonEN": "A fundamental directed-graph cycle-detection problem using indegrees or DFS states, essential for mastering DAG feasibility checks in dependency systems.",
+    "reasonZH": "有向图环检测基础题，可通过入度拓扑排序或 DFS 状态完成，是掌握依赖系统中 DAG 可行性判断的必练题。"
+  },
+  {
+    "slug": "course-schedule-ii",
+    "reasonEN": "This topological-sorting template extends feasibility detection to order construction, reinforcing indegree updates and the invariant that every course must be emitted once.",
+    "reasonZH": "拓扑排序模板题，将可行性检测扩展为具体顺序构造，训练入度更新，并验证每门课程都恰好被输出一次。"
+  },
+  {
+    "slug": "course-schedule-iii",
+    "reasonEN": "A hard scheduling greedy problem that sorts by deadlines and uses a max-heap to discard the most expensive selected course, a cornerstone pattern for deadline optimization.",
+    "reasonZH": "高难度课程调度贪心题，按截止时间排序并用大根堆剔除耗时最长的已选课程，是截止时间优化的核心模式。"
+  },
+  {
+    "slug": "course-schedule-iv",
+    "reasonEN": "A medium prerequisite-reachability problem that propagates transitive dependencies through topological order or graph search, distinguishing direct edges from indirect prerequisites.",
+    "reasonZH": "中等难度先修关系可达性题，通过拓扑序传播或图搜索得到传递依赖，训练区分直接边与间接先修关系。"
+  },
+  {
+    "slug": "cousins-in-binary-tree",
+    "reasonEN": "An easy tree-traversal problem that compares node depth and parent identity, making it a precise exercise in level-order state management.",
+    "reasonZH": "二叉树遍历入门题，通过比较节点深度与父节点身份判断堂兄弟关系，训练层序遍历中的状态维护。"
+  },
+  {
+    "slug": "cousins-in-binary-tree-ii",
+    "reasonEN": "This medium tree transformation problem aggregates each level before updating children, teaching the crucial read-old-values then write-new-values traversal discipline.",
+    "reasonZH": "中等难度树变换题，先聚合每层信息再更新子节点，重点训练遍历中先读取旧值、后写入新值的时序纪律。"
+  },
+  {
+    "slug": "cracking-the-safe",
+    "reasonEN": "A hard Eulerian-circuit construction problem on a de Bruijn graph, offering a memorable application of Hierholzer's algorithm to generate every fixed-length code exactly once.",
+    "reasonZH": "高难度欧拉回路构造题，在 de Bruijn 图上应用 Hierholzer 算法，使每个定长密码恰好出现一次，是图论生成问题的经典代表。"
+  },
+  {
+    "slug": "crawler-log-folder",
+    "reasonEN": "A simple stack-simulation problem that maps navigation commands to depth changes, reinforcing the value of modeling only the state the final result actually needs.",
+    "reasonZH": "简单的栈模拟题，将导航命令映射为目录深度变化，训练只维护最终结果真正需要的最小状态。"
+  },
+  {
+    "slug": "create-a-dataframe-from-list",
+    "reasonEN": "A foundational Pandas construction exercise that maps nested lists to explicit column labels, useful for learning the basic shape contract of tabular data.",
+    "reasonZH": "Pandas DataFrame 构造基础题，将嵌套列表映射为明确列名，帮助理解表格数据的基本形状契约。"
+  },
+  {
+    "slug": "create-a-new-column",
+    "reasonEN": "An easy Pandas transformation problem focused on vectorized column assignment, reinforcing concise dataframe mutation without unnecessary row-wise loops.",
+    "reasonZH": "Pandas 表变换入门题，核心是向量化新增列，训练避免逐行循环的简洁 DataFrame 修改方式。"
+  },
+  {
+    "slug": "create-binary-tree-from-descriptions",
+    "reasonEN": "A medium tree-construction problem that maps values to nodes and identifies the unique root through parent tracking, strengthening object linkage and structural validation.",
+    "reasonZH": "中等难度二叉树构造题，通过值到节点的映射建立父子连接，并借助父节点标记识别唯一根节点，训练对象关联与结构校验。"
+  },
+  {
+    "slug": "create-components-with-same-value",
+    "reasonEN": "A hard tree partitioning problem that combines divisor enumeration with postorder aggregation, teaching how global arithmetic constraints can guide local component cuts.",
+    "reasonZH": "高难度树分割题，结合因子枚举与后序聚合，训练用全局算术约束指导局部连通块切分。"
+  },
+  {
+    "slug": "create-grid-with-exactly-one-path",
+    "reasonEN": "An easy constructive problem that designs a grid around a uniqueness invariant, encouraging proof-oriented construction instead of trial-and-error search.",
+    "reasonZH": "简单的构造题，围绕路径唯一性不变量设计网格，培养先证明构造性质、再落地实现的思维。"
+  },
+  {
+    "slug": "create-hello-world-function",
+    "reasonEN": "A minimal JavaScript function exercise that verifies function declaration and return-value semantics, serving as a quick baseline for the platform's language interface.",
+    "reasonZH": "最基础的 JavaScript 函数题，验证函数声明与返回值语义，可作为熟悉平台语言接口的快速基线。"
+  },
+  {
+    "slug": "create-maximum-number",
+    "reasonEN": "A hard greedy and monotonic-stack problem that selects optimal subsequences and lexicographically merges them, requiring careful dominance comparisons and split enumeration.",
+    "reasonZH": "高难度贪心与单调栈题，先选取最优子序列再按字典序合并，重点训练支配比较、拆分枚举与合并细节。"
+  }
+]

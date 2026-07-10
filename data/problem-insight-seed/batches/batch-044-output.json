@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "find-original-array-from-doubled-array",
+    "reasonEN": "A medium greedy reconstruction problem that combines sorting with frequency counting. It trains pairing each value with its double in ascending order, with zero handling and depleted counts as key edge cases, making it a strong exercise in proving greedy feasibility.",
+    "reasonZH": "中等难度的贪心还原题，结合排序与频次统计。它训练按升序将数值与其两倍值配对，零值处理和剩余计数是关键边界，能有效练习贪心可行性的证明。"
+  },
+  {
+    "slug": "find-overbooked-employees",
+    "reasonEN": "A medium database aggregation problem centered on detecting capacity conflicts across related booking records. It practices grouping, conditional counts, and precise join conditions, which are essential for translating operational rules into reliable SQL reports.",
+    "reasonZH": "中等难度的数据库聚合题，核心是从关联预订记录中识别容量冲突。它训练分组、条件计数和精确连接条件，是将业务规则转化为可靠 SQL 报表的重要练习。"
+  },
+  {
+    "slug": "find-palindrome-with-fixed-length",
+    "reasonEN": "This medium math construction problem turns palindrome indexing into prefix arithmetic. It trains mirroring a half-number, handling odd and even lengths, and rejecting out-of-range queries, giving a reusable alternative to brute-force enumeration.",
+    "reasonZH": "这是一道中等难度的数学构造题，将回文数定位转化为前缀算术。它训练半数镜像、奇偶长度处理和越界判断，建立替代暴力枚举的通用构造思路。"
+  },
+  {
+    "slug": "find-peak-element",
+    "reasonEN": "A classic medium binary-search problem with a nonstandard monotonic signal. It teaches deciding which side must contain a peak by comparing adjacent values, sharpening invariant design for search spaces that are not globally sorted.",
+    "reasonZH": "经典的中等难度二分题，单调信息并非传统有序数组。它训练通过相邻元素比较判断必含峰值的一侧，强化在非全局有序空间中设计二分不变量的能力。"
+  },
+  {
+    "slug": "find-pivot-index",
+    "reasonEN": "An entry-level prefix-sum problem that reduces repeated range summation to a running invariant. It practices relating total sum, left sum, and the current value, making it an efficient foundation for balance and partition queries.",
+    "reasonZH": "入门级前缀和题，将重复区间求和压缩为维护中的不变量。它训练关联总和、左侧和与当前值，为平衡点和分割类查询打下高效基础。"
+  },
+  {
+    "slug": "find-players-with-zero-or-one-losses",
+    "reasonEN": "A medium counting-and-sorting problem built around recording loss frequencies. It reinforces choosing the correct hash-map state, distinguishing absent keys from zero counts, and producing ordered results, a common pattern in event-log analysis.",
+    "reasonZH": "中等难度的计数排序题，核心是记录失败次数。它强化哈希表状态设计、区分不存在键与零计数，并输出有序结果，是事件日志统计中的常见模式。"
+  },
+  {
+    "slug": "find-polygon-with-the-largest-perimeter",
+    "reasonEN": "This medium greedy problem relies on the polygon inequality after sorting. It trains maintaining a prefix sum while testing the largest feasible side, illustrating how a local inequality and ordering can collapse a combinatorial search.",
+    "reasonZH": "这道中等难度贪心题依赖排序后的多边形不等式。它训练维护前缀和并检验最大的可行边，展示如何用局部不等式和顺序压缩组合搜索。"
+  },
+  {
+    "slug": "find-positive-integer-solution-for-a-given-equation",
+    "reasonEN": "A medium monotonic-function search problem that applies two pointers to an interactive API. It teaches exploiting monotonicity to eliminate rows or columns and treating expensive function calls carefully, a useful bridge from theory to interface-constrained algorithms.",
+    "reasonZH": "中等难度的单调函数搜索题，将双指针应用于交互式接口。它训练利用单调性排除整行或整列，并谨慎对待高成本函数调用，是连接算法理论与接口约束的好题。"
+  },
+  {
+    "slug": "find-product-recommendation-pairs",
+    "reasonEN": "A medium SQL self-join problem for deriving unordered pairs from shared behavior. It practices joining a relation to itself, enforcing a canonical pair order to remove duplicates, and aggregating co-occurrence, all central to recommendation analytics.",
+    "reasonZH": "中等难度的 SQL 自连接题，用共享行为推导无序产品对。它训练关系自连接、用规范顺序去重，以及共现聚合，是推荐分析的核心技巧。"
+  },
+  {
+    "slug": "find-products-of-elements-of-big-array",
+    "reasonEN": "A hard bit-manipulation problem that queries an implicitly enormous sequence without materializing it. It trains counting set-bit contributions by position, binary-searching prefix boundaries, and computing modular products, a valuable lesson in compressed sequence queries.",
+    "reasonZH": "困难的位运算题，在不展开超大隐式序列的前提下完成查询。它训练按位统计置位贡献、二分前缀边界和计算模乘，是压缩序列查询的重要进阶练习。"
+  },
+  {
+    "slug": "find-products-with-valid-serial-numbers",
+    "reasonEN": "An easy database validation problem focused on classifying strings by structured rules. It practices combining pattern predicates with NULL-aware filtering and readable conditional logic, useful for data-quality checks in production tables.",
+    "reasonZH": "入门级数据库校验题，重点是按结构化规则分类字符串。它训练组合模式判断、兼顾 NULL 的过滤和清晰的条件逻辑，适合练习生产表中的数据质量检查。"
+  },
+  {
+    "slug": "find-resultant-array-after-removing-anagrams",
+    "reasonEN": "A simple string-normalization problem that compares only adjacent groups. It trains building a canonical anagram signature and retaining state from the previous item, making it a concise introduction to equivalence-class processing.",
+    "reasonZH": "简洁的字符串规范化题，只需比较相邻分组。它训练构造字母异位词的规范签名并保留前一项状态，是等价类处理的入门练习。"
+  },
+  {
+    "slug": "find-right-interval",
+    "reasonEN": "A medium interval-search problem that converts each lookup into a lower-bound query. It practices sorting starts with original indices and using binary search for the first feasible endpoint, a standard reduction for offline interval matching.",
+    "reasonZH": "中等难度的区间搜索题，将每次查找转化为 lower bound 查询。它训练按起点排序并保留原下标，再二分第一个可行终点，是离线区间匹配的标准归约。"
+  },
+  {
+    "slug": "find-score-of-an-array-after-marking-all-elements",
+    "reasonEN": "A medium greedy simulation driven by a min-heap. It teaches processing values in priority order while tracking whether positions have already been marked, emphasizing the separation between selection order and mutable array state.",
+    "reasonZH": "中等难度的贪心模拟题，由最小堆驱动。它训练按优先级处理数值并追踪位置是否已标记，强调选择顺序与可变数组状态的分离。"
+  },
+  {
+    "slug": "find-servers-that-handled-most-number-of-requests",
+    "reasonEN": "A hard scheduling simulation combining an ordered set of available servers with a heap of busy release times. It trains circular successor lookup, event-time cleanup, and load accounting, directly mirroring resource allocation systems.",
+    "reasonZH": "困难的调度模拟题，结合可用服务器有序集合与忙碌释放时间堆。它训练循环后继查找、按事件时间清理和负载统计，直接映射资源分配系统。"
+  },
+  {
+    "slug": "find-smallest-letter-greater-than-target",
+    "reasonEN": "An easy binary-search boundary problem with circular wraparound. It practices finding the first strictly greater element rather than an arbitrary match and handling the no-answer case cleanly, a core search-template distinction.",
+    "reasonZH": "入门级二分边界题，包含循环回绕条件。它训练查找第一个严格大于目标的元素而非任意匹配，并清晰处理无答案情况，是二分模板的核心区别。"
+  },
+  {
+    "slug": "find-special-substring-of-length-k",
+    "reasonEN": "A focused easy string-scanning problem about maximal runs and boundary checks. It teaches verifying that a candidate run has exactly the required length instead of merely containing it, strengthening attention to local substring constraints.",
+    "reasonZH": "聚焦的入门级字符串扫描题，考查极大连续段与边界判断。它训练确认候选连续段长度恰好满足要求，而非仅仅包含该长度，强化局部子串约束意识。"
+  },
+  {
+    "slug": "find-stores-with-inventory-imbalance",
+    "reasonEN": "A medium database analysis problem for detecting uneven inventory across related records. It practices grouping at the correct business granularity, comparing conditional aggregates, and expressing imbalance rules declaratively in SQL.",
+    "reasonZH": "中等难度的数据库分析题，用于发现关联记录中的库存失衡。它训练按正确业务粒度分组、比较条件聚合，并以声明式 SQL 表达失衡规则。"
+  },
+  {
+    "slug": "find-students-who-improved",
+    "reasonEN": "A medium SQL comparison problem that derives progress from records across time or attempts. It trains self-joins or window-based comparisons, correct partitioning, and avoiding duplicate student rows, which are fundamental for longitudinal analytics.",
+    "reasonZH": "中等难度的 SQL 对比题，从时间或多次尝试记录中推导进步情况。它训练自连接或窗口比较、正确分区和避免学生行重复，是纵向分析的基础能力。"
+  },
+  {
+    "slug": "find-students-with-study-spiral-pattern",
+    "reasonEN": "A hard database pattern-detection problem over ordered study events. It trains defining sequence order, correlating multiple rows for cyclic conditions, and preserving strict temporal constraints, making it valuable for advanced SQL behavioral analysis.",
+    "reasonZH": "困难的数据库模式识别题，面向有序学习事件。它训练定义序列顺序、关联多行以识别循环条件，并保持严格时间约束，适合进阶 SQL 行为分析。"
+  },
+  {
+    "slug": "find-subarray-with-bitwise-or-closest-to-k",
+    "reasonEN": "A hard bitwise subarray problem that exploits the monotonicity of OR under window expansion. It trains maintaining per-bit counts while shrinking a window and evaluating candidates near the target, an important technique for noninvertible range operations.",
+    "reasonZH": "困难的位运算子数组题，利用按位或在窗口扩张下的单调性。它训练维护每一位的计数来收缩窗口并评估接近目标的候选，是处理不可逆区间运算的重要技巧。"
+  },
+  {
+    "slug": "find-subarrays-with-equal-sum",
+    "reasonEN": "An easy hash-set detection problem based on fixed-length subarray sums. It practices recognizing that equal adjacent-pair sums can be streamed and deduplicated immediately, reinforcing how constraints can simplify a general prefix-sum problem.",
+    "reasonZH": "入门级哈希集合检测题，基于固定长度子数组和。它训练识别相邻二元和可在线计算并立即去重，理解约束如何简化一般的前缀和问题。"
+  },
+  {
+    "slug": "find-subsequence-of-length-k-with-the-largest-sum",
+    "reasonEN": "A useful easy selection problem that separates choosing the largest values from preserving original order. It practices selecting by value with sorting or a heap, then restoring index order, a recurring pattern in subsequence construction.",
+    "reasonZH": "实用的入门级选择题，区分挑选最大值与保留原始相对顺序。它训练用排序或堆按值选择，再恢复下标顺序，是构造子序列的常见模式。"
+  },
+  {
+    "slug": "find-substring-with-given-hash-value",
+    "reasonEN": "A hard rolling-hash problem that evaluates fixed-length substrings in reverse. It trains recurrence direction, modular arithmetic, and power updates without recomputing hashes, providing a rigorous template for efficient string hashing.",
+    "reasonZH": "困难的滚动哈希题，需要逆向计算固定长度子串。它训练递推方向、模运算和幂次更新，避免重复计算哈希，提供高效字符串哈希的严谨模板。"
+  },
+  {
+    "slug": "find-subtree-sizes-after-changes",
+    "reasonEN": "A medium tree-restructuring problem that combines DFS with nearest-ancestor state. It teaches carrying character-to-ancestor mappings along a traversal and accumulating sizes on the effective parent relation, a valuable example of contextual tree DP.",
+    "reasonZH": "中等难度的树重构题，结合 DFS 与最近祖先状态。它训练在遍历中维护字符到祖先的映射，并按实际父子关系累积规模，是带上下文树形 DP 的典型例子。"
+  },
+  {
+    "slug": "find-sum-of-array-product-of-magical-sequences",
+    "reasonEN": "A hard combinatorial DP problem integrating bitmask states, digit-like counting, and modular arithmetic. It trains decomposing a global product constraint into transitions over bit contributions, offering strong practice in state compression and counting proofs.",
+    "reasonZH": "困难的组合计数 DP 题，融合位掩码状态、类数位计数与模运算。它训练把全局乘积约束拆解为按位贡献的状态转移，是状态压缩和计数证明的高质量练习。"
+  },
+  {
+    "slug": "find-target-indices-after-sorting-array",
+    "reasonEN": "An easy sorting problem that highlights the relationship between value ranks and output indices. It practices sorting before scanning or using lower and upper bounds, giving beginners a clear case for choosing an order-aware representation.",
+    "reasonZH": "入门级排序题，突出数值排名与输出下标的关系。它训练排序后扫描或使用上下界，为初学者展示何时应采用有序表示。"
+  },
+  {
+    "slug": "find-the-array-concatenation-value",
+    "reasonEN": "A straightforward two-pointer simulation problem with a subtle numeric conversion step. It trains consuming symmetric elements, forming decimal concatenations safely, and handling the center element, reinforcing implementation discipline in simple simulations.",
+    "reasonZH": "直接的双指针模拟题，包含细微的数值拼接步骤。它训练消耗对称位置元素、安全构造十进制拼接值并处理中心元素，强化简单模拟中的实现严谨性。"
+  },
+  {
+    "slug": "find-the-child-who-has-the-ball-after-k-seconds",
+    "reasonEN": "An easy math simulation problem whose bouncing process has a short period. It teaches replacing step-by-step movement with modular arithmetic over the cycle, a compact introduction to periodic-state optimization.",
+    "reasonZH": "入门级数学模拟题，来回传球过程具有短周期。它训练用周期上的模运算替代逐步移动，是周期状态优化的简洁入门。"
+  },
+  {
+    "slug": "find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance",
+    "reasonEN": "A medium all-pairs shortest-path problem suited to Floyd-Warshall under small graph constraints. It practices initializing parallel edges, relaxing through each intermediate node, and applying the specified tie-break, making it a complete graph-algorithm template exercise.",
+    "reasonZH": "中等难度的全源最短路题，在小规模图约束下适合 Floyd-Warshall。它训练初始化重边、经由每个中间点松弛，并处理指定的平局规则，是完整的图算法模板练习。"
+  }
+]

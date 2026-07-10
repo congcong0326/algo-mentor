@@ -1,0 +1,732 @@
+[
+  {
+    "slug": "minimum-garden-perimeter-to-collect-enough-apples",
+    "frontendDisplayId": "1954",
+    "titleEn": "Minimum Garden Perimeter to Collect Enough Apples",
+    "titleZh": "收集足够苹果的最小花园周长",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-garden-perimeter-to-collect-enough-apples/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-generations-to-target-point",
+    "frontendDisplayId": "3923",
+    "titleEn": "Minimum Generations to Target Point",
+    "titleZh": "得到目标点的最少代数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-generations-to-target-point/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-genetic-mutation",
+    "frontendDisplayId": "433",
+    "titleEn": "Minimum Genetic Mutation",
+    "titleZh": "最小基因变化",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-genetic-mutation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-height-tree-lcci",
+    "frontendDisplayId": "面试题 04.02",
+    "titleEn": null,
+    "titleZh": "最小高度树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search Tree",
+      "Binary Tree",
+      "Divide and Conquer",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉搜索树",
+      "二叉树",
+      "分治",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/minimum-height-tree-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-height-trees",
+    "frontendDisplayId": "310",
+    "titleEn": "Minimum Height Trees",
+    "titleZh": "最小高度树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-height-trees/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-hours-of-training-to-win-a-competition",
+    "frontendDisplayId": "2383",
+    "titleEn": "Minimum Hours of Training to Win a Competition",
+    "titleZh": "赢得比赛需要的最少训练时长",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-hours-of-training-to-win-a-competition/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-impossible-or",
+    "frontendDisplayId": "2568",
+    "titleEn": "Minimum Impossible OR",
+    "titleZh": "最小无法得到的或值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Brainteaser"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "脑筋急转弯"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-impossible-or/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-incompatibility",
+    "frontendDisplayId": "1681",
+    "titleEn": "Minimum Incompatibility",
+    "titleZh": "最小不兼容性",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-incompatibility/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-increase-to-maximize-special-indices",
+    "frontendDisplayId": "3891",
+    "titleEn": "Minimum Increase to Maximize Special Indices",
+    "titleZh": "最大化特殊下标数目的最少增加次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-increase-to-maximize-special-indices/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-increment-operations-to-make-array-beautiful",
+    "frontendDisplayId": "2919",
+    "titleEn": "Minimum Increment Operations to Make Array Beautiful",
+    "titleZh": "使数组变美的最小增量运算数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-increment-operations-to-make-array-beautiful/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-increment-to-make-array-unique",
+    "frontendDisplayId": "945",
+    "titleEn": "Minimum Increment to Make Array Unique",
+    "titleZh": "使数组唯一的最小增量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-increment-to-make-array-unique/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-increments-for-target-multiples-in-an-array",
+    "frontendDisplayId": "3444",
+    "titleEn": "Minimum Increments for Target Multiples in an Array",
+    "titleZh": "使数组包含目标值倍数的最少增量",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-increments-for-target-multiples-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-increments-to-equalize-leaf-paths",
+    "frontendDisplayId": "3593",
+    "titleEn": "Minimum Increments to Equalize Leaf Paths",
+    "titleZh": "使叶子路径成本相等的最小增量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-increments-to-equalize-leaf-paths/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-index-of-a-valid-split",
+    "frontendDisplayId": "2780",
+    "titleEn": "Minimum Index of a Valid Split",
+    "titleZh": "合法分割的最小下标",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-index-of-a-valid-split/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-index-sum-of-two-lists",
+    "frontendDisplayId": "599",
+    "titleEn": "Minimum Index Sum of Two Lists",
+    "titleZh": "两个列表的最小索引总和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-index-sum-of-two-lists/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-initial-energy-to-finish-tasks",
+    "frontendDisplayId": "1665",
+    "titleEn": "Minimum Initial Energy to Finish Tasks",
+    "titleZh": "完成所有任务的最少初始能量",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-initial-energy-to-finish-tasks/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-insertion-steps-to-make-a-string-palindrome",
+    "frontendDisplayId": "1312",
+    "titleEn": "Minimum Insertion Steps to Make a String Palindrome",
+    "titleZh": "让字符串成为回文串的最少插入次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-insertion-steps-to-make-a-string-palindrome/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-insertions-to-balance-a-parentheses-string",
+    "frontendDisplayId": "1541",
+    "titleEn": "Minimum Insertions to Balance a Parentheses String",
+    "titleZh": "平衡括号字符串的最少插入次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-insertions-to-balance-a-parentheses-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-interval-to-include-each-query",
+    "frontendDisplayId": "1851",
+    "titleEn": "Minimum Interval to Include Each Query",
+    "titleZh": "包含每个查询的最小区间",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Heap (Priority Queue)",
+      "Sweep Line",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "堆（优先队列）",
+      "扫描线",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-interval-to-include-each-query/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-inversion-count-in-subarrays-of-fixed-length",
+    "frontendDisplayId": "3768",
+    "titleEn": "Minimum Inversion Count in Subarrays of Fixed Length",
+    "titleZh": "固定长度子数组中的最小逆序对数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Segment Tree",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "线段树",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-inversion-count-in-subarrays-of-fixed-length/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-jumps-to-reach-end-via-prime-teleportation",
+    "frontendDisplayId": "3629",
+    "titleEn": "Minimum Jumps to Reach End via Prime Teleportation",
+    "titleZh": "通过质数传送到达终点的最少跳跃次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Hash Table",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "哈希表",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-jumps-to-reach-end-via-prime-teleportation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-jumps-to-reach-home",
+    "frontendDisplayId": "1654",
+    "titleEn": "Minimum Jumps to Reach Home",
+    "titleZh": "到家的最少跳跃次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-jumps-to-reach-home/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-k-to-reduce-array-within-limit",
+    "frontendDisplayId": "3824",
+    "titleEn": "Minimum K to Reduce Array Within Limit",
+    "titleZh": "减小数组使其满足条件的最小 K 值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-k-to-reduce-array-within-limit/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-length-of-anagram-concatenation",
+    "frontendDisplayId": "3138",
+    "titleEn": "Minimum Length of Anagram Concatenation",
+    "titleZh": "同位字符串连接的最小长度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-length-of-anagram-concatenation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-length-of-string-after-deleting-similar-ends",
+    "frontendDisplayId": "1750",
+    "titleEn": "Minimum Length of String After Deleting Similar Ends",
+    "titleZh": "删除字符串两端相同字符后的最短长度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-length-of-string-after-deleting-similar-ends/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-length-of-string-after-operations",
+    "frontendDisplayId": "3223",
+    "titleEn": "Minimum Length of String After Operations",
+    "titleZh": "操作后字符串的最短长度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-length-of-string-after-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-levels-to-gain-more-points",
+    "frontendDisplayId": "3096",
+    "titleEn": "Minimum Levels to Gain More Points",
+    "titleZh": "得到更多分数的最少关卡数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-levels-to-gain-more-points/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-lights-to-illuminate-a-road",
+    "frontendDisplayId": "3964",
+    "titleEn": "Minimum Lights to Illuminate a Road",
+    "titleZh": "照亮道路的最少灯泡数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-lights-to-illuminate-a-road/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-limit-of-balls-in-a-bag",
+    "frontendDisplayId": "1760",
+    "titleEn": "Minimum Limit of Balls in a Bag",
+    "titleZh": "袋子里最少数目的球",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-limit-of-balls-in-a-bag/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-lines-to-represent-a-line-chart",
+    "frontendDisplayId": "2280",
+    "titleEn": "Minimum Lines to Represent a Line Chart",
+    "titleZh": "表示一个折线图的最少线段数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Math",
+      "Number Theory",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "数学",
+      "数论",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-lines-to-represent-a-line-chart/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-081",
+    "claimedAt": "2026-07-10T06:26:23.301609+00:00",
+    "completedAt": null
+  }
+]

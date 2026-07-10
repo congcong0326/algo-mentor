@@ -1,0 +1,708 @@
+[
+  {
+    "slug": "furthest-building-you-can-reach",
+    "frontendDisplayId": "1642",
+    "titleEn": "Furthest Building You Can Reach",
+    "titleZh": "可以到达的最远建筑",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/furthest-building-you-can-reach/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "furthest-point-from-origin",
+    "frontendDisplayId": "2833",
+    "titleEn": "Furthest Point From Origin",
+    "titleZh": "距离原点最远的点",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/furthest-point-from-origin/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "g5c51o",
+    "frontendDisplayId": "LCR 060",
+    "titleEn": null,
+    "titleZh": "前 K 个高频元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bucket Sort",
+      "Counting",
+      "Divide and Conquer",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Quickselect",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "桶排序",
+      "计数",
+      "分治",
+      "哈希表",
+      "堆（优先队列）",
+      "快速选择",
+      "排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/g5c51o/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "gaM7Ch",
+    "frontendDisplayId": "LCR 103",
+    "titleEn": null,
+    "titleZh": "零钱兑换",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "动态规划"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/gaM7Ch/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "game-of-life",
+    "frontendDisplayId": "289",
+    "titleEn": "Game of Life",
+    "titleZh": "生命游戏",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/game-of-life/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "game-play-analysis-i",
+    "frontendDisplayId": "511",
+    "titleEn": "Game Play Analysis I",
+    "titleZh": "游戏玩法分析 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/game-play-analysis-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "game-play-analysis-iv",
+    "frontendDisplayId": "550",
+    "titleEn": "Game Play Analysis IV",
+    "titleZh": "游戏玩法分析 IV",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/game-play-analysis-iv/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "gas-station",
+    "frontendDisplayId": "134",
+    "titleEn": "Gas Station",
+    "titleZh": "加油站",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/gas-station/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "gcd-of-odd-and-even-sums",
+    "frontendDisplayId": "3658",
+    "titleEn": "GCD of Odd and Even Sums",
+    "titleZh": "奇数和与偶数和的最大公约数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/gcd-of-odd-and-even-sums/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "gcd-sort-of-an-array",
+    "frontendDisplayId": "1998",
+    "titleEn": "GCD Sort of an Array",
+    "titleZh": "数组的最大公因数排序",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory",
+      "Sorting",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论",
+      "排序",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/gcd-sort-of-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "generate-a-string-with-characters-that-have-odd-counts",
+    "frontendDisplayId": "1374",
+    "titleEn": "Generate a String With Characters That Have Odd Counts",
+    "titleZh": "生成每种字符都是奇数个的字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/generate-a-string-with-characters-that-have-odd-counts/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "generate-binary-strings-without-adjacent-zeros",
+    "frontendDisplayId": "3211",
+    "titleEn": "Generate Binary Strings Without Adjacent Zeros",
+    "titleZh": "生成不含相邻零的二进制字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Bit Manipulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "位运算",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/generate-binary-strings-without-adjacent-zeros/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "generate-fibonacci-sequence",
+    "frontendDisplayId": "2648",
+    "titleEn": "Generate Fibonacci Sequence",
+    "titleZh": "生成斐波那契数列",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/generate-fibonacci-sequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "generate-parentheses",
+    "frontendDisplayId": "22",
+    "titleEn": "Generate Parentheses",
+    "titleZh": "括号生成",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/generate-parentheses/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "generate-random-point-in-a-circle",
+    "frontendDisplayId": "478",
+    "titleEn": "Generate Random Point in a Circle",
+    "titleZh": "在圆内随机生成点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Geometry",
+      "Math",
+      "Randomized",
+      "Rejection Sampling"
+    ],
+    "tagLabelsZh": [
+      "几何",
+      "数学",
+      "随机化",
+      "拒绝采样"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/generate-random-point-in-a-circle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "generate-schedule",
+    "frontendDisplayId": "3680",
+    "titleEn": "Generate Schedule",
+    "titleZh": "生成赛程",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/generate-schedule/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "generate-tag-for-video-caption",
+    "frontendDisplayId": "3582",
+    "titleEn": "Generate Tag for Video Caption",
+    "titleZh": "为视频标题生成标签",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/generate-tag-for-video-caption/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "get-biggest-three-rhombus-sums-in-a-grid",
+    "frontendDisplayId": "1878",
+    "titleEn": "Get Biggest Three Rhombus Sums in a Grid",
+    "titleZh": "矩阵中最大的三个菱形和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Math",
+      "Matrix",
+      "Prefix Sum",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "数学",
+      "矩阵",
+      "前缀和",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/get-biggest-three-rhombus-sums-in-a-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "get-equal-substrings-within-budget",
+    "frontendDisplayId": "1208",
+    "titleEn": "Get Equal Substrings Within Budget",
+    "titleZh": "尽可能使字符串相等",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Prefix Sum",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "前缀和",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/get-equal-substrings-within-budget/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "get-kth-magic-number-lcci",
+    "frontendDisplayId": "面试题 17.09",
+    "titleEn": null,
+    "titleZh": "第 k 个数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "哈希表",
+      "堆（优先队列）",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/get-kth-magic-number-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "get-maximum-in-generated-array",
+    "frontendDisplayId": "1646",
+    "titleEn": "Get Maximum in Generated Array",
+    "titleZh": "获取生成数组中的最大值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/get-maximum-in-generated-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "get-the-maximum-score",
+    "frontendDisplayId": "1537",
+    "titleEn": "Get the Maximum Score",
+    "titleZh": "最大得分",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/get-the-maximum-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "get-the-size-of-a-dataframe",
+    "frontendDisplayId": "2878",
+    "titleEn": "Get the Size of a DataFrame",
+    "titleZh": "获取 DataFrame 的大小",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/get-the-size-of-a-dataframe/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "get-watched-videos-by-your-friends",
+    "frontendDisplayId": "1311",
+    "titleEn": "Get Watched Videos by Your Friends",
+    "titleZh": "获取你好友已观看的视频",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Graph Theory",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "图",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/get-watched-videos-by-your-friends/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "global-and-local-inversions",
+    "frontendDisplayId": "775",
+    "titleEn": "Global and Local Inversions",
+    "titleZh": "全局倒置与局部倒置",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/global-and-local-inversions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "goal-parser-interpretation",
+    "frontendDisplayId": "1678",
+    "titleEn": "Goal Parser Interpretation",
+    "titleZh": "设计 Goal 解析器",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/goal-parser-interpretation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "goat-latin",
+    "frontendDisplayId": "824",
+    "titleEn": "Goat Latin",
+    "titleZh": "山羊拉丁文",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/goat-latin/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "good-subsequence-queries",
+    "frontendDisplayId": "3901",
+    "titleEn": "Good Subsequence Queries",
+    "titleZh": "好子序列查询",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/good-subsequence-queries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "gou-jian-cheng-ji-shu-zu-lcof",
+    "frontendDisplayId": "LCR 191",
+    "titleEn": null,
+    "titleZh": "按规则计算统计结果",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/gou-jian-cheng-ji-shu-zu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "graph-connectivity-with-threshold",
+    "frontendDisplayId": "1627",
+    "titleEn": "Graph Connectivity With Threshold",
+    "titleZh": "带阈值的图连通性",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/graph-connectivity-with-threshold/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-051",
+    "claimedAt": "2026-07-10T03:47:04.027806+00:00",
+    "completedAt": null
+  }
+]

@@ -1,0 +1,756 @@
+[
+  {
+    "slug": "find-maximum-area-of-a-triangle",
+    "frontendDisplayId": "3588",
+    "titleEn": "Find Maximum Area of a Triangle",
+    "titleZh": "找到最大三角形面积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Geometry",
+      "Greedy",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "几何",
+      "贪心",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-maximum-area-of-a-triangle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-maximum-balanced-xor-subarray-length",
+    "frontendDisplayId": "3755",
+    "titleEn": "Find Maximum Balanced XOR Subarray Length",
+    "titleZh": "最大平衡异或子数组的长度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-maximum-balanced-xor-subarray-length/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-maximum-non-decreasing-array-length",
+    "frontendDisplayId": "2945",
+    "titleEn": "Find Maximum Non-decreasing Array Length",
+    "titleZh": "找到最大非递减数组的长度",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Monotonic Queue",
+      "Monotonic Stack",
+      "Prefix Sum",
+      "Queue",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "单调队列",
+      "单调栈",
+      "前缀和",
+      "队列",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-maximum-non-decreasing-array-length/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-maximum-number-of-non-intersecting-substrings",
+    "frontendDisplayId": "3557",
+    "titleEn": "Find Maximum Number of Non Intersecting Substrings",
+    "titleZh": "不相交子字符串的最大数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Greedy",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "贪心",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-maximum-number-of-non-intersecting-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-maximum-number-of-string-pairs",
+    "frontendDisplayId": "2744",
+    "titleEn": "Find Maximum Number of String Pairs",
+    "titleZh": "最大字符串配对数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-maximum-number-of-string-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-maximum-removals-from-source-string",
+    "frontendDisplayId": "3316",
+    "titleEn": "Find Maximum Removals From Source String",
+    "titleZh": "从原字符串里进行删除操作的最多次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Table",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希表",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-maximum-removals-from-source-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-maximum-value-in-a-constrained-sequence",
+    "frontendDisplayId": "3796",
+    "titleEn": "Find Maximum Value in a Constrained Sequence",
+    "titleZh": "找到带限制序列的最大值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-maximum-value-in-a-constrained-sequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-median-from-data-stream",
+    "frontendDisplayId": "295",
+    "titleEn": "Find Median from Data Stream",
+    "titleZh": "数据流的中位数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Data Stream",
+      "Design",
+      "Heap (Priority Queue)",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数据流",
+      "设计",
+      "堆（优先队列）",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-median-from-data-stream/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-minimum-cost-to-remove-array-elements",
+    "frontendDisplayId": "3469",
+    "titleEn": "Find Minimum Cost to Remove Array Elements",
+    "titleZh": "移除所有数组元素的最小代价",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-minimum-cost-to-remove-array-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-minimum-diameter-after-merging-two-trees",
+    "frontendDisplayId": "3203",
+    "titleEn": "Find Minimum Diameter After Merging Two Trees",
+    "titleZh": "合并两棵树后的最小直径",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-minimum-diameter-after-merging-two-trees/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-minimum-in-rotated-sorted-array",
+    "frontendDisplayId": "153",
+    "titleEn": "Find Minimum in Rotated Sorted Array",
+    "titleZh": "寻找旋转排序数组中的最小值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-minimum-in-rotated-sorted-array-ii",
+    "frontendDisplayId": "154",
+    "titleEn": "Find Minimum in Rotated Sorted Array II",
+    "titleZh": "寻找旋转排序数组中的最小值 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-minimum-log-transportation-cost",
+    "frontendDisplayId": "3560",
+    "titleEn": "Find Minimum Log Transportation Cost",
+    "titleZh": "木材运输的最小成本",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-minimum-log-transportation-cost/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-minimum-operations-to-make-all-elements-divisible-by-three",
+    "frontendDisplayId": "3190",
+    "titleEn": "Find Minimum Operations to Make All Elements Divisible by Three",
+    "titleZh": "使所有元素都可以被 3 整除的最少操作数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-minimum-operations-to-make-all-elements-divisible-by-three/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-minimum-time-to-finish-all-jobs",
+    "frontendDisplayId": "1723",
+    "titleEn": "Find Minimum Time to Finish All Jobs",
+    "titleZh": "完成所有工作的最短时间",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "位掩码",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-minimum-time-to-finish-all-jobs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-minimum-time-to-reach-last-room-i",
+    "frontendDisplayId": "3341",
+    "titleEn": "Find Minimum Time to Reach Last Room I",
+    "titleZh": "到达最后一个房间的最少时间 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Matrix",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "堆（优先队列）",
+      "矩阵",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-minimum-time-to-reach-last-room-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-minimum-time-to-reach-last-room-ii",
+    "frontendDisplayId": "3342",
+    "titleEn": "Find Minimum Time to Reach Last Room II",
+    "titleZh": "到达最后一个房间的最少时间 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Matrix",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "堆（优先队列）",
+      "矩阵",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-minimum-time-to-reach-last-room-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-mirror-score-of-a-string",
+    "frontendDisplayId": "3412",
+    "titleEn": "Find Mirror Score of a String",
+    "titleZh": "计算字符串的镜像分数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Simulation",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "模拟",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-mirror-score-of-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-missing-and-repeated-values",
+    "frontendDisplayId": "2965",
+    "titleEn": "Find Missing and Repeated Values",
+    "titleZh": "找出缺失和重复的数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Math",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "数学",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-missing-and-repeated-values/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-missing-elements",
+    "frontendDisplayId": "3731",
+    "titleEn": "Find Missing Elements",
+    "titleZh": "找出缺失的元素",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-missing-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-missing-observations",
+    "frontendDisplayId": "2028",
+    "titleEn": "Find Missing Observations",
+    "titleZh": "找出缺失的观测数据",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-missing-observations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-mode-in-binary-search-tree",
+    "frontendDisplayId": "501",
+    "titleEn": "Find Mode in Binary Search Tree",
+    "titleZh": "二叉搜索树中的众数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-mode-in-binary-search-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-most-frequent-vowel-and-consonant",
+    "frontendDisplayId": "3541",
+    "titleEn": "Find Most Frequent Vowel and Consonant",
+    "titleZh": "找到频率最高的元音和辅音",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-most-frequent-vowel-and-consonant/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-n-unique-integers-sum-up-to-zero",
+    "frontendDisplayId": "1304",
+    "titleEn": "Find N Unique Integers Sum up to Zero",
+    "titleZh": "和为零的 N 个不同整数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-n-unique-integers-sum-up-to-zero/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-nearest-point-that-has-the-same-x-or-y-coordinate",
+    "frontendDisplayId": "1779",
+    "titleEn": "Find Nearest Point That Has the Same X or Y Coordinate",
+    "titleZh": "找到最近的有相同 X 或 Y 坐标的点",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-nearest-point-that-has-the-same-x-or-y-coordinate/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-nth-smallest-integer-with-k-one-bits",
+    "frontendDisplayId": "3821",
+    "titleEn": "Find Nth Smallest Integer With K One Bits",
+    "titleZh": "二进制中恰好K个1的第N小整数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Combinatorics",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "组合数学",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-nth-smallest-integer-with-k-one-bits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-number-of-coins-to-place-in-tree-nodes",
+    "frontendDisplayId": "2973",
+    "titleEn": "Find Number of Coins to Place in Tree Nodes",
+    "titleZh": "树中每个节点放置的金币数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Heap (Priority Queue)",
+      "Sorting",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "动态规划",
+      "堆（优先队列）",
+      "排序",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-number-of-coins-to-place-in-tree-nodes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-number-of-ways-to-reach-the-k-th-stair",
+    "frontendDisplayId": "3154",
+    "titleEn": "Find Number of Ways to Reach the K-th Stair",
+    "titleZh": "到达第 K 级台阶的方案数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "组合数学",
+      "动态规划",
+      "数学",
+      "记忆化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-number-of-ways-to-reach-the-k-th-stair/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-numbers-with-even-number-of-digits",
+    "frontendDisplayId": "1295",
+    "titleEn": "Find Numbers with Even Number of Digits",
+    "titleZh": "统计位数为偶数的数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-numbers-with-even-number-of-digits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-occurrences-of-an-element-in-an-array",
+    "frontendDisplayId": "3159",
+    "titleEn": "Find Occurrences of an Element in an Array",
+    "titleZh": "查询数组中元素的出现位置",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-occurrences-of-an-element-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-043",
+    "claimedAt": "2026-07-10T03:01:38.357521+00:00",
+    "completedAt": null
+  }
+]

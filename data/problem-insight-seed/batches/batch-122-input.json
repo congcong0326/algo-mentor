@@ -1,0 +1,736 @@
+[
+  {
+    "slug": "two-furthest-houses-with-different-colors",
+    "frontendDisplayId": "2078",
+    "titleEn": "Two Furthest Houses With Different Colors",
+    "titleZh": "两栋颜色不同且距离最远的房子",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/two-furthest-houses-with-different-colors/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "two-letter-card-game",
+    "frontendDisplayId": "3664",
+    "titleEn": "Two-Letter Card Game",
+    "titleZh": "两个字母卡牌游戏",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Enumeration",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "枚举",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/two-letter-card-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "two-out-of-three",
+    "frontendDisplayId": "2032",
+    "titleEn": "Two Out of Three",
+    "titleZh": "至少在两个数组中出现的值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/two-out-of-three/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "two-sum",
+    "frontendDisplayId": "1",
+    "titleEn": "Two Sum",
+    "titleZh": "两数之和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/two-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "two-sum-ii-input-array-is-sorted",
+    "frontendDisplayId": "167",
+    "titleEn": "Two Sum II - Input Array Is Sorted",
+    "titleZh": "两数之和 II - 输入有序数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "two-sum-iv-input-is-a-bst",
+    "frontendDisplayId": "653",
+    "titleEn": "Two Sum IV - Input is a BST",
+    "titleZh": "两数之和 IV - 输入二叉搜索树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Hash Table",
+      "Tree",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "哈希表",
+      "树",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/two-sum-iv-input-is-a-bst/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "type-of-triangle",
+    "frontendDisplayId": "3024",
+    "titleEn": "Type of Triangle",
+    "titleZh": "三角形类型",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/type-of-triangle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "uOAnQW",
+    "frontendDisplayId": "LCP 40",
+    "titleEn": null,
+    "titleZh": "心算挑战",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/uOAnQW/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "uUsW3B",
+    "frontendDisplayId": "LCR 080",
+    "titleEn": null,
+    "titleZh": "组合",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/uUsW3B/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ugly-number",
+    "frontendDisplayId": "263",
+    "titleEn": "Ugly Number",
+    "titleZh": "丑数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/ugly-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ugly-number-ii",
+    "frontendDisplayId": "264",
+    "titleEn": "Ugly Number II",
+    "titleZh": "丑数 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "哈希表",
+      "堆（优先队列）",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/ugly-number-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ugly-number-iii",
+    "frontendDisplayId": "1201",
+    "titleEn": "Ugly Number III",
+    "titleZh": "丑数 III",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Combinatorics",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "组合数学",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/ugly-number-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "uncommon-words-from-two-sentences",
+    "frontendDisplayId": "884",
+    "titleEn": "Uncommon Words from Two Sentences",
+    "titleZh": "两句话中的不常见单词",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/uncommon-words-from-two-sentences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "uncrossed-lines",
+    "frontendDisplayId": "1035",
+    "titleEn": "Uncrossed Lines",
+    "titleZh": "不相交的线",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/uncrossed-lines/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "unique-3-digit-even-numbers",
+    "frontendDisplayId": "3483",
+    "titleEn": "Unique 3-Digit Even Numbers",
+    "titleZh": "不同三位偶数的数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Hash Table",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "哈希表",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/unique-3-digit-even-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "unique-binary-search-trees",
+    "frontendDisplayId": "96",
+    "titleEn": "Unique Binary Search Trees",
+    "titleZh": "不同的二叉搜索树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Dynamic Programming",
+      "Math",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "动态规划",
+      "数学",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/unique-binary-search-trees/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "unique-binary-search-trees-ii",
+    "frontendDisplayId": "95",
+    "titleEn": "Unique Binary Search Trees II",
+    "titleZh": "不同的二叉搜索树 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Binary Search Tree",
+      "Binary Tree",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "二叉搜索树",
+      "二叉树",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/unique-binary-search-trees-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "unique-email-addresses",
+    "frontendDisplayId": "929",
+    "titleEn": "Unique Email Addresses",
+    "titleZh": "独特的电子邮件地址",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/unique-email-addresses/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "unique-length-3-palindromic-subsequences",
+    "frontendDisplayId": "1930",
+    "titleEn": "Unique Length-3 Palindromic Subsequences",
+    "titleZh": "长度为 3 的不同回文子序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Hash Table",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "哈希表",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/unique-length-3-palindromic-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "unique-morse-code-words",
+    "frontendDisplayId": "804",
+    "titleEn": "Unique Morse Code Words",
+    "titleZh": "唯一摩尔斯密码词",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/unique-morse-code-words/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "unique-number-of-occurrences",
+    "frontendDisplayId": "1207",
+    "titleEn": "Unique Number of Occurrences",
+    "titleZh": "独一无二的出现次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/unique-number-of-occurrences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "unique-paths",
+    "frontendDisplayId": "62",
+    "titleEn": "Unique Paths",
+    "titleZh": "不同路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/unique-paths/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "unique-paths-ii",
+    "frontendDisplayId": "63",
+    "titleEn": "Unique Paths II",
+    "titleZh": "不同路径 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/unique-paths-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "unique-paths-iii",
+    "frontendDisplayId": "980",
+    "titleEn": "Unique Paths III",
+    "titleZh": "不同路径 III",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/unique-paths-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "unique-substrings-in-wraparound-string",
+    "frontendDisplayId": "467",
+    "titleEn": "Unique Substrings in Wraparound String",
+    "titleZh": "环绕字符串中唯一的子字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/unique-substrings-in-wraparound-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "unit-conversion-i",
+    "frontendDisplayId": "3528",
+    "titleEn": "Unit Conversion I",
+    "titleZh": "单位转换 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/unit-conversion-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "univalued-binary-tree",
+    "frontendDisplayId": "965",
+    "titleEn": "Univalued Binary Tree",
+    "titleZh": "单值二叉树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/univalued-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ur2n8P",
+    "frontendDisplayId": "LCR 115",
+    "titleEn": null,
+    "titleZh": "序列重建",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Graph",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "拓扑排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/ur2n8P/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "user-activity-for-the-past-30-days-i",
+    "frontendDisplayId": "1141",
+    "titleEn": "User Activity for the Past 30 Days I",
+    "titleZh": "查询近30天活跃用户数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/user-activity-for-the-past-30-days-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "using-a-robot-to-print-the-lexicographically-smallest-string",
+    "frontendDisplayId": "2434",
+    "titleEn": "Using a Robot to Print the Lexicographically Smallest String",
+    "titleZh": "使用机器人打印字典序最小的字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Hash Table",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "哈希表",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/using-a-robot-to-print-the-lexicographically-smallest-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-122",
+    "claimedAt": "2026-07-10T08:12:38.330795+00:00",
+    "completedAt": null
+  }
+]

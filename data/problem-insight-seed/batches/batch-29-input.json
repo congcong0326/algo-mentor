@@ -1,0 +1,726 @@
+[
+  {
+    "slug": "destroy-sequential-targets",
+    "frontendDisplayId": "2453",
+    "titleEn": "Destroy Sequential Targets",
+    "titleZh": "摧毁一系列目标",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/destroy-sequential-targets/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "destroying-asteroids",
+    "frontendDisplayId": "2126",
+    "titleEn": "Destroying Asteroids",
+    "titleZh": "摧毁小行星",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/destroying-asteroids/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "detect-capital",
+    "frontendDisplayId": "520",
+    "titleEn": "Detect Capital",
+    "titleZh": "检测大写字母",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/detect-capital/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "detect-cycles-in-2d-grid",
+    "frontendDisplayId": "1559",
+    "titleEn": "Detect Cycles in 2D Grid",
+    "titleZh": "二维网格图中探测环",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/detect-cycles-in-2d-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "detect-pattern-of-length-m-repeated-k-or-more-times",
+    "frontendDisplayId": "1566",
+    "titleEn": "Detect Pattern of Length M Repeated K or More Times",
+    "titleZh": "重复至少 K 次且长度为 M 的模式",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/detect-pattern-of-length-m-repeated-k-or-more-times/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "detect-squares",
+    "frontendDisplayId": "2013",
+    "titleEn": "Detect Squares",
+    "titleZh": "检测正方形",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Data Stream",
+      "Design",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "数据流",
+      "设计",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/detect-squares/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "determine-color-of-a-chessboard-square",
+    "frontendDisplayId": "1812",
+    "titleEn": "Determine Color of a Chessboard Square",
+    "titleZh": "判断国际象棋棋盘中一个格子的颜色",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/determine-color-of-a-chessboard-square/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "determine-if-a-cell-is-reachable-at-a-given-time",
+    "frontendDisplayId": "2849",
+    "titleEn": "Determine if a Cell Is Reachable at a Given Time",
+    "titleZh": "判断能否在给定时间到达单元格",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/determine-if-a-cell-is-reachable-at-a-given-time/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "determine-if-string-halves-are-alike",
+    "frontendDisplayId": "1704",
+    "titleEn": "Determine if String Halves Are Alike",
+    "titleZh": "判断字符串的两半是否相似",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/determine-if-string-halves-are-alike/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "determine-if-two-events-have-conflict",
+    "frontendDisplayId": "2446",
+    "titleEn": "Determine if Two Events Have Conflict",
+    "titleZh": "判断两个事件是否存在冲突",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/determine-if-two-events-have-conflict/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "determine-if-two-strings-are-close",
+    "frontendDisplayId": "1657",
+    "titleEn": "Determine if Two Strings Are Close",
+    "titleZh": "确定两个字符串是否接近",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/determine-if-two-strings-are-close/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "determine-the-minimum-sum-of-a-k-avoiding-array",
+    "frontendDisplayId": "2829",
+    "titleEn": "Determine the Minimum Sum of a k-avoiding Array",
+    "titleZh": "k-avoiding 数组的最小总和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/determine-the-minimum-sum-of-a-k-avoiding-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "determine-the-winner-of-a-bowling-game",
+    "frontendDisplayId": "2660",
+    "titleEn": "Determine the Winner of a Bowling Game",
+    "titleZh": "保龄球游戏的获胜者",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/determine-the-winner-of-a-bowling-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "determine-whether-matrix-can-be-obtained-by-rotation",
+    "frontendDisplayId": "1886",
+    "titleEn": "Determine Whether Matrix Can Be Obtained By Rotation",
+    "titleZh": "判断矩阵经轮转后是否一致",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/determine-whether-matrix-can-be-obtained-by-rotation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "detonate-the-maximum-bombs",
+    "frontendDisplayId": "2101",
+    "titleEn": "Detonate the Maximum Bombs",
+    "titleZh": "引爆最多的炸弹",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Geometry",
+      "Graph Theory",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "几何",
+      "图",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/detonate-the-maximum-bombs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "di-string-match",
+    "frontendDisplayId": "942",
+    "titleEn": "DI String Match",
+    "titleZh": "增减字符串匹配",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/di-string-match/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof",
+    "frontendDisplayId": "LCR 169",
+    "titleEn": null,
+    "titleZh": "招式拆解 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "Queue",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "队列",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/di-yi-ge-zhi-chu-xian-yi-ci-de-zi-fu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "diagonal-traverse",
+    "frontendDisplayId": "498",
+    "titleEn": "Diagonal Traverse",
+    "titleZh": "对角线遍历",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/diagonal-traverse/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "diagonal-traverse-ii",
+    "frontendDisplayId": "1424",
+    "titleEn": "Diagonal Traverse II",
+    "titleZh": "对角线遍历 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/diagonal-traverse-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "diameter-of-binary-tree",
+    "frontendDisplayId": "543",
+    "titleEn": "Diameter of Binary Tree",
+    "titleZh": "二叉树的直径",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/diameter-of-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof",
+    "frontendDisplayId": "LCR 139",
+    "titleEn": null,
+    "titleZh": "训练计划 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "dice-roll-simulation",
+    "frontendDisplayId": "1223",
+    "titleEn": "Dice Roll Simulation",
+    "titleZh": "掷骰子模拟",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/dice-roll-simulation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "difference-between-element-sum-and-digit-sum-of-an-array",
+    "frontendDisplayId": "2535",
+    "titleEn": "Difference Between Element Sum and Digit Sum of an Array",
+    "titleZh": "数组元素和与数字和的绝对差",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/difference-between-element-sum-and-digit-sum-of-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "difference-between-maximum-and-minimum-price-sum",
+    "frontendDisplayId": "2538",
+    "titleEn": "Difference Between Maximum and Minimum Price Sum",
+    "titleZh": "最大价值和与最小价值和的差值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/difference-between-maximum-and-minimum-price-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "difference-between-ones-and-zeros-in-row-and-column",
+    "frontendDisplayId": "2482",
+    "titleEn": "Difference Between Ones and Zeros in Row and Column",
+    "titleZh": "行和列中一和零的差值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/difference-between-ones-and-zeros-in-row-and-column/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "difference-of-number-of-distinct-values-on-diagonals",
+    "frontendDisplayId": "2711",
+    "titleEn": "Difference of Number of Distinct Values on Diagonals",
+    "titleZh": "对角线上不同值的数量差",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/difference-of-number-of-distinct-values-on-diagonals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "different-ways-to-add-parentheses",
+    "frontendDisplayId": "241",
+    "titleEn": "Different Ways to Add Parentheses",
+    "titleZh": "为运算表达式设计优先级",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "Memoization",
+      "Recursion",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "记忆化",
+      "递归",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/different-ways-to-add-parentheses/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "digit-frequency-score",
+    "frontendDisplayId": "3945",
+    "titleEn": "Digit Frequency Score",
+    "titleZh": "计算数字频率得分",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/digit-frequency-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "digit-operations-to-make-two-integers-equal",
+    "frontendDisplayId": "3377",
+    "titleEn": "Digit Operations to Make Two Integers Equal",
+    "titleZh": "使两个整数相等的数位操作",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Math",
+      "Number Theory",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "图",
+      "堆（优先队列）",
+      "数学",
+      "数论",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/digit-operations-to-make-two-integers-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "dinner-plate-stacks",
+    "frontendDisplayId": "1172",
+    "titleEn": "Dinner Plate Stacks",
+    "titleZh": "餐盘栈",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Design",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "哈希表",
+      "堆（优先队列）",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/dinner-plate-stacks/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-29",
+    "claimedAt": "2026-07-10T02:07:52.656948+00:00",
+    "completedAt": null
+  }
+]

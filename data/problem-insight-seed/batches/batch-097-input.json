@@ -1,0 +1,742 @@
+[
+  {
+    "slug": "partition-array-for-maximum-sum",
+    "frontendDisplayId": "1043",
+    "titleEn": "Partition Array for Maximum Sum",
+    "titleZh": "分隔数组以得到最大和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-array-for-maximum-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-array-for-maximum-xor-and-and",
+    "frontendDisplayId": "3630",
+    "titleEn": "Partition Array for Maximum XOR and AND",
+    "titleZh": "划分数组得到最大异或运算和与运算之和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Enumeration",
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "枚举",
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-array-for-maximum-xor-and-and/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-array-into-disjoint-intervals",
+    "frontendDisplayId": "915",
+    "titleEn": "Partition Array into Disjoint Intervals",
+    "titleZh": "分割数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-array-into-disjoint-intervals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-array-into-k-distinct-groups",
+    "frontendDisplayId": "3659",
+    "titleEn": "Partition Array Into K-Distinct Groups",
+    "titleZh": "数组元素分组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-array-into-k-distinct-groups/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-array-into-three-parts-with-equal-sum",
+    "frontendDisplayId": "1013",
+    "titleEn": "Partition Array Into Three Parts With Equal Sum",
+    "titleZh": "将数组分成和相等的三个部分",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-array-into-three-parts-with-equal-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-array-into-two-arrays-to-minimize-sum-difference",
+    "frontendDisplayId": "2035",
+    "titleEn": "Partition Array Into Two Arrays to Minimize Sum Difference",
+    "titleZh": "将数组分成两个数组并最小化数组和的差",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Ordered Set",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "有序集合",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-array-into-two-arrays-to-minimize-sum-difference/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-array-into-two-equal-product-subsets",
+    "frontendDisplayId": "3566",
+    "titleEn": "Partition Array into Two Equal Product Subsets",
+    "titleZh": "等积子集的划分方案",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Enumeration",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "枚举",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-array-into-two-equal-product-subsets/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-array-such-that-maximum-difference-is-k",
+    "frontendDisplayId": "2294",
+    "titleEn": "Partition Array Such That Maximum Difference Is K",
+    "titleZh": "划分数组使最大差为 K",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-array-such-that-maximum-difference-is-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-array-to-minimize-xor",
+    "frontendDisplayId": "3599",
+    "titleEn": "Partition Array to Minimize XOR",
+    "titleZh": "划分数组得到最小 XOR",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Dynamic Programming",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "动态规划",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-array-to-minimize-xor/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-equal-subset-sum",
+    "frontendDisplayId": "416",
+    "titleEn": "Partition Equal Subset Sum",
+    "titleZh": "分割等和子集",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-equal-subset-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-labels",
+    "frontendDisplayId": "763",
+    "titleEn": "Partition Labels",
+    "titleZh": "划分字母区间",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Hash Table",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "哈希表",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-labels/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-list",
+    "frontendDisplayId": "86",
+    "titleEn": "Partition List",
+    "titleZh": "分隔链表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-list-lcci",
+    "frontendDisplayId": "面试题 02.04",
+    "titleEn": null,
+    "titleZh": "分割链表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/partition-list-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-string",
+    "frontendDisplayId": "3597",
+    "titleEn": "Partition String",
+    "titleZh": "分割字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Simulation",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "模拟",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-string-into-minimum-beautiful-substrings",
+    "frontendDisplayId": "2767",
+    "titleEn": "Partition String Into Minimum Beautiful Substrings",
+    "titleZh": "将字符串分割为最少的美丽子字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Dynamic Programming",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "动态规划",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-string-into-minimum-beautiful-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-string-into-substrings-with-values-at-most-k",
+    "frontendDisplayId": "2522",
+    "titleEn": "Partition String Into Substrings With Values at Most K",
+    "titleZh": "将字符串分割成值不超过 K 的子字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-string-into-substrings-with-values-at-most-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partition-to-k-equal-sum-subsets",
+    "frontendDisplayId": "698",
+    "titleEn": "Partition to K Equal Sum Subsets",
+    "titleZh": "划分为k个相等的子集",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "记忆化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partition-to-k-equal-sum-subsets/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "partitioning-into-minimum-number-of-deci-binary-numbers",
+    "frontendDisplayId": "1689",
+    "titleEn": "Partitioning Into Minimum Number Of Deci-Binary Numbers",
+    "titleZh": "十-二进制数的最少数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/partitioning-into-minimum-number-of-deci-binary-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "pascals-triangle",
+    "frontendDisplayId": "118",
+    "titleEn": "Pascal's Triangle",
+    "titleZh": "杨辉三角",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/pascals-triangle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "pascals-triangle-ii",
+    "frontendDisplayId": "119",
+    "titleEn": "Pascal's Triangle II",
+    "titleZh": "杨辉三角 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/pascals-triangle-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "pass-the-pillow",
+    "frontendDisplayId": "2582",
+    "titleEn": "Pass the Pillow",
+    "titleZh": "递枕头",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/pass-the-pillow/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "password-strength",
+    "frontendDisplayId": "3941",
+    "titleEn": "Password Strength",
+    "titleZh": "密码强度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/password-strength/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "patching-array",
+    "frontendDisplayId": "330",
+    "titleEn": "Patching Array",
+    "titleZh": "按要求补齐数组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/patching-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "path-crossing",
+    "frontendDisplayId": "1496",
+    "titleEn": "Path Crossing",
+    "titleZh": "判断路径是否相交",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/path-crossing/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "path-existence-queries-in-a-graph-i",
+    "frontendDisplayId": "3532",
+    "titleEn": "Path Existence Queries in a Graph I",
+    "titleZh": "针对图的路径存在性查询 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Graph Theory",
+      "Hash Table",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "图",
+      "哈希表",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/path-existence-queries-in-a-graph-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "path-existence-queries-in-a-graph-ii",
+    "frontendDisplayId": "3534",
+    "titleEn": "Path Existence Queries in a Graph II",
+    "titleZh": "针对图的路径存在性查询 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Bit Manipulation",
+      "Dynamic Programming",
+      "Graph Theory",
+      "Greedy",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "位运算",
+      "动态规划",
+      "图",
+      "贪心",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/path-existence-queries-in-a-graph-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "path-in-zigzag-labelled-binary-tree",
+    "frontendDisplayId": "1104",
+    "titleEn": "Path In Zigzag Labelled Binary Tree",
+    "titleZh": "二叉树寻路",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Math",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "数学",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/path-in-zigzag-labelled-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "path-sum",
+    "frontendDisplayId": "112",
+    "titleEn": "Path Sum",
+    "titleZh": "路径总和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/path-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "path-sum-ii",
+    "frontendDisplayId": "113",
+    "titleEn": "Path Sum II",
+    "titleZh": "路径总和 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/path-sum-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "path-sum-iii",
+    "frontendDisplayId": "437",
+    "titleEn": "Path Sum III",
+    "titleZh": "路径总和 III",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/path-sum-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-097",
+    "claimedAt": "2026-07-10T07:00:53.762813+00:00",
+    "completedAt": null
+  }
+]

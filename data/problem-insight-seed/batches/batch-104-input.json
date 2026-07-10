@@ -1,0 +1,706 @@
+[
+  {
+    "slug": "remove-k-digits",
+    "frontendDisplayId": "402",
+    "titleEn": "Remove K Digits",
+    "titleZh": "移掉 K 位数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Monotonic Stack",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "单调栈",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/remove-k-digits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "remove-letter-to-equalize-frequency",
+    "frontendDisplayId": "2423",
+    "titleEn": "Remove Letter To Equalize Frequency",
+    "titleZh": "删除字符使频率相同",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/remove-letter-to-equalize-frequency/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "remove-linked-list-elements",
+    "frontendDisplayId": "203",
+    "titleEn": "Remove Linked List Elements",
+    "titleZh": "移除链表元素",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Linked List",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/remove-linked-list-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "remove-max-number-of-edges-to-keep-graph-fully-traversable",
+    "frontendDisplayId": "1579",
+    "titleEn": "Remove Max Number of Edges to Keep Graph Fully Traversable",
+    "titleZh": "保证图可完全遍历",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Graph Theory",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "图",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/remove-max-number-of-edges-to-keep-graph-fully-traversable/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "remove-methods-from-project",
+    "frontendDisplayId": "3310",
+    "titleEn": "Remove Methods From Project",
+    "titleZh": "移除可疑的方法",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/remove-methods-from-project/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "remove-nodes-from-linked-list",
+    "frontendDisplayId": "2487",
+    "titleEn": "Remove Nodes From Linked List",
+    "titleZh": "从链表中移除节点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Monotonic Stack",
+      "Recursion",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "单调栈",
+      "递归",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/remove-nodes-from-linked-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "remove-nth-node-from-end-of-list",
+    "frontendDisplayId": "19",
+    "titleEn": "Remove Nth Node From End of List",
+    "titleZh": "删除链表的倒数第 N 个结点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "remove-one-element-to-make-the-array-strictly-increasing",
+    "frontendDisplayId": "1909",
+    "titleEn": "Remove One Element to Make the Array Strictly Increasing",
+    "titleZh": "删除一个元素使数组严格递增",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/remove-one-element-to-make-the-array-strictly-increasing/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "remove-outermost-parentheses",
+    "frontendDisplayId": "1021",
+    "titleEn": "Remove Outermost Parentheses",
+    "titleZh": "删除最外层的括号",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/remove-outermost-parentheses/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "remove-palindromic-subsequences",
+    "frontendDisplayId": "1332",
+    "titleEn": "Remove Palindromic Subsequences",
+    "titleZh": "删除回文子序列",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/remove-palindromic-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "remove-stones-to-minimize-the-total",
+    "frontendDisplayId": "1962",
+    "titleEn": "Remove Stones to Minimize the Total",
+    "titleZh": "移除石子使总数最小",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/remove-stones-to-minimize-the-total/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "remove-sub-folders-from-the-filesystem",
+    "frontendDisplayId": "1233",
+    "titleEn": "Remove Sub-Folders from the Filesystem",
+    "titleZh": "删除子文件夹",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/remove-sub-folders-from-the-filesystem/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "remove-trailing-zeros-from-a-string",
+    "frontendDisplayId": "2710",
+    "titleEn": "Remove Trailing Zeros From a String",
+    "titleZh": "移除字符串中的尾随零",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/remove-trailing-zeros-from-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "remove-zero-sum-consecutive-nodes-from-linked-list",
+    "frontendDisplayId": "1171",
+    "titleEn": "Remove Zero Sum Consecutive Nodes from Linked List",
+    "titleZh": "从链表中删去总和值为零的连续节点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/remove-zero-sum-consecutive-nodes-from-linked-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "remove-zeros-in-decimal-representation",
+    "frontendDisplayId": "3726",
+    "titleEn": "Remove Zeros in Decimal Representation",
+    "titleZh": "移除十进制表示中的所有零",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/remove-zeros-in-decimal-representation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "removing-minimum-and-maximum-from-array",
+    "frontendDisplayId": "2091",
+    "titleEn": "Removing Minimum and Maximum From Array",
+    "titleZh": "从数组中移除最大值和最小值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/removing-minimum-and-maximum-from-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "removing-minimum-number-of-magic-beans",
+    "frontendDisplayId": "2171",
+    "titleEn": "Removing Minimum Number of Magic Beans",
+    "titleZh": "拿出最少数目的魔法豆",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Greedy",
+      "Prefix Sum",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "贪心",
+      "前缀和",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/removing-minimum-number-of-magic-beans/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "removing-stars-from-a-string",
+    "frontendDisplayId": "2390",
+    "titleEn": "Removing Stars From a String",
+    "titleZh": "从字符串中移除星号",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Simulation",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/removing-stars-from-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rename-columns",
+    "frontendDisplayId": "2885",
+    "titleEn": "Rename Columns",
+    "titleZh": "重命名列",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rename-columns/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reorder-data-in-log-files",
+    "frontendDisplayId": "937",
+    "titleEn": "Reorder Data in Log Files",
+    "titleZh": "重新排列日志文件",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reorder-data-in-log-files/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reorder-list",
+    "frontendDisplayId": "143",
+    "titleEn": "Reorder List",
+    "titleZh": "重排链表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Recursion",
+      "Stack",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "递归",
+      "栈",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reorder-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reorder-routes-to-make-all-paths-lead-to-the-city-zero",
+    "frontendDisplayId": "1466",
+    "titleEn": "Reorder Routes to Make All Paths Lead to the City Zero",
+    "titleZh": "重新规划路线",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reorder-routes-to-make-all-paths-lead-to-the-city-zero/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reordered-power-of-2",
+    "frontendDisplayId": "869",
+    "titleEn": "Reordered Power of 2",
+    "titleZh": "重新排序得到 2 的幂",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Enumeration",
+      "Hash Table",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "枚举",
+      "哈希表",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reordered-power-of-2/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reorganize-string",
+    "frontendDisplayId": "767",
+    "titleEn": "Reorganize String",
+    "titleZh": "重构字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Greedy",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "贪心",
+      "哈希表",
+      "堆（优先队列）",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reorganize-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "repeated-dna-sequences",
+    "frontendDisplayId": "187",
+    "titleEn": "Repeated DNA Sequences",
+    "titleZh": "重复的DNA序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Hash Function",
+      "Hash Table",
+      "Rolling Hash",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "哈希函数",
+      "哈希表",
+      "滚动哈希",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/repeated-dna-sequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "repeated-string-match",
+    "frontendDisplayId": "686",
+    "titleEn": "Repeated String Match",
+    "titleZh": "重复叠加字符串匹配",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "字符串匹配"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/repeated-string-match/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "repeated-substring-pattern",
+    "frontendDisplayId": "459",
+    "titleEn": "Repeated Substring Pattern",
+    "titleZh": "重复的子字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "字符串匹配"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/repeated-substring-pattern/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "replace-all-digits-with-characters",
+    "frontendDisplayId": "1844",
+    "titleEn": "Replace All Digits with Characters",
+    "titleZh": "将所有数字用字符替换",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/replace-all-digits-with-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "replace-all-s-to-avoid-consecutive-repeating-characters",
+    "frontendDisplayId": "1576",
+    "titleEn": "Replace All ?'s to Avoid Consecutive Repeating Characters",
+    "titleZh": "替换所有的问号",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/replace-all-s-to-avoid-consecutive-repeating-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "replace-elements-in-an-array",
+    "frontendDisplayId": "2295",
+    "titleEn": "Replace Elements in an Array",
+    "titleZh": "替换数组中的元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/replace-elements-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-104",
+    "claimedAt": "2026-07-10T07:10:27.699417+00:00",
+    "completedAt": null
+  }
+]

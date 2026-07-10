@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "path-with-maximum-gold",
+    "reasonEN": "A matrix backtracking problem that explores simple paths while marking and restoring visited cells. It builds the core DFS discipline of local choice, state rollback, and branch-level maximum aggregation.",
+    "reasonZH": "这是一道矩阵回溯题，需要探索简单路径并标记、恢复访问状态。它训练 DFS 的核心纪律：局部选择、状态回溯和分支最大值聚合。"
+  },
+  {
+    "slug": "path-with-maximum-probability",
+    "reasonEN": "This graph shortest-path variant maximizes multiplicative probability with a max-priority queue. It teaches how Dijkstra's greedy expansion generalizes when path quality is combined by multiplication rather than addition.",
+    "reasonZH": "该图最短路变体通过大根堆最大化路径概率乘积。它训练理解 Dijkstra 的贪心扩展如何从加法代价推广到乘法路径质量。"
+  },
+  {
+    "slug": "path-with-minimum-effort",
+    "reasonEN": "A minimax path problem whose cost is the largest edge difference on a route, solvable by Dijkstra, binary search plus reachability, or union-find. It is valuable for recognizing bottleneck objectives that differ from ordinary shortest paths.",
+    "reasonZH": "这是一道极小化路径最大边权差的瓶颈路径题，可用 Dijkstra、二分加连通性或并查集解决。它训练识别区别于普通最短路的瓶颈型目标。"
+  },
+  {
+    "slug": "paths-in-matrix-whose-sum-is-divisible-by-k",
+    "reasonEN": "This hard grid DP augments each cell state with the path-sum remainder modulo k. It develops the ability to preserve exactly the information a divisibility constraint needs while merging top and left transitions.",
+    "reasonZH": "该困难网格 DP 为每个单元格状态额外维护路径和对 k 的余数。它训练仅保留整除约束所需的信息，并合并来自上方和左方的转移。"
+  },
+  {
+    "slug": "paths-with-sum-lcci",
+    "reasonEN": "A binary-tree path-counting problem that examines downward paths ending at each DFS position. It strengthens recursive path-state management and the distinction between a path starting at the root and one starting at any node.",
+    "reasonZH": "这是一道二叉树路径计数题，在 DFS 的每个位置检查以该节点结尾的向下路径。它训练递归路径状态管理，并区分从根出发与从任意节点出发的路径。"
+  },
+  {
+    "slug": "patients-with-a-condition",
+    "reasonEN": "A focused SQL filtering exercise that matches a diagnosis token at the required word boundary. It teaches careful use of pattern predicates so partial-string matches do not produce incorrect records.",
+    "reasonZH": "该 SQL 过滤题要求在正确的单词边界匹配诊断标记。它训练谨慎使用模式条件，避免部分字符串匹配带来错误记录。"
+  },
+  {
+    "slug": "pattern-matching-lcci",
+    "reasonEN": "A string enumeration problem that tries feasible lengths for the two pattern symbols and validates a one-to-one mapping. It develops disciplined case analysis around empty mappings, repeated symbols, and mapping distinctness.",
+    "reasonZH": "这是一道字符串枚举题，尝试两个模式符号的可行长度并验证一一映射。它训练严谨处理空映射、重复符号和映射互异性等边界情况。"
+  },
+  {
+    "slug": "peak-index-in-a-mountain-array",
+    "reasonEN": "A binary-search template problem that locates the turning point by comparing adjacent slopes. It reinforces using a monotone predicate instead of scanning, which is the central skill behind logarithmic array searches.",
+    "reasonZH": "这是二分查找模板题，通过比较相邻斜率定位转折点。它训练使用单调判定替代线性扫描，是掌握对数级数组搜索的核心能力。"
+  },
+  {
+    "slug": "peaks-and-valleys-lcci",
+    "reasonEN": "An array-rearrangement problem solved by sorting and interleaving or by local greedy swaps. It teaches how enforcing a local alternating relation can construct a globally valid ordering without exhaustive search.",
+    "reasonZH": "该数组重排题可通过排序交错放置或局部贪心交换解决。它训练如何用局部交替关系构造全局合法顺序，而无需穷举。"
+  },
+  {
+    "slug": "peaks-in-array",
+    "reasonEN": "This hard dynamic-query problem maintains peak indicators in a Fenwick or segment tree, updating only the changed position and its neighbors. It is excellent practice for identifying the small local impact region behind global range queries.",
+    "reasonZH": "这道困难动态查询题用树状数组或线段树维护峰值标记，只更新修改位置及其邻居。它训练识别全局区间查询背后很小的局部影响范围。"
+  },
+  {
+    "slug": "peeking-iterator",
+    "reasonEN": "A stateful iterator-design problem that caches the next element so peek does not advance consumption. It reinforces interface invariants, especially keeping next, peek, and hasNext behavior mutually consistent.",
+    "reasonZH": "这是有状态的迭代器设计题，通过缓存下一个元素让 peek 不消耗数据。它训练接口不变量，尤其是保持 next、peek 与 hasNext 行为一致。"
+  },
+  {
+    "slug": "people-whose-list-of-favorite-companies-is-not-a-subset-of-another-list",
+    "reasonEN": "A set-comparison problem that converts each favorite-company list into a hash set and tests subset relations pairwise. It teaches choosing representations that make membership checks cheap and pruning self-comparisons correctly.",
+    "reasonZH": "该集合比较题将每份收藏清单转为哈希集合，再两两检查子集关系。它训练选择低成本成员查询的表示方式，并正确排除自身比较。"
+  },
+  {
+    "slug": "percentage-of-letter-in-string",
+    "reasonEN": "A basic string-frequency calculation that combines one pass with integer percentage arithmetic. It provides useful practice for exact counting and understanding truncation behavior in integer division.",
+    "reasonZH": "这是一道基础字符串频次计算题，通过一次扫描和整数百分比运算完成。它适合练习精确计数，并理解整数除法的截断行为。"
+  },
+  {
+    "slug": "percentage-of-users-attended-a-contest",
+    "reasonEN": "A database aggregation problem that groups registrations by contest and divides by the global user count. It teaches combining grouped metrics with a scalar total and applying numeric rounding at the correct stage.",
+    "reasonZH": "该数据库聚合题按赛事分组注册记录，并除以全局用户总数。它训练组合分组指标与标量总量，并在正确阶段进行数值舍入。"
+  },
+  {
+    "slug": "perfect-number",
+    "reasonEN": "A number-theory check that enumerates divisors in paired square-root ranges and sums proper factors. It reinforces divisor pairing, perfect-square boundary handling, and avoiding unnecessary linear scans.",
+    "reasonZH": "这是一道数论判定题，在平方根范围内成对枚举因子并求真因子和。它训练因子配对、完全平方数边界处理和避免无谓线性扫描。"
+  },
+  {
+    "slug": "perfect-rectangle",
+    "reasonEN": "A hard geometry invariant problem that combines total-area equality with corner parity tracking. It is a landmark exercise in proving exact coverage by ruling out both gaps and overlaps through complementary invariants.",
+    "reasonZH": "该困难几何不变量题结合总面积相等与角点奇偶性追踪。它训练通过互补不变量同时排除空洞和重叠，从而证明精确覆盖。"
+  },
+  {
+    "slug": "perfect-squares",
+    "reasonEN": "A classic unbounded-knapsack DP where each square is a reusable transition, with BFS offering an equivalent shortest-layer view. It teaches recognizing when a minimization recurrence is a coin-change pattern in disguise.",
+    "reasonZH": "这是经典的完全背包 DP，每个平方数都可重复作为转移，BFS 也提供等价的最短层数视角。它训练识别隐藏在最小化递推中的零钱兑换模式。"
+  },
+  {
+    "slug": "permutation-difference-between-two-strings",
+    "reasonEN": "A direct position-mapping problem that records each character index in one permutation and accumulates absolute offsets in the other. It reinforces using an inverse mapping to turn repeated searches into constant-time lookups.",
+    "reasonZH": "该直接位置映射题记录一个排列中每个字符的下标，再累计另一个排列的绝对偏移。它训练使用逆映射把重复搜索化为常数时间查询。"
+  },
+  {
+    "slug": "permutation-i-lcci",
+    "reasonEN": "A foundational backtracking problem that builds a permutation by choosing each unused character once. It establishes the recursion template of path construction, used-state marking, and precise rollback.",
+    "reasonZH": "这是基础回溯题，通过每次选择一个未使用字符构造排列。它建立路径构造、使用状态标记和精确回溯的递归模板。"
+  },
+  {
+    "slug": "permutation-ii-lcci",
+    "reasonEN": "This duplicate-aware permutation problem sorts first and skips equivalent choices at the same recursion depth. It is essential practice for proving a backtracking deduplication rule rather than filtering repeated results afterward.",
+    "reasonZH": "该含重复元素的排列题先排序，再跳过同一递归层的等价选择。它训练证明回溯去重规则，而不是在生成结果后再过滤重复项。"
+  },
+  {
+    "slug": "permutation-in-string",
+    "reasonEN": "A fixed-length sliding-window problem that maintains character frequencies for a candidate permutation. It develops the key invariant that the window length and count difference together fully characterize an anagram match.",
+    "reasonZH": "这是一道定长滑动窗口题，维护候选排列的字符频次。它训练理解窗口长度和频次数差共同刻画异位词匹配的核心不变量。"
+  },
+  {
+    "slug": "permutation-sequence",
+    "reasonEN": "A factorial-number-system construction that skips whole lexicographic blocks to select each next digit. It teaches replacing exponential permutation generation with combinatorial indexing and careful zero-based rank conversion.",
+    "reasonZH": "该题使用阶乘进制跳过完整的字典序块来选择每一位。它训练用组合索引替代指数级全排列生成，并谨慎处理从一开始的排名到零基下标的转换。"
+  },
+  {
+    "slug": "permutations",
+    "reasonEN": "The canonical array backtracking problem, requiring every unused element to be selected exactly once per path. It is the baseline exercise for recursion-tree reasoning and output-size-aware complexity analysis.",
+    "reasonZH": "这是标准数组回溯题，每条路径都要恰好选择一次每个未使用元素。它是训练递归树推理和考虑输出规模复杂度的基准题。"
+  },
+  {
+    "slug": "permutations-ii",
+    "reasonEN": "A sorted backtracking problem where duplicate branches are pruned before they enter the recursion tree. It strengthens the widely reusable same-level skip condition for generating unique combinatorial results.",
+    "reasonZH": "该排序回溯题在进入递归树前剪去重复分支。它强化生成唯一组合结果时可广泛复用的“同层跳过”条件。"
+  },
+  {
+    "slug": "permutations-iv",
+    "reasonEN": "This hard combinatorial construction uses counts of remaining parity classes to skip invalid lexicographic blocks. It develops the ability to rank and unrank constrained permutations instead of enumerating them explicitly.",
+    "reasonZH": "这道困难组合构造题根据剩余奇偶类别数量跳过无效的字典序块。它训练对受约束排列进行排名与反排名，而不是显式枚举。"
+  },
+  {
+    "slug": "pile-box-lcci",
+    "reasonEN": "A three-dimensional stacking DP that sorts boxes and extends only from strictly smaller predecessors. It is valuable practice for recognizing a partial-order longest-chain problem and enforcing all dimension constraints together.",
+    "reasonZH": "该三维堆叠 DP 先排序，只能从三边均严格更小的前驱转移。它训练识别偏序下的最长链问题，并同时落实所有维度约束。"
+  },
+  {
+    "slug": "ping-heng-er-cha-shu-lcof",
+    "reasonEN": "A binary-tree validation problem best solved by postorder DFS that returns height or an imbalance sentinel. It teaches how one bottom-up traversal can compute a summary and short-circuit invalid structure at once.",
+    "reasonZH": "这是一道二叉树校验题，适合用后序 DFS 返回高度或失衡哨兵值。它训练一次自底向上遍历同时计算摘要并提前终止非法结构。"
+  },
+  {
+    "slug": "pizza-with-3n-slices",
+    "reasonEN": "A hard circular selection DP that splits the ring into two linear cases and chooses nonadjacent slices with a fixed count. It is a core exercise in reducing circular dependencies and designing pick-or-skip recurrences.",
+    "reasonZH": "该困难环形选择 DP 将圆环拆成两个线性情况，并在固定数量下选择不相邻切片。它训练消除环形依赖，以及设计选取或跳过的递推。"
+  },
+  {
+    "slug": "plates-between-candles",
+    "reasonEN": "An offline range-query problem that combines a plate prefix sum with nearest-candle boundary arrays. It teaches decomposing a query into snapped endpoints plus an O(1) aggregate lookup.",
+    "reasonZH": "这是一道离线区间查询题，结合盘子前缀和与最近蜡烛边界数组。它训练将查询拆分为端点对齐和 O(1) 聚合查询。"
+  },
+  {
+    "slug": "plus-one",
+    "reasonEN": "A digit-array simulation centered on carry propagation from the least significant position. It reinforces processing carry chains correctly, including the all-nine overflow case that changes the output length.",
+    "reasonZH": "这是一道数字数组模拟题，核心是从最低位向前传播进位。它训练正确处理连续进位，包括全为九时结果长度变化的边界情况。"
+  }
+]

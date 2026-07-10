@@ -1,0 +1,716 @@
+[
+  {
+    "slug": "number-of-ways-to-split-array",
+    "frontendDisplayId": "2270",
+    "titleEn": "Number of Ways to Split Array",
+    "titleZh": "分割数组的方案数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-split-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-stay-in-the-same-place-after-some-steps",
+    "frontendDisplayId": "1269",
+    "titleEn": "Number of Ways to Stay in the Same Place After Some Steps",
+    "titleZh": "停在原地的方案数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-stay-in-the-same-place-after-some-steps/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-wear-different-hats-to-each-other",
+    "frontendDisplayId": "1434",
+    "titleEn": "Number of Ways to Wear Different Hats to Each Other",
+    "titleZh": "每个人戴不同帽子的方案数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-wear-different-hats-to-each-other/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-where-square-of-number-is-equal-to-product-of-two-numbers",
+    "frontendDisplayId": "1577",
+    "titleEn": "Number of Ways Where Square of Number Is Equal to Product of Two Numbers",
+    "titleZh": "数的平方等于两数乘积的方法数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Math",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "数学",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-where-square-of-number-is-equal-to-product-of-two-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-wonderful-substrings",
+    "frontendDisplayId": "1915",
+    "titleEn": "Number of Wonderful Substrings",
+    "titleZh": "最美子字符串的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Hash Table",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "哈希表",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-wonderful-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-zero-filled-subarrays",
+    "frontendDisplayId": "2348",
+    "titleEn": "Number of Zero-Filled Subarrays",
+    "titleZh": "全 0 子数组的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-zero-filled-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-zigzag-arrays-i",
+    "frontendDisplayId": "3699",
+    "titleEn": "Number of ZigZag Arrays I",
+    "titleZh": "锯齿形数组的总数 I",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "Dynamic Programming",
+      "Prefix Sum"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-zigzag-arrays-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-zigzag-arrays-ii",
+    "frontendDisplayId": "3700",
+    "titleEn": "Number of ZigZag Arrays II",
+    "titleZh": "锯齿形数组的总数 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "Dynamic Programming",
+      "Math"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-zigzag-arrays-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "numbers-at-most-n-given-digit-set",
+    "frontendDisplayId": "902",
+    "titleEn": "Numbers At Most N Given Digit Set",
+    "titleZh": "最大为 N 的数字组合",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/numbers-at-most-n-given-digit-set/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "numbers-with-repeated-digits",
+    "frontendDisplayId": "1012",
+    "titleEn": "Numbers With Repeated Digits",
+    "titleZh": "至少有 1 位重复的数字",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/numbers-with-repeated-digits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "numbers-with-same-consecutive-differences",
+    "frontendDisplayId": "967",
+    "titleEn": "Numbers With Same Consecutive Differences",
+    "titleZh": "连续差相同的数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Breadth-First Search"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "广度优先搜索"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/numbers-with-same-consecutive-differences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "o8SXZn",
+    "frontendDisplayId": "LCP 33",
+    "titleEn": null,
+    "titleZh": "蓄水",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/o8SXZn/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "oPs9Bm",
+    "frontendDisplayId": "LCP 47",
+    "titleEn": null,
+    "titleZh": "入场安检",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/oPs9Bm/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "occurrences-after-bigram",
+    "frontendDisplayId": "1078",
+    "titleEn": "Occurrences After Bigram",
+    "titleZh": "Bigram 分词",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/occurrences-after-bigram/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "odd-and-even-transactions",
+    "frontendDisplayId": "3220",
+    "titleEn": "Odd and Even Transactions",
+    "titleZh": "奇数和偶数交易",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/odd-and-even-transactions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "odd-even-jump",
+    "frontendDisplayId": "975",
+    "titleEn": "Odd Even Jump",
+    "titleZh": "奇偶跳",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Monotonic Stack",
+      "Ordered Set",
+      "Sorting",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "单调栈",
+      "有序集合",
+      "排序",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/odd-even-jump/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "odd-even-linked-list",
+    "frontendDisplayId": "328",
+    "titleEn": "Odd Even Linked List",
+    "titleZh": "奇偶链表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/odd-even-linked-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "odd-string-difference",
+    "frontendDisplayId": "2451",
+    "titleEn": "Odd String Difference",
+    "titleZh": "差值数组不同的字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/odd-string-difference/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "om3reC",
+    "frontendDisplayId": "LCR 108",
+    "titleEn": null,
+    "titleZh": "单词接龙",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/om3reC/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "omKAoA",
+    "frontendDisplayId": "LCR 094",
+    "titleEn": null,
+    "titleZh": "分割回文串 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/omKAoA/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "one-away-lcci",
+    "frontendDisplayId": "面试题 01.05",
+    "titleEn": null,
+    "titleZh": "一次编辑",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/one-away-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ones-and-zeroes",
+    "frontendDisplayId": "474",
+    "titleEn": "Ones and Zeroes",
+    "titleZh": "一和零",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/ones-and-zeroes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "online-election",
+    "frontendDisplayId": "911",
+    "titleEn": "Online Election",
+    "titleZh": "在线选举",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Design",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "设计",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/online-election/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "online-majority-element-in-subarray",
+    "frontendDisplayId": "1157",
+    "titleEn": "Online Majority Element In Subarray",
+    "titleZh": "子数组中占绝大多数的元素",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Binary Search",
+      "Design",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "二分查找",
+      "设计",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/online-majority-element-in-subarray/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "online-stock-span",
+    "frontendDisplayId": "901",
+    "titleEn": "Online Stock Span",
+    "titleZh": "股票价格跨度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Data Stream",
+      "Design",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数据流",
+      "设计",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/online-stock-span/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "opLdQZ",
+    "frontendDisplayId": "LCR 056",
+    "titleEn": null,
+    "titleZh": "两数之和 IV - 输入二叉搜索树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "滑动窗口"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/opLdQZ/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "open-the-lock",
+    "frontendDisplayId": "752",
+    "titleEn": "Open the Lock",
+    "titleZh": "打开转盘锁",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/open-the-lock/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "operations-lcci",
+    "frontendDisplayId": "面试题 16.09",
+    "titleEn": null,
+    "titleZh": "运算",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/operations-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "operations-on-tree",
+    "frontendDisplayId": "1993",
+    "titleEn": "Operations on Tree",
+    "titleZh": "树上的操作",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Design",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "设计",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/operations-on-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "optimal-division",
+    "frontendDisplayId": "553",
+    "titleEn": "Optimal Division",
+    "titleZh": "最优除法",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/optimal-division/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-095",
+    "claimedAt": "2026-07-10T06:56:22.355563+00:00",
+    "completedAt": null
+  }
+]

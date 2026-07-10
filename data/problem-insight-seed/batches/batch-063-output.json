@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "longest-unequal-adjacent-groups-subsequence-i",
+    "reasonEN": "A greedy subsequence problem where adjacent selected group labels must differ. It teaches recognizing when scanning and taking each valid transition is optimal, turning a DP-looking constraint into a simple linear solution.",
+    "reasonZH": "这是一道贪心子序列题，要求相邻选中元素的分组标签不同。它训练识别何时顺序扫描并选取每个有效转移即可最优，将看似 DP 的约束化为线性解法。"
+  },
+  {
+    "slug": "longest-unequal-adjacent-groups-subsequence-ii",
+    "reasonEN": "This string subsequence DP combines unequal group labels with a one-character Hamming-distance condition. It develops pairwise compatibility modeling and predecessor reconstruction for an optimal sequence.",
+    "reasonZH": "该字符串子序列 DP 同时要求分组标签不同和汉明距离恰为一。它训练成对兼容性建模，以及通过前驱回溯构造最优序列。"
+  },
+  {
+    "slug": "longest-univalue-path",
+    "reasonEN": "A tree DFS problem that joins matching-value downward arms through a node to form the best path. It teaches post-order aggregation and the distinction between a returnable branch length and a global answer.",
+    "reasonZH": "这是一道树 DFS 题，将同值的向下分支在节点处连接为最长路径。它训练后序聚合，并区分可向上返回的单支长度与全局答案。"
+  },
+  {
+    "slug": "longest-uploaded-prefix",
+    "reasonEN": "A dynamic prefix-maintenance design problem that tracks which uploaded IDs form an uninterrupted initial range. It teaches choosing a set, bitset, or ordered structure and advancing the prefix only while its invariant holds.",
+    "reasonZH": "该动态前缀维护设计题需要跟踪已上传编号形成的连续起始区间。它训练在集合、位图或有序结构之间选择，并只在不变量成立时推进前缀。"
+  },
+  {
+    "slug": "longest-valid-parentheses",
+    "reasonEN": "A hard parenthesis-structure problem with complementary stack and dynamic-programming solutions. It teaches matching-boundary invariants, reset points after invalid prefixes, and extracting maximum valid span length.",
+    "reasonZH": "这是困难的括号结构题，可用栈或动态规划解决。它训练匹配边界不变量、无效前缀后的重置点，以及提取最长有效跨度。"
+  },
+  {
+    "slug": "longest-well-performing-interval",
+    "reasonEN": "A prefix-sum problem that maps a balance condition to finding the earliest smaller prefix. It develops binary encoding of daily performance and the use of hashes or monotonic stacks for longest-interval queries.",
+    "reasonZH": "该前缀和题将区间平衡条件转化为寻找最早的更小前缀。它训练对每日表现进行二值编码，并用哈希或单调栈求最长区间。"
+  },
+  {
+    "slug": "longest-word-in-dictionary",
+    "reasonEN": "A dictionary construction problem where every prefix of the chosen word must also exist. It teaches sorting or trie traversal, prefix-closure validation, and lexicographic tie-breaking.",
+    "reasonZH": "这是一道词典构造题，要求所选单词的每个前缀都存在。它训练排序或 Trie 遍历、前缀闭包验证，以及字典序平局处理。"
+  },
+  {
+    "slug": "longest-word-in-dictionary-through-deleting",
+    "reasonEN": "A subsequence-matching problem that searches a dictionary for the longest deletable target word. It reinforces two-pointer matching, length-first ordering, and lexicographic tie-breaking.",
+    "reasonZH": "该子序列匹配题要在词典中寻找可由删除字符得到的最长目标词。它巩固双指针匹配、长度优先排序，以及字典序平局处理。"
+  },
+  {
+    "slug": "longest-word-lcci",
+    "reasonEN": "A word-decomposition problem that tests whether a candidate can be assembled from other dictionary words. It develops trie or hash-set DP, memoized segmentation, and descending-length candidate selection.",
+    "reasonZH": "这是一道单词拆分题，判断候选词能否由其他词典单词拼接而成。它训练 Trie 或哈希集合 DP、记忆化分段，以及按长度递减选择候选词。"
+  },
+  {
+    "slug": "longest-zigzag-path-in-a-binary-tree",
+    "reasonEN": "A tree DP problem that carries the last movement direction while exploring alternating edges. It teaches directional recursive states and updating a global maximum from both child transitions.",
+    "reasonZH": "该树 DP 题在遍历中携带上一步移动方向，以探索交替边路径。它训练带方向的递归状态，并从两侧子节点转移更新全局最大值。"
+  },
+  {
+    "slug": "loud-and-rich",
+    "reasonEN": "A directed-graph propagation problem that finds the quietest reachable person under richer-than relations. It teaches memoized DFS or topological DP and how partial-order edges carry an optimal representative.",
+    "reasonZH": "这是有向图传播题，需要在富有关系中找到可达的最安静的人。它训练记忆化 DFS 或拓扑 DP，以及如何沿偏序边传播最优代表。"
+  },
+  {
+    "slug": "lowest-common-ancestor-of-a-binary-search-tree",
+    "reasonEN": "A BST-specific LCA problem where value ordering directly guides the search. It reinforces the search-tree invariant and shows how domain structure can remove the need for general ancestor bookkeeping.",
+    "reasonZH": "这是一道 BST 特化的最近公共祖先题，节点值的有序性可直接指引搜索方向。它巩固搜索树不变量，并展示领域结构如何省去通用祖先记录。"
+  },
+  {
+    "slug": "lowest-common-ancestor-of-a-binary-tree",
+    "reasonEN": "A canonical tree DFS problem where recursive returns reveal whether each target lies in a subtree. It teaches post-order reasoning and identifying the first node where search paths split.",
+    "reasonZH": "这是经典的树 DFS 题，递归返回值揭示目标节点是否位于子树中。它训练后序推理，并定位搜索路径首次分叉的节点。"
+  },
+  {
+    "slug": "lowest-common-ancestor-of-deepest-leaves",
+    "reasonEN": "A tree aggregation problem that returns both subtree depth and the ancestor representing deepest leaves. It develops multi-value DFS returns and a concise way to merge equal-depth branches.",
+    "reasonZH": "该树聚合题需要同时返回子树深度和代表最深叶节点的祖先。它训练多返回值 DFS，以及合并等深分支的简洁方法。"
+  },
+  {
+    "slug": "lru-cache",
+    "reasonEN": "A foundational cache-design problem combining a hash map with a doubly linked recency list. It teaches constant-time lookup, promotion, eviction, and sentinel-node techniques that simplify boundary cases.",
+    "reasonZH": "这是基础缓存设计题，结合哈希表和双向链表维护最近使用顺序。它训练常数时间查找、提升、淘汰，以及用哨兵节点简化边界情况。"
+  },
+  {
+    "slug": "lru-cache-lcci",
+    "reasonEN": "This LRU implementation problem requires keeping key lookup and recency updates synchronized. It reinforces the hash-map plus doubly-linked-list pattern and careful capacity eviction.",
+    "reasonZH": "该 LRU 实现题要求键查找与最近使用顺序更新始终同步。它巩固哈希表加双向链表模式，并训练容量淘汰时的细致处理。"
+  },
+  {
+    "slug": "lucky-numbers-in-a-matrix",
+    "reasonEN": "A matrix observation problem that intersects row minima with column maxima. It teaches independent aggregation by dimension and a clean way to turn a two-dimensional condition into set membership.",
+    "reasonZH": "这是一道矩阵观察题，寻找行最小值与列最大值的交集。它训练按维度独立聚合，并将二维条件清晰转化为集合成员判断。"
+  },
+  {
+    "slug": "lwyVBB",
+    "reasonEN": "A custom-order validation problem that compares adjacent words at their first differing character. It reinforces rank mapping, prefix edge cases, and the principle that lexical order depends only on the first mismatch.",
+    "reasonZH": "这是一道自定义顺序校验题，比较相邻单词的第一个不同字符。它训练顺序映射、前缀边界处理，以及字典序只由首个失配位置决定的原则。"
+  },
+  {
+    "slug": "magic-index-lcci",
+    "reasonEN": "A sorted-array search problem that looks for an index equal to its value. It teaches binary-search pruning, including why duplicate values require more careful branch handling than the distinct case.",
+    "reasonZH": "该有序数组搜索题寻找下标等于元素值的位置。它训练二分剪枝，并理解有重复值时为何比互异情况需要更谨慎地处理分支。"
+  },
+  {
+    "slug": "magic-squares-in-grid",
+    "reasonEN": "A fixed-size matrix validation problem that checks digit constraints and row, column, and diagonal sums. It develops systematic enumeration and compact verification of several geometric invariants.",
+    "reasonZH": "这是固定尺寸矩阵验证题，需要检查数字约束、行列和以及对角线和。它训练系统枚举，以及紧凑验证多个几何不变量。"
+  },
+  {
+    "slug": "magical-string",
+    "reasonEN": "A self-generating sequence simulation where run lengths are read from previously produced values. It teaches pointer coordination, incremental construction, and counting a target symbol during generation.",
+    "reasonZH": "该自生成序列模拟题的连续段长度来自此前生成的值。它训练指针协同、增量构造，以及在生成过程中统计目标符号。"
+  },
+  {
+    "slug": "magnetic-force-between-two-balls",
+    "reasonEN": "A parametric binary-search problem that maximizes a minimum placement distance. It teaches monotone feasibility checks, greedy placement, and the standard answer-search pattern for spacing optimization.",
+    "reasonZH": "这是参数二分题，需要最大化放置点之间的最小距离。它训练单调可行性判断、贪心放置，以及间距优化中的答案搜索模板。"
+  },
+  {
+    "slug": "majority-element",
+    "reasonEN": "A classic majority-vote problem whose Boyer-Moore algorithm cancels different values in pairs. It teaches a powerful linear-time voting invariant and contrasts it with counting-based alternatives.",
+    "reasonZH": "这是经典的多数投票题，Boyer-Moore 算法通过成对抵消不同元素求解。它训练强大的线性投票不变量，并可与计数法进行对比。"
+  },
+  {
+    "slug": "majority-element-ii",
+    "reasonEN": "An extended majority-vote problem where at most two values can exceed one third frequency. It develops generalized candidate cancellation, verification passes, and counting arguments based on frequency limits.",
+    "reasonZH": "该扩展多数投票题中，超过三分之一频率的值至多有两个。它训练广义候选抵消、二次验证，以及基于频率上界的计数论证。"
+  },
+  {
+    "slug": "majority-frequency-characters",
+    "reasonEN": "A character-frequency problem that identifies symbols attaining the dominant count under a string constraint. It reinforces frequency tables, maximum tracking, and stable result construction.",
+    "reasonZH": "这是一道字符频次题，需要识别满足主导频率条件的字符。它训练频次表、最大值维护，以及稳定地构造结果。"
+  },
+  {
+    "slug": "make-a-square-with-the-same-color",
+    "reasonEN": "A small matrix-enumeration problem that checks every 2 by 2 block for a reachable uniform-color state. It teaches compact local case analysis and exploiting tiny fixed dimensions.",
+    "reasonZH": "这是一道小型矩阵枚举题，检查每个 2x2 方块能否达到同色状态。它训练紧凑的局部分类讨论，以及利用固定小尺寸的特点。"
+  },
+  {
+    "slug": "make-array-elements-equal-to-zero",
+    "reasonEN": "A prefix-sum simulation problem where movement choices depend on balance around each zero position. It develops cumulative-state interpretation and exact procedural simulation without recomputing ranges.",
+    "reasonZH": "该前缀和模拟题中，移动选择依赖每个零位置两侧的平衡。它训练累计状态解释，以及无需重复计算区间的精确过程模拟。"
+  },
+  {
+    "slug": "make-array-empty",
+    "reasonEN": "A hard ordered-removal problem that combines sorted values with a Fenwick tree to count remaining cyclic positions. It teaches rank changes after deletion and how to model repeated passes efficiently.",
+    "reasonZH": "这是困难的有序删除题，结合排序和树状数组统计循环过程中的剩余位置。它训练删除后的排名变化，以及如何高效建模重复扫描。"
+  },
+  {
+    "slug": "make-array-non-decreasing",
+    "reasonEN": "A greedy monotonic-stack problem that repairs decreasing relationships by merging local information. It develops stack invariants and shows how adjacent violations can be resolved while preserving a maximal valid structure.",
+    "reasonZH": "该贪心单调栈题通过合并局部信息修复递减关系。它训练栈不变量，并展示如何处理相邻违例以保留最大的有效结构。"
+  },
+  {
+    "slug": "make-array-strictly-increasing",
+    "reasonEN": "A hard dynamic-programming problem that replaces selected elements using the smallest viable value from a sorted auxiliary array. It teaches state compression, lower-bound lookup, and minimizing edits under an ordering constraint.",
+    "reasonZH": "这是困难的动态规划题，需要从有序辅助数组中选择最小可行值替换元素。它训练状态压缩、下界查找，以及在有序约束下最小化修改次数。"
+  }
+]

@@ -1,0 +1,722 @@
+[
+  {
+    "slug": "minimum-area-rectangle",
+    "frontendDisplayId": "939",
+    "titleEn": "Minimum Area Rectangle",
+    "titleZh": "最小面积矩形",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Hash Table",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "哈希表",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-area-rectangle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-area-rectangle-ii",
+    "frontendDisplayId": "963",
+    "titleEn": "Minimum Area Rectangle II",
+    "titleZh": "最小面积矩形 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-area-rectangle-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-array-changes-to-make-differences-equal",
+    "frontendDisplayId": "3224",
+    "titleEn": "Minimum Array Changes to Make Differences Equal",
+    "titleZh": "使差值相等的最少数组改动次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-array-changes-to-make-differences-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-array-end",
+    "frontendDisplayId": "3133",
+    "titleEn": "Minimum Array End",
+    "titleZh": "数组最后一个元素的最小值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-array-end/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-array-length-after-pair-removals",
+    "frontendDisplayId": "2856",
+    "titleEn": "Minimum Array Length After Pair Removals",
+    "titleZh": "删除数对后的最小数组长度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Counting",
+      "Greedy",
+      "Hash Table",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "计数",
+      "贪心",
+      "哈希表",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-array-length-after-pair-removals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-array-sum",
+    "frontendDisplayId": "3366",
+    "titleEn": "Minimum Array Sum",
+    "titleZh": "最小数组和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-array-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-ascii-delete-sum-for-two-strings",
+    "frontendDisplayId": "712",
+    "titleEn": "Minimum ASCII Delete Sum for Two Strings",
+    "titleZh": "两个字符串的最小ASCII删除和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-ascii-delete-sum-for-two-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-average-difference",
+    "frontendDisplayId": "2256",
+    "titleEn": "Minimum Average Difference",
+    "titleZh": "最小平均差",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-average-difference/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-average-of-smallest-and-largest-elements",
+    "frontendDisplayId": "3194",
+    "titleEn": "Minimum Average of Smallest and Largest Elements",
+    "titleZh": "最小元素和最大元素的最小平均值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-average-of-smallest-and-largest-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-bit-flips-to-convert-number",
+    "frontendDisplayId": "2220",
+    "titleEn": "Minimum Bit Flips to Convert Number",
+    "titleZh": "转换数字的最少位翻转次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-bit-flips-to-convert-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-bitwise-or-from-grid",
+    "frontendDisplayId": "3858",
+    "titleEn": "Minimum Bitwise OR From Grid",
+    "titleZh": "按位或的最小值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Greedy",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "Array",
+      "Bit Manipulation",
+      "Greedy",
+      "Matrix"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-bitwise-or-from-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-capacity-box",
+    "frontendDisplayId": "3861",
+    "titleEn": "Minimum Capacity Box",
+    "titleZh": "容量最小的箱子",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-capacity-box/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-changes-to-make-alternating-binary-string",
+    "frontendDisplayId": "1758",
+    "titleEn": "Minimum Changes To Make Alternating Binary String",
+    "titleZh": "生成交替二进制字符串的最少操作数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-changes-to-make-alternating-binary-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-changes-to-make-k-semi-palindromes",
+    "frontendDisplayId": "2911",
+    "titleEn": "Minimum Changes to Make K Semi-palindromes",
+    "titleZh": "得到 K 个半回文串的最少修改次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-changes-to-make-k-semi-palindromes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-common-value",
+    "frontendDisplayId": "2540",
+    "titleEn": "Minimum Common Value",
+    "titleZh": "最小公共值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Hash Table",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "哈希表",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-common-value/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-consecutive-cards-to-pick-up",
+    "frontendDisplayId": "2260",
+    "titleEn": "Minimum Consecutive Cards to Pick Up",
+    "titleZh": "必须拿起的最小连续卡牌数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-consecutive-cards-to-pick-up/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-for-cutting-cake-i",
+    "frontendDisplayId": "3218",
+    "titleEn": "Minimum Cost for Cutting Cake I",
+    "titleZh": "切蛋糕的最小总开销 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-for-cutting-cake-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-for-cutting-cake-ii",
+    "frontendDisplayId": "3219",
+    "titleEn": "Minimum Cost for Cutting Cake II",
+    "titleZh": "切蛋糕的最小总开销 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-for-cutting-cake-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-for-tickets",
+    "frontendDisplayId": "983",
+    "titleEn": "Minimum Cost For Tickets",
+    "titleZh": "最低票价",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-for-tickets/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-good-caption",
+    "frontendDisplayId": "3441",
+    "titleEn": "Minimum Cost Good Caption",
+    "titleZh": "变成好标题的最少代价",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-good-caption/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-homecoming-of-a-robot-in-a-grid",
+    "frontendDisplayId": "2087",
+    "titleEn": "Minimum Cost Homecoming of a Robot in a Grid",
+    "titleZh": "网格图中机器人回家的最小代价",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-homecoming-of-a-robot-in-a-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-of-a-path-with-special-roads",
+    "frontendDisplayId": "2662",
+    "titleEn": "Minimum Cost of a Path With Special Roads",
+    "titleZh": "前往目标的最小代价",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "堆（优先队列）",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-of-a-path-with-special-roads/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-of-buying-candies-with-discount",
+    "frontendDisplayId": "2144",
+    "titleEn": "Minimum Cost of Buying Candies With Discount",
+    "titleZh": "打折购买糖果的最小开销",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-of-buying-candies-with-discount/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-path-with-alternating-directions-ii",
+    "frontendDisplayId": "3603",
+    "titleEn": "Minimum Cost Path with Alternating Directions II",
+    "titleZh": "交替方向的最小路径代价 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-path-with-alternating-directions-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-path-with-edge-reversals",
+    "frontendDisplayId": "3650",
+    "titleEn": "Minimum Cost Path with Edge Reversals",
+    "titleZh": "边反转的最小路径总成本",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "图",
+      "堆（优先队列）",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-path-with-edge-reversals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-path-with-teleportations",
+    "frontendDisplayId": "3651",
+    "titleEn": "Minimum Cost Path with Teleportations",
+    "titleZh": "带传送的最小路径成本",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-path-with-teleportations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-acquire-required-items",
+    "frontendDisplayId": "3789",
+    "titleEn": "Minimum Cost to Acquire Required Items",
+    "titleZh": "采购的最小花费",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-acquire-required-items/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-buy-apples-ii",
+    "frontendDisplayId": "3928",
+    "titleEn": "Minimum Cost to Buy Apples II",
+    "titleZh": "购买苹果的最低成本 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "堆（优先队列）",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-buy-apples-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-change-the-final-value-of-expression",
+    "frontendDisplayId": "1896",
+    "titleEn": "Minimum Cost to Change the Final Value of Expression",
+    "titleZh": "反转表达式值的最少操作次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-change-the-final-value-of-expression/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-connect-two-groups-of-points",
+    "frontendDisplayId": "1595",
+    "titleEn": "Minimum Cost to Connect Two Groups of Points",
+    "titleZh": "连通两组点的最小成本",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-connect-two-groups-of-points/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-078",
+    "claimedAt": "2026-07-10T06:22:22.742647+00:00",
+    "completedAt": null
+  }
+]

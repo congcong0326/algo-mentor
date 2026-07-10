@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "number-of-paths-with-max-score",
+    "reasonEN": "A hard grid DP problem that must track both the best score and the number of ways attaining it. It develops multi-state transitions, obstacle handling, and modular counting under tie conditions.",
+    "reasonZH": "高难网格动态规划题，需要同时维护最优得分及其对应路径数。它训练多状态转移、障碍处理，以及最优值并列时的模计数。"
+  },
+  {
+    "slug": "number-of-people-aware-of-a-secret",
+    "reasonEN": "This medium simulation DP models people entering and leaving an active sharing window. It teaches difference-style state updates and how a queue or rolling totals avoids repeatedly iterating over participants.",
+    "reasonZH": "中等难度模拟 DP 题，刻画人群进入和离开可分享秘密的时间窗口。它训练差分式状态更新，并理解如何用队列或滚动和避免反复遍历参与者。"
+  },
+  {
+    "slug": "number-of-perfect-pairs",
+    "reasonEN": "A sorting and two-pointer counting problem driven by a numeric compatibility condition. It sharpens inequality transformation, duplicate-aware range counting, and the conversion of pair rules into monotone boundaries.",
+    "reasonZH": "基于数值兼容条件的排序双指针计数题。它训练不等式变形、重复元素下的区间计数，以及将配对规则转化为单调边界。"
+  },
+  {
+    "slug": "number-of-possible-sets-of-closing-branches",
+    "reasonEN": "A hard subset-enumeration graph problem that validates each closure choice through shortest paths. It develops bitmask state management and repeated all-pairs feasibility checks under a distance threshold.",
+    "reasonZH": "高难子集枚举图论题，需要通过最短路验证每种关闭方案。它训练位掩码状态管理，以及距离阈值下的重复全源可行性检查。"
+  },
+  {
+    "slug": "number-of-prefix-connected-groups",
+    "reasonEN": "A string grouping problem centered on counting common-prefix connectivity efficiently. It builds skill in incremental prefix aggregation and choosing hash-based representations for repeated string features.",
+    "reasonZH": "围绕公共前缀连通关系计数的字符串题。它训练增量聚合前缀信息，并掌握为重复字符串特征选择哈希表示。"
+  },
+  {
+    "slug": "number-of-provinces",
+    "reasonEN": "A canonical connected-components problem on an adjacency matrix. It reinforces the interchangeable DFS, BFS, and Union-Find approaches and teaches how graph representation affects traversal cost.",
+    "reasonZH": "邻接矩阵上的经典连通分量题。它巩固 DFS、BFS、并查集三种可互换解法，并帮助理解图表示对遍历成本的影响。"
+  },
+  {
+    "slug": "number-of-recent-calls",
+    "reasonEN": "An introductory data-stream design problem solved with a time-ordered queue. It teaches amortized O(1) eviction and the invariant that the queue contains exactly the active request window.",
+    "reasonZH": "入门级数据流设计题，使用按时间有序的队列维护窗口。它训练均摊 O(1) 的过期淘汰，并建立队列恰好保存有效请求窗口的不变量。"
+  },
+  {
+    "slug": "number-of-rectangles-that-can-form-the-largest-square",
+    "reasonEN": "A concise array scan that reduces each rectangle to its limiting side length. It emphasizes extracting the decisive metric first, then counting ties in a single linear pass.",
+    "reasonZH": "简洁的数组扫描题，将每个矩形归约为其限制边长。它训练先提取决定性指标，再在线性遍历中统计并列最优值。"
+  },
+  {
+    "slug": "number-of-restricted-paths-from-first-to-last-node",
+    "reasonEN": "A graph DP problem that runs Dijkstra from the destination, then counts paths along strictly decreasing distance labels. It develops the important technique of deriving an acyclic transition order from shortest-path distances.",
+    "reasonZH": "图论动态规划题，先从终点运行 Dijkstra，再沿距离严格递减的边计数。它训练利用最短路距离构造无环转移顺序这一关键技巧。"
+  },
+  {
+    "slug": "number-of-segments-in-a-string",
+    "reasonEN": "A basic string-scanning problem that identifies word starts across runs of spaces. It is useful for practicing boundary-aware iteration instead of relying on fragile split behavior.",
+    "reasonZH": "基础字符串扫描题，需要在连续空格之间识别单词起点。它训练边界感知的遍历方式，避免依赖容易出错的字符串切分行为。"
+  },
+  {
+    "slug": "number-of-senior-citizens",
+    "reasonEN": "A fixed-format string parsing exercise where extracting the correct character range matters more than algorithmic complexity. It builds careful indexing habits and clear conversion from encoded fields to comparisons.",
+    "reasonZH": "定长字符串解析题，重点在于准确截取字段而非算法复杂度。它训练严谨的下标操作，以及从编码字段到数值比较的清晰转换。"
+  },
+  {
+    "slug": "number-of-sets-of-k-non-overlapping-line-segments",
+    "reasonEN": "A combinatorial DP problem for selecting non-overlapping intervals with shared endpoints allowed. It develops state design for choose-or-skip decisions and prefix-sum optimization of interval transitions.",
+    "reasonZH": "组合型动态规划题，用于选择允许端点相接的不重叠线段。它训练选取或跳过的状态设计，以及用前缀和优化区间转移。"
+  },
+  {
+    "slug": "number-of-smooth-descent-periods-of-a-stock",
+    "reasonEN": "A linear DP and sliding-window pattern that extends the current run when adjacent values differ by one. It teaches turning a local adjacency condition into a count of all valid subarrays ending at each position.",
+    "reasonZH": "线性 DP 与滑动窗口题，当相邻值差为一时延长当前连续段。它训练将局部相邻条件转化为统计每个位置结尾的全部有效子数组。"
+  },
+  {
+    "slug": "number-of-squareful-arrays",
+    "reasonEN": "A hard bitmask backtracking problem where adjacent values must form perfect squares and duplicates require pruning. It develops subset-state memoization and symmetry control for permutation enumeration.",
+    "reasonZH": "高难位掩码回溯题，要求相邻元素之和为完全平方数且需处理重复值。它训练子集状态记忆化，以及排列枚举中的对称性剪枝。"
+  },
+  {
+    "slug": "number-of-stable-subsequences",
+    "reasonEN": "A hard array DP counting problem built around a stability constraint on selected values. It sharpens compressed state design and careful aggregation of transitions without enumerating subsequences explicitly.",
+    "reasonZH": "高难数组计数 DP 题，核心是满足所选元素的稳定性约束。它训练压缩状态设计，以及不显式枚举子序列时的严谨转移聚合。"
+  },
+  {
+    "slug": "number-of-steps-to-reduce-a-number-in-binary-representation-to-one",
+    "reasonEN": "A binary-string simulation problem where carry propagation determines the number of reductions. It teaches right-to-left bit processing and replaces expensive integer conversion with direct digit-state reasoning.",
+    "reasonZH": "二进制字符串模拟题，进位传播决定操作次数。它训练从右向左处理位，并用直接的数字状态推理替代昂贵的整数转换。"
+  },
+  {
+    "slug": "number-of-steps-to-reduce-a-number-to-zero",
+    "reasonEN": "An elementary bit-manipulation problem based on alternating subtract-one and divide-by-two operations. It builds intuition for how set bits and bit length determine a process that otherwise looks procedural.",
+    "reasonZH": "基础位运算题，围绕减一和除二的交替操作展开。它帮助理解置位个数和位长度如何决定一个看似过程化的计算。"
+  },
+  {
+    "slug": "number-of-strings-that-appear-as-substrings-in-word",
+    "reasonEN": "A straightforward string membership task that favors direct containment checks over unnecessary pattern machinery. It reinforces choosing complexity proportional to the input scale and keeping string logic readable.",
+    "reasonZH": "直接的字符串包含关系题，适合使用朴素查找而无需复杂匹配算法。它训练按输入规模选择复杂度合适且可读性高的字符串处理方式。"
+  },
+  {
+    "slug": "number-of-strings-which-can-be-rearranged-to-contain-substring",
+    "reasonEN": "A combinatorial counting problem that uses complementary counting for strings missing required character frequencies. It develops bounded-state DP and the inclusion-exclusion mindset for rearrangement constraints.",
+    "reasonZH": "组合计数题，利用补集统计无法满足目标字符频次的字符串。它训练有界状态 DP，并建立处理重排约束时的容斥思维。"
+  },
+  {
+    "slug": "number-of-students-doing-homework-at-a-given-time",
+    "reasonEN": "A simple interval-counting problem that checks inclusive membership at a target time. It reinforces translating interval notation accurately and avoiding off-by-one errors at endpoints.",
+    "reasonZH": "简单区间计数题，判断目标时间是否落在闭区间内。它训练准确翻译区间含义，并避免端点处的 off-by-one 错误。"
+  },
+  {
+    "slug": "number-of-students-unable-to-eat-lunch",
+    "reasonEN": "A queue simulation problem with a key termination condition when no remaining student accepts the top item. It teaches faithful state modeling and how frequency counting can simplify repeated rotations.",
+    "reasonZH": "队列模拟题，关键终止条件是剩余学生都不接受栈顶食物。它训练忠实建模状态，并理解如何用频次统计简化反复轮转。"
+  },
+  {
+    "slug": "number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold",
+    "reasonEN": "A fixed-length sliding-window template where comparing sums avoids division entirely. It reinforces constant-time window updates and the algebraic transformation of average constraints.",
+    "reasonZH": "定长滑动窗口模板题，通过比较区间和可完全避免除法。它训练常数时间窗口更新，以及平均值约束的代数变形。"
+  },
+  {
+    "slug": "number-of-sub-arrays-with-odd-sum",
+    "reasonEN": "A prefix-parity counting problem where each new prefix pairs with earlier prefixes of opposite parity. It develops modular-state frequency counting and a reusable reduction from subarray sums to prefix relations.",
+    "reasonZH": "前缀奇偶性计数题，每个新前缀与此前奇偶性相反的前缀配对。它训练模状态频次统计，以及将子数组和问题归约为前缀关系的通用方法。"
+  },
+  {
+    "slug": "number-of-subarrays-that-match-a-pattern-i",
+    "reasonEN": "A medium pattern-matching problem that compares adjacent-order relations rather than raw values. It teaches encoding comparisons into a derived sequence and applying direct matching at manageable constraints.",
+    "reasonZH": "中等难度模式匹配题，比较相邻元素的大小关系而非原始数值。它训练将比较关系编码为派生序列，并在可接受规模下进行直接匹配。"
+  },
+  {
+    "slug": "number-of-subarrays-that-match-a-pattern-ii",
+    "reasonEN": "The hard-scale version of relational pattern matching requires rolling hash or other fast string-matching machinery. It develops robust sequence encoding, collision-aware hashing, and linear-time matching techniques.",
+    "reasonZH": "关系模式匹配的高难规模版本，需要滚动哈希或其他快速字符串匹配工具。它训练可靠的序列编码、哈希冲突意识，以及线性时间匹配技巧。"
+  },
+  {
+    "slug": "number-of-subarrays-with-and-value-of-k",
+    "reasonEN": "A hard bitwise range-query problem that exploits the monotonic decrease of subarray AND values as a range grows. It teaches bitwise monotonicity and efficient boundary search or segment-tree aggregation.",
+    "reasonZH": "高难位运算区间题，利用子数组扩展时按位与结果单调不增的性质。它训练位运算单调性，以及高效的边界二分或线段树聚合。"
+  },
+  {
+    "slug": "number-of-subarrays-with-bounded-maximum",
+    "reasonEN": "A two-pointer counting problem that counts subarrays by their latest invalid and latest qualifying positions. It develops an elegant alternative to explicit windows for range-constrained subarray counting.",
+    "reasonZH": "双指针计数题，通过最近非法位置和最近满足条件的位置统计子数组。它训练一种无需显式维护窗口的优雅区间约束计数方法。"
+  },
+  {
+    "slug": "number-of-subarrays-with-gcd-equal-to-k",
+    "reasonEN": "A number-theory subarray problem that repeatedly folds GCD values over expanding ranges. It builds intuition for GCD monotonicity and early stopping once further extension cannot recover the target.",
+    "reasonZH": "数论子数组题，需要在扩展区间时持续累积 GCD。它训练 GCD 的单调性质，并掌握一旦无法恢复目标值时的提前终止。"
+  },
+  {
+    "slug": "number-of-subarrays-with-lcm-equal-to-k",
+    "reasonEN": "A subarray enumeration problem where LCM growth enables pruning whenever it exceeds or no longer divides the target. It teaches safe arithmetic reasoning and the contrasting monotonic behavior of LCM versus GCD.",
+    "reasonZH": "子数组枚举题，LCM 的增长性允许在超过目标或不再整除目标时剪枝。它训练严谨的算术判断，并对比 LCM 与 GCD 相反的单调行为。"
+  },
+  {
+    "slug": "number-of-submatrices-that-sum-to-target",
+    "reasonEN": "A hard matrix prefix-sum problem that compresses pairs of rows into one-dimensional target-sum counting. It develops dimensional reduction and the hash-map prefix-sum pattern for repeated subarray queries.",
+    "reasonZH": "高难矩阵前缀和题，将行对压缩为一维目标和计数。它训练降维思想，以及哈希表前缀和模式在重复子数组查询中的应用。"
+  }
+]

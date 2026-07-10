@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "find-maximum-area-of-a-triangle",
+    "reasonEN": "A medium geometry-enumeration problem that reduces area maximization to selecting extreme coordinates. It trains recognizing algebraic simplifications and combining grouping with greedy extrema, a useful pattern for turning geometric constraints into linear scans.",
+    "reasonZH": "这是一道中等难度的几何枚举题，最大面积可转化为选取坐标极值。它训练从公式中提炼代数化简，并结合分组与贪心维护极值，是把几何约束降为线性扫描的实用套路。"
+  },
+  {
+    "slug": "find-maximum-balanced-xor-subarray-length",
+    "reasonEN": "This prefix-XOR and hash-table problem targets the equivalence between balanced subarrays and repeated prefix states. It sharpens state encoding, first-occurrence indexing, and the ability to adapt prefix-sum reasoning to bitwise conditions.",
+    "reasonZH": "该题属于前缀异或与哈希表题型，核心是把平衡子数组转化为重复的前缀状态。它训练状态编码、首次出现位置记录，以及将前缀和思维迁移到位运算条件的能力。"
+  },
+  {
+    "slug": "find-maximum-non-decreasing-array-length",
+    "reasonEN": "A hard prefix-sum dynamic-programming problem with monotonic optimization. It develops the ability to define DP states around partition boundaries, maintain candidate transitions efficiently, and reason about binary-search or monotonic-structure invariants.",
+    "reasonZH": "这是一道高难度前缀和动态规划题，结合了单调结构优化。它训练围绕分段边界设计 DP 状态、高效维护转移候选，以及推导二分或单调结构不变量的能力。"
+  },
+  {
+    "slug": "find-maximum-number-of-non-intersecting-substrings",
+    "reasonEN": "This greedy string-interval problem centers on expanding character closure intervals and selecting compatible ranges. It teaches how to derive valid intervals from frequency boundaries and why earliest-finish greedy choices maximize the number selected.",
+    "reasonZH": "该题是字符串区间贪心题，核心在于扩展字符的闭包区间并选择相容范围。它训练从出现边界推导合法区间，并理解为何按最早结束位置贪心能最大化可选数量。"
+  },
+  {
+    "slug": "find-maximum-number-of-string-pairs",
+    "reasonEN": "An introductory string hashing problem built around reversal as a canonical counterpart. It reinforces set membership checks, one-pass pairing, and the habit of identifying the exact transformation that links two records.",
+    "reasonZH": "这是一道入门级字符串哈希题，围绕反转字符串这一对应关系展开。它巩固集合查找、单遍配对，并培养识别两条记录之间精确变换关系的习惯。"
+  },
+  {
+    "slug": "find-maximum-removals-from-source-string",
+    "reasonEN": "A medium string DP problem that models deletion decisions while preserving a subsequence. It practices transition design under two competing choices and exposes the difference between feasibility checking and directly optimizing removable positions.",
+    "reasonZH": "该题是中等难度字符串动态规划，要求在保留子序列的同时建模删除决策。它训练存在两类选择时的状态转移设计，并区分可行性判断与直接最大化可删除位置的思路。"
+  },
+  {
+    "slug": "find-maximum-value-in-a-constrained-sequence",
+    "reasonEN": "This constrained-sequence greedy problem emphasizes extracting the locally tightest bound from ordered choices. It builds skill in maintaining feasible ranges and proving that a simple extremal decision preserves the global optimum.",
+    "reasonZH": "这是一道受限序列贪心题，重点是从有序选择中提取局部最紧约束。它训练维护可行范围，并证明简单的极值决策为何能保留全局最优性。"
+  },
+  {
+    "slug": "find-median-from-data-stream",
+    "reasonEN": "A foundational data-stream design problem using two heaps to maintain a balanced partition. It teaches insertion invariants, heap rebalancing, and how a carefully chosen representation makes online median queries constant time.",
+    "reasonZH": "作为数据流设计的经典题，它用双堆维护平衡划分。该题训练插入不变量、堆的再平衡，以及如何通过恰当的数据表示把在线中位数查询降到常数时间。"
+  },
+  {
+    "slug": "find-minimum-cost-to-remove-array-elements",
+    "reasonEN": "This medium array DP problem focuses on carrying the small amount of state left by each removal decision. It develops compact state modeling and transition reasoning for optimization problems where operations consume elements in groups.",
+    "reasonZH": "该题是中等难度数组动态规划，重点在于保留每次删除后遗留的少量状态。它训练紧凑的状态建模，以及处理按组消耗元素的最优化操作时的转移推导。"
+  },
+  {
+    "slug": "find-minimum-diameter-after-merging-two-trees",
+    "reasonEN": "A hard tree-metric problem that combines diameter computation with center-based merging. It reinforces double-search traversal, the relationship between diameter and radius, and deriving an optimal connection from structural properties rather than simulation.",
+    "reasonZH": "这是一道高难度树度量题，结合树直径计算与中心连接策略。它巩固两次遍历求直径、直径与半径的关系，并训练依据结构性质而非模拟来推导最优连接方式。"
+  },
+  {
+    "slug": "find-minimum-in-rotated-sorted-array",
+    "reasonEN": "This is the canonical rotated-array binary-search problem. It trains choosing a sorted-half invariant, comparing against the right boundary, and shrinking the search space without relying on a fully ordered array.",
+    "reasonZH": "这是旋转数组二分查找的经典题。它训练选择有序半边不变量、与右边界比较，以及在整体不完全有序时稳定缩小搜索区间。"
+  },
+  {
+    "slug": "find-minimum-in-rotated-sorted-array-ii",
+    "reasonEN": "The duplicate-aware extension of rotated-array binary search highlights an important ambiguity case. It teaches when equality destroys directional information and how to safely discard a boundary while preserving correctness.",
+    "reasonZH": "作为旋转数组二分的重复元素扩展题，它突出展示了关键的歧义场景。该题训练理解相等比较何时会丢失方向信息，以及如何安全舍弃边界仍保证正确性。"
+  },
+  {
+    "slug": "find-minimum-log-transportation-cost",
+    "reasonEN": "A concise mathematical optimization problem that asks for the right cost expression before implementation. It reinforces translating domain constraints into arithmetic and checking simple edge cases without overengineering.",
+    "reasonZH": "这是一道简洁的数学优化题，重点是在实现前先建立正确的成本表达式。它训练把业务约束转化为算术关系，并在不过度设计的前提下处理基础边界情况。"
+  },
+  {
+    "slug": "find-minimum-operations-to-make-all-elements-divisible-by-three",
+    "reasonEN": "An easy modular-arithmetic scan that isolates each element's independent contribution. It reinforces remainder reasoning and recognizing when a global minimum is simply the sum of local optimal adjustments.",
+    "reasonZH": "该题是简单的模运算扫描题，每个元素的贡献彼此独立。它巩固余数分析，并训练识别何时全局最优就是各局部最优调整之和。"
+  },
+  {
+    "slug": "find-minimum-time-to-finish-all-jobs",
+    "reasonEN": "A hard assignment optimization problem combining backtracking, pruning, and bitmask DP perspectives. It develops symmetry pruning, workload-bound reasoning, and the ability to search exponential state spaces without exploring equivalent branches.",
+    "reasonZH": "这是一道高难度任务分配优化题，结合回溯剪枝与位掩码 DP 思路。它训练对称性剪枝、负载下界分析，以及在指数状态空间中避免搜索等价分支的能力。"
+  },
+  {
+    "slug": "find-minimum-time-to-reach-last-room-i",
+    "reasonEN": "This grid shortest-path problem applies Dijkstra's algorithm to time-gated transitions. It practices priority-queue relaxation, stale-state handling, and modeling waiting time directly in an edge transition.",
+    "reasonZH": "该题是带时间门槛转移的网格最短路，适合练习 Dijkstra 算法。它训练优先队列松弛、过期状态处理，以及将等待时间直接建模进边权转移。"
+  },
+  {
+    "slug": "find-minimum-time-to-reach-last-room-ii",
+    "reasonEN": "A variant grid shortest-path problem where movement timing adds an extra transition cost. It deepens Dijkstra modeling by requiring each relaxation to account for both room availability and alternating movement behavior.",
+    "reasonZH": "这是带额外移动时序的网格最短路变体。它深化 Dijkstra 建模，要求每次松弛同时考虑房间开放时间与交替移动带来的代价。"
+  },
+  {
+    "slug": "find-mirror-score-of-a-string",
+    "reasonEN": "This stack-and-hash-table simulation problem pairs characters according to a mirrored mapping while preserving positional order. It trains per-character state management and recognizing when LIFO matching is required by the scoring rule.",
+    "reasonZH": "该题是栈与哈希表模拟题，需要按镜像映射配对字符并保持位置顺序。它训练按字符维护状态，并识别计分规则何时要求使用后进先出的匹配方式。"
+  },
+  {
+    "slug": "find-missing-and-repeated-values",
+    "reasonEN": "An accessible matrix counting problem with multiple solution paths, including frequency tables and arithmetic invariants. It strengthens duplicate-and-missing detection and encourages comparing direct bookkeeping against mathematical shortcuts.",
+    "reasonZH": "这是一道易上手的矩阵计数题，可用频次数组或数学不变量求解。它强化重复值与缺失值检测，并帮助比较直接记录法和数学捷径各自的适用性。"
+  },
+  {
+    "slug": "find-missing-elements",
+    "reasonEN": "A basic array lookup problem that contrasts hashing with sorting-based presence checks. It reinforces choosing a representation based on lookup cost and producing deterministic results from unordered membership information.",
+    "reasonZH": "该题是基础数组查找题，对比哈希与排序后的存在性检查。它训练根据查询成本选择数据表示，并从无序的成员信息中生成确定性结果。"
+  },
+  {
+    "slug": "find-missing-observations",
+    "reasonEN": "This medium constructive math problem derives a required total before distributing it under bounds. It trains average-to-sum conversion, feasibility checks, and greedy construction that respects lower and upper limits.",
+    "reasonZH": "这是一道中等难度构造数学题，先推导所需总和，再在边界内分配。它训练均值到总和的转换、可行性判断，以及满足上下界的贪心构造。"
+  },
+  {
+    "slug": "find-mode-in-binary-search-tree",
+    "reasonEN": "A BST traversal problem that exploits inorder ordering to count consecutive equal values in constant auxiliary traversal state. It reinforces structural properties of BSTs and careful updates for ties and run boundaries.",
+    "reasonZH": "该题利用二叉搜索树的中序有序性，在常量级遍历状态中统计连续相同值。它巩固 BST 结构性质，并训练处理并列众数与连续段边界时的细致更新。"
+  },
+  {
+    "slug": "find-most-frequent-vowel-and-consonant",
+    "reasonEN": "An elementary string counting problem that separates classification from frequency aggregation. It practices character categorization, fixed-size or hash-based counts, and clean handling of independent maxima.",
+    "reasonZH": "这是一道基础字符串计数题，将字符分类与频率聚合分开处理。它训练字符类别判断、定长数组或哈希计数，以及独立最大值的清晰维护。"
+  },
+  {
+    "slug": "find-n-unique-integers-sum-up-to-zero",
+    "reasonEN": "A constructive array problem built on symmetric positive-negative pairs. It reinforces parity-aware construction and the habit of satisfying several constraints through an invariant instead of search.",
+    "reasonZH": "该题是构造数组题，核心是不相同的正负对称配对。它训练按奇偶性构造，并培养通过不变量同时满足多个约束而非搜索答案的习惯。"
+  },
+  {
+    "slug": "find-nearest-point-that-has-the-same-x-or-y-coordinate",
+    "reasonEN": "This straightforward geometry scan focuses on filtering valid candidates before minimizing Manhattan distance. It reinforces condition-first iteration, stable tie handling, and the distinction between coordinate alignment and distance calculation.",
+    "reasonZH": "这是一道直接的几何扫描题，先筛选合法候选点，再最小化曼哈顿距离。它训练先判条件再迭代、稳定处理并列情况，以及区分坐标对齐与距离计算。"
+  },
+  {
+    "slug": "find-nth-smallest-integer-with-k-one-bits",
+    "reasonEN": "A hard combinatorics and bit-manipulation problem that ranks integers by the positions of set bits. It develops combinatorial counting, greedy bit construction, and the ability to navigate an implicit ordered set without enumerating it.",
+    "reasonZH": "这是一道高难度组合数学与位运算题，按置位的位置对整数进行排序。它训练组合计数、贪心构造二进制位，以及在不枚举的前提下定位隐式有序集合中的元素。"
+  },
+  {
+    "slug": "find-number-of-coins-to-place-in-tree-nodes",
+    "reasonEN": "This hard tree DP problem uses postorder aggregation while retaining only extrema that can affect a subtree product. It teaches lossless state compression, signed-product edge cases, and merging child summaries efficiently.",
+    "reasonZH": "该题是高难度树形 DP，通过后序聚合且只保留会影响子树乘积的极值。它训练无损状态压缩、带符号乘积的边界处理，以及高效合并子节点摘要。"
+  },
+  {
+    "slug": "find-number-of-ways-to-reach-the-k-th-stair",
+    "reasonEN": "A hard counting problem that combines memoized search with combinatorial reasoning about jumps and decrements. It builds skill in identifying compact states, preventing duplicate counting, and recognizing when a closed-form count can replace exploration.",
+    "reasonZH": "这是一道高难度计数题，结合记忆化搜索与跳跃、回退次数的组合分析。它训练识别紧凑状态、防止重复计数，并理解何时可用闭式组合计数替代枚举搜索。"
+  },
+  {
+    "slug": "find-numbers-with-even-number-of-digits",
+    "reasonEN": "An easy numeric scan that isolates digit-length computation as the central operation. It reinforces choosing between repeated division, string conversion, and threshold tests while keeping a simple aggregation loop correct.",
+    "reasonZH": "该题是简单的数值扫描题，核心操作是计算数字位数。它训练在反复除法、字符串转换和阈值判断之间选择，并保持基础聚合循环的正确性。"
+  },
+  {
+    "slug": "find-occurrences-of-an-element-in-an-array",
+    "reasonEN": "A medium indexing problem that preprocesses occurrence positions for efficient repeated queries. It teaches the query-versus-preprocessing tradeoff, zero-based index discipline, and clean handling of requests beyond the available occurrences.",
+    "reasonZH": "这是一道中等难度索引题，通过预处理元素出现位置高效回答多次查询。它训练查询与预处理的权衡、零基下标纪律，以及对超出出现次数请求的清晰处理。"
+  }
+]

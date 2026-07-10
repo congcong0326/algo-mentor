@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "maximum-score-with-co-prime-element",
+    "reasonEN": "A hard number-theory optimization problem that organizes candidates by prime-factor compatibility and counts feasible selections. It develops gcd-based reasoning, factor enumeration, and the ability to turn coprimality constraints into efficient combinatorial cases.",
+    "reasonZH": "高难度数论优化题，需要按质因子兼容关系组织候选并统计可行选择。它能训练 gcd 判断、因子枚举，以及将互质约束转化为高效组合分类的能力。"
+  },
+  {
+    "slug": "maximum-score-words-formed-by-letters",
+    "reasonEN": "A classic subset backtracking problem that decides whether to include each word while maintaining letter frequencies and score. It is valuable practice for pruning, reversible state updates, and recognizing when small input size permits enumeration.",
+    "reasonZH": "经典子集回溯题，逐个决定是否选取单词，同时维护字母频次和累计得分。它能训练剪枝、可回滚状态更新，以及识别小规模约束下可枚举性的能力。"
+  },
+  {
+    "slug": "maximum-segment-sum-after-removals",
+    "reasonEN": "A reverse-processing union-find problem: add removed positions back and merge adjacent active segments while tracking their sums. It teaches how reversing destructive operations can convert difficult splits into simple connectivity merges.",
+    "reasonZH": "逆序处理的并查集代表题，将删除操作反转为逐点恢复，并合并相邻活跃区间以维护区间和。它能训练把难处理的分裂操作转化为简单连通合并的思维。"
+  },
+  {
+    "slug": "maximum-side-length-of-a-square-with-sum-less-than-or-equal-to-threshold",
+    "reasonEN": "A matrix prefix-sum problem with a monotone answer: test a square side length in constant time per position and binary-search the maximum feasible size. It reinforces two-dimensional inclusion-exclusion and answer-based binary search.",
+    "reasonZH": "二维前缀和与二分答案题，能够常数时间查询任意正方形和，并二分最大可行边长。它能训练二维容斥计算，以及单调性驱动的答案二分。"
+  },
+  {
+    "slug": "maximum-size-of-a-set-after-removals",
+    "reasonEN": "A set-counting greedy problem that separates common values from values unique to either array before allocating removal capacity. It develops careful accounting of overlap and the insight that diverse values should be preserved first.",
+    "reasonZH": "集合计数贪心题，需要区分两数组共有值和各自独有值，再分配删除容量。它能训练重叠元素的精确计数，以及优先保留多样性元素的贪心思路。"
+  },
+  {
+    "slug": "maximum-spending-after-buying-items",
+    "reasonEN": "A hard heap-greedy scheduling problem where buying currently cheapest accessible items maximizes their later weighted contribution. It trains recognizing precedence constraints in rows and using a priority queue to realize the exchange argument.",
+    "reasonZH": "高难度堆贪心调度题，在行内先后约束下优先购买当前可得的最低价物品以最大化加权总开销。它能训练识别前置依赖，并用优先队列落实交换论证。"
+  },
+  {
+    "slug": "maximum-split-of-positive-even-integers",
+    "reasonEN": "A constructive greedy problem that takes the smallest distinct positive even numbers first and folds the remainder into the final part. It is a concise exercise in proving that minimal early choices maximize the number of summands.",
+    "reasonZH": "构造型贪心题，先选取最小的互异正偶数，再将剩余量合并到最后一项。它能训练证明最小化前缀选择为何能够最大化拆分项数。"
+  },
+  {
+    "slug": "maximum-square-area-by-removing-fences-from-a-field",
+    "reasonEN": "A geometry-by-enumeration problem that records all achievable fence gaps in one direction and matches them in the other. It reinforces reducing area search to equal-distance lookup and handling modular area computation.",
+    "reasonZH": "枚举式几何题，记录一个方向所有可形成的栅栏间距，再在另一方向寻找相同间距。它能训练将面积搜索化简为等距离匹配，并处理模运算面积计算。"
+  },
+  {
+    "slug": "maximum-star-sum-of-a-graph",
+    "reasonEN": "A graph-local greedy problem that keeps only the largest positive neighbor values for every potential center. It teaches how independent contributions simplify a graph objective and how bounded heaps avoid unnecessary sorting.",
+    "reasonZH": "图局部贪心题，对每个中心节点只保留贡献最大的若干正权邻居。它能训练识别独立贡献如何简化图目标，以及用定长堆避免全量排序。"
+  },
+  {
+    "slug": "maximum-strength-of-a-group",
+    "reasonEN": "A sign-aware product greedy problem that keeps positive values, pairs negative values, and handles zeros and leftovers carefully. It develops a reliable case analysis for multiplicative objectives, where addition-based intuition often fails.",
+    "reasonZH": "符号敏感的乘积贪心题，需要保留正数、配对负数，并谨慎处理零和落单负数。它能训练乘积目标的分类讨论，避免直接套用加和问题的直觉。"
+  },
+  {
+    "slug": "maximum-strength-of-k-disjoint-subarrays",
+    "reasonEN": "A hard multi-segment DP problem that tracks how many weighted subarrays have been opened or closed while scanning the array. It is strong practice for state-machine DP and encoding alternating coefficients without overlapping segments.",
+    "reasonZH": "高难度多段动态规划题，扫描数组时记录已开启或结束的带权子数组数量。它能训练状态机式 DP，以及在不重叠区间中编码交替系数的能力。"
+  },
+  {
+    "slug": "maximum-strictly-increasing-cells-in-a-matrix",
+    "reasonEN": "A hard matrix DP problem that processes equal values in batches so they cannot transition to one another. It teaches value-ordered state updates, delayed commits, and summarizing row and column best states.",
+    "reasonZH": "高难度矩阵动态规划题，必须按相同值分批处理以避免同值单元互相转移。它能训练值排序状态更新、延迟提交，以及行列最优状态摘要。"
+  },
+  {
+    "slug": "maximum-strong-pair-xor-i",
+    "reasonEN": "An introductory pair-enumeration and bitwise-XOR problem constrained by a numeric relation between values. It is useful for validating the strong-pair condition directly before moving on to trie-based optimization.",
+    "reasonZH": "入门级数对枚举与异或题，需要在数值关系约束下直接验证强数对。它适合先掌握条件判断和异或比较，为后续字典树优化建立基线。"
+  },
+  {
+    "slug": "maximum-strong-pair-xor-ii",
+    "reasonEN": "A hard optimized XOR problem that sorts values, maintains the valid range with a sliding window, and queries a binary trie. It develops the powerful combination of monotone constraints, insertion/deletion, and maximum-XOR search.",
+    "reasonZH": "高难度异或优化题，排序后用滑动窗口维护合法范围，并通过二进制字典树查询最大异或值。它能训练单调约束、动态插删和最大异或查询的组合技巧。"
+  },
+  {
+    "slug": "maximum-students-taking-exam",
+    "reasonEN": "A classic row-profile DP problem that encodes valid seating arrangements as bitmasks and checks compatibility between adjacent rows. It is essential practice for translating local grid conflicts into compact subset transitions.",
+    "reasonZH": "经典行状态压缩 DP 题，将每行合法座位编码为位掩码，并检查相邻行的兼容性。它能训练把网格局部冲突转化为紧凑子集转移的能力。"
+  },
+  {
+    "slug": "maximum-subarray",
+    "reasonEN": "The canonical Kadane dynamic-programming problem: decide whether each position extends the previous segment or starts anew. It is a foundational exercise in local recurrence design and a prerequisite for many interval optimizations.",
+    "reasonZH": "Kadane 算法的经典动态规划题，每个位置决定延续前一段还是重新开始。它是局部递推设计的基础，也是大量区间优化题的重要前置能力。"
+  },
+  {
+    "slug": "maximum-subarray-min-product",
+    "reasonEN": "A monotonic-stack contribution problem that finds the widest range where each element is the minimum, then obtains the range sum with prefix sums. It builds the crucial stack-and-prefix-sum pattern for extremum times aggregate objectives.",
+    "reasonZH": "单调栈贡献题，寻找每个元素作为最小值时能覆盖的最宽区间，再用前缀和计算区间和。它能训练最值乘聚合量问题中单调栈与前缀和的核心组合。"
+  },
+  {
+    "slug": "maximum-subarray-sum-after-at-most-k-swaps",
+    "reasonEN": "A hard operation-constrained array optimization problem that must model how a limited number of swaps changes the best contiguous segment. It develops disciplined state design around operation budgets and the separation of chosen and unchosen elements.",
+    "reasonZH": "高难度操作约束数组优化题，需要刻画有限次交换如何改变最佳连续子数组。它能训练围绕操作预算设计状态，并区分已选区间元素与外部可交换元素。"
+  },
+  {
+    "slug": "maximum-subarray-sum-after-multiplier",
+    "reasonEN": "A dynamic-programming variant of maximum subarray sum that tracks phases before, during, and after applying a multiplier. It teaches how one contiguous transformation can be represented by a small finite-state recurrence.",
+    "reasonZH": "最大子数组和的动态规划变体，需要分别维护乘法操作前、操作中和操作后的阶段。它能训练将一次连续变换抽象为有限状态递推的能力。"
+  },
+  {
+    "slug": "maximum-subarray-sum-with-length-divisible-by-k",
+    "reasonEN": "A prefix-sum optimization problem that stores the minimum prefix sum for every index remainder modulo k. It reinforces converting a length divisibility condition into matching remainders and retaining the best historical state.",
+    "reasonZH": "前缀和优化题，为每个下标模 k 余数维护最小历史前缀和。它能训练将长度整除条件转化为余数匹配，并保存最优历史状态。"
+  },
+  {
+    "slug": "maximum-subarray-sum-with-one-deletion",
+    "reasonEN": "A two-state Kadane variant that distinguishes segments with no deletion from segments that have already deleted one value. It is valuable practice for modeling a single exception without losing contiguous-subarray structure.",
+    "reasonZH": "双状态 Kadane 变体，分别维护未删除元素和已经删除一个元素的连续子数组。它能训练在保持连续区间结构时建模一次例外操作。"
+  },
+  {
+    "slug": "maximum-subarray-with-equal-products",
+    "reasonEN": "An easy number-theory enumeration problem that checks product-equivalence conditions through gcd and lcm relationships. It is useful for practicing safe bounded-range enumeration and recognizing algebraic identities behind array constraints.",
+    "reasonZH": "入门级数论枚举题，通过 gcd 与 lcm 关系检查乘积等价条件。它能训练在有限范围内安全枚举，并识别数组约束背后的代数恒等式。"
+  },
+  {
+    "slug": "maximum-subarray-xor-with-bounded-range",
+    "reasonEN": "A hard prefix-XOR optimization problem that maintains only prefixes in the permitted length range and queries a binary trie. It develops synchronization between sliding-window bounds and dynamic maximum-XOR data structures.",
+    "reasonZH": "高难度前缀异或优化题，只维护长度范围允许的前缀，并在二进制字典树中查询最大异或值。它能训练滑动窗口边界与动态最大异或数据结构的同步维护。"
+  },
+  {
+    "slug": "maximum-subgraph-score-in-a-tree",
+    "reasonEN": "A hard tree-DP problem that aggregates child contributions while deciding which connected subgraph structure should continue through each node. It sharpens postorder state design and the handling of optional subtree contributions.",
+    "reasonZH": "高难度树形动态规划题，聚合子节点贡献并决定哪些连通子图结构应经过当前节点延续。它能训练后序状态设计，以及可选子树贡献的取舍。"
+  },
+  {
+    "slug": "maximum-subsequence-score",
+    "reasonEN": "A sorting-and-heap greedy problem that fixes the current minimum multiplier by processing it in descending order, while retaining the largest companion values. It teaches how to isolate a bottleneck term and optimize the remaining additive part.",
+    "reasonZH": "排序加堆的贪心代表题，按候选最小乘子降序处理，同时保留最大的若干配对值。它能训练先固定瓶颈项，再优化其余可加部分的思维。"
+  },
+  {
+    "slug": "maximum-substrings-with-distinct-start",
+    "reasonEN": "A string grouping problem centered on tracking occurrences by starting character and selecting maximal valid contributions. It develops concise hash-based modeling and careful interpretation of uniqueness at substring boundaries.",
+    "reasonZH": "字符串分组题，核心是按起始字符跟踪出现情况并选择最大合法贡献。它能训练简洁的哈希建模，以及对子串边界唯一性条件的准确理解。"
+  },
+  {
+    "slug": "maximum-sum-bst-in-binary-tree",
+    "reasonEN": "A postorder tree-DP problem that returns subtree validity, value range, and sum together to validate BST structure locally. It is a model exercise in designing rich recursive return values for global tree objectives.",
+    "reasonZH": "后序树形 DP 题，需要同时返回子树合法性、取值范围和节点和以局部验证 BST 性质。它是训练为全局树目标设计丰富递归返回值的代表题。"
+  },
+  {
+    "slug": "maximum-sum-circular-subarray",
+    "reasonEN": "A circular-array extension of Kadane's algorithm that compares the ordinary maximum with total sum minus the minimum segment. It reinforces complement reasoning and the all-negative edge case that invalidates the wrapped form.",
+    "reasonZH": "环形数组的 Kadane 扩展题，需要比较普通最大子数组和与总和减最小子数组和。它能训练补集思维，并掌握全负数组会使环绕方案失效的边界。"
+  },
+  {
+    "slug": "maximum-sum-obtained-of-any-permutation",
+    "reasonEN": "A contribution-sorting greedy problem: prefix sums count how often each index is requested, then the largest values are paired with the largest frequencies. It develops the rearrangement inequality intuition and difference-array counting.",
+    "reasonZH": "贡献排序贪心题，先用前缀和统计每个下标被请求的次数，再将最大数值匹配最大频次。它能训练重排不等式直觉，以及差分计数与前缀恢复。"
+  },
+  {
+    "slug": "maximum-sum-of-3-non-overlapping-subarrays",
+    "reasonEN": "A landmark fixed-window DP problem that combines window sums with best-left and best-right choices to enforce non-overlap and tie order. It is excellent practice for decomposing multi-interval selection into reusable prefix and suffix optima.",
+    "reasonZH": "固定窗口多区间 DP 代表题，结合窗口和、左侧最优和右侧最优来保证不重叠及字典序要求。它能训练将多区间选择拆解为可复用前后缀最优状态。"
+  }
+]

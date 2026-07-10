@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "longest-non-decreasing-subarray-from-two-arrays",
+    "reasonEN": "A medium array DP problem that chooses one value at each index while preserving a non-decreasing run. It trains maintaining the best ending length for both source choices and comparing all compatible prior transitions.",
+    "reasonZH": "这是一道中等难度的数组 DP 题，需要在每个下标选择一个值并保持非递减连续段。它训练分别维护两种来源选择的最佳结尾长度，并比较所有兼容的前驱转移。"
+  },
+  {
+    "slug": "longest-palindrome",
+    "reasonEN": "An easy greedy counting problem that pairs equal character occurrences and reserves at most one odd count for the center. It reinforces frequency aggregation and the symmetry rule behind palindrome construction.",
+    "reasonZH": "这是一道简单的贪心计数题，配对相同字符的出现次数，并最多保留一个奇数频次放在中心。它训练频次聚合和回文构造背后的对称规则。"
+  },
+  {
+    "slug": "longest-palindrome-after-substring-concatenation-i",
+    "reasonEN": "This medium enumeration and DP problem explores cross-string substring choices before evaluating palindrome structure. It trains boundary-aware two-pointer expansion and provides a direct baseline for reasoning about concatenated palindrome candidates.",
+    "reasonZH": "本题是中等难度的枚举与 DP 题，需要先探索跨字符串的子串选择，再判断回文结构。它训练考虑边界的双指针扩展，并为拼接回文候选提供直接解法基线。"
+  },
+  {
+    "slug": "longest-palindrome-after-substring-concatenation-ii",
+    "reasonEN": "The hard extension requires optimized DP over matching regions from two strings rather than enumerating all substrings. It develops cross-boundary palindrome transitions and state reuse, a valuable technique for large string-combination constraints.",
+    "reasonZH": "困难进阶版需要在两个字符串的匹配区域上进行优化 DP，而非枚举所有子串。它训练跨边界回文转移和状态复用，是处理大规模字符串组合约束的重要技巧。"
+  },
+  {
+    "slug": "longest-palindrome-by-concatenating-two-letter-words",
+    "reasonEN": "A medium greedy counting problem that matches each two-letter word with its reverse and handles symmetric words as a possible center. It trains complement lookup, pair consumption, and the one-center restriction in palindrome assembly.",
+    "reasonZH": "这是一道中等难度的贪心计数题，将每个双字母单词与其反转词配对，并把对称单词作为可能的中心。它训练互补查询、成对消耗，以及回文拼接中只能有一个中心的限制。"
+  },
+  {
+    "slug": "longest-palindromic-path-in-graph",
+    "reasonEN": "A hard graph DP problem that grows a path from matching labeled endpoints while respecting path-state constraints. It trains bitmask state compression, paired-end transitions, and combining graph connectivity with palindrome symmetry.",
+    "reasonZH": "本题是困难的图 DP 题，需要从标签匹配的两端扩展路径并遵守路径状态约束。它训练位掩码状态压缩、双端转移，以及将图连通性与回文对称性结合。"
+  },
+  {
+    "slug": "longest-palindromic-subsequence",
+    "reasonEN": "A classic medium interval DP problem that either pairs equal endpoints or discards one boundary. It teaches interval expansion order and the essential distinction between subsequences and contiguous substrings.",
+    "reasonZH": "这是一道经典的中等难度区间 DP 题，相等端点可以配对，否则需要舍弃一侧边界。它训练区间扩展顺序，以及子序列与连续子串之间的关键区别。"
+  },
+  {
+    "slug": "longest-palindromic-subsequence-after-at-most-k-operations",
+    "reasonEN": "This medium resource-constrained interval DP extends palindromic subsequence states with an operation budget. It trains calculating pair-conversion cost and allocating limited edits only where they improve the optimal structure.",
+    "reasonZH": "本题是中等难度的资源受限区间 DP，在最长回文子序列状态中加入操作预算。它训练计算字符配对转换代价，并只在能改进最优结构的位置分配有限修改次数。"
+  },
+  {
+    "slug": "longest-palindromic-substring",
+    "reasonEN": "A foundational medium palindrome problem best approached by expanding around odd and even centers. It trains symmetry-based boundary expansion and offers a clean contrast between center expansion and interval DP.",
+    "reasonZH": "这是一道基础的中等难度回文题，最适合围绕奇偶中心向两侧扩展。它训练基于对称性的边界扩展，并清晰对比中心扩展和区间 DP。"
+  },
+  {
+    "slug": "longest-path-with-different-adjacent-characters",
+    "reasonEN": "A hard tree DP problem that combines the two longest valid child chains through each node. It trains filtering children by label compatibility and maintaining the top two contributions, a canonical tree-diameter variation.",
+    "reasonZH": "这是一道困难的树形 DP 题，需要通过每个节点合并两条最长的合法子链。它训练按标签兼容性过滤子节点并维护前两大贡献，是树直径变体的经典题。"
+  },
+  {
+    "slug": "longest-repeating-character-replacement",
+    "reasonEN": "This medium sliding-window problem keeps a window valid when its nonmajority characters fit within the replacement budget. It trains frequency tracking, the size-minus-maximum-frequency invariant, and efficient window contraction.",
+    "reasonZH": "本题是中等难度的滑动窗口题，当窗口内非主导字符数量不超过替换预算时保持有效。它训练频次跟踪、窗口长度减最大频次的不变量，以及高效收缩窗口。"
+  },
+  {
+    "slug": "longest-special-path",
+    "reasonEN": "A hard tree DFS problem that finds the longest ancestor-descendant path with distinct values. It trains maintaining last-seen depths during recursion, moving a valid path boundary, and using prefix distances for constant-time length evaluation.",
+    "reasonZH": "这是一道困难的树 DFS 题，寻找值互不重复的最长祖先到后代路径。它训练在递归中维护最近出现深度、移动合法路径边界，并用前缀距离常数时间计算长度。"
+  },
+  {
+    "slug": "longest-special-path-ii",
+    "reasonEN": "The hard follow-up extends path uniqueness with richer occurrence constraints and tie-breaking requirements. It develops multi-occurrence bookkeeping during DFS and demonstrates how a tree-path sliding window can be generalized beyond simple distinctness.",
+    "reasonZH": "困难进阶版在路径唯一性基础上加入更复杂的出现次数约束和并列规则。它训练 DFS 中的多次出现记录，并展示树路径滑动窗口如何从简单去重推广到更一般的限制。"
+  },
+  {
+    "slug": "longest-square-streak-in-an-array",
+    "reasonEN": "A medium hash-based chain problem that links a number to its square when the successor exists. It trains set membership, overflow-aware squaring, and DP-style chain length propagation after sorting or deduplication.",
+    "reasonZH": "本题是中等难度的哈希链式题，当平方后的后继存在时连接两个数。它训练集合成员查询、防溢出的平方计算，以及排序或去重后的 DP 式链长传递。"
+  },
+  {
+    "slug": "longest-strictly-increasing-or-strictly-decreasing-subarray",
+    "reasonEN": "An easy one-pass array problem that maintains separate increasing and decreasing streak lengths. It reinforces local comparison transitions and reset behavior, forming a compact template for monotonic run detection.",
+    "reasonZH": "这是一道简单的一次遍历数组题，分别维护严格递增和严格递减的连续段长度。它训练局部比较转移与重置行为，是单调连续段检测的紧凑模板。"
+  },
+  {
+    "slug": "longest-strictly-increasing-subsequence-with-non-zero-bitwise-and",
+    "reasonEN": "This medium hybrid problem combines increasing-subsequence ordering with bitwise compatibility. It trains enumerating contributing bits, maintaining best candidates under value order, and using bit-level conditions to prune otherwise broad LIS transitions.",
+    "reasonZH": "本题是中等难度的混合题，将递增子序列顺序与位运算兼容性结合。它训练枚举贡献位、按数值顺序维护最佳候选，并用位级条件剪枝原本宽泛的 LIS 转移。"
+  },
+  {
+    "slug": "longest-string-chain",
+    "reasonEN": "A medium DP problem that sorts words by length and derives each state by deleting one character. It trains predecessor generation, hash-map memoization, and the useful principle of processing states in dependency order.",
+    "reasonZH": "本题是中等难度的 DP 题，按单词长度排序后通过删除一个字符生成前驱状态。它训练前驱生成、哈希表记忆化，以及按依赖顺序处理状态的实用原则。"
+  },
+  {
+    "slug": "longest-subarray-of-1s-after-deleting-one-element",
+    "reasonEN": "This medium sliding-window problem permits at most one zero, then accounts for the mandatory deletion in the final length. It trains window validity under a small violation budget and careful handling of an all-one input.",
+    "reasonZH": "本题是中等难度的滑动窗口题，窗口内至多允许一个零，并在最终长度中处理必须删除一个元素的要求。它训练小违规预算下的窗口有效性，以及全为一时的边界处理。"
+  },
+  {
+    "slug": "longest-subarray-with-maximum-bitwise-and",
+    "reasonEN": "A medium bitwise observation problem where the maximum possible AND can only come from the array's maximum value. It trains reducing a seemingly global bitwise optimization to counting the longest consecutive run of one decisive value.",
+    "reasonZH": "本题是中等难度的位运算观察题，最大可能按位与只能由数组最大值形成。它训练将看似全局的位运算优化化简为统计一个关键值的最长连续段。"
+  },
+  {
+    "slug": "longest-subsequence-repeated-k-times",
+    "reasonEN": "A hard backtracking problem that enumerates only characters frequent enough to appear in a k-fold subsequence. It trains frequency-based pruning, descending lexicographic candidate generation, and fast repeated-subsequence validation.",
+    "reasonZH": "这是一道困难的回溯题，只枚举频次足以出现在 k 次重复子序列中的字符。它训练基于频次的剪枝、按字典序降序生成候选，以及快速验证重复子序列。"
+  },
+  {
+    "slug": "longest-subsequence-with-decreasing-adjacent-difference",
+    "reasonEN": "This medium DP problem records both the last value and the previous adjacent difference to enforce a decreasing-difference rule. It develops multidimensional state compression and suffix-max optimization over allowable next differences.",
+    "reasonZH": "本题是中等难度的 DP 题，需要同时记录最后一个值和前一次相邻差，以满足差值递减规则。它训练多维状态压缩，以及对允许后续差值进行后缀最大值优化。"
+  },
+  {
+    "slug": "longest-subsequence-with-limited-sum",
+    "reasonEN": "An easy greedy query problem that sorts values so the smallest possible elements fill each sum budget first. It trains prefix-sum preprocessing and upper-bound binary search, a standard offline approach for repeated capacity queries.",
+    "reasonZH": "本题是简单的贪心查询题，将数值排序后优先用最小元素填充每个和预算。它训练前缀和预处理和上界二分，是重复容量查询的标准离线方法。"
+  },
+  {
+    "slug": "longest-subsequence-with-non-zero-bitwise-xor",
+    "reasonEN": "A medium bit-manipulation problem that reasons from the XOR of the whole sequence and the effect of removing minimal elements. It trains using algebraic XOR cancellation to replace exhaustive subsequence search, including zero-value edge cases.",
+    "reasonZH": "本题是中等难度的位运算题，从整个序列的异或值及删除少量元素的影响出发推理。它训练利用异或抵消性质替代穷举子序列搜索，并处理零值边界情况。"
+  },
+  {
+    "slug": "longest-substring-of-all-vowels-in-order",
+    "reasonEN": "This medium string scan tracks nondecreasing vowel phases while requiring every phase to appear. It develops stateful run extension, reset conditions, and validation of a complete ordered alphabet subset.",
+    "reasonZH": "本题是中等难度的字符串扫描题，跟踪非递减的元音阶段并要求所有阶段都出现。它训练有状态的连续段扩展、重置条件，以及完整有序字符集合的验证。"
+  },
+  {
+    "slug": "longest-substring-of-one-repeating-character",
+    "reasonEN": "A hard dynamic string-query problem that uses a segment tree to merge prefix, suffix, and best run information. It trains designing composable node summaries and correctly merging runs that cross a modified boundary.",
+    "reasonZH": "这是一道困难的动态字符串查询题，使用线段树合并前缀、后缀和最佳连续段信息。它训练设计可组合的节点摘要，并正确合并跨越修改边界的连续段。"
+  },
+  {
+    "slug": "longest-substring-with-at-least-k-repeating-characters",
+    "reasonEN": "This medium divide-and-conquer or multi-window problem splits at characters that cannot belong to a valid answer. It trains frequency-based partitioning and offers a strong lesson in choosing between recursive decomposition and constrained sliding windows.",
+    "reasonZH": "本题是中等难度的分治或多窗口题，在不可能属于合法答案的字符处分割。它训练基于频次的划分，并帮助理解递归分解和受限滑动窗口两种方案的取舍。"
+  },
+  {
+    "slug": "longest-substring-without-repeating-characters",
+    "reasonEN": "A canonical medium variable sliding-window problem that moves the left boundary past repeated characters. It trains last-seen indexing, maintaining a uniqueness invariant, and is one of the most reusable templates in string and array processing.",
+    "reasonZH": "这是一道经典的中等难度可变滑动窗口题，重复字符出现时将左边界移动到其后。它训练最近出现位置记录、维护唯一性不变量，是字符串和数组处理中最可复用的模板之一。"
+  },
+  {
+    "slug": "longest-turbulent-subarray",
+    "reasonEN": "A medium array DP problem that extends a run only when adjacent comparison signs alternate. It trains representing the last comparison direction, resetting on equality, and recognizing alternating-pattern invariants.",
+    "reasonZH": "本题是中等难度的数组 DP 题，只有相邻比较符号交替时才能扩展连续段。它训练表示上一次比较方向、在相等时重置，以及识别交替模式不变量。"
+  },
+  {
+    "slug": "longest-uncommon-subsequence-i",
+    "reasonEN": "An easy string observation problem whose answer follows immediately from whether two inputs are equal. It trains identifying when a formal subsequence definition collapses to a simple comparison rather than overengineering a search.",
+    "reasonZH": "本题是简单的字符串观察题，答案直接取决于两个输入是否相等。它训练识别何时形式化的子序列定义可以化简为简单比较，避免过度设计搜索。"
+  },
+  {
+    "slug": "longest-uncommon-subsequence-ii",
+    "reasonEN": "This medium candidate-filtering problem tests longer strings first and rejects any that are subsequences of another string. It trains duplicate handling, two-pointer subsequence checks, and length-ordered pruning for string collections.",
+    "reasonZH": "本题是中等难度的候选过滤题，优先测试较长字符串，并排除作为其他字符串子序列的候选。它训练重复处理、双指针子序列检查，以及字符串集合中的按长度剪枝。"
+  }
+]

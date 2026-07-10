@@ -1,0 +1,742 @@
+[
+  {
+    "slug": "maximum-product-of-subsequences-with-an-alternating-sum-equal-to-k",
+    "frontendDisplayId": "3509",
+    "titleEn": "Maximum Product of Subsequences With an Alternating Sum Equal to K",
+    "titleZh": "最大化交错和为 K 的子序列乘积",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-product-of-subsequences-with-an-alternating-sum-equal-to-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-product-of-the-length-of-two-palindromic-subsequences",
+    "frontendDisplayId": "2002",
+    "titleEn": "Maximum Product of the Length of Two Palindromic Subsequences",
+    "titleZh": "两个回文子序列长度的最大乘积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-product-of-the-length-of-two-palindromic-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-product-of-the-length-of-two-palindromic-substrings",
+    "frontendDisplayId": "1960",
+    "titleEn": "Maximum Product of the Length of Two Palindromic Substrings",
+    "titleZh": "两个回文子字符串长度的最大乘积",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Hash Function",
+      "Rolling Hash",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "哈希函数",
+      "滚动哈希",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-product-of-the-length-of-two-palindromic-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-product-of-three-elements-after-one-replacement",
+    "frontendDisplayId": "3732",
+    "titleEn": "Maximum Product of Three Elements After One Replacement",
+    "titleZh": "一次替换后的三元素最大乘积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-product-of-three-elements-after-one-replacement/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-product-of-three-numbers",
+    "frontendDisplayId": "628",
+    "titleEn": "Maximum Product of Three Numbers",
+    "titleZh": "三个数的最大乘积",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-product-of-three-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-product-of-two-digits",
+    "frontendDisplayId": "3536",
+    "titleEn": "Maximum Product of Two Digits",
+    "titleZh": "两个数字的最大乘积",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-product-of-two-digits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-product-of-two-elements-in-an-array",
+    "frontendDisplayId": "1464",
+    "titleEn": "Maximum Product of Two Elements in an Array",
+    "titleZh": "数组中两元素的最大乘积",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-product-of-two-elements-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-product-of-two-integers-with-no-common-bits",
+    "frontendDisplayId": "3670",
+    "titleEn": "Maximum Product of Two Integers With No Common Bits",
+    "titleZh": "没有公共位的整数最大乘积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-product-of-two-integers-with-no-common-bits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-product-of-word-lengths",
+    "frontendDisplayId": "318",
+    "titleEn": "Maximum Product of Word Lengths",
+    "titleZh": "最大单词长度乘积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-product-of-word-lengths/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-product-subarray",
+    "frontendDisplayId": "152",
+    "titleEn": "Maximum Product Subarray",
+    "titleZh": "乘积最大子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-product-subarray/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-profit-from-trading-stocks-with-discounts",
+    "frontendDisplayId": "3562",
+    "titleEn": "Maximum Profit from Trading Stocks with Discounts",
+    "titleZh": "折扣价交易股票的最大利润",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-profit-from-trading-stocks-with-discounts/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-profit-from-valid-topological-order-in-dag",
+    "frontendDisplayId": "3530",
+    "titleEn": "Maximum Profit from Valid Topological Order in DAG",
+    "titleZh": "有向无环图中合法拓扑排序的最大利润",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Graph Theory",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "图",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-profit-from-valid-topological-order-in-dag/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-profit-in-job-scheduling",
+    "frontendDisplayId": "1235",
+    "titleEn": "Maximum Profit in Job Scheduling",
+    "titleZh": "规划兼职工作",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-profit-in-job-scheduling/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-profit-of-operating-a-centennial-wheel",
+    "frontendDisplayId": "1599",
+    "titleEn": "Maximum Profit of Operating a Centennial Wheel",
+    "titleZh": "经营摩天轮的最大利润",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-profit-of-operating-a-centennial-wheel/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-repeating-substring",
+    "frontendDisplayId": "1668",
+    "titleEn": "Maximum Repeating Substring",
+    "titleZh": "最大重复子字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串",
+      "字符串匹配"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-repeating-substring/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-rows-covered-by-columns",
+    "frontendDisplayId": "2397",
+    "titleEn": "Maximum Rows Covered by Columns",
+    "titleZh": "被列覆盖的最多行数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Enumeration",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "枚举",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-rows-covered-by-columns/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-running-time-of-n-computers",
+    "frontendDisplayId": "2141",
+    "titleEn": "Maximum Running Time of N Computers",
+    "titleZh": "同时运行 N 台电脑的最长时间",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-running-time-of-n-computers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-score-after-applying-operations-on-a-tree",
+    "frontendDisplayId": "2925",
+    "titleEn": "Maximum Score After Applying Operations on a Tree",
+    "titleZh": "在树上执行操作以后得到的最大分数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-score-after-applying-operations-on-a-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-score-after-binary-swaps",
+    "frontendDisplayId": "3781",
+    "titleEn": "Maximum Score After Binary Swaps",
+    "titleZh": "二进制交换后的最大分数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-score-after-binary-swaps/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-score-after-splitting-a-string",
+    "frontendDisplayId": "1422",
+    "titleEn": "Maximum Score After Splitting a String",
+    "titleZh": "分割字符串的最大得分",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-score-after-splitting-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-score-from-grid-operations",
+    "frontendDisplayId": "3225",
+    "titleEn": "Maximum Score From Grid Operations",
+    "titleZh": "网格图操作后的最大分数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-score-from-grid-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-score-from-performing-multiplication-operations",
+    "frontendDisplayId": "1770",
+    "titleEn": "Maximum Score from Performing Multiplication Operations",
+    "titleZh": "执行乘法运算的最大分数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-score-from-performing-multiplication-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-score-from-removing-stones",
+    "frontendDisplayId": "1753",
+    "titleEn": "Maximum Score From Removing Stones",
+    "titleZh": "移除石子的最大得分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "堆（优先队列）",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-score-from-removing-stones/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-score-from-removing-substrings",
+    "frontendDisplayId": "1717",
+    "titleEn": "Maximum Score From Removing Substrings",
+    "titleZh": "删除子字符串的最大得分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-score-from-removing-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-score-of-a-good-subarray",
+    "frontendDisplayId": "1793",
+    "titleEn": "Maximum Score of a Good Subarray",
+    "titleZh": "好子数组的最大分数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Monotonic Stack",
+      "Stack",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "单调栈",
+      "栈",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-score-of-a-good-subarray/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-score-of-a-node-sequence",
+    "frontendDisplayId": "2242",
+    "titleEn": "Maximum Score of a Node Sequence",
+    "titleZh": "节点序列的最大得分",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Graph Theory",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "图",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-score-of-a-node-sequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-score-of-a-split",
+    "frontendDisplayId": "3788",
+    "titleEn": "Maximum Score of a Split",
+    "titleZh": "分割的最大得分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-score-of-a-split/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-score-of-non-overlapping-intervals",
+    "frontendDisplayId": "3414",
+    "titleEn": "Maximum Score of Non-overlapping Intervals",
+    "titleZh": "不重叠区间的最大得分",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-score-of-non-overlapping-intervals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-score-of-spliced-array",
+    "frontendDisplayId": "2321",
+    "titleEn": "Maximum Score Of Spliced Array",
+    "titleZh": "拼接数组的最大分数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-score-of-spliced-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-score-using-exactly-k-pairs",
+    "frontendDisplayId": "3836",
+    "titleEn": "Maximum Score Using Exactly K Pairs",
+    "titleZh": "恰好 K 个下标对的最大得分",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-score-using-exactly-k-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-072",
+    "claimedAt": "2026-07-10T06:14:25.901976+00:00",
+    "completedAt": null
+  }
+]

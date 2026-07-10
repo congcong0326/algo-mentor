@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "cinema-seat-allocation",
+    "reasonEN": "A medium bitmask-and-greedy design problem that compresses each row's reservations into a compact state, tests conflict detection for fixed seat blocks, and builds practical skill in replacing bulky simulation with efficient encoding.",
+    "reasonZH": "中等难度的位运算与贪心题，通过位掩码压缩每排预约状态并判断固定座位块冲突，训练用紧凑编码替代冗长模拟的能力。"
+  },
+  {
+    "slug": "circle-and-rectangle-overlapping",
+    "reasonEN": "This medium geometry problem centers on projecting a circle center onto a rectangle and comparing squared distances, reinforcing boundary handling without floating-point errors and providing a reusable collision-detection pattern.",
+    "reasonZH": "中等难度的几何判定题，核心是将圆心投影到矩形最近点并比较距离平方，训练边界处理与避免浮点误差的技巧，是碰撞检测的基础模板。"
+  },
+  {
+    "slug": "circular-array-loop",
+    "reasonEN": "A nuanced medium cycle-detection problem that adapts fast and slow pointers to directional constraints in a circular array, highlights invalid-loop cleanup, and sharpens reasoning about stateful traversal.",
+    "reasonZH": "这是一道带方向约束的中等环检测题，需要将快慢指针迁移到环形数组并排除无效循环，训练状态遍历和细节清理能力。"
+  },
+  {
+    "slug": "circular-permutation-in-binary-representation",
+    "reasonEN": "This medium bit-manipulation construction problem uses Gray-code adjacency to satisfy a circular permutation constraint, connecting binary transformations with combinatorial generation and strengthening constructive problem-solving.",
+    "reasonZH": "中等难度的位运算构造题，利用格雷码相邻元素仅一位不同的性质满足循环排列约束，连接二进制变换与组合生成思维。"
+  },
+  {
+    "slug": "circular-sentence",
+    "reasonEN": "An easy string-validation exercise that checks local word boundaries plus the wraparound boundary, training careful indexing and serving as a concise introduction to circular-condition handling.",
+    "reasonZH": "简单字符串校验题，既要检查相邻单词边界也要检查首尾回环关系，训练细致的下标处理，是理解循环条件的入门练习。"
+  },
+  {
+    "slug": "circus-tower-lcci",
+    "reasonEN": "A medium sorting-and-dynamic-programming variant of longest increasing subsequence, where tie-breaking order is essential before binary-search optimization, making it valuable practice for reducing two-dimensional nesting problems.",
+    "reasonZH": "这是最长递增子序列的中等二维变体，排序时的同维度 tie-breaking 决定了后续二分优化是否正确，适合训练二维嵌套问题的降维技巧。"
+  },
+  {
+    "slug": "classes-with-at-least-5-students",
+    "reasonEN": "This easy database aggregation problem focuses on GROUP BY and HAVING rather than row-level filtering, establishing a fundamental SQL distinction that appears frequently in analytical queries.",
+    "reasonZH": "简单的数据库聚合题，重点区分分组后的 HAVING 与行级 WHERE 过滤，是分析型 SQL 查询中必须掌握的基础语义。"
+  },
+  {
+    "slug": "clear-digits",
+    "reasonEN": "An easy stack simulation problem that models each digit as a deletion of the nearest prior letter, reinforcing LIFO state maintenance and showing when a simple mutable buffer is the natural solution.",
+    "reasonZH": "简单的栈模拟题，将每个数字视为删除最近左侧字母，训练后进先出的状态维护，并帮助理解何时应使用可变字符缓冲区。"
+  },
+  {
+    "slug": "climbing-stairs",
+    "reasonEN": "A foundational easy dynamic-programming problem whose recurrence is Fibonacci-shaped, teaching base-case design and state compression while providing a durable entry point for counting-path problems.",
+    "reasonZH": "动态规划的经典入门题，递推关系呈斐波那契形式，训练边界初始化与状态压缩，是计数型路径问题的可靠起点。"
+  },
+  {
+    "slug": "climbing-stairs-ii",
+    "reasonEN": "This medium dynamic-programming extension requires deriving transitions from the allowed-step structure, training recurrence modeling over an array and helping distinguish direct pattern recall from generalized state design.",
+    "reasonZH": "中等难度的爬楼梯扩展题，需要从允许步长结构推导状态转移，训练数组上的递推建模，而非机械套用基础题公式。"
+  },
+  {
+    "slug": "clone-graph",
+    "reasonEN": "A canonical medium graph traversal problem that pairs DFS or BFS with a node-to-copy map, testing identity preservation and duplicate avoidance while establishing a core graph-copying template.",
+    "reasonZH": "图遍历的经典中等题，将 DFS 或 BFS 与原节点到复制节点的映射结合，考查节点身份保持和防重复访问，是克隆图的核心模板。"
+  },
+  {
+    "slug": "closed-number-lcci",
+    "reasonEN": "This medium bit-manipulation problem works with the next larger and smaller integers having equal popcount, training low-bit extraction, carry-like transformations, and precise boundary reasoning for binary representations.",
+    "reasonZH": "中等难度的位运算题，寻找二进制中 1 的数量相同的相邻整数，训练最低位提取、类似进位的变换以及二进制边界判断。"
+  },
+  {
+    "slug": "closest-dessert-cost",
+    "reasonEN": "A medium backtracking optimization problem that enumerates ternary topping choices and applies exact tie-breaking, building intuition for bounded search spaces and branch decisions near a target value.",
+    "reasonZH": "中等难度的回溯优化题，枚举每种配料的三种选择并处理精确的并列规则，训练有界搜索空间和目标值附近的分支决策。"
+  },
+  {
+    "slug": "closest-divisors",
+    "reasonEN": "This medium number-theory problem leverages the fact that closest factor pairs lie near a square root, training divisor scanning and demonstrating how mathematical structure can collapse a brute-force search.",
+    "reasonZH": "中等数论题利用最接近的因数对通常靠近平方根这一性质，训练约数扫描，并展示如何借助数学结构缩小暴力搜索范围。"
+  },
+  {
+    "slug": "closest-equal-element-queries",
+    "reasonEN": "A medium query problem that groups equal values by index and searches neighboring occurrences in a circular ordering, combining hashing with binary search and teaching how preprocessing converts repeated queries into local lookups.",
+    "reasonZH": "中等查询题按值分组保存下标，再在循环顺序中查找相邻出现位置，结合哈希与二分，训练用预处理将重复查询转化为局部查找。"
+  },
+  {
+    "slug": "closest-nodes-queries-in-a-binary-search-tree",
+    "reasonEN": "This medium BST query problem flattens in-order values into a sorted array before binary searching predecessor and successor, illustrating how traversal order and offline preprocessing simplify many-query workloads.",
+    "reasonZH": "这道中等 BST 查询题先通过中序遍历得到有序数组，再二分寻找前驱和后继，体现遍历顺序与离线预处理如何简化多次查询。"
+  },
+  {
+    "slug": "closest-prime-numbers-in-range",
+    "reasonEN": "A medium number-theory problem built around sieve preprocessing and one-pass adjacent-prime comparison, reinforcing primality generation at scale and the value of sequential postprocessing.",
+    "reasonZH": "中等难度的数论题，以筛法预处理质数并在线性扫描中比较相邻质数，训练规模化质数生成与顺序后处理能力。"
+  },
+  {
+    "slug": "closest-room",
+    "reasonEN": "A hard offline-query problem that sorts rooms and requests by eligibility, then uses an ordered set to inspect nearest identifiers, making it a strong template for combining activation sweeps with predecessor-successor queries.",
+    "reasonZH": "困难的离线查询题，按可用条件排序激活房间，再用有序集合寻找最近编号，是扫描线式激活与前驱后继查询结合的代表题。"
+  },
+  {
+    "slug": "closest-subsequence-sum",
+    "reasonEN": "This hard meet-in-the-middle problem splits subset enumeration into two manageable halves and searches paired sums near the target, teaching a key exponential-time optimization beyond ordinary dynamic programming.",
+    "reasonZH": "困难的折半枚举题，将子集枚举拆为两个可控部分并匹配接近目标的和，训练超越常规动态规划的重要指数级优化方法。"
+  },
+  {
+    "slug": "clumsy-factorial",
+    "reasonEN": "A medium arithmetic simulation problem where operator precedence must be preserved through stack updates, reinforcing expression-evaluation mechanics and careful treatment of integer division.",
+    "reasonZH": "中等难度的算术模拟题，需要借助栈维护运算优先级，训练表达式求值过程以及整数除法等细节处理。"
+  },
+  {
+    "slug": "cnHoX6",
+    "reasonEN": "A hard tree-focused problem that demands disciplined state modeling and structural decomposition, making it valuable for practicing how to turn a complex tree process into verifiable dynamic transitions.",
+    "reasonZH": "困难的树结构题，需要严谨地建模状态并拆解结构过程，适合训练如何将复杂树上过程转化为可验证的动态转移。"
+  },
+  {
+    "slug": "coin-bonus",
+    "reasonEN": "A hard tree-query problem that combines subtree interval mapping with Fenwick tree or segment tree operations, training range-update and range-query techniques used in hierarchy-based data systems.",
+    "reasonZH": "困难的树上查询题，将子树映射为区间后配合树状数组或线段树操作，训练层级数据中的区间修改与区间查询技巧。"
+  },
+  {
+    "slug": "coin-change",
+    "reasonEN": "A classic medium unbounded-knapsack problem that minimizes the number of coins through a one-dimensional recurrence, teaching reachability initialization and the difference between optimization and counting DP.",
+    "reasonZH": "经典的中等完全背包题，通过一维递推最小化硬币数量，训练可达状态初始化，并区分最优化 DP 与计数型 DP。"
+  },
+  {
+    "slug": "coin-change-ii",
+    "reasonEN": "This medium complete-knapsack counting problem emphasizes loop order to count combinations exactly once, making it essential practice for avoiding permutation overcounting in dynamic programming.",
+    "reasonZH": "中等难度的完全背包计数题，循环顺序决定组合是否只统计一次，是避免动态规划中排列重复计数的必练题。"
+  },
+  {
+    "slug": "coin-lcci",
+    "reasonEN": "A medium coin-combination dynamic-programming problem that uses fixed denominations and modular arithmetic, reinforcing complete-knapsack transitions and robust counting-state initialization.",
+    "reasonZH": "中等硬币组合动态规划题，结合固定面额与模运算，巩固完全背包转移和计数状态初始化的基本功。"
+  },
+  {
+    "slug": "collect-coins-in-a-tree",
+    "reasonEN": "A hard tree-pruning problem that repeatedly removes irrelevant leaves before accounting for the remaining traversal, teaching degree-based topological peeling and structural reduction on trees.",
+    "reasonZH": "困难的树剪枝题，先反复移除无关叶子再计算剩余遍历代价，训练基于度数的拓扑剥离和树结构化简思维。"
+  },
+  {
+    "slug": "collecting-chocolates",
+    "reasonEN": "This medium enumeration problem evaluates each rotation while maintaining the best attainable cost per position, training incremental minimum updates and revealing how a quadratic scan can be made conceptually simple.",
+    "reasonZH": "中等枚举题，逐一考察旋转次数并维护每个位置可达到的最小成本，训练增量最小值更新，理解如何简洁处理平方级扫描。"
+  },
+  {
+    "slug": "color-fill-lcci",
+    "reasonEN": "An easy matrix traversal template that applies DFS or BFS to a connected component, reinforcing visited-state discipline and serving as a direct foundation for flood-fill and island problems.",
+    "reasonZH": "简单的矩阵遍历模板题，用 DFS 或 BFS 处理连通块，训练访问状态管理，是泛洪填充和岛屿类问题的直接基础。"
+  },
+  {
+    "slug": "coloring-a-border",
+    "reasonEN": "A medium grid traversal problem that distinguishes component interior cells from boundary cells during DFS or BFS, sharpening neighbor-count reasoning and safe in-place update strategies.",
+    "reasonZH": "中等网格遍历题，在 DFS 或 BFS 过程中区分连通块内部与边界单元，训练邻居计数判断和安全的原地更新策略。"
+  },
+  {
+    "slug": "combination-sum",
+    "reasonEN": "A core medium backtracking problem that explores reusable candidates with nondecreasing choices, teaching recursion-state design, pruning by remaining target, and duplicate-free combination construction.",
+    "reasonZH": "核心中等回溯题，通过非递减选择顺序枚举可重复候选数，训练递归状态设计、按剩余目标剪枝和无重复组合构造。"
+  }
+]

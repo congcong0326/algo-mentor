@@ -1,0 +1,738 @@
+[
+  {
+    "slug": "number-of-paths-with-max-score",
+    "frontendDisplayId": "1301",
+    "titleEn": "Number of Paths with Max Score",
+    "titleZh": "最大得分的路径数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-paths-with-max-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-people-aware-of-a-secret",
+    "frontendDisplayId": "2327",
+    "titleEn": "Number of People Aware of a Secret",
+    "titleZh": "知道秘密的人数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Queue",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "队列",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-people-aware-of-a-secret/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-perfect-pairs",
+    "frontendDisplayId": "3649",
+    "titleEn": "Number of Perfect Pairs",
+    "titleZh": "完美对的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "Array",
+      "Math",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-perfect-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-possible-sets-of-closing-branches",
+    "frontendDisplayId": "2959",
+    "titleEn": "Number of Possible Sets of Closing Branches",
+    "titleZh": "关闭分部的可行集合数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Enumeration",
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "枚举",
+      "图",
+      "堆（优先队列）",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-possible-sets-of-closing-branches/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-prefix-connected-groups",
+    "frontendDisplayId": "3839",
+    "titleEn": "Number of Prefix Connected Groups",
+    "titleZh": "前缀连接组的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-prefix-connected-groups/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-provinces",
+    "frontendDisplayId": "547",
+    "titleEn": "Number of Provinces",
+    "titleZh": "省份数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-provinces/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-recent-calls",
+    "frontendDisplayId": "933",
+    "titleEn": "Number of Recent Calls",
+    "titleZh": "最近的请求次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Data Stream",
+      "Design",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "数据流",
+      "设计",
+      "队列"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-recent-calls/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-rectangles-that-can-form-the-largest-square",
+    "frontendDisplayId": "1725",
+    "titleEn": "Number Of Rectangles That Can Form The Largest Square",
+    "titleZh": "可以形成最大正方形的矩形数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-rectangles-that-can-form-the-largest-square/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-restricted-paths-from-first-to-last-node",
+    "frontendDisplayId": "1786",
+    "titleEn": "Number of Restricted Paths From First to Last Node",
+    "titleZh": "从第一个节点出发到最后一个节点的受限路径数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Shortest Path",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "图",
+      "堆（优先队列）",
+      "最短路",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-restricted-paths-from-first-to-last-node/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-segments-in-a-string",
+    "frontendDisplayId": "434",
+    "titleEn": "Number of Segments in a String",
+    "titleZh": "字符串中的单词数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-segments-in-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-senior-citizens",
+    "frontendDisplayId": "2678",
+    "titleEn": "Number of Senior Citizens",
+    "titleZh": "老人的数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-senior-citizens/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-sets-of-k-non-overlapping-line-segments",
+    "frontendDisplayId": "1621",
+    "titleEn": "Number of Sets of K Non-Overlapping Line Segments",
+    "titleZh": "大小为 K 的不重叠线段的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "动态规划",
+      "数学",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-sets-of-k-non-overlapping-line-segments/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-smooth-descent-periods-of-a-stock",
+    "frontendDisplayId": "2110",
+    "titleEn": "Number of Smooth Descent Periods of a Stock",
+    "titleZh": "股票平滑下跌阶段的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Math",
+      "Sliding Window",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "数学",
+      "滑动窗口",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-smooth-descent-periods-of-a-stock/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-squareful-arrays",
+    "frontendDisplayId": "996",
+    "titleEn": "Number of Squareful Arrays",
+    "titleZh": "平方数组的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-squareful-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-stable-subsequences",
+    "frontendDisplayId": "3686",
+    "titleEn": "Number of Stable Subsequences",
+    "titleZh": "稳定子序列的数量",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-stable-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-steps-to-reduce-a-number-in-binary-representation-to-one",
+    "frontendDisplayId": "1404",
+    "titleEn": "Number of Steps to Reduce a Number in Binary Representation to One",
+    "titleZh": "将二进制表示减到 1 的步骤数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-steps-to-reduce-a-number-in-binary-representation-to-one/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-steps-to-reduce-a-number-to-zero",
+    "frontendDisplayId": "1342",
+    "titleEn": "Number of Steps to Reduce a Number to Zero",
+    "titleZh": "将数字变成 0 的操作次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-steps-to-reduce-a-number-to-zero/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-strings-that-appear-as-substrings-in-word",
+    "frontendDisplayId": "1967",
+    "titleEn": "Number of Strings That Appear as Substrings in Word",
+    "titleZh": "作为子字符串出现在单词中的字符串数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-strings-that-appear-as-substrings-in-word/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-strings-which-can-be-rearranged-to-contain-substring",
+    "frontendDisplayId": "2930",
+    "titleEn": "Number of Strings Which Can Be Rearranged to Contain Substring",
+    "titleZh": "重新排列后包含指定子字符串的字符串数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-strings-which-can-be-rearranged-to-contain-substring/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-students-doing-homework-at-a-given-time",
+    "frontendDisplayId": "1450",
+    "titleEn": "Number of Students Doing Homework at a Given Time",
+    "titleZh": "在既定时间做作业的学生人数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-students-doing-homework-at-a-given-time/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-students-unable-to-eat-lunch",
+    "frontendDisplayId": "1700",
+    "titleEn": "Number of Students Unable to Eat Lunch",
+    "titleZh": "无法吃午餐的学生数量",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Queue",
+      "Simulation",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "队列",
+      "模拟",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-students-unable-to-eat-lunch/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold",
+    "frontendDisplayId": "1343",
+    "titleEn": "Number of Sub-arrays of Size K and Average Greater than or Equal to Threshold",
+    "titleZh": "大小为 K 且平均值大于等于阈值的子数组数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-sub-arrays-with-odd-sum",
+    "frontendDisplayId": "1524",
+    "titleEn": "Number of Sub-arrays With Odd Sum",
+    "titleZh": "和为奇数的子数组数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Math",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "数学",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-sub-arrays-with-odd-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-subarrays-that-match-a-pattern-i",
+    "frontendDisplayId": "3034",
+    "titleEn": "Number of Subarrays That Match a Pattern I",
+    "titleZh": "匹配模式数组的子数组数目 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Function",
+      "Rolling Hash",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希函数",
+      "滚动哈希",
+      "字符串匹配"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-subarrays-that-match-a-pattern-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-subarrays-that-match-a-pattern-ii",
+    "frontendDisplayId": "3036",
+    "titleEn": "Number of Subarrays That Match a Pattern II",
+    "titleZh": "匹配模式数组的子数组数目 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Function",
+      "Rolling Hash",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希函数",
+      "滚动哈希",
+      "字符串匹配"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-subarrays-that-match-a-pattern-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-subarrays-with-and-value-of-k",
+    "frontendDisplayId": "3209",
+    "titleEn": "Number of Subarrays With AND Value of K",
+    "titleZh": "子数组按位与值为 K 的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Bit Manipulation",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "位运算",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-subarrays-with-and-value-of-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-subarrays-with-bounded-maximum",
+    "frontendDisplayId": "795",
+    "titleEn": "Number of Subarrays with Bounded Maximum",
+    "titleZh": "区间子数组个数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-subarrays-with-bounded-maximum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-subarrays-with-gcd-equal-to-k",
+    "frontendDisplayId": "2447",
+    "titleEn": "Number of Subarrays With GCD Equal to K",
+    "titleZh": "最大公因数等于 K 的子数组数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-subarrays-with-gcd-equal-to-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-subarrays-with-lcm-equal-to-k",
+    "frontendDisplayId": "2470",
+    "titleEn": "Number of Subarrays With LCM Equal to K",
+    "titleZh": "最小公倍数等于 K 的子数组数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-subarrays-with-lcm-equal-to-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-submatrices-that-sum-to-target",
+    "frontendDisplayId": "1074",
+    "titleEn": "Number of Submatrices That Sum to Target",
+    "titleZh": "元素和为目标值的子矩阵数量",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-submatrices-that-sum-to-target/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-093",
+    "claimedAt": "2026-07-10T06:56:21.914217+00:00",
+    "completedAt": null
+  }
+]

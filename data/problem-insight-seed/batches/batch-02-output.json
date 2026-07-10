@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "4ueAj6",
+    "reasonEN": "A medium linked-list boundary-case drill, it centers on preserving circular sorted order while handling wraparound points and all-equal lists, making it useful for sharpening pointer updates under edge cases.",
+    "reasonZH": "中等难度链表边界题，核心是判断循环有序链表的断点并处理全相等、插入最小值或最大值等场景，适合训练指针修改时的边界意识。"
+  },
+  {
+    "slug": "4xy4Wx",
+    "reasonEN": "An accessible sorting and two-pointer counting problem, it tests how to count valid pairs without enumerating them all and is a good warm-up for turning brute-force pair checks into linear scans after sorting.",
+    "reasonZH": "入门级排序与双指针计数题，重点是避免枚举所有组合并用有序性批量统计合法配对，适合作为数组计数优化的练习。"
+  },
+  {
+    "slug": "569nqc",
+    "reasonEN": "A medium string-to-number sorting exercise, it combines time normalization, adjacent-difference scanning, and the circular midnight boundary, making it a compact test of representation choices.",
+    "reasonZH": "中等难度的时间表示转换题，核心是把字符串时间映射为分钟后排序，并额外处理跨午夜的环形差值，能训练建模和边界处理能力。"
+  },
+  {
+    "slug": "5TxKeK",
+    "reasonEN": "A hard array and heap problem built around dynamic median maintenance, it requires deriving the right value transformation and balancing priority queues with running costs, making it valuable for advanced optimization practice.",
+    "reasonZH": "困难级数组与堆综合题，关键在于识别中位数维护模型、完成数值变换并维护动态代价，适合提升优先队列和数学推导能力。"
+  },
+  {
+    "slug": "600YaG",
+    "reasonEN": "A concise counting and hash-table problem, it focuses on aggregating per-string character requirements by maximum frequency and is useful for practicing frequency arrays over small alphabets.",
+    "reasonZH": "简单的计数与哈希题，核心是按字符统计每个需求中的最大出现次数并合并结果，适合巩固小字符集频率数组的使用。"
+  },
+  {
+    "slug": "6CE719",
+    "reasonEN": "A lightweight array comparison task, it emphasizes converting raw temperatures into trend signals and comparing adjacent changes, making it a clean exercise in state compression.",
+    "reasonZH": "简单数组趋势比较题，重点是把连续温度变化压缩成升降平信号再逐位比较，适合训练基础遍历和状态抽象。"
+  },
+  {
+    "slug": "6UEx57",
+    "reasonEN": "A medium shortest-path problem on a matrix graph, it tests BFS or Dijkstra-style state expansion with movement costs and is a strong bridge from grid traversal to graph modeling.",
+    "reasonZH": "中等难度矩阵最短路题，核心是把网格转化为图状态并选择 BFS 或堆优化搜索，适合训练从矩阵遍历到图建模的迁移能力。"
+  },
+  {
+    "slug": "6eUYwP",
+    "reasonEN": "A medium binary-tree DFS problem, it pairs prefix sums with path counting and highlights the common pitfall of backtracking prefix frequencies correctly during recursion.",
+    "reasonZH": "中等难度二叉树 DFS 题，核心是用前缀和统计路径数量，并在递归回溯时正确恢复计数，适合掌握树上路径问题的通用技巧。"
+  },
+  {
+    "slug": "7LpjUW",
+    "reasonEN": "A classic medium graph cycle-detection problem, it is best solved with union find while also reinforcing DFS/BFS alternatives, making it a core exercise for recognizing redundant edges.",
+    "reasonZH": "经典中等图论判环题，最直接考查并查集的连通性维护，也可对照 DFS/BFS 思路，适合巩固冗余边识别模型。"
+  },
+  {
+    "slug": "7WHec2",
+    "reasonEN": "A medium linked-list sorting problem, it applies merge sort under pointer constraints and tests slow-fast splitting, stable merging, and careful next-pointer management.",
+    "reasonZH": "中等难度链表排序题，核心是用归并排序处理无法随机访问的结构，重点训练快慢指针拆分、链表合并和指针断开细节。"
+  },
+  {
+    "slug": "7WqeDu",
+    "reasonEN": "A medium sliding-window and ordered-set problem, it tests how to enforce both index distance and value distance constraints, making it useful for comparing bucketization with balanced-tree approaches.",
+    "reasonZH": "中等难度滑动窗口与有序集合题，关键是同时满足下标距离和值距离约束，适合比较桶排序和有序结构两种解法。"
+  },
+  {
+    "slug": "7p8L0Z",
+    "reasonEN": "A medium backtracking problem with duplicates, it focuses on sorting-based pruning and used-state checks, making it a standard exercise for generating unique permutations without repetition.",
+    "reasonZH": "中等难度含重复元素回溯题，核心是排序后剪枝并正确判断同层重复选择，适合训练去重排列的标准模板。"
+  },
+  {
+    "slug": "7rLGCR",
+    "reasonEN": "A hard matrix dynamic-programming problem, it demands careful state design over constrained grid transitions and is valuable for practicing DP under spatial and blocking conditions.",
+    "reasonZH": "困难级矩阵动态规划题，重点在复杂网格约束下设计状态和转移，适合提升多条件场景中的 DP 建模能力。"
+  },
+  {
+    "slug": "8Zf90G",
+    "reasonEN": "A medium stack simulation problem, it checks expression-evaluation discipline, operand order, and integer operation handling, making it a practical foundation for parser-like problems.",
+    "reasonZH": "中等难度栈模拟题，核心是按逆波兰表达式规则处理操作数顺序和整数运算，适合作为表达式求值类问题的基础训练。"
+  },
+  {
+    "slug": "A1NYOS",
+    "reasonEN": "A medium prefix-sum and hash-table problem, it turns equal numbers of two values into repeated prefix balances and is a strong pattern for longest-subarray constraints.",
+    "reasonZH": "中等难度前缀和哈希题，关键是把 0/1 数量相等转化为前缀差值重复出现，适合掌握最长子数组约束的经典套路。"
+  },
+  {
+    "slug": "B1IidL",
+    "reasonEN": "A simple binary-search problem on a mountain array, it teaches how local slope comparisons guide the search direction and is a clear entry point for non-exact-match binary search.",
+    "reasonZH": "简单山脉数组二分题，核心是根据相邻斜率判断峰值所在方向，适合作为非精确查找型二分的入门练习。"
+  },
+  {
+    "slug": "D0F0SV",
+    "reasonEN": "A medium dynamic-programming counting problem, it emphasizes order-sensitive transitions and target-based state accumulation, making it useful for distinguishing combinations from permutations.",
+    "reasonZH": "中等难度动态规划计数题，重点是按目标值递推并理解顺序敏感的状态转移，适合区分组合数与排列数模型。"
+  },
+  {
+    "slug": "D9PW8w",
+    "reasonEN": "A medium graph-degree problem, it relies on recognizing the hub condition through in-degree and out-degree counts, making it a concise exercise in translating graph definitions into counters.",
+    "reasonZH": "中等难度图度数统计题，核心是用入度和出度刻画交通枢纽条件，适合训练把图论定义转化为计数判定。"
+  },
+  {
+    "slug": "DFPeFJ",
+    "reasonEN": "A hard shortest-path problem with resource states, it extends Dijkstra beyond plain nodes by including battery and charging decisions, making it valuable for state-augmented graph modeling.",
+    "reasonZH": "困难级资源约束最短路题，关键是把电量和充电选择纳入状态并用堆优化搜索，适合提升状态扩展型图论建模能力。"
+  },
+  {
+    "slug": "Db3wC1",
+    "reasonEN": "A hard maze-search problem with changing constraints, it combines matrix traversal, state design, and dynamic programming or search pruning, making it a strong test of multi-dimensional state reasoning.",
+    "reasonZH": "困难级变化迷宫题，核心是把位置、时间或能力等因素纳入状态并进行搜索或动态规划剪枝，适合训练多维状态推理。"
+  },
+  {
+    "slug": "De4qBB",
+    "reasonEN": "A hard backtracking problem on matrix pieces, it stresses shape representation, rotation or placement validation, and pruning, making it useful for practicing exhaustive search with tight constraints.",
+    "reasonZH": "困难级矩阵拼接回溯题，重点是表示积木形状、校验放置合法性并有效剪枝，适合强化复杂组合搜索能力。"
+  },
+  {
+    "slug": "EJvmW4",
+    "reasonEN": "A hard bitmask dynamic-programming problem, it compresses protection states with bits and optimizes transitions over time or positions, making it valuable for mastering compact-state DP.",
+    "reasonZH": "困难级位压动态规划题，核心是用位掩码压缩防护状态并设计高效转移，适合提升复杂状态压缩与枚举能力。"
+  },
+  {
+    "slug": "EXvqDp",
+    "reasonEN": "A medium matrix graph problem with directed movement, it rewards modeling cells as states and using DFS, BFS, memoization, or topological ideas to avoid repeated simulation.",
+    "reasonZH": "中等难度矩阵图搜索题，关键是把格子和方向建模为状态，并用搜索、记忆化或拓扑思路减少重复模拟。"
+  },
+  {
+    "slug": "FortPu",
+    "reasonEN": "A medium data-structure design problem, it combines an array with a hash map to support O(1) insert, delete, and random access, making it a canonical design-pattern exercise.",
+    "reasonZH": "中等难度数据结构设计题，核心是用数组配合哈希表实现 O(1) 插入、删除和随机访问，适合掌握复合结构的设计思路。"
+  },
+  {
+    "slug": "Gu0c2T",
+    "reasonEN": "A medium linear dynamic-programming problem, it distills local take-or-skip choices into two rolling states and is a foundational exercise for non-adjacent selection constraints.",
+    "reasonZH": "中等难度线性动态规划题，核心是把选或不选的局部决策压缩为滚动状态，适合打牢相邻约束类 DP 基础。"
+  },
+  {
+    "slug": "GzCJIP",
+    "reasonEN": "An easy dynamic-programming warm-up, it focuses on choosing the cheaper predecessor at each step and is useful for building intuition around recurrence and space optimization.",
+    "reasonZH": "简单动态规划入门题，重点是从前两个台阶中选择较小代价并逐步递推，适合建立状态转移和空间优化直觉。"
+  },
+  {
+    "slug": "H6lPxb",
+    "reasonEN": "A hard union-find and string-graph problem, it requires defining similarity precisely and connecting equivalent strings efficiently, making it valuable for graph modeling over string relations.",
+    "reasonZH": "困难级并查集与字符串图题，关键是准确判断字符串相似关系并维护连通分量，适合训练字符串关系到图结构的建模能力。"
+  },
+  {
+    "slug": "H8086Q",
+    "reasonEN": "A simple queue-based data-stream design problem, it tests maintaining a moving time window under online queries and is a practical introduction to streaming state management.",
+    "reasonZH": "简单数据流设计题，核心是用队列维护固定时间窗口内的请求，适合练习在线查询场景下的状态更新。"
+  },
+  {
+    "slug": "IDBivT",
+    "reasonEN": "A medium backtracking problem on strings, it uses open and close counts to enforce validity during generation and is a classic template for constrained constructive search.",
+    "reasonZH": "中等难度字符串回溯题，关键是用左右括号数量约束生成过程，避免产生非法前缀，适合掌握构造型搜索模板。"
+  },
+  {
+    "slug": "IQvJ9i",
+    "reasonEN": "A hard design and ordered-structure problem, it blends geometric reflection reasoning with ordered sets or segment trees, making it a high-value exercise for maintaining dynamic boundary events.",
+    "reasonZH": "困难级设计与有序结构题，核心是结合光线反射规律和有序集合或线段树维护动态边界事件，适合挑战复杂模拟与数据结构设计。"
+  }
+]

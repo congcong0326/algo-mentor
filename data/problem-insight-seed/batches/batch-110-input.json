@@ -1,0 +1,730 @@
+[
+  {
+    "slug": "shortest-unsorted-continuous-subarray",
+    "frontendDisplayId": "581",
+    "titleEn": "Shortest Unsorted Continuous Subarray",
+    "titleZh": "最短无序连续子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Monotonic Stack",
+      "Sorting",
+      "Stack",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "单调栈",
+      "排序",
+      "栈",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/shortest-unsorted-continuous-subarray/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shu-de-zi-jie-gou-lcof",
+    "frontendDisplayId": "LCR 143",
+    "titleEn": null,
+    "titleZh": "子结构判断",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/shu-de-zi-jie-gou-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shu-ju-liu-zhong-de-zhong-wei-shu-lcof",
+    "frontendDisplayId": "LCR 160",
+    "titleEn": null,
+    "titleZh": "数据流中的中位数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Data Stream",
+      "Design",
+      "Heap (Priority Queue)",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数据流",
+      "设计",
+      "堆（优先队列）",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/shu-ju-liu-zhong-de-zhong-wei-shu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shu-zhi-de-zheng-shu-ci-fang-lcof",
+    "frontendDisplayId": "LCR 134",
+    "titleEn": null,
+    "titleZh": "Pow(x, n)",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/shu-zhi-de-zheng-shu-ci-fang-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shu-zi-xu-lie-zhong-mou-yi-wei-de-shu-zi-lcof",
+    "frontendDisplayId": "LCR 163",
+    "titleEn": null,
+    "titleZh": "找到第 k 位数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/shu-zi-xu-lie-zhong-mou-yi-wei-de-shu-zi-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shu-zu-zhong-chu-xian-ci-shu-chao-guo-yi-ban-de-shu-zi-lcof",
+    "frontendDisplayId": "LCR 158",
+    "titleEn": null,
+    "titleZh": "库存管理 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Divide and Conquer",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "分治",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/shu-zu-zhong-chu-xian-ci-shu-chao-guo-yi-ban-de-shu-zi-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shu-zu-zhong-de-ni-xu-dui-lcof",
+    "frontendDisplayId": "LCR 170",
+    "titleEn": null,
+    "titleZh": "交易逆序对的总数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Binary Search",
+      "Divide and Conquer",
+      "Merge Sort",
+      "Ordered Set",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "二分查找",
+      "分治",
+      "归并排序",
+      "有序集合",
+      "线段树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/shu-zu-zhong-de-ni-xu-dui-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-ii-lcof",
+    "frontendDisplayId": "LCR 178",
+    "titleEn": null,
+    "titleZh": "训练计划 VI",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-ii-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof",
+    "frontendDisplayId": "LCR 177",
+    "titleEn": null,
+    "titleZh": "撞色搭配",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shu-zu-zhong-zhong-fu-de-shu-zi-lcof",
+    "frontendDisplayId": "LCR 120",
+    "titleEn": null,
+    "titleZh": "寻找文件副本",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shuffle-an-array",
+    "frontendDisplayId": "384",
+    "titleEn": "Shuffle an Array",
+    "titleZh": "打乱数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Math",
+      "Randomized"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "数学",
+      "随机化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/shuffle-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shuffle-string",
+    "frontendDisplayId": "1528",
+    "titleEn": "Shuffle String",
+    "titleZh": "重新排列字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/shuffle-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shuffle-the-array",
+    "frontendDisplayId": "1470",
+    "titleEn": "Shuffle the Array",
+    "titleZh": "重新排列数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/shuffle-the-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shun-shi-zhen-da-yin-ju-zhen-lcof",
+    "frontendDisplayId": "LCR 146",
+    "titleEn": null,
+    "titleZh": "螺旋遍历二维数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/shun-shi-zhen-da-yin-ju-zhen-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sign-of-the-product-of-an-array",
+    "frontendDisplayId": "1822",
+    "titleEn": "Sign of the Product of an Array",
+    "titleZh": "数组元素积的符号",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sign-of-the-product-of-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "similar-string-groups",
+    "frontendDisplayId": "839",
+    "titleEn": "Similar String Groups",
+    "titleZh": "相似字符串组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Hash Table",
+      "String",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "哈希表",
+      "字符串",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/similar-string-groups/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "simple-bank-system",
+    "frontendDisplayId": "2043",
+    "titleEn": "Simple Bank System",
+    "titleZh": "简易银行系统",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Table",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希表",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/simple-bank-system/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "simplified-fractions",
+    "frontendDisplayId": "1447",
+    "titleEn": "Simplified Fractions",
+    "titleZh": "最简分数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Number Theory",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "数论",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/simplified-fractions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "simplify-path",
+    "frontendDisplayId": "71",
+    "titleEn": "Simplify Path",
+    "titleZh": "简化路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/simplify-path/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "single-element-in-a-sorted-array",
+    "frontendDisplayId": "540",
+    "titleEn": "Single Element in a Sorted Array",
+    "titleZh": "有序数组中的单一元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/single-element-in-a-sorted-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "single-number",
+    "frontendDisplayId": "136",
+    "titleEn": "Single Number",
+    "titleZh": "只出现一次的数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/single-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "single-number-ii",
+    "frontendDisplayId": "137",
+    "titleEn": "Single Number II",
+    "titleZh": "只出现一次的数字 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/single-number-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "single-number-iii",
+    "frontendDisplayId": "260",
+    "titleEn": "Single Number III",
+    "titleZh": "只出现一次的数字 III",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/single-number-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "single-threaded-cpu",
+    "frontendDisplayId": "1834",
+    "titleEn": "Single-Threaded CPU",
+    "titleZh": "单线程 CPU",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/single-threaded-cpu/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "skFtm2",
+    "frontendDisplayId": "LCR 070",
+    "titleEn": null,
+    "titleZh": "有序数组中的单一元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/skFtm2/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sleep",
+    "frontendDisplayId": "2621",
+    "titleEn": "Sleep",
+    "titleZh": "睡眠函数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sleep/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sliding-puzzle",
+    "frontendDisplayId": "773",
+    "titleEn": "Sliding Puzzle",
+    "titleZh": "滑动谜题",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Breadth-First Search",
+      "Dynamic Programming",
+      "Matrix",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "广度优先搜索",
+      "动态规划",
+      "矩阵",
+      "记忆化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sliding-puzzle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sliding-subarray-beauty",
+    "frontendDisplayId": "2653",
+    "titleEn": "Sliding Subarray Beauty",
+    "titleZh": "滑动子数组的美丽值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sliding-subarray-beauty/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sliding-window-maximum",
+    "frontendDisplayId": "239",
+    "titleEn": "Sliding Window Maximum",
+    "titleZh": "滑动窗口最大值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Monotonic Queue",
+      "Queue",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "单调队列",
+      "队列",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sliding-window-maximum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sliding-window-median",
+    "frontendDisplayId": "480",
+    "titleEn": "Sliding Window Median",
+    "titleZh": "滑动窗口中位数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "堆（优先队列）",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sliding-window-median/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-110",
+    "claimedAt": "2026-07-10T07:39:33.331540+00:00",
+    "completedAt": null
+  }
+]

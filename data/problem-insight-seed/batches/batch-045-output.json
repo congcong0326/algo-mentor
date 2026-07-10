@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "find-the-closest-palindrome",
+    "reasonEN": "A hard digit-DP and string-math problem centered on palindromic candidates. It trains constructing only the neighboring mirrored prefixes, handling powers of ten and tie-breaking precisely. The problem is valuable for replacing infeasible numeric search with structural candidate enumeration.",
+    "reasonZH": "这是一道高难度的数字构造与字符串数学题，核心是回文候选的定位。它训练只构造相邻镜像前缀对应的候选，并严谨处理 10 的幂、边界和并列取舍。该题有助于建立用结构化枚举替代数值暴搜的意识。"
+  },
+  {
+    "slug": "find-the-count-of-good-integers",
+    "reasonEN": "This hard combinatorics problem combines palindrome enumeration with multiset counting. The key is deduplicating digit-frequency patterns and computing valid permutations without leading zeros. It is a strong exercise in separating structural generation from combinatorial aggregation.",
+    "reasonZH": "本题是高难度的组合计数题，结合回文枚举与多重集合排列。关键在于按数字频次模式去重，并计算不含前导零的合法排列数。它能训练将结构生成和组合汇总拆开的建模能力。"
+  },
+  {
+    "slug": "find-the-count-of-monotonic-pairs-i",
+    "reasonEN": "A dynamic-programming counting problem with monotonic constraints on paired arrays. It emphasizes deriving valid predecessor ranges and accelerating transitions with prefix sums. This is a useful template for turning coupled inequalities into state DP.",
+    "reasonZH": "这是一道带单调约束的动态规划计数题。重点是推导合法前驱区间，并用前缀和加速状态转移。它适合训练把耦合不等式转化为状态 DP 的能力。"
+  },
+  {
+    "slug": "find-the-count-of-monotonic-pairs-ii",
+    "reasonEN": "This harder monotonic-pair variant stresses scalable DP design under larger constraints. It requires preserving the inequality-derived transition bound while using prefix sums to avoid quadratic work. The problem teaches how to carry a correct recurrence from a small version into an optimized implementation.",
+    "reasonZH": "该题是单调数组对的高难度扩展，考查可扩展的 DP 设计。需要保留由不等式推得的转移上界，同时借助前缀和避免二次复杂度。它训练将小数据递推正确地优化到大规模实现。"
+  },
+  {
+    "slug": "find-the-count-of-numbers-which-are-not-special",
+    "reasonEN": "A number-theory classification problem built around recognizing prime squares. The main action is bounding the relevant primes with a sieve or primality test and counting their squares in range. It reinforces reducing a seemingly broad definition to a compact mathematical characterization.",
+    "reasonZH": "这是一个围绕质数平方识别的数论分类题。核心是用筛法或判素数限定相关质数，并统计区间内的平方数。它能训练把宽泛定义归约为简洁数学刻画的思路。"
+  },
+  {
+    "slug": "find-the-degree-of-each-vertex",
+    "reasonEN": "An introductory graph-and-matrix traversal exercise. It focuses on interpreting an adjacency representation and accumulating each vertex degree without missing symmetry or diagonal cases. The task builds reliable fundamentals for graph data representations.",
+    "reasonZH": "本题是图与矩阵遍历的入门练习。重点是正确解读邻接表示，并累计每个顶点的度数，避免遗漏对称关系或对角线情况。它帮助打牢图数据表示的基础。"
+  },
+  {
+    "slug": "find-the-difference",
+    "reasonEN": "A compact string-difference problem with hash, sorting, and XOR solutions. It highlights XOR cancellation as a constant-space invariant and invites comparison with frequency counting. This is an excellent entry point for recognizing when bit operations simplify multiset comparison.",
+    "reasonZH": "这是一道紧凑的字符串差异题，可用哈希、排序或异或解决。核心是理解异或抵消这一常量空间不变量，并与计数法比较。它适合培养在多重集合比较中识别位运算简化方案的能力。"
+  },
+  {
+    "slug": "find-the-difference-of-two-arrays",
+    "reasonEN": "A basic set-operation problem over two arrays. The essential step is deduplicating membership before producing the two directional differences. It reinforces choosing hash sets for clear linear-time reasoning instead of repeated scans.",
+    "reasonZH": "本题是两个数组上的基础集合运算题。关键是先按成员关系去重，再分别构造双向差集。它训练使用哈希集合获得清晰线性复杂度，而非反复扫描。"
+  },
+  {
+    "slug": "find-the-distance-value-between-two-arrays",
+    "reasonEN": "This array problem is a practical sorting-plus-binary-search pattern. After sorting one side, only the predecessor and successor around each query need checking against the distance threshold. It teaches how ordering turns all-pairs validation into local boundary inspection.",
+    "reasonZH": "这是一道实用的排序加二分查找题。排序其中一个数组后，每次只需检查查询值附近的前驱和后继是否满足距离阈值。它训练利用有序性将全对验证化为局部边界检查。"
+  },
+  {
+    "slug": "find-the-distinct-difference-array",
+    "reasonEN": "A prefix-suffix distinct-count problem that uses two frequency structures. The key is maintaining counts while moving the split point so each side's distinct total updates in O(1). It is a clean exercise in incremental state maintenance.",
+    "reasonZH": "本题是前后缀不同元素计数题，需要维护两套频次结构。关键是移动分割点时让两侧的不同元素数都能 O(1) 更新。它是增量维护状态的清晰练习。"
+  },
+  {
+    "slug": "find-the-divisibility-array-of-a-string",
+    "reasonEN": "A modular-arithmetic streaming problem on a very large decimal string. It trains updating the prefix remainder digit by digit rather than converting overflowing prefixes to integers. The technique generalizes directly to parsing and divisibility checks on big numeric inputs.",
+    "reasonZH": "这是处理超大十进制字符串的模运算题。它训练逐位更新前缀余数，而不是将可能溢出的前缀转为整数。该技巧可直接迁移到大数输入的解析和整除判断。"
+  },
+  {
+    "slug": "find-the-duplicate-number",
+    "reasonEN": "A classic constrained-array problem whose most instructive solution is Floyd's cycle detection. Modeling indices as next pointers exposes the duplicate as a cycle entrance while preserving constant extra space. It is a landmark exercise in reframing array constraints as functional graphs.",
+    "reasonZH": "本题是受限数组中的经典题，最具教学价值的解法是 Floyd 判圈。把下标视为 next 指针后，重复数就成为环入口，同时保持常量额外空间。它是将数组约束重构为函数图的重要训练。"
+  },
+  {
+    "slug": "find-the-encrypted-string",
+    "reasonEN": "A simple cyclic-string simulation problem. The central operation is modular indexing to map every character to its shifted destination without off-by-one mistakes. It provides focused practice with circular arrays and index normalization.",
+    "reasonZH": "这是一道简单的循环字符串模拟题。核心操作是利用模索引把每个字符映射到偏移位置，并避免边界错误。它适合专门练习环形数组和下标归一化。"
+  },
+  {
+    "slug": "find-the-first-player-to-win-k-games-in-a-row",
+    "reasonEN": "A simulation problem with a useful champion-state invariant. Track the current winner and consecutive wins, and recognize that a sufficiently large k permits an early conclusion. It develops the habit of simplifying queue-like processes through the minimal state that affects future rounds.",
+    "reasonZH": "本题是带冠军状态不变量的模拟题。维护当前胜者和连胜次数，并识别 k 足够大时可提前得出结论。它训练用影响后续轮次的最小状态简化类似队列的过程。"
+  },
+  {
+    "slug": "find-the-grid-of-region-average",
+    "reasonEN": "This matrix simulation problem combines fixed-size region validation with overlapping contributions. It requires separating the threshold check from accumulation and count tracking for every covered cell. The task is valuable for disciplined handling of overlapping local windows.",
+    "reasonZH": "这是一道矩阵模拟题，结合固定区域校验与重叠贡献累加。需要将阈值检查与每个覆盖单元格的累加、计数分离处理。它有助于规范地处理重叠局部窗口。"
+  },
+  {
+    "slug": "find-the-highest-altitude",
+    "reasonEN": "A canonical prefix-sum exercise with a running maximum. The key is treating the starting altitude as part of the prefix sequence and updating the answer during one pass. It establishes a dependable pattern for cumulative-state problems.",
+    "reasonZH": "本题是带运行最大值的经典前缀和练习。关键是把起始海拔纳入前缀序列，并在一次遍历中更新答案。它建立了处理累积状态问题的可靠模式。"
+  },
+  {
+    "slug": "find-the-index-of-the-first-occurrence-in-a-string",
+    "reasonEN": "A foundational string-matching problem that supports both direct scanning and KMP extension. It emphasizes exact alignment checks and careful boundary handling for the first match. The problem offers a clear bridge from brute-force matching to linear-time pattern algorithms.",
+    "reasonZH": "这是字符串匹配的基础题，可从直接扫描延伸到 KMP。重点是精确的对齐检查和首个匹配位置的边界处理。它清晰地连接了暴力匹配与线性模式匹配算法。"
+  },
+  {
+    "slug": "find-the-integer-added-to-array-i",
+    "reasonEN": "An elementary array-invariant problem. Comparing corresponding extrema reveals the common offset immediately, provided the input relation is understood correctly. It trains identifying a global transformation instead of simulating element-by-element changes.",
+    "reasonZH": "本题是基础的数组不变量题。正确理解输入关系后，比较对应极值即可直接得到统一偏移量。它训练识别全局变换，而不是逐元素模拟。"
+  },
+  {
+    "slug": "find-the-integer-added-to-array-ii",
+    "reasonEN": "A sorting and enumeration problem with a small set of viable offsets. The core is trying offsets induced by early elements, then validating with two pointers while allowing the prescribed deletions. It is useful practice in converting unknown global parameters into a bounded candidate search.",
+    "reasonZH": "这是排序与枚举结合的数组题，候选偏移量数量很小。核心是枚举由前部元素导出的偏移，并用双指针在允许删除的条件下验证。它训练将未知全局参数转化为有限候选搜索。"
+  },
+  {
+    "slug": "find-the-k-beauty-of-a-number",
+    "reasonEN": "A fixed-length sliding-window problem over a number's decimal representation. It focuses on extracting each k-digit block, excluding zero divisors, and applying divisibility safely. The task reinforces when string windows are clearer than repeated arithmetic slicing.",
+    "reasonZH": "本题是在数字十进制表示上的定长滑动窗口题。重点是提取每个 k 位片段、排除零除数并安全判断整除。它帮助理解何时字符串窗口比反复算术切片更清晰。"
+  },
+  {
+    "slug": "find-the-k-or-of-an-array",
+    "reasonEN": "A bit-counting classification problem. Count how many values contain each bit and set that bit in the answer exactly when the count reaches k. It is concise practice in decomposing a threshold condition independently across binary positions.",
+    "reasonZH": "这是按位计数的分类题。统计每一位被多少数包含，并在计数达到 k 时设置答案对应位。它适合练习将阈值条件独立分解到各个二进制位。"
+  },
+  {
+    "slug": "find-the-k-sum-of-an-array",
+    "reasonEN": "A hard heap-enumeration problem for ordered subset sums. It starts from the maximum sum, transforms choices into nonnegative penalties, and uses a priority queue to generate the next candidates without enumerating all subsets. This is a powerful pattern for kth-order queries in exponential search spaces.",
+    "reasonZH": "本题是高难度的堆枚举题，用于有序生成子集和。它从最大和出发，将选择转成非负代价，再用优先队列生成后继候选，避免枚举全部子集。该题是解决指数搜索空间第 k 顺序统计问题的重要模式。"
+  },
+  {
+    "slug": "find-the-k-th-character-in-string-game-i",
+    "reasonEN": "A recursive string-construction problem with a compact positional observation. The key is tracing the kth position backward through the doubling process, often via powers of two or bit properties. It trains replacing explicit expansion with index-based reasoning.",
+    "reasonZH": "这是递归字符串构造题，关键在于紧凑的位置规律。需要通过 2 的幂或位性质，将第 k 个位置沿倍增过程反向追踪。它训练用下标推理代替显式展开字符串。"
+  },
+  {
+    "slug": "find-the-k-th-character-in-string-game-ii",
+    "reasonEN": "This hard variant generalizes recursive index tracing across a sequence of operations. It requires reading the selected bits of k to determine which transformations contribute to the final character. The problem deepens the connection between recursion trees, binary representation, and lazy evaluation.",
+    "reasonZH": "该题是递归下标追踪的高难度变体，扩展到一系列操作。需要读取 k 的相关二进制位，判断哪些变换会贡献到最终字符。它深化了递归树、二进制表示与惰性求值之间的联系。"
+  },
+  {
+    "slug": "find-the-key-of-the-numbers",
+    "reasonEN": "A digit-wise arithmetic exercise with a deliberately small state space. The essential step is aligning decimal positions, including leading zeros, before selecting the required digit at each position. It sharpens careful digit extraction and formatting logic.",
+    "reasonZH": "本题是状态空间很小的逐位数学题。核心是先对齐十进制位并补齐前导零，再在每一位选择要求的数字。它训练细致的数字提取与格式处理逻辑。"
+  },
+  {
+    "slug": "find-the-kth-largest-integer-in-the-array",
+    "reasonEN": "A selection problem on integers too large for native numeric types. Comparing normalized decimal strings by length and lexicographic order supports sorting, heaps, or quickselect. It teaches how representation constraints alter comparison design without changing the order-statistics goal.",
+    "reasonZH": "这是原生数值类型装不下的大整数选择题。按长度再按字典序比较规范化十进制字符串，可支持排序、堆或快速选择。它训练在表示受限时重设比较器而不改变顺序统计目标。"
+  },
+  {
+    "slug": "find-the-kth-smallest-sum-of-a-matrix-with-sorted-rows",
+    "reasonEN": "A hard ordered-matrix problem that exploits sorted rows to control combinatorial growth. Repeatedly merge partial sums with a heap or use binary search with pruning to retain only relevant candidates. It is valuable for learning how local order enables global kth-selection algorithms.",
+    "reasonZH": "本题是利用行有序性控制组合爆炸的高难度矩阵题。可反复用堆合并部分和，或采用带剪枝的二分，只保留相关候选。它训练理解局部有序如何支撑全局第 k 小选择算法。"
+  },
+  {
+    "slug": "find-the-largest-almost-missing-integer",
+    "reasonEN": "A small array-frequency problem with a subtle window-occurrence definition. The key is counting how many length-k windows contain each value, then selecting the largest value with the required count. It reinforces translating wording about overlapping subarrays into frequency bookkeeping.",
+    "reasonZH": "这是一道规模较小但定义细致的数组频次题。关键是统计每个值出现于多少个长度为 k 的窗口，再选择满足次数要求的最大值。它训练将重叠子数组的文字条件转为频次维护。"
+  },
+  {
+    "slug": "find-the-largest-area-of-square-inside-two-rectangles",
+    "reasonEN": "A computational-geometry problem based on rectangle intersection. Compute overlap width and height for every pair, use the smaller dimension as the feasible square side, and maximize its area. It gives practical practice with coordinate bounds and geometric edge cases.",
+    "reasonZH": "本题是基于矩形交集的计算几何题。枚举矩形对，计算重叠宽高，以较小维度作为可放入正方形的边长，再最大化面积。它提供坐标边界和几何边界情况的实战练习。"
+  },
+  {
+    "slug": "find-the-largest-palindrome-divisible-by-k",
+    "reasonEN": "A hard constructive number-theory problem over palindromic digit positions. It combines mirrored-digit contributions modulo k with DP or greedy reconstruction to maximize the number while preserving divisibility. The problem is valuable for advanced modular-state design and lexicographic construction.",
+    "reasonZH": "这是围绕回文数字位的高难度构造数论题。需要结合镜像位对模 k 的贡献，以及 DP 或贪心重建，在保持可整除的同时最大化数字。它训练高级模状态设计与字典序构造能力。"
+  }
+]

@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "find-the-minimum-possible-sum-of-a-beautiful-array",
+    "reasonEN": "A medium greedy-and-math construction problem that exploits complementary values around a forbidden target sum. It trains choosing the smallest feasible numbers while proving why the split selection is optimal, a useful pattern for turning pairwise constraints into a closed-form answer.",
+    "reasonZH": "这是一道中等难度的贪心与数学构造题，核心是围绕禁止出现的目标和处理互补数。它训练在两两约束下选择最小可行数并证明贪心最优，是将局部冲突转化为公式化答案的典型练习。"
+  },
+  {
+    "slug": "find-the-most-common-response",
+    "reasonEN": "This counting and hash-table problem focuses on aggregating string frequencies under the problem's response rules. It reinforces careful deduplication, frequency maintenance, and deterministic tie handling, which are foundational skills for data-processing tasks.",
+    "reasonZH": "本题属于计数与哈希表题型，重点是在给定回答规则下聚合字符串频次。它训练去重、频次维护和稳定的并列处理，是数据统计类题目的基础能力。"
+  },
+  {
+    "slug": "find-the-most-competitive-subsequence",
+    "reasonEN": "A canonical greedy monotonic-stack problem for lexicographically minimal subsequences. The key is deciding when a larger previous value can be removed without making the remaining length impossible, making it excellent practice for stack pop conditions and feasibility accounting.",
+    "reasonZH": "这是一道经典的贪心单调栈题，目标是构造字典序最小的子序列。关键在于判断何时能弹出较大元素而不影响剩余长度可行性，非常适合训练单调栈弹栈条件与容量预留意识。"
+  },
+  {
+    "slug": "find-the-n-th-value-after-k-seconds",
+    "reasonEN": "This medium simulation problem reveals the repeated-prefix-sum structure behind an iterative process. It builds intuition for one-dimensional DP transitions, modular arithmetic, and the combinatorial interpretation that often emerges from repeated accumulation.",
+    "reasonZH": "本题通过迭代过程揭示重复前缀和的结构，属于中等难度的模拟与数学题。它训练一维 DP 转移、模运算，以及从重复累加中识别组合数学含义的能力。"
+  },
+  {
+    "slug": "find-the-number-of-copy-arrays",
+    "reasonEN": "A constraint-transformation problem that converts adjacent differences into a single initial-offset range. It teaches how to reconstruct cumulative values, intersect feasibility intervals, and replace brute-force array generation with compact mathematical reasoning.",
+    "reasonZH": "这是一道约束转换题，可将相邻差分条件归结为初始偏移量的可行区间。它训练累积重建、区间求交，并用紧凑的数学推理替代暴力构造数组。"
+  },
+  {
+    "slug": "find-the-number-of-distinct-colors-among-the-balls",
+    "reasonEN": "This hash-table simulation problem requires maintaining both each ball's current color and global color frequencies under updates. It is a strong exercise in keeping derived counts consistent when assignments are overwritten.",
+    "reasonZH": "本题是哈希表模拟题，需要同时维护每个球的当前颜色和全局颜色频次。它重点训练覆盖赋值时同步更新派生计数，避免状态不一致。"
+  },
+  {
+    "slug": "find-the-number-of-good-pairs-i",
+    "reasonEN": "An easy array and hash-table exercise centered on divisibility checks across pairs. It establishes the direct baseline solution and helps develop the habit of translating number relationships into clear loop invariants before optimizing.",
+    "reasonZH": "这是一道简单的数组与哈希表练习，核心是枚举数对并判断整除关系。它提供了直接解法基线，帮助建立先把数值关系转化为清晰循环逻辑、再考虑优化的习惯。"
+  },
+  {
+    "slug": "find-the-number-of-good-pairs-ii",
+    "reasonEN": "This medium follow-up upgrades pair counting through frequency maps and divisor or multiple enumeration. It teaches how to avoid quadratic comparisons by reorganizing arithmetic compatibility into reusable count lookups.",
+    "reasonZH": "作为进阶版，本题通过频次表与约数或倍数枚举完成数对计数。它训练将算术兼容关系重组为可复用的计数查询，从而避开二次枚举。"
+  },
+  {
+    "slug": "find-the-number-of-possible-ways-for-an-event",
+    "reasonEN": "A hard combinatorics-and-DP problem combining partition counts with arrangement choices. Solving it requires defining precise states for grouping and then composing independent counting factors, making it valuable for advanced modular counting techniques.",
+    "reasonZH": "这是一道困难的组合数学与动态规划题，需要结合分组计数和排列选择。它训练精确定义分组状态，再组合独立计数因子，是进阶模计数技巧的重要题目。"
+  },
+  {
+    "slug": "find-the-number-of-subarrays-where-boundary-elements-are-maximum",
+    "reasonEN": "This hard monotonic-stack counting problem turns boundary-maximum constraints into valid dominance ranges. It develops the ability to use stack boundaries and indexed equal values to count admissible subarrays without enumerating all endpoints.",
+    "reasonZH": "本题是困难的单调栈计数题，将边界元素为最大值的条件转化为有效支配区间。它训练利用栈边界和相等值位置统计合法子数组，避免枚举所有端点。"
+  },
+  {
+    "slug": "find-the-number-of-subsequences-with-equal-gcd",
+    "reasonEN": "A challenging number-theory DP problem whose state records the GCDs built by two subsequences. It practices GCD-state compression, exhaustive transition design, and modular counting for disjoint selection processes.",
+    "reasonZH": "这是一道有挑战性的数论 DP 题，状态记录两个子序列逐步形成的最大公约数。它训练 GCD 状态压缩、完整转移设计，以及互斥选择过程中的模计数。"
+  },
+  {
+    "slug": "find-the-number-of-ways-to-place-people-i",
+    "reasonEN": "This medium geometry enumeration problem builds the direct method for validating point pairs under rectangular exclusion conditions. It sharpens coordinate comparison, sorting awareness, and precise handling of boundary relationships.",
+    "reasonZH": "本题是中等难度的几何枚举题，建立在矩形排除条件下验证点对的直接方法。它训练坐标比较、排序意识和边界关系的精确处理。"
+  },
+  {
+    "slug": "find-the-number-of-ways-to-place-people-ii",
+    "reasonEN": "The hard version demands a more efficient geometric counting strategy than pair-and-interior enumeration. It teaches how sorting and ordered scans can preserve the same validity condition while reducing repeated point checks.",
+    "reasonZH": "困难版本要求比点对加内部枚举更高效的几何计数策略。它训练利用排序和有序扫描保留原有合法性条件，同时减少重复的点检查。"
+  },
+  {
+    "slug": "find-the-number-of-winning-players",
+    "reasonEN": "An easy counting problem that groups observations by player and category before applying a threshold rule. It is useful for practicing nested-frequency maps and separating local statistics from the final qualification test.",
+    "reasonZH": "这是一道简单的计数题，需要按玩家和类别聚合记录后再应用阈值规则。它适合练习嵌套频次表，并区分局部统计与最终资格判断。"
+  },
+  {
+    "slug": "find-the-occurrence-of-first-almost-equal-substring",
+    "reasonEN": "A hard string-matching problem centered on locating the earliest alignment with at most one mismatch. It develops the use of prefix and suffix match information to validate a near-match in constant time per candidate after preprocessing.",
+    "reasonZH": "本题是困难的字符串匹配题，核心是寻找至多一个失配的最早对齐位置。它训练利用前后缀匹配信息，在预处理后快速验证每个近似匹配候选。"
+  },
+  {
+    "slug": "find-the-original-array-of-prefix-xor",
+    "reasonEN": "This medium bit-manipulation inversion problem is built on the cancellation property of XOR. It reinforces deriving an original sequence from adjacent prefix states, a compact technique that recurs in encoding and prefix-transform problems.",
+    "reasonZH": "这是一道中等难度的位运算逆推题，核心利用异或的抵消性质。它训练从相邻前缀状态恢复原序列，这种技巧常见于编码和前缀变换问题。"
+  },
+  {
+    "slug": "find-the-original-typed-string-i",
+    "reasonEN": "An easy string run-length problem that counts the alternatives introduced by repeated keystrokes. It teaches recognizing independent character runs and converting a typing ambiguity into a simple accumulation formula.",
+    "reasonZH": "本题是简单的字符串连续段问题，统计重复按键带来的可能原串数。它训练识别相互独立的字符连续段，并将输入歧义转化为简单的累加公式。"
+  },
+  {
+    "slug": "find-the-original-typed-string-ii",
+    "reasonEN": "This hard extension combines run-length encoding with DP and prefix-sum optimization under a length constraint. It is valuable practice for counting constrained compositions while making range transitions fast enough for large inputs.",
+    "reasonZH": "作为困难进阶版，本题结合连续段编码、动态规划和前缀和优化处理长度限制。它训练受限组合计数，以及将区间转移优化到可处理大规模输入。"
+  },
+  {
+    "slug": "find-the-peaks",
+    "reasonEN": "A concise array enumeration problem that identifies local extrema through a three-element neighborhood. It reinforces index-boundary discipline and is a clean introductory example of local-condition scanning.",
+    "reasonZH": "这是一道简洁的数组枚举题，通过三个相邻元素判断局部峰值。它重点训练下标边界控制，是局部条件扫描的入门范例。"
+  },
+  {
+    "slug": "find-the-pivot-integer",
+    "reasonEN": "An easy math and prefix-sum problem where equal left and right totals expose a strong algebraic condition. It teaches switching between a direct scan and a square-root-based derivation, illustrating how prefix identities simplify search.",
+    "reasonZH": "本题是简单的数学与前缀和题，左右和相等会导出很强的代数条件。它训练在直接扫描和平方根推导之间切换，理解前缀恒等式如何简化搜索。"
+  },
+  {
+    "slug": "find-the-power-of-k-size-subarrays-i",
+    "reasonEN": "This medium sliding-window baseline checks whether each fixed-length segment satisfies a consecutive-value pattern. It builds reliable window validation logic and clarifies which information must be recomputed before applying optimizations.",
+    "reasonZH": "这是一道中等难度的滑动窗口基础题，检查每个定长区间是否满足连续数值模式。它训练可靠的窗口验证逻辑，并明确优化前哪些信息需要重新计算。"
+  },
+  {
+    "slug": "find-the-power-of-k-size-subarrays-ii",
+    "reasonEN": "The optimized sliding-window version tracks consecutive growth so each window can be evaluated in constant time. It demonstrates how a local streak invariant replaces repeated scans across highly overlapping subarrays.",
+    "reasonZH": "优化版通过维护连续递增长度，使每个窗口都能在常数时间判断。它展示了如何用局部连续段不变量替代对大量重叠子数组的重复扫描。"
+  },
+  {
+    "slug": "find-the-prefix-common-array-of-two-arrays",
+    "reasonEN": "A medium prefix-counting problem that maintains which values have appeared in both arrays as the boundary advances. It practices synchronized scans, frequency-state transitions, and using bit operations or hash tables for set membership.",
+    "reasonZH": "本题是中等难度的前缀计数题，随着边界推进维护同时出现在两个数组中的值。它训练同步扫描、频次状态转移，以及用位运算或哈希表表示集合成员关系。"
+  },
+  {
+    "slug": "find-the-punishment-number-of-an-integer",
+    "reasonEN": "This medium backtracking and math problem partitions a squared number's digits to satisfy an additive target. It is a focused exercise in recursive cut decisions, pruning by partial sums, and validating numeric-string decompositions.",
+    "reasonZH": "这是一道中等难度的回溯与数学题，需要把平方数的数字划分为若干段并满足加和目标。它训练递归切分决策、部分和剪枝和数字字符串分解验证。"
+  },
+  {
+    "slug": "find-the-safest-path-in-a-grid",
+    "reasonEN": "A representative grid optimization problem that combines multi-source BFS distances with binary search plus connectivity checking. It teaches separating safety preprocessing from path feasibility, with heap and union-find alternatives that broaden graph-tool selection.",
+    "reasonZH": "本题是典型的网格优化题，结合多源 BFS 距离预处理、二分答案和连通性检查。它训练将安全度预处理与路径可行性分离，并理解堆和并查集等不同图算法方案。"
+  },
+  {
+    "slug": "find-the-score-difference-in-a-game",
+    "reasonEN": "This medium simulation problem requires modeling the scoring process exactly and preserving the state that affects later rounds. It is useful for practicing rule-driven array traversal and avoiding errors caused by updating scores in the wrong order.",
+    "reasonZH": "本题属于中等难度的模拟题，需要精确建模计分过程并维护影响后续回合的状态。它训练按规则遍历数组，并避免因分数更新顺序错误导致的结果偏差。"
+  },
+  {
+    "slug": "find-the-score-of-all-prefixes-of-an-array",
+    "reasonEN": "A medium prefix-sum problem that combines a running sum with the maximum seen so far. It demonstrates how maintaining a small set of streaming aggregates yields every prefix answer in one pass.",
+    "reasonZH": "这是一道中等难度的前缀和题，需要同时维护运行和与当前最大值。它展示了如何通过少量流式聚合量，在一次遍历中得到所有前缀答案。"
+  },
+  {
+    "slug": "find-the-sequence-of-strings-appeared-on-the-screen",
+    "reasonEN": "This string simulation problem models a sequence of incremental screen operations character by character. It strengthens constructive thinking, operation ordering, and careful handling of cyclic character changes.",
+    "reasonZH": "本题是字符串模拟题，按字符建模屏幕上的递增操作序列。它训练构造性思维、操作顺序控制和循环字符变化的细节处理。"
+  },
+  {
+    "slug": "find-the-shortest-superstring",
+    "reasonEN": "A classic hard bitmask-DP problem that maximizes pairwise overlap while selecting an order of strings. It develops subset-state design, overlap preprocessing, parent reconstruction, and the connection between sequence assembly and traveling-salesman-style DP.",
+    "reasonZH": "这是一道经典的困难位压 DP 题，通过选择字符串拼接顺序最大化重叠部分。它训练子集状态设计、重叠预处理、路径还原，以及序列组装与旅行商式 DP 的联系。"
+  },
+  {
+    "slug": "find-the-smallest-balanced-index",
+    "reasonEN": "This medium prefix-sum problem searches for the first index satisfying a balance relation between its two sides. It reinforces deriving the right-side aggregate from a total sum and checking candidates in order to guarantee minimality.",
+    "reasonZH": "本题是中等难度的前缀和题，寻找左右两侧满足平衡关系的最小下标。它训练由总和推导右侧聚合量，并按顺序检查候选以保证最小性。"
+  }
+]

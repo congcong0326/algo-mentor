@@ -1,0 +1,716 @@
+[
+  {
+    "slug": "stone-game-vi",
+    "frontendDisplayId": "1686",
+    "titleEn": "Stone Game VI",
+    "titleZh": "石子游戏 VI",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Game Theory",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "博弈",
+      "贪心",
+      "堆（优先队列）",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/stone-game-vi/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "stone-game-vii",
+    "frontendDisplayId": "1690",
+    "titleEn": "Stone Game VII",
+    "titleZh": "石子游戏 VII",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Game Theory",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "博弈",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/stone-game-vii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "stone-game-viii",
+    "frontendDisplayId": "1872",
+    "titleEn": "Stone Game VIII",
+    "titleZh": "石子游戏 VIII",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Game Theory",
+      "Math",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "博弈",
+      "数学",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/stone-game-viii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "stone-removal-game",
+    "frontendDisplayId": "3360",
+    "titleEn": "Stone Removal Game",
+    "titleZh": "移除石头游戏",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/stone-removal-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "strange-printer",
+    "frontendDisplayId": "664",
+    "titleEn": "Strange Printer",
+    "titleZh": "奇怪的打印机",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/strange-printer/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "strange-printer-ii",
+    "frontendDisplayId": "1591",
+    "titleEn": "Strange Printer II",
+    "titleZh": "奇怪的打印机 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Matrix",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "矩阵",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/strange-printer-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "stream-of-characters",
+    "frontendDisplayId": "1032",
+    "titleEn": "Stream of Characters",
+    "titleZh": "字符流",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Data Stream",
+      "Design",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数据流",
+      "设计",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/stream-of-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "strictly-palindromic-number",
+    "frontendDisplayId": "2396",
+    "titleEn": "Strictly Palindromic Number",
+    "titleZh": "严格回文的数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Brainteaser",
+      "Math",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "脑筋急转弯",
+      "数学",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/strictly-palindromic-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "string-compression",
+    "frontendDisplayId": "443",
+    "titleEn": "String Compression",
+    "titleZh": "压缩字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/string-compression/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "string-compression-ii",
+    "frontendDisplayId": "1531",
+    "titleEn": "String Compression II",
+    "titleZh": "压缩字符串 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/string-compression-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "string-compression-iii",
+    "frontendDisplayId": "3163",
+    "titleEn": "String Compression III",
+    "titleZh": "压缩字符串 III",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/string-compression-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "string-matching-in-an-array",
+    "frontendDisplayId": "1408",
+    "titleEn": "String Matching in an Array",
+    "titleZh": "数组中的字符串匹配",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "String",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串",
+      "字符串匹配"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/string-matching-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "string-rotation-lcci",
+    "frontendDisplayId": "面试题 01.09",
+    "titleEn": null,
+    "titleZh": "字符串轮转",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "字符串匹配"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/string-rotation-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "string-to-integer-atoi",
+    "frontendDisplayId": "8",
+    "titleEn": "String to Integer (atoi)",
+    "titleZh": "字符串转换整数 (atoi)",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/string-to-integer-atoi/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "string-to-url-lcci",
+    "frontendDisplayId": "面试题 01.03",
+    "titleEn": null,
+    "titleZh": "URL化",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/string-to-url-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "string-transformation",
+    "frontendDisplayId": "2851",
+    "titleEn": "String Transformation",
+    "titleZh": "字符串转换",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "String",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "字符串",
+      "字符串匹配"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/string-transformation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "string-without-aaa-or-bbb",
+    "frontendDisplayId": "984",
+    "titleEn": "String Without AAA or BBB",
+    "titleZh": "不含 AAA 或 BBB 的字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/string-without-aaa-or-bbb/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "strong-password-checker",
+    "frontendDisplayId": "420",
+    "titleEn": "Strong Password Checker",
+    "titleZh": "强密码检验器",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Greedy",
+      "Heap (Priority Queue)",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "堆（优先队列）",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/strong-password-checker/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "strong-password-checker-ii",
+    "frontendDisplayId": "2299",
+    "titleEn": "Strong Password Checker II",
+    "titleZh": "强密码检验器 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/strong-password-checker-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "student-attendance-record-i",
+    "frontendDisplayId": "551",
+    "titleEn": "Student Attendance Record I",
+    "titleZh": "学生出勤记录 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/student-attendance-record-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "student-attendance-record-ii",
+    "frontendDisplayId": "552",
+    "titleEn": "Student Attendance Record II",
+    "titleZh": "学生出勤记录 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/student-attendance-record-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "students-and-examinations",
+    "frontendDisplayId": "1280",
+    "titleEn": "Students and Examinations",
+    "titleZh": "学生们参加各科测试的次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/students-and-examinations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sub-sort-lcci",
+    "frontendDisplayId": "面试题 16.16",
+    "titleEn": null,
+    "titleZh": "部分排序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Monotonic Stack",
+      "Sorting",
+      "Stack",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "单调栈",
+      "排序",
+      "栈",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/sub-sort-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subarray-product-less-than-k",
+    "frontendDisplayId": "713",
+    "titleEn": "Subarray Product Less Than K",
+    "titleZh": "乘积小于 K 的子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subarray-product-less-than-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subarray-sum-equals-k",
+    "frontendDisplayId": "560",
+    "titleEn": "Subarray Sum Equals K",
+    "titleZh": "和为 K 的子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subarray-sum-equals-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subarray-sums-divisible-by-k",
+    "frontendDisplayId": "974",
+    "titleEn": "Subarray Sums Divisible by K",
+    "titleZh": "和可被 K 整除的子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subarray-sums-divisible-by-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subarray-with-elements-greater-than-varying-threshold",
+    "frontendDisplayId": "2334",
+    "titleEn": "Subarray With Elements Greater Than Varying Threshold",
+    "titleZh": "元素值大于变化阈值的子数组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Stack",
+      "Stack",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调栈",
+      "栈",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subarray-with-elements-greater-than-varying-threshold/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subarrays-distinct-element-sum-of-squares-i",
+    "frontendDisplayId": "2913",
+    "titleEn": "Subarrays Distinct Element Sum of Squares I",
+    "titleZh": "子数组不同元素数目的平方和 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subarrays-distinct-element-sum-of-squares-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subarrays-distinct-element-sum-of-squares-ii",
+    "frontendDisplayId": "2916",
+    "titleEn": "Subarrays Distinct Element Sum of Squares II",
+    "titleZh": "子数组不同元素数目的平方和 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Hash Table",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "哈希表",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subarrays-distinct-element-sum-of-squares-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "subarrays-with-k-different-integers",
+    "frontendDisplayId": "992",
+    "titleEn": "Subarrays with K Different Integers",
+    "titleZh": "K 个不同整数的子数组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/subarrays-with-k-different-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-115",
+    "claimedAt": "2026-07-10T07:52:59.689386+00:00",
+    "completedAt": null
+  }
+]

@@ -1,0 +1,754 @@
+[
+  {
+    "slug": "employee-importance",
+    "frontendDisplayId": "690",
+    "titleEn": "Employee Importance",
+    "titleZh": "员工的重要性",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/employee-importance/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "employees-earning-more-than-their-managers",
+    "frontendDisplayId": "181",
+    "titleEn": "Employees Earning More Than Their Managers",
+    "titleZh": "超过经理收入的员工",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/employees-earning-more-than-their-managers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "employees-whose-manager-left-the-company",
+    "frontendDisplayId": "1978",
+    "titleEn": "Employees Whose Manager Left the Company",
+    "titleZh": "上级经理已离职的公司员工",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/employees-whose-manager-left-the-company/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "employees-with-missing-information",
+    "frontendDisplayId": "1965",
+    "titleEn": "Employees With Missing Information",
+    "titleZh": "丢失信息的雇员",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/employees-with-missing-information/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "encode-and-decode-tinyurl",
+    "frontendDisplayId": "535",
+    "titleEn": "Encode and Decode TinyURL",
+    "titleZh": "TinyURL 的加密与解密",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Hash Function",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "哈希函数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/encode-and-decode-tinyurl/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "encrypt-and-decrypt-strings",
+    "frontendDisplayId": "2227",
+    "titleEn": "Encrypt and Decrypt Strings",
+    "titleZh": "加密解密字符串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Table",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希表",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/encrypt-and-decrypt-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "english-int-lcci",
+    "frontendDisplayId": "面试题 16.08",
+    "titleEn": null,
+    "titleZh": "整数的英语表示",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Math",
+      "Recursion",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "递归",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/english-int-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "equal-rational-numbers",
+    "frontendDisplayId": "972",
+    "titleEn": "Equal Rational Numbers",
+    "titleZh": "相等的有理数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/equal-rational-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "equal-row-and-column-pairs",
+    "frontendDisplayId": "2352",
+    "titleEn": "Equal Row and Column Pairs",
+    "titleZh": "相等行列对",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/equal-row-and-column-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "equal-score-substrings",
+    "frontendDisplayId": "3707",
+    "titleEn": "Equal Score Substrings",
+    "titleZh": "相等子字符串分数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/equal-score-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "equal-sum-arrays-with-minimum-number-of-operations",
+    "frontendDisplayId": "1775",
+    "titleEn": "Equal Sum Arrays With Minimum Number of Operations",
+    "titleZh": "通过最少操作次数使数组的和相等",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Greedy",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "贪心",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/equal-sum-arrays-with-minimum-number-of-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "equal-sum-grid-partition-i",
+    "frontendDisplayId": "3546",
+    "titleEn": "Equal Sum Grid Partition I",
+    "titleZh": "等和矩阵分割 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/equal-sum-grid-partition-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "equal-sum-grid-partition-ii",
+    "frontendDisplayId": "3548",
+    "titleEn": "Equal Sum Grid Partition II",
+    "titleZh": "等和矩阵分割 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Hash Table",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "哈希表",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/equal-sum-grid-partition-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "er-cha-shu-de-jing-xiang-lcof",
+    "frontendDisplayId": "LCR 144",
+    "titleEn": null,
+    "titleZh": "翻转二叉树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/er-cha-shu-de-jing-xiang-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "er-cha-shu-de-shen-du-lcof",
+    "frontendDisplayId": "LCR 175",
+    "titleEn": null,
+    "titleZh": "计算二叉树的深度",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/er-cha-shu-de-shen-du-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "er-cha-shu-de-zui-jin-gong-gong-zu-xian-lcof",
+    "frontendDisplayId": "LCR 194",
+    "titleEn": null,
+    "titleZh": "二叉树的最近公共祖先",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/er-cha-shu-de-zui-jin-gong-gong-zu-xian-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "er-cha-shu-ran-se-UGC",
+    "frontendDisplayId": "LCP 34",
+    "titleEn": null,
+    "titleZh": "二叉树染色",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/er-cha-shu-ran-se-UGC/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "er-cha-shu-ren-wu-diao-du",
+    "frontendDisplayId": "LCP 10",
+    "titleEn": null,
+    "titleZh": "二叉树任务调度",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/er-cha-shu-ren-wu-diao-du/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof",
+    "frontendDisplayId": "LCR 153",
+    "titleEn": null,
+    "titleZh": "二叉树中和为目标值的路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof",
+    "frontendDisplayId": "LCR 174",
+    "titleEn": null,
+    "titleZh": "寻找二叉搜索树中的目标节点",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof",
+    "frontendDisplayId": "LCR 152",
+    "titleEn": null,
+    "titleZh": "验证二叉搜索树的后序遍历序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search Tree",
+      "Binary Tree",
+      "Monotonic Stack",
+      "Recursion",
+      "Stack",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉搜索树",
+      "二叉树",
+      "单调栈",
+      "递归",
+      "栈",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "er-cha-sou-suo-shu-de-zui-jin-gong-gong-zu-xian-lcof",
+    "frontendDisplayId": "LCR 193",
+    "titleEn": null,
+    "titleZh": "二叉搜索树的最近公共祖先",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/er-cha-sou-suo-shu-de-zui-jin-gong-gong-zu-xian-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof",
+    "frontendDisplayId": "LCR 155",
+    "titleEn": null,
+    "titleZh": "将二叉搜索树转化为排序的双向链表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Doubly-Linked List",
+      "Linked List",
+      "Stack",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "双向链表",
+      "链表",
+      "栈",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "er-jin-zhi-zhong-1de-ge-shu-lcof",
+    "frontendDisplayId": "LCR 133",
+    "titleEn": null,
+    "titleZh": "位 1 的个数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "位运算"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/er-jin-zhi-zhong-1de-ge-shu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "er-wei-shu-zu-zhong-de-cha-zhao-lcof",
+    "frontendDisplayId": "LCR 121",
+    "titleEn": null,
+    "titleZh": "寻找目标值 - 二维数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Divide and Conquer",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "分治",
+      "矩阵"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "er94lq",
+    "frontendDisplayId": "LCP 23",
+    "titleEn": null,
+    "titleZh": "魔术排列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Queue",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "队列",
+      "模拟"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/er94lq/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "erect-the-fence",
+    "frontendDisplayId": "587",
+    "titleEn": "Erect the Fence",
+    "titleZh": "安装栅栏",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/erect-the-fence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "escape-a-large-maze",
+    "frontendDisplayId": "1036",
+    "titleEn": "Escape a Large Maze",
+    "titleZh": "逃离大迷宫",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/escape-a-large-maze/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "escape-the-ghosts",
+    "frontendDisplayId": "789",
+    "titleEn": "Escape The Ghosts",
+    "titleZh": "逃脱阻碍者",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/escape-the-ghosts/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "escape-the-spreading-fire",
+    "frontendDisplayId": "2258",
+    "titleEn": "Escape the Spreading Fire",
+    "titleZh": "逃离火灾",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Breadth-First Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "广度优先搜索",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/escape-the-spreading-fire/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-032",
+    "claimedAt": "2026-07-10T02:23:42.530173+00:00",
+    "completedAt": null
+  }
+]

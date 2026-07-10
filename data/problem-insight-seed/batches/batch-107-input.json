@@ -1,0 +1,696 @@
+[
+  {
+    "slug": "rotate-non-negative-elements",
+    "frontendDisplayId": "3819",
+    "titleEn": "Rotate Non Negative Elements",
+    "titleZh": "非负元素轮替",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "Array",
+      "Simulation"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rotate-non-negative-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rotate-string",
+    "frontendDisplayId": "796",
+    "titleEn": "Rotate String",
+    "titleZh": "旋转字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "字符串匹配"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rotate-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rotated-digits",
+    "frontendDisplayId": "788",
+    "titleEn": "Rotated Digits",
+    "titleZh": "旋转数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rotated-digits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rotating-the-box",
+    "frontendDisplayId": "1861",
+    "titleEn": "Rotating the Box",
+    "titleZh": "旋转盒子",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rotating-the-box/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rotting-oranges",
+    "frontendDisplayId": "994",
+    "titleEn": "Rotting Oranges",
+    "titleZh": "腐烂的橘子",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rotting-oranges/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "route-between-nodes-lcci",
+    "frontendDisplayId": "面试题 04.01",
+    "titleEn": null,
+    "titleZh": "节点间通路",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/route-between-nodes-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "row-with-maximum-ones",
+    "frontendDisplayId": "2643",
+    "titleEn": "Row With Maximum Ones",
+    "titleZh": "一最多的行",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/row-with-maximum-ones/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "running-sum-of-1d-array",
+    "frontendDisplayId": "1480",
+    "titleEn": "Running Sum of 1d Array",
+    "titleZh": "一维数组的动态和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/running-sum-of-1d-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "russian-doll-envelopes",
+    "frontendDisplayId": "354",
+    "titleEn": "Russian Doll Envelopes",
+    "titleZh": "俄罗斯套娃信封问题",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/russian-doll-envelopes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ryfUiz",
+    "frontendDisplayId": "LCP 81",
+    "titleEn": null,
+    "titleZh": "与非的谜题",
+    "difficulty": "HARD",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/ryfUiz/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "s5kipK",
+    "frontendDisplayId": "LCP 54",
+    "titleEn": null,
+    "titleZh": "夺回据点",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Biconnected Component",
+      "Graph"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "双连通分量",
+      "图"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/s5kipK/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sZ59z6",
+    "frontendDisplayId": "LCP 44",
+    "titleEn": null,
+    "titleZh": "开幕式焰火",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/sZ59z6/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sales-analysis-iii",
+    "frontendDisplayId": "1084",
+    "titleEn": "Sales Analysis III",
+    "titleZh": "销售分析 III",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sales-analysis-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sales-person",
+    "frontendDisplayId": "607",
+    "titleEn": "Sales Person",
+    "titleZh": "销售员",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sales-person/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "same-tree",
+    "frontendDisplayId": "100",
+    "titleEn": "Same Tree",
+    "titleZh": "相同的树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/same-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "satisfiability-of-equality-equations",
+    "frontendDisplayId": "990",
+    "titleEn": "Satisfiability of Equality Equations",
+    "titleZh": "等式方程的可满足性",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "String",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "字符串",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/satisfiability-of-equality-equations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "score-after-flipping-matrix",
+    "frontendDisplayId": "861",
+    "titleEn": "Score After Flipping Matrix",
+    "titleZh": "翻转矩阵后的得分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Greedy",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "贪心",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/score-after-flipping-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "score-of-a-string",
+    "frontendDisplayId": "3110",
+    "titleEn": "Score of a String",
+    "titleZh": "字符串的分数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/score-of-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "score-of-parentheses",
+    "frontendDisplayId": "856",
+    "titleEn": "Score of Parentheses",
+    "titleZh": "括号的分数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/score-of-parentheses/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "score-validator",
+    "frontendDisplayId": "3921",
+    "titleEn": "Score Validator",
+    "titleZh": "分数验证器",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "Array",
+      "Simulation",
+      "String"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/score-validator/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "scramble-string",
+    "frontendDisplayId": "87",
+    "titleEn": "Scramble String",
+    "titleZh": "扰乱字符串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/scramble-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "search-a-2d-matrix",
+    "frontendDisplayId": "74",
+    "titleEn": "Search a 2D Matrix",
+    "titleZh": "搜索二维矩阵",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/search-a-2d-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "search-a-2d-matrix-ii",
+    "frontendDisplayId": "240",
+    "titleEn": "Search a 2D Matrix II",
+    "titleZh": "搜索二维矩阵 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Divide and Conquer",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "分治",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/search-a-2d-matrix-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "search-in-a-binary-search-tree",
+    "frontendDisplayId": "700",
+    "titleEn": "Search in a Binary Search Tree",
+    "titleZh": "二叉搜索树中的搜索",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/search-in-a-binary-search-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "search-in-rotated-sorted-array",
+    "frontendDisplayId": "33",
+    "titleEn": "Search in Rotated Sorted Array",
+    "titleZh": "搜索旋转排序数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "search-in-rotated-sorted-array-ii",
+    "frontendDisplayId": "81",
+    "titleEn": "Search in Rotated Sorted Array II",
+    "titleZh": "搜索旋转排序数组 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/search-in-rotated-sorted-array-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "search-insert-position",
+    "frontendDisplayId": "35",
+    "titleEn": "Search Insert Position",
+    "titleZh": "搜索插入位置",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/search-insert-position/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "search-rotate-array-lcci",
+    "frontendDisplayId": "面试题 10.03",
+    "titleEn": null,
+    "titleZh": "搜索旋转数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/search-rotate-array-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "search-suggestions-system",
+    "frontendDisplayId": "1268",
+    "titleEn": "Search Suggestions System",
+    "titleZh": "搜索推荐系统",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Heap (Priority Queue)",
+      "Sorting",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "堆（优先队列）",
+      "排序",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/search-suggestions-system/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "seasonal-sales-analysis",
+    "frontendDisplayId": "3564",
+    "titleEn": "Seasonal Sales Analysis",
+    "titleZh": "季节性销售分析",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/seasonal-sales-analysis/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-107",
+    "claimedAt": "2026-07-10T07:32:48.771346+00:00",
+    "completedAt": null
+  }
+]

@@ -1,0 +1,738 @@
+[
+  {
+    "slug": "direction-assignments-with-exactly-k-visible-people",
+    "frontendDisplayId": "3881",
+    "titleEn": "Direction Assignments with Exactly K Visible People",
+    "titleZh": "恰好看到 K 个人的方向选择",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/direction-assignments-with-exactly-k-visible-people/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "disconnect-path-in-a-binary-matrix-by-at-most-one-flip",
+    "frontendDisplayId": "2556",
+    "titleEn": "Disconnect Path in a Binary Matrix by at Most One Flip",
+    "titleZh": "二进制矩阵中翻转最多一次使路径不连通",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/disconnect-path-in-a-binary-matrix-by-at-most-one-flip/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "display-table-of-food-orders-in-a-restaurant",
+    "frontendDisplayId": "1418",
+    "titleEn": "Display Table of Food Orders in a Restaurant",
+    "titleZh": "点菜展示表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Ordered Set",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "有序集合",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/display-table-of-food-orders-in-a-restaurant/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "display-the-first-three-rows",
+    "frontendDisplayId": "2879",
+    "titleEn": "Display the First Three Rows",
+    "titleZh": "显示前三行",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/display-the-first-three-rows/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distance-between-bus-stops",
+    "frontendDisplayId": "1184",
+    "titleEn": "Distance Between Bus Stops",
+    "titleZh": "公交站间的距离",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distance-between-bus-stops/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distant-barcodes",
+    "frontendDisplayId": "1054",
+    "titleEn": "Distant Barcodes",
+    "titleZh": "距离相等的条形码",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Greedy",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "贪心",
+      "哈希表",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distant-barcodes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distinct-echo-substrings",
+    "frontendDisplayId": "1316",
+    "titleEn": "Distinct Echo Substrings",
+    "titleZh": "不同的循环子字符串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Hash Function",
+      "Rolling Hash",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "哈希函数",
+      "滚动哈希",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distinct-echo-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distinct-points-reachable-after-substring-removal",
+    "frontendDisplayId": "3694",
+    "titleEn": "Distinct Points Reachable After Substring Removal",
+    "titleZh": "删除子字符串后不同的终点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Prefix Sum",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "前缀和",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distinct-points-reachable-after-substring-removal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distinct-prime-factors-of-product-of-array",
+    "frontendDisplayId": "2521",
+    "titleEn": "Distinct Prime Factors of Product of Array",
+    "titleZh": "数组乘积中的不同质因数数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distinct-prime-factors-of-product-of-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distinct-subsequences",
+    "frontendDisplayId": "115",
+    "titleEn": "Distinct Subsequences",
+    "titleZh": "不同的子序列",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distinct-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distinct-subsequences-ii",
+    "frontendDisplayId": "940",
+    "titleEn": "Distinct Subsequences II",
+    "titleZh": "不同的子序列 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distinct-subsequences-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distribute-candies",
+    "frontendDisplayId": "575",
+    "titleEn": "Distribute Candies",
+    "titleZh": "分糖果",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distribute-candies/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distribute-candies-among-children-i",
+    "frontendDisplayId": "2928",
+    "titleEn": "Distribute Candies Among Children I",
+    "titleZh": "给小朋友们分糖果 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Enumeration",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "枚举",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distribute-candies-among-children-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distribute-candies-among-children-ii",
+    "frontendDisplayId": "2929",
+    "titleEn": "Distribute Candies Among Children II",
+    "titleZh": "给小朋友们分糖果 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Enumeration",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "枚举",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distribute-candies-among-children-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distribute-candies-to-people",
+    "frontendDisplayId": "1103",
+    "titleEn": "Distribute Candies to People",
+    "titleZh": "分糖果 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distribute-candies-to-people/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distribute-coins-in-binary-tree",
+    "frontendDisplayId": "979",
+    "titleEn": "Distribute Coins in Binary Tree",
+    "titleZh": "在二叉树中分配硬币",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distribute-coins-in-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distribute-elements-into-two-arrays-i",
+    "frontendDisplayId": "3069",
+    "titleEn": "Distribute Elements Into Two Arrays I",
+    "titleZh": "将元素分配到两个数组中 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distribute-elements-into-two-arrays-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distribute-elements-into-two-arrays-ii",
+    "frontendDisplayId": "3072",
+    "titleEn": "Distribute Elements Into Two Arrays II",
+    "titleZh": "将元素分配到两个数组中 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Segment Tree",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "线段树",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distribute-elements-into-two-arrays-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distribute-money-to-maximum-children",
+    "frontendDisplayId": "2591",
+    "titleEn": "Distribute Money to Maximum Children",
+    "titleZh": "将钱分给最多的儿童",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distribute-money-to-maximum-children/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "distribute-repeating-integers",
+    "frontendDisplayId": "1655",
+    "titleEn": "Distribute Repeating Integers",
+    "titleZh": "分配重复整数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Bitmask",
+      "Counting",
+      "Dynamic Programming",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "位掩码",
+      "计数",
+      "动态规划",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/distribute-repeating-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "divide-a-string-into-groups-of-size-k",
+    "frontendDisplayId": "2138",
+    "titleEn": "Divide a String Into Groups of Size k",
+    "titleZh": "将字符串拆分为若干长度为 k 的组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/divide-a-string-into-groups-of-size-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "divide-an-array-into-subarrays-with-minimum-cost-i",
+    "frontendDisplayId": "3010",
+    "titleEn": "Divide an Array Into Subarrays With Minimum Cost I",
+    "titleZh": "将数组分成最小总代价的子数组 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/divide-an-array-into-subarrays-with-minimum-cost-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "divide-an-array-into-subarrays-with-minimum-cost-ii",
+    "frontendDisplayId": "3013",
+    "titleEn": "Divide an Array Into Subarrays With Minimum Cost II",
+    "titleZh": "将数组分成最小总代价的子数组 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "堆（优先队列）",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/divide-an-array-into-subarrays-with-minimum-cost-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "divide-array-in-sets-of-k-consecutive-numbers",
+    "frontendDisplayId": "1296",
+    "titleEn": "Divide Array in Sets of K Consecutive Numbers",
+    "titleZh": "划分数组为连续数字的集合",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/divide-array-in-sets-of-k-consecutive-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "divide-array-into-arrays-with-max-difference",
+    "frontendDisplayId": "2966",
+    "titleEn": "Divide Array Into Arrays With Max Difference",
+    "titleZh": "划分数组并满足最大差限制",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/divide-array-into-arrays-with-max-difference/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "divide-array-into-equal-pairs",
+    "frontendDisplayId": "2206",
+    "titleEn": "Divide Array Into Equal Pairs",
+    "titleZh": "将数组划分成相等数对",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/divide-array-into-equal-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "divide-intervals-into-minimum-number-of-groups",
+    "frontendDisplayId": "2406",
+    "titleEn": "Divide Intervals Into Minimum Number of Groups",
+    "titleZh": "将区间分为最少组数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Prefix Sum",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）",
+      "前缀和",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/divide-intervals-into-minimum-number-of-groups/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "divide-nodes-into-the-maximum-number-of-groups",
+    "frontendDisplayId": "2493",
+    "titleEn": "Divide Nodes Into the Maximum Number of Groups",
+    "titleZh": "将节点分成尽可能多的组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/divide-nodes-into-the-maximum-number-of-groups/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "divide-players-into-teams-of-equal-skill",
+    "frontendDisplayId": "2491",
+    "titleEn": "Divide Players Into Teams of Equal Skill",
+    "titleZh": "划分技能点相等的团队",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/divide-players-into-teams-of-equal-skill/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "divide-two-integers",
+    "frontendDisplayId": "29",
+    "titleEn": "Divide Two Integers",
+    "titleZh": "两数相除",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/divide-two-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-30",
+    "claimedAt": "2026-07-10T02:07:52.851354+00:00",
+    "completedAt": null
+  }
+]

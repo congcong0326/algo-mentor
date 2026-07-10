@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "flip-columns-for-maximum-number-of-equal-rows",
+    "reasonEN": "A medium matrix and hash-table problem that normalizes each row relative to its first bit. It trains recognizing flip-equivalent patterns and using canonical encodings for frequency aggregation, a reusable technique for symmetry-based grouping.",
+    "reasonZH": "这是一道中等难度的矩阵与哈希表题，通过相对首位对每一行进行规范化。它训练识别列翻转等价模式并用规范编码聚合频次，是处理对称分组问题的通用技巧。"
+  },
+  {
+    "slug": "flip-equivalent-binary-trees",
+    "reasonEN": "This medium tree DFS problem compares subtrees while allowing either child order at every node. It reinforces recursive base cases and the two possible pairing choices, making it a clean exercise in structural equivalence under local transformations.",
+    "reasonZH": "本题是中等难度的树形 DFS 题，需要在每个节点允许交换左右子树的前提下比较结构。它训练递归边界和两种子树配对选择，是理解局部变换下结构等价性的经典练习。"
+  },
+  {
+    "slug": "flip-square-submatrix-vertically",
+    "reasonEN": "An easy matrix simulation problem that reverses corresponding rows inside a square region. It practices two-pointer swapping with precise submatrix boundaries, providing a reliable foundation for in-place grid transformations.",
+    "reasonZH": "这是一道简单的矩阵模拟题，需要交换正方形区域内对应的行。它训练双指针交换和子矩阵边界控制，是原地网格变换的基础练习。"
+  },
+  {
+    "slug": "flip-string-to-monotone-increasing",
+    "reasonEN": "A classic medium string DP problem that minimizes changes needed to preserve a zero-then-one ordering. The key is maintaining the best cost for each ending state, making it valuable for learning compact state transitions and prefix-based alternatives.",
+    "reasonZH": "这是一道经典的中等难度字符串 DP 题，目标是以最少翻转保持先 0 后 1 的单调结构。核心是维护不同结尾状态的最优代价，适合训练紧凑状态转移和前缀计数替代方案。"
+  },
+  {
+    "slug": "flipping-an-image",
+    "reasonEN": "This easy matrix simulation combines horizontal reversal with bit inversion. It develops careful paired-index processing and shows how XOR or direct toggling can simplify binary-image transformations.",
+    "reasonZH": "本题是简单的矩阵模拟题，结合水平翻转和二进制取反。它训练成对下标处理，并展示如何用异或或直接翻转简化二值图像变换。"
+  },
+  {
+    "slug": "flood-fill",
+    "reasonEN": "A foundational easy grid traversal problem using DFS or BFS to expand a connected component. It trains neighbor-boundary checks, visited-state handling, and the distinction between recursive and iterative traversal implementations.",
+    "reasonZH": "这是一道基础的简单网格遍历题，使用 DFS 或 BFS 扩展连通块。它训练相邻边界判断、访问状态维护，以及递归和迭代遍历实现的差异。"
+  },
+  {
+    "slug": "flower-planting-with-no-adjacent",
+    "reasonEN": "This medium graph-coloring problem exploits the bounded degree to greedily assign one of a few colors. It teaches adjacency-list construction and local conflict checks, illustrating when a simple greedy coloring proof is sufficient.",
+    "reasonZH": "本题是中等难度的图着色题，利用节点度数受限的性质贪心分配少量颜色。它训练邻接表构建和局部冲突检查，说明何时简单贪心着色可以成立。"
+  },
+  {
+    "slug": "form-array-by-concatenating-subarrays-of-another-array",
+    "reasonEN": "A medium greedy matching problem that advances through the source only after a target group matches contiguously. It reinforces two-pointer alignment, early mismatch handling, and why taking the earliest valid occurrence preserves feasibility.",
+    "reasonZH": "这是一道中等难度的贪心匹配题，只有目标分组连续匹配后才能推进源数组指针。它训练双指针对齐、尽早处理失配，并理解为何选择最早合法位置不会损失可行性。"
+  },
+  {
+    "slug": "form-largest-integer-with-digits-that-add-up-to-target",
+    "reasonEN": "A hard unbounded-knapsack DP problem that optimizes numeric length before lexicographic order. It trains representing impossible states, resolving equal-value ties correctly, and reconstructing the largest valid digit sequence.",
+    "reasonZH": "本题是困难的完全背包 DP 题，需先优化数字长度再处理字典序。它训练不可达状态表示、等价值下的正确比较，以及还原最大的合法数字串。"
+  },
+  {
+    "slug": "form-smallest-number-from-two-digit-arrays",
+    "reasonEN": "This easy enumeration and set-membership problem separates the shared-digit case from the two-digit construction case. It sharpens minimum selection and ordering logic, offering a concise example of reducing candidates through case analysis.",
+    "reasonZH": "这是一道简单的枚举与集合成员题，需要区分存在公共数字和只能拼接两位数两种情况。它训练最小值选择与数位排序，是通过分类讨论缩小候选空间的简洁范例。"
+  },
+  {
+    "slug": "four-divisors",
+    "reasonEN": "A medium number-theory problem that enumerates divisors up to the square root while tracking both count and sum. It develops divisor-pair reasoning and careful square-number handling, which are essential for efficient factorization tasks.",
+    "reasonZH": "本题是中等难度的数论题，在平方根范围内枚举因数并同时统计数量与和。它训练因数成对推理和完全平方数的边界处理，是高效分解类题目的重要基础。"
+  },
+  {
+    "slug": "fpTFWP",
+    "reasonEN": "This hard matrix graph problem finds the longest increasing path through memoized DFS or topological layering. It trains converting local value comparisons into directed edges and avoiding repeated subproblems, a key pattern for implicit DAGs.",
+    "reasonZH": "这是一道困难的矩阵图题，可通过记忆化 DFS 或拓扑分层求最长递增路径。它训练将局部大小关系转换为有向边并避免重复子问题，是处理隐式 DAG 的关键模式。"
+  },
+  {
+    "slug": "fraction-addition-and-subtraction",
+    "reasonEN": "A medium parsing and arithmetic simulation problem that accumulates signed fractions exactly. It practices tokenizing signs and denominators, using common denominators safely, and reducing with GCD after each update.",
+    "reasonZH": "本题是中等难度的解析与算术模拟题，需要精确累加带符号分数。它训练符号和分母解析、安全通分，以及每次更新后用最大公约数约分。"
+  },
+  {
+    "slug": "fraction-to-recurring-decimal",
+    "reasonEN": "This medium math and hash-table problem detects recurring decimals by recording the remainder position. It reinforces long-division simulation, sign and overflow handling, and the powerful connection between repeated state and cycle detection.",
+    "reasonZH": "这是一道中等难度的数学与哈希表题，通过记录余数首次位置识别循环小数。它训练长除法模拟、符号与溢出处理，并理解重复状态与环检测之间的联系。"
+  },
+  {
+    "slug": "freedom-trail",
+    "reasonEN": "A hard circular-string DP problem that chooses among every matching ring position for each key character. It teaches state compression, circular distance calculation, and transition minimization, making it an excellent example of shortest-path thinking inside DP.",
+    "reasonZH": "本题是困难的环形字符串 DP 题，需要为每个目标字符选择可能的圆环位置。它训练状态压缩、环形距离计算和转移最小化，是在 DP 中融入最短路思想的优秀例题。"
+  },
+  {
+    "slug": "frequencies-of-shortest-supersequences",
+    "reasonEN": "This hard graph and enumeration problem models ordering constraints between letters, then resolves cycles through small-state search before topological construction. It develops cycle analysis, bitmask enumeration, and reasoning about all minimal solutions rather than one sequence.",
+    "reasonZH": "这是一道困难的图论与枚举题，将字符先后关系建模为有向图，再通过小状态搜索处理环并进行拓扑构造。它训练环分析、位掩码枚举，以及从单个解扩展到全部最优解的思维。"
+  },
+  {
+    "slug": "frequency-balance-subarray",
+    "reasonEN": "A medium frequency-state subarray problem centered on maintaining whether element counts meet a balance condition. It trains choosing a representation for dynamic frequencies and controlling repeated work across candidate ranges, which is central to subarray counting design.",
+    "reasonZH": "本题是中等难度的频次状态子数组题，核心是维护元素计数是否满足平衡条件。它训练为动态频次选择合适表示，并控制候选区间之间的重复计算，是子数组计数设计的重要能力。"
+  },
+  {
+    "slug": "frequency-of-the-most-frequent-element",
+    "reasonEN": "A representative medium sorting and sliding-window problem that spends increments to raise smaller values to the window maximum. It teaches prefix-sum cost calculation, shrinking an infeasible window, and the greedy meaning of sorting before optimization.",
+    "reasonZH": "这是一道代表性的中等难度排序与滑动窗口题，通过消耗增量把较小值提升到窗口最大值。它训练前缀和计算代价、收缩不可行窗口，以及理解排序在贪心优化中的作用。"
+  },
+  {
+    "slug": "frequency-tracker",
+    "reasonEN": "This medium design problem maintains both value frequencies and the number of values at each frequency. It reinforces update-before-query invariants and shows how a second counter map makes frequency existence checks constant time.",
+    "reasonZH": "本题是中等难度的设计题，需要同时维护元素频次和各频次对应的元素数量。它训练先更新旧状态再写入新状态的不变量，并展示第二层计数表如何把频次存在性查询降为常数时间。"
+  },
+  {
+    "slug": "friend-requests-ii-who-has-the-most-friends",
+    "reasonEN": "A medium SQL aggregation problem that unifies requester and accepter columns before counting appearances. It teaches UNION-based normalization, GROUP BY aggregation, and selecting all tied maxima in a relationship dataset.",
+    "reasonZH": "这是一道中等难度的 SQL 聚合题，需要先合并请求方和接受方字段再统计出现次数。它训练用 UNION 规范化数据、GROUP BY 聚合，以及在关系数据中保留所有并列最大值。"
+  },
+  {
+    "slug": "friends-of-appropriate-ages",
+    "reasonEN": "This medium sorting and two-pointer counting problem converts age rules into an ordered valid interval. It develops inequality simplification, duplicate-aware counting, and efficient range expansion instead of testing every pair.",
+    "reasonZH": "本题是中等难度的排序与双指针计数题，将年龄规则转换为有序的合法区间。它训练不等式化简、重复值计数，以及用区间扩展替代逐对判断。"
+  },
+  {
+    "slug": "frog-jump",
+    "reasonEN": "A hard dynamic-programming reachability problem whose state couples a stone position with the previous jump length. It trains sparse-state transitions, pruning impossible jumps, and recognizing why position alone is insufficient state information.",
+    "reasonZH": "这是一道困难的动态规划可达性题，状态必须同时记录石头位置和上一次跳跃长度。它训练稀疏状态转移、不可行跳跃剪枝，并理解为何仅记录位置不足以描述问题。"
+  },
+  {
+    "slug": "frog-jump-ii",
+    "reasonEN": "This medium minimax greedy problem seeks to minimize the largest jump over an outbound-and-return route. It teaches identifying the forced two-step spacing created by non-reuse constraints, turning an apparent path search into a direct maximum-gap calculation.",
+    "reasonZH": "本题是中等难度的极小化最大值贪心题，目标是最小化往返路线中的最大跳跃距离。它训练识别不可复用约束带来的强制隔点结构，将看似路径搜索的问题化为直接的最大间距计算。"
+  },
+  {
+    "slug": "frog-position-after-t-seconds",
+    "reasonEN": "A hard tree probability traversal problem that propagates probability mass across unvisited children at each second. It reinforces parent tracking, degree-based transition probabilities, and the subtle stopping behavior at leaves and at the target node.",
+    "reasonZH": "这是一道困难的树上概率遍历题，每秒将概率质量分配给未访问的子节点。它训练父节点追踪、按度数计算转移概率，以及叶节点和目标节点停留条件的细节处理。"
+  },
+  {
+    "slug": "fruit-into-baskets",
+    "reasonEN": "A canonical medium variable sliding-window problem that keeps at most two distinct types. It trains frequency-map updates, left-boundary contraction, and the invariant-driven approach used throughout substring and subarray optimization.",
+    "reasonZH": "这是一道经典的中等难度可变滑动窗口题，窗口内最多保留两种类型。它训练频次表更新、左边界收缩，以及广泛用于子串和子数组优化的不变量思维。"
+  },
+  {
+    "slug": "fruits-into-baskets-ii",
+    "reasonEN": "This easy greedy simulation assigns each fruit to the leftmost still-available basket with sufficient capacity. It practices ordered scanning and state updates, while establishing the straightforward baseline for the data-structure extension.",
+    "reasonZH": "本题是简单的贪心模拟题，将每个水果放入最靠左且容量足够的未占用篮子。它训练有序扫描和状态更新，并为后续数据结构优化版本建立直接基线。"
+  },
+  {
+    "slug": "fruits-into-baskets-iii",
+    "reasonEN": "The medium extension requires a segment tree or ordered structure to find the leftmost basket meeting a capacity threshold after removals. It teaches range-maximum queries, leftmost feasible search, and point updates in an online allocation workflow.",
+    "reasonZH": "作为中等难度进阶版，本题需要用线段树或有序结构在移除后寻找最左侧容量达标的篮子。它训练区间最大值查询、最左可行位置搜索和在线分配中的单点更新。"
+  },
+  {
+    "slug": "fsa7oZ",
+    "reasonEN": "This hard combinatorial game problem analyzes an unbounded board through local threat patterns and finite candidate enumeration. It develops winning-state classification, adversarial case analysis, and the ability to extract bounded structure from an apparently infinite state space.",
+    "reasonZH": "本题是困难的组合博弈题，需要从局部威胁模式和有限候选枚举分析无限棋盘。它训练胜负状态分类、对抗性分类讨论，以及从表面无限的状态空间中提取有限结构的能力。"
+  },
+  {
+    "slug": "fu-za-lian-biao-de-fu-zhi-lcof",
+    "reasonEN": "A medium linked-list copying problem that must preserve both next and random references. It trains identity-based node mapping and pointer reconstruction, with the interleaving solution offering a valuable space-optimization extension.",
+    "reasonZH": "这是一道中等难度的链表复制题，必须同时保留 next 和 random 指针关系。它训练基于节点身份的映射与指针重建，穿插节点解法还提供了有价值的空间优化思路。"
+  },
+  {
+    "slug": "function-composition",
+    "reasonEN": "This easy functional-programming exercise builds a composed callable by applying functions in reverse order. It reinforces closure construction, evaluation order, and the practical meaning of composition in JavaScript-style APIs.",
+    "reasonZH": "本题是简单的函数式编程练习，通过按逆序应用函数构建复合可调用对象。它训练闭包构造、求值顺序，以及组合在 JavaScript 风格 API 中的实际含义。"
+  }
+]

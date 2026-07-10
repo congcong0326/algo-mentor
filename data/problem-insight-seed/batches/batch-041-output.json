@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "find-and-replace-in-string",
+    "reasonEN": "A medium string simulation problem centered on sorting replacement positions and applying only non-overlapping matches against the original text. It sharpens index-boundary handling and demonstrates why edits should be built in one pass rather than mutating the source repeatedly.",
+    "reasonZH": "中等难度的字符串模拟题，核心是按替换位置排序，并基于原始字符串判断每个不重叠匹配。它训练下标边界处理，也说明了为何应单次构造结果而不是反复原地修改字符串。"
+  },
+  {
+    "slug": "find-and-replace-pattern",
+    "reasonEN": "This is a bijective-pattern matching exercise using two directional hash maps. It exposes the common mistake of checking only one mapping direction and provides a compact template for isomorphic-string style problems.",
+    "reasonZH": "这是一道使用双向哈希映射的双射模式匹配题。它能暴露只检查单向映射的常见错误，并为同构字符串类问题提供紧凑模板。"
+  },
+  {
+    "slug": "find-array-given-subset-sums",
+    "reasonEN": "A hard reconstruction problem that combines sorted multiset reasoning with recursive partitioning of subset sums. It trains recovery under sign ambiguity and is valuable for building confidence with inverse problems and frequency-map invariants.",
+    "reasonZH": "高难度的逆向构造题，结合排序多重集合与子集和的递归拆分。它训练在符号不确定性下恢复答案的能力，对理解逆问题和频次表不变量很有价值。"
+  },
+  {
+    "slug": "find-beautiful-indices-in-the-given-array-i",
+    "reasonEN": "This medium string-matching problem pairs occurrence collection with sorted-position searches to enforce distance constraints. It is a practical stepping stone from direct matching to binary-search filtering of pattern positions.",
+    "reasonZH": "中等难度的字符串匹配题，先收集模式出现位置，再在有序位置中搜索满足距离约束的候选。它是从直接匹配过渡到二分筛选模式位置的实用练习。"
+  },
+  {
+    "slug": "find-beautiful-indices-in-the-given-array-ii",
+    "reasonEN": "A hard-scale extension of constrained pattern matching, requiring efficient occurrence detection such as KMP or rolling hash plus binary search over positions. It teaches how to preserve the same query logic when input limits rule out naive substring scans.",
+    "reasonZH": "这是带距离约束字符串匹配的高难度规模版，需要用 KMP 或滚动哈希高效找出出现位置，再对位置二分。它训练在数据规模排除朴素子串扫描时保留同一查询逻辑。"
+  },
+  {
+    "slug": "find-books-with-no-available-copies",
+    "reasonEN": "A foundational SQL aggregation problem that distinguishes total inventory from available inventory through grouping and conditional counts. It reinforces NULL-aware joins and business-rule filtering in relational reports.",
+    "reasonZH": "基础的 SQL 聚合题，通过分组和条件计数区分总库存与可借库存。它强化了空值感知的连接处理，以及在关系型报表中落实业务筛选规则的能力。"
+  },
+  {
+    "slug": "find-books-with-polarized-opinions",
+    "reasonEN": "This SQL analytics problem uses grouped review statistics and conditional aggregation to identify opposing sentiment. It practices expressing multi-condition business definitions precisely and turning row-level feedback into book-level decisions.",
+    "reasonZH": "这道 SQL 分析题通过分组评价统计和条件聚合识别两极化观点。它训练精确表达多条件业务定义，并将行级反馈转化为书籍级结论。"
+  },
+  {
+    "slug": "find-bottom-left-tree-value",
+    "reasonEN": "A classic tree traversal problem where level order or depth-first traversal must preserve the deepest-leftmost invariant. It is a clean exercise in choosing traversal order so the desired answer emerges without extra bookkeeping.",
+    "reasonZH": "经典的树遍历题，层序或深度优先遍历都必须维护最深且最靠左的节点不变量。它训练通过选择合适的遍历顺序，让目标答案自然产生而无需冗余记录。"
+  },
+  {
+    "slug": "find-building-where-alice-and-bob-can-meet",
+    "reasonEN": "This hard offline-query problem combines monotonic structure with ordered queries, commonly solved by sweeping from right to left and answering pending requests with a heap or segment tree. It develops the key skill of converting reachability questions into threshold queries.",
+    "reasonZH": "高难度离线查询题，常通过从右向左扫描，结合单调结构与堆或线段树回答待处理请求。它训练把可达性问题转换为阈值查询的关键能力。"
+  },
+  {
+    "slug": "find-category-recommendation-pairs",
+    "reasonEN": "A hard SQL self-join and aggregation problem for deriving co-occurring category pairs from user behavior. It teaches duplicate control, canonical pair ordering, and layered CTE design for recommendation-style analysis.",
+    "reasonZH": "高难度 SQL 自连接与聚合题，从用户行为中推导共现类别对。它训练去重、规范化配对顺序，以及用分层 CTE 组织推荐分析逻辑。"
+  },
+  {
+    "slug": "find-center-of-star-graph",
+    "reasonEN": "An easy graph observation problem: the shared endpoint of the first two edges must be the star center. It develops the habit of exploiting structural guarantees instead of constructing unnecessary adjacency data.",
+    "reasonZH": "简单的图论观察题：前两条边的公共端点必然是星型图中心。它培养利用结构保证的习惯，避免构建不必要的邻接结构。"
+  },
+  {
+    "slug": "find-champion-i",
+    "reasonEN": "This easy matrix problem reduces a tournament relation to finding the row with no losses. It reinforces reading directional information from an adjacency matrix and recognizing when exhaustive graph machinery is unnecessary.",
+    "reasonZH": "简单的矩阵题，将比赛关系归结为寻找没有败绩的一行。它训练从邻接矩阵读取有向信息，并识别何时不需要完整图算法。"
+  },
+  {
+    "slug": "find-champion-ii",
+    "reasonEN": "A medium directed-graph problem that identifies the unique node with indegree zero. It is a concise application of degree statistics and connects directly to source detection in dependency graphs.",
+    "reasonZH": "中等难度的有向图题，核心是找出唯一入度为零的节点。它是度数统计的简洁应用，并直接关联到依赖图中的源节点识别。"
+  },
+  {
+    "slug": "find-churn-risk-customers",
+    "reasonEN": "This SQL business-analysis problem combines customer history with recency and activity aggregates to flag risk cohorts. It practices building interpretable retention rules through CTEs, date arithmetic, and grouped metrics.",
+    "reasonZH": "这是一道 SQL 业务分析题，结合客户历史、近期行为和活跃度聚合筛选风险人群。它训练使用 CTE、日期运算与分组指标构建可解释的留存规则。"
+  },
+  {
+    "slug": "find-closest-lcci",
+    "reasonEN": "A medium single-pass array problem that records the latest occurrence of each target word and minimizes their gap. It is an essential pattern for ordered-stream proximity queries and teaches how to update answers online.",
+    "reasonZH": "中等难度的单遍数组题，记录两个目标词最近一次出现的位置并最小化间距。它是有序数据流邻近查询的重要模式，训练在线更新答案。"
+  },
+  {
+    "slug": "find-closest-node-to-given-two-nodes",
+    "reasonEN": "This functional-graph problem computes distances from two sources while handling cycles and unreachable nodes. It develops careful visitation discipline and a reusable approach for comparing paths in outdegree-one graphs.",
+    "reasonZH": "函数图题，需要从两个起点计算距离，同时处理环和不可达节点。它训练严谨的访问标记，并提供比较出度为一图中两条路径的可复用方法。"
+  },
+  {
+    "slug": "find-closest-number-to-zero",
+    "reasonEN": "An easy scan problem with a subtle tie-break: compare absolute values, then prefer the larger signed value when distances match. It is useful for practicing precise comparator design instead of relying on incidental iteration order.",
+    "reasonZH": "简单的遍历题，但包含细微的并列规则：先比较绝对值，再在距离相同时选择较大的有符号值。它训练精确定义比较器，而非依赖偶然的遍历顺序。"
+  },
+  {
+    "slug": "find-closest-person",
+    "reasonEN": "A concise math comparison problem based on distances along a number line. It reinforces translating a verbal race condition into absolute differences and handling ties explicitly.",
+    "reasonZH": "简洁的数轴距离比较题，核心是比较到目标的绝对距离。它训练把文字化的竞速条件转化为数学表达式，并显式处理平局。"
+  },
+  {
+    "slug": "find-common-characters",
+    "reasonEN": "A frequency-intersection problem that repeatedly takes the minimum count of every character across words. It teaches multiset intersection and offers a dependable template for lowercase alphabet counting.",
+    "reasonZH": "字符频次交集题，持续取每个字符在所有单词中的最小出现次数。它训练多重集合求交，并提供小写字母计数的可靠模板。"
+  },
+  {
+    "slug": "find-common-elements-between-two-arrays",
+    "reasonEN": "This easy hash-set problem counts directional membership between two arrays. It clarifies the distinction between unique values and occurrences, a frequent source of mistakes in set-based tasks.",
+    "reasonZH": "简单的哈希集合题，分别统计两个数组中落入对方集合的元素。它澄清了不同值与出现次数的区别，这是集合类题目的常见失误点。"
+  },
+  {
+    "slug": "find-consecutive-integers-from-a-data-stream",
+    "reasonEN": "A medium data-stream design problem that maintains the current streak of a target value in constant space. It teaches stateful API design, reset conditions, and online invariant maintenance.",
+    "reasonZH": "中等难度的数据流设计题，用常数空间维护目标值的当前连续次数。它训练有状态 API 设计、重置条件以及在线维护不变量。"
+  },
+  {
+    "slug": "find-consistently-improving-employees",
+    "reasonEN": "This SQL sequence-analysis problem compares each employee's ordered performance records, typically with window functions. It builds skill in partitioned ordering, adjacent-row comparison, and enforcing an all-period condition.",
+    "reasonZH": "这道 SQL 序列分析题比较每位员工按时间排序的表现记录，通常需要窗口函数。它训练分区排序、相邻行比较，以及落实“全周期均满足”的条件。"
+  },
+  {
+    "slug": "find-covid-recovery-patients",
+    "reasonEN": "A medium SQL temporal-analysis problem that links medical events across dates and statuses. It is valuable for practicing patient-level grouping, date comparisons, and precise interpretation of recovery criteria.",
+    "reasonZH": "中等难度的 SQL 时序分析题，需要按日期和状态关联医疗事件。它训练患者维度分组、日期比较，以及精确解释康复判定标准。"
+  },
+  {
+    "slug": "find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
+    "reasonEN": "A hard MST classification problem built on Kruskal's algorithm and Union-Find, testing each edge under forced inclusion or exclusion. It deepens understanding of MST optimality and the difference between indispensable and optional optimal edges.",
+    "reasonZH": "高难度最小生成树分类题，以 Kruskal 和并查集为基础，通过强制选边或禁用边进行测试。它深化对 MST 最优性的理解，并区分不可缺少边与可选最优边。"
+  },
+  {
+    "slug": "find-customer-referee",
+    "reasonEN": "A foundational SQL filtering problem whose main trap is SQL three-valued logic around NULL. It teaches writing predicates that correctly retain rows with missing referrer values.",
+    "reasonZH": "基础 SQL 筛选题，关键陷阱是 NULL 带来的三值逻辑。它训练编写能够正确保留推荐人缺失记录的过滤条件。"
+  },
+  {
+    "slug": "find-drivers-with-improved-fuel-efficiency",
+    "reasonEN": "This SQL trend-analysis problem compares each driver's efficiency across ordered periods using aggregation and window functions. It practices ratio calculations, chronological alignment, and avoiding division-related edge cases.",
+    "reasonZH": "这是一道 SQL 趋势分析题，通过聚合和窗口函数比较驾驶员在有序周期内的燃油效率。它训练比率计算、时间对齐，以及规避除法相关边界情况。"
+  },
+  {
+    "slug": "find-duplicate-file-in-system",
+    "reasonEN": "A medium parsing-and-grouping problem that maps file content signatures to full paths. It trains robust token extraction from structured strings and highlights how hash keys turn duplicate detection into linear-time grouping.",
+    "reasonZH": "中等难度的解析分组题，将文件内容特征映射到完整路径列表。它训练从结构化字符串中稳健提取字段，并说明哈希键如何把重复检测转化为线性分组。"
+  },
+  {
+    "slug": "find-duplicate-subtrees",
+    "reasonEN": "This tree hashing problem assigns canonical serialization or interned IDs to subtrees during postorder traversal. It teaches structural deduplication and why postorder is the natural direction for composing subtree signatures.",
+    "reasonZH": "树哈希题，在后序遍历中为子树分配规范序列化结果或内部 ID。它训练结构去重，并解释为何后序是组合子树特征的自然方向。"
+  },
+  {
+    "slug": "find-edges-in-shortest-paths",
+    "reasonEN": "A hard shortest-path problem that runs Dijkstra from both endpoints and classifies an edge by whether its weight can lie on an optimal route. It develops distance decomposition reasoning and careful handling of undirected edge directions.",
+    "reasonZH": "高难度最短路题，从两个端点分别运行 Dijkstra，并依据边权能否组成最优路径来分类边。它训练距离分解思维，以及对无向边两个方向的严谨处理。"
+  },
+  {
+    "slug": "find-elements-in-a-contaminated-binary-tree",
+    "reasonEN": "A medium tree-design problem that restores implicit node values through traversal and stores them for fast membership queries. It contrasts preprocessing cost with query latency and reinforces parent-to-child state propagation.",
+    "reasonZH": "中等难度的树设计题，通过遍历恢复隐式节点值并存储，以支持快速成员查询。它对比预处理成本与查询延迟，并强化从父节点向子节点传播状态的思路。"
+  }
+]

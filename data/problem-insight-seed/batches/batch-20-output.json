@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "count-fertile-pyramids-in-a-land",
+    "reasonEN": "A hard matrix-DP pattern that builds maximal pyramid heights from the base upward. It trains symmetric state transitions and boundary handling, making it a strong exercise in recognizing geometric substructure in grids.",
+    "reasonZH": "高难度矩阵动态规划代表题，通过自底向上累积金字塔的最大高度。它训练对称状态转移与边界处理，适合建立从网格中识别几何子结构的能力。"
+  },
+  {
+    "slug": "count-good-integers-in-a-range",
+    "reasonEN": "This hard counting problem calls for turning digit constraints over a range into a compact combinatorial or digit-DP state. It sharpens range counting, leading-zero treatment, and state compression under large bounds.",
+    "reasonZH": "这是一道高难度计数题，需要把区间内的数位约束转化为紧凑的组合计数或数位 DP 状态。它训练区间计数、前导零处理和大范围下的状态压缩。"
+  },
+  {
+    "slug": "count-good-integers-on-a-grid-path",
+    "reasonEN": "A hard grid dynamic-programming problem centered on propagating path states while preserving number properties. It develops careful state design and transition merging, both essential for constrained path-counting tasks.",
+    "reasonZH": "高难度网格动态规划题，核心是在路径推进中维护数字性质。它训练状态设计与转移合并，是掌握带约束路径计数问题的重要练习。"
+  },
+  {
+    "slug": "count-good-meals",
+    "reasonEN": "This hash-table counting problem reduces pair sums to powers-of-two complements. It teaches how to enumerate a small target set, update frequencies online, and avoid quadratic pair checks.",
+    "reasonZH": "这道哈希计数题把数对求和转化为枚举 2 的幂对应的补数。它训练有限目标枚举、在线维护频次和避免二重循环的思路。"
+  },
+  {
+    "slug": "count-good-nodes-in-binary-tree",
+    "reasonEN": "A clean tree traversal exercise where each path carries its maximum value. It reinforces DFS/BFS state propagation and shows how ancestor context can be maintained without extra global structure.",
+    "reasonZH": "简洁的树遍历题，需要沿根到节点路径维护当前最大值。它巩固 DFS/BFS 的状态传递，并说明如何无需额外全局结构地保留祖先上下文。"
+  },
+  {
+    "slug": "count-good-numbers",
+    "reasonEN": "This modular-arithmetic problem separates independent digit positions and applies fast exponentiation. It is a compact lesson in modeling combinatorial choices and computing enormous powers safely under a modulus.",
+    "reasonZH": "该模运算题将相互独立的数位位置拆开，并使用快速幂计算结果。它训练组合选择建模，以及在模数下安全处理超大幂次。"
+  },
+  {
+    "slug": "count-good-subarrays",
+    "reasonEN": "A hard monotonic-stack and bitwise counting problem that asks for precise ownership of subarray contributions. It develops boundary discovery, bit-level aggregation, and duplicate-safe counting techniques.",
+    "reasonZH": "高难度单调栈与位运算计数题，关键是精确划分子数组贡献归属。它训练边界定位、按位聚合以及处理重复值时的去重计数技巧。"
+  },
+  {
+    "slug": "count-good-triplets",
+    "reasonEN": "An accessible enumeration baseline for triple constraints. It teaches disciplined loop ordering and early pruning, providing a useful reference before optimizing higher-dimensional counting problems.",
+    "reasonZH": "适合作为三元组约束的枚举入门题。它训练有序循环设计和提前剪枝，为后续优化高维计数问题建立基准思路。"
+  },
+  {
+    "slug": "count-good-triplets-in-an-array",
+    "reasonEN": "This hard permutation-counting problem decomposes each valid triplet around a center and uses a Fenwick tree or segment tree for prefix statistics. It is valuable practice in converting relative-order conditions into logarithmic queries.",
+    "reasonZH": "高难度排列计数题，需要围绕中心元素拆分合法三元组，并用树状数组或线段树维护前缀统计。它训练把相对次序条件转化为对数复杂度查询。"
+  },
+  {
+    "slug": "count-hills-and-valleys-in-an-array",
+    "reasonEN": "A focused array-scanning problem that requires collapsing equal neighbors before local comparison. It highlights an easy-to-miss duplicate-handling detail and builds reliable one-pass reasoning.",
+    "reasonZH": "这道数组扫描题要求在局部比较前消除相邻相等元素的干扰。它突出处理重复值这一常见细节，并训练可靠的一次遍历思维。"
+  },
+  {
+    "slug": "count-increasing-quadruplets",
+    "reasonEN": "A hard sequence-counting problem that factors four-index order constraints into reusable prefix and suffix counts. It trains DP-style decomposition and Fenwick-tree optimization for nested inequalities.",
+    "reasonZH": "高难度序列计数题，需要把四个下标的顺序约束拆成可复用的前缀与后缀计数。它训练 DP 式分解，以及用树状数组优化嵌套不等式。"
+  },
+  {
+    "slug": "count-indices-with-opposite-parity",
+    "reasonEN": "This easy array problem is a concise parity-classification exercise. It reinforces direct index/value parity checks and helps build the habit of translating wording into a simple invariant.",
+    "reasonZH": "简单数组分类题，核心是判断下标与数值的奇偶关系。它训练直接的奇偶校验，并帮助把题意快速提炼为简单不变量。"
+  },
+  {
+    "slug": "count-integers-in-intervals",
+    "reasonEN": "A hard design problem for dynamically merging covered intervals while reporting total length. It teaches ordered-set interval coalescing, overlap accounting, and the tradeoff between sparse storage and segment trees.",
+    "reasonZH": "高难度数据结构设计题，需要动态合并覆盖区间并维护总长度。它训练有序集合的区间合并、重叠长度核算，以及稀疏存储与线段树之间的取舍。"
+  },
+  {
+    "slug": "count-integers-with-even-digit-sum",
+    "reasonEN": "A small simulation and number-theory exercise based on digit-sum parity. It is useful for practicing digit extraction cleanly and validating straightforward enumeration against edge cases.",
+    "reasonZH": "小型模拟与数论题，核心是判断各位数字和的奇偶性。它适合练习清晰的数位拆解，并用边界案例验证直接枚举。"
+  },
+  {
+    "slug": "count-islands-with-total-value-divisible-by-k",
+    "reasonEN": "This graph-on-a-grid problem combines component traversal with modular accumulation. It trains DFS/BFS or union-find modeling, component-local aggregation, and careful reset of per-island state.",
+    "reasonZH": "这道网格图题结合连通块遍历与模值累加。它训练 DFS/BFS 或并查集建模、连通块内聚合，以及每个岛屿状态的正确重置。"
+  },
+  {
+    "slug": "count-items-matching-a-rule",
+    "reasonEN": "A direct array and string filtering task that maps rule names to fixed fields. It reinforces clean data indexing and is a good introductory exercise in turning symbolic criteria into predicates.",
+    "reasonZH": "直接的数组与字符串筛选题，需要把规则名称映射到固定字段。它巩固清晰的数据索引，是将符号条件转化为谓词的入门练习。"
+  },
+  {
+    "slug": "count-k-reducible-numbers-less-than-n",
+    "reasonEN": "A hard digit-DP and combinatorics problem that groups numbers by popcount reduction depth. It develops binary bound handling, binomial counting, and the ability to separate structural properties from numeric order.",
+    "reasonZH": "高难度数位 DP 与组合数学题，按位数归约深度对整数分组。它训练二进制上界处理、组合计数，以及将结构性质与数值大小关系分离。"
+  },
+  {
+    "slug": "count-k-subsequences-of-a-string-with-maximum-beauty",
+    "reasonEN": "This hard greedy-combinatorics problem selects the highest character frequencies, then counts ties at the cutoff. It sharpens frequency analysis, modular combinations, and the subtle distinction between optimization and counting optima.",
+    "reasonZH": "高难度贪心组合题，先选择频率最高的字符，再计算临界频率的组合数。它训练频次分析、模组合计算，以及区分求最优值与计数最优方案。"
+  },
+  {
+    "slug": "count-k-th-roots-in-a-range",
+    "reasonEN": "A numerical binary-search problem for locating integer k-th-root boundaries in a range. It teaches monotone predicates, overflow-aware power comparison, and exact floor/ceiling boundary reasoning.",
+    "reasonZH": "数值二分题，用于定位区间内整数 K 次根的边界。它训练单调判定、避免幂运算溢出，以及精确处理上下取整边界。"
+  },
+  {
+    "slug": "count-largest-group",
+    "reasonEN": "This counting problem groups values by digit sum and compares bucket frequencies. It offers practical practice with hash maps or fixed arrays, while reinforcing the separation of key construction from aggregation.",
+    "reasonZH": "这道计数题按数位和分组并比较桶的频次。它适合练习哈希表或定长数组，并巩固键构造与聚合统计分离的思路。"
+  },
+  {
+    "slug": "count-lattice-points-inside-a-circle",
+    "reasonEN": "A geometry enumeration problem that converts circle membership into squared-distance checks and deduplicates overlapping regions. It trains integer geometry, bounded iteration, and set-based de-duplication.",
+    "reasonZH": "几何枚举题，把圆内判定转化为平方距离比较，并对重叠区域去重。它训练整数几何、有限范围枚举和基于集合的去重。"
+  },
+  {
+    "slug": "count-mentions-per-user",
+    "reasonEN": "This event-simulation problem depends on sorting timestamps and correctly modeling temporary offline intervals. It develops chronological state updates, tie-order awareness, and robust parsing of mixed event formats.",
+    "reasonZH": "事件模拟题，关键是按时间排序并正确维护临时离线区间。它训练按时间更新状态、处理同一时刻的顺序，以及解析混合事件格式。"
+  },
+  {
+    "slug": "count-monobit-integers",
+    "reasonEN": "A compact bit-manipulation enumeration problem centered on recognizing binary forms with one contiguous run of ones. It reinforces binary representation reasoning and simple constructive generation.",
+    "reasonZH": "紧凑的位运算枚举题，核心是识别二进制中只有一段连续 1 的形式。它巩固二进制表示推理和简单的构造生成方法。"
+  },
+  {
+    "slug": "count-negative-numbers-in-a-sorted-matrix",
+    "reasonEN": "This sorted-matrix problem exploits row and column monotonicity to count negatives in linear perimeter time. It teaches staircase traversal and why global ordering can eliminate repeated binary searches.",
+    "reasonZH": "有序矩阵题，利用行列单调性在线性边界时间内统计负数。它训练阶梯式遍历，并说明全局有序性如何避免重复二分。"
+  },
+  {
+    "slug": "count-nice-pairs-in-an-array",
+    "reasonEN": "An algebraic hash-counting problem that rewrites the pair condition into equal transformed values. It builds the valuable habit of rearranging equations before choosing a data structure, with digit reversal as the key transform.",
+    "reasonZH": "代数化的哈希计数题，把数对条件改写为变换后数值相等。它训练先整理等式再选择数据结构的习惯，关键变换是数字翻转。"
+  },
+  {
+    "slug": "count-no-zero-pairs-that-sum-to-n",
+    "reasonEN": "A hard digit-DP counting task with addition carries and forbidden zero digits. It strengthens per-digit state modeling, carry transitions, and leading-position boundary treatment in arithmetic DP.",
+    "reasonZH": "高难度数位 DP 计数题，包含加法进位和禁止出现零数字的约束。它训练逐位状态建模、进位转移，以及算术 DP 中最高位边界处理。"
+  },
+  {
+    "slug": "count-nodes-equal-to-average-of-subtree",
+    "reasonEN": "A postorder tree-DP exercise that returns subtree sums and sizes together. It reinforces bottom-up aggregation, integer-division semantics, and designing DFS return values around the parent’s needs.",
+    "reasonZH": "后序树形 DP 题，需要同时返回子树和与节点数。它巩固自底向上聚合、整数除法语义，以及按父节点需求设计 DFS 返回值。"
+  },
+  {
+    "slug": "count-nodes-with-the-highest-score",
+    "reasonEN": "This tree decomposition problem evaluates how removing each node partitions the tree into component sizes. It trains subtree-size DFS, complement-size calculation, and overflow-safe multiplication of independent parts.",
+    "reasonZH": "树分治计数题，需要评估删除每个节点后形成的各连通部分大小。它训练子树大小 DFS、补集大小计算，以及独立部分乘积的溢出防护。"
+  },
+  {
+    "slug": "count-non-adjacent-subsets-in-a-rooted-tree",
+    "reasonEN": "A hard tree-DP formulation of choosing an independent set under counting constraints. It develops include/exclude states, child-state multiplication, and modular aggregation on rooted trees.",
+    "reasonZH": "高难度树形 DP 题，本质是在树上计数独立集选择方案。它训练选与不选状态、子节点状态相乘，以及有根树上的模聚合。"
+  },
+  {
+    "slug": "count-non-decreasing-arrays-with-given-digit-sums",
+    "reasonEN": "This hard dynamic-programming problem combines non-decreasing sequence constraints with per-position digit-sum targets. It is valuable for learning prefix-sum transition optimization and preserving order information in compressed states.",
+    "reasonZH": "高难度动态规划题，结合非递减序列约束与每个位置的数位和目标。它训练前缀和优化转移，以及在压缩状态中保留顺序信息。"
+  }
+]

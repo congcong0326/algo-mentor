@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "max-chunks-to-make-sorted-ii",
+    "reasonEN": "A hard greedy monotonic-stack problem that merges adjacent regions whenever their value ranges would cross after sorting. It trains maintaining chunk maxima and recognizing when local partitions must be coalesced, a powerful pattern for permutation-free ordering problems.",
+    "reasonZH": "这是一道困难的贪心单调栈题，当相邻区域的值域在排序后会交叉时需要合并。它训练维护分块最大值并识别何时必须合并局部分区，是处理非排列排序问题的强力模式。"
+  },
+  {
+    "slug": "max-consecutive-ones",
+    "reasonEN": "An easy array scan that counts the current run of ones and resets on zero. It reinforces simple running-state invariants and is a foundational exercise for recognizing consecutive-segment patterns.",
+    "reasonZH": "本题是简单的数组扫描题，统计当前连续一的长度并在零处重置。它训练简单的运行状态不变量，是识别连续段模式的基础练习。"
+  },
+  {
+    "slug": "max-consecutive-ones-iii",
+    "reasonEN": "This medium variable sliding-window problem allows a bounded number of zeros inside the current range. It trains counting violations, shrinking only when the budget is exceeded, and applying the same invariant to replacement-style problems.",
+    "reasonZH": "这是一道中等难度的可变滑动窗口题，允许当前区间内存在有限数量的零。它训练统计违规数量、只在超出预算时收缩窗口，并将同一不变量迁移到替换类问题。"
+  },
+  {
+    "slug": "max-difference-you-can-get-from-changing-an-integer",
+    "reasonEN": "A medium digit-greedy problem that independently constructs the largest and smallest reachable values under replacement rules. It trains choosing the first influential digit, handling leading-zero restrictions, and proving digit-local decisions are globally optimal.",
+    "reasonZH": "本题是中等难度的数位贪心题，需要在替换规则下分别构造最大和最小可达值。它训练选择首个关键数位、处理前导零限制，并证明数位局部决策能够达到全局最优。"
+  },
+  {
+    "slug": "max-dot-product-of-two-subsequences",
+    "reasonEN": "A hard two-sequence DP problem that decides whether to pair current elements or skip from either side. It trains nonempty-state initialization, especially for all-negative inputs, and is an important extension of LCS-style dynamic programming.",
+    "reasonZH": "这是一道困难的双序列 DP 题，需要决定配对当前元素还是跳过其中一侧。它训练非空状态初始化，尤其是全负输入的处理，是 LCS 风格动态规划的重要进阶。"
+  },
+  {
+    "slug": "max-increase-to-keep-city-skyline",
+    "reasonEN": "This medium matrix greedy problem limits each cell by the minimum of its row and column skyline maxima. It trains separating global constraints into reusable aggregates and summing independent local improvements.",
+    "reasonZH": "本题是中等难度的矩阵贪心题，每个单元的上限由所在行和列最大值的较小者决定。它训练将全局约束拆分为可复用聚合量，并累加彼此独立的局部改进。"
+  },
+  {
+    "slug": "max-number-of-k-sum-pairs",
+    "reasonEN": "A medium pair-matching problem that consumes complements to maximize disjoint target-sum pairs. It practices frequency-map updates or sorted two pointers, with emphasis on using each element exactly once.",
+    "reasonZH": "这是一道中等难度的数对匹配题，通过消耗互补值最大化不相交的目标和数对。它训练频次表更新或排序双指针，并强调每个元素只能使用一次。"
+  },
+  {
+    "slug": "max-pair-sum-in-an-array",
+    "reasonEN": "An easy hash-bucket problem that groups numbers by their maximum digit before retaining the best two values. It trains feature-based grouping and incremental top-two maintenance instead of enumerating all pairs.",
+    "reasonZH": "本题是简单的哈希分桶题，按最大数位分组后保留每组最大的两个值。它训练按特征分组和增量维护前两大值，避免枚举所有数对。"
+  },
+  {
+    "slug": "max-points-on-a-line",
+    "reasonEN": "A hard geometry and hash-table problem that counts normalized slopes from each anchor point. It trains GCD-based direction canonicalization, duplicate-point handling, and avoiding floating-point precision errors in collinearity checks.",
+    "reasonZH": "这是一道困难的几何与哈希表题，从每个锚点统计规范化斜率。它训练用最大公约数规范方向、处理重复点，并避免共线判断中的浮点精度误差。"
+  },
+  {
+    "slug": "max-submatrix-lcci",
+    "reasonEN": "A hard matrix optimization problem that compresses row ranges into one-dimensional arrays and applies Kadane's algorithm. It trains dimensionality reduction, prefix accumulation, and recovering rectangle boundaries alongside the maximum sum.",
+    "reasonZH": "本题是困难的矩阵优化题，将行区间压缩为一维数组后应用 Kadane 算法。它训练降维、前缀累积，以及在求最大和时同步恢复矩形边界。"
+  },
+  {
+    "slug": "max-sum-of-a-pair-with-equal-sum-of-digits",
+    "reasonEN": "This medium hashing problem groups values by digit sum and retains the best previous value in each bucket. It teaches compact feature extraction and online maximum-pair updates without sorting every group.",
+    "reasonZH": "本题是中等难度的哈希题，按数位和分组并在每个桶中保留此前最大值。它训练紧凑的特征提取和在线更新最大数对，无需对每个分组排序。"
+  },
+  {
+    "slug": "max-sum-of-rectangle-no-larger-than-k",
+    "reasonEN": "A hard matrix prefix-sum problem that reduces row bands to a constrained maximum-subarray query. It trains ordered-prefix lookup for the smallest prior sum meeting a threshold, a high-value combination of dimensional compression and balanced-tree search.",
+    "reasonZH": "这是一道困难的矩阵前缀和题，将行带压缩为带上界的最大子数组查询。它训练在有序前缀和中查找满足阈值的最小历史值，是降维与平衡树查询的高价值组合。"
+  },
+  {
+    "slug": "max-value-of-equation",
+    "reasonEN": "This hard sliding-window optimization rewrites the expression so prior points contribute a single maintainable term. It trains expiring points by coordinate distance and using a monotonic deque or heap to retrieve the best valid predecessor.",
+    "reasonZH": "本题是困难的滑动窗口优化题，通过改写表达式将历史点贡献化为可维护的单一项。它训练按坐标距离淘汰过期点，并用单调队列或堆取得最佳合法前驱。"
+  },
+  {
+    "slug": "maximal-network-rank",
+    "reasonEN": "A medium graph-counting problem that evaluates each city pair by combining degrees and subtracting a shared road once. It reinforces adjacency representation and inclusion-exclusion reasoning in small dense graph searches.",
+    "reasonZH": "本题是中等难度的图计数题，计算每对城市的度数之和并对共享道路减一次。它训练邻接关系表示和小规模稠密图搜索中的容斥思维。"
+  },
+  {
+    "slug": "maximal-rectangle",
+    "reasonEN": "A classic hard matrix problem that converts each row into a histogram and solves it with a monotonic stack. It trains cumulative-height preprocessing, sentinel boundaries, and the reusable largest-rectangle-in-histogram technique.",
+    "reasonZH": "这是一道经典的困难矩阵题，将每一行转换为直方图后用单调栈求解。它训练累计高度预处理、哨兵边界，以及可复用的最大矩形直方图技巧。"
+  },
+  {
+    "slug": "maximal-score-after-applying-k-operations",
+    "reasonEN": "This medium greedy heap problem repeatedly selects the current largest contribution and reinserts its reduced replacement. It trains priority-queue scheduling and recognizing when locally best extraction is justified by independent future values.",
+    "reasonZH": "本题是中等难度的贪心堆题，反复选择当前最大贡献并插回其缩减后的替代值。它训练优先队列调度，并理解何时局部最优取出可由独立的未来价值保证。"
+  },
+  {
+    "slug": "maximal-square",
+    "reasonEN": "A medium matrix DP problem where each filled cell extends the smallest of its top, left, and diagonal square capacities. It trains local recurrence derivation and one-dimensional space compression for grid dynamic programming.",
+    "reasonZH": "本题是中等难度的矩阵 DP 题，每个填充单元可将上、左和左上方向的最小正方形容量扩展一格。它训练局部递推推导，以及网格动态规划的一维空间压缩。"
+  },
+  {
+    "slug": "maximize-active-section-with-trade-i",
+    "reasonEN": "This medium string enumeration problem evaluates eligible trade boundaries and their effect on neighboring active runs. It trains run-length decomposition, exact operation simulation, and choosing the best local merge in a small-input setting.",
+    "reasonZH": "本题是中等难度的字符串枚举题，评估合法交易边界及其对相邻活跃段的影响。它训练连续段分解、精确操作模拟，以及在小规模输入中选择最佳局部合并。"
+  },
+  {
+    "slug": "maximize-active-section-with-trade-ii",
+    "reasonEN": "The hard extension supports larger or repeated trade decisions through range data structures and feasibility search. It develops segment-tree summaries, binary-searchable objectives, and efficient maintenance of active interval information.",
+    "reasonZH": "困难进阶版需要通过区间数据结构和可行性搜索支持更大规模或重复交易决策。它训练线段树摘要、可二分的目标，以及活跃区间信息的高效维护。"
+  },
+  {
+    "slug": "maximize-alternating-sum-using-swaps",
+    "reasonEN": "A hard component-based greedy problem that uses union-find to identify positions connected by permitted swaps. It trains sorting values within each component and assigning them according to alternating-sign coefficients for the maximum total.",
+    "reasonZH": "这是一道困难的连通分量贪心题，用并查集识别可通过允许交换互相连通的位置。它训练在每个分量内排序数值，并按交替符号系数分配以最大化总和。"
+  },
+  {
+    "slug": "maximize-amount-after-two-days-of-conversions",
+    "reasonEN": "This medium weighted-graph problem computes reachable conversion multipliers for each day's exchange network. It trains DFS or BFS ratio propagation, composing multiplicative paths, and comparing cross-day conversion opportunities.",
+    "reasonZH": "本题是中等难度的带权图题，需要计算每天兑换网络中的可达汇率乘积。它训练 DFS 或 BFS 的比率传播、乘法路径组合，以及比较跨天兑换机会。"
+  },
+  {
+    "slug": "maximize-area-of-square-hole-in-grid",
+    "reasonEN": "A medium sorting problem that finds the longest consecutive runs of removed horizontal and vertical bars. It trains converting geometric deletion information into one-dimensional streak lengths, then using the smaller dimension as the square side.",
+    "reasonZH": "本题是中等难度的排序题，寻找被移除横杆和竖杆中的最长连续段。它训练将几何删除信息转换为一维连续长度，再以较小维度作为正方形边长。"
+  },
+  {
+    "slug": "maximize-consecutive-elements-in-an-array-after-modification",
+    "reasonEN": "A hard sorting and DP problem that decides whether each value should stay or shift by one to extend a consecutive chain. It trains state updates around neighboring target values and careful ordering when duplicate numbers interact.",
+    "reasonZH": "本题是困难的排序与 DP 题，需要决定每个值保持不变还是移动一位以延长连续链。它训练围绕相邻目标值更新状态，并处理重复数字相互影响时的顺序细节。"
+  },
+  {
+    "slug": "maximize-count-of-distinct-primes-after-split",
+    "reasonEN": "This hard number-theory range problem tracks prime-factor contributions across possible split positions. It trains factorization, occurrence bookkeeping, and segment-tree or ordered-set maintenance for maximizing a distinct-count objective dynamically.",
+    "reasonZH": "本题是困难的数论区间题，需要跟踪质因子对不同分割位置的贡献。它训练分解质因数、出现位置记录，以及用线段树或有序集合动态维护最大不同数目目标。"
+  },
+  {
+    "slug": "maximize-cyclic-partition-score",
+    "reasonEN": "A hard cyclic DP problem that must account for partitions crossing the array boundary. It trains enumerating or fixing a break point, defining partition-end states, and restoring circular dependencies through linear subproblems.",
+    "reasonZH": "本题是困难的环形 DP 题，必须处理跨越数组边界的分割。它训练枚举或固定断点、定义分割结尾状态，并通过线性子问题恢复环形依赖。"
+  },
+  {
+    "slug": "maximize-distance-to-closest-person",
+    "reasonEN": "A medium array scan that evaluates leading, trailing, and interior empty runs differently. It trains gap-based reasoning and the ceiling-half rule for interior gaps, a concise example of boundary-sensitive optimization.",
+    "reasonZH": "本题是中等难度的数组扫描题，需要分别处理开头、结尾和中间的连续空位。它训练基于间隔的推理和中间间隔的向上取半规则，是边界敏感优化的简洁例子。"
+  },
+  {
+    "slug": "maximize-expression-of-three-elements",
+    "reasonEN": "An easy greedy enumeration problem that reduces a three-element expression to a small set of extremal candidates after sorting. It trains analyzing coefficient signs and avoiding cubic enumeration by selecting only values that can influence the optimum.",
+    "reasonZH": "本题是简单的贪心枚举题，排序后可将三元素表达式缩减为少量极值候选。它训练分析系数符号，并通过只选择可能影响最优值的元素避免三重枚举。"
+  },
+  {
+    "slug": "maximize-fixed-points-after-deletions",
+    "reasonEN": "A hard ordered-array optimization problem that balances deletion choices against positions that can become fixed points. It trains sorting candidates, testing monotone feasibility with binary search, and reasoning about index shifts caused by removals.",
+    "reasonZH": "本题是困难的有序数组优化题，需要平衡删除选择与可成为固定点的位置。它训练排序候选、用二分测试单调可行性，以及推理删除引起的下标变化。"
+  },
+  {
+    "slug": "maximize-greatness-of-an-array",
+    "reasonEN": "This medium sorting and two-pointer greedy problem matches each value with the smallest strictly greater available counterpart. It trains exchange-style matching arguments and is a useful template for maximizing the number of successful comparisons.",
+    "reasonZH": "本题是中等难度的排序与双指针贪心题，为每个值匹配最小的严格更大可用值。它训练交换式匹配论证，是最大化成功比较次数的实用模板。"
+  },
+  {
+    "slug": "maximize-grid-happiness",
+    "reasonEN": "A hard profile-DP problem that builds the grid cell by cell while encoding prior-row states and remaining counts. It trains ternary bitmask representation, local neighbor interaction scoring, and memoization for exponential-looking placement choices.",
+    "reasonZH": "本题是困难的轮廓 DP 题，逐格构建网格并编码上一行状态和剩余数量。它训练三进制位掩码表示、局部相邻交互计分，以及对指数级放置选择进行记忆化。"
+  }
+]

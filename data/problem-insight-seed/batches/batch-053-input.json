@@ -1,0 +1,710 @@
+[
+  {
+    "slug": "happy-number",
+    "frontendDisplayId": "202",
+    "titleEn": "Happy Number",
+    "titleZh": "快乐数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Math",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "数学",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/happy-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "happy-students",
+    "frontendDisplayId": "2860",
+    "titleEn": "Happy Students",
+    "titleZh": "让所有学生保持开心的分组方法数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/happy-students/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "harshad-number",
+    "frontendDisplayId": "3099",
+    "titleEn": "Harshad Number",
+    "titleZh": "哈沙德数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/harshad-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "hash-divided-string",
+    "frontendDisplayId": "3271",
+    "titleEn": "Hash Divided String",
+    "titleZh": "哈希分割字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/hash-divided-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "he-bing-liang-ge-pai-xu-de-lian-biao-lcof",
+    "frontendDisplayId": "LCR 142",
+    "titleEn": null,
+    "titleZh": "训练计划 IV",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Linked List",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "递归"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/he-bing-liang-ge-pai-xu-de-lian-biao-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "he-wei-sde-lian-xu-zheng-shu-xu-lie-lcof",
+    "frontendDisplayId": "LCR 180",
+    "titleEn": null,
+    "titleZh": "文件组合",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Math",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "数学",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/he-wei-sde-lian-xu-zheng-shu-xu-lie-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "he-wei-sde-liang-ge-shu-zi-lcof",
+    "frontendDisplayId": "LCR 179",
+    "titleEn": null,
+    "titleZh": "查找总价格为目标值的两个商品",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/he-wei-sde-liang-ge-shu-zi-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "heaters",
+    "frontendDisplayId": "475",
+    "titleEn": "Heaters",
+    "titleZh": "供暖器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/heaters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "height-checker",
+    "frontendDisplayId": "1051",
+    "titleEn": "Height Checker",
+    "titleZh": "高度检查器",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting Sort",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数排序",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/height-checker/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "height-of-binary-tree-after-subtree-removal-queries",
+    "frontendDisplayId": "2458",
+    "titleEn": "Height of Binary Tree After Subtree Removal Queries",
+    "titleZh": "移除子树后的二叉树高度",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/height-of-binary-tree-after-subtree-removal-queries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "hexadecimal-and-hexatrigesimal-conversion",
+    "frontendDisplayId": "3602",
+    "titleEn": "Hexadecimal and Hexatrigesimal Conversion",
+    "titleZh": "十六进制和三十六进制转化",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/hexadecimal-and-hexatrigesimal-conversion/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "high-access-employees",
+    "frontendDisplayId": "2933",
+    "titleEn": "High-Access Employees",
+    "titleZh": "高访问员工",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/high-access-employees/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "house-robber",
+    "frontendDisplayId": "198",
+    "titleEn": "House Robber",
+    "titleZh": "打家劫舍",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/house-robber/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "house-robber-ii",
+    "frontendDisplayId": "213",
+    "titleEn": "House Robber II",
+    "titleZh": "打家劫舍 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/house-robber-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "house-robber-iii",
+    "frontendDisplayId": "337",
+    "titleEn": "House Robber III",
+    "titleZh": "打家劫舍 III",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/house-robber-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "house-robber-iv",
+    "frontendDisplayId": "2560",
+    "titleEn": "House Robber IV",
+    "titleZh": "打家劫舍 IV",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/house-robber-iv/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "house-robber-v",
+    "frontendDisplayId": "3840",
+    "titleEn": "House Robber V",
+    "titleZh": "打家劫舍 V",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/house-robber-v/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "how-many-numbers-are-smaller-than-the-current-number",
+    "frontendDisplayId": "1365",
+    "titleEn": "How Many Numbers Are Smaller Than the Current Number",
+    "titleZh": "有多少小于当前数字的数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting Sort",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数排序",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "hqCnmP",
+    "frontendDisplayId": "LCP 72",
+    "titleEn": null,
+    "titleZh": "补给马车",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/hqCnmP/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "html-entity-parser",
+    "frontendDisplayId": "1410",
+    "titleEn": "HTML Entity Parser",
+    "titleZh": "HTML 实体解析器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/html-entity-parser/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "hua-dong-chuang-kou-de-zui-da-zhi-lcof",
+    "frontendDisplayId": "LCR 183",
+    "titleEn": null,
+    "titleZh": "望远镜中最高的海拔",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Monotonic Queue",
+      "Queue",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "单调队列",
+      "队列",
+      "滑动窗口"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/hua-dong-chuang-kou-de-zui-da-zhi-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "human-traffic-of-stadium",
+    "frontendDisplayId": "601",
+    "titleEn": "Human Traffic of Stadium",
+    "titleZh": "体育馆的人流量",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/human-traffic-of-stadium/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "iIQa4I",
+    "frontendDisplayId": "LCR 038",
+    "titleEn": null,
+    "titleZh": "每日温度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/iIQa4I/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "iSwD2y",
+    "frontendDisplayId": "LCR 065",
+    "titleEn": null,
+    "titleZh": "单词的压缩编码",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/iSwD2y/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "identify-the-largest-outlier-in-an-array",
+    "frontendDisplayId": "3371",
+    "titleEn": "Identify the Largest Outlier in an Array",
+    "titleZh": "识别数组中的最大异常值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Enumeration",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "枚举",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/identify-the-largest-outlier-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "image-overlap",
+    "frontendDisplayId": "835",
+    "titleEn": "Image Overlap",
+    "titleZh": "图像重叠",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/image-overlap/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "image-smoother",
+    "frontendDisplayId": "661",
+    "titleEn": "Image Smoother",
+    "titleZh": "图片平滑器",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/image-smoother/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "immediate-food-delivery-ii",
+    "frontendDisplayId": "1174",
+    "titleEn": "Immediate Food Delivery II",
+    "titleZh": "即时食物配送 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/immediate-food-delivery-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "implement-magic-dictionary",
+    "frontendDisplayId": "676",
+    "titleEn": "Implement Magic Dictionary",
+    "titleZh": "实现一个魔法字典",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Design",
+      "Hash Table",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "设计",
+      "哈希表",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/implement-magic-dictionary/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "implement-queue-using-stacks",
+    "frontendDisplayId": "232",
+    "titleEn": "Implement Queue using Stacks",
+    "titleZh": "用栈实现队列",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Design",
+      "Queue",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "队列",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/implement-queue-using-stacks/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-053",
+    "claimedAt": "2026-07-10T03:53:34.923685+00:00",
+    "completedAt": null
+  }
+]

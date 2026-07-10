@@ -1,0 +1,746 @@
+[
+  {
+    "slug": "smallest-string-with-swaps",
+    "frontendDisplayId": "1202",
+    "titleEn": "Smallest String With Swaps",
+    "titleZh": "交换字符串中的元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Hash Table",
+      "Sorting",
+      "String",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "哈希表",
+      "排序",
+      "字符串",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/smallest-string-with-swaps/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "smallest-subarrays-with-maximum-bitwise-or",
+    "frontendDisplayId": "2411",
+    "titleEn": "Smallest Subarrays With Maximum Bitwise OR",
+    "titleZh": "按位或最大的最小子数组长度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Bit Manipulation",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "位运算",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/smallest-subarrays-with-maximum-bitwise-or/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "smallest-subsequence-of-distinct-characters",
+    "frontendDisplayId": "1081",
+    "titleEn": "Smallest Subsequence of Distinct Characters",
+    "titleZh": "不同字符的最小子序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Monotonic Stack",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "单调栈",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "smallest-substring-with-identical-characters-i",
+    "frontendDisplayId": "3398",
+    "titleEn": "Smallest Substring With Identical Characters I",
+    "titleZh": "字符相同的最短子字符串 I",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/smallest-substring-with-identical-characters-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "smallest-substring-with-identical-characters-ii",
+    "frontendDisplayId": "3399",
+    "titleEn": "Smallest Substring With Identical Characters II",
+    "titleZh": "字符相同的最短子字符串 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Search",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/smallest-substring-with-identical-characters-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "smallest-subtree-with-all-the-deepest-nodes",
+    "frontendDisplayId": "865",
+    "titleEn": "Smallest Subtree with all the Deepest Nodes",
+    "titleZh": "具有所有最深节点的最小子树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/smallest-subtree-with-all-the-deepest-nodes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "smallest-sufficient-team",
+    "frontendDisplayId": "1125",
+    "titleEn": "Smallest Sufficient Team",
+    "titleZh": "最小的必要团队",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/smallest-sufficient-team/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "smallest-unique-subarray",
+    "frontendDisplayId": "3934",
+    "titleEn": "Smallest Unique Subarray",
+    "titleZh": "最短唯一子数组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Hash Function",
+      "Hash Table",
+      "Rolling Hash",
+      "Suffix Array"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "哈希函数",
+      "哈希表",
+      "滚动哈希",
+      "后缀数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/smallest-unique-subarray/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "smallest-value-after-replacing-with-sum-of-prime-factors",
+    "frontendDisplayId": "2507",
+    "titleEn": "Smallest Value After Replacing With Sum of Prime Factors",
+    "titleZh": "使用质因数之和替换后可以取到的最小值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Number Theory",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "数论",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/smallest-value-after-replacing-with-sum-of-prime-factors/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "smallest-value-of-the-rearranged-number",
+    "frontendDisplayId": "2165",
+    "titleEn": "Smallest Value of the Rearranged Number",
+    "titleZh": "重排数字的最小值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/smallest-value-of-the-rearranged-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "snail-traversal",
+    "frontendDisplayId": "2624",
+    "titleEn": "Snail Traversal",
+    "titleZh": "蜗牛排序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/snail-traversal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "snake-in-matrix",
+    "frontendDisplayId": "3248",
+    "titleEn": "Snake in Matrix",
+    "titleZh": "矩阵中的蛇",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/snake-in-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "snakes-and-ladders",
+    "frontendDisplayId": "909",
+    "titleEn": "Snakes and Ladders",
+    "titleZh": "蛇梯棋",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/snakes-and-ladders/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "snapshot-array",
+    "frontendDisplayId": "1146",
+    "titleEn": "Snapshot Array",
+    "titleZh": "快照数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Design",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "设计",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/snapshot-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "solve-the-equation",
+    "frontendDisplayId": "640",
+    "titleEn": "Solve the Equation",
+    "titleZh": "求解方程",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/solve-the-equation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "solving-questions-with-brainpower",
+    "frontendDisplayId": "2140",
+    "titleEn": "Solving Questions With Brainpower",
+    "titleZh": "解决智力问题",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/solving-questions-with-brainpower/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-an-array",
+    "frontendDisplayId": "912",
+    "titleEn": "Sort an Array",
+    "titleZh": "排序数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bucket Sort",
+      "Counting Sort",
+      "Divide and Conquer",
+      "Heap (Priority Queue)",
+      "Merge Sort",
+      "Radix Sort",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "桶排序",
+      "计数排序",
+      "分治",
+      "堆（优先队列）",
+      "归并排序",
+      "基数排序",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-array-by-increasing-frequency",
+    "frontendDisplayId": "1636",
+    "titleEn": "Sort Array by Increasing Frequency",
+    "titleZh": "按照频率将数组升序排序",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-array-by-increasing-frequency/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-array-by-parity",
+    "frontendDisplayId": "905",
+    "titleEn": "Sort Array By Parity",
+    "titleZh": "按奇偶排序数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-array-by-parity/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-array-by-parity-ii",
+    "frontendDisplayId": "922",
+    "titleEn": "Sort Array By Parity II",
+    "titleZh": "按奇偶排序数组 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-array-by-parity-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-by",
+    "frontendDisplayId": "2724",
+    "titleEn": "Sort By",
+    "titleZh": "排序方式",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-by/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-characters-by-frequency",
+    "frontendDisplayId": "451",
+    "titleEn": "Sort Characters By Frequency",
+    "titleZh": "根据字符出现频率排序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bucket Sort",
+      "Counting",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "桶排序",
+      "计数",
+      "哈希表",
+      "堆（优先队列）",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-characters-by-frequency/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-colors",
+    "frontendDisplayId": "75",
+    "titleEn": "Sort Colors",
+    "titleZh": "颜色分类",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-colors/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-even-and-odd-indices-independently",
+    "frontendDisplayId": "2164",
+    "titleEn": "Sort Even and Odd Indices Independently",
+    "titleZh": "对奇偶下标分别排序",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-even-and-odd-indices-independently/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-integers-by-binary-reflection",
+    "frontendDisplayId": "3769",
+    "titleEn": "Sort Integers by Binary Reflection",
+    "titleZh": "二进制反射排序",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-integers-by-binary-reflection/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-integers-by-the-number-of-1-bits",
+    "frontendDisplayId": "1356",
+    "titleEn": "Sort Integers by The Number of 1 Bits",
+    "titleZh": "根据数字二进制下 1 的数目排序",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Counting",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "计数",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-integers-by-the-number-of-1-bits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-integers-by-the-power-value",
+    "frontendDisplayId": "1387",
+    "titleEn": "Sort Integers by The Power Value",
+    "titleZh": "将整数按权重排序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Memoization",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "记忆化",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-integers-by-the-power-value/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-items-by-groups-respecting-dependencies",
+    "frontendDisplayId": "1203",
+    "titleEn": "Sort Items by Groups Respecting Dependencies",
+    "titleZh": "项目管理",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-items-by-groups-respecting-dependencies/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-list",
+    "frontendDisplayId": "148",
+    "titleEn": "Sort List",
+    "titleZh": "排序链表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Divide and Conquer",
+      "Linked List",
+      "Merge Sort",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "分治",
+      "链表",
+      "归并排序",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sort-matrix-by-diagonals",
+    "frontendDisplayId": "3446",
+    "titleEn": "Sort Matrix by Diagonals",
+    "titleZh": "按对角线进行矩阵排序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sort-matrix-by-diagonals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-112",
+    "claimedAt": "2026-07-10T07:39:33.740184+00:00",
+    "completedAt": null
+  }
+]

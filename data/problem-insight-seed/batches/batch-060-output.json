@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "lexicographically-smallest-string-after-operations-with-constraint",
+    "reasonEN": "A greedy string-optimization problem that spends a limited operation budget on earliest characters. It trains circular alphabet distance handling and why improving a more significant position dominates later choices.",
+    "reasonZH": "这是一道贪心字符串优化题，需要优先把有限操作预算投入最靠前的字符。它训练环形字母距离处理，并理解改善高位字符为何优先于后续位置。"
+  },
+  {
+    "slug": "lexicographically-smallest-string-after-reverse",
+    "reasonEN": "This lexicographic optimization problem searches for the best effect of a single reversal. It develops candidate comparison and the use of binary search or two pointers to avoid brute-force substring rebuilding.",
+    "reasonZH": "该字典序优化题需要寻找一次反转带来的最佳效果。它训练比较候选变换，并使用二分或双指针避免暴力重建所有子串。"
+  },
+  {
+    "slug": "lexicographically-smallest-string-after-substring-operation",
+    "reasonEN": "A greedy construction problem where the first improvable position determines the useful operation range. It reinforces lexicographic priority, contiguous-range decisions, and the wraparound case for the smallest character.",
+    "reasonZH": "这是一道贪心构造题，第一个可改进的位置决定有效操作区间。它巩固字典序优先级、连续区间决策，以及最小字符回绕的特殊情况。"
+  },
+  {
+    "slug": "lfu-cache",
+    "reasonEN": "A hard cache-design problem that supports frequency eviction and recency tie-breaking in constant time. It teaches coordinated hash maps and doubly linked lists, including updates when frequency buckets become empty.",
+    "reasonZH": "该困难缓存设计题需要在常数时间内按使用频率淘汰，并按最近使用时间打破平局。它训练哈希表与双向链表协同维护，以及频率桶清空时的细致更新。"
+  },
+  {
+    "slug": "li-wu-de-zui-da-jie-zhi-lcof",
+    "reasonEN": "A grid dynamic-programming problem that accumulates the best value from top and left predecessors. It builds the standard matrix-path recurrence and clarifies initialization along the first row and column.",
+    "reasonZH": "这是一道网格动态规划题，从上方和左方前驱中累积最大可收集价值。它建立标准矩阵路径递推，并澄清首行首列的初始化方式。"
+  },
+  {
+    "slug": "lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof",
+    "reasonEN": "A linked-list two-pointer template that maintains a fixed K-node gap to locate a reverse-order position. It trains synchronized traversal and avoids a separate length-counting pass.",
+    "reasonZH": "这是链表双指针模板题，通过保持 K 个节点的固定间隔定位倒数位置。它训练同步遍历，并避免额外计算链表长度。"
+  },
+  {
+    "slug": "lian-xu-zi-shu-zu-de-zui-da-he-lcof",
+    "reasonEN": "A canonical maximum-subarray problem solved by Kadane's recurrence or divide and conquer. It teaches the decision between extending a running sum and restarting at the current element.",
+    "reasonZH": "这是经典的最大子数组题，可用 Kadane 递推或分治解决。它训练在延续当前和与从当前元素重新开始之间作出关键选择。"
+  },
+  {
+    "slug": "liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof",
+    "reasonEN": "A classic linked-list intersection problem where pointer switching aligns unequal prefixes without extra memory. It develops structural reasoning about shared tails and a reusable two-pointer technique.",
+    "reasonZH": "这是经典的链表相交题，指针换链可在不用额外空间的情况下对齐不同长度的前缀。它训练共享尾部的结构推理，并掌握可复用的双指针技巧。"
+  },
+  {
+    "slug": "license-key-formatting",
+    "reasonEN": "A string-formatting problem that scans from the least significant end to form fixed-size groups. It reinforces normalization, separator placement, and reverse construction for cleaner boundary handling.",
+    "reasonZH": "该字符串格式化题从末尾开始扫描以形成固定长度分组。它训练规范化处理、分隔符放置，以及用逆向构造简化边界处理。"
+  },
+  {
+    "slug": "limit-occurrences-in-sorted-array",
+    "reasonEN": "A sorted-array filtering problem that uses two pointers to retain only an allowed count from each run. It teaches in-place compaction and how sorted order turns duplicate control into a linear scan.",
+    "reasonZH": "这是一道有序数组筛选题，用双指针保留每段重复元素中允许的数量。它训练原地压缩，并理解有序性如何将重复控制化为线性扫描。"
+  },
+  {
+    "slug": "linked-list-components",
+    "reasonEN": "A linked-list segmentation problem that counts transitions into runs whose values belong to a target set. It develops set-based membership testing and a precise definition of component boundaries.",
+    "reasonZH": "该链表分段题统计进入目标值连续段的次数。它训练基于集合的成员判断，以及对连通分量边界的精确定义。"
+  },
+  {
+    "slug": "linked-list-cycle",
+    "reasonEN": "A foundational cycle-detection problem using Floyd's fast and slow pointers. It teaches relative-speed reasoning and provides a constant-space alternative to visited-node hashing.",
+    "reasonZH": "这是基础的环检测题，使用 Floyd 快慢指针。它训练相对速度推理，并提供不依赖访问集合的常数空间方案。"
+  },
+  {
+    "slug": "linked-list-cycle-ii",
+    "reasonEN": "This cycle-entry problem extends Floyd's algorithm with the proof that a reset pointer meets the slow pointer at the loop start. It develops mathematical reasoning about linked-list distances beyond simple detection.",
+    "reasonZH": "该环入口题扩展了 Floyd 算法：重置一个指针后，它会与慢指针在环起点相遇。它训练超越简单判环的链表距离数学推理。"
+  },
+  {
+    "slug": "linked-list-cycle-lcci",
+    "reasonEN": "A linked-list loop-entry problem that can use hashing or Floyd's two-pointer method. It reinforces recognizing the entry node rather than stopping at cycle existence alone.",
+    "reasonZH": "这是一道链表环入口题，可用哈希或 Floyd 双指针处理。它训练不仅判断环是否存在，还要准确定位入口节点。"
+  },
+  {
+    "slug": "linked-list-in-binary-tree",
+    "reasonEN": "A tree-pattern matching problem that launches a linked-list match attempt from each relevant tree node. It teaches nested DFS structure, local failure handling, and separating traversal from matching logic.",
+    "reasonZH": "该树模式匹配题需要从每个相关树节点发起一次链表匹配。它训练嵌套 DFS 结构、局部失败处理，以及分离遍历逻辑与匹配逻辑。"
+  },
+  {
+    "slug": "linked-list-random-node",
+    "reasonEN": "A reservoir-sampling problem that selects one node uniformly from a list of unknown length. It teaches probabilistic invariants and how a single pass preserves equal selection probability.",
+    "reasonZH": "这是蓄水池抽样题，需要从长度未知的链表中等概率选择一个节点。它训练概率不变量，并理解单次遍历如何保持每个元素相等的被选概率。"
+  },
+  {
+    "slug": "list-of-depth-lcci",
+    "reasonEN": "A tree BFS construction problem that creates one linked list for each depth level. It reinforces level-order traversal, per-level state reset, and conversion from hierarchical data to grouped linear structures.",
+    "reasonZH": "这是一道树 BFS 构造题，需要为每个深度生成一条链表。它训练层序遍历、每层状态重置，以及将层级数据转化为分组线性结构。"
+  },
+  {
+    "slug": "list-the-products-ordered-in-a-period",
+    "reasonEN": "A SQL reporting problem that filters an interval, aggregates order units by product, and applies a threshold. It reinforces WHERE versus HAVING responsibilities and clean grouped-query construction.",
+    "reasonZH": "这是 SQL 报表题，需要筛选时间区间、按产品聚合订单数量并应用阈值。它巩固 WHERE 与 HAVING 的职责区别，以及清晰的分组查询构造。"
+  },
+  {
+    "slug": "living-people-lcci",
+    "reasonEN": "An interval-overlap counting problem that turns birth and death years into difference-array events. It teaches sweep-line accumulation and careful treatment of inclusive endpoints.",
+    "reasonZH": "该区间重叠计数题将出生和死亡年份转化为差分事件。它训练扫描线累积，并细致处理包含端点的规则。"
+  },
+  {
+    "slug": "logical-or-of-two-binary-grids-represented-as-quad-trees",
+    "reasonEN": "A recursive tree-merging problem where uniform regions allow immediate short-circuiting. It develops divide-and-conquer composition, structural simplification, and compressed quad-tree reconstruction.",
+    "reasonZH": "这是递归树合并题，均匀区域可以立即短路处理。它训练分治组合、结构化简，以及重新构造压缩的四叉树结果。"
+  },
+  {
+    "slug": "long-pressed-name",
+    "reasonEN": "A two-pointer string-validation problem that distinguishes valid repeated keystrokes from unmatched characters. It reinforces grouped-character reasoning and exact end-condition checks.",
+    "reasonZH": "这是一道双指针字符串校验题，需要区分合法的长按重复与无法匹配的字符。它训练按字符分组推理，以及精确的结束条件检查。"
+  },
+  {
+    "slug": "longer-contiguous-segments-of-ones-than-zeros",
+    "reasonEN": "A linear string-scan problem that compares the longest runs of two character classes. It provides focused practice in run-length tracking and resetting state at transitions.",
+    "reasonZH": "该线性字符串扫描题比较两类字符的最长连续段。它适合练习连续长度维护，以及在状态切换时正确重置。"
+  },
+  {
+    "slug": "longest-absolute-file-path",
+    "reasonEN": "A stack-based parser that converts indentation depth into cumulative directory lengths. It teaches hierarchical state management, delimiter parsing, and identifying files versus folders during one pass.",
+    "reasonZH": "这是栈式解析题，将缩进层级转化为累计目录长度。它训练层级状态管理、分隔符解析，以及单次遍历中识别文件与目录。"
+  },
+  {
+    "slug": "longest-almost-palindromic-substring",
+    "reasonEN": "A substring optimization problem that combines two-pointer expansion with DP treatment of a near-palindromic condition. It develops mismatch-state control and careful reasoning about allowable repairs.",
+    "reasonZH": "该子串优化题结合双指针扩展与动态规划来处理准回文条件。它训练失配状态控制，以及对允许修复方式的细致推理。"
+  },
+  {
+    "slug": "longest-alternating-subarray",
+    "reasonEN": "An enumeration problem that extends maximal runs only while adjacent differences continue to alternate. It reinforces run-boundary detection and turning a local relation into a linear-time scan.",
+    "reasonZH": "这是一道枚举题，只有相邻差值持续交替时才能延长连续段。它训练识别连续段边界，并将局部关系转化为线性扫描。"
+  },
+  {
+    "slug": "longest-alternating-subarray-after-removing-at-most-one-element",
+    "reasonEN": "A hard sequence-DP problem that tracks alternating runs with and without one permitted deletion. It teaches layered state design and how a small edit budget changes transition dependencies.",
+    "reasonZH": "该困难序列 DP 题需要同时维护未删除和至多删除一个元素的交替连续段。它训练分层状态设计，以及小型修改预算如何改变转移依赖。"
+  },
+  {
+    "slug": "longest-arithmetic-sequence-after-changing-at-most-one-element",
+    "reasonEN": "An arithmetic-pattern optimization problem that examines how one replacement can repair or extend a run. It develops case analysis on neighboring differences and precise handling of integer feasibility.",
+    "reasonZH": "这是一道等差模式优化题，需要分析一次替换如何修复或延长连续段。它训练围绕相邻差值的分类讨论，以及对整数可行性的精确处理。"
+  },
+  {
+    "slug": "longest-arithmetic-subsequence",
+    "reasonEN": "A dynamic-programming subsequence problem that indexes states by ending position and common difference. It teaches sparse-state storage with hash maps and the distinction between subsequences and contiguous subarrays.",
+    "reasonZH": "这是等差子序列动态规划题，以结束位置和公差作为状态索引。它训练用哈希表存储稀疏状态，并区分子序列与连续子数组。"
+  },
+  {
+    "slug": "longest-arithmetic-subsequence-of-given-difference",
+    "reasonEN": "A streamlined hash-map DP problem where each value extends the chain ending at value minus the fixed difference. It builds a value-based recurrence and shows how a fixed relation compresses quadratic DP.",
+    "reasonZH": "该哈希表 DP 题中，每个值都可延长以其减去固定差值结尾的链。它训练基于数值的递推，并展示固定关系如何压缩二次 DP。"
+  },
+  {
+    "slug": "longest-balanced-subarray-i",
+    "reasonEN": "A range-balance problem that combines prefix information with structured query techniques. It develops encoding balance as a cumulative state and choosing between hashing, divide and conquer, or segment trees for interval constraints.",
+    "reasonZH": "该区间平衡题结合前缀信息与结构化查询技巧。它训练把平衡关系编码为累计状态，并根据区间约束在哈希、分治和线段树之间选择方案。"
+  }
+]

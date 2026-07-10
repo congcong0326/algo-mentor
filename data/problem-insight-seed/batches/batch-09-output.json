@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "best-poker-hand",
+    "reasonEN": "A compact easy counting task, focusing on turning ranks and suits into frequency summaries and choosing clean hash-table logic over scattered condition branches.",
+    "reasonZH": "入门级计数题，重点是把牌面和花色转成频次统计，训练用哈希表或数组压缩分类判断，适合作为条件分支题的简洁化练习。"
+  },
+  {
+    "slug": "best-position-for-a-service-centre",
+    "reasonEN": "A hard geometry and math optimization problem, valuable for practicing continuous search, distance functions, precision control, and randomized or iterative approximation techniques.",
+    "reasonZH": "高难度几何优化题，核心在连续空间中处理距离函数、精度误差和迭代逼近，适合突破只会离散枚举的算法思维。"
+  },
+  {
+    "slug": "best-reachable-tower",
+    "reasonEN": "A medium array modeling problem, centered on reachability decisions and best-candidate selection, useful for training careful state interpretation from compact input constraints.",
+    "reasonZH": "中等数组建模题，关键在抽象可达关系并筛选最优候选，训练从有限状态和约束中提炼判定逻辑的能力。"
+  },
+  {
+    "slug": "best-sightseeing-pair",
+    "reasonEN": "A classic medium array-DP transformation, teaching how to split a scoring formula into a running best prefix and current contribution for an efficient one-pass solution.",
+    "reasonZH": "经典中等数组动态规划题，重点是把评分公式拆成历史最优前缀和当前贡献，训练一次遍历维护最优状态的思路。"
+  },
+  {
+    "slug": "best-team-with-no-conflicts",
+    "reasonEN": "A medium sorting plus DP problem, emphasizing ordering before transition design and handling conflict constraints without double-counting invalid team states.",
+    "reasonZH": "中等排序加动态规划题，核心是先建立合理顺序再设计转移，训练在约束冲突下构造合法最优子结构。"
+  },
+  {
+    "slug": "best-time-to-buy-and-sell-stock",
+    "reasonEN": "A foundational easy array-DP problem, built around maintaining the lowest prior price and current best profit, making it ideal for learning rolling-state optimization.",
+    "reasonZH": "股票系列基础题，核心是维护历史最低买入价和当前最大收益，适合建立滚动状态和单次扫描最优解意识。"
+  },
+  {
+    "slug": "best-time-to-buy-and-sell-stock-ii",
+    "reasonEN": "A medium stock-DP and greedy exercise, highlighting how unlimited transactions collapse into local positive gains while still connecting to buy-sell state transitions.",
+    "reasonZH": "中等股票贪心与动态规划题，关键是理解无限交易可转化为累加局部上涨，同时巩固买入和卖出状态建模。"
+  },
+  {
+    "slug": "best-time-to-buy-and-sell-stock-iii",
+    "reasonEN": "A hard stock-DP milestone, focused on modeling at most two transactions with layered holding and cash states, useful for mastering bounded transaction transitions.",
+    "reasonZH": "高难度股票动态规划里程碑题，重点是用分层持有和现金状态表达最多两次交易，训练有交易次数限制的状态设计。"
+  },
+  {
+    "slug": "best-time-to-buy-and-sell-stock-iv",
+    "reasonEN": "A hard generalized stock-DP problem, requiring transaction-count dimensions, boundary optimization, and awareness of when the model degenerates to unlimited trading.",
+    "reasonZH": "高难度通用股票动态规划题，核心是引入交易次数维度并处理边界优化，适合系统掌握股票系列状态机模板。"
+  },
+  {
+    "slug": "best-time-to-buy-and-sell-stock-using-strategy",
+    "reasonEN": "A medium prefix-sum and sliding-window stock problem, training how to evaluate a fixed strategy modification by isolating baseline value and window improvement.",
+    "reasonZH": "中等前缀和与滑动窗口题，重点是拆分基础收益和窗口内策略增益，训练对局部改造收益的快速评估。"
+  },
+  {
+    "slug": "best-time-to-buy-and-sell-stock-v",
+    "reasonEN": "A medium stock-DP variant, useful for strengthening state definitions around trading constraints and avoiding ambiguous transitions between holding and completed-profit states.",
+    "reasonZH": "中等股票动态规划变体，价值在于强化交易约束下的状态定义，避免持有状态和已完成收益状态之间的转移混乱。"
+  },
+  {
+    "slug": "best-time-to-buy-and-sell-stock-with-cooldown",
+    "reasonEN": "A medium state-machine DP problem, centered on cooldown-aware transitions among holding, selling, and resting states, making it a strong template for temporal constraints.",
+    "reasonZH": "中等状态机动态规划题，核心是处理持有、卖出和冷冻休息之间的时间约束转移，适合作为带冷却限制题型模板。"
+  },
+  {
+    "slug": "best-time-to-buy-and-sell-stock-with-transaction-fee",
+    "reasonEN": "A medium stock-DP and greedy problem, emphasizing fee placement in state transitions and teaching when local profit accumulation still remains valid.",
+    "reasonZH": "中等股票动态规划与贪心题，重点是手续费放在买入或卖出转移中的一致性，训练成本约束下的收益维护。"
+  },
+  {
+    "slug": "biao-shi-shu-zhi-de-zi-fu-chuan-lcof",
+    "reasonEN": "A medium string parsing problem, focused on numeric-format validation, state coverage, and edge cases around signs, decimals, exponents, and blank handling.",
+    "reasonZH": "中等字符串解析题，核心是覆盖有效数字的状态转换，尤其考查符号、小数点、指数和空格等边界条件。"
+  },
+  {
+    "slug": "big-countries",
+    "reasonEN": "An easy database filtering problem, ideal for practicing basic SQL selection logic, compound predicates, and translating business thresholds into concise query conditions.",
+    "reasonZH": "入门级数据库筛选题，重点是 SQL 条件过滤和复合谓词表达，适合作为把业务阈值转成查询语句的基础练习。"
+  },
+  {
+    "slug": "biggest-single-number",
+    "reasonEN": "An easy SQL aggregation problem, centered on grouping, uniqueness filtering, maximum selection, and correctly returning null-like results when no candidate exists.",
+    "reasonZH": "入门级 SQL 聚合题，核心是分组统计、筛选只出现一次的值并取最大值，同时注意无结果时的空值处理。"
+  },
+  {
+    "slug": "binary-gap",
+    "reasonEN": "A concise easy bit-manipulation task, training how to scan set bits, track previous positions, and reason directly on binary representation.",
+    "reasonZH": "简洁的入门位运算题，重点是扫描二进制中的 1、记录上一次位置并计算间距，适合建立按位遍历意识。"
+  },
+  {
+    "slug": "binary-number-to-string-lcci",
+    "reasonEN": "A medium math and string conversion problem, valuable for understanding fractional binary representation, termination conditions, and precision-related failure cases.",
+    "reasonZH": "中等数学与字符串转换题，核心是理解小数的二进制展开、终止条件和精度限制，适合训练表示法边界判断。"
+  },
+  {
+    "slug": "binary-number-with-alternating-bits",
+    "reasonEN": "An easy bit-pattern recognition problem, focused on adjacent-bit comparison and compact bit tricks for validating alternating binary structure.",
+    "reasonZH": "入门级位模式判断题，重点是比较相邻二进制位或使用位运算技巧验证交替结构，适合巩固基础位操作。"
+  },
+  {
+    "slug": "binary-prefix-divisible-by-5",
+    "reasonEN": "An easy array and bit-manipulation problem, teaching modular accumulation over binary prefixes and avoiding overflow by keeping only remainders.",
+    "reasonZH": "入门级数组与位运算题，核心是对二进制前缀做取模累积，训练用余数状态避免大数溢出的技巧。"
+  },
+  {
+    "slug": "binary-search",
+    "reasonEN": "A fundamental easy binary-search template, emphasizing loop invariants, boundary updates, and off-by-one discipline in sorted arrays.",
+    "reasonZH": "基础二分查找模板题，重点是循环不变量、边界更新和越界细节，适合作为所有二分变体的起点。"
+  },
+  {
+    "slug": "binary-search-tree-iterator",
+    "reasonEN": "A medium design problem on BST traversal, combining iterator semantics with an explicit stack to deliver amortized efficient in-order access.",
+    "reasonZH": "中等二叉搜索树设计题，核心是把中序遍历封装成迭代器并用栈延迟展开，训练接口设计和摊还复杂度分析。"
+  },
+  {
+    "slug": "binary-search-tree-to-greater-sum-tree",
+    "reasonEN": "A medium BST and DFS problem, centered on reverse in-order traversal and accumulating ordered values, reinforcing how BST ordering drives transformations.",
+    "reasonZH": "中等二叉搜索树 DFS 题，关键是利用反向中序遍历累加有序值，训练把 BST 排序性质转化为原地更新逻辑。"
+  },
+  {
+    "slug": "binary-string-with-substrings-representing-1-to-n",
+    "reasonEN": "A medium string and bit problem, useful for practicing binary substring enumeration, hash-based coverage checks, and pruning by representation length.",
+    "reasonZH": "中等字符串与位运算题，重点是枚举二进制子串、用哈希集合验证覆盖范围，并通过长度约束控制复杂度。"
+  },
+  {
+    "slug": "binary-subarrays-with-sum",
+    "reasonEN": "A medium prefix-sum and sliding-window problem, highlighting two standard counting views for binary arrays and careful handling of zero-heavy segments.",
+    "reasonZH": "中等前缀和与滑动窗口题，核心是统计二元数组中目标和子数组，训练前缀计数和零段边界处理。"
+  },
+  {
+    "slug": "binary-tree-cameras",
+    "reasonEN": "A hard tree-DP and DFS problem, focused on post-order state classification and greedy placement decisions that minimize coverage cost.",
+    "reasonZH": "高难度树形动态规划题，重点是后序遍历划分节点覆盖状态并做最小摄像头放置，适合突破树上贪心与 DP 融合。"
+  },
+  {
+    "slug": "binary-tree-coloring-game",
+    "reasonEN": "A medium tree reasoning problem, centered on subtree size calculation and strategic partition comparison, useful for turning game outcomes into structural counts.",
+    "reasonZH": "中等二叉树博弈题，核心是计算子树规模并比较可控制区域，训练把对抗选择转化为树结构计数。"
+  },
+  {
+    "slug": "binary-tree-inorder-traversal",
+    "reasonEN": "A foundational easy tree traversal problem, covering recursive DFS and stack-based iteration while reinforcing the canonical left-root-right order.",
+    "reasonZH": "基础二叉树遍历题，重点是递归 DFS 和栈模拟两种写法，适合作为理解中序顺序和遍历模板的起点。"
+  },
+  {
+    "slug": "binary-tree-level-order-traversal",
+    "reasonEN": "A core medium BFS tree problem, teaching queue-based layer expansion, per-level result construction, and clean separation of traversal depth.",
+    "reasonZH": "核心中等 BFS 树题，关键是用队列逐层扩展并按层收集结果，训练层级遍历和深度边界管理。"
+  },
+  {
+    "slug": "binary-tree-level-order-traversal-ii",
+    "reasonEN": "A medium BFS variant, extending standard level-order traversal with reversed output order and encouraging clean result construction without complicating traversal logic.",
+    "reasonZH": "中等层序遍历变体，重点是在标准 BFS 基础上处理自底向上的输出顺序，训练遍历逻辑和结果组织的解耦。"
+  }
+]

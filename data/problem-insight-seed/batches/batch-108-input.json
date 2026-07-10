@@ -1,0 +1,726 @@
+[
+  {
+    "slug": "seat-reservation-manager",
+    "frontendDisplayId": "1845",
+    "titleEn": "Seat Reservation Manager",
+    "titleZh": "座位预约管理系统",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/seat-reservation-manager/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "second-highest-salary",
+    "frontendDisplayId": "176",
+    "titleEn": "Second Highest Salary",
+    "titleZh": "第二高的薪水",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/second-highest-salary/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "second-largest-digit-in-a-string",
+    "frontendDisplayId": "1796",
+    "titleEn": "Second Largest Digit in a String",
+    "titleZh": "字符串中第二大的数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/second-largest-digit-in-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "second-minimum-node-in-a-binary-tree",
+    "frontendDisplayId": "671",
+    "titleEn": "Second Minimum Node In a Binary Tree",
+    "titleZh": "二叉树中第二小的节点",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/second-minimum-node-in-a-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "second-minimum-time-to-reach-destination",
+    "frontendDisplayId": "2045",
+    "titleEn": "Second Minimum Time to Reach Destination",
+    "titleZh": "到达目的地的第二短时间",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Graph Theory",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "图",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/second-minimum-time-to-reach-destination/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "select-cells-in-grid-with-maximum-score",
+    "frontendDisplayId": "3276",
+    "titleEn": "Select Cells in Grid With Maximum Score",
+    "titleZh": "选择矩阵中单元格的最大得分",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/select-cells-in-grid-with-maximum-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "select-data",
+    "frontendDisplayId": "2880",
+    "titleEn": "Select Data",
+    "titleZh": "数据选取",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/select-data/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "select-k-disjoint-special-substrings",
+    "frontendDisplayId": "3458",
+    "titleEn": "Select K Disjoint Special Substrings",
+    "titleZh": "选择 K 个互不重叠的特殊子字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Greedy",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "贪心",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/select-k-disjoint-special-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "self-crossing",
+    "frontendDisplayId": "335",
+    "titleEn": "Self Crossing",
+    "titleZh": "路径交叉",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/self-crossing/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "self-dividing-numbers",
+    "frontendDisplayId": "728",
+    "titleEn": "Self Dividing Numbers",
+    "titleZh": "自除数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/self-dividing-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sell-diminishing-valued-colored-balls",
+    "frontendDisplayId": "1648",
+    "titleEn": "Sell Diminishing-Valued Colored Balls",
+    "titleZh": "销售价值减少的颜色球",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "堆（优先队列）",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sell-diminishing-valued-colored-balls/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "selling-pieces-of-wood",
+    "frontendDisplayId": "2312",
+    "titleEn": "Selling Pieces of Wood",
+    "titleZh": "卖木头块",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "记忆化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/selling-pieces-of-wood/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "semi-ordered-permutation",
+    "frontendDisplayId": "2717",
+    "titleEn": "Semi-Ordered Permutation",
+    "titleZh": "半有序排列",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/semi-ordered-permutation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sender-with-largest-word-count",
+    "frontendDisplayId": "2284",
+    "titleEn": "Sender With Largest Word Count",
+    "titleZh": "最多单词数的发件人",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sender-with-largest-word-count/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sentence-similarity-iii",
+    "frontendDisplayId": "1813",
+    "titleEn": "Sentence Similarity III",
+    "titleZh": "句子相似性 III",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sentence-similarity-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "separate-black-and-white-balls",
+    "frontendDisplayId": "2938",
+    "titleEn": "Separate Black and White Balls",
+    "titleZh": "区分黑球与白球",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/separate-black-and-white-balls/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "separate-squares-i",
+    "frontendDisplayId": "3453",
+    "titleEn": "Separate Squares I",
+    "titleZh": "分割正方形 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/separate-squares-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "separate-squares-ii",
+    "frontendDisplayId": "3454",
+    "titleEn": "Separate Squares II",
+    "titleZh": "分割正方形 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sweep Line",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "扫描线",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/separate-squares-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "separate-the-digits-in-an-array",
+    "frontendDisplayId": "2553",
+    "titleEn": "Separate the Digits in an Array",
+    "titleZh": "分割数组中数字的数位",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/separate-the-digits-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sequential-digits",
+    "frontendDisplayId": "1291",
+    "titleEn": "Sequential Digits",
+    "titleZh": "顺次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sequential-digits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sequentially-ordinal-rank-tracker",
+    "frontendDisplayId": "2102",
+    "titleEn": "Sequentially Ordinal Rank Tracker",
+    "titleZh": "序列顺序查询",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Data Stream",
+      "Design",
+      "Heap (Priority Queue)",
+      "Ordered Set"
+    ],
+    "tagLabelsZh": [
+      "数据流",
+      "设计",
+      "堆（优先队列）",
+      "有序集合"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/sequentially-ordinal-rank-tracker/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "serialize-and-deserialize-binary-tree",
+    "frontendDisplayId": "297",
+    "titleEn": "Serialize and Deserialize Binary Tree",
+    "titleZh": "二叉树的序列化与反序列化",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Design",
+      "String",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "设计",
+      "字符串",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/serialize-and-deserialize-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "serialize-and-deserialize-bst",
+    "frontendDisplayId": "449",
+    "titleEn": "Serialize and Deserialize BST",
+    "titleZh": "序列化和反序列化二叉搜索树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Design",
+      "String",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "设计",
+      "字符串",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/serialize-and-deserialize-bst/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "set-intersection-size-at-least-two",
+    "frontendDisplayId": "757",
+    "titleEn": "Set Intersection Size At Least Two",
+    "titleZh": "设置交集大小至少为2",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/set-intersection-size-at-least-two/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "set-matrix-zeroes",
+    "frontendDisplayId": "73",
+    "titleEn": "Set Matrix Zeroes",
+    "titleZh": "矩阵置零",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/set-matrix-zeroes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "set-mismatch",
+    "frontendDisplayId": "645",
+    "titleEn": "Set Mismatch",
+    "titleZh": "错误的集合",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/set-mismatch/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "sfvd7V",
+    "frontendDisplayId": "LCR 033",
+    "titleEn": null,
+    "titleZh": "字母异位词分组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/sfvd7V/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shan-chu-lian-biao-de-jie-dian-lcof",
+    "frontendDisplayId": "LCR 136",
+    "titleEn": null,
+    "titleZh": "删除链表的节点",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "链表"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/shan-chu-lian-biao-de-jie-dian-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shift-2d-grid",
+    "frontendDisplayId": "1260",
+    "titleEn": "Shift 2D Grid",
+    "titleZh": "二维网格迁移",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/shift-2d-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "shift-distance-between-two-strings",
+    "frontendDisplayId": "3361",
+    "titleEn": "Shift Distance Between Two Strings",
+    "titleZh": "两个字符串的切换距离",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/shift-distance-between-two-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-108",
+    "claimedAt": "2026-07-10T07:32:48.977556+00:00",
+    "completedAt": null
+  }
+]

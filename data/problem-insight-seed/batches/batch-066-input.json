@@ -1,0 +1,758 @@
+[
+  {
+    "slug": "maximize-happiness-of-selected-children",
+    "frontendDisplayId": "3075",
+    "titleEn": "Maximize Happiness of Selected Children",
+    "titleZh": "幸福值最大化的选择方案",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-happiness-of-selected-children/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-number-of-nice-divisors",
+    "frontendDisplayId": "1808",
+    "titleEn": "Maximize Number of Nice Divisors",
+    "titleZh": "好因子的最大数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Math",
+      "Number Theory",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "数论",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-number-of-nice-divisors/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-number-of-subsequences-in-a-string",
+    "frontendDisplayId": "2207",
+    "titleEn": "Maximize Number of Subsequences in a String",
+    "titleZh": "字符串中最多数目的子序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-number-of-subsequences-in-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-palindrome-length-from-subsequences",
+    "frontendDisplayId": "1771",
+    "titleEn": "Maximize Palindrome Length From Subsequences",
+    "titleZh": "由子序列构造的最长回文串的长度",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-palindrome-length-from-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-points-after-choosing-k-tasks",
+    "frontendDisplayId": "3767",
+    "titleEn": "Maximize Points After Choosing K Tasks",
+    "titleZh": "选择 K 个任务的最大总分数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-points-after-choosing-k-tasks/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-score-after-n-operations",
+    "frontendDisplayId": "1799",
+    "titleEn": "Maximize Score After N Operations",
+    "titleZh": "N 次操作后的最大分数和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-score-after-n-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-score-of-numbers-in-ranges",
+    "frontendDisplayId": "3281",
+    "titleEn": "Maximize Score of Numbers in Ranges",
+    "titleZh": "范围内整数的最大得分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-score-of-numbers-in-ranges/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-spanning-tree-stability-with-upgrades",
+    "frontendDisplayId": "3600",
+    "titleEn": "Maximize Spanning Tree Stability with Upgrades",
+    "titleZh": "升级后最大生成树稳定性",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Graph Theory",
+      "Greedy",
+      "Minimum Spanning Tree",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "图",
+      "贪心",
+      "最小生成树",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-spanning-tree-stability-with-upgrades/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-subarray-gcd-score",
+    "frontendDisplayId": "3574",
+    "titleEn": "Maximize Subarray GCD Score",
+    "titleZh": "最大子数组 GCD 分数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-subarray-gcd-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-subarray-sum-after-removing-all-occurrences-of-one-element",
+    "frontendDisplayId": "3410",
+    "titleEn": "Maximize Subarray Sum After Removing All Occurrences of One Element",
+    "titleZh": "删除所有值为某个元素后的最大子数组和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Dynamic Programming",
+      "Hash Table",
+      "Prefix Sum",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "动态规划",
+      "哈希表",
+      "前缀和",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-subarray-sum-after-removing-all-occurrences-of-one-element/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-subarrays-after-removing-one-conflicting-pair",
+    "frontendDisplayId": "3480",
+    "titleEn": "Maximize Subarrays After Removing One Conflicting Pair",
+    "titleZh": "删除一个冲突对后最大子数组数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Prefix Sum",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "前缀和",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-subarrays-after-removing-one-conflicting-pair/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-sum-of-array-after-k-negations",
+    "frontendDisplayId": "1005",
+    "titleEn": "Maximize Sum Of Array After K Negations",
+    "titleZh": "K 次取反后最大化的数组和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-sum-of-array-after-k-negations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-sum-of-at-most-k-distinct-elements",
+    "frontendDisplayId": "3684",
+    "titleEn": "Maximize Sum of At Most K Distinct Elements",
+    "titleZh": "至多 K 个不同元素的最大和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-sum-of-at-most-k-distinct-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-sum-of-device-ratings",
+    "frontendDisplayId": "3961",
+    "titleEn": "Maximize Sum of Device Ratings",
+    "titleZh": "设备评分的最大和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-sum-of-device-ratings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-sum-of-squares-of-digits",
+    "frontendDisplayId": "3723",
+    "titleEn": "Maximize Sum of Squares of Digits",
+    "titleZh": "数位平方和的最大值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-sum-of-squares-of-digits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-sum-of-weights-after-edge-removals",
+    "frontendDisplayId": "3367",
+    "titleEn": "Maximize Sum of Weights after Edge Removals",
+    "titleZh": "移除边之后的权重最大和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Sorting",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "动态规划",
+      "排序",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-sum-of-weights-after-edge-removals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-the-confusion-of-an-exam",
+    "frontendDisplayId": "2024",
+    "titleEn": "Maximize the Confusion of an Exam",
+    "titleZh": "考试的最大困扰度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Prefix Sum",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "前缀和",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-the-confusion-of-an-exam/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-the-distance-between-points-on-a-square",
+    "frontendDisplayId": "3464",
+    "titleEn": "Maximize the Distance Between Points on a Square",
+    "titleZh": "正方形上的点之间的最大距离",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Geometry",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "几何",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-the-distance-between-points-on-a-square/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-the-minimum-game-score",
+    "frontendDisplayId": "3449",
+    "titleEn": "Maximize the Minimum Game Score",
+    "titleZh": "最大化游戏分数的最小值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-the-minimum-game-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-the-minimum-powered-city",
+    "frontendDisplayId": "2528",
+    "titleEn": "Maximize the Minimum Powered City",
+    "titleZh": "最大化城市的最小电量",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Prefix Sum",
+      "Queue",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "前缀和",
+      "队列",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-the-minimum-powered-city/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-the-number-of-partitions-after-operations",
+    "frontendDisplayId": "3003",
+    "titleEn": "Maximize the Number of Partitions After Operations",
+    "titleZh": "执行操作后的最大分割数量",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-the-number-of-partitions-after-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-the-number-of-target-nodes-after-connecting-trees-i",
+    "frontendDisplayId": "3372",
+    "titleEn": "Maximize the Number of Target Nodes After Connecting Trees I",
+    "titleZh": "连接两棵树后最大目标节点数目 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-the-number-of-target-nodes-after-connecting-trees-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-the-number-of-target-nodes-after-connecting-trees-ii",
+    "frontendDisplayId": "3373",
+    "titleEn": "Maximize the Number of Target Nodes After Connecting Trees II",
+    "titleZh": "连接两棵树后最大目标节点数目 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-the-number-of-target-nodes-after-connecting-trees-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-the-profit-as-the-salesman",
+    "frontendDisplayId": "2830",
+    "titleEn": "Maximize the Profit as the Salesman",
+    "titleZh": "销售利润最大化",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-the-profit-as-the-salesman/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-the-topmost-element-after-k-moves",
+    "frontendDisplayId": "2202",
+    "titleEn": "Maximize the Topmost Element After K Moves",
+    "titleZh": "K 次操作后最大化顶端元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-the-topmost-element-after-k-moves/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-the-total-height-of-unique-towers",
+    "frontendDisplayId": "3301",
+    "titleEn": "Maximize the Total Height of Unique Towers",
+    "titleZh": "高度互不相同的最大塔高和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-the-total-height-of-unique-towers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-total-cost-of-alternating-subarrays",
+    "frontendDisplayId": "3196",
+    "titleEn": "Maximize Total Cost of Alternating Subarrays",
+    "titleZh": "最大化子数组的总成本",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-total-cost-of-alternating-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-value-of-function-in-a-ball-passing-game",
+    "frontendDisplayId": "2836",
+    "titleEn": "Maximize Value of Function in a Ball Passing Game",
+    "titleZh": "在传球游戏中最大化函数值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-value-of-function-in-a-ball-passing-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-win-from-two-segments",
+    "frontendDisplayId": "2555",
+    "titleEn": "Maximize Win From Two Segments",
+    "titleZh": "两个线段获得的最多奖品",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-win-from-two-segments/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-ysum-by-picking-a-triplet-of-distinct-xvalues",
+    "frontendDisplayId": "3572",
+    "titleEn": "Maximize Y‑Sum by Picking a Triplet of Distinct X‑Values",
+    "titleZh": "选择不同 X 值三元组使 Y 值之和最大",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-ysum-by-picking-a-triplet-of-distinct-xvalues/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-066",
+    "claimedAt": "2026-07-10T04:17:33.212211+00:00",
+    "completedAt": null
+  }
+]

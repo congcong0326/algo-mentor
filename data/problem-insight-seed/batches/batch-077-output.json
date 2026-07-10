@@ -1,0 +1,150 @@
+[
+  {
+    "slug": "minimize-maximum-of-array",
+    "reasonEN": "A medium prefix-average greedy problem; track cumulative load and derive the smallest feasible ceiling from each prefix; it teaches how one-way redistribution creates a prefix invariant.",
+    "reasonZH": "中等难度的前缀平均贪心题，跟踪累计总量并由每个前缀推导最小可行上界；训练单向转移形成的前缀不变量；是负载均衡题的经典模型。"
+  },
+  {
+    "slug": "minimize-maximum-pair-sum-in-array",
+    "reasonEN": "A medium sorting-and-pairing greedy problem; pair the smallest remaining value with the largest remaining value; it demonstrates the exchange argument behind balancing extreme pairs.",
+    "reasonZH": "中等难度的排序配对贪心题，将当前最小值与最大值配对；训练平衡极值对的交换论证；是最小化最大值问题的基础模板。"
+  },
+  {
+    "slug": "minimize-or-of-remaining-elements-using-operations",
+    "reasonEN": "A hard bitwise greedy problem; decide bits from high to low and test whether segment merges can eliminate each candidate bit within the operation budget; it sharpens feasibility reasoning at the bit level.",
+    "reasonZH": "困难的位运算贪心题，从高位到低位决定答案，并检查能否在操作预算内通过分段合并消去候选位；训练位级可行性判断；是按位构造答案的代表题。"
+  },
+  {
+    "slug": "minimize-result-by-adding-parentheses-to-expression",
+    "reasonEN": "A medium string-enumeration problem; try every legal parenthesis split and evaluate the resulting multiplicative form; it practices exhaustive boundary selection on a compact search space.",
+    "reasonZH": "中等难度的字符串枚举题，尝试所有合法的括号切分并计算对应乘法形式；训练小规模搜索空间中的边界枚举；适合巩固表达式建模。"
+  },
+  {
+    "slug": "minimize-string-length","reasonEN":"An easy string and set problem; reduce the operation freedom to retaining at most one occurrence of each character; it trains recognizing when repeated edits collapse to a distinct-count invariant.","reasonZH":"简单的字符串集合题，可将操作自由度化简为每种字符至多保留一次；训练识别重复操作何时收敛为不同字符数量不变量；适合培养化简思维。"
+  },
+  {
+    "slug": "minimize-the-difference-between-target-and-chosen-elements",
+    "reasonEN": "A medium matrix DP problem; maintain reachable row-selection sums and compare them with the target after the final row; it develops boolean-state compression for bounded sum choices.",
+    "reasonZH": "中等难度的矩阵动态规划题，维护逐行选择后的可达和，并在最后与目标比较；训练有界求和的布尔状态压缩；是选择型 DP 的典型练习。"
+  },
+  {
+    "slug": "minimize-the-maximum-adjacent-element-difference",
+    "reasonEN": "A hard answer-search problem with missing-value construction; binary-search the maximum gap and greedily verify whether replacements satisfy every local constraint; it practices translating a minimax target into a monotone predicate.",
+    "reasonZH": "困难的含缺失值构造型答案搜索题，对最大差值二分并贪心验证替换后能否满足所有局部约束；训练将极小化极大目标转为单调判定；很有二分建模价值。"
+  },
+  {
+    "slug": "minimize-the-maximum-difference-of-pairs",
+    "reasonEN": "A medium sorting and binary-search problem; greedily form adjacent pairs under a proposed difference threshold; it is a canonical example of using sorted order for optimal feasibility matching.",
+    "reasonZH": "中等难度的排序与二分题，在给定差值阈值下贪心配对相邻元素；训练利用有序性完成最优可行匹配；是配对类答案二分的经典题。"
+  },
+  {
+    "slug": "minimize-the-maximum-edge-weight-of-graph",
+    "reasonEN": "A medium graph bottleneck problem; binary-search an edge-weight limit and verify reachability with DFS or BFS on the filtered graph; it teaches the standard threshold-connectivity reduction.",
+    "reasonZH": "中等难度的图瓶颈优化题，对边权上限二分，并在过滤后的图上用 DFS 或 BFS 验证可达性；训练阈值连通性归约；是图论答案二分的实用模板。"
+  },
+  {
+    "slug": "minimize-the-maximum-of-two-arrays",
+    "reasonEN": "A medium number-theory binary-search problem; count values divisible by each divisor and use inclusion-exclusion for shared exclusions; it develops arithmetic feasibility checks for allocation constraints.",
+    "reasonZH": "中等难度的数论答案二分题，统计被各除数整除的数并用容斥处理共同排除项；训练分配约束下的算术可行性检查；适合掌握 LCM 与容斥。"
+  },
+  {
+    "slug": "minimize-the-total-price-of-the-trips",
+    "reasonEN": "A hard tree counting and DP problem; accumulate how often each node is used across trips, then solve an independent-set-style discount DP; it combines path aggregation with rooted-tree optimization.",
+    "reasonZH": "困难的树路径计数与动态规划题，先累积每个节点被旅行经过的次数，再做类似独立集的折扣 DP；训练路径聚合与树形优化结合；是树题综合能力的代表。"
+  },
+  {
+    "slug": "minimize-xor",
+    "reasonEN": "A medium bit-greedy construction problem; preserve high bits already shared with the reference number, then fill the lowest available bits to meet the popcount; it clarifies lexicographic priority in binary values.",
+    "reasonZH": "中等难度的位贪心构造题，优先保留与参考数相同的高位，再用最低可用位补足 1 的个数；训练二进制数中的高位优先原则；是异或最小化经典题。"
+  },
+  {
+    "slug": "minimized-maximum-of-products-distributed-to-any-store",
+    "reasonEN": "A medium binary-search allocation problem; test a proposed per-store cap by summing the stores required for every product type; it reinforces ceiling-division feasibility checks.",
+    "reasonZH": "中等难度的二分分配题，测试每店容量上限时累加各商品类型所需店铺数；训练向上取整的可行性计算；是容量分摊问题的标准模型。"
+  },
+  {
+    "slug": "minimum-absolute-difference",
+    "reasonEN": "An easy sorting problem; after ordering the values, inspect only adjacent differences and collect those at the minimum; it proves how sorting eliminates unnecessary pair comparisons.",
+    "reasonZH": "简单的排序题，排序后只需检查相邻差值并收集最小者；训练理解排序如何消除无效的数对比较；是最小差值问题的入门模板。"
+  },
+  {
+    "slug": "minimum-absolute-difference-between-elements-with-constraint",
+    "reasonEN": "A medium ordered-set streaming problem; insert elements only after their index becomes eligible and query their nearest sorted neighbors; it practices delayed activation with predecessor and successor searches.",
+    "reasonZH": "中等难度的有序集合流式题，只有当下标满足距离要求时才插入元素，并查询其前驱和后继；训练延迟激活与有序邻居搜索；是平衡树应用的典型题。"
+  },
+  {
+    "slug": "minimum-absolute-difference-between-two-values",
+    "reasonEN": "An easy enumeration problem; compare the relevant candidate pairs and retain the smallest absolute gap; it reinforces direct exhaustive search when constraints make it sufficient.",
+    "reasonZH": "简单的枚举题，比较相关候选对并保留最小绝对差；训练在数据范围允许时直接穷举；适合建立复杂度判断意识。"
+  },
+  {
+    "slug": "minimum-absolute-difference-in-bst",
+    "reasonEN": "An easy BST traversal problem; perform an inorder traversal and compare each value with its predecessor; it connects the sorted-order property of BSTs to an adjacent-difference scan.",
+    "reasonZH": "简单的 BST 遍历题，中序遍历并比较当前值与前驱值；训练利用二叉搜索树的有序性质转化为相邻差值扫描；是 BST 的核心应用。"
+  },
+  {
+    "slug": "minimum-absolute-difference-in-sliding-submatrix",
+    "reasonEN": "A medium sliding-matrix enumeration problem; extract each window's values, sort the distinct candidates, and inspect adjacent gaps; it practices adapting one-dimensional order-statistic ideas to submatrices.",
+    "reasonZH": "中等难度的滑动子矩阵枚举题，提取每个窗口的值、排序去重后检查相邻差值；训练将一维顺序统计思想迁移到子矩阵；适合巩固二维枚举。"
+  },
+  {
+    "slug": "minimum-absolute-difference-queries",
+    "reasonEN": "A medium range-query counting problem; precompute per-value prefix counts and reconstruct the present values for each query; it teaches exploiting a small value domain to avoid expensive sorting.",
+    "reasonZH": "中等难度的区间查询计数题，预处理每个数值的前缀计数并重建每次查询中出现的值；训练利用较小值域避免重复排序；是值域前缀和的代表题。"
+  },
+  {
+    "slug": "minimum-absolute-distance-between-mirror-pairs",
+    "reasonEN": "A medium hash-based pairing problem; map each value to its mirrored counterpart and track closest valid index pairs; it develops symmetric transformation and online position bookkeeping.",
+    "reasonZH": "中等难度的哈希配对题，将每个数映射到其镜像对应值并维护最近的合法下标对；训练对称变换与在线位置记录；适合掌握映射类数组题。"
+  },
+  {
+    "slug": "minimum-absolute-sum-difference",
+    "reasonEN": "A medium sorted-search optimization problem; compute the original total and use binary search to find the best single replacement improvement; it teaches maximizing saved cost instead of minimizing the whole expression directly.",
+    "reasonZH": "中等难度的排序查找优化题，先计算原始总和，再用二分寻找一次替换可带来的最大改进；训练把整体最小化转为最大节省量；很有优化建模价值。"
+  },
+  {
+    "slug": "minimum-add-to-make-parentheses-valid",
+    "reasonEN": "A medium greedy parenthesis-balancing problem; track unmatched openings and count the additions needed for premature closings or leftovers; it establishes the balance-invariant pattern for bracket strings.",
+    "reasonZH": "中等难度的贪心括号平衡题，跟踪未匹配左括号并统计过早右括号和剩余左括号所需补充；训练括号平衡不变量；是括号字符串的核心模板。"
+  },
+  {
+    "slug": "minimum-addition-to-make-integer-beautiful",
+    "reasonEN": "A medium digit-greedy arithmetic problem; carry from low digits until the digit sum reaches the threshold; it practices controlling a global digit property through local place-value adjustments.",
+    "reasonZH": "中等难度的数位贪心数学题，从低位开始进位直到数位和满足阈值；训练通过局部位权调整控制全局数位属性；是进位贪心的典型题。"
+  },
+  {
+    "slug": "minimum-additions-to-make-valid-string",
+    "reasonEN": "A medium pattern-completion greedy problem; advance through the required character cycle and insert missing symbols whenever order breaks; it teaches matching an input stream against a repeating grammar.",
+    "reasonZH": "中等难度的模式补全贪心题，沿目标字符循环推进，在顺序断裂时补入缺失字符；训练将输入流匹配到重复语法模式；适合掌握字符串状态机思维。"
+  },
+  {
+    "slug": "minimum-adjacent-swaps-for-k-consecutive-ones",
+    "reasonEN": "A hard positions-and-prefix-sums problem; collect indices of ones, center each k-sized group at its median, and correct for compressed offsets; it develops median-based movement cost reasoning.",
+    "reasonZH": "困难的位置数组与前缀和题，收集 1 的下标，以每个大小为 k 的组的中位数为中心并修正压缩偏移；训练基于中位数的移动成本计算；是相邻交换难题代表。"
+  },
+  {
+    "slug": "minimum-adjacent-swaps-to-alternate-parity",
+    "reasonEN": "A medium greedy arrangement problem; test each feasible starting parity and sum the displacement of elements into their target slots; it practices converting adjacent swaps into position-matching cost.",
+    "reasonZH": "中等难度的贪心排列题，分别尝试可行的起始奇偶性并累加元素移动到目标槽位的距离；训练将相邻交换转化为位置匹配成本；很适合掌握重排计算。"
+  },
+  {
+    "slug": "minimum-adjacent-swaps-to-reach-the-kth-smallest-number",
+    "reasonEN": "A medium permutation-and-simulation problem; generate the target with next permutation, then bubble matching digits into place; it combines lexicographic permutation logic with duplicate-aware swap counting.",
+    "reasonZH": "中等难度的排列模拟题，先用下一个排列生成目标，再将匹配数字冒泡到位；训练字典序排列与重复数字下的交换计数；是综合字符串题。"
+  },
+  {
+    "slug": "minimum-amount-of-damage-dealt-to-bob",
+    "reasonEN": "A hard scheduling greedy problem; order enemies by the ratio implied by their damage and defeat time so expensive damage stops earlier; it trains weighted completion-time exchange arguments.",
+    "reasonZH": "困难的调度贪心题，按伤害与击败时间决定的比率安排敌人，使高代价伤害更早停止；训练加权完成时间的交换论证；是排序贪心的重要模型。"
+  },
+  {
+    "slug": "minimum-amount-of-time-to-collect-garbage",
+    "reasonEN": "A medium prefix-travel accounting problem; count collection work directly and add each truck's travel only through its last required house; it teaches separating fixed service cost from reusable path cost.",
+    "reasonZH": "中等难度的前缀行程统计题，直接统计收集工作量，并只计算每类车辆到最后需求位置的路程；训练分离固定服务成本与可复用路径成本；建模简洁实用。"
+  },
+  {
+    "slug": "minimum-amount-of-time-to-fill-cups",
+    "reasonEN": "An easy greedy scheduling problem; fill two currently largest nonempty cups together whenever possible; it illustrates how parallel capacity leads to a max-versus-half-sum formula.",
+    "reasonZH": "简单的贪心调度题，尽可能同时处理当前两个数量最多的杯子；训练并行容量下的贪心安排；可理解最大值与总和一半共同决定答案。"
+  }
+]

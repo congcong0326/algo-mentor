@@ -1,0 +1,716 @@
+[
+  {
+    "slug": "reverse-odd-levels-of-binary-tree",
+    "frontendDisplayId": "2415",
+    "titleEn": "Reverse Odd Levels of Binary Tree",
+    "titleZh": "反转二叉树的奇数层",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-odd-levels-of-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-only-letters",
+    "frontendDisplayId": "917",
+    "titleEn": "Reverse Only Letters",
+    "titleZh": "仅仅反转字母",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-only-letters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-pairs",
+    "frontendDisplayId": "493",
+    "titleEn": "Reverse Pairs",
+    "titleZh": "翻转对",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Binary Search",
+      "Divide and Conquer",
+      "Merge Sort",
+      "Ordered Set",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "二分查找",
+      "分治",
+      "归并排序",
+      "有序集合",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-prefix-of-word",
+    "frontendDisplayId": "2000",
+    "titleEn": "Reverse Prefix of Word",
+    "titleZh": "反转单词前缀",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Stack",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "栈",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-prefix-of-word/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-string",
+    "frontendDisplayId": "344",
+    "titleEn": "Reverse String",
+    "titleZh": "反转字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-string-ii",
+    "frontendDisplayId": "541",
+    "titleEn": "Reverse String II",
+    "titleZh": "反转字符串 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-string-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-string-prefix",
+    "frontendDisplayId": "3794",
+    "titleEn": "Reverse String Prefix",
+    "titleZh": "反转字符串前缀",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-string-prefix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-subarray-to-maximize-array-value",
+    "frontendDisplayId": "1330",
+    "titleEn": "Reverse Subarray To Maximize Array Value",
+    "titleZh": "翻转子数组得到最大的数组值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-subarray-to-maximize-array-value/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-substrings-between-each-pair-of-parentheses",
+    "frontendDisplayId": "1190",
+    "titleEn": "Reverse Substrings Between Each Pair of Parentheses",
+    "titleZh": "反转每对括号间的子串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-substrings-between-each-pair-of-parentheses/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-vowels-of-a-string",
+    "frontendDisplayId": "345",
+    "titleEn": "Reverse Vowels of a String",
+    "titleZh": "反转字符串中的元音字母",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-vowels-of-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-words-in-a-string",
+    "frontendDisplayId": "151",
+    "titleEn": "Reverse Words in a String",
+    "titleZh": "反转字符串中的单词",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-words-in-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-words-in-a-string-iii",
+    "frontendDisplayId": "557",
+    "titleEn": "Reverse Words in a String III",
+    "titleZh": "反转字符串中的单词 III",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-words-in-a-string-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reverse-words-with-same-vowel-count",
+    "frontendDisplayId": "3775",
+    "titleEn": "Reverse Words With Same Vowel Count",
+    "titleZh": "反转元音数相同的单词",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Simulation",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reverse-words-with-same-vowel-count/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "reward-top-k-students",
+    "frontendDisplayId": "2512",
+    "titleEn": "Reward Top K Students",
+    "titleZh": "奖励最顶尖的 K 名学生",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "堆（优先队列）",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/reward-top-k-students/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "richest-customer-wealth",
+    "frontendDisplayId": "1672",
+    "titleEn": "Richest Customer Wealth",
+    "titleZh": "最富有客户的资产总量",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/richest-customer-wealth/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "right-triangles",
+    "frontendDisplayId": "3128",
+    "titleEn": "Right Triangles",
+    "titleZh": "直角三角形",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Counting",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "计数",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/right-triangles/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rings-and-rods",
+    "frontendDisplayId": "2103",
+    "titleEn": "Rings and Rods",
+    "titleZh": "环和杆",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rings-and-rods/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rising-temperature",
+    "frontendDisplayId": "197",
+    "titleEn": "Rising Temperature",
+    "titleZh": "上升的温度",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rising-temperature/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rle-iterator",
+    "frontendDisplayId": "900",
+    "titleEn": "RLE Iterator",
+    "titleZh": "RLE 迭代器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Design",
+      "Iterator"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "设计",
+      "迭代器"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rle-iterator/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "robot-bounded-in-circle",
+    "frontendDisplayId": "1041",
+    "titleEn": "Robot Bounded In Circle",
+    "titleZh": "困于环中的机器人",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/robot-bounded-in-circle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "robot-collisions",
+    "frontendDisplayId": "2751",
+    "titleEn": "Robot Collisions",
+    "titleZh": "机器人碰撞",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "Sorting",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟",
+      "排序",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/robot-collisions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "robot-in-a-grid-lcci",
+    "frontendDisplayId": "面试题 08.02",
+    "titleEn": null,
+    "titleZh": "迷路的机器人",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/robot-in-a-grid-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "robot-return-to-origin",
+    "frontendDisplayId": "657",
+    "titleEn": "Robot Return to Origin",
+    "titleZh": "机器人能否返回原点",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/robot-return-to-origin/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "roman-to-integer",
+    "frontendDisplayId": "13",
+    "titleEn": null,
+    "titleZh": "罗马数字转整数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/roman-to-integer/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "root-equals-sum-of-children",
+    "frontendDisplayId": "2236",
+    "titleEn": "Root Equals Sum of Children",
+    "titleZh": "判断根结点是否等于子结点之和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/root-equals-sum-of-children/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rotate-array",
+    "frontendDisplayId": "189",
+    "titleEn": "Rotate Array",
+    "titleZh": "轮转数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rotate-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rotate-function",
+    "frontendDisplayId": "396",
+    "titleEn": "Rotate Function",
+    "titleZh": "旋转函数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rotate-function/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rotate-image",
+    "frontendDisplayId": "48",
+    "titleEn": "Rotate Image",
+    "titleZh": "旋转图像",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rotate-image/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rotate-list",
+    "frontendDisplayId": "61",
+    "titleEn": "Rotate List",
+    "titleZh": "旋转链表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/rotate-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "rotate-matrix-lcci",
+    "frontendDisplayId": "面试题 01.07",
+    "titleEn": null,
+    "titleZh": "旋转矩阵",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "矩阵"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/rotate-matrix-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-106",
+    "claimedAt": "2026-07-10T07:14:07.740144+00:00",
+    "completedAt": null
+  }
+]

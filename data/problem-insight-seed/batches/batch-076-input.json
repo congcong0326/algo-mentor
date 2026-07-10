@@ -1,0 +1,728 @@
+[
+  {
+    "slug": "merge-in-between-linked-lists",
+    "frontendDisplayId": "1669",
+    "titleEn": "Merge In Between Linked Lists",
+    "titleZh": "合并两个链表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-in-between-linked-lists/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "merge-intervals",
+    "frontendDisplayId": "56",
+    "titleEn": "Merge Intervals",
+    "titleZh": "合并区间",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-intervals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "merge-k-sorted-lists",
+    "frontendDisplayId": "23",
+    "titleEn": "Merge k Sorted Lists",
+    "titleZh": "合并 K 个升序链表",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Divide and Conquer",
+      "Heap (Priority Queue)",
+      "Linked List",
+      "Merge Sort"
+    ],
+    "tagLabelsZh": [
+      "分治",
+      "堆（优先队列）",
+      "链表",
+      "归并排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-k-sorted-lists/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "merge-nodes-in-between-zeros",
+    "frontendDisplayId": "2181",
+    "titleEn": "Merge Nodes in Between Zeros",
+    "titleZh": "合并零之间的节点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-nodes-in-between-zeros/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "merge-operations-for-minimum-travel-time",
+    "frontendDisplayId": "3538",
+    "titleEn": "Merge Operations for Minimum Travel Time",
+    "titleZh": "合并得到最小旅行时间",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-operations-for-minimum-travel-time/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "merge-similar-items",
+    "frontendDisplayId": "2363",
+    "titleEn": "Merge Similar Items",
+    "titleZh": "合并相似的物品",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Ordered Set",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "有序集合",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-similar-items/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "merge-sorted-array",
+    "frontendDisplayId": "88",
+    "titleEn": "Merge Sorted Array",
+    "titleZh": "合并两个有序数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-sorted-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "merge-strings-alternately",
+    "frontendDisplayId": "1768",
+    "titleEn": "Merge Strings Alternately",
+    "titleZh": "交替合并字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-strings-alternately/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "merge-triplets-to-form-target-triplet",
+    "frontendDisplayId": "1899",
+    "titleEn": "Merge Triplets to Form Target Triplet",
+    "titleZh": "合并若干三元组以形成目标三元组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-triplets-to-form-target-triplet/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "merge-two-2d-arrays-by-summing-values",
+    "frontendDisplayId": "2570",
+    "titleEn": "Merge Two 2D Arrays by Summing Values",
+    "titleZh": "合并两个二维数组 - 求和法",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-two-2d-arrays-by-summing-values/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "merge-two-binary-trees",
+    "frontendDisplayId": "617",
+    "titleEn": "Merge Two Binary Trees",
+    "titleZh": "合并二叉树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-two-binary-trees/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "merge-two-sorted-lists",
+    "frontendDisplayId": "21",
+    "titleEn": "Merge Two Sorted Lists",
+    "titleZh": "合并两个有序链表",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Linked List",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/merge-two-sorted-lists/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "method-chaining",
+    "frontendDisplayId": "2891",
+    "titleEn": "Method Chaining",
+    "titleZh": "方法链",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/method-chaining/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "mice-and-cheese",
+    "frontendDisplayId": "2611",
+    "titleEn": "Mice and Cheese",
+    "titleZh": "老鼠和奶酪",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/mice-and-cheese/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "middle-of-the-linked-list",
+    "frontendDisplayId": "876",
+    "titleEn": "Middle of the Linked List",
+    "titleZh": "链表的中间结点",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Linked List",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/middle-of-the-linked-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "min-cost-climbing-stairs",
+    "frontendDisplayId": "746",
+    "titleEn": "Min Cost Climbing Stairs",
+    "titleZh": "使用最小花费爬楼梯",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/min-cost-climbing-stairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "min-cost-to-connect-all-points",
+    "frontendDisplayId": "1584",
+    "titleEn": "Min Cost to Connect All Points",
+    "titleZh": "连接所有点的最小费用",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Minimum Spanning Tree",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "最小生成树",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/min-cost-to-connect-all-points/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "min-max-game",
+    "frontendDisplayId": "2293",
+    "titleEn": "Min Max Game",
+    "titleZh": "极大极小游戏",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/min-max-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "min-stack",
+    "frontendDisplayId": "155",
+    "titleEn": "Min Stack",
+    "titleZh": "最小栈",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/min-stack/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "min-stack-lcci",
+    "frontendDisplayId": "面试题 03.02",
+    "titleEn": null,
+    "titleZh": "栈的最小值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Design",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "栈"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/min-stack-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minesweeper",
+    "frontendDisplayId": "529",
+    "titleEn": "Minesweeper",
+    "titleZh": "扫雷游戏",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minesweeper/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "mini-parser",
+    "frontendDisplayId": "385",
+    "titleEn": "Mini Parser",
+    "titleZh": "迷你语法分析器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/mini-parser/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-array-sum-using-divisible-replacements",
+    "frontendDisplayId": "3927",
+    "titleEn": "Minimize Array Sum Using Divisible Replacements",
+    "titleZh": "可整除替换后的数组最小元素和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-array-sum-using-divisible-replacements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-deviation-in-array",
+    "frontendDisplayId": "1675",
+    "titleEn": "Minimize Deviation in Array",
+    "titleZh": "数组的最小偏移量",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Ordered Set"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）",
+      "有序集合"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-deviation-in-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-hamming-distance-after-swap-operations",
+    "frontendDisplayId": "1722",
+    "titleEn": "Minimize Hamming Distance After Swap Operations",
+    "titleZh": "执行交换操作后的最小汉明距离",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-hamming-distance-after-swap-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-length-of-array-using-operations",
+    "frontendDisplayId": "3012",
+    "titleEn": "Minimize Length of Array Using Operations",
+    "titleZh": "通过操作使数组长度最小",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-length-of-array-using-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-malware-spread",
+    "frontendDisplayId": "924",
+    "titleEn": "Minimize Malware Spread",
+    "titleZh": "尽量减少恶意软件的传播",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Hash Table",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "哈希表",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-malware-spread/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-malware-spread-ii",
+    "frontendDisplayId": "928",
+    "titleEn": "Minimize Malware Spread II",
+    "titleZh": "尽量减少恶意软件的传播 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Hash Table",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "哈希表",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-malware-spread-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-manhattan-distances",
+    "frontendDisplayId": "3102",
+    "titleEn": "Minimize Manhattan Distances",
+    "titleZh": "最小化曼哈顿距离",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Math",
+      "Ordered Set",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "数学",
+      "有序集合",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-manhattan-distances/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-maximum-component-cost",
+    "frontendDisplayId": "3613",
+    "titleEn": "Minimize Maximum Component Cost",
+    "titleZh": "最小化连通分量的最大成本",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Graph Theory",
+      "Sorting",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "图",
+      "排序",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-maximum-component-cost/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-076",
+    "claimedAt": "2026-07-10T06:22:03.991967+00:00",
+    "completedAt": null
+  }
+]

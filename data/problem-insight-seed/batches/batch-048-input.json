@@ -1,0 +1,714 @@
+[
+  {
+    "slug": "find-the-smallest-divisor-given-a-threshold",
+    "frontendDisplayId": "1283",
+    "titleEn": "Find the Smallest Divisor Given a Threshold",
+    "titleZh": "使结果不超过阈值的最小除数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-smallest-divisor-given-a-threshold/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-string-with-lcp",
+    "frontendDisplayId": "2573",
+    "titleEn": "Find the String with LCP",
+    "titleZh": "找出对应 LCP 矩阵的字符串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "Matrix",
+      "String",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心",
+      "矩阵",
+      "字符串",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-string-with-lcp/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-student-that-will-replace-the-chalk",
+    "frontendDisplayId": "1894",
+    "titleEn": "Find the Student that Will Replace the Chalk",
+    "titleZh": "找到需要补充粉笔的学生编号",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-student-that-will-replace-the-chalk/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-substring-with-maximum-cost",
+    "frontendDisplayId": "2606",
+    "titleEn": "Find the Substring With Maximum Cost",
+    "titleZh": "找到最大开销的子字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-substring-with-maximum-cost/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-sum-of-encrypted-integers",
+    "frontendDisplayId": "3079",
+    "titleEn": "Find the Sum of Encrypted Integers",
+    "titleZh": "求出加密整数的和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-sum-of-encrypted-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-sum-of-subsequence-powers",
+    "frontendDisplayId": "3098",
+    "titleEn": "Find the Sum of Subsequence Powers",
+    "titleZh": "求出所有子序列的能量和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-sum-of-subsequence-powers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-sum-of-the-power-of-all-subsequences",
+    "frontendDisplayId": "3082",
+    "titleEn": "Find the Sum of the Power of All Subsequences",
+    "titleZh": "求出所有子序列的能量和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-sum-of-the-power-of-all-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-town-judge",
+    "frontendDisplayId": "997",
+    "titleEn": "Find the Town Judge",
+    "titleZh": "找到小镇的法官",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-town-judge/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-value-of-the-partition",
+    "frontendDisplayId": "2740",
+    "titleEn": "Find the Value of the Partition",
+    "titleZh": "找出分区值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-value-of-the-partition/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-width-of-columns-of-a-grid",
+    "frontendDisplayId": "2639",
+    "titleEn": "Find the Width of Columns of a Grid",
+    "titleZh": "查询网格图中每一列的宽度",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-width-of-columns-of-a-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-winner-of-an-array-game",
+    "frontendDisplayId": "1535",
+    "titleEn": "Find the Winner of an Array Game",
+    "titleZh": "找出数组游戏的赢家",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-winner-of-an-array-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-winner-of-the-circular-game",
+    "frontendDisplayId": "1823",
+    "titleEn": "Find the Winner of the Circular Game",
+    "titleZh": "找出游戏的获胜者",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Queue",
+      "Recursion",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "队列",
+      "递归",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-winner-of-the-circular-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-winning-player-in-coin-game",
+    "frontendDisplayId": "3222",
+    "titleEn": "Find the Winning Player in Coin Game",
+    "titleZh": "求出硬币游戏的赢家",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Game Theory",
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "博弈",
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-winning-player-in-coin-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-xor-of-numbers-which-appear-twice",
+    "frontendDisplayId": "3158",
+    "titleEn": "Find the XOR of Numbers Which Appear Twice",
+    "titleZh": "求出出现两次数字的 XOR 值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-xor-of-numbers-which-appear-twice/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-three-consecutive-integers-that-sum-to-a-given-number",
+    "frontendDisplayId": "2177",
+    "titleEn": "Find Three Consecutive Integers That Sum to a Given Number",
+    "titleZh": "找到和为给定整数的三个连续整数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-three-consecutive-integers-that-sum-to-a-given-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-total-time-spent-by-each-employee",
+    "frontendDisplayId": "1741",
+    "titleEn": "Find Total Time Spent by Each Employee",
+    "titleZh": "查找每个员工花费的总时间",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-total-time-spent-by-each-employee/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-triangular-sum-of-an-array",
+    "frontendDisplayId": "2221",
+    "titleEn": "Find Triangular Sum of an Array",
+    "titleZh": "数组的三角和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Math",
+      "Number Theory",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "数学",
+      "数论",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-triangular-sum-of-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-two-non-overlapping-sub-arrays-each-with-target-sum",
+    "frontendDisplayId": "1477",
+    "titleEn": "Find Two Non-overlapping Sub-arrays Each With Target Sum",
+    "titleZh": "找两个和为目标值且不重叠的子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Hash Table",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "哈希表",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-two-non-overlapping-sub-arrays-each-with-target-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-unique-binary-string",
+    "frontendDisplayId": "1980",
+    "titleEn": "Find Unique Binary String",
+    "titleZh": "找出不同的二进制字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-unique-binary-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-users-with-high-token-usage",
+    "frontendDisplayId": "3793",
+    "titleEn": "Find Users with High Token Usage",
+    "titleZh": "查找高 tokens 使用量的用户",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-users-with-high-token-usage/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-users-with-persistent-behavior-patterns",
+    "frontendDisplayId": "3832",
+    "titleEn": "Find Users with Persistent Behavior Patterns",
+    "titleZh": "查找具有持续行为模式的用户",
+    "difficulty": "HARD",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-users-with-persistent-behavior-patterns/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-users-with-valid-e-mails",
+    "frontendDisplayId": "1517",
+    "titleEn": "Find Users With Valid E-Mails",
+    "titleZh": "查找拥有有效邮箱的用户",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-users-with-valid-e-mails/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-valid-emails",
+    "frontendDisplayId": "3436",
+    "titleEn": "Find Valid Emails",
+    "titleZh": "查找合法邮箱",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-valid-emails/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-valid-matrix-given-row-and-column-sums",
+    "frontendDisplayId": "1605",
+    "titleEn": "Find Valid Matrix Given Row and Column Sums",
+    "titleZh": "给定行和列的和求可行矩阵",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-valid-matrix-given-row-and-column-sums/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-valid-pair-of-adjacent-digits-in-string",
+    "frontendDisplayId": "3438",
+    "titleEn": "Find Valid Pair of Adjacent Digits in String",
+    "titleZh": "找到字符串中合法的相邻数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-valid-pair-of-adjacent-digits-in-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-weighted-median-node-in-tree",
+    "frontendDisplayId": "3585",
+    "titleEn": "Find Weighted Median Node in Tree",
+    "titleZh": "树中找到带权中位节点",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Bit Manipulation",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "位运算",
+      "深度优先搜索",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-weighted-median-node-in-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-winner-on-a-tic-tac-toe-game",
+    "frontendDisplayId": "1275",
+    "titleEn": "Find Winner on a Tic Tac Toe Game",
+    "titleZh": "找出井字棋的获胜者",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-winner-on-a-tic-tac-toe-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-words-containing-character",
+    "frontendDisplayId": "2942",
+    "titleEn": "Find Words Containing Character",
+    "titleZh": "查找包含给定字符的单词",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-words-containing-character/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-words-that-can-be-formed-by-characters",
+    "frontendDisplayId": "1160",
+    "titleEn": "Find Words That Can Be Formed by Characters",
+    "titleZh": "拼写单词",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-words-that-can-be-formed-by-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-x-sum-of-all-k-long-subarrays-i",
+    "frontendDisplayId": "3318",
+    "titleEn": "Find X-Sum of All K-Long Subarrays I",
+    "titleZh": "计算子数组的 x-sum I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "堆（优先队列）",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-x-sum-of-all-k-long-subarrays-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-048",
+    "claimedAt": "2026-07-10T03:39:14.830558+00:00",
+    "completedAt": null
+  }
+]

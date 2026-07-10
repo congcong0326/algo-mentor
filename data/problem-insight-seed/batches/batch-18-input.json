@@ -1,0 +1,718 @@
+[
+  {
+    "slug": "continuous-subarray-sum",
+    "frontendDisplayId": "523",
+    "titleEn": "Continuous Subarray Sum",
+    "titleZh": "连续的子数组和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Math",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "数学",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/continuous-subarray-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "continuous-subarrays",
+    "frontendDisplayId": "2762",
+    "titleEn": "Continuous Subarrays",
+    "titleZh": "不间断子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Monotonic Queue",
+      "Ordered Set",
+      "Queue",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "单调队列",
+      "有序集合",
+      "队列",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/continuous-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "convert-1d-array-into-2d-array",
+    "frontendDisplayId": "2022",
+    "titleEn": "Convert 1D Array Into 2D Array",
+    "titleZh": "将一维数组转变成二维数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/convert-1d-array-into-2d-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "convert-a-number-to-hexadecimal",
+    "frontendDisplayId": "405",
+    "titleEn": "Convert a Number to Hexadecimal",
+    "titleZh": "数字转换为十六进制数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/convert-a-number-to-hexadecimal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "convert-an-array-into-a-2d-array-with-conditions",
+    "frontendDisplayId": "2610",
+    "titleEn": "Convert an Array Into a 2D Array With Conditions",
+    "titleZh": "转换二维数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/convert-an-array-into-a-2d-array-with-conditions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "convert-binary-number-in-a-linked-list-to-integer",
+    "frontendDisplayId": "1290",
+    "titleEn": "Convert Binary Number in a Linked List to Integer",
+    "titleZh": "二进制链表转整数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Linked List",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/convert-binary-number-in-a-linked-list-to-integer/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "convert-bst-to-greater-tree",
+    "frontendDisplayId": "538",
+    "titleEn": "Convert BST to Greater Tree",
+    "titleZh": "把二叉搜索树转换为累加树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/convert-bst-to-greater-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "convert-date-to-binary",
+    "frontendDisplayId": "3280",
+    "titleEn": "Convert Date to Binary",
+    "titleZh": "将日期转换为二进制表示",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/convert-date-to-binary/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "convert-integer-lcci",
+    "frontendDisplayId": "面试题 05.06",
+    "titleEn": null,
+    "titleZh": "整数转换",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "位运算"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/convert-integer-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "convert-integer-to-the-sum-of-two-no-zero-integers",
+    "frontendDisplayId": "1317",
+    "titleEn": "Convert Integer to the Sum of Two No-Zero Integers",
+    "titleZh": "将整数转换为两个无零整数的和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/convert-integer-to-the-sum-of-two-no-zero-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "convert-sorted-array-to-binary-search-tree",
+    "frontendDisplayId": "108",
+    "titleEn": "Convert Sorted Array to Binary Search Tree",
+    "titleZh": "将有序数组转换为二叉搜索树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search Tree",
+      "Binary Tree",
+      "Divide and Conquer",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉搜索树",
+      "二叉树",
+      "分治",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "convert-sorted-list-to-binary-search-tree",
+    "frontendDisplayId": "109",
+    "titleEn": "Convert Sorted List to Binary Search Tree",
+    "titleZh": "有序链表转换二叉搜索树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Divide and Conquer",
+      "Linked List",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "分治",
+      "链表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/convert-sorted-list-to-binary-search-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "convert-the-temperature",
+    "frontendDisplayId": "2469",
+    "titleEn": "Convert the Temperature",
+    "titleZh": "温度转换",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/convert-the-temperature/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "convert-to-base-2",
+    "frontendDisplayId": "1017",
+    "titleEn": "Convert to Base -2",
+    "titleZh": "负二进制转换",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/convert-to-base-2/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "coordinate-with-maximum-network-quality",
+    "frontendDisplayId": "1620",
+    "titleEn": "Coordinate With Maximum Network Quality",
+    "titleZh": "网络信号最好的坐标",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/coordinate-with-maximum-network-quality/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "copy-list-with-random-pointer",
+    "frontendDisplayId": "138",
+    "titleEn": "Copy List with Random Pointer",
+    "titleZh": "随机链表的复制",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/copy-list-with-random-pointer/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "corporate-flight-bookings",
+    "frontendDisplayId": "1109",
+    "titleEn": "Corporate Flight Bookings",
+    "titleZh": "航班预订统计",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/corporate-flight-bookings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-all-possible-routes",
+    "frontendDisplayId": "1575",
+    "titleEn": "Count All Possible Routes",
+    "titleZh": "统计所有可行路径",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "记忆化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-all-possible-routes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-all-valid-pickup-and-delivery-options",
+    "frontendDisplayId": "1359",
+    "titleEn": "Count All Valid Pickup and Delivery Options",
+    "titleZh": "有效的快递序列数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-all-valid-pickup-and-delivery-options/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-almost-equal-pairs-i",
+    "frontendDisplayId": "3265",
+    "titleEn": "Count Almost Equal Pairs I",
+    "titleZh": "统计近似相等数对 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Enumeration",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "枚举",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-almost-equal-pairs-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-almost-equal-pairs-ii",
+    "frontendDisplayId": "3267",
+    "titleEn": "Count Almost Equal Pairs II",
+    "titleZh": "统计近似相等数对 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Enumeration",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "枚举",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-almost-equal-pairs-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-alternating-subarrays",
+    "frontendDisplayId": "3101",
+    "titleEn": "Count Alternating Subarrays",
+    "titleZh": "交替子数组计数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-alternating-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-anagrams",
+    "frontendDisplayId": "2514",
+    "titleEn": "Count Anagrams",
+    "titleZh": "统计同位异构字符串数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Counting",
+      "Hash Table",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "计数",
+      "哈希表",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-anagrams/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-and-say",
+    "frontendDisplayId": "38",
+    "titleEn": "Count and Say",
+    "titleZh": "外观数列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-and-say/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-array-pairs-divisible-by-k",
+    "frontendDisplayId": "2183",
+    "titleEn": "Count Array Pairs Divisible by K",
+    "titleZh": "统计可以被 K 整除的下标对数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-array-pairs-divisible-by-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-artifacts-that-can-be-extracted",
+    "frontendDisplayId": "2201",
+    "titleEn": "Count Artifacts That Can Be Extracted",
+    "titleZh": "统计可以提取的工件",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-artifacts-that-can-be-extracted/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-asterisks",
+    "frontendDisplayId": "2315",
+    "titleEn": "Count Asterisks",
+    "titleZh": "统计星号",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-asterisks/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-beautiful-numbers",
+    "frontendDisplayId": "3490",
+    "titleEn": "Count Beautiful Numbers",
+    "titleZh": "统计美丽整数的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-beautiful-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-beautiful-splits-in-an-array",
+    "frontendDisplayId": "3388",
+    "titleEn": "Count Beautiful Splits in an Array",
+    "titleZh": "统计数组中的美丽分割",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-beautiful-splits-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-beautiful-substrings-i",
+    "frontendDisplayId": "2947",
+    "titleEn": "Count Beautiful Substrings I",
+    "titleZh": "统计美丽子字符串 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Hash Table",
+      "Math",
+      "Number Theory",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "哈希表",
+      "数学",
+      "数论",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-beautiful-substrings-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-18",
+    "claimedAt": "2026-07-10T01:49:58.728667+00:00",
+    "completedAt": null
+  }
+]

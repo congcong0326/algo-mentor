@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "maximum-number-of-visible-points",
+    "reasonEN": "A hard geometry and angular-window problem; normalize point angles, duplicate the circular range, and slide over the allowed aperture; it is a strong pattern for converting circular visibility into sorted intervals.",
+    "reasonZH": "困难的几何与角度滑动窗口题，需要归一化点的极角、复制环形区间并维护视角窗口；训练将圆周可见性转化为有序区间；是掌握环形窗口建模的代表题。"
+  },
+  {
+    "slug": "maximum-number-of-vowels-in-a-substring-of-given-length",
+    "reasonEN": "A medium fixed-size sliding-window problem; update the vowel count by removing and adding one character per shift; it builds the most reusable template for constant-length substring queries.",
+    "reasonZH": "中等难度的定长滑动窗口题，每次移动时删除左端字符并加入右端字符来更新元音数；训练窗口增量维护；是定长子串统计的核心模板。"
+  },
+  {
+    "slug": "maximum-number-of-ways-to-partition-an-array",
+    "reasonEN": "A hard prefix-sum and hash-counting problem with one modification; compare left and right sums while accounting for the replacement delta; it sharpens offline counting across alternate decision points.",
+    "reasonZH": "困难的前缀和与哈希计数题，允许一次修改时要用替换差值协调左右和；训练不同决策位置下的离线统计；有助于理解前后缀状态的联动。"
+  },
+  {
+    "slug": "maximum-number-of-weeks-for-which-you-can-work",
+    "reasonEN": "A medium greedy scheduling problem; compare the largest project count with the sum of all remaining work; it teaches how a dominant item determines whether alternation remains feasible.",
+    "reasonZH": "中等难度的贪心调度题，比较最大项目数量与其余工作总量；训练判断主导元素是否会破坏交替安排；能掌握计数型贪心的可行性结论。"
+  },
+  {
+    "slug": "maximum-number-of-words-found-in-sentences",
+    "reasonEN": "An easy string scanning problem; count separators or split each sentence and retain the maximum; it reinforces choosing a direct representation for simple text statistics.",
+    "reasonZH": "简单的字符串扫描题，可统计空格或拆分句子后维护最大值；训练文本统计的直接建模；适合巩固基础字符串处理。"
+  },
+  {
+    "slug": "maximum-number-of-words-you-can-type",
+    "reasonEN": "An easy hash-set filtering problem; record broken letters and reject any word containing one of them; it practices character-level membership checks in tokenized text.",
+    "reasonZH": "简单的哈希集合筛选题，记录损坏按键并排除含有这些字符的单词；训练分词文本中的字符成员判断；适合夯实集合应用。"
+  },
+  {
+    "slug": "maximum-number-that-sum-of-the-prices-is-less-than-or-equal-to-k",
+    "reasonEN": "A medium binary-search-on-answer problem backed by bit DP; calculate cumulative bit-position prices up to a candidate number; it develops digit-counting techniques for enormous search spaces.",
+    "reasonZH": "中等难度的答案二分题，需要用位 DP 计算某个候选数范围内的位价总和；训练大范围数位计数；适合掌握二分与位运算的结合。"
+  },
+  {
+    "slug": "maximum-odd-binary-number",
+    "reasonEN": "An easy greedy binary-string construction problem; reserve one set bit for the final position and place all others as far left as possible; it illustrates positional-value greedy reasoning.",
+    "reasonZH": "简单的贪心二进制串构造题，保留一个 1 放在末位，其余 1 尽量前置；训练位权下的贪心安排；能快速建立数位构造直觉。"
+  },
+  {
+    "slug": "maximum-of-absolute-value-expression",
+    "reasonEN": "A medium expression-transformation problem; enumerate sign combinations to turn absolute values into extrema of linear forms; it teaches a powerful algebraic reduction for Manhattan-style distances.",
+    "reasonZH": "中等难度的表达式变形题，枚举符号组合，将绝对值转化为线性形式的最值；训练代数化简；是处理曼哈顿距离类问题的重要技巧。"
+  },
+  {
+    "slug": "maximum-or",
+    "reasonEN": "A medium bitwise greedy problem; preserve the OR of all unaffected elements while testing which value benefits most from the shift; it reinforces contribution accounting with prefix and suffix OR values.",
+    "reasonZH": "中等难度的位运算贪心题，保留未操作元素的按位或并评估哪一项移位收益最大；训练前后缀 OR 的贡献统计；适合理解位级优化。"
+  },
+  {
+    "slug": "maximum-palindromes-after-operations",
+    "reasonEN": "A medium counting-and-greedy allocation problem; pool character pairs, sort target lengths, and serve short palindromes first; it develops resource allocation reasoning under parity constraints.",
+    "reasonZH": "中等难度的计数贪心分配题，汇总字符对、排序目标长度并优先满足短回文串；训练奇偶约束下的资源分配；是频次贪心的典型应用。"
+  },
+  {
+    "slug": "maximum-partition-factor",
+    "reasonEN": "A hard graph-connectivity optimization problem; use binary search over the factor and verify components with union-find or traversal; it practices pairing a monotone predicate with connectivity checks.",
+    "reasonZH": "困难的图连通性优化题，对划分因子二分并用并查集或遍历验证连通分组；训练单调性判定与连通性检查的组合；适合掌握答案二分的图论应用。"
+  },
+  {
+    "slug": "maximum-path-intersection-sum-in-a-grid",
+    "reasonEN": "A medium grid DP problem with shared-path accounting; combine path states with prefix-style accumulation to avoid double counting intersections; it trains state design for coupled paths in a matrix.",
+    "reasonZH": "中等难度的网格动态规划题，需要结合路径状态与前缀累积避免共享部分重复计分；训练耦合路径的状态设计；对矩阵 DP 建模很有价值。"
+  },
+  {
+    "slug": "maximum-path-quality-of-a-graph",
+    "reasonEN": "A hard graph backtracking problem under a time budget; explore feasible walks while counting each node value only on its first visit and prune by travel cost; it strengthens constrained DFS search design.",
+    "reasonZH": "困难的限时图回溯题，在可行路径中仅首次访问节点时计入价值，并按路程成本剪枝；训练受约束 DFS 搜索；能提升图上回溯建模能力。"
+  },
+  {
+    "slug": "maximum-path-score-in-a-grid",
+    "reasonEN": "A medium matrix dynamic-programming problem; propagate the best predecessor score through valid moves and handle transition boundaries carefully; it reinforces the standard local-transition view of grid paths.",
+    "reasonZH": "中等难度的矩阵动态规划题，沿合法移动传播最优前驱得分并仔细处理转移边界；训练网格路径的局部转移思维；适合巩固矩阵 DP 模板。"
+  },
+  {
+    "slug": "maximum-performance-of-a-team",
+    "reasonEN": "A hard sort-and-heap greedy problem; process engineers by decreasing efficiency and keep the best k speeds in a min-heap; it is a classic exercise in fixing the bottleneck before optimizing the sum.",
+    "reasonZH": "困难的排序加堆贪心题，按效率降序处理工程师并用小根堆保留最大的 k 个速度；训练先固定瓶颈再优化总和；是堆贪心的经典代表。"
+  },
+  {
+    "slug": "maximum-points-activated-with-one-addition",
+    "reasonEN": "A hard union-find and component-merging problem; map active regions and evaluate how one added point joins neighboring components; it develops local-change impact analysis on dynamic connectivity.",
+    "reasonZH": "困难的并查集连通块合并题，记录已激活区域并评估新增一点能连接的相邻分量；训练动态连通性中的局部改动影响分析；适合掌握并查集建模。"
+  },
+  {
+    "slug": "maximum-points-after-collecting-coins-from-all-nodes",
+    "reasonEN": "A hard tree DP problem with bitwise state transitions; memoize each subtree under the possible value-shift choices; it teaches how to compress repeated decisions on rooted trees.",
+    "reasonZH": "困难的树形动态规划题，结合位运算状态并记忆化每个子树在不同数值偏移下的最优结果；训练树上重复决策压缩；适合进阶树 DP。"
+  },
+  {
+    "slug": "maximum-points-after-enemy-battles",
+    "reasonEN": "A medium greedy resource-conversion problem; identify the cheapest repeated scoring action and preserve enough energy through the remaining choices; it sharpens invariant-based reasoning for repeated operations.",
+    "reasonZH": "中等难度的贪心资源转换题，找出最低成本的重复得分动作并在其余选择中保留足够能量；训练重复操作下的不变量推理；有助于理解资源型贪心。"
+  },
+  {
+    "slug": "maximum-points-in-an-archery-competition",
+    "reasonEN": "A medium subset-enumeration problem; choose which scoring regions to win, compute their arrow cost, and assign leftovers afterward; it is a clean exercise in bitmask search with reconstruction.",
+    "reasonZH": "中等难度的子集枚举题，选择要赢下的得分区、计算箭数成本并最后分配剩余箭；训练位掩码搜索与方案还原；是回溯枚举的优质练习。"
+  },
+  {
+    "slug": "maximum-points-inside-the-square",
+    "reasonEN": "A medium geometry and ordering problem; sort points by their required square radius and stop before duplicate labels conflict; it trains converting geometric containment into a one-dimensional threshold scan.",
+    "reasonZH": "中等难度的几何排序题，按点进入正方形所需半径排序，并在重复标签冲突前停止；训练把几何包含关系转化为一维阈值扫描；建模价值很高。"
+  },
+  {
+    "slug": "maximum-points-tourist-can-earn",
+    "reasonEN": "A medium day-by-city dynamic-programming problem; transition between staying and traveling choices while retaining the best score per location; it reinforces layered-state DP for itinerary planning.",
+    "reasonZH": "中等难度的按天按城市动态规划题，在停留与移动选择间转移并维护每个位置的最优分数；训练分层状态 DP；适合理解行程规划模型。"
+  },
+  {
+    "slug": "maximum-points-you-can-obtain-from-cards",
+    "reasonEN": "A medium complementary sliding-window problem; minimize the sum of the contiguous cards left behind instead of enumerating picks from both ends; it teaches the useful total-minus-window transformation.",
+    "reasonZH": "中等难度的补集滑动窗口题，不直接枚举两端取牌，而是最小化中间剩余连续段的和；训练总和减窗口的转换；是双端选择问题的经典技巧。"
+  },
+  {
+    "slug": "maximum-population-year",
+    "reasonEN": "An easy difference-array counting problem; mark each birth and death boundary, then prefix-sum the yearly population; it is a concise introduction to range updates and sweep-line thinking.",
+    "reasonZH": "简单的差分数组计数题，在出生和死亡边界打标后做前缀和恢复每年人口；训练区间增减与扫描线思维；是差分法的入门代表。"
+  },
+  {
+    "slug": "maximum-possible-number-by-binary-concatenation",
+    "reasonEN": "A medium bit-manipulation enumeration problem; compare the finite concatenation orders using shifts and OR operations; it practices constructing numeric candidates directly from binary representations.",
+    "reasonZH": "中等难度的位运算枚举题，用移位和按位或比较有限种二进制拼接顺序；训练从二进制表示直接构造数值候选；适合巩固位级组合操作。"
+  },
+  {
+    "slug": "maximum-prime-difference",
+    "reasonEN": "A medium number-theory scan problem; test primality while recording the first and last qualifying indices; it reinforces integrating a mathematical predicate into a linear array pass.",
+    "reasonZH": "中等难度的数论扫描题，判定质数并记录首个和最后一个满足条件的下标；训练在线性遍历中嵌入数学谓词；适合巩固基础素数判断。"
+  },
+  {
+    "slug": "maximum-product-after-k-increments",
+    "reasonEN": "A medium heap-based greedy optimization problem; repeatedly raise the current minimum element before taking the modular product; it demonstrates why balancing factors maximizes a product.",
+    "reasonZH": "中等难度的堆贪心优化题，反复提升当前最小元素后再计算模意义下的乘积；训练用均衡因子增大乘积的贪心思想；是优先队列的典型应用。"
+  },
+  {
+    "slug": "maximum-product-difference-between-two-pairs",
+    "reasonEN": "An easy extrema-selection problem; sort the array or track its two smallest and two largest values; it practices recognizing when an expression depends only on a few order statistics.",
+    "reasonZH": "简单的极值选择题，可排序或维护两个最小值和两个最大值；训练识别仅依赖少量顺序统计量的表达式；适合巩固数组最值技巧。"
+  },
+  {
+    "slug": "maximum-product-of-first-and-last-elements-of-a-subsequence",
+    "reasonEN": "A medium array optimization problem with endpoint constraints; maintain candidate extrema as the subsequence boundaries are considered; it develops sign-aware reasoning for maximum-product selection.",
+    "reasonZH": "中等难度的端点约束数组优化题，枚举子序列边界时维护候选极值；训练考虑正负号的最大乘积选择；有助于掌握极值配对思维。"
+  },
+  {
+    "slug": "maximum-product-of-splitted-binary-tree",
+    "reasonEN": "A medium tree DFS problem; compute the total sum and each subtree sum, then maximize the resulting split product; it reinforces postorder aggregation and modular-arithmetic discipline.",
+    "reasonZH": "中等难度的树 DFS 题，先求全树和与各子树和，再最大化切分后的乘积；训练后序聚合与取模细节；是子树统计的经典应用。"
+  }
+]

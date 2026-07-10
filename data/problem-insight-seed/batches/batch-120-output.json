@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "three-consecutive-odds",
+    "reasonEN": "An easy array scan centered on consecutive-state tracking; incrementing an odd streak and resetting it at breaks is a compact introduction to local pattern detection.",
+    "reasonZH": "这道简单数组扫描题围绕连续状态维护；遇到奇数累加连续长度、遇到中断重置，是局部模式检测的紧凑入门。"
+  },
+  {
+    "slug": "three-divisors",
+    "reasonEN": "This easy number-theory problem links divisor counts to prime-square structure; recognizing the characterization avoids unnecessary factor enumeration and sharpens mathematical simplification skills.",
+    "reasonZH": "这道简单数论题将约数个数联系到质数平方结构；识别该充要特征可避免无谓枚举，并训练数学化简能力。"
+  },
+  {
+    "slug": "three-equal-parts",
+    "reasonEN": "A hard binary-array problem that aligns equal bit patterns across three segments; counting significant bits and handling trailing zeros trains precise representation-based partitioning.",
+    "reasonZH": "这是一道困难的二进制数组题，需要对齐三个区间中的相同位模式；统计有效位并处理尾随零，训练精确的表示型分割能力。"
+  },
+  {
+    "slug": "three-in-one-lcci",
+    "reasonEN": "An easy stack-design problem that places several bounded stacks in one array; mapping stack identities to disjoint index ranges builds clean fixed-capacity data-structure design habits.",
+    "reasonZH": "这道简单栈设计题在一个数组中放置多个容量受限的栈；将栈标识映射到互不重叠的下标区间，可建立清晰的定长数据结构设计习惯。"
+  },
+  {
+    "slug": "three-steps-problem-lcci",
+    "reasonEN": "A classic easy dynamic-programming problem with a short recurrence; deriving each count from the previous three states reinforces memoization and constant-space DP optimization.",
+    "reasonZH": "经典的简单动态规划题具有简短递推关系；由前三个状态推导当前计数，可巩固记忆化和常数空间 DP 优化。"
+  },
+  {
+    "slug": "threshold-majority-queries",
+    "reasonEN": "A hard range-query problem combining counting, divide and conquer, and binary search; generating viable candidates and validating their interval frequency develops advanced query-design reasoning.",
+    "reasonZH": "这是一道困难的区间查询题，结合计数、分治和二分；生成可行候选并验证其区间频次，训练进阶查询设计能力。"
+  },
+  {
+    "slug": "throne-inheritance",
+    "reasonEN": "A medium tree-design problem that separates genealogy storage from inheritance traversal; maintaining child order and skipping inactive nodes is valuable practice for mutable hierarchical models.",
+    "reasonZH": "这道中等树设计题将家谱存储与继承遍历分离；维护子节点顺序并跳过失效节点，是可变层级模型的重要训练。"
+  },
+  {
+    "slug": "ti-huan-kong-ge-lcof",
+    "reasonEN": "An easy string transformation exercise focused on replacing designated characters while preserving all other content; it reinforces predictable scanning and output construction.",
+    "reasonZH": "这道简单字符串变换题聚焦替换指定字符并保留其余内容；它训练可预测的扫描流程和结果构造。"
+  },
+  {
+    "slug": "tic-tac-toe-lcci",
+    "reasonEN": "A medium matrix and counting problem that evaluates winning lines systematically; maintaining row, column, and diagonal conditions builds reliable board-state validation skills.",
+    "reasonZH": "这道中等矩阵计数题系统判断获胜线路；维护行、列和对角线条件，可训练可靠的棋盘状态校验能力。"
+  },
+  {
+    "slug": "tiling-a-rectangle-with-the-fewest-squares",
+    "reasonEN": "A hard backtracking optimization problem that searches geometric placements under a minimum objective; choosing constrained positions first and pruning weak branches develops high-level search technique.",
+    "reasonZH": "这是一道困难的回溯优化题，需要在最小化目标下搜索几何放置；优先选择受约束位置并剪去劣势分支，可训练高阶搜索技巧。"
+  },
+  {
+    "slug": "time-based-key-value-store",
+    "reasonEN": "This medium design problem indexes timestamped values by key and binary-searches predecessor entries; it is a core pattern for efficient historical lookup APIs.",
+    "reasonZH": "这道中等设计题按键索引带时间戳的值，并二分查找前驱记录；它是高效历史查询 API 的核心模式。"
+  },
+  {
+    "slug": "time-needed-to-buy-tickets",
+    "reasonEN": "An easy queue simulation problem that models repeated service fairly; tracking decrements and queue rotation provides clear practice in discrete process simulation.",
+    "reasonZH": "这道简单队列模拟题建模公平的重复服务过程；跟踪递减与队列轮转，可清晰练习离散过程模拟。"
+  },
+  {
+    "slug": "time-needed-to-inform-all-employees",
+    "reasonEN": "A medium tree traversal problem that accumulates communication delay along management paths; DFS or BFS propagation trains longest-path reasoning on rooted hierarchies.",
+    "reasonZH": "这道中等树遍历题沿管理路径累积通知延迟；使用 DFS 或 BFS 传播，可训练根层级上的最长路径推理。"
+  },
+  {
+    "slug": "time-needed-to-rearrange-a-binary-string",
+    "reasonEN": "A medium string simulation and DP problem that compresses repeated adjacent swaps into state updates; tracking prior blocking characters develops a faster alternative to round-by-round simulation.",
+    "reasonZH": "这道中等字符串模拟 DP 题将重复相邻交换压缩为状态更新；追踪先前的阻塞字符，可训练替代逐轮模拟的更快方法。"
+  },
+  {
+    "slug": "time-taken-to-mark-all-nodes",
+    "reasonEN": "A hard tree rerooting-DP problem that computes completion time from every possible start; combining downward and upward path information is advanced practice for all-roots metrics.",
+    "reasonZH": "这是一道困难的树形换根 DP 题，需要计算每个起点的完成时间；结合向下与向上的路径信息，是全根指标的进阶训练。"
+  },
+  {
+    "slug": "time-to-cross-a-bridge",
+    "reasonEN": "This hard priority-queue simulation coordinates workers across competing timed events; modeling availability, waiting order, and clock jumps is excellent practice for event-driven scheduling.",
+    "reasonZH": "这道困难优先队列模拟题协调多个竞争的定时事件；建模可用状态、等待优先级和时钟跳转，是事件驱动调度的优秀训练。"
+  },
+  {
+    "slug": "timeout-cancellation",
+    "reasonEN": "An easy asynchronous programming exercise focused on scheduling and cancellation; pairing a delayed callback with a cancellation handle builds practical timer-lifecycle awareness.",
+    "reasonZH": "这是一道简单的异步编程练习，聚焦调度与取消；将延迟回调与取消句柄配对，可建立实用的计时器生命周期意识。"
+  },
+  {
+    "slug": "to-be-or-not-to-be",
+    "reasonEN": "An easy assertion-design exercise that compares values under explicit success and failure behavior; it is useful for learning precise equality contracts and error signaling.",
+    "reasonZH": "这是一道简单的断言设计练习，按明确的成功与失败行为比较值；适合理解精确的相等性契约和错误信号。"
+  },
+  {
+    "slug": "to-lower-case",
+    "reasonEN": "A straightforward easy string-normalization task that applies character-case conversion; it reinforces safe use of language character APIs and simple text preprocessing.",
+    "reasonZH": "这道直接的简单字符串规范化题执行字符大小写转换；它巩固字符 API 的安全使用和基础文本预处理。"
+  },
+  {
+    "slug": "toeplitz-matrix",
+    "reasonEN": "An easy matrix-validation problem based on diagonal invariants; comparing each cell with its upper-left predecessor trains concise coordinate-based checking.",
+    "reasonZH": "这道简单矩阵校验题基于对角线不变量；将每个单元格与左上前驱比较，可训练简洁的坐标式检查。"
+  },
+  {
+    "slug": "toggle-light-bulbs",
+    "reasonEN": "An easy simulation problem that tracks repeated toggle operations and final active states; hash-based state management and ordered output make it useful implementation practice.",
+    "reasonZH": "这道简单模拟题追踪重复切换操作和最终开启状态；基于哈希的状态管理与有序输出，是实用的实现训练。"
+  },
+  {
+    "slug": "top-k-frequent-elements",
+    "reasonEN": "A medium frequency-ranking problem with heap, bucket, and quickselect solutions; separating counting from selection develops a reusable top-K processing pattern.",
+    "reasonZH": "这道中等频次排序题可用堆、桶排序或快速选择解决；将计数与筛选分离，可训练可复用的 Top-K 处理模式。"
+  },
+  {
+    "slug": "top-k-frequent-words",
+    "reasonEN": "This medium string frequency problem adds deterministic lexical tie-breaking to top-K selection; designing a correct comparator is valuable practice for ordered ranking systems.",
+    "reasonZH": "这道中等字符串频次题在 Top-K 选择中加入确定性的字典序并列规则；设计正确比较器，是有序排名系统的重要训练。"
+  },
+  {
+    "slug": "top-travellers",
+    "reasonEN": "An easy database aggregation problem that combines records, preserves entities with no activity, and orders totals; it reinforces joins, grouped sums, and null-safe SQL output.",
+    "reasonZH": "这道简单数据库聚合题需要关联记录、保留无活动实体并排序总量；它巩固连接、分组求和和空值安全的 SQL 输出。"
+  },
+  {
+    "slug": "total-appeal-of-a-string",
+    "reasonEN": "A hard string DP problem that counts each character's incremental contribution across substrings; tracking last occurrences converts quadratic enumeration into linear aggregation.",
+    "reasonZH": "这是一道困难的字符串 DP 题，计算每个字符对所有子串的增量贡献；维护上次出现位置可将二次枚举转化为线性聚合。"
+  },
+  {
+    "slug": "total-characters-in-string-after-transformations-i",
+    "reasonEN": "A medium counting DP problem that evolves character frequencies through repeated transformations; updating a compact alphabet state trains efficient simulation of aggregate behavior.",
+    "reasonZH": "这道中等计数 DP 题让字符频次经过重复变换演化；更新紧凑的字母表状态，可训练高效模拟聚合行为。"
+  },
+  {
+    "slug": "total-characters-in-string-after-transformations-ii",
+    "reasonEN": "A hard counting DP problem with long-running character transitions; formulating transformations as state propagation develops scalable reasoning beyond direct simulation.",
+    "reasonZH": "这是一道困难的计数 DP 题，处理长轮次的字符转移；将变换表述为状态传播，可训练超越直接模拟的可扩展推理。"
+  },
+  {
+    "slug": "total-cost-to-hire-k-workers",
+    "reasonEN": "A medium heap simulation problem that selects from two moving candidate ranges; coordinating pointers, tie-breaking, and priority queues builds a practical greedy scheduling pattern.",
+    "reasonZH": "这道中等堆模拟题从两侧不断移动的候选区间中选择；协调指针、并列规则和优先队列，可训练实用的贪心调度模式。"
+  },
+  {
+    "slug": "total-distance-traveled",
+    "reasonEN": "An easy math simulation problem that models consumption and periodic replenishment; it reinforces translating a physical process into compact state updates.",
+    "reasonZH": "这道简单数学模拟题建模消耗与周期性补给；它训练将实际过程转化为紧凑的状态更新。"
+  },
+  {
+    "slug": "total-hamming-distance",
+    "reasonEN": "A medium bit-manipulation problem that sums pair contributions independently by bit; counting zero-one splits per position is a canonical technique for replacing pairwise enumeration.",
+    "reasonZH": "这道中等位运算题按位独立累加数对贡献；统计每一位的零一划分，是替代成对枚举的经典技巧。"
+  }
+]

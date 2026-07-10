@@ -1,0 +1,706 @@
+[
+  {
+    "slug": "lexicographically-smallest-string-after-operations-with-constraint",
+    "frontendDisplayId": "3106",
+    "titleEn": "Lexicographically Smallest String After Operations With Constraint",
+    "titleZh": "满足距离约束且字典序最小的字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-smallest-string-after-operations-with-constraint/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographically-smallest-string-after-reverse",
+    "frontendDisplayId": "3722",
+    "titleEn": "Lexicographically Smallest String After Reverse",
+    "titleZh": "反转后字典序最小的字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Enumeration",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "枚举",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-smallest-string-after-reverse/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographically-smallest-string-after-substring-operation",
+    "frontendDisplayId": "2734",
+    "titleEn": "Lexicographically Smallest String After Substring Operation",
+    "titleZh": "执行子串操作后的字典序最小字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-smallest-string-after-substring-operation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lfu-cache",
+    "frontendDisplayId": "460",
+    "titleEn": "LFU Cache",
+    "titleZh": "LFU 缓存",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Design",
+      "Doubly-Linked List",
+      "Hash Table",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "双向链表",
+      "哈希表",
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lfu-cache/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "li-wu-de-zui-da-jie-zhi-lcof",
+    "frontendDisplayId": "LCR 166",
+    "titleEn": null,
+    "titleZh": "珠宝的最高价值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/li-wu-de-zui-da-jie-zhi-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof",
+    "frontendDisplayId": "LCR 140",
+    "titleEn": null,
+    "titleZh": "训练计划 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Linked List",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lian-xu-zi-shu-zu-de-zui-da-he-lcof",
+    "frontendDisplayId": "LCR 161",
+    "titleEn": null,
+    "titleZh": "连续天数的最高销售额",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "动态规划"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof",
+    "frontendDisplayId": "LCR 171",
+    "titleEn": null,
+    "titleZh": "训练计划 V",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Linked List",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "链表",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "license-key-formatting",
+    "frontendDisplayId": "482",
+    "titleEn": "License Key Formatting",
+    "titleZh": "密钥格式化",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/license-key-formatting/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "limit-occurrences-in-sorted-array",
+    "frontendDisplayId": "3940",
+    "titleEn": "Limit Occurrences in Sorted Array",
+    "titleZh": "限制有序数组中的元素出现次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/limit-occurrences-in-sorted-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "linked-list-components",
+    "frontendDisplayId": "817",
+    "titleEn": "Linked List Components",
+    "titleZh": "链表组件",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/linked-list-components/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "linked-list-cycle",
+    "frontendDisplayId": "141",
+    "titleEn": "Linked List Cycle",
+    "titleZh": "环形链表",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Linked List",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "链表",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/linked-list-cycle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "linked-list-cycle-ii",
+    "frontendDisplayId": "142",
+    "titleEn": "Linked List Cycle II",
+    "titleZh": "环形链表 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Linked List",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "链表",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/linked-list-cycle-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "linked-list-cycle-lcci",
+    "frontendDisplayId": "面试题 02.08",
+    "titleEn": null,
+    "titleZh": "环路检测",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Linked List",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "链表",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/linked-list-cycle-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "linked-list-in-binary-tree",
+    "frontendDisplayId": "1367",
+    "titleEn": "Linked List in Binary Tree",
+    "titleZh": "二叉树中的链表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Linked List",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "链表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/linked-list-in-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "linked-list-random-node",
+    "frontendDisplayId": "382",
+    "titleEn": "Linked List Random Node",
+    "titleZh": "链表随机节点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Math",
+      "Randomized",
+      "Reservoir Sampling"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "数学",
+      "随机化",
+      "水塘抽样"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/linked-list-random-node/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "list-of-depth-lcci",
+    "frontendDisplayId": "面试题 04.03",
+    "titleEn": null,
+    "titleZh": "特定深度节点链表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Linked List",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "链表",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/list-of-depth-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "list-the-products-ordered-in-a-period",
+    "frontendDisplayId": "1327",
+    "titleEn": "List the Products Ordered in a Period",
+    "titleZh": "列出指定时间段内所有的下单产品",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/list-the-products-ordered-in-a-period/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "living-people-lcci",
+    "frontendDisplayId": "面试题 16.10",
+    "titleEn": null,
+    "titleZh": "生存人数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/living-people-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "logical-or-of-two-binary-grids-represented-as-quad-trees",
+    "frontendDisplayId": "558",
+    "titleEn": "Logical OR of Two Binary Grids Represented as Quad-Trees",
+    "titleZh": "四叉树交集",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Divide and Conquer",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "分治",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/logical-or-of-two-binary-grids-represented-as-quad-trees/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "long-pressed-name",
+    "frontendDisplayId": "925",
+    "titleEn": "Long Pressed Name",
+    "titleZh": "长按键入",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/long-pressed-name/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longer-contiguous-segments-of-ones-than-zeros",
+    "frontendDisplayId": "1869",
+    "titleEn": "Longer Contiguous Segments of Ones than Zeros",
+    "titleZh": "哪种连续子字符串更长",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longer-contiguous-segments-of-ones-than-zeros/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-absolute-file-path",
+    "frontendDisplayId": "388",
+    "titleEn": "Longest Absolute File Path",
+    "titleZh": "文件的最长绝对路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-absolute-file-path/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-almost-palindromic-substring",
+    "frontendDisplayId": "3844",
+    "titleEn": "Longest Almost-Palindromic Substring",
+    "titleZh": "最长的准回文子字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-almost-palindromic-substring/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-alternating-subarray",
+    "frontendDisplayId": "2765",
+    "titleEn": "Longest Alternating Subarray",
+    "titleZh": "最长交替子数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-alternating-subarray/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-alternating-subarray-after-removing-at-most-one-element",
+    "frontendDisplayId": "3830",
+    "titleEn": "Longest Alternating Subarray After Removing At Most One Element",
+    "titleZh": "移除至多一个元素后的最长交替子数组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-alternating-subarray-after-removing-at-most-one-element/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-arithmetic-sequence-after-changing-at-most-one-element",
+    "frontendDisplayId": "3872",
+    "titleEn": "Longest Arithmetic Sequence After Changing At Most One Element",
+    "titleZh": "替换最多一个元素后的最长等差子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-arithmetic-sequence-after-changing-at-most-one-element/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-arithmetic-subsequence",
+    "frontendDisplayId": "1027",
+    "titleEn": "Longest Arithmetic Subsequence",
+    "titleZh": "最长等差数列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-arithmetic-subsequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-arithmetic-subsequence-of-given-difference",
+    "frontendDisplayId": "1218",
+    "titleEn": "Longest Arithmetic Subsequence of Given Difference",
+    "titleZh": "最长定差子序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-arithmetic-subsequence-of-given-difference/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-balanced-subarray-i",
+    "frontendDisplayId": "3719",
+    "titleEn": "Longest Balanced Subarray I",
+    "titleZh": "最长平衡子数组 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Hash Table",
+      "Prefix Sum",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "哈希表",
+      "前缀和",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-balanced-subarray-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-060",
+    "claimedAt": "2026-07-10T04:06:50.350189+00:00",
+    "completedAt": null
+  }
+]

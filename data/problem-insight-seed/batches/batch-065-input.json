@@ -1,0 +1,744 @@
+[
+  {
+    "slug": "max-chunks-to-make-sorted-ii",
+    "frontendDisplayId": "768",
+    "titleEn": "Max Chunks To Make Sorted II",
+    "titleZh": "最多能完成排序的块 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Monotonic Stack",
+      "Sorting",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "单调栈",
+      "排序",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/max-chunks-to-make-sorted-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "max-consecutive-ones",
+    "frontendDisplayId": "485",
+    "titleEn": "Max Consecutive Ones",
+    "titleZh": "最大连续 1 的个数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/max-consecutive-ones/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "max-consecutive-ones-iii",
+    "frontendDisplayId": "1004",
+    "titleEn": "Max Consecutive Ones III",
+    "titleZh": "最大连续1的个数 III",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/max-consecutive-ones-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "max-difference-you-can-get-from-changing-an-integer",
+    "frontendDisplayId": "1432",
+    "titleEn": "Max Difference You Can Get From Changing an Integer",
+    "titleZh": "改变一个整数能得到的最大差值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/max-difference-you-can-get-from-changing-an-integer/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "max-dot-product-of-two-subsequences",
+    "frontendDisplayId": "1458",
+    "titleEn": "Max Dot Product of Two Subsequences",
+    "titleZh": "两个子序列的最大点积",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/max-dot-product-of-two-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "max-increase-to-keep-city-skyline",
+    "frontendDisplayId": "807",
+    "titleEn": "Max Increase to Keep City Skyline",
+    "titleZh": "保持城市天际线",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/max-increase-to-keep-city-skyline/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "max-number-of-k-sum-pairs",
+    "frontendDisplayId": "1679",
+    "titleEn": "Max Number of K-Sum Pairs",
+    "titleZh": "K 和数对的最大数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/max-number-of-k-sum-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "max-pair-sum-in-an-array",
+    "frontendDisplayId": "2815",
+    "titleEn": "Max Pair Sum in an Array",
+    "titleZh": "数组中的最大数对和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/max-pair-sum-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "max-points-on-a-line",
+    "frontendDisplayId": "149",
+    "titleEn": "Max Points on a Line",
+    "titleZh": "直线上最多的点数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/max-points-on-a-line/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "max-submatrix-lcci",
+    "frontendDisplayId": "面试题 17.24",
+    "titleEn": null,
+    "titleZh": "最大子矩阵",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/max-submatrix-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "max-sum-of-a-pair-with-equal-sum-of-digits",
+    "frontendDisplayId": "2342",
+    "titleEn": "Max Sum of a Pair With Equal Sum of Digits",
+    "titleZh": "数位和相等数对的最大和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/max-sum-of-a-pair-with-equal-sum-of-digits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "max-sum-of-rectangle-no-larger-than-k",
+    "frontendDisplayId": "363",
+    "titleEn": "Max Sum of Rectangle No Larger Than K",
+    "titleZh": "矩形区域不超过 K 的最大数值和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Matrix",
+      "Ordered Set",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "矩阵",
+      "有序集合",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/max-sum-of-rectangle-no-larger-than-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "max-value-of-equation",
+    "frontendDisplayId": "1499",
+    "titleEn": "Max Value of Equation",
+    "titleZh": "满足不等式的最大值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Monotonic Queue",
+      "Queue",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "单调队列",
+      "队列",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/max-value-of-equation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximal-network-rank",
+    "frontendDisplayId": "1615",
+    "titleEn": "Maximal Network Rank",
+    "titleZh": "最大网络秩",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximal-network-rank/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximal-rectangle",
+    "frontendDisplayId": "85",
+    "titleEn": "Maximal Rectangle",
+    "titleZh": "最大矩形",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximal-rectangle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximal-score-after-applying-k-operations",
+    "frontendDisplayId": "2530",
+    "titleEn": "Maximal Score After Applying K Operations",
+    "titleZh": "执行 K 次操作后的最大分数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximal-score-after-applying-k-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximal-square",
+    "frontendDisplayId": "221",
+    "titleEn": "Maximal Square",
+    "titleZh": "最大正方形",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximal-square/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-active-section-with-trade-i",
+    "frontendDisplayId": "3499",
+    "titleEn": "Maximize Active Section with Trade I",
+    "titleZh": "操作后最大活跃区段数 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Enumeration",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-active-section-with-trade-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-active-section-with-trade-ii",
+    "frontendDisplayId": "3501",
+    "titleEn": "Maximize Active Section with Trade II",
+    "titleZh": "操作后最大活跃区段数 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Segment Tree",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "线段树",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-active-section-with-trade-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-alternating-sum-using-swaps",
+    "frontendDisplayId": "3695",
+    "titleEn": "Maximize Alternating Sum Using Swaps",
+    "titleZh": "交换元素后的最大交替和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-alternating-sum-using-swaps/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-amount-after-two-days-of-conversions",
+    "frontendDisplayId": "3387",
+    "titleEn": "Maximize Amount After Two Days of Conversions",
+    "titleZh": "两天自由外汇交易后的最大货币数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-amount-after-two-days-of-conversions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-area-of-square-hole-in-grid",
+    "frontendDisplayId": "2943",
+    "titleEn": "Maximize Area of Square Hole in Grid",
+    "titleZh": "最大化网格图中正方形空洞的面积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-area-of-square-hole-in-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-consecutive-elements-in-an-array-after-modification",
+    "frontendDisplayId": "3041",
+    "titleEn": "Maximize Consecutive Elements in an Array After Modification",
+    "titleZh": "修改数组后最大化数组中的连续元素数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-consecutive-elements-in-an-array-after-modification/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-count-of-distinct-primes-after-split",
+    "frontendDisplayId": "3569",
+    "titleEn": "Maximize Count of Distinct Primes After Split",
+    "titleZh": "分割数组后不同质数的最大数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Math",
+      "Number Theory",
+      "Ordered Set",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "数学",
+      "数论",
+      "有序集合",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-count-of-distinct-primes-after-split/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-cyclic-partition-score",
+    "frontendDisplayId": "3743",
+    "titleEn": "Maximize Cyclic Partition Score",
+    "titleZh": "循环划分的最大得分",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-cyclic-partition-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-distance-to-closest-person",
+    "frontendDisplayId": "849",
+    "titleEn": "Maximize Distance to Closest Person",
+    "titleZh": "到最近的人的最大距离",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-distance-to-closest-person/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-expression-of-three-elements",
+    "frontendDisplayId": "3745",
+    "titleEn": "Maximize Expression of Three Elements",
+    "titleZh": "三元素表达式的最大值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-expression-of-three-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-fixed-points-after-deletions",
+    "frontendDisplayId": "3920",
+    "titleEn": "Maximize Fixed Points After Deletions",
+    "titleZh": "删除元素后最大固定点数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "Array",
+      "Binary Search",
+      "Sorting"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-fixed-points-after-deletions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-greatness-of-an-array",
+    "frontendDisplayId": "2592",
+    "titleEn": "Maximize Greatness of an Array",
+    "titleZh": "最大化数组的伟大值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-greatness-of-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximize-grid-happiness",
+    "frontendDisplayId": "1659",
+    "titleEn": "Maximize Grid Happiness",
+    "titleZh": "最大化网格幸福感",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "记忆化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximize-grid-happiness/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-065",
+    "claimedAt": "2026-07-10T04:17:32.997966+00:00",
+    "completedAt": null
+  }
+]

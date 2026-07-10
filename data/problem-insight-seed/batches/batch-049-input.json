@@ -1,0 +1,700 @@
+[
+  {
+    "slug": "find-x-sum-of-all-k-long-subarrays-ii",
+    "frontendDisplayId": "3321",
+    "titleEn": "Find X-Sum of All K-Long Subarrays II",
+    "titleZh": "计算子数组的 x-sum II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "堆（优先队列）",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-x-sum-of-all-k-long-subarrays-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-x-value-of-array-i",
+    "frontendDisplayId": "3524",
+    "titleEn": "Find X Value of Array I",
+    "titleZh": "求出数组的 X 值 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-x-value-of-array-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-x-value-of-array-ii",
+    "frontendDisplayId": "3525",
+    "titleEn": "Find X Value of Array II",
+    "titleZh": "求出数组的 X 值 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-x-value-of-array-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-xor-beauty-of-array",
+    "frontendDisplayId": "2527",
+    "titleEn": "Find Xor-Beauty of Array",
+    "titleZh": "查询数组异或美丽值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-xor-beauty-of-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-xor-sum-of-all-pairs-bitwise-and",
+    "frontendDisplayId": "1835",
+    "titleEn": "Find XOR Sum of All Pairs Bitwise AND",
+    "titleZh": "所有数对按位与结果的异或和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-xor-sum-of-all-pairs-bitwise-and/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-zombie-sessions",
+    "frontendDisplayId": "3673",
+    "titleEn": "Find Zombie Sessions",
+    "titleZh": "查找僵尸会话",
+    "difficulty": "HARD",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-zombie-sessions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "finding-3-digit-even-numbers",
+    "frontendDisplayId": "2094",
+    "titleEn": "Finding 3-Digit Even Numbers",
+    "titleZh": "找出 3 位偶数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Hash Table",
+      "Recursion",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "哈希表",
+      "递归",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/finding-3-digit-even-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "finding-mk-average",
+    "frontendDisplayId": "1825",
+    "titleEn": "Finding MK Average",
+    "titleZh": "求出 MK 平均值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Data Stream",
+      "Design",
+      "Heap (Priority Queue)",
+      "Ordered Set",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "数据流",
+      "设计",
+      "堆（优先队列）",
+      "有序集合",
+      "队列"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/finding-mk-average/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "finding-pairs-with-a-certain-sum",
+    "frontendDisplayId": "1865",
+    "titleEn": "Finding Pairs With a Certain Sum",
+    "titleZh": "找出和为指定值的下标对",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/finding-pairs-with-a-certain-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "finding-the-users-active-minutes",
+    "frontendDisplayId": "1817",
+    "titleEn": "Finding the Users Active Minutes",
+    "titleZh": "查找用户活跃分钟数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/finding-the-users-active-minutes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "finish-time-of-tasks-i",
+    "frontendDisplayId": "3965",
+    "titleEn": "Finish Time of Tasks I",
+    "titleZh": "任务完成时间 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/finish-time-of-tasks-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "first-bad-version",
+    "frontendDisplayId": "278",
+    "titleEn": "First Bad Version",
+    "titleZh": "第一个错误的版本",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Interactive"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "交互"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/first-bad-version/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "first-common-ancestor-lcci",
+    "frontendDisplayId": "面试题 04.08",
+    "titleEn": null,
+    "titleZh": "首个共同祖先",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/first-common-ancestor-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "first-completely-painted-row-or-column",
+    "frontendDisplayId": "2661",
+    "titleEn": "First Completely Painted Row or Column",
+    "titleZh": "找出叠涂元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/first-completely-painted-row-or-column/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "first-day-where-you-have-been-in-all-the-rooms",
+    "frontendDisplayId": "1997",
+    "titleEn": "First Day Where You Have Been in All the Rooms",
+    "titleZh": "访问完所有房间的第一天",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/first-day-where-you-have-been-in-all-the-rooms/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "first-element-with-unique-frequency",
+    "frontendDisplayId": "3843",
+    "titleEn": "First Element with Unique Frequency",
+    "titleZh": "频率唯一的第一个元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/first-element-with-unique-frequency/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "first-letter-capitalization-ii",
+    "frontendDisplayId": "3374",
+    "titleEn": "First Letter Capitalization II",
+    "titleZh": "首字母大写 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/first-letter-capitalization-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "first-letter-to-appear-twice",
+    "frontendDisplayId": "2351",
+    "titleEn": "First Letter to Appear Twice",
+    "titleZh": "第一个出现两次的字母",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/first-letter-to-appear-twice/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "first-matching-character-from-both-ends",
+    "frontendDisplayId": "3884",
+    "titleEn": "First Matching Character From Both Ends",
+    "titleZh": "双端字符匹配",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/first-matching-character-from-both-ends/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "first-missing-positive",
+    "frontendDisplayId": "41",
+    "titleEn": "First Missing Positive",
+    "titleZh": "缺失的第一个正数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/first-missing-positive/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "first-unique-character-in-a-string",
+    "frontendDisplayId": "387",
+    "titleEn": "First Unique Character in a String",
+    "titleZh": "字符串中的第一个唯一字符",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "Queue",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "队列",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/first-unique-character-in-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "first-unique-even-element",
+    "frontendDisplayId": "3866",
+    "titleEn": "First Unique Even Element",
+    "titleZh": "找到第一个唯一偶数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/first-unique-even-element/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fix-names-in-a-table",
+    "frontendDisplayId": "1667",
+    "titleEn": "Fix Names in a Table",
+    "titleZh": "修复表中的名字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/fix-names-in-a-table/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fizz-buzz",
+    "frontendDisplayId": "412",
+    "titleEn": "Fizz Buzz",
+    "titleZh": "Fizz Buzz",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/fizz-buzz/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fizz-buzz-multithreaded",
+    "frontendDisplayId": "1195",
+    "titleEn": "Fizz Buzz Multithreaded",
+    "titleZh": "多线程 Fizz Buzz",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Concurrency"
+    ],
+    "tagLabelsZh": [
+      "多线程"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/fizz-buzz-multithreaded/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "flatten-a-multilevel-doubly-linked-list",
+    "frontendDisplayId": "430",
+    "titleEn": "Flatten a Multilevel Doubly Linked List",
+    "titleZh": "扁平化多级双向链表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Doubly-Linked List",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "双向链表",
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/flatten-a-multilevel-doubly-linked-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "flatten-binary-tree-to-linked-list",
+    "frontendDisplayId": "114",
+    "titleEn": "Flatten Binary Tree to Linked List",
+    "titleZh": "二叉树展开为链表",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Linked List",
+      "Stack",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "链表",
+      "栈",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/flatten-binary-tree-to-linked-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "flatten-deeply-nested-array",
+    "frontendDisplayId": "2625",
+    "titleEn": "Flatten Deeply Nested Array",
+    "titleZh": "扁平化嵌套数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/flatten-deeply-nested-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "flatten-nested-list-iterator",
+    "frontendDisplayId": "341",
+    "titleEn": "Flatten Nested List Iterator",
+    "titleZh": "扁平化嵌套列表迭代器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Design",
+      "Iterator",
+      "Queue",
+      "Stack",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "设计",
+      "迭代器",
+      "队列",
+      "栈",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/flatten-nested-list-iterator/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "flip-binary-tree-to-match-preorder-traversal",
+    "frontendDisplayId": "971",
+    "titleEn": "Flip Binary Tree To Match Preorder Traversal",
+    "titleZh": "翻转二叉树以匹配先序遍历",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/flip-binary-tree-to-match-preorder-traversal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-049",
+    "claimedAt": "2026-07-10T03:39:15.046630+00:00",
+    "completedAt": null
+  }
+]

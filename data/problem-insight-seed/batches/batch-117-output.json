@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "sum-of-digits-in-base-k",
+    "reasonEN": "An easy math problem centered on repeated base conversion; extracting remainders and updating the quotient reinforces the fundamental digit-decomposition pattern.",
+    "reasonZH": "这道简单数学题围绕重复进制转换；提取余数并更新商，可巩固基础的数位分解模式。"
+  },
+  {
+    "slug": "sum-of-digits-of-string-after-convert",
+    "reasonEN": "This easy string-simulation task chains character conversion with repeated digit aggregation; it trains precise multi-stage transformations and iterative state updates.",
+    "reasonZH": "这道简单字符串模拟题串联字符转换与重复数位求和；它训练精确的多阶段变换和迭代状态更新。"
+  },
+  {
+    "slug": "sum-of-distances",
+    "reasonEN": "A medium array problem that groups equal values and accumulates positional distances; prefix sums over prior indices turn repeated pairwise work into linear scans.",
+    "reasonZH": "这道中等数组题按相同值分组并累积位置距离；对已出现下标使用前缀和，可将重复的成对计算降为线性扫描。"
+  },
+  {
+    "slug": "sum-of-distances-in-tree",
+    "reasonEN": "A hard tree rerooting-DP problem that first aggregates subtree information and then propagates answers outward; it is a landmark exercise in transferring global tree metrics across roots.",
+    "reasonZH": "这是一道困难的树形换根 DP 题，先聚合子树信息再向外传递答案；它是掌握全局树指标随根转移的里程碑练习。"
+  },
+  {
+    "slug": "sum-of-elements-with-frequency-divisible-by-k",
+    "reasonEN": "An easy counting and hash-table problem that separates frequency collection from final aggregation; it reinforces using modular conditions to filter grouped data cleanly.",
+    "reasonZH": "这道简单计数哈希题将频次收集与最终聚合分离；它训练用模条件清晰筛选分组数据。"
+  },
+  {
+    "slug": "sum-of-even-numbers-after-queries",
+    "reasonEN": "This medium array simulation problem maintains an aggregate through point updates; removing an old even contribution before adding the new one is a reusable incremental-update technique.",
+    "reasonZH": "这道中等数组模拟题在单点更新中维护聚合值；先移除旧的偶数贡献再加入新的贡献，是可复用的增量更新技巧。"
+  },
+  {
+    "slug": "sum-of-floored-pairs",
+    "reasonEN": "A hard counting and prefix-sum number problem that groups quotient ranges by multiples; frequency prefix sums make large-scale floor-division aggregation tractable.",
+    "reasonZH": "这是一道困难的计数前缀和数论题，按倍数对商的取值范围分组；频次数组前缀和让大规模整除聚合变得可行。"
+  },
+  {
+    "slug": "sum-of-gcd-of-formed-pairs",
+    "reasonEN": "A medium number-theory pairing problem combining sorting and two pointers; organizing values before forming pairs develops practical reasoning about how pairing affects GCD totals.",
+    "reasonZH": "这道中等数论配对题结合排序与双指针；在形成数对前组织数值，可训练配对方式如何影响最大公约数总和的推理。"
+  },
+  {
+    "slug": "sum-of-good-numbers",
+    "reasonEN": "An easy array scanning problem based on local eligibility checks; handling nearby boundaries correctly makes it useful practice for conditional aggregation.",
+    "reasonZH": "这道简单数组扫描题基于局部条件筛选元素；正确处理相邻边界，是条件聚合的有效练习。"
+  },
+  {
+    "slug": "sum-of-good-subsequences",
+    "reasonEN": "This hard dynamic-programming problem aggregates counts and sums by value state; updating compatible neighboring states develops a powerful compressed-DP approach for subsequences.",
+    "reasonZH": "这道困难动态规划题按数值状态聚合数量与总和；更新可兼容的相邻状态，训练子序列问题中强大的压缩 DP 方法。"
+  },
+  {
+    "slug": "sum-of-imbalance-numbers-of-all-subarrays",
+    "reasonEN": "A hard array-enumeration problem that tracks how newly included values alter a subarray metric; incremental set or hash maintenance is valuable practice for aggregate-over-all-subarrays reasoning.",
+    "reasonZH": "这是一道困难的数组枚举题，追踪新加入元素如何改变子数组指标；用集合或哈希增量维护，是训练全子数组聚合推理的好题。"
+  },
+  {
+    "slug": "sum-of-k-digit-numbers-in-a-range",
+    "reasonEN": "A hard combinatorics and number-theory problem that decomposes a range by digit structure; combining counting formulas with range splitting builds advanced numerical aggregation skills.",
+    "reasonZH": "这是一道困难的组合数学数论题，按数位结构分解区间；结合计数公式与区间拆分，可训练进阶数值聚合能力。"
+  },
+  {
+    "slug": "sum-of-k-mirror-numbers",
+    "reasonEN": "A hard math-enumeration problem that constructs palindromic candidates and checks representations across bases; it develops efficient candidate generation under multiple numeric constraints.",
+    "reasonZH": "这是一道困难的数学枚举题，需要构造回文候选并检查多种进制表示；它训练多重数值约束下的高效候选生成。"
+  },
+  {
+    "slug": "sum-of-k-subarrays-with-length-at-least-m",
+    "reasonEN": "A medium prefix-sum DP problem for selecting constrained segments; preserving the best prior state while enforcing minimum length is key practice for sequence partition optimization.",
+    "reasonZH": "这道中等前缀和 DP 题用于选择受约束的区间；在满足最小长度的同时保留最优历史状态，是序列分割优化的关键训练。"
+  },
+  {
+    "slug": "sum-of-largest-prime-substrings",
+    "reasonEN": "A medium string and number-theory problem that extracts and ranks prime-valued substrings; integrating substring parsing with primality validation sharpens numeric text processing.",
+    "reasonZH": "这道中等字符串数论题提取并排序质数子串；结合子串解析与质数校验，可强化数值文本处理能力。"
+  },
+  {
+    "slug": "sum-of-left-leaves",
+    "reasonEN": "An easy tree traversal problem that distinguishes a structural role from a node value; carrying left-child context through DFS or BFS builds precise tree-classification habits.",
+    "reasonZH": "这道简单树遍历题区分节点的结构角色与节点值；在 DFS 或 BFS 中携带左子节点上下文，可建立精确的树节点分类习惯。"
+  },
+  {
+    "slug": "sum-of-matrix-after-queries",
+    "reasonEN": "This medium matrix-update problem processes assignments in reverse to avoid overwritten work; tracking finalized rows and columns with hash sets demonstrates an effective offline-query pattern.",
+    "reasonZH": "这道中等矩阵更新题逆序处理赋值以避免被覆盖的重复工作；用哈希集合记录已确定的行列，展示了高效的离线查询模式。"
+  },
+  {
+    "slug": "sum-of-mutated-array-closest-to-target",
+    "reasonEN": "A medium array optimization problem that binary-searches a monotonic cap value; comparing neighboring candidates after the search is valuable practice for closest-target objectives.",
+    "reasonZH": "这道中等数组优化题对单调的截断值进行二分；搜索后比较相邻候选，是处理最接近目标问题的重要训练。"
+  },
+  {
+    "slug": "sum-of-nodes-with-even-valued-grandparent",
+    "reasonEN": "A medium tree DFS problem that carries ancestor context through recursion; tracking a fixed-depth property cleanly prepares learners for richer path-dependent tree queries.",
+    "reasonZH": "这道中等树形 DFS 题在递归中携带祖先上下文；清晰追踪固定层数的属性，可为更复杂的路径依赖树查询打基础。"
+  },
+  {
+    "slug": "sum-of-number-and-its-reverse",
+    "reasonEN": "A medium math-enumeration problem that tests candidates through digit reversal; it reinforces bounded search and reliable arithmetic transformation routines.",
+    "reasonZH": "这道中等数学枚举题通过数位反转检验候选；它训练有界搜索和可靠的算术变换实现。"
+  },
+  {
+    "slug": "sum-of-numbers-with-units-digit-k",
+    "reasonEN": "This medium math and enumeration problem exploits repeating units-digit cycles; recognizing the small modular search space turns an apparent construction problem into concise feasibility analysis.",
+    "reasonZH": "这道中等数学枚举题利用个位数字的循环规律；识别很小的模搜索空间，可将表面构造题转化为简洁的可行性分析。"
+  },
+  {
+    "slug": "sum-of-perfect-square-ancestors",
+    "reasonEN": "A hard tree and number-theory problem that combines DFS with ancestor-state counting; efficiently identifying square-valued ancestors develops layered structural aggregation skills.",
+    "reasonZH": "这是一道困难的树与数论题，结合 DFS 和祖先状态计数；高效识别平方数祖先，训练分层结构聚合能力。"
+  },
+  {
+    "slug": "sum-of-prefix-scores-of-strings",
+    "reasonEN": "A hard trie and counting problem that accumulates prefix frequencies during insertion; reusing those counts for scoring is core practice for scalable shared-prefix queries.",
+    "reasonZH": "这道困难字典树计数题在插入时累积前缀频次；复用这些频次计算得分，是可扩展公共前缀查询的核心训练。"
+  },
+  {
+    "slug": "sum-of-primes-between-number-and-its-reverse",
+    "reasonEN": "A medium math and number-theory problem that combines digit reversal with prime-range aggregation; it provides focused practice in composing elementary numerical predicates.",
+    "reasonZH": "这道中等数学数论题结合数位反转与质数区间聚合；它可集中训练组合基础数值判定条件的能力。"
+  },
+  {
+    "slug": "sum-of-root-to-leaf-binary-numbers",
+    "reasonEN": "An easy tree DFS problem that carries a rolling binary value down each path; shift-and-append accumulation is a clean introduction to path-state propagation.",
+    "reasonZH": "这道简单树形 DFS 题沿每条路径维护滚动二进制值；左移追加的累积方式，是路径状态传递的清晰入门。"
+  },
+  {
+    "slug": "sum-of-scores-of-built-strings",
+    "reasonEN": "A hard string-matching problem that aggregates prefix-suffix similarity lengths; using efficient LCP techniques such as rolling hashes or suffix structures develops advanced matching intuition.",
+    "reasonZH": "这是一道困难的字符串匹配题，需要聚合前后缀相似长度；使用滚动哈希或后缀结构等高效 LCP 技术，可培养进阶匹配直觉。"
+  },
+  {
+    "slug": "sum-of-sortable-integers",
+    "reasonEN": "A hard array and math-enumeration problem that studies how ordering operations affect integer properties; systematic candidate classification is valuable practice for transformation-based counting.",
+    "reasonZH": "这是一道困难的数组数学枚举题，研究排序操作如何影响整数性质；系统分类候选，是变换型计数问题的重要训练。"
+  },
+  {
+    "slug": "sum-of-square-numbers",
+    "reasonEN": "A medium math problem with binary-search and two-pointer solutions; moving bounds according to the current square sum reinforces monotonic search over numeric pairs.",
+    "reasonZH": "这道中等数学题可用二分或双指针解决；按当前平方和移动边界，可训练数值对上的单调搜索。"
+  },
+  {
+    "slug": "sum-of-squares-of-special-elements",
+    "reasonEN": "An easy array-enumeration problem driven by index divisibility; it reinforces careful conversion between one-based conditions and zero-based implementation.",
+    "reasonZH": "这道简单数组枚举题由下标整除关系驱动；它训练在一基条件和零基实现之间进行严谨转换。"
+  },
+  {
+    "slug": "sum-of-subarray-minimums",
+    "reasonEN": "A medium monotonic-stack cornerstone that counts each element's contribution as a subarray minimum; resolving equal-value boundaries consistently is essential for linear-time aggregate optimization.",
+    "reasonZH": "作为中等单调栈核心题，它计算每个元素作为子数组最小值的贡献；一致处理相等值边界，是线性时间聚合优化的关键。"
+  }
+]

@@ -1,0 +1,718 @@
+[
+  {
+    "slug": "find-the-least-frequent-digit",
+    "frontendDisplayId": "3663",
+    "titleEn": "Find The Least Frequent Digit",
+    "titleZh": "出现频率最低的数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-least-frequent-digit/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-length-of-the-longest-common-prefix",
+    "frontendDisplayId": "3043",
+    "titleEn": "Find the Length of the Longest Common Prefix",
+    "titleZh": "最长公共前缀的长度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-length-of-the-longest-common-prefix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-lexicographically-largest-string-from-the-box-i",
+    "frontendDisplayId": "3403",
+    "titleEn": "Find the Lexicographically Largest String From the Box I",
+    "titleZh": "从盒子中找出字典序最大的字符串 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Enumeration",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-lexicographically-largest-string-from-the-box-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-lexicographically-smallest-valid-sequence",
+    "frontendDisplayId": "3302",
+    "titleEn": "Find the Lexicographically Smallest Valid Sequence",
+    "titleZh": "字典序最小的合法序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Greedy",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "贪心",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-lexicographically-smallest-valid-sequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-longest-balanced-substring-of-a-binary-string",
+    "frontendDisplayId": "2609",
+    "titleEn": "Find the Longest Balanced Substring of a Binary String",
+    "titleZh": "最长平衡子字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-longest-balanced-substring-of-a-binary-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-longest-equal-subarray",
+    "frontendDisplayId": "2831",
+    "titleEn": "Find the Longest Equal Subarray",
+    "titleZh": "找出最长等值子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Hash Table",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "哈希表",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-longest-equal-subarray/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-longest-semi-repetitive-substring",
+    "frontendDisplayId": "2730",
+    "titleEn": "Find the Longest Semi-Repetitive Substring",
+    "titleZh": "找到最长的半重复子字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-longest-semi-repetitive-substring/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-longest-substring-containing-vowels-in-even-counts",
+    "frontendDisplayId": "1371",
+    "titleEn": "Find the Longest Substring Containing Vowels in Even Counts",
+    "titleZh": "每个元音包含偶数次的最长子字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Hash Table",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "哈希表",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-longest-substring-containing-vowels-in-even-counts/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-longest-valid-obstacle-course-at-each-position",
+    "frontendDisplayId": "1964",
+    "titleEn": "Find the Longest Valid Obstacle Course at Each Position",
+    "titleZh": "找出到每个位置为止最长的有效障碍赛跑路线",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-longest-valid-obstacle-course-at-each-position/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-losers-of-the-circular-game",
+    "frontendDisplayId": "2682",
+    "titleEn": "Find the Losers of the Circular Game",
+    "titleZh": "找出转圈游戏输家",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-losers-of-the-circular-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-maximum-achievable-number",
+    "frontendDisplayId": "2769",
+    "titleEn": "Find the Maximum Achievable Number",
+    "titleZh": "找出最大的可达成数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-maximum-achievable-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-maximum-divisibility-score",
+    "frontendDisplayId": "2644",
+    "titleEn": "Find the Maximum Divisibility Score",
+    "titleZh": "找出可整除性得分最大的整数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-maximum-divisibility-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-maximum-factor-score-of-array",
+    "frontendDisplayId": "3334",
+    "titleEn": "Find the Maximum Factor Score of Array",
+    "titleZh": "数组的最大因子得分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-maximum-factor-score-of-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-maximum-length-of-a-good-subsequence-i",
+    "frontendDisplayId": "3176",
+    "titleEn": "Find the Maximum Length of a Good Subsequence I",
+    "titleZh": "求出最长好子序列 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-maximum-length-of-a-good-subsequence-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-maximum-length-of-a-good-subsequence-ii",
+    "frontendDisplayId": "3177",
+    "titleEn": "Find the Maximum Length of a Good Subsequence II",
+    "titleZh": "求出最长好子序列 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-maximum-length-of-a-good-subsequence-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-maximum-length-of-valid-subsequence-i",
+    "frontendDisplayId": "3201",
+    "titleEn": "Find the Maximum Length of Valid Subsequence I",
+    "titleZh": "找出有效子序列的最大长度 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-maximum-length-of-valid-subsequence-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-maximum-length-of-valid-subsequence-ii",
+    "frontendDisplayId": "3202",
+    "titleEn": "Find the Maximum Length of Valid Subsequence II",
+    "titleZh": "找出有效子序列的最大长度 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-maximum-length-of-valid-subsequence-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-maximum-number-of-elements-in-subset",
+    "frontendDisplayId": "3020",
+    "titleEn": "Find the Maximum Number of Elements in Subset",
+    "titleZh": "子集中元素的最大数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-maximum-number-of-elements-in-subset/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-maximum-number-of-fruits-collected",
+    "frontendDisplayId": "3363",
+    "titleEn": "Find the Maximum Number of Fruits Collected",
+    "titleZh": "最多可收集的水果数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-maximum-number-of-fruits-collected/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-maximum-number-of-marked-indices",
+    "frontendDisplayId": "2576",
+    "titleEn": "Find the Maximum Number of Marked Indices",
+    "titleZh": "求出最多标记下标",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-maximum-number-of-marked-indices/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-maximum-sequence-value-of-array",
+    "frontendDisplayId": "3287",
+    "titleEn": "Find the Maximum Sequence Value of Array",
+    "titleZh": "求出数组中最大序列值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-maximum-sequence-value-of-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-maximum-sum-of-node-values",
+    "frontendDisplayId": "3068",
+    "titleEn": "Find the Maximum Sum of Node Values",
+    "titleZh": "最大节点价值之和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Dynamic Programming",
+      "Greedy",
+      "Sorting",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "动态规划",
+      "贪心",
+      "排序",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-maximum-sum-of-node-values/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-median-of-the-uniqueness-array",
+    "frontendDisplayId": "3134",
+    "titleEn": "Find the Median of the Uniqueness Array",
+    "titleZh": "找出唯一性数组的中位数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Hash Table",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "哈希表",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-median-of-the-uniqueness-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-middle-index-in-array",
+    "frontendDisplayId": "1991",
+    "titleEn": "Find the Middle Index in Array",
+    "titleZh": "找到数组的中间位置",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-middle-index-in-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-minimum-amount-of-time-to-brew-potions",
+    "frontendDisplayId": "3494",
+    "titleEn": "Find the Minimum Amount of Time to Brew Potions",
+    "titleZh": "酿造药水需要的最少总时间",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-minimum-amount-of-time-to-brew-potions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-minimum-and-maximum-number-of-nodes-between-critical-points",
+    "frontendDisplayId": "2058",
+    "titleEn": "Find the Minimum and Maximum Number of Nodes Between Critical Points",
+    "titleZh": "找出临界点之间的最小和最大距离",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "链表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-minimum-and-maximum-number-of-nodes-between-critical-points/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-minimum-area-to-cover-all-ones-i",
+    "frontendDisplayId": "3195",
+    "titleEn": "Find the Minimum Area to Cover All Ones I",
+    "titleZh": "包含所有 1 的最小矩形面积 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-minimum-area-to-cover-all-ones-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-minimum-area-to-cover-all-ones-ii",
+    "frontendDisplayId": "3197",
+    "titleEn": "Find the Minimum Area to Cover All Ones II",
+    "titleZh": "包含所有 1 的最小矩形面积 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-minimum-area-to-cover-all-ones-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-minimum-cost-array-permutation",
+    "frontendDisplayId": "3149",
+    "titleEn": "Find the Minimum Cost Array Permutation",
+    "titleZh": "找出分数最低的排列",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-minimum-cost-array-permutation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-the-minimum-number-of-fibonacci-numbers-whose-sum-is-k",
+    "frontendDisplayId": "1414",
+    "titleEn": "Find the Minimum Number of Fibonacci Numbers Whose Sum Is K",
+    "titleZh": "和为 K 的最少斐波那契数字数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-the-minimum-number-of-fibonacci-numbers-whose-sum-is-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-046",
+    "claimedAt": "2026-07-10T03:08:10.696562+00:00",
+    "completedAt": null
+  }
+]

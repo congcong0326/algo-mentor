@@ -1,0 +1,704 @@
+[
+  {
+    "slug": "find-and-replace-in-string",
+    "frontendDisplayId": "833",
+    "titleEn": "Find And Replace in String",
+    "titleZh": "字符串中的查找与替换",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-and-replace-in-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-and-replace-pattern",
+    "frontendDisplayId": "890",
+    "titleEn": "Find and Replace Pattern",
+    "titleZh": "查找和替换模式",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-and-replace-pattern/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-array-given-subset-sums",
+    "frontendDisplayId": "1982",
+    "titleEn": "Find Array Given Subset Sums",
+    "titleZh": "从子集的和还原数组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-array-given-subset-sums/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-beautiful-indices-in-the-given-array-i",
+    "frontendDisplayId": "3006",
+    "titleEn": "Find Beautiful Indices in the Given Array I",
+    "titleZh": "找出数组中的美丽下标 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Hash Function",
+      "Rolling Hash",
+      "String",
+      "String Matching",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "哈希函数",
+      "滚动哈希",
+      "字符串",
+      "字符串匹配",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-beautiful-indices-in-the-given-array-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-beautiful-indices-in-the-given-array-ii",
+    "frontendDisplayId": "3008",
+    "titleEn": "Find Beautiful Indices in the Given Array II",
+    "titleZh": "找出数组中的美丽下标 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Hash Function",
+      "Rolling Hash",
+      "String",
+      "String Matching",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "哈希函数",
+      "滚动哈希",
+      "字符串",
+      "字符串匹配",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-beautiful-indices-in-the-given-array-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-books-with-no-available-copies",
+    "frontendDisplayId": "3570",
+    "titleEn": "Find Books with No Available Copies",
+    "titleZh": "查找无可用副本的书籍",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-books-with-no-available-copies/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-books-with-polarized-opinions",
+    "frontendDisplayId": "3642",
+    "titleEn": "Find Books with Polarized Opinions",
+    "titleZh": "查找有两极分化观点的书籍",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-books-with-polarized-opinions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-bottom-left-tree-value",
+    "frontendDisplayId": "513",
+    "titleEn": "Find Bottom Left Tree Value",
+    "titleZh": "找树左下角的值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-bottom-left-tree-value/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-building-where-alice-and-bob-can-meet",
+    "frontendDisplayId": "2940",
+    "titleEn": "Find Building Where Alice and Bob Can Meet",
+    "titleZh": "找到 Alice 和 Bob 可以相遇的建筑",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Binary Search",
+      "Heap (Priority Queue)",
+      "Monotonic Stack",
+      "Segment Tree",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "二分查找",
+      "堆（优先队列）",
+      "单调栈",
+      "线段树",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-building-where-alice-and-bob-can-meet/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-category-recommendation-pairs",
+    "frontendDisplayId": "3554",
+    "titleEn": "Find Category Recommendation Pairs",
+    "titleZh": "查找类别推荐对",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-category-recommendation-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-center-of-star-graph",
+    "frontendDisplayId": "1791",
+    "titleEn": "Find Center of Star Graph",
+    "titleZh": "找出星型图的中心节点",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-center-of-star-graph/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-champion-i",
+    "frontendDisplayId": "2923",
+    "titleEn": "Find Champion I",
+    "titleZh": "找到冠军 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-champion-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-champion-ii",
+    "frontendDisplayId": "2924",
+    "titleEn": "Find Champion II",
+    "titleZh": "找到冠军 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-champion-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-churn-risk-customers",
+    "frontendDisplayId": "3716",
+    "titleEn": "Find Churn Risk Customers",
+    "titleZh": "寻找流失风险客户",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-churn-risk-customers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-closest-lcci",
+    "frontendDisplayId": "面试题 17.11",
+    "titleEn": null,
+    "titleZh": "单词距离",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/find-closest-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-closest-node-to-given-two-nodes",
+    "frontendDisplayId": "2359",
+    "titleEn": "Find Closest Node to Given Two Nodes",
+    "titleZh": "找到离给定两个节点最近的节点",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-closest-node-to-given-two-nodes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-closest-number-to-zero",
+    "frontendDisplayId": "2239",
+    "titleEn": "Find Closest Number to Zero",
+    "titleZh": "找到最接近 0 的数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-closest-number-to-zero/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-closest-person",
+    "frontendDisplayId": "3516",
+    "titleEn": "Find Closest Person",
+    "titleZh": "找到最近的人",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-closest-person/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-common-characters",
+    "frontendDisplayId": "1002",
+    "titleEn": "Find Common Characters",
+    "titleZh": "查找共用字符",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-common-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-common-elements-between-two-arrays",
+    "frontendDisplayId": "2956",
+    "titleEn": "Find Common Elements Between Two Arrays",
+    "titleZh": "找到两个数组中的公共元素",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-common-elements-between-two-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-consecutive-integers-from-a-data-stream",
+    "frontendDisplayId": "2526",
+    "titleEn": "Find Consecutive Integers from a Data Stream",
+    "titleZh": "找到数据流中的连续整数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Data Stream",
+      "Design",
+      "Hash Table",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "数据流",
+      "设计",
+      "哈希表",
+      "队列"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-consecutive-integers-from-a-data-stream/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-consistently-improving-employees",
+    "frontendDisplayId": "3580",
+    "titleEn": "Find Consistently Improving Employees",
+    "titleZh": "寻找持续进步的员工",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-consistently-improving-employees/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-covid-recovery-patients",
+    "frontendDisplayId": "3586",
+    "titleEn": "Find COVID Recovery Patients",
+    "titleZh": "寻找 COVID 康复患者",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-covid-recovery-patients/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree",
+    "frontendDisplayId": "1489",
+    "titleEn": "Find Critical and Pseudo-Critical Edges in Minimum Spanning Tree",
+    "titleZh": "找到最小生成树里的关键边和伪关键边",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Graph Theory",
+      "Minimum Spanning Tree",
+      "Sorting",
+      "Strongly Connected Component",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "图",
+      "最小生成树",
+      "排序",
+      "强连通分量",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-critical-and-pseudo-critical-edges-in-minimum-spanning-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-customer-referee",
+    "frontendDisplayId": "584",
+    "titleEn": "Find Customer Referee",
+    "titleZh": "寻找用户推荐人",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-customer-referee/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-drivers-with-improved-fuel-efficiency",
+    "frontendDisplayId": "3601",
+    "titleEn": "Find Drivers with Improved Fuel Efficiency",
+    "titleZh": "寻找燃油效率提升的驾驶员",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-drivers-with-improved-fuel-efficiency/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-duplicate-file-in-system",
+    "frontendDisplayId": "609",
+    "titleEn": "Find Duplicate File in System",
+    "titleZh": "在系统中查找重复文件",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-duplicate-file-in-system/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-duplicate-subtrees",
+    "frontendDisplayId": "652",
+    "titleEn": "Find Duplicate Subtrees",
+    "titleZh": "寻找重复的子树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-duplicate-subtrees/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-edges-in-shortest-paths",
+    "frontendDisplayId": "3123",
+    "titleEn": "Find Edges in Shortest Paths",
+    "titleZh": "最短路径中的边",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "堆（优先队列）",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-edges-in-shortest-paths/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "find-elements-in-a-contaminated-binary-tree",
+    "frontendDisplayId": "1261",
+    "titleEn": "Find Elements in a Contaminated Binary Tree",
+    "titleZh": "在受污染的二叉树中查找元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Design",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "设计",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/find-elements-in-a-contaminated-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-041",
+    "claimedAt": "2026-07-10T03:01:37.966228+00:00",
+    "completedAt": null
+  }
+]

@@ -1,0 +1,678 @@
+[
+  {
+    "slug": "diving-board-lcci",
+    "frontendDisplayId": "面试题 16.11",
+    "titleEn": null,
+    "titleZh": "跳水板",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/diving-board-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "divisible-and-non-divisible-sums-difference",
+    "frontendDisplayId": "2894",
+    "titleEn": "Divisible and Non-divisible Sums Difference",
+    "titleZh": "分类求和并作差",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/divisible-and-non-divisible-sums-difference/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "divisor-game",
+    "frontendDisplayId": "1025",
+    "titleEn": "Divisor Game",
+    "titleZh": "除数博弈",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Brainteaser",
+      "Dynamic Programming",
+      "Game Theory",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "脑筋急转弯",
+      "动态规划",
+      "博弈",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/divisor-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "dna-pattern-recognition",
+    "frontendDisplayId": "3475",
+    "titleEn": "DNA Pattern Recognition",
+    "titleZh": "DNA 模式识别",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "Database"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/dna-pattern-recognition/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "domino-and-tromino-tiling",
+    "frontendDisplayId": "790",
+    "titleEn": "Domino and Tromino Tiling",
+    "titleZh": "多米诺和托米诺平铺",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/domino-and-tromino-tiling/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "dota2-senate",
+    "frontendDisplayId": "649",
+    "titleEn": "Dota2 Senate",
+    "titleZh": "Dota2 参议院",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Queue",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "队列",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/dota2-senate/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "double-a-number-represented-as-a-linked-list",
+    "frontendDisplayId": "2816",
+    "titleEn": "Double a Number Represented as a Linked List",
+    "titleZh": "翻倍以链表形式表示的数字",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Math",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "数学",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/double-a-number-represented-as-a-linked-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "double-modular-exponentiation",
+    "frontendDisplayId": "2961",
+    "titleEn": "Double Modular Exponentiation",
+    "titleZh": "双模幂运算",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/double-modular-exponentiation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "draw-line-lcci",
+    "frontendDisplayId": "面试题 05.08",
+    "titleEn": null,
+    "titleZh": "绘制直线",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/draw-line-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "drop-duplicate-rows",
+    "frontendDisplayId": "2882",
+    "titleEn": "Drop Duplicate Rows",
+    "titleZh": "删去重复的行",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/drop-duplicate-rows/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "drop-missing-data",
+    "frontendDisplayId": "2883",
+    "titleEn": "Drop Missing Data",
+    "titleZh": "删去丢失的数据",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/drop-missing-data/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "dui-cheng-de-er-cha-shu-lcof",
+    "frontendDisplayId": "LCR 145",
+    "titleEn": null,
+    "titleZh": "判断对称二叉树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/dui-cheng-de-er-cha-shu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "dui-lie-de-zui-da-zhi-lcof",
+    "frontendDisplayId": "LCR 184",
+    "titleEn": null,
+    "titleZh": "设计自助结算系统",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Monotonic Queue",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "单调队列",
+      "队列"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/dui-lie-de-zui-da-zhi-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "dungeon-game",
+    "frontendDisplayId": "174",
+    "titleEn": "Dungeon Game",
+    "titleZh": "地下城游戏",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/dungeon-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "duplicate-emails",
+    "frontendDisplayId": "182",
+    "titleEn": "Duplicate Emails",
+    "titleZh": "查找重复的电子邮箱",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/duplicate-emails/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "duplicate-zeros",
+    "frontendDisplayId": "1089",
+    "titleEn": "Duplicate Zeros",
+    "titleZh": "复写零",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/duplicate-zeros/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "earliest-finish-time-for-land-and-water-rides-i",
+    "frontendDisplayId": "3633",
+    "titleEn": "Earliest Finish Time for Land and Water Rides I",
+    "titleZh": "最早完成陆地和水上游乐设施的时间 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/earliest-finish-time-for-land-and-water-rides-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "earliest-finish-time-for-land-and-water-rides-ii",
+    "frontendDisplayId": "3635",
+    "titleEn": "Earliest Finish Time for Land and Water Rides II",
+    "titleZh": "最早完成陆地和水上游乐设施的时间 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/earliest-finish-time-for-land-and-water-rides-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "earliest-possible-day-of-full-bloom",
+    "frontendDisplayId": "2136",
+    "titleEn": "Earliest Possible Day of Full Bloom",
+    "titleZh": "全部开花的最早一天",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/earliest-possible-day-of-full-bloom/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "earliest-second-to-mark-indices-i",
+    "frontendDisplayId": "3048",
+    "titleEn": "Earliest Second to Mark Indices I",
+    "titleZh": "标记所有下标的最早秒数 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/earliest-second-to-mark-indices-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "earliest-second-to-mark-indices-ii",
+    "frontendDisplayId": "3049",
+    "titleEn": "Earliest Second to Mark Indices II",
+    "titleZh": "标记所有下标的最早秒数 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/earliest-second-to-mark-indices-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "earliest-time-to-finish-one-task",
+    "frontendDisplayId": "3683",
+    "titleEn": "Earliest Time to Finish One Task",
+    "titleZh": "完成一个任务的最早时间",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "Array"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/earliest-time-to-finish-one-task/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "eat-pizzas",
+    "frontendDisplayId": "3457",
+    "titleEn": "Eat Pizzas!",
+    "titleZh": "吃披萨",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/eat-pizzas/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "edit-distance",
+    "frontendDisplayId": "72",
+    "titleEn": "Edit Distance",
+    "titleZh": "编辑距离",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/edit-distance/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "egg-drop-with-2-eggs-and-n-floors",
+    "frontendDisplayId": "1884",
+    "titleEn": "Egg Drop With 2 Eggs and N Floors",
+    "titleZh": "鸡蛋掉落-两枚鸡蛋",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/egg-drop-with-2-eggs-and-n-floors/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "eight-queens-lcci",
+    "frontendDisplayId": "面试题 08.12",
+    "titleEn": null,
+    "titleZh": "八皇后",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/eight-queens-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "element-appearing-more-than-25-in-sorted-array",
+    "frontendDisplayId": "1287",
+    "titleEn": "Element Appearing More Than 25% In Sorted Array",
+    "titleZh": "有序数组中出现次数超过25%的元素",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/element-appearing-more-than-25-in-sorted-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "eliminate-maximum-number-of-monsters",
+    "frontendDisplayId": "1921",
+    "titleEn": "Eliminate Maximum Number of Monsters",
+    "titleZh": "消灭怪物的最大数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/eliminate-maximum-number-of-monsters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "elimination-game",
+    "frontendDisplayId": "390",
+    "titleEn": "Elimination Game",
+    "titleZh": "消除游戏",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/elimination-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "employee-bonus",
+    "frontendDisplayId": "577",
+    "titleEn": "Employee Bonus",
+    "titleZh": "员工奖金",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/employee-bonus/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-031",
+    "claimedAt": "2026-07-10T02:23:42.333766+00:00",
+    "completedAt": null
+  }
+]

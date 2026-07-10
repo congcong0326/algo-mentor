@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "find-x-sum-of-all-k-long-subarrays-ii",
+    "reasonEN": "A hard sliding-window frequency-maintenance problem that combines hash counting with ordered heaps. It trains dynamic reclassification of elements by frequency and value, a valuable pattern for high-performance window statistics.",
+    "reasonZH": "高难度滑动窗口统计题，结合哈希计数与堆维护元素分组。它训练窗口移动时按频率和值动态调整集合，是掌握高性能区间统计的重要题型。"
+  },
+  {
+    "slug": "find-x-value-of-array-i",
+    "reasonEN": "This medium array and math problem introduces the recurrence behind the X-value definition. It emphasizes deriving a compact dynamic-programming transition instead of simulating every possibility, making it a useful foundation for the sequel.",
+    "reasonZH": "这是一道中等数组与数学题，重点在于推导 X 值定义背后的递推关系。它训练用简洁的动态规划转移替代逐项模拟，也为进阶版本打下基础。"
+  },
+  {
+    "slug": "find-x-value-of-array-ii",
+    "reasonEN": "A hard extension of the X-value recurrence that requires range-query data structures. It trains converting mathematical dependencies into segment-tree aggregates, a key upgrade from simple DP to scalable online computation.",
+    "reasonZH": "作为 X 值问题的高难进阶版，它需要用线段树维护递推所需的区间信息。该题训练把数学依赖转化为区间聚合，是从基础 DP 走向可扩展在线计算的关键练习。"
+  },
+  {
+    "slug": "find-xor-beauty-of-array",
+    "reasonEN": "This medium bit-manipulation problem rewards algebraic simplification over brute-force pair enumeration. It trains recognizing XOR cancellation laws and reducing a seemingly complex expression to an invariant, a central competitive-programming skill.",
+    "reasonZH": "这道中等位运算题考查用代数化简取代数对枚举。它训练识别异或的消去规律并将复杂表达式归约为不变量，是竞赛中常见且核心的思维技巧。"
+  },
+  {
+    "slug": "find-xor-sum-of-all-pairs-bitwise-and",
+    "reasonEN": "A hard bitwise algebra problem centered on distributing AND and XOR across pairwise combinations. It develops the ability to prove expression equivalences and collapse quadratic pair processing into linear aggregation.",
+    "reasonZH": "高难位运算代数题，核心是利用按位与和异或在数对组合中的分配规律。它训练证明表达式等价，并把二次枚举压缩为线性聚合。"
+  },
+  {
+    "slug": "find-zombie-sessions",
+    "reasonEN": "This hard session-analysis problem focuses on reconstructing meaningful activity intervals from event data. It trains careful boundary handling, state transitions, and exceptional cases, all of which transfer directly to log-processing tasks.",
+    "reasonZH": "这道高难会话分析题关注从事件数据中还原有效活动区间。它训练边界处理、状态转移与异常场景判断，对日志处理和时间线分析很有迁移价值。"
+  },
+  {
+    "slug": "finding-3-digit-even-numbers",
+    "reasonEN": "An easy enumeration and counting exercise that requires respecting digit availability, leading-zero rules, and duplicate elimination. It is a concise way to practice building valid candidates under combinatorial constraints.",
+    "reasonZH": "简单的枚举计数题，需要同时处理数字库存、前导零和去重约束。它适合训练在组合限制下构造合法候选项的基本能力。"
+  },
+  {
+    "slug": "finding-mk-average",
+    "reasonEN": "A classic hard data-stream design problem using a queue, ordered partitions, and running sums. It trains maintaining the smallest, middle, and largest portions under insertions and evictions, a demanding invariant-management exercise.",
+    "reasonZH": "经典高难数据流设计题，需要队列、有序集合分区与滚动求和协同维护。它训练在插入和淘汰时保持最小、中间、最大三部分的不变量，是很扎实的状态维护练习。"
+  },
+  {
+    "slug": "finding-pairs-with-a-certain-sum",
+    "reasonEN": "This medium design problem combines mutable arrays with frequency maps for efficient pair queries. It highlights how an update-friendly representation can turn repeated lookup operations from brute force into fast counting.",
+    "reasonZH": "中等难度的可变数组设计题，结合频次哈希表高效回答数对查询。它展示了如何选择支持更新的数据表示，将重复查找从暴力枚举优化为快速计数。"
+  },
+  {
+    "slug": "finding-the-users-active-minutes",
+    "reasonEN": "A medium hashing problem that separates distinct per-user activity from global frequency distribution. It trains grouping and deduplication before aggregation, a highly reusable pattern in analytics-style problems.",
+    "reasonZH": "这道中等哈希题要求区分用户内部的去重活跃记录与全局频次分布。它训练先分组去重、再聚合统计的流程，是数据分析类题目的通用模式。"
+  },
+  {
+    "slug": "finish-time-of-tasks-i",
+    "reasonEN": "This medium scheduling problem develops precise reasoning about task timing and execution order. It is useful for practicing simulation with explicit time-state updates and for establishing a baseline before more complex scheduling variants.",
+    "reasonZH": "中等难度的任务调度题，训练对任务时序和执行顺序进行精确推理。它适合练习显式时间状态模拟，也为更复杂的调度变体建立基础。"
+  },
+  {
+    "slug": "first-bad-version",
+    "reasonEN": "A foundational binary-search boundary problem with an external predicate. It trains choosing the correct search invariant and avoiding off-by-one errors, which are the most important details in production binary-search code.",
+    "reasonZH": "基础的二分边界题，结合外部判定接口寻找第一个满足条件的位置。它重点训练搜索不变量与边界收缩，能有效避免二分中最常见的越界错误。"
+  },
+  {
+    "slug": "first-common-ancestor-lcci",
+    "reasonEN": "A medium binary-tree DFS problem centered on propagating subtree results upward. It trains the lowest-common-ancestor recurrence and clarifies how recursive return values encode structural information.",
+    "reasonZH": "中等二叉树 DFS 题，核心是向上回传子树搜索结果。它训练最近公共祖先的递归关系，并帮助理解返回值如何承载树结构信息。"
+  },
+  {
+    "slug": "first-completely-painted-row-or-column",
+    "reasonEN": "This medium matrix-indexing problem pairs a value-to-position map with row and column counters. It teaches how preprocessing converts repeated matrix searches into constant-time updates and early completion detection.",
+    "reasonZH": "中等矩阵索引题，使用数值到坐标的映射配合行列计数器。它训练通过预处理把重复矩阵查找转为常数时间更新，并及时判断完成条件。"
+  },
+  {
+    "slug": "first-day-where-you-have-been-in-all-the-rooms",
+    "reasonEN": "A medium dynamic-programming problem built from revisitation timing rather than direct simulation. It trains deriving a recurrence with modular arithmetic from a deterministic process, a valuable technique for huge time horizons.",
+    "reasonZH": "中等动态规划题，关键在于从重复访问时刻推导递推式而非直接模拟。它训练从确定性过程抽象出带模运算的状态转移，适合处理极长时间尺度。"
+  },
+  {
+    "slug": "first-element-with-unique-frequency",
+    "reasonEN": "This medium counting problem uses two frequency layers: element counts and count-of-counts. It trains separating local statistics from uniqueness checks, an effective pattern for frequency-based queries.",
+    "reasonZH": "中等计数题需要维护元素频次和频次数量两层统计。它训练将局部计数与唯一性判断分离，是处理频率查询的高效模式。"
+  },
+  {
+    "slug": "first-letter-capitalization-ii",
+    "reasonEN": "A hard database string-transformation problem that requires precise capitalization rules across word boundaries. It trains composing SQL text functions and preserving edge cases in set-based data cleanup.",
+    "reasonZH": "高难数据库字符串处理题，需要在单词边界上严格执行大小写转换规则。它训练组合 SQL 文本函数并在集合式数据清洗中保留边界情况。"
+  },
+  {
+    "slug": "first-letter-to-appear-twice",
+    "reasonEN": "An easy string-scanning problem that can be solved with a bitmask or small visited set. It reinforces one-pass duplicate detection and demonstrates when fixed alphabets enable compact state representations.",
+    "reasonZH": "简单字符串扫描题，可用位掩码或小型访问集合解决。它训练单次遍历中的重复检测，也展示了固定字符集如何支持紧凑状态表示。"
+  },
+  {
+    "slug": "first-matching-character-from-both-ends",
+    "reasonEN": "This easy two-pointer string problem focuses on coordinated scans from opposite ends. It is useful for establishing pointer movement rules and stopping conditions that recur throughout palindrome and interval problems.",
+    "reasonZH": "简单双指针字符串题，核心是协调首尾两个方向的扫描。它适合建立指针移动规则和停止条件，这些技巧会反复用于回文与区间问题。"
+  },
+  {
+    "slug": "first-missing-positive",
+    "reasonEN": "A landmark hard in-place array problem that uses indices as a hash structure. It trains cyclic placement, range filtering, and invariant reasoning to achieve linear time with constant extra space.",
+    "reasonZH": "经典高难原地数组题，把下标当作哈希位置使用。它训练循环归位、范围过滤与不变量推理，从而实现线性时间和常数额外空间。"
+  },
+  {
+    "slug": "first-unique-character-in-a-string",
+    "reasonEN": "A foundational easy counting problem that separates frequency collection from ordered retrieval. It reinforces the two-pass hash-table pattern and makes the meaning of uniqueness in a sequence explicit.",
+    "reasonZH": "基础的简单计数题，先统计频次再按顺序检索答案。它巩固双遍哈希表模式，并帮助明确序列中“唯一”的含义。"
+  },
+  {
+    "slug": "first-unique-even-element",
+    "reasonEN": "This easy filtering and counting problem combines a parity condition with frequency information. It practices sequencing constraints correctly: count candidates globally, then preserve the required original order.",
+    "reasonZH": "简单的筛选计数题，需要结合偶数条件与频次信息。它训练正确安排约束顺序：先全局计数候选元素，再保留原始顺序寻找答案。"
+  },
+  {
+    "slug": "fix-names-in-a-table",
+    "reasonEN": "An easy SQL formatting exercise focused on normalizing text case. It provides practical practice with string functions, concatenation, and deterministic ordering in data-cleanup queries.",
+    "reasonZH": "简单 SQL 格式化题，聚焦于规范化文本大小写。它适合练习字符串函数、拼接操作和数据清洗查询中的确定性排序。"
+  },
+  {
+    "slug": "fizz-buzz",
+    "reasonEN": "A classic easy simulation problem that tests ordered condition checks and clean output construction. Its real value is building disciplined control flow for overlapping divisibility rules.",
+    "reasonZH": "经典简单模拟题，考查条件判断顺序与结果构造的清晰度。它的价值在于训练处理重叠整除规则时严谨的控制流。"
+  },
+  {
+    "slug": "fizz-buzz-multithreaded",
+    "reasonEN": "This medium concurrency design problem applies synchronization to a familiar control-flow task. It trains coordinating multiple workers, guarding shared progress, and ensuring ordered output without race conditions.",
+    "reasonZH": "中等并发设计题，将同步机制应用到熟悉的流程任务中。它训练协调多个工作线程、保护共享进度，并在避免竞态的同时保证输出顺序。"
+  },
+  {
+    "slug": "flatten-a-multilevel-doubly-linked-list",
+    "reasonEN": "A medium linked-list DFS problem requiring careful pointer rewiring across nested levels. It trains preserving predecessor and successor links while stitching recursive segments, which is essential for mutation-heavy structures.",
+    "reasonZH": "中等链表 DFS 题，需要在多层结构间谨慎重连指针。它训练拼接递归片段时同时维护前驱和后继关系，是指针修改类问题的重要练习。"
+  },
+  {
+    "slug": "flatten-binary-tree-to-linked-list",
+    "reasonEN": "This medium tree-transformation problem combines preorder structure with in-place pointer updates. It trains managing traversal order while avoiding the loss of untouched subtrees, a common mutation pitfall.",
+    "reasonZH": "中等树形转换题，将先序结构与原地指针调整结合。它训练在保持遍历顺序的同时避免丢失尚未处理的子树，是修改树结构时的典型难点。"
+  },
+  {
+    "slug": "flatten-deeply-nested-array",
+    "reasonEN": "A medium nested-array traversal problem that emphasizes depth control and output ordering. It trains recursive or iterative stack-based expansion, a useful model for processing arbitrarily nested data formats.",
+    "reasonZH": "中等嵌套数组遍历题，重点是深度控制与输出顺序。它训练递归或显式栈展开任意层级数据，是处理嵌套数据格式的实用模型。"
+  },
+  {
+    "slug": "flatten-nested-list-iterator",
+    "reasonEN": "A medium iterator-design problem that combines lazy traversal with stack state. It teaches how to make hasNext and next cooperate without eager flattening, a reusable pattern for streaming hierarchical data.",
+    "reasonZH": "中等迭代器设计题，结合惰性遍历与栈状态维护。它训练让 hasNext 和 next 协同工作而不预先展开全部元素，是流式处理层级数据的通用模式。"
+  },
+  {
+    "slug": "flip-binary-tree-to-match-preorder-traversal",
+    "reasonEN": "This medium tree DFS problem matches a target preorder sequence while deciding local child swaps. It trains aligning recursive expectations with traversal state and detecting impossible branches early.",
+    "reasonZH": "中等二叉树 DFS 题，需要在匹配目标先序序列时决定局部子树交换。它训练将递归预期与遍历状态对齐，并及早识别无法匹配的分支。"
+  }
+]

@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "split-array-into-fibonacci-sequence",
+    "reasonEN": "A medium backtracking and string problem that builds a sequence incrementally; validating leading zeros, numeric bounds, and the Fibonacci relation trains disciplined recursive pruning.",
+    "reasonZH": "中等难度的回溯字符串题，需要逐步构造序列；校验前导零、数值边界和斐波那契关系，训练严谨的递归剪枝。"
+  },
+  {
+    "slug": "split-array-into-maximum-number-of-subarrays",
+    "reasonEN": "This medium greedy bit-manipulation problem uses a running bitwise invariant to decide cut points; it demonstrates how an irreversible local condition can maximize segment count.",
+    "reasonZH": "这道中等贪心位运算题利用运行中的位运算不变量决定切分点；它展示了如何借助不可逆的局部条件最大化分段数量。"
+  },
+  {
+    "slug": "split-array-largest-sum",
+    "reasonEN": "A hard partition-optimization problem with binary-search, greedy, and DP perspectives; turning a maximum-sum bound into a feasibility test is a cornerstone of answer-space search.",
+    "reasonZH": "这是一道困难的分割优化题，涵盖二分、贪心和 DP 视角；将最大段和上界转化为可行性判断，是答案空间二分的核心训练。"
+  },
+  {
+    "slug": "split-array-with-minimum-difference",
+    "reasonEN": "A medium array and prefix-sum optimization problem focused on evaluating split boundaries efficiently; it reinforces converting repeated range sums into constant-time comparisons.",
+    "reasonZH": "这道中等数组前缀和优化题聚焦高效评估切分边界；它训练将重复的区间求和转化为常数时间比较。"
+  },
+  {
+    "slug": "split-array-with-same-average",
+    "reasonEN": "This hard subset-DP and bitmask problem transforms an average constraint into a sum-and-size state search; it develops advanced state compression and mathematical normalization skills.",
+    "reasonZH": "这道困难子集 DP 与位掩码题将平均值约束转化为按和与元素数量搜索状态；它训练进阶状态压缩和数学归一化能力。"
+  },
+  {
+    "slug": "split-linked-list-in-parts",
+    "reasonEN": "A medium linked-list partitioning problem that distributes lengths using quotient and remainder; accurately severing each part builds reliable pointer and boundary-handling habits.",
+    "reasonZH": "这道中等链表分割题通过商和余数分配各段长度；准确断开每一段，能建立可靠的指针与边界处理习惯。"
+  },
+  {
+    "slug": "split-message-based-on-limit",
+    "reasonEN": "A hard string-enumeration problem where metadata overhead changes each segment's capacity; reasoning about digit lengths and global feasibility is valuable constrained-formatting practice.",
+    "reasonZH": "这是一道困难的字符串枚举题，元信息开销会改变每段容量；推理数字长度和整体可行性，是受限格式化问题的重要训练。"
+  },
+  {
+    "slug": "split-strings-by-separator",
+    "reasonEN": "An easy array and string parsing task centered on delimiter-based tokenization; filtering empty fragments and preserving order reinforces dependable text-processing basics.",
+    "reasonZH": "这道简单数组字符串解析题围绕分隔符切分；过滤空片段并保持顺序，可夯实可靠的文本处理基础。"
+  },
+  {
+    "slug": "split-the-array",
+    "reasonEN": "This easy counting and hash-table problem reduces a partition condition to frequency validation; it trains recognizing when a global construction depends only on local occurrence limits.",
+    "reasonZH": "这道简单计数哈希题将分割条件化为频次校验；它训练识别何时全局构造只依赖局部出现次数限制。"
+  },
+  {
+    "slug": "split-the-array-to-make-coprime-products",
+    "reasonEN": "A hard number-theory array problem that tracks prime-factor influence across a split; maintaining factor boundaries develops a reusable approach to coprimality constraints.",
+    "reasonZH": "这道困难数论数组题追踪质因子对切分边界的影响；维护因子边界，可训练处理互质约束的可复用方法。"
+  },
+  {
+    "slug": "split-two-strings-to-make-palindrome",
+    "reasonEN": "A medium two-pointer string problem that combines cross-string matching with an in-string palindrome check; it sharpens symmetric boundary reasoning and concise case handling.",
+    "reasonZH": "这道中等双指针字符串题结合跨字符串匹配与串内回文校验；它训练对称边界推理和简洁的分情况处理。"
+  },
+  {
+    "slug": "split-with-minimum-sum",
+    "reasonEN": "An easy greedy sorting problem where small digits should be balanced across constructed values; it illustrates how ordering and alternating placement minimize positional contribution.",
+    "reasonZH": "这道简单贪心排序题需要将较小数位均衡放入构造结果；它说明排序和交替放置如何最小化位权贡献。"
+  },
+  {
+    "slug": "splitting-a-string-into-descending-consecutive-values",
+    "reasonEN": "A medium backtracking and enumeration problem that validates consecutive numeric choices; managing substring bounds and decrement relations is strong practice for recursive parsing.",
+    "reasonZH": "这道中等回溯枚举题需要校验连续数值选择；处理子串边界和递减关系，是递归解析的扎实训练。"
+  },
+  {
+    "slug": "sqrtx",
+    "reasonEN": "This easy binary-search and math problem finds an integer boundary under a monotonic square relation; overflow-safe comparisons make it a foundational numerical-search exercise.",
+    "reasonZH": "这道简单二分数学题在单调平方关系中寻找整数边界；采用防溢出比较，是基础数值搜索训练。"
+  },
+  {
+    "slug": "squares-of-a-sorted-array",
+    "reasonEN": "An easy two-pointer array problem that merges magnitudes from both ends; filling the result in reverse trains a classic linear-time alternative to re-sorting.",
+    "reasonZH": "这道简单双指针数组题从两端合并绝对值大小；逆序填充结果，训练替代重新排序的经典线性解法。"
+  },
+  {
+    "slug": "stable-subarrays-with-equal-boundary-and-interior-sum",
+    "reasonEN": "A medium prefix-sum and hash-table subarray problem that converts a balance condition into comparable accumulated states; it strengthens algebraic reformulation for range counting.",
+    "reasonZH": "这道中等前缀和哈希子数组题将平衡条件转化为可比较的累积状态；它强化区间计数中的代数重构能力。"
+  },
+  {
+    "slug": "stack-of-plates-lcci",
+    "reasonEN": "A medium stack-design problem that manages multiple capacity-bounded stacks; preserving push-pop behavior across internal containers develops practical stateful API design skills.",
+    "reasonZH": "这道中等栈设计题管理多个容量受限的栈；在内部容器间保持压入弹出语义，训练实用的有状态 API 设计能力。"
+  },
+  {
+    "slug": "stamping-the-grid",
+    "reasonEN": "A hard matrix and prefix-sum problem that validates placements and coverage at scale; combining two-dimensional range queries with difference-style accumulation is key grid-optimization practice.",
+    "reasonZH": "这是一道困难的矩阵前缀和题，需要大规模校验放置与覆盖；结合二维区间查询和差分式累积，是网格优化的重要训练。"
+  },
+  {
+    "slug": "stamping-the-sequence",
+    "reasonEN": "This hard greedy string problem works backward through erasable windows; coordinating queue-driven progress with reverse reconstruction develops non-obvious greedy reasoning.",
+    "reasonZH": "这道困难贪心字符串题通过可擦除窗口逆向推进；协调队列驱动的进展与反向重建，可训练非直观的贪心推理。"
+  },
+  {
+    "slug": "statistics-from-a-large-sample",
+    "reasonEN": "A medium statistics problem that derives distribution measures from frequency data; weighted accumulation for mean and median reinforces practical aggregate-computation techniques.",
+    "reasonZH": "这道中等统计题从频次数据推导分布指标；利用加权累积计算均值和中位数，可强化实用的聚合计算技巧。"
+  },
+  {
+    "slug": "step-by-step-directions-from-a-binary-tree-node-to-another",
+    "reasonEN": "A medium tree DFS problem that derives routes through shared ancestry; building root paths and removing their common prefix teaches a clear navigation construction pattern.",
+    "reasonZH": "这道中等树形 DFS 题通过共同祖先推导路径；构建根路径并去除公共前缀，训练清晰的导航路径构造模式。"
+  },
+  {
+    "slug": "steps-to-make-array-non-decreasing",
+    "reasonEN": "A medium monotonic-stack and DP problem that tracks how long blocked elements persist; propagating removal rounds through stack state is valuable for layered simulation optimization.",
+    "reasonZH": "这道中等单调栈 DP 题追踪受阻元素的存活时长；通过栈状态传播删除轮次，是分层模拟优化的重要训练。"
+  },
+  {
+    "slug": "stickers-to-spell-word",
+    "reasonEN": "A hard memoized search problem over character-demand states; pruning dominated choices and caching normalized remainders develops advanced combinatorial DP technique.",
+    "reasonZH": "这是一道困难的记忆化搜索题，状态是字符需求；剪除劣势选择并缓存规范化剩余需求，训练进阶组合 DP 技巧。"
+  },
+  {
+    "slug": "stock-price-fluctuation",
+    "reasonEN": "A medium data-stream design problem that handles corrections as well as queries; pairing a timestamp map with heaps or ordered sets teaches lazy-validation strategies for mutable streams.",
+    "reasonZH": "这道中等数据流设计题同时处理更正和查询；将时间戳映射与堆或有序集合结合，可训练可变数据流中的惰性校验策略。"
+  },
+  {
+    "slug": "stone-game",
+    "reasonEN": "A medium game-theory and DP problem centered on optimal play over an array; expressing a player's advantage as a state value builds foundational adversarial-reasoning skills.",
+    "reasonZH": "这道中等博弈 DP 题围绕数组上的最优对抗；将玩家优势表示为状态值，可建立基础的对抗推理能力。"
+  },
+  {
+    "slug": "stone-game-ii",
+    "reasonEN": "This medium game DP problem expands the state with a dynamic move limit; combining suffix sums with minimax transitions is strong practice for parameterized interval decisions.",
+    "reasonZH": "这道中等博弈 DP 题将动态取石限制纳入状态；结合后缀和与极大极小转移，是参数化区间决策的扎实训练。"
+  },
+  {
+    "slug": "stone-game-iii",
+    "reasonEN": "A hard game-theory DP problem that compares score differences under several next moves; modeling net advantage rather than separate scores simplifies competitive state transitions.",
+    "reasonZH": "这道困难博弈 DP 题比较多个下一步选择下的得分差；建模净优势而非分别记录双方得分，可简化对抗状态转移。"
+  },
+  {
+    "slug": "stone-game-iv",
+    "reasonEN": "A hard impartial-game DP problem built on square-number moves; classifying each state as winning or losing develops the core recurrence used in subtraction games.",
+    "reasonZH": "这道困难公平博弈 DP 题以平方数移动为基础；判定状态必胜或必败，可训练减法博弈的核心递推。"
+  },
+  {
+    "slug": "stone-game-ix",
+    "reasonEN": "A medium counting and game-theory problem that reduces values by modular classes; analyzing residue counts and opening choices is valuable practice in compressing game states.",
+    "reasonZH": "这道中等计数博弈题将数值按模类压缩；分析余数计数与开局选择，是压缩博弈状态的重要练习。"
+  },
+  {
+    "slug": "stone-game-v",
+    "reasonEN": "A hard interval-DP game problem where each split changes the remaining playable side; evaluating partition outcomes with carefully defined subarray states develops high-level optimization reasoning.",
+    "reasonZH": "这是一道困难的区间 DP 博弈题，每次切分都会改变可继续选择的一侧；用明确定义的子数组状态评估切分结果，可训练高阶优化推理。"
+  }
+]

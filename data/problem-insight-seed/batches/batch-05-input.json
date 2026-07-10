@@ -1,0 +1,698 @@
+[
+  {
+    "slug": "ZL6zAn",
+    "frontendDisplayId": "LCR 105",
+    "titleEn": null,
+    "titleZh": "岛屿的最大面积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix",
+      "Union Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/ZL6zAn/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ZVAVXX",
+    "frontendDisplayId": "LCR 009",
+    "titleEn": null,
+    "titleZh": "乘积小于 K 的子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "滑动窗口"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/ZVAVXX/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "Za25hA",
+    "frontendDisplayId": "LCP 21",
+    "titleEn": null,
+    "titleZh": "追逐游戏",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "拓扑排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/Za25hA/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ZbAuEH",
+    "frontendDisplayId": "LCP 57",
+    "titleEn": null,
+    "titleZh": "打地鼠",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵",
+      "排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/ZbAuEH/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "a-number-after-a-double-reversal",
+    "frontendDisplayId": "2119",
+    "titleEn": "A Number After a Double Reversal",
+    "titleZh": "反转两次的数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/a-number-after-a-double-reversal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "a7VOhD",
+    "frontendDisplayId": "LCR 020",
+    "titleEn": null,
+    "titleZh": "回文子串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/a7VOhD/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "aMhZSa",
+    "frontendDisplayId": "LCR 027",
+    "titleEn": null,
+    "titleZh": "回文链表",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Linked List",
+      "Recursion",
+      "Stack",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "递归",
+      "栈",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/aMhZSa/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "abbreviating-the-product-of-a-range",
+    "frontendDisplayId": "2117",
+    "titleEn": "Abbreviating the Product of a Range",
+    "titleZh": "一个区间内所有数乘积的缩写",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/abbreviating-the-product-of-a-range/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "absolute-difference-between-maximum-and-minimum-k-elements",
+    "frontendDisplayId": "3774",
+    "titleEn": "Absolute Difference Between Maximum and Minimum K Elements",
+    "titleZh": "最大和最小 K 个元素的绝对差",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/absolute-difference-between-maximum-and-minimum-k-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "account-balance-after-rounded-purchase",
+    "frontendDisplayId": "2806",
+    "titleEn": "Account Balance After Rounded Purchase",
+    "titleZh": "取整购买后的账户余额",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/account-balance-after-rounded-purchase/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "accounts-merge",
+    "frontendDisplayId": "721",
+    "titleEn": "Accounts Merge",
+    "titleZh": "账户合并",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Hash Table",
+      "Sorting",
+      "String",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "哈希表",
+      "排序",
+      "字符串",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/accounts-merge/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "actors-and-directors-who-cooperated-at-least-three-times",
+    "frontendDisplayId": "1050",
+    "titleEn": "Actors and Directors Who Cooperated At Least Three Times",
+    "titleZh": "合作过至少三次的演员和导演",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/actors-and-directors-who-cooperated-at-least-three-times/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "add-binary",
+    "frontendDisplayId": "67",
+    "titleEn": "Add Binary",
+    "titleZh": "二进制求和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/add-binary/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "add-digits",
+    "frontendDisplayId": "258",
+    "titleEn": "Add Digits",
+    "titleZh": "各位相加",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Number Theory",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "数论",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/add-digits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "add-edges-to-make-degrees-of-all-nodes-even",
+    "frontendDisplayId": "2508",
+    "titleEn": "Add Edges to Make Degrees of All Nodes Even",
+    "titleZh": "添加边使所有节点度数都为偶数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Graph Theory",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "图",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/add-edges-to-make-degrees-of-all-nodes-even/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "add-minimum-number-of-rungs",
+    "frontendDisplayId": "1936",
+    "titleEn": "Add Minimum Number of Rungs",
+    "titleZh": "新增的最少台阶数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/add-minimum-number-of-rungs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "add-one-row-to-tree",
+    "frontendDisplayId": "623",
+    "titleEn": "Add One Row to Tree",
+    "titleZh": "在二叉树中增加一行",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/add-one-row-to-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "add-strings",
+    "frontendDisplayId": "415",
+    "titleEn": "Add Strings",
+    "titleZh": "字符串相加",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/add-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "add-to-array-form-of-integer",
+    "frontendDisplayId": "989",
+    "titleEn": "Add to Array-Form of Integer",
+    "titleZh": "数组形式的整数加法",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/add-to-array-form-of-integer/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "add-two-integers",
+    "frontendDisplayId": "2235",
+    "titleEn": "Add Two Integers",
+    "titleZh": "两整数相加",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/add-two-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "add-two-numbers",
+    "frontendDisplayId": "2",
+    "titleEn": "Add Two Numbers",
+    "titleZh": "两数相加",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/add-two-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "add-two-numbers-ii",
+    "frontendDisplayId": "445",
+    "titleEn": "Add Two Numbers II",
+    "titleZh": "两数相加 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Math",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "数学",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/add-two-numbers-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "add-two-promises",
+    "frontendDisplayId": "2723",
+    "titleEn": "Add Two Promises",
+    "titleZh": "两个 Promise 对象相加",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/add-two-promises/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "add-without-plus-lcci",
+    "frontendDisplayId": "面试题 17.01",
+    "titleEn": null,
+    "titleZh": "不用加号的加法",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/add-without-plus-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "adding-spaces-to-a-string",
+    "frontendDisplayId": "2109",
+    "titleEn": "Adding Spaces to a String",
+    "titleZh": "向字符串添加空格",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/adding-spaces-to-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "adding-two-negabinary-numbers",
+    "frontendDisplayId": "1073",
+    "titleEn": "Adding Two Negabinary Numbers",
+    "titleZh": "负二进制数相加",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/adding-two-negabinary-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "additive-number",
+    "frontendDisplayId": "306",
+    "titleEn": "Additive Number",
+    "titleZh": "累加数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/additive-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "adjacent-increasing-subarrays-detection-i",
+    "frontendDisplayId": "3349",
+    "titleEn": "Adjacent Increasing Subarrays Detection I",
+    "titleZh": "检测相邻递增子数组 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/adjacent-increasing-subarrays-detection-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "adjacent-increasing-subarrays-detection-ii",
+    "frontendDisplayId": "3350",
+    "titleEn": "Adjacent Increasing Subarrays Detection II",
+    "titleZh": "检测相邻递增子数组 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/adjacent-increasing-subarrays-detection-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "advantage-shuffle",
+    "frontendDisplayId": "870",
+    "titleEn": "Advantage Shuffle",
+    "titleZh": "优势洗牌",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/advantage-shuffle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-05",
+    "claimedAt": "2026-07-09T13:57:08.686169+00:00",
+    "completedAt": null
+  }
+]

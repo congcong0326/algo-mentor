@@ -1,0 +1,694 @@
+[
+  {
+    "slug": "apply-discount-to-prices",
+    "frontendDisplayId": "2288",
+    "titleEn": "Apply Discount to Prices",
+    "titleZh": "价格减免",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/apply-discount-to-prices/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "apply-operations-on-array-to-maximize-sum-of-squares",
+    "frontendDisplayId": "2897",
+    "titleEn": "Apply Operations on Array to Maximize Sum of Squares",
+    "titleZh": "对数组执行操作使平方和最大",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Greedy",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "贪心",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/apply-operations-on-array-to-maximize-sum-of-squares/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "apply-operations-to-an-array",
+    "frontendDisplayId": "2460",
+    "titleEn": "Apply Operations to an Array",
+    "titleZh": "对数组执行操作",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/apply-operations-to-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "apply-operations-to-make-all-array-elements-equal-to-zero",
+    "frontendDisplayId": "2772",
+    "titleEn": "Apply Operations to Make All Array Elements Equal to Zero",
+    "titleZh": "使数组中的所有元素都等于零",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/apply-operations-to-make-all-array-elements-equal-to-zero/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "apply-operations-to-make-string-empty",
+    "frontendDisplayId": "3039",
+    "titleEn": "Apply Operations to Make String Empty",
+    "titleZh": "进行操作使字符串为空",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/apply-operations-to-make-string-empty/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "apply-operations-to-make-sum-of-array-greater-than-or-equal-to-k",
+    "frontendDisplayId": "3091",
+    "titleEn": "Apply Operations to Make Sum of Array Greater Than or Equal to k",
+    "titleZh": "执行操作使数据元素之和大于等于 K",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/apply-operations-to-make-sum-of-array-greater-than-or-equal-to-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "apply-operations-to-make-two-strings-equal",
+    "frontendDisplayId": "2896",
+    "titleEn": "Apply Operations to Make Two Strings Equal",
+    "titleZh": "执行操作使两个字符串相等",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/apply-operations-to-make-two-strings-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "apply-operations-to-maximize-frequency-score",
+    "frontendDisplayId": "2968",
+    "titleEn": "Apply Operations to Maximize Frequency Score",
+    "titleZh": "执行操作使频率分数最大",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum",
+      "Sliding Window",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和",
+      "滑动窗口",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/apply-operations-to-maximize-frequency-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "apply-operations-to-maximize-score",
+    "frontendDisplayId": "2818",
+    "titleEn": "Apply Operations to Maximize Score",
+    "titleZh": "操作使得分最大",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Math",
+      "Monotonic Stack",
+      "Number Theory",
+      "Sorting",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "数学",
+      "单调栈",
+      "数论",
+      "排序",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/apply-operations-to-maximize-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "apply-transform-over-each-element-in-array",
+    "frontendDisplayId": "2635",
+    "titleEn": "Apply Transform Over Each Element in Array",
+    "titleZh": "转换数组中的每个元素",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/apply-transform-over-each-element-in-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "arithmetic-slices",
+    "frontendDisplayId": "413",
+    "titleEn": "Arithmetic Slices",
+    "titleZh": "等差数列划分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/arithmetic-slices/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "arithmetic-slices-ii-subsequence",
+    "frontendDisplayId": "446",
+    "titleEn": "Arithmetic Slices II - Subsequence",
+    "titleZh": "等差数列划分 II - 子序列",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/arithmetic-slices-ii-subsequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "arithmetic-subarrays",
+    "frontendDisplayId": "1630",
+    "titleEn": "Arithmetic Subarrays",
+    "titleZh": "等差子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/arithmetic-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "arranging-coins",
+    "frontendDisplayId": "441",
+    "titleEn": "Arranging Coins",
+    "titleZh": "排列硬币",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/arranging-coins/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "array-nesting",
+    "frontendDisplayId": "565",
+    "titleEn": "Array Nesting",
+    "titleZh": "数组嵌套",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/array-nesting/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "array-of-doubled-pairs",
+    "frontendDisplayId": "954",
+    "titleEn": "Array of Doubled Pairs",
+    "titleZh": "二倍数对数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/array-of-doubled-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "array-partition",
+    "frontendDisplayId": "561",
+    "titleEn": "Array Partition",
+    "titleZh": "数组拆分",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting Sort",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数排序",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/array-partition/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "array-prototype-last",
+    "frontendDisplayId": "2619",
+    "titleEn": "Array Prototype Last",
+    "titleZh": "数组原型对象的最后一个元素",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/array-prototype-last/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "array-reduce-transformation",
+    "frontendDisplayId": "2626",
+    "titleEn": "Array Reduce Transformation",
+    "titleZh": "数组归约运算",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/array-reduce-transformation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "array-with-elements-not-equal-to-average-of-neighbors",
+    "frontendDisplayId": "1968",
+    "titleEn": "Array With Elements Not Equal to Average of Neighbors",
+    "titleZh": "构造元素不等于两相邻元素平均值的数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/array-with-elements-not-equal-to-average-of-neighbors/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "array-wrapper",
+    "frontendDisplayId": "2695",
+    "titleEn": "Array Wrapper",
+    "titleZh": "包装数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/array-wrapper/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "article-views-i",
+    "frontendDisplayId": "1148",
+    "titleEn": "Article Views I",
+    "titleZh": "文章浏览 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/article-views-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "as-far-from-land-as-possible",
+    "frontendDisplayId": "1162",
+    "titleEn": "As Far from Land as Possible",
+    "titleZh": "地图分析",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/as-far-from-land-as-possible/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "aseY1I",
+    "frontendDisplayId": "LCR 005",
+    "titleEn": null,
+    "titleZh": "最大单词长度乘积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/aseY1I/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "assign-cookies",
+    "frontendDisplayId": "455",
+    "titleEn": "Assign Cookies",
+    "titleZh": "分发饼干",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/assign-cookies/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "assign-elements-to-groups-with-constraints",
+    "frontendDisplayId": "3447",
+    "titleEn": "Assign Elements to Groups with Constraints",
+    "titleZh": "将元素分配给有约束条件的组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/assign-elements-to-groups-with-constraints/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "asteroid-collision",
+    "frontendDisplayId": "735",
+    "titleEn": "Asteroid Collision",
+    "titleZh": "小行星碰撞",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/asteroid-collision/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "available-captures-for-rook",
+    "frontendDisplayId": "999",
+    "titleEn": "Available Captures for Rook",
+    "titleZh": "可以被一步捕获的棋子数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/available-captures-for-rook/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "average-of-levels-in-binary-tree",
+    "frontendDisplayId": "637",
+    "titleEn": "Average of Levels in Binary Tree",
+    "titleZh": "二叉树的层平均值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/average-of-levels-in-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "average-salary-excluding-the-minimum-and-maximum-salary",
+    "frontendDisplayId": "1491",
+    "titleEn": "Average Salary Excluding the Minimum and Maximum Salary",
+    "titleZh": "去掉最低工资和最高工资后的工资平均值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/average-salary-excluding-the-minimum-and-maximum-salary/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-07",
+    "claimedAt": "2026-07-09T13:57:09.102675+00:00",
+    "completedAt": null
+  }
+]

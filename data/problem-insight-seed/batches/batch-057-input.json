@@ -1,0 +1,766 @@
+[
+  {
+    "slug": "kplEvH",
+    "frontendDisplayId": "LCP 45",
+    "titleEn": null,
+    "titleZh": "自行车炫技赛场",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Matrix",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "动态规划",
+      "矩阵",
+      "记忆化"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/kplEvH/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "kskhHQ",
+    "frontendDisplayId": "LCP 71",
+    "titleEn": null,
+    "titleZh": "集水器",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Union Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/kskhHQ/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "kth-ancestor-of-a-tree-node",
+    "frontendDisplayId": "1483",
+    "titleEn": "Kth Ancestor of a Tree Node",
+    "titleZh": "树节点的第 K 个祖先",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Bit Manipulation",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Design",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "位运算",
+      "广度优先搜索",
+      "深度优先搜索",
+      "设计",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/kth-ancestor-of-a-tree-node/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "kth-distinct-string-in-an-array",
+    "frontendDisplayId": "2053",
+    "titleEn": "Kth Distinct String in an Array",
+    "titleZh": "数组中第 K 个独一无二的字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/kth-distinct-string-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "kth-largest-element-in-a-stream",
+    "frontendDisplayId": "703",
+    "titleEn": "Kth Largest Element in a Stream",
+    "titleZh": "数据流中的第 K 大元素",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Data Stream",
+      "Design",
+      "Heap (Priority Queue)",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "数据流",
+      "设计",
+      "堆（优先队列）",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/kth-largest-element-in-a-stream/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "kth-largest-element-in-an-array",
+    "frontendDisplayId": "215",
+    "titleEn": "Kth Largest Element in an Array",
+    "titleZh": "数组中的第K个最大元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Heap (Priority Queue)",
+      "Quickselect",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "堆（优先队列）",
+      "快速选择",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/kth-largest-element-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "kth-largest-sum-in-a-binary-tree",
+    "frontendDisplayId": "2583",
+    "titleEn": "Kth Largest Sum in a Binary Tree",
+    "titleZh": "二叉树中的第 K 大层和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Sorting",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "排序",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/kth-largest-sum-in-a-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "kth-missing-positive-number",
+    "frontendDisplayId": "1539",
+    "titleEn": "Kth Missing Positive Number",
+    "titleZh": "第 k 个缺失的正整数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/kth-missing-positive-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "kth-node-from-end-of-list-lcci",
+    "frontendDisplayId": "面试题 02.02",
+    "titleEn": null,
+    "titleZh": "返回倒数第 k 个节点",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Linked List",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/kth-node-from-end-of-list-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "kth-smallest-amount-with-single-denomination-combination",
+    "frontendDisplayId": "3116",
+    "titleEn": "Kth Smallest Amount With Single Denomination Combination",
+    "titleZh": "单面值组合的第 K 小金额",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Bit Manipulation",
+      "Combinatorics",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "位运算",
+      "组合数学",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/kth-smallest-amount-with-single-denomination-combination/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "kth-smallest-element-in-a-bst",
+    "frontendDisplayId": "230",
+    "titleEn": "Kth Smallest Element in a BST",
+    "titleZh": "二叉搜索树中第 K 小的元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/kth-smallest-element-in-a-bst/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "kth-smallest-element-in-a-sorted-matrix",
+    "frontendDisplayId": "378",
+    "titleEn": "Kth Smallest Element in a Sorted Matrix",
+    "titleZh": "有序矩阵中第 K 小的元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Heap (Priority Queue)",
+      "Matrix",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "堆（优先队列）",
+      "矩阵",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "kth-smallest-instructions",
+    "frontendDisplayId": "1643",
+    "titleEn": "Kth Smallest Instructions",
+    "titleZh": "第 K 条最小指令",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/kth-smallest-instructions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "kth-smallest-number-in-multiplication-table",
+    "frontendDisplayId": "668",
+    "titleEn": "Kth Smallest Number in Multiplication Table",
+    "titleZh": "乘法表中第k小的数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/kth-smallest-number-in-multiplication-table/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "kth-smallest-path-xor-sum",
+    "frontendDisplayId": "3590",
+    "titleEn": "Kth Smallest Path XOR Sum",
+    "titleZh": "第 K 小的路径异或和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Ordered Set",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "有序集合",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/kth-smallest-path-xor-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "kth-smallest-product-of-two-sorted-arrays",
+    "frontendDisplayId": "2040",
+    "titleEn": "Kth Smallest Product of Two Sorted Arrays",
+    "titleZh": "两个有序数组的第 K 小乘积",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/kth-smallest-product-of-two-sorted-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lMSNwu",
+    "frontendDisplayId": "LCR 025",
+    "titleEn": null,
+    "titleZh": "两数相加 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Linked List",
+      "Math",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "链表",
+      "数学",
+      "栈"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/lMSNwu/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "langtons-ant-lcci",
+    "frontendDisplayId": "面试题 16.22",
+    "titleEn": null,
+    "titleZh": "兰顿蚂蚁",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Matrix",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "矩阵",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/langtons-ant-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-1-bordered-square",
+    "frontendDisplayId": "1139",
+    "titleEn": "Largest 1-Bordered Square",
+    "titleZh": "最大的以 1 为边界的正方形",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-1-bordered-square/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-3-same-digit-number-in-string",
+    "frontendDisplayId": "2264",
+    "titleEn": "Largest 3-Same-Digit Number in String",
+    "titleZh": "字符串中最大的 3 位相同数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-3-same-digit-number-in-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-color-value-in-a-directed-graph",
+    "frontendDisplayId": "1857",
+    "titleEn": "Largest Color Value in a Directed Graph",
+    "titleZh": "有向图中最大颜色值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Counting",
+      "Dynamic Programming",
+      "Graph Theory",
+      "Hash Table",
+      "Memoization",
+      "String",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "动态规划",
+      "图",
+      "哈希表",
+      "记忆化",
+      "字符串",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-color-value-in-a-directed-graph/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-combination-with-bitwise-and-greater-than-zero",
+    "frontendDisplayId": "2275",
+    "titleEn": "Largest Combination With Bitwise AND Greater Than Zero",
+    "titleZh": "按位与结果大于零的最长组合",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-combination-with-bitwise-and-greater-than-zero/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-component-size-by-common-factor",
+    "frontendDisplayId": "952",
+    "titleEn": "Largest Component Size by Common Factor",
+    "titleZh": "按公因数计算最大组件大小",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Math",
+      "Number Theory",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "数学",
+      "数论",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-component-size-by-common-factor/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-divisible-subset",
+    "frontendDisplayId": "368",
+    "titleEn": "Largest Divisible Subset",
+    "titleZh": "最大整除子集",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-divisible-subset/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-element-in-an-array-after-merge-operations",
+    "frontendDisplayId": "2789",
+    "titleEn": "Largest Element in an Array after Merge Operations",
+    "titleZh": "合并后数组中的最大元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-element-in-an-array-after-merge-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-even-number",
+    "frontendDisplayId": "3798",
+    "titleEn": "Largest Even Number",
+    "titleZh": "最大的偶数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-even-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-local-values-in-a-matrix",
+    "frontendDisplayId": "2373",
+    "titleEn": "Largest Local Values in a Matrix",
+    "titleZh": "矩阵中的局部最大值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-local-values-in-a-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-local-values-in-a-matrix-ii",
+    "frontendDisplayId": "3933",
+    "titleEn": "Largest Local Values in a Matrix II",
+    "titleZh": "矩阵中的局部最大值 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-local-values-in-a-matrix-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-magic-square",
+    "frontendDisplayId": "1895",
+    "titleEn": "Largest Magic Square",
+    "titleZh": "最大的幻方",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-magic-square/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "largest-merge-of-two-strings",
+    "frontendDisplayId": "1754",
+    "titleEn": "Largest Merge Of Two Strings",
+    "titleZh": "构造字典序最大的合并字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/largest-merge-of-two-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-057",
+    "claimedAt": "2026-07-10T03:59:51.482597+00:00",
+    "completedAt": null
+  }
+]

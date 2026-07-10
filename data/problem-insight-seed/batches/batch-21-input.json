@@ -1,0 +1,768 @@
+[
+  {
+    "slug": "count-non-decreasing-subarrays-after-k-operations",
+    "frontendDisplayId": "3420",
+    "titleEn": "Count Non-Decreasing Subarrays After K Operations",
+    "titleZh": "统计 K 次操作以内得到非递减子数组的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Queue",
+      "Monotonic Stack",
+      "Queue",
+      "Segment Tree",
+      "Sliding Window",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调队列",
+      "单调栈",
+      "队列",
+      "线段树",
+      "滑动窗口",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-non-decreasing-subarrays-after-k-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-number-of-bad-pairs",
+    "frontendDisplayId": "2364",
+    "titleEn": "Count Number of Bad Pairs",
+    "titleZh": "统计坏数对的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-number-of-bad-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-number-of-balanced-permutations",
+    "frontendDisplayId": "3343",
+    "titleEn": "Count Number of Balanced Permutations",
+    "titleZh": "统计平衡排列的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "动态规划",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-number-of-balanced-permutations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-number-of-distinct-integers-after-reverse-operations",
+    "frontendDisplayId": "2442",
+    "titleEn": "Count Number of Distinct Integers After Reverse Operations",
+    "titleZh": "反转之后不同整数的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-number-of-distinct-integers-after-reverse-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-number-of-homogenous-substrings",
+    "frontendDisplayId": "1759",
+    "titleEn": "Count Number of Homogenous Substrings",
+    "titleZh": "统计同质子字符串的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-number-of-homogenous-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-number-of-maximum-bitwise-or-subsets",
+    "frontendDisplayId": "2044",
+    "titleEn": "Count Number of Maximum Bitwise-OR Subsets",
+    "titleZh": "统计按位或能得到最大值的子集数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-number-of-maximum-bitwise-or-subsets/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-number-of-nice-subarrays",
+    "frontendDisplayId": "1248",
+    "titleEn": "Count Number of Nice Subarrays",
+    "titleZh": "统计「优美子数组」",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Math",
+      "Prefix Sum",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "数学",
+      "前缀和",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-number-of-nice-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-number-of-pairs-with-absolute-difference-k",
+    "frontendDisplayId": "2006",
+    "titleEn": "Count Number of Pairs With Absolute Difference K",
+    "titleZh": "差的绝对值为 K 的数对数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-number-of-pairs-with-absolute-difference-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-number-of-possible-root-nodes",
+    "frontendDisplayId": "2581",
+    "titleEn": "Count Number of Possible Root Nodes",
+    "titleZh": "统计可能的树根数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "动态规划",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-number-of-possible-root-nodes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-number-of-rectangles-containing-each-point",
+    "frontendDisplayId": "2250",
+    "titleEn": "Count Number of Rectangles Containing Each Point",
+    "titleZh": "统计包含每个点的矩形数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Binary Search",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "二分查找",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-number-of-rectangles-containing-each-point/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-number-of-special-subsequences",
+    "frontendDisplayId": "1955",
+    "titleEn": "Count Number of Special Subsequences",
+    "titleZh": "统计特殊子序列的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-number-of-special-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-number-of-teams",
+    "frontendDisplayId": "1395",
+    "titleEn": "Count Number of Teams",
+    "titleZh": "统计作战单位数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Dynamic Programming",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "动态规划",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-number-of-teams/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-number-of-texts",
+    "frontendDisplayId": "2266",
+    "titleEn": "Count Number of Texts",
+    "titleZh": "统计打字方案数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Hash Table",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "哈希表",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-number-of-texts/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-number-of-trapezoids-i",
+    "frontendDisplayId": "3623",
+    "titleEn": "Count Number of Trapezoids I",
+    "titleZh": "统计梯形的数目 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-number-of-trapezoids-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-number-of-trapezoids-ii",
+    "frontendDisplayId": "3625",
+    "titleEn": "Count Number of Trapezoids II",
+    "titleZh": "统计梯形的数目 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-number-of-trapezoids-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-number-of-ways-to-place-houses",
+    "frontendDisplayId": "2320",
+    "titleEn": "Count Number of Ways to Place Houses",
+    "titleZh": "统计放置房子的方式数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-number-of-ways-to-place-houses/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-numbers-with-non-decreasing-digits",
+    "frontendDisplayId": "3519",
+    "titleEn": "Count Numbers with Non-Decreasing Digits",
+    "titleZh": "统计逐位非递减的整数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-numbers-with-non-decreasing-digits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-numbers-with-unique-digits",
+    "frontendDisplayId": "357",
+    "titleEn": "Count Numbers with Unique Digits",
+    "titleZh": "统计各位数字都不同的数字个数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-numbers-with-unique-digits/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-odd-numbers-in-an-interval-range",
+    "frontendDisplayId": "1523",
+    "titleEn": "Count Odd Numbers in an Interval Range",
+    "titleZh": "在区间范围内统计奇数数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-odd-numbers-in-an-interval-range/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-of-integers",
+    "frontendDisplayId": "2719",
+    "titleEn": "Count of Integers",
+    "titleZh": "统计整数数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-of-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-of-interesting-subarrays",
+    "frontendDisplayId": "2845",
+    "titleEn": "Count of Interesting Subarrays",
+    "titleZh": "统计趣味子数组的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-of-interesting-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-of-matches-in-tournament",
+    "frontendDisplayId": "1688",
+    "titleEn": "Count of Matches in Tournament",
+    "titleZh": "比赛中的配对次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-of-matches-in-tournament/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-of-range-sum",
+    "frontendDisplayId": "327",
+    "titleEn": "Count of Range Sum",
+    "titleZh": "区间和的个数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Binary Search",
+      "Divide and Conquer",
+      "Merge Sort",
+      "Ordered Set",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "二分查找",
+      "分治",
+      "归并排序",
+      "有序集合",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-of-range-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-of-smaller-numbers-after-self",
+    "frontendDisplayId": "315",
+    "titleEn": "Count of Smaller Numbers After Self",
+    "titleZh": "计算右侧小于当前元素的个数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Binary Search",
+      "Divide and Conquer",
+      "Merge Sort",
+      "Ordered Set",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "二分查找",
+      "分治",
+      "归并排序",
+      "有序集合",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-of-smaller-numbers-after-self/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-of-sub-multisets-with-bounded-sum",
+    "frontendDisplayId": "2902",
+    "titleEn": "Count of Sub-Multisets With Bounded Sum",
+    "titleZh": "和带限制的子多重集合的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Table",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希表",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-of-sub-multisets-with-bounded-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-of-substrings-containing-every-vowel-and-k-consonants-i",
+    "frontendDisplayId": "3305",
+    "titleEn": "Count of Substrings Containing Every Vowel and K Consonants I",
+    "titleZh": "元音辅音字符串计数 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-of-substrings-containing-every-vowel-and-k-consonants-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-of-substrings-containing-every-vowel-and-k-consonants-ii",
+    "frontendDisplayId": "3306",
+    "titleEn": "Count of Substrings Containing Every Vowel and K Consonants II",
+    "titleZh": "元音辅音字符串计数 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-of-substrings-containing-every-vowel-and-k-consonants-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-operations-to-obtain-zero",
+    "frontendDisplayId": "2169",
+    "titleEn": "Count Operations to Obtain Zero",
+    "titleZh": "得到 0 的操作数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-operations-to-obtain-zero/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-pairs-of-connectable-servers-in-a-weighted-tree-network",
+    "frontendDisplayId": "3067",
+    "titleEn": "Count Pairs of Connectable Servers in a Weighted Tree Network",
+    "titleZh": "在带权树网络中统计可连接服务器对数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-pairs-of-connectable-servers-in-a-weighted-tree-network/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-pairs-of-nodes",
+    "frontendDisplayId": "1782",
+    "titleEn": "Count Pairs Of Nodes",
+    "titleZh": "统计点对的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Counting",
+      "Graph Theory",
+      "Hash Table",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "计数",
+      "图",
+      "哈希表",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-pairs-of-nodes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-21",
+    "claimedAt": "2026-07-10T02:07:51.050147+00:00",
+    "completedAt": null
+  }
+]

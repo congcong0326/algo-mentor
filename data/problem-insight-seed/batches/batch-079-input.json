@@ -1,0 +1,750 @@
+[
+  {
+    "slug": "minimum-cost-to-convert-string-i",
+    "frontendDisplayId": "2976",
+    "titleEn": "Minimum Cost to Convert String I",
+    "titleZh": "转换字符串的最小成本 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Shortest Path",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "最短路",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-convert-string-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-convert-string-ii",
+    "frontendDisplayId": "2977",
+    "titleEn": "Minimum Cost to Convert String II",
+    "titleZh": "转换字符串的最小成本 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Graph Theory",
+      "Shortest Path",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "图",
+      "最短路",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-convert-string-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-cut-a-stick",
+    "frontendDisplayId": "1547",
+    "titleEn": "Minimum Cost to Cut a Stick",
+    "titleZh": "切棍子的最小成本",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-cut-a-stick/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-divide-array-into-subarrays",
+    "frontendDisplayId": "3500",
+    "titleEn": "Minimum Cost to Divide Array Into Subarrays",
+    "titleZh": "将数组分割为子数组的最小代价",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-divide-array-into-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-equalize-array",
+    "frontendDisplayId": "3139",
+    "titleEn": "Minimum Cost to Equalize Array",
+    "titleZh": "使数组中所有元素相等的最小开销",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-equalize-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-equalize-arrays-using-swaps",
+    "frontendDisplayId": "3868",
+    "titleEn": "Minimum Cost to Equalize Arrays Using Swaps",
+    "titleZh": "通过交换使数组相等的最小花费",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Greedy",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "贪心",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-equalize-arrays-using-swaps/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-hire-k-workers",
+    "frontendDisplayId": "857",
+    "titleEn": "Minimum Cost to Hire K Workers",
+    "titleZh": "雇佣 K 名工人的最低成本",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-hire-k-workers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-make-all-characters-equal",
+    "frontendDisplayId": "2712",
+    "titleEn": "Minimum Cost to Make All Characters Equal",
+    "titleZh": "使所有字符相等的最小成本",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-make-all-characters-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-make-array-equal",
+    "frontendDisplayId": "2448",
+    "titleEn": "Minimum Cost to Make Array Equal",
+    "titleZh": "使数组相等的最小开销",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Prefix Sum",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "前缀和",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-make-array-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-make-array-equalindromic",
+    "frontendDisplayId": "2967",
+    "titleEn": "Minimum Cost to Make Array Equalindromic",
+    "titleZh": "使数组成为等数数组的最小代价",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-make-array-equalindromic/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-make-arrays-identical",
+    "frontendDisplayId": "3424",
+    "titleEn": "Minimum Cost to Make Arrays Identical",
+    "titleZh": "将数组变相同的最小代价",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-make-arrays-identical/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-make-at-least-one-valid-path-in-a-grid",
+    "frontendDisplayId": "1368",
+    "titleEn": "Minimum Cost to Make at Least One Valid Path in a Grid",
+    "titleZh": "使网格图至少有一条有效路径的最小代价",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Matrix",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "图",
+      "堆（优先队列）",
+      "矩阵",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-make-at-least-one-valid-path-in-a-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-make-two-binary-strings-equal",
+    "frontendDisplayId": "3800",
+    "titleEn": "Minimum Cost to Make Two Binary Strings Equal",
+    "titleZh": "使二进制字符串相等的最小成本",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-make-two-binary-strings-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-merge-sorted-lists",
+    "frontendDisplayId": "3801",
+    "titleEn": "Minimum Cost to Merge Sorted Lists",
+    "titleZh": "合并有序列表的最小成本",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Bit Manipulation",
+      "Dynamic Programming",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "位运算",
+      "动态规划",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-merge-sorted-lists/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-merge-stones",
+    "frontendDisplayId": "1000",
+    "titleEn": "Minimum Cost to Merge Stones",
+    "titleZh": "合并石头的最低成本",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-merge-stones/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-move-between-indices",
+    "frontendDisplayId": "3919",
+    "titleEn": "Minimum Cost to Move Between Indices",
+    "titleZh": "在下标间移动的最小代价",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-move-between-indices/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-move-chips-to-the-same-position",
+    "frontendDisplayId": "1217",
+    "titleEn": "Minimum Cost to Move Chips to The Same Position",
+    "titleZh": "玩筹码",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-move-chips-to-the-same-position/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-partition-a-binary-string",
+    "frontendDisplayId": "3864",
+    "titleEn": "Minimum Cost to Partition a Binary String",
+    "titleZh": "划分二进制字符串的最小费用",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Divide and Conquer",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "分治",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-partition-a-binary-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-reach-destination-in-time",
+    "frontendDisplayId": "1928",
+    "titleEn": "Minimum Cost to Reach Destination in Time",
+    "titleZh": "规定时间内到达终点的最小花费",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-reach-destination-in-time/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-reach-every-position",
+    "frontendDisplayId": "3502",
+    "titleEn": "Minimum Cost to Reach Every Position",
+    "titleZh": "到达每个位置的最小费用",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-reach-every-position/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-set-cooking-time",
+    "frontendDisplayId": "2162",
+    "titleEn": "Minimum Cost to Set Cooking Time",
+    "titleZh": "设置时间的最少代价",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-set-cooking-time/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-split-an-array",
+    "frontendDisplayId": "2547",
+    "titleEn": "Minimum Cost to Split an Array",
+    "titleZh": "拆分数组的最小代价",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Dynamic Programming",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "动态规划",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-split-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-to-split-into-ones",
+    "frontendDisplayId": "3857",
+    "titleEn": "Minimum Cost to Split into Ones",
+    "titleZh": "拆分到 1 的最小总代价",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-to-split-into-ones/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-tree-from-leaf-values",
+    "frontendDisplayId": "1130",
+    "titleEn": "Minimum Cost Tree From Leaf Values",
+    "titleZh": "叶值的最小代价生成树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-tree-from-leaf-values/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cost-walk-in-weighted-graph",
+    "frontendDisplayId": "3108",
+    "titleEn": "Minimum Cost Walk in Weighted Graph",
+    "titleZh": "带权图里旅途的最小代价",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Graph Theory",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "图",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cost-walk-in-weighted-graph/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-cuts-to-divide-a-circle",
+    "frontendDisplayId": "2481",
+    "titleEn": "Minimum Cuts to Divide a Circle",
+    "titleZh": "分割圆的最少切割次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Geometry",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "几何",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-cuts-to-divide-a-circle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-degree-of-a-connected-trio-in-a-graph",
+    "frontendDisplayId": "1761",
+    "titleEn": "Minimum Degree of a Connected Trio in a Graph",
+    "titleZh": "一个图中连通三元组的最小度数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-degree-of-a-connected-trio-in-a-graph/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-deletion-cost-to-make-all-characters-equal",
+    "frontendDisplayId": "3784",
+    "titleEn": "Minimum Deletion Cost to Make All Characters Equal",
+    "titleZh": "使所有字符相等的最小删除代价",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-deletion-cost-to-make-all-characters-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-deletions-for-at-most-k-distinct-characters",
+    "frontendDisplayId": "3545",
+    "titleEn": "Minimum Deletions for At Most K Distinct Characters",
+    "titleZh": "不同字符数量最多为 K 时的最少删除数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Greedy",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "贪心",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-deletions-for-at-most-k-distinct-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-deletions-to-make-alternating-substring",
+    "frontendDisplayId": "3777",
+    "titleEn": "Minimum Deletions to Make Alternating Substring",
+    "titleZh": "使子字符串变交替的最少删除次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Segment Tree",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "线段树",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-deletions-to-make-alternating-substring/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-079",
+    "claimedAt": "2026-07-10T06:26:08.008208+00:00",
+    "completedAt": null
+  }
+]

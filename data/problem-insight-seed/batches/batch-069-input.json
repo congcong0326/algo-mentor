@@ -1,0 +1,750 @@
+[
+  {
+    "slug": "maximum-genetic-difference-query",
+    "frontendDisplayId": "1938",
+    "titleEn": "Maximum Genetic Difference Query",
+    "titleZh": "查询最大基因差",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Depth-First Search",
+      "Hash Table",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "深度优先搜索",
+      "哈希表",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-genetic-difference-query/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-good-people-based-on-statements",
+    "frontendDisplayId": "2151",
+    "titleEn": "Maximum Good People Based on Statements",
+    "titleZh": "基于陈述统计最多好人数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-good-people-based-on-statements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-good-subarray-sum",
+    "frontendDisplayId": "3026",
+    "titleEn": "Maximum Good Subarray Sum",
+    "titleZh": "最大好子数组和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-good-subarray-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-good-subtree-score",
+    "frontendDisplayId": "3575",
+    "titleEn": "Maximum Good Subtree Score",
+    "titleZh": "最大好子树分数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "深度优先搜索",
+      "动态规划",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-good-subtree-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-height-by-stacking-cuboids",
+    "frontendDisplayId": "1691",
+    "titleEn": "Maximum Height by Stacking Cuboids",
+    "titleZh": "堆叠长方体的最大高度",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-height-by-stacking-cuboids/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-height-of-a-triangle",
+    "frontendDisplayId": "3200",
+    "titleEn": "Maximum Height of a Triangle",
+    "titleZh": "三角形的最大高度",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-height-of-a-triangle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-ice-cream-bars",
+    "frontendDisplayId": "1833",
+    "titleEn": "Maximum Ice Cream Bars",
+    "titleZh": "雪糕的最大数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting Sort",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数排序",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-ice-cream-bars/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-k-to-sort-a-permutation",
+    "frontendDisplayId": "3644",
+    "titleEn": "Maximum K to Sort a Permutation",
+    "titleZh": "排序排列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-k-to-sort-a-permutation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-lcci",
+    "frontendDisplayId": "面试题 16.07",
+    "titleEn": null,
+    "titleZh": "最大数值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Brainteaser",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "脑筋急转弯",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/maximum-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-length-of-a-concatenated-string-with-unique-characters",
+    "frontendDisplayId": "1239",
+    "titleEn": "Maximum Length of a Concatenated String with Unique Characters",
+    "titleZh": "串联字符串的最大长度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-length-of-a-concatenated-string-with-unique-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-length-of-pair-chain",
+    "frontendDisplayId": "646",
+    "titleEn": "Maximum Length of Pair Chain",
+    "titleZh": "最长数对链",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-length-of-pair-chain/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-length-of-repeated-subarray",
+    "frontendDisplayId": "718",
+    "titleEn": "Maximum Length of Repeated Subarray",
+    "titleZh": "最长重复子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Hash Function",
+      "Rolling Hash",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "哈希函数",
+      "滚动哈希",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-length-of-repeated-subarray/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-length-of-subarray-with-positive-product",
+    "frontendDisplayId": "1567",
+    "titleEn": "Maximum Length of Subarray With Positive Product",
+    "titleZh": "乘积为正数的最长子数组长度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-length-of-subarray-with-positive-product/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-length-substring-with-two-occurrences",
+    "frontendDisplayId": "3090",
+    "titleEn": "Maximum Length Substring With Two Occurrences",
+    "titleZh": "每个字符最多出现两次的最长子字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-length-substring-with-two-occurrences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-level-sum-of-a-binary-tree",
+    "frontendDisplayId": "1161",
+    "titleEn": "Maximum Level Sum of a Binary Tree",
+    "titleZh": "最大层内元素和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-level-sum-of-a-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-manhattan-distance-after-all-moves",
+    "frontendDisplayId": "3968",
+    "titleEn": "Maximum Manhattan Distance After All Moves",
+    "titleZh": "移动后的最大曼哈顿距离",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-manhattan-distance-after-all-moves/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-manhattan-distance-after-k-changes",
+    "frontendDisplayId": "3443",
+    "titleEn": "Maximum Manhattan Distance After K Changes",
+    "titleZh": "K 次修改后的最大曼哈顿距离",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-manhattan-distance-after-k-changes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-matching-of-players-with-trainers",
+    "frontendDisplayId": "2410",
+    "titleEn": "Maximum Matching of Players With Trainers",
+    "titleZh": "运动员和训练师的最大匹配数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-matching-of-players-with-trainers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-matrix-sum",
+    "frontendDisplayId": "1975",
+    "titleEn": "Maximum Matrix Sum",
+    "titleZh": "最大方阵和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-matrix-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-median-sum-of-subsequences-of-size-3",
+    "frontendDisplayId": "3627",
+    "titleEn": "Maximum Median Sum of Subsequences of Size 3",
+    "titleZh": "中位数之和的最大值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Game Theory",
+      "Greedy",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "Array",
+      "Game Theory",
+      "Greedy",
+      "Math",
+      "Sorting"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-median-sum-of-subsequences-of-size-3/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-multiplication-score",
+    "frontendDisplayId": "3290",
+    "titleEn": "Maximum Multiplication Score",
+    "titleZh": "最高乘法得分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-multiplication-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-nesting-depth-of-the-parentheses",
+    "frontendDisplayId": "1614",
+    "titleEn": "Maximum Nesting Depth of the Parentheses",
+    "titleZh": "括号的最大嵌套深度",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-nesting-depth-of-the-parentheses/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-nesting-depth-of-two-valid-parentheses-strings",
+    "frontendDisplayId": "1111",
+    "titleEn": "Maximum Nesting Depth of Two Valid Parentheses Strings",
+    "titleZh": "有效括号的嵌套深度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-nesting-depth-of-two-valid-parentheses-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-non-negative-product-in-a-matrix",
+    "frontendDisplayId": "1594",
+    "titleEn": "Maximum Non Negative Product in a Matrix",
+    "titleZh": "矩阵的最大非负积",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-non-negative-product-in-a-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-achievable-transfer-requests",
+    "frontendDisplayId": "1601",
+    "titleEn": "Maximum Number of Achievable Transfer Requests",
+    "titleZh": "最多可达成的换楼请求数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-achievable-transfer-requests/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-alloys",
+    "frontendDisplayId": "2861",
+    "titleEn": "Maximum Number of Alloys",
+    "titleZh": "最大合金数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-alloys/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-balloons",
+    "frontendDisplayId": "1189",
+    "titleEn": "Maximum Number of Balloons",
+    "titleZh": "“气球” 的最大数量",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-balloons/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-balls-in-a-box",
+    "frontendDisplayId": "1742",
+    "titleEn": "Maximum Number of Balls in a Box",
+    "titleZh": "盒子中小球的最大数量",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-balls-in-a-box/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-coins-you-can-get",
+    "frontendDisplayId": "1561",
+    "titleEn": "Maximum Number of Coins You Can Get",
+    "titleZh": "你可以获得的最大硬币数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Game Theory",
+      "Greedy",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "博弈",
+      "贪心",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-coins-you-can-get/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-number-of-consecutive-values-you-can-make",
+    "frontendDisplayId": "1798",
+    "titleEn": "Maximum Number of Consecutive Values You Can Make",
+    "titleZh": "你能构造出连续值的最大数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-number-of-consecutive-values-you-can-make/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-069",
+    "claimedAt": "2026-07-10T06:06:14.680731+00:00",
+    "completedAt": null
+  }
+]

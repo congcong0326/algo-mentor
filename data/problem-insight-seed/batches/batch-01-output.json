@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "01-matrix",
+    "reasonEN": "A medium matrix-distance classic combining multi-source BFS and dynamic programming; it trains boundary handling, shortest-distance propagation, and choosing the right traversal direction, making it valuable for grid problem fundamentals.",
+    "reasonZH": "矩阵距离类中等经典题，串联多源 BFS 与动态规划思路；重点训练边界处理、最短距离扩散和状态转移方向选择，是夯实网格题基础的高价值题。"
+  },
+  {
+    "slug": "05ZEDJ",
+    "reasonEN": "A medium LCP math-and-graph problem with array modeling; it emphasizes reverse reasoning, equation construction, and constraint propagation, making it useful for improving abstraction beyond routine traversal.",
+    "reasonZH": "LCP 中等数学图建模题，核心在于反向推导、方程关系构造和约束传递；适合训练从业务场景抽象出可计算模型的能力。"
+  },
+  {
+    "slug": "0H97ZC",
+    "reasonEN": "An easy sorting exercise centered on counting sort and hash mapping; it reinforces custom order handling and frequency reconstruction, serving as a clean entry point for non-comparison sorting.",
+    "reasonZH": "简单排序训练题，核心围绕计数排序与哈希映射；能强化自定义顺序处理和频次重建，是理解非比较排序的轻量入口。"
+  },
+  {
+    "slug": "0Zeoeg",
+    "reasonEN": "A medium LCP scenario problem that rewards precise state modeling; the main challenge is turning exploration records into stable rules and avoiding overcomplicated simulation, which makes it useful for contest-style reasoning practice.",
+    "reasonZH": "LCP 中等场景推理题，价值在于把探索记录抽象成稳定状态规则；训练避免过度模拟、抓住有效信息的能力，适合提升竞赛题建模敏感度。"
+  },
+  {
+    "slug": "0i0mDW",
+    "reasonEN": "A medium grid dynamic programming staple; it trains local transition design, first-row and first-column initialization, and space optimization, making it a must-practice problem for matrix DP fluency.",
+    "reasonZH": "网格动态规划中等基础题，重点训练局部状态转移、首行首列初始化和空间压缩；是建立矩阵 DP 手感的必刷题。"
+  },
+  {
+    "slug": "0jQkd0",
+    "reasonEN": "An easy matrix counting problem using hash-style frequency comparison; it sharpens observation of symmetric data changes and simple invariant checks, making it effective for implementation accuracy training.",
+    "reasonZH": "简单矩阵计数题，核心是用哈希或频次统计比较变化；训练对称数据变化的观察和不变量判断，适合提升基础实现准确性。"
+  },
+  {
+    "slug": "0on3uN",
+    "reasonEN": "A medium backtracking string problem with tight segment constraints; it practices pruning, boundary validation, and duplicate-free search construction, making it a compact template for constrained enumeration.",
+    "reasonZH": "字符串回溯中等题，约束集中且边界清晰；重点训练剪枝、合法性校验和无重复搜索路径构造，是掌握受限枚举模板的好题。"
+  },
+  {
+    "slug": "0ynMMM",
+    "reasonEN": "A hard monotonic stack landmark; it trains finding nearest smaller boundaries, sentinel handling, and area calculation under strict invariants, making it essential for breaking through stack-based interval reasoning.",
+    "reasonZH": "单调栈困难代表题，核心训练寻找左右第一个更小元素、哨兵处理和面积计算不变量；是突破栈式区间思维瓶颈的关键题。"
+  },
+  {
+    "slug": "1-bit-and-2-bit-characters",
+    "reasonEN": "An easy array parsing problem with a small state machine flavor; it focuses on greedy index jumps and terminal-state judgment, making it useful for practicing concise simulation without overengineering.",
+    "reasonZH": "简单数组解析题，带有轻量状态机特点；重点是贪心跳步和终止状态判断，适合训练简洁模拟与边界意识。"
+  },
+  {
+    "slug": "132-pattern",
+    "reasonEN": "A medium pattern-detection problem best solved with a monotonic stack; it teaches reverse scanning, maintaining candidate middle values, and avoiding quadratic enumeration, making it valuable for advanced stack intuition.",
+    "reasonZH": "中等模式检测题，单调栈解法非常典型；训练逆向扫描、维护候选中间值和规避二次枚举，是提升高级栈思维的优质题。"
+  },
+  {
+    "slug": "1GxJYY",
+    "reasonEN": "A medium sliding-window problem over arrays; it emphasizes frequency maintenance, valid-window counting, and modular result handling, making it useful for mastering window constraints with duplicates.",
+    "reasonZH": "数组滑动窗口中等题，核心是维护频次、统计合法窗口并处理结果取模；适合掌握含重复元素约束下的窗口计数技巧。"
+  },
+  {
+    "slug": "1fGaJU",
+    "reasonEN": "A medium two-pointers classic after sorting; it trains duplicate skipping, pointer movement by sum comparison, and result de-duplication, making it a foundational problem for k-sum families.",
+    "reasonZH": "排序加双指针的中等经典题，重点训练去重、按和移动指针和结果唯一性控制；是进入 k 数之和题型的基础关卡。"
+  },
+  {
+    "slug": "1nzheng-shu-zhong-1chu-xian-de-ci-shu-lcof",
+    "reasonEN": "A hard digit-counting problem combining math, recursion, and dynamic programming ideas; it stresses place-value decomposition and boundary contribution analysis, making it excellent for digit DP intuition.",
+    "reasonZH": "困难数字计数题，融合数学拆位、递归和动态规划思想；核心是按数位分析贡献与边界，是培养数位 DP 直觉的高价值题。"
+  },
+  {
+    "slug": "1ybDKD",
+    "reasonEN": "A hard LCP board-style reasoning problem; it demands precise constraint translation, state consistency checks, and careful handling of edge cases, making it strong practice for high-density contest puzzles.",
+    "reasonZH": "LCP 困难棋盘推理题，重点在于约束翻译、状态一致性判断和边界情况处理；适合训练高密度竞赛题中的建模与推理能力。"
+  },
+  {
+    "slug": "2-keys-keyboard",
+    "reasonEN": "A medium math-DP problem with a factorization core; it trains recognizing operation blocks, converting process cost into divisors, and choosing between DP and number-theoretic reasoning.",
+    "reasonZH": "中等数学动态规划题，核心隐藏在因子分解中；训练把操作过程转化为因子代价，并比较 DP 与数论推导两种思路。"
+  },
+  {
+    "slug": "21dk04",
+    "reasonEN": "A hard string dynamic programming classic; it focuses on subsequence-count transitions, empty-prefix initialization, and large-state dependency control, making it essential for advanced sequence DP practice.",
+    "reasonZH": "字符串动态规划困难经典题，重点是子序列计数转移、空前缀初始化和状态依赖控制；是进阶序列 DP 必练题。"
+  },
+  {
+    "slug": "24-game",
+    "reasonEN": "A hard backtracking math problem with a tiny search space but tricky precision; it trains expression-state enumeration, floating-point tolerance, and commutative pruning, making it ideal for exhaustive-search discipline.",
+    "reasonZH": "困难数学回溯题，搜索空间小但精度和剪枝细节多；训练表达式状态枚举、浮点误差容忍和交换律剪枝，是打磨穷举搜索基本功的好题。"
+  },
+  {
+    "slug": "2AoeFn",
+    "reasonEN": "A medium path-counting problem linking dynamic programming and combinatorics; it reinforces grid-state transitions, combinational formulas, and boundary initialization, making it useful for comparing DP and math solutions.",
+    "reasonZH": "中等路径计数题，连接动态规划与组合数学；能强化网格状态转移、组合公式和边界初始化，适合对比 DP 解法与数学解法。"
+  },
+  {
+    "slug": "2VG8Kg",
+    "reasonEN": "A medium minimum-subarray problem with sliding window, prefix sum, and binary search options; it trains monotonic constraints and answer minimization, making it valuable for selecting among array techniques.",
+    "reasonZH": "中等最短子数组题，可用滑动窗口、前缀和或二分；核心训练单调约束识别和最小答案维护，适合培养数组题解法选择能力。"
+  },
+  {
+    "slug": "2bCMpM",
+    "reasonEN": "A medium matrix-distance problem that highlights multi-source BFS and DP alternatives; it sharpens queue initialization, distance relaxation, and grid traversal discipline, making it useful for shortest-distance templates.",
+    "reasonZH": "中等矩阵距离题，突出多源 BFS 与动态规划两类解法；训练队列初始化、距离松弛和网格遍历规范，是掌握最短距离模板的好题。"
+  },
+  {
+    "slug": "2vYnGI",
+    "reasonEN": "An easy array pairing problem with sorting, binary search, and two-pointers choices; it practices counting valid pairs under a limit and handling modulo constraints, making it a practical warm-up for pair-sum patterns.",
+    "reasonZH": "简单数组配对题，可用排序、二分或双指针；重点训练限制条件下的合法配对计数和取模处理，是二元和题型的实用热身。"
+  },
+  {
+    "slug": "3Etpl5",
+    "reasonEN": "A medium binary-tree DFS problem focused on path-state accumulation; it trains carrying numeric context through recursion and finalizing work at leaves, making it a strong template for root-to-leaf traversal.",
+    "reasonZH": "中等二叉树 DFS 题，核心是路径状态累积；训练递归过程中携带数值上下文并在叶子节点结算，是根到叶遍历模板题。"
+  },
+  {
+    "slug": "3aqs1c",
+    "reasonEN": "A hard array dynamic programming problem from LCP; it emphasizes choosing compact states, reasoning about transition costs, and preventing state explosion, making it valuable for contest-level DP design.",
+    "reasonZH": "LCP 困难数组动态规划题，重点是设计紧凑状态、分析转移代价并避免状态爆炸；适合提升竞赛级 DP 建模能力。"
+  },
+  {
+    "slug": "3sum",
+    "reasonEN": "A medium two-pointers cornerstone after sorting; it teaches duplicate removal, fixed-anchor enumeration, and pointer convergence, making it one of the most important foundations for sum-combination problems.",
+    "reasonZH": "排序加双指针的中等基石题，训练去重、固定枚举锚点和指针收敛；是所有数和组合类题目的重要基础。"
+  },
+  {
+    "slug": "3sum-closest",
+    "reasonEN": "A medium two-pointers variant of 3Sum; it focuses on optimizing toward a target, updating the best distance, and moving pointers by comparison, making it useful for approximate-answer reasoning.",
+    "reasonZH": "三数之和的中等双指针变体，核心是逼近目标、维护最优差值并按比较结果移动指针；适合训练近似最优答案的思维。"
+  },
+  {
+    "slug": "3sum-with-multiplicity",
+    "reasonEN": "A medium counting-oriented 3Sum variant; it combines frequency tables, duplicate-aware combinatorics, and modular arithmetic, making it valuable for moving from listing solutions to counting them.",
+    "reasonZH": "偏计数的中等三数之和变体，融合频次表、重复元素组合计数和取模运算；适合从枚举答案进阶到统计方案数。"
+  },
+  {
+    "slug": "3u1WK4",
+    "reasonEN": "An easy linked-list intersection problem with hash-table and two-pointers solutions; it trains reference identity, pointer synchronization, and space-time tradeoffs, making it a concise linked-list reasoning exercise.",
+    "reasonZH": "简单链表相交题，可用哈希表或双指针；重点训练引用身份判断、指针同步和空间时间取舍，是链表推理的精炼练习。"
+  },
+  {
+    "slug": "4sjJUc",
+    "reasonEN": "A medium backtracking combination problem over arrays; it emphasizes sorting-based pruning, duplicate skipping at the same depth, and target reduction, making it a core exercise for combination-search templates.",
+    "reasonZH": "数组回溯组合中等题，核心是排序剪枝、同层去重和目标值递减；是掌握组合搜索模板与去重细节的核心练习。"
+  },
+  {
+    "slug": "4sum",
+    "reasonEN": "A medium k-sum extension using sorting and two pointers; it trains nested fixing, overflow awareness, duplicate control, and pruning, making it a natural progression after 3Sum.",
+    "reasonZH": "排序加双指针的中等 k 数之和扩展题，训练多层固定、溢出意识、去重控制和剪枝；是三数之和后的自然进阶。"
+  },
+  {
+    "slug": "4sum-ii",
+    "reasonEN": "A medium hash-table counting problem that splits four arrays into two pair-sum groups; it teaches meet-in-the-middle thinking and frequency aggregation, making it a practical bridge from brute force to optimized counting.",
+    "reasonZH": "中等哈希计数题，将四个数组拆成两组 pair sum；训练折半思想与频次聚合，是从暴力枚举走向优化计数的典型题。"
+  }
+]

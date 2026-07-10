@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "minimum-number-of-food-buckets-to-feed-the-hamsters",
+    "reasonEN": "A medium line-placement greedy problem; place a bucket where it can cover the current unmet position and a future neighbor whenever possible; it trains local coverage decisions with boundary awareness.",
+    "reasonZH": "中等难度的线性放置贪心题，优先把资源放在既能满足当前位置又能覆盖后续邻居的位置；训练局部覆盖决策与边界意识；是字符串贪心的经典模型。"
+  },
+  {
+    "slug": "minimum-number-of-frogs-croaking",
+    "reasonEN": "A medium string-state counting problem; track how many concurrent sequences are at each stage of the required character order and reject invalid transitions; it practices finite-state validation with concurrency counts.",
+    "reasonZH": "中等难度的字符串状态计数题，跟踪并发序列在规定字符顺序各阶段的数量并拒绝非法转移；训练有限状态验证与并发计数；很适合构建状态机思维。"
+  },
+  {
+    "slug": "minimum-number-of-groups-to-create-a-valid-assignment",
+    "reasonEN": "A medium frequency-partition greedy problem; test feasible base group sizes around the minimum count and sum the resulting groups; it develops quotient-remainder reasoning under near-equal partition constraints.",
+    "reasonZH": "中等难度的频次划分贪心题，围绕最小频次尝试可行基础组大小并累加所需组数；训练近似等大小分组下的商余数推理；是计数贪心的进阶题。"
+  },
+  {
+    "slug": "minimum-number-of-increments-on-subarrays-to-form-a-target-array",
+    "reasonEN": "A hard array-construction greedy problem; add only the positive rises between consecutive target heights; it reveals how interval increments decompose into a simple difference-array cost.",
+    "reasonZH": "困难的数组构造贪心题，只累加相邻目标高度之间的正向增量；训练理解区间增加如何分解为简单的差分成本；是差分思想的代表题。"
+  },
+  {
+    "slug": "minimum-number-of-k-consecutive-bit-flips",
+    "reasonEN": "A hard greedy window-flip problem; decide flips at the first incorrect bit and maintain active flip parity with a queue or difference array; it teaches irreversible local decisions with lazy state updates.",
+    "reasonZH": "困难的贪心窗口翻转题，在遇到第一个错误位时立即决定翻转，并用队列或差分维护生效翻转的奇偶性；训练不可逆局部决策与延迟状态更新。"
+  },
+  {
+    "slug": "minimum-number-of-moves-to-make-palindrome",
+    "reasonEN": "A hard two-pointer greedy problem; match outer characters by bubbling a partner inward and handle a lone center character separately; it develops inversion-count intuition for adjacent-swap transformations.",
+    "reasonZH": "困难的双指针贪心题，通过把匹配字符逐步冒泡到边缘来配对，并单独处理中心字符；训练相邻交换变换中的逆序计数直觉；是回文构造难题。"
+  },
+  {
+    "slug": "minimum-number-of-moves-to-seat-everyone",
+    "reasonEN": "An easy sorting-and-matching problem; pair sorted seat positions with sorted student positions and sum absolute differences; it demonstrates why ordered matching minimizes total movement on a line.",
+    "reasonZH": "简单的排序匹配题，将座位位置和学生位置分别排序后按序配对并累加绝对差；训练理解线性位置中的有序匹配为何最优；是重排问题基础题。"
+  },
+  {
+    "slug": "minimum-number-of-operations-to-convert-time",
+    "reasonEN": "An easy greedy denomination problem; convert both times to minutes and consume the difference with the largest allowed increments; it reinforces canonical coin-style greedy selection.",
+    "reasonZH": "简单的面额贪心题，将时间统一换算为分钟后用允许的最大增量逐步消耗差值；训练标准硬币式贪心选择；适合巩固基础模拟。"
+  },
+  {
+    "slug": "minimum-number-of-operations-to-have-distinct-elements",
+    "reasonEN": "A medium hash-based suffix problem; count duplicate conflicts and remove operations from the front until the remaining suffix is unique; it practices choosing a removal boundary through frequency maintenance.",
+    "reasonZH": "中等难度的哈希后缀题，统计重复冲突并从前端执行操作，直到剩余后缀互不相同；训练通过频次维护确定删除边界；适合学习后缀扫描。"
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-all-array-elements-equal-to-1",
+    "reasonEN": "A medium gcd-based array problem; use existing ones when available, otherwise find the shortest subarray with gcd one; it connects repeated gcd operations to an interval number-theory search.",
+    "reasonZH": "中等难度的 GCD 数组题，若已有 1 则直接扩散，否则寻找 GCD 为 1 的最短子数组；训练把重复最大公约数操作转化为区间数论搜索；很有化简价值。"
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-array-continuous",
+    "reasonEN": "A hard deduplication and sliding-window problem; sort unique values and maximize how many fit inside an interval of length n minus one; it teaches complement optimization for replacement operations.",
+    "reasonZH": "困难的去重滑动窗口题，排序唯一值后最大化落在长度 n-1 区间内的元素数；训练用补集思路优化替换次数；是连续数组问题的经典解法。"
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-array-empty",
+    "reasonEN": "A medium frequency greedy problem; decompose each count into groups of two and three while treating a leftover one as impossible; it sharpens modular case analysis in grouping tasks.",
+    "reasonZH": "中等难度的频次贪心题，将每种计数分解为大小为 2 和 3 的组，并识别余数为 1 的不可行情形；训练分组问题中的模分类；适合巩固计数技巧。"
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-array-xor-equal-to-k",
+    "reasonEN": "A medium bitwise observation problem; XOR the whole array with k and count the set bits in the mismatch; it teaches how independent bit corrections collapse an operation problem to popcount.",
+    "reasonZH": "中等难度的位运算观察题，将全数组异或结果再与 k 异或，并统计不匹配位中的 1；训练独立位修正如何化简为 popcount；是异或性质的实用应用。"
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-arrays-similar",
+    "reasonEN": "A hard parity-preserving matching problem; sort odd and even values separately, then sum the directional surplus transfers; it develops invariant-aware pairing for constrained transformations.",
+    "reasonZH": "困难的保奇偶匹配题，分别排序奇数和偶数，再累加单向盈余转移；训练受不变量约束的配对方法；是数组变换贪心的代表题。"
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-elements-in-array-distinct",
+    "reasonEN": "An easy frequency-suffix problem; scan or remove fixed-size prefixes until every remaining value is unique; it reinforces duplicate detection with a direct operation simulation.",
+    "reasonZH": "简单的频次后缀题，扫描或移除固定大小前缀，直到剩余元素互不相同；训练重复检测与直接操作模拟；适合夯实哈希表基础。"
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-string-sorted",
+    "reasonEN": "A hard combinatorics problem on multiset permutations; count lexicographically smaller remaining arrangements using factorials and inverse factorials; it is a rigorous exercise in duplicate-aware rank calculation.",
+    "reasonZH": "困难的多重集排列组合题，利用阶乘和逆阶乘统计字典序更小的剩余排列数；训练处理重复字符的排名计算；是组合数学字符串题的代表。"
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-word-k-periodic",
+    "reasonEN": "A medium block-frequency problem; split the word into k-length chunks and retain the most common chunk; it teaches reducing periodicity edits to mode selection over normalized units.",
+    "reasonZH": "中等难度的块频次题，将单词切成长度为 k 的片段并保留出现最多的片段；训练把周期修改转化为标准化单元上的众数选择；建模简洁有效。"
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-x-and-y-equal",
+    "reasonEN": "A medium memoized shortest-path problem; compare direct increments or decrements with detours through divisible values and cache repeated states; it develops state-space pruning for arithmetic transitions.",
+    "reasonZH": "中等难度的记忆化最短路题，比较直接加减与经由可整除值绕行的代价，并缓存重复状态；训练算术状态转移中的搜索剪枝；适合掌握记忆化 DP。"
+  },
+  {
+    "slug": "minimum-number-of-operations-to-move-all-balls-to-each-box",
+    "reasonEN": "A medium prefix-sweep problem; make left-to-right and right-to-left passes while maintaining counts and accumulated distances; it teaches deriving all-target costs from directional aggregates.",
+    "reasonZH": "中等难度的前缀扫描题，分别从左到右和从右到左维护球数与累计距离；训练用方向聚合推导所有目标位置成本；是前后缀技巧的经典题。"
+  },
+  {
+    "slug": "minimum-number-of-operations-to-reinitialize-a-permutation",
+    "reasonEN": "A medium permutation-cycle simulation problem; follow the position of one representative element until it returns to its start; it shows how symmetry reduces full-array simulation to a single cycle length.",
+    "reasonZH": "中等难度的排列环模拟题，跟踪一个代表元素的位置直到回到起点；训练利用对称性把全数组模拟缩减为单个环长度；适合建立置换思维。"
+  },
+  {
+    "slug": "minimum-number-of-operations-to-satisfy-conditions",
+    "reasonEN": "A medium column-state DP problem; count replacement costs for each column value and transition only between different neighboring states; it reinforces small-alphabet dynamic programming on matrices.",
+    "reasonZH": "中等难度的列状态动态规划题，统计每列改成各值的成本，并只在相邻列不同状态间转移；训练小字母表下的矩阵 DP；是状态压缩的实用练习。"
+  },
+  {
+    "slug": "minimum-number-of-operations-to-sort-a-binary-tree-by-level",
+    "reasonEN": "A medium BFS and cycle-decomposition problem; gather each level, map it to sorted order, and count permutation cycles; it combines level traversal with minimum-swap reasoning.",
+    "reasonZH": "中等难度的 BFS 与环分解题，收集每层节点、映射到排序位置并统计排列环；训练层序遍历与最少交换推理的结合；很适合巩固置换技巧。"
+  },
+  {
+    "slug": "minimum-number-of-people-to-teach",
+    "reasonEN": "A medium set-cover-style greedy problem; isolate incompatible friendships and count which language reaches the most involved people; it teaches focusing only on constraints that actually fail.",
+    "reasonZH": "中等难度的集合覆盖式贪心题，先找出无法沟通的关系，再统计哪种语言覆盖最多相关人员；训练只聚焦真正失败的约束；是筛选加计数的典型应用。"
+  },
+  {
+    "slug": "minimum-number-of-pushes-to-type-word-i",
+    "reasonEN": "An easy arithmetic greedy problem; assign characters to key slots in fixed groups of eight presses; it practices deriving a direct cost formula from uniform capacity constraints.",
+    "reasonZH": "简单的算术贪心题，按每组八个按键槽分配字符；训练从均匀容量约束中推导直接成本公式；适合巩固基础数学建模。"
+  },
+  {
+    "slug": "minimum-number-of-pushes-to-type-word-ii",
+    "reasonEN": "A medium frequency-sorting greedy problem; place the most frequent characters in the cheapest key positions; it demonstrates the rearrangement principle for weighted assignment.",
+    "reasonZH": "中等难度的频次排序贪心题，将出现次数最多的字符放到按键成本最低的位置；训练加权分配中的重排原则；是字符频率优化的经典题。"
+  },
+  {
+    "slug": "minimum-number-of-refueling-stops",
+    "reasonEN": "A hard heap-greedy reachability problem; as stations become reachable, keep their fuel in a max-heap and refuel only when necessary; it is a canonical deferred-choice strategy.",
+    "reasonZH": "困难的堆贪心可达性题，将已可达加油站的燃料放入大根堆，并仅在必要时选择最大补给；训练延迟决策策略；是优先队列贪心的经典代表。"
+  },
+  {
+    "slug": "minimum-number-of-removals-to-make-mountain-array",
+    "reasonEN": "A hard bidirectional LIS problem; compute increasing subsequence lengths from both sides and keep the best valid peak; it develops combining two directional DPs into a shape constraint.",
+    "reasonZH": "困难的双向 LIS 题，分别计算两侧递增子序列长度并保留最佳合法峰顶；训练将两个方向 DP 组合为形状约束；是山形序列经典题。"
+  },
+  {
+    "slug": "minimum-number-of-seconds-to-make-mountain-height-zero",
+    "reasonEN": "A medium binary-search scheduling problem; test a time limit by summing how much each worker can remove via its quadratic work progression; it practices feasibility counting under nonlinear rates.",
+    "reasonZH": "中等难度的二分调度题，通过计算每个工人在给定时间内按二次进度可移除的高度来验证时限；训练非线性速率下的可行性计数；适合进阶答案二分。"
+  },
+  {
+    "slug": "minimum-number-of-steps-to-make-two-strings-anagram",
+    "reasonEN": "A medium character-counting problem; compare frequency deficits between the two equal-length strings and sum the required replacements; it reinforces histogram-difference modeling.",
+    "reasonZH": "中等难度的字符计数题，比较两个等长字符串的频次缺口并累加所需替换；训练直方图差分建模；是字母异位词的基础模板。"
+  },
+  {
+    "slug": "minimum-number-of-steps-to-make-two-strings-anagram-ii",
+    "reasonEN": "A medium frequency-difference problem with deletions; sum absolute character-count differences across the alphabet; it clarifies how allowing both strings to change alters the counting formula.",
+    "reasonZH": "中等难度的可删除频次差问题，对字母表上各字符频次差取绝对值后求和；训练理解双方都可修改时计数公式的变化；适合对比异位词变体。"
+  }
+]

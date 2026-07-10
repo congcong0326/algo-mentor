@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "kplEvH",
+    "reasonEN": "A grid path-optimization problem that combines reachability with dynamic programming over constrained movement. It trains state modeling on a matrix and the use of DFS or BFS to expose valid transitions.",
+    "reasonZH": "这是一道网格路径优化题，将可达性与受限移动下的动态规划结合。它训练矩阵状态建模，以及用 DFS 或 BFS 发掘有效转移。"
+  },
+  {
+    "slug": "kskhHQ",
+    "reasonEN": "This hard matrix-connectivity problem uses union-find to merge regions as water levels or local conditions evolve. It develops component metadata design and the ability to turn geometric adjacency into efficient connectivity updates.",
+    "reasonZH": "该困难矩阵连通性题利用并查集，随着水位或局部条件变化合并区域。它训练连通块元数据设计，以及将几何相邻关系转化为高效连通性更新。"
+  },
+  {
+    "slug": "kth-ancestor-of-a-tree-node",
+    "reasonEN": "A binary-lifting template problem for jumping upward by powers of two in a rooted tree. It teaches preprocessing parent tables, bit decomposition of queries, and the time-space trade-off behind fast ancestry lookup.",
+    "reasonZH": "这是树上倍增模板题，通过二的幂次向上跳跃查询祖先。它训练预处理父节点表、按位分解查询，以及快速祖先查询背后的时空权衡。"
+  },
+  {
+    "slug": "kth-distinct-string-in-an-array",
+    "reasonEN": "A frequency-counting and ordered-scan problem that distinguishes globally unique strings from repeated ones. It reinforces two-pass reasoning and preserving original encounter order after aggregation.",
+    "reasonZH": "这是一道频次统计与顺序扫描题，需要区分全局唯一字符串和重复字符串。它训练两遍处理思路，并在聚合后保留原始出现顺序。"
+  },
+  {
+    "slug": "kth-largest-element-in-a-stream",
+    "reasonEN": "A streaming top-K problem where a min-heap of fixed size retains exactly the current K largest values. It establishes a practical priority-queue pattern for online data and incremental queries.",
+    "reasonZH": "这是数据流 Top-K 题，用固定大小的小根堆保留当前最大的 K 个值。它建立在线数据处理与增量查询中实用的优先队列模式。"
+  },
+  {
+    "slug": "kth-largest-element-in-an-array",
+    "reasonEN": "A selection problem that contrasts sorting, heaps, and quickselect for finding an order statistic. It teaches partition invariants and choosing an algorithm according to expected time and memory constraints.",
+    "reasonZH": "该选择题可比较排序、堆和快速选择来求顺序统计量。它训练分区不变量，并根据时间与空间约束选择合适算法。"
+  },
+  {
+    "slug": "kth-largest-sum-in-a-binary-tree",
+    "reasonEN": "A tree BFS problem that aggregates node values level by level before selecting a rank. It reinforces level-order traversal, numeric accumulation, and handling cases with fewer than K levels.",
+    "reasonZH": "这是一道树 BFS 题，先按层聚合节点值，再选择指定排名。它训练层序遍历、数值累加，以及层数不足 K 时的边界处理。"
+  },
+  {
+    "slug": "kth-missing-positive-number",
+    "reasonEN": "A sorted-array binary-search problem based on the number of missing values before each index. It develops a useful derived monotonic function and precise lower-bound search logic.",
+    "reasonZH": "该有序数组二分题依据每个下标前缺失正整数的数量进行判断。它训练构造单调派生函数，以及精确的下界二分逻辑。"
+  },
+  {
+    "slug": "kth-node-from-end-of-list-lcci",
+    "reasonEN": "A standard linked-list two-pointer problem that keeps a fixed gap of K nodes. It teaches synchronized pointer movement and eliminates the need to know list length in advance.",
+    "reasonZH": "这是标准的链表双指针题，通过保持 K 个节点的固定间隔定位目标。它训练同步移动指针，并避免预先计算链表长度。"
+  },
+  {
+    "slug": "kth-smallest-amount-with-single-denomination-combination",
+    "reasonEN": "A hard parametric-search problem that counts valid amounts with inclusion-exclusion over denomination subsets. It develops binary search on answers, least-common-multiple control, and overflow-aware combinatorics.",
+    "reasonZH": "该困难参数搜索题通过容斥原理统计可由单一面值整除的金额。它训练答案二分、最小公倍数控制，以及防溢出的组合计数。"
+  },
+  {
+    "slug": "kth-smallest-element-in-a-bst",
+    "reasonEN": "A BST order-statistic problem where in-order traversal naturally visits values in ascending order. It reinforces the search-tree invariant and early termination once the required rank is reached.",
+    "reasonZH": "这是一道 BST 顺序统计题，中序遍历会自然按升序访问节点值。它巩固搜索树有序不变量，并训练达到目标排名后的提前终止。"
+  },
+  {
+    "slug": "kth-smallest-element-in-a-sorted-matrix",
+    "reasonEN": "A matrix order-statistic problem that supports both heap merging and binary search over value space. It teaches monotone counting in sorted rows and columns and the trade-offs between the two approaches.",
+    "reasonZH": "该矩阵顺序统计题可用堆归并，也可对值域二分。它训练在行列有序条件下进行单调计数，并比较两种方案的适用场景。"
+  },
+  {
+    "slug": "kth-smallest-instructions",
+    "reasonEN": "A hard combinatorial construction problem that chooses each lexicographic step by counting remaining paths. It teaches binomial-coefficient DP, rank-based decisions, and avoiding explicit enumeration.",
+    "reasonZH": "这是困难的组合构造题，通过统计剩余路径数决定每一步的字典序选择。它训练二项式系数 DP、按排名决策，以及避免显式枚举。"
+  },
+  {
+    "slug": "kth-smallest-number-in-multiplication-table",
+    "reasonEN": "A classic answer-binary-search problem with a monotone counting function over multiplication-table rows. It develops integer division counting and the ability to search a value domain rather than enumerate entries.",
+    "reasonZH": "这是经典的答案二分题，利用乘法表各行构造单调计数函数。它训练整除计数，以及在值域中搜索而非枚举表项的能力。"
+  },
+  {
+    "slug": "kth-smallest-path-xor-sum",
+    "reasonEN": "This hard tree query problem combines root-path XOR structure with ordered selection. It develops prefix-XOR modeling, set-based ranking, and careful handling of dynamic or constrained path states.",
+    "reasonZH": "该困难树查询题结合根路径异或结构与有序选择。它训练前缀异或建模、基于集合的排名处理，以及对动态或受限路径状态的细致维护。"
+  },
+  {
+    "slug": "kth-smallest-product-of-two-sorted-arrays",
+    "reasonEN": "A hard binary-search problem where negative values make product counting subtle. It teaches sign-aware partitioning, monotone predicate construction, and using two pointers or bounds to count products efficiently.",
+    "reasonZH": "这是困难的二分题，负数使乘积计数变得复杂。它训练按符号分类、构造单调判定函数，以及用双指针或边界搜索高效统计乘积。"
+  },
+  {
+    "slug": "lMSNwu",
+    "reasonEN": "A forward-order linked-list addition problem that uses stacks to align digits from least significant to most significant. It reinforces carry propagation and the value of reversing access order without mutating input lists.",
+    "reasonZH": "该正序链表加法题使用栈从低位到高位对齐数字。它训练进位传递，并理解如何在不修改输入链表的前提下反转访问顺序。"
+  },
+  {
+    "slug": "langtons-ant-lcci",
+    "reasonEN": "A stateful grid simulation with an unbounded sparse board and direction changes driven by cell color. It teaches coordinate hashing, directional encoding, and faithful implementation of evolving local rules.",
+    "reasonZH": "这是一道有状态的网格模拟题，在稀疏无限棋盘上根据格子颜色改变方向。它训练坐标哈希、方向编码，以及忠实实现不断演化的局部规则。"
+  },
+  {
+    "slug": "largest-1-bordered-square",
+    "reasonEN": "A matrix DP problem that precomputes horizontal and vertical runs of ones to verify square borders quickly. It teaches directional state design and reducing repeated border scans to constant-time checks.",
+    "reasonZH": "该矩阵 DP 题预处理横向和纵向连续 1 的长度，以快速验证正方形边界。它训练方向性状态设计，并将重复边界扫描降为常数时间检查。"
+  },
+  {
+    "slug": "largest-3-same-digit-number-in-string",
+    "reasonEN": "A simple string-scan problem that detects equal-digit runs while retaining the numerically largest candidate. It reinforces fixed-window inspection and the distinction between lexicographic and numeric comparison for equal-length strings.",
+    "reasonZH": "这是一道简单字符串扫描题，识别连续相同数字并保留数值最大的候选。它训练定长窗口检查，以及等长字符串中字典序与数值比较的一致性。"
+  },
+  {
+    "slug": "largest-color-value-in-a-directed-graph",
+    "reasonEN": "A hard DAG dynamic-programming problem that propagates per-color counts along a topological order. It teaches cycle detection through indegrees and how to carry a vector-valued DP state across graph edges.",
+    "reasonZH": "该困难 DAG 动态规划题沿拓扑序传播每种颜色的计数。它训练通过入度检测环，并掌握在线图边上传递向量型 DP 状态的方法。"
+  },
+  {
+    "slug": "largest-combination-with-bitwise-and-greater-than-zero",
+    "reasonEN": "A bit-counting problem based on the observation that a nonzero AND requires at least one common set bit. It develops independent bit-position analysis and an efficient alternative to subset enumeration.",
+    "reasonZH": "本题基于非零按位与必须存在公共置位这一观察进行逐位计数。它训练独立分析每个二进制位，并用高效方法替代子集枚举。"
+  },
+  {
+    "slug": "largest-component-size-by-common-factor",
+    "reasonEN": "A hard union-find problem that connects array values through their prime factors and measures component size. It teaches factorization-driven graph construction and choosing whether factors or indices should be unioned.",
+    "reasonZH": "该困难并查集题通过质因数连接数组元素，并统计连通块大小。它训练由分解驱动的图构建，以及选择合并因子还是下标的建模方式。"
+  },
+  {
+    "slug": "largest-divisible-subset",
+    "reasonEN": "A sorted dynamic-programming problem that extends divisible chains while recording predecessors. It teaches partial-order DP, reconstruction of an optimal subset, and why sorting makes divisibility transitions tractable.",
+    "reasonZH": "这是一道排序动态规划题，通过扩展整除链并记录前驱构造最优子集。它训练偏序关系上的 DP、最优解回溯，以及排序为何能简化整除转移。"
+  },
+  {
+    "slug": "largest-element-in-an-array-after-merge-operations",
+    "reasonEN": "A greedy right-to-left merging problem where suffix accumulation determines whether adjacent values can combine. It develops reverse traversal reasoning and shows how local feasibility controls a global maximum.",
+    "reasonZH": "该贪心题从右向左合并，后缀累积值决定相邻元素能否结合。它训练逆向遍历推理，并展示局部可行性如何控制全局最大值。"
+  },
+  {
+    "slug": "largest-even-number",
+    "reasonEN": "A string and parity problem that locates the last usable even digit to maximize the retained prefix. It reinforces the greedy principle that preserving more significant digits dominates local choices.",
+    "reasonZH": "这是一道字符串奇偶性题，需要定位最后一个可用偶数位以最大化保留前缀。它巩固高位优先的贪心原则，即保留更多高位数字优先于局部选择。"
+  },
+  {
+    "slug": "largest-local-values-in-a-matrix",
+    "reasonEN": "A direct matrix-window problem that computes the maximum for every fixed 3 by 3 neighborhood. It provides clean practice with nested-loop boundaries and local aggregation.",
+    "reasonZH": "这是直接的矩阵窗口题，需要计算每个固定 3x3 邻域的最大值。它适合练习嵌套循环边界和局部聚合。"
+  },
+  {
+    "slug": "largest-local-values-in-a-matrix-ii",
+    "reasonEN": "An extended matrix local-maximum problem that benefits from preprocessing rather than recomputing every region independently. It teaches exploiting two-dimensional structure and selecting an appropriate range-maximum strategy.",
+    "reasonZH": "该扩展矩阵局部最大值题适合通过预处理避免重复计算每个区域。它训练利用二维结构，并选择合适的区间最大值维护策略。"
+  },
+  {
+    "slug": "largest-magic-square",
+    "reasonEN": "A matrix verification problem that uses row, column, and diagonal prefix sums to test candidate magic squares efficiently. It develops multidirectional prefix-sum design and systematic validation of geometric constraints.",
+    "reasonZH": "这是一道矩阵验证题，利用行、列和对角线前缀和高效检查候选幻方。它训练多方向前缀和设计，以及系统验证几何约束。"
+  },
+  {
+    "slug": "largest-merge-of-two-strings",
+    "reasonEN": "A lexicographic greedy problem where each step compares the remaining suffixes of two strings. It teaches why immediate character comparison can be insufficient and how suffix order supports an optimal merge.",
+    "reasonZH": "该字典序贪心题每一步都要比较两个字符串的剩余后缀。它训练理解单字符比较为何可能不足，以及后缀顺序如何保证最优合并。"
+  }
+]

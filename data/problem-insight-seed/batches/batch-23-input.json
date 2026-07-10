@@ -1,0 +1,746 @@
+[
+  {
+    "slug": "count-sub-islands",
+    "frontendDisplayId": "1905",
+    "titleEn": "Count Sub Islands",
+    "titleZh": "统计子岛屿",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-sub-islands/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-subarrays-of-length-three-with-a-condition",
+    "frontendDisplayId": "3392",
+    "titleEn": "Count Subarrays of Length Three With a Condition",
+    "titleZh": "统计符合条件长度为 3 的子数组数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-subarrays-of-length-three-with-a-condition/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-subarrays-where-max-element-appears-at-least-k-times",
+    "frontendDisplayId": "2962",
+    "titleEn": "Count Subarrays Where Max Element Appears at Least K Times",
+    "titleZh": "统计最大元素出现至少 K 次的子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-subarrays-where-max-element-appears-at-least-k-times/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-subarrays-with-cost-less-than-or-equal-to-k",
+    "frontendDisplayId": "3835",
+    "titleEn": "Count Subarrays With Cost Less Than or Equal to K",
+    "titleZh": "开销小于等于 K 的子数组数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Queue",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调队列",
+      "队列"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-subarrays-with-cost-less-than-or-equal-to-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-subarrays-with-fixed-bounds",
+    "frontendDisplayId": "2444",
+    "titleEn": "Count Subarrays With Fixed Bounds",
+    "titleZh": "统计定界子数组的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Queue",
+      "Queue",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调队列",
+      "队列",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-subarrays-with-fixed-bounds/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-subarrays-with-k-distinct-integers",
+    "frontendDisplayId": "3859",
+    "titleEn": "Count Subarrays With K Distinct Integers",
+    "titleZh": "统计包含 K 个不同整数的子数组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Hash Table",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "哈希表",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-subarrays-with-k-distinct-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-subarrays-with-majority-element-i",
+    "frontendDisplayId": "3737",
+    "titleEn": "Count Subarrays With Majority Element I",
+    "titleZh": "统计主要元素子数组数目 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Divide and Conquer",
+      "Hash Table",
+      "Merge Sort",
+      "Prefix Sum",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "分治",
+      "哈希表",
+      "归并排序",
+      "前缀和",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-subarrays-with-majority-element-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-subarrays-with-majority-element-ii",
+    "frontendDisplayId": "3739",
+    "titleEn": "Count Subarrays With Majority Element II",
+    "titleZh": "统计主要元素子数组数目 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Hash Table",
+      "Merge Sort",
+      "Prefix Sum",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "哈希表",
+      "归并排序",
+      "前缀和",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-subarrays-with-majority-element-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-subarrays-with-median-k",
+    "frontendDisplayId": "2488",
+    "titleEn": "Count Subarrays With Median K",
+    "titleZh": "统计中位数为 K 的子数组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-subarrays-with-median-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-subarrays-with-score-less-than-k",
+    "frontendDisplayId": "2302",
+    "titleEn": "Count Subarrays With Score Less Than K",
+    "titleZh": "统计得分小于 K 的子数组数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-subarrays-with-score-less-than-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-submatrices-with-all-ones",
+    "frontendDisplayId": "1504",
+    "titleEn": "Count Submatrices With All Ones",
+    "titleZh": "统计全 1 子矩形",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-submatrices-with-all-ones/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-submatrices-with-equal-frequency-of-x-and-y",
+    "frontendDisplayId": "3212",
+    "titleEn": "Count Submatrices With Equal Frequency of X and Y",
+    "titleZh": "统计 X 和 Y 频数相等的子矩阵数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-submatrices-with-equal-frequency-of-x-and-y/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-submatrices-with-top-left-element-and-sum-less-than-k",
+    "frontendDisplayId": "3070",
+    "titleEn": "Count Submatrices with Top-Left Element and Sum Less Than k",
+    "titleZh": "元素和小于等于 k 的子矩阵的数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-submatrices-with-top-left-element-and-sum-less-than-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-substrings-divisible-by-last-digit",
+    "frontendDisplayId": "3448",
+    "titleEn": "Count Substrings Divisible By Last Digit",
+    "titleZh": "统计可以被最后一个数位整除的子字符串数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-substrings-divisible-by-last-digit/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-substrings-starting-and-ending-with-given-character",
+    "frontendDisplayId": "3084",
+    "titleEn": "Count Substrings Starting and Ending with Given Character",
+    "titleZh": "统计以给定字符开头和结尾的子字符串总数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-substrings-starting-and-ending-with-given-character/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-substrings-that-can-be-rearranged-to-contain-a-string-i",
+    "frontendDisplayId": "3297",
+    "titleEn": "Count Substrings That Can Be Rearranged to Contain a String I",
+    "titleZh": "统计重新排列后包含另一个字符串的子字符串数目 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-substrings-that-can-be-rearranged-to-contain-a-string-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-substrings-that-can-be-rearranged-to-contain-a-string-ii",
+    "frontendDisplayId": "3298",
+    "titleEn": "Count Substrings That Can Be Rearranged to Contain a String II",
+    "titleZh": "统计重新排列后包含另一个字符串的子字符串数目 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-substrings-that-can-be-rearranged-to-contain-a-string-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-substrings-that-differ-by-one-character",
+    "frontendDisplayId": "1638",
+    "titleEn": "Count Substrings That Differ by One Character",
+    "titleZh": "统计只差一个字符的子串数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Enumeration",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "枚举",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-substrings-that-differ-by-one-character/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-substrings-that-satisfy-k-constraint-i",
+    "frontendDisplayId": "3258",
+    "titleEn": "Count Substrings That Satisfy K-Constraint I",
+    "titleZh": "统计满足 K 约束的子字符串数量 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-substrings-that-satisfy-k-constraint-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-substrings-that-satisfy-k-constraint-ii",
+    "frontendDisplayId": "3261",
+    "titleEn": "Count Substrings That Satisfy K-Constraint II",
+    "titleZh": "统计满足 K 约束的子字符串数量 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-substrings-that-satisfy-k-constraint-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-substrings-with-k-frequency-characters-i",
+    "frontendDisplayId": "3325",
+    "titleEn": "Count Substrings With K-Frequency Characters I",
+    "titleZh": "字符至少出现 K 次的子字符串 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-substrings-with-k-frequency-characters-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-subtrees-with-max-distance-between-cities",
+    "frontendDisplayId": "1617",
+    "titleEn": "Count Subtrees With Max Distance Between Cities",
+    "titleZh": "统计子树中城市之间最大距离",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Enumeration",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "枚举",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-subtrees-with-max-distance-between-cities/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-symmetric-integers",
+    "frontendDisplayId": "2843",
+    "titleEn": "Count Symmetric Integers",
+    "titleZh": "统计对称整数的数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-symmetric-integers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-tested-devices-after-test-operations",
+    "frontendDisplayId": "2960",
+    "titleEn": "Count Tested Devices After Test Operations",
+    "titleZh": "统计已测试设备",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-tested-devices-after-test-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-digits-that-divide-a-number",
+    "frontendDisplayId": "2520",
+    "titleEn": "Count the Digits That Divide a Number",
+    "titleZh": "统计能整除数字的位数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-digits-that-divide-a-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-hidden-sequences",
+    "frontendDisplayId": "2145",
+    "titleEn": "Count the Hidden Sequences",
+    "titleZh": "统计隐藏数组数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-hidden-sequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-arrays-with-k-matching-adjacent-elements",
+    "frontendDisplayId": "3405",
+    "titleEn": "Count the Number of Arrays with K Matching Adjacent Elements",
+    "titleZh": "统计恰好有 K 个相等相邻元素的数组数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-arrays-with-k-matching-adjacent-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-beautiful-subarrays",
+    "frontendDisplayId": "2588",
+    "titleEn": "Count the Number of Beautiful Subarrays",
+    "titleZh": "统计美丽子数组数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-beautiful-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-complete-components",
+    "frontendDisplayId": "2685",
+    "titleEn": "Count the Number of Complete Components",
+    "titleZh": "统计完全连通分量的数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-complete-components/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "count-the-number-of-computer-unlocking-permutations",
+    "frontendDisplayId": "3577",
+    "titleEn": "Count the Number of Computer Unlocking Permutations",
+    "titleZh": "统计计算机解锁顺序排列数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Brainteaser",
+      "Combinatorics",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "脑筋急转弯",
+      "组合数学",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/count-the-number-of-computer-unlocking-permutations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-23",
+    "claimedAt": "2026-07-10T02:07:51.446382+00:00",
+    "completedAt": null
+  }
+]

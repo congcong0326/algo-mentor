@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "find-emotionally-consistent-users",
+    "reasonEN": "A medium SQL analytics problem centered on grouped behavioral consistency; it practices conditional aggregation and filtering across user records, making it useful for modeling multi-row business rules in database queries.",
+    "reasonZH": "这是一道中等 SQL 行为分析题，聚焦按用户聚合后的状态一致性；训练条件聚合与分组筛选，适合掌握将多行业务规则转化为查询条件的能力。"
+  },
+  {
+    "slug": "find-eventual-safe-states",
+    "reasonEN": "This graph problem reframes cycle detection as reverse topological elimination; it trains out-degree construction and queue-based propagation, providing a reusable way to identify nodes that cannot reach a cycle.",
+    "reasonZH": "该图论题将环检测转化为反向拓扑剥离；训练出度建图与队列传播，是理解如何找出无法到达环节点的通用方法。"
+  },
+  {
+    "slug": "find-first-and-last-position-of-element-in-sorted-array",
+    "reasonEN": "A binary-search boundary template problem that separates lower and upper bound searches; it sharpens interval invariants and duplicate handling, which are essential for reliable ordered-array queries.",
+    "reasonZH": "这是二分边界模板题，需要分别寻找左边界和右边界；重点训练区间不变量与重复元素处理，对有序数组查询非常基础。"
+  },
+  {
+    "slug": "find-first-palindromic-string-in-the-array",
+    "reasonEN": "An easy string scan built around two-pointer palindrome validation; it practices early termination and symmetric index movement, making it a clean entry point for basic string predicates.",
+    "reasonZH": "这道简单字符串遍历题以双指针回文判断为核心；训练对称下标移动和及早返回，适合作为基础字符串判定的入门练习。"
+  },
+  {
+    "slug": "find-followers-count",
+    "reasonEN": "A foundational SQL grouping exercise focused on counting relationships per entity; it reinforces GROUP BY semantics and result ordering, directly matching common reporting-query patterns.",
+    "reasonZH": "该题是基础 SQL 分组统计题，核心是按实体计数关联关系；训练 GROUP BY 语义与结果排序，贴近日常报表查询场景。"
+  },
+  {
+    "slug": "find-golden-hour-customers",
+    "reasonEN": "This medium database analysis task focuses on extracting time-window behavior from customer activity; it exercises temporal filtering and per-user aggregation, useful for translating product metrics into SQL.",
+    "reasonZH": "这是一道中等数据库分析题，关注从客户活动中筛选特定时段行为；训练时间条件过滤与按用户聚合，适合将产品指标落到 SQL 查询。"
+  },
+  {
+    "slug": "find-good-days-to-rob-the-bank",
+    "reasonEN": "A prefix-style dynamic programming problem that precomputes monotonic run lengths on both sides; it teaches how directional summaries turn repeated range checks into linear-time decisions.",
+    "reasonZH": "该题属于前后缀动态规划题，通过预处理两侧单调连续长度完成判断；训练用方向性摘要将重复区间检查降为线性复杂度。"
+  },
+  {
+    "slug": "find-greatest-common-divisor-of-array",
+    "reasonEN": "An easy number-theory application showing that the array-wide answer depends on its minimum and maximum; it reinforces Euclid's algorithm and the habit of reducing a problem to decisive extremes.",
+    "reasonZH": "这是一道简单数论应用题，数组整体答案可归约为最小值和最大值；训练欧几里得算法，以及从全局问题提取决定性极值的思路。"
+  },
+  {
+    "slug": "find-if-array-can-be-sorted",
+    "reasonEN": "This medium bit-manipulation and sorting problem exploits invariant popcount groups; it trains recognizing operation constraints and verifying order through group boundaries instead of simulating every swap.",
+    "reasonZH": "该中等题利用二进制位数相同这一可交换不变量；训练识别操作约束，并通过分组边界验证有序性而非逐次模拟交换。"
+  },
+  {
+    "slug": "find-if-digit-game-can-be-won",
+    "reasonEN": "A lightweight arithmetic classification problem based on partitioning numbers by digit length; it practices translating game conditions into aggregate comparisons, a useful simplification pattern for easy simulations.",
+    "reasonZH": "这道简单数学分类题按数字位数划分元素；训练把博弈条件转化为聚合量比较，是简化模拟类问题的实用模式。"
+  },
+  {
+    "slug": "find-if-path-exists-in-graph",
+    "reasonEN": "An introductory connectivity problem with DFS, BFS, or Union-Find as interchangeable tools; it builds graph representation skills and clarifies when component merging is preferable to traversal.",
+    "reasonZH": "该题是图连通性的入门代表，可用 DFS、BFS 或并查集求解；训练图建模，并理解何时用连通块合并替代遍历。"
+  },
+  {
+    "slug": "find-in-mountain-array",
+    "reasonEN": "A hard interactive binary-search problem combining peak detection with ascending and descending searches; it tests query-budget awareness and careful boundary logic, making it excellent practice for composite binary search.",
+    "reasonZH": "这是一道困难交互式二分题，需要结合峰值定位、升序段查找和降序段查找；训练查询次数意识与边界处理，是复合二分的高价值练习。"
+  },
+  {
+    "slug": "find-indices-of-stable-mountains",
+    "reasonEN": "An easy array-filtering exercise that checks each position against a local threshold; it reinforces index-safe iteration and direct predicate construction, useful for many one-pass screening tasks.",
+    "reasonZH": "该题是简单数组筛选题，依据局部阈值判断每个位置；训练下标安全遍历和直接构造判定条件，适合一趟扫描类问题入门。"
+  },
+  {
+    "slug": "find-indices-with-index-and-value-difference-i",
+    "reasonEN": "A small-constraint two-pointer and enumeration problem that separates index and value constraints; it trains precise pair-condition checks and establishes a baseline before optimizing the harder variant.",
+    "reasonZH": "这是一道小规模的双指针或枚举题，需要同时处理下标差和值差；训练精确的数对条件判断，并为优化版建立清晰基线。"
+  },
+  {
+    "slug": "find-indices-with-index-and-value-difference-ii",
+    "reasonEN": "The optimized counterpart uses maintained extrema to satisfy distance constraints efficiently; it teaches how to convert pair search into prefix-state queries, a key upgrade from brute-force reasoning.",
+    "reasonZH": "作为优化版本，该题通过维护前缀极值高效满足距离约束；训练把数对搜索转化为前缀状态查询，是从暴力枚举进阶的重要一步。"
+  },
+  {
+    "slug": "find-invalid-ip-addresses",
+    "reasonEN": "A hard SQL data-quality problem centered on validating structured text fields; it practices pattern matching, numeric range checks, and edge-case exclusion, directly applicable to database cleansing workflows.",
+    "reasonZH": "这是一道困难 SQL 数据质量题，核心是校验结构化文本字段；训练模式匹配、数值范围判断和边界情况排除，贴近数据库清洗场景。"
+  },
+  {
+    "slug": "find-k-closest-elements",
+    "reasonEN": "A medium sorted-array selection problem where binary search locates the best window; it trains comparing window endpoints and tie-breaking, illustrating how ordering removes the need for a heap.",
+    "reasonZH": "该中等题在有序数组中用二分定位最优窗口；训练窗口两端比较与平局处理，展示了有序性如何避免使用堆。"
+  },
+  {
+    "slug": "find-k-pairs-with-smallest-sums",
+    "reasonEN": "This heap problem treats sorted pair sums as a best-first frontier; it practices initializing candidate states and expanding only promising neighbors, a reusable pattern for k-smallest combination problems.",
+    "reasonZH": "这是一道堆的最佳优先搜索题，将有序数对和视为候选前沿；训练初始化候选状态并只扩展有希望的相邻状态，可迁移到各类最小 K 组合问题。"
+  },
+  {
+    "slug": "find-k-th-smallest-pair-distance",
+    "reasonEN": "A hard answer-space binary search problem paired with a two-pointer counting routine; it teaches monotonic feasibility design and efficient pair counting, a core technique for kth-order optimization.",
+    "reasonZH": "该困难题采用答案空间二分配合双指针计数；训练构造单调可行性和高效统计数对，是第 K 小优化问题的核心技巧。"
+  },
+  {
+    "slug": "find-kth-bit-in-nth-binary-string",
+    "reasonEN": "This recursive symmetry problem avoids materializing exponentially long strings; it trains mapping an index through reversal and inversion, making it valuable for divide-and-conquer reasoning on implicit sequences.",
+    "reasonZH": "该递归对称题无需构造指数长度字符串；训练通过翻转与取反将下标映射到更小问题，适合理解隐式序列上的分治思维。"
+  },
+  {
+    "slug": "find-kth-largest-xor-coordinate-value",
+    "reasonEN": "A medium matrix prefix-XOR problem followed by kth-value selection; it combines two-dimensional state recurrence with heap or quickselect tradeoffs, making it a strong exercise in compositional techniques.",
+    "reasonZH": "这是一道中等矩阵前缀异或题，随后还要完成第 K 大选择；训练二维状态递推，以及堆和快速选择的取舍，适合练习组合算法。"
+  },
+  {
+    "slug": "find-largest-value-in-each-tree-row",
+    "reasonEN": "A tree traversal template problem that aggregates one value per depth; it reinforces level-order BFS and level-boundary management, which generalize to many hierarchical reporting tasks.",
+    "reasonZH": "该题是按层聚合的树遍历模板题，每一深度输出一个结果；训练层序 BFS 与层边界管理，可迁移到多种层级统计任务。"
+  },
+  {
+    "slug": "find-latest-group-of-size-m",
+    "reasonEN": "This medium simulation problem tracks contiguous segment lengths as bits flip; it teaches boundary-based state updates and avoids rescanning groups, a valuable technique for dynamic interval maintenance.",
+    "reasonZH": "这道中等模拟题在位翻转过程中维护连续区间长度；训练基于边界更新状态、避免重复扫描分组，是动态区间维护的实用技巧。"
+  },
+  {
+    "slug": "find-longest-awesome-substring",
+    "reasonEN": "A hard prefix-mask problem that encodes digit parity in a bitset; it trains earliest-index storage and one-bit state transitions, revealing a powerful method for substring parity constraints.",
+    "reasonZH": "该困难题用前缀位掩码编码数字奇偶性；训练记录状态首次出现位置和枚举一位变化，揭示了处理子串奇偶约束的强力方法。"
+  },
+  {
+    "slug": "find-longest-special-substring-that-occurs-thrice-i",
+    "reasonEN": "The first version is a medium counting and enumeration problem over repeated-character runs; it practices converting substring occurrence requirements into run-length statistics and serves as a clear baseline for optimization.",
+    "reasonZH": "第一版是中等计数与枚举题，围绕连续相同字符段统计；训练把子串出现次数条件转化为段长统计，并为优化解建立直观基线。"
+  },
+  {
+    "slug": "find-longest-special-substring-that-occurs-thrice-ii",
+    "reasonEN": "This optimized medium variant uses monotonic length feasibility with counting over character runs; it trains binary search on the answer and scalable occurrence aggregation, highlighting how to improve the baseline solution.",
+    "reasonZH": "该优化版中等题利用长度可行性的单调性和字符段计数；训练答案二分与可扩展的出现次数聚合，展示如何系统优化基础解法。"
+  },
+  {
+    "slug": "find-longest-subarray-lcci",
+    "reasonEN": "A prefix-sum and hash-map problem that balances two categories through a signed cumulative sum; it trains recording the earliest occurrence of each state, a classic technique for longest balanced subarrays.",
+    "reasonZH": "这是一道前缀和加哈希表题，用带符号累计和表示两类元素的平衡；训练记录每个状态的最早位置，是最长平衡子数组的经典技巧。"
+  },
+  {
+    "slug": "find-loyal-customers",
+    "reasonEN": "This medium SQL cohort-analysis problem identifies customers meeting repeated activity criteria; it practices grouped conditional counts and HAVING filters, directly reflecting retention and loyalty reporting logic.",
+    "reasonZH": "该中等 SQL 用户分群题识别满足重复行为条件的客户；训练分组条件计数与 HAVING 筛选，直接对应留存和忠诚度报表逻辑。"
+  },
+  {
+    "slug": "find-lucky-integer-in-an-array",
+    "reasonEN": "An easy frequency-counting problem that compares each value with its occurrence total; it reinforces hash-map or bucket counting and the distinction between element values and frequencies.",
+    "reasonZH": "这道简单计数题比较元素值与其出现次数；训练哈希表或桶计数，并强化元素取值与频次之间的对应关系。"
+  },
+  {
+    "slug": "find-majority-element-lcci",
+    "reasonEN": "A foundational majority-detection problem that can be solved with counting or Boyer-Moore voting; it teaches frequency invariants and introduces a space-efficient cancellation strategy with broad interview value.",
+    "reasonZH": "该题是主要元素检测的基础代表，可用计数或 Boyer-Moore 投票法；训练频次不变量，并引入空间高效的抵消策略，面试价值很高。"
+  }
+]

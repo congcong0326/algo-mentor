@@ -1,0 +1,756 @@
+[
+  {
+    "slug": "longest-non-decreasing-subarray-from-two-arrays",
+    "frontendDisplayId": "2771",
+    "titleEn": "Longest Non-decreasing Subarray From Two Arrays",
+    "titleZh": "构造最长非递减子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-non-decreasing-subarray-from-two-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-palindrome",
+    "frontendDisplayId": "409",
+    "titleEn": "Longest Palindrome",
+    "titleZh": "最长回文串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Greedy",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-palindrome/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-palindrome-after-substring-concatenation-i",
+    "frontendDisplayId": "3503",
+    "titleEn": "Longest Palindrome After Substring Concatenation I",
+    "titleZh": "子字符串连接后的最长回文串 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Enumeration",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "枚举",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-palindrome-after-substring-concatenation-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-palindrome-after-substring-concatenation-ii",
+    "frontendDisplayId": "3504",
+    "titleEn": "Longest Palindrome After Substring Concatenation II",
+    "titleZh": "子字符串连接后的最长回文串 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-palindrome-after-substring-concatenation-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-palindrome-by-concatenating-two-letter-words",
+    "frontendDisplayId": "2131",
+    "titleEn": "Longest Palindrome by Concatenating Two Letter Words",
+    "titleZh": "连接两字母单词得到的最长回文串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Greedy",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "贪心",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-palindrome-by-concatenating-two-letter-words/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-palindromic-path-in-graph",
+    "frontendDisplayId": "3615",
+    "titleEn": "Longest Palindromic Path in Graph",
+    "titleZh": "图中的最长回文路径",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming",
+      "Graph Theory",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "位掩码",
+      "动态规划",
+      "图",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-palindromic-path-in-graph/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-palindromic-subsequence",
+    "frontendDisplayId": "516",
+    "titleEn": "Longest Palindromic Subsequence",
+    "titleZh": "最长回文子序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-palindromic-subsequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-palindromic-subsequence-after-at-most-k-operations",
+    "frontendDisplayId": "3472",
+    "titleEn": "Longest Palindromic Subsequence After at Most K Operations",
+    "titleZh": "至多 K 次操作后的最长回文子序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-palindromic-subsequence-after-at-most-k-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-palindromic-substring",
+    "frontendDisplayId": "5",
+    "titleEn": "Longest Palindromic Substring",
+    "titleZh": "最长回文子串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-palindromic-substring/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-path-with-different-adjacent-characters",
+    "frontendDisplayId": "2246",
+    "titleEn": "Longest Path With Different Adjacent Characters",
+    "titleZh": "相邻字符不同的最长路径",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Graph Theory",
+      "String",
+      "Topological Sort",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "图",
+      "字符串",
+      "拓扑排序",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-path-with-different-adjacent-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-repeating-character-replacement",
+    "frontendDisplayId": "424",
+    "titleEn": "Longest Repeating Character Replacement",
+    "titleZh": "替换后的最长重复字符",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-repeating-character-replacement/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-special-path",
+    "frontendDisplayId": "3425",
+    "titleEn": "Longest Special Path",
+    "titleZh": "最长特殊路径",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Hash Table",
+      "Prefix Sum",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "哈希表",
+      "前缀和",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-special-path/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-special-path-ii",
+    "frontendDisplayId": "3486",
+    "titleEn": "Longest Special Path II",
+    "titleZh": "最长特殊路径 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Hash Table",
+      "Prefix Sum",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "哈希表",
+      "前缀和",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-special-path-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-square-streak-in-an-array",
+    "frontendDisplayId": "2501",
+    "titleEn": "Longest Square Streak in an Array",
+    "titleZh": "数组中最长的方波",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-square-streak-in-an-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-strictly-increasing-or-strictly-decreasing-subarray",
+    "frontendDisplayId": "3105",
+    "titleEn": "Longest Strictly Increasing or Strictly Decreasing Subarray",
+    "titleZh": "最长的严格递增或递减子数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-strictly-increasing-or-strictly-decreasing-subarray/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-strictly-increasing-subsequence-with-non-zero-bitwise-and",
+    "frontendDisplayId": "3825",
+    "titleEn": "Longest Strictly Increasing Subsequence With Non-Zero Bitwise AND",
+    "titleZh": "按位与结果非零的最长上升子序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Bit Manipulation",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "Array",
+      "Binary Search",
+      "Bit Manipulation",
+      "Enumeration"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-strictly-increasing-subsequence-with-non-zero-bitwise-and/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-string-chain",
+    "frontendDisplayId": "1048",
+    "titleEn": "Longest String Chain",
+    "titleZh": "最长字符串链",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Table",
+      "Sorting",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希表",
+      "排序",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-string-chain/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-subarray-of-1s-after-deleting-one-element",
+    "frontendDisplayId": "1493",
+    "titleEn": "Longest Subarray of 1's After Deleting One Element",
+    "titleZh": "删掉一个元素以后全为 1 的最长子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-subarray-of-1s-after-deleting-one-element/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-subarray-with-maximum-bitwise-and",
+    "frontendDisplayId": "2419",
+    "titleEn": "Longest Subarray With Maximum Bitwise AND",
+    "titleZh": "按位与最大的最长子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Brainteaser"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "脑筋急转弯"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-subarray-with-maximum-bitwise-and/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-subsequence-repeated-k-times",
+    "frontendDisplayId": "2014",
+    "titleEn": "Longest Subsequence Repeated k Times",
+    "titleZh": "重复 K 次的最长子序列",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Counting",
+      "Enumeration",
+      "Hash Table",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "计数",
+      "枚举",
+      "哈希表",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-subsequence-repeated-k-times/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-subsequence-with-decreasing-adjacent-difference",
+    "frontendDisplayId": "3409",
+    "titleEn": "Longest Subsequence With Decreasing Adjacent Difference",
+    "titleZh": "最长相邻绝对差递减子序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-subsequence-with-decreasing-adjacent-difference/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-subsequence-with-limited-sum",
+    "frontendDisplayId": "2389",
+    "titleEn": "Longest Subsequence With Limited Sum",
+    "titleZh": "和有限的最长子序列",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Prefix Sum",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "前缀和",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-subsequence-with-limited-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-subsequence-with-non-zero-bitwise-xor",
+    "frontendDisplayId": "3702",
+    "titleEn": "Longest Subsequence With Non-Zero Bitwise XOR",
+    "titleZh": "按位异或非零的最长子序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-subsequence-with-non-zero-bitwise-xor/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-substring-of-all-vowels-in-order",
+    "frontendDisplayId": "1839",
+    "titleEn": "Longest Substring Of All Vowels in Order",
+    "titleZh": "所有元音按顺序排布的最长子字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-substring-of-all-vowels-in-order/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-substring-of-one-repeating-character",
+    "frontendDisplayId": "2213",
+    "titleEn": "Longest Substring of One Repeating Character",
+    "titleZh": "由单个字符重复的最长子字符串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Ordered Set",
+      "Segment Tree",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "有序集合",
+      "线段树",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-substring-of-one-repeating-character/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-substring-with-at-least-k-repeating-characters",
+    "frontendDisplayId": "395",
+    "titleEn": "Longest Substring with At Least K Repeating Characters",
+    "titleZh": "至少有 K 个重复字符的最长子串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Divide and Conquer",
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "分治",
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-substring-with-at-least-k-repeating-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-substring-without-repeating-characters",
+    "frontendDisplayId": "3",
+    "titleEn": "Longest Substring Without Repeating Characters",
+    "titleZh": "无重复字符的最长子串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-turbulent-subarray",
+    "frontendDisplayId": "978",
+    "titleEn": "Longest Turbulent Subarray",
+    "titleZh": "最长湍流子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-turbulent-subarray/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-uncommon-subsequence-i",
+    "frontendDisplayId": "521",
+    "titleEn": "Longest Uncommon Subsequence I",
+    "titleZh": "最长特殊序列 Ⅰ",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-uncommon-subsequence-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "longest-uncommon-subsequence-ii",
+    "frontendDisplayId": "522",
+    "titleEn": "Longest Uncommon Subsequence II",
+    "titleZh": "最长特殊序列 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/longest-uncommon-subsequence-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-062",
+    "claimedAt": "2026-07-10T04:11:02.714186+00:00",
+    "completedAt": null
+  }
+]

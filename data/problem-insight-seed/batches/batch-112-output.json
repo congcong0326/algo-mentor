@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "smallest-string-with-swaps",
+    "reasonEN": "A medium graph-connectivity string problem using Union-Find or component traversal. Grouping swappable indices and sorting characters within each component teaches how connectivity constraints turn local swaps into global freedom.",
+    "reasonZH": "这是一道借助并查集或连通分量遍历的中等字符串题。将可交换下标分组并在每个分量内排序字符，训练如何把局部交换约束转化为全局重排能力。"
+  },
+  {
+    "slug": "smallest-subarrays-with-maximum-bitwise-or",
+    "reasonEN": "This medium bitwise window problem exploits the contribution of each binary bit to a suffix OR. Tracking last occurrences or window coverage builds intuition for deriving minimal ranges from monotonic bitwise aggregates.",
+    "reasonZH": "这道中等位运算窗口题利用每个二进制位对后缀或值的贡献。追踪最近出现位置或窗口覆盖情况，能训练从单调位运算聚合中推导最短区间的能力。"
+  },
+  {
+    "slug": "smallest-subsequence-of-distinct-characters",
+    "reasonEN": "A medium greedy monotonic-stack classic for lexicographically minimal subsequences. Popping a larger character only when it appears again later trains the key feasibility check behind many stack-based greedy proofs.",
+    "reasonZH": "这是求字典序最小子序列的中等贪心单调栈经典题。只有在较大字符后续仍会出现时才弹栈，训练单调栈贪心中最关键的可行性判断。"
+  },
+  {
+    "slug": "smallest-substring-with-identical-characters-i",
+    "reasonEN": "A hard binary-search and enumeration problem focused on limiting runs of identical characters. Designing a monotone feasibility test and accounting for replacement choices make it a strong exercise in answer-search reasoning.",
+    "reasonZH": "这是一道围绕限制连续相同字符长度的困难二分枚举题。构造单调的可行性判定并计算替换代价，能强化答案二分的建模能力。"
+  },
+  {
+    "slug": "smallest-substring-with-identical-characters-ii",
+    "reasonEN": "This hard string optimization problem applies binary search to a run-length constraint. Efficiently evaluating whether a candidate maximum run is achievable trains the transition from brute-force edits to monotone decision algorithms.",
+    "reasonZH": "这道困难字符串优化题将二分查找用于连续段长度约束。高效判断某个最大连续长度是否可达，训练从暴力修改转向单调决策算法的思维。"
+  },
+  {
+    "slug": "smallest-subtree-with-all-the-deepest-nodes",
+    "reasonEN": "A medium tree problem that connects deepest-node depth with their lowest common ancestor. Returning both subtree depth and representative node in DFS demonstrates how composite recursion results can eliminate extra traversals.",
+    "reasonZH": "这是一道将最深节点深度与最近公共祖先结合的中等树题。DFS 同时返回子树深度和代表节点，展示了复合递归返回值如何避免额外遍历。"
+  },
+  {
+    "slug": "smallest-sufficient-team",
+    "reasonEN": "A hard bitmask dynamic programming problem for minimum set coverage. Compressing skills into masks and preserving predecessor choices trains both subset-state optimization and solution reconstruction.",
+    "reasonZH": "这是一道最小集合覆盖的困难位掩码动态规划题。将技能压缩为掩码并保留前驱选择，能同时训练子集状态优化与方案重构。"
+  },
+  {
+    "slug": "smallest-unique-subarray",
+    "reasonEN": "A hard uniqueness-query problem combining rolling hashes or suffix arrays with binary search. Checking whether a candidate length distinguishes subarrays develops advanced substring indexing and collision-aware comparison skills.",
+    "reasonZH": "这是一道结合滚动哈希或后缀数组与二分查找的困难唯一性查询题。判断给定长度能否区分子数组，训练高级子串索引与哈希冲突处理能力。"
+  },
+  {
+    "slug": "smallest-value-after-replacing-with-sum-of-prime-factors",
+    "reasonEN": "A medium number-theory simulation problem built on repeated prime factorization. Correctly handling multiplicity and the fixed-point condition provides practical training in divisor-based decomposition.",
+    "reasonZH": "这是一道基于反复质因数分解的中等数论模拟题。正确处理质因数重数和不再变化的终止条件，能训练因子分解的实用实现能力。"
+  },
+  {
+    "slug": "smallest-value-of-the-rearranged-number",
+    "reasonEN": "A medium digit-rearrangement problem driven by sorting and sign-aware construction. Treating zeros and negative values carefully highlights how numeric formatting constraints affect an otherwise simple ordering task.",
+    "reasonZH": "这是一道由排序和符号分类驱动的中等数字重排题。谨慎处理零与负数，能理解数值格式约束如何改变看似简单的排序逻辑。"
+  },
+  {
+    "slug": "snail-traversal",
+    "reasonEN": "A medium traversal and reshaping problem centered on consistent index mapping. Alternating row direction while preserving output dimensions trains careful coordinate transformation and boundary-aware array construction.",
+    "reasonZH": "这是一道以稳定下标映射为核心的中等遍历与重塑题。交替处理行方向并保持输出维度正确，训练坐标转换与边界控制能力。"
+  },
+  {
+    "slug": "snake-in-matrix",
+    "reasonEN": "An easy matrix simulation problem that reduces movement commands to a linear position update. Converting between row-column coordinates and flat indices offers concise practice with grid arithmetic.",
+    "reasonZH": "这是一道将移动指令归约为线性位置更新的简单矩阵模拟题。在线性下标与行列坐标之间转换，适合练习简洁的网格算术。"
+  },
+  {
+    "slug": "snakes-and-ladders",
+    "reasonEN": "A medium implicit-graph BFS problem with nontrivial board-coordinate conversion. Modeling dice outcomes as edges and applying jumps at the right time reinforces shortest-path layering and zigzag matrix indexing.",
+    "reasonZH": "这是一道带复杂棋盘坐标转换的中等隐式图 BFS 题。将掷骰结果建模为边并在正确时机应用跳转，能巩固最短路分层与蛇形矩阵下标转换。"
+  },
+  {
+    "slug": "snapshot-array",
+    "reasonEN": "A medium data-structure design problem based on per-index version histories and binary search. Storing changes lazily instead of copying whole arrays teaches a foundational approach to persistent-looking APIs.",
+    "reasonZH": "这是一道基于每个下标版本历史和二分查找的中等数据结构设计题。惰性记录变更而非复制整个数组，训练实现持久化风格接口的基础方法。"
+  },
+  {
+    "slug": "solve-the-equation",
+    "reasonEN": "A medium parsing and algebra simulation problem that normalizes terms across both sides. Handling signs, coefficients, and constants in one scan develops reliable state-machine techniques for expression processing.",
+    "reasonZH": "这是一道将等式两侧项统一归并的中等解析与代数模拟题。单次扫描中处理符号、系数与常数，能训练表达式处理中的可靠状态机思维。"
+  },
+  {
+    "slug": "solving-questions-with-brainpower",
+    "reasonEN": "A medium one-dimensional dynamic programming problem with take-or-skip transitions. Propagating the best score to the next eligible position is a clean lesson in modeling cooldown constraints.",
+    "reasonZH": "这是一道带选取或跳过转移的中等一维动态规划题。将最优得分传播到下一个可选位置，能清晰训练带冷却约束的状态建模。"
+  },
+  {
+    "slug": "sort-an-array",
+    "reasonEN": "A medium sorting benchmark that exposes the tradeoffs among merge sort, heap sort, counting sort, and radix sort. Implementing one approach with its time and memory guarantees is essential practice for choosing algorithms by constraints.",
+    "reasonZH": "这是一道涵盖归并、堆、计数和基数排序取舍的中等排序基准题。实现一种满足时间与空间保证的方法，是按数据约束选择算法的重要练习。"
+  },
+  {
+    "slug": "sort-array-by-increasing-frequency",
+    "reasonEN": "An easy frequency-ordering problem using a hash table and custom comparator. Encoding the secondary descending-value rule precisely builds good habits for multi-key sorting.",
+    "reasonZH": "这是一道使用哈希表和自定义比较器的简单频率排序题。精确编码数值降序这一第二关键字，能培养多关键字排序的实现习惯。"
+  },
+  {
+    "slug": "sort-array-by-parity",
+    "reasonEN": "A simple partitioning problem well suited to two pointers. Moving the boundaries according to parity trains in-place rearrangement and the invariant that separates processed from unprocessed elements.",
+    "reasonZH": "这是一道适合双指针处理的简单分区题。依据奇偶性移动两端边界，训练原地重排以及已处理和未处理区域的循环不变量。"
+  },
+  {
+    "slug": "sort-array-by-parity-ii",
+    "reasonEN": "An easy two-pointer placement problem with parity-specific index positions. Advancing separate even and odd pointers highlights how a positional invariant can simplify constrained rearrangement.",
+    "reasonZH": "这是一道要求奇偶元素落在对应下标的简单双指针题。分别推进偶数和奇数位置指针，能理解位置不变量如何简化受约束重排。"
+  },
+  {
+    "slug": "sort-by",
+    "reasonEN": "A straightforward sorting API problem focused on comparator design. Ordering objects by a derived numeric key offers practical practice with callback semantics and stable, readable comparison logic.",
+    "reasonZH": "这是一道聚焦比较器设计的简单排序 API 题。按派生数值键排列对象，适合练习回调语义与清晰稳定的比较逻辑。"
+  },
+  {
+    "slug": "sort-characters-by-frequency",
+    "reasonEN": "A medium counting-and-ordering string problem that can use buckets or a heap. Mapping character frequencies back into grouped output teaches how to select a sorting strategy from the value range and output needs.",
+    "reasonZH": "这是一道可使用桶排序或堆的中等字符串计数排序题。将字符频次回填为分组输出，训练根据值域与输出需求选择排序策略。"
+  },
+  {
+    "slug": "sort-colors",
+    "reasonEN": "A medium Dutch-national-flag problem and a canonical three-way partition template. Maintaining low, current, and high boundaries while avoiding skipped values is valuable training for in-place classification.",
+    "reasonZH": "这是荷兰国旗问题的中等经典三路划分模板题。维护 low、current、high 三个边界并避免漏处理元素，能训练原地分类的核心技巧。"
+  },
+  {
+    "slug": "sort-even-and-odd-indices-independently",
+    "reasonEN": "An easy array-sorting problem that separates interleaved positions into independent groups. Extracting, ordering in opposite directions, and merging back trains clean index-based data transformation.",
+    "reasonZH": "这是一道将交错下标拆成独立组处理的简单数组排序题。提取两组、按相反方向排序后再回填，训练清晰的下标型数据转换。"
+  },
+  {
+    "slug": "sort-integers-by-binary-reflection",
+    "reasonEN": "A simple custom-ordering problem based on a binary-derived key. Computing the reflection consistently and using it as a comparator key builds fluency with bit representation transformations.",
+    "reasonZH": "这是一道以二进制派生键为依据的简单自定义排序题。稳定计算二进制反射值并将其作为比较键，能提升位表示转换的熟练度。"
+  },
+  {
+    "slug": "sort-integers-by-the-number-of-1-bits",
+    "reasonEN": "An easy bit-counting sorting problem with a natural numeric tie-breaker. Using a population-count key reinforces bit manipulation utilities and disciplined comparator construction.",
+    "reasonZH": "这是一道带数值次关键字的简单位计数排序题。以二进制 1 的个数作为排序键，能巩固位运算工具使用和比较器构造。"
+  },
+  {
+    "slug": "sort-integers-by-the-power-value",
+    "reasonEN": "A medium memoization and sorting problem based on recursively defined power values. Caching repeated transition chains is the key optimization, making it a useful example of dynamic programming over an implicit state graph.",
+    "reasonZH": "这是一道基于递归权重值的中等记忆化排序题。缓存重复出现的状态转移链是核心优化，适合作为隐式状态图动态规划的实例。"
+  },
+  {
+    "slug": "sort-items-by-groups-respecting-dependencies",
+    "reasonEN": "A hard dependency-ordering problem requiring topological sorting at both item and group levels. Building and validating two related DAGs teaches how to preserve nested ordering constraints and detect cycles rigorously.",
+    "reasonZH": "这是一道需要同时处理项目层和组层拓扑排序的困难依赖排序题。构建并验证两个关联 DAG，训练如何保持嵌套顺序约束并严谨地检测环。"
+  },
+  {
+    "slug": "sort-list",
+    "reasonEN": "A medium linked-list merge-sort classic with strict space expectations. Splitting by fast and slow pointers and merging sorted halves trains divide-and-conquer mechanics without relying on random access.",
+    "reasonZH": "这是具有严格空间要求的中等链表归并排序经典题。通过快慢指针拆分、再合并有序链表，训练不依赖随机访问的分治实现。"
+  },
+  {
+    "slug": "sort-matrix-by-diagonals",
+    "reasonEN": "A medium matrix-ordering problem that groups cells by diagonal identity before sorting. Traversing each diagonal with the required direction trains coordinate grouping and systematic write-back in two-dimensional arrays.",
+    "reasonZH": "这是一道先按对角线身份分组再排序的中等矩阵题。以要求的方向遍历每条对角线，训练二维数组中的坐标分组与系统化回填。"
+  }
+]

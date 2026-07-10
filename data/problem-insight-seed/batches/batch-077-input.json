@@ -1,0 +1,736 @@
+[
+  {
+    "slug": "minimize-maximum-of-array",
+    "frontendDisplayId": "2439",
+    "titleEn": "Minimize Maximum of Array",
+    "titleZh": "最小化数组中的最大值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Greedy",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "贪心",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-maximum-of-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-maximum-pair-sum-in-array",
+    "frontendDisplayId": "1877",
+    "titleEn": "Minimize Maximum Pair Sum in Array",
+    "titleZh": "数组中最大数对和的最小值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-maximum-pair-sum-in-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-or-of-remaining-elements-using-operations",
+    "frontendDisplayId": "3022",
+    "titleEn": "Minimize OR of Remaining Elements Using Operations",
+    "titleZh": "给定操作次数内使剩余元素的或值最小",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-or-of-remaining-elements-using-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-result-by-adding-parentheses-to-expression",
+    "frontendDisplayId": "2232",
+    "titleEn": "Minimize Result by Adding Parentheses to Expression",
+    "titleZh": "向表达式添加括号后的最小结果",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Enumeration",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-result-by-adding-parentheses-to-expression/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-string-length",
+    "frontendDisplayId": "2716",
+    "titleEn": "Minimize String Length",
+    "titleZh": "最小化字符串长度",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-string-length/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-the-difference-between-target-and-chosen-elements",
+    "frontendDisplayId": "1981",
+    "titleEn": "Minimize the Difference Between Target and Chosen Elements",
+    "titleZh": "最小化目标值与所选元素的差",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-the-difference-between-target-and-chosen-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-the-maximum-adjacent-element-difference",
+    "frontendDisplayId": "3357",
+    "titleEn": "Minimize the Maximum Adjacent Element Difference",
+    "titleZh": "最小化相邻元素的最大差值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-the-maximum-adjacent-element-difference/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-the-maximum-difference-of-pairs",
+    "frontendDisplayId": "2616",
+    "titleEn": "Minimize the Maximum Difference of Pairs",
+    "titleZh": "最小化数对的最大差值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-the-maximum-difference-of-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-the-maximum-edge-weight-of-graph",
+    "frontendDisplayId": "3419",
+    "titleEn": "Minimize the Maximum Edge Weight of Graph",
+    "titleZh": "图的最大边权的最小值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-the-maximum-edge-weight-of-graph/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-the-maximum-of-two-arrays",
+    "frontendDisplayId": "2513",
+    "titleEn": "Minimize the Maximum of Two Arrays",
+    "titleZh": "最小化两个数组中的最大值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "二分查找",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-the-maximum-of-two-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-the-total-price-of-the-trips",
+    "frontendDisplayId": "2646",
+    "titleEn": "Minimize the Total Price of the Trips",
+    "titleZh": "最小化旅行的价格总和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Graph Theory",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "动态规划",
+      "图",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-the-total-price-of-the-trips/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimize-xor",
+    "frontendDisplayId": "2429",
+    "titleEn": "Minimize XOR",
+    "titleZh": "最小异或",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimize-xor/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimized-maximum-of-products-distributed-to-any-store",
+    "frontendDisplayId": "2064",
+    "titleEn": "Minimized Maximum of Products Distributed to Any Store",
+    "titleZh": "分配给商店的最多商品的最小值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimized-maximum-of-products-distributed-to-any-store/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-absolute-difference",
+    "frontendDisplayId": "1200",
+    "titleEn": "Minimum Absolute Difference",
+    "titleZh": "最小绝对差",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-absolute-difference/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-absolute-difference-between-elements-with-constraint",
+    "frontendDisplayId": "2817",
+    "titleEn": "Minimum Absolute Difference Between Elements With Constraint",
+    "titleZh": "限制条件下元素之间的最小绝对差",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Ordered Set"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "有序集合"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-absolute-difference-between-elements-with-constraint/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-absolute-difference-between-two-values",
+    "frontendDisplayId": "3880",
+    "titleEn": "Minimum Absolute Difference Between Two Values",
+    "titleZh": "两个值之间的最小绝对差值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-absolute-difference-between-two-values/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-absolute-difference-in-bst",
+    "frontendDisplayId": "530",
+    "titleEn": "Minimum Absolute Difference in BST",
+    "titleZh": "二叉搜索树的最小绝对差",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-absolute-difference-in-bst/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-absolute-difference-in-sliding-submatrix",
+    "frontendDisplayId": "3567",
+    "titleEn": "Minimum Absolute Difference in Sliding Submatrix",
+    "titleZh": "子矩阵的最小绝对差",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-absolute-difference-in-sliding-submatrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-absolute-difference-queries",
+    "frontendDisplayId": "1906",
+    "titleEn": "Minimum Absolute Difference Queries",
+    "titleZh": "查询差绝对值的最小值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-absolute-difference-queries/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-absolute-distance-between-mirror-pairs",
+    "frontendDisplayId": "3761",
+    "titleEn": "Minimum Absolute Distance Between Mirror Pairs",
+    "titleZh": "镜像对之间最小绝对距离",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-absolute-distance-between-mirror-pairs/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-absolute-sum-difference",
+    "frontendDisplayId": "1818",
+    "titleEn": "Minimum Absolute Sum Difference",
+    "titleZh": "绝对差值和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Ordered Set",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "有序集合",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-absolute-sum-difference/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-add-to-make-parentheses-valid",
+    "frontendDisplayId": "921",
+    "titleEn": "Minimum Add to Make Parentheses Valid",
+    "titleZh": "使括号有效的最少添加",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-addition-to-make-integer-beautiful",
+    "frontendDisplayId": "2457",
+    "titleEn": "Minimum Addition to Make Integer Beautiful",
+    "titleZh": "美丽整数的最小增量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-addition-to-make-integer-beautiful/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-additions-to-make-valid-string",
+    "frontendDisplayId": "2645",
+    "titleEn": "Minimum Additions to Make Valid String",
+    "titleZh": "构造有效字符串的最少插入数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Greedy",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "贪心",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-additions-to-make-valid-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-adjacent-swaps-for-k-consecutive-ones",
+    "frontendDisplayId": "1703",
+    "titleEn": "Minimum Adjacent Swaps for K Consecutive Ones",
+    "titleZh": "得到连续 K 个 1 的最少相邻交换次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Prefix Sum",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "前缀和",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-adjacent-swaps-for-k-consecutive-ones/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-adjacent-swaps-to-alternate-parity",
+    "frontendDisplayId": "3587",
+    "titleEn": "Minimum Adjacent Swaps to Alternate Parity",
+    "titleZh": "最小相邻交换至奇偶交替",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-adjacent-swaps-to-alternate-parity/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-adjacent-swaps-to-reach-the-kth-smallest-number",
+    "frontendDisplayId": "1850",
+    "titleEn": "Minimum Adjacent Swaps to Reach the Kth Smallest Number",
+    "titleZh": "邻位交换的最小次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-adjacent-swaps-to-reach-the-kth-smallest-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-amount-of-damage-dealt-to-bob",
+    "frontendDisplayId": "3273",
+    "titleEn": "Minimum Amount of Damage Dealt to Bob",
+    "titleZh": "对 Bob 造成的最少伤害",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-amount-of-damage-dealt-to-bob/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-amount-of-time-to-collect-garbage",
+    "frontendDisplayId": "2391",
+    "titleEn": "Minimum Amount of Time to Collect Garbage",
+    "titleZh": "收集垃圾的最少总时间",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-amount-of-time-to-collect-garbage/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-amount-of-time-to-fill-cups",
+    "frontendDisplayId": "2335",
+    "titleEn": "Minimum Amount of Time to Fill Cups",
+    "titleZh": "装满杯子需要的最短总时长",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-amount-of-time-to-fill-cups/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-077",
+    "claimedAt": "2026-07-10T06:22:14.997161+00:00",
+    "completedAt": null
+  }
+]

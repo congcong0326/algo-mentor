@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "direction-assignments-with-exactly-k-visible-people",
+    "reasonEN": "A medium combinatorics problem that converts visibility constraints into a count of independent direction choices. It develops the ability to identify the decisive positions and apply multiplication principles instead of enumerating assignments.",
+    "reasonZH": "这是一道中等难度的组合计数题，将可见性约束转化为独立方向选择的数量。它训练识别决定性位置，并用乘法原理替代对所有方案的枚举。"
+  },
+  {
+    "slug": "disconnect-path-in-a-binary-matrix-by-at-most-one-flip",
+    "reasonEN": "This medium grid-connectivity problem exploits the monotone structure of valid paths. Finding one path and testing whether any internal cell is essential teaches a compact way to reason about cut vertices without general graph machinery.",
+    "reasonZH": "这是一道中等难度的网格连通性题，利用合法路径的单调结构。先找到一条路径，再判断其内部格是否不可替代，可训练无需通用图算法也能推理割点的简洁方法。"
+  },
+  {
+    "slug": "display-table-of-food-orders-in-a-restaurant",
+    "reasonEN": "A medium data-formatting problem that aggregates a two-dimensional frequency table and emits it in a prescribed order. It reinforces separating collection from presentation through maps, sorted keys, and careful string conversion.",
+    "reasonZH": "这是一道中等难度的数据格式化题，需要聚合二维频次表并按规定顺序输出。它训练通过映射、排序键和谨慎的字符串转换，将数据收集与展示逻辑分离。"
+  },
+  {
+    "slug": "display-the-first-three-rows",
+    "reasonEN": "An easy SQL retrieval exercise focused on limiting result rows. It establishes the basic distinction between selecting records and aggregating them, a useful first step for database query fluency.",
+    "reasonZH": "这是一道简单的 SQL 检索题，核心是限制结果行数。它建立选择记录与聚合记录之间的基本区分，是培养数据库查询熟练度的起点。"
+  },
+  {
+    "slug": "distance-between-bus-stops",
+    "reasonEN": "This easy circular-array problem compares the two complementary route sums. It is a clean exercise in range accumulation and recognizing that a ring can be solved by total distance minus one directed segment.",
+    "reasonZH": "这道简单的环形数组题需要比较两条互补路线的距离。它练习区间累加，并理解环形问题可由总距离减去一段定向路径来简化。"
+  },
+  {
+    "slug": "distant-barcodes",
+    "reasonEN": "A medium greedy rearrangement problem that repeatedly places high-frequency values while avoiding adjacent duplicates. Using a heap or parity slots develops the scheduling intuition behind frequency-constrained sequence construction.",
+    "reasonZH": "这是一道中等难度的贪心重排题，需要持续放置高频值并避免相邻重复。使用堆或奇偶槽位，可训练频次约束序列构造中的调度直觉。"
+  },
+  {
+    "slug": "distinct-echo-substrings",
+    "reasonEN": "A hard string-deduplication problem that detects repeated adjacent blocks with rolling hashes or a Trie. It teaches fast substring equality testing and the collision-aware use of hashes for large-scale pattern enumeration.",
+    "reasonZH": "这是一道高难度的字符串去重题，通过滚动哈希或 Trie 检测相邻重复块。它训练快速子串相等判断，以及在大规模模式枚举中注意哈希冲突的使用方式。"
+  },
+  {
+    "slug": "distinct-points-reachable-after-substring-removal",
+    "reasonEN": "A medium prefix-state problem that represents movement before and after a removed segment as vector sums. Matching compatible prefix and suffix states with hashing develops a reusable approach to deletion-based path transformations.",
+    "reasonZH": "这是一道中等难度的前缀状态题，将删除片段前后的移动表示为向量和。通过哈希匹配兼容的前缀与后缀状态，可掌握删除操作下路径变换的通用方法。"
+  },
+  {
+    "slug": "distinct-prime-factors-of-product-of-array",
+    "reasonEN": "This medium number-theory problem factorizes each value independently and unions the resulting primes. It reinforces trial division, factor deduplication, and the key observation that the full product never needs to be constructed.",
+    "reasonZH": "这是一道中等难度的数论题，对每个数独立分解质因数后取并集即可。它训练试除分解、因子去重，以及无需实际构造整个乘积这一关键观察。"
+  },
+  {
+    "slug": "distinct-subsequences",
+    "reasonEN": "A hard two-string dynamic-programming classic that counts alignments while preserving order. Its recurrence distinguishes skipping a source character from matching it, making it a cornerstone for subsequence DP and state interpretation.",
+    "reasonZH": "这是一道高难度的双字符串动态规划经典题，统计保持相对顺序的匹配方式。递推区分跳过源字符和执行匹配，是理解子序列 DP 与状态含义的基石。"
+  },
+  {
+    "slug": "distinct-subsequences-ii",
+    "reasonEN": "This hard DP variant prevents duplicate subsequences by subtracting contributions from prior occurrences. Tracking the last contribution of each character teaches an elegant inclusion-exclusion correction within a linear scan.",
+    "reasonZH": "这道高难度 DP 变体需要通过扣除重复贡献避免相同子序列。跟踪每个字符上次的贡献，可学习在线性扫描中实现容斥修正的优雅方法。"
+  },
+  {
+    "slug": "distribute-candies",
+    "reasonEN": "An easy set-counting problem where the answer is bounded by both distinct types and recipient capacity. It reinforces reducing a distribution story to the minimum of two independent limits.",
+    "reasonZH": "这是一道简单的集合计数题，答案同时受不同种类数和接收容量限制。它训练将分配叙事归约为两个独立上界的最小值。"
+  },
+  {
+    "slug": "distribute-candies-among-children-i",
+    "reasonEN": "This easy bounded-composition problem can be solved by enumerating one allocation and validating the remainder. It offers direct practice in translating integer-distribution constraints into simple, correct case counting.",
+    "reasonZH": "这是一道简单的有界整数划分题，可枚举其中一人的分配并验证剩余部分。它适合练习将整数分配约束转化为简单且正确的分类计数。"
+  },
+  {
+    "slug": "distribute-candies-among-children-ii",
+    "reasonEN": "A medium combinatorial counting problem that scales bounded candy distributions beyond brute force. Applying inclusion-exclusion or interval counting develops a practical method for constrained integer solutions.",
+    "reasonZH": "这是一道中等难度的组合计数题，需要将有界糖果分配扩展到无法暴力枚举的范围。运用容斥原理或区间计数，可掌握受限整数解的实用方法。"
+  },
+  {
+    "slug": "distribute-candies-to-people",
+    "reasonEN": "An easy arithmetic simulation that follows increasing rounds while respecting a final partial allocation. It trains state updates, cyclic recipient indexing, and the boundary condition where remaining resources are insufficient for the next step.",
+    "reasonZH": "这是一道简单的算术模拟题，按递增轮次分配并处理最后一次部分分配。它训练状态更新、循环接收者下标，以及剩余资源不足下一步时的边界处理。"
+  },
+  {
+    "slug": "distribute-coins-in-binary-tree",
+    "reasonEN": "A medium tree-flow problem solved by postorder DFS. Returning each subtree's coin surplus or deficit and summing absolute transfers teaches a powerful conservation-law view of recursive tree algorithms.",
+    "reasonZH": "这是一道中等难度的树上流量题，使用后序 DFS 求解。返回每棵子树的硬币盈余或缺口并累加转移绝对值，可训练递归树算法中的守恒定律视角。"
+  },
+  {
+    "slug": "distribute-elements-into-two-arrays-i",
+    "reasonEN": "This easy simulation problem follows a deterministic placement rule based on current endpoints. It reinforces faithful state tracking and provides a useful baseline before the same decision rule requires faster statistics.",
+    "reasonZH": "这是一道简单的模拟题，根据当前末尾元素执行确定性放置。它训练忠实维护状态，并为同一决策规则需要更快统计的进阶版本打下基础。"
+  },
+  {
+    "slug": "distribute-elements-into-two-arrays-ii",
+    "reasonEN": "A hard online-distribution problem that upgrades endpoint comparison into greater-element counts with coordinate compression and BITs. It is valuable practice in embedding order statistics inside a stateful simulation.",
+    "reasonZH": "这是一道高难度的在线分配题，需要用坐标压缩和树状数组将比较升级为较大元素计数。它训练在有状态模拟中嵌入顺序统计能力。"
+  },
+  {
+    "slug": "distribute-money-to-maximum-children",
+    "reasonEN": "This easy greedy arithmetic problem maximizes a target outcome under minimum-allocation and exceptional-value constraints. It sharpens the habit of checking feasibility first, then correcting the final remainder case precisely.",
+    "reasonZH": "这是一道简单的贪心算术题，在最低分配和特殊金额限制下最大化目标结果。它训练先检查可行性，再精确修正最后剩余情况的习惯。"
+  },
+  {
+    "slug": "distribute-repeating-integers",
+    "reasonEN": "A hard resource-allocation problem that pairs value frequencies with customer demands using subset DP or backtracking. Precomputing demand sums for masks teaches how bitmasks compress many assignment combinations into tractable states.",
+    "reasonZH": "这是一道高难度的资源分配题，利用子集 DP 或回溯匹配数值频次与客户需求。预计算掩码需求和，可学习位掩码如何将大量分配组合压缩为可处理的状态。"
+  },
+  {
+    "slug": "divide-a-string-into-groups-of-size-k",
+    "reasonEN": "An easy string-simulation problem that chunks fixed-width groups and pads only the final one. It reinforces index stepping, remainder handling, and exact output formatting in implementation-focused tasks.",
+    "reasonZH": "这是一道简单的字符串模拟题，按固定长度分组并只填充最后一组。它训练下标步进、余数处理和实现题中的精确输出格式。"
+  },
+  {
+    "slug": "divide-an-array-into-subarrays-with-minimum-cost-i",
+    "reasonEN": "This easy greedy-selection problem reduces the partition cost to choosing a small set of minimum elements. It teaches identifying when structural constraints make exhaustive partition reasoning collapse into sorting or a short scan.",
+    "reasonZH": "这是一道简单的贪心选择题，可将分割代价归约为选择少量最小元素。它训练识别结构约束何时能把复杂的分割推理简化为排序或短扫描。"
+  },
+  {
+    "slug": "divide-an-array-into-subarrays-with-minimum-cost-ii",
+    "reasonEN": "A hard sliding-window selection problem that maintains the best eligible elements under an index-span constraint. Coordinating heaps with lazy deletion develops a key pattern for dynamic top-k sums in moving windows.",
+    "reasonZH": "这是一道高难度的滑动窗口选择题，需要在下标跨度限制下维护最优候选元素。协调堆与惰性删除，可掌握移动窗口中动态 top-k 求和的关键模式。"
+  },
+  {
+    "slug": "divide-array-in-sets-of-k-consecutive-numbers",
+    "reasonEN": "A medium greedy multiset problem that always starts groups from the smallest remaining value. Consuming consecutive frequencies in order teaches why sorted processing exposes forced choices in partition feasibility problems.",
+    "reasonZH": "这是一道中等难度的贪心多重集合题，总是从最小剩余值开始组队。按顺序消耗连续值的频次，可理解排序处理为何能暴露划分可行性中的必然选择。"
+  },
+  {
+    "slug": "divide-array-into-arrays-with-max-difference",
+    "reasonEN": "This medium sorting-and-greedy problem groups adjacent sorted values into fixed-size blocks. Checking each block's extrema teaches a simple exchange argument: crossing groups cannot improve a maximum-difference constraint.",
+    "reasonZH": "这是一道中等难度的排序贪心题，将相邻的有序值划为定长块。检查每块极值，可理解一个简单交换论证：交叉分组无法改善最大差约束。"
+  },
+  {
+    "slug": "divide-array-into-equal-pairs",
+    "reasonEN": "An easy parity-counting problem that verifies every value has an even frequency. It reinforces the use of hash counts or XOR-style toggling to test pairability without constructing pairs explicitly.",
+    "reasonZH": "这是一道简单的奇偶计数题，验证每个值是否都出现偶数次。它训练使用哈希计数或异或式切换来判断可配对性，无需显式构造数对。"
+  },
+  {
+    "slug": "divide-intervals-into-minimum-number-of-groups",
+    "reasonEN": "A medium interval-partitioning problem whose answer is the maximum overlap. Solving it with a min-heap or sweep-line difference array builds a foundational connection between resource allocation and interval concurrency.",
+    "reasonZH": "这是一道中等难度的区间划分题，答案等于最大重叠数。使用最小堆或扫描线差分数组求解，可建立资源分配与区间并发之间的基础联系。"
+  },
+  {
+    "slug": "divide-nodes-into-the-maximum-number-of-groups",
+    "reasonEN": "A hard graph-layering problem that first requires bipartite validation, then maximizes BFS depth within each component. It develops a rigorous workflow for combining feasibility checks with optimization over connected components.",
+    "reasonZH": "这是一道高难度的图分层题，先需验证二分图性质，再在每个连通块中最大化 BFS 层数。它训练将可行性校验与连通块上的优化严谨结合。"
+  },
+  {
+    "slug": "divide-players-into-teams-of-equal-skill",
+    "reasonEN": "A medium pairing problem that sorts skills and matches the smallest with the largest. It teaches the two-pointer invariant for enforcing a fixed pair sum while accumulating the requested interaction cost.",
+    "reasonZH": "这是一道中等难度的配对题，将最小技能与最大技能配对。它训练双指针不变量，在强制固定对和的同时累计所需的组合代价。"
+  },
+  {
+    "slug": "divide-two-integers",
+    "reasonEN": "This medium bit-manipulation classic implements division through shifted subtraction. It sharpens binary decomposition, sign handling, and overflow protection, especially around the asymmetric minimum-integer boundary.",
+    "reasonZH": "这是一道中等难度的位运算经典题，通过移位减法实现除法。它训练二进制拆分、符号处理和溢出保护，尤其要注意最小整数这一非对称边界。"
+  }
+]

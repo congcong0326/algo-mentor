@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "count-beautiful-substrings-ii",
+    "reasonEN": "A hard prefix-sum and number-theory string problem that combines vowel-consonant balance with divisibility constraints. It trains modular-state hashing and factor analysis for turning substring conditions into efficient pair counting.",
+    "reasonZH": "高难度前缀和与数论字符串题，将元音辅音平衡和整除约束结合。它训练用模状态哈希与因子分析把子串条件转化为高效的数对计数。"
+  },
+  {
+    "slug": "count-binary-palindromic-numbers",
+    "reasonEN": "A hard bit-manipulation counting problem centered on binary palindromes. Constructing valid prefixes and handling length boundaries develops the ability to replace enumeration with digit-style combinatorial counting.",
+    "reasonZH": "高难度位运算计数题，核心是二进制回文结构。通过构造合法前缀并处理位长边界，训练以数位式组合计数替代逐个枚举的能力。"
+  },
+  {
+    "slug": "count-binary-substrings",
+    "reasonEN": "This foundational string counting problem reduces adjacent balanced runs to a two-pointer invariant. Tracking consecutive group lengths is a compact way to learn how local structure can eliminate explicit substring expansion.",
+    "reasonZH": "基础字符串计数题，可归结为相邻分组的平衡不变量。维护连续分组长度，训练利用局部结构避免显式展开所有子串。"
+  },
+  {
+    "slug": "count-bowl-subarrays",
+    "reasonEN": "A medium monotonic-stack problem that encodes nested boundary relationships in an array. It sharpens the use of stack order and nearest-element reasoning for counting valid intervals without quadratic scans.",
+    "reasonZH": "中等单调栈题，用数组中的嵌套边界关系建模。它强化栈内单调性和最近元素推理，从而避免平方级扫描来计数合法区间。"
+  },
+  {
+    "slug": "count-caesar-cipher-pairs",
+    "reasonEN": "This medium hashing and counting problem models Caesar shifts as normalized string signatures. It trains modular character transformation, canonical representation, and frequency aggregation for pair-counting tasks.",
+    "reasonZH": "中等哈希计数题，将凯撒位移建模为归一化字符串签名。它训练字符模变换、规范化表示和频率聚合，适合掌握数对计数套路。"
+  },
+  {
+    "slug": "count-cells-in-overlapping-horizontal-and-vertical-substrings",
+    "reasonEN": "A medium matrix string-matching problem built around rolling hashes. Matching rows and columns while marking intersections develops careful hash-window handling and shows how one-dimensional matching composes in grids.",
+    "reasonZH": "中等矩阵字符串匹配题，核心是滚动哈希。在行列中匹配并标记交点，训练哈希窗口的边界处理，也展示一维匹配如何组合到网格中。"
+  },
+  {
+    "slug": "count-collisions-of-monkeys-on-a-polygon",
+    "reasonEN": "A medium mathematical reduction that turns a geometric story into a power-of-two count with excluded cases. It builds the habit of identifying global invariants before reaching for simulation or recursion.",
+    "reasonZH": "中等数学化简题，把几何叙述转化为幂次计数并排除特殊情况。它培养先识别全局不变量、再决定是否模拟或递归的习惯。"
+  },
+  {
+    "slug": "count-collisions-on-a-road",
+    "reasonEN": "This medium simulation problem has a clean state-compression solution: discard harmless outward cars and count the remaining interactions. It teaches how stack-like process reasoning can often collapse into a linear scan.",
+    "reasonZH": "中等模拟题有很干净的状态压缩解法：去除不会碰撞的向外车辆，再统计其余交互。它训练把类似栈的过程推理压缩为一次线性扫描。"
+  },
+  {
+    "slug": "count-commas-in-range",
+    "reasonEN": "An easy place-value arithmetic exercise that counts formatting separators by digit-length ranges. It reinforces interval decomposition and boundary arithmetic, useful prerequisites for larger digit-DP problems.",
+    "reasonZH": "简单位值数学题，按数字长度区间统计格式化分隔符。它巩固区间拆分和边界运算，是进阶数位 DP 的有用前置训练。"
+  },
+  {
+    "slug": "count-commas-in-range-ii",
+    "reasonEN": "A medium extension of place-value counting where large bounds demand direct arithmetic rather than iteration. It practices deriving closed-form contributions per digit block and guarding overflow-prone endpoints.",
+    "reasonZH": "中等位值计数进阶题，大范围边界要求直接数学计算而非遍历。它训练推导每个数位块的闭式贡献，并处理易溢出的端点。"
+  },
+  {
+    "slug": "count-common-words-with-one-occurrence",
+    "reasonEN": "An easy frequency-map exercise for comparing two collections under an exact-count condition. It establishes a reusable hash-table pattern: count independently, then filter on jointly specified frequencies.",
+    "reasonZH": "简单频次哈希题，比较两个集合中恰好出现一次的元素。它建立可复用模式：分别计数，再按联合频次条件筛选。"
+  },
+  {
+    "slug": "count-complete-subarrays-in-an-array",
+    "reasonEN": "A medium sliding-window template problem for counting subarrays that cover every distinct value. Maintaining frequencies while shrinking a valid left boundary teaches the complement-style counting common in window problems.",
+    "reasonZH": "中等滑动窗口模板题，统计覆盖全部不同值的子数组。维护频次并收缩仍合法的左边界，训练窗口题中常见的补集式计数。"
+  },
+  {
+    "slug": "count-complete-substrings",
+    "reasonEN": "A hard string sliding-window problem that combines fixed-length frequency validation with adjacency segmentation. It develops multi-level decomposition: split impossible regions first, then count tightly constrained windows.",
+    "reasonZH": "高难度字符串滑动窗口题，结合定长频次校验与相邻关系分段。它训练多层拆解：先切分不可能区域，再统计受严格约束的窗口。"
+  },
+  {
+    "slug": "count-complete-tree-nodes",
+    "reasonEN": "A classic tree problem that exploits complete-tree shape to beat ordinary traversal. Comparing subtree heights and applying binary-search reasoning builds structural optimization instincts for tree algorithms.",
+    "reasonZH": "经典树题，利用完全二叉树的形状特性优于普通遍历。比较子树高度并运用二分思想，训练基于结构性质优化树算法的能力。"
+  },
+  {
+    "slug": "count-connected-components-in-lcm-graph",
+    "reasonEN": "A hard union-find and number-theory problem where implicit graph edges arise from LCM relationships. It trains factor-based connectivity modeling and careful threshold handling instead of materializing a dense graph.",
+    "reasonZH": "高难度并查集与数论题，隐式图边由最小公倍数关系产生。它训练用因子关系建模连通性并谨慎处理阈值，而非显式构造稠密图。"
+  },
+  {
+    "slug": "count-connected-subgraphs-with-even-node-sum",
+    "reasonEN": "A hard graph-counting problem that mixes connectivity structure with parity states. It challenges you to compress components and enumerate only meaningful bitmask or traversal states, a valuable technique for constrained subgraph counting.",
+    "reasonZH": "高难度图计数题，将连通结构与奇偶状态结合。它挑战你压缩连通块，并只枚举有意义的位掩码或遍历状态，是受限子图计数的重要技巧。"
+  },
+  {
+    "slug": "count-covered-buildings",
+    "reasonEN": "A medium sorting and grouping problem that turns two-dimensional coverage into directional extrema. Organizing coordinates by row and column trains data partitioning and endpoint reasoning for geometric counting.",
+    "reasonZH": "中等排序分组题，将二维覆盖关系转化为方向极值。按行列组织坐标，训练几何计数中的数据分组和端点推理。"
+  },
+  {
+    "slug": "count-days-spent-together",
+    "reasonEN": "An easy date-interval problem that rewards converting calendar strings into comparable day offsets. It reinforces interval intersection formulas and off-by-one discipline in real-world style boundary calculations.",
+    "reasonZH": "简单日期区间题，关键是把日历字符串转换为可比较的日序号。它巩固区间交集公式，以及实际边界计算中的差一处理。"
+  },
+  {
+    "slug": "count-days-without-meetings",
+    "reasonEN": "A medium interval-merging problem for finding uncovered time. Sorting meetings and maintaining the farthest covered endpoint teaches a core sweep pattern used throughout scheduling and calendar systems.",
+    "reasonZH": "中等区间合并题，用于寻找未覆盖时间。排序会议并维护最远覆盖端点，训练调度和日历系统中通用的扫描线模式。"
+  },
+  {
+    "slug": "count-different-palindromic-subsequences",
+    "reasonEN": "A hard interval-DP landmark problem for counting distinct palindromic subsequences. Managing matching endpoints and duplicate inner characters develops rigorous state transitions and inclusion-exclusion awareness.",
+    "reasonZH": "高难度区间 DP 代表题，统计不同回文子序列。处理匹配端点及内部重复字符，训练严谨的状态转移和容斥意识。"
+  },
+  {
+    "slug": "count-digit-appearances",
+    "reasonEN": "A medium digit-counting problem that aggregates positional contributions across a range. It practices decomposing a number around each decimal place and handling leading-zero edge cases precisely.",
+    "reasonZH": "中等数位计数题，聚合区间内各数位位置的贡献。它训练围绕每个十进制位拆分数字，并精确处理前导零边界。"
+  },
+  {
+    "slug": "count-distinct-integers-after-removing-zeros",
+    "reasonEN": "A medium mathematical DP problem about transformations created by deleting zeros. It develops state compression around decimal structure and highlights how seemingly local edits can create duplicate-result constraints.",
+    "reasonZH": "中等数学 DP 题，研究删除零产生的数值变换。它训练围绕十进制结构压缩状态，并理解局部编辑如何带来结果去重约束。"
+  },
+  {
+    "slug": "count-distinct-numbers-on-board",
+    "reasonEN": "An easy simulation problem with a concise mathematical invariant beneath it. Discovering the eventual set size trains the useful transition from process simulation to proof-based closed-form reasoning.",
+    "reasonZH": "简单模拟题，底层存在简洁的数学不变量。发现最终集合大小，训练从过程模拟过渡到基于证明的闭式推理。"
+  },
+  {
+    "slug": "count-distinct-subarrays-divisible-by-k-in-sorted-array",
+    "reasonEN": "A hard prefix-sum and hashing problem that must count qualifying subarrays while removing duplicates in sorted data. It builds skill in combining divisibility remainders with value-boundary reasoning for distinct sequence counting.",
+    "reasonZH": "高难度前缀和哈希题，既要统计整除子数组又要在有序数据中去重。它训练结合余数状态与值边界推理来计数不同序列。"
+  },
+  {
+    "slug": "count-dominant-indices",
+    "reasonEN": "An easy array-enumeration problem focused on expressing the dominance condition exactly. It is useful for practicing direct constraint checks, extrema precomputation, and avoiding accidental self-comparisons.",
+    "reasonZH": "简单数组枚举题，重点是准确表达主导条件。它适合练习直接约束检查、极值预处理，并避免误把自身纳入比较。"
+  },
+  {
+    "slug": "count-elements-with-at-least-k-greater-values",
+    "reasonEN": "A medium ordering problem where sorting or selection exposes the threshold for qualifying elements. It trains rank-based reasoning, duplicate handling, and choosing between full sorting, binary search, and quickselect.",
+    "reasonZH": "中等顺序统计题，排序或选择算法可揭示合格元素的阈值。它训练基于排名的推理、重复值处理，以及在排序、二分和快速选择间取舍。"
+  },
+  {
+    "slug": "count-elements-with-maximum-frequency",
+    "reasonEN": "An easy counting problem that separates finding the maximum frequency from summing its contributors. It reinforces one-pass frequency aggregation and the distinction between unique values and their total occurrences.",
+    "reasonZH": "简单计数题，先找最大频率再累加对应元素的出现次数。它巩固单次频率聚合，并区分不同值个数与总出现次数。"
+  },
+  {
+    "slug": "count-elements-with-strictly-smaller-and-greater-elements",
+    "reasonEN": "An easy array problem whose strict inequalities make duplicates the key detail. Using sorted boundaries or global extrema teaches concise classification and careful interpretation of equality cases.",
+    "reasonZH": "简单数组题，严格不等式使重复值成为关键细节。利用排序边界或全局极值，训练简洁分类和对相等情况的谨慎理解。"
+  },
+  {
+    "slug": "count-equal-and-divisible-pairs-in-an-array",
+    "reasonEN": "An easy pair-enumeration exercise that combines value equality with an index divisibility test. It is a clean starting point for recognizing when brute force is sufficient and for writing exact pair predicates.",
+    "reasonZH": "简单数对枚举题，结合数值相等与下标整除条件。它适合作为判断何时可直接暴力、并准确编写数对判定条件的起点。"
+  },
+  {
+    "slug": "count-fancy-numbers-in-a-range",
+    "reasonEN": "A hard digit-DP problem for counting range values under digit-dependent rules. It trains tight-bound states, leading-zero handling, and memoization design, making it a strong bridge into advanced numerical dynamic programming.",
+    "reasonZH": "高难度数位 DP 题，统计满足数字相关规则的区间数。它训练贴边状态、前导零处理和记忆化设计，是进阶数值动态规划的关键练习。"
+  }
+]

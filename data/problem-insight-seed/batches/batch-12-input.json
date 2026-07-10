@@ -1,0 +1,694 @@
+[
+  {
+    "slug": "can-place-flowers",
+    "frontendDisplayId": "605",
+    "titleEn": "Can Place Flowers",
+    "titleZh": "种花问题",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/can-place-flowers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "can-you-eat-your-favorite-candy-on-your-favorite-day",
+    "frontendDisplayId": "1744",
+    "titleEn": "Can You Eat Your Favorite Candy on Your Favorite Day?",
+    "titleZh": "你能在你最喜欢的那天吃到你最喜欢的糖果吗？",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/can-you-eat-your-favorite-candy-on-your-favorite-day/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "candy",
+    "frontendDisplayId": "135",
+    "titleEn": "Candy",
+    "titleZh": "分发糖果",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/candy/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "capacity-to-ship-packages-within-d-days",
+    "frontendDisplayId": "1011",
+    "titleEn": "Capacity To Ship Packages Within D Days",
+    "titleZh": "在 D 天内送达包裹的能力",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "capital-gainloss",
+    "frontendDisplayId": "1393",
+    "titleEn": "Capital Gain/Loss",
+    "titleZh": "股票的资本损益",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/capital-gainloss/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "capitalize-the-title",
+    "frontendDisplayId": "2129",
+    "titleEn": "Capitalize the Title",
+    "titleZh": "将标题首字母大写",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/capitalize-the-title/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "car-fleet",
+    "frontendDisplayId": "853",
+    "titleEn": "Car Fleet",
+    "titleZh": "车队",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Stack",
+      "Sorting",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调栈",
+      "排序",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/car-fleet/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "car-fleet-ii",
+    "frontendDisplayId": "1776",
+    "titleEn": "Car Fleet II",
+    "titleZh": "车队 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Math",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "数学",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/car-fleet-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "car-pooling",
+    "frontendDisplayId": "1094",
+    "titleEn": "Car Pooling",
+    "titleZh": "拼车",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Heap (Priority Queue)",
+      "Prefix Sum",
+      "Simulation",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "堆（优先队列）",
+      "前缀和",
+      "模拟",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/car-pooling/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "card-flipping-game",
+    "frontendDisplayId": "822",
+    "titleEn": "Card Flipping Game",
+    "titleZh": "翻转卡片游戏",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/card-flipping-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cat-and-mouse",
+    "frontendDisplayId": "913",
+    "titleEn": "Cat and Mouse",
+    "titleZh": "猫和老鼠",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Game Theory",
+      "Graph Theory",
+      "Math",
+      "Memoization",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "博弈",
+      "图",
+      "数学",
+      "记忆化",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/cat-and-mouse/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cat-and-mouse-ii",
+    "frontendDisplayId": "1728",
+    "titleEn": "Cat and Mouse II",
+    "titleZh": "猫和老鼠 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Game Theory",
+      "Graph Theory",
+      "Math",
+      "Matrix",
+      "Memoization",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "博弈",
+      "图",
+      "数学",
+      "矩阵",
+      "记忆化",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/cat-and-mouse-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "categorize-box-according-to-criteria",
+    "frontendDisplayId": "2525",
+    "titleEn": "Categorize Box According to Criteria",
+    "titleZh": "根据规则将箱子分类",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/categorize-box-according-to-criteria/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ccw6C7",
+    "frontendDisplayId": "LCP 22",
+    "titleEn": null,
+    "titleZh": "黑白方格画",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/ccw6C7/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cells-in-a-range-on-an-excel-sheet",
+    "frontendDisplayId": "2194",
+    "titleEn": "Cells in a Range on an Excel Sheet",
+    "titleZh": "Excel 表中某个范围内的单元格",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/cells-in-a-range-on-an-excel-sheet/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cells-with-odd-values-in-a-matrix",
+    "frontendDisplayId": "1252",
+    "titleEn": "Cells with Odd Values in a Matrix",
+    "titleZh": "奇数值单元格的数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/cells-with-odd-values-in-a-matrix/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "chalkboard-xor-game",
+    "frontendDisplayId": "810",
+    "titleEn": "Chalkboard XOR Game",
+    "titleZh": "黑板异或游戏",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Brainteaser",
+      "Game Theory",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "脑筋急转弯",
+      "博弈",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/chalkboard-xor-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "champagne-tower",
+    "frontendDisplayId": "799",
+    "titleEn": "Champagne Tower",
+    "titleZh": "香槟塔",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/champagne-tower/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "change-data-type",
+    "frontendDisplayId": "2886",
+    "titleEn": "Change Data Type",
+    "titleZh": "改变数据类型",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/change-data-type/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "change-minimum-characters-to-satisfy-one-of-three-conditions",
+    "frontendDisplayId": "1737",
+    "titleEn": "Change Minimum Characters to Satisfy One of Three Conditions",
+    "titleZh": "满足三条件之一需改变的最少字符数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/change-minimum-characters-to-satisfy-one-of-three-conditions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "cheapest-flights-within-k-stops",
+    "frontendDisplayId": "787",
+    "titleEn": "Cheapest Flights Within K Stops",
+    "titleZh": "K 站中转内最便宜的航班",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "动态规划",
+      "图",
+      "堆（优先队列）",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/cheapest-flights-within-k-stops/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-adjacent-digit-differences",
+    "frontendDisplayId": "3931",
+    "titleEn": "Check Adjacent Digit Differences",
+    "titleZh": "检查相邻数字差",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-adjacent-digit-differences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-array-formation-through-concatenation",
+    "frontendDisplayId": "1640",
+    "titleEn": "Check Array Formation Through Concatenation",
+    "titleZh": "能否连接形成数组",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-array-formation-through-concatenation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-balance-lcci",
+    "frontendDisplayId": "面试题 04.04",
+    "titleEn": null,
+    "titleZh": "检查平衡性",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/check-balance-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-balanced-string",
+    "frontendDisplayId": "3340",
+    "titleEn": "Check Balanced String",
+    "titleZh": "检查平衡字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-balanced-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-completeness-of-a-binary-tree",
+    "frontendDisplayId": "958",
+    "titleEn": "Check Completeness of a Binary Tree",
+    "titleZh": "二叉树的完全性检验",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-completeness-of-a-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-digitorial-permutation",
+    "frontendDisplayId": "3848",
+    "titleEn": "Check Digitorial Permutation",
+    "titleZh": "阶数数字排列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-digitorial-permutation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-distances-between-same-letters",
+    "frontendDisplayId": "2399",
+    "titleEn": "Check Distances Between Same Letters",
+    "titleZh": "检查相同字母间的距离",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-distances-between-same-letters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-divisibility-by-digit-sum-and-product",
+    "frontendDisplayId": "3622",
+    "titleEn": "Check Divisibility by Digit Sum and Product",
+    "titleZh": "判断整除性",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-divisibility-by-digit-sum-and-product/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "check-good-integer",
+    "frontendDisplayId": "3959",
+    "titleEn": "Check Good Integer",
+    "titleZh": "判定好整数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/check-good-integer/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-12",
+    "claimedAt": "2026-07-10T01:49:57.563294+00:00",
+    "completedAt": null
+  }
+]

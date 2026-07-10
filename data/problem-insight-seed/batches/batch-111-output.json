@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "slowest-key",
+    "reasonEN": "An easy array-and-string scan that compares adjacent release times to derive each press duration. It reinforces one-pass state updates and deterministic tie handling, useful foundations for event-stream processing.",
+    "reasonZH": "简单的数组与字符串扫描题，通过相邻释放时间计算按键持续时长；它训练单次遍历中的状态更新和并列结果处理，是事件流处理的基础练习。"
+  },
+  {
+    "slug": "smallest-absent-positive-greater-than-average",
+    "reasonEN": "A lightweight array-and-hash problem that combines an aggregate threshold with membership testing. It practices separating average computation from absent-value search, a useful pattern for constraint-driven enumeration.",
+    "reasonZH": "轻量的数组哈希题，将聚合阈值与成员存在性判断结合起来；它训练分离平均值计算和缺失值搜索，是约束枚举中的实用模式。"
+  },
+  {
+    "slug": "smallest-all-ones-multiple",
+    "reasonEN": "A medium number-theory problem that tracks remainders instead of constructing enormous all-ones integers. It develops modular-state reasoning and cycle detection, essential techniques for divisibility problems with implicit numbers.",
+    "reasonZH": "中等难度数论题，用余数状态代替构造巨大的全 1 整数；它训练模运算状态推理和循环检测，是处理隐式大数整除问题的关键技巧。"
+  },
+  {
+    "slug": "smallest-difference-lcci",
+    "reasonEN": "A medium sorting-and-two-pointer problem for minimizing cross-array distance. It teaches how sorted order gives a monotonic pointer movement rule, providing a reusable template for closest-pair style searches.",
+    "reasonZH": "中等难度的排序双指针题，目标是最小化两个数组元素间的距离；它训练利用有序性得到单调移动规则，是最近数对类搜索的可复用模板。"
+  },
+  {
+    "slug": "smallest-divisible-digit-product-i",
+    "reasonEN": "An easy math-enumeration exercise that checks divisibility through digit products. It builds disciplined candidate generation and digit decomposition, making it a clean introduction to bounded brute-force design.",
+    "reasonZH": "简单的数学枚举题，通过数位乘积检查整除性；它训练有序候选生成和数位拆分，是掌握有界暴力设计的良好入门。"
+  },
+  {
+    "slug": "smallest-divisible-digit-product-ii",
+    "reasonEN": "A hard constructive number-theory problem that combines prime-factor requirements with lexicographic minimization. It sharpens greedy digit placement, suffix feasibility checks, and backtracking discipline for large search spaces.",
+    "reasonZH": "高难度构造数论题，同时满足质因数约束与字典序最小化；它训练贪心放置数字、后缀可行性判断和大搜索空间下的回溯控制。"
+  },
+  {
+    "slug": "smallest-even-multiple",
+    "reasonEN": "A concise number-theory starter that reduces the task to an LCM observation. It reinforces parity reasoning and recognizing when a direct formula replaces simulation.",
+    "reasonZH": "简洁的数论入门题，可归结为最小公倍数的观察；它巩固奇偶性推理，并训练识别可用直接公式替代模拟的场景。"
+  },
+  {
+    "slug": "smallest-good-base",
+    "reasonEN": "A hard math-and-binary-search classic that represents a number as a geometric series in an unknown base. It develops length enumeration, overflow-safe comparison, and monotonic search, valuable tools for numeric optimization.",
+    "reasonZH": "高难度数学二分经典题，将目标数表示为未知进制下的等比数列；它训练位数枚举、防溢出比较和单调搜索，是数值优化的重要能力。"
+  },
+  {
+    "slug": "smallest-index-with-digit-sum-equal-to-index",
+    "reasonEN": "An easy array scan with a small digit-arithmetic predicate. It practices early exit, digit-sum implementation, and matching a computed property against an index, ideal for building clean traversal habits.",
+    "reasonZH": "简单的数组扫描题，结合数位和这一局部判定条件；它训练提前返回、数位和实现以及计算属性与下标的匹配，是培养清晰遍历习惯的练习。"
+  },
+  {
+    "slug": "smallest-index-with-equal-value",
+    "reasonEN": "A basic linear-search exercise that emphasizes checking the exact index-value relation and returning the first valid result. It is useful for reinforcing traversal order as part of the problem contract.",
+    "reasonZH": "基础线性搜索题，重点是检查准确的下标与数值关系并返回首个有效结果；它强化遍历顺序本身也是题目契约的一部分。"
+  },
+  {
+    "slug": "smallest-integer-divisible-by-k",
+    "reasonEN": "A medium modular-arithmetic problem that follows the remainder of a growing repunit. It teaches pigeonhole-based termination reasoning and avoids integer overflow, forming a strong template for remainder automata.",
+    "reasonZH": "中等难度模运算题，持续追踪递增全 1 数的余数；它训练基于抽屉原理的终止性推理并避免整数溢出，是余数自动机问题的经典模板。"
+  },
+  {
+    "slug": "smallest-k-lcci",
+    "reasonEN": "A medium selection problem with several valid strategies, especially quickselect and heap maintenance. It clarifies the tradeoff among average linear time, memory use, and implementation complexity, which is central to practical top-k tasks.",
+    "reasonZH": "中等难度选择题，可用快速选择或堆维护等多种方案；它厘清平均线性时间、内存占用和实现复杂度之间的取舍，是实战 Top-K 问题的核心训练。"
+  },
+  {
+    "slug": "smallest-k-length-subsequence-with-occurrences-of-a-letter",
+    "reasonEN": "A hard monotonic-stack greedy problem with both length and mandatory-character constraints. It develops the key feasibility checks before popping or pushing, making it an excellent exercise in constrained lexicographic construction.",
+    "reasonZH": "高难度单调栈贪心题，同时受长度和指定字符数量约束；它训练在入栈、出栈前判断后续可行性，是受限字典序构造的高质量练习。"
+  },
+  {
+    "slug": "smallest-missing-genetic-value-in-each-subtree",
+    "reasonEN": "A hard tree problem that exploits the special path containing the smallest candidate value rather than recomputing every subtree independently. It teaches structural pruning, DFS state propagation, and amortized reasoning on trees.",
+    "reasonZH": "高难度树题，关键是利用包含最小候选基因值的特殊路径，避免对每棵子树重复计算；它训练结构剪枝、DFS 状态传递和树上的均摊分析。"
+  },
+  {
+    "slug": "smallest-missing-integer-greater-than-sequential-prefix-sum",
+    "reasonEN": "An easy array-and-hash-set exercise that combines prefix continuity with missing-value lookup. It reinforces identifying the maximal valid prefix first, then searching from the derived threshold efficiently.",
+    "reasonZH": "简单的数组哈希集合题，结合连续前缀识别与缺失值查询；它训练先确定最长有效前缀，再从推导出的阈值高效搜索。"
+  },
+  {
+    "slug": "smallest-missing-multiple-of-k",
+    "reasonEN": "A straightforward hash-based array problem that searches multiples in increasing order. It practices choosing the right membership structure and turning a numeric condition into a monotonic candidate scan.",
+    "reasonZH": "直接的数组哈希题，按递增顺序搜索倍数即可；它训练选择合适的成员查询结构，并将数值条件转化为单调候选扫描。"
+  },
+  {
+    "slug": "smallest-missing-non-negative-integer-after-operations",
+    "reasonEN": "A medium greedy modular-class problem that maximizes MEX by consuming available residues in order. It develops frequency accounting by remainder and explains why local smallest-first allocation is globally optimal.",
+    "reasonZH": "中等难度贪心同余类题，通过按顺序消耗可用余数来最大化 MEX；它训练按余数统计频次，并理解局部优先填补为何能得到全局最优。"
+  },
+  {
+    "slug": "smallest-number-in-infinite-set",
+    "reasonEN": "A medium data-structure design problem combining a moving frontier with a heap for restored values. It teaches how to model an implicit infinite domain while deduplicating returned elements, a useful pattern for resource allocators.",
+    "reasonZH": "中等难度数据结构设计题，将移动边界与存放回收值的堆结合起来；它训练如何建模隐式无限集合并去重恢复元素，适用于资源分配器类问题。"
+  },
+  {
+    "slug": "smallest-number-with-all-set-bits",
+    "reasonEN": "An easy bit-manipulation problem built on recognizing numbers of the form 2^k - 1. It reinforces bit-length reasoning and gives a compact example of replacing trial construction with binary structure.",
+    "reasonZH": "简单的位运算题，核心是识别形如 2^k - 1 的数字结构；它巩固位长度推理，并展示如何用二进制规律替代逐个试探。"
+  },
+  {
+    "slug": "smallest-pair-with-different-frequencies",
+    "reasonEN": "An easy counting-and-hash-table exercise that separates value ordering from frequency comparison. It practices building frequency maps and handling pair selection under multiple constraints, useful in data summarization tasks.",
+    "reasonZH": "简单的计数哈希题，需要分离数值顺序与频次比较；它训练构建频次映射并处理多约束下的数对选择，适合数据汇总类问题。"
+  },
+  {
+    "slug": "smallest-palindromic-rearrangement-i",
+    "reasonEN": "A medium counting-and-sorting construction problem for lexicographically smallest palindromes. It develops half-string construction, mirrored placement, and careful treatment of the center character, all core palindrome techniques.",
+    "reasonZH": "中等难度计数排序构造题，目标是得到字典序最小的回文排列；它训练半串构造、镜像放置和中心字符处理，是回文构造的核心技巧。"
+  },
+  {
+    "slug": "smallest-palindromic-rearrangement-ii",
+    "reasonEN": "A hard combinatorial counting problem that selects the k-th lexicographic palindromic arrangement. It combines multiset permutation counts with prefix decisions, providing advanced practice in combinatorial unranking.",
+    "reasonZH": "高难度组合计数题，需要选择第 k 个字典序回文排列；它结合多重集排列计数与逐位决策，是组合对象反排名的进阶训练。"
+  },
+  {
+    "slug": "smallest-range-covering-elements-from-k-lists",
+    "reasonEN": "A hard multi-list range problem where a min-heap advances the current minimum while preserving coverage. It teaches the invariant linking the heap minimum and global maximum, a canonical technique for synchronized sorted streams.",
+    "reasonZH": "高难度多列表区间题，用最小堆推进当前最小值并保持所有列表均被覆盖；它训练堆最小值与全局最大值之间的不变量，是同步有序流处理的经典技巧。"
+  },
+  {
+    "slug": "smallest-range-i",
+    "reasonEN": "An easy array-math problem that reduces a range-minimization operation to the original extrema. It builds the habit of deriving tight bounds first, often eliminating the need for simulation.",
+    "reasonZH": "简单的数组数学题，可将区间最小化操作归约为原数组的最大最小值；它培养先推导紧界的习惯，常能直接省去模拟。"
+  },
+  {
+    "slug": "smallest-range-ii",
+    "reasonEN": "A medium greedy sorting problem that considers the single boundary where adjustment choices switch. It develops proof-driven partition reasoning and demonstrates how sorting exposes a compact set of candidates.",
+    "reasonZH": "中等难度排序贪心题，只需考察调整选择发生切换的分界位置；它训练带证明意识的分割推理，并展示排序如何暴露有限候选集。"
+  },
+  {
+    "slug": "smallest-rotation-with-highest-score",
+    "reasonEN": "A hard array-difference problem that converts rotation scores into interval contributions over all shifts. It teaches circular range updates and prefix accumulation, a powerful technique for optimizing repeated rotations.",
+    "reasonZH": "高难度数组差分题，将每个元素对不同轮调的得分转化为区间贡献；它训练环形区间更新与前缀累加，是优化重复旋转计算的强力技巧。"
+  },
+  {
+    "slug": "smallest-stable-index-i",
+    "reasonEN": "An easy prefix-sum problem that tests a stability condition at each array position. It reinforces maintaining running aggregates and checking boundaries in a single pass, a dependable pattern for balance-point queries.",
+    "reasonZH": "简单的前缀和题，需要在每个数组位置检查稳定条件；它训练单次遍历中维护累积量和处理边界，是平衡点查询的可靠模式。"
+  },
+  {
+    "slug": "smallest-stable-index-ii",
+    "reasonEN": "A medium prefix-sum extension that requires more careful aggregation and condition evaluation than its introductory counterpart. It strengthens invariant design for array balance metrics and prepares you for scalable range reasoning.",
+    "reasonZH": "中等难度前缀和进阶题，比基础版本需要更细致的聚合与条件判断；它强化数组平衡指标的不变量设计，并为可扩展的区间推理打下基础。"
+  },
+  {
+    "slug": "smallest-string-starting-from-leaf",
+    "reasonEN": "A medium tree-backtracking problem that builds strings along root-to-leaf paths in reverse comparison order. It practices path restoration, leaf detection, and lexicographic minimization across recursive branches.",
+    "reasonZH": "中等难度树回溯题，需要沿根到叶路径构造并比较反向字符串；它训练路径恢复、叶节点判断和递归分支间的字典序最小化。"
+  },
+  {
+    "slug": "smallest-string-with-a-given-numeric-value",
+    "reasonEN": "A medium greedy string-construction problem that reserves the smallest possible prefix and fills value from the end. It develops capacity reasoning for each remaining position, a reusable method for lexicographically minimal constructions.",
+    "reasonZH": "中等难度贪心字符串构造题，先保留尽可能小的前缀，再从末尾补足数值；它训练每个剩余位置的容量推理，是字典序最小构造的通用方法。"
+  }
+]

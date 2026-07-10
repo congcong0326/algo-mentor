@@ -1,0 +1,744 @@
+[
+  {
+    "slug": "minimum-number-of-food-buckets-to-feed-the-hamsters",
+    "frontendDisplayId": "2086",
+    "titleEn": "Minimum Number of Food Buckets to Feed the Hamsters",
+    "titleZh": "喂食仓鼠的最小食物桶数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-food-buckets-to-feed-the-hamsters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-frogs-croaking",
+    "frontendDisplayId": "1419",
+    "titleEn": "Minimum Number of Frogs Croaking",
+    "titleZh": "数青蛙",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-frogs-croaking/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-groups-to-create-a-valid-assignment",
+    "frontendDisplayId": "2910",
+    "titleEn": "Minimum Number of Groups to Create a Valid Assignment",
+    "titleZh": "合法分组的最少组数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-groups-to-create-a-valid-assignment/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-increments-on-subarrays-to-form-a-target-array",
+    "frontendDisplayId": "1526",
+    "titleEn": "Minimum Number of Increments on Subarrays to Form a Target Array",
+    "titleZh": "形成目标数组的子数组最少增加次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-increments-on-subarrays-to-form-a-target-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-k-consecutive-bit-flips",
+    "frontendDisplayId": "995",
+    "titleEn": "Minimum Number of K Consecutive Bit Flips",
+    "titleZh": "K 连续位的最小翻转次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Prefix Sum",
+      "Queue",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "前缀和",
+      "队列",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-k-consecutive-bit-flips/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-moves-to-make-palindrome",
+    "frontendDisplayId": "2193",
+    "titleEn": "Minimum Number of Moves to Make Palindrome",
+    "titleZh": "得到回文串的最少操作次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Indexed Tree",
+      "Greedy",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "树状数组",
+      "贪心",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-moves-to-make-palindrome/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-moves-to-seat-everyone",
+    "frontendDisplayId": "2037",
+    "titleEn": "Minimum Number of Moves to Seat Everyone",
+    "titleZh": "使每位学生都有座位的最少移动次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Counting Sort",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数排序",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-moves-to-seat-everyone/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-operations-to-convert-time",
+    "frontendDisplayId": "2224",
+    "titleEn": "Minimum Number of Operations to Convert Time",
+    "titleZh": "转化时间需要的最少操作数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-operations-to-convert-time/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-operations-to-have-distinct-elements",
+    "frontendDisplayId": "3779",
+    "titleEn": "Minimum Number of Operations to Have Distinct Elements",
+    "titleZh": "得到互不相同元素的最少操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-operations-to-have-distinct-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-all-array-elements-equal-to-1",
+    "frontendDisplayId": "2654",
+    "titleEn": "Minimum Number of Operations to Make All Array Elements Equal to 1",
+    "titleZh": "使数组所有元素变成 1 的最少操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-operations-to-make-all-array-elements-equal-to-1/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-array-continuous",
+    "frontendDisplayId": "2009",
+    "titleEn": "Minimum Number of Operations to Make Array Continuous",
+    "titleZh": "使数组连续的最少操作数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Hash Table",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "哈希表",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-operations-to-make-array-continuous/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-array-empty",
+    "frontendDisplayId": "2870",
+    "titleEn": "Minimum Number of Operations to Make Array Empty",
+    "titleZh": "使数组为空的最少操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Greedy",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "贪心",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-operations-to-make-array-empty/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-array-xor-equal-to-k",
+    "frontendDisplayId": "2997",
+    "titleEn": "Minimum Number of Operations to Make Array XOR Equal to K",
+    "titleZh": "使数组异或和等于 K 的最少操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-operations-to-make-array-xor-equal-to-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-arrays-similar",
+    "frontendDisplayId": "2449",
+    "titleEn": "Minimum Number of Operations to Make Arrays Similar",
+    "titleZh": "使数组相似的最少操作次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-operations-to-make-arrays-similar/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-elements-in-array-distinct",
+    "frontendDisplayId": "3396",
+    "titleEn": "Minimum Number of Operations to Make Elements in Array Distinct",
+    "titleZh": "使数组元素互不相同所需的最少操作次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-operations-to-make-elements-in-array-distinct/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-string-sorted",
+    "frontendDisplayId": "1830",
+    "titleEn": "Minimum Number of Operations to Make String Sorted",
+    "titleZh": "使字符串有序的最少操作次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Counting",
+      "Hash Table",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "计数",
+      "哈希表",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-operations-to-make-string-sorted/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-word-k-periodic",
+    "frontendDisplayId": "3137",
+    "titleEn": "Minimum Number of Operations to Make Word K-Periodic",
+    "titleZh": "K 周期字符串需要的最少操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-operations-to-make-word-k-periodic/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-operations-to-make-x-and-y-equal",
+    "frontendDisplayId": "2998",
+    "titleEn": "Minimum Number of Operations to Make X and Y Equal",
+    "titleZh": "使 X 和 Y 相等的最少操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Dynamic Programming",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "动态规划",
+      "记忆化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-operations-to-make-x-and-y-equal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-operations-to-move-all-balls-to-each-box",
+    "frontendDisplayId": "1769",
+    "titleEn": "Minimum Number of Operations to Move All Balls to Each Box",
+    "titleZh": "移动所有球到每个盒子所需的最小操作数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-operations-to-move-all-balls-to-each-box/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-operations-to-reinitialize-a-permutation",
+    "frontendDisplayId": "1806",
+    "titleEn": "Minimum Number of Operations to Reinitialize a Permutation",
+    "titleZh": "还原排列的最少操作步数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-operations-to-reinitialize-a-permutation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-operations-to-satisfy-conditions",
+    "frontendDisplayId": "3122",
+    "titleEn": "Minimum Number of Operations to Satisfy Conditions",
+    "titleZh": "使矩阵满足条件的最少操作次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-operations-to-satisfy-conditions/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-operations-to-sort-a-binary-tree-by-level",
+    "frontendDisplayId": "2471",
+    "titleEn": "Minimum Number of Operations to Sort a Binary Tree by Level",
+    "titleZh": "逐层排序二叉树所需的最少操作数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-operations-to-sort-a-binary-tree-by-level/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-people-to-teach",
+    "frontendDisplayId": "1733",
+    "titleEn": "Minimum Number of People to Teach",
+    "titleZh": "需要教语言的最少人数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-people-to-teach/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-pushes-to-type-word-i",
+    "frontendDisplayId": "3014",
+    "titleEn": "Minimum Number of Pushes to Type Word I",
+    "titleZh": "输入单词需要的最少按键次数 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-pushes-to-type-word-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-pushes-to-type-word-ii",
+    "frontendDisplayId": "3016",
+    "titleEn": "Minimum Number of Pushes to Type Word II",
+    "titleZh": "输入单词需要的最少按键次数 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Greedy",
+      "Hash Table",
+      "Sorting",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "贪心",
+      "哈希表",
+      "排序",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-pushes-to-type-word-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-refueling-stops",
+    "frontendDisplayId": "871",
+    "titleEn": "Minimum Number of Refueling Stops",
+    "titleZh": "最低加油次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-refueling-stops/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-removals-to-make-mountain-array",
+    "frontendDisplayId": "1671",
+    "titleEn": "Minimum Number of Removals to Make Mountain Array",
+    "titleZh": "得到山形数组的最少删除次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-removals-to-make-mountain-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-seconds-to-make-mountain-height-zero",
+    "frontendDisplayId": "3296",
+    "titleEn": "Minimum Number of Seconds to Make Mountain Height Zero",
+    "titleZh": "移山所需的最少秒数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "堆（优先队列）",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-seconds-to-make-mountain-height-zero/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-steps-to-make-two-strings-anagram",
+    "frontendDisplayId": "1347",
+    "titleEn": "Minimum Number of Steps to Make Two Strings Anagram",
+    "titleZh": "制造字母异位词的最小步骤数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-steps-to-make-two-strings-anagram/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "minimum-number-of-steps-to-make-two-strings-anagram-ii",
+    "frontendDisplayId": "2186",
+    "titleEn": "Minimum Number of Steps to Make Two Strings Anagram II",
+    "titleZh": "制造字母异位词的最小步骤数 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/minimum-number-of-steps-to-make-two-strings-anagram-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-083",
+    "claimedAt": "2026-07-10T06:32:05.229812+00:00",
+    "completedAt": null
+  }
+]

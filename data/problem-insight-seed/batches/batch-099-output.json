@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "points-that-intersect-with-cars",
+    "reasonEN": "A simple interval-union counting problem that marks or merges covered integer points. It reinforces translating ranges into coverage state and choosing between prefix sums and direct set tracking.",
+    "reasonZH": "简单的区间并集计数题，可标记或合并被覆盖的整数点。它训练将区间转化为覆盖状态，并理解前缀和与直接集合记录的选择。"
+  },
+  {
+    "slug": "pond-sizes-lcci",
+    "reasonEN": "A matrix connected-components problem that measures eight-directional water regions. It develops DFS or BFS flood fill, boundary checks, and the distinction between four-directional and diagonal adjacency.",
+    "reasonZH": "矩阵连通分量题，需要计算八方向相连水域的面积。它训练 DFS 或 BFS 泛洪填充、边界检查，以及四方向与对角相邻的区别。"
+  },
+  {
+    "slug": "poor-pigs",
+    "reasonEN": "A classic hard combinatorics problem that encodes bucket choices in the outcome states of each pig. It develops information-capacity reasoning and shows how multi-round experiments become base representation.",
+    "reasonZH": "经典高难组合题，将每只猪的实验结果状态编码为桶的选择。它训练信息容量推理，并理解多轮实验如何转化为进制表示。"
+  },
+  {
+    "slug": "populating-next-right-pointers-in-each-node",
+    "reasonEN": "A perfect-tree pointer-linking problem that uses existing next pointers to traverse levels in O(1) extra space. It reinforces structural invariants and the value of exploiting regular tree shape.",
+    "reasonZH": "完美二叉树指针连接题，利用已有 next 指针以 O(1) 额外空间遍历层级。它训练结构不变量，并理解如何利用规则树形特征。"
+  },
+  {
+    "slug": "populating-next-right-pointers-in-each-node-ii",
+    "reasonEN": "The general-tree extension removes perfect-tree guarantees and requires building the next level dynamically. It develops dummy-head traversal and robust level linking in the presence of missing children.",
+    "reasonZH": "通用二叉树版本取消了完美树保证，需要动态构建下一层链表。它训练哑节点遍历，以及存在缺失子节点时的稳健层级连接。"
+  },
+  {
+    "slug": "positions-of-large-groups",
+    "reasonEN": "A concise run-length scanning problem for locating long equal-character segments. It strengthens start-end boundary handling and the habit of flushing the final group after a loop.",
+    "reasonZH": "简洁的连续段扫描题，用于定位长度较大的相同字符分组。它训练起止边界处理，以及循环结束后补充处理最后一组的习惯。"
+  },
+  {
+    "slug": "possible-bipartition",
+    "reasonEN": "A graph two-coloring problem that tests whether conflict edges permit a bipartition. It develops DFS or BFS coloring, disconnected-component handling, and the connection between bipartite graphs and parity constraints.",
+    "reasonZH": "图的二染色题，判断冲突边能否形成二分组。它训练 DFS 或 BFS 染色、非连通分量处理，以及二分图与奇偶约束的联系。"
+  },
+  {
+    "slug": "power-grid-maintenance",
+    "reasonEN": "A dynamic graph-maintenance problem involving connectivity and component queries after failures. It develops the judgment to combine graph traversal, Union-Find, and ordered retrieval structures according to update semantics.",
+    "reasonZH": "动态电网维护题，涉及故障后的连通性与连通块查询。它训练根据更新语义组合图遍历、并查集与有序检索结构的能力。"
+  },
+  {
+    "slug": "power-of-four",
+    "reasonEN": "A bit-manipulation variant of power testing that additionally requires the single set bit to occupy an even-position pattern. It sharpens binary invariants beyond the basic power-of-two check.",
+    "reasonZH": "2 的幂判断的位运算变体，额外要求唯一置位落在特定奇偶位置。它训练超越基础 2 的幂判断的二进制不变量。"
+  },
+  {
+    "slug": "power-of-heroes",
+    "reasonEN": "A hard sorting and contribution-counting problem where each element can act as a maximum across many subsets. It develops prefix accumulation under modular arithmetic and the ability to derive combinatorial contributions after sorting.",
+    "reasonZH": "高难排序贡献计数题，每个元素可作为许多子集的最大值。它训练模运算下的前缀累积，并掌握排序后推导组合贡献的方法。"
+  },
+  {
+    "slug": "power-of-three",
+    "reasonEN": "An elementary number-theory recognition problem that can use repeated division or an upper-bound divisibility invariant. It reinforces exact arithmetic checks and the limits of floating-point logarithms.",
+    "reasonZH": "基础数论判断题，可用反复整除或最大幂的整除不变量。它训练精确算术判断，并认识浮点对数方法的局限。"
+  },
+  {
+    "slug": "power-of-two",
+    "reasonEN": "A foundational bitwise predicate based on the x & (x - 1) identity. It teaches why removing the lowest set bit is a powerful binary primitive and how to guard zero correctly.",
+    "reasonZH": "基础位运算判定题，核心是 x & (x - 1) 恒等式。它训练最低置位消除这一强大二进制原语，并强调正确排除零。"
+  },
+  {
+    "slug": "power-set-lcci",
+    "reasonEN": "A standard subset-generation problem that exposes both backtracking and bitmask enumeration. It builds the core correspondence between binary choices and the power-set search space.",
+    "reasonZH": "标准子集生成题，展示回溯与位掩码枚举两种方法。它建立二进制选择与幂集搜索空间之间的核心对应关系。"
+  },
+  {
+    "slug": "powerful-integers",
+    "reasonEN": "A bounded enumeration problem that generates sums of two exponential sequences while deduplicating results. It reinforces loop bounds derived from a target limit and edge cases when a base equals one.",
+    "reasonZH": "有界枚举题，生成两个指数序列之和并去重。它训练从目标上界推导循环边界，以及底数为一时的特殊情况处理。"
+  },
+  {
+    "slug": "powx-n",
+    "reasonEN": "A fast exponentiation template that halves the exponent at each recursive or iterative step. It develops divide-and-conquer reasoning, negative-exponent handling, and logarithmic-time arithmetic design.",
+    "reasonZH": "快速幂模板题，每步将指数减半。它训练分治思维、负指数处理，以及对数时间的算术算法设计。"
+  },
+  {
+    "slug": "predict-the-winner",
+    "reasonEN": "A game-theory interval DP where each player maximizes score difference rather than raw score. It teaches minimax recurrence design and the compact interpretation of optimal adversarial choices.",
+    "reasonZH": "博弈论区间 DP 题，玩家最大化的是分差而非原始得分。它训练极小化极大递推设计，并理解最优对抗选择的紧凑表达。"
+  },
+  {
+    "slug": "prefix-and-suffix-search",
+    "reasonEN": "A hard string-indexing design problem for queries constrained by both prefix and suffix. It develops composite-key hashing or trie construction and the tradeoff between preprocessing cost and query speed.",
+    "reasonZH": "高难字符串索引设计题，查询同时受前缀和后缀约束。它训练复合键哈希或 Trie 构造，并理解预处理成本与查询速度的取舍。"
+  },
+  {
+    "slug": "preimage-size-of-factorial-zeroes-function",
+    "reasonEN": "A hard binary-search problem over a monotone trailing-zero function whose target preimage has a special fixed size. It sharpens lower-bound search and counting factors of five without computing factorials.",
+    "reasonZH": "高难二分题，围绕单调的阶乘末尾零函数，其目标原像具有特殊固定大小。它训练下界二分，以及无需计算阶乘即可统计五因子。"
+  },
+  {
+    "slug": "previous-permutation-with-one-swap",
+    "reasonEN": "A greedy permutation construction problem that finds the rightmost decrease and the best swap candidate while avoiding duplicates. It develops lexicographic reasoning and subtle tie handling in array transformations.",
+    "reasonZH": "贪心排列构造题，寻找最右下降点及最优交换候选并避免重复值干扰。它训练字典序推理，以及数组变换中的细致并列处理。"
+  },
+  {
+    "slug": "primary-department-for-each-employee",
+    "reasonEN": "A database selection problem that combines an explicit primary flag with the single-department fallback. It reinforces conditional filtering and expressing mutually exclusive business rules clearly in SQL.",
+    "reasonZH": "数据库筛选题，需要结合显式主部门标记与单部门的兜底规则。它训练条件过滤，并在 SQL 中清晰表达互斥的业务规则。"
+  },
+  {
+    "slug": "prime-arrangements",
+    "reasonEN": "A combinatorics problem that counts prime and non-prime positions separately, then multiplies factorials. It develops sieve-based prime counting and modular factorial computation.",
+    "reasonZH": "组合计数题，分别统计质数和非质数位置后相乘阶乘。它训练筛法计数质数，以及模阶乘计算。"
+  },
+  {
+    "slug": "prime-in-diagonal",
+    "reasonEN": "A matrix scan combined with primality testing on the two diagonals. It reinforces extracting only relevant cells and implementing a square-root-bounded divisor check correctly.",
+    "reasonZH": "矩阵扫描结合质数判断题，只需检查两条对角线。它训练提取相关单元格，并正确实现以平方根为上界的试除判断。"
+  },
+  {
+    "slug": "prime-number-of-set-bits-in-binary-representation",
+    "reasonEN": "A range iteration problem that combines population count with a tiny primality predicate. It develops use of built-in bit operations and precomputing or hardcoding a small set of valid counts safely.",
+    "reasonZH": "区间遍历题，结合置位计数与小范围质数判断。它训练使用内置位操作，并安全地预处理或固定少量合法计数。"
+  },
+  {
+    "slug": "prime-pairs-with-target-sum",
+    "reasonEN": "A number-theory enumeration problem that pairs primes around a target sum. It reinforces sieve preprocessing, symmetry reduction, and ordered pair construction without duplicates.",
+    "reasonZH": "数论枚举题，在目标和两侧配对质数。它训练筛法预处理、对称性缩减，以及无重复地构造有序数对。"
+  },
+  {
+    "slug": "prime-palindrome",
+    "reasonEN": "A number-theory search problem that generates palindromes before testing primality, avoiding a sparse brute-force scan. It develops constructive candidate generation and the observation that even-length palindromes are usually divisible by eleven.",
+    "reasonZH": "数论搜索题，先构造回文数再判断质数，避免稀疏的暴力扫描。它训练候选构造，并利用偶数长度回文通常可被十一整除的观察。"
+  },
+  {
+    "slug": "prime-subtraction-operation",
+    "reasonEN": "A greedy array-feasibility problem that subtracts a suitable prime to preserve strict increase. It develops local-choice justification, prime preprocessing, and the importance of leaving enough room for later elements.",
+    "reasonZH": "贪心数组可行性题，减去合适质数以保持严格递增。它训练局部选择论证、质数预处理，以及为后续元素保留足够空间的意识。"
+  },
+  {
+    "slug": "print-binary-tree",
+    "reasonEN": "A tree-layout simulation problem that places nodes using subtree height and interval midpoints. It develops recursive coordinate assignment and connects tree depth to two-dimensional output structure.",
+    "reasonZH": "树形布局模拟题，利用子树高度和区间中点放置节点。它训练递归坐标分配，并建立树深度与二维输出结构的联系。"
+  },
+  {
+    "slug": "print-foobar-alternately",
+    "reasonEN": "A concurrency coordination problem requiring two threads to alternate deterministically. It teaches condition synchronization, semaphore handoff, and guarding against missed notifications or spurious wakeups.",
+    "reasonZH": "并发协作题，要求两个线程确定性交替执行。它训练条件同步、信号量交接，以及防范遗漏通知和虚假唤醒。"
+  },
+  {
+    "slug": "print-in-order",
+    "reasonEN": "An introductory concurrency ordering problem where independent callbacks must obey a fixed sequence. It builds practical understanding of latches, semaphores, and happens-before relationships.",
+    "reasonZH": "入门并发顺序控制题，独立回调必须遵守固定执行次序。它帮助理解闭锁、信号量，以及 happens-before 关系。"
+  },
+  {
+    "slug": "print-words-vertically",
+    "reasonEN": "A string formatting simulation that transposes uneven word rows and trims trailing spaces. It reinforces dimension calculation, padding logic, and output normalization in text-processing tasks.",
+    "reasonZH": "字符串格式化模拟题，需要转置长度不一的单词行并去除尾部空格。它训练维度计算、补位逻辑，以及文本处理中的输出规范化。"
+  }
+]

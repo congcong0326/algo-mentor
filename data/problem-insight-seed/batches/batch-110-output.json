@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "shortest-unsorted-continuous-subarray",
+    "reasonEN": "A medium array problem with sorting, monotonic-stack, and two-pointer perspectives; locating boundary violations and extending them by extremal values trains efficient disorder detection.",
+    "reasonZH": "中等难度的数组题，涵盖排序、单调栈和双指针视角；通过定位边界逆序并用极值扩展区间，训练高效识别局部无序。"
+  },
+  {
+    "slug": "shu-de-zi-jie-gou-lcof",
+    "reasonEN": "This medium tree DFS problem combines candidate-root scanning with structural matching; separating the two recursive responsibilities builds clear subtree-comparison reasoning.",
+    "reasonZH": "这道中等树形 DFS 题结合候选根扫描与结构匹配；分离两类递归职责，能建立清晰的子树比较思路。"
+  },
+  {
+    "slug": "shu-ju-liu-zhong-de-zhong-wei-shu-lcof",
+    "reasonEN": "A hard data-stream design problem centered on balanced heaps; maintaining partition invariants during insertion is core practice for online median and order-statistics queries.",
+    "reasonZH": "这是一道困难的数据流设计题，核心是平衡双堆；在插入时维护分区不变量，是在线中位数和顺序统计查询的关键训练。"
+  },
+  {
+    "slug": "shu-zhi-de-zheng-shu-ci-fang-lcof",
+    "reasonEN": "This medium math and recursion problem is a classic fast-exponentiation exercise; halving the exponent while handling sign and extreme bounds develops logarithmic algorithm design instincts.",
+    "reasonZH": "这道中等数学递归题是快速幂的经典练习；通过折半指数并处理符号和边界，培养对对数级算法的设计直觉。"
+  },
+  {
+    "slug": "shu-zi-xu-lie-zhong-mou-yi-wei-de-shu-zi-lcof",
+    "reasonEN": "A medium math and binary-search problem that groups numbers by digit length; identifying the correct block before computing an offset teaches layered numerical indexing.",
+    "reasonZH": "这道中等数学与二分题按数字位数分组；先定位所属区间再计算偏移，训练分层数值索引能力。"
+  },
+  {
+    "slug": "shu-zu-zhong-chu-xian-ci-shu-chao-guo-yi-ban-de-shu-zi-lcof",
+    "reasonEN": "An easy array counting problem with hash, sorting, and divide-and-conquer alternatives; comparing these approaches strengthens recognition of majority-value invariants.",
+    "reasonZH": "这道简单数组计数题可用哈希、排序和分治处理；比较不同方案有助于理解多数元素的不变量。"
+  },
+  {
+    "slug": "shu-zu-zhong-de-ni-xu-dui-lcof",
+    "reasonEN": "This hard array counting problem is a core divide-and-conquer pattern; counting cross inversions during merge sort provides foundational practice for subquadratic pair statistics.",
+    "reasonZH": "这道困难数组计数题是分治核心模式；在归并排序中统计跨区间逆序对，是掌握次二次复杂度数对统计的基础。"
+  },
+  {
+    "slug": "shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-ii-lcof",
+    "reasonEN": "A medium bit-manipulation problem that reconstructs an exceptional value from per-bit counts; it develops modular bit-state reasoning beyond the standard XOR trick.",
+    "reasonZH": "这道中等位运算题通过逐位计数恢复特殊值；它训练超越常规异或技巧的模运算位状态推理。"
+  },
+  {
+    "slug": "shu-zu-zhong-shu-zi-chu-xian-de-ci-shu-lcof",
+    "reasonEN": "This medium array and bit-manipulation problem uses XOR to isolate distinguishing bits; partitioning values by that bit is an important technique for recovering paired exceptions.",
+    "reasonZH": "这道中等数组位运算题利用异或定位区分位；按该位分组是找回成对异常值的重要技巧。"
+  },
+  {
+    "slug": "shu-zu-zhong-zhong-fu-de-shu-zi-lcof",
+    "reasonEN": "An easy array problem focused on duplicate detection through hashing or sorting; it offers concise practice in choosing time-space tradeoffs for membership tracking.",
+    "reasonZH": "这道简单数组题聚焦用哈希或排序检测重复元素；适合练习在成员记录问题中选择时间与空间的权衡。"
+  },
+  {
+    "slug": "shuffle-an-array",
+    "reasonEN": "A medium randomized design problem that requires uniform permutation generation and resettable state; implementing Fisher-Yates correctly is essential practice for unbiased shuffling.",
+    "reasonZH": "这道中等随机化设计题要求生成均匀排列并支持状态重置；正确实现 Fisher-Yates 算法，是无偏洗牌的必备训练。"
+  },
+  {
+    "slug": "shuffle-string",
+    "reasonEN": "An easy array and string reconstruction problem based on index placement; it reinforces direct-address mapping and preserving output positions accurately.",
+    "reasonZH": "这道简单数组字符串重建题依赖按下标放置字符；它训练直接寻址映射和准确保持输出位置。"
+  },
+  {
+    "slug": "shuffle-the-array",
+    "reasonEN": "This easy array simulation problem practices interleaving values by a fixed positional pattern; it is useful for building clean index arithmetic and result construction habits.",
+    "reasonZH": "这道简单数组模拟题训练按固定位置模式交错元素；适合建立清晰的下标运算和结果构造习惯。"
+  },
+  {
+    "slug": "shun-shi-zhen-da-yin-ju-zhen-lcof",
+    "reasonEN": "A classic easy matrix simulation problem that manages four shrinking boundaries; disciplined boundary updates make it valuable preparation for traversal and coordinate-control tasks.",
+    "reasonZH": "经典的简单矩阵模拟题，通过维护四条不断收缩的边界完成遍历；严谨更新边界，是矩阵遍历与坐标控制的有效训练。"
+  },
+  {
+    "slug": "sign-of-the-product-of-an-array",
+    "reasonEN": "An easy array and math problem that reduces multiplication to zero detection and parity of negatives; it teaches how to extract only the needed invariant without overflow risk.",
+    "reasonZH": "这道简单数组数学题将乘积问题化为零检测和负数个数奇偶性；它训练只提取所需不变量并规避溢出。"
+  },
+  {
+    "slug": "similar-string-groups",
+    "reasonEN": "A hard string connectivity problem using union-find or graph traversal; defining pairwise similarity and merging components develops practical equivalence-class modeling skills.",
+    "reasonZH": "这是一道困难的字符串连通性题，可用并查集或图遍历；定义两两相似关系并合并连通分量，训练等价类建模能力。"
+  },
+  {
+    "slug": "simple-bank-system",
+    "reasonEN": "This medium design and simulation problem focuses on validating operations before mutating account state; it reinforces ordered state updates and defensive boundary checks.",
+    "reasonZH": "这道中等设计模拟题强调在修改账户状态前完成操作校验；它训练有序的状态更新和防御性边界检查。"
+  },
+  {
+    "slug": "simplified-fractions",
+    "reasonEN": "A medium number-theory enumeration problem centered on coprimality; using the greatest common divisor to filter candidates provides direct practice with canonical fraction representation.",
+    "reasonZH": "这道中等数论枚举题聚焦互质关系；用最大公约数筛选候选分数，可直接训练分数规范表示。"
+  },
+  {
+    "slug": "simplify-path",
+    "reasonEN": "A medium stack and string parsing problem that normalizes hierarchical tokens; handling current-directory, parent-directory, and empty components builds robust path-processing skills.",
+    "reasonZH": "这道中等栈与字符串解析题用于规范化层级标记；处理当前目录、父目录和空片段，能训练稳健的路径处理能力。"
+  },
+  {
+    "slug": "single-element-in-a-sorted-array",
+    "reasonEN": "This medium binary-search problem exploits pair-index parity in sorted data; maintaining the correct half invariant is excellent practice for non-obvious search predicates.",
+    "reasonZH": "这道中等二分题利用有序数据中的成对下标奇偶规律；维护正确的半区不变量，是训练非直观搜索条件的好题。"
+  },
+  {
+    "slug": "single-number",
+    "reasonEN": "An easy bit-manipulation staple where XOR cancels paired values; it introduces algebraic invariants that deliver constant-space solutions to frequency problems.",
+    "reasonZH": "作为简单位运算经典题，异或可消去成对元素；它引入代数不变量，用常数空间解决频次问题。"
+  },
+  {
+    "slug": "single-number-ii",
+    "reasonEN": "A medium bit-manipulation extension that tracks repeated bits modulo a fixed count; it develops finite-state reasoning for frequency patterns that XOR alone cannot solve.",
+    "reasonZH": "这道中等位运算进阶题按固定次数对重复位取模；它训练处理单纯异或无法解决的频次模式的有限状态思维。"
+  },
+  {
+    "slug": "single-number-iii",
+    "reasonEN": "This medium bit-manipulation problem splits two exceptional values by a differentiating bit; it is a compact but powerful exercise in deriving partitions from XOR results.",
+    "reasonZH": "这道中等位运算题通过区分位拆分两个特殊值；它是从异或结果推导分组的一道紧凑而有力的练习。"
+  },
+  {
+    "slug": "single-threaded-cpu",
+    "reasonEN": "A medium scheduling simulation problem combining sorting with a priority queue; advancing time and resolving task-order ties trains a reusable event-driven processing pattern.",
+    "reasonZH": "这道中等调度模拟题结合排序与优先队列；推进时间并处理任务优先级并列，是可复用的事件驱动处理模式。"
+  },
+  {
+    "slug": "skFtm2",
+    "reasonEN": "A medium array and binary-search problem built on the parity structure of paired sorted elements; it strengthens invariant-driven logarithmic search design.",
+    "reasonZH": "这道中等数组二分题建立在有序成对元素的奇偶结构上；它强化基于不变量的对数级搜索设计。"
+  },
+  {
+    "slug": "sleep",
+    "reasonEN": "An easy asynchronous programming exercise centered on delayed completion; it provides a focused introduction to timer-based control flow and promise timing semantics.",
+    "reasonZH": "这是一道简单的异步编程练习，核心是延迟完成；它可集中理解基于计时器的控制流和 Promise 时间语义。"
+  },
+  {
+    "slug": "sliding-puzzle",
+    "reasonEN": "A hard state-space search problem where BFS explores matrix configurations by shortest moves; encoding states and avoiding revisits provide high-value graph-search practice.",
+    "reasonZH": "这是一道困难的状态空间搜索题，BFS 按最少步数探索矩阵配置；状态编码和去重访问是高价值的图搜索训练。"
+  },
+  {
+    "slug": "sliding-subarray-beauty",
+    "reasonEN": "A medium sliding-window problem that maintains value frequencies as the range moves; efficient add-remove updates train the core mechanics of dynamic window statistics.",
+    "reasonZH": "这道中等滑动窗口题在窗口移动时维护数值频次；高效处理加入和移除操作，训练动态窗口统计的核心机制。"
+  },
+  {
+    "slug": "sliding-window-maximum",
+    "reasonEN": "A hard sliding-window cornerstone that uses a monotonic queue to retain maximum candidates; expiring stale indices correctly is essential practice for linear-time window optimization.",
+    "reasonZH": "作为困难滑动窗口核心题，它用单调队列保留最大值候选；正确淘汰过期下标，是线性时间窗口优化的必备训练。"
+  },
+  {
+    "slug": "sliding-window-median",
+    "reasonEN": "A hard sliding-window order-statistics problem requiring balanced heaps and delayed removal; maintaining median invariants under both insertion and expiration is advanced data-structure practice.",
+    "reasonZH": "这是一道困难的滑动窗口顺序统计题，需要平衡双堆与延迟删除；在插入和过期时持续维护中位数不变量，是进阶数据结构训练。"
+  }
+]

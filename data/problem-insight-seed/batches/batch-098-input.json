@@ -1,0 +1,716 @@
+[
+  {
+    "slug": "path-with-maximum-gold",
+    "frontendDisplayId": "1219",
+    "titleEn": "Path with Maximum Gold",
+    "titleZh": "黄金矿工",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/path-with-maximum-gold/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "path-with-maximum-probability",
+    "frontendDisplayId": "1514",
+    "titleEn": "Path with Maximum Probability",
+    "titleZh": "概率最大的路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Heap (Priority Queue)",
+      "Shortest Path"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "堆（优先队列）",
+      "最短路"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/path-with-maximum-probability/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "path-with-minimum-effort",
+    "frontendDisplayId": "1631",
+    "titleEn": "Path With Minimum Effort",
+    "titleZh": "最小体力消耗路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Heap (Priority Queue)",
+      "Matrix",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "广度优先搜索",
+      "深度优先搜索",
+      "堆（优先队列）",
+      "矩阵",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/path-with-minimum-effort/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "paths-in-matrix-whose-sum-is-divisible-by-k",
+    "frontendDisplayId": "2435",
+    "titleEn": "Paths in Matrix Whose Sum Is Divisible by K",
+    "titleZh": "矩阵中和能被 K 整除的路径",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/paths-in-matrix-whose-sum-is-divisible-by-k/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "paths-with-sum-lcci",
+    "frontendDisplayId": "面试题 04.12",
+    "titleEn": null,
+    "titleZh": "求和路径",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/paths-with-sum-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "patients-with-a-condition",
+    "frontendDisplayId": "1527",
+    "titleEn": "Patients With a Condition",
+    "titleZh": "患某种疾病的患者",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/patients-with-a-condition/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "pattern-matching-lcci",
+    "frontendDisplayId": "面试题 16.18",
+    "titleEn": null,
+    "titleZh": "模式匹配",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Enumeration",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "枚举",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/pattern-matching-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "peak-index-in-a-mountain-array",
+    "frontendDisplayId": "852",
+    "titleEn": "Peak Index in a Mountain Array",
+    "titleZh": "山脉数组的峰顶索引",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/peak-index-in-a-mountain-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "peaks-and-valleys-lcci",
+    "frontendDisplayId": "面试题 10.11",
+    "titleEn": null,
+    "titleZh": "峰与谷",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/peaks-and-valleys-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "peaks-in-array",
+    "frontendDisplayId": "3187",
+    "titleEn": "Peaks in Array",
+    "titleZh": "数组中的峰值",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/peaks-in-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "peeking-iterator",
+    "frontendDisplayId": "284",
+    "titleEn": "Peeking Iterator",
+    "titleZh": "窥视迭代器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Design",
+      "Iterator"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "设计",
+      "迭代器"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/peeking-iterator/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "people-whose-list-of-favorite-companies-is-not-a-subset-of-another-list",
+    "frontendDisplayId": "1452",
+    "titleEn": "People Whose List of Favorite Companies Is Not a Subset of Another List",
+    "titleZh": "收藏清单",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/people-whose-list-of-favorite-companies-is-not-a-subset-of-another-list/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "percentage-of-letter-in-string",
+    "frontendDisplayId": "2278",
+    "titleEn": "Percentage of Letter in String",
+    "titleZh": "字母在字符串中的百分比",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/percentage-of-letter-in-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "percentage-of-users-attended-a-contest",
+    "frontendDisplayId": "1633",
+    "titleEn": "Percentage of Users Attended a Contest",
+    "titleZh": "各赛事的用户注册率",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/percentage-of-users-attended-a-contest/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "perfect-number",
+    "frontendDisplayId": "507",
+    "titleEn": "Perfect Number",
+    "titleZh": "完美数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/perfect-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "perfect-rectangle",
+    "frontendDisplayId": "391",
+    "titleEn": "Perfect Rectangle",
+    "titleZh": "完美矩形",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Geometry",
+      "Hash Table",
+      "Sweep Line",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "几何",
+      "哈希表",
+      "扫描线",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/perfect-rectangle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "perfect-squares",
+    "frontendDisplayId": "279",
+    "titleEn": "Perfect Squares",
+    "titleZh": "完全平方数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/perfect-squares/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "permutation-difference-between-two-strings",
+    "frontendDisplayId": "3146",
+    "titleEn": "Permutation Difference between Two Strings",
+    "titleZh": "两个字符串的排列差",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/permutation-difference-between-two-strings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "permutation-i-lcci",
+    "frontendDisplayId": "面试题 08.07",
+    "titleEn": null,
+    "titleZh": "无重复字符串的排列组合",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/permutation-i-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "permutation-ii-lcci",
+    "frontendDisplayId": "面试题 08.08",
+    "titleEn": null,
+    "titleZh": "有重复字符串的排列组合",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/permutation-ii-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "permutation-in-string",
+    "frontendDisplayId": "567",
+    "titleEn": "Permutation in String",
+    "titleZh": "字符串的排列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/permutation-in-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "permutation-sequence",
+    "frontendDisplayId": "60",
+    "titleEn": "Permutation Sequence",
+    "titleZh": "排列序列",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/permutation-sequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "permutations",
+    "frontendDisplayId": "46",
+    "titleEn": "Permutations",
+    "titleZh": "全排列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/permutations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "permutations-ii",
+    "frontendDisplayId": "47",
+    "titleEn": "Permutations II",
+    "titleZh": "全排列 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/permutations-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "permutations-iv",
+    "frontendDisplayId": "3470",
+    "titleEn": "Permutations IV",
+    "titleZh": "全排列 IV",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Enumeration",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "枚举",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/permutations-iv/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "pile-box-lcci",
+    "frontendDisplayId": "面试题 08.13",
+    "titleEn": null,
+    "titleZh": "堆箱子",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/pile-box-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ping-heng-er-cha-shu-lcof",
+    "frontendDisplayId": "LCR 176",
+    "titleEn": null,
+    "titleZh": "判断是否为平衡二叉树",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/ping-heng-er-cha-shu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "pizza-with-3n-slices",
+    "frontendDisplayId": "1388",
+    "titleEn": "Pizza With 3n Slices",
+    "titleZh": "3n 块披萨",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/pizza-with-3n-slices/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "plates-between-candles",
+    "frontendDisplayId": "2055",
+    "titleEn": "Plates Between Candles",
+    "titleZh": "蜡烛之间的盘子",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/plates-between-candles/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "plus-one",
+    "frontendDisplayId": "66",
+    "titleEn": "Plus One",
+    "titleZh": "加一",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/plus-one/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-098",
+    "claimedAt": "2026-07-10T07:00:53.983973+00:00",
+    "completedAt": null
+  }
+]

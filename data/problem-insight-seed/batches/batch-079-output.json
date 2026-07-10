@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "minimum-cost-to-convert-string-i",
+    "reasonEN": "A character-graph shortest-path problem that computes the cheapest conversion between every pair of letters before summing position costs. It teaches all-pairs relaxation and the clean separation of local string positions from shared transformation rules.",
+    "reasonZH": "字符图最短路题，先求任意字符对之间的最小转换成本，再汇总各位置代价。它能训练全源最短路松弛，以及将局部字符串位置与共享转换规则分离的思维。"
+  },
+  {
+    "slug": "minimum-cost-to-convert-string-ii",
+    "reasonEN": "A hard string transformation DP that combines shortest paths among replacement patterns with trie-based matching at each position. It develops multi-length transition design and efficient discovery of applicable substring rules.",
+    "reasonZH": "高难度字符串转换 DP，结合替换模式之间的最短路和字典树匹配各位置。它能训练多长度转移设计，以及高效发现可应用子串规则的能力。"
+  },
+  {
+    "slug": "minimum-cost-to-cut-a-stick",
+    "reasonEN": "A classic interval DP problem where each final cut divides a segment into two independent subproblems and pays the segment length. It establishes the last-operation viewpoint that unlocks many partition optimization tasks.",
+    "reasonZH": "经典区间 DP 题，将最后一次切割视为把一段分成两个独立子问题，并支付当前段长度代价。它能建立最后操作视角，是攻克分割优化题的重要方法。"
+  },
+  {
+    "slug": "minimum-cost-to-divide-array-into-subarrays",
+    "reasonEN": "A hard array partition DP that uses prefix sums to evaluate segment costs while optimizing previous cut positions. It develops state definitions over prefixes and the discipline to distinguish segment-local cost from cumulative optimum.",
+    "reasonZH": "高难度数组分割 DP，利用前缀和快速计算分段代价并优化前一切分位置。它能训练前缀状态定义，以及区分单段代价与累计最优值的能力。"
+  },
+  {
+    "slug": "minimum-cost-to-equalize-array",
+    "reasonEN": "A hard operation-cost greedy problem that compares single increments with paired increments and enumerates viable target heights. It teaches how relative operation prices change the optimal construction and why only a narrow target range matters.",
+    "reasonZH": "高难度操作成本贪心题，需要比较单次增加与成对增加的价格，并枚举合理目标高度。它能训练理解相对操作价格如何改变最优构造，以及为何只需考察有限目标范围。"
+  },
+  {
+    "slug": "minimum-cost-to-equalize-arrays-using-swaps",
+    "reasonEN": "A frequency-counting greedy problem that identifies unmatched values and pairs swap obligations at minimum cost. It develops multiset-difference modeling and the key choice between direct swaps and routing through a global minimum.",
+    "reasonZH": "频次统计贪心题，识别两数组中未匹配的数值并以最低成本配对交换义务。它能训练多重集合差异建模，以及直接交换和借助全局最小值中转的取舍。"
+  },
+  {
+    "slug": "minimum-cost-to-hire-k-workers",
+    "reasonEN": "A hard ratio-greedy problem that processes workers by wage-to-quality ratio and keeps the smallest total quality in a max-heap. It teaches fixing the bottleneck ratio first, then optimizing the additive companion quantity.",
+    "reasonZH": "高难度比率贪心题，按工资质量比排序，并用大根堆保留最小总质量。它能训练先固定瓶颈比率，再优化可加辅助量的经典策略。"
+  },
+  {
+    "slug": "minimum-cost-to-make-all-characters-equal",
+    "reasonEN": "A string-boundary greedy problem where every character change creates a decision point whose cheaper side should be flipped. It reinforces recognizing independent transition costs and avoiding unnecessary simulation of whole-string operations.",
+    "reasonZH": "字符串边界贪心题，每次字符变化都形成一个决策点，应选择翻转代价更低的一侧。它能训练识别独立的变化边界成本，并避免对整串操作进行冗余模拟。"
+  },
+  {
+    "slug": "minimum-cost-to-make-array-equal",
+    "reasonEN": "A weighted-median optimization problem in which the total adjustment cost is convex over the target value. It develops weighted median intuition, prefix-sum cost evaluation, and binary-search reasoning on discrete convex functions.",
+    "reasonZH": "加权中位数优化题，总调整成本对目标值呈凸性。它能训练加权中位数直觉、前缀和代价计算，以及离散凸函数上的二分推理。"
+  },
+  {
+    "slug": "minimum-cost-to-make-array-equalindromic",
+    "reasonEN": "A constrained-target optimization problem that searches palindromic candidates near the array median. It teaches how an unconstrained L1 optimum guides candidate generation when the target belongs to a sparse numeric set.",
+    "reasonZH": "受限目标优化题，需要在数组中位数附近搜索回文数候选。它能训练当目标属于稀疏数集时，如何借助无约束 L1 最优点生成少量候选。"
+  },
+  {
+    "slug": "minimum-cost-to-make-arrays-identical",
+    "reasonEN": "A sorting-greedy comparison problem that weighs positionwise alignment against rearranging values before pairing. It develops exchange arguments for matching costs and clear comparison of competing global strategies.",
+    "reasonZH": "排序贪心比较题，需要权衡按原位置配对与重排后配对两种成本。它能训练匹配代价的交换论证，以及对竞争性全局策略的清晰比较。"
+  },
+  {
+    "slug": "minimum-cost-to-make-at-least-one-valid-path-in-a-grid",
+    "reasonEN": "A 0-1 shortest-path problem on a grid where following an arrow costs zero and changing it costs one. It is a prime exercise for deque-based BFS and modeling edit costs as edge weights.",
+    "reasonZH": "网格上的 0-1 最短路题，顺着箭头移动代价为零，修改方向代价为一。它是训练双端队列 BFS，以及将编辑成本建模为边权的代表题。"
+  },
+  {
+    "slug": "minimum-cost-to-make-two-binary-strings-equal",
+    "reasonEN": "A binary-string greedy problem that pairs mismatch positions while comparing local swaps with a global correction operation. It teaches matching-by-distance reasoning and careful handling of an odd mismatch count.",
+    "reasonZH": "二进制字符串贪心题，需要配对失配位置并比较局部交换与全局修正操作的成本。它能训练按距离匹配的推理，以及奇数个失配无法完全配对的边界。"
+  },
+  {
+    "slug": "minimum-cost-to-merge-sorted-lists",
+    "reasonEN": "A hard ordered-sequence optimization problem that combines state compression, binary search, and two-pointer transitions to minimize merge cost. It develops recognizing monotone structure inside a high-dimensional DP and pruning impossible pairings.",
+    "reasonZH": "高难度有序序列优化题，结合状态压缩、二分和双指针转移来最小化合并成本。它能训练在高维 DP 中识别单调结构，并剪除不可能的配对状态。"
+  },
+  {
+    "slug": "minimum-cost-to-merge-stones",
+    "reasonEN": "A hard interval DP problem with a modular feasibility condition: only segments whose pile count can reduce correctly should be merged. It is valuable practice for deriving state dimensions from operation arity and using prefix sums for merge costs.",
+    "reasonZH": "高难度区间 DP 题，存在由每次合并数量决定的模意义可行性条件，只有满足条件的区间才能正确缩并。它能训练从操作元数推导状态维度，并用前缀和计算合并代价。"
+  },
+  {
+    "slug": "minimum-cost-to-move-between-indices",
+    "reasonEN": "An array movement optimization problem that accumulates transition costs and uses greedy prefix reasoning to choose cheaper route changes. It develops converting a path of local moves into a prefix-based cost comparison.",
+    "reasonZH": "数组移动优化题，需要累计相邻转移代价，并用贪心前缀思路选择更低成本的路径变更。它能训练将局部移动路径转化为前缀式成本比较。"
+  },
+  {
+    "slug": "minimum-cost-to-move-chips-to-the-same-position",
+    "reasonEN": "A parity-invariant greedy problem: moves by two are free, so only chips of the minority parity need paid moves. It teaches spotting modular invariants that collapse an apparent position optimization into simple counting.",
+    "reasonZH": "奇偶不变量贪心题，移动两格免费，因此只需为数量较少的奇偶类筹码支付移动成本。它能训练识别模意义不变量，将位置优化化简为简单计数。"
+  },
+  {
+    "slug": "minimum-cost-to-partition-a-binary-string",
+    "reasonEN": "A hard binary-string partition problem that uses prefix summaries and divide-and-conquer structure to evaluate cut costs. It develops recursive decomposition around transition boundaries and efficient reuse of aggregate information.",
+    "reasonZH": "高难度二进制字符串分割题，利用前缀摘要和分治结构评估切分成本。它能训练围绕字符变化边界递归分解，并高效复用聚合信息。"
+  },
+  {
+    "slug": "minimum-cost-to-reach-destination-in-time",
+    "reasonEN": "A resource-constrained shortest-path DP where time is part of the state and node fees are optimized under a deadline. It teaches why a single best cost per node is insufficient when another resource constrains future choices.",
+    "reasonZH": "资源约束最短路 DP，时间必须进入状态，并在截止时间内优化节点费用。它能训练理解为何存在额外资源约束时，每个节点只保留一个最小成本并不充分。"
+  },
+  {
+    "slug": "minimum-cost-to-reach-every-position",
+    "reasonEN": "An easy one-pass array optimization that maintains the best reachable cost while extending answers to later positions. It reinforces identifying a running minimum invariant and avoiding repeated recomputation for every destination.",
+    "reasonZH": "入门一次扫描优化题，维护当前可达的最优成本并扩展到后续位置。它能训练识别运行最小值不变量，避免为每个终点重复计算。"
+  },
+  {
+    "slug": "minimum-cost-to-set-cooking-time",
+    "reasonEN": "A bounded enumeration problem that tests the few valid minute-second representations and simulates digit-entry cost. It teaches exploiting small representation spaces and handling leading-zero display rules precisely.",
+    "reasonZH": "有界枚举题，检查少量合法的分钟秒数表示并模拟按键成本。它能训练利用表示空间很小的特点，以及精确处理前导零显示规则。"
+  },
+  {
+    "slug": "minimum-cost-to-split-an-array",
+    "reasonEN": "A hard prefix DP problem that incrementally updates duplicate penalties while extending the final segment backwards. It develops dynamic frequency maintenance inside nested transitions and careful accounting of first versus repeated occurrences.",
+    "reasonZH": "高难度前缀 DP 题，向左扩展最后一段时动态维护重复元素罚分。它能训练在嵌套转移中维护频次，以及区分首次出现与重复出现贡献的能力。"
+  },
+  {
+    "slug": "minimum-cost-to-split-into-ones",
+    "reasonEN": "A mathematical DP problem that models the cost of recursively splitting a quantity until only unit parts remain. It strengthens recurrence discovery from divisor choices and the use of memoization for repeated subproblems.",
+    "reasonZH": "数学动态规划题，刻画一个数递归拆分直到全部成为 1 的成本。它能训练从可选因子发现递推关系，并用记忆化消除重复子问题。"
+  },
+  {
+    "slug": "minimum-cost-tree-from-leaf-values",
+    "reasonEN": "A monotonic-stack greedy problem that removes smaller leaves when their cheapest inevitable partner is known. It teaches the local-elimination proof behind a problem that also admits interval DP, making it a valuable optimization comparison.",
+    "reasonZH": "单调栈贪心题，当较小叶子的最便宜必然配对对象确定时将其消去。它能训练局部消除的正确性证明，并对比同题的区间 DP 解法。"
+  },
+  {
+    "slug": "minimum-cost-walk-in-weighted-graph",
+    "reasonEN": "A graph-component bitwise problem where every walk inside a connected component shares an AND-based lower bound. It develops union-find aggregation and the nonintuitive behavior of bitwise AND under repeated edge traversal.",
+    "reasonZH": "图连通分量位运算题，同一连通分量内的任意路径共享按位与形式的下界。它能训练并查集聚合，以及理解重复经过边时按位与的非直观性质。"
+  },
+  {
+    "slug": "minimum-cuts-to-divide-a-circle",
+    "reasonEN": "A compact geometry and parity problem that derives a direct formula from how diameters partition a circle. It is useful for replacing visual casework with a precise odd-even argument.",
+    "reasonZH": "简洁的几何奇偶题，根据直径切分圆形的规律推导直接公式。它能训练用严谨的奇偶论证替代直观图形分类。"
+  },
+  {
+    "slug": "minimum-degree-of-a-connected-trio-in-a-graph",
+    "reasonEN": "A graph enumeration problem that detects triangles using adjacency lookup and evaluates external degree from node degrees. It teaches efficient trio enumeration and avoiding double-counting edges internal to the triangle.",
+    "reasonZH": "图枚举题，通过邻接查询识别三角形，并由节点度数计算外部度数。它能训练高效三元组枚举，以及避免重复计入三角形内部边。"
+  },
+  {
+    "slug": "minimum-deletion-cost-to-make-all-characters-equal",
+    "reasonEN": "A character-frequency optimization problem that tests each possible retained character and sums deletion costs for all others. It develops target enumeration and the insight that independent deletion costs make global optimization separable.",
+    "reasonZH": "字符频次优化题，枚举最终保留的字符并汇总删除其余字符的成本。它能训练目标枚举，以及理解独立删除代价如何让全局优化可分解。"
+  },
+  {
+    "slug": "minimum-deletions-for-at-most-k-distinct-characters",
+    "reasonEN": "An easy frequency-greedy problem that retains the k most frequent character classes and deletes the rest. It reinforces the exchange argument that keeping larger groups always minimizes deletion count.",
+    "reasonZH": "入门频次贪心题，保留出现次数最多的 k 类字符并删除其余字符。它能巩固保留更大频次组必然最小化删除数量的交换论证。"
+  },
+  {
+    "slug": "minimum-deletions-to-make-alternating-substring",
+    "reasonEN": "A hard dynamic string-query problem that stores composable alternating-pattern summaries in a segment tree. It develops designing mergeable node states so range updates or queries preserve the minimum-deletion objective.",
+    "reasonZH": "高难度动态字符串查询题，需要在线段树节点中保存可合并的交替模式摘要。它能训练设计可组合节点状态，使区间更新或查询仍能保持最小删除目标。"
+  }
+]

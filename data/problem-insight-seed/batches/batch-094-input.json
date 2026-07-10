@@ -1,0 +1,734 @@
+[
+  {
+    "slug": "number-of-subsequences-that-satisfy-the-given-sum-condition",
+    "frontendDisplayId": "1498",
+    "titleEn": "Number of Subsequences That Satisfy the Given Sum Condition",
+    "titleZh": "满足条件的子序列数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-subsequences-that-satisfy-the-given-sum-condition/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-substrings-containing-all-three-characters",
+    "frontendDisplayId": "1358",
+    "titleEn": "Number of Substrings Containing All Three Characters",
+    "titleZh": "包含所有三种字符的子字符串数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-substrings-containing-all-three-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-substrings-with-only-1s",
+    "frontendDisplayId": "1513",
+    "titleEn": "Number of Substrings With Only 1s",
+    "titleZh": "仅含 1 的子串数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-substrings-with-only-1s/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-times-binary-string-is-prefix-aligned",
+    "frontendDisplayId": "1375",
+    "titleEn": "Number of Times Binary String Is Prefix-Aligned",
+    "titleZh": "二进制字符串前缀一致的次数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-times-binary-string-is-prefix-aligned/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-unequal-triplets-in-array",
+    "frontendDisplayId": "2475",
+    "titleEn": "Number of Unequal Triplets in Array",
+    "titleZh": "数组中不等三元组的数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-unequal-triplets-in-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-unique-good-subsequences",
+    "frontendDisplayId": "1987",
+    "titleEn": "Number of Unique Good Subsequences",
+    "titleZh": "不同的好子序列数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-unique-good-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-unique-subjects-taught-by-each-teacher",
+    "frontendDisplayId": "2356",
+    "titleEn": "Number of Unique Subjects Taught by Each Teacher",
+    "titleZh": "每位教师所教授的科目种类的数量",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-unique-subjects-taught-by-each-teacher/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-unique-xor-triplets-i",
+    "frontendDisplayId": "3513",
+    "titleEn": "Number of Unique XOR Triplets I",
+    "titleZh": "不同 XOR 三元组的数目 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-unique-xor-triplets-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-unique-xor-triplets-ii",
+    "frontendDisplayId": "3514",
+    "titleEn": "Number of Unique XOR Triplets II",
+    "titleZh": "不同 XOR 三元组的数目 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Enumeration",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "枚举",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-unique-xor-triplets-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-valid-clock-times",
+    "frontendDisplayId": "2437",
+    "titleEn": "Number of Valid Clock Times",
+    "titleZh": "有效时间的数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Enumeration",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-valid-clock-times/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-valid-move-combinations-on-chessboard",
+    "frontendDisplayId": "2056",
+    "titleEn": "Number of Valid Move Combinations On Chessboard",
+    "titleZh": "棋盘上有效移动组合的数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-valid-move-combinations-on-chessboard/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-valid-words-for-each-puzzle",
+    "frontendDisplayId": "1178",
+    "titleEn": "Number of Valid Words for Each Puzzle",
+    "titleZh": "猜字谜",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Hash Table",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "哈希表",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-valid-words-for-each-puzzle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-valid-words-in-a-sentence",
+    "frontendDisplayId": "2047",
+    "titleEn": "Number of Valid Words in a Sentence",
+    "titleZh": "句子中的有效单词数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-valid-words-in-a-sentence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-visible-people-in-a-queue",
+    "frontendDisplayId": "1944",
+    "titleEn": "Number of Visible People in a Queue",
+    "titleZh": "队列中可以看到的人数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-visible-people-in-a-queue/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-of-cutting-a-pizza",
+    "frontendDisplayId": "1444",
+    "titleEn": "Number of Ways of Cutting a Pizza",
+    "titleZh": "切披萨的方案数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix",
+      "Memoization",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵",
+      "记忆化",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-of-cutting-a-pizza/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-arrive-at-destination",
+    "frontendDisplayId": "1976",
+    "titleEn": "Number of Ways to Arrive at Destination",
+    "titleZh": "到达目的地的方案数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Graph Theory",
+      "Shortest Path",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "图",
+      "最短路",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-arrive-at-destination/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-assign-edge-weights-i",
+    "frontendDisplayId": "3558",
+    "titleEn": "Number of Ways to Assign Edge Weights I",
+    "titleZh": "给边赋权值的方案数 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Math",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "数学",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-assign-edge-weights-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-assign-edge-weights-ii",
+    "frontendDisplayId": "3559",
+    "titleEn": "Number of Ways to Assign Edge Weights II",
+    "titleZh": "给边赋权值的方案数 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Math",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "深度优先搜索",
+      "动态规划",
+      "数学",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-assign-edge-weights-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-buy-pens-and-pencils",
+    "frontendDisplayId": "2240",
+    "titleEn": "Number of Ways to Buy Pens and Pencils",
+    "titleZh": "买钢笔和铅笔的方案数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-buy-pens-and-pencils/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-divide-a-long-corridor",
+    "frontendDisplayId": "2147",
+    "titleEn": "Number of Ways to Divide a Long Corridor",
+    "titleZh": "分隔长廊的方案数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-divide-a-long-corridor/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-earn-points",
+    "frontendDisplayId": "2585",
+    "titleEn": "Number of Ways to Earn Points",
+    "titleZh": "获得分数的方法数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-earn-points/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-form-a-target-string-given-a-dictionary",
+    "frontendDisplayId": "1639",
+    "titleEn": "Number of Ways to Form a Target String Given a Dictionary",
+    "titleZh": "通过给定词典构造目标字符串的方案数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-form-a-target-string-given-a-dictionary/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-paint-n-3-grid",
+    "frontendDisplayId": "1411",
+    "titleEn": "Number of Ways to Paint N × 3 Grid",
+    "titleZh": "给 N x 3 网格图涂色的方案数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-paint-n-3-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-reach-a-position-after-exactly-k-steps",
+    "frontendDisplayId": "2400",
+    "titleEn": "Number of Ways to Reach a Position After Exactly k Steps",
+    "titleZh": "恰好移动 k 步到达某一位置的方法数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-reach-a-position-after-exactly-k-steps/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-rearrange-sticks-with-k-sticks-visible",
+    "frontendDisplayId": "1866",
+    "titleEn": "Number of Ways to Rearrange Sticks With K Sticks Visible",
+    "titleZh": "恰有 K 根木棍可以看到的排列数目",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-rearrange-sticks-with-k-sticks-visible/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-reconstruct-a-tree",
+    "frontendDisplayId": "1719",
+    "titleEn": "Number Of Ways To Reconstruct A Tree",
+    "titleZh": "重构一棵树的方案数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Graph Theory",
+      "Hash Table",
+      "Simulation",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "图",
+      "哈希表",
+      "模拟",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-reconstruct-a-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-reorder-array-to-get-same-bst",
+    "frontendDisplayId": "1569",
+    "titleEn": "Number of Ways to Reorder Array to Get Same BST",
+    "titleZh": "将子数组重新排序得到同一个二叉搜索树的方案数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search Tree",
+      "Binary Tree",
+      "Combinatorics",
+      "Divide and Conquer",
+      "Dynamic Programming",
+      "Math",
+      "Memoization",
+      "Tree",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉搜索树",
+      "二叉树",
+      "组合数学",
+      "分治",
+      "动态规划",
+      "数学",
+      "记忆化",
+      "树",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-reorder-array-to-get-same-bst/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-select-buildings",
+    "frontendDisplayId": "2222",
+    "titleEn": "Number of Ways to Select Buildings",
+    "titleZh": "选择建筑的方案数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-select-buildings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-separate-numbers",
+    "frontendDisplayId": "1977",
+    "titleEn": "Number of Ways to Separate Numbers",
+    "titleZh": "划分数字的方案数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Prefix Sum",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "前缀和",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-separate-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "number-of-ways-to-split-a-string",
+    "frontendDisplayId": "1573",
+    "titleEn": "Number of Ways to Split a String",
+    "titleZh": "分割字符串的方案数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/number-of-ways-to-split-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-094",
+    "claimedAt": "2026-07-10T06:56:22.140269+00:00",
+    "completedAt": null
+  }
+]

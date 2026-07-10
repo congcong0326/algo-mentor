@@ -1,0 +1,524 @@
+[
+  {
+    "slug": "yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof",
+    "frontendDisplayId": "LCR 187",
+    "titleEn": null,
+    "titleZh": "破冰游戏",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Recursion"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "递归"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "z1R5dt",
+    "frontendDisplayId": "LCR 066",
+    "titleEn": null,
+    "titleZh": "键值映射",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Hash Table",
+      "String",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "哈希表",
+      "字符串",
+      "字典树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/z1R5dt/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zai-pai-xu-shu-zu-zhong-cha-zhao-shu-zi-lcof",
+    "frontendDisplayId": "LCR 172",
+    "titleEn": null,
+    "titleZh": "统计目标成绩的出现次数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/zai-pai-xu-shu-zu-zhong-cha-zhao-shu-zi-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zero-array-transformation-i",
+    "frontendDisplayId": "3355",
+    "titleEn": "Zero Array Transformation I",
+    "titleZh": "零数组变换 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/zero-array-transformation-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zero-array-transformation-ii",
+    "frontendDisplayId": "3356",
+    "titleEn": "Zero Array Transformation II",
+    "titleZh": "零数组变换 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/zero-array-transformation-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zero-array-transformation-iii",
+    "frontendDisplayId": "3362",
+    "titleEn": "Zero Array Transformation III",
+    "titleZh": "零数组变换 III",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)",
+      "Prefix Sum",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）",
+      "前缀和",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/zero-array-transformation-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zero-array-transformation-iv",
+    "frontendDisplayId": "3489",
+    "titleEn": "Zero Array Transformation IV",
+    "titleZh": "零数组变换 IV",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/zero-array-transformation-iv/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zero-matrix-lcci",
+    "frontendDisplayId": "面试题 01.08",
+    "titleEn": null,
+    "titleZh": "零矩阵",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "矩阵"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/zero-matrix-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zhan-de-ya-ru-dan-chu-xu-lie-lcof",
+    "frontendDisplayId": "LCR 148",
+    "titleEn": null,
+    "titleZh": "验证图书取出顺序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟",
+      "栈"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zheng-ze-biao-da-shi-pi-pei-lcof",
+    "frontendDisplayId": "LCR 137",
+    "titleEn": null,
+    "titleZh": "模糊搜索验证",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Recursion",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "递归",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/zheng-ze-biao-da-shi-pi-pei-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zhong-jian-er-cha-shu-lcof",
+    "frontendDisplayId": "LCR 124",
+    "titleEn": null,
+    "titleZh": "推理二叉树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Tree",
+      "Divide and Conquer",
+      "Hash Table",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉树",
+      "分治",
+      "哈希表",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/zhong-jian-er-cha-shu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zi-fu-chuan-de-pai-lie-lcof",
+    "frontendDisplayId": "LCR 157",
+    "titleEn": null,
+    "titleZh": "套餐内商品的排列顺序",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/zi-fu-chuan-de-pai-lie-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zigzag-conversion",
+    "frontendDisplayId": "6",
+    "titleEn": "Zigzag Conversion",
+    "titleZh": "Z 字形变换",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/zigzag-conversion/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zigzag-grid-traversal-with-skip",
+    "frontendDisplayId": "3417",
+    "titleEn": "Zigzag Grid Traversal With Skip",
+    "titleZh": "跳过交替单元格的之字形遍历",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/zigzag-grid-traversal-with-skip/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zlDJc7",
+    "frontendDisplayId": "LCR 109",
+    "titleEn": null,
+    "titleZh": "打开转盘锁",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/zlDJc7/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zui-chang-bu-han-zhong-fu-zi-fu-de-zi-zi-fu-chuan-lcof",
+    "frontendDisplayId": "LCR 167",
+    "titleEn": null,
+    "titleZh": "招式拆解 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/zui-chang-bu-han-zhong-fu-zi-fu-de-zi-zi-fu-chuan-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zui-xiao-de-kge-shu-lcof",
+    "frontendDisplayId": "LCR 159",
+    "titleEn": null,
+    "titleZh": "库存管理 III",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Heap (Priority Queue)",
+      "Quickselect",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "堆（优先队列）",
+      "快速选择",
+      "排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/zui-xiao-de-kge-shu-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zui-xiao-ju-xing-mian-ji",
+    "frontendDisplayId": "LCP 37",
+    "titleEn": null,
+    "titleZh": "最小矩形面积",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Geometry",
+      "Greedy",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "几何",
+      "贪心",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/zui-xiao-ju-xing-mian-ji/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zui-xiao-tiao-yue-ci-shu",
+    "frontendDisplayId": "LCP 09",
+    "titleEn": null,
+    "titleZh": "最小跳跃次数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Dynamic Programming",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "动态规划",
+      "线段树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/zui-xiao-tiao-yue-ci-shu/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zuma-game",
+    "frontendDisplayId": "488",
+    "titleEn": "Zuma Game",
+    "titleZh": "祖玛游戏",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Dynamic Programming",
+      "Memoization",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "动态规划",
+      "记忆化",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/zuma-game/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "zuo-xuan-zhuan-zi-fu-chuan-lcof",
+    "frontendDisplayId": "LCR 182",
+    "titleEn": null,
+    "titleZh": "动态口令",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/zuo-xuan-zhuan-zi-fu-chuan-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-126",
+    "claimedAt": "2026-07-10T08:16:35.320786+00:00",
+    "completedAt": null
+  }
+]

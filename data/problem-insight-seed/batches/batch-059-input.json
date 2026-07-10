@@ -1,0 +1,730 @@
+[
+  {
+    "slug": "least-number-of-unique-integers-after-k-removals",
+    "frontendDisplayId": "1481",
+    "titleEn": "Least Number of Unique Integers after K Removals",
+    "titleZh": "不同整数的最少数目",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Counting",
+      "Greedy",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "计数",
+      "贪心",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/least-number-of-unique-integers-after-k-removals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "least-operators-to-express-number",
+    "frontendDisplayId": "964",
+    "titleEn": "Least Operators to Express Number",
+    "titleZh": "表示数字的最少运算符",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Math",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "数学",
+      "记忆化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/least-operators-to-express-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "left-and-right-sum-differences",
+    "frontendDisplayId": "2574",
+    "titleEn": "Left and Right Sum Differences",
+    "titleZh": "左右元素和的差值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/left-and-right-sum-differences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "legal-binary-search-tree-lcci",
+    "frontendDisplayId": "面试题 04.05",
+    "titleEn": null,
+    "titleZh": "合法二叉搜索树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/legal-binary-search-tree-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lemonade-change",
+    "frontendDisplayId": "860",
+    "titleEn": "Lemonade Change",
+    "titleZh": "柠檬水找零",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lemonade-change/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "length-of-last-word",
+    "frontendDisplayId": "58",
+    "titleEn": "Length of Last Word",
+    "titleZh": "最后一个单词的长度",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/length-of-last-word/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "length-of-longest-fibonacci-subsequence",
+    "frontendDisplayId": "873",
+    "titleEn": "Length of Longest Fibonacci Subsequence",
+    "titleZh": "最长的斐波那契子序列的长度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/length-of-longest-fibonacci-subsequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "length-of-longest-subarray-with-at-most-k-frequency",
+    "frontendDisplayId": "2958",
+    "titleEn": "Length of Longest Subarray With at Most K Frequency",
+    "titleZh": "最多 K 个重复元素的最长子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/length-of-longest-subarray-with-at-most-k-frequency/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "length-of-longest-v-shaped-diagonal-segment",
+    "frontendDisplayId": "3459",
+    "titleEn": "Length of Longest V-Shaped Diagonal Segment",
+    "titleZh": "最长 V 形对角线段的长度",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix",
+      "Memoization"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵",
+      "记忆化"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/length-of-longest-v-shaped-diagonal-segment/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "length-of-the-longest-alphabetical-continuous-substring",
+    "frontendDisplayId": "2414",
+    "titleEn": "Length of the Longest Alphabetical Continuous Substring",
+    "titleZh": "最长的字母序连续子字符串的长度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String"
+    ],
+    "tagLabelsZh": [
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/length-of-the-longest-alphabetical-continuous-substring/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "length-of-the-longest-increasing-path",
+    "frontendDisplayId": "3288",
+    "titleEn": "Length of the Longest Increasing Path",
+    "titleZh": "最长上升路径的长度",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/length-of-the-longest-increasing-path/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "length-of-the-longest-subsequence-that-sums-to-target",
+    "frontendDisplayId": "2915",
+    "titleEn": "Length of the Longest Subsequence That Sums to Target",
+    "titleZh": "和为目标值的最长子序列的长度",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/length-of-the-longest-subsequence-that-sums-to-target/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "length-of-the-longest-valid-substring",
+    "frontendDisplayId": "2781",
+    "titleEn": "Length of the Longest Valid Substring",
+    "titleZh": "最长合法子字符串的长度",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/length-of-the-longest-valid-substring/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "letter-case-permutation",
+    "frontendDisplayId": "784",
+    "titleEn": "Letter Case Permutation",
+    "titleZh": "字母大小写全排列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Bit Manipulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "位运算",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/letter-case-permutation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "letter-combinations-of-a-phone-number",
+    "frontendDisplayId": "17",
+    "titleEn": "Letter Combinations of a Phone Number",
+    "titleZh": "电话号码的字母组合",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "letter-tile-possibilities",
+    "frontendDisplayId": "1079",
+    "titleEn": "Letter Tile Possibilities",
+    "titleZh": "活字印刷",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Backtracking",
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "回溯",
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/letter-tile-possibilities/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographical-numbers",
+    "frontendDisplayId": "386",
+    "titleEn": "Lexicographical Numbers",
+    "titleZh": "字典序排数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Depth-First Search",
+      "Trie"
+    ],
+    "tagLabelsZh": [
+      "深度优先搜索",
+      "字典树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographical-numbers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographically-maximum-mex-array",
+    "frontendDisplayId": "3948",
+    "titleEn": "Lexicographically Maximum MEX Array",
+    "titleZh": "字典序最大的 MEX 数组",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table",
+      "Queue"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表",
+      "队列"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-maximum-mex-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographically-minimum-string-after-removing-stars",
+    "frontendDisplayId": "3170",
+    "titleEn": "Lexicographically Minimum String After Removing Stars",
+    "titleZh": "删除星号以后字典序最小的字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "哈希表",
+      "堆（优先队列）",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-minimum-string-after-removing-stars/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographically-smallest-beautiful-string",
+    "frontendDisplayId": "2663",
+    "titleEn": "Lexicographically Smallest Beautiful String",
+    "titleZh": "字典序最小的美丽字符串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-smallest-beautiful-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographically-smallest-equivalent-string",
+    "frontendDisplayId": "1061",
+    "titleEn": "Lexicographically Smallest Equivalent String",
+    "titleZh": "按字典序排列最小的等效字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "String",
+      "Union-Find"
+    ],
+    "tagLabelsZh": [
+      "字符串",
+      "并查集"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-smallest-equivalent-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographically-smallest-generated-string",
+    "frontendDisplayId": "3474",
+    "titleEn": "Lexicographically Smallest Generated String",
+    "titleZh": "字典序最小的生成字符串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Greedy",
+      "String",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串",
+      "字符串匹配"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-smallest-generated-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographically-smallest-negated-permutation-that-sums-to-target",
+    "frontendDisplayId": "3752",
+    "titleEn": "Lexicographically Smallest Negated Permutation that Sums to Target",
+    "titleZh": "字典序最小和为目标值且绝对值是排列的数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Math",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "数学",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-smallest-negated-permutation-that-sums-to-target/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographically-smallest-palindrome",
+    "frontendDisplayId": "2697",
+    "titleEn": "Lexicographically Smallest Palindrome",
+    "titleZh": "字典序最小回文串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Greedy",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-smallest-palindrome/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographically-smallest-palindromic-permutation-greater-than-target",
+    "frontendDisplayId": "3734",
+    "titleEn": "Lexicographically Smallest Palindromic Permutation Greater Than Target",
+    "titleZh": "大于目标字符串的最小字典序回文排列",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Enumeration",
+      "String",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "字符串",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-smallest-palindromic-permutation-greater-than-target/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographically-smallest-permutation-greater-than-target",
+    "frontendDisplayId": "3720",
+    "titleEn": "Lexicographically Smallest Permutation Greater Than Target",
+    "titleZh": "大于目标字符串的最小字典序排列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Counting",
+      "Enumeration",
+      "Greedy",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "枚举",
+      "贪心",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-smallest-permutation-greater-than-target/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographically-smallest-string-after-a-swap",
+    "frontendDisplayId": "3216",
+    "titleEn": "Lexicographically Smallest String After a Swap",
+    "titleZh": "交换后字典序最小的字符串",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-smallest-string-after-a-swap/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographically-smallest-string-after-adjacent-removals",
+    "frontendDisplayId": "3563",
+    "titleEn": "Lexicographically Smallest String After Adjacent Removals",
+    "titleZh": "移除相邻字符后字典序最小的字符串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-smallest-string-after-adjacent-removals/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographically-smallest-string-after-applying-operations",
+    "frontendDisplayId": "1625",
+    "titleEn": "Lexicographically Smallest String After Applying Operations",
+    "titleZh": "执行操作后字典序最小的字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Enumeration",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "枚举",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-smallest-string-after-applying-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "lexicographically-smallest-string-after-deleting-duplicate-characters",
+    "frontendDisplayId": "3816",
+    "titleEn": "Lexicographically Smallest String After Deleting Duplicate Characters",
+    "titleZh": "删除重复字符后的字典序最小字符串",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Greedy",
+      "Hash Table",
+      "Monotonic Stack",
+      "Stack",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "哈希表",
+      "单调栈",
+      "栈",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/lexicographically-smallest-string-after-deleting-duplicate-characters/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-059",
+    "claimedAt": "2026-07-10T04:06:50.138808+00:00",
+    "completedAt": null
+  }
+]

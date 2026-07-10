@@ -1,0 +1,732 @@
+[
+  {
+    "slug": "verifying-an-alien-dictionary",
+    "frontendDisplayId": "953",
+    "titleEn": "Verifying an Alien Dictionary",
+    "titleZh": "验证外星语词典",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/verifying-an-alien-dictionary/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "vertical-order-traversal-of-a-binary-tree",
+    "frontendDisplayId": "987",
+    "titleEn": "Vertical Order Traversal of a Binary Tree",
+    "titleZh": "二叉树的垂序遍历",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Hash Table",
+      "Sorting",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "哈希表",
+      "排序",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/vertical-order-traversal-of-a-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "video-stitching",
+    "frontendDisplayId": "1024",
+    "titleEn": "Video Stitching",
+    "titleZh": "视频拼接",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/video-stitching/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "visit-array-positions-to-maximize-score",
+    "frontendDisplayId": "2786",
+    "titleEn": "Visit Array Positions to Maximize Score",
+    "titleZh": "访问数组中的位置使分数最大",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/visit-array-positions-to-maximize-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "vlzXQL",
+    "frontendDisplayId": "LCR 111",
+    "titleEn": null,
+    "titleZh": "除法求值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph",
+      "Shortest Path",
+      "Union Find"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "最短路",
+      "并查集"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/vlzXQL/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "volume-of-histogram-lcci",
+    "frontendDisplayId": "面试题 17.21",
+    "titleEn": null,
+    "titleZh": "直方图的水量",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Monotonic Stack",
+      "Stack",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "单调栈",
+      "栈",
+      "双指针"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/volume-of-histogram-lcci/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "vowel-consonant-score",
+    "frontendDisplayId": "3813",
+    "titleEn": "Vowel-Consonant Score",
+    "titleZh": "元音辅音得分",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/vowel-consonant-score/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "vowel-spellchecker",
+    "frontendDisplayId": "966",
+    "titleEn": "Vowel Spellchecker",
+    "titleZh": "元音拼写检查器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/vowel-spellchecker/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "vowels-game-in-a-string",
+    "frontendDisplayId": "3227",
+    "titleEn": "Vowels Game in a String",
+    "titleZh": "字符串元音游戏",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Brainteaser",
+      "Game Theory",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "脑筋急转弯",
+      "博弈",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/vowels-game-in-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "vowels-of-all-substrings",
+    "frontendDisplayId": "2063",
+    "titleEn": "Vowels of All Substrings",
+    "titleZh": "所有子字符串中的元音",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "组合数学",
+      "动态规划",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/vowels-of-all-substrings/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "vvXgSW",
+    "frontendDisplayId": "LCR 078",
+    "titleEn": null,
+    "titleZh": "合并 K 个升序链表",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Divide and Conquer",
+      "Heap (Priority Queue)",
+      "Linked List",
+      "Merge Sort"
+    ],
+    "tagLabelsZh": [
+      "分治",
+      "堆（优先队列）",
+      "链表",
+      "归并排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/vvXgSW/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "w3tCBm",
+    "frontendDisplayId": "LCR 003",
+    "titleEn": null,
+    "titleZh": "比特位计数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "动态规划"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/w3tCBm/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "w6cpku",
+    "frontendDisplayId": "LCR 054",
+    "titleEn": null,
+    "titleZh": "把二叉搜索树转换为累加树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Search Tree",
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉搜索树",
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/w6cpku/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "walking-robot-simulation",
+    "frontendDisplayId": "874",
+    "titleEn": "Walking Robot Simulation",
+    "titleZh": "模拟行走机器人",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/walking-robot-simulation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "walking-robot-simulation-ii",
+    "frontendDisplayId": "2069",
+    "titleEn": "Walking Robot Simulation II",
+    "titleZh": "模拟行走机器人 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/walking-robot-simulation-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "water-and-jug-problem",
+    "frontendDisplayId": "365",
+    "titleEn": "Water and Jug Problem",
+    "titleZh": "水壶问题",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/water-and-jug-problem/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "water-bottles",
+    "frontendDisplayId": "1518",
+    "titleEn": "Water Bottles",
+    "titleZh": "换水问题",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/water-bottles/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "water-bottles-ii",
+    "frontendDisplayId": "3100",
+    "titleEn": "Water Bottles II",
+    "titleZh": "换水问题 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/water-bottles-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "watering-plants",
+    "frontendDisplayId": "2079",
+    "titleEn": "Watering Plants",
+    "titleZh": "给植物浇水",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/watering-plants/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "watering-plants-ii",
+    "frontendDisplayId": "2105",
+    "titleEn": "Watering Plants II",
+    "titleZh": "给植物浇水 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/watering-plants-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ways-to-express-an-integer-as-sum-of-powers",
+    "frontendDisplayId": "2787",
+    "titleEn": "Ways to Express an Integer as Sum of Powers",
+    "titleZh": "将一个数字表示成幂的和的方案数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/ways-to-express-an-integer-as-sum-of-powers/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ways-to-make-a-fair-array",
+    "frontendDisplayId": "1664",
+    "titleEn": "Ways to Make a Fair Array",
+    "titleZh": "生成平衡数组的方案数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/ways-to-make-a-fair-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ways-to-split-array-into-good-subarrays",
+    "frontendDisplayId": "2750",
+    "titleEn": "Ways to Split Array Into Good Subarrays",
+    "titleZh": "将数组划分成若干好子数组的方式",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/ways-to-split-array-into-good-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "ways-to-split-array-into-three-subarrays",
+    "frontendDisplayId": "1712",
+    "titleEn": "Ways to Split Array Into Three Subarrays",
+    "titleZh": "将数组分成三个子数组的方案数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/ways-to-split-array-into-three-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "weighted-word-mapping",
+    "frontendDisplayId": "3838",
+    "titleEn": "Weighted Word Mapping",
+    "titleZh": "带权单词映射",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/weighted-word-mapping/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "where-will-the-ball-fall",
+    "frontendDisplayId": "1706",
+    "titleEn": "Where Will the Ball Fall",
+    "titleZh": "球会落何处",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/where-will-the-ball-fall/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "widest-vertical-area-between-two-points-containing-no-points",
+    "frontendDisplayId": "1637",
+    "titleEn": "Widest Vertical Area Between Two Points Containing No Points",
+    "titleZh": "两点之间不包含任何点的最宽垂直区域",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/widest-vertical-area-between-two-points-containing-no-points/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "wiggle-sort-ii",
+    "frontendDisplayId": "324",
+    "titleEn": "Wiggle Sort II",
+    "titleZh": "摆动排序 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Divide and Conquer",
+      "Greedy",
+      "Quickselect",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "分治",
+      "贪心",
+      "快速选择",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/wiggle-sort-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "wiggle-subsequence",
+    "frontendDisplayId": "376",
+    "titleEn": "Wiggle Subsequence",
+    "titleZh": "摆动序列",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/wiggle-subsequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "wildcard-matching",
+    "frontendDisplayId": "44",
+    "titleEn": "Wildcard Matching",
+    "titleZh": "通配符匹配",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Greedy",
+      "Recursion",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "贪心",
+      "递归",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/wildcard-matching/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-124",
+    "claimedAt": "2026-07-10T08:12:38.739519+00:00",
+    "completedAt": null
+  }
+]

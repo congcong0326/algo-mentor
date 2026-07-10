@@ -1,0 +1,752 @@
+[
+  {
+    "slug": "maximum-69-number",
+    "frontendDisplayId": "1323",
+    "titleEn": "Maximum 69 Number",
+    "titleZh": "6 和 9 组成的最大数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-69-number/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-absolute-sum-of-any-subarray",
+    "frontendDisplayId": "1749",
+    "titleEn": "Maximum Absolute Sum of Any Subarray",
+    "titleZh": "任意子数组和的绝对值的最大值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-absolute-sum-of-any-subarray/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-alternating-subsequence-sum",
+    "frontendDisplayId": "1911",
+    "titleEn": "Maximum Alternating Subsequence Sum",
+    "titleZh": "最大交替子序列和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-alternating-subsequence-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-alternating-sum-of-squares",
+    "frontendDisplayId": "3727",
+    "titleEn": "Maximum Alternating Sum of Squares",
+    "titleZh": "最大交替平方和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-alternating-sum-of-squares/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-amount-of-money-robot-can-earn",
+    "frontendDisplayId": "3418",
+    "titleEn": "Maximum Amount of Money Robot Can Earn",
+    "titleZh": "机器人可以获得的最大金币数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-amount-of-money-robot-can-earn/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-and-minimum-sums-of-at-most-size-k-subarrays",
+    "frontendDisplayId": "3430",
+    "titleEn": "Maximum and Minimum Sums of at Most Size K Subarrays",
+    "titleZh": "最多 K 个元素的子数组的最值之和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-and-minimum-sums-of-at-most-size-k-subarrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-and-minimum-sums-of-at-most-size-k-subsequences",
+    "frontendDisplayId": "3428",
+    "titleEn": "Maximum and Minimum Sums of at Most Size K Subsequences",
+    "titleZh": "最多 K 个元素的子序列的最值之和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Combinatorics",
+      "Dynamic Programming",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "组合数学",
+      "动态规划",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-and-minimum-sums-of-at-most-size-k-subsequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-and-sum-of-array",
+    "frontendDisplayId": "2172",
+    "titleEn": "Maximum AND Sum of Array",
+    "titleZh": "数组的最大与和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "位掩码",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-and-sum-of-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-area-of-a-piece-of-cake-after-horizontal-and-vertical-cuts",
+    "frontendDisplayId": "1465",
+    "titleEn": "Maximum Area of a Piece of Cake After Horizontal and Vertical Cuts",
+    "titleZh": "切割后面积最大的蛋糕",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-area-of-a-piece-of-cake-after-horizontal-and-vertical-cuts/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-area-of-longest-diagonal-rectangle",
+    "frontendDisplayId": "3000",
+    "titleEn": "Maximum Area of Longest Diagonal Rectangle",
+    "titleZh": "对角线最长的矩形的面积",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-area-of-longest-diagonal-rectangle/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-area-rectangle-with-point-constraints-i",
+    "frontendDisplayId": "3380",
+    "titleEn": "Maximum Area Rectangle With Point Constraints I",
+    "titleZh": "用点构造面积最大的矩形 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Enumeration",
+      "Geometry",
+      "Math",
+      "Segment Tree",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "枚举",
+      "几何",
+      "数学",
+      "线段树",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-area-rectangle-with-point-constraints-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-area-rectangle-with-point-constraints-ii",
+    "frontendDisplayId": "3382",
+    "titleEn": "Maximum Area Rectangle With Point Constraints II",
+    "titleZh": "用点构造面积最大的矩形 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Geometry",
+      "Math",
+      "Segment Tree",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "几何",
+      "数学",
+      "线段树",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-area-rectangle-with-point-constraints-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-ascending-subarray-sum",
+    "frontendDisplayId": "1800",
+    "titleEn": "Maximum Ascending Subarray Sum",
+    "titleZh": "最大升序子数组和",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-ascending-subarray-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-average-pass-ratio",
+    "frontendDisplayId": "1792",
+    "titleEn": "Maximum Average Pass Ratio",
+    "titleZh": "最大平均通过率",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Heap (Priority Queue)"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "堆（优先队列）"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-average-pass-ratio/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-average-subarray-i",
+    "frontendDisplayId": "643",
+    "titleEn": "Maximum Average Subarray I",
+    "titleZh": "子数组最大平均数 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-average-subarray-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-bags-with-full-capacity-of-rocks",
+    "frontendDisplayId": "2279",
+    "titleEn": "Maximum Bags With Full Capacity of Rocks",
+    "titleZh": "装满石头的背包的最大数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-bags-with-full-capacity-of-rocks/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-balanced-shipments",
+    "frontendDisplayId": "3638",
+    "titleEn": "Maximum Balanced Shipments",
+    "titleZh": "平衡装运的最大数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Greedy",
+      "Monotonic Stack",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "贪心",
+      "单调栈",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-balanced-shipments/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-balanced-subsequence-sum",
+    "frontendDisplayId": "2926",
+    "titleEn": "Maximum Balanced Subsequence Sum",
+    "titleZh": "平衡子序列的最大和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Indexed Tree",
+      "Binary Search",
+      "Dynamic Programming",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "树状数组",
+      "二分查找",
+      "动态规划",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-balanced-subsequence-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-beauty-of-an-array-after-applying-operation",
+    "frontendDisplayId": "2779",
+    "titleEn": "Maximum Beauty of an Array After Applying Operation",
+    "titleZh": "数组的最大美丽值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sliding Window",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "滑动窗口",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-beauty-of-an-array-after-applying-operation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-binary-string-after-change",
+    "frontendDisplayId": "1702",
+    "titleEn": "Maximum Binary String After Change",
+    "titleZh": "修改后的最大二进制字符串",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-binary-string-after-change/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-binary-tree",
+    "frontendDisplayId": "654",
+    "titleEn": "Maximum Binary Tree",
+    "titleZh": "最大二叉树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Tree",
+      "Divide and Conquer",
+      "Monotonic Stack",
+      "Stack",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二叉树",
+      "分治",
+      "单调栈",
+      "栈",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-binary-tree-ii",
+    "frontendDisplayId": "998",
+    "titleEn": "Maximum Binary Tree II",
+    "titleZh": "最大二叉树 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-binary-tree-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-bitwise-and-after-increment-operations",
+    "frontendDisplayId": "3806",
+    "titleEn": "Maximum Bitwise AND After Increment Operations",
+    "titleZh": "增加操作后最大按位与的结果",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-bitwise-and-after-increment-operations/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-bitwise-xor-after-rearrangement",
+    "frontendDisplayId": "3849",
+    "titleEn": "Maximum Bitwise XOR After Rearrangement",
+    "titleZh": "重新排列后的最大按位异或值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Bit Manipulation",
+      "Greedy",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "位运算",
+      "贪心",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-bitwise-xor-after-rearrangement/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-building-height",
+    "frontendDisplayId": "1840",
+    "titleEn": "Maximum Building Height",
+    "titleZh": "最高建筑高度",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-building-height/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-candies-allocated-to-k-children",
+    "frontendDisplayId": "2226",
+    "titleEn": "Maximum Candies Allocated to K Children",
+    "titleZh": "每个小孩最多能分到多少糖果",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-candies-allocated-to-k-children/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-candies-you-can-get-from-boxes",
+    "frontendDisplayId": "1298",
+    "titleEn": "Maximum Candies You Can Get from Boxes",
+    "titleZh": "你能从盒子里获得的最大糖果数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-candies-you-can-get-from-boxes/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-capacity-within-budget",
+    "frontendDisplayId": "3814",
+    "titleEn": "Maximum Capacity Within Budget",
+    "titleZh": "预算下的最大总容量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-capacity-within-budget/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-coins-from-k-consecutive-bags",
+    "frontendDisplayId": "3413",
+    "titleEn": "Maximum Coins From K Consecutive Bags",
+    "titleZh": "收集连续 K 个袋子可以获得的最多硬币数量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Prefix Sum",
+      "Sliding Window",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "前缀和",
+      "滑动窗口",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-coins-from-k-consecutive-bags/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-compatibility-score-sum",
+    "frontendDisplayId": "1947",
+    "titleEn": "Maximum Compatibility Score Sum",
+    "titleZh": "最大兼容性评分和",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Backtracking",
+      "Bit Manipulation",
+      "Bitmask",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "回溯",
+      "位运算",
+      "位掩码",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-compatibility-score-sum/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-067",
+    "claimedAt": "2026-07-10T06:05:59.556284+00:00",
+    "completedAt": null
+  }
+]

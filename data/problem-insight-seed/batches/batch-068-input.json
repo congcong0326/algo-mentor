@@ -1,0 +1,740 @@
+[
+  {
+    "slug": "maximum-consecutive-floors-without-special-floors",
+    "frontendDisplayId": "2274",
+    "titleEn": "Maximum Consecutive Floors Without Special Floors",
+    "titleZh": "不含特殊楼层的最大连续楼层数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-consecutive-floors-without-special-floors/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-containers-on-a-ship",
+    "frontendDisplayId": "3492",
+    "titleEn": "Maximum Containers on a Ship",
+    "titleZh": "船上可以装载的最大集装箱数量",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-containers-on-a-ship/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-count-of-positive-integer-and-negative-integer",
+    "frontendDisplayId": "2529",
+    "titleEn": "Maximum Count of Positive Integer and Negative Integer",
+    "titleZh": "正整数和负整数的最大计数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Counting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "计数"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-count-of-positive-integer-and-negative-integer/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-deletions-on-a-string",
+    "frontendDisplayId": "2430",
+    "titleEn": "Maximum Deletions on a String",
+    "titleZh": "对字母串可执行的最大删除数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "Hash Function",
+      "Rolling Hash",
+      "String",
+      "String Matching"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "哈希函数",
+      "滚动哈希",
+      "字符串",
+      "字符串匹配"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-deletions-on-a-string/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-depth-of-binary-tree",
+    "frontendDisplayId": "104",
+    "titleEn": "Maximum Depth of Binary Tree",
+    "titleZh": "二叉树的最大深度",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-depth-of-binary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-depth-of-n-ary-tree",
+    "frontendDisplayId": "559",
+    "titleEn": "Maximum Depth of N-ary Tree",
+    "titleZh": "N 叉树的最大深度",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-depth-of-n-ary-tree/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-difference-between-adjacent-elements-in-a-circular-array",
+    "frontendDisplayId": "3423",
+    "titleEn": "Maximum Difference Between Adjacent Elements in a Circular Array",
+    "titleZh": "循环数组中相邻元素的最大差值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-difference-between-adjacent-elements-in-a-circular-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-difference-between-even-and-odd-frequency-i",
+    "frontendDisplayId": "3442",
+    "titleEn": "Maximum Difference Between Even and Odd Frequency I",
+    "titleZh": "奇偶频次间的最大差值 I",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Counting",
+      "Hash Table",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "计数",
+      "哈希表",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-difference-between-even-and-odd-frequency-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-difference-between-even-and-odd-frequency-ii",
+    "frontendDisplayId": "3445",
+    "titleEn": "Maximum Difference Between Even and Odd Frequency II",
+    "titleZh": "奇偶频次间的最大差值 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Enumeration",
+      "Prefix Sum",
+      "Sliding Window",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "枚举",
+      "前缀和",
+      "滑动窗口",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-difference-between-even-and-odd-frequency-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-difference-between-increasing-elements",
+    "frontendDisplayId": "2016",
+    "titleEn": "Maximum Difference Between Increasing Elements",
+    "titleZh": "增量元素之间的最大差值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array"
+    ],
+    "tagLabelsZh": [
+      "数组"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-difference-between-increasing-elements/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-difference-between-node-and-ancestor",
+    "frontendDisplayId": "1026",
+    "titleEn": "Maximum Difference Between Node and Ancestor",
+    "titleZh": "节点与其祖先之间的最大差值",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-difference-between-node-and-ancestor/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-difference-by-remapping-a-digit",
+    "frontendDisplayId": "2566",
+    "titleEn": "Maximum Difference by Remapping a Digit",
+    "titleZh": "替换一个数字后的最大差值",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Greedy",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "贪心",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-difference-by-remapping-a-digit/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-difference-score-in-a-grid",
+    "frontendDisplayId": "3148",
+    "titleEn": "Maximum Difference Score in a Grid",
+    "titleZh": "矩阵中的最大得分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-difference-score-in-a-grid/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-distance-between-a-pair-of-values",
+    "frontendDisplayId": "1855",
+    "titleEn": "Maximum Distance Between a Pair of Values",
+    "titleZh": "下标对中的最大距离",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-distance-between-a-pair-of-values/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-distance-in-arrays",
+    "frontendDisplayId": "624",
+    "titleEn": "Maximum Distance in Arrays",
+    "titleZh": "数组列表中的最大距离",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-distance-in-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-earnings-from-taxi",
+    "frontendDisplayId": "2008",
+    "titleEn": "Maximum Earnings From Taxi",
+    "titleZh": "出租车的最大盈利",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Dynamic Programming",
+      "Hash Table",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "动态规划",
+      "哈希表",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-earnings-from-taxi/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-elegance-of-a-k-length-subsequence",
+    "frontendDisplayId": "2813",
+    "titleEn": "Maximum Elegance of a K-Length Subsequence",
+    "titleZh": "子序列最大优雅度",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Hash Table",
+      "Heap (Priority Queue)",
+      "Sorting",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "哈希表",
+      "堆（优先队列）",
+      "排序",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-elegance-of-a-k-length-subsequence/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-element-after-decreasing-and-rearranging",
+    "frontendDisplayId": "1846",
+    "titleEn": "Maximum Element After Decreasing and Rearranging",
+    "titleZh": "减小和重新排列数组后的最大元素",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-element-after-decreasing-and-rearranging/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-element-sum-of-a-complete-subset-of-indices",
+    "frontendDisplayId": "2862",
+    "titleEn": "Maximum Element-Sum of a Complete Subset of Indices",
+    "titleZh": "完全子集的最大元素和",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Math",
+      "Number Theory"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学",
+      "数论"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-element-sum-of-a-complete-subset-of-indices/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-employees-to-be-invited-to-a-meeting",
+    "frontendDisplayId": "2127",
+    "titleEn": "Maximum Employees to Be Invited to a Meeting",
+    "titleZh": "参加会议的最多员工数",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Graph Theory",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "深度优先搜索",
+      "动态规划",
+      "图",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-employees-to-be-invited-to-a-meeting/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-enemy-forts-that-can-be-captured",
+    "frontendDisplayId": "2511",
+    "titleEn": "Maximum Enemy Forts That Can Be Captured",
+    "titleZh": "最多可以摧毁的敌人城堡数目",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-enemy-forts-that-can-be-captured/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-energy-boost-from-two-drinks",
+    "frontendDisplayId": "3259",
+    "titleEn": "Maximum Energy Boost From Two Drinks",
+    "titleZh": "超级饮料的最大强化能量",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-energy-boost-from-two-drinks/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-equal-frequency",
+    "frontendDisplayId": "1224",
+    "titleEn": "Maximum Equal Frequency",
+    "titleZh": "最大相等频率",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-equal-frequency/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-erasure-value",
+    "frontendDisplayId": "1695",
+    "titleEn": "Maximum Erasure Value",
+    "titleZh": "删除子数组的最大得分",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-erasure-value/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-frequency-after-subarray-operation",
+    "frontendDisplayId": "3434",
+    "titleEn": "Maximum Frequency After Subarray Operation",
+    "titleZh": "子数组操作后的最大频率",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming",
+      "Enumeration",
+      "Greedy",
+      "Hash Table",
+      "Prefix Sum"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划",
+      "枚举",
+      "贪心",
+      "哈希表",
+      "前缀和"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-frequency-after-subarray-operation/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-frequency-of-an-element-after-performing-operations-i",
+    "frontendDisplayId": "3346",
+    "titleEn": "Maximum Frequency of an Element After Performing Operations I",
+    "titleZh": "执行操作后元素的最高频率 I",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum",
+      "Sliding Window",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和",
+      "滑动窗口",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-frequency-of-an-element-after-performing-operations-i/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-frequency-of-an-element-after-performing-operations-ii",
+    "frontendDisplayId": "3347",
+    "titleEn": "Maximum Frequency of an Element After Performing Operations II",
+    "titleZh": "执行操作后元素的最高频率 II",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum",
+      "Sliding Window",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和",
+      "滑动窗口",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-frequency-of-an-element-after-performing-operations-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-frequency-stack",
+    "frontendDisplayId": "895",
+    "titleEn": "Maximum Frequency Stack",
+    "titleZh": "最大频率栈",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Design",
+      "Hash Table",
+      "Ordered Set",
+      "Stack"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "哈希表",
+      "有序集合",
+      "栈"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-frequency-stack/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-fruits-harvested-after-at-most-k-steps",
+    "frontendDisplayId": "2106",
+    "titleEn": "Maximum Fruits Harvested After at Most K Steps",
+    "titleZh": "摘水果",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Prefix Sum",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "前缀和",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-fruits-harvested-after-at-most-k-steps/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "maximum-gap",
+    "frontendDisplayId": "164",
+    "titleEn": "Maximum Gap",
+    "titleZh": "最大间距",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Bucket Sort",
+      "Radix Sort",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "桶排序",
+      "基数排序",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/maximum-gap/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-068",
+    "claimedAt": "2026-07-10T06:06:08.215415+00:00",
+    "completedAt": null
+  }
+]

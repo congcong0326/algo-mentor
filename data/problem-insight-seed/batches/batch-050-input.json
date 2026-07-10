@@ -1,0 +1,734 @@
+[
+  {
+    "slug": "flip-columns-for-maximum-number-of-equal-rows",
+    "frontendDisplayId": "1072",
+    "titleEn": "Flip Columns For Maximum Number of Equal Rows",
+    "titleZh": "按列翻转得到最大值等行数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/flip-columns-for-maximum-number-of-equal-rows/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "flip-equivalent-binary-trees",
+    "frontendDisplayId": "951",
+    "titleEn": "Flip Equivalent Binary Trees",
+    "titleZh": "翻转等价二叉树",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Binary Tree",
+      "Depth-First Search",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "二叉树",
+      "深度优先搜索",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/flip-equivalent-binary-trees/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "flip-square-submatrix-vertically",
+    "frontendDisplayId": "3643",
+    "titleEn": "Flip Square Submatrix Vertically",
+    "titleZh": "垂直翻转子矩阵",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Matrix",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "矩阵",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/flip-square-submatrix-vertically/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "flip-string-to-monotone-increasing",
+    "frontendDisplayId": "926",
+    "titleEn": "Flip String to Monotone Increasing",
+    "titleZh": "将字符串翻转到单调递增",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/flip-string-to-monotone-increasing/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "flipping-an-image",
+    "frontendDisplayId": "832",
+    "titleEn": "Flipping an Image",
+    "titleZh": "翻转图像",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Matrix",
+      "Simulation",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "矩阵",
+      "模拟",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/flipping-an-image/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "flood-fill",
+    "frontendDisplayId": "733",
+    "titleEn": "Flood Fill",
+    "titleZh": "图像渲染",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Matrix"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "矩阵"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/flood-fill/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "flower-planting-with-no-adjacent",
+    "frontendDisplayId": "1042",
+    "titleEn": "Flower Planting With No Adjacent",
+    "titleZh": "不邻接植花",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/flower-planting-with-no-adjacent/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "form-array-by-concatenating-subarrays-of-another-array",
+    "frontendDisplayId": "1764",
+    "titleEn": "Form Array by Concatenating Subarrays of Another Array",
+    "titleZh": "通过连接另一个数组的子数组得到一个数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Greedy",
+      "String Matching",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "贪心",
+      "字符串匹配",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/form-array-by-concatenating-subarrays-of-another-array/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "form-largest-integer-with-digits-that-add-up-to-target",
+    "frontendDisplayId": "1449",
+    "titleEn": "Form Largest Integer With Digits That Add up to Target",
+    "titleZh": "数位成本和为目标值的最大数字",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/form-largest-integer-with-digits-that-add-up-to-target/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "form-smallest-number-from-two-digit-arrays",
+    "frontendDisplayId": "2605",
+    "titleEn": "Form Smallest Number From Two Digit Arrays",
+    "titleZh": "从两个数字数组里生成最小数字",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/form-smallest-number-from-two-digit-arrays/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "four-divisors",
+    "frontendDisplayId": "1390",
+    "titleEn": "Four Divisors",
+    "titleZh": "四因数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "数学"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/four-divisors/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fpTFWP",
+    "frontendDisplayId": "LCR 112",
+    "titleEn": null,
+    "titleZh": "矩阵中的最长递增路径",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "Graph",
+      "Matrix",
+      "Memoization",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "广度优先搜索",
+      "深度优先搜索",
+      "动态规划",
+      "图",
+      "矩阵",
+      "记忆化",
+      "拓扑排序"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/fpTFWP/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fraction-addition-and-subtraction",
+    "frontendDisplayId": "592",
+    "titleEn": "Fraction Addition and Subtraction",
+    "titleZh": "分数加减运算",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Math",
+      "Simulation",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "数学",
+      "模拟",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/fraction-addition-and-subtraction/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fraction-to-recurring-decimal",
+    "frontendDisplayId": "166",
+    "titleEn": "Fraction to Recurring Decimal",
+    "titleZh": "分数到小数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Math",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "数学",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/fraction-to-recurring-decimal/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "freedom-trail",
+    "frontendDisplayId": "514",
+    "titleEn": "Freedom Trail",
+    "titleZh": "自由之路",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Dynamic Programming",
+      "String"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "动态规划",
+      "字符串"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/freedom-trail/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "frequencies-of-shortest-supersequences",
+    "frontendDisplayId": "3435",
+    "titleEn": "Frequencies of Shortest Supersequences",
+    "titleZh": "最短公共超序列的字母出现频率",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Bit Manipulation",
+      "Enumeration",
+      "Graph Theory",
+      "String",
+      "Topological Sort"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "位运算",
+      "枚举",
+      "图",
+      "字符串",
+      "拓扑排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/frequencies-of-shortest-supersequences/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "frequency-balance-subarray",
+    "frontendDisplayId": "3960",
+    "titleEn": "Frequency Balance Subarray",
+    "titleZh": "频率平衡子数组",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/frequency-balance-subarray/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "frequency-of-the-most-frequent-element",
+    "frontendDisplayId": "1838",
+    "titleEn": "Frequency of the Most Frequent Element",
+    "titleZh": "最高频元素的频数",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy",
+      "Prefix Sum",
+      "Sliding Window",
+      "Sorting"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心",
+      "前缀和",
+      "滑动窗口",
+      "排序"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/frequency-of-the-most-frequent-element/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "frequency-tracker",
+    "frontendDisplayId": "2671",
+    "titleEn": "Frequency Tracker",
+    "titleZh": "频率跟踪器",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Design",
+      "Hash Table"
+    ],
+    "tagLabelsZh": [
+      "设计",
+      "哈希表"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/frequency-tracker/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "friend-requests-ii-who-has-the-most-friends",
+    "frontendDisplayId": "602",
+    "titleEn": "Friend Requests II: Who Has the Most Friends",
+    "titleZh": "好友申请 II ：谁有最多的好友",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Database"
+    ],
+    "tagLabelsZh": [
+      "数据库"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/friend-requests-ii-who-has-the-most-friends/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "friends-of-appropriate-ages",
+    "frontendDisplayId": "825",
+    "titleEn": "Friends Of Appropriate Ages",
+    "titleZh": "适龄的朋友",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Sorting",
+      "Two Pointers"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "排序",
+      "双指针"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/friends-of-appropriate-ages/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "frog-jump",
+    "frontendDisplayId": "403",
+    "titleEn": "Frog Jump",
+    "titleZh": "青蛙过河",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Dynamic Programming"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "动态规划"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/frog-jump/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "frog-jump-ii",
+    "frontendDisplayId": "2498",
+    "titleEn": "Frog Jump II",
+    "titleZh": "青蛙过河 II",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Greedy"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "贪心"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/frog-jump-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "frog-position-after-t-seconds",
+    "frontendDisplayId": "1377",
+    "titleEn": "Frog Position After T Seconds",
+    "titleZh": "T 秒后青蛙的位置",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Breadth-First Search",
+      "Depth-First Search",
+      "Graph Theory",
+      "Tree"
+    ],
+    "tagLabelsZh": [
+      "广度优先搜索",
+      "深度优先搜索",
+      "图",
+      "树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/frog-position-after-t-seconds/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fruit-into-baskets",
+    "frontendDisplayId": "904",
+    "titleEn": "Fruit Into Baskets",
+    "titleZh": "水果成篮",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Hash Table",
+      "Sliding Window"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "哈希表",
+      "滑动窗口"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/fruit-into-baskets/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fruits-into-baskets-ii",
+    "frontendDisplayId": "3477",
+    "titleEn": "Fruits Into Baskets II",
+    "titleZh": "水果成篮 II",
+    "difficulty": "EASY",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Ordered Set",
+      "Segment Tree",
+      "Simulation"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "有序集合",
+      "线段树",
+      "模拟"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/fruits-into-baskets-ii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fruits-into-baskets-iii",
+    "frontendDisplayId": "3479",
+    "titleEn": "Fruits Into Baskets III",
+    "titleZh": "水果成篮 III",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Array",
+      "Binary Search",
+      "Ordered Set",
+      "Segment Tree"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "二分查找",
+      "有序集合",
+      "线段树"
+    ],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/fruits-into-baskets-iii/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fsa7oZ",
+    "frontendDisplayId": "LCP 48",
+    "titleEn": null,
+    "titleZh": "无限棋局",
+    "difficulty": "HARD",
+    "tagLabelsEn": [
+      "Array",
+      "Enumeration",
+      "Game Theory",
+      "Math"
+    ],
+    "tagLabelsZh": [
+      "数组",
+      "枚举",
+      "博弈",
+      "数学"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/fsa7oZ/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "fu-za-lian-biao-de-fu-zhi-lcof",
+    "frontendDisplayId": "LCR 154",
+    "titleEn": null,
+    "titleZh": "复杂链表的复制",
+    "difficulty": "MEDIUM",
+    "tagLabelsEn": [
+      "Hash Table",
+      "Linked List"
+    ],
+    "tagLabelsZh": [
+      "哈希表",
+      "链表"
+    ],
+    "contentStatus": "CN_ONLY",
+    "leetcodeUrl": "https://leetcode.cn/problems/fu-za-lian-biao-de-fu-zhi-lcof/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  },
+  {
+    "slug": "function-composition",
+    "frontendDisplayId": "2629",
+    "titleEn": "Function Composition",
+    "titleZh": "复合函数",
+    "difficulty": "EASY",
+    "tagLabelsEn": [],
+    "tagLabelsZh": [],
+    "contentStatus": "BILINGUAL",
+    "leetcodeUrl": "https://leetcode.com/problems/function-composition/",
+    "consumed": false,
+    "status": "IN_PROGRESS",
+    "claimId": "batch-050",
+    "claimedAt": "2026-07-10T03:47:03.819802+00:00",
+    "completedAt": null
+  }
+]

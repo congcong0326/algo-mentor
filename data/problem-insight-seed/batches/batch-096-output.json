@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "optimal-partition-of-string",
+    "reasonEN": "A greedy string partitioning problem where each segment must keep distinct characters. It trains maintaining the smallest sufficient hash-set state and recognizing when a local duplicate forces an immediate cut.",
+    "reasonZH": "贪心字符串划分题，每个片段都需保持字符互异。它训练维护最小必要的哈希集合状态，并识别局部重复何时必须立即切分。"
+  },
+  {
+    "slug": "orderly-queue",
+    "reasonEN": "A hard string-ordering problem whose behavior changes fundamentally between one allowed rotation and multiple positions. It develops lexicographic rotation reasoning and the insight that operation freedom can collapse a search problem into sorting.",
+    "reasonZH": "高难字符串排序题，允许移动一个位置与多个位置时的性质完全不同。它训练字典序循环移位推理，并理解操作自由度如何把搜索问题简化为排序。"
+  },
+  {
+    "slug": "out-of-boundary-paths",
+    "reasonEN": "A grid DP counting problem that accumulates paths escaping the board within a move budget. It reinforces step-indexed state transitions, boundary contributions, and modular arithmetic.",
+    "reasonZH": "网格动态规划计数题，统计限定步数内离开棋盘的路径。它训练按步数建立状态转移、处理边界贡献，以及模运算。"
+  },
+  {
+    "slug": "p0NxJO",
+    "reasonEN": "A greedy survival problem that uses a min-heap to defer the most damaging previously accepted event. It develops prefix-feasibility reasoning and the exchange argument behind repairing a negative running total.",
+    "reasonZH": "贪心生存类题，使用最小堆延后此前接受过的伤害最大的事件。它训练前缀可行性思维，并理解修复负累计值背后的交换论证。"
+  },
+  {
+    "slug": "pOCWxh",
+    "reasonEN": "A binary-tree pruning problem solved by postorder DFS, where child results determine whether the parent subtree remains. It teaches bottom-up tree decisions and the clean propagation of subtree validity.",
+    "reasonZH": "二叉树剪枝题，使用后序 DFS，由子树结果决定父节点是否保留。它训练自底向上的树决策，以及子树有效性的清晰传递。"
+  },
+  {
+    "slug": "pacific-atlantic-water-flow",
+    "reasonEN": "A reverse-reachability matrix traversal that searches inward from both oceans instead of outward from every cell. It develops multi-source DFS or BFS and the valuable reversal of a difficult reachability condition.",
+    "reasonZH": "逆向可达性矩阵搜索题，从两片海洋向内搜索，而非从每个格子向外尝试。它训练多源 DFS 或 BFS，并掌握反转复杂可达条件的技巧。"
+  },
+  {
+    "slug": "paint-house-iii",
+    "reasonEN": "A hard dynamic-programming problem with house index, previous color, and neighborhood count as coupled state. It builds discipline in high-dimensional DP transitions and handling pre-painted constraints correctly.",
+    "reasonZH": "高难动态规划题，将房屋下标、前一颜色和街区数量作为耦合状态。它训练多维 DP 转移的严谨性，以及正确处理预涂颜色约束。"
+  },
+  {
+    "slug": "paint-house-iv",
+    "reasonEN": "A medium DP coloring problem that combines adjacent-house constraints with symmetric pair relationships. It develops compact color-state transitions and careful treatment of dependencies from both ends of an array.",
+    "reasonZH": "中等难度涂色 DP 题，同时结合相邻房屋约束与对称位置关系。它训练紧凑的颜色状态转移，以及处理数组两端依赖的能力。"
+  },
+  {
+    "slug": "painting-a-grid-with-three-different-colors",
+    "reasonEN": "A hard state-compression DP for grid coloring that enumerates valid column masks and compatible neighbors. It teaches encoding local constraints into states and precomputing transition graphs for repeated layers.",
+    "reasonZH": "高难状态压缩 DP 题，枚举合法列状态及相邻列兼容关系。它训练将局部约束编码为状态，并预计算重复层之间的转移图。"
+  },
+  {
+    "slug": "painting-the-walls",
+    "reasonEN": "A hard knapsack-style DP that turns paid painters and free work time into coverage capacity. It develops nonstandard cost-state modeling and the ability to identify hidden 0/1 knapsack structure.",
+    "reasonZH": "高难背包型 DP 题，将付费工人与免费工时转化为覆盖能力。它训练非常规的成本状态建模，并识别隐藏的 0/1 背包结构。"
+  },
+  {
+    "slug": "pairs-of-songs-with-total-durations-divisible-by-60",
+    "reasonEN": "A remainder-counting pattern for pair sums divisible by a fixed modulus. It reinforces complement lookup, streaming frequency updates, and special handling for self-complementary remainders.",
+    "reasonZH": "固定模数下配对和整除的余数计数题。它训练互补余数查找、流式频次更新，以及自互补余数的特殊处理。"
+  },
+  {
+    "slug": "pairs-with-sum-lcci",
+    "reasonEN": "A pair-counting problem that can be solved with sorting and two pointers or with frequency counting. It develops duplicate-aware pointer movement and the tradeoff between ordering data and using a hash table.",
+    "reasonZH": "数对计数题，可用排序双指针或频次统计解决。它训练考虑重复值的指针移动，并理解排序与哈希表两种方案的取舍。"
+  },
+  {
+    "slug": "palindrome-linked-list",
+    "reasonEN": "A linked-list palindrome classic that finds the midpoint, reverses the second half, and compares in place. It strengthens fast-slow pointer technique, pointer reversal, and list restoration awareness.",
+    "reasonZH": "经典链表回文题，先找中点、反转后半段，再原地比较。它强化快慢指针、链表反转，以及必要时恢复链表结构的意识。"
+  },
+  {
+    "slug": "palindrome-linked-list-lcci",
+    "reasonEN": "This entry-level linked-list palindrome check highlights the same midpoint and reversal strategy under interview-style constraints. It is valuable for practicing O(1)-extra-space comparison on sequential structures.",
+    "reasonZH": "这道面试型链表回文题突出中点与反转策略。它适合练习在顺序结构上以 O(1) 额外空间完成对称比较。"
+  },
+  {
+    "slug": "palindrome-number",
+    "reasonEN": "An arithmetic palindrome test that reverses only half of the digits to avoid overflow. It builds numeric symmetry reasoning and demonstrates how a small invariant can replace string conversion.",
+    "reasonZH": "算术回文判断题，只反转一半数字以避免溢出。它训练数值对称性推理，并展示如何用简单不变量替代字符串转换。"
+  },
+  {
+    "slug": "palindrome-pairs",
+    "reasonEN": "A hard string lookup problem that splits each word at every boundary and matches reversed counterparts. It develops palindrome-prefix and suffix checks, hash-based indexing, and duplicate-safe pair construction.",
+    "reasonZH": "高难字符串查找题，在每个切分位置匹配反转后的对应部分。它训练回文前后缀判断、哈希索引，以及避免重复构造数对。"
+  },
+  {
+    "slug": "palindrome-partitioning",
+    "reasonEN": "A backtracking template problem that enumerates all cuts while accepting only palindromic segments. It teaches path construction, pruning with local validity checks, and the relationship between recursion depth and partition structure.",
+    "reasonZH": "回溯模板题，枚举所有切分位置且只接受回文片段。它训练路径构造、基于局部合法性的剪枝，以及递归深度与分割结构的关系。"
+  },
+  {
+    "slug": "palindrome-partitioning-ii",
+    "reasonEN": "A hard interval-DP problem that minimizes cuts after precomputing palindrome substrings. It develops the standard cooperation between palindrome validity DP and an optimization DP over prefix endpoints.",
+    "reasonZH": "高难区间 DP 题，预处理回文子串后最小化切割次数。它训练回文合法性 DP 与前缀端点优化 DP 的标准协作方式。"
+  },
+  {
+    "slug": "palindrome-partitioning-iii",
+    "reasonEN": "A hard partition DP that combines exact segment counts with the cost of converting each interval into a palindrome. It strengthens interval cost preprocessing and constrained segmentation transitions.",
+    "reasonZH": "高难分割 DP 题，结合固定段数与将区间改造成回文串的代价。它训练区间代价预处理，以及受限分段的状态转移。"
+  },
+  {
+    "slug": "palindrome-partitioning-iv",
+    "reasonEN": "A hard feasibility version of palindrome partitioning that asks whether exactly three valid segments exist. It develops boolean interval DP and disciplined enumeration of a small number of cut positions.",
+    "reasonZH": "高难回文分割可行性题，判断能否恰好切成三个合法片段。它训练布尔型区间 DP，以及对少量切分位置的严谨枚举。"
+  },
+  {
+    "slug": "palindrome-permutation-lcci",
+    "reasonEN": "A concise parity-counting problem based on the fact that a palindrome has at most one odd frequency. It teaches bitmask toggling or hash counting as a direct expression of character parity.",
+    "reasonZH": "简洁的奇偶频次题，利用回文排列至多允许一个奇数频次字符的性质。它训练位掩码翻转或哈希计数，直接表达字符奇偶性。"
+  },
+  {
+    "slug": "palindrome-rearrangement-queries",
+    "reasonEN": "A hard query problem that compares character-frequency deficits across rearrangeable intervals. It develops prefix-frequency tables, interval accounting, and precise handling of overlapping versus fixed portions.",
+    "reasonZH": "高难查询题，需要比较可重排区间中的字符频次缺口。它训练前缀频次表、区间账本式计算，以及重叠区域与固定区域的精确处理。"
+  },
+  {
+    "slug": "palindromic-path-queries-in-a-tree",
+    "reasonEN": "A hard tree-query problem that reduces palindrome feasibility to parity masks along paths. It develops Euler-tour indexing, XOR-based character parity, and advanced offline or segment-tree query handling.",
+    "reasonZH": "高难树上查询题，将路径回文可行性归约为字符奇偶性掩码。它训练欧拉序索引、异或维护字符奇偶性，以及高级离线或线段树查询处理。"
+  },
+  {
+    "slug": "palindromic-substrings",
+    "reasonEN": "A central palindrome-counting problem that can expand around centers or use interval DP. It teaches symmetry expansion, even and odd center cases, and a reusable foundation for string DP.",
+    "reasonZH": "核心回文计数题，可使用中心扩展或区间 DP。它训练对称扩展、奇偶中心的边界处理，并为字符串 DP 打下通用基础。"
+  },
+  {
+    "slug": "pancake-sorting",
+    "reasonEN": "A constructive greedy sorting problem that places the current maximum with two prefix reversals. It develops operation-sequence design and illustrates how unusual allowed moves can still yield a simple invariant-driven algorithm.",
+    "reasonZH": "构造型贪心排序题，用两次前缀翻转放置当前最大值。它训练操作序列设计，并说明看似特殊的允许操作也能形成简单的不变量算法。"
+  },
+  {
+    "slug": "parallel-courses-ii",
+    "reasonEN": "A hard bitmask DP on prerequisite graphs that chooses up to k available courses each semester. It develops subset enumeration over frontier states and combines topological constraints with state compression.",
+    "reasonZH": "先修关系图上的高难位掩码 DP，每学期从可选课程中最多选择 k 门。它训练在前沿状态上枚举子集，并结合拓扑约束与状态压缩。"
+  },
+  {
+    "slug": "parallel-courses-iii",
+    "reasonEN": "A weighted DAG scheduling problem solved by topological traversal and longest-path DP. It reinforces indegree processing and the distinction between summing work and taking the maximum over parallel prerequisite chains.",
+    "reasonZH": "带权 DAG 调度题，使用拓扑遍历与最长路 DP。它训练入度处理，并理解并行先修链中取最大完成时间而非简单求和的区别。"
+  },
+  {
+    "slug": "parse-lisp-expression",
+    "reasonEN": "A hard recursive parsing problem with nested scopes and variable bindings. It develops tokenization, environment-stack management, and the ability to evaluate syntax while respecting lexical scope.",
+    "reasonZH": "高难递归解析题，包含嵌套作用域与变量绑定。它训练分词、环境栈管理，以及在遵守词法作用域的同时完成语法求值。"
+  },
+  {
+    "slug": "parsing-a-boolean-expression",
+    "reasonEN": "A hard expression-evaluation problem well suited to a stack that closes subexpressions at parentheses. It teaches delimiter-driven reduction and correctly aggregating variadic AND, OR, and NOT operations.",
+    "reasonZH": "高难表达式求值题，适合用栈在括号闭合时归约子表达式。它训练由分隔符驱动的归约，并正确聚合可变参数的与、或、非操作。"
+  },
+  {
+    "slug": "partition-array-according-to-given-pivot",
+    "reasonEN": "A stable array partitioning problem that separates values by comparison with a pivot while preserving relative order. It reinforces bucket-style construction and the difference between stable partitioning and in-place two-pointer partitioning.",
+    "reasonZH": "稳定数组划分题，按与枢轴的比较关系分组并保持相对顺序。它训练桶式构造，并理解稳定划分与原地双指针划分的差异。"
+  }
+]

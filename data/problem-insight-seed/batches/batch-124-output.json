@@ -1,0 +1,152 @@
+[
+  {
+    "slug": "verifying-an-alien-dictionary",
+    "reasonEN": "An easy string-ordering problem that maps characters to custom ranks; comparing adjacent words while handling prefix cases reinforces robust lexicographic comparison.",
+    "reasonZH": "这道简单字符串排序题将字符映射到自定义顺序；比较相邻单词并处理前缀情况，可巩固稳健的字典序比较。"
+  },
+  {
+    "slug": "vertical-order-traversal-of-a-binary-tree",
+    "reasonEN": "A hard tree traversal problem that records column, row, and value coordinates before ordering them; it develops precise multi-key sorting for structural tree views.",
+    "reasonZH": "这是一道困难的树遍历题，需要记录列、行和值坐标后再排序；它训练构造树形视图时精确的多关键字排序。"
+  },
+  {
+    "slug": "video-stitching",
+    "reasonEN": "A medium interval-covering problem with greedy and DP formulations; repeatedly extending the current reachable endpoint is a core pattern for minimum-cover planning.",
+    "reasonZH": "这道中等区间覆盖题具有贪心和 DP 两种建模；不断扩展当前可达的最远端点，是最小覆盖规划的核心模式。"
+  },
+  {
+    "slug": "visit-array-positions-to-maximize-score",
+    "reasonEN": "This medium array DP problem compresses choices into a small set of compatibility states; maintaining the best score by parity demonstrates efficient transition design.",
+    "reasonZH": "这道中等数组 DP 题将选择压缩为少量兼容状态；按奇偶性维护最优得分，展示了高效的状态转移设计。"
+  },
+  {
+    "slug": "vlzXQL",
+    "reasonEN": "A medium weighted-graph problem that models equations as directed ratios; DFS, BFS, or union-find propagation develops reusable reasoning for relational queries.",
+    "reasonZH": "这道中等带权图题将方程建模为有向比值；使用 DFS、BFS 或并查集传播，可训练关系查询的可复用推理。"
+  },
+  {
+    "slug": "volume-of-histogram-lcci",
+    "reasonEN": "A hard array problem for trapped-volume aggregation with monotonic-stack, DP, or two-pointer solutions; identifying limiting boundaries is essential practice for elevation-based optimization.",
+    "reasonZH": "这是一道困难的数组积水聚合题，可用单调栈、DP 或双指针解决；识别限制高度的边界，是高程型优化的关键训练。"
+  },
+  {
+    "slug": "vowel-consonant-score",
+    "reasonEN": "An easy string-simulation problem that classifies characters and accumulates category scores; it offers focused practice in rule-driven scanning and character predicates.",
+    "reasonZH": "这道简单字符串模拟题对字符分类并累计类别得分；它适合集中练习规则驱动的扫描和字符判定。"
+  },
+  {
+    "slug": "vowel-spellchecker",
+    "reasonEN": "A medium hash-table string problem with ordered matching priorities; building exact, case-normalized, and vowel-normalized indexes trains reliable multi-stage lookup design.",
+    "reasonZH": "这道中等哈希字符串题具有有序的匹配优先级；构建精确、大小写规范化和元音规范化索引，可训练可靠的多阶段查找设计。"
+  },
+  {
+    "slug": "vowels-game-in-a-string",
+    "reasonEN": "This medium string game-theory problem reduces play to a key vowel-count invariant; finding the winning condition is valuable practice in replacing simulation with mathematical insight.",
+    "reasonZH": "这道中等字符串博弈题将对局归结为关键的元音计数不变量；找出必胜条件，可训练用数学洞察替代模拟。"
+  },
+  {
+    "slug": "vowels-of-all-substrings",
+    "reasonEN": "A medium combinatorics problem that counts each vowel's contribution across all substrings; multiplying its left and right choices is a classic route from enumeration to linear aggregation.",
+    "reasonZH": "这道中等组合数学题计算每个元音对所有子串的贡献；相乘其左右选择数，是从枚举走向线性聚合的经典方法。"
+  },
+  {
+    "slug": "vvXgSW",
+    "reasonEN": "A hard linked-list merge problem with heap and divide-and-conquer strategies; maintaining the next smallest frontier develops a foundational pattern for merging multiple sorted streams.",
+    "reasonZH": "这是一道困难的链表合并题，可用堆或分治策略；维护下一个最小元素的前沿，是合并多个有序流的基础模式。"
+  },
+  {
+    "slug": "w3tCBm",
+    "reasonEN": "An easy bit-manipulation DP problem that derives each population count from a smaller value; using bit-clearing or shifts builds a reusable binary-state recurrence.",
+    "reasonZH": "这道简单位运算 DP 题从更小数值推导每个二进制位计数；使用清除最低位或移位，可建立可复用的二进制状态递推。"
+  },
+  {
+    "slug": "w6cpku",
+    "reasonEN": "A medium BST traversal problem that accumulates larger values in reverse inorder; exploiting sorted traversal order is key practice for transforming search-tree nodes in place.",
+    "reasonZH": "这道中等 BST 遍历题在反向中序中累积更大值；利用有序遍历顺序，是原地转换搜索树节点的关键训练。"
+  },
+  {
+    "slug": "walking-robot-simulation",
+    "reasonEN": "A medium simulation problem that combines direction-state updates with hash-based obstacle lookup; representing coordinates and turns cleanly builds robust grid-navigation skills.",
+    "reasonZH": "这道中等模拟题结合方向状态更新和基于哈希的障碍查询；清晰表示坐标与转向，可建立稳健的网格导航能力。"
+  },
+  {
+    "slug": "walking-robot-simulation-ii",
+    "reasonEN": "This medium design simulation problem models periodic motion along a rectangle; reducing large move counts by the perimeter develops efficient cyclic-state handling.",
+    "reasonZH": "这道中等设计模拟题建模机器人沿矩形边界的周期运动；按周长缩减大步数，可训练高效的循环状态处理。"
+  },
+  {
+    "slug": "water-and-jug-problem",
+    "reasonEN": "A medium math and graph-search problem with a number-theoretic reachability criterion; connecting state exploration to the greatest common divisor is valuable for recognizing hidden structure.",
+    "reasonZH": "这道中等数学图搜索题具有数论可达性判据；将状态搜索与最大公约数联系起来，可训练识别隐藏结构的能力。"
+  },
+  {
+    "slug": "water-bottles",
+    "reasonEN": "An easy math simulation problem that cycles consumption and empty-bottle exchange; tracking the conserved resource state provides concise practice in iterative process modeling.",
+    "reasonZH": "这道简单数学模拟题在饮用与空瓶兑换之间循环；追踪守恒资源状态，是迭代过程建模的紧凑练习。"
+  },
+  {
+    "slug": "water-bottles-ii",
+    "reasonEN": "A medium simulation problem extending resource exchange with a changing cost; handling the evolving threshold carefully develops disciplined state-transition reasoning.",
+    "reasonZH": "这道中等模拟题在资源兑换中加入变化的成本；谨慎处理不断变化的阈值，可训练严谨的状态转移推理。"
+  },
+  {
+    "slug": "watering-plants",
+    "reasonEN": "A medium array simulation problem that tracks capacity, consumption, and refill trips; sequencing replenishment decisions provides practical practice for resource-constrained traversal.",
+    "reasonZH": "这道中等数组模拟题追踪容量、消耗和补给往返；按顺序决定补水时机，是资源受限遍历的实用训练。"
+  },
+  {
+    "slug": "watering-plants-ii",
+    "reasonEN": "This medium two-pointer simulation coordinates two independent capacities approaching from both ends; resolving the meeting position and refill conditions sharpens concurrent-process modeling.",
+    "reasonZH": "这道中等双指针模拟题协调从两端靠近的两份独立容量；处理相遇位置和补给条件，可强化并行过程建模。"
+  },
+  {
+    "slug": "ways-to-express-an-integer-as-sum-of-powers",
+    "reasonEN": "A medium dynamic-programming problem that treats distinct powers as selectable items; descending knapsack updates train subset-counting techniques under uniqueness constraints.",
+    "reasonZH": "这道中等动态规划题将不同幂次视为可选物品；倒序背包更新可训练唯一性约束下的子集计数技巧。"
+  },
+  {
+    "slug": "ways-to-make-a-fair-array",
+    "reasonEN": "A medium prefix-sum array problem that accounts for parity shifts after removal; maintaining left and right even-odd totals is an instructive exercise in index-sensitive aggregation.",
+    "reasonZH": "这道中等前缀和数组题需要处理删除后的奇偶位置变化；维护左右两侧的奇偶总和，是下标敏感聚合的启发性练习。"
+  },
+  {
+    "slug": "ways-to-split-array-into-good-subarrays",
+    "reasonEN": "A medium combinatorial DP problem that converts valid split positions into multiplicative choices; recognizing independent gaps builds a concise counting approach.",
+    "reasonZH": "这道中等组合 DP 题将有效切分位置转化为乘法选择；识别相互独立的间隔，可建立简洁的计数方法。"
+  },
+  {
+    "slug": "ways-to-split-array-into-three-subarrays",
+    "reasonEN": "This medium prefix-sum problem finds valid middle boundaries through monotonic inequalities; binary search or moving pointers trains efficient counting of ordered partitions.",
+    "reasonZH": "这道中等前缀和题通过单调不等式寻找有效中间边界；二分或移动指针可训练高效统计有序分割方案。"
+  },
+  {
+    "slug": "weighted-word-mapping",
+    "reasonEN": "An easy string simulation problem that maps characters or words to weighted values; systematic conversion and accumulation reinforce implementation accuracy for rule-based encodings.",
+    "reasonZH": "这道简单字符串模拟题将字符或单词映射为权重值；系统地转换并累加，可强化规则编码中的实现准确性。"
+  },
+  {
+    "slug": "where-will-the-ball-fall",
+    "reasonEN": "A medium matrix simulation problem that advances each ball row by row; validating paired slopes before moving is valuable practice for local transition checks in grids.",
+    "reasonZH": "这道中等矩阵模拟题让每个球逐行前进；移动前验证相邻斜板，是网格局部转移检查的重要训练。"
+  },
+  {
+    "slug": "widest-vertical-area-between-two-points-containing-no-points",
+    "reasonEN": "An easy sorting problem that reduces geometry to adjacent coordinate gaps; sorting one axis and scanning differences demonstrates effective dimensional simplification.",
+    "reasonZH": "这道简单排序题将几何问题化为相邻坐标间隔；对单个轴排序后扫描差值，展示了有效的降维简化。"
+  },
+  {
+    "slug": "wiggle-sort-ii",
+    "reasonEN": "A medium array rearrangement problem using median selection and partitioning; separating small and large values with virtual indexing develops advanced in-place ordering skills.",
+    "reasonZH": "这道中等数组重排题使用中位数选择与分区；通过虚拟下标分离较小和较大值，可训练进阶原地排序能力。"
+  },
+  {
+    "slug": "wiggle-subsequence",
+    "reasonEN": "A medium greedy and DP problem that tracks the best rising and falling subsequences; updating only on direction changes is a classic compression of sequence-state logic.",
+    "reasonZH": "这道中等贪心 DP 题追踪最优上升和下降子序列；仅在方向变化时更新，是经典的序列状态压缩。"
+  },
+  {
+    "slug": "wildcard-matching",
+    "reasonEN": "A hard string-matching problem with DP and greedy approaches; handling star expansion and backtracking boundaries builds essential pattern-matching state-management skills.",
+    "reasonZH": "这是一道困难的字符串匹配题，可用 DP 或贪心解决；处理星号扩展和回溯边界，是模式匹配状态管理的必备训练。"
+  }
+]
