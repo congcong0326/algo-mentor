@@ -19,6 +19,7 @@ import {
 } from './learning-plans/learningPlanRhythm';
 import {
   getTodayPack,
+  getReviewSummary,
   requireApiData,
   updateLearningPlanRhythm,
   restartTodayPack,
@@ -50,6 +51,9 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
   const [pack, setPack] = useState<TodayPackResponse>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [reviewDueCount, setReviewDueCount] = useState<number>();
+  const [reviewLoading, setReviewLoading] = useState(true);
+  const [reviewUnavailable, setReviewUnavailable] = useState(false);
   const totalProblems = useMemo(
     () => pack?.sections.reduce((total, section) => total + section.problems.length, 0) ?? 0,
     [pack],
@@ -76,56 +80,101 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
     return () => controller.abort();
   }, [timezone]);
 
-  if (loading && !pack) {
-    return (
-      <article className="today-pack-home" aria-busy="true">
-        <section className="today-pack-home-entry" aria-label="题包入口">
-          <div className="today-pack-home-summary">
-            <span>今日题包</span>
-            <strong>正在加载</strong>
-          </div>
-        </section>
-      </article>
-    );
-  }
+  useEffect(() => {
+    const controller = new AbortController();
+    setReviewLoading(true);
+    setReviewUnavailable(false);
+    void getReviewSummary(controller.signal)
+      .then((response) => {
+        setReviewDueCount(requireApiData(response, '复习摘要加载失败').dueCount);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          setReviewUnavailable(true);
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setReviewLoading(false);
+        }
+      });
+    return () => controller.abort();
+  }, []);
 
   const activePlan = pack?.activePlan;
-  const statusText = pack ? todayPackStatusText(pack, totalProblems) : '暂时无法读取今日训练状态。';
+  const statusText = pack
+    ? todayPackStatusText(pack, totalProblems)
+    : loading
+      ? '正在加载'
+      : '暂时无法读取今日训练状态。';
+  const reviewStatusText = reviewLoading
+    ? '正在加载复习状态'
+    : reviewUnavailable
+      ? '复习状态暂不可用'
+      : reviewDueCount && reviewDueCount > 0
+        ? `今日待复习 ${reviewDueCount} 题`
+        : '今日已完成';
+  const reviewActionLabel = reviewLoading
+    ? '正在加载复习状态'
+    : reviewUnavailable
+      ? '复习状态暂不可用'
+      : reviewDueCount && reviewDueCount > 0
+        ? `开始今日复习 ${reviewDueCount} 题`
+        : '今日已完成';
+  const reviewActionDisabled = reviewLoading || reviewUnavailable || !reviewDueCount;
 
   return (
     <article className="today-pack-home" aria-label="首页">
       {error && <p className="error-text" role="alert">{error}</p>}
 
-      <section className="today-pack-home-entry" aria-label="题包入口">
-        <div className="today-pack-home-summary">
-          <span>{activePlan ? '今日题包' : '未采用方案'}</span>
-          <strong>{statusText}</strong>
-          {activePlan && (
-            <small>
-              {activePlan.title} · {activePlan.dailyProblemCount} 题/天 · 每周 {activePlan.trainingDaysPerWeek} 天
-            </small>
+      <div className="today-pack-home-entry-grid">
+        <section className="today-pack-home-entry" aria-label="题包入口">
+          <div className="today-pack-home-summary">
+            <span>{activePlan ? '今日题包' : '未采用方案'}</span>
+            <strong>{statusText}</strong>
+            {activePlan && (
+              <small>
+                {activePlan.title} · {activePlan.dailyProblemCount} 题/天 · 每周 {activePlan.trainingDaysPerWeek} 天
+              </small>
+            )}
+          </div>
+          {activePlan ? (
+            <button
+              className="primary-button compact"
+              onClick={() => onNavigate(learningPlanTodayPackPath(activePlan.planId))}
+              type="button"
+            >
+              <span>开始今日训练</span>
+              <ArrowRight aria-hidden="true" />
+            </button>
+          ) : (
+            <button
+              className="primary-button compact"
+              onClick={() => onNavigate(APP_ROUTES.learningPlans)}
+              type="button"
+            >
+              <span>去方案页创建或采用一个</span>
+              <ArrowRight aria-hidden="true" />
+            </button>
           )}
-        </div>
-        {activePlan ? (
+        </section>
+
+        <section className="today-pack-home-entry" aria-busy={reviewLoading} aria-label="复习中心入口">
+          <div className="today-pack-home-summary">
+            <span>复习中心</span>
+            <strong>{reviewStatusText}</strong>
+          </div>
           <button
-            className="primary-button compact"
-            onClick={() => onNavigate(learningPlanTodayPackPath(activePlan.planId))}
+            className="secondary-button compact"
+            disabled={reviewActionDisabled}
+            onClick={() => onNavigate(APP_ROUTES.reviewSession)}
             type="button"
           >
-            <span>开始今日训练</span>
+            <span>{reviewActionLabel}</span>
             <ArrowRight aria-hidden="true" />
           </button>
-        ) : (
-          <button
-            className="primary-button compact"
-            onClick={() => onNavigate(APP_ROUTES.learningPlans)}
-            type="button"
-          >
-            <span>去方案页创建或采用一个</span>
-            <ArrowRight aria-hidden="true" />
-          </button>
-        )}
-      </section>
+        </section>
+      </div>
     </article>
   );
 }

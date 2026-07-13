@@ -64,6 +64,12 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toMatch(/\.company-mark \{[^}]*color: var\(--text-muted\);/);
   });
 
+  it('keeps signed-in home shortcuts compact without stretching the page', () => {
+    expect(styles).toMatch(/\.today-pack-home \{[^}]*align-content: start;/);
+    expect(styles).toMatch(/\.today-pack-home-entry-grid \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+    expect(styles).toMatch(/@media \(max-width: 640px\) \{[\s\S]*?\.today-pack-home-entry-grid \{[^}]*grid-template-columns: 1fr;/);
+  });
+
   it('keeps the ability detail dialog above the fixed app header with top safe spacing', () => {
     expect(styles).toMatch(/\.app-header \{[^}]*z-index: 100;/);
     expect(styles).toMatch(/\.ability-dialog-backdrop \{[^}]*z-index: 160;/);

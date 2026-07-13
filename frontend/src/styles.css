@@ -3462,7 +3462,15 @@ a {
 }
 
 .today-pack-home {
-  display: block;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.today-pack-home-entry-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .today-pack-home-summary {
@@ -5612,11 +5620,6 @@ a {
     grid-template-columns: 1fr;
   }
 
-  .today-pack-home-entry {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
   .today-pack-heading {
     align-items: flex-start;
     flex-direction: column;
@@ -5742,6 +5745,15 @@ a {
 }
 
 @media (max-width: 640px) {
+  .today-pack-home-entry-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .today-pack-home-entry {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   .login-page {
     padding: 64px 16px 36px;
   }
