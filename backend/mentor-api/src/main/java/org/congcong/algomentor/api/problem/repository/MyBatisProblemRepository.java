@@ -141,7 +141,9 @@ public class MyBatisProblemRepository implements ProblemRepository {
           problem.leetcodeUrl(),
           problem.sampleTestCase(),
           problem.python3Template(),
-          problem.sourceCommit()));
+          problem.sourceCommit(),
+          problem.recommendationReasonEn(),
+          problem.recommendationReasonZh()));
     } catch (SQLException exception) {
       throw new IllegalStateException("Failed to create PostgreSQL array for problem tags.", exception);
     } finally {
@@ -178,7 +180,8 @@ public class MyBatisProblemRepository implements ProblemRepository {
         row.leetcodeUrl(),
         row.sampleTestCase(),
         row.python3Template(),
-        row.sourceCommit());
+        row.sourceCommit(),
+        recommendationReason(row, locale));
   }
 
   private ProblemCategoryFilterOption toCategoryFilterOption(ProblemCategoryFilterRow row) {
@@ -225,6 +228,12 @@ public class MyBatisProblemRepository implements ProblemRepository {
     return locale.isEnglish()
         ? fallback(row.contentMarkdownEn(), row.contentMarkdownZh())
         : fallback(row.contentMarkdownZh(), row.contentMarkdownEn());
+  }
+
+  private String recommendationReason(ProblemRow row, ProblemLocale locale) {
+    return locale.isEnglish()
+        ? fallback(row.recommendationReasonEn(), row.recommendationReasonZh())
+        : fallback(row.recommendationReasonZh(), row.recommendationReasonEn());
   }
 
   private List<ProblemTag> tags(ProblemRow row, ProblemLocale locale) {

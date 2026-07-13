@@ -286,7 +286,7 @@ class LearningPlanTemplateSeedImportServiceTest {
       if (!knownSlugs.contains(slug)) {
         return Optional.empty();
       }
-      return Optional.of(new ProblemDetail(slug, 1, "1", slug, null, List.of(), null, null, null, null, null, null));
+      return Optional.of(new ProblemDetail(slug, 1, "1", slug, null, List.of(), null, null, null, null, null, null, null));
     }
 
     @Override

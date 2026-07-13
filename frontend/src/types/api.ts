@@ -152,6 +152,7 @@ export interface ProblemListItem {
 
 export interface ProblemDetail extends ProblemListItem {
   contentMarkdown: string;
+  recommendationReason?: string;
   leetcodeUrl?: string;
   sampleTestCase?: string;
   python3Template?: string;

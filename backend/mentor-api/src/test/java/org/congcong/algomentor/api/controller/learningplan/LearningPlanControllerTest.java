@@ -373,6 +373,7 @@ class LearningPlanControllerTest {
 
     mockMvc.perform(post("/api/learning-plans/drafts/from-template")
             .contentType(MediaType.APPLICATION_JSON)
+            .header("Accept-Language", "en-US,en;q=0.9")
             .content("""
                 {
                   "templateId": "tih_best_practice_50_5weeks",
@@ -391,6 +392,8 @@ class LearningPlanControllerTest {
     verify(templateDraftService).createDraft(eq(42L), commandCaptor.capture());
     org.assertj.core.api.Assertions.assertThat(commandCaptor.getValue().dailyProblemCount()).isEqualTo(3);
     org.assertj.core.api.Assertions.assertThat(commandCaptor.getValue().trainingDaysPerWeek()).isEqualTo(4);
+    org.assertj.core.api.Assertions.assertThat(commandCaptor.getValue().recommendationReasonLocale())
+        .isEqualTo("en-US");
     verifyNoInteractions(admissionService, lifecycleService);
   }
 

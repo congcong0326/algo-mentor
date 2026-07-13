@@ -2192,6 +2192,21 @@ a {
   margin-bottom: 14px;
 }
 
+.recommendation-reason {
+  margin: 0 0 14px;
+}
+
+.recommendation-reason h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.recommendation-reason p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
 .markdown-view,
 .code-section pre {
   margin: 0;

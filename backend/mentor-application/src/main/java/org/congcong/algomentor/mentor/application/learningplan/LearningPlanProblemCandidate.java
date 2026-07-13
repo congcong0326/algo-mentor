@@ -8,8 +8,20 @@ public record LearningPlanProblemCandidate(
     String title,
     String titleCn,
     String difficulty,
-    List<String> tags
+    List<String> tags,
+    String recommendationReason
 ) {
+
+  public LearningPlanProblemCandidate(
+      String slug,
+      Integer frontendId,
+      String title,
+      String titleCn,
+      String difficulty,
+      List<String> tags
+  ) {
+    this(slug, frontendId, title, titleCn, difficulty, tags, null);
+  }
 
   public LearningPlanProblemCandidate {
     tags = tags == null ? List.of() : List.copyOf(tags);

@@ -6,6 +6,7 @@ import org.congcong.algomentor.api.learningplan.model.TodayPackResponse;
 import org.congcong.algomentor.api.learningplan.model.TodayPackResponseMapper;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
+import org.congcong.algomentor.common.api.ApiErrorLocales;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivationService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -59,13 +61,15 @@ public class TodayPackController {
           + ApiContractConstants.TODAY_PACK_RECOMMENDED_ACTIVATION_PATH,
       consumes = MediaType.APPLICATION_JSON_VALUE)
   public ApiResponse<TodayPackResponse> activateRecommendedPlan(
+      @RequestHeader(name = ApiContractConstants.ACCEPT_LANGUAGE_HEADER, required = false) String acceptLanguage,
       @RequestBody(required = false) RecommendedTodayPackActivationRequest request) {
     long userId = requireCurrentUserId();
     LearningPlanDraftResult draft = requiredTemplateDraftService().createDraft(userId, new LearningPlanTemplateDraftCommand(
         TodayPackService.RECOMMENDED_TEMPLATE_ID,
         null,
         null,
-        null));
+        null,
+        ApiErrorLocales.parse(acceptLanguage).toLanguageTag()));
     long planId = requiredDraftService().confirmDraft(userId, draft.draftId()).planId();
     requiredActivationService().activate(userId, planId);
     String timezone = request == null ? null : request.timezone();

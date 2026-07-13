@@ -25,6 +25,8 @@ PROBLEM_INDEX_PATH := data/index/problem_index.jsonl
 PROBLEM_API_CACHE_DIR := data/sources/leetcode-api
 PROBLEM_SEED_DIR := data/seed
 PROBLEM_SEED_ABS_DIR := $(abspath $(PROBLEM_SEED_DIR))
+PROBLEM_INSIGHT_SEED_DIR := data/problem-insight-seed
+PROBLEM_INSIGHT_SEED_ABS_DIR := $(abspath $(PROBLEM_INSIGHT_SEED_DIR))
 PROBLEM_COMPANY_SEED_DIR := data/company-seed
 PROBLEM_COMPANY_SEED_ABS_DIR := $(abspath $(PROBLEM_COMPANY_SEED_DIR))
 LEARNING_PLAN_TEMPLATE_SEED_DIR := data/learning-plan-template-seed
@@ -237,7 +239,7 @@ db-install:
 
 db-seed:
 	API_PORT="$(API_PORT)" SERVER_PORT="$(API_PORT)" $(MAVEN) -pl mentor-api -am -DskipTests spring-boot:run \
-		-Dspring-boot.run.arguments="--algo-mentor.problem.seed.enabled=true --algo-mentor.problem.seed.path=$(PROBLEM_SEED_ABS_DIR) --algo-mentor.problem.company-seed.enabled=true --algo-mentor.problem.company-seed.path=$(PROBLEM_COMPANY_SEED_ABS_DIR) --algo-mentor.learning-plan-template.seed.enabled=true --algo-mentor.learning-plan-template.seed.path=$(LEARNING_PLAN_TEMPLATE_SEED_ABS_DIR) --spring.datasource.url=$(DB_SEED_URL) --spring.datasource.username=$(DB_SEED_USER) --spring.datasource.password=$(DB_SEED_PASSWORD) --spring.flyway.enabled=true" \
+		-Dspring-boot.run.arguments="--algo-mentor.problem.seed.enabled=true --algo-mentor.problem.seed.path=$(PROBLEM_SEED_ABS_DIR) --algo-mentor.problem.insight-seed.path=$(PROBLEM_INSIGHT_SEED_ABS_DIR) --algo-mentor.problem.company-seed.enabled=true --algo-mentor.problem.company-seed.path=$(PROBLEM_COMPANY_SEED_ABS_DIR) --algo-mentor.learning-plan-template.seed.enabled=true --algo-mentor.learning-plan-template.seed.path=$(LEARNING_PLAN_TEMPLATE_SEED_ABS_DIR) --spring.datasource.url=$(DB_SEED_URL) --spring.datasource.username=$(DB_SEED_USER) --spring.datasource.password=$(DB_SEED_PASSWORD) --spring.flyway.enabled=true" \
 		-Dspring-boot.run.profiles=local
 
 sync-frontend:

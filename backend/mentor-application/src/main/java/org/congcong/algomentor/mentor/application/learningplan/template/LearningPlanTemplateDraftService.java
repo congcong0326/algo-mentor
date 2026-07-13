@@ -82,7 +82,15 @@ public class LearningPlanTemplateDraftService {
         template.difficultyPreference(),
         template.interviewOriented(),
         template.topicPreferences());
-    LearningPlanDraftPlan draftPlan = buildDraftPlan(template, draftCommand, dailyProblemCount, trainingDaysPerWeek);
+    String recommendationReasonLocale = command == null
+        ? LearningPlanTemplateDraftCommand.DEFAULT_RECOMMENDATION_REASON_LOCALE
+        : command.recommendationReasonLocale();
+    LearningPlanDraftPlan draftPlan = buildDraftPlan(
+        template,
+        draftCommand,
+        dailyProblemCount,
+        trainingDaysPerWeek,
+        recommendationReasonLocale);
     validator.validateTemplatePlan(draftPlan);
 
     Instant now = clock.instant();
@@ -106,7 +114,8 @@ public class LearningPlanTemplateDraftService {
       LearningPlanTemplate template,
       LearningPlanDraftCommand command,
       int dailyProblemCount,
-      int trainingDaysPerWeek
+      int trainingDaysPerWeek,
+      String recommendationReasonLocale
   ) {
     if (template.phases().isEmpty()) {
       throw new LearningPlanException("LEARNING_PLAN_DRAFT_INVALID", "学习计划模板没有可用阶段。");
@@ -121,7 +130,7 @@ public class LearningPlanTemplateDraftService {
     for (int index = 0; index < template.phases().size(); index++) {
       LearningPlanTemplatePhase templatePhase = template.phases().get(index);
       List<LearningPlanTemplateProblemRef> refs = templatePhase.problemRefs();
-      List<LearningPlanProblemDraft> problems = selectProblems(template, refs);
+      List<LearningPlanProblemDraft> problems = selectProblems(refs, recommendationReasonLocale);
       incomplete = incomplete || problems.size() < refs.size();
       phases.add(toDraftPhase(index + 1, phaseWeeks.get(index), templatePhase, problems));
     }
@@ -145,19 +154,27 @@ public class LearningPlanTemplateDraftService {
   }
 
   private List<LearningPlanProblemDraft> selectProblems(
-      LearningPlanTemplate template,
-      List<LearningPlanTemplateProblemRef> refs
+      List<LearningPlanTemplateProblemRef> refs,
+      String recommendationReasonLocale
   ) {
     List<LearningPlanProblemDraft> problems = new ArrayList<>();
     for (LearningPlanTemplateProblemRef ref : refs) {
-      LearningPlanProblemCandidate candidate = problemCatalog.findBySlug(ref.problemSlug()).orElse(null);
+      LearningPlanProblemCandidate candidate = problemCatalog
+          .findBySlug(ref.problemSlug(), recommendationReasonLocale)
+          .orElse(null);
       if (candidate == null) {
         continue;
+      }
+      String reason = candidate.recommendationReason();
+      if (reason == null || reason.isBlank()) {
+        throw new LearningPlanException(
+            "LEARNING_PLAN_TEMPLATE_PROBLEM_REASON_MISSING",
+            "题库数据不完整：模板题目缺少推荐理由：" + ref.problemSlug() + "。");
       }
       problems.add(LearningPlanProblemDraft.fromCandidate(
           candidate,
           problems.size() + 1,
-          "来自模板 " + template.templateId() + "，围绕 " + ref.pattern() + " 训练。"));
+          reason));
     }
     return problems;
   }

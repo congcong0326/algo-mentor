@@ -23,6 +23,7 @@ public class ProblemSeedRunner implements ApplicationRunner {
   private final ConfigurableApplicationContext applicationContext;
   private final boolean problemSeedEnabled;
   private final Path seedPath;
+  private final Path insightSeedPath;
   private final Path companySeedPath;
   private final boolean companySeedEnabled;
   private final Path templateSeedPath;
@@ -35,6 +36,7 @@ public class ProblemSeedRunner implements ApplicationRunner {
       ConfigurableApplicationContext applicationContext,
       @Value("${algo-mentor.problem.seed.enabled:false}") boolean problemSeedEnabled,
       @Value("${algo-mentor.problem.seed.path:data/seed}") String seedPath,
+      @Value("${algo-mentor.problem.insight-seed.path:data/problem-insight-seed}") String insightSeedPath,
       @Value("${algo-mentor.problem.company-seed.path:data/company-seed}") String companySeedPath,
       @Value("${algo-mentor.problem.company-seed.enabled:false}") boolean companySeedEnabled,
       @Value("${algo-mentor.learning-plan-template.seed.path:data/learning-plan-template-seed}") String templateSeedPath,
@@ -46,6 +48,7 @@ public class ProblemSeedRunner implements ApplicationRunner {
     this.applicationContext = applicationContext;
     this.problemSeedEnabled = problemSeedEnabled;
     this.seedPath = Path.of(seedPath);
+    this.insightSeedPath = Path.of(insightSeedPath);
     this.companySeedPath = Path.of(companySeedPath);
     this.companySeedEnabled = companySeedEnabled;
     this.templateSeedPath = Path.of(templateSeedPath);
@@ -58,7 +61,7 @@ public class ProblemSeedRunner implements ApplicationRunner {
       return;
     }
     if (problemSeedEnabled) {
-      int imported = importer.importSeed(seedPath);
+      int imported = importer.importSeed(seedPath, insightSeedPath);
       log.info("Imported problem seed rows: {}", imported);
     }
     if (problemSeedEnabled && companySeedEnabled) {

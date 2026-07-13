@@ -77,7 +77,8 @@ class ProblemControllerTest {
         "https://leetcode.com/problems/two-sum/",
         "[2,7]\n9",
         "class Solution:\n    pass",
-        "abc123")));
+        "abc123",
+        "Practice hash-table lookups.")));
 
     mockMvc.perform(get("/api/admin/problems/two-sum").param("locale", "en-US"))
         .andExpect(status().isOk())
@@ -86,6 +87,7 @@ class ProblemControllerTest {
         .andExpect(jsonPath("$.data.title").value("Two Sum"))
         .andExpect(jsonPath("$.data.titleCn").doesNotExist())
         .andExpect(jsonPath("$.data.contentMarkdown").value("# Two Sum"))
+        .andExpect(jsonPath("$.data.recommendationReason").value("Practice hash-table lookups."))
         .andExpect(jsonPath("$.data.python3Template").value("class Solution:\n    pass"));
   }
 

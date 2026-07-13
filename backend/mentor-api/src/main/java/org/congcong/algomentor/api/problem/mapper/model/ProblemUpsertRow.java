@@ -19,6 +19,8 @@ public record ProblemUpsertRow(
     String leetcodeUrl,
     String sampleTestCase,
     String python3Template,
-    String sourceCommit
+    String sourceCommit,
+    String recommendationReasonEn,
+    String recommendationReasonZh
 ) {
 }

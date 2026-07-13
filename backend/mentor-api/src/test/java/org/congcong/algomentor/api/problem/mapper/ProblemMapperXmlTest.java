@@ -8,6 +8,7 @@ import org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.Configuration;
+import org.congcong.algomentor.api.problem.mapper.model.ProblemUpsertRow;
 import org.junit.jupiter.api.Test;
 
 class ProblemMapperXmlTest {
@@ -53,6 +54,20 @@ class ProblemMapperXmlTest {
         "org.congcong.algomentor.api.problem.mapper.ProblemMapper.clearConflictingFrontendDisplayId")).isTrue();
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.api.problem.mapper.ProblemMapper.upsertProblem")).isTrue();
+    String upsertSql = configuration.getMappedStatement(
+            "org.congcong.algomentor.api.problem.mapper.ProblemMapper.upsertProblem")
+        .getBoundSql(new ProblemUpsertRow(
+            null, null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null, null))
+        .getSql();
+    assertThat(upsertSql)
+        .contains("recommendation_reason_en", "recommendation_reason_zh", "IS DISTINCT FROM");
+    String detailSql = configuration.getMappedStatement(
+            "org.congcong.algomentor.api.problem.mapper.ProblemMapper.findProblemBySlug")
+        .getBoundSql("two-sum")
+        .getSql();
+    assertThat(detailSql)
+        .contains("p.recommendation_reason_en", "p.recommendation_reason_zh");
 
     try (Reader reader = Resources.getResourceAsReader("mapper/problem/ProblemCompanyMapper.xml")) {
       new XMLMapperBuilder(

@@ -286,6 +286,7 @@ export interface LocaleResources {
     previousPage: string;
     nextPage: string;
     loadingDetail: string;
+    recommendationReason: string;
     sampleInput: string;
     pythonTemplate: string;
     selectProblem: string;
@@ -876,6 +877,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       previousPage: '上一页',
       nextPage: '下一页',
       loadingDetail: '加载详情...',
+      recommendationReason: '推荐理由',
       sampleInput: '样例输入',
       pythonTemplate: 'Python3 模板',
       selectProblem: '选择一道题查看详情',
@@ -1543,6 +1545,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       previousPage: 'Previous page',
       nextPage: 'Next page',
       loadingDetail: 'Loading details...',
+      recommendationReason: 'Recommendation reason',
       sampleInput: 'Sample Input',
       pythonTemplate: 'Python3 Template',
       selectProblem: 'Select a problem to view details',

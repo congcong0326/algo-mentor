@@ -1098,6 +1098,8 @@ describe('App', () => {
     expect(await screen.findByRole('textbox', { name: '搜索题目' })).toBeInTheDocument();
     expect(await screen.findByText('两数之和')).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: '两数之和' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 3, name: '推荐理由' })).toBeInTheDocument();
+    expect(screen.getByText('练习哈希表查找和补集思路。')).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 1, name: 'Two Sum' })).toBeInTheDocument();
     expect(screen.getByText('注意：').closest('strong')).toBeInTheDocument();
     expect(screen.queryByText('**注意：**')).not.toBeInTheDocument();
@@ -3361,6 +3363,7 @@ function baseProblemDetail() {
     contentStatus: 'BILINGUAL',
     companyFrequencyScore: null,
     companySignalCount: 0,
+    recommendationReason: '练习哈希表查找和补集思路。',
     contentMarkdown: '# Two Sum\n\n**注意：**请返回下标而不是数值。',
     leetcodeUrl: 'https://leetcode.com/problems/two-sum/',
     sampleTestCase: '[2,7,11,15]\n9',

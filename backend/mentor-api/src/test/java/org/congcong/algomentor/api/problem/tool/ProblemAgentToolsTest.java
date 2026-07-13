@@ -226,7 +226,8 @@ class ProblemAgentToolsTest {
         "https://leetcode.com/problems/two-sum/",
         "[2,7,11,15]\n9",
         "class Solution:\n    pass",
-        "abc123")));
+        "abc123",
+        "Practice hash-table lookups.")));
     ObjectNode arguments = JsonNodeFactory.instance.objectNode()
         .put("slug", "two-sum")
         .put("locale", "en-US");
@@ -245,6 +246,7 @@ class ProblemAgentToolsTest {
     assertThat(output.path("sampleTestCase").asText()).isEqualTo("[2,7,11,15]\n9");
     assertThat(output.has("python3Template")).isFalse();
     assertThat(output.has("sourceCommit")).isFalse();
+    assertThat(output.has("recommendationReason")).isFalse();
   }
 
   @Test

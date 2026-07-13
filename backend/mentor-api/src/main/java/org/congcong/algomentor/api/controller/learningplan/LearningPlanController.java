@@ -39,6 +39,7 @@ import org.congcong.algomentor.api.learningplan.service.SseLearningPlanProposalS
 import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
+import org.congcong.algomentor.common.api.ApiErrorLocales;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivation;
@@ -73,6 +74,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -253,9 +255,12 @@ public class LearningPlanController {
 
   @PostMapping(ApiContractConstants.LEARNING_PLAN_DRAFT_FROM_TEMPLATE_PATH)
   public ApiResponse<LearningPlanDraftResponse> createDraftFromTemplate(
+      @RequestHeader(name = ApiContractConstants.ACCEPT_LANGUAGE_HEADER, required = false) String acceptLanguage,
       @RequestBody LearningPlanTemplateDraftRequest request) {
     long userId = requireCurrentUserId();
-    LearningPlanDraftResult result = requiredTemplateDraftService().createDraft(userId, request.toCommand());
+    LearningPlanDraftResult result = requiredTemplateDraftService().createDraft(
+        userId,
+        request.toCommand(ApiErrorLocales.parse(acceptLanguage).toLanguageTag()));
     return ApiResponse.success(LearningPlanResponseMapper.toDraftResponse(result));
   }
 

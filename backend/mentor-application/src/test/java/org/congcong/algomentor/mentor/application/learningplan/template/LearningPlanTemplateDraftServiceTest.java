@@ -7,10 +7,12 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanConfirmResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
@@ -166,6 +168,51 @@ class LearningPlanTemplateDraftServiceTest {
         .hasSize(9);
   }
 
+  @org.junit.jupiter.api.Test
+  void templateDraftSnapshotsProblemRecommendationReasonsInTheRequestedLanguage() {
+    templateRepository.saveTemplate(blind75Template());
+
+    LearningPlanDraftResult chineseDraft = templateDraftService.createDraft(
+        7L,
+        new LearningPlanTemplateDraftCommand("neetcode_blind_75_interview_core", null, null, null));
+    LearningPlanDraftResult englishDraft = templateDraftService.createDraft(
+        7L,
+        new LearningPlanTemplateDraftCommand(
+            "neetcode_blind_75_interview_core",
+            null,
+            null,
+            null,
+            "en-US"));
+
+    assertThat(problemReasons(chineseDraft)).contains("中文推荐：two-sum");
+    assertThat(problemReasons(englishDraft)).contains("English recommendation: two-sum");
+    assertThat(problemReasons(chineseDraft))
+        .noneMatch(reason -> reason.contains("来自模板") || reason.contains("围绕"));
+    assertThat(problemReasons(englishDraft))
+        .noneMatch(reason -> reason.contains("来自模板") || reason.contains("围绕"));
+  }
+
+  @org.junit.jupiter.api.Test
+  void templateDraftRejectsMatchedProblemWithoutRecommendationReason() {
+    templateRepository.saveTemplate(blind75Template());
+    problemCatalog.removeRecommendationReason("two-sum");
+
+    assertThatThrownBy(() -> templateDraftService.createDraft(
+        7L,
+        new LearningPlanTemplateDraftCommand("neetcode_blind_75_interview_core", null, null, null)))
+        .isInstanceOfSatisfying(LearningPlanException.class, exception -> {
+          assertThat(exception.code()).isEqualTo("LEARNING_PLAN_TEMPLATE_PROBLEM_REASON_MISSING");
+          assertThat(exception).hasMessage("题库数据不完整：模板题目缺少推荐理由：two-sum。");
+        });
+  }
+
+  private List<String> problemReasons(LearningPlanDraftResult result) {
+    return result.draftPlan().phases().stream()
+        .flatMap(phase -> phase.problems().stream())
+        .map(LearningPlanProblemDraft::reason)
+        .toList();
+  }
+
   private void assertTemplateDraftMatchesLocalRefs(
       String templateId,
       int durationWeeks,
@@ -314,6 +361,7 @@ class LearningPlanTemplateDraftServiceTest {
   private static class FakeProblemCatalog implements LearningPlanProblemCatalog {
 
     private final Map<String, LearningPlanProblemCandidate> problems = new HashMap<>();
+    private final Set<String> missingRecommendationReasonSlugs = new HashSet<>();
 
     FakeProblemCatalog() {
       add("two-sum", 1, "Two Sum", "EASY", "Array");
@@ -334,20 +382,51 @@ class LearningPlanTemplateDraftServiceTest {
 
     @Override
     public Optional<LearningPlanProblemCandidate> findBySlug(String slug) {
+      return findBySlug(slug, LearningPlanTemplateDraftCommand.DEFAULT_RECOMMENDATION_REASON_LOCALE);
+    }
+
+    @Override
+    public Optional<LearningPlanProblemCandidate> findBySlug(String slug, String locale) {
       if (slug.startsWith("missing-problem")) {
         return Optional.empty();
       }
+      LearningPlanProblemCandidate candidate;
       if (slug.startsWith("template-problem-")) {
         int frontendId = Integer.parseInt(slug.substring("template-problem-".length()));
-        return Optional.of(new LearningPlanProblemCandidate(
+        candidate = new LearningPlanProblemCandidate(
             slug,
             frontendId,
             "Template Problem " + frontendId,
             "模板题 " + frontendId,
             "MEDIUM",
-            List.of("Template")));
+            List.of("Template"));
+      } else {
+        candidate = problems.get(slug);
       }
-      return Optional.ofNullable(problems.get(slug));
+      return Optional.ofNullable(candidate).map(problem -> withRecommendationReason(problem, locale));
+    }
+
+    void removeRecommendationReason(String slug) {
+      missingRecommendationReasonSlugs.add(slug);
+    }
+
+    private LearningPlanProblemCandidate withRecommendationReason(
+        LearningPlanProblemCandidate problem,
+        String locale
+    ) {
+      String reason = missingRecommendationReasonSlugs.contains(problem.slug())
+          ? null
+          : LearningPlanTemplateDraftCommand.ENGLISH_RECOMMENDATION_REASON_LOCALE.equals(locale)
+              ? "English recommendation: " + problem.slug()
+              : "中文推荐：" + problem.slug();
+      return new LearningPlanProblemCandidate(
+          problem.slug(),
+          problem.frontendId(),
+          problem.title(),
+          problem.titleCn(),
+          problem.difficulty(),
+          problem.tags(),
+          reason);
     }
 
     private void add(String slug, int frontendId, String title, String difficulty, String tag) {

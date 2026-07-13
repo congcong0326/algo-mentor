@@ -325,6 +325,12 @@ export default function ProblemLibrary() {
                 {detail.contentStatus === 'CN_ONLY' && <span className="content-status-badge">{resources.problems.cnOnlyBadge}</span>}
                 {detail.tags.map((tag) => <span className="tag-pill" key={tag.value}>{tag.label}</span>)}
               </div>
+              {detail.recommendationReason && (
+                <section className="recommendation-reason">
+                  <h3>{resources.problems.recommendationReason}</h3>
+                  <p>{detail.recommendationReason}</p>
+                </section>
+              )}
               <MarkdownView content={detail.contentMarkdown} />
               {detail.sampleTestCase && (
                 <section className="code-section">

@@ -20,6 +20,8 @@ public record ProblemRow(
     String sampleTestCase,
     String python3Template,
     String sourceCommit,
+    String recommendationReasonEn,
+    String recommendationReasonZh,
     BigDecimal companyFrequencyScore,
     Long companySignalCount
 ) {

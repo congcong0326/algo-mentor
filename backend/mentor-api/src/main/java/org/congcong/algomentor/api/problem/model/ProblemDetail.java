@@ -14,7 +14,8 @@ public record ProblemDetail(
     String leetcodeUrl,
     String sampleTestCase,
     String python3Template,
-    String sourceCommit
+    String sourceCommit,
+    String recommendationReason
 ) {
 
   public ProblemDetail {

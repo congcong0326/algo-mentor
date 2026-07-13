@@ -10,10 +10,15 @@ public record LearningPlanTemplateDraftRequest(
 ) {
 
   public LearningPlanTemplateDraftCommand toCommand() {
+    return toCommand(null);
+  }
+
+  public LearningPlanTemplateDraftCommand toCommand(String recommendationReasonLocale) {
     return new LearningPlanTemplateDraftCommand(
         templateId,
         programmingLanguage,
         dailyProblemCount,
-        trainingDaysPerWeek);
+        trainingDaysPerWeek,
+        recommendationReasonLocale);
   }
 }

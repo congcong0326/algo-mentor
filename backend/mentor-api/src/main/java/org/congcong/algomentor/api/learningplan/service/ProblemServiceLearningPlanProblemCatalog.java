@@ -2,7 +2,9 @@ package org.congcong.algomentor.api.learningplan.service;
 
 import java.util.List;
 import java.util.Optional;
+import org.congcong.algomentor.api.problem.model.ProblemDetail;
 import org.congcong.algomentor.api.problem.model.ProblemListItem;
+import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
 import org.congcong.algomentor.api.problem.model.ProblemTag;
 import org.congcong.algomentor.api.problem.model.ProblemSort;
@@ -43,14 +45,13 @@ public class ProblemServiceLearningPlanProblemCatalog implements LearningPlanPro
 
   @Override
   public Optional<LearningPlanProblemCandidate> findBySlug(String slug) {
-    return problemService.findProblemBySlug(slug)
-        .map(problem -> new LearningPlanProblemCandidate(
-            problem.slug(),
-            problem.frontendId(),
-            problem.title(),
-            null,
-            problem.difficulty() == null ? null : problem.difficulty().name(),
-            tagLabels(problem.tags())));
+    return findBySlug(slug, ProblemLocale.DEFAULT.value());
+  }
+
+  @Override
+  public Optional<LearningPlanProblemCandidate> findBySlug(String slug, String locale) {
+    return problemService.findProblemBySlug(slug, ProblemLocale.parse(locale))
+        .map(this::toCandidate);
   }
 
   private LearningPlanProblemCandidate toCandidate(ProblemListItem problem) {
@@ -61,6 +62,17 @@ public class ProblemServiceLearningPlanProblemCatalog implements LearningPlanPro
         null,
         problem.difficulty() == null ? null : problem.difficulty().name(),
         tagLabels(problem.tags()));
+  }
+
+  private LearningPlanProblemCandidate toCandidate(ProblemDetail problem) {
+    return new LearningPlanProblemCandidate(
+        problem.slug(),
+        problem.frontendId(),
+        problem.title(),
+        null,
+        problem.difficulty() == null ? null : problem.difficulty().name(),
+        tagLabels(problem.tags()),
+        problem.recommendationReason());
   }
 
   private List<String> tagLabels(List<ProblemTag> tags) {

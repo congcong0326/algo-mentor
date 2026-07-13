@@ -49,6 +49,8 @@
 - `backend/mentor-api/src/main/resources/application.yml`：默认应用配置，默认不强制连接数据库。
 - `backend/mentor-api/src/main/resources/application-local.yml`：本地 PostgreSQL 与 Flyway 配置。
 - `backend/mentor-api/src/main/resources/db/migration`：mentor API 自有 Flyway 迁移脚本目录。
+- `backend/mentor-api/src/main/resources/db/migration/V27__problem_recommendation_reasons.sql`：为题目表增加中英文推荐理由字段。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/service/ProblemSeedImporter.java`：按 `slug` 合并题目 JSONL 与推荐理由 JSON，完成全量匹配校验后幂等写入题目表。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/AgentToolPermissionController.java`：Agent Tool 权限决策 API，提供 `POST /api/agent/tool-permissions/{permissionRequestId}/decision`，通过当前认证用户提交允许或拒绝。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/AgentToolPermissionExceptionHandler.java`：权限决策异常到 HTTP 状态的映射，覆盖未登录、越权、不存在、已决策、过期和非法请求。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/agent/model`：权限决策 API 的 request/response DTO，只接收 `decision` 和 `reason`，不接收前端声明的 userId。

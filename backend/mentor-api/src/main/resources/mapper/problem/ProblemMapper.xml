@@ -23,6 +23,8 @@
       <arg column="sample_test_case" javaType="string"/>
       <arg column="python3_template" javaType="string"/>
       <arg column="source_commit" javaType="string"/>
+      <arg column="recommendation_reason_en" javaType="string"/>
+      <arg column="recommendation_reason_zh" javaType="string"/>
       <arg column="company_frequency_score" javaType="java.math.BigDecimal"/>
       <arg column="company_signal_count" javaType="java.lang.Long"/>
     </constructor>
@@ -64,6 +66,8 @@
     p.sample_test_case,
     p.python3_template,
     p.source_commit,
+    NULL::TEXT AS recommendation_reason_en,
+    NULL::TEXT AS recommendation_reason_zh,
     (
       SELECT MAX(pcs.frequency_score)
       FROM problem_company_signal pcs
@@ -221,6 +225,8 @@
       p.sample_test_case,
       p.python3_template,
       p.source_commit,
+      p.recommendation_reason_en,
+      p.recommendation_reason_zh,
       NULL::NUMERIC AS company_frequency_score,
       0::BIGINT AS company_signal_count
     FROM problem p
@@ -340,6 +346,8 @@
       sample_test_case,
       python3_template,
       source_commit,
+      recommendation_reason_en,
+      recommendation_reason_zh,
       created_at,
       updated_at
     )
@@ -361,6 +369,8 @@
       #{sampleTestCase},
       #{python3Template},
       #{sourceCommit},
+      #{recommendationReasonEn},
+      #{recommendationReasonZh},
       NOW(),
       NOW()
     )
@@ -381,6 +391,47 @@
         sample_test_case = EXCLUDED.sample_test_case,
         python3_template = EXCLUDED.python3_template,
         source_commit = EXCLUDED.source_commit,
+        recommendation_reason_en = EXCLUDED.recommendation_reason_en,
+        recommendation_reason_zh = EXCLUDED.recommendation_reason_zh,
         updated_at = NOW()
+    WHERE (
+      problem.frontend_id,
+      problem.frontend_display_id,
+      problem.title_en,
+      problem.title_zh,
+      problem.difficulty,
+      problem.tag_values,
+      problem.tag_labels_en,
+      problem.tag_labels_zh,
+      problem.content_markdown_en,
+      problem.content_markdown_zh,
+      problem.content_status,
+      problem.source_site,
+      problem.leetcode_url,
+      problem.sample_test_case,
+      problem.python3_template,
+      problem.source_commit,
+      problem.recommendation_reason_en,
+      problem.recommendation_reason_zh
+    ) IS DISTINCT FROM (
+      EXCLUDED.frontend_id,
+      EXCLUDED.frontend_display_id,
+      EXCLUDED.title_en,
+      EXCLUDED.title_zh,
+      EXCLUDED.difficulty,
+      EXCLUDED.tag_values,
+      EXCLUDED.tag_labels_en,
+      EXCLUDED.tag_labels_zh,
+      EXCLUDED.content_markdown_en,
+      EXCLUDED.content_markdown_zh,
+      EXCLUDED.content_status,
+      EXCLUDED.source_site,
+      EXCLUDED.leetcode_url,
+      EXCLUDED.sample_test_case,
+      EXCLUDED.python3_template,
+      EXCLUDED.source_commit,
+      EXCLUDED.recommendation_reason_en,
+      EXCLUDED.recommendation_reason_zh
+    )
   </insert>
 </mapper>
