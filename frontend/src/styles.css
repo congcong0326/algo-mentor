@@ -4940,6 +4940,52 @@ a {
   gap: 10px;
   color: var(--text-secondary);
   font-size: 13px;
+  position: relative;
+}
+
+.review-setting-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.review-setting-tooltip-wrap {
+  flex: 0 0 auto;
+  position: static;
+}
+
+.review-setting-help {
+  width: 22px;
+  height: 22px;
+  color: var(--text-muted);
+  cursor: help;
+}
+
+.review-setting-help svg {
+  width: 15px;
+  height: 15px;
+}
+
+.review-setting-help:hover,
+.review-setting-help:focus-visible {
+  border-color: var(--accent-warm-border);
+  background: var(--accent-warm-soft);
+  color: var(--accent-warm-text);
+}
+
+.review-setting-tooltip {
+  top: auto;
+  right: 0;
+  bottom: calc(100% + 8px);
+  width: min(260px, calc(100vw - 48px));
+  max-width: min(260px, calc(100vw - 48px));
+  transform: translateY(-4px);
+  text-align: left;
+}
+
+.review-setting-checkbox {
+  position: relative;
 }
 
 .review-setting-field input {
@@ -5808,6 +5854,11 @@ a {
 
   .current-coach-strip {
     grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .review-setting-tooltip {
+    right: auto;
+    left: 0;
   }
 
   .ability-radar svg {

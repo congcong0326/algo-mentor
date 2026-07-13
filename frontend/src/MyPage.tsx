@@ -4,6 +4,7 @@ import {
   BrainCircuit,
   BookOpenCheck as BookOpenIcon,
   Check,
+  CircleHelp,
   Gauge,
   X,
   Settings2,
@@ -37,6 +38,31 @@ const coachStyleOptions: PracticeCoachStyle[] = ['GUIDED', 'DIRECT'];
 const defaultRadarTagCount = 8;
 const maxRadarTagCount = 12;
 const minRadarTagCount = 3;
+
+interface ReviewSettingHelpProps {
+  description: string;
+  label: string;
+  tooltipId: string;
+}
+
+function ReviewSettingHelp({ description, label, tooltipId }: ReviewSettingHelpProps) {
+  return (
+    <span className="toolbar-tooltip-wrap review-setting-tooltip-wrap">
+      <span
+        aria-describedby={tooltipId}
+        aria-label={`${label}说明`}
+        className="icon-button review-setting-help"
+        role="img"
+        tabIndex={0}
+      >
+        <CircleHelp aria-hidden="true" />
+      </span>
+      <span className="toolbar-tooltip review-setting-tooltip" id={tooltipId} role="tooltip">
+        {description}
+      </span>
+    </span>
+  );
+}
 
 export default function MyPage() {
   const { locale, resources } = useI18n();
@@ -453,19 +479,33 @@ export default function MyPage() {
             </div>
           ) : reviewPreference ? (
             <div className="preference-controls">
-              <label className="checkbox-control">
+              <label className="checkbox-control review-setting-checkbox">
                 <input
                   checked={reviewPreference.aiSuggestionEnabled}
                   disabled={reviewPreferenceSaving}
                   onChange={(event) => void saveReviewPreference({ aiSuggestionEnabled: event.target.checked })}
                   type="checkbox"
                 />
-                <span>复习后启用 AI 建议评级</span>
+                <span className="review-setting-label">
+                  <span>复习后启用 AI 建议评级</span>
+                  <ReviewSettingHelp
+                    description="AI 仅分析复述并给出建议，最终评级仍由用户确认；关闭后直接手动评级。"
+                    label="AI 建议评级"
+                    tooltipId="review-ai-suggestion-tooltip"
+                  />
+                </span>
               </label>
               <fieldset className="preference-control-group">
                 <legend>FSRS 参数</legend>
                 <label className="review-setting-field">
-                  <span>目标记忆率</span>
+                  <span className="review-setting-label">
+                    <span>目标记忆率</span>
+                    <ReviewSettingHelp
+                      description="数值越高，复习安排越频繁、遗忘风险越低。"
+                      label="目标记忆率"
+                      tooltipId="review-desired-retention-tooltip"
+                    />
+                  </span>
                   <input
                     disabled={reviewPreferenceSaving}
                     max="0.97"
@@ -481,7 +521,14 @@ export default function MyPage() {
                   />
                 </label>
                 <label className="review-setting-field">
-                  <span>每日新卡</span>
+                  <span className="review-setting-label">
+                    <span>每日新卡</span>
+                    <ReviewSettingHelp
+                      description="当天首次进入队列的卡片数量，0 表示不安排新卡。"
+                      label="每日新卡"
+                      tooltipId="review-daily-new-limit-tooltip"
+                    />
+                  </span>
                   <input
                     disabled={reviewPreferenceSaving}
                     min="0"
@@ -495,7 +542,14 @@ export default function MyPage() {
                   />
                 </label>
                 <label className="review-setting-field">
-                  <span>学习中上限</span>
+                  <span className="review-setting-label">
+                    <span>学习中上限</span>
+                    <ReviewSettingHelp
+                      description="当天处于学习或重新学习状态的到期卡数量。"
+                      label="学习中上限"
+                      tooltipId="review-daily-learning-limit-tooltip"
+                    />
+                  </span>
                   <input
                     disabled={reviewPreferenceSaving}
                     min="1"
@@ -509,7 +563,14 @@ export default function MyPage() {
                   />
                 </label>
                 <label className="review-setting-field">
-                  <span>复习卡上限</span>
+                  <span className="review-setting-label">
+                    <span>复习卡上限</span>
+                    <ReviewSettingHelp
+                      description="当天处于复习状态的到期卡数量。"
+                      label="复习卡上限"
+                      tooltipId="review-daily-review-limit-tooltip"
+                    />
+                  </span>
                   <input
                     disabled={reviewPreferenceSaving}
                     min="1"
