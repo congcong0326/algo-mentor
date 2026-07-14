@@ -156,9 +156,12 @@ test:
 - `SMOKE_REPORT_DIR`：报告输出目录，默认 `reports/smoke`。
 - `SMOKE_RUN_ID`：可选固定运行 ID；未提供时由 runner 生成。
 - `SMOKE_KEEP_DATA`：是否保留测试数据用于排查，默认 `false`。
-- `SMOKE_SUITE`：指定运行的 suite，默认 `core`；可取 `core`、`practice`、`security` 或 `all`。
+- `SMOKE_SUITE`：指定运行的 suite，默认 `core`；可取 `core`、`practice`、`security`、`admin` 或 `all`。
 - `SMOKE_CASE`：指定运行的单个 case，通常对应 suite 下的一个 `.hurl` 文件名，不包含 `.hurl` 后缀。
 - `SMOKE_TAGS`：指定运行标签，作为 suite 选择的补充过滤条件。
+- `SMOKE_ADMIN_EMAIL`：管理员治理 smoke 注册使用的邮箱；未提供时为 `smoke-admin+{run_id}@example.test`。
+- `SMOKE_ADMIN_PASSWORD`：管理员治理 smoke 注册使用的密码；未提供时使用仅限测试环境的默认值。
+- `SMOKE_ADMIN_DISPLAY_NAME`：管理员治理 smoke 的显示名，可选。
 
 建议扩展命令：
 
@@ -183,6 +186,7 @@ SMOKE_SUITE=practice make test
 SMOKE_SUITE=practice SMOKE_CASE=practice_session make test
 SMOKE_SUITE=core,security make test
 SMOKE_TAGS=critical make test
+SMOKE_RUN_ID=ai-governance SMOKE_SUITE=admin make test
 ```
 
 后续 eval 命令预留：
@@ -251,6 +255,13 @@ runner 的发现规则：
 - 多个 suite 可以用逗号分隔，例如 `SMOKE_SUITE=core,security`。
 - `SMOKE_CASE=practice_session` 时只运行匹配 `practice_session.hurl` 的 case；如同时指定 `SMOKE_SUITE`，则只在该 suite 范围内查找。
 - `SMOKE_CASE` 未匹配任何文件时，runner 应快速失败并打印可用 case 列表。
+
+管理员治理 suite 需要在启动 API 前，将 `AUTH_ADMIN_EMAILS` 配置为包含
+`SMOKE_ADMIN_EMAIL` 的值。使用默认邮箱时，可固定运行 ID，例如先以
+`SMOKE_RUN_ID=ai-governance` 启动服务并设置
+`AUTH_ADMIN_EMAILS=smoke-admin+ai-governance@example.test`，再运行
+`SMOKE_RUN_ID=ai-governance SMOKE_SUITE=admin make test`。该 suite 只覆盖管理 API，
+不依赖外部模型服务。
 
 复杂场景处理规则：
 

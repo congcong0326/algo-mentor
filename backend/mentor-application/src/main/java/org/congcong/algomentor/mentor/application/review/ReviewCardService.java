@@ -11,6 +11,11 @@ import java.util.HexFormat;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.congcong.algomentor.ai.governance.completion.AiCompletionContext;
+import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
+import org.congcong.algomentor.ai.governance.completion.AiPassthroughCompletionGateway;
+import org.congcong.algomentor.ai.governance.model.AiPurpose;
+import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
@@ -26,7 +31,7 @@ public class ReviewCardService {
 
   private static final Logger log = LoggerFactory.getLogger(ReviewCardService.class);
 
-  private final LlmGateway llmGateway;
+  private final AiCompletionGateway completionGateway;
   private final ObjectMapper objectMapper;
   private final RuleBasedCardComposer ruleBasedCardComposer;
   private final ReviewCardProperties properties;
@@ -40,7 +45,17 @@ public class ReviewCardService {
       ReviewCardProperties properties,
       Clock clock
   ) {
-    this.llmGateway = Objects.requireNonNull(llmGateway, "llmGateway must not be null");
+    this(new AiPassthroughCompletionGateway(llmGateway), objectMapper, ruleBasedCardComposer, properties, clock);
+  }
+
+  public ReviewCardService(
+      AiCompletionGateway completionGateway,
+      ObjectMapper objectMapper,
+      RuleBasedCardComposer ruleBasedCardComposer,
+      ReviewCardProperties properties,
+      Clock clock
+  ) {
+    this.completionGateway = Objects.requireNonNull(completionGateway, "completionGateway must not be null");
     this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper must not be null");
     this.ruleBasedCardComposer = Objects.requireNonNull(ruleBasedCardComposer, "ruleBasedCardComposer must not be null");
     this.properties = Objects.requireNonNull(properties, "properties must not be null");
@@ -68,7 +83,7 @@ public class ReviewCardService {
     try {
       log.info("Review card generation LLM request started. noteId={} userId={} problemSlug={} responseSchema={}",
           note.id(), note.userId(), note.problemSlug(), MistakeReviewConstants.CARD_SCHEMA_NAME);
-      LlmCompletionResult result = llmGateway.complete(request);
+      LlmCompletionResult result = completionGateway.complete(request, backgroundContext(note));
       ReviewCard card = objectMapper.convertValue(result.structuredOutput(), ReviewCard.class);
       return new ReviewCard(
           CardVariant.AI_GENERATED,
@@ -109,6 +124,10 @@ public class ReviewCardService {
     }
     Instant expiresAt = cache.generatedAt().plus(properties.cacheTtl());
     return expiresAt.isAfter(Instant.now(clock));
+  }
+
+  public boolean canGenerateAi(MistakeNote note) {
+    return completionGateway.isAllowed(backgroundContext(note));
   }
 
   public String signature(MistakeNote note) {
@@ -167,6 +186,15 @@ public class ReviewCardService {
             true))
         .metadata(Map.of(MistakeReviewConstants.METADATA_MISTAKE_NOTE_ID, note.id()))
         .build();
+  }
+
+  private AiCompletionContext backgroundContext(MistakeNote note) {
+    return AiCompletionContext.background(
+        note.userId(),
+        AiPurpose.PROBLEM_EXPLANATION,
+        AiRunSource.REVIEW_CARD_GENERATION,
+        MistakeReviewConstants.QUOTA_SCOPE,
+        note.problemSlug().length());
   }
 
   private ReviewCard withNoteProblemContext(MistakeNote note, ReviewCard card) {

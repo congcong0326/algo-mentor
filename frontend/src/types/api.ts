@@ -144,6 +144,145 @@ export interface AdminPasswordResetResponse {
   expiresAt: string;
 }
 
+export interface AdminAiSettings {
+  aiEnabled: boolean;
+  defaultDailyRequestLimit: number;
+  updatedBy?: number | null;
+  updatedByDisplayName?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface AdminAiSettingsUpdateRequest {
+  aiEnabled: boolean;
+  defaultDailyRequestLimit: number;
+}
+
+export interface AdminUserAiPolicy {
+  userId: number;
+  globalAiEnabled: boolean;
+  aiEnabledOverride?: boolean | null;
+  effectiveAiEnabled: boolean;
+  effectiveDisabledReason?: 'GLOBAL' | 'USER' | string | null;
+  globalDefaultDailyRequestLimit: number;
+  dailyRequestLimitOverride?: number | null;
+  effectiveDailyRequestLimit: number;
+  updatedBy?: number | null;
+  updatedByDisplayName?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface AdminUserAiPolicyUpdateRequest {
+  aiEnabledOverride: boolean | null;
+  dailyRequestLimitOverride: number | null;
+}
+
+/** Price and cost values remain decimal strings through the browser boundary. */
+export interface AdminAiModelPrice {
+  id: number;
+  provider: string;
+  model: string;
+  currency: 'USD' | string;
+  inputPricePerMillion: string;
+  cachedInputPricePerMillion: string;
+  outputPricePerMillion: string;
+  costMultiplier: string;
+  enabled: boolean;
+  updatedBy?: number | null;
+  updatedByDisplayName?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface AdminAiModelPriceWriteRequest {
+  provider: string;
+  model: string;
+  inputPricePerMillion: string;
+  cachedInputPricePerMillion: string;
+  outputPricePerMillion: string;
+  costMultiplier: string;
+  enabled: boolean;
+}
+
+export interface AdminAiUnpricedModel {
+  provider?: string | null;
+  model?: string | null;
+  modelCallCount: number;
+  totalTokens: number;
+  lastSeenAt?: string | null;
+}
+
+export interface AdminAiModelPricePage {
+  items: AdminAiModelPrice[];
+  unpricedModels: AdminAiUnpricedModel[];
+}
+
+export interface AdminAiUsageMetrics {
+  modelCallCount: number;
+  inputTokens: number;
+  cachedTokens: number;
+  outputTokens: number;
+  reasoningTokens: number;
+  totalTokens: number;
+  pricedCallCount: number;
+  pricedTokenCount: number;
+  estimatedCostUsd: string;
+  unpricedCallCount: number;
+  unpricedTokenCount: number;
+}
+
+export interface AdminAiUsageSummary {
+  from: string;
+  to: string;
+  quotaZone: string;
+  admittedEntryRequestCount: number;
+  metrics: AdminAiUsageMetrics;
+}
+
+export interface AdminAiUsageByUser {
+  userId: number;
+  email?: string | null;
+  displayName?: string | null;
+  accountStatus?: AuthUserStatus | string | null;
+  metrics: AdminAiUsageMetrics;
+  todayEntryRequestCount: number;
+  effectiveDailyRequestLimit: number;
+  effectiveAiEnabled: boolean;
+}
+
+export interface AdminAiUsageByUserPage {
+  items: AdminAiUsageByUser[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface AdminAiUsageByModel {
+  provider?: string | null;
+  model?: string | null;
+  priced: boolean;
+  metrics: AdminAiUsageMetrics;
+}
+
+export interface AdminAiUsageBySource {
+  source: string;
+  metrics: AdminAiUsageMetrics;
+}
+
+export interface AdminAiUsageQuery {
+  from?: string;
+  to?: string;
+  userId?: number;
+  provider?: string;
+  model?: string;
+  purpose?: string;
+  source?: string;
+}
+
+export interface AdminAiUsageByUserQuery extends AdminAiUsageQuery {
+  page?: number;
+  pageSize?: number;
+}
+
 export interface AbilityTagScore {
   tag: string;
   label: string;

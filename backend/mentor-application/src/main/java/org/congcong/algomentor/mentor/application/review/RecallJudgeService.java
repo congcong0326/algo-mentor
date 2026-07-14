@@ -5,6 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
+import org.congcong.algomentor.ai.governance.completion.AiCompletionContext;
+import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
+import org.congcong.algomentor.ai.governance.completion.AiPassthroughCompletionGateway;
+import org.congcong.algomentor.ai.governance.model.AiPurpose;
+import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
@@ -19,12 +25,20 @@ public class RecallJudgeService {
 
   private static final Logger log = LoggerFactory.getLogger(RecallJudgeService.class);
 
-  private final LlmGateway llmGateway;
+  private final AiCompletionGateway completionGateway;
   private final ObjectMapper objectMapper;
   private final MistakeReviewMetrics metrics;
 
   public RecallJudgeService(LlmGateway llmGateway, ObjectMapper objectMapper, MistakeReviewMetrics metrics) {
-    this.llmGateway = Objects.requireNonNull(llmGateway, "llmGateway must not be null");
+    this(new AiPassthroughCompletionGateway(llmGateway), objectMapper, metrics);
+  }
+
+  public RecallJudgeService(
+      AiCompletionGateway completionGateway,
+      ObjectMapper objectMapper,
+      MistakeReviewMetrics metrics
+  ) {
+    this.completionGateway = Objects.requireNonNull(completionGateway, "completionGateway must not be null");
     this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper must not be null");
     this.metrics = Objects.requireNonNull(metrics, "metrics must not be null");
   }
@@ -32,7 +46,14 @@ public class RecallJudgeService {
   public RecallJudgment judge(MistakeNote note, String recallText) {
     try {
       RecallJudgment judgment = objectMapper.convertValue(
-          llmGateway.complete(request(note, recallText)).structuredOutput(),
+          completionGateway.complete(
+              request(note, recallText),
+              AiCompletionContext.userEntry(
+                  note.userId(),
+                  UUID.randomUUID().toString(),
+                  AiPurpose.PROBLEM_EXPLANATION,
+                  AiRunSource.RECALL_JUDGE,
+                  safeRecallText(recallText).length())).structuredOutput(),
           RecallJudgment.class);
       metrics.recordRecallJudge(judgment.suggestedRating(), RecallJudgeOutcome.COMPLETED);
       return judgment;

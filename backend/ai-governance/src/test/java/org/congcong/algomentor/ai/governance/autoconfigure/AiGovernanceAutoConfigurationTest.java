@@ -72,6 +72,11 @@ class AiGovernanceAutoConfigurationTest {
     public int addUsage(long userId, LocalDate quotaDate, String scope, AiUsage usage) {
       return 1;
     }
+
+    @Override
+    public long findRequestCount(long userId, LocalDate quotaDate, String scope) {
+      return 0;
+    }
   }
 
   private static final class FakeAiRunAdmissionMapper implements AiRunAdmissionMapper {

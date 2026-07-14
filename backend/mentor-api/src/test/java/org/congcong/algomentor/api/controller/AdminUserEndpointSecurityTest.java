@@ -1,5 +1,6 @@
 package org.congcong.algomentor.api.controller;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -16,8 +17,11 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.congcong.algomentor.api.MentorApiApplication;
+import org.congcong.algomentor.api.controller.admin.ai.AdminAiApiContractConstants;
 import org.congcong.algomentor.auth.config.AuthSecurityPaths;
 import org.congcong.algomentor.auth.controller.admin.AdminPasswordResetApiContractConstants;
 import org.congcong.algomentor.auth.controller.admin.BetaAccessApiContractConstants;
@@ -32,6 +36,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 @SpringBootTest(
     classes = {MentorApiApplication.class, AdminUserEndpointSecurityTest.TestConfig.class},
@@ -41,6 +46,30 @@ class AdminUserEndpointSecurityTest {
 
   @Autowired
   private MockMvc mockMvc;
+
+  @Autowired
+  private RequestMappingHandlerMapping requestMappingHandlerMapping;
+
+  @Test
+  void aiGovernanceEndpointsAreMappedWhenDataSourceIsConfigured() {
+    Set<String> mappedPaths = requestMappingHandlerMapping.getHandlerMethods().keySet().stream()
+        .flatMap(mapping -> mapping.getPatternValues().stream())
+        .collect(Collectors.toSet());
+
+    Set<String> expectedPaths = Set.of(
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.SETTINGS_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.MODEL_PRICES_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.MODEL_PRICE_ID_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.USAGE_SUMMARY_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.USAGE_BY_USER_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.USAGE_BY_MODEL_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.USAGE_BY_SOURCE_PATH,
+        AdminAiApiContractConstants.ADMIN_USERS_BASE_PATH + AdminAiApiContractConstants.USER_AI_POLICY_PATH);
+
+    assertTrue(mappedPaths.containsAll(expectedPaths), () -> "Missing mappings: " + expectedPaths.stream()
+        .filter(path -> !mappedPaths.contains(path))
+        .toList());
+  }
 
   @Test
   void nonAdminCannotAccessAdminUsersEndpoint() throws Exception {
@@ -52,6 +81,10 @@ class AdminUserEndpointSecurityTest {
   @Test
   void nonAdminCannotAccessBetaAccessOrPasswordResetEndpoints() throws Exception {
     mockMvc.perform(get(BetaAccessApiContractConstants.BASE_PATH)
+            .with(authentication(authenticationToken("ROLE_USER"))))
+        .andExpect(status().isForbidden());
+
+    mockMvc.perform(get(AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.SETTINGS_PATH)
             .with(authentication(authenticationToken("ROLE_USER"))))
         .andExpect(status().isForbidden());
 
@@ -77,6 +110,9 @@ class AdminUserEndpointSecurityTest {
         .andExpect(status().isForbidden());
     mockMvc.perform(post(AuthSecurityPaths.AUTH_COMPLETE_RESET_PATH)
             .with(authentication(authenticationToken("ROLE_USER"))))
+        .andExpect(status().isForbidden());
+    mockMvc.perform(patch(AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.SETTINGS_PATH)
+            .with(authentication(authenticationToken("ROLE_ADMIN"))))
         .andExpect(status().isForbidden());
   }
 

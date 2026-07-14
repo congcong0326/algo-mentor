@@ -42,6 +42,15 @@ import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.agent.core.tool.ReadToolResultTool;
 import org.congcong.algomentor.agent.core.tool.CalculatorTool;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
+import org.congcong.algomentor.ai.governance.accounting.AiAccountingLlmGateway;
+import org.congcong.algomentor.ai.governance.accounting.AiLlmCallAccountingService;
+import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
+import org.congcong.algomentor.ai.governance.admission.AiRunLifecycleService;
+import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
+import org.congcong.algomentor.ai.governance.completion.AiGovernedCompletionService;
+import org.congcong.algomentor.ai.governance.completion.AiPassthroughCompletionGateway;
+import org.congcong.algomentor.ai.governance.policy.AiPurposePolicyResolver;
+import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimePolicyService;
 import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.congcong.algomentor.api.problem.tool.GetProblemStatementTool;
 import org.congcong.algomentor.api.problem.tool.ListProblemFiltersTool;
@@ -87,16 +96,52 @@ public class MentorAiConfiguration {
   }
 
   @Bean
-  @ConditionalOnMissingBean
-  public LlmGateway llmGateway(
+  @ConditionalOnMissingBean(LlmGateway.class)
+  public LlmGatewayDelegate llmGatewayDelegate(
       List<LlmProvider> providers,
       LlmGatewayProperties gatewayProperties,
       LlmGatewayFactory gatewayFactory
   ) {
     if (providers.isEmpty()) {
-      return new UnconfiguredLlmGateway();
+      return new LlmGatewayDelegate(new UnconfiguredLlmGateway());
     }
-    return gatewayFactory.create(providers, gatewayProperties.toOptions());
+    return new LlmGatewayDelegate(gatewayFactory.create(providers, gatewayProperties.toOptions()));
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(LlmGateway.class)
+  public LlmGateway llmGateway(
+      LlmGatewayDelegate delegate,
+      ObjectProvider<AiLlmCallAccountingService> accountingServiceProvider
+  ) {
+    AiLlmCallAccountingService accountingService = accountingServiceProvider.getIfAvailable();
+    return accountingService == null
+        ? delegate.gateway()
+        : new AiAccountingLlmGateway(delegate.gateway(), accountingService);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public AiCompletionGateway aiCompletionGateway(
+      LlmGateway llmGateway,
+      ObjectProvider<AiRunAdmissionService> admissionServiceProvider,
+      ObjectProvider<AiRunLifecycleService> lifecycleServiceProvider,
+      ObjectProvider<AiPurposePolicyResolver> policyResolverProvider,
+      ObjectProvider<AiRuntimePolicyService> runtimePolicyServiceProvider
+  ) {
+    AiRunAdmissionService admissionService = admissionServiceProvider.getIfAvailable();
+    AiRunLifecycleService lifecycleService = lifecycleServiceProvider.getIfAvailable();
+    AiPurposePolicyResolver policyResolver = policyResolverProvider.getIfAvailable();
+    AiRuntimePolicyService runtimePolicyService = runtimePolicyServiceProvider.getIfAvailable();
+    if (admissionService == null || lifecycleService == null || policyResolver == null || runtimePolicyService == null) {
+      return new AiPassthroughCompletionGateway(llmGateway);
+    }
+    return new AiGovernedCompletionService(
+        llmGateway,
+        admissionService,
+        lifecycleService,
+        policyResolver,
+        runtimePolicyService);
   }
 
   @Bean
@@ -340,6 +385,19 @@ public class MentorAiConfiguration {
       throw new AgentToolPermissionException(
           AgentToolPermissionException.Code.NOT_FOUND,
           "Agent tool permission is disabled");
+    }
+  }
+
+  static final class LlmGatewayDelegate {
+
+    private final LlmGateway gateway;
+
+    private LlmGatewayDelegate(LlmGateway gateway) {
+      this.gateway = gateway;
+    }
+
+    private LlmGateway gateway() {
+      return gateway;
     }
   }
 

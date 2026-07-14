@@ -85,6 +85,7 @@ export interface LocaleResources {
     problems: string;
     adminBetaAccess: string;
     adminUsers: string;
+    adminAi: string;
     debug: string;
     forbidden: string;
   };
@@ -132,6 +133,131 @@ export interface LocaleResources {
     temporaryPasswordExpiresAt: string;
     copyTemporaryPassword: string;
     temporaryPasswordCopied: string;
+  };
+  adminAi: {
+    ariaLabel: string;
+    title: string;
+    settingsTitle: string;
+    globalStatus: string;
+    enabled: string;
+    disabled: string;
+    defaultDailyRequestLimit: string;
+    lastUpdated: string;
+    editLimit: string;
+    save: string;
+    saving: string;
+    refresh: string;
+    limitHint: string;
+    limitInvalid: string;
+    settingsLoadFailed: string;
+    settingsUpdateFailed: string;
+    usageLoadFailed: string;
+    pricingLoadFailed: string;
+    priceSaveFailed: string;
+    confirm: string;
+    cancel: string;
+    confirmEnableTitle: string;
+    confirmEnableDescription: string;
+    confirmDisableTitle: string;
+    confirmDisableDescription: string;
+    usageTab: string;
+    pricingTab: string;
+    usageTitle: string;
+    pricingTitle: string;
+    today: string;
+    last7Days: string;
+    last30Days: string;
+    customRange: string;
+    from: string;
+    to: string;
+    userId: string;
+    provider: string;
+    model: string;
+    purpose: string;
+    source: string;
+    all: string;
+    apply: string;
+    clear: string;
+    byUser: string;
+    byModel: string;
+    bySource: string;
+    admittedEntryRequests: string;
+    modelCalls: string;
+    inputTokens: string;
+    cachedTokens: string;
+    outputTokens: string;
+    totalTokens: string;
+    estimatedCost: string;
+    estimatedAtCurrentPrices: string;
+    unpricedCalls: string;
+    unpricedTokens: string;
+    noResults: string;
+    actions: string;
+    viewUser: string;
+    filterUser: string;
+    active: string;
+    inactive: string;
+    requestQuota: string;
+    accountStatus: string;
+    priceStatus: string;
+    unpriced: string;
+    priced: string;
+    unpricedModels: string;
+    lastSeenAt: string;
+    addPrice: string;
+    configurePrice: string;
+    editPrice: string;
+    providerRequired: string;
+    modelRequired: string;
+    inputPricePerMillion: string;
+    cachedInputPricePerMillion: string;
+    outputPricePerMillion: string;
+    costMultiplier: string;
+    priceEnabled: string;
+    createPrice: string;
+    updatePrice: string;
+    priceDialogTitleCreate: string;
+    priceDialogTitleEdit: string;
+    priceInvalid: string;
+    disablePrice: string;
+    enablePrice: string;
+    confirmDisablePriceTitle: string;
+    confirmDisablePriceDescription: string;
+    historicalPriceNotice: string;
+    updatedBy: string;
+    updatedAt: string;
+  };
+  adminUserAi: {
+    title: string;
+    loading: string;
+    loadFailed: string;
+    policyLoadFailed: string;
+    usageLoadFailed: string;
+    effectiveStatus: string;
+    normal: string;
+    globalDisabled: string;
+    userPaused: string;
+    inherited: string;
+    paused: string;
+    pauseUser: string;
+    resumeUser: string;
+    defaultLimit: string;
+    overrideLimit: string;
+    effectiveLimit: string;
+    saveOverride: string;
+    restoreInheritance: string;
+    todayEntryRequests: string;
+    todayTokens: string;
+    todayEstimatedCost: string;
+    last7DaysEstimatedCost: string;
+    last30DaysEstimatedCost: string;
+    viewFullUsage: string;
+    confirmPauseTitle: string;
+    confirmPauseDescription: string;
+    confirmResumeTitle: string;
+    confirmResumeDescription: string;
+    limitInvalid: string;
+    saveFailed: string;
   };
   betaAccess: {
     ariaLabel: string;
@@ -739,6 +865,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       problems: '题库',
       adminBetaAccess: '内测准入',
       adminUsers: '用户管理',
+      adminAi: 'AI 治理',
       debug: 'AI 调试',
       forbidden: '无权访问',
     },
@@ -786,6 +913,131 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       temporaryPasswordExpiresAt: '有效期至',
       copyTemporaryPassword: '复制临时密码',
       temporaryPasswordCopied: '已复制',
+    },
+    adminAi: {
+      ariaLabel: 'AI 治理',
+      title: 'AI 治理',
+      settingsTitle: '运行策略',
+      globalStatus: '全局 AI 状态',
+      enabled: '已开启',
+      disabled: '已关闭',
+      defaultDailyRequestLimit: '默认每日 AI 入口请求上限',
+      lastUpdated: '最近更新',
+      editLimit: '编辑额度',
+      save: '保存',
+      saving: '保存中',
+      refresh: '刷新',
+      limitHint: '允许范围：1 - 10000',
+      limitInvalid: '请输入 1 到 10000 之间的整数。',
+      settingsLoadFailed: 'AI 运行策略加载失败。',
+      settingsUpdateFailed: 'AI 运行策略保存失败。',
+      usageLoadFailed: 'AI 用量加载失败。',
+      pricingLoadFailed: '模型定价加载失败。',
+      priceSaveFailed: '模型定价保存失败。',
+      confirm: '确认',
+      cancel: '取消',
+      confirmEnableTitle: '开启全局 AI',
+      confirmEnableDescription: '开启后仍会继续执行用户暂停、每日入口额度和业务场景策略。',
+      confirmDisableTitle: '关闭全局 AI',
+      confirmDisableDescription: '关闭后，下一次用户 AI 准入会被拒绝，复习卡后台 AI 生成也会停止。',
+      usageTab: '用量与成本',
+      pricingTab: '模型定价',
+      usageTitle: '用量与成本',
+      pricingTitle: '模型定价',
+      today: '今天',
+      last7Days: '近 7 天',
+      last30Days: '近 30 天',
+      customRange: '自定义区间',
+      from: '开始日期',
+      to: '结束日期',
+      userId: '用户 ID',
+      provider: 'Provider',
+      model: '模型',
+      purpose: '用途',
+      source: '业务场景',
+      all: '全部',
+      apply: '应用筛选',
+      clear: '清除筛选',
+      byUser: '按用户',
+      byModel: '按模型',
+      bySource: '按场景',
+      admittedEntryRequests: '已准入入口请求',
+      modelCalls: '实际模型调用',
+      inputTokens: '输入 Token',
+      cachedTokens: '缓存输入 Token',
+      outputTokens: '输出 Token',
+      totalTokens: '总 Token',
+      estimatedCost: '估算成本',
+      estimatedAtCurrentPrices: '按当前价格估算',
+      unpricedCalls: '未定价调用',
+      unpricedTokens: '未定价 Token',
+      noResults: '当前筛选没有可展示的数据。',
+      actions: '操作',
+      viewUser: '查看用户',
+      filterUser: '仅看该用户',
+      active: '启用',
+      inactive: '停用',
+      requestQuota: '今日入口请求',
+      accountStatus: '账号状态',
+      priceStatus: '定价状态',
+      unpriced: '未定价',
+      priced: '已定价',
+      unpricedModels: '出现过的未定价模型',
+      lastSeenAt: '最近出现',
+      addPrice: '新增价格',
+      configurePrice: '配置价格',
+      editPrice: '编辑价格',
+      providerRequired: '请输入 provider。',
+      modelRequired: '请输入精确模型 ID。',
+      inputPricePerMillion: '非缓存输入价格（USD / 1M Token）',
+      cachedInputPricePerMillion: '缓存输入价格（USD / 1M Token）',
+      outputPricePerMillion: '输出价格（USD / 1M Token）',
+      costMultiplier: '成本倍率',
+      priceEnabled: '启用价格',
+      createPrice: '创建价格',
+      updatePrice: '保存价格',
+      priceDialogTitleCreate: '新增模型价格',
+      priceDialogTitleEdit: '编辑模型价格',
+      priceInvalid: '请输入合法的十进制价格，价格不得小于 0，倍率必须大于 0。',
+      disablePrice: '停用价格',
+      enablePrice: '启用价格',
+      confirmDisablePriceTitle: '停用模型价格',
+      confirmDisablePriceDescription: '停用后，历史调用会重新显示为未定价，不会作为 $0 计入成本。',
+      historicalPriceNotice: '历史区间会按当前启用价格重新估算。',
+      updatedBy: '更新人',
+      updatedAt: '更新时间',
+    },
+    adminUserAi: {
+      title: 'AI 使用与控制',
+      loading: '正在加载 AI 信息...',
+      loadFailed: 'AI 信息加载失败。',
+      policyLoadFailed: 'AI 策略加载失败。',
+      usageLoadFailed: 'AI 用量摘要加载失败。',
+      effectiveStatus: '最终 AI 状态',
+      normal: '正常启用',
+      globalDisabled: '全局已关闭',
+      userPaused: '用户已暂停',
+      inherited: '继承',
+      paused: '已暂停',
+      pauseUser: '暂停 AI',
+      resumeUser: '恢复继承',
+      defaultLimit: '全局默认额度',
+      overrideLimit: '用户额度覆盖',
+      effectiveLimit: '最终有效额度',
+      saveOverride: '保存额度',
+      restoreInheritance: '恢复继承',
+      todayEntryRequests: '今日入口请求',
+      todayTokens: '今日 Token',
+      todayEstimatedCost: '今日估算成本',
+      last7DaysEstimatedCost: '近 7 天估算成本',
+      last30DaysEstimatedCost: '近 30 天估算成本',
+      viewFullUsage: '查看完整用量',
+      confirmPauseTitle: '暂停该用户的 AI',
+      confirmPauseDescription: '暂停后，该用户后续受治理 AI 调用将被拒绝。',
+      confirmResumeTitle: '恢复该用户的 AI 继承策略',
+      confirmResumeDescription: '恢复后，该用户会重新继承全局 AI 状态和额度。',
+      limitInvalid: '请输入 1 到 10000 之间的整数，或恢复继承。',
+      saveFailed: '用户 AI 策略保存失败。',
     },
     betaAccess: {
       ariaLabel: '内测准入管理',
@@ -1484,6 +1736,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       problems: 'Problems',
       adminBetaAccess: 'Beta Access',
       adminUsers: 'Users',
+      adminAi: 'AI Governance',
       debug: 'AI Debug',
       forbidden: 'Not authorized',
     },
@@ -1531,6 +1784,131 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       temporaryPasswordExpiresAt: 'Expires at',
       copyTemporaryPassword: 'Copy temporary password',
       temporaryPasswordCopied: 'Copied',
+    },
+    adminAi: {
+      ariaLabel: 'AI governance',
+      title: 'AI governance',
+      settingsTitle: 'Runtime policy',
+      globalStatus: 'Global AI status',
+      enabled: 'Enabled',
+      disabled: 'Disabled',
+      defaultDailyRequestLimit: 'Default daily AI entry request limit',
+      lastUpdated: 'Last updated',
+      editLimit: 'Edit limit',
+      save: 'Save',
+      saving: 'Saving',
+      refresh: 'Refresh',
+      limitHint: 'Allowed range: 1 - 10000',
+      limitInvalid: 'Enter a whole number from 1 to 10000.',
+      settingsLoadFailed: 'Failed to load AI runtime policy.',
+      settingsUpdateFailed: 'Failed to save AI runtime policy.',
+      usageLoadFailed: 'Failed to load AI usage.',
+      pricingLoadFailed: 'Failed to load model pricing.',
+      priceSaveFailed: 'Failed to save model pricing.',
+      confirm: 'Confirm',
+      cancel: 'Cancel',
+      confirmEnableTitle: 'Enable global AI',
+      confirmEnableDescription: 'User pauses, daily entry limits, and purpose policies will continue to apply.',
+      confirmDisableTitle: 'Disable global AI',
+      confirmDisableDescription: 'The next user AI admission will be rejected and background AI review-card generation will stop.',
+      usageTab: 'Usage & cost',
+      pricingTab: 'Model pricing',
+      usageTitle: 'Usage & cost',
+      pricingTitle: 'Model pricing',
+      today: 'Today',
+      last7Days: 'Last 7 days',
+      last30Days: 'Last 30 days',
+      customRange: 'Custom range',
+      from: 'From',
+      to: 'To',
+      userId: 'User ID',
+      provider: 'Provider',
+      model: 'Model',
+      purpose: 'Purpose',
+      source: 'Business source',
+      all: 'All',
+      apply: 'Apply filters',
+      clear: 'Clear filters',
+      byUser: 'By user',
+      byModel: 'By model',
+      bySource: 'By source',
+      admittedEntryRequests: 'Admitted entry requests',
+      modelCalls: 'Actual model calls',
+      inputTokens: 'Input tokens',
+      cachedTokens: 'Cached input tokens',
+      outputTokens: 'Output tokens',
+      totalTokens: 'Total tokens',
+      estimatedCost: 'Estimated cost',
+      estimatedAtCurrentPrices: 'Estimated at current prices',
+      unpricedCalls: 'Unpriced calls',
+      unpricedTokens: 'Unpriced tokens',
+      noResults: 'No data matches the current filters.',
+      actions: 'Actions',
+      viewUser: 'View user',
+      filterUser: 'Filter to user',
+      active: 'Enabled',
+      inactive: 'Disabled',
+      requestQuota: 'Today entry requests',
+      accountStatus: 'Account status',
+      priceStatus: 'Pricing status',
+      unpriced: 'Unpriced',
+      priced: 'Priced',
+      unpricedModels: 'Observed unpriced models',
+      lastSeenAt: 'Last seen',
+      addPrice: 'Add price',
+      configurePrice: 'Configure price',
+      editPrice: 'Edit price',
+      providerRequired: 'Enter a provider.',
+      modelRequired: 'Enter the exact model ID.',
+      inputPricePerMillion: 'Uncached input price (USD / 1M tokens)',
+      cachedInputPricePerMillion: 'Cached input price (USD / 1M tokens)',
+      outputPricePerMillion: 'Output price (USD / 1M tokens)',
+      costMultiplier: 'Cost multiplier',
+      priceEnabled: 'Enable price',
+      createPrice: 'Create price',
+      updatePrice: 'Save price',
+      priceDialogTitleCreate: 'Add model price',
+      priceDialogTitleEdit: 'Edit model price',
+      priceInvalid: 'Enter valid decimal prices. Prices cannot be negative and the multiplier must be greater than zero.',
+      disablePrice: 'Disable price',
+      enablePrice: 'Enable price',
+      confirmDisablePriceTitle: 'Disable model price',
+      confirmDisablePriceDescription: 'After disabling, historical calls become unpriced again instead of being included as $0 cost.',
+      historicalPriceNotice: 'Historical ranges are recalculated at current enabled prices.',
+      updatedBy: 'Updated by',
+      updatedAt: 'Updated at',
+    },
+    adminUserAi: {
+      title: 'AI usage & controls',
+      loading: 'Loading AI information...',
+      loadFailed: 'Failed to load AI information.',
+      policyLoadFailed: 'Failed to load AI policy.',
+      usageLoadFailed: 'Failed to load AI usage summary.',
+      effectiveStatus: 'Effective AI status',
+      normal: 'Enabled normally',
+      globalDisabled: 'Disabled globally',
+      userPaused: 'User paused',
+      inherited: 'Inherited',
+      paused: 'Paused',
+      pauseUser: 'Pause AI',
+      resumeUser: 'Restore inheritance',
+      defaultLimit: 'Global default limit',
+      overrideLimit: 'User limit override',
+      effectiveLimit: 'Effective limit',
+      saveOverride: 'Save limit',
+      restoreInheritance: 'Restore inheritance',
+      todayEntryRequests: 'Today entry requests',
+      todayTokens: 'Today tokens',
+      todayEstimatedCost: 'Today estimated cost',
+      last7DaysEstimatedCost: 'Last 7 days estimated cost',
+      last30DaysEstimatedCost: 'Last 30 days estimated cost',
+      viewFullUsage: 'View full usage',
+      confirmPauseTitle: 'Pause this user\'s AI',
+      confirmPauseDescription: 'After pausing, this user\'s governed AI calls will be rejected.',
+      confirmResumeTitle: 'Restore this user\'s inherited AI policy',
+      confirmResumeDescription: 'After restoring, this user will inherit the global AI state and limit again.',
+      limitInvalid: 'Enter a whole number from 1 to 10000, or restore inheritance.',
+      saveFailed: 'Failed to save user AI policy.',
     },
     betaAccess: {
       ariaLabel: 'Beta access management',

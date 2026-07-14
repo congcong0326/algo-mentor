@@ -16,4 +16,7 @@ public interface AiDailyUsageMapper {
 
   int addUsage(@Param("userId") long userId, @Param("quotaDate") LocalDate quotaDate,
       @Param("scope") String scope, @Param("usage") AiUsage usage);
+
+  long findRequestCount(@Param("userId") long userId, @Param("quotaDate") LocalDate quotaDate,
+      @Param("scope") String scope);
 }

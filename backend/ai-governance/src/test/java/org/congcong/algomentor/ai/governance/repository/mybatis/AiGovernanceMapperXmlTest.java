@@ -15,7 +15,12 @@ class AiGovernanceMapperXmlTest {
     configuration.setMapUnderscoreToCamelCase(true);
     for (String mapper : List.of(
         "mapper/ai/AiDailyUsageMapper.xml",
-        "mapper/ai/AiRunAdmissionMapper.xml")) {
+        "mapper/ai/AiRunAdmissionMapper.xml",
+        "mapper/ai/AiLlmCallUsageMapper.xml",
+        "mapper/ai/AiModelPriceMapper.xml",
+        "mapper/ai/AiAdminUsageMapper.xml",
+        "mapper/ai/AiRuntimeSettingsMapper.xml",
+        "mapper/ai/AiUserPolicyMapper.xml")) {
       try (InputStream input = getClass().getClassLoader().getResourceAsStream(mapper)) {
         assertThat(input).as(mapper).isNotNull();
         new XMLMapperBuilder(input, configuration, mapper, configuration.getSqlFragments()).parse();

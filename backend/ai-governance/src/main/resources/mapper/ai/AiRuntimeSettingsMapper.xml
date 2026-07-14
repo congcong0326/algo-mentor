@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.ai.governance.repository.mybatis.AiRuntimeSettingsMapper">
+
+  <resultMap id="AiRuntimeSettingsRowMap"
+      type="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiRuntimeSettingsRow">
+    <constructor>
+      <idArg column="id" javaType="_int"/>
+      <arg column="ai_enabled" javaType="_boolean"/>
+      <arg column="default_daily_request_limit" javaType="_int"/>
+      <arg column="updated_by" javaType="java.lang.Long"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <select id="findSingleton" resultMap="AiRuntimeSettingsRowMap">
+    SELECT id, ai_enabled, default_daily_request_limit, updated_by, updated_at
+    FROM ai_runtime_settings
+    WHERE id = 1
+  </select>
+
+  <update id="update"
+      parameterType="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiRuntimeSettingsRow">
+    UPDATE ai_runtime_settings
+    SET ai_enabled = #{aiEnabled},
+        default_daily_request_limit = #{defaultDailyRequestLimit},
+        updated_by = #{updatedBy},
+        updated_at = #{updatedAt}
+    WHERE id = 1
+  </update>
+</mapper>

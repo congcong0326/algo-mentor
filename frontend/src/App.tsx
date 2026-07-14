@@ -14,6 +14,7 @@ import AiDebugConsole, {
 } from './ai-debug/AiDebugConsole';
 import UserManagementPage from './admin/UserManagementPage';
 import BetaAccessPage from './admin/BetaAccessPage';
+import AiGovernancePage from './admin/ai/AiGovernancePage';
 import AppShell from './app/AppShell';
 import LoginPage from './app/LoginPage';
 import PasswordChangeRequiredPage from './app/PasswordChangeRequiredPage';
@@ -70,6 +71,9 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
   if (view === 'adminBetaAccess' && !hasPermission(user, 'beta-access:manage')) {
     return defaultAuthenticatedRouteForUser(user);
   }
+  if (view === 'adminAi' && !hasPermission(user, 'ai-governance:manage')) {
+    return defaultAuthenticatedRouteForUser(user);
+  }
   if (view === 'problems' && !hasPermission(user, 'problem:read')) {
     return defaultAuthenticatedRouteForUser(user);
   }
@@ -84,7 +88,54 @@ function normalizeAuthenticatedSearch(pathname: string, search: string): string 
   if (/^\/learning-plans\/\d+/.test(pathname) && params.get('pack') === 'today') {
     return '?pack=today';
   }
+  if (pathname === APP_ROUTES.adminUsers) {
+    const userId = positiveInteger(params.get('userId'));
+    return userId ? `?userId=${userId}` : '';
+  }
+  if (pathname === APP_ROUTES.adminAi) {
+    const normalized = new URLSearchParams();
+    const tab = params.get('tab');
+    const from = validIsoDate(params.get('from'));
+    const to = validIsoDate(params.get('to'));
+    const dimension = params.get('dimension');
+    const userId = positiveInteger(params.get('userId'));
+    if (tab === 'usage' || tab === 'pricing') {
+      normalized.set('tab', tab);
+    }
+    if (from) {
+      normalized.set('from', from);
+    }
+    if (to) {
+      normalized.set('to', to);
+    }
+    if (dimension === 'user' || dimension === 'model' || dimension === 'source') {
+      normalized.set('dimension', dimension);
+    }
+    if (userId) {
+      normalized.set('userId', String(userId));
+    }
+    ['provider', 'model', 'purpose', 'source'].forEach((key) => {
+      const value = params.get(key)?.trim();
+      if (value) {
+        normalized.set(key, value);
+      }
+    });
+    const serialized = normalized.toString();
+    return serialized ? `?${serialized}` : '';
+  }
   return '';
+}
+
+function positiveInteger(value: string | null): number | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+function validIsoDate(value: string | null): string | undefined {
+  return value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : undefined;
 }
 
 function isLoginRoute(pathname: string): boolean {
@@ -553,9 +604,11 @@ export default function App() {
         : activeView === 'problems' && hasPermission(currentUser, 'problem:read')
         ? <ProblemLibrary />
         : activeView === 'adminUsers' && hasPermission(currentUser, 'user:manage')
-        ? <UserManagementPage onNavigateHome={() => navigateToView('home')} />
+        ? <UserManagementPage onNavigateHome={() => navigateToView('home')} onNavigate={navigateToPath} search={search} />
         : activeView === 'adminBetaAccess' && hasPermission(currentUser, 'beta-access:manage')
         ? <BetaAccessPage onNavigateHome={() => navigateToView('home')} />
+        : activeView === 'adminAi' && hasPermission(currentUser, 'ai-governance:manage')
+        ? <AiGovernancePage onNavigate={navigateToPath} search={search} />
         : activeView === 'mistakes'
           ? pathname === APP_ROUTES.reviewSession
             ? <ReviewSessionPage onNavigate={navigateToPath} />

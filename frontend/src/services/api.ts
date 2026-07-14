@@ -8,6 +8,19 @@ import type {
   AdminUserPage,
   AdminUserStatusUpdateRequest,
   AdminPasswordResetResponse,
+  AdminAiModelPrice,
+  AdminAiModelPricePage,
+  AdminAiModelPriceWriteRequest,
+  AdminAiSettings,
+  AdminAiSettingsUpdateRequest,
+  AdminAiUsageByModel,
+  AdminAiUsageBySource,
+  AdminAiUsageByUserPage,
+  AdminAiUsageByUserQuery,
+  AdminAiUsageQuery,
+  AdminAiUsageSummary,
+  AdminUserAiPolicy,
+  AdminUserAiPolicyUpdateRequest,
   BetaAccessListQuery,
   BetaAccessPage,
   BetaAccessSettings,
@@ -684,6 +697,195 @@ export async function resetAdminUserPassword(
   return response.json();
 }
 
+export async function getAdminAiSettings(
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminAiSettings>> {
+  const response = await apiFetch('/api/admin/ai/settings', {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'AI governance settings request failed');
+  }
+
+  return response.json();
+}
+
+export async function updateAdminAiSettings(
+  request: AdminAiSettingsUpdateRequest,
+): Promise<ApiResponse<AdminAiSettings>> {
+  const response = await apiFetch('/api/admin/ai/settings', {
+    method: 'PATCH',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'AI governance settings update failed');
+  }
+
+  return response.json();
+}
+
+export async function getAdminUserAiPolicy(
+  userId: number,
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminUserAiPolicy>> {
+  const response = await apiFetch(`/api/admin/users/${userId}/ai-policy`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Admin user AI policy request failed');
+  }
+
+  return response.json();
+}
+
+export async function updateAdminUserAiPolicy(
+  userId: number,
+  request: AdminUserAiPolicyUpdateRequest,
+): Promise<ApiResponse<AdminUserAiPolicy>> {
+  const response = await apiFetch(`/api/admin/users/${userId}/ai-policy`, {
+    method: 'PATCH',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Admin user AI policy update failed');
+  }
+
+  return response.json();
+}
+
+export async function getAdminAiModelPrices(
+  query: Pick<AdminAiUsageQuery, 'from' | 'to'> = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminAiModelPricePage>> {
+  const response = await apiFetch(`/api/admin/ai/model-prices${toQueryString(query)}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'AI model prices request failed');
+  }
+
+  return response.json();
+}
+
+export async function createAdminAiModelPrice(
+  request: AdminAiModelPriceWriteRequest,
+): Promise<ApiResponse<AdminAiModelPrice>> {
+  const response = await apiFetch('/api/admin/ai/model-prices', {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'AI model price create failed');
+  }
+
+  return response.json();
+}
+
+export async function updateAdminAiModelPrice(
+  priceId: number,
+  request: AdminAiModelPriceWriteRequest,
+): Promise<ApiResponse<AdminAiModelPrice>> {
+  const response = await apiFetch(`/api/admin/ai/model-prices/${priceId}`, {
+    method: 'PATCH',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'AI model price update failed');
+  }
+
+  return response.json();
+}
+
+export async function getAdminAiUsageSummary(
+  query: AdminAiUsageQuery = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminAiUsageSummary>> {
+  const response = await apiFetch(`/api/admin/ai/usage/summary${toQueryString(query)}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'AI usage summary request failed');
+  }
+
+  return response.json();
+}
+
+export async function getAdminAiUsageByUser(
+  query: AdminAiUsageByUserQuery = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminAiUsageByUserPage>> {
+  const response = await apiFetch(`/api/admin/ai/usage/by-user${toQueryString(query)}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'AI usage by user request failed');
+  }
+
+  return response.json();
+}
+
+export async function getAdminAiUsageByModel(
+  query: AdminAiUsageQuery = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminAiUsageByModel[]>> {
+  const response = await apiFetch(`/api/admin/ai/usage/by-model${toQueryString(query)}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'AI usage by model request failed');
+  }
+
+  return response.json();
+}
+
+export async function getAdminAiUsageBySource(
+  query: AdminAiUsageQuery = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminAiUsageBySource[]>> {
+  const response = await apiFetch(`/api/admin/ai/usage/by-source${toQueryString(query)}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'AI usage by source request failed');
+  }
+
+  return response.json();
+}
+
 export async function getProblems(
   query: ProblemListQuery = {},
   signal?: AbortSignal,
@@ -1327,6 +1529,8 @@ type QueryParams =
   | LearningPlanListQuery
   | PracticeSessionQuery
   | AdminUserListQuery
+  | AdminAiUsageQuery
+  | AdminAiUsageByUserQuery
   | MistakeNoteListQuery
   | TodayPackQuery;
 

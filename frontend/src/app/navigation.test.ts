@@ -43,6 +43,11 @@ describe('learning plan practice submissions navigation', () => {
     expect(viewFromPath('/password/change-required')).toBe('passwordChangeRequired');
   });
 
+  it('maps the AI governance route as its own permission-gated view', () => {
+    expect(viewFromPath('/admin/ai')).toBe('adminAi');
+    expect(pathForView('adminAi')).toBe('/admin/ai');
+  });
+
   it('maps the problem library to the admin route only', () => {
     expect(viewFromPath('/admin/problems')).toBe('problems');
     expect(pathForView('problems')).toBe('/admin/problems');

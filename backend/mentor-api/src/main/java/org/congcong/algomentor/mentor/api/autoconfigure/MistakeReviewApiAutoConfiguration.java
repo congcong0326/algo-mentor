@@ -9,6 +9,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import org.congcong.algomentor.ai.governance.model.AiUsage;
 import org.congcong.algomentor.ai.governance.usage.AiDailyUsageStore;
+import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
+import org.congcong.algomentor.ai.governance.completion.AiPassthroughCompletionGateway;
 import org.congcong.algomentor.api.config.ReviewProperties;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.mentor.application.review.MicrometerMistakeReviewMetrics;
@@ -135,10 +137,11 @@ public class MistakeReviewApiAutoConfiguration {
       LlmGateway llmGateway,
       ObjectMapper objectMapper,
       RuleBasedCardComposer ruleBasedCardComposer,
-      ReviewCardProperties properties
+      ReviewCardProperties properties,
+      ObjectProvider<AiCompletionGateway> completionGateway
   ) {
     return new ReviewCardService(
-        llmGateway,
+        completionGateway.getIfAvailable(() -> new AiPassthroughCompletionGateway(llmGateway)),
         objectMapper,
         ruleBasedCardComposer,
         properties,
@@ -151,10 +154,11 @@ public class MistakeReviewApiAutoConfiguration {
   public RecallJudgeService recallJudgeService(
       LlmGateway llmGateway,
       ObjectMapper objectMapper,
-      ObjectProvider<MistakeReviewMetrics> metrics
+      ObjectProvider<MistakeReviewMetrics> metrics,
+      ObjectProvider<AiCompletionGateway> completionGateway
   ) {
     return new RecallJudgeService(
-        llmGateway,
+        completionGateway.getIfAvailable(() -> new AiPassthroughCompletionGateway(llmGateway)),
         objectMapper,
         metrics.getIfAvailable(() -> MistakeReviewMetrics.NOOP));
   }

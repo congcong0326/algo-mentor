@@ -116,7 +116,7 @@ public final class AgentLlmRequestFactory {
         .tools(tools)
         .toolChoice(tools == null || tools.isEmpty() ? LlmToolChoice.none() : toolChoice)
         .responseFormat(executionOptions.responseFormat())
-        .metadata(executionMetadata(metadata, executionOptions.structuredOutput()))
+        .metadata(executionMetadata(metadata, stepIndex, executionOptions.structuredOutput()))
         .build();
   }
 
@@ -126,12 +126,14 @@ public final class AgentLlmRequestFactory {
 
   private static Map<String, Object> executionMetadata(
       Map<String, Object> metadata,
+      int stepIndex,
       AgentStructuredOutputOptions structuredOutput
   ) {
     Map<String, Object> values = new LinkedHashMap<>();
     if (metadata != null) {
       values.putAll(metadata);
     }
+    values.put(AgentRuntimeMetadataKeys.STEP_INDEX, stepIndex);
     values.put(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_STRATEGY, structuredOutput.strategy().name());
     if (structuredOutput.schemaName() != null && !structuredOutput.schemaName().isBlank()) {
       values.put(AgentRuntimeMetadataKeys.SCHEMA_NAME, structuredOutput.schemaName());

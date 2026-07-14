@@ -43,6 +43,9 @@ class RunHurlCasesTest(unittest.TestCase):
         password="secret",
         display_name="Smoke Unit",
         goal="Smoke Unit Goal",
+        admin_email="smoke-admin+unit@example.test",
+        admin_password="admin-secret",
+        admin_display_name="Smoke Admin Unit",
     )
 
     with tempfile.TemporaryDirectory() as directory:
@@ -61,6 +64,8 @@ class RunHurlCasesTest(unittest.TestCase):
     self.assertIn(str(report_dir / "security-anonymous_access" / "cookies.txt"), second_command)
     self.assertIn(str(report_dir / "core-auth_and_learning_plan" / "html"), first_command)
     self.assertIn(str(report_dir / "security-anonymous_access" / "html"), second_command)
+    admin_password_index = first_command.index("smoke_admin_password=admin-secret")
+    self.assertEqual("--secret", first_command[admin_password_index - 1])
     self.assertEqual(str(cases[0].path), first_command[-1])
     self.assertEqual(str(cases[1].path), second_command[-1])
 
@@ -83,6 +88,9 @@ class RunHurlCasesTest(unittest.TestCase):
         password="secret",
         display_name="Smoke Unit",
         goal="Smoke Unit Goal",
+        admin_email="smoke-admin+unit@example.test",
+        admin_password="admin-secret",
+        admin_display_name="Smoke Admin Unit",
     )
     failed = Mock()
     failed.returncode = 4

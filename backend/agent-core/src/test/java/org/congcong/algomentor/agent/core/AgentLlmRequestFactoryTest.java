@@ -56,7 +56,8 @@ class AgentLlmRequestFactoryTest {
     assertThat(llmRequest.metadata())
         .containsEntry(AgentRuntimeMetadataKeys.STRUCTURED_OUTPUT_STRATEGY, "PROVIDER_NATIVE")
         .containsEntry(AgentRuntimeMetadataKeys.SCHEMA_NAME, "learning_plan_draft")
-        .containsEntry(AgentRuntimeMetadataKeys.SCHEMA_VERSION, "v1");
+        .containsEntry(AgentRuntimeMetadataKeys.SCHEMA_VERSION, "v1")
+        .containsEntry(AgentRuntimeMetadataKeys.STEP_INDEX, 1);
   }
 
   @Test

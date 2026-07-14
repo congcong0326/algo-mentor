@@ -15,6 +15,9 @@ import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.runtime.model.AgentTurnMessages;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
+import org.congcong.algomentor.ai.governance.completion.AiCompletionContext;
+import org.congcong.algomentor.ai.governance.model.AiPurpose;
+import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 
 public final class PracticeCodeReviewAgentTool implements AgentTool {
@@ -120,7 +123,14 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
 
     PracticeReviewResult reviewResult;
     try {
-      reviewResult = reviewService.review(turnContext);
+      reviewResult = reviewService.review(
+          turnContext,
+          AiCompletionContext.parentRun(
+              userId,
+              context.runId(),
+              purpose(metadata),
+              AiRunSource.PRACTICE_CODE_REVIEW,
+              context.stepIndex()));
     } catch (AgentException exception) {
       throw exception;
     } catch (RuntimeException exception) {
@@ -141,6 +151,18 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
     }
     if (!PracticeChatPromptConstants.SCENARIO.equals(scenario.toString())) {
       throw failure("Practice code review tool can only run in practice chat", ERROR_NOT_PRACTICE_CHAT, Map.of(), null);
+    }
+  }
+
+  private AiPurpose purpose(Map<String, Object> metadata) {
+    Object value = metadata.get(org.congcong.algomentor.ai.governance.model.AiGovernanceMetadataKeys.PURPOSE);
+    if (value == null) {
+      return AiPurpose.LEARNING_CHAT;
+    }
+    try {
+      return AiPurpose.valueOf(value.toString());
+    } catch (IllegalArgumentException exception) {
+      return AiPurpose.LEARNING_CHAT;
     }
   }
 

@@ -27,6 +27,9 @@ class SmokeContext:
   password: str
   display_name: str
   goal: str
+  admin_email: str
+  admin_password: str
+  admin_display_name: str
 
   @classmethod
   def from_env(cls, repo_root: Path) -> "SmokeContext":
@@ -52,6 +55,9 @@ class SmokeContext:
         password="SmokePassword-12345",
         display_name=f"Smoke {run_id}",
         goal=f"Smoke {run_id} Java algorithm interview plan",
+        admin_email=os.getenv("SMOKE_ADMIN_EMAIL") or f"smoke-admin+{sanitize_run_id(run_id)}@example.test",
+        admin_password=os.getenv("SMOKE_ADMIN_PASSWORD") or "SmokeAdminPassword-12345",
+        admin_display_name=os.getenv("SMOKE_ADMIN_DISPLAY_NAME") or f"Smoke Admin {run_id}",
     )
 
   def hurl_variables(self) -> dict[str, str]:
@@ -63,6 +69,9 @@ class SmokeContext:
         "smoke_display_name": self.display_name,
         "smoke_goal": self.goal,
         "smoke_keep_data": str(self.keep_data).lower(),
+        "smoke_admin_email": self.admin_email,
+        "smoke_admin_password": self.admin_password,
+        "smoke_admin_display_name": self.admin_display_name,
     }
 
 

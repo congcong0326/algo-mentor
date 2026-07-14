@@ -56,6 +56,12 @@ public class ReviewCardPregenerationService {
         metrics.recordCardGeneration(CardGenerationOutcome.CACHE_HIT);
         return;
       }
+      if (!cardService.canGenerateAi(note)) {
+        log.info("Review card generation skipped by AI runtime policy. noteId={} userId={}",
+            note.id(), note.userId());
+        metrics.recordCardGeneration(CardGenerationOutcome.FALLBACK_RULE);
+        return;
+      }
       LocalDate today = LocalDate.now(clock);
       if (!usageStore.tryConsumeRequest(
           note.userId(),

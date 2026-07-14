@@ -1,29 +1,22 @@
 package org.congcong.algomentor.ai.governance.admission;
 
-import java.time.LocalDate;
 import org.congcong.algomentor.ai.governance.model.AiGovernanceErrorCode;
 import org.congcong.algomentor.ai.governance.model.AiRunStatus;
 import org.congcong.algomentor.ai.governance.model.AiUsage;
-import org.congcong.algomentor.ai.governance.policy.AiGovernanceProperties;
 import org.congcong.algomentor.ai.governance.repository.mybatis.PostgresAiRunAdmissionRepository;
 import org.congcong.algomentor.ai.governance.runlock.AiRunLockService;
-import org.congcong.algomentor.ai.governance.usage.AiDailyUsageStore;
 
 public class AiRunLifecycleService {
 
-  private final AiGovernanceProperties properties;
   private final PostgresAiRunAdmissionRepository admissionRepository;
-  private final AiDailyUsageStore usageStore;
   private final AiRunLockService runLockService;
 
   public AiRunLifecycleService(
-      AiGovernanceProperties properties,
+      org.congcong.algomentor.ai.governance.policy.AiGovernanceProperties properties,
       PostgresAiRunAdmissionRepository admissionRepository,
-      AiDailyUsageStore usageStore,
+      org.congcong.algomentor.ai.governance.usage.AiDailyUsageStore usageStore,
       AiRunLockService runLockService) {
-    this.properties = properties;
     this.admissionRepository = admissionRepository;
-    this.usageStore = usageStore;
     this.runLockService = runLockService;
   }
 
@@ -80,11 +73,6 @@ public class AiRunLifecycleService {
           provider,
           model,
           java.time.Instant.now());
-      usageStore.addUsage(
-          admission.userId(),
-          LocalDate.now(properties.getQuotaZone()),
-          admission.quotaScope(),
-          safeUsage);
     } finally {
       release(admission);
     }

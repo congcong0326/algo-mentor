@@ -51,4 +51,12 @@ class AiGovernanceModelTest {
 
     assertThat(AiUsage.zero().plus(usage)).isEqualTo(usage);
   }
+
+  @Test
+  void stageTwoSourcesRemainStable() {
+    assertThat(AiRunSource.values()).contains(
+        AiRunSource.PRACTICE_CODE_REVIEW,
+        AiRunSource.RECALL_JUDGE,
+        AiRunSource.REVIEW_CARD_GENERATION);
+  }
 }

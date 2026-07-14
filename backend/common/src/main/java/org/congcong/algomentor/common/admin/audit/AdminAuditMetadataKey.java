@@ -10,6 +10,17 @@ public enum AdminAuditMetadataKey {
   INVALID_COUNT("invalidCount"),
   REVOKED_SESSION_COUNT("revokedSessionCount"),
   SESSION_REVOCATION_SUCCEEDED("sessionRevocationSucceeded"),
+  GLOBAL_AI_ENABLED("globalAiEnabled"),
+  DEFAULT_DAILY_REQUEST_LIMIT("defaultDailyRequestLimit"),
+  AI_ENABLED_OVERRIDE("aiEnabledOverride"),
+  DAILY_REQUEST_LIMIT_OVERRIDE("dailyRequestLimitOverride"),
+  PROVIDER("provider"),
+  MODEL("model"),
+  INPUT_PRICE_PER_MILLION("inputPricePerMillion"),
+  CACHED_INPUT_PRICE_PER_MILLION("cachedInputPricePerMillion"),
+  OUTPUT_PRICE_PER_MILLION("outputPricePerMillion"),
+  COST_MULTIPLIER("costMultiplier"),
+  PRICE_ENABLED("priceEnabled"),
   ERROR_CODE("errorCode");
 
   private final String value;

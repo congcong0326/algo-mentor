@@ -47,12 +47,13 @@ export default function AppShell({
     return item.view === 'problems'
       || item.view === 'adminBetaAccess'
       || item.view === 'adminUsers'
+      || item.view === 'adminAi'
       || item.view === 'debug';
   }).sort((left, right) => {
     if (!isAdmin) {
       return 0;
     }
-    const order = ['adminBetaAccess', 'adminUsers', 'problems', 'debug'];
+    const order = ['adminBetaAccess', 'adminUsers', 'adminAi', 'problems', 'debug'];
     return order.indexOf(left.view) - order.indexOf(right.view);
   });
 

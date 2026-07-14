@@ -37,4 +37,19 @@ class AiGovernanceMigrationResourceTest {
         .contains("CREATE TABLE ai_llm_call_usage")
         .doesNotContain("INSERT INTO ai_llm_call_usage");
   }
+
+  @Test
+  void usageAccountingHardeningMigrationAddsConstraintsAndLegacyBackfill() throws IOException {
+    Resource resource = new PathMatchingResourcePatternResolver()
+        .getResource("classpath:db/migration/ai/V32__ai_usage_accounting_hardening.sql");
+
+    assertThat(resource.exists()).isTrue();
+    String sql = resource.getContentAsString(StandardCharsets.UTF_8);
+    assertThat(sql)
+        .contains("ck_ai_llm_call_usage_input_tokens_non_negative")
+        .contains("ck_ai_llm_call_usage_step_index_positive")
+        .contains("ck_ai_model_price_provider_lower")
+        .contains("legacy-run-")
+        .contains("ON CONFLICT (call_id) DO NOTHING");
+  }
 }

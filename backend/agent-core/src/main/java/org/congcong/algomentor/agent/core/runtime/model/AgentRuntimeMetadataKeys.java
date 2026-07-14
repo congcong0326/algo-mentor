@@ -63,6 +63,11 @@ public final class AgentRuntimeMetadataKeys {
   public static final String AGENT_RUN_ID = "agentRunId";
 
   /**
+   * 当前模型调用在 Agent run 内的稳定正序 step 编号。
+   */
+  public static final String STEP_INDEX = "stepIndex";
+
+  /**
    * 工具调用 ID，用于错误、trace 和工具结果 metadata。
    */
   public static final String TOOL_CALL_ID = "toolCallId";

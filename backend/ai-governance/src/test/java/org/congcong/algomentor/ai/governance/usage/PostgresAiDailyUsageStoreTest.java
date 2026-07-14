@@ -86,5 +86,10 @@ class PostgresAiDailyUsageStoreTest {
           Instant.now());
       return 1;
     }
+
+    @Override
+    public long findRequestCount(long userId, LocalDate quotaDate, String scope) {
+      return row == null ? 0 : row.requestCount();
+    }
   }
 }

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.ai.governance.repository.mybatis.AiAdminUsageMapper">
+
+  <resultMap id="AiUsageAggregationRowMap"
+      type="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiUsageAggregationRow">
+    <constructor>
+      <arg column="user_id" javaType="java.lang.Long"/>
+      <arg column="provider" javaType="java.lang.String"/>
+      <arg column="model" javaType="java.lang.String"/>
+      <arg column="purpose" javaType="java.lang.String"/>
+      <arg column="source" javaType="java.lang.String"/>
+      <arg column="model_call_count" javaType="_long"/>
+      <arg column="input_tokens" javaType="_long"/>
+      <arg column="cached_tokens" javaType="_long"/>
+      <arg column="output_tokens" javaType="_long"/>
+      <arg column="reasoning_tokens" javaType="_long"/>
+      <arg column="total_tokens" javaType="_long"/>
+      <arg column="price_id" javaType="java.lang.Long"/>
+      <arg column="input_price_per_million" javaType="java.math.BigDecimal"/>
+      <arg column="cached_input_price_per_million" javaType="java.math.BigDecimal"/>
+      <arg column="output_price_per_million" javaType="java.math.BigDecimal"/>
+      <arg column="cost_multiplier" javaType="java.math.BigDecimal"/>
+    </constructor>
+  </resultMap>
+
+  <resultMap id="AiObservedUnpricedModelRowMap"
+      type="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiObservedUnpricedModelRow">
+    <constructor>
+      <arg column="provider" javaType="java.lang.String"/>
+      <arg column="model" javaType="java.lang.String"/>
+      <arg column="model_call_count" javaType="_long"/>
+      <arg column="total_tokens" javaType="_long"/>
+      <arg column="last_seen_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <sql id="usageFilter">
+    c.started_at &gt;= #{fromAt}
+    AND c.started_at &lt; #{toExclusive}
+    <if test="userId != null">
+      AND c.user_id = #{userId}
+    </if>
+    <if test="provider != null">
+      AND lower(c.provider) = #{provider}
+    </if>
+    <if test="model != null">
+      AND c.model = #{model}
+    </if>
+    <if test="purpose != null">
+      AND c.purpose = #{purpose}
+    </if>
+    <if test="source != null">
+      AND c.source = #{source}
+    </if>
+  </sql>
+
+  <sql id="priceJoin">
+    LEFT JOIN ai_model_price p
+      ON p.provider = lower(c.provider)
+     AND p.model = c.model
+     AND p.enabled = TRUE
+  </sql>
+
+  <sql id="priceColumns">
+    p.id AS price_id,
+    p.input_price_per_million,
+    p.cached_input_price_per_million,
+    p.output_price_per_million,
+    p.cost_multiplier
+  </sql>
+
+  <sql id="tokenAggregates">
+    count(*) AS model_call_count,
+    coalesce(sum(c.input_tokens), 0) AS input_tokens,
+    coalesce(sum(c.cached_tokens), 0) AS cached_tokens,
+    coalesce(sum(c.output_tokens), 0) AS output_tokens,
+    coalesce(sum(c.reasoning_tokens), 0) AS reasoning_tokens,
+    coalesce(sum(c.total_tokens), 0) AS total_tokens
+  </sql>
+
+  <select id="summary" resultMap="AiUsageAggregationRowMap">
+    SELECT NULL::bigint AS user_id,
+           NULL::varchar AS provider,
+           NULL::varchar AS model,
+           NULL::varchar AS purpose,
+           NULL::varchar AS source,
+           <include refid="tokenAggregates"/>,
+           <include refid="priceColumns"/>
+    FROM ai_llm_call_usage c
+    <include refid="priceJoin"/>
+    WHERE <include refid="usageFilter"/>
+    GROUP BY p.id, p.input_price_per_million, p.cached_input_price_per_million,
+             p.output_price_per_million, p.cost_multiplier
+  </select>
+
+  <select id="byUser" resultMap="AiUsageAggregationRowMap">
+    SELECT c.user_id,
+           NULL::varchar AS provider,
+           NULL::varchar AS model,
+           NULL::varchar AS purpose,
+           NULL::varchar AS source,
+           <include refid="tokenAggregates"/>,
+           <include refid="priceColumns"/>
+    FROM ai_llm_call_usage c
+    <include refid="priceJoin"/>
+    WHERE <include refid="usageFilter"/>
+      AND c.user_id IS NOT NULL
+    GROUP BY c.user_id, p.id, p.input_price_per_million, p.cached_input_price_per_million,
+             p.output_price_per_million, p.cost_multiplier
+  </select>
+
+  <select id="byModel" resultMap="AiUsageAggregationRowMap">
+    SELECT NULL::bigint AS user_id,
+           c.provider,
+           c.model,
+           NULL::varchar AS purpose,
+           NULL::varchar AS source,
+           <include refid="tokenAggregates"/>,
+           <include refid="priceColumns"/>
+    FROM ai_llm_call_usage c
+    <include refid="priceJoin"/>
+    WHERE <include refid="usageFilter"/>
+    GROUP BY c.provider, c.model, p.id, p.input_price_per_million, p.cached_input_price_per_million,
+             p.output_price_per_million, p.cost_multiplier
+  </select>
+
+  <select id="bySource" resultMap="AiUsageAggregationRowMap">
+    SELECT NULL::bigint AS user_id,
+           NULL::varchar AS provider,
+           NULL::varchar AS model,
+           NULL::varchar AS purpose,
+           c.source,
+           <include refid="tokenAggregates"/>,
+           <include refid="priceColumns"/>
+    FROM ai_llm_call_usage c
+    <include refid="priceJoin"/>
+    WHERE <include refid="usageFilter"/>
+    GROUP BY c.source, p.id, p.input_price_per_million, p.cached_input_price_per_million,
+             p.output_price_per_million, p.cost_multiplier
+  </select>
+
+  <select id="admittedEntryRequestCount" resultType="long">
+    SELECT count(*)
+    FROM ai_run_admissions a
+    WHERE a.created_at &gt;= #{fromAt}
+      AND a.created_at &lt; #{toExclusive}
+      AND a.status IN ('ADMITTED', 'RUNNING', 'COMPLETED', 'FAILED', 'CANCELLED', 'EXPIRED')
+    <if test="userId != null">
+      AND a.user_id = #{userId}
+    </if>
+    <if test="purpose != null">
+      AND a.purpose = #{purpose}
+    </if>
+    <if test="source != null">
+      AND a.source = #{source}
+    </if>
+  </select>
+
+  <select id="observedUnpricedModels" resultMap="AiObservedUnpricedModelRowMap">
+    SELECT c.provider,
+           c.model,
+           count(*) AS model_call_count,
+           coalesce(sum(c.total_tokens), 0) AS total_tokens,
+           max(c.started_at) AS last_seen_at
+    FROM ai_llm_call_usage c
+    <include refid="priceJoin"/>
+    WHERE <include refid="usageFilter"/>
+      AND p.id IS NULL
+      AND c.provider IS NOT NULL
+      AND c.model IS NOT NULL
+    GROUP BY c.provider, c.model
+    ORDER BY last_seen_at DESC
+    LIMIT 200
+  </select>
+</mapper>

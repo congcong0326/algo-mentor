@@ -31,6 +31,7 @@
 - `docs/review-card-content-fix-design.md`：复习卡内容修复研发设计，说明复习卡标题补齐 `titleCn/difficulty`、题面通过 `GET /api/mistake-notes/{id}/problem-statement` 按需查询、`review.note.ingest{outcome}` 埋点扩展与任务拆解。
 - `docs/internal-beta-admin-capabilities-design.md`：5-20 人封闭内测管理员业务能力研发设计，说明数据库邮箱白名单、临时密码、动态 AI 额度、模型价格与成本估算、AI run 排障、30 天诊断保留、反馈信箱、管理员概览和低敏审计边界。
 - `docs/internal-beta-admin-capabilities-implementation-plan.md`：内测管理员业务能力分阶段实施计划，按准入与账号运维、AI 止损与成本观测、run 排障、反馈与概览拆分任务、测试和发布门禁。
+- `docs/internal-beta-ai-governance-stage-2-implementation-plan.md`：内测管理员能力阶段二详细实施计划，固化 `/admin/ai` 与用户管理的产品边界，细化动态 AI 策略、V32 调用级 Token 台账、当前价格成本估算、直接 LLM 调用治理、管理员 API、前端工作区、测试和发布门禁。
 
 ## 后端
 
@@ -48,7 +49,7 @@
 - `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/permission`：Agent Tool 执行前权限核心包，包含 `AgentToolPermissionGuard`、hook chain、内存 coordinator、permission request/decision 模型、synthetic result factory 和 no-op metrics。
 - `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/AgentLoopRunner.java`：Agent 主循环，在真实工具执行前调用 lifecycle 权限门禁，并支持 synthetic permission result 回填模型上下文。
 - `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/AgentLoopLifecycle.java`：Agent lifecycle 门面，发布 `tool_permission_request`、`tool_permission_decision`、`tool_permission_timeout` 事件并调用权限 guard。
-- `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/runtime/model/AgentRuntimeMetadataKeys.java`：Agent runtime 受信 metadata key，包含权限 owner 校验使用的 `USER_ID = "userId"`。
+- `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/runtime/model/AgentRuntimeMetadataKeys.java`：Agent runtime 受信 metadata key，包含权限 owner 校验使用的 `USER_ID = "userId"` 和调用级台账关联所需的稳定 step index。
 - `backend/agent-persistence-postgres`：Agent 运行态 PostgreSQL/MyBatis 持久化模块，包含 MyBatis mapper interface/XML、JSONB type handler、repository、持久化 observer、trace snapshot observer 和 agent runtime Flyway migration。
 - `backend/mentor-application`：算法学习业务应用层，用 use case 组织 Agent 调用和领域对象；conversation 包只保留 mentor 场景命令、运行结果和业务编排服务。
 - `backend/mentor-api`：Spring MVC API 应用，负责 controller、SSE adapter、配置属性和 bean wiring，不直接拥有 agent runtime SQL。
@@ -71,6 +72,12 @@
 - `backend/agent-persistence-postgres/src/main/resources/db/migration/agent`：agent runtime Flyway 迁移脚本目录，随 `classpath:db/migration` 被 API 应用递归扫描；这些目录共享同一个 Flyway 版本空间，新增 `V` 版本号需要跨模块唯一；`V3__agent_runtime_sequence_counters.sql` 使用数据库计数器/触发器分配 turn、message sequence 和 run attempt。
 - `backend/agent-persistence-postgres/src/main/resources/db/migration/agent/V31__agent_diagnostic_retention.sql`：为 Agent run 固定 30 天诊断保留期限并回填历史记录；新 run 在 mapper 插入时同步写入到期时间。
 - `backend/ai-governance/src/main/resources/db/migration/ai/V29__ai_runtime_policy_and_model_price.sql`：提前固定后续阶段的动态 AI 策略、模型价格和调用级用量表，本阶段不暴露治理接口且不回填 legacy 调用台账。
+- `backend/ai-governance/src/main/resources/db/migration/ai/V32__ai_usage_accounting_hardening.sql`：为调用级 Token 台账追加非负约束、索引、provider 规范化约束，并从历史 run 聚合幂等回填 legacy 调用记录。
+- `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/policy/runtime`：动态全局 AI 设置、用户暂停/额度覆盖、有效策略计算和管理员审计写入服务。
+- `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/accounting`：真实 `LlmGateway` 的调用级记账装饰器，覆盖同步、流式、失败、取消与每日 Token 累计。
+- `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/completion`：代码 Review、复述判定、复习卡生成等直接 completion 的准入、动态开关和受信 metadata 包装。
+- `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/pricing` 与 `adminquery`：当前模型价格管理、Decimal 成本计算及按用户、模型、业务场景聚合的管理查询。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/admin/ai`：AI 设置、单用户策略、模型价格、用量查询的管理员 HTTP 契约、DTO 映射与错误响应。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/admin/audit`：管理员审计 PostgreSQL/MyBatis 实现，以独立 `REQUIRES_NEW` 事务写入并对失败计数降级。
 - `backend/mentor-api/src/main/resources/db/migration/V30__admin_audit_and_user_feedback.sql`：提前固定管理员审计和用户反馈表结构，本阶段只启用审计写入。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice`：题目训练会话应用层，包含 `PracticeSessionService`、`PracticeMessageStreamService`、prompt assembly 片段 provider、题面 catalog 端口和训练进度/消息领域模型。
@@ -87,10 +94,11 @@
 ## 前端
 
 - `frontend/src/App.tsx`：学习工作台首屏。
-- `frontend/src/services/api.ts`：前端 API 调用封装，包含 Agent Tool 权限决策 API `decideAgentToolPermission(...)`。
-- `frontend/src/types/api.ts`：前后端共享契约的 TypeScript 表示，包含权限 SSE 事件、决策请求/响应和 Review tool result 类型。
+- `frontend/src/services/api.ts`：前端 API 调用封装，包含 Agent Tool 权限决策和 AI 治理设置、策略、价格、用量查询 API。
+- `frontend/src/types/api.ts`：前后端共享契约的 TypeScript 表示，包含权限 SSE 事件、决策请求/响应、Review tool result 和 AI 治理 DTO。
 - `frontend/src/admin/BetaAccessPage.tsx`：内测准入管理页，提供开关确认、搜索、批量添加、分页列表、移除确认和 Session 吊销失败提示。
-- `frontend/src/admin/UserManagementPage.tsx`：管理员用户列表与详情页；阶段一增加一次性临时密码重置和关闭即清空的结果对话框。
+- `frontend/src/admin/UserManagementPage.tsx`：管理员用户列表与 URL 驱动的详情抽屉；支持一次性临时密码重置、单用户 AI 暂停/额度覆盖和跳转至筛选后的 AI 用量页。
+- `frontend/src/admin/ai`：`/admin/ai` 治理工作区，提供全局 AI 止损、按用户/模型/场景的 Token 与当前价格成本观测、未定价模型告警和模型价格编辑。
 - `frontend/src/app/PasswordChangeRequiredPage.tsx`：临时密码登录后的独占改密页，成功后恢复普通 Session 路由。
 - `frontend/src/learning-plans/PracticeChatWorkbench.tsx`：题目训练聊天工作台，使用 practice session 专用 API 渲染题面 seed、流式 AI 回复、Review 入口、LeetCode 外链和题目完成状态；监听权限 SSE 并展示轻量原生确认弹窗。
 - `frontend/src/i18n/locales.ts`：前端文案资源，包含权限弹窗、拒绝、超时“本次未执行。”和英文 “This action was not run.” 文案。

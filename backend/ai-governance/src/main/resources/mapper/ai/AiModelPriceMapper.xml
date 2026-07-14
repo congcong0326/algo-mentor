@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.ai.governance.repository.mybatis.AiModelPriceMapper">
+
+  <resultMap id="AiModelPriceRowMap"
+      type="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiModelPriceRow">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Long"/>
+      <arg column="provider" javaType="java.lang.String"/>
+      <arg column="model" javaType="java.lang.String"/>
+      <arg column="currency" javaType="java.lang.String"/>
+      <arg column="input_price_per_million" javaType="java.math.BigDecimal"/>
+      <arg column="cached_input_price_per_million" javaType="java.math.BigDecimal"/>
+      <arg column="output_price_per_million" javaType="java.math.BigDecimal"/>
+      <arg column="cost_multiplier" javaType="java.math.BigDecimal"/>
+      <arg column="enabled" javaType="_boolean"/>
+      <arg column="updated_by" javaType="java.lang.Long"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <select id="findAll" resultMap="AiModelPriceRowMap">
+    SELECT id, provider, model, currency, input_price_per_million, cached_input_price_per_million,
+           output_price_per_million, cost_multiplier, enabled, updated_by, created_at, updated_at
+    FROM ai_model_price
+    ORDER BY provider, model
+  </select>
+
+  <select id="findById" resultMap="AiModelPriceRowMap">
+    SELECT id, provider, model, currency, input_price_per_million, cached_input_price_per_million,
+           output_price_per_million, cost_multiplier, enabled, updated_by, created_at, updated_at
+    FROM ai_model_price
+    WHERE id = #{id}
+  </select>
+
+  <select id="findByProviderAndModel" resultMap="AiModelPriceRowMap">
+    SELECT id, provider, model, currency, input_price_per_million, cached_input_price_per_million,
+           output_price_per_million, cost_multiplier, enabled, updated_by, created_at, updated_at
+    FROM ai_model_price
+    WHERE provider = #{provider}
+      AND model = #{model}
+  </select>
+
+  <select id="insert"
+      parameterType="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiModelPriceRow"
+      resultType="long"
+      affectData="true">
+    INSERT INTO ai_model_price (
+      provider, model, currency, input_price_per_million, cached_input_price_per_million,
+      output_price_per_million, cost_multiplier, enabled, updated_by, created_at, updated_at
+    )
+    VALUES (
+      #{provider}, #{model}, #{currency}, #{inputPricePerMillion}, #{cachedInputPricePerMillion},
+      #{outputPricePerMillion}, #{costMultiplier}, #{enabled}, #{updatedBy}, #{updatedAt}, #{updatedAt}
+    )
+    RETURNING id
+  </select>
+
+  <update id="update"
+      parameterType="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiModelPriceRow">
+    UPDATE ai_model_price
+    SET provider = #{provider},
+        model = #{model},
+        input_price_per_million = #{inputPricePerMillion},
+        cached_input_price_per_million = #{cachedInputPricePerMillion},
+        output_price_per_million = #{outputPricePerMillion},
+        cost_multiplier = #{costMultiplier},
+        enabled = #{enabled},
+        updated_by = #{updatedBy},
+        updated_at = #{updatedAt}
+    WHERE id = #{id}
+  </update>
+</mapper>

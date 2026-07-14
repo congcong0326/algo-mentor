@@ -33,4 +33,14 @@
       AND quota_date = #{quotaDate}
       AND scope = #{scope}
   </update>
+
+  <select id="findRequestCount" resultType="long">
+    SELECT coalesce((
+      SELECT request_count
+      FROM ai_daily_usage
+      WHERE user_id = #{userId}
+        AND quota_date = #{quotaDate}
+        AND scope = #{scope}
+    ), 0)
+  </select>
 </mapper>

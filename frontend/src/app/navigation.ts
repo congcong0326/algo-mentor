@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Bot, ClipboardList, House, Library, NotebookTabs, ShieldCheck, UserRound, UsersRound } from 'lucide-react';
+import { Bot, ClipboardList, House, Library, NotebookTabs, ShieldCheck, SlidersHorizontal, UserRound, UsersRound } from 'lucide-react';
 import type { AuthPermission } from '../types/api';
 
 export const APP_ROUTES = {
@@ -13,6 +13,7 @@ export const APP_ROUTES = {
   problems: '/admin/problems',
   adminBetaAccess: '/admin/beta-access',
   adminUsers: '/admin/users',
+  adminAi: '/admin/ai',
   passwordChangeRequired: '/password/change-required',
   debug: '/debug',
 } as const;
@@ -41,6 +42,7 @@ export type AppView =
   | 'problems'
   | 'adminBetaAccess'
   | 'adminUsers'
+  | 'adminAi'
   | 'passwordChangeRequired'
   | 'debug';
 
@@ -95,6 +97,13 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     permission: 'user:manage',
   },
   {
+    view: 'adminAi',
+    labelKey: 'adminAi',
+    path: APP_ROUTES.adminAi,
+    icon: SlidersHorizontal,
+    permission: 'ai-governance:manage',
+  },
+  {
     view: 'debug',
     labelKey: 'debug',
     path: APP_ROUTES.debug,
@@ -124,6 +133,9 @@ export function viewFromPath(pathname: string): AppView | undefined {
   }
   if (pathname === APP_ROUTES.adminUsers) {
     return 'adminUsers';
+  }
+  if (pathname === APP_ROUTES.adminAi) {
+    return 'adminAi';
   }
   if (pathname === APP_ROUTES.adminBetaAccess) {
     return 'adminBetaAccess';

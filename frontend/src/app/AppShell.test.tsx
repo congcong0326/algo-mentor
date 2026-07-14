@@ -117,6 +117,38 @@ describe('AppShell', () => {
       .map((button) => button.textContent)).toEqual(['内测准入', '用户管理']);
   });
 
+  it('shows AI governance navigation only with the governance permission', () => {
+    const { rerender } = render(
+      <AppShell
+        activeView="adminUsers"
+        currentUser={{ ...user, roles: ['ADMIN'], permissions: ['user:manage'] }}
+        onLogout={vi.fn()}
+        onNavigate={vi.fn()}
+        onToggleTheme={vi.fn()}
+        theme="light"
+      >
+        <div>Users page</div>
+      </AppShell>,
+    );
+
+    expect(screen.queryByRole('button', { name: 'AI 治理' })).not.toBeInTheDocument();
+
+    rerender(
+      <AppShell
+        activeView="adminAi"
+        currentUser={{ ...user, roles: ['ADMIN'], permissions: ['user:manage', 'ai-governance:manage'] }}
+        onLogout={vi.fn()}
+        onNavigate={vi.fn()}
+        onToggleTheme={vi.fn()}
+        theme="light"
+      >
+        <div>AI page</div>
+      </AppShell>,
+    );
+
+    expect(screen.getByRole('button', { name: 'AI 治理' })).toHaveAttribute('aria-pressed', 'true');
+  });
+
   it('shows problem library navigation only with problem read permission', () => {
     render(
       <AppShell

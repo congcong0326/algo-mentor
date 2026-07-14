@@ -81,7 +81,7 @@ def run_hurl_case(context: SmokeContext, case: HurlCase, report_dir: Path) -> in
       str(cookie_file),
   ]
   for name, value in context.hurl_variables().items():
-    option = "--secret" if name == "smoke_password" else "--variable"
+    option = "--secret" if name in {"smoke_password", "smoke_admin_password"} else "--variable"
     command.extend([option, f"{name}={value}"])
   command.append(str(case.path))
   result = subprocess.run(command, cwd=context.repo_root)

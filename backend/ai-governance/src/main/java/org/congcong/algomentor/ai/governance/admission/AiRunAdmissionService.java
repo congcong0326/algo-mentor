@@ -12,6 +12,10 @@ import org.congcong.algomentor.ai.governance.model.AiRunStatus;
 import org.congcong.algomentor.ai.governance.policy.AiGovernanceProperties;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicy;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicyResolver;
+import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimeDisabledReason;
+import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimePolicyException;
+import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimePolicyService;
+import org.congcong.algomentor.ai.governance.policy.runtime.EffectiveAiRuntimePolicy;
 import org.congcong.algomentor.ai.governance.repository.mybatis.PostgresAiRunAdmissionRepository;
 import org.congcong.algomentor.ai.governance.runlock.AiRunLockService;
 import org.congcong.algomentor.ai.governance.usage.AiDailyUsageStore;
@@ -27,6 +31,7 @@ public class AiRunAdmissionService {
   private final AiDailyUsageStore usageStore;
   private final AiRunLockService runLockService;
   private final PostgresAiRunAdmissionRepository admissionRepository;
+  private final AiRuntimePolicyService runtimePolicyService;
 
   public AiRunAdmissionService(
       AiGovernanceProperties properties,
@@ -34,11 +39,22 @@ public class AiRunAdmissionService {
       AiDailyUsageStore usageStore,
       AiRunLockService runLockService,
       PostgresAiRunAdmissionRepository admissionRepository) {
+    this(properties, policyResolver, usageStore, runLockService, admissionRepository, null);
+  }
+
+  public AiRunAdmissionService(
+      AiGovernanceProperties properties,
+      AiPurposePolicyResolver policyResolver,
+      AiDailyUsageStore usageStore,
+      AiRunLockService runLockService,
+      PostgresAiRunAdmissionRepository admissionRepository,
+      AiRuntimePolicyService runtimePolicyService) {
     this.properties = properties;
     this.policyResolver = policyResolver;
     this.usageStore = usageStore;
     this.runLockService = runLockService;
     this.admissionRepository = admissionRepository;
+    this.runtimePolicyService = runtimePolicyService;
   }
 
   /**
@@ -60,6 +76,16 @@ public class AiRunAdmissionService {
     if (!context.actor().authenticated()) {
       reject(context, AiGovernanceErrorCode.AI_UNAUTHENTICATED, AiRunStatus.REJECTED_UNAUTHENTICATED, metadata);
     }
+    EffectiveAiRuntimePolicy runtimePolicy = effectiveRuntimePolicy(policy, context.actor().userId());
+    if (!runtimePolicy.globalAiEnabled()) {
+      reject(context, AiGovernanceErrorCode.AI_GLOBALLY_DISABLED, AiRunStatus.REJECTED_DISABLED, metadata);
+    }
+    if (!runtimePolicy.effectiveAiEnabled()) {
+      AiGovernanceErrorCode code = runtimePolicy.effectiveDisabledReason() == AiRuntimeDisabledReason.USER
+          ? AiGovernanceErrorCode.AI_USER_DISABLED
+          : AiGovernanceErrorCode.AI_PURPOSE_DISABLED;
+      reject(context, code, AiRunStatus.REJECTED_DISABLED, metadata);
+    }
     if (policy.adminOnly() && !context.actor().admin()) {
       reject(context, AiGovernanceErrorCode.AI_FORBIDDEN, AiRunStatus.REJECTED_FORBIDDEN, metadata);
     }
@@ -70,7 +96,12 @@ public class AiRunAdmissionService {
     // 当前额度按用户维度共享，不区分 learning chat、plan draft 等具体 purpose。
     long userId = context.actor().userId();
     LocalDate quotaDate = LocalDate.now(properties.getQuotaZone());
-    if (!usageStore.tryConsumeRequest(userId, quotaDate, SHARED_QUOTA_SCOPE, policy.dailyRequestLimit())) {
+    metadata.put(AiGovernanceMetadataKeys.DAILY_LIMIT, runtimePolicy.effectiveDailyRequestLimit());
+    if (!usageStore.tryConsumeRequest(
+        userId,
+        quotaDate,
+        SHARED_QUOTA_SCOPE,
+        runtimePolicy.effectiveDailyRequestLimit())) {
       reject(context, AiGovernanceErrorCode.AI_QUOTA_EXCEEDED, AiRunStatus.REJECTED_QUOTA, metadata);
     }
 
@@ -142,6 +173,7 @@ public class AiRunAdmissionService {
   private Map<String, Object> baseMetadata(AiRunContext context, AiPurposePolicy policy) {
     Map<String, Object> metadata = new LinkedHashMap<>();
     // 这部分 metadata 会一路传入 Agent request、SSE 事件和 trace 快照，用于跨层关联。
+    metadata.putAll(context.metadata());
     metadata.put(AiGovernanceMetadataKeys.RUN_ID, context.runId());
     if (context.actor().userId() != null) {
       metadata.put(AiGovernanceMetadataKeys.USER_ID, context.actor().userId());
@@ -151,8 +183,27 @@ public class AiRunAdmissionService {
     metadata.put(AiGovernanceMetadataKeys.QUOTA_SCOPE, SHARED_QUOTA_SCOPE);
     metadata.put(AiGovernanceMetadataKeys.DAILY_LIMIT, policy.dailyRequestLimit());
     metadata.put(AiGovernanceMetadataKeys.SYSTEM_POLICY_VERSION, policy.systemPolicyVersion());
-    metadata.putAll(context.metadata());
     return metadata;
+  }
+
+  private EffectiveAiRuntimePolicy effectiveRuntimePolicy(AiPurposePolicy policy, Long userId) {
+    if (runtimePolicyService == null) {
+      return new EffectiveAiRuntimePolicy(
+          true,
+          null,
+          true,
+          null,
+          policy.dailyRequestLimit(),
+          null,
+          policy.dailyRequestLimit(),
+          null,
+          null);
+    }
+    try {
+      return runtimePolicyService.resolve(policy, userId);
+    } catch (AiRuntimePolicyException exception) {
+      throw exception(exception.code(), AiRunStatus.REJECTED_DISABLED, Map.of());
+    }
   }
 
   private AiRunAdmissionException exception(
@@ -165,6 +216,8 @@ public class AiRunAdmissionService {
   private static String message(AiGovernanceErrorCode code) {
     return switch (code) {
       case AI_PURPOSE_DISABLED, AI_PROVIDER_DISABLED -> "AI 功能暂未开放。";
+      case AI_GLOBALLY_DISABLED -> "AI 服务已由管理员全局关闭。";
+      case AI_USER_DISABLED -> "当前账号的 AI 使用已暂停。";
       case AI_UNAUTHENTICATED -> "当前请求未登录或无法解析当前用户。";
       case AI_FORBIDDEN -> "当前账号无权使用该 AI 功能。";
       case AI_QUOTA_EXCEEDED -> "今日 AI 使用次数已达上限，请明天再试。";
@@ -177,11 +230,15 @@ public class AiRunAdmissionService {
   private static HttpStatus httpStatus(AiGovernanceErrorCode code) {
     return switch (code) {
       case AI_UNAUTHENTICATED -> HttpStatus.UNAUTHORIZED;
-      case AI_FORBIDDEN, AI_PURPOSE_DISABLED -> HttpStatus.FORBIDDEN;
+      case AI_FORBIDDEN, AI_PURPOSE_DISABLED, AI_USER_DISABLED -> HttpStatus.FORBIDDEN;
       case AI_QUOTA_EXCEEDED, AI_RATE_LIMITED -> HttpStatus.TOO_MANY_REQUESTS;
       case AI_CONCURRENT_RUN_CONFLICT -> HttpStatus.CONFLICT;
       case AI_REQUEST_TOO_LARGE -> HttpStatus.PAYLOAD_TOO_LARGE;
-      case AI_PROVIDER_DISABLED, AI_PROVIDER_UNAVAILABLE -> HttpStatus.SERVICE_UNAVAILABLE;
+      case AI_PROVIDER_DISABLED, AI_PROVIDER_UNAVAILABLE, AI_GLOBALLY_DISABLED -> HttpStatus.SERVICE_UNAVAILABLE;
+      case AI_RUNTIME_SETTINGS_INVALID, AI_USER_POLICY_INVALID, AI_MODEL_PRICE_INVALID,
+          AI_USAGE_DATE_RANGE_INVALID, AI_USAGE_QUERY_INVALID -> HttpStatus.BAD_REQUEST;
+      case AI_MODEL_PRICE_NOT_FOUND -> HttpStatus.NOT_FOUND;
+      case AI_MODEL_PRICE_ALREADY_EXISTS -> HttpStatus.CONFLICT;
       case AI_TIMEOUT -> HttpStatus.GATEWAY_TIMEOUT;
       case AI_STRUCTURED_OUTPUT_INVALID -> HttpStatus.BAD_GATEWAY;
       case AI_CANCELLED -> HttpStatus.BAD_REQUEST;

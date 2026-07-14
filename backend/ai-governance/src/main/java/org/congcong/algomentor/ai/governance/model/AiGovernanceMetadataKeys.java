@@ -15,6 +15,10 @@ public final class AiGovernanceMetadataKeys {
   public static final String DAILY_LIMIT = "aiDailyLimit";
   public static final String SYSTEM_POLICY_VERSION = "aiSystemPolicyVersion";
   public static final String GOVERNANCE_STATUS = "aiGovernanceStatus";
+  /** 调用级台账使用的稳定调用类型。 */
+  public static final String CALL_KIND = "aiCallKind";
+  /** 调用级台账的唯一调用 ID。 */
+  public static final String CALL_ID = "aiCallId";
 
   private AiGovernanceMetadataKeys() {
   }

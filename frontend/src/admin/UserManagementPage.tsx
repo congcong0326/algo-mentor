@@ -1,9 +1,8 @@
-import { Copy, KeyRound } from 'lucide-react';
+import { Copy } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ApiRequestError,
   deleteAdminUser,
-  getAdminUserDetail,
   getAdminUsers,
   requireApiData,
   resetAdminUserPassword,
@@ -11,16 +10,18 @@ import {
 } from '../services/api';
 import type {
   AdminPasswordResetResponse,
-  AdminUserDetail,
   AdminUserPage,
   AdminUserSummary,
   AuthUserStatus,
 } from '../types/api';
 import { useI18n } from '../i18n/I18nProvider';
 import type { LocaleResources } from '../i18n/locales';
+import AdminUserDetailDrawer from './users/AdminUserDetailDrawer';
 
 interface UserManagementPageProps {
   onNavigateHome: () => void;
+  onNavigate?: (path: string, options?: { replace?: boolean }) => void;
+  search?: string;
 }
 
 type StatusFilter = AuthUserStatus | '';
@@ -37,7 +38,7 @@ interface TemporaryPasswordDialogState extends AdminPasswordResetResponse {
 
 const defaultPageSize = 20;
 
-export default function UserManagementPage({ onNavigateHome }: UserManagementPageProps) {
+export default function UserManagementPage({ onNavigate, onNavigateHome, search = '' }: UserManagementPageProps) {
   const { resources } = useI18n();
   const t = resources.adminUsers;
   const [page, setPage] = useState(1);
@@ -51,9 +52,8 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
     page: 1,
     pageSize: defaultPageSize,
   });
-  const [selectedUser, setSelectedUser] = useState<AdminUserDetail>();
+  const [fallbackSelectedUserId, setFallbackSelectedUserId] = useState<number | undefined>(() => selectedUserIdFromSearch(search));
   const [loading, setLoading] = useState(false);
-  const [detailLoading, setDetailLoading] = useState(false);
   const [error, setError] = useState('');
   const [forbidden, setForbidden] = useState(false);
   const [operation, setOperation] = useState(false);
@@ -61,7 +61,7 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
   const [temporaryPassword, setTemporaryPassword] = useState<TemporaryPasswordDialogState>();
   const [temporaryPasswordCopied, setTemporaryPasswordCopied] = useState(false);
   const listRequestIdRef = useRef(0);
-  const detailRequestIdRef = useRef(0);
+  const selectedUserId = onNavigate ? selectedUserIdFromSearch(search) : fallbackSelectedUserId;
 
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(usersPage.total / usersPage.pageSize)),
@@ -114,28 +114,20 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
     }
   }
 
-  async function openDetail(userId: number) {
-    const requestId = detailRequestIdRef.current + 1;
-    detailRequestIdRef.current = requestId;
-    const isCurrentRequest = () => requestId === detailRequestIdRef.current;
-
-    setDetailLoading(true);
-    setError('');
-    try {
-      const detail = requireApiData(await getAdminUserDetail(userId), t.loadFailed);
-      if (!isCurrentRequest()) {
-        return;
-      }
-      setSelectedUser(detail);
-    } catch (caught) {
-      if (isCurrentRequest()) {
-        setError(caught instanceof Error ? caught.message : t.loadFailed);
-      }
-    } finally {
-      if (isCurrentRequest()) {
-        setDetailLoading(false);
-      }
+  function openDetail(userId: number) {
+    if (onNavigate) {
+      onNavigate(`/admin/users?userId=${userId}`);
+      return;
     }
+    setFallbackSelectedUserId(userId);
+  }
+
+  function closeDetail() {
+    if (onNavigate) {
+      onNavigate('/admin/users');
+      return;
+    }
+    setFallbackSelectedUserId(undefined);
   }
 
   function handleKeywordChange(value: string) {
@@ -297,7 +289,7 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
                 <td>{formatOptionalDateTime(user.lastLoginAt, resources.common.empty)}</td>
                 <td>
                   <div className="admin-user-actions">
-                    <button className="secondary-button compact" onClick={() => void openDetail(user.id)} type="button">
+                    <button className="secondary-button compact" onClick={() => openDetail(user.id)} type="button">
                       {resources.common.view}
                     </button>
                     {user.status === 'ACTIVE' ? (
@@ -348,48 +340,13 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
         </button>
       </div>
 
-      {detailLoading ? <div role="status">{t.loading}</div> : null}
-      {selectedUser ? (
-        <aside className="admin-user-detail" aria-label={t.detailAriaLabel} role="region">
-          <div>
-            <h2>{selectedUser.displayName ?? resources.app.unknownUser(selectedUser.id)}</h2>
-            <div className="admin-user-detail-actions">
-              {selectedUser.status !== 'DELETED' ? (
-                <button
-                  className="secondary-button compact"
-                  onClick={() => setPendingConfirmation({ action: 'resetPassword', user: selectedUser })}
-                  type="button"
-                >
-                  <KeyRound aria-hidden="true" />
-                  <span>{t.resetPassword}</span>
-                </button>
-              ) : null}
-              <button className="secondary-button compact" onClick={() => setSelectedUser(undefined)} type="button">
-                {resources.common.close}
-              </button>
-            </div>
-          </div>
-          <dl>
-            <dt>{t.id}</dt>
-            <dd>{selectedUser.id}</dd>
-            <dt>{t.email}</dt>
-            <dd>{selectedUser.email ?? resources.common.empty}</dd>
-            <dt>{t.roles}</dt>
-            <dd>{selectedUser.roles.join(', ')}</dd>
-            <dt>{t.status}</dt>
-            <dd>{statusLabel(selectedUser.status, t)}</dd>
-            <dt>{t.createdAt}</dt>
-            <dd>{formatDateTime(selectedUser.createdAt)}</dd>
-            <dt>{t.updatedAt}</dt>
-            <dd>{formatDateTime(selectedUser.updatedAt)}</dd>
-            <dt>{t.lastLoginAt}</dt>
-            <dd>{formatOptionalDateTime(selectedUser.lastLoginAt, resources.common.empty)}</dd>
-            <dt>{t.deletedAt}</dt>
-            <dd>{formatOptionalDateTime(selectedUser.deletedAt, resources.common.empty)}</dd>
-            <dt>{t.deletedBy}</dt>
-            <dd>{selectedUser.deletedBy ?? resources.common.empty}</dd>
-          </dl>
-        </aside>
+      {selectedUserId ? (
+        <AdminUserDetailDrawer
+          onClose={closeDetail}
+          onResetPassword={(user) => setPendingConfirmation({ action: 'resetPassword', user })}
+          onViewFullUsage={(userId) => onNavigate?.(`/admin/ai?userId=${userId}`)}
+          userId={selectedUserId}
+        />
       ) : null}
 
       {pendingConfirmation ? (
@@ -466,4 +423,13 @@ function formatDateTime(value: string): string {
     String(date.getUTCMonth() + 1).padStart(2, '0'),
     String(date.getUTCDate()).padStart(2, '0'),
   ].join('-') + ` ${String(date.getUTCHours()).padStart(2, '0')}:${String(date.getUTCMinutes()).padStart(2, '0')}`;
+}
+
+function selectedUserIdFromSearch(search: string): number | undefined {
+  const value = new URLSearchParams(search).get('userId');
+  if (!value) {
+    return undefined;
+  }
+  const userId = Number(value);
+  return Number.isSafeInteger(userId) && userId > 0 ? userId : undefined;
 }

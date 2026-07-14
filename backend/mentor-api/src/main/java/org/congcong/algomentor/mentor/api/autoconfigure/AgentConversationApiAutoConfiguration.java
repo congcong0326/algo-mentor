@@ -9,6 +9,8 @@ import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
+import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
+import org.congcong.algomentor.ai.governance.completion.AiPassthroughCompletionGateway;
 import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.agent.persistence.postgres.config.AgentPostgresPersistenceConfiguration;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
@@ -189,11 +191,12 @@ public class AgentConversationApiAutoConfiguration {
       PracticeCodeReviewPromptBuilder promptBuilder,
       PracticeCodeReviewStructuredOutputMapper outputMapper,
       ObjectProvider<PracticeCodeReviewMetrics> metrics,
-      ObjectProvider<PracticeCodeReviewObserver> observer
+      ObjectProvider<PracticeCodeReviewObserver> observer,
+      ObjectProvider<AiCompletionGateway> completionGateway
   ) {
     return new PracticeCodeReviewService(
         reviewRepository,
-        llmGateway,
+        completionGateway.getIfAvailable(() -> new AiPassthroughCompletionGateway(llmGateway)),
         promptBuilder,
         outputMapper,
         metrics.getIfAvailable(() -> PracticeCodeReviewMetrics.NOOP),

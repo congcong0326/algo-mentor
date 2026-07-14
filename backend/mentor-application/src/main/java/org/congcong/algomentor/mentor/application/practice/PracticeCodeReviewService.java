@@ -8,6 +8,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import org.congcong.algomentor.ai.governance.completion.AiCompletionContext;
+import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
+import org.congcong.algomentor.ai.governance.completion.AiPassthroughCompletionGateway;
+import org.congcong.algomentor.ai.governance.model.AiPurpose;
+import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
@@ -29,7 +34,7 @@ public class PracticeCodeReviewService {
   private static final Logger log = LoggerFactory.getLogger(PracticeCodeReviewService.class);
 
   private final PracticeCodeReviewRepository repository;
-  private final LlmGateway llmGateway;
+  private final AiCompletionGateway completionGateway;
   private final PracticeCodeReviewPromptBuilder promptBuilder;
   private final PracticeCodeReviewStructuredOutputMapper outputMapper;
   private final PracticeCodeReviewMetrics metrics;
@@ -63,8 +68,25 @@ public class PracticeCodeReviewService {
       PracticeCodeReviewMetrics metrics,
       PracticeCodeReviewObserver observer
   ) {
+    this(
+        repository,
+        new AiPassthroughCompletionGateway(llmGateway),
+        promptBuilder,
+        outputMapper,
+        metrics,
+        observer);
+  }
+
+  public PracticeCodeReviewService(
+      PracticeCodeReviewRepository repository,
+      AiCompletionGateway completionGateway,
+      PracticeCodeReviewPromptBuilder promptBuilder,
+      PracticeCodeReviewStructuredOutputMapper outputMapper,
+      PracticeCodeReviewMetrics metrics,
+      PracticeCodeReviewObserver observer
+  ) {
     this.repository = Objects.requireNonNull(repository, "repository must not be null");
-    this.llmGateway = Objects.requireNonNull(llmGateway, "llmGateway must not be null");
+    this.completionGateway = Objects.requireNonNull(completionGateway, "completionGateway must not be null");
     this.promptBuilder = Objects.requireNonNull(promptBuilder, "promptBuilder must not be null");
     this.outputMapper = Objects.requireNonNull(outputMapper, "outputMapper must not be null");
     this.metrics = Objects.requireNonNull(metrics, "metrics must not be null");
@@ -74,7 +96,7 @@ public class PracticeCodeReviewService {
 
   protected PracticeCodeReviewService(Function<PracticeTurnContext, PracticeReviewResult> delegate) {
     this.repository = null;
-    this.llmGateway = null;
+    this.completionGateway = null;
     this.promptBuilder = null;
     this.outputMapper = null;
     this.metrics = PracticeCodeReviewMetrics.NOOP;
@@ -83,7 +105,12 @@ public class PracticeCodeReviewService {
   }
 
   public PracticeReviewResult review(PracticeTurnContext context) {
+    return review(context, defaultCompletionContext(context));
+  }
+
+  public PracticeReviewResult review(PracticeTurnContext context, AiCompletionContext completionContext) {
     Objects.requireNonNull(context, "context must not be null");
+    Objects.requireNonNull(completionContext, "completionContext must not be null");
     if (delegate != null) {
       return delegate.apply(context);
     }
@@ -112,7 +139,7 @@ public class PracticeCodeReviewService {
         context.userMessageId(),
         context.agentRunDbId(),
         context.problemSlug());
-    result = reviewWithLlm(context);
+    result = reviewWithLlm(context, completionContext);
     recordReviewResult(result);
     return result;
   }
@@ -177,7 +204,10 @@ public class PracticeCodeReviewService {
     return PracticeCodeReviewMetricStatus.UNREVIEWABLE;
   }
 
-  private PracticeReviewResult reviewWithLlm(PracticeTurnContext context) {
+  private PracticeReviewResult reviewWithLlm(
+      PracticeTurnContext context,
+      AiCompletionContext completionContext
+  ) {
     LlmCompletionResult completion;
     LlmCompletionRequest request = request(context);
     try {
@@ -191,7 +221,7 @@ public class PracticeCodeReviewService {
           context.extractedCode().length(),
           request.messages().size(),
           PracticeCodeReviewConstants.SCHEMA_NAME);
-      completion = llmGateway.complete(request);
+      completion = completionGateway.complete(request, completionContext);
     } catch (RuntimeException exception) {
       if (exception instanceof LlmException llmException) {
         log.warn(
@@ -391,6 +421,16 @@ public class PracticeCodeReviewService {
             PracticeCodeReviewConstants.METADATA_REVIEW_CANDIDATE, true,
             PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, context.sessionId()))
         .build();
+  }
+
+  private AiCompletionContext defaultCompletionContext(PracticeTurnContext context) {
+    String runId = context.agentRunDbId() == null ? null : "practice-review-" + context.agentRunDbId();
+    return AiCompletionContext.parentRun(
+        context.userId(),
+        runId,
+        AiPurpose.LEARNING_CHAT,
+        AiRunSource.PRACTICE_CODE_REVIEW,
+        1);
   }
 
   private String usageSummary(LlmUsage usage) {

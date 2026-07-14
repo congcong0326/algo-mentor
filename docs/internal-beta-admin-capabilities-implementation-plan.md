@@ -242,6 +242,8 @@ make frontend-test
 
 ## 阶段二：AI 止损与成本观测
 
+> 详细执行计划见 `docs/internal-beta-ai-governance-stage-2-implementation-plan.md`。该文档结合当前已落地的 V29 基座、实际 LLM 调用链和已确认的前端信息架构，细化并覆盖本节 Task 6-8 的执行顺序与验收门禁。
+
 ### Task 6：实现数据库动态 AI 策略
 
 **目标：** 全局 AI 开关、默认每日额度和用户覆盖无需重启即可生效。
