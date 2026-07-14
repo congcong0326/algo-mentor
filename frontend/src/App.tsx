@@ -13,13 +13,21 @@ import AiDebugConsole, {
   type ConnectionState,
 } from './ai-debug/AiDebugConsole';
 import UserManagementPage from './admin/UserManagementPage';
+import BetaAccessPage from './admin/BetaAccessPage';
 import AppShell from './app/AppShell';
 import LoginPage from './app/LoginPage';
+import PasswordChangeRequiredPage from './app/PasswordChangeRequiredPage';
 import { APP_ROUTES, pathForView, type AppView, viewFromPath } from './app/navigation';
 import { applyTheme, nextTheme, readStoredTheme, storeTheme, type AppTheme } from './app/theme';
 import LanguageSelector from './i18n/LanguageSelector';
 import { useI18n } from './i18n/I18nProvider';
-import { getCurrentUser, loginWithPassword, logout, registerWithPassword } from './services/api';
+import {
+  ApiRequestError,
+  getCurrentUser,
+  loginWithPassword,
+  logout,
+  registerWithPassword,
+} from './services/api';
 import type { AuthPermission, CurrentUser, PasswordLoginRequest, PasswordRegisterRequest } from './types/api';
 
 const DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.home;
@@ -43,6 +51,12 @@ function normalizeAuthenticatedView(pathname: string, user?: CurrentUser): AppVi
 }
 
 function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): string {
+  if (user?.passwordChangeRequired) {
+    return APP_ROUTES.passwordChangeRequired;
+  }
+  if (pathname === APP_ROUTES.passwordChangeRequired) {
+    return defaultAuthenticatedRouteForUser(user);
+  }
   const view = viewFromPath(pathname);
   if (!view) {
     return defaultAuthenticatedRouteForUser(user);
@@ -51,6 +65,9 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminUsers' && !hasPermission(user, 'user:manage')) {
+    return defaultAuthenticatedRouteForUser(user);
+  }
+  if (view === 'adminBetaAccess' && !hasPermission(user, 'beta-access:manage')) {
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'problems' && !hasPermission(user, 'problem:read')) {
@@ -75,7 +92,8 @@ function isLoginRoute(pathname: string): boolean {
 }
 
 function hasAuthFailedQuery(search: string): boolean {
-  return new URLSearchParams(search).get('auth') === 'failed';
+  const authStatus = new URLSearchParams(search).get('auth');
+  return authStatus === 'failed' || authStatus === 'beta-access-denied';
 }
 
 function normalizePublicLocation(pathname: string, search: string): string {
@@ -322,8 +340,22 @@ export default function App() {
           window.history.replaceState({}, '', normalizedLocation);
         }
       }
-    } catch {
+    } catch (caught) {
       if (!isActive()) {
+        return;
+      }
+
+      if (caught instanceof ApiRequestError
+          && caught.status === 403
+          && caught.code === 'AUTH_BETA_ACCESS_DENIED') {
+        setCurrentUser(undefined);
+        setAuthChecked(true);
+        setAuthError(false);
+        setPasswordAuthError(caught.message);
+        setActiveView('home');
+        setPathname(APP_ROUTES.login);
+        setSearch('');
+        window.history.replaceState({}, '', APP_ROUTES.login);
         return;
       }
 
@@ -477,11 +509,22 @@ export default function App() {
       <LoginPage
         authError={passwordAuthError}
         authFailed={new URLSearchParams(window.location.search).get('auth') === 'failed'}
+        betaAccessDenied={new URLSearchParams(window.location.search).get('auth') === 'beta-access-denied'}
         onLogin={handlePasswordLogin}
         onRegister={handlePasswordRegister}
         onToggleTheme={handleToggleTheme}
         pending={passwordAuthPending}
         theme={theme}
+      />
+    );
+  }
+
+  if (currentUser.passwordChangeRequired) {
+    return (
+      <PasswordChangeRequiredPage
+        logoutPending={logoutPending}
+        onCompleted={handleAuthenticatedUser}
+        onLogout={() => void handleLogout()}
       />
     );
   }
@@ -511,6 +554,8 @@ export default function App() {
         ? <ProblemLibrary />
         : activeView === 'adminUsers' && hasPermission(currentUser, 'user:manage')
         ? <UserManagementPage onNavigateHome={() => navigateToView('home')} />
+        : activeView === 'adminBetaAccess' && hasPermission(currentUser, 'beta-access:manage')
+        ? <BetaAccessPage onNavigateHome={() => navigateToView('home')} />
         : activeView === 'mistakes'
           ? pathname === APP_ROUTES.reviewSession
             ? <ReviewSessionPage onNavigate={navigateToPath} />

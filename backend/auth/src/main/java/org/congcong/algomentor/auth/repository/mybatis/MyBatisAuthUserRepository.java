@@ -40,6 +40,40 @@ public class MyBatisAuthUserRepository implements AuthUserRepository {
   }
 
   @Override
+  public Optional<PasswordCredential> findPasswordCredentialByUserId(long userId) {
+    if (userId < 1) {
+      return Optional.empty();
+    }
+    return Optional.ofNullable(mapper.findPasswordCredentialByUserId(userId))
+        .map(PasswordCredentialRow::toDomain);
+  }
+
+  @Override
+  public boolean resetPasswordCredential(
+      long userId,
+      String passwordHash,
+      Instant expiresAt,
+      long resetBy,
+      Instant updatedAt
+  ) {
+    return mapper.resetPasswordCredential(userId, passwordHash, expiresAt, resetBy, updatedAt) == 1;
+  }
+
+  @Override
+  public boolean consumeTemporaryPassword(
+      long userId,
+      String expectedPasswordHash,
+      Instant consumedAt
+  ) {
+    return mapper.consumeTemporaryPassword(userId, expectedPasswordHash, consumedAt) == 1;
+  }
+
+  @Override
+  public boolean completePasswordReset(long userId, String passwordHash, Instant changedAt) {
+    return mapper.completePasswordReset(userId, passwordHash, changedAt) == 1;
+  }
+
+  @Override
   public OAuthAccount createOAuthAccount(OAuthAccount account) {
     OAuthAccountRow row = new OAuthAccountRow(
         null,

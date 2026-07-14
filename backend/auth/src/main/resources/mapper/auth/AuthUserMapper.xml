@@ -22,6 +22,11 @@
       <idArg column="id" javaType="java.lang.Long"/>
       <arg column="user_id" javaType="java.lang.Long"/>
       <arg column="password_hash" javaType="java.lang.String"/>
+      <arg column="reset_required" javaType="_boolean"/>
+      <arg column="temporary_password_expires_at" javaType="java.time.Instant"/>
+      <arg column="temporary_password_consumed_at" javaType="java.time.Instant"/>
+      <arg column="password_changed_at" javaType="java.time.Instant"/>
+      <arg column="reset_by" javaType="java.lang.Long"/>
       <arg column="created_at" javaType="java.time.Instant"/>
       <arg column="updated_at" javaType="java.time.Instant"/>
     </constructor>
@@ -49,11 +54,21 @@
     insert into auth_password_credentials (
       user_id,
       password_hash,
+      reset_required,
+      temporary_password_expires_at,
+      temporary_password_consumed_at,
+      password_changed_at,
+      reset_by,
       created_at,
       updated_at
     ) values (
       #{userId},
       #{passwordHash},
+      FALSE,
+      NULL,
+      NULL,
+      NULL,
+      NULL,
       #{createdAt},
       #{updatedAt}
     )
@@ -63,12 +78,68 @@
     select credential.id,
            credential.user_id,
            credential.password_hash,
+           credential.reset_required,
+           credential.temporary_password_expires_at,
+           credential.temporary_password_consumed_at,
+           credential.password_changed_at,
+           credential.reset_by,
            credential.created_at,
            credential.updated_at
     from auth_password_credentials credential
     inner join auth_users users on users.id = credential.user_id
     where users.email_normalized = #{emailNormalized}
   </select>
+
+  <select id="findPasswordCredentialByUserId" resultMap="PasswordCredentialRowMap">
+    select id,
+           user_id,
+           password_hash,
+           reset_required,
+           temporary_password_expires_at,
+           temporary_password_consumed_at,
+           password_changed_at,
+           reset_by,
+           created_at,
+           updated_at
+    from auth_password_credentials
+    where user_id = #{userId}
+  </select>
+
+  <update id="resetPasswordCredential">
+    update auth_password_credentials
+    set password_hash = #{passwordHash},
+        reset_required = TRUE,
+        temporary_password_expires_at = #{expiresAt},
+        temporary_password_consumed_at = NULL,
+        reset_by = #{resetBy},
+        updated_at = #{updatedAt}
+    where user_id = #{userId}
+  </update>
+
+  <update id="consumeTemporaryPassword">
+    update auth_password_credentials
+    set temporary_password_consumed_at = #{consumedAt},
+        updated_at = #{consumedAt}
+    where user_id = #{userId}
+      and password_hash = #{expectedPasswordHash}
+      and reset_required = TRUE
+      and temporary_password_consumed_at is null
+      and temporary_password_expires_at &gt; #{consumedAt}
+  </update>
+
+  <update id="completePasswordReset">
+    update auth_password_credentials
+    set password_hash = #{passwordHash},
+        reset_required = FALSE,
+        temporary_password_expires_at = NULL,
+        temporary_password_consumed_at = NULL,
+        password_changed_at = #{changedAt},
+        reset_by = NULL,
+        updated_at = #{changedAt}
+    where user_id = #{userId}
+      and reset_required = TRUE
+      and temporary_password_consumed_at is not null
+  </update>
 
   <insert id="insertOAuthAccount"
           parameterType="org.congcong.algomentor.auth.repository.mybatis.model.OAuthAccountRow"

@@ -44,7 +44,16 @@ export default function AppShell({
     if (!isAdmin) {
       return true;
     }
-    return item.view === 'problems' || item.view === 'adminUsers' || item.view === 'debug';
+    return item.view === 'problems'
+      || item.view === 'adminBetaAccess'
+      || item.view === 'adminUsers'
+      || item.view === 'debug';
+  }).sort((left, right) => {
+    if (!isAdmin) {
+      return 0;
+    }
+    const order = ['adminBetaAccess', 'adminUsers', 'problems', 'debug'];
+    return order.indexOf(left.view) - order.indexOf(right.view);
   });
 
   return (

@@ -26,6 +26,11 @@ public final class AuthApiContractConstants {
   public static final String LOGIN_PATH = "/login";
 
   /**
+   * 使用临时密码登录后完成强制改密的路径。
+   */
+  public static final String COMPLETE_PASSWORD_RESET_PATH = "/password/complete-reset";
+
+  /**
    * 当前请求没有可用登录用户时返回的错误码。
    */
   public static final String AUTH_UNAUTHENTICATED_CODE = "AUTH_UNAUTHENTICATED";

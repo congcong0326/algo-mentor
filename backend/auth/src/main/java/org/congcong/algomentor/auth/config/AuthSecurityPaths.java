@@ -13,6 +13,8 @@ public final class AuthSecurityPaths {
   public static final String OAUTH2_CALLBACK_PATTERN = "/login/oauth2/code/**";
   public static final String AUTH_REGISTER_PATH = "/api/auth/register";
   public static final String AUTH_LOGIN_PATH = "/api/auth/login";
+  public static final String AUTH_ME_PATH = "/api/auth/me";
+  public static final String AUTH_COMPLETE_RESET_PATH = "/api/auth/password/complete-reset";
   public static final String AUTH_LOGOUT_PATH = "/api/auth/logout";
   public static final String ADMIN_API_PATTERN = "/api/admin/**";
   public static final String AGENT_CONVERSATIONS_API_PATTERN = "/api/agent/conversations/**";

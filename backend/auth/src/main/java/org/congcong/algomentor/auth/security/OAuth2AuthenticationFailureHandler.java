@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.congcong.algomentor.auth.betaaccess.service.BetaAccessErrorCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
@@ -14,9 +15,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 public class OAuth2AuthenticationFailureHandler implements AuthenticationFailureHandler {
 
   private static final Logger log = LoggerFactory.getLogger(OAuth2AuthenticationFailureHandler.class);
-
-  private final SimpleUrlAuthenticationFailureHandler delegate =
-      new SimpleUrlAuthenticationFailureHandler("/login?auth=failed");
 
   @Override
   public void onAuthenticationFailure(
@@ -29,7 +27,14 @@ public class OAuth2AuthenticationFailureHandler implements AuthenticationFailure
         AuthDiagnosticSupport.requestSummary(request),
         exception.getClass().getName(),
         errorCode(exception));
-    delegate.onAuthenticationFailure(request, response, exception);
+    new SimpleUrlAuthenticationFailureHandler(failureUrl(exception))
+        .onAuthenticationFailure(request, response, exception);
+  }
+
+  private static String failureUrl(AuthenticationException exception) {
+    return BetaAccessErrorCode.AUTH_BETA_ACCESS_DENIED.name().equals(errorCode(exception))
+        ? "/login?auth=beta-access-denied"
+        : "/login?auth=failed";
   }
 
   private static String errorCode(AuthenticationException exception) {

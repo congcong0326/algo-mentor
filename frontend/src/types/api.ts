@@ -25,6 +25,11 @@ export type AuthPermission =
   | 'problem:read'
   | 'problem:write'
   | 'user:manage'
+  | 'admin-overview:read'
+  | 'beta-access:manage'
+  | 'ai-governance:manage'
+  | 'ai-run:read'
+  | 'feedback:manage'
   | 'debug:access';
 
 export interface CurrentUser {
@@ -35,6 +40,7 @@ export interface CurrentUser {
   roles: AuthRole[];
   permissions: AuthPermission[];
   status: AuthUserStatus;
+  passwordChangeRequired: boolean;
 }
 
 export interface AdminUserSummary {
@@ -71,6 +77,71 @@ export interface AdminUserListQuery {
 
 export interface AdminUserStatusUpdateRequest {
   status: Extract<AuthUserStatus, 'ACTIVE' | 'DISABLED'>;
+}
+
+export interface BetaAccessSettings {
+  id: number;
+  emailAllowlistEnabled: boolean;
+  updatedBy?: number | null;
+  updatedByDisplayName?: string | null;
+  updatedAt: string;
+}
+
+export interface BetaAllowedEmail {
+  id: number;
+  email: string;
+  registered: boolean;
+  associatedUserId?: number | null;
+  associatedUserStatus?: AuthUserStatus | null;
+  createdBy: number;
+  createdByDisplayName?: string | null;
+  createdAt: string;
+}
+
+export interface BetaAccessPage {
+  settings: BetaAccessSettings;
+  items: BetaAllowedEmail[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface BetaAccessListQuery {
+  page?: number;
+  pageSize?: number;
+  keyword?: string;
+}
+
+export interface BetaAccessSettingsUpdateRequest {
+  emailAllowlistEnabled: boolean;
+}
+
+export type BetaAllowedEmailAddStatus = 'ADDED' | 'EXISTING' | 'INVALID';
+
+export interface BetaAllowedEmailAddResult {
+  email: string;
+  status: BetaAllowedEmailAddStatus;
+  allowedEmailId?: number | null;
+}
+
+export interface BetaAllowedEmailBatchResponse {
+  addedCount: number;
+  existingCount: number;
+  invalidCount: number;
+  results: BetaAllowedEmailAddResult[];
+}
+
+export interface BetaAllowedEmailRemovalResponse {
+  allowedEmailId: number;
+  associatedUserId?: number | null;
+  associatedUserStatus?: AuthUserStatus | null;
+  revokedSessionCount: number;
+  sessionRevocationSucceeded: boolean;
+}
+
+export interface AdminPasswordResetResponse {
+  temporaryPassword: string;
+  expiresAt: string;
 }
 
 export interface AbilityTagScore {
@@ -115,6 +186,11 @@ export interface PasswordLoginRequest {
 
 export interface PasswordRegisterRequest extends PasswordLoginRequest {
   displayName: string;
+}
+
+export interface CompletePasswordResetRequest {
+  newPassword: string;
+  confirmPassword: string;
 }
 
 export type ProblemDifficulty = 'EASY' | 'MEDIUM' | 'HARD';

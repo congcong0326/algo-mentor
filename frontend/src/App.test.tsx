@@ -257,6 +257,101 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/login');
   });
 
+  it('forces a temporary-password session onto the password change route', async () => {
+    let passwordChanged = false;
+    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: {
+            id: 42,
+            email: 'user@example.com',
+            displayName: 'User Name',
+            roles: ['USER'],
+            permissions: ['learning-plan:read:own'],
+            status: 'ACTIVE',
+            passwordChangeRequired: true,
+          },
+          timestamp: '2026-07-13T00:00:00Z',
+        }));
+      }
+      if (url === '/api/auth/password/complete-reset') {
+        passwordChanged = true;
+        expect(init?.body).toBe(JSON.stringify({
+          newPassword: 'new-password',
+          confirmPassword: 'new-password',
+        }));
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: {
+            id: 42,
+            email: 'user@example.com',
+            displayName: 'User Name',
+            roles: ['USER'],
+            permissions: ['learning-plan:read:own'],
+            status: 'ACTIVE',
+            passwordChangeRequired: false,
+          },
+          timestamp: '2026-07-13T00:00:00Z',
+        }));
+      }
+      if (passwordChanged && isTodayPackUrl(url)) {
+        return Promise.resolve(todayPackApiResponse());
+      }
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/admin/users');
+
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { name: '设置新密码' })).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/password/change-required');
+
+    window.history.pushState({}, '', '/');
+    fireEvent(window, new PopStateEvent('popstate'));
+    await waitFor(() => expect(window.location.pathname).toBe('/password/change-required'));
+
+    fireEvent.change(screen.getByLabelText('新密码'), { target: { value: 'new-password' } });
+    fireEvent.change(screen.getByLabelText('确认新密码'), { target: { value: 'new-password' } });
+    fireEvent.click(screen.getByRole('button', { name: '完成改密' }));
+
+    expect(await screen.findByText('User Name')).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/');
+  });
+
+  it('returns a denied stored session to login with the localized server message', async () => {
+    vi.stubGlobal('fetch', vi.fn((url: string) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(jsonResponse({
+          success: false,
+          error: {
+            code: 'AUTH_BETA_ACCESS_DENIED',
+            message: '当前邮箱不在内测准入名单中。',
+          },
+          timestamp: '2026-07-13T00:00:00Z',
+        }, 403));
+      }
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    }));
+    window.history.replaceState({}, '', '/learning-plans');
+
+    render(<App />);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('当前邮箱不在内测准入名单中。');
+    expect(window.location.pathname).toBe('/login');
+  });
+
+  it('maps OAuth beta denial to a dedicated login message', async () => {
+    vi.stubGlobal('fetch', mockUnauthenticatedFetch());
+    window.history.replaceState({}, '', '/login?auth=beta-access-denied');
+
+    render(<App />);
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('当前邮箱不在内测准入名单中。');
+    expect(window.location.search).toBe('?auth=beta-access-denied');
+  });
+
   it('shows a retryable authentication check error for non-401 failures', async () => {
     const fetchMock = vi.fn((url: string) => {
       if (url === '/api/auth/me' && fetchMock.mock.calls.length === 1) {
@@ -2307,6 +2402,7 @@ function adminUserResponse(): Response {
     'problem:read',
     'problem:write',
     'user:manage',
+    'beta-access:manage',
     'debug:access',
   ], ['USER', 'ADMIN']);
 }
@@ -2330,6 +2426,7 @@ function authenticatedUserResponseWithPermissions(permissions: string[], roles: 
       roles,
       permissions,
       status: 'ACTIVE',
+      passwordChangeRequired: false,
     },
     timestamp: '2026-06-22T00:00:00Z',
   });

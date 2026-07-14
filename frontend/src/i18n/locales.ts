@@ -56,6 +56,7 @@ export interface LocaleResources {
     termsConnector: string;
     privacyLabel: string;
     failed: string;
+    betaAccessDenied: string;
     googleLogin: string;
     emailLabel: string;
     emailPlaceholder: string;
@@ -82,6 +83,7 @@ export interface LocaleResources {
     learningPlans: string;
     mistakes: string;
     problems: string;
+    adminBetaAccess: string;
     adminUsers: string;
     debug: string;
     forbidden: string;
@@ -122,6 +124,73 @@ export interface LocaleResources {
     confirmDeleteDescription: string;
     operationFailed: string;
     operationSucceeded: string;
+    resetPassword: string;
+    confirmPasswordResetTitle: string;
+    confirmPasswordResetDescription: string;
+    temporaryPasswordTitle: string;
+    temporaryPasswordNotice: string;
+    temporaryPasswordExpiresAt: string;
+    copyTemporaryPassword: string;
+    temporaryPasswordCopied: string;
+  };
+  betaAccess: {
+    ariaLabel: string;
+    title: string;
+    searchPlaceholder: string;
+    search: string;
+    refresh: string;
+    loading: string;
+    empty: string;
+    loadFailed: string;
+    forbidden: string;
+    backHome: string;
+    allowlistSetting: string;
+    enabled: string;
+    disabled: string;
+    batchAdd: string;
+    batchPlaceholder: string;
+    batchLimit: string;
+    emailInputRequired: string;
+    add: string;
+    saving: string;
+    batchResult: string;
+    batchSummary: (added: number, existing: number, invalid: number) => string;
+    addStatus: Record<'ADDED' | 'EXISTING' | 'INVALID', string>;
+    email: string;
+    registration: string;
+    registered: string;
+    unregistered: string;
+    userStatus: string;
+    userStatuses: Record<'ACTIVE' | 'DISABLED' | 'DELETED', string>;
+    createdBy: string;
+    createdAt: string;
+    actions: string;
+    remove: string;
+    removeEmail: (email: string) => string;
+    confirm: string;
+    confirmEnableTitle: string;
+    confirmEnableDescription: string;
+    confirmEnableEmptyDescription: string;
+    confirmDisableTitle: string;
+    confirmDisableDescription: string;
+    confirmRemoveTitle: string;
+    confirmRegisteredRemoval: (email: string) => string;
+    confirmRemoval: (email: string) => string;
+    sessionRevocationWarning: string;
+    operationFailed: string;
+  };
+  passwordChange: {
+    ariaLabel: string;
+    title: string;
+    description: string;
+    newPassword: string;
+    confirmPassword: string;
+    submit: string;
+    submitting: string;
+    logout: string;
+    passwordMismatch: string;
+    passwordTooShort: string;
+    failed: string;
   };
   common: {
     cancel: string;
@@ -641,6 +710,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       termsConnector: ' 和 ',
       privacyLabel: '隐私政策',
       failed: '登录失败，请重新尝试。',
+      betaAccessDenied: '当前邮箱不在内测准入名单中。',
       googleLogin: '使用 Google 登录',
       emailLabel: '邮箱',
       emailPlaceholder: 'you@example.com',
@@ -667,6 +737,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       learningPlans: '方案',
       mistakes: '复习中心',
       problems: '题库',
+      adminBetaAccess: '内测准入',
       adminUsers: '用户管理',
       debug: 'AI 调试',
       forbidden: '无权访问',
@@ -707,6 +778,81 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       confirmDeleteDescription: '删除后用户会进入软删除状态，无法再执行管理操作。',
       operationFailed: '操作失败，请稍后重试。',
       operationSucceeded: '操作已完成。',
+      resetPassword: '重置密码',
+      confirmPasswordResetTitle: '生成一次性临时密码',
+      confirmPasswordResetDescription: '继续后会立即吊销该用户的全部登录 Session，旧密码失效。',
+      temporaryPasswordTitle: '一次性临时密码',
+      temporaryPasswordNotice: '该密码关闭后无法再次查看。请通过安全渠道交给用户。',
+      temporaryPasswordExpiresAt: '有效期至',
+      copyTemporaryPassword: '复制临时密码',
+      temporaryPasswordCopied: '已复制',
+    },
+    betaAccess: {
+      ariaLabel: '内测准入管理',
+      title: '内测准入',
+      searchPlaceholder: '搜索白名单邮箱',
+      search: '搜索',
+      refresh: '刷新',
+      loading: '正在加载白名单...',
+      empty: '没有匹配的白名单邮箱',
+      loadFailed: '内测准入数据加载失败',
+      forbidden: '没有权限管理内测准入',
+      backHome: '返回首页',
+      allowlistSetting: '邮箱白名单',
+      enabled: '已开启',
+      disabled: '已关闭',
+      batchAdd: '批量添加邮箱',
+      batchPlaceholder: '每行一个邮箱，也可使用逗号分隔',
+      batchLimit: '单次最多 100 个邮箱',
+      emailInputRequired: '请至少输入一个邮箱。',
+      add: '添加',
+      saving: '处理中',
+      batchResult: '添加结果',
+      batchSummary: (added, existing, invalid) => `新增 ${added}，已存在 ${existing}，无效 ${invalid}`,
+      addStatus: {
+        ADDED: '已新增',
+        EXISTING: '已存在',
+        INVALID: '无效',
+      },
+      email: '邮箱',
+      registration: '注册状态',
+      registered: '已注册',
+      unregistered: '未注册',
+      userStatus: '用户状态',
+      userStatuses: {
+        ACTIVE: '正常',
+        DISABLED: '已禁用',
+        DELETED: '已删除',
+      },
+      createdBy: '添加人',
+      createdAt: '添加时间',
+      actions: '操作',
+      remove: '移除',
+      removeEmail: (email) => `移除 ${email}`,
+      confirm: '确认',
+      confirmEnableTitle: '开启邮箱白名单',
+      confirmEnableDescription: '开启后，非管理员账号只有命中白名单才能注册、登录和继续访问。',
+      confirmEnableEmptyDescription: '当前白名单为空。开启后除受信管理员外，其他账号会立即无法访问。',
+      confirmDisableTitle: '关闭邮箱白名单',
+      confirmDisableDescription: '关闭后，邮箱白名单不再限制注册、登录和已登录请求。',
+      confirmRemoveTitle: '移除白名单邮箱',
+      confirmRegisteredRemoval: (email) => `移除 ${email} 后会立即吊销关联用户的全部 Session，但不会删除账号和学习数据。`,
+      confirmRemoval: (email) => `确认从白名单移除 ${email}？`,
+      sessionRevocationWarning: '白名单记录已移除，但 Session 吊销失败；该用户后续请求仍会被实时准入检查拒绝。',
+      operationFailed: '内测准入操作失败，请稍后重试。',
+    },
+    passwordChange: {
+      ariaLabel: '修改临时密码',
+      title: '设置新密码',
+      description: '当前 Session 仅能修改密码或退出登录。',
+      newPassword: '新密码',
+      confirmPassword: '确认新密码',
+      submit: '完成改密',
+      submitting: '正在更新',
+      logout: '退出登录',
+      passwordMismatch: '两次输入的密码不一致。',
+      passwordTooShort: '新密码至少需要 8 个字符。',
+      failed: '密码更新失败，请稍后重试。',
     },
     common: {
       cancel: '取消',
@@ -1309,6 +1455,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       termsConnector: ' and ',
       privacyLabel: 'Privacy Policy',
       failed: 'Sign-in failed. Please try again.',
+      betaAccessDenied: 'This email is not currently allowed to access the private beta.',
       googleLogin: 'Sign in with Google',
       emailLabel: 'Email',
       emailPlaceholder: 'you@example.com',
@@ -1335,6 +1482,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       learningPlans: 'Plans',
       mistakes: 'Review Center',
       problems: 'Problems',
+      adminBetaAccess: 'Beta Access',
       adminUsers: 'Users',
       debug: 'AI Debug',
       forbidden: 'Not authorized',
@@ -1375,6 +1523,81 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       confirmDeleteDescription: 'The user will be soft deleted and management actions will no longer be available.',
       operationFailed: 'Operation failed. Please try again later.',
       operationSucceeded: 'Operation completed.',
+      resetPassword: 'Reset password',
+      confirmPasswordResetTitle: 'Generate a one-time temporary password',
+      confirmPasswordResetDescription: 'Continuing immediately revokes all sessions for this user and invalidates the old password.',
+      temporaryPasswordTitle: 'One-time temporary password',
+      temporaryPasswordNotice: 'This password cannot be retrieved after closing. Share it through a secure channel.',
+      temporaryPasswordExpiresAt: 'Expires at',
+      copyTemporaryPassword: 'Copy temporary password',
+      temporaryPasswordCopied: 'Copied',
+    },
+    betaAccess: {
+      ariaLabel: 'Beta access management',
+      title: 'Beta access',
+      searchPlaceholder: 'Search allowlisted email',
+      search: 'Search',
+      refresh: 'Refresh',
+      loading: 'Loading allowlist...',
+      empty: 'No matching allowlisted emails',
+      loadFailed: 'Failed to load beta access data',
+      forbidden: 'You do not have permission to manage beta access',
+      backHome: 'Back to dashboard',
+      allowlistSetting: 'Email allowlist',
+      enabled: 'Enabled',
+      disabled: 'Disabled',
+      batchAdd: 'Add emails in bulk',
+      batchPlaceholder: 'One email per line, or separate with commas',
+      batchLimit: 'Up to 100 emails per request',
+      emailInputRequired: 'Enter at least one email.',
+      add: 'Add',
+      saving: 'Working',
+      batchResult: 'Add results',
+      batchSummary: (added, existing, invalid) => `Added ${added}, existing ${existing}, invalid ${invalid}`,
+      addStatus: {
+        ADDED: 'Added',
+        EXISTING: 'Existing',
+        INVALID: 'Invalid',
+      },
+      email: 'Email',
+      registration: 'Registration',
+      registered: 'Registered',
+      unregistered: 'Not registered',
+      userStatus: 'User status',
+      userStatuses: {
+        ACTIVE: 'Active',
+        DISABLED: 'Disabled',
+        DELETED: 'Deleted',
+      },
+      createdBy: 'Added by',
+      createdAt: 'Added at',
+      actions: 'Actions',
+      remove: 'Remove',
+      removeEmail: (email) => `Remove ${email}`,
+      confirm: 'Confirm',
+      confirmEnableTitle: 'Enable the email allowlist',
+      confirmEnableDescription: 'Once enabled, non-admin accounts must be allowlisted to register, sign in, or keep using the app.',
+      confirmEnableEmptyDescription: 'The allowlist is empty. Enabling it immediately blocks every account except trusted administrators.',
+      confirmDisableTitle: 'Disable the email allowlist',
+      confirmDisableDescription: 'The allowlist will no longer restrict registration, sign-in, or authenticated requests.',
+      confirmRemoveTitle: 'Remove allowlisted email',
+      confirmRegisteredRemoval: (email) => `Removing ${email} immediately revokes the linked user's sessions without deleting the account or learning data.`,
+      confirmRemoval: (email) => `Remove ${email} from the allowlist?`,
+      sessionRevocationWarning: 'The allowlist entry was removed, but session revocation failed. Real-time access checks will still reject subsequent requests.',
+      operationFailed: 'Beta access operation failed. Please try again later.',
+    },
+    passwordChange: {
+      ariaLabel: 'Change temporary password',
+      title: 'Set a new password',
+      description: 'This session can only change the password or sign out.',
+      newPassword: 'New password',
+      confirmPassword: 'Confirm new password',
+      submit: 'Change password',
+      submitting: 'Updating',
+      logout: 'Log out',
+      passwordMismatch: 'The passwords do not match.',
+      passwordTooShort: 'The new password must contain at least 8 characters.',
+      failed: 'Failed to update the password. Please try again later.',
     },
     common: {
       cancel: 'Cancel',

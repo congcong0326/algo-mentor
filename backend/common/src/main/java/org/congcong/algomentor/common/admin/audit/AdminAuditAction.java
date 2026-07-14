@@ -1,0 +1,16 @@
+package org.congcong.algomentor.common.admin.audit;
+
+/**
+ * 管理员敏感操作的稳定动作标识。
+ */
+public enum AdminAuditAction {
+  BETA_ACCESS_SETTING_UPDATE,
+  BETA_ALLOWED_EMAIL_ADD,
+  BETA_ALLOWED_EMAIL_REMOVE,
+  AI_GLOBAL_SETTING_UPDATE,
+  AI_USER_POLICY_UPDATE,
+  AI_MODEL_PRICE_CREATE,
+  AI_MODEL_PRICE_UPDATE,
+  AI_RUN_TRACE_VIEW,
+  USER_PASSWORD_RESET
+}

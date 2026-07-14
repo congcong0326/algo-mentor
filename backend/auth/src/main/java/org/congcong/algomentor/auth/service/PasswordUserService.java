@@ -3,7 +3,8 @@ package org.congcong.algomentor.auth.service;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
-import java.util.Locale;
+import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
+import org.congcong.algomentor.auth.betaaccess.service.BetaEmailAddress;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.identity.model.AuthRole;
@@ -22,6 +23,7 @@ public class PasswordUserService {
   private final PasswordEncoder passwordEncoder;
   private final Clock clock;
   private final AdminEmailRoleService adminEmailRoleService;
+  private final BetaAccessPolicy betaAccessPolicy;
 
   public PasswordUserService(
       AuthUserRepository authRepository,
@@ -30,11 +32,29 @@ public class PasswordUserService {
       Clock clock,
       AdminEmailRoleService adminEmailRoleService
   ) {
+    this(
+        authRepository,
+        identityRepository,
+        passwordEncoder,
+        clock,
+        adminEmailRoleService,
+        null);
+  }
+
+  public PasswordUserService(
+      AuthUserRepository authRepository,
+      IdentityUserRepository identityRepository,
+      PasswordEncoder passwordEncoder,
+      Clock clock,
+      AdminEmailRoleService adminEmailRoleService,
+      BetaAccessPolicy betaAccessPolicy
+  ) {
     this.authRepository = authRepository;
     this.identityRepository = identityRepository;
     this.passwordEncoder = passwordEncoder;
     this.clock = clock;
     this.adminEmailRoleService = adminEmailRoleService;
+    this.betaAccessPolicy = betaAccessPolicy;
   }
 
   @Transactional
@@ -42,6 +62,9 @@ public class PasswordUserService {
     String normalizedEmail = normalizeEmail(email);
     String normalizedDisplayName = normalizeDisplayName(displayName);
     validateRegistration(normalizedEmail, password, normalizedDisplayName);
+    if (betaAccessPolicy != null) {
+      betaAccessPolicy.requireAllowed(email, false);
+    }
     if (identityRepository.findUserByEmailNormalized(normalizedEmail).isPresent()) {
       throw new PasswordRegistrationException(
           PasswordAuthErrorCode.AUTH_EMAIL_ALREADY_REGISTERED,
@@ -66,7 +89,7 @@ public class PasswordUserService {
   }
 
   private static void validateRegistration(String emailNormalized, String password, String displayName) {
-    if (emailNormalized.isBlank() || !emailNormalized.contains("@")) {
+    if (!BetaEmailAddress.isValid(emailNormalized)) {
       throw new PasswordRegistrationException(
           PasswordAuthErrorCode.AUTH_REQUEST_INVALID,
           "请输入有效邮箱。");
@@ -94,7 +117,7 @@ public class PasswordUserService {
   }
 
   private static String normalizeEmail(String email) {
-    return email == null ? "" : email.trim().toLowerCase(Locale.ROOT);
+    return BetaEmailAddress.normalize(email);
   }
 
   private static String normalizeDisplayName(String displayName) {

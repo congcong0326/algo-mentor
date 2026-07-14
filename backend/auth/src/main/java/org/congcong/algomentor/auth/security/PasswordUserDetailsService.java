@@ -62,7 +62,7 @@ public class PasswordUserDetailsService implements UserDetailsService {
         updatedUser.status());
     return new AuthenticatedUserDetails(
         principal,
-        credential.passwordHash(),
+        credential,
         AuthAuthorities.fromRoles(effectiveRoles));
   }
 

@@ -1,6 +1,21 @@
+import { Copy, KeyRound } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ApiRequestError, deleteAdminUser, getAdminUserDetail, getAdminUsers, requireApiData, updateAdminUserStatus } from '../services/api';
-import type { AdminUserDetail, AdminUserPage, AdminUserSummary, AuthUserStatus } from '../types/api';
+import {
+  ApiRequestError,
+  deleteAdminUser,
+  getAdminUserDetail,
+  getAdminUsers,
+  requireApiData,
+  resetAdminUserPassword,
+  updateAdminUserStatus,
+} from '../services/api';
+import type {
+  AdminPasswordResetResponse,
+  AdminUserDetail,
+  AdminUserPage,
+  AdminUserSummary,
+  AuthUserStatus,
+} from '../types/api';
 import { useI18n } from '../i18n/I18nProvider';
 import type { LocaleResources } from '../i18n/locales';
 
@@ -9,10 +24,14 @@ interface UserManagementPageProps {
 }
 
 type StatusFilter = AuthUserStatus | '';
-type ConfirmAction = 'disable' | 'restore' | 'delete';
+type ConfirmAction = 'disable' | 'restore' | 'delete' | 'resetPassword';
 
 interface PendingConfirmation {
   action: ConfirmAction;
+  user: AdminUserSummary;
+}
+
+interface TemporaryPasswordDialogState extends AdminPasswordResetResponse {
   user: AdminUserSummary;
 }
 
@@ -39,6 +58,8 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
   const [forbidden, setForbidden] = useState(false);
   const [operation, setOperation] = useState(false);
   const [pendingConfirmation, setPendingConfirmation] = useState<PendingConfirmation>();
+  const [temporaryPassword, setTemporaryPassword] = useState<TemporaryPasswordDialogState>();
+  const [temporaryPasswordCopied, setTemporaryPasswordCopied] = useState(false);
   const listRequestIdRef = useRef(0);
   const detailRequestIdRef = useRef(0);
 
@@ -144,12 +165,16 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
       } else if (action === 'restore') {
         requireApiData(await updateAdminUserStatus(user.id, { status: 'ACTIVE' }), t.operationFailed);
         await loadUsers(page);
-      } else {
+      } else if (action === 'delete') {
         requireApiData(await deleteAdminUser(user.id), t.operationFailed);
         const reloaded = await loadUsers(page);
         if (reloaded && reloaded.items.length === 0 && page > 1) {
           setPage(page - 1);
         }
+      } else {
+        const result = requireApiData(await resetAdminUserPassword(user.id), t.operationFailed);
+        setTemporaryPassword({ ...result, user });
+        setTemporaryPasswordCopied(false);
       }
       setPendingConfirmation(undefined);
     } catch (caught) {
@@ -166,7 +191,27 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
     if (action === 'restore') {
       return t.confirmRestoreTitle;
     }
+    if (action === 'resetPassword') {
+      return t.confirmPasswordResetTitle;
+    }
     return t.confirmDeleteTitle;
+  }
+
+  async function copyTemporaryPassword() {
+    if (!temporaryPassword) {
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(temporaryPassword.temporaryPassword);
+      setTemporaryPasswordCopied(true);
+    } catch {
+      setError(t.operationFailed);
+    }
+  }
+
+  function closeTemporaryPassword() {
+    setTemporaryPassword(undefined);
+    setTemporaryPasswordCopied(false);
   }
 
   if (forbidden) {
@@ -308,9 +353,21 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
         <aside className="admin-user-detail" aria-label={t.detailAriaLabel} role="region">
           <div>
             <h2>{selectedUser.displayName ?? resources.app.unknownUser(selectedUser.id)}</h2>
-            <button className="secondary-button compact" onClick={() => setSelectedUser(undefined)} type="button">
-              {resources.common.close}
-            </button>
+            <div className="admin-user-detail-actions">
+              {selectedUser.status !== 'DELETED' ? (
+                <button
+                  className="secondary-button compact"
+                  onClick={() => setPendingConfirmation({ action: 'resetPassword', user: selectedUser })}
+                  type="button"
+                >
+                  <KeyRound aria-hidden="true" />
+                  <span>{t.resetPassword}</span>
+                </button>
+              ) : null}
+              <button className="secondary-button compact" onClick={() => setSelectedUser(undefined)} type="button">
+                {resources.common.close}
+              </button>
+            </div>
           </div>
           <dl>
             <dt>{t.id}</dt>
@@ -340,12 +397,38 @@ export default function UserManagementPage({ onNavigateHome }: UserManagementPag
           <div className="admin-confirm-dialog" aria-labelledby="admin-confirm-dialog-title" aria-modal="true" role="dialog">
             <h2 id="admin-confirm-dialog-title">{confirmationTitle(pendingConfirmation.action)}</h2>
             {pendingConfirmation.action === 'delete' ? <p>{t.confirmDeleteDescription}</p> : null}
+            {pendingConfirmation.action === 'resetPassword' ? <p>{t.confirmPasswordResetDescription}</p> : null}
             <div className="button-row">
               <button className="secondary-button" disabled={operation} onClick={() => setPendingConfirmation(undefined)} type="button">
                 {resources.common.cancel}
               </button>
               <button className="primary-button" disabled={operation} onClick={() => void confirmOperation()} type="button">
                 {t.confirm}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {temporaryPassword ? (
+        <div className="admin-confirm-dialog-backdrop">
+          <div
+            className="admin-confirm-dialog temporary-password-dialog"
+            aria-labelledby="temporary-password-dialog-title"
+            aria-modal="true"
+            role="dialog"
+          >
+            <h2 id="temporary-password-dialog-title">{t.temporaryPasswordTitle}</h2>
+            <p>{t.temporaryPasswordNotice}</p>
+            <code>{temporaryPassword.temporaryPassword}</code>
+            <p>{t.temporaryPasswordExpiresAt}: {formatDateTime(temporaryPassword.expiresAt)}</p>
+            <div className="button-row">
+              <button className="secondary-button" onClick={() => void copyTemporaryPassword()} type="button">
+                <Copy aria-hidden="true" />
+                <span>{temporaryPasswordCopied ? t.temporaryPasswordCopied : t.copyTemporaryPassword}</span>
+              </button>
+              <button className="primary-button" onClick={closeTemporaryPassword} type="button">
+                {resources.common.close}
               </button>
             </div>
           </div>

@@ -7,6 +7,14 @@ import type {
   AdminUserListQuery,
   AdminUserPage,
   AdminUserStatusUpdateRequest,
+  AdminPasswordResetResponse,
+  BetaAccessListQuery,
+  BetaAccessPage,
+  BetaAccessSettings,
+  BetaAccessSettingsUpdateRequest,
+  BetaAllowedEmailBatchResponse,
+  BetaAllowedEmailRemovalResponse,
+  CompletePasswordResetRequest,
   ApiResponse,
   CurrentUser,
   HealthStatus,
@@ -180,6 +188,24 @@ export async function logout(): Promise<void> {
   if (!response.ok) {
     throw await toApiRequestError(response, 'Logout request failed');
   }
+}
+
+export async function completePasswordReset(request: CompletePasswordResetRequest): Promise<CurrentUser> {
+  const response = await apiFetch('/api/auth/password/complete-reset', {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Password reset completion failed');
+  }
+
+  const body = await response.json() as ApiResponse<CurrentUser>;
+  return requireApiData(body, 'Password reset completion failed');
 }
 
 export async function listMistakeNotes(
@@ -569,6 +595,90 @@ export async function deleteAdminUser(userId: number): Promise<ApiResponse<Admin
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Admin user delete request failed');
+  }
+
+  return response.json();
+}
+
+export async function getBetaAccess(
+  query: BetaAccessListQuery = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<BetaAccessPage>> {
+  const response = await apiFetch(`/api/admin/beta-access${toQueryString(query)}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Beta access request failed');
+  }
+
+  return response.json();
+}
+
+export async function updateBetaAccessSettings(
+  request: BetaAccessSettingsUpdateRequest,
+): Promise<ApiResponse<BetaAccessSettings>> {
+  const response = await apiFetch('/api/admin/beta-access/settings', {
+    method: 'PATCH',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Beta access settings update failed');
+  }
+
+  return response.json();
+}
+
+export async function addBetaAllowedEmails(
+  emails: string[],
+): Promise<ApiResponse<BetaAllowedEmailBatchResponse>> {
+  const response = await apiFetch('/api/admin/beta-access/emails', {
+    method: 'POST',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ emails }),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Beta allowlist update failed');
+  }
+
+  return response.json();
+}
+
+export async function removeBetaAllowedEmail(
+  allowedEmailId: number,
+): Promise<ApiResponse<BetaAllowedEmailRemovalResponse>> {
+  const response = await apiFetch(`/api/admin/beta-access/emails/${allowedEmailId}`, {
+    method: 'DELETE',
+    headers: jsonHeaders,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Beta allowlist removal failed');
+  }
+
+  return response.json();
+}
+
+export async function resetAdminUserPassword(
+  userId: number,
+): Promise<ApiResponse<AdminPasswordResetResponse>> {
+  const response = await apiFetch(`/api/admin/users/${userId}/password-reset`, {
+    method: 'POST',
+    headers: jsonHeaders,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Admin password reset failed');
   }
 
   return response.json();

@@ -35,4 +35,18 @@ class AuthMigrationResourceTest {
         .contains("password_hash text not null")
         .contains("unique (user_id)");
   }
+
+  @Test
+  void betaAccessMigrationDefinesAllowlistAndTemporaryPasswordState() throws Exception {
+    ClassPathResource resource = new ClassPathResource(
+        "db/migration/auth/V28__beta_access_and_password_reset.sql");
+
+    assertThat(resource.exists()).isTrue();
+    assertThat(resource.getContentAsString(StandardCharsets.UTF_8))
+        .contains("CREATE TABLE auth_beta_access_settings")
+        .contains("CREATE TABLE auth_beta_allowed_email")
+        .contains("email_normalized VARCHAR(320) NOT NULL")
+        .contains("ADD COLUMN reset_required BOOLEAN NOT NULL DEFAULT FALSE")
+        .contains("ADD COLUMN temporary_password_expires_at TIMESTAMPTZ NULL");
+  }
 }

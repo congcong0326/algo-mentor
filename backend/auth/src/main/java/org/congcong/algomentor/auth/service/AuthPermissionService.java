@@ -25,6 +25,11 @@ public class AuthPermissionService {
       permissions.add(AuthPermission.PROBLEM_READ);
       permissions.add(AuthPermission.PROBLEM_WRITE);
       permissions.add(AuthPermission.USER_MANAGE);
+      permissions.add(AuthPermission.ADMIN_OVERVIEW_READ);
+      permissions.add(AuthPermission.BETA_ACCESS_MANAGE);
+      permissions.add(AuthPermission.AI_GOVERNANCE_MANAGE);
+      permissions.add(AuthPermission.AI_RUN_READ);
+      permissions.add(AuthPermission.FEEDBACK_MANAGE);
       permissions.add(AuthPermission.DEBUG_ACCESS);
     }
     return permissions.stream()

@@ -15,6 +15,25 @@ public interface AuthUserMapper {
 
   PasswordCredentialRow findPasswordCredentialByEmailNormalized(@Param("emailNormalized") String emailNormalized);
 
+  PasswordCredentialRow findPasswordCredentialByUserId(@Param("userId") long userId);
+
+  int resetPasswordCredential(
+      @Param("userId") long userId,
+      @Param("passwordHash") String passwordHash,
+      @Param("expiresAt") Instant expiresAt,
+      @Param("resetBy") long resetBy,
+      @Param("updatedAt") Instant updatedAt);
+
+  int consumeTemporaryPassword(
+      @Param("userId") long userId,
+      @Param("expectedPasswordHash") String expectedPasswordHash,
+      @Param("consumedAt") Instant consumedAt);
+
+  int completePasswordReset(
+      @Param("userId") long userId,
+      @Param("passwordHash") String passwordHash,
+      @Param("changedAt") Instant changedAt);
+
   int insertOAuthAccount(OAuthAccountRow account);
 
   int updateOAuthAccountProfile(

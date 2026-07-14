@@ -11,8 +11,21 @@ public record CurrentUserResponse(
     String avatarUrl,
     List<AuthRole> roles,
     List<String> permissions,
-    AuthUserStatus status
+    AuthUserStatus status,
+    boolean passwordChangeRequired
 ) {
+
+  public CurrentUserResponse(
+      Long id,
+      String email,
+      String displayName,
+      String avatarUrl,
+      List<AuthRole> roles,
+      List<String> permissions,
+      AuthUserStatus status
+  ) {
+    this(id, email, displayName, avatarUrl, roles, permissions, status, false);
+  }
 
   public CurrentUserResponse {
     if (id == null || id < 1) {

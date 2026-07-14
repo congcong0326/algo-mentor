@@ -201,7 +201,8 @@
       trigger_type,
       status,
       max_steps,
-      started_at
+      started_at,
+      diagnostic_retention_expires_at
     )
     VALUES (
       #{taskId},
@@ -212,7 +213,8 @@
       'user_request',
       'running',
       #{maxSteps},
-      NOW()
+      NOW(),
+      NOW() + INTERVAL '30 days'
     )
     RETURNING id
   </select>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.admin.audit.AdminOperationAuditMapper">
+  <insert id="insert">
+    INSERT INTO admin_operation_audit (
+      operator_user_id,
+      action,
+      target_type,
+      target_ref,
+      outcome,
+      request_id,
+      metadata_json,
+      created_at
+    ) VALUES (
+      #{operatorUserId},
+      #{action},
+      #{targetType},
+      #{targetRef},
+      #{outcome},
+      #{requestId},
+      CAST(#{metadataJson} AS JSONB),
+      #{createdAt}
+    )
+  </insert>
+</mapper>

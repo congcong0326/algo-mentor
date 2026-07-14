@@ -325,6 +325,53 @@ describe('UserManagementPage', () => {
 
     expect(onNavigateHome).toHaveBeenCalledTimes(1);
   });
+
+  it('shows an administrator-reset password only once after confirmation', async () => {
+    const writeText = vi.fn(() => Promise.resolve());
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+    const user = userSummary({ id: 42, email: 'member@example.com' });
+    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+      if (url === '/api/admin/users?page=1&pageSize=20') {
+        return Promise.resolve(adminUsersResponse({
+          items: [user],
+          total: 1,
+          page: 1,
+          pageSize: 20,
+        }));
+      }
+      if (url === '/api/admin/users/42' && !init?.method) {
+        return Promise.resolve(apiResponse(userDetail(user)));
+      }
+      if (url === '/api/admin/users/42/password-reset') {
+        expect(init?.method).toBe('POST');
+        return Promise.resolve(apiResponse({
+          temporaryPassword: 'Aa2!temporary-pass',
+          expiresAt: '2026-07-14T00:00:00Z',
+        }));
+      }
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderPage();
+
+    fireEvent.click(await screen.findByRole('button', { name: '查看' }));
+    fireEvent.click(await screen.findByRole('button', { name: '重置密码' }));
+    expect(screen.getByRole('dialog')).toHaveTextContent('旧密码失效');
+    fireEvent.click(screen.getByRole('button', { name: '确认' }));
+
+    expect(await screen.findByText('Aa2!temporary-pass')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '复制临时密码' }));
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith('Aa2!temporary-pass'));
+    expect(screen.getByRole('button', { name: '已复制' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('dialog', { name: '一次性临时密码' })
+      .querySelector<HTMLButtonElement>('.primary-button')!);
+    expect(screen.queryByText('Aa2!temporary-pass')).not.toBeInTheDocument();
+  });
 });
 
 function renderPage(onNavigateHome = vi.fn()) {

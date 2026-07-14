@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.auth.betaaccess.repository.mybatis.BetaAccessMapper">
+  <resultMap id="BetaAccessSettingsRowMap" type="org.congcong.algomentor.auth.betaaccess.repository.mybatis.model.BetaAccessSettingsRow">
+    <constructor>
+      <idArg column="id" javaType="_short"/>
+      <arg column="email_allowlist_enabled" javaType="_boolean"/>
+      <arg column="updated_by" javaType="java.lang.Long"/>
+      <arg column="updated_by_display_name" javaType="java.lang.String"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <resultMap id="BetaAllowedEmailRowMap" type="org.congcong.algomentor.auth.betaaccess.repository.mybatis.model.BetaAllowedEmailRow">
+    <constructor>
+      <idArg column="id" javaType="_long"/>
+      <arg column="email" javaType="java.lang.String"/>
+      <arg column="email_normalized" javaType="java.lang.String"/>
+      <arg column="created_by" javaType="_long"/>
+      <arg column="created_by_display_name" javaType="java.lang.String"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="registered_user_id" javaType="java.lang.Long"/>
+      <arg column="registered_user_status" javaType="java.lang.String"/>
+    </constructor>
+  </resultMap>
+
+  <sql id="AllowedEmailColumns">
+    allowed.id,
+    allowed.email,
+    allowed.email_normalized,
+    allowed.created_by,
+    COALESCE(creator.display_name, creator.email) AS created_by_display_name,
+    allowed.created_at,
+    registered.id AS registered_user_id,
+    registered.status AS registered_user_status
+  </sql>
+
+  <select id="findSettings" resultMap="BetaAccessSettingsRowMap">
+    SELECT settings.id,
+           settings.email_allowlist_enabled,
+           settings.updated_by,
+           COALESCE(updater.display_name, updater.email) AS updated_by_display_name,
+           settings.updated_at
+    FROM auth_beta_access_settings settings
+    LEFT JOIN auth_users updater ON updater.id = settings.updated_by
+    WHERE settings.id = 1
+  </select>
+
+  <update id="updateSettings">
+    UPDATE auth_beta_access_settings
+    SET email_allowlist_enabled = #{emailAllowlistEnabled},
+        updated_by = #{updatedBy},
+        updated_at = #{updatedAt}
+    WHERE id = 1
+  </update>
+
+  <select id="isAllowedEmail" resultType="boolean">
+    SELECT EXISTS(
+      SELECT 1
+      FROM auth_beta_allowed_email
+      WHERE email_normalized = #{emailNormalized}
+    )
+  </select>
+
+  <select id="findAllowedEmailById" resultMap="BetaAllowedEmailRowMap">
+    SELECT <include refid="AllowedEmailColumns"/>
+    FROM auth_beta_allowed_email allowed
+    INNER JOIN auth_users creator ON creator.id = allowed.created_by
+    LEFT JOIN auth_users registered ON registered.email_normalized = allowed.email_normalized
+    WHERE allowed.id = #{allowedEmailId}
+  </select>
+
+  <select id="findAllowedEmailByNormalized" resultMap="BetaAllowedEmailRowMap">
+    SELECT <include refid="AllowedEmailColumns"/>
+    FROM auth_beta_allowed_email allowed
+    INNER JOIN auth_users creator ON creator.id = allowed.created_by
+    LEFT JOIN auth_users registered ON registered.email_normalized = allowed.email_normalized
+    WHERE allowed.email_normalized = #{emailNormalized}
+  </select>
+
+  <select id="insertAllowedEmail" resultType="java.lang.Long">
+    INSERT INTO auth_beta_allowed_email (email, email_normalized, created_by, created_at)
+    VALUES (#{email}, #{emailNormalized}, #{createdBy}, #{createdAt})
+    ON CONFLICT (email_normalized) DO NOTHING
+    RETURNING id
+  </select>
+
+  <delete id="deleteAllowedEmail">
+    DELETE FROM auth_beta_allowed_email
+    WHERE id = #{allowedEmailId}
+  </delete>
+
+  <select id="findAllowedEmails" resultMap="BetaAllowedEmailRowMap">
+    SELECT <include refid="AllowedEmailColumns"/>
+    FROM auth_beta_allowed_email allowed
+    INNER JOIN auth_users creator ON creator.id = allowed.created_by
+    LEFT JOIN auth_users registered ON registered.email_normalized = allowed.email_normalized
+    <if test="keyword != null and keyword != ''">
+      WHERE lower(allowed.email) LIKE concat('%', lower(#{keyword}), '%')
+    </if>
+    ORDER BY allowed.created_at DESC, allowed.id DESC
+    LIMIT #{limit}
+    OFFSET #{offset}
+  </select>
+
+  <select id="countAllowedEmails" resultType="long">
+    SELECT count(*)
+    FROM auth_beta_allowed_email allowed
+    <if test="keyword != null and keyword != ''">
+      WHERE lower(allowed.email) LIKE concat('%', lower(#{keyword}), '%')
+    </if>
+  </select>
+</mapper>

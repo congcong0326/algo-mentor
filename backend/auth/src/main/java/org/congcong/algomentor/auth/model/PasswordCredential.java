@@ -6,9 +6,24 @@ public record PasswordCredential(
     Long id,
     long userId,
     String passwordHash,
+    boolean resetRequired,
+    Instant temporaryPasswordExpiresAt,
+    Instant temporaryPasswordConsumedAt,
+    Instant passwordChangedAt,
+    Long resetBy,
     Instant createdAt,
     Instant updatedAt
 ) {
+
+  public PasswordCredential(
+      Long id,
+      long userId,
+      String passwordHash,
+      Instant createdAt,
+      Instant updatedAt
+  ) {
+    this(id, userId, passwordHash, false, null, null, null, null, createdAt, updatedAt);
+  }
 
   public PasswordCredential {
     if (id != null && id < 1) {
@@ -19,6 +34,9 @@ public record PasswordCredential(
     }
     if (passwordHash == null || passwordHash.isBlank()) {
       throw new IllegalArgumentException("passwordHash must not be blank.");
+    }
+    if (resetBy != null && resetBy < 1) {
+      throw new IllegalArgumentException("resetBy must be positive when present.");
     }
   }
 }

@@ -29,13 +29,19 @@
 - `docs/product-planning/p1-4.0-a-company-problem-metadata-design.md`：P1-4.0-A 公司维度题目元数据设计，说明 `liquidslr`（欧美/时间桶）与 `afatcoder/LeetcodeTop`（国内/岗位）双主源、`role` 岗位维度、cn/com 链接归一、公司高频 seed、数据库模型、题库/API/Agent 工具扩展和测试计划。
 - `docs/mistake-notebook-review-technical-design.md`：错题本 + 间隔重复复习技术详设，说明 `mistake_note`/`review_log` 迁移（V18）、`mentor.application.review` 模块划分、SM-2 调度引擎、事件驱动入库、卡片生成/预生成/配额、复述判定、API 契约与任务拆解。
 - `docs/review-card-content-fix-design.md`：复习卡内容修复研发设计，说明复习卡标题补齐 `titleCn/difficulty`、题面通过 `GET /api/mistake-notes/{id}/problem-statement` 按需查询、`review.note.ingest{outcome}` 埋点扩展与任务拆解。
+- `docs/internal-beta-admin-capabilities-design.md`：5-20 人封闭内测管理员业务能力研发设计，说明数据库邮箱白名单、临时密码、动态 AI 额度、模型价格与成本估算、AI run 排障、30 天诊断保留、反馈信箱、管理员概览和低敏审计边界。
+- `docs/internal-beta-admin-capabilities-implementation-plan.md`：内测管理员业务能力分阶段实施计划，按准入与账号运维、AI 止损与成本观测、run 排障、反馈与概览拆分任务、测试和发布门禁。
 
 ## 后端
 
 - `backend/pom.xml`：Maven 多模块根，统一 Java 17、Spring Boot 与 `openai-java` 版本。
 - `backend/common`：跨模块公共模型、DTO 和工具。
+- `backend/common/src/main/java/org/congcong/algomentor/common/admin/audit`：低敏管理员审计公共端口、强类型动作/目标/结果、受控 metadata 和 no-op 实现。
 - `backend/domain`：业务领域模型，例如算法学习主题、题目、学习计划、会话等。
 - `backend/identity`：身份本体模块，拥有用户/角色模型、用户与角色 MyBatis mapper、管理员用户管理 API、身份状态事件和用户软删除迁移；`auth` 依赖该模块完成认证流程中的用户创建、查询、角色和状态校验。
+- `backend/auth/src/main/java/org/congcong/algomentor/auth/betaaccess`：内测邮箱准入的模型、独立 repository/service、管理员 API 和三类认证入口共用策略。
+- `backend/auth/src/main/java/org/congcong/algomentor/auth/passwordreset`：管理员临时密码重置、24 小时有效期、原子单次消费、强制改密和 Session 吊销事务边界。
+- `backend/auth/src/main/resources/db/migration/auth/V28__beta_access_and_password_reset.sql`：内测准入设置、邮箱白名单和密码凭据临时状态迁移，白名单默认关闭。
 - `backend/llm-core`：项目内 LLM 抽象契约，按职责拆分为 `gateway`、`provider`、`model`、`request`、`response`、`stream`、`tool`、`exception` 子包。
 - `backend/llm-openai`：OpenAI provider 适配模块，隔离 `openai-java` SDK、OpenAI 配置、provider 能力描述和后续请求/响应映射。
 - `backend/agent-core`：Agent 核心编排模型，面向 `LlmGateway` 组织模型调用和后续工具执行流程；`runtime` 子包提供通用会话模型、上下文组装策略和 repository 端口。
@@ -63,6 +69,10 @@
 - `backend/agent-persistence-postgres/src/main/java/org/congcong/algomentor/agent/persistence/postgres/json`：PostgreSQL JSONB 与 agent message role 的 MyBatis type handler。
 - `backend/agent-persistence-postgres/src/main/resources/mapper/agent`：agent runtime MyBatis XML mapper 目录，SQL 只保存在 persistence 模块。
 - `backend/agent-persistence-postgres/src/main/resources/db/migration/agent`：agent runtime Flyway 迁移脚本目录，随 `classpath:db/migration` 被 API 应用递归扫描；这些目录共享同一个 Flyway 版本空间，新增 `V` 版本号需要跨模块唯一；`V3__agent_runtime_sequence_counters.sql` 使用数据库计数器/触发器分配 turn、message sequence 和 run attempt。
+- `backend/agent-persistence-postgres/src/main/resources/db/migration/agent/V31__agent_diagnostic_retention.sql`：为 Agent run 固定 30 天诊断保留期限并回填历史记录；新 run 在 mapper 插入时同步写入到期时间。
+- `backend/ai-governance/src/main/resources/db/migration/ai/V29__ai_runtime_policy_and_model_price.sql`：提前固定后续阶段的动态 AI 策略、模型价格和调用级用量表，本阶段不暴露治理接口且不回填 legacy 调用台账。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/admin/audit`：管理员审计 PostgreSQL/MyBatis 实现，以独立 `REQUIRES_NEW` 事务写入并对失败计数降级。
+- `backend/mentor-api/src/main/resources/db/migration/V30__admin_audit_and_user_feedback.sql`：提前固定管理员审计和用户反馈表结构，本阶段只启用审计写入。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice`：题目训练会话应用层，包含 `PracticeSessionService`、`PracticeMessageStreamService`、prompt assembly 片段 provider、题面 catalog 端口和训练进度/消息领域模型。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewAgentTool.java`：`submit_practice_code_review` Agent 工具，从受信 metadata、practice session repository 和 run message lookup 读取上下文，不信任模型 arguments 中的用户/session/code。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewPermissionHook.java`：Review 工具业务权限 hook，命中 `ASK`，构造低敏 preview 并脱敏 authorization、cookie、API key、JWT/bearer/token 类内容。
@@ -79,6 +89,9 @@
 - `frontend/src/App.tsx`：学习工作台首屏。
 - `frontend/src/services/api.ts`：前端 API 调用封装，包含 Agent Tool 权限决策 API `decideAgentToolPermission(...)`。
 - `frontend/src/types/api.ts`：前后端共享契约的 TypeScript 表示，包含权限 SSE 事件、决策请求/响应和 Review tool result 类型。
+- `frontend/src/admin/BetaAccessPage.tsx`：内测准入管理页，提供开关确认、搜索、批量添加、分页列表、移除确认和 Session 吊销失败提示。
+- `frontend/src/admin/UserManagementPage.tsx`：管理员用户列表与详情页；阶段一增加一次性临时密码重置和关闭即清空的结果对话框。
+- `frontend/src/app/PasswordChangeRequiredPage.tsx`：临时密码登录后的独占改密页，成功后恢复普通 Session 路由。
 - `frontend/src/learning-plans/PracticeChatWorkbench.tsx`：题目训练聊天工作台，使用 practice session 专用 API 渲染题面 seed、流式 AI 回复、Review 入口、LeetCode 外链和题目完成状态；监听权限 SSE 并展示轻量原生确认弹窗。
 - `frontend/src/i18n/locales.ts`：前端文案资源，包含权限弹窗、拒绝、超时“本次未执行。”和英文 “This action was not run.” 文案。
 - `frontend/package.json`：React 19、TypeScript 6、Vite 8、Vitest 4 依赖与脚本。

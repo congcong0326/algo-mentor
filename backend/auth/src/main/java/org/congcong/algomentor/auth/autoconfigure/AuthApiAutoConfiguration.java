@@ -2,7 +2,20 @@ package org.congcong.algomentor.auth.autoconfigure;
 
 import java.time.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
+import org.congcong.algomentor.auth.betaaccess.repository.BetaAccessRepository;
+import org.congcong.algomentor.auth.betaaccess.repository.mybatis.BetaAccessMapper;
+import org.congcong.algomentor.auth.betaaccess.repository.mybatis.MyBatisBetaAccessRepository;
+import org.congcong.algomentor.auth.betaaccess.service.BetaAccessAdminService;
+import org.congcong.algomentor.auth.betaaccess.service.BetaAccessMetrics;
+import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
+import org.congcong.algomentor.auth.betaaccess.service.BetaAllowedEmailRemovalExecutor;
+import org.congcong.algomentor.auth.betaaccess.service.MicrometerBetaAccessMetrics;
+import org.congcong.algomentor.auth.betaaccess.service.NoopBetaAccessMetrics;
 import org.congcong.algomentor.auth.config.AuthProperties;
+import org.congcong.algomentor.auth.controller.admin.BetaAccessController;
+import org.congcong.algomentor.auth.controller.admin.BetaAccessExceptionHandler;
+import org.congcong.algomentor.auth.controller.admin.AdminPasswordResetController;
+import org.congcong.algomentor.auth.controller.admin.AdminPasswordResetExceptionHandler;
 import org.congcong.algomentor.auth.controller.CurrentUserController;
 import org.congcong.algomentor.auth.controller.PasswordAuthController;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
@@ -14,6 +27,9 @@ import org.congcong.algomentor.auth.security.AuthenticatedOidcUserService;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.auth.security.PasswordUserDetailsService;
 import org.congcong.algomentor.auth.security.SecurityContextCurrentUserIdProvider;
+import org.congcong.algomentor.auth.passwordreset.PasswordResetMutationExecutor;
+import org.congcong.algomentor.auth.passwordreset.PasswordResetService;
+import org.congcong.algomentor.auth.passwordreset.TemporaryPasswordGenerator;
 import org.congcong.algomentor.auth.session.AuthSessionMetrics;
 import org.congcong.algomentor.auth.session.AuthSessionRevocationService;
 import org.congcong.algomentor.auth.session.IdentityUserStatusChangedEventListener;
@@ -25,6 +41,9 @@ import org.congcong.algomentor.auth.service.AuthPermissionService;
 import org.congcong.algomentor.auth.service.OAuth2LoginUserService;
 import org.congcong.algomentor.auth.service.PasswordUserService;
 import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
+import org.congcong.algomentor.common.api.ApiErrorMessageResolver;
+import org.congcong.algomentor.common.admin.audit.AdminOperationAuditRecorder;
+import org.congcong.algomentor.common.admin.audit.NoopAdminOperationAuditRecorder;
 import org.congcong.algomentor.identity.autoconfigure.IdentityAutoConfiguration;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -42,6 +61,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @AutoConfiguration(after = IdentityAutoConfiguration.class)
 @EnableConfigurationProperties(AuthProperties.class)
@@ -81,6 +101,20 @@ public class AuthApiAutoConfiguration {
   }
 
   @Bean
+  @ConditionalOnBean(SqlSessionTemplate.class)
+  @ConditionalOnMissingBean
+  public BetaAccessMapper betaAccessMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(BetaAccessMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnBean(BetaAccessMapper.class)
+  @ConditionalOnMissingBean
+  public BetaAccessRepository betaAccessRepository(BetaAccessMapper betaAccessMapper) {
+    return new MyBatisBetaAccessRepository(betaAccessMapper);
+  }
+
+  @Bean
   @ConditionalOnMissingBean
   public Clock authClock() {
     return Clock.systemUTC();
@@ -100,6 +134,74 @@ public class AuthApiAutoConfiguration {
       AuthProperties authProperties
   ) {
     return new AdminEmailRoleService(identityUserRepository, authProperties.getAdminEmails());
+  }
+
+  @Bean
+  @ConditionalOnBean(BetaAccessRepository.class)
+  @ConditionalOnMissingBean
+  public BetaAccessPolicy betaAccessPolicy(
+      BetaAccessRepository betaAccessRepository,
+      ObjectProvider<AdminEmailRoleService> adminEmailRoleServiceProvider
+  ) {
+    return new BetaAccessPolicy(betaAccessRepository, adminEmailRoleServiceProvider.getIfAvailable());
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public BetaAccessMetrics betaAccessMetrics(ObjectProvider<MeterRegistry> meterRegistryProvider) {
+    MeterRegistry registry = meterRegistryProvider.getIfAvailable();
+    return registry == null ? new NoopBetaAccessMetrics() : new MicrometerBetaAccessMetrics(registry);
+  }
+
+  @Bean
+  @ConditionalOnBean(BetaAccessRepository.class)
+  @ConditionalOnMissingBean
+  public BetaAllowedEmailRemovalExecutor betaAllowedEmailRemovalExecutor(
+      BetaAccessRepository betaAccessRepository,
+      ObjectProvider<PlatformTransactionManager> transactionManagerProvider
+  ) {
+    return new BetaAllowedEmailRemovalExecutor(
+        betaAccessRepository,
+        transactionManagerProvider.getIfAvailable());
+  }
+
+  @Bean
+  @ConditionalOnBean({BetaAccessRepository.class, IdentityUserRepository.class})
+  @ConditionalOnMissingBean
+  public BetaAccessAdminService betaAccessAdminService(
+      BetaAccessRepository betaAccessRepository,
+      IdentityUserRepository identityUserRepository,
+      ObjectProvider<AuthSessionRevocationService> sessionRevocationServiceProvider,
+      ObjectProvider<AdminOperationAuditRecorder> auditRecorderProvider,
+      BetaAllowedEmailRemovalExecutor removalExecutor,
+      BetaAccessMetrics betaAccessMetrics,
+      Clock authClock
+  ) {
+    return new BetaAccessAdminService(
+        betaAccessRepository,
+        identityUserRepository,
+        sessionRevocationServiceProvider.getIfAvailable(),
+        auditRecorderProvider.getIfAvailable(NoopAdminOperationAuditRecorder::new),
+        removalExecutor,
+        betaAccessMetrics,
+        authClock);
+  }
+
+  @Bean
+  @ConditionalOnBean(BetaAccessAdminService.class)
+  @ConditionalOnMissingBean
+  public BetaAccessController betaAccessController(BetaAccessAdminService betaAccessAdminService) {
+    return new BetaAccessController(betaAccessAdminService);
+  }
+
+  @Bean
+  @ConditionalOnBean(BetaAccessController.class)
+  @ConditionalOnMissingBean
+  public BetaAccessExceptionHandler betaAccessExceptionHandler(
+      ObjectProvider<ApiErrorResponseFactory> responseFactoryProvider
+  ) {
+    return new BetaAccessExceptionHandler(responseFactoryProvider.getIfAvailable(
+        () -> new ApiErrorResponseFactory(new ApiErrorMessageResolver())));
   }
 
   @Bean
@@ -126,14 +228,16 @@ public class AuthApiAutoConfiguration {
       IdentityUserRepository identityUserRepository,
       PasswordEncoder passwordEncoder,
       Clock authClock,
-      ObjectProvider<AdminEmailRoleService> adminEmailRoleServiceProvider
+      ObjectProvider<AdminEmailRoleService> adminEmailRoleServiceProvider,
+      ObjectProvider<BetaAccessPolicy> betaAccessPolicyProvider
   ) {
     return new PasswordUserService(
         authUserRepository,
         identityUserRepository,
         passwordEncoder,
         authClock,
-        adminEmailRoleServiceProvider.getIfAvailable());
+        adminEmailRoleServiceProvider.getIfAvailable(),
+        betaAccessPolicyProvider.getIfAvailable());
   }
 
   @Bean
@@ -141,9 +245,76 @@ public class AuthApiAutoConfiguration {
   @ConditionalOnMissingBean
   public AuthenticationManager passwordAuthenticationManager(
       PasswordUserDetailsService passwordUserDetailsService,
-      PasswordEncoder passwordEncoder
+      PasswordEncoder passwordEncoder,
+      AuthUserRepository authUserRepository,
+      Clock authClock,
+      ObjectProvider<BetaAccessPolicy> betaAccessPolicyProvider
   ) {
-    return new ProviderManager(new AuthenticatedDaoAuthenticationProvider(passwordEncoder, passwordUserDetailsService));
+    return new ProviderManager(new AuthenticatedDaoAuthenticationProvider(
+        passwordEncoder,
+        passwordUserDetailsService,
+        authUserRepository,
+        authClock,
+        betaAccessPolicyProvider.getIfAvailable()));
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public TemporaryPasswordGenerator temporaryPasswordGenerator() {
+    return new TemporaryPasswordGenerator();
+  }
+
+  @Bean
+  @ConditionalOnBean(AuthUserRepository.class)
+  @ConditionalOnMissingBean
+  public PasswordResetMutationExecutor passwordResetMutationExecutor(
+      AuthUserRepository authUserRepository,
+      ObjectProvider<AuthSessionRevocationService> sessionRevocationServiceProvider,
+      ObjectProvider<PlatformTransactionManager> transactionManagerProvider
+  ) {
+    return new PasswordResetMutationExecutor(
+        authUserRepository,
+        sessionRevocationServiceProvider.getIfAvailable(),
+        transactionManagerProvider.getIfAvailable());
+  }
+
+  @Bean
+  @ConditionalOnBean({AuthUserRepository.class, IdentityUserRepository.class, PasswordResetMutationExecutor.class})
+  @ConditionalOnMissingBean
+  public PasswordResetService passwordResetService(
+      AuthUserRepository authUserRepository,
+      IdentityUserRepository identityUserRepository,
+      PasswordEncoder passwordEncoder,
+      TemporaryPasswordGenerator temporaryPasswordGenerator,
+      PasswordResetMutationExecutor mutationExecutor,
+      ObjectProvider<AdminOperationAuditRecorder> auditRecorderProvider,
+      Clock authClock
+  ) {
+    return new PasswordResetService(
+        authUserRepository,
+        identityUserRepository,
+        passwordEncoder,
+        temporaryPasswordGenerator,
+        mutationExecutor,
+        auditRecorderProvider.getIfAvailable(NoopAdminOperationAuditRecorder::new),
+        authClock);
+  }
+
+  @Bean
+  @ConditionalOnBean(PasswordResetService.class)
+  @ConditionalOnMissingBean
+  public AdminPasswordResetController adminPasswordResetController(PasswordResetService passwordResetService) {
+    return new AdminPasswordResetController(passwordResetService);
+  }
+
+  @Bean
+  @ConditionalOnBean(AdminPasswordResetController.class)
+  @ConditionalOnMissingBean
+  public AdminPasswordResetExceptionHandler adminPasswordResetExceptionHandler(
+      ObjectProvider<ApiErrorResponseFactory> responseFactoryProvider
+  ) {
+    return new AdminPasswordResetExceptionHandler(responseFactoryProvider.getIfAvailable(
+        () -> new ApiErrorResponseFactory(new ApiErrorMessageResolver())));
   }
 
   @Bean
@@ -185,13 +356,15 @@ public class AuthApiAutoConfiguration {
       AuthUserRepository authUserRepository,
       IdentityUserRepository identityUserRepository,
       Clock authClock,
-      ObjectProvider<AdminEmailRoleService> adminEmailRoleServiceProvider
+      ObjectProvider<AdminEmailRoleService> adminEmailRoleServiceProvider,
+      ObjectProvider<BetaAccessPolicy> betaAccessPolicyProvider
   ) {
     return new OAuth2LoginUserService(
         authUserRepository,
         identityUserRepository,
         authClock,
-        adminEmailRoleServiceProvider.getIfAvailable());
+        adminEmailRoleServiceProvider.getIfAvailable(),
+        betaAccessPolicyProvider.getIfAvailable());
   }
 
   @Bean
@@ -208,21 +381,19 @@ public class AuthApiAutoConfiguration {
       AuthenticationManager authenticationManager,
       SecurityContextRepository securityContextRepository,
       AuthPermissionService authPermissionService,
+      ObjectProvider<PasswordResetService> passwordResetServiceProvider,
       ObjectProvider<ApiErrorResponseFactory> apiErrorResponseFactoryProvider
   ) {
     ApiErrorResponseFactory responseFactory = apiErrorResponseFactoryProvider.getIfAvailable();
-    return responseFactory == null
-        ? new PasswordAuthController(
-            passwordUserService,
-            authenticationManager,
-            securityContextRepository,
-            authPermissionService)
-        : new PasswordAuthController(
-            passwordUserService,
-            authenticationManager,
-            securityContextRepository,
-            responseFactory,
-            authPermissionService);
+    return new PasswordAuthController(
+        passwordUserService,
+        authenticationManager,
+        securityContextRepository,
+        responseFactory == null
+            ? new ApiErrorResponseFactory(new ApiErrorMessageResolver())
+            : responseFactory,
+        authPermissionService,
+        passwordResetServiceProvider.getIfAvailable());
   }
 
   @Bean

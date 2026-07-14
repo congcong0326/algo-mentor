@@ -2,6 +2,8 @@ package org.congcong.algomentor.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -14,6 +16,9 @@ import java.util.Optional;
 import org.congcong.algomentor.auth.model.OAuthAccount;
 import org.congcong.algomentor.auth.model.OAuthProvider;
 import org.congcong.algomentor.auth.model.PasswordCredential;
+import org.congcong.algomentor.auth.betaaccess.model.BetaAccessSettings;
+import org.congcong.algomentor.auth.betaaccess.repository.BetaAccessRepository;
+import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.identity.model.AuthRole;
@@ -241,6 +246,38 @@ public class OAuth2LoginUserServiceTest {
 
     assertThat(principal.roles()).containsExactly(AuthRole.USER, AuthRole.ADMIN);
     assertThat(repository.rolesByUserId.get(principal.userId())).containsExactly(AuthRole.USER, AuthRole.ADMIN);
+  }
+
+  @Test
+  void existingRoleAdminCanCreateFirstGoogleBindingOutsideAllowlist() {
+    AuthUser admin = repository.createUser(
+        "role-admin@example.com",
+        "role-admin@example.com",
+        "Role Admin",
+        null,
+        AuthUserStatus.ACTIVE,
+        NOW.minusSeconds(3600));
+    repository.addRole(admin.id(), AuthRole.ADMIN);
+    BetaAccessRepository betaAccessRepository = mock(BetaAccessRepository.class);
+    when(betaAccessRepository.findSettings()).thenReturn(Optional.of(
+        new BetaAccessSettings((short) 1, true, null, null, NOW)));
+    OAuth2LoginUserService betaService = new OAuth2LoginUserService(
+        repository,
+        repository,
+        Clock.fixed(NOW, ZoneOffset.UTC),
+        null,
+        new BetaAccessPolicy(betaAccessRepository, null));
+
+    AuthenticatedUserPrincipal principal = betaService.syncGoogleUser(googleAttributes(
+        "role-admin-google-sub",
+        "ROLE-ADMIN@example.com",
+        "Role Admin",
+        null));
+
+    assertThat(principal.userId()).isEqualTo(admin.id());
+    assertThat(principal.roles()).containsExactly(AuthRole.ADMIN);
+    assertThat(repository.oauthAccountsByKey)
+        .containsKey(OAuthProvider.GOOGLE.value() + ":role-admin-google-sub");
   }
 
   private static Map<String, Object> googleAttributes(

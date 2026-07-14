@@ -2,6 +2,7 @@ package org.congcong.algomentor.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Locale;
+import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
 import org.congcong.algomentor.auth.security.ActiveIdentityUserFilter;
 import org.congcong.algomentor.auth.security.ApiAuthenticationEntryPoint;
 import org.congcong.algomentor.auth.security.AuthenticatedOAuth2UserService;
@@ -9,6 +10,7 @@ import org.congcong.algomentor.auth.security.AuthenticatedOidcUserService;
 import org.congcong.algomentor.auth.security.CsrfTokenCookieFilter;
 import org.congcong.algomentor.auth.security.OAuth2AuthenticationFailureHandler;
 import org.congcong.algomentor.auth.security.OAuth2AuthenticationSuccessHandler;
+import org.congcong.algomentor.auth.security.PasswordChangeRequiredFilter;
 import org.congcong.algomentor.auth.security.SpaCsrfTokenRequestHandler;
 import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
@@ -94,6 +96,7 @@ public class AuthSecurityAutoConfiguration {
       ObjectProvider<ClientRegistrationRepository> clientRegistrationRepository,
       ObjectProvider<SecurityContextRepository> securityContextRepository,
       ObjectProvider<IdentityUserRepository> identityUserRepositoryProvider,
+      ObjectProvider<BetaAccessPolicy> betaAccessPolicyProvider,
       AuthProperties properties
   ) throws Exception {
     CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
@@ -160,8 +163,22 @@ public class AuthSecurityAutoConfiguration {
         .sessionManagement(Customizer.withDefaults());
 
     identityUserRepositoryProvider.ifAvailable(repository -> http.addFilterAfter(
-        new ActiveIdentityUserFilter(repository, apiAuthenticationEntryPoint),
+        new ActiveIdentityUserFilter(
+            repository,
+            apiAuthenticationEntryPoint,
+            betaAccessPolicyProvider.getIfAvailable(),
+            objectMapper,
+            apiErrorResponseFactory == null
+                ? new ApiErrorResponseFactory(new org.congcong.algomentor.common.api.ApiErrorMessageResolver())
+                : apiErrorResponseFactory),
         SecurityContextHolderFilter.class));
+    http.addFilterAfter(
+        new PasswordChangeRequiredFilter(
+            objectMapper,
+            apiErrorResponseFactory == null
+                ? new ApiErrorResponseFactory(new org.congcong.algomentor.common.api.ApiErrorMessageResolver())
+                : apiErrorResponseFactory),
+        SecurityContextHolderFilter.class);
 
     return http.build();
   }

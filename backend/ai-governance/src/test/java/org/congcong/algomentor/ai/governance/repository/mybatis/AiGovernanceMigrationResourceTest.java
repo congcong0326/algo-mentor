@@ -22,4 +22,19 @@ class AiGovernanceMigrationResourceTest {
     assertThat(sql).contains("UNIQUE (run_id)");
     assertThat(sql).contains("UNIQUE (user_id, quota_date, scope)");
   }
+
+  @Test
+  void futureRuntimePolicyMigrationDefinesCallLevelUsageWithoutLegacyBackfill() throws IOException {
+    Resource resource = new PathMatchingResourcePatternResolver()
+        .getResource("classpath:db/migration/ai/V29__ai_runtime_policy_and_model_price.sql");
+
+    assertThat(resource.exists()).isTrue();
+    String sql = resource.getContentAsString(StandardCharsets.UTF_8);
+    assertThat(sql)
+        .contains("CREATE TABLE ai_runtime_settings")
+        .contains("CREATE TABLE ai_user_policy")
+        .contains("CREATE TABLE ai_model_price")
+        .contains("CREATE TABLE ai_llm_call_usage")
+        .doesNotContain("INSERT INTO ai_llm_call_usage");
+  }
 }

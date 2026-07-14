@@ -11,6 +11,11 @@ public enum AuthPermission {
   PROBLEM_READ("problem:read"),
   PROBLEM_WRITE("problem:write"),
   USER_MANAGE("user:manage"),
+  ADMIN_OVERVIEW_READ("admin-overview:read"),
+  BETA_ACCESS_MANAGE("beta-access:manage"),
+  AI_GOVERNANCE_MANAGE("ai-governance:manage"),
+  AI_RUN_READ("ai-run:read"),
+  FEEDBACK_MANAGE("feedback:manage"),
   DEBUG_ACCESS("debug:access");
 
   private final String value;

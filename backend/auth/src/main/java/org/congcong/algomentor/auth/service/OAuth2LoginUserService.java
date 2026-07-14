@@ -3,9 +3,11 @@ package org.congcong.algomentor.auth.service;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import org.congcong.algomentor.auth.betaaccess.service.BetaAccessException;
+import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
+import org.congcong.algomentor.auth.betaaccess.service.BetaEmailAddress;
 import org.congcong.algomentor.auth.model.OAuthAccount;
 import org.congcong.algomentor.auth.model.OAuthProvider;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
@@ -31,13 +33,14 @@ public class OAuth2LoginUserService {
   private final IdentityUserRepository identityRepository;
   private final Clock clock;
   private final AdminEmailRoleService adminEmailRoleService;
+  private final BetaAccessPolicy betaAccessPolicy;
 
   public OAuth2LoginUserService(
       AuthUserRepository authRepository,
       IdentityUserRepository identityRepository,
       Clock clock
   ) {
-    this(authRepository, identityRepository, clock, null);
+    this(authRepository, identityRepository, clock, null, null);
   }
 
   public OAuth2LoginUserService(
@@ -46,10 +49,21 @@ public class OAuth2LoginUserService {
       Clock clock,
       AdminEmailRoleService adminEmailRoleService
   ) {
+    this(authRepository, identityRepository, clock, adminEmailRoleService, null);
+  }
+
+  public OAuth2LoginUserService(
+      AuthUserRepository authRepository,
+      IdentityUserRepository identityRepository,
+      Clock clock,
+      AdminEmailRoleService adminEmailRoleService,
+      BetaAccessPolicy betaAccessPolicy
+  ) {
     this.authRepository = authRepository;
     this.identityRepository = identityRepository;
     this.clock = clock;
     this.adminEmailRoleService = adminEmailRoleService;
+    this.betaAccessPolicy = betaAccessPolicy;
   }
 
   @Transactional
@@ -62,6 +76,7 @@ public class OAuth2LoginUserService {
     Instant now = Instant.now(clock);
 
     Optional<OAuthAccount> existingAccount = authRepository.findOAuthAccount(OAuthProvider.GOOGLE, subject);
+    requireBetaAccess(email, existingAccount);
     boolean createdAccount = existingAccount.isEmpty();
     OAuthAccount account = existingAccount
         .orElseGet(() -> createGoogleAccount(subject, email, emailNormalized, displayName, avatarUrl, now));
@@ -86,6 +101,28 @@ public class OAuth2LoginUserService {
         avatarUrl != null,
         effectiveRoles);
     return toPrincipal(updatedUser, effectiveRoles);
+  }
+
+  private void requireBetaAccess(String providerEmail, Optional<OAuthAccount> existingAccount) {
+    if (betaAccessPolicy == null) {
+      return;
+    }
+    Optional<AuthUser> existingUser = existingAccount
+        .flatMap(account -> identityRepository.findUserById(account.userId()));
+    if (existingUser.isEmpty()) {
+      String emailNormalized = BetaEmailAddress.normalize(providerEmail);
+      if (!emailNormalized.isBlank()) {
+        existingUser = identityRepository.findUserByEmailNormalized(emailNormalized);
+      }
+    }
+    boolean hasAdminRole = existingUser
+        .map(user -> identityRepository.findRoles(user.id()).contains(AuthRole.ADMIN))
+        .orElse(false);
+    try {
+      betaAccessPolicy.requireAllowed(providerEmail, hasAdminRole);
+    } catch (BetaAccessException exception) {
+      throw authenticationException(exception.code().name(), exception.getMessage());
+    }
   }
 
   private void ensureConfiguredAdminRole(AuthUser user) {
@@ -157,7 +194,8 @@ public class OAuth2LoginUserService {
   }
 
   private static String normalizeEmail(String email) {
-    return email == null ? null : email.trim().toLowerCase(Locale.ROOT);
+    String normalized = BetaEmailAddress.normalize(email);
+    return normalized.isEmpty() ? null : normalized;
   }
 
   private static OAuth2AuthenticationException authenticationException(String code, String description) {

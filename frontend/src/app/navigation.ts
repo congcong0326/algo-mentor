@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Bot, ClipboardList, House, Library, NotebookTabs, UserRound, UsersRound } from 'lucide-react';
+import { Bot, ClipboardList, House, Library, NotebookTabs, ShieldCheck, UserRound, UsersRound } from 'lucide-react';
 import type { AuthPermission } from '../types/api';
 
 export const APP_ROUTES = {
@@ -11,7 +11,9 @@ export const APP_ROUTES = {
   mistakes: '/mistakes',
   reviewSession: '/mistakes/review',
   problems: '/admin/problems',
+  adminBetaAccess: '/admin/beta-access',
   adminUsers: '/admin/users',
+  passwordChangeRequired: '/password/change-required',
   debug: '/debug',
 } as const;
 
@@ -31,11 +33,22 @@ export interface LearningPlanPracticeSubmissionsRoute {
   problemSlug: string;
 }
 
-export type AppView = 'home' | 'my' | 'learningPlans' | 'mistakes' | 'problems' | 'adminUsers' | 'debug';
+export type AppView =
+  | 'home'
+  | 'my'
+  | 'learningPlans'
+  | 'mistakes'
+  | 'problems'
+  | 'adminBetaAccess'
+  | 'adminUsers'
+  | 'passwordChangeRequired'
+  | 'debug';
+
+type NavigationView = Exclude<AppView, 'passwordChangeRequired'>;
 
 export interface NavigationItem {
-  view: AppView;
-  labelKey: AppView;
+  view: NavigationView;
+  labelKey: NavigationView;
   path: string;
   icon: LucideIcon;
   permission?: AuthPermission;
@@ -66,6 +79,13 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     path: APP_ROUTES.problems,
     icon: Library,
     permission: 'problem:read',
+  },
+  {
+    view: 'adminBetaAccess',
+    labelKey: 'adminBetaAccess',
+    path: APP_ROUTES.adminBetaAccess,
+    icon: ShieldCheck,
+    permission: 'beta-access:manage',
   },
   {
     view: 'adminUsers',
@@ -104,6 +124,12 @@ export function viewFromPath(pathname: string): AppView | undefined {
   }
   if (pathname === APP_ROUTES.adminUsers) {
     return 'adminUsers';
+  }
+  if (pathname === APP_ROUTES.adminBetaAccess) {
+    return 'adminBetaAccess';
+  }
+  if (pathname === APP_ROUTES.passwordChangeRequired) {
+    return 'passwordChangeRequired';
   }
   if (pathname === APP_ROUTES.debug) {
     return 'debug';

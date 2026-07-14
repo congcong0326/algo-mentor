@@ -1,6 +1,7 @@
 package org.congcong.algomentor.auth.security;
 
 import java.util.Collection;
+import org.congcong.algomentor.auth.model.PasswordCredential;
 import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class AuthenticatedUserDetails implements UserDetails {
 
   private final AuthenticatedUserPrincipal principal;
-  private final String passwordHash;
+  private final PasswordCredential credential;
   private final Collection<? extends GrantedAuthority> authorities;
 
   public AuthenticatedUserDetails(
@@ -16,13 +17,28 @@ public class AuthenticatedUserDetails implements UserDetails {
       String passwordHash,
       Collection<? extends GrantedAuthority> authorities
   ) {
+    this(
+        principal,
+        new PasswordCredential(null, principal.userId(), passwordHash, null, null),
+        authorities);
+  }
+
+  public AuthenticatedUserDetails(
+      AuthenticatedUserPrincipal principal,
+      PasswordCredential credential,
+      Collection<? extends GrantedAuthority> authorities
+  ) {
     this.principal = principal;
-    this.passwordHash = passwordHash;
+    this.credential = credential;
     this.authorities = authorities;
   }
 
   public AuthenticatedUserPrincipal principal() {
     return principal;
+  }
+
+  public PasswordCredential credential() {
+    return credential;
   }
 
   @Override
@@ -32,7 +48,7 @@ public class AuthenticatedUserDetails implements UserDetails {
 
   @Override
   public String getPassword() {
-    return passwordHash;
+    return credential.passwordHash();
   }
 
   @Override

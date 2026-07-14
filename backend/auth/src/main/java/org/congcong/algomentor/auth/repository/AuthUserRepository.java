@@ -14,6 +14,32 @@ public interface AuthUserRepository {
 
   Optional<PasswordCredential> findPasswordCredentialByEmailNormalized(String emailNormalized);
 
+  default Optional<PasswordCredential> findPasswordCredentialByUserId(long userId) {
+    return Optional.empty();
+  }
+
+  default boolean resetPasswordCredential(
+      long userId,
+      String passwordHash,
+      Instant expiresAt,
+      long resetBy,
+      Instant updatedAt
+  ) {
+    return false;
+  }
+
+  default boolean consumeTemporaryPassword(
+      long userId,
+      String expectedPasswordHash,
+      Instant consumedAt
+  ) {
+    return false;
+  }
+
+  default boolean completePasswordReset(long userId, String passwordHash, Instant changedAt) {
+    return false;
+  }
+
   OAuthAccount createOAuthAccount(OAuthAccount account);
 
   void updateOAuthAccountProfile(

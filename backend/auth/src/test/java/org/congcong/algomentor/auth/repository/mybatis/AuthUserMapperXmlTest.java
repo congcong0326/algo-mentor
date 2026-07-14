@@ -37,5 +37,39 @@ class AuthUserMapperXmlTest {
         "org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper.findRoles")).isFalse();
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper.insertOAuthAccount")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper.consumeTemporaryPassword")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper.completePasswordReset")).isTrue();
+    assertThat(configuration.getResultMap(
+        "org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper.PasswordCredentialRowMap")
+        .getConstructorResultMappings().get(3).getJavaType()).isEqualTo(boolean.class);
+  }
+
+  @Test
+  void mybatisLoadsBetaAccessMapperXml() throws Exception {
+    Configuration configuration = new Configuration();
+    configuration.setMapUnderscoreToCamelCase(true);
+
+    try (Reader reader = Resources.getResourceAsReader("mapper/auth/BetaAccessMapper.xml")) {
+      new XMLMapperBuilder(
+          reader,
+          configuration,
+          "mapper/auth/BetaAccessMapper.xml",
+          configuration.getSqlFragments()).parse();
+    }
+
+    String namespace = "org.congcong.algomentor.auth.betaaccess.repository.mybatis.BetaAccessMapper.";
+    assertThat(configuration.hasStatement(namespace + "findSettings")).isTrue();
+    assertThat(configuration.hasStatement(namespace + "insertAllowedEmail")).isTrue();
+    assertThat(configuration.hasStatement(namespace + "deleteAllowedEmail")).isTrue();
+    var settingsMappings = configuration.getResultMap(namespace + "BetaAccessSettingsRowMap")
+        .getConstructorResultMappings();
+    assertThat(settingsMappings.get(0).getJavaType()).isEqualTo(short.class);
+    assertThat(settingsMappings.get(1).getJavaType()).isEqualTo(boolean.class);
+    var allowedEmailMappings = configuration.getResultMap(namespace + "BetaAllowedEmailRowMap")
+        .getConstructorResultMappings();
+    assertThat(allowedEmailMappings.get(0).getJavaType()).isEqualTo(long.class);
+    assertThat(allowedEmailMappings.get(3).getJavaType()).isEqualTo(long.class);
   }
 }

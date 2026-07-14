@@ -3,9 +3,16 @@ package org.congcong.algomentor.auth.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.congcong.algomentor.auth.model.CurrentUserResponse;
+import org.congcong.algomentor.auth.model.CompletePasswordResetRequest;
 import org.congcong.algomentor.auth.model.PasswordLoginRequest;
 import org.congcong.algomentor.auth.model.PasswordRegisterRequest;
+import org.congcong.algomentor.auth.betaaccess.service.BetaAccessException;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
+import org.congcong.algomentor.auth.security.BetaAccessAuthenticationException;
+import org.congcong.algomentor.auth.security.TemporaryPasswordAuthenticationException;
+import org.congcong.algomentor.auth.passwordreset.PasswordResetErrorCode;
+import org.congcong.algomentor.auth.passwordreset.PasswordResetException;
+import org.congcong.algomentor.auth.passwordreset.PasswordResetService;
 import org.congcong.algomentor.auth.service.AuthPermissionService;
 import org.congcong.algomentor.auth.service.PasswordAuthErrorCode;
 import org.congcong.algomentor.auth.service.PasswordRegistrationException;
@@ -37,6 +44,7 @@ public class PasswordAuthController {
   private final SecurityContextRepository securityContextRepository;
   private final ApiErrorResponseFactory responseFactory;
   private final AuthPermissionService permissionService;
+  private final PasswordResetService passwordResetService;
 
   public PasswordAuthController(
       PasswordUserService passwordUserService,
@@ -49,7 +57,8 @@ public class PasswordAuthController {
         authenticationManager,
         securityContextRepository,
         new ApiErrorResponseFactory(new ApiErrorMessageResolver()),
-        permissionService);
+        permissionService,
+        null);
   }
 
   public PasswordAuthController(
@@ -59,11 +68,29 @@ public class PasswordAuthController {
       ApiErrorResponseFactory responseFactory,
       AuthPermissionService permissionService
   ) {
+    this(
+        passwordUserService,
+        authenticationManager,
+        securityContextRepository,
+        responseFactory,
+        permissionService,
+        null);
+  }
+
+  public PasswordAuthController(
+      PasswordUserService passwordUserService,
+      AuthenticationManager authenticationManager,
+      SecurityContextRepository securityContextRepository,
+      ApiErrorResponseFactory responseFactory,
+      AuthPermissionService permissionService,
+      PasswordResetService passwordResetService
+  ) {
     this.passwordUserService = passwordUserService;
     this.authenticationManager = authenticationManager;
     this.securityContextRepository = securityContextRepository;
     this.responseFactory = responseFactory;
     this.permissionService = permissionService;
+    this.passwordResetService = passwordResetService;
   }
 
   @PostMapping(AuthApiContractConstants.REGISTER_PATH)
@@ -88,6 +115,12 @@ public class PasswordAuthController {
           ? HttpStatus.CONFLICT
           : HttpStatus.BAD_REQUEST;
       return failure(status, exception.code(), exception.getMessage(), servletRequest);
+    } catch (BetaAccessException exception) {
+      return failure(
+          HttpStatus.FORBIDDEN,
+          exception.code().name(),
+          exception.getMessage(),
+          servletRequest);
     }
   }
 
@@ -104,12 +137,57 @@ public class PasswordAuthController {
               request == null ? null : request.password()));
       saveAuthentication(authentication, servletRequest, servletResponse);
       return ResponseEntity.ok(ApiResponse.success(toResponse((AuthenticatedUserPrincipal) authentication.getPrincipal())));
+    } catch (BetaAccessAuthenticationException exception) {
+      return failure(
+          HttpStatus.FORBIDDEN,
+          exception.code().name(),
+          exception.getMessage(),
+          servletRequest);
+    } catch (TemporaryPasswordAuthenticationException exception) {
+      return failure(
+          HttpStatus.UNAUTHORIZED,
+          exception.code().name(),
+          exception.getMessage(),
+          servletRequest);
     } catch (AuthenticationException exception) {
       return failure(
           HttpStatus.UNAUTHORIZED,
           PasswordAuthErrorCode.AUTH_INVALID_CREDENTIALS,
           "邮箱或密码错误。",
           servletRequest);
+    }
+  }
+
+  @PostMapping(AuthApiContractConstants.COMPLETE_PASSWORD_RESET_PATH)
+  public ResponseEntity<ApiResponse<CurrentUserResponse>> completePasswordReset(
+      @RequestBody CompletePasswordResetRequest request,
+      Authentication authentication,
+      HttpServletRequest servletRequest,
+      HttpServletResponse servletResponse
+  ) {
+    try {
+      if (passwordResetService == null
+          || authentication == null
+          || !(authentication.getPrincipal() instanceof AuthenticatedUserPrincipal principal)) {
+        throw new PasswordResetException(
+            PasswordResetErrorCode.AUTH_PASSWORD_CHANGE_REQUIRED,
+            "当前 Session 不需要完成临时密码修改。");
+      }
+      AuthenticatedUserPrincipal updatedPrincipal = passwordResetService.completeReset(
+          principal,
+          request == null ? null : request.newPassword(),
+          request == null ? null : request.confirmPassword());
+      Authentication updatedAuthentication = UsernamePasswordAuthenticationToken.authenticated(
+          updatedPrincipal,
+          null,
+          authentication.getAuthorities());
+      saveAuthentication(updatedAuthentication, servletRequest, servletResponse);
+      return ResponseEntity.ok(ApiResponse.success(toResponse(updatedPrincipal)));
+    } catch (PasswordResetException exception) {
+      HttpStatus status = exception.code() == PasswordResetErrorCode.AUTH_REQUEST_INVALID
+          ? HttpStatus.BAD_REQUEST
+          : HttpStatus.FORBIDDEN;
+      return failure(status, exception.code().name(), exception.getMessage(), servletRequest);
     }
   }
 
@@ -132,7 +210,8 @@ public class PasswordAuthController {
         principal.avatarUrl(),
         principal.roles(),
         permissionService.permissionsFor(principal.roles()),
-        principal.status());
+        principal.status(),
+        principal.passwordChangeRequired());
   }
 
   private ResponseEntity<ApiResponse<CurrentUserResponse>> failure(

@@ -12,10 +12,22 @@ public record AuthenticatedUserPrincipal(
     String displayName,
     String avatarUrl,
     List<AuthRole> roles,
-    AuthUserStatus status
+    AuthUserStatus status,
+    boolean passwordChangeRequired
 ) implements AuthenticatedPrincipal, Serializable {
 
   private static final long serialVersionUID = 1L;
+
+  public AuthenticatedUserPrincipal(
+      Long userId,
+      String email,
+      String displayName,
+      String avatarUrl,
+      List<AuthRole> roles,
+      AuthUserStatus status
+  ) {
+    this(userId, email, displayName, avatarUrl, roles, status, false);
+  }
 
   public AuthenticatedUserPrincipal {
     if (userId == null || userId < 1) {
@@ -28,5 +40,16 @@ public record AuthenticatedUserPrincipal(
   @Override
   public String getName() {
     return userId.toString();
+  }
+
+  public AuthenticatedUserPrincipal withPasswordChangeRequired(boolean required) {
+    return new AuthenticatedUserPrincipal(
+        userId,
+        email,
+        displayName,
+        avatarUrl,
+        roles,
+        status,
+        required);
   }
 }

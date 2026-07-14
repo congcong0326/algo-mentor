@@ -63,6 +63,15 @@ class AgentMapperXmlTest {
             + "AND a.role = 'assistant' AND a.run_id = r.id");
   }
 
+  @Test
+  void newRunsPersistDiagnosticRetentionExpiry() throws Exception {
+    String sql = normalizedResourceText("mapper/agent/AgentConversationMapper.xml");
+
+    assertThat(sql)
+        .contains("diagnostic_retention_expires_at")
+        .contains("NOW() + INTERVAL '30 days'");
+  }
+
   private String normalizedResourceText(String resource) throws Exception {
     try (InputStream inputStream = Resources.getResourceAsStream(resource)) {
       return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8).replaceAll("\\s+", " ");

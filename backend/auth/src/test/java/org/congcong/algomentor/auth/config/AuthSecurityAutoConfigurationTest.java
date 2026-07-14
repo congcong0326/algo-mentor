@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.congcong.algomentor.auth.autoconfigure.AuthApiAutoConfiguration;
+import org.congcong.algomentor.auth.betaaccess.service.BetaAccessErrorCode;
 import org.congcong.algomentor.auth.security.AuthAuthorities;
 import org.congcong.algomentor.auth.security.AuthenticatedOidcUser;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
@@ -150,6 +151,19 @@ class AuthSecurityAutoConfigurationTest {
         new OAuth2AuthenticationException(new OAuth2Error("invalid_request")));
 
     assertThat(response.getRedirectedUrl()).isEqualTo("/login?auth=failed");
+  }
+
+  @Test
+  void oauth2BetaAccessFailureRedirectsToDedicatedLoginState() throws Exception {
+    MockHttpServletResponse response = new MockHttpServletResponse();
+
+    new OAuth2AuthenticationFailureHandler().onAuthenticationFailure(
+        new MockHttpServletRequest(),
+        response,
+        new OAuth2AuthenticationException(new OAuth2Error(
+            BetaAccessErrorCode.AUTH_BETA_ACCESS_DENIED.name())));
+
+    assertThat(response.getRedirectedUrl()).isEqualTo("/login?auth=beta-access-denied");
   }
 
   @Test

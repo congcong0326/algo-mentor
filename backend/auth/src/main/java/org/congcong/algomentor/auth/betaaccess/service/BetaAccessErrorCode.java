@@ -1,0 +1,10 @@
+package org.congcong.algomentor.auth.betaaccess.service;
+
+public enum BetaAccessErrorCode {
+  AUTH_BETA_ACCESS_DENIED,
+  BETA_ACCESS_EMAIL_INVALID,
+  BETA_ACCESS_EMAIL_ALREADY_EXISTS,
+  BETA_ACCESS_EMAIL_NOT_FOUND,
+  BETA_ACCESS_SETTINGS_CONFLICT,
+  AUTH_REQUEST_INVALID
+}

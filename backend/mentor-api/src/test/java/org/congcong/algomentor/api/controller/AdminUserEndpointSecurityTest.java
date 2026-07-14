@@ -5,8 +5,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -16,6 +18,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.congcong.algomentor.api.MentorApiApplication;
+import org.congcong.algomentor.auth.config.AuthSecurityPaths;
+import org.congcong.algomentor.auth.controller.admin.AdminPasswordResetApiContractConstants;
+import org.congcong.algomentor.auth.controller.admin.BetaAccessApiContractConstants;
 import org.congcong.algomentor.identity.controller.AdminUserApiContractConstants;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +45,37 @@ class AdminUserEndpointSecurityTest {
   @Test
   void nonAdminCannotAccessAdminUsersEndpoint() throws Exception {
     mockMvc.perform(get(AdminUserApiContractConstants.ADMIN_USERS_BASE_PATH)
+            .with(authentication(authenticationToken("ROLE_USER"))))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void nonAdminCannotAccessBetaAccessOrPasswordResetEndpoints() throws Exception {
+    mockMvc.perform(get(BetaAccessApiContractConstants.BASE_PATH)
+            .with(authentication(authenticationToken("ROLE_USER"))))
+        .andExpect(status().isForbidden());
+
+    mockMvc.perform(post(AdminPasswordResetApiContractConstants.BASE_PATH + "/42/password-reset")
+            .with(csrf())
+            .with(authentication(authenticationToken("ROLE_USER"))))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void newMutatingEndpointsRequireCsrfToken() throws Exception {
+    mockMvc.perform(patch(BetaAccessApiContractConstants.BASE_PATH + BetaAccessApiContractConstants.SETTINGS_PATH)
+            .with(authentication(authenticationToken("ROLE_ADMIN"))))
+        .andExpect(status().isForbidden());
+    mockMvc.perform(post(BetaAccessApiContractConstants.BASE_PATH + BetaAccessApiContractConstants.EMAILS_PATH)
+            .with(authentication(authenticationToken("ROLE_ADMIN"))))
+        .andExpect(status().isForbidden());
+    mockMvc.perform(delete(BetaAccessApiContractConstants.BASE_PATH + "/emails/7")
+            .with(authentication(authenticationToken("ROLE_ADMIN"))))
+        .andExpect(status().isForbidden());
+    mockMvc.perform(post(AdminPasswordResetApiContractConstants.BASE_PATH + "/42/password-reset")
+            .with(authentication(authenticationToken("ROLE_ADMIN"))))
+        .andExpect(status().isForbidden());
+    mockMvc.perform(post(AuthSecurityPaths.AUTH_COMPLETE_RESET_PATH)
             .with(authentication(authenticationToken("ROLE_USER"))))
         .andExpect(status().isForbidden());
   }

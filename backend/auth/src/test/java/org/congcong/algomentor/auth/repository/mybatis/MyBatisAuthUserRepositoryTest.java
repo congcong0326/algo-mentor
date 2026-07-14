@@ -63,6 +63,32 @@ class MyBatisAuthUserRepositoryTest {
     }
 
     @Override
+    public PasswordCredentialRow findPasswordCredentialByUserId(long userId) {
+      return null;
+    }
+
+    @Override
+    public int resetPasswordCredential(
+        long userId,
+        String passwordHash,
+        Instant expiresAt,
+        long resetBy,
+        Instant updatedAt
+    ) {
+      return 0;
+    }
+
+    @Override
+    public int consumeTemporaryPassword(long userId, String expectedPasswordHash, Instant consumedAt) {
+      return 0;
+    }
+
+    @Override
+    public int completePasswordReset(long userId, String passwordHash, Instant changedAt) {
+      return 0;
+    }
+
+    @Override
     public int insertOAuthAccount(OAuthAccountRow account) {
       account.setId(99L);
       return 1;

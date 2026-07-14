@@ -37,6 +37,12 @@ describe('learning plan practice submissions navigation', () => {
     expect(pathForView('adminUsers')).toBe('/admin/users');
   });
 
+  it('maps the beta access and required password change routes', () => {
+    expect(viewFromPath('/admin/beta-access')).toBe('adminBetaAccess');
+    expect(pathForView('adminBetaAccess')).toBe('/admin/beta-access');
+    expect(viewFromPath('/password/change-required')).toBe('passwordChangeRequired');
+  });
+
   it('maps the problem library to the admin route only', () => {
     expect(viewFromPath('/admin/problems')).toBe('problems');
     expect(pathForView('problems')).toBe('/admin/problems');

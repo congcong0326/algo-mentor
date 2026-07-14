@@ -64,7 +64,8 @@ public class CurrentUserController {
               principal.avatarUrl(),
               principal.roles(),
               permissionService.permissionsFor(principal.roles()),
-              principal.status())));
+              principal.status(),
+              principal.passwordChangeRequired())));
         })
         .orElseGet(() -> {
           log.info("Current user endpoint returning unauthenticated response.");

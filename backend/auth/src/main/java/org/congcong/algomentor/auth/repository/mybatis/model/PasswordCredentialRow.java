@@ -8,8 +8,37 @@ public final class PasswordCredentialRow {
   private Long id;
   private final Long userId;
   private final String passwordHash;
+  private final boolean resetRequired;
+  private final Instant temporaryPasswordExpiresAt;
+  private final Instant temporaryPasswordConsumedAt;
+  private final Instant passwordChangedAt;
+  private final Long resetBy;
   private final Instant createdAt;
   private final Instant updatedAt;
+
+  public PasswordCredentialRow(
+      Long id,
+      Long userId,
+      String passwordHash,
+      boolean resetRequired,
+      Instant temporaryPasswordExpiresAt,
+      Instant temporaryPasswordConsumedAt,
+      Instant passwordChangedAt,
+      Long resetBy,
+      Instant createdAt,
+      Instant updatedAt
+  ) {
+    this.id = id;
+    this.userId = userId;
+    this.passwordHash = passwordHash;
+    this.resetRequired = resetRequired;
+    this.temporaryPasswordExpiresAt = temporaryPasswordExpiresAt;
+    this.temporaryPasswordConsumedAt = temporaryPasswordConsumedAt;
+    this.passwordChangedAt = passwordChangedAt;
+    this.resetBy = resetBy;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
 
   public PasswordCredentialRow(
       Long id,
@@ -18,11 +47,7 @@ public final class PasswordCredentialRow {
       Instant createdAt,
       Instant updatedAt
   ) {
-    this.id = id;
-    this.userId = userId;
-    this.passwordHash = passwordHash;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
+    this(id, userId, passwordHash, false, null, null, null, null, createdAt, updatedAt);
   }
 
   public Long id() {
@@ -41,6 +66,26 @@ public final class PasswordCredentialRow {
     return passwordHash;
   }
 
+  public boolean resetRequired() {
+    return resetRequired;
+  }
+
+  public Instant temporaryPasswordExpiresAt() {
+    return temporaryPasswordExpiresAt;
+  }
+
+  public Instant temporaryPasswordConsumedAt() {
+    return temporaryPasswordConsumedAt;
+  }
+
+  public Instant passwordChangedAt() {
+    return passwordChangedAt;
+  }
+
+  public Long resetBy() {
+    return resetBy;
+  }
+
   public Instant createdAt() {
     return createdAt;
   }
@@ -50,6 +95,16 @@ public final class PasswordCredentialRow {
   }
 
   public PasswordCredential toDomain() {
-    return new PasswordCredential(id, userId, passwordHash, createdAt, updatedAt);
+    return new PasswordCredential(
+        id,
+        userId,
+        passwordHash,
+        resetRequired,
+        temporaryPasswordExpiresAt,
+        temporaryPasswordConsumedAt,
+        passwordChangedAt,
+        resetBy,
+        createdAt,
+        updatedAt);
   }
 }

@@ -7,6 +7,7 @@ import type { PasswordLoginRequest, PasswordRegisterRequest } from '../types/api
 
 export interface LoginPageProps {
   authFailed?: boolean;
+  betaAccessDenied?: boolean;
   authError?: string;
   pending?: boolean;
   onLogin?: (request: PasswordLoginRequest) => Promise<void>;
@@ -19,6 +20,7 @@ type PasswordMode = 'login' | 'register';
 
 export default function LoginPage({
   authFailed = false,
+  betaAccessDenied = false,
   authError = '',
   pending = false,
   onLogin,
@@ -74,7 +76,10 @@ export default function LoginPage({
     setGoogleLoginPending(true);
   }
 
-  const errorText = validationError || authError || (authFailed ? resources.auth.failed : '');
+  const errorText = validationError
+    || authError
+    || (betaAccessDenied ? resources.auth.betaAccessDenied : '')
+    || (authFailed ? resources.auth.failed : '');
 
   return (
     <main className="login-page" aria-labelledby="login-title">
