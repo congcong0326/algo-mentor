@@ -51,6 +51,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.session.SessionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -63,7 +64,7 @@ import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.transaction.PlatformTransactionManager;
 
-@AutoConfiguration(after = IdentityAutoConfiguration.class)
+@AutoConfiguration(after = {IdentityAutoConfiguration.class, SessionAutoConfiguration.class})
 @EnableConfigurationProperties(AuthProperties.class)
 public class AuthApiAutoConfiguration {
 
