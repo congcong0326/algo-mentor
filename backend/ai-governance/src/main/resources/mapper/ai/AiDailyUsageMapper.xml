@@ -43,4 +43,27 @@
         AND scope = #{scope}
     ), 0)
   </select>
+
+  <resultMap id="AiDailyUsageRowMap" type="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiDailyUsageRow">
+    <constructor>
+      <arg column="id" javaType="java.lang.Long"/>
+      <arg column="user_id" javaType="_long"/>
+      <arg column="quota_date" javaType="java.time.LocalDate"/>
+      <arg column="scope" javaType="java.lang.String"/>
+      <arg column="request_count" javaType="_long"/>
+      <arg column="input_tokens" javaType="_long"/>
+      <arg column="output_tokens" javaType="_long"/>
+      <arg column="cached_tokens" javaType="_long"/>
+      <arg column="reasoning_tokens" javaType="_long"/>
+      <arg column="total_tokens" javaType="_long"/>
+      <arg column="limit_count" javaType="_long"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+  <select id="findByQuotaDateAndScope" resultMap="AiDailyUsageRowMap">
+    SELECT id, user_id, quota_date, scope, request_count, input_tokens, output_tokens,
+           cached_tokens, reasoning_tokens, total_tokens, limit_count, updated_at
+    FROM ai_daily_usage
+    WHERE quota_date = #{quotaDate} AND scope = #{scope} AND request_count &gt; 0
+  </select>
 </mapper>

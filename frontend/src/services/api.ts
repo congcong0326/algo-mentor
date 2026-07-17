@@ -76,7 +76,17 @@ import type {
   SseStreamEvent,
   UserAiPreference,
   UserAiPreferenceRequest,
+  FeedbackCreateRequest,
+  FeedbackMessageRequest,
+  FeedbackThreadDetail,
+  FeedbackThreadPage,
+  FeedbackListQuery,
+  AdminFeedbackListQuery,
+  FeedbackReadResult,
+  AdminOverview,
+  BetaAccessUserMembership,
 } from '../types/api';
+import { recordFeedbackRequestContext } from '../feedback/feedbackSourceContext';
 
 const jsonHeaders: HeadersInit = {
   Accept: 'application/json',
@@ -886,6 +896,54 @@ export async function getAdminAiUsageBySource(
   return response.json();
 }
 
+export async function createFeedback(request: FeedbackCreateRequest): Promise<ApiResponse<FeedbackThreadDetail>> {
+  return jsonRequest('/api/feedback', 'POST', request, 'Feedback create request failed');
+}
+
+export async function getFeedbackThreads(query: FeedbackListQuery = {}, signal?: AbortSignal): Promise<ApiResponse<FeedbackThreadPage>> {
+  return getJson(`/api/feedback${toQueryString(query)}`, 'Feedback list request failed', signal);
+}
+
+export async function getFeedbackThread(threadId: number, signal?: AbortSignal): Promise<ApiResponse<FeedbackThreadDetail>> {
+  return getJson(`/api/feedback/${threadId}`, 'Feedback detail request failed', signal);
+}
+
+export async function replyFeedback(threadId: number, request: FeedbackMessageRequest): Promise<ApiResponse<FeedbackThreadDetail>> {
+  return jsonRequest(`/api/feedback/${threadId}/messages`, 'POST', request, 'Feedback reply request failed');
+}
+
+export async function markFeedbackRead(threadId: number): Promise<ApiResponse<FeedbackReadResult>> {
+  return jsonRequest(`/api/feedback/${threadId}/read`, 'POST', undefined, 'Feedback read request failed');
+}
+
+export async function getAdminFeedbackThreads(query: AdminFeedbackListQuery = {}, signal?: AbortSignal): Promise<ApiResponse<FeedbackThreadPage>> {
+  return getJson(`/api/admin/feedback${toQueryString(query)}`, 'Admin feedback list request failed', signal);
+}
+
+export async function getAdminFeedbackThread(threadId: number, signal?: AbortSignal): Promise<ApiResponse<FeedbackThreadDetail>> {
+  return getJson(`/api/admin/feedback/${threadId}`, 'Admin feedback detail request failed', signal);
+}
+
+export async function replyAdminFeedback(threadId: number, request: FeedbackMessageRequest): Promise<ApiResponse<FeedbackThreadDetail>> {
+  return jsonRequest(`/api/admin/feedback/${threadId}/messages`, 'POST', request, 'Admin feedback reply request failed');
+}
+
+export async function updateAdminFeedbackStatus(threadId: number, status: 'OPEN' | 'CLOSED'): Promise<ApiResponse<FeedbackThreadDetail>> {
+  return jsonRequest(`/api/admin/feedback/${threadId}/status`, 'PATCH', { status }, 'Admin feedback status request failed');
+}
+
+export async function markAdminFeedbackRead(threadId: number): Promise<ApiResponse<FeedbackReadResult>> {
+  return jsonRequest(`/api/admin/feedback/${threadId}/read`, 'POST', undefined, 'Admin feedback read request failed');
+}
+
+export async function getAdminOverview(signal?: AbortSignal): Promise<ApiResponse<AdminOverview>> {
+  return getJson('/api/admin/overview', 'Admin overview request failed', signal);
+}
+
+export async function getBetaAccessUserMembership(userId: number, signal?: AbortSignal): Promise<ApiResponse<BetaAccessUserMembership>> {
+  return getJson(`/api/admin/beta-access/users/${userId}`, 'Beta access membership request failed', signal);
+}
+
 export async function getProblems(
   query: ProblemListQuery = {},
   signal?: AbortSignal,
@@ -1532,7 +1590,9 @@ type QueryParams =
   | AdminAiUsageQuery
   | AdminAiUsageByUserQuery
   | MistakeNoteListQuery
-  | TodayPackQuery;
+  | TodayPackQuery
+  | FeedbackListQuery
+  | AdminFeedbackListQuery;
 
 function toQueryString(query: QueryParams): string {
   const params = new URLSearchParams();
@@ -1609,7 +1669,8 @@ function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Res
   const headers = apiHeaders(init.headers);
   const csrfToken = readCookie(xsrfCookieName);
 
-  headers.set(requestIdHeaderName, generateRequestId());
+  const requestId = generateRequestId();
+  headers.set(requestIdHeaderName, requestId);
 
   if (csrfToken && method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS') {
     headers.set(xsrfHeaderName, csrfToken);
@@ -1619,7 +1680,28 @@ function apiFetch(input: RequestInfo | URL, init: RequestInit = {}): Promise<Res
     ...init,
     credentials: init.credentials ?? 'same-origin',
     headers,
+  }).then((response) => {
+    recordFeedbackRequestContext(requestPath(input), response.headers.get(requestIdHeaderName) ?? requestId);
+    return response;
   });
+}
+
+async function getJson<T>(path: string, fallback: string, signal?: AbortSignal): Promise<ApiResponse<T>> {
+  const response = await apiFetch(path, { headers: jsonHeaders, signal });
+  if (!response.ok) throw await toApiRequestError(response, fallback);
+  return response.json();
+}
+
+async function jsonRequest<T>(path: string, method: 'POST' | 'PATCH', body: unknown, fallback: string): Promise<ApiResponse<T>> {
+  const response = await apiFetch(path, { method, headers: { ...jsonHeaders, 'Content-Type': 'application/json' }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
+  if (!response.ok) throw await toApiRequestError(response, fallback);
+  return response.json();
+}
+
+function requestPath(input: RequestInfo | URL): string {
+  if (typeof input === 'string') return new URL(input, window.location.origin).pathname;
+  if (input instanceof URL) return input.pathname;
+  return new URL(input.url, window.location.origin).pathname;
 }
 
 function generateRequestId(): string {

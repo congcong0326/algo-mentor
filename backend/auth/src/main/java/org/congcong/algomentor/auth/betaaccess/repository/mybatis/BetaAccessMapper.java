@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.congcong.algomentor.auth.betaaccess.repository.mybatis.model.BetaAccessSettingsRow;
 import org.congcong.algomentor.auth.betaaccess.repository.mybatis.model.BetaAllowedEmailRow;
+import org.congcong.algomentor.auth.betaaccess.repository.mybatis.model.BetaAccessOverviewSummaryRow;
+import org.congcong.algomentor.auth.betaaccess.repository.mybatis.model.BetaAccessUserMembershipRow;
 
 public interface BetaAccessMapper {
 
@@ -35,4 +37,8 @@ public interface BetaAccessMapper {
       @Param("offset") int offset);
 
   long countAllowedEmails(@Param("keyword") String keyword);
+
+  BetaAccessOverviewSummaryRow overviewSummary();
+
+  BetaAccessUserMembershipRow userMembership(@Param("userId") long userId);
 }

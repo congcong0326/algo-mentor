@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import org.congcong.algomentor.auth.betaaccess.model.BetaAccessSettings;
 import org.congcong.algomentor.auth.betaaccess.model.BetaAllowedEmail;
+import org.congcong.algomentor.auth.betaaccess.model.BetaAccessOverviewSummary;
+import org.congcong.algomentor.auth.betaaccess.model.BetaAccessUserMembership;
 
 public interface BetaAccessRepository {
 
@@ -29,4 +31,8 @@ public interface BetaAccessRepository {
   List<BetaAllowedEmail> findAllowedEmails(String keyword, int limit, int offset);
 
   long countAllowedEmails(String keyword);
+
+  BetaAccessOverviewSummary overviewSummary();
+
+  BetaAccessUserMembership userMembership(long userId);
 }

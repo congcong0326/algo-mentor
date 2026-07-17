@@ -1,4 +1,4 @@
-import { LogOut, Moon, Sun } from 'lucide-react';
+import { LogOut, MessageSquare, Moon, Sun } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { NAVIGATION_ITEMS, type AppView } from './navigation';
 import type { AppTheme } from './theme';
@@ -11,8 +11,10 @@ interface AppShellProps {
   children: ReactNode;
   currentUser: CurrentUser;
   debugStatus?: ReactNode;
+  feedbackUnreadCount?: number;
   logoutError?: string;
   logoutPending?: boolean;
+  onOpenFeedback?: () => void;
   onLogout: () => void;
   onNavigate: (view: AppView) => void;
   onToggleTheme: () => void;
@@ -24,8 +26,10 @@ export default function AppShell({
   children,
   currentUser,
   debugStatus,
+  feedbackUnreadCount,
   logoutError,
   logoutPending = false,
+  onOpenFeedback,
   onLogout,
   onNavigate,
   onToggleTheme,
@@ -36,7 +40,7 @@ export default function AppShell({
   const ThemeIcon = theme === 'light' ? Moon : Sun;
   const themeLabel = theme === 'light' ? resources.app.switchToDarkMode : resources.app.switchToLightMode;
   const permissions = new Set<AuthPermission>(currentUser.permissions ?? []);
-  const isAdmin = permissions.has('user:manage');
+  const isAdmin = permissions.has('admin-overview:read') || permissions.has('user:manage');
   const visibleNavigationItems = NAVIGATION_ITEMS.filter((item) => {
     if (item.permission && !permissions.has(item.permission)) {
       return false;
@@ -45,15 +49,17 @@ export default function AppShell({
       return true;
     }
     return item.view === 'problems'
+      || item.view === 'adminOverview'
       || item.view === 'adminBetaAccess'
       || item.view === 'adminUsers'
       || item.view === 'adminAi'
+      || item.view === 'adminFeedback'
       || item.view === 'debug';
   }).sort((left, right) => {
     if (!isAdmin) {
       return 0;
     }
-    const order = ['adminBetaAccess', 'adminUsers', 'adminAi', 'problems', 'debug'];
+    const order = ['adminOverview', 'adminBetaAccess', 'adminUsers', 'adminAi', 'adminFeedback', 'problems', 'debug'];
     return order.indexOf(left.view) - order.indexOf(right.view);
   });
 
@@ -81,12 +87,25 @@ export default function AppShell({
               >
                 <Icon aria-hidden="true" />
                 <span>{resources.nav[item.labelKey]}</span>
+                {item.view === 'adminFeedback' && feedbackUnreadCount && feedbackUnreadCount > 0 ? <span className="app-nav-badge">{feedbackUnreadCount > 99 ? '99+' : feedbackUnreadCount}</span> : null}
               </button>
             );
           })}
         </nav>
         <div className="app-header-actions">
           {debugStatus}
+          {!isAdmin && onOpenFeedback ? (
+            <button
+              aria-label={feedbackUnreadCount && feedbackUnreadCount > 0 ? resources.feedback.openDialogUnread : resources.feedback.openDialog}
+              className="icon-button feedback-trigger-button"
+              onClick={onOpenFeedback}
+              title={resources.feedback.openDialog}
+              type="button"
+            >
+              <MessageSquare aria-hidden="true" />
+              {feedbackUnreadCount && feedbackUnreadCount > 0 ? <span aria-hidden="true" className="feedback-unread-dot" /> : null}
+            </button>
+          ) : null}
           <button
             aria-label={themeLabel}
             className="icon-button theme-toggle-button"

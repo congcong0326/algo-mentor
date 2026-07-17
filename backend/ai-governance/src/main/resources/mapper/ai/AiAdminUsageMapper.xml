@@ -175,4 +175,30 @@
     ORDER BY last_seen_at DESC
     LIMIT 200
   </select>
+
+  <resultMap id="AiEntryRequestMetricsRowMap" type="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiEntryRequestMetricsRow">
+    <constructor>
+      <arg column="total" javaType="_long"/>
+      <arg column="completed" javaType="_long"/>
+      <arg column="failed" javaType="_long"/>
+      <arg column="cancelled" javaType="_long"/>
+      <arg column="quota_rejected" javaType="_long"/>
+      <arg column="in_progress" javaType="_long"/>
+      <arg column="other_rejected" javaType="_long"/>
+    </constructor>
+  </resultMap>
+
+  <select id="entryRequestMetrics" resultMap="AiEntryRequestMetricsRowMap">
+    SELECT count(*) AS total,
+           count(*) FILTER (WHERE status = 'COMPLETED') AS completed,
+           count(*) FILTER (WHERE status IN ('FAILED', 'EXPIRED')) AS failed,
+           count(*) FILTER (WHERE status = 'CANCELLED') AS cancelled,
+           count(*) FILTER (WHERE status = 'REJECTED_QUOTA') AS quota_rejected,
+           count(*) FILTER (WHERE status IN ('ADMITTED', 'RUNNING')) AS in_progress,
+           count(*) FILTER (WHERE status LIKE 'REJECTED_%' AND status &lt;&gt; 'REJECTED_QUOTA') AS other_rejected
+    FROM ai_run_admissions
+    WHERE created_at &gt;= #{fromAt}
+      AND created_at &lt; #{toExclusive}
+      AND user_id IS NOT NULL
+  </select>
 </mapper>

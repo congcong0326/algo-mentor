@@ -1,6 +1,8 @@
 package org.congcong.algomentor.ai.governance.repository.mybatis;
 
 import java.time.LocalDate;
+import java.util.List;
+import org.congcong.algomentor.ai.governance.repository.mybatis.model.AiDailyUsageRow;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.congcong.algomentor.ai.governance.model.AiUsage;
@@ -18,5 +20,8 @@ public interface AiDailyUsageMapper {
       @Param("scope") String scope, @Param("usage") AiUsage usage);
 
   long findRequestCount(@Param("userId") long userId, @Param("quotaDate") LocalDate quotaDate,
+      @Param("scope") String scope);
+
+  List<AiDailyUsageRow> findByQuotaDateAndScope(@Param("quotaDate") LocalDate quotaDate,
       @Param("scope") String scope);
 }

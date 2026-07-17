@@ -785,6 +785,50 @@ describe('App', () => {
     expect(fetchMock.mock.calls.some(([url]) => String(url).startsWith('/api/admin/problems'))).toBe(false);
   });
 
+  it('normalizes the former feedback page to home without opening the feedback dialog', async () => {
+    const fallbackFetch = mockAuthenticatedAppFetch();
+    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+      if (url === '/api/feedback?page=1&pageSize=1') {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: { items: [], total: 0, page: 1, pageSize: 1, unreadMessageCount: 0 },
+          timestamp: '2026-07-17T00:00:00Z',
+        }));
+      }
+      return fallbackFetch(url, init);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/feedback');
+
+    render(<App />);
+
+    expect(await screen.findByText('User Name')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.queryByRole('dialog', { name: '反馈信箱' })).not.toBeInTheDocument();
+    expect(window.location.pathname).toBe('/');
+  });
+
+  it('opens the feedback dialog from the ordinary-user header icon', async () => {
+    const fallbackFetch = mockAuthenticatedAppFetch();
+    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+      if (url === '/api/feedback?page=1&pageSize=1' || url === '/api/feedback') {
+        return Promise.resolve(jsonResponse({
+          success: true,
+          data: { items: [], total: 0, page: 1, pageSize: 20, unreadMessageCount: 0 },
+          timestamp: '2026-07-17T00:00:00Z',
+        }));
+      }
+      return fallbackFetch(url, init);
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState({}, '', '/');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '打开反馈信箱' }));
+    expect(await screen.findByRole('dialog', { name: '反馈信箱' })).toBeInTheDocument();
+  });
+
   it('renders the admin user management page for users with manage permission', async () => {
     vi.stubGlobal('fetch', mockAdminUserManagementFetch());
     window.history.replaceState({}, '', '/admin/users');

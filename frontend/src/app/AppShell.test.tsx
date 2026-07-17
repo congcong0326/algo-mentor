@@ -30,11 +30,13 @@ afterEach(() => {
 describe('AppShell', () => {
   it('renders top navigation and delegates navigation clicks', () => {
     const onNavigate = vi.fn();
+    const onOpenFeedback = vi.fn();
 
     render(
       <AppShell
         activeView="learningPlans"
         currentUser={user}
+        onOpenFeedback={onOpenFeedback}
         onLogout={vi.fn()}
         onNavigate={onNavigate}
         onToggleTheme={vi.fn()}
@@ -53,6 +55,8 @@ describe('AppShell', () => {
     expect(screen.getByRole('button', { name: 'AI 调试' })).toBeInTheDocument();
     expect(within(screen.getByRole('navigation', { name: '主导航' })).getAllByRole('button')
       .map((button) => button.textContent)).toEqual(['首页', '方案', '复习中心', 'AI 调试', '我的']);
+    fireEvent.click(screen.getByRole('button', { name: '打开反馈信箱' }));
+    expect(onOpenFeedback).toHaveBeenCalledOnce();
     expect(screen.getByText('User Name')).toBeInTheDocument();
     expect(screen.getByText('Current page')).toBeInTheDocument();
 
@@ -75,6 +79,47 @@ describe('AppShell', () => {
     );
 
     expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
+  });
+
+  it('renders an unread-dot feedback trigger for ordinary users without showing a number', () => {
+    render(
+      <AppShell
+        activeView="home"
+        currentUser={user}
+        feedbackUnreadCount={3}
+        onLogout={vi.fn()}
+        onNavigate={vi.fn()}
+        onOpenFeedback={vi.fn()}
+        onToggleTheme={vi.fn()}
+        theme="light"
+      >
+        <div>Current page</div>
+      </AppShell>,
+    );
+
+    const trigger = screen.getByRole('button', { name: '打开反馈信箱，有未读管理员回复' });
+    expect(trigger.querySelector('.feedback-unread-dot')).toBeInTheDocument();
+    expect(trigger).not.toHaveTextContent('3');
+  });
+
+  it('does not render the user feedback trigger for administrators', () => {
+    render(
+      <AppShell
+        activeView="adminFeedback"
+        currentUser={{ ...user, roles: ['ADMIN'], permissions: ['user:manage', 'feedback:manage'] }}
+        feedbackUnreadCount={1}
+        onLogout={vi.fn()}
+        onNavigate={vi.fn()}
+        onOpenFeedback={vi.fn()}
+        onToggleTheme={vi.fn()}
+        theme="light"
+      >
+        <div>Admin feedback</div>
+      </AppShell>,
+    );
+
+    expect(screen.queryByRole('button', { name: '打开反馈信箱' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '反馈1' })).toHaveTextContent('1');
   });
 
   it('shows user management navigation only with user manage permission', () => {

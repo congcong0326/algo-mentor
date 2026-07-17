@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.congcong.algomentor.ai.governance.adminquery.AiUsageQuery;
 import org.congcong.algomentor.ai.governance.repository.mybatis.model.AiObservedUnpricedModelRow;
 import org.congcong.algomentor.ai.governance.repository.mybatis.model.AiUsageAggregationRow;
+import org.congcong.algomentor.ai.governance.repository.mybatis.model.AiEntryRequestMetricsRow;
 
 @Mapper
 public interface AiAdminUsageMapper {
@@ -22,4 +23,7 @@ public interface AiAdminUsageMapper {
   long admittedEntryRequestCount(AiUsageQuery query);
 
   List<AiObservedUnpricedModelRow> observedUnpricedModels(AiUsageQuery query);
+
+  AiEntryRequestMetricsRow entryRequestMetrics(@Param("fromAt") java.time.Instant fromAt,
+      @Param("toExclusive") java.time.Instant toExclusive);
 }

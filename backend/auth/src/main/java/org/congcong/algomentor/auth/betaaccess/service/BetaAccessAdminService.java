@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.congcong.algomentor.auth.betaaccess.model.BetaAccessSettings;
+import org.congcong.algomentor.auth.betaaccess.model.BetaAccessOverviewSummary;
+import org.congcong.algomentor.auth.betaaccess.model.BetaAccessUserMembership;
 import org.congcong.algomentor.auth.betaaccess.model.BetaAllowedEmail;
 import org.congcong.algomentor.auth.betaaccess.model.BetaAllowedEmailAddResult;
 import org.congcong.algomentor.auth.betaaccess.model.BetaAllowedEmailAddStatus;
@@ -71,6 +73,17 @@ public class BetaAccessAdminService {
         repository.countAllowedEmails(normalizedKeyword),
         page,
         pageSize);
+  }
+
+  public BetaAccessOverviewSummary overviewSummary() {
+    return repository.overviewSummary();
+  }
+
+  public BetaAccessUserMembership userMembership(long userId) {
+    if (userId < 1 || identityUserRepository.findUserById(userId).isEmpty()) {
+      throw new BetaAccessException(BetaAccessErrorCode.AUTH_REQUEST_INVALID, "用户不存在。");
+    }
+    return repository.userMembership(userId);
   }
 
   public BetaAccessSettings updateSettings(Boolean emailAllowlistEnabled, long operatorUserId) {

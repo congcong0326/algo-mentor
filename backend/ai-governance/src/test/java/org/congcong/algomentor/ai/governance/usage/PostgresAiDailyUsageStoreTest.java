@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import org.congcong.algomentor.ai.governance.model.AiUsage;
 import org.congcong.algomentor.ai.governance.repository.mybatis.AiDailyUsageMapper;
 import org.congcong.algomentor.ai.governance.repository.mybatis.model.AiDailyUsageRow;
@@ -90,6 +91,14 @@ class PostgresAiDailyUsageStoreTest {
     @Override
     public long findRequestCount(long userId, LocalDate quotaDate, String scope) {
       return row == null ? 0 : row.requestCount();
+    }
+
+    @Override
+    public List<AiDailyUsageRow> findByQuotaDateAndScope(LocalDate quotaDate, String scope) {
+      if (row == null || !row.quotaDate().equals(quotaDate) || !row.scope().equals(scope)) {
+        return List.of();
+      }
+      return List.of(row);
     }
   }
 }

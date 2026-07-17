@@ -283,6 +283,123 @@ export interface AdminAiUsageByUserQuery extends AdminAiUsageQuery {
   pageSize?: number;
 }
 
+export type FeedbackCategory = 'BUG' | 'SUGGESTION' | 'OTHER';
+export type FeedbackStatus = 'OPEN' | 'CLOSED';
+export type FeedbackSenderType = 'USER' | 'ADMIN';
+
+export interface FeedbackCreateRequest {
+  category: FeedbackCategory;
+  subject?: string;
+  content: string;
+  sourcePath?: string;
+  sourceRequestId?: string;
+  sourceRunId?: string;
+}
+
+export interface FeedbackMessageRequest {
+  content: string;
+}
+
+export interface FeedbackUserSummary {
+  id: number;
+  email?: string | null;
+  displayName?: string | null;
+  status?: AuthUserStatus | string | null;
+}
+
+export interface FeedbackThreadSummary {
+  id: number;
+  category: FeedbackCategory;
+  status: FeedbackStatus;
+  subject?: string | null;
+  lastSenderType: FeedbackSenderType;
+  unreadMessageCount: number;
+  sourceRunId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  closedAt?: string | null;
+  user?: FeedbackUserSummary | null;
+}
+
+export interface FeedbackMessage {
+  id: number;
+  senderType: FeedbackSenderType;
+  senderUserId: number;
+  content: string;
+  readAt?: string | null;
+  createdAt: string;
+}
+
+export interface FeedbackThreadDetail {
+  id: number;
+  category: FeedbackCategory;
+  status: FeedbackStatus;
+  subject?: string | null;
+  sourcePath?: string | null;
+  sourceRequestId?: string | null;
+  sourceRunId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  closedAt?: string | null;
+  closedBy?: number | null;
+  unreadMessageCount: number;
+  messages: FeedbackMessage[];
+}
+
+export interface FeedbackThreadPage {
+  items: FeedbackThreadSummary[];
+  total: number;
+  page: number;
+  pageSize: number;
+  unreadMessageCount: number;
+}
+
+export interface FeedbackListQuery {
+  page?: number;
+  pageSize?: number;
+  status?: FeedbackStatus | '';
+}
+
+export interface AdminFeedbackListQuery extends FeedbackListQuery {
+  category?: FeedbackCategory | '';
+  userId?: number;
+  unreadOnly?: boolean;
+}
+
+export interface FeedbackReadResult {
+  threadId: number;
+  markedReadCount: number;
+  unreadMessageCount: number;
+}
+
+export interface BetaAccessUserMembership {
+  userId: number;
+  allowed: boolean;
+  allowedEmailId?: number | null;
+}
+
+export interface AdminOverviewSection<T> {
+  available: boolean;
+  data?: T | null;
+  errorCode?: string | null;
+}
+
+export interface AdminOverview {
+  generatedAt: string;
+  quotaDate: string;
+  quotaZone: string;
+  betaAccess: AdminOverviewSection<{ emailAllowlistEnabled: boolean; allowedEmailCount: number; registeredAllowedEmailCount: number }>;
+  aiRuntime: AdminOverviewSection<{ aiEnabled: boolean; defaultDailyRequestLimit: number; updatedAt?: string | null }>;
+  aiToday: AdminOverviewSection<{
+    entryRequests: { total: number; completed: number; failed: number; cancelled: number; quotaRejected: number; inProgress: number; otherRejected: number };
+    modelCallCount: number; inputTokens: number; cachedTokens: number; outputTokens: number; totalTokens: number;
+    estimatedCostUsd: string; unpricedCallCount: number; unpricedTokenCount: number;
+  }>;
+  quotaRisks: AdminOverviewSection<{ thresholdPercent: number; items: Array<{ userId: number; email?: string | null; displayName?: string | null; requestCount: number; effectiveDailyRequestLimit: number; usagePercent: number; atLimit: boolean; effectiveAiEnabled: boolean }> }>;
+  feedback: AdminOverviewSection<{ openThreadCount: number; adminUnreadMessageCount: number }>;
+  recentFailedRuns: AdminOverviewSection<{ items: unknown[] }>;
+}
+
 export interface AbilityTagScore {
   tag: string;
   label: string;

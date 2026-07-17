@@ -1,5 +1,5 @@
 import { Moon, Radio, Sun } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import HomeDashboard from './HomeDashboard';
 import LearningPlans from './LearningPlans';
 import MyPage from './MyPage';
@@ -15,16 +15,22 @@ import AiDebugConsole, {
 import UserManagementPage from './admin/UserManagementPage';
 import BetaAccessPage from './admin/BetaAccessPage';
 import AiGovernancePage from './admin/ai/AiGovernancePage';
+import FeedbackManagementPage from './admin/feedback/FeedbackManagementPage';
+import AdminOverviewPage from './admin/overview/AdminOverviewPage';
+import UserFeedbackDialog from './feedback/UserFeedbackDialog';
 import AppShell from './app/AppShell';
 import LoginPage from './app/LoginPage';
 import PasswordChangeRequiredPage from './app/PasswordChangeRequiredPage';
-import { APP_ROUTES, pathForView, type AppView, viewFromPath } from './app/navigation';
+import { APP_ROUTES, LEGACY_FEEDBACK_ROUTE, pathForView, type AppView, viewFromPath } from './app/navigation';
 import { applyTheme, nextTheme, readStoredTheme, storeTheme, type AppTheme } from './app/theme';
 import LanguageSelector from './i18n/LanguageSelector';
 import { useI18n } from './i18n/I18nProvider';
+import { captureFeedbackNavigationContext } from './feedback/feedbackSourceContext';
 import {
   ApiRequestError,
   getCurrentUser,
+  getAdminFeedbackThreads,
+  getFeedbackThreads,
   loginWithPassword,
   logout,
   registerWithPassword,
@@ -32,7 +38,7 @@ import {
 import type { AuthPermission, CurrentUser, PasswordLoginRequest, PasswordRegisterRequest } from './types/api';
 
 const DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.home;
-const ADMIN_DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.adminUsers;
+const ADMIN_DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.adminOverview;
 const ADMIN_RESTRICTED_VIEWS: ReadonlySet<AppView> = new Set(['home', 'learningPlans', 'mistakes', 'my']);
 
 function hasPermission(user: CurrentUser | undefined, permission: AuthPermission): boolean {
@@ -40,11 +46,12 @@ function hasPermission(user: CurrentUser | undefined, permission: AuthPermission
 }
 
 function isAdminUser(user: CurrentUser | undefined): boolean {
-  return hasPermission(user, 'user:manage');
+  return hasPermission(user, 'admin-overview:read') || hasPermission(user, 'user:manage');
 }
 
 function defaultAuthenticatedRouteForUser(user?: CurrentUser): string {
-  return isAdminUser(user) ? ADMIN_DEFAULT_AUTHENTICATED_ROUTE : DEFAULT_AUTHENTICATED_ROUTE;
+  if (hasPermission(user, 'admin-overview:read')) return ADMIN_DEFAULT_AUTHENTICATED_ROUTE;
+  return hasPermission(user, 'user:manage') ? APP_ROUTES.adminUsers : DEFAULT_AUTHENTICATED_ROUTE;
 }
 
 function normalizeAuthenticatedView(pathname: string, user?: CurrentUser): AppView {
@@ -57,6 +64,9 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
   }
   if (pathname === APP_ROUTES.passwordChangeRequired) {
     return defaultAuthenticatedRouteForUser(user);
+  }
+  if (pathname === LEGACY_FEEDBACK_ROUTE) {
+    return isAdminUser(user) ? defaultAuthenticatedRouteForUser(user) : APP_ROUTES.home;
   }
   const view = viewFromPath(pathname);
   if (!view) {
@@ -74,11 +84,17 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
   if (view === 'adminAi' && !hasPermission(user, 'ai-governance:manage')) {
     return defaultAuthenticatedRouteForUser(user);
   }
+  if (view === 'adminOverview' && !hasPermission(user, 'admin-overview:read')) {
+    return defaultAuthenticatedRouteForUser(user);
+  }
+  if (view === 'adminFeedback' && !hasPermission(user, 'feedback:manage')) {
+    return defaultAuthenticatedRouteForUser(user);
+  }
   if (view === 'problems' && !hasPermission(user, 'problem:read')) {
     return defaultAuthenticatedRouteForUser(user);
   }
   if (isAdminUser(user) && ADMIN_RESTRICTED_VIEWS.has(view)) {
-    return ADMIN_DEFAULT_AUTHENTICATED_ROUTE;
+    return defaultAuthenticatedRouteForUser(user);
   }
   return pathname;
 }
@@ -120,6 +136,18 @@ function normalizeAuthenticatedSearch(pathname: string, search: string): string 
         normalized.set(key, value);
       }
     });
+    const serialized = normalized.toString();
+    return serialized ? `?${serialized}` : '';
+  }
+  if (pathname === APP_ROUTES.adminFeedback) {
+    const normalized = new URLSearchParams();
+    const status = params.get('status'); const category = params.get('category');
+    const userId = positiveInteger(params.get('userId')); const threadId = positiveInteger(params.get('threadId'));
+    if (status === 'OPEN' || status === 'CLOSED') normalized.set('status', status);
+    if (category === 'BUG' || category === 'SUGGESTION' || category === 'OTHER') normalized.set('category', category);
+    if (userId) normalized.set('userId', String(userId));
+    if (threadId) normalized.set('threadId', String(threadId));
+    if (params.get('unreadOnly') === 'true') normalized.set('unreadOnly', 'true');
     const serialized = normalized.toString();
     return serialized ? `?${serialized}` : '';
   }
@@ -261,6 +289,8 @@ export default function App() {
   const [passwordAuthError, setPasswordAuthError] = useState('');
   const [passwordAuthPending, setPasswordAuthPending] = useState(false);
   const [debugConnectionState, setDebugConnectionState] = useState<ConnectionState>('idle');
+  const [feedbackUnreadCount, setFeedbackUnreadCount] = useState<number>();
+  const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
   const debugConsoleRef = useRef<AiDebugConsoleHandle | null>(null);
   const [theme, setTheme] = useState<AppTheme>(() => readStoredTheme());
 
@@ -276,6 +306,24 @@ export default function App() {
   useEffect(() => {
     applyTheme(theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (!currentUser || currentUser.passwordChangeRequired) {
+      setFeedbackUnreadCount(undefined);
+      return undefined;
+    }
+    let active = true;
+    async function refreshUnread() {
+      try {
+        const response = isAdminUser(currentUser)
+          ? await getAdminFeedbackThreads({ page: 1, pageSize: 1 })
+          : await getFeedbackThreads({ page: 1, pageSize: 1 });
+        if (active) setFeedbackUnreadCount(response.data?.unreadMessageCount);
+      } catch { if (active) setFeedbackUnreadCount(undefined); }
+    }
+    void refreshUnread();
+    return () => { active = false; };
+  }, [currentUser]);
 
   useEffect(() => {
     if (!currentUser) {
@@ -430,6 +478,7 @@ export default function App() {
     try {
       await logout();
       setCurrentUser(undefined);
+      setFeedbackDialogOpen(false);
       setActiveView('home');
       setPathname(APP_ROUTES.home);
       setSearch('');
@@ -503,6 +552,15 @@ export default function App() {
       return updatedTheme;
     });
   }
+
+  const closeFeedbackDialog = useCallback(() => {
+    setFeedbackDialogOpen(false);
+  }, []);
+
+  const openFeedbackDialog = useCallback(() => {
+    captureFeedbackNavigationContext();
+    setFeedbackDialogOpen(true);
+  }, []);
 
   if (!authChecked) {
     if (!isLoginRoute(window.location.pathname)) {
@@ -581,43 +639,57 @@ export default function App() {
   }
 
   return (
-    <AppShell
-      activeView={activeView}
-      currentUser={currentUser}
-      debugStatus={activeView === 'debug' && hasPermission(currentUser, 'debug:access') ? (
-        <div className={`status-pill ${debugConnectionState}`}>
-          <Radio aria-hidden="true" />
-          <span>{debugStatusLabel(debugConnectionState)}</span>
-        </div>
-      ) : undefined}
-      logoutError={logoutError}
-      logoutPending={logoutPending}
-      onLogout={() => void handleLogout()}
-      onNavigate={navigateToView}
-      onToggleTheme={handleToggleTheme}
-      theme={theme}
-    >
-      {activeView === 'home'
-        ? <TodayPackPage onNavigate={navigateToPath} />
-        : activeView === 'my'
-        ? <MyPage />
-        : activeView === 'problems' && hasPermission(currentUser, 'problem:read')
-        ? <ProblemLibrary />
-        : activeView === 'adminUsers' && hasPermission(currentUser, 'user:manage')
-        ? <UserManagementPage onNavigateHome={() => navigateToView('home')} onNavigate={navigateToPath} search={search} />
-        : activeView === 'adminBetaAccess' && hasPermission(currentUser, 'beta-access:manage')
-        ? <BetaAccessPage onNavigateHome={() => navigateToView('home')} />
-        : activeView === 'adminAi' && hasPermission(currentUser, 'ai-governance:manage')
-        ? <AiGovernancePage onNavigate={navigateToPath} search={search} />
-        : activeView === 'mistakes'
-          ? pathname === APP_ROUTES.reviewSession
-            ? <ReviewSessionPage onNavigate={navigateToPath} />
-            : <MistakeNotebookPage onNavigate={navigateToPath} />
-        : activeView === 'learningPlans'
-          ? <LearningPlans onNavigate={navigateToPath} pathname={pathname} search={search} />
-          : hasPermission(currentUser, 'debug:access')
-            ? <AiDebugConsole ref={debugConsoleRef} onConnectionStateChange={setDebugConnectionState} />
-            : <HomeDashboard onNavigate={navigateToView} />}
-    </AppShell>
+    <>
+      <AppShell
+        activeView={activeView}
+        currentUser={currentUser}
+        debugStatus={activeView === 'debug' && hasPermission(currentUser, 'debug:access') ? (
+          <div className={`status-pill ${debugConnectionState}`}>
+            <Radio aria-hidden="true" />
+            <span>{debugStatusLabel(debugConnectionState)}</span>
+          </div>
+        ) : undefined}
+        feedbackUnreadCount={feedbackUnreadCount}
+        logoutError={logoutError}
+        logoutPending={logoutPending}
+        onLogout={() => void handleLogout()}
+        onNavigate={navigateToView}
+        onOpenFeedback={openFeedbackDialog}
+        onToggleTheme={handleToggleTheme}
+        theme={theme}
+      >
+        {activeView === 'home'
+          ? <TodayPackPage onNavigate={navigateToPath} />
+          : activeView === 'my'
+          ? <MyPage />
+          : activeView === 'problems' && hasPermission(currentUser, 'problem:read')
+          ? <ProblemLibrary />
+          : activeView === 'adminUsers' && hasPermission(currentUser, 'user:manage')
+          ? <UserManagementPage onNavigateHome={() => navigateToView('home')} onNavigate={navigateToPath} search={search} />
+          : activeView === 'adminBetaAccess' && hasPermission(currentUser, 'beta-access:manage')
+          ? <BetaAccessPage onNavigateHome={() => navigateToView('home')} />
+          : activeView === 'adminAi' && hasPermission(currentUser, 'ai-governance:manage')
+          ? <AiGovernancePage onNavigate={navigateToPath} search={search} />
+          : activeView === 'adminOverview' && hasPermission(currentUser, 'admin-overview:read')
+          ? <AdminOverviewPage onNavigate={navigateToPath} />
+          : activeView === 'adminFeedback' && hasPermission(currentUser, 'feedback:manage')
+          ? <FeedbackManagementPage onNavigate={navigateToPath} onUnreadCountChanged={setFeedbackUnreadCount} search={search} />
+          : activeView === 'mistakes'
+            ? pathname === APP_ROUTES.reviewSession
+              ? <ReviewSessionPage onNavigate={navigateToPath} />
+              : <MistakeNotebookPage onNavigate={navigateToPath} />
+            : activeView === 'learningPlans'
+            ? <LearningPlans onNavigate={navigateToPath} pathname={pathname} search={search} />
+            : hasPermission(currentUser, 'debug:access')
+              ? <AiDebugConsole ref={debugConsoleRef} onConnectionStateChange={setDebugConnectionState} />
+              : <HomeDashboard onNavigate={navigateToView} />}
+      </AppShell>
+      {feedbackDialogOpen && !isAdminUser(currentUser) ? (
+        <UserFeedbackDialog
+          onClose={closeFeedbackDialog}
+          onUnreadCountChanged={setFeedbackUnreadCount}
+        />
+      ) : null}
+    </>
   );
 }

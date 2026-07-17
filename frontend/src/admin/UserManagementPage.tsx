@@ -344,6 +344,7 @@ export default function UserManagementPage({ onNavigate, onNavigateHome, search 
         <AdminUserDetailDrawer
           onClose={closeDetail}
           onResetPassword={(user) => setPendingConfirmation({ action: 'resetPassword', user })}
+          onNavigate={(path) => onNavigate?.(path)}
           onViewFullUsage={(userId) => onNavigate?.(`/admin/ai?userId=${userId}`)}
           userId={selectedUserId}
         />

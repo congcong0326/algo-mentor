@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Bot, ClipboardList, House, Library, NotebookTabs, ShieldCheck, SlidersHorizontal, UserRound, UsersRound } from 'lucide-react';
+import { Bot, ClipboardList, House, LayoutDashboard, Library, MessageSquare, NotebookTabs, ShieldCheck, SlidersHorizontal, UserRound, UsersRound } from 'lucide-react';
 import type { AuthPermission } from '../types/api';
 
 export const APP_ROUTES = {
@@ -14,9 +14,14 @@ export const APP_ROUTES = {
   adminBetaAccess: '/admin/beta-access',
   adminUsers: '/admin/users',
   adminAi: '/admin/ai',
+  adminOverview: '/admin',
+  adminFeedback: '/admin/feedback',
   passwordChangeRequired: '/password/change-required',
   debug: '/debug',
 } as const;
+
+// Preserved only to normalize old bookmarks after the user inbox moved to a dialog.
+export const LEGACY_FEEDBACK_ROUTE = '/feedback';
 
 const LEARNING_PLAN_DETAIL_PATTERN = /^\/learning-plans\/(\d+)$/;
 const LEARNING_PLAN_PRACTICE_CHAT_PATTERN = /^\/learning-plans\/(\d+)\/phases\/(\d+)\/problems\/([^/]+)\/chat$/;
@@ -43,6 +48,8 @@ export type AppView =
   | 'adminBetaAccess'
   | 'adminUsers'
   | 'adminAi'
+  | 'adminOverview'
+  | 'adminFeedback'
   | 'passwordChangeRequired'
   | 'debug';
 
@@ -57,6 +64,13 @@ export interface NavigationItem {
 }
 
 export const NAVIGATION_ITEMS: NavigationItem[] = [
+  {
+    view: 'adminOverview',
+    labelKey: 'adminOverview',
+    path: APP_ROUTES.adminOverview,
+    icon: LayoutDashboard,
+    permission: 'admin-overview:read',
+  },
   {
     view: 'home',
     labelKey: 'home',
@@ -104,6 +118,13 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     permission: 'ai-governance:manage',
   },
   {
+    view: 'adminFeedback',
+    labelKey: 'adminFeedback',
+    path: APP_ROUTES.adminFeedback,
+    icon: MessageSquare,
+    permission: 'feedback:manage',
+  },
+  {
     view: 'debug',
     labelKey: 'debug',
     path: APP_ROUTES.debug,
@@ -133,6 +154,12 @@ export function viewFromPath(pathname: string): AppView | undefined {
   }
   if (pathname === APP_ROUTES.adminUsers) {
     return 'adminUsers';
+  }
+  if (pathname === APP_ROUTES.adminOverview) {
+    return 'adminOverview';
+  }
+  if (pathname === APP_ROUTES.adminFeedback) {
+    return 'adminFeedback';
   }
   if (pathname === APP_ROUTES.adminAi) {
     return 'adminAi';

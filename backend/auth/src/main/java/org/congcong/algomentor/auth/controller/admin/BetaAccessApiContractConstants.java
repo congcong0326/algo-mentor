@@ -6,6 +6,7 @@ public final class BetaAccessApiContractConstants {
   public static final String SETTINGS_PATH = "/settings";
   public static final String EMAILS_PATH = "/emails";
   public static final String EMAIL_ID_PATH = "/emails/{allowedEmailId}";
+  public static final String USER_MEMBERSHIP_PATH = "/users/{userId}";
 
   private BetaAccessApiContractConstants() {
   }

@@ -32,6 +32,7 @@
 - `docs/internal-beta-admin-capabilities-design.md`：5-20 人封闭内测管理员业务能力研发设计，说明数据库邮箱白名单、临时密码、动态 AI 额度、模型价格与成本估算、AI run 排障、30 天诊断保留、反馈信箱、管理员概览和低敏审计边界。
 - `docs/internal-beta-admin-capabilities-implementation-plan.md`：内测管理员业务能力分阶段实施计划，按准入与账号运维、AI 止损与成本观测、run 排障、反馈与概览拆分任务、测试和发布门禁。
 - `docs/internal-beta-ai-governance-stage-2-implementation-plan.md`：内测管理员能力阶段二详细实施计划，固化 `/admin/ai` 与用户管理的产品边界，细化动态 AI 策略、V32 调用级 Token 台账、当前价格成本估算、直接 LLM 调用治理、管理员 API、前端工作区、测试和发布门禁。
+- `docs/internal-beta-feedback-overview-stage-4-implementation-plan.md`：内测管理员能力阶段四详细实施计划，仅细化反馈信箱与管理员概览，固定未读/事务语义、反馈 API、概览区块降级、前端徽标与跨页面联动，并明确阶段三 run 查询依赖。
 
 ## 后端
 

@@ -22,6 +22,9 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.congcong.algomentor.api.MentorApiApplication;
 import org.congcong.algomentor.api.controller.admin.ai.AdminAiApiContractConstants;
+import org.congcong.algomentor.api.controller.admin.feedback.AdminFeedbackApiContractConstants;
+import org.congcong.algomentor.api.controller.admin.overview.AdminOverviewApiContractConstants;
+import org.congcong.algomentor.api.controller.feedback.FeedbackApiContractConstants;
 import org.congcong.algomentor.auth.config.AuthSecurityPaths;
 import org.congcong.algomentor.auth.controller.admin.AdminPasswordResetApiContractConstants;
 import org.congcong.algomentor.auth.controller.admin.BetaAccessApiContractConstants;
@@ -65,6 +68,29 @@ class AdminUserEndpointSecurityTest {
         AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.USAGE_BY_MODEL_PATH,
         AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.USAGE_BY_SOURCE_PATH,
         AdminAiApiContractConstants.ADMIN_USERS_BASE_PATH + AdminAiApiContractConstants.USER_AI_POLICY_PATH);
+
+    assertTrue(mappedPaths.containsAll(expectedPaths), () -> "Missing mappings: " + expectedPaths.stream()
+        .filter(path -> !mappedPaths.contains(path))
+        .toList());
+  }
+
+  @Test
+  void feedbackEndpointsAreMappedWhenDataSourceIsConfigured() {
+    Set<String> mappedPaths = requestMappingHandlerMapping.getHandlerMethods().keySet().stream()
+        .flatMap(mapping -> mapping.getPatternValues().stream())
+        .collect(Collectors.toSet());
+
+    Set<String> expectedPaths = Set.of(
+        FeedbackApiContractConstants.BASE_PATH,
+        FeedbackApiContractConstants.BASE_PATH + FeedbackApiContractConstants.THREAD_ID_PATH,
+        FeedbackApiContractConstants.BASE_PATH + FeedbackApiContractConstants.MESSAGES_PATH,
+        FeedbackApiContractConstants.BASE_PATH + FeedbackApiContractConstants.READ_PATH,
+        AdminFeedbackApiContractConstants.BASE_PATH,
+        AdminFeedbackApiContractConstants.BASE_PATH + AdminFeedbackApiContractConstants.THREAD_ID_PATH,
+        AdminFeedbackApiContractConstants.BASE_PATH + AdminFeedbackApiContractConstants.MESSAGES_PATH,
+        AdminFeedbackApiContractConstants.BASE_PATH + AdminFeedbackApiContractConstants.READ_PATH,
+        AdminFeedbackApiContractConstants.BASE_PATH + AdminFeedbackApiContractConstants.STATUS_PATH,
+        AdminOverviewApiContractConstants.BASE_PATH);
 
     assertTrue(mappedPaths.containsAll(expectedPaths), () -> "Missing mappings: " + expectedPaths.stream()
         .filter(path -> !mappedPaths.contains(path))

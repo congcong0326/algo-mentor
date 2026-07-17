@@ -53,4 +53,8 @@ describe('learning plan practice submissions navigation', () => {
     expect(pathForView('problems')).toBe('/admin/problems');
     expect(viewFromPath('/problems')).toBeUndefined();
   });
+
+  it('does not expose the former user feedback page as an application view', () => {
+    expect(viewFromPath('/feedback')).toBeUndefined();
+  });
 });

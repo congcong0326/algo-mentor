@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import org.congcong.algomentor.auth.betaaccess.model.BetaAccessSettings;
 import org.congcong.algomentor.auth.betaaccess.model.BetaAllowedEmail;
+import org.congcong.algomentor.auth.betaaccess.model.BetaAccessOverviewSummary;
+import org.congcong.algomentor.auth.betaaccess.model.BetaAccessUserMembership;
 import org.congcong.algomentor.auth.betaaccess.repository.BetaAccessRepository;
 import org.congcong.algomentor.auth.betaaccess.repository.mybatis.model.BetaAccessSettingsRow;
 import org.congcong.algomentor.auth.betaaccess.repository.mybatis.model.BetaAllowedEmailRow;
@@ -68,5 +70,15 @@ public class MyBatisBetaAccessRepository implements BetaAccessRepository {
   @Override
   public long countAllowedEmails(String keyword) {
     return mapper.countAllowedEmails(keyword);
+  }
+
+  @Override
+  public BetaAccessOverviewSummary overviewSummary() {
+    return mapper.overviewSummary().toDomain();
+  }
+
+  @Override
+  public BetaAccessUserMembership userMembership(long userId) {
+    return mapper.userMembership(userId).toDomain();
   }
 }

@@ -86,8 +86,51 @@ export interface LocaleResources {
     adminBetaAccess: string;
     adminUsers: string;
     adminAi: string;
+    feedback: string;
+    adminOverview: string;
+    adminFeedback: string;
     debug: string;
     forbidden: string;
+  };
+  feedback: {
+    openDialog: string;
+    openDialogUnread: string;
+    closeDialog: string;
+    title: string;
+    refresh: string;
+    filterLabel: string;
+    all: string;
+    open: string;
+    closed: string;
+    newFeedback: string;
+    createFormLabel: string;
+    category: string;
+    categoryBug: string;
+    categorySuggestion: string;
+    categoryOther: string;
+    subject: string;
+    content: string;
+    cancel: string;
+    create: string;
+    creating: string;
+    loading: string;
+    detailLoading: string;
+    threadListLabel: string;
+    selectThread: string;
+    backToList: string;
+    untitled: string;
+    replyContent: string;
+    replyPlaceholder: string;
+    sendReply: string;
+    replyAndReopen: string;
+    sending: string;
+    user: string;
+    administrator: string;
+    listLoadFailed: string;
+    detailLoadFailed: string;
+    markReadFailed: string;
+    createFailed: string;
+    replyFailed: string;
   };
   adminUsers: {
     ariaLabel: string;
@@ -866,8 +909,51 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminBetaAccess: '内测准入',
       adminUsers: '用户管理',
       adminAi: 'AI 治理',
+      feedback: '反馈',
+      adminOverview: '概览',
+      adminFeedback: '反馈',
       debug: 'AI 调试',
       forbidden: '无权访问',
+    },
+    feedback: {
+      openDialog: '打开反馈信箱',
+      openDialogUnread: '打开反馈信箱，有未读管理员回复',
+      closeDialog: '关闭反馈信箱',
+      title: '反馈信箱',
+      refresh: '刷新',
+      filterLabel: '反馈状态筛选',
+      all: '全部',
+      open: '处理中',
+      closed: '已关闭',
+      newFeedback: '新建反馈',
+      createFormLabel: '新建反馈',
+      category: '分类',
+      categoryBug: '问题',
+      categorySuggestion: '建议',
+      categoryOther: '其他',
+      subject: '主题（可选）',
+      content: '正文',
+      cancel: '取消',
+      create: '提交反馈',
+      creating: '提交中...',
+      loading: '正在加载...',
+      detailLoading: '正在加载反馈详情...',
+      threadListLabel: '反馈会话列表',
+      selectThread: '从左侧选择一条反馈查看详情。',
+      backToList: '返回反馈列表',
+      untitled: '未命名反馈',
+      replyContent: '回复内容',
+      replyPlaceholder: '输入回复...',
+      sendReply: '发送回复',
+      replyAndReopen: '回复并重新打开',
+      sending: '发送中...',
+      user: '你',
+      administrator: '管理员',
+      listLoadFailed: '反馈列表加载失败',
+      detailLoadFailed: '反馈详情加载失败',
+      markReadFailed: '标记已读失败',
+      createFailed: '创建反馈失败',
+      replyFailed: '反馈回复失败',
     },
     adminUsers: {
       ariaLabel: '用户管理',
@@ -1737,8 +1823,51 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminBetaAccess: 'Beta Access',
       adminUsers: 'Users',
       adminAi: 'AI Governance',
+      feedback: 'Feedback',
+      adminOverview: 'Overview',
+      adminFeedback: 'Feedback',
       debug: 'AI Debug',
       forbidden: 'Not authorized',
+    },
+    feedback: {
+      openDialog: 'Open feedback inbox',
+      openDialogUnread: 'Open feedback inbox with unread administrator replies',
+      closeDialog: 'Close feedback inbox',
+      title: 'Feedback inbox',
+      refresh: 'Refresh',
+      filterLabel: 'Feedback status filter',
+      all: 'All',
+      open: 'In progress',
+      closed: 'Closed',
+      newFeedback: 'New feedback',
+      createFormLabel: 'New feedback',
+      category: 'Category',
+      categoryBug: 'Issue',
+      categorySuggestion: 'Suggestion',
+      categoryOther: 'Other',
+      subject: 'Subject (optional)',
+      content: 'Details',
+      cancel: 'Cancel',
+      create: 'Submit feedback',
+      creating: 'Submitting...',
+      loading: 'Loading...',
+      detailLoading: 'Loading feedback details...',
+      threadListLabel: 'Feedback conversations',
+      selectThread: 'Select feedback from the list to view details.',
+      backToList: 'Back to feedback list',
+      untitled: 'Untitled feedback',
+      replyContent: 'Reply',
+      replyPlaceholder: 'Write a reply...',
+      sendReply: 'Send reply',
+      replyAndReopen: 'Reply and reopen',
+      sending: 'Sending...',
+      user: 'You',
+      administrator: 'Administrator',
+      listLoadFailed: 'Failed to load feedback list',
+      detailLoadFailed: 'Failed to load feedback details',
+      markReadFailed: 'Failed to mark feedback as read',
+      createFailed: 'Failed to create feedback',
+      replyFailed: 'Failed to send feedback reply',
     },
     adminUsers: {
       ariaLabel: 'User management',

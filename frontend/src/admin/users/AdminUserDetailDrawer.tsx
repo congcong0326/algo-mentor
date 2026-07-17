@@ -5,11 +5,13 @@ import { ApiRequestError, getAdminUserDetail, requireApiData } from '../../servi
 import type { AdminUserDetail } from '../../types/api';
 import { formatDateTime } from '../ai/aiFormat';
 import AdminUserAiSection from './AdminUserAiSection';
+import AdminUserSupportSection from './AdminUserSupportSection';
 
 interface AdminUserDetailDrawerProps {
   onClose: () => void;
   onResetPassword: (user: AdminUserDetail) => void;
   onViewFullUsage: (userId: number) => void;
+  onNavigate: (path: string) => void;
   userId: number;
 }
 
@@ -17,6 +19,7 @@ export default function AdminUserDetailDrawer({
   onClose,
   onResetPassword,
   onViewFullUsage,
+  onNavigate,
   userId,
 }: AdminUserDetailDrawerProps) {
   const { resources } = useI18n();
@@ -98,6 +101,7 @@ export default function AdminUserDetailDrawer({
         ) : null}
 
         <AdminUserAiSection key={userId} onViewFullUsage={() => onViewFullUsage(userId)} userId={userId} />
+        <AdminUserSupportSection key={`support-${userId}`} onNavigate={onNavigate} userId={userId} />
       </aside>
     </div>
   );

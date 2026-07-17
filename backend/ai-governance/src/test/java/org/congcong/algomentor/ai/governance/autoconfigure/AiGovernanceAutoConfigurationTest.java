@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.time.LocalDate;
+import java.util.List;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockOwnerProvider;
 import org.congcong.algomentor.agent.core.runlock.InMemoryAgentRunLockManager;
@@ -17,6 +18,7 @@ import org.congcong.algomentor.ai.governance.policy.AiGovernanceProperties;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicyResolver;
 import org.congcong.algomentor.ai.governance.repository.mybatis.AiDailyUsageMapper;
 import org.congcong.algomentor.ai.governance.repository.mybatis.AiRunAdmissionMapper;
+import org.congcong.algomentor.ai.governance.repository.mybatis.model.AiDailyUsageRow;
 import org.congcong.algomentor.ai.governance.repository.mybatis.model.AiRunAdmissionRow;
 import org.congcong.algomentor.ai.governance.repository.mybatis.model.AiRunStatusUpdate;
 import org.congcong.algomentor.ai.governance.usage.AiDailyUsageStore;
@@ -76,6 +78,11 @@ class AiGovernanceAutoConfigurationTest {
     @Override
     public long findRequestCount(long userId, LocalDate quotaDate, String scope) {
       return 0;
+    }
+
+    @Override
+    public List<AiDailyUsageRow> findByQuotaDateAndScope(LocalDate quotaDate, String scope) {
+      return List.of();
     }
   }
 

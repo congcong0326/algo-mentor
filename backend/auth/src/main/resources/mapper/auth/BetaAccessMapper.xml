@@ -112,4 +112,36 @@
       WHERE lower(allowed.email) LIKE concat('%', lower(#{keyword}), '%')
     </if>
   </select>
+
+  <resultMap id="BetaAccessOverviewSummaryRowMap" type="org.congcong.algomentor.auth.betaaccess.repository.mybatis.model.BetaAccessOverviewSummaryRow">
+    <constructor>
+      <arg column="email_allowlist_enabled" javaType="_boolean"/>
+      <arg column="allowed_email_count" javaType="_long"/>
+      <arg column="registered_allowed_email_count" javaType="_long"/>
+    </constructor>
+  </resultMap>
+
+  <select id="overviewSummary" resultMap="BetaAccessOverviewSummaryRowMap">
+    SELECT settings.email_allowlist_enabled,
+           (SELECT count(*) FROM auth_beta_allowed_email) AS allowed_email_count,
+           (SELECT count(*) FROM auth_beta_allowed_email allowed
+             INNER JOIN auth_users users ON users.email_normalized = allowed.email_normalized)
+             AS registered_allowed_email_count
+    FROM auth_beta_access_settings settings
+    WHERE settings.id = 1
+  </select>
+
+  <resultMap id="BetaAccessUserMembershipRowMap" type="org.congcong.algomentor.auth.betaaccess.repository.mybatis.model.BetaAccessUserMembershipRow">
+    <constructor>
+      <arg column="user_id" javaType="_long"/>
+      <arg column="allowed_email_id" javaType="java.lang.Long"/>
+    </constructor>
+  </resultMap>
+
+  <select id="userMembership" resultMap="BetaAccessUserMembershipRowMap">
+    SELECT users.id AS user_id, allowed.id AS allowed_email_id
+    FROM auth_users users
+    LEFT JOIN auth_beta_allowed_email allowed ON allowed.email_normalized = users.email_normalized
+    WHERE users.id = #{userId}
+  </select>
 </mapper>

@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.time.LocalDate;
 import org.congcong.algomentor.ai.governance.model.AiPurpose;
 import org.congcong.algomentor.ai.governance.model.AiUsage;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicyResolver;
@@ -19,6 +20,7 @@ import org.congcong.algomentor.ai.governance.repository.mybatis.AiAdminUsageMapp
 import org.congcong.algomentor.ai.governance.repository.mybatis.AiDailyUsageMapper;
 import org.congcong.algomentor.ai.governance.repository.mybatis.model.AiObservedUnpricedModelRow;
 import org.congcong.algomentor.ai.governance.repository.mybatis.model.AiUsageAggregationRow;
+import org.congcong.algomentor.ai.governance.repository.mybatis.model.AiDailyUsageRow;
 import org.congcong.algomentor.identity.model.AuthUser;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 
@@ -115,6 +117,31 @@ public class AiAdminUsageQueryService {
     return usageMapper.observedUnpricedModels(query).stream()
         .map(this::toObservedUnpricedModel)
         .toList();
+  }
+
+  public AiOverviewSnapshot overview(java.time.ZoneId quotaZone) {
+    LocalDate date = LocalDate.now(quotaZone);
+    AiUsageQuery query = AiUsageQuery.of(date, date, quotaZone, null, null, null, null, null);
+    AiEntryRequestMetrics entryRequests = usageMapper.entryRequestMetrics(query.fromAt(), query.toExclusive()).toDomain();
+    List<AiQuotaRiskUser> risks = dailyUsageMapper.findByQuotaDateAndScope(date, "ALL").stream()
+        .map(row -> quotaRisk(row))
+        .filter(java.util.Objects::nonNull)
+        .sorted(Comparator.comparingInt(AiQuotaRiskUser::usagePercent).reversed()
+            .thenComparing(Comparator.comparingLong(AiQuotaRiskUser::requestCount).reversed())
+            .thenComparingLong(AiQuotaRiskUser::userId))
+        .limit(20)
+        .toList();
+    return new AiOverviewSnapshot(date, quotaZone.getId(), entryRequests, summary(query).metrics(), risks);
+  }
+
+  private AiQuotaRiskUser quotaRisk(AiDailyUsageRow row) {
+    EffectiveAiRuntimePolicy policy = runtimePolicyService.resolve(policyResolver.resolve(AiPurpose.LEARNING_CHAT), row.userId());
+    int limit = policy.effectiveDailyRequestLimit();
+    if (limit < 1 || row.requestCount() * 100L < limit * 80L) return null;
+    AuthUser user = identityUserRepository.findUserById(row.userId()).orElse(null);
+    int percent = (int) Math.min(10_000L, (row.requestCount() * 100L) / limit);
+    return new AiQuotaRiskUser(row.userId(), user == null ? null : user.email(), user == null ? null : user.displayName(),
+        row.requestCount(), limit, percent, row.requestCount() >= limit, policy.effectiveAiEnabled());
   }
 
   private AiUsageByUserRow toUserRow(long userId, AiUsageMetrics metrics, LocalDate today) {

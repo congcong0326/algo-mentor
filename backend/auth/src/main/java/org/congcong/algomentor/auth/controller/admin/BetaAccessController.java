@@ -40,6 +40,13 @@ public class BetaAccessController {
     return ApiResponse.success(BetaAccessPageResponse.from(service.getPage(page, pageSize, keyword)));
   }
 
+  @GetMapping(BetaAccessApiContractConstants.USER_MEMBERSHIP_PATH)
+  public ApiResponse<org.congcong.algomentor.auth.betaaccess.model.BetaAccessUserMembership> userMembership(
+      @PathVariable long userId
+  ) {
+    return ApiResponse.success(service.userMembership(userId));
+  }
+
   @PatchMapping(BetaAccessApiContractConstants.SETTINGS_PATH)
   public ApiResponse<BetaAccessSettingsResponse> updateSettings(
       @RequestBody BetaAccessSettingsUpdateRequest request,
