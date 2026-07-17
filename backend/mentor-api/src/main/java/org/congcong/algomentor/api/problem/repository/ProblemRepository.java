@@ -7,7 +7,7 @@ import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.api.problem.model.ProblemListItem;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
 import org.congcong.algomentor.api.problem.model.ProblemPage;
-import org.congcong.algomentor.api.problem.model.ProblemSeedRecord;
+import org.congcong.algomentor.api.problem.model.NormalizedProblemSeed;
 
 public interface ProblemRepository {
 
@@ -25,5 +25,5 @@ public interface ProblemRepository {
     return findProblemFilters();
   }
 
-  void upsertProblem(ProblemSeedRecord problem);
+  void upsertProblem(NormalizedProblemSeed problem);
 }

@@ -40,7 +40,11 @@ class AbilityProfileMapperXmlTest {
 
     assertThat(normalizedMapperXml).contains(
         "ROW_NUMBER() OVER (PARTITION BY problem_slug ORDER BY created_at DESC, id DESC)");
-    assertThat(normalizedMapperXml).contains("CROSS JOIN LATERAL unnest(");
+    assertThat(normalizedMapperXml)
+        .contains("JOIN problem_tag_assignment assignment ON assignment.problem_id = p.id")
+        .contains("JOIN problem_tag pt ON pt.id = assignment.tag_id")
+        .contains("WHERE pt.active = TRUE")
+        .doesNotContain("unnest(", "p.tag_values");
     assertThat(normalizedMapperXml).contains("LEFT JOIN tag_review_scores");
     assertThat(normalizedMapperXml).contains("HAVING COUNT(*) >= #{minProblemCount}");
     assertThat(normalizedMapperXml).contains("ORDER BY tc.problem_count DESC, tc.tag ASC");

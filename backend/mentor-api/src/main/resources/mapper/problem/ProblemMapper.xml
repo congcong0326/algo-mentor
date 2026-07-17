@@ -56,9 +56,9 @@
     p.title_en,
     p.title_zh,
     p.difficulty,
-    COALESCE(array_to_string(p.tag_values, E'\n'), '') AS tag_values_text,
-    COALESCE(array_to_string(p.tag_labels_en, E'\n'), '') AS tag_labels_en_text,
-    COALESCE(array_to_string(p.tag_labels_zh, E'\n'), '') AS tag_labels_zh_text,
+    COALESCE(normalized_tags.tag_values_text, '') AS tag_values_text,
+    COALESCE(normalized_tags.tag_labels_en_text, '') AS tag_labels_en_text,
+    COALESCE(normalized_tags.tag_labels_zh_text, '') AS tag_labels_zh_text,
     p.content_markdown_en,
     p.content_markdown_zh,
     p.content_status,
@@ -100,6 +100,18 @@
     ) AS company_signal_count
   </sql>
 
+  <sql id="NormalizedTagLateralJoin">
+    LEFT JOIN LATERAL (
+      SELECT
+        string_agg(pt.value, E'\n' ORDER BY assignment.ordinal) AS tag_values_text,
+        string_agg(pt.label_en, E'\n' ORDER BY assignment.ordinal) AS tag_labels_en_text,
+        string_agg(pt.label_zh, E'\n' ORDER BY assignment.ordinal) AS tag_labels_zh_text
+      FROM problem_tag_assignment assignment
+      JOIN problem_tag pt ON pt.id = assignment.tag_id
+      WHERE assignment.problem_id = p.id
+    ) normalized_tags ON TRUE
+  </sql>
+
   <sql id="ProblemFilters">
     <where>
       <if test="keyword != null and keyword != ''">
@@ -115,7 +127,14 @@
         AND p.difficulty = #{difficulty}
       </if>
       <if test="tag != null and tag != ''">
-        AND #{tag} = ANY(p.tag_values)
+        AND EXISTS (
+          SELECT 1
+          FROM problem_tag_assignment assignment
+          JOIN problem_tag pt ON pt.id = assignment.tag_id
+          WHERE assignment.problem_id = p.id
+            AND pt.value = #{tag}
+            AND pt.active = TRUE
+        )
       </if>
       <if test="category != null and category != ''">
         AND EXISTS (
@@ -177,6 +196,7 @@
     SELECT
       <include refid="ProblemColumns"/>
     FROM problem p
+    <include refid="NormalizedTagLateralJoin"/>
     <include refid="ProblemFilters"/>
     <choose>
       <when test="sort == 'FRONTEND_ID_DESC'">
@@ -215,9 +235,9 @@
       p.title_en,
       p.title_zh,
       p.difficulty,
-      COALESCE(array_to_string(p.tag_values, E'\n'), '') AS tag_values_text,
-      COALESCE(array_to_string(p.tag_labels_en, E'\n'), '') AS tag_labels_en_text,
-      COALESCE(array_to_string(p.tag_labels_zh, E'\n'), '') AS tag_labels_zh_text,
+      COALESCE(normalized_tags.tag_values_text, '') AS tag_values_text,
+      COALESCE(normalized_tags.tag_labels_en_text, '') AS tag_labels_en_text,
+      COALESCE(normalized_tags.tag_labels_zh_text, '') AS tag_labels_zh_text,
       p.content_markdown_en,
       p.content_markdown_zh,
       p.content_status,
@@ -230,6 +250,7 @@
       NULL::NUMERIC AS company_frequency_score,
       0::BIGINT AS company_signal_count
     FROM problem p
+    <include refid="NormalizedTagLateralJoin"/>
     WHERE p.slug = #{slug}
   </select>
 
@@ -252,21 +273,17 @@
 
   <select id="countProblemsByTag" resultMap="ProblemFilterCountRowMap">
     SELECT
-      t.tag AS value,
-      MIN(t.label) AS label,
-      COUNT(*) AS problem_count
-    FROM problem p
-    CROSS JOIN LATERAL unnest(
-      p.tag_values,
+      pt.value AS value,
       CASE
-        WHEN #{locale} = 'en-US' THEN p.tag_labels_en
-        ELSE p.tag_labels_zh
-      END
-    ) AS t(tag, label)
-    WHERE t.tag IS NOT NULL
-      AND t.tag != ''
-    GROUP BY t.tag
-    ORDER BY MIN(t.label) ASC, t.tag ASC
+        WHEN #{locale} = 'en-US' THEN pt.label_en
+        ELSE pt.label_zh
+      END AS label,
+      COUNT(assignment.problem_id) AS problem_count
+    FROM problem_tag pt
+    JOIN problem_tag_assignment assignment ON assignment.tag_id = pt.id
+    WHERE pt.active = TRUE
+    GROUP BY pt.id, pt.value, pt.label_en, pt.label_zh
+    ORDER BY label ASC, pt.value ASC
   </select>
 
   <select id="countProblemCategories" resultMap="ProblemCategoryFilterRowMap">

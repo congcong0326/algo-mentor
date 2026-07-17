@@ -20,6 +20,9 @@
 - `docs/practice-code-review-product-design.md`：练习代码 Review 产品设计，说明自动识别完整代码提交、多版本 Review、评分规则、完成门槛和 Review 抽屉体验。
 - `docs/practice-code-review-technical-design.md`：练习代码 Review 技术设计，说明基于 practice turn orchestrator 与服务端 capability 的结构化 Review、数据模型、完成 gate、API 和前端闭环。
 - `docs/problem-agent-tools-design.md`：题目 Agent 工具体系设计，说明过滤项发现、查题、读取题面的用途、边界、返回内容和后续演进。
+- `docs/ai-learner-profile-data-model-and-storage-design.md`：AI 学习者画像数据建模与存储研发设计，说明题目标签规范化、自然语言画像正文、`NO_CHANGE / REPLACE` 更新、画像版本链和 PostgreSQL 表结构。
+- `docs/problem-tag-modeling-spec.md`：题目标签建模完整闭环规格，说明规范化标签表、历史数组回填、seed 导入双写、题库与能力雷达读取切换、一致性校验、测试和旧数组手动删除门禁。
+- `docs/problem-tag-modeling-implementation-plan.md`：题目标签建模闭环研发实施计划，按 PostgreSQL 验证基线、V33 迁移、统一规范化、seed 双写、题库与能力雷达读取切换、发布观察和旧数组保留门禁拆分任务。
 - `docs/learning-plan-template-seed-design.md`：学习计划模板 seed 最小闭环设计，说明 NeetCode 模板 seed、模板表、导入配置、查询 API、从模板生成草稿和项目 Skill 沉淀。
 - `docs/learning-plan-template-source-research.md`：学习计划模板资料源调研，按最终计划价值排序 LeetCode 官方计划、NeetCode、TIH、代码随想录、halfrost、labuladong 等候选来源。
 - `docs/learning-plan-template-internalization-plan.md`：学习计划模板资料源内部化实施计划，定义第一批 10 个模板、资料源转换清单、完成标记、subagent 派发模式、seed 生成和验证门禁。
@@ -58,7 +61,10 @@
 - `backend/mentor-api/src/main/resources/application-local.yml`：本地 PostgreSQL 与 Flyway 配置。
 - `backend/mentor-api/src/main/resources/db/migration`：mentor API 自有 Flyway 迁移脚本目录。
 - `backend/mentor-api/src/main/resources/db/migration/V27__problem_recommendation_reasons.sql`：为题目表增加中英文推荐理由字段。
-- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/service/ProblemSeedImporter.java`：按 `slug` 合并题目 JSONL 与推荐理由 JSON，完成全量匹配校验后幂等写入题目表。
+- `backend/mentor-api/src/main/resources/db/migration/V33__problem_tag_normalization.sql`：创建题目标签目录和关联表，按稳定频次规则回填历史数组，并在迁移内校验有序双写一致性。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/service/ProblemSeedTagNormalizer.java`：题目 seed 标签 fallback、题内去重和跨题名称稳定决胜的唯一实现入口。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/service/ProblemSeedImporter.java`：按 `slug` 合并题目 JSONL 与推荐理由 JSON，在一个事务中规范化并双写题目兼容数组、标签目录和关联表，提交前执行一致性校验。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/repository/ProblemTagRepository.java`：规范化标签目录 upsert 与题目标签关联完整替换的持久化边界。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/AgentToolPermissionController.java`：Agent Tool 权限决策 API，提供 `POST /api/agent/tool-permissions/{permissionRequestId}/decision`，通过当前认证用户提交允许或拒绝。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/AgentToolPermissionExceptionHandler.java`：权限决策异常到 HTTP 状态的映射，覆盖未登录、越权、不存在、已决策、过期和非法请求。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/agent/model`：权限决策 API 的 request/response DTO，只接收 `decision` 和 `reason`，不接收前端声明的 userId。

@@ -19,23 +19,20 @@
     WITH expanded_problem_tags AS (
       SELECT
         p.slug,
-        t.tag,
-        t.label
+        pt.value AS tag,
+        pt.label_zh AS label
       FROM problem p
-      CROSS JOIN LATERAL unnest(
-        p.tag_values,
-        p.tag_labels_zh
-      ) AS t(tag, label)
-      WHERE t.tag IS NOT NULL
-        AND t.tag != ''
+      JOIN problem_tag_assignment assignment ON assignment.problem_id = p.id
+      JOIN problem_tag pt ON pt.id = assignment.tag_id
+      WHERE pt.active = TRUE
     ),
     tag_catalog AS (
       SELECT
         tag,
-        MIN(label) AS label,
+        label,
         COUNT(*) AS problem_count
       FROM expanded_problem_tags
-      GROUP BY tag
+      GROUP BY tag, label
       HAVING COUNT(*) >= #{minProblemCount}
     ),
     latest_reviews AS (

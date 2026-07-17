@@ -24,6 +24,7 @@ import org.congcong.algomentor.api.problem.model.ProblemListItem;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
 import org.congcong.algomentor.api.problem.model.ProblemPage;
 import org.congcong.algomentor.api.problem.model.ProblemSeedRecord;
+import org.congcong.algomentor.api.problem.model.NormalizedProblemSeed;
 import org.congcong.algomentor.api.problem.model.ProblemTag;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
@@ -110,11 +111,12 @@ public class MyBatisProblemRepository implements ProblemRepository {
   }
 
   @Override
-  public void upsertProblem(ProblemSeedRecord problem) {
+  public void upsertProblem(NormalizedProblemSeed normalizedProblem) {
+    ProblemSeedRecord problem = normalizedProblem.problem();
     Connection connection = DataSourceUtils.getConnection(dataSource);
-    List<String> tagValues = normalizedValues(problem.tagValues());
-    List<String> tagLabelsEn = normalizedLabels(problem.tagLabelsEn(), tagValues);
-    List<String> tagLabelsZh = normalizedLabels(problem.tagLabelsZh(), tagValues);
+    List<String> tagValues = normalizedProblem.tags().stream().map(tag -> tag.value()).toList();
+    List<String> tagLabelsEn = normalizedProblem.tags().stream().map(tag -> tag.labelEn()).toList();
+    List<String> tagLabelsZh = normalizedProblem.tags().stream().map(tag -> tag.labelZh()).toList();
     Array tagValuesArray = null;
     Array tagLabelsEnArray = null;
     Array tagLabelsZhArray = null;
@@ -251,23 +253,6 @@ public class MyBatisProblemRepository implements ProblemRepository {
     return Arrays.stream(value.split("\\R", -1))
         .map(this::blankToNull)
         .map(valueOrNull -> valueOrNull == null ? "" : valueOrNull)
-        .toList();
-  }
-
-  private List<String> normalizedValues(List<String> values) {
-    if (values == null) {
-      return List.of();
-    }
-    return values.stream()
-        .map(this::blankToNull)
-        .filter(value -> value != null)
-        .distinct()
-        .toList();
-  }
-
-  private List<String> normalizedLabels(List<String> labels, List<String> tagValues) {
-    return java.util.stream.IntStream.range(0, tagValues.size())
-        .mapToObj(index -> fallback(valueAt(labels, index), tagValues.get(index)))
         .toList();
   }
 

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.problem.mapper.ProblemTagMapper">
+
+  <insert id="upsertCatalog">
+    INSERT INTO problem_tag (
+      value,
+      label_en,
+      label_zh,
+      active,
+      created_at,
+      updated_at
+    )
+    VALUES
+    <foreach collection="rows" item="row" separator=",">
+      (
+        #{row.value},
+        #{row.labelEn},
+        #{row.labelZh},
+        TRUE,
+        NOW(),
+        NOW()
+      )
+    </foreach>
+    ON CONFLICT (value) DO UPDATE
+    SET label_en = EXCLUDED.label_en,
+        label_zh = EXCLUDED.label_zh,
+        active = TRUE,
+        updated_at = NOW()
+    WHERE (
+      problem_tag.label_en,
+      problem_tag.label_zh,
+      problem_tag.active
+    ) IS DISTINCT FROM (
+      EXCLUDED.label_en,
+      EXCLUDED.label_zh,
+      TRUE
+    )
+  </insert>
+
+  <delete id="deleteAssignmentsByProblemSlug">
+    DELETE FROM problem_tag_assignment assignment
+    USING problem p
+    WHERE assignment.problem_id = p.id
+      AND p.slug = #{problemSlug}
+  </delete>
+
+  <insert id="insertAssignments">
+    INSERT INTO problem_tag_assignment (
+      problem_id,
+      tag_id,
+      ordinal
+    )
+    SELECT
+      p.id,
+      pt.id,
+      assignments.ordinal
+    FROM (
+      VALUES
+      <foreach collection="rows" item="row" separator=",">
+        (#{row.problemSlug}, #{row.tagValue}, #{row.ordinal})
+      </foreach>
+    ) AS assignments(problem_slug, tag_value, ordinal)
+    JOIN problem p ON p.slug = assignments.problem_slug
+    JOIN problem_tag pt ON pt.value = assignments.tag_value
+    ORDER BY assignments.ordinal ASC
+  </insert>
+
+  <select id="findArrayConsistencyViolationSlugs" resultType="string">
+    SELECT p.slug
+    FROM problem p
+    LEFT JOIN LATERAL (
+      SELECT
+        array_agg(pt.value::TEXT ORDER BY assignment.ordinal) AS tag_values,
+        array_agg(pt.label_en::TEXT ORDER BY assignment.ordinal) AS tag_labels_en,
+        array_agg(pt.label_zh::TEXT ORDER BY assignment.ordinal) AS tag_labels_zh
+      FROM problem_tag_assignment assignment
+      JOIN problem_tag pt ON pt.id = assignment.tag_id
+      WHERE assignment.problem_id = p.id
+    ) normalized_tags ON TRUE
+    WHERE p.tag_values IS DISTINCT FROM COALESCE(
+            normalized_tags.tag_values,
+            ARRAY[]::TEXT[]
+          )
+       OR p.tag_labels_en IS DISTINCT FROM COALESCE(
+            normalized_tags.tag_labels_en,
+            ARRAY[]::TEXT[]
+          )
+       OR p.tag_labels_zh IS DISTINCT FROM COALESCE(
+            normalized_tags.tag_labels_zh,
+            ARRAY[]::TEXT[]
+          )
+    ORDER BY p.slug ASC
+  </select>
+
+  <select id="findAssignmentOrdinalViolationSlugs" resultType="string">
+    SELECT p.slug
+    FROM problem p
+    LEFT JOIN LATERAL (
+      SELECT
+        COUNT(*) AS assignment_count,
+        MIN(assignment.ordinal) AS first_ordinal,
+        MAX(assignment.ordinal) AS last_ordinal
+      FROM problem_tag_assignment assignment
+      WHERE assignment.problem_id = p.id
+    ) assignment_stats ON TRUE
+    WHERE cardinality(p.tag_values) != assignment_stats.assignment_count
+       OR (
+         assignment_stats.assignment_count > 0
+         AND (
+           assignment_stats.first_ordinal != 0
+           OR assignment_stats.last_ordinal != assignment_stats.assignment_count - 1
+         )
+       )
+    ORDER BY p.slug ASC
+  </select>
+
+  <select id="findDanglingAssignmentReferences" resultType="string">
+    SELECT CONCAT(assignment.problem_id::TEXT, ':', assignment.tag_id::TEXT)
+    FROM problem_tag_assignment assignment
+    LEFT JOIN problem p ON p.id = assignment.problem_id
+    LEFT JOIN problem_tag pt ON pt.id = assignment.tag_id
+    WHERE p.id IS NULL
+       OR pt.id IS NULL
+    ORDER BY assignment.problem_id ASC, assignment.tag_id ASC
+  </select>
+
+  <select id="findDuplicateCatalogValues" resultType="string">
+    SELECT value
+    FROM problem_tag
+    GROUP BY value
+    HAVING COUNT(*) > 1
+    ORDER BY value ASC
+  </select>
+
+  <select id="findInactiveCatalogValues" resultType="string">
+    SELECT value
+    FROM problem_tag
+    WHERE active = FALSE
+      AND value IN
+      <foreach collection="values" item="value" open="(" separator="," close=")">
+        #{value}
+      </foreach>
+    ORDER BY value ASC
+  </select>
+</mapper>

@@ -1,13 +1,23 @@
 package org.congcong.algomentor.api.problem.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.sql.Array;
+import java.sql.Connection;
+import java.util.List;
 import javax.sql.DataSource;
 import org.congcong.algomentor.api.problem.mapper.ProblemMapper;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemRow;
+import org.congcong.algomentor.api.problem.model.NormalizedProblemSeed;
 import org.congcong.algomentor.api.problem.model.ProblemLocale;
+import org.congcong.algomentor.api.problem.model.ProblemSeedRecord;
+import org.congcong.algomentor.api.problem.model.ProblemSeedTag;
 import org.junit.jupiter.api.Test;
 
 class MyBatisProblemRepositoryTest {
@@ -47,6 +57,34 @@ class MyBatisProblemRepositoryTest {
 
     assertThat(chineseReason).isEqualTo("Practice hash-table lookups.");
     assertThat(englishReason).isEqualTo("练习哈希表查找。");
+  }
+
+  @Test
+  void upsertProblemWritesCompatibilityArraysFromNormalizedTags() throws Exception {
+    ProblemMapper mapper = mock(ProblemMapper.class);
+    DataSource dataSource = mock(DataSource.class);
+    Connection connection = mock(Connection.class);
+    Array values = mock(Array.class);
+    Array labelsEn = mock(Array.class);
+    Array labelsZh = mock(Array.class);
+    when(dataSource.getConnection()).thenReturn(connection);
+    when(connection.createArrayOf(eq("text"), any(Object[].class)))
+        .thenReturn(values, labelsEn, labelsZh);
+    MyBatisProblemRepository repository = new MyBatisProblemRepository(mapper, dataSource);
+    ProblemSeedRecord rawSeed = new ProblemSeedRecord(
+        "two-sum", 1, "1", "Two Sum", "两数之和", null,
+        List.of("legacy"), List.of("Legacy"), List.of("旧"),
+        "body", "题面", "BILINGUAL", "LEETCODE_COM_CN", null,
+        null, null, null, null, null);
+
+    repository.upsertProblem(new NormalizedProblemSeed(rawSeed, List.of(
+        new ProblemSeedTag("array", "Array", "数组", 0),
+        new ProblemSeedTag("hash-table", "Hash Table", "哈希表", 1))));
+
+    verify(connection).createArrayOf(eq("text"), aryEq(new String[] {"array", "hash-table"}));
+    verify(connection).createArrayOf(eq("text"), aryEq(new String[] {"Array", "Hash Table"}));
+    verify(connection).createArrayOf(eq("text"), aryEq(new String[] {"数组", "哈希表"}));
+    verify(mapper).upsertProblem(any());
   }
 
   private ProblemRow problemRow(String recommendationReasonEn, String recommendationReasonZh) {

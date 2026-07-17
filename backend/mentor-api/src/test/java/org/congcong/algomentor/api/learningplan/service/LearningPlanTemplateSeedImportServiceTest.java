@@ -18,7 +18,7 @@ import org.congcong.algomentor.api.problem.model.ProblemFilters;
 import org.congcong.algomentor.api.problem.model.ProblemListItem;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
 import org.congcong.algomentor.api.problem.model.ProblemPage;
-import org.congcong.algomentor.api.problem.model.ProblemSeedRecord;
+import org.congcong.algomentor.api.problem.model.NormalizedProblemSeed;
 import org.congcong.algomentor.api.problem.repository.ProblemRepository;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplate;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateImportRun;
@@ -295,7 +295,7 @@ class LearningPlanTemplateSeedImportServiceTest {
     }
 
     @Override
-    public void upsertProblem(ProblemSeedRecord problem) {
+    public void upsertProblem(NormalizedProblemSeed problem) {
     }
   }
 

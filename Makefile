@@ -36,7 +36,7 @@ DB_SEED_USER := $(POSTGRES_USER)
 DB_SEED_PASSWORD := $(POSTGRES_PASSWORD)
 STATIC_DIR := backend/mentor-api/src/main/resources/static
 
-.PHONY: build package package-skip-tests up down proxy-up proxy-down proxy-restart proxy-status observability-up observability-down observability-status observability-logs observability-check backend-build backend-build-skip-tests backend-test backend-dev frontend-install frontend-build frontend-test frontend-dev test test-smoke test-smoke-all test-env sync-frontend problem-source problem-seed db-install db-seed clean
+.PHONY: build package package-skip-tests up down proxy-up proxy-down proxy-restart proxy-status observability-up observability-down observability-status observability-logs observability-check backend-build backend-build-skip-tests backend-test backend-it backend-dev frontend-install frontend-build frontend-test frontend-dev test test-smoke test-smoke-all test-env sync-frontend problem-source problem-seed db-install db-seed clean
 
 build: backend-build frontend-build
 
@@ -124,6 +124,9 @@ backend-build-skip-tests:
 
 backend-test:
 	$(MAVEN) test
+
+backend-it:
+	$(MAVEN) -pl mentor-api -am -Dtest=NoUnitTestsSpecified -Dit.test='**/*IT' verify
 
 backend-dev:
 	API_PORT="$(API_PORT)" SERVER_PORT="$(API_PORT)" $(MAVEN) -pl mentor-api -am spring-boot:run

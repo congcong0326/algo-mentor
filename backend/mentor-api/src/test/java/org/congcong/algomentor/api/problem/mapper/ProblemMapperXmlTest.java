@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.Reader;
+import java.io.BufferedReader;
+import java.util.stream.Collectors;
 import org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.io.Resources;
@@ -68,6 +70,15 @@ class ProblemMapperXmlTest {
         .getSql();
     assertThat(detailSql)
         .contains("p.recommendation_reason_en", "p.recommendation_reason_zh");
+
+    String mapperXml;
+    try (Reader reader = Resources.getResourceAsReader("mapper/problem/ProblemMapper.xml");
+        BufferedReader bufferedReader = new BufferedReader(reader)) {
+      mapperXml = bufferedReader.lines().collect(Collectors.joining("\n"));
+    }
+    assertThat(mapperXml)
+        .contains("problem_tag_assignment", "JOIN problem_tag pt", "pt.active = TRUE")
+        .doesNotContain("ANY(p.tag_values)", "array_to_string(p.tag_values)", "CROSS JOIN LATERAL unnest(");
 
     try (Reader reader = Resources.getResourceAsReader("mapper/problem/ProblemCompanyMapper.xml")) {
       new XMLMapperBuilder(

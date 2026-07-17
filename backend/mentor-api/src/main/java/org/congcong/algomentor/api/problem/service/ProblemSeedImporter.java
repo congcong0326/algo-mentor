@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.congcong.algomentor.api.problem.model.ProblemInsightSeedRecord;
+import org.congcong.algomentor.api.problem.model.ProblemTagNormalizationResult;
 import org.congcong.algomentor.api.problem.model.ProblemSeedRecord;
 import org.congcong.algomentor.api.problem.repository.ProblemRepository;
+import org.congcong.algomentor.api.problem.repository.ProblemTagRepository;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +27,22 @@ public class ProblemSeedImporter {
   public static final String PROBLEM_REASONS_FILE = "problem_reasons.json";
 
   private final ObjectProvider<ProblemRepository> repositoryProvider;
+  private final ObjectProvider<ProblemTagRepository> tagRepositoryProvider;
+  private final ProblemSeedTagNormalizer tagNormalizer;
+  private final ProblemTagConsistencyValidator consistencyValidator;
   private final ObjectMapper objectMapper;
 
-  public ProblemSeedImporter(ObjectProvider<ProblemRepository> repositoryProvider, ObjectMapper objectMapper) {
+  public ProblemSeedImporter(
+      ObjectProvider<ProblemRepository> repositoryProvider,
+      ObjectProvider<ProblemTagRepository> tagRepositoryProvider,
+      ProblemSeedTagNormalizer tagNormalizer,
+      ProblemTagConsistencyValidator consistencyValidator,
+      ObjectMapper objectMapper
+  ) {
     this.repositoryProvider = repositoryProvider;
+    this.tagRepositoryProvider = tagRepositoryProvider;
+    this.tagNormalizer = tagNormalizer;
+    this.consistencyValidator = consistencyValidator;
     this.objectMapper = objectMapper;
   }
 
@@ -39,14 +53,30 @@ public class ProblemSeedImporter {
         insightSeedDirectory.resolve(PROBLEM_REASONS_FILE));
     List<ProblemSeedRecord> problems = readProblems(problemsFile);
     validateMatchingSlugs(problems, reasonsBySlug);
+    List<ProblemSeedRecord> problemsWithReasons = problems.stream()
+        .map(problem -> withRecommendationReasons(problem, reasonsBySlug))
+        .toList();
+    ProblemTagNormalizationResult normalizationResult = tagNormalizer.normalize(problemsWithReasons);
     ProblemRepository repository = repository();
+    ProblemTagRepository tagRepository = tagRepository();
+    consistencyValidator.verifyAvailable();
 
-    for (ProblemSeedRecord problem : problems) {
-      ProblemInsightSeedRecord reason = reasonsBySlug.get(problem.slug());
-      repository.upsertProblem(problem.withRecommendationReasons(reason.reasonEn(), reason.reasonZh()));
+    tagRepository.upsertCatalog(normalizationResult.catalog());
+    for (var normalizedProblem : normalizationResult.problems()) {
+      repository.upsertProblem(normalizedProblem);
+      tagRepository.replaceAssignments(normalizedProblem.problem().slug(), normalizedProblem.tags());
     }
+    consistencyValidator.validate(normalizationResult.catalog());
 
     return problems.size();
+  }
+
+  private ProblemSeedRecord withRecommendationReasons(
+      ProblemSeedRecord problem,
+      Map<String, ProblemInsightSeedRecord> reasonsBySlug
+  ) {
+    ProblemInsightSeedRecord reason = reasonsBySlug.get(problem.slug());
+    return problem.withRecommendationReasons(reason.reasonEn(), reason.reasonZh());
   }
 
   private List<ProblemSeedRecord> readProblems(Path problemsFile) throws IOException {
@@ -111,6 +141,14 @@ public class ProblemSeedImporter {
 
   private ProblemRepository repository() {
     ProblemRepository repository = repositoryProvider.getIfAvailable();
+    if (repository == null) {
+      throw new ProblemService.ProblemRepositoryUnavailableException();
+    }
+    return repository;
+  }
+
+  private ProblemTagRepository tagRepository() {
+    ProblemTagRepository repository = tagRepositoryProvider.getIfAvailable();
     if (repository == null) {
       throw new ProblemService.ProblemRepositoryUnavailableException();
     }

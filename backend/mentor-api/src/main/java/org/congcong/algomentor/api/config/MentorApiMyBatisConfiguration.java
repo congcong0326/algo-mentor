@@ -17,10 +17,13 @@ import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReview
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeSessionRepository;
 import org.congcong.algomentor.api.problem.mapper.ProblemMapper;
 import org.congcong.algomentor.api.problem.mapper.ProblemCompanyMapper;
+import org.congcong.algomentor.api.problem.mapper.ProblemTagMapper;
 import org.congcong.algomentor.api.problem.repository.MyBatisProblemCompanyRepository;
 import org.congcong.algomentor.api.problem.repository.MyBatisProblemRepository;
+import org.congcong.algomentor.api.problem.repository.MyBatisProblemTagRepository;
 import org.congcong.algomentor.api.problem.repository.ProblemCompanyRepository;
 import org.congcong.algomentor.api.problem.repository.ProblemRepository;
+import org.congcong.algomentor.api.problem.repository.ProblemTagRepository;
 import org.congcong.algomentor.api.review.mapper.MistakeNoteMapper;
 import org.congcong.algomentor.api.review.mapper.ReviewPreferenceMapper;
 import org.congcong.algomentor.api.review.mapper.ReviewRecallEvaluationMapper;
@@ -93,6 +96,12 @@ public class MentorApiMyBatisConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
+  public ProblemTagMapper problemTagMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(ProblemTagMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
   public LearningPlanMapper learningPlanMapper(SqlSessionTemplate sqlSessionTemplate) {
     return sqlSessionTemplate.getMapper(LearningPlanMapper.class);
   }
@@ -155,6 +164,12 @@ public class MentorApiMyBatisConfiguration {
   @ConditionalOnMissingBean(ProblemRepository.class)
   public ProblemRepository problemRepository(ProblemMapper problemMapper, DataSource dataSource) {
     return new MyBatisProblemRepository(problemMapper, dataSource);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(ProblemTagRepository.class)
+  public ProblemTagRepository problemTagRepository(ProblemTagMapper problemTagMapper) {
+    return new MyBatisProblemTagRepository(problemTagMapper);
   }
 
   @Bean

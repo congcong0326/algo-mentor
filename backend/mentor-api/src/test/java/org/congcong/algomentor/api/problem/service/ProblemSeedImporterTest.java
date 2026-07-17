@@ -7,8 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.congcong.algomentor.api.problem.model.NormalizedProblemSeed;
 import org.congcong.algomentor.api.problem.model.ProblemDetail;
 import org.congcong.algomentor.api.problem.model.ProblemFilters;
 import org.congcong.algomentor.api.problem.model.ProblemListItem;
@@ -16,6 +18,7 @@ import org.congcong.algomentor.api.problem.model.ProblemListRequest;
 import org.congcong.algomentor.api.problem.model.ProblemPage;
 import org.congcong.algomentor.api.problem.model.ProblemSeedRecord;
 import org.congcong.algomentor.api.problem.repository.ProblemRepository;
+import org.congcong.algomentor.api.problem.repository.ProblemTagRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.ObjectProvider;
@@ -39,7 +42,8 @@ class ProblemSeedImporterTest {
         [{"slug":"two-sum","reasonEN":"Practice hash lookup.","reasonZH":"练习哈希查找。"}]
         """);
     InMemoryProblemRepository repository = new InMemoryProblemRepository();
-    ProblemSeedImporter importer = new ProblemSeedImporter(new StaticObjectProvider<>(repository), new ObjectMapper());
+    InMemoryProblemTagRepository tagRepository = new InMemoryProblemTagRepository();
+    ProblemSeedImporter importer = importer(repository, tagRepository);
 
     int firstImported = importer.importSeed(problemSeedDirectory, insightSeedDirectory);
     int secondImported = importer.importSeed(problemSeedDirectory, insightSeedDirectory);
@@ -48,10 +52,15 @@ class ProblemSeedImporterTest {
     assertThat(secondImported).isEqualTo(2);
     assertThat(repository.upsertCalls).isEqualTo(4);
     assertThat(repository.records).hasSize(1);
-    assertThat(repository.records.get("two-sum").titleEn()).isEqualTo("Two Sum Updated");
-    assertThat(repository.records.get("two-sum").tagValues()).containsExactly("array", "hash-table");
-    assertThat(repository.records.get("two-sum").recommendationReasonEn()).isEqualTo("Practice hash lookup.");
-    assertThat(repository.records.get("two-sum").recommendationReasonZh()).isEqualTo("练习哈希查找。");
+    assertThat(repository.records.get("two-sum").problem().titleEn()).isEqualTo("Two Sum Updated");
+    assertThat(repository.records.get("two-sum").tags())
+        .extracting(tag -> tag.value())
+        .containsExactly("array", "hash-table");
+    assertThat(repository.records.get("two-sum").problem().recommendationReasonEn())
+        .isEqualTo("Practice hash lookup.");
+    assertThat(repository.records.get("two-sum").problem().recommendationReasonZh())
+        .isEqualTo("练习哈希查找。");
+    assertThat(tagRepository.catalogByValue).containsOnlyKeys("array", "hash-table");
   }
 
   @Test
@@ -65,7 +74,7 @@ class ProblemSeedImporterTest {
         """);
     Files.writeString(insightSeedDirectory.resolve("problem_reasons.json"), "[]");
     InMemoryProblemRepository repository = new InMemoryProblemRepository();
-    ProblemSeedImporter importer = new ProblemSeedImporter(new StaticObjectProvider<>(repository), new ObjectMapper());
+    ProblemSeedImporter importer = importer(repository, new InMemoryProblemTagRepository());
 
     assertThatThrownBy(() -> importer.importSeed(problemSeedDirectory, insightSeedDirectory))
         .isInstanceOf(IllegalArgumentException.class)
@@ -77,7 +86,7 @@ class ProblemSeedImporterTest {
   void repositoryProblemAndRecommendationSeedsMatchExactly() throws Exception {
     Path repoRoot = repoRoot();
     InMemoryProblemRepository repository = new InMemoryProblemRepository();
-    ProblemSeedImporter importer = new ProblemSeedImporter(new StaticObjectProvider<>(repository), new ObjectMapper());
+    ProblemSeedImporter importer = importer(repository, new InMemoryProblemTagRepository());
 
     int imported = importer.importSeed(
         repoRoot.resolve("data/seed"),
@@ -86,10 +95,23 @@ class ProblemSeedImporterTest {
     assertThat(imported).isEqualTo(3591);
     assertThat(repository.records).hasSize(3591);
     assertThat(repository.records.values())
-        .allSatisfy(problem -> {
-          assertThat(problem.recommendationReasonEn()).isNotBlank();
-          assertThat(problem.recommendationReasonZh()).isNotBlank();
+        .allSatisfy(normalizedProblem -> {
+          assertThat(normalizedProblem.problem().recommendationReasonEn()).isNotBlank();
+          assertThat(normalizedProblem.problem().recommendationReasonZh()).isNotBlank();
         });
+  }
+
+  private ProblemSeedImporter importer(
+      InMemoryProblemRepository repository,
+      InMemoryProblemTagRepository tagRepository
+  ) {
+    ProblemTagConsistencyValidator validator = org.mockito.Mockito.mock(ProblemTagConsistencyValidator.class);
+    return new ProblemSeedImporter(
+        new StaticObjectProvider<>(repository),
+        new StaticObjectProvider<>(tagRepository),
+        new ProblemSeedTagNormalizer(),
+        validator,
+        new ObjectMapper());
   }
 
   private Path repoRoot() {
@@ -104,7 +126,7 @@ class ProblemSeedImporterTest {
   }
 
   static class InMemoryProblemRepository implements ProblemRepository {
-    private final Map<String, ProblemSeedRecord> records = new LinkedHashMap<>();
+    private final Map<String, NormalizedProblemSeed> records = new LinkedHashMap<>();
     private int upsertCalls;
 
     @Override
@@ -130,9 +152,31 @@ class ProblemSeedImporterTest {
     }
 
     @Override
-    public void upsertProblem(ProblemSeedRecord problem) {
+    public void upsertProblem(NormalizedProblemSeed problem) {
       upsertCalls += 1;
-      records.put(problem.slug(), problem);
+      records.put(problem.problem().slug(), problem);
+    }
+  }
+
+  static class InMemoryProblemTagRepository implements ProblemTagRepository {
+    private final Map<String, org.congcong.algomentor.api.problem.model.ProblemTagDefinition> catalogByValue =
+        new LinkedHashMap<>();
+    private final Map<String, List<org.congcong.algomentor.api.problem.model.ProblemSeedTag>> assignmentsBySlug =
+        new LinkedHashMap<>();
+
+    @Override
+    public void upsertCatalog(List<org.congcong.algomentor.api.problem.model.ProblemTagDefinition> catalog) {
+      for (var tag : catalog) {
+        catalogByValue.put(tag.value(), tag);
+      }
+    }
+
+    @Override
+    public void replaceAssignments(
+        String problemSlug,
+        List<org.congcong.algomentor.api.problem.model.ProblemSeedTag> tags
+    ) {
+      assignmentsBySlug.put(problemSlug, List.copyOf(tags));
     }
   }
 
