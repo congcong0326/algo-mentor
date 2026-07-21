@@ -3,6 +3,7 @@ import type {
   LearningPlanIntent,
   LearningPlanLevel,
   LearningPlanStatus,
+  LearnerProfileDimension,
   ProblemDifficulty,
 } from '../types/api';
 
@@ -467,6 +468,24 @@ export interface LocaleResources {
     tagCoverage: (reviewed: number, total: number) => string;
     scoreValue: (score: string) => string;
     reviewedProblemsValue: (count: number) => string;
+    memoryEyebrow: string;
+    memoryTitle: string;
+    memorySubtitle: string;
+    memoryLoading: string;
+    memoryLoadFailed: string;
+    memoryEmpty: string;
+    memoryCategoryEmpty: string;
+    memoryTabs: {
+      declaredFacts: string;
+      generalObservations: string;
+      tagAssessments: string;
+    };
+    memoryTabLabel: (label: string, count: number) => string;
+    memoryDimensionLabels: Record<LearnerProfileDimension, string>;
+    memoryUpdatedAt: (value: string) => string;
+    memoryRevision: (revision: number) => string;
+    memoryShowAll: (hiddenCount: number) => string;
+    memoryCollapse: string;
   };
   home: {
     ariaLabel: string;
@@ -1342,6 +1361,35 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       tagCoverage: (reviewed, total) => `${reviewed}/${total}`,
       scoreValue: (score) => `${score} 分`,
       reviewedProblemsValue: (count) => `${count} 题`,
+      memoryEyebrow: 'LEARNING MEMORY',
+      memoryTitle: '学习记忆',
+      memorySubtitle: '当前学习背景、长期观察和专项能力判断。',
+      memoryLoading: '正在加载学习记忆...',
+      memoryLoadFailed: '学习记忆加载失败',
+      memoryEmpty: '还没有形成学习记忆。完成更多练习或在对话中告诉 AI 你的目标与偏好后，这里会逐步出现内容。',
+      memoryCategoryEmpty: '这一类暂时没有内容。',
+      memoryTabs: {
+        declaredFacts: '我告诉 AI 的',
+        generalObservations: 'AI 观察到的',
+        tagAssessments: '专项能力判断',
+      },
+      memoryTabLabel: (label, count) => `${label}，${count} 条`,
+      memoryDimensionLabels: {
+        LEARNER_BACKGROUND: '学习背景',
+        GOALS_AND_INTENTS: '目标与意图',
+        TIME_AND_RESOURCE_CONSTRAINTS: '时间与资源',
+        LEARNING_AND_INTERACTION_PREFERENCES: '学习与互动偏好',
+        SELF_ABILITY_ASSESSMENT: '自我能力判断',
+        PROBLEM_SOLVING_APPROACH: '解题方式',
+        IMPLEMENTATION_AND_ERROR_PATTERN: '实现与错误模式',
+        LEARNING_INTERACTION_AND_INDEPENDENCE: '互动与独立性',
+        REVIEW_AND_GROWTH_PERFORMANCE: '复盘与成长表现',
+        TAG_MASTERY: '专项能力',
+      },
+      memoryUpdatedAt: (value) => `更新于 ${value}`,
+      memoryRevision: (revision) => `第 ${revision} 版`,
+      memoryShowAll: (hiddenCount) => `查看其余 ${hiddenCount} 条`,
+      memoryCollapse: '收起',
     },
     home: {
       ariaLabel: '首页',
@@ -2294,6 +2342,35 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       tagCoverage: (reviewed, total) => `${reviewed}/${total}`,
       scoreValue: (score) => `${score} pts`,
       reviewedProblemsValue: (count) => `${count} ${count === 1 ? 'problem' : 'problems'}`,
+      memoryEyebrow: 'LEARNING MEMORY',
+      memoryTitle: 'Learning Memory',
+      memorySubtitle: 'Current learning background, long-term observations, and topic assessments.',
+      memoryLoading: 'Loading learning memory...',
+      memoryLoadFailed: 'Failed to load learning memory',
+      memoryEmpty: 'No learning memory yet. More practice and conversations about your goals or preferences will add context here over time.',
+      memoryCategoryEmpty: 'Nothing in this category yet.',
+      memoryTabs: {
+        declaredFacts: 'What I told AI',
+        generalObservations: 'AI observations',
+        tagAssessments: 'Topic assessments',
+      },
+      memoryTabLabel: (label, count) => `${label}, ${count} ${count === 1 ? 'item' : 'items'}`,
+      memoryDimensionLabels: {
+        LEARNER_BACKGROUND: 'Learning background',
+        GOALS_AND_INTENTS: 'Goals and intent',
+        TIME_AND_RESOURCE_CONSTRAINTS: 'Time and resources',
+        LEARNING_AND_INTERACTION_PREFERENCES: 'Learning preferences',
+        SELF_ABILITY_ASSESSMENT: 'Self assessment',
+        PROBLEM_SOLVING_APPROACH: 'Problem-solving approach',
+        IMPLEMENTATION_AND_ERROR_PATTERN: 'Implementation and error patterns',
+        LEARNING_INTERACTION_AND_INDEPENDENCE: 'Interaction and independence',
+        REVIEW_AND_GROWTH_PERFORMANCE: 'Review and growth',
+        TAG_MASTERY: 'Topic ability',
+      },
+      memoryUpdatedAt: (value) => `Updated ${value}`,
+      memoryRevision: (revision) => `Revision ${revision}`,
+      memoryShowAll: (hiddenCount) => `Show ${hiddenCount} more`,
+      memoryCollapse: 'Show less',
     },
     home: {
       ariaLabel: 'Dashboard',

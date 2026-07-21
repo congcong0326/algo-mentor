@@ -38,6 +38,7 @@
 - `docs/ai-learner-profile-implementation-plans/LP-12-profile-tool-frontend-status.md`：规划前端学习记忆工具状态、SSE 幂等和中英文反馈。
 - `docs/ai-learner-profile-implementation-plans/LP-13-profile-end-to-end-rollout.md`：规划画像闭环联调、配置、灰度发布、治理审计和回滚门禁。
 - `docs/ai-learner-profile-rollout-runbook.md`：画像第一版的单节点发布顺序、配置映射、观测阈值、隐私门禁和不回放回滚规则。
+- `docs/learner-profile-frontend-display-design.md`：学习画像页的学习记忆只读展示设计，说明页面位置、三类分组、当前用户 API、安全字段和前端状态。
 - `docs/problem-tag-modeling-spec.md`：题目标签建模完整闭环规格，说明规范化标签表、历史数组回填、seed 导入双写、题库与能力雷达读取切换、一致性校验、测试和旧数组手动删除门禁。
 - `docs/problem-tag-modeling-implementation-plan.md`：题目标签建模闭环研发实施计划，按 PostgreSQL 验证基线、V33 迁移、统一规范化、seed 双写、题库与能力雷达读取切换、发布观察和旧数组保留门禁拆分任务。
 - `docs/learning-plan-template-seed-design.md`：学习计划模板 seed 最小闭环设计，说明 NeetCode 模板 seed、模板表、导入配置、查询 API、从模板生成草稿和项目 Skill 沉淀。

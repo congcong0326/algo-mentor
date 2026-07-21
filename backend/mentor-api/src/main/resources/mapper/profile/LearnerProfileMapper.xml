@@ -11,6 +11,14 @@
       <arg column="created_at" javaType="java.time.Instant"/><arg column="updated_at" javaType="java.time.Instant"/>
     </constructor>
   </resultMap>
+  <resultMap id="LearnerProfileViewRowMap" type="org.congcong.algomentor.api.profile.mapper.model.LearnerProfileViewRow">
+    <constructor>
+      <arg column="id" javaType="_long"/><arg column="entry_kind" javaType="string"/><arg column="dimension" javaType="string"/>
+      <arg column="tag_id" javaType="java.lang.Long"/><arg column="tag_value" javaType="string"/><arg column="tag_label_en" javaType="string"/>
+      <arg column="tag_label_zh" javaType="string"/><arg column="revision_no" javaType="_int"/><arg column="content_text" javaType="string"/>
+      <arg column="origin_type" javaType="string"/><arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
   <sql id="Columns">id, user_id, entry_kind, dimension, tag_id, revision_no, status, content_text, supersedes_entry_id, origin_type, model_provider, model_name, prompt_version, valid_from, valid_to, created_at, updated_at</sql>
   <sql id="IdentityWhere">
     user_id = #{userId} AND entry_kind = #{entryKind} AND dimension = #{dimension}
@@ -34,6 +42,32 @@
   <select id="findCurrentByTagIds" resultMap="LearnerProfileEntryRowMap">
     SELECT <include refid="Columns"/> FROM learner_profile_entry WHERE user_id = #{userId} AND entry_kind = 'TAG_ASSESSMENT' AND status = 'ACTIVE'
     AND tag_id IN <foreach collection="tagIds" item="tagId" open="(" separator="," close=")">#{tagId}</foreach> ORDER BY tag_id
+  </select>
+  <select id="findCurrentForDisplay" resultMap="LearnerProfileViewRowMap">
+    SELECT profile_entry.id,
+           profile_entry.entry_kind,
+           profile_entry.dimension,
+           profile_entry.tag_id,
+           tag.value AS tag_value,
+           tag.label_en AS tag_label_en,
+           tag.label_zh AS tag_label_zh,
+           profile_entry.revision_no,
+           profile_entry.content_text,
+           profile_entry.origin_type,
+           profile_entry.updated_at
+    FROM learner_profile_entry profile_entry
+    LEFT JOIN problem_tag tag ON tag.id = profile_entry.tag_id
+    WHERE profile_entry.user_id = #{userId}
+      AND profile_entry.status = 'ACTIVE'
+    ORDER BY CASE profile_entry.entry_kind
+               WHEN 'DECLARED_FACT' THEN 1
+               WHEN 'GENERAL_OBSERVATION' THEN 2
+               WHEN 'TAG_ASSESSMENT' THEN 3
+               ELSE 4
+             END,
+             profile_entry.dimension ASC,
+             tag.value ASC NULLS LAST,
+             profile_entry.id ASC
   </select>
   <select id="insert" resultMap="LearnerProfileEntryRowMap" affectData="true">
     INSERT INTO learner_profile_entry (user_id, entry_kind, dimension, tag_id, revision_no, status, content_text, supersedes_entry_id, origin_type, model_provider, model_name, prompt_version, valid_from, valid_to)

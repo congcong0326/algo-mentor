@@ -42,6 +42,11 @@ public final class ApiContractConstants {
   public static final String ABILITIES_PROFILE_PATH = "/api/abilities/profile";
 
   /**
+   * 当前用户学习记忆路径。
+   */
+  public static final String ME_LEARNER_PROFILE_PATH = "/api/me/learner-profile";
+
+  /**
    * 当前用户 AI 偏好设置路径。
    */
   public static final String ME_AI_PREFERENCES_PATH = "/api/me/ai-preferences";

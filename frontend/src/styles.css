@@ -5400,6 +5400,206 @@ a {
   line-height: 1.55;
 }
 
+.learner-memory-section {
+  display: grid;
+  gap: 16px;
+  padding: 22px 0;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.learner-memory-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.learner-memory-heading h2,
+.learner-memory-heading p,
+.learner-memory-item h3 {
+  margin: 0;
+}
+
+.learner-memory-heading .my-card-title > div {
+  display: grid;
+  gap: 5px;
+}
+
+.learner-memory-heading .my-card-title > div > p:last-child {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.learner-memory-title-icon {
+  background: rgb(14 165 233 / 10%);
+  color: #0369a1;
+}
+
+.learner-memory-latest {
+  flex: 0 0 auto;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.learner-memory-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: min(720px, 100%);
+  padding: 4px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-muted);
+}
+
+.learner-memory-tabs button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 720;
+}
+
+.learner-memory-tabs button:hover,
+.learner-memory-tabs button.active {
+  background: var(--surface-card);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-subtle);
+}
+
+.learner-memory-tabs button strong {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.learner-memory-tabs button.active strong {
+  background: rgb(14 165 233 / 12%);
+  color: #0369a1;
+}
+
+.learner-memory-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.learner-memory-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.learner-memory-item {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-card);
+}
+
+.learner-memory-item header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.learner-memory-item h3 {
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.learner-memory-meta {
+  display: inline-flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.learner-memory-item .markdown-view {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.65;
+  overflow: visible;
+  white-space: normal;
+}
+
+.learner-memory-item .markdown-view > :first-child {
+  margin-top: 0;
+}
+
+.learner-memory-item .markdown-view > :last-child {
+  margin-bottom: 0;
+}
+
+.learner-memory-state {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 96px;
+  padding: 18px;
+  border: 1px dashed var(--border-subtle);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.learner-memory-state.error {
+  border-style: solid;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.learner-memory-state.compact-state {
+  min-height: 72px;
+}
+
+.learner-memory-expand {
+  justify-self: start;
+}
+
+.learner-memory-expand svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 160ms ease;
+}
+
+.learner-memory-expand svg.expanded {
+  transform: rotate(180deg);
+}
+
 .my-workspace-grid {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(310px, 0.86fr);
@@ -6388,6 +6588,11 @@ a {
   color: #7dd3fc;
 }
 
+:root[data-theme="dark"] .learner-memory-title-icon,
+:root[data-theme="dark"] .learner-memory-tabs button.active strong {
+  color: #7dd3fc;
+}
+
 :root[data-theme="dark"] .my-summary-card.score .my-summary-icon,
 :root[data-theme="dark"] .ability-score-pill,
 :root[data-theme="dark"] .ability-heatmap-cell span {
@@ -6571,6 +6776,10 @@ a {
 
   .my-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .learner-memory-list {
+    grid-template-columns: 1fr;
   }
 
   .ai-preference-card {
@@ -6808,6 +7017,20 @@ a {
 
   .my-summary-card {
     min-height: 0;
+  }
+
+  .learner-memory-heading,
+  .learner-memory-item header {
+    display: grid;
+  }
+
+  .learner-memory-latest,
+  .learner-memory-meta {
+    justify-self: start;
+  }
+
+  .learner-memory-tabs {
+    grid-template-columns: 1fr;
   }
 
   .my-card-heading,

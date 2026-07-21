@@ -421,6 +421,44 @@ export interface AbilityProfileResponse {
   scope: AbilityProfileScope;
 }
 
+export type LearnerProfileDimension =
+  | 'LEARNER_BACKGROUND'
+  | 'GOALS_AND_INTENTS'
+  | 'TIME_AND_RESOURCE_CONSTRAINTS'
+  | 'LEARNING_AND_INTERACTION_PREFERENCES'
+  | 'SELF_ABILITY_ASSESSMENT'
+  | 'PROBLEM_SOLVING_APPROACH'
+  | 'IMPLEMENTATION_AND_ERROR_PATTERN'
+  | 'LEARNING_INTERACTION_AND_INDEPENDENCE'
+  | 'REVIEW_AND_GROWTH_PERFORMANCE'
+  | 'TAG_MASTERY';
+
+export type LearnerProfileOriginType = 'USER_EXPLICIT' | 'USER_CORRECTION' | 'SYSTEM_DERIVED';
+
+export interface LearnerProfileTag {
+  id: number;
+  value: string;
+  labelEn: string;
+  labelZh: string;
+}
+
+export interface LearnerProfileEntry {
+  id: number;
+  dimension: LearnerProfileDimension;
+  revisionNo: number;
+  contentText: string;
+  originType: LearnerProfileOriginType;
+  updatedAt: string;
+  tag?: LearnerProfileTag | null;
+}
+
+export interface LearnerProfileResponse {
+  declaredFacts: LearnerProfileEntry[];
+  generalObservations: LearnerProfileEntry[];
+  tagAssessments: LearnerProfileEntry[];
+  updatedAt?: string | null;
+}
+
 export type PracticeCoachStyle = 'GUIDED' | 'DIRECT';
 
 export type PracticeResponseLanguage = 'ZH_CN' | 'EN_US';

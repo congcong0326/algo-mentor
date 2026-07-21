@@ -1,21 +1,21 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { I18nProvider } from './i18n/I18nProvider';
-import SettingsPage from './SettingsPage';
+import MyPage from './MyPage';
 import {
-  getReviewPreference,
-  getUserAiPreference,
+  getAbilityProfile,
+  getLearnerProfile,
 } from './services/api';
 import type {
+  AbilityProfileResponse,
   ApiResponse,
-  CurrentUser,
-  ReviewPreference,
-  UserAiPreference,
+  LearnerProfileEntry,
+  LearnerProfileResponse,
 } from './types/api';
 
 vi.mock('./services/api', () => ({
-  getReviewPreference: vi.fn(),
-  getUserAiPreference: vi.fn(),
+  getAbilityProfile: vi.fn(),
+  getLearnerProfile: vi.fn(),
   requireApiData: <T,>(response: ApiResponse<T>, fallbackMessage: string): T => {
     if (response.success && response.data !== undefined) {
       return response.data;
@@ -23,13 +23,11 @@ vi.mock('./services/api', () => ({
     throw new Error(fallbackMessage);
   },
   setApiLocale: vi.fn(),
-  updateReviewPreference: vi.fn(),
-  updateUserAiPreference: vi.fn(),
 }));
 
 beforeEach(() => {
-  vi.mocked(getUserAiPreference).mockResolvedValue(apiResponse(userAiPreference()));
-  vi.mocked(getReviewPreference).mockResolvedValue(apiResponse(reviewPreference()));
+  vi.mocked(getAbilityProfile).mockResolvedValue(apiResponse(abilityProfile()));
+  vi.mocked(getLearnerProfile).mockResolvedValue(apiResponse(learnerProfile()));
 });
 
 afterEach(() => {
@@ -37,54 +35,47 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe('SettingsPage', () => {
-  it('associates every review setting help icon with its accessible tooltip', async () => {
+describe('MyPage learning memory', () => {
+  it('shows declared facts, observations, and tag assessments in separate tabs', async () => {
     renderPage();
 
-    expect(await screen.findByRole('heading', { name: '复习策略' })).toBeInTheDocument();
-    expect(getUserAiPreference).toHaveBeenCalledTimes(1);
-    expect(getReviewPreference).toHaveBeenCalledTimes(1);
+    expect(await screen.findByRole('heading', { name: '学习记忆' })).toBeInTheDocument();
+    expect(getAbilityProfile).toHaveBeenCalledTimes(1);
+    expect(getLearnerProfile).toHaveBeenCalledTimes(1);
+    expect(screen.getByText('准备 Java 后端面试。')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('高级复习设置'));
+    fireEvent.click(screen.getByRole('tab', { name: /AI 观察到的/ }));
+    expect(screen.getByText('编码前会先拆解状态。')).toBeInTheDocument();
 
-    const helpItems = [
-      {
-        description: '数值越高，复习安排越频繁、遗忘风险越低。',
-        label: '目标记忆率说明',
-        tooltipId: 'review-desired-retention-tooltip',
-      },
-      {
-        description: '当天首次进入队列的卡片数量，0 表示不安排新卡。',
-        label: '每日新卡说明',
-        tooltipId: 'review-daily-new-limit-tooltip',
-      },
-      {
-        description: '当天处于学习或重新学习状态的到期卡数量。',
-        label: '学习中上限说明',
-        tooltipId: 'review-daily-learning-limit-tooltip',
-      },
-      {
-        description: '当天处于复习状态的到期卡数量。',
-        label: '复习卡上限说明',
-        tooltipId: 'review-daily-review-limit-tooltip',
-      },
-    ];
+    fireEvent.click(screen.getByRole('tab', { name: /专项能力判断/ }));
+    expect(screen.getByRole('heading', { name: '二分查找' })).toBeInTheDocument();
+    expect(screen.getByText('循环不变量仍需巩固。')).toBeInTheDocument();
+  });
 
-    expect(screen.getAllByRole('img', { name: /说明$/ })).toHaveLength(4);
-    helpItems.forEach(({ description, label, tooltipId }) => {
-      expect(screen.getByRole('img', { name: label })).toHaveAttribute('aria-describedby', tooltipId);
-      expect(screen.getByRole('tooltip', { name: description })).toHaveAttribute('id', tooltipId);
-    });
+  it('limits long categories to five entries until expanded', async () => {
+    vi.mocked(getLearnerProfile).mockResolvedValue(apiResponse({
+      declaredFacts: Array.from({ length: 6 }, (_, index) => memoryEntry(index + 1, `记忆内容 ${index + 1}`)),
+      generalObservations: [],
+      tagAssessments: [],
+      updatedAt: '2026-07-20T12:00:00Z',
+    }));
+
+    renderPage();
+
+    expect(await screen.findByText('记忆内容 1')).toBeInTheDocument();
+    expect(screen.queryByText('记忆内容 6')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /查看其余 1 条/ }));
+
+    expect(screen.getByText('记忆内容 6')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /收起/ })).toBeInTheDocument();
   });
 });
 
 function renderPage() {
   render(
     <I18nProvider>
-      <SettingsPage
-        currentUser={user}
-        onLogout={vi.fn()}
-      />
+      <MyPage />
     </I18nProvider>,
   );
 }
@@ -93,34 +84,52 @@ function apiResponse<T>(data: T): ApiResponse<T> {
   return {
     success: true,
     data,
-    timestamp: '2026-07-13T00:00:00Z',
+    timestamp: '2026-07-20T12:00:00Z',
   };
 }
 
-function userAiPreference(): UserAiPreference {
+function abilityProfile(): AbilityProfileResponse {
   return {
-    coachStyle: 'GUIDED',
-    coachStyleLabel: '引导型教练',
+    tags: [],
+    scope: {
+      minProblemCount: 20,
+      scorePrecision: 1,
+      latestReviewOnly: true,
+      conservativeWeight: 4,
+    },
   };
 }
 
-const user: CurrentUser = {
-  id: 42,
-  email: 'user@example.com',
-  displayName: 'User Name',
-  avatarUrl: undefined,
-  roles: ['USER'],
-  permissions: [],
-  status: 'ACTIVE',
-  passwordChangeRequired: false,
-};
-
-function reviewPreference(): ReviewPreference {
+function learnerProfile(): LearnerProfileResponse {
   return {
-    aiSuggestionEnabled: true,
-    dailyLearningLimit: 50,
-    dailyNewLimit: 10,
-    dailyReviewLimit: 30,
-    desiredRetention: 0.9,
+    declaredFacts: [memoryEntry(1, '准备 Java 后端面试。', 'GOALS_AND_INTENTS')],
+    generalObservations: [memoryEntry(2, '编码前会先拆解状态。', 'PROBLEM_SOLVING_APPROACH')],
+    tagAssessments: [{
+      ...memoryEntry(3, '循环不变量仍需巩固。', 'TAG_MASTERY'),
+      tag: {
+        id: 7,
+        value: 'binary-search',
+        labelEn: 'Binary Search',
+        labelZh: '二分查找',
+      },
+    }],
+    updatedAt: '2026-07-20T12:00:00Z',
+  };
+}
+
+function memoryEntry(
+  id: number,
+  contentText: string,
+  dimension: LearnerProfileEntry['dimension'] = 'LEARNER_BACKGROUND',
+): LearnerProfileEntry {
+  return {
+    id,
+    dimension,
+    revisionNo: 1,
+    contentText,
+    originType: dimension === 'LEARNER_BACKGROUND' || dimension === 'GOALS_AND_INTENTS'
+      ? 'USER_EXPLICIT'
+      : 'SYSTEM_DERIVED',
+    updatedAt: '2026-07-20T12:00:00Z',
   };
 }

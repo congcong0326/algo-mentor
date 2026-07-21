@@ -13,6 +13,7 @@ import {
   getLearningPlanTemplate,
   getLearningPlanTemplates,
   getLearningPlans,
+  getLearnerProfile,
   getUserAiPreference,
   listMistakeNotes,
   logout,
@@ -104,6 +105,35 @@ describe('api service', () => {
     const headers = requestHeaders(fetchMock);
     expect(headers.get('Accept')).toBe('application/json');
     expect(headers.get('Accept-Language')).toBe('zh-CN');
+  });
+
+  it('requests the current learner profile with json and locale headers', async () => {
+    setApiLocale('en-US');
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c]) });
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        declaredFacts: [],
+        generalObservations: [],
+        tagAssessments: [],
+        updatedAt: null,
+      },
+      timestamp: '2026-07-20T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getLearnerProfile();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/me/learner-profile',
+      expect.objectContaining({
+        credentials: 'same-origin',
+        headers: expect.any(Headers),
+      }),
+    );
+    const headers = requestHeaders(fetchMock);
+    expect(headers.get('Accept')).toBe('application/json');
+    expect(headers.get('Accept-Language')).toBe('en-US');
   });
 
   it('loads user AI preferences with json and locale headers', async () => {

@@ -8,7 +8,9 @@ import org.congcong.algomentor.api.controller.learningplan.LearningPlanUnauthent
 import org.congcong.algomentor.api.controller.preference.UserAiPreferenceUnauthenticatedException;
 import org.congcong.algomentor.api.controller.practice.PracticeProgressStatusInvalidException;
 import org.congcong.algomentor.api.controller.practice.PracticeSessionUnauthenticatedException;
+import org.congcong.algomentor.api.controller.profile.LearnerProfileUnauthenticatedException;
 import org.congcong.algomentor.api.controller.review.MistakeReviewUnauthenticatedException;
+import org.congcong.algomentor.api.profile.service.LearnerProfileViewService;
 import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
@@ -42,6 +44,7 @@ public class LocalizedApiExceptionHandler {
   public static final String UNSUPPORTED_PROBLEM_LOCALE_CODE = "UNSUPPORTED_PROBLEM_LOCALE";
   public static final String PROBLEM_REPOSITORY_UNAVAILABLE_CODE = "PROBLEM_REPOSITORY_UNAVAILABLE";
   public static final String ABILITY_PROFILE_UNAVAILABLE_CODE = "ABILITY_PROFILE_UNAVAILABLE";
+  public static final String LEARNER_PROFILE_UNAVAILABLE_CODE = "LEARNER_PROFILE_UNAVAILABLE";
   public static final String PRACTICE_MESSAGE_INVALID_CODE = "PRACTICE_MESSAGE_INVALID";
   public static final String PRACTICE_PROGRESS_STATUS_INVALID_CODE = "PRACTICE_PROGRESS_STATUS_INVALID";
   public static final String VALIDATION_FAILED_CODE = "VALIDATION_FAILED";
@@ -77,6 +80,11 @@ public class LocalizedApiExceptionHandler {
     return failure(HttpStatus.SERVICE_UNAVAILABLE, ABILITY_PROFILE_UNAVAILABLE_CODE, exception.getMessage());
   }
 
+  @ExceptionHandler(LearnerProfileViewService.LearnerProfileMapperUnavailableException.class)
+  public ResponseEntity<ApiResponse<Void>> learnerProfileUnavailable(RuntimeException exception) {
+    return failure(HttpStatus.SERVICE_UNAVAILABLE, LEARNER_PROFILE_UNAVAILABLE_CODE, exception.getMessage());
+  }
+
   @ExceptionHandler(ProblemLocale.UnsupportedProblemLocaleException.class)
   public ResponseEntity<ApiResponse<Void>> unsupportedProblemLocale(RuntimeException exception) {
     return failure(HttpStatus.BAD_REQUEST, UNSUPPORTED_PROBLEM_LOCALE_CODE, exception.getMessage());
@@ -86,6 +94,7 @@ public class LocalizedApiExceptionHandler {
       LearningPlanUnauthenticatedException.class,
       PracticeSessionUnauthenticatedException.class,
       AbilityProfileUnauthenticatedException.class,
+      LearnerProfileUnauthenticatedException.class,
       UserAiPreferenceUnauthenticatedException.class,
       MistakeReviewUnauthenticatedException.class
   })

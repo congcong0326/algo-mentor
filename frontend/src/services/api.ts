@@ -45,6 +45,7 @@ import type {
   LearningPlanTemplateDetailResponse,
   LearningPlanTemplateDraftRequest,
   LearningPlanTemplateSummaryResponse,
+  LearnerProfileResponse,
   TodayPackResponse,
   PracticeMessageRequest,
   PracticeMessage,
@@ -519,6 +520,19 @@ export async function getAbilityProfile(signal?: AbortSignal): Promise<ApiRespon
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Ability profile request failed');
+  }
+
+  return response.json();
+}
+
+export async function getLearnerProfile(signal?: AbortSignal): Promise<ApiResponse<LearnerProfileResponse>> {
+  const response = await apiFetch('/api/me/learner-profile', {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learner profile request failed');
   }
 
   return response.json();

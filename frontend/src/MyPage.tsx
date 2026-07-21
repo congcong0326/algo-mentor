@@ -1,6 +1,8 @@
 import {
   Activity,
   AlertCircle,
+  BrainCircuit,
+  ChevronDown,
   Gauge,
   X,
   Sparkles,
@@ -16,18 +18,31 @@ import {
   formatAbilityScore,
   summarizeAbilityProfile,
 } from './ability/abilityProfile';
+import MarkdownView from './components/MarkdownView';
 import { useI18n } from './i18n/I18nProvider';
 import {
   getAbilityProfile,
+  getLearnerProfile,
   requireApiData,
 } from './services/api';
 import type {
   AbilityProfileResponse,
   AbilityTagScore,
+  LearnerProfileEntry,
+  LearnerProfileResponse,
 } from './types/api';
 
 const maxRadarTagCount = 12;
 const minRadarTagCount = 3;
+const memoryPreviewCount = 5;
+
+type LearnerMemoryCategory = 'declaredFacts' | 'generalObservations' | 'tagAssessments';
+
+const learnerMemoryCategories: LearnerMemoryCategory[] = [
+  'declaredFacts',
+  'generalObservations',
+  'tagAssessments',
+];
 
 export default function MyPage() {
   const { locale, resources } = useI18n();
@@ -37,10 +52,16 @@ export default function MyPage() {
   const [selectedAbilityTags, setSelectedAbilityTags] = useState<string[]>([]);
   const [abilityDialogOpen, setAbilityDialogOpen] = useState(false);
   const [abilitySelectionNotice, setAbilitySelectionNotice] = useState('');
+  const [learnerProfile, setLearnerProfile] = useState<LearnerProfileResponse>();
+  const [learnerProfileLoading, setLearnerProfileLoading] = useState(true);
+  const [learnerProfileError, setLearnerProfileError] = useState('');
+  const [activeMemoryCategory, setActiveMemoryCategory] = useState<LearnerMemoryCategory>('declaredFacts');
+  const [memoryExpanded, setMemoryExpanded] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
     void loadAbilityProfile(controller.signal);
+    void loadLearnerProfile(controller.signal);
     return () => controller.abort();
   }, []);
 
@@ -65,6 +86,30 @@ export default function MyPage() {
     }
   }
 
+  async function loadLearnerProfile(signal?: AbortSignal) {
+    setLearnerProfileLoading(true);
+    setLearnerProfileError('');
+    try {
+      const response = await getLearnerProfile(signal);
+      const profile = requireApiData(response, resources.myPage.memoryLoadFailed);
+      setLearnerProfile(profile);
+      setMemoryExpanded(false);
+      setActiveMemoryCategory((currentCategory) => (
+        profile[currentCategory].length > 0
+          ? currentCategory
+          : learnerMemoryCategories.find((category) => profile[category].length > 0) ?? currentCategory
+      ));
+    } catch (error) {
+      if (!signal?.aborted) {
+        setLearnerProfileError(error instanceof Error ? error.message : resources.myPage.memoryLoadFailed);
+      }
+    } finally {
+      if (!signal?.aborted) {
+        setLearnerProfileLoading(false);
+      }
+    }
+  }
+
   const abilitySummary = summarizeAbilityProfile(abilityProfile);
   const selectedAbilityTagScores = selectedAbilityTags
     .map((tag) => abilityProfile?.tags.find((item) => item.tag === tag))
@@ -75,6 +120,14 @@ export default function MyPage() {
     ? formatAbilityScore(abilitySummary.strongestTag.abilityScore, locale)
     : resources.myPage.noData;
   const breakthroughTag = findBreakthroughTag(abilityProfile, abilitySummary.strongestTag);
+  const activeMemoryItems = learnerProfile?.[activeMemoryCategory] ?? [];
+  const visibleMemoryItems = memoryExpanded
+    ? activeMemoryItems
+    : activeMemoryItems.slice(0, memoryPreviewCount);
+  const hiddenMemoryCount = Math.max(0, activeMemoryItems.length - visibleMemoryItems.length);
+  const totalMemoryCount = learnerProfile
+    ? learnerMemoryCategories.reduce((total, category) => total + learnerProfile[category].length, 0)
+    : 0;
   const summaryCards = [
     {
       className: 'scope',
@@ -133,6 +186,30 @@ export default function MyPage() {
       setAbilitySelectionNotice('');
       return [...currentTags, tag.tag];
     });
+  }
+
+  function selectMemoryCategory(category: LearnerMemoryCategory) {
+    setActiveMemoryCategory(category);
+    setMemoryExpanded(false);
+  }
+
+  function memoryTitle(entry: LearnerProfileEntry): string {
+    if (entry.tag) {
+      return (locale === 'zh-CN' ? entry.tag.labelZh : entry.tag.labelEn) || entry.tag.value;
+    }
+    return resources.myPage.memoryDimensionLabels[entry.dimension];
+  }
+
+  function memoryDate(value: string): string {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+    return new Intl.DateTimeFormat(locale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(date);
   }
 
   function renderAbilityHeatmap(titleId: string, className = '') {
@@ -216,6 +293,107 @@ export default function MyPage() {
           );
         })}
       </div>
+
+      <section className="learner-memory-section" aria-labelledby="learner-memory-title">
+        <div className="learner-memory-heading">
+          <div className="my-card-title">
+            <span className="my-card-title-icon learner-memory-title-icon" aria-hidden="true">
+              <BrainCircuit />
+            </span>
+            <div>
+              <p className="my-section-eyebrow">{resources.myPage.memoryEyebrow}</p>
+              <h2 id="learner-memory-title">{resources.myPage.memoryTitle}</h2>
+              <p>{resources.myPage.memorySubtitle}</p>
+            </div>
+          </div>
+          {learnerProfile?.updatedAt ? (
+            <span className="learner-memory-latest">
+              {resources.myPage.memoryUpdatedAt(memoryDate(learnerProfile.updatedAt))}
+            </span>
+          ) : null}
+        </div>
+
+        {learnerProfileLoading ? (
+          <div className="learner-memory-state" role="status">{resources.myPage.memoryLoading}</div>
+        ) : learnerProfileError ? (
+          <div className="learner-memory-state error" role="alert">
+            <AlertCircle aria-hidden="true" />
+            <span>{learnerProfileError}</span>
+            <button className="secondary-button compact" onClick={() => void loadLearnerProfile()} type="button">
+              {resources.app.retry}
+            </button>
+          </div>
+        ) : !learnerProfile || totalMemoryCount === 0 ? (
+          <div className="learner-memory-state empty">{resources.myPage.memoryEmpty}</div>
+        ) : (
+          <>
+            <div className="learner-memory-tabs" role="tablist" aria-label={resources.myPage.memoryTitle}>
+              {learnerMemoryCategories.map((category) => {
+                const count = learnerProfile[category].length;
+                const label = resources.myPage.memoryTabs[category];
+                return (
+                  <button
+                    aria-label={resources.myPage.memoryTabLabel(label, count)}
+                    aria-controls="learner-memory-panel"
+                    aria-selected={activeMemoryCategory === category}
+                    className={activeMemoryCategory === category ? 'active' : ''}
+                    id={`learner-memory-tab-${category}`}
+                    key={category}
+                    onClick={() => selectMemoryCategory(category)}
+                    role="tab"
+                    type="button"
+                  >
+                    <span>{label}</span>
+                    <strong aria-hidden="true">{count}</strong>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div
+              aria-labelledby={`learner-memory-tab-${activeMemoryCategory}`}
+              className="learner-memory-panel"
+              id="learner-memory-panel"
+              role="tabpanel"
+            >
+              {visibleMemoryItems.length === 0 ? (
+                <div className="learner-memory-state empty compact-state">
+                  {resources.myPage.memoryCategoryEmpty}
+                </div>
+              ) : (
+                <div className="learner-memory-list">
+                  {visibleMemoryItems.map((entry) => (
+                    <article className="learner-memory-item" key={entry.id}>
+                      <header>
+                        <h3>{memoryTitle(entry)}</h3>
+                        <div className="learner-memory-meta">
+                          {entry.revisionNo > 1 ? <span>{resources.myPage.memoryRevision(entry.revisionNo)}</span> : null}
+                          <span>{resources.myPage.memoryUpdatedAt(memoryDate(entry.updatedAt))}</span>
+                        </div>
+                      </header>
+                      <MarkdownView content={entry.contentText} />
+                    </article>
+                  ))}
+                </div>
+              )}
+              {activeMemoryItems.length > memoryPreviewCount ? (
+                <button
+                  className="secondary-button compact learner-memory-expand"
+                  onClick={() => setMemoryExpanded((expanded) => !expanded)}
+                  type="button"
+                >
+                  <ChevronDown aria-hidden="true" className={memoryExpanded ? 'expanded' : ''} />
+                  <span>
+                    {memoryExpanded
+                      ? resources.myPage.memoryCollapse
+                      : resources.myPage.memoryShowAll(hiddenMemoryCount)}
+                  </span>
+                </button>
+              ) : null}
+            </div>
+          </>
+        )}
+      </section>
 
       <div className="my-workspace-grid profile-only">
         <article className="my-card ability-card" aria-labelledby="ability-radar-title">

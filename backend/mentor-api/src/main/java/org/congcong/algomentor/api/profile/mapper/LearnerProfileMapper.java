@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.congcong.algomentor.api.profile.mapper.model.LearnerProfileEntryRow;
+import org.congcong.algomentor.api.profile.mapper.model.LearnerProfileViewRow;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileEntryDraft;
 
 public interface LearnerProfileMapper {
@@ -36,6 +37,8 @@ public interface LearnerProfileMapper {
   List<LearnerProfileEntryRow> findCurrentByTagIds(
       @Param("userId") long userId,
       @Param("tagIds") List<Long> tagIds);
+
+  List<LearnerProfileViewRow> findCurrentForDisplay(@Param("userId") long userId);
 
   LearnerProfileEntryRow insert(@Param("draft") LearnerProfileEntryDraft draft);
 
