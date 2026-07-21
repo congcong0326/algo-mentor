@@ -47,6 +47,9 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAge
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPermissionHook;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
+import org.congcong.algomentor.mentor.application.practice.TrustedProblemTagCatalog;
+import org.congcong.algomentor.queue.model.QueueMessage;
+import org.congcong.algomentor.queue.publisher.QueuePublisher;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
@@ -412,6 +415,16 @@ class MentorAiConfigurationTest {
     @Bean
     PracticeCodeReviewService practiceCodeReviewService() {
       return mock(PracticeCodeReviewService.class);
+    }
+
+    @Bean
+    TrustedProblemTagCatalog trustedProblemTagCatalog() {
+      return TrustedProblemTagCatalog.empty();
+    }
+
+    @Bean
+    QueuePublisher queuePublisher() {
+      return (topic, key, payload) -> new QueueMessage(1L, topic, key, "{}", java.time.Instant.EPOCH);
     }
   }
 

@@ -6,7 +6,8 @@ public final class PracticeCodeReviewConstants {
 
   public static final String SCENARIO = "practice_code_review";
   public static final String SCHEMA_NAME = "practice_code_review_result";
-  public static final String SCHEMA_VERSION = "v1";
+  public static final String SCHEMA_VERSION = "v2";
+  public static final String JSON_AFFECTED_TAG_IDS = "affectedTagIds";
   public static final BigDecimal PASS_SCORE = new BigDecimal("6.0");
   public static final String METADATA_CODE_REVIEW = "codeReview";
   /**

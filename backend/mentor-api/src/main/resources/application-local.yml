@@ -7,3 +7,15 @@ spring:
     password: ${POSTGRES_PASSWORD:algo_mentor_dev}
   flyway:
     enabled: true
+algo-mentor:
+  queue:
+    consumer:
+      enabled: true
+  learner-profile:
+    code-review-consumer:
+      enabled: true
+    declared-update:
+      enabled: true
+    recall:
+      practice-chat:
+        enabled: true

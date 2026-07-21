@@ -30,9 +30,10 @@ public final class PracticeCodeReviewJsonSchema {
     properties.set("deductionReasons", stringArray());
     properties.set("improvementSuggestions", stringArray());
     properties.set("reviewMarkdown", string());
+    properties.set(PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS, positiveIntegerArray());
     require(root, "isCodeSubmission", "belongsToCurrentProblem", "isCompleteLeetCodeSolution", "language",
         "rawCode", "normalizedCode", "evidence", "contextSummary", "scores", "passed", "deductionReasons",
-        "improvementSuggestions", "reviewMarkdown");
+        "improvementSuggestions", "reviewMarkdown", PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS);
     return root;
   }
 
@@ -97,6 +98,15 @@ public final class PracticeCodeReviewJsonSchema {
     ObjectNode node = JsonNodeFactory.instance.objectNode();
     node.put("type", "array");
     node.set("items", string());
+    return node;
+  }
+
+  private static ObjectNode positiveIntegerArray() {
+    ObjectNode node = JsonNodeFactory.instance.objectNode();
+    node.put("type", "array");
+    ObjectNode item = node.putObject("items");
+    item.put("type", "integer");
+    item.put("minimum", 1);
     return node;
   }
 

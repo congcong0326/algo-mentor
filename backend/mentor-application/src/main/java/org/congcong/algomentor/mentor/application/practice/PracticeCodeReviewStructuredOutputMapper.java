@@ -3,7 +3,9 @@ package org.congcong.algomentor.mentor.application.practice;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PracticeCodeReviewStructuredOutputMapper {
 
@@ -15,8 +17,10 @@ public class PracticeCodeReviewStructuredOutputMapper {
       return invalid();
     }
     try {
-      if (!requiredBoolean(structuredOutput, "isCodeSubmission")
-          || !requiredBoolean(structuredOutput, "belongsToCurrentProblem")
+      if (!requiredBoolean(structuredOutput, "isCodeSubmission")) {
+        return PracticeReviewResult.notCodeLike();
+      }
+      if (!requiredBoolean(structuredOutput, "belongsToCurrentProblem")
           || !requiredBoolean(structuredOutput, "isCompleteLeetCodeSolution")) {
         return PracticeReviewResult.notCompleteSubmission();
       }
@@ -73,7 +77,8 @@ public class PracticeCodeReviewStructuredOutputMapper {
           total.compareTo(PracticeCodeReviewConstants.PASS_SCORE) >= 0,
           stringList(structuredOutput.path("deductionReasons")),
           stringList(structuredOutput.path("improvementSuggestions")),
-          textValue(structuredOutput, "reviewMarkdown"));
+          textValue(structuredOutput, "reviewMarkdown"),
+          affectedTagIds(context, structuredOutput.path(PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS)));
       return PracticeReviewResult.reviewed(draft);
     } catch (IllegalArgumentException exception) {
       return invalid();
@@ -138,6 +143,22 @@ public class PracticeCodeReviewStructuredOutputMapper {
       }
     }
     return values;
+  }
+
+  private List<Long> affectedTagIds(PracticeTurnContext context, JsonNode node) {
+    if (!node.isArray()) {
+      throw new IllegalArgumentException("Practice review affectedTagIds must be an array");
+    }
+    Set<Long> candidates = context.trustedProblemTags().stream().map(TrustedProblemTag::tagId)
+        .collect(java.util.stream.Collectors.toSet());
+    LinkedHashSet<Long> accepted = new LinkedHashSet<>();
+    for (JsonNode item : node) {
+      if (item.isIntegralNumber() && item.canConvertToLong() && item.longValue() > 0
+          && candidates.contains(item.longValue())) {
+        accepted.add(item.longValue());
+      }
+    }
+    return List.copyOf(accepted);
   }
 
   private String textValue(JsonNode node, String field) {

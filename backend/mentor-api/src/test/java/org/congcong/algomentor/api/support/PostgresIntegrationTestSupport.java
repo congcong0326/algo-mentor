@@ -19,33 +19,64 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.transaction.SpringManagedTransactionFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.DelegatingDataSource;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInstance;
 
-@Testcontainers
+/**
+ * 使用本机 PostgreSQL 的集成测试基座。
+ *
+ * <p>每个测试类独占随机 schema，迁移和清理都被限制在该 schema 内，避免 Testcontainers
+ * 依赖以及对开发库 public schema 的破坏性操作。</p>
+ */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class PostgresIntegrationTestSupport {
 
-  @Container
-  protected static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(
-      DockerImageName.parse("postgres:16-alpine"));
-
   private DataSource dataSource;
+  private String schemaName;
+
+  @BeforeAll
+  void createIntegrationSchema() throws SQLException {
+    schemaName = "it_" + getClass().getSimpleName().replaceAll("[^A-Za-z0-9]", "").toLowerCase()
+        + "_" + Long.toUnsignedString(System.nanoTime(), 36);
+    try (Connection connection = adminDataSource().getConnection();
+        PreparedStatement statement = connection.prepareStatement("CREATE SCHEMA \"" + schemaName + "\"")) {
+      statement.execute();
+    }
+  }
 
   @BeforeEach
   void cleanDatabase() {
     flyway().clean();
   }
 
+  @AfterAll
+  void dropIntegrationSchema() throws SQLException {
+    if (schemaName == null || !schemaName.startsWith("it_")) {
+      return;
+    }
+    try (Connection connection = adminDataSource().getConnection();
+        PreparedStatement statement = connection.prepareStatement("DROP SCHEMA IF EXISTS \"" + schemaName + "\" CASCADE")) {
+      statement.execute();
+    }
+  }
+
   protected void migrateToV32() {
+    migrateTo("32");
+  }
+
+  protected void migrateTo(String version) {
     Flyway.configure()
         .dataSource(dataSource())
         .locations("classpath:db/migration")
-        .target("32")
+        .schemas(schemaName)
+        .defaultSchema(schemaName)
+        .createSchemas(true)
+        .target(version)
         .load()
         .migrate();
   }
@@ -58,19 +89,48 @@ public abstract class PostgresIntegrationTestSupport {
     return Flyway.configure()
         .dataSource(dataSource())
         .locations("classpath:db/migration")
+        .schemas(schemaName)
+        .defaultSchema(schemaName)
+        .createSchemas(true)
         .cleanDisabled(false)
         .load();
   }
 
   protected DataSource dataSource() {
     if (dataSource == null) {
-      dataSource = new SimpleDriverDataSource(
+      DataSource baseDataSource = new SimpleDriverDataSource(
           new org.postgresql.Driver(),
-          POSTGRES.getJdbcUrl(),
-          POSTGRES.getUsername(),
-          POSTGRES.getPassword());
+          databaseUrl(),
+          databaseUser(),
+          databasePassword());
+      dataSource = new SchemaScopedDataSource(baseDataSource, schemaName);
     }
     return dataSource;
+  }
+
+  private DataSource adminDataSource() {
+    return new SimpleDriverDataSource(
+        new org.postgresql.Driver(), databaseUrl(), databaseUser(), databasePassword());
+  }
+
+  private String databaseUrl() {
+    return System.getenv().getOrDefault(
+        "ALGO_MENTOR_IT_DATABASE_URL",
+        "jdbc:postgresql://" + environment("POSTGRES_HOST", "localhost") + ":"
+            + environment("POSTGRES_PORT", "5432") + "/" + environment("POSTGRES_DB", "algo_mentor"));
+  }
+
+  private String databaseUser() {
+    return environment("POSTGRES_USER", "algo_mentor");
+  }
+
+  private String databasePassword() {
+    return environment("POSTGRES_PASSWORD", "algo_mentor_dev");
+  }
+
+  private String environment(String name, String defaultValue) {
+    String value = System.getenv(name);
+    return value == null || value.isBlank() ? defaultValue : value;
   }
 
   protected TransactionTemplate transactionTemplate() {
@@ -191,6 +251,62 @@ public abstract class PostgresIntegrationTestSupport {
     }
   }
 
+  protected long insertUser() throws SQLException {
+    String email = "it-" + Long.toUnsignedString(System.nanoTime(), 36) + "@example.test";
+    return queryLong(
+        """
+        INSERT INTO auth_users (email, email_normalized, display_name, status, created_at, updated_at)
+        VALUES (?, ?, 'Integration Test User', 'ACTIVE', NOW(), NOW())
+        RETURNING id
+        """,
+        email,
+        email);
+  }
+
+  protected long insertPracticeSession(long userId, String problemSlug) throws SQLException {
+    return queryLong(
+        """
+        INSERT INTO practice_session (user_id, plan_id, phase_index, problem_slug, status, locale)
+        VALUES (?, 1, 1, ?, 'ACTIVE', 'zh-CN')
+        RETURNING id
+        """,
+        userId,
+        problemSlug);
+  }
+
+  protected long insertUserMessage(long userId) throws SQLException {
+    long taskId = queryLong(
+        """
+        INSERT INTO agent_task (user_id, status, context_policy, metadata, created_at, updated_at)
+        VALUES (?, 'ACTIVE', '{}'::jsonb, '{}'::jsonb, NOW(), NOW())
+        RETURNING id
+        """,
+        userId);
+    long turnId = queryLong(
+        """
+        INSERT INTO agent_turn (task_id, sequence_no, status, created_at, updated_at)
+        VALUES (?, 1, 'COMPLETED', NOW(), NOW())
+        RETURNING id
+        """,
+        taskId);
+    return queryLong(
+        """
+        INSERT INTO agent_message (task_id, turn_id, role, content, sequence_no, status, metadata, created_at, updated_at)
+        VALUES (?, ?, 'user', 'class Solution {}', 1, 'COMPLETED', '{}'::jsonb, NOW(), NOW())
+        RETURNING id
+        """,
+        taskId,
+        turnId);
+  }
+
+  protected void execute(String sql, Object... parameters) throws SQLException {
+    try (Connection connection = dataSource().getConnection();
+        PreparedStatement statement = connection.prepareStatement(sql)) {
+      bind(statement, parameters);
+      statement.executeUpdate();
+    }
+  }
+
   protected String queryString(String sql, Object... parameters) throws SQLException {
     try (Connection connection = dataSource().getConnection();
         PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -241,6 +357,32 @@ public abstract class PostgresIntegrationTestSupport {
     @Override
     public T getObject() {
       return value;
+    }
+  }
+
+  private static final class SchemaScopedDataSource extends DelegatingDataSource {
+    private final String schemaName;
+
+    private SchemaScopedDataSource(DataSource targetDataSource, String schemaName) {
+      super(targetDataSource);
+      this.schemaName = schemaName;
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException {
+      return configure(super.getConnection());
+    }
+
+    @Override
+    public Connection getConnection(String username, String password) throws SQLException {
+      return configure(super.getConnection(username, password));
+    }
+
+    private Connection configure(Connection connection) throws SQLException {
+      try (java.sql.Statement statement = connection.createStatement()) {
+        statement.execute("SET search_path TO \"" + schemaName + "\"");
+      }
+      return connection;
     }
   }
 }

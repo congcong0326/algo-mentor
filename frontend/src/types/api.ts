@@ -1132,6 +1132,13 @@ export interface AgentToolEndEvent {
   result: unknown;
 }
 
+export type LearnerDeclaredProfileToolStatus = 'UPDATED' | 'NO_CHANGE' | 'FAILED';
+
+export interface LearnerDeclaredProfileToolResult {
+  type: 'learner_declared_profile_update';
+  status: LearnerDeclaredProfileToolStatus;
+}
+
 export interface AgentToolPermissionDecisionEvent {
   runId: string;
   stepIndex: number;

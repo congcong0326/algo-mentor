@@ -133,3 +133,31 @@ algo-mentor:
     seed:
       enabled: ${LEARNING_PLAN_TEMPLATE_SEED_ENABLED:false}
       path: ${LEARNING_PLAN_TEMPLATE_SEED_PATH:data/learning-plan-template-seed}
+  learner-profile:
+    content:
+      max-chars: ${LEARNER_PROFILE_CONTENT_MAX_CHARS:4000}
+    declared-update:
+      enabled: ${LEARNER_PROFILE_DECLARED_UPDATE_ENABLED:false}
+      max-stale-retries: ${LEARNER_PROFILE_DECLARED_UPDATE_MAX_STALE_RETRIES:1}
+      result-summary-max-chars: ${LEARNER_PROFILE_DECLARED_UPDATE_RESULT_SUMMARY_MAX_CHARS:300}
+    recall:
+      practice-chat:
+        enabled: ${LEARNER_PROFILE_PRACTICE_RECALL_ENABLED:false}
+        max-token-budget: ${LEARNER_PROFILE_PROMPT_TOKEN_BUDGET:800}
+    code-review-consumer:
+      enabled: ${LEARNER_PROFILE_REVIEW_CONSUMER_ENABLED:false}
+      max-stale-retries: ${LEARNER_PROFILE_CODE_REVIEW_CONSUMER_MAX_STALE_RETRIES:1}
+  practice-chat:
+    prompt:
+      total-token-budget: ${PRACTICE_CHAT_PROMPT_TOKEN_BUDGET:8000}
+  queue:
+    message:
+      max-value-bytes: ${QUEUE_MESSAGE_MAX_VALUE_BYTES:65536}
+    consumer:
+      enabled: ${QUEUE_CONSUMER_ENABLED:false}
+      poll-interval: ${QUEUE_CONSUMER_POLL_INTERVAL:10s}
+      shutdown-timeout: ${QUEUE_CONSUMER_SHUTDOWN_TIMEOUT:30s}
+    cleanup:
+      succeeded-retention: ${QUEUE_CLEANUP_SUCCEEDED_RETENTION:7d}
+      fixed-delay: ${QUEUE_CLEANUP_FIXED_DELAY:1h}
+      batch-size: ${QUEUE_CLEANUP_BATCH_SIZE:1000}

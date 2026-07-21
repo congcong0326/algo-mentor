@@ -15,6 +15,8 @@ import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
 import org.congcong.algomentor.api.practice.mapper.PracticeSessionMapper;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewRepository;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeSessionRepository;
+import org.congcong.algomentor.api.profile.mapper.LearnerProfileMapper;
+import org.congcong.algomentor.api.profile.repository.MyBatisLearnerProfileRepository;
 import org.congcong.algomentor.api.problem.mapper.ProblemMapper;
 import org.congcong.algomentor.api.problem.mapper.ProblemCompanyMapper;
 import org.congcong.algomentor.api.problem.mapper.ProblemTagMapper;
@@ -41,6 +43,10 @@ import org.congcong.algomentor.mentor.application.learningplan.template.Learning
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileContentPolicy;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileQueryService;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileRepository;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileUpdateService;
 import org.congcong.algomentor.mentor.application.review.MistakeNoteRepository;
 import org.congcong.algomentor.mentor.application.review.ReviewPreferenceRepository;
 import org.congcong.algomentor.mentor.application.review.ReviewRecallEvaluationRepository;
@@ -51,12 +57,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(name = "spring.datasource.url")
 @EnableTransactionManagement
+@EnableConfigurationProperties(LearnerProfileProperties.class)
 public class MentorApiMyBatisConfiguration {
 
   @Bean
@@ -122,6 +132,12 @@ public class MentorApiMyBatisConfiguration {
   @ConditionalOnMissingBean
   public PracticeCodeReviewMapper practiceCodeReviewMapper(SqlSessionTemplate sqlSessionTemplate) {
     return sqlSessionTemplate.getMapper(PracticeCodeReviewMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearnerProfileMapper learnerProfileMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(LearnerProfileMapper.class);
   }
 
   @Bean
@@ -215,6 +231,33 @@ public class MentorApiMyBatisConfiguration {
       ObjectMapper objectMapper
   ) {
     return new MyBatisPracticeCodeReviewRepository(mapper, objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(LearnerProfileRepository.class)
+  public LearnerProfileRepository learnerProfileRepository(LearnerProfileMapper mapper) {
+    return new MyBatisLearnerProfileRepository(mapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearnerProfileContentPolicy learnerProfileContentPolicy(LearnerProfileProperties properties) {
+    return new LearnerProfileContentPolicy(properties.getMaxChars());
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearnerProfileQueryService learnerProfileQueryService(LearnerProfileRepository repository) {
+    return new LearnerProfileQueryService(repository);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearnerProfileUpdateService learnerProfileUpdateService(
+      LearnerProfileRepository repository,
+      LearnerProfileContentPolicy contentPolicy,
+      PlatformTransactionManager transactionManager) {
+    return new LearnerProfileUpdateService(repository, contentPolicy, new TransactionTemplate(transactionManager));
   }
 
   @Bean

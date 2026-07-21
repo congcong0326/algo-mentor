@@ -55,6 +55,7 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
   private final PracticeSessionRepository sessionRepository;
   private final AgentTurnMessageLookupRepository turnMessageLookupRepository;
   private final PracticeCodeReviewService reviewService;
+  private final TrustedProblemTagCatalog trustedProblemTagCatalog;
   private final PracticeCodeReviewToolResultMapper resultMapper;
 
   public PracticeCodeReviewAgentTool(
@@ -63,11 +64,23 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
       PracticeCodeReviewService reviewService,
       ObjectMapper objectMapper
   ) {
+    this(sessionRepository, turnMessageLookupRepository, reviewService, objectMapper, TrustedProblemTagCatalog.empty());
+  }
+
+  public PracticeCodeReviewAgentTool(
+      PracticeSessionRepository sessionRepository,
+      AgentTurnMessageLookupRepository turnMessageLookupRepository,
+      PracticeCodeReviewService reviewService,
+      ObjectMapper objectMapper,
+      TrustedProblemTagCatalog trustedProblemTagCatalog
+  ) {
     this.sessionRepository = Objects.requireNonNull(sessionRepository, "sessionRepository must not be null");
     this.turnMessageLookupRepository = Objects.requireNonNull(
         turnMessageLookupRepository,
         "turnMessageLookupRepository must not be null");
     this.reviewService = Objects.requireNonNull(reviewService, "reviewService must not be null");
+    this.trustedProblemTagCatalog = Objects.requireNonNull(
+        trustedProblemTagCatalog, "trustedProblemTagCatalog must not be null");
     this.resultMapper = new PracticeCodeReviewToolResultMapper(
         Objects.requireNonNull(objectMapper, "objectMapper must not be null"));
   }
@@ -119,7 +132,8 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
         userMessage.content(),
         userMessage.content(),
         "",
-        session.locale());
+        session.locale(),
+        trustedProblemTagCatalog.findByProblemSlug(session.problemSlug()));
 
     PracticeReviewResult reviewResult;
     try {

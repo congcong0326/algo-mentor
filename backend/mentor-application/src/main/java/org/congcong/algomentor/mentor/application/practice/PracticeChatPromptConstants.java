@@ -18,6 +18,8 @@ public final class PracticeChatPromptConstants {
   public static final String SECTION_SCENARIO_POLICY = "practice.strategy.coach";
   public static final String SECTION_RUNTIME_CONTEXT = "practice.context.training";
   public static final String SECTION_ACTIVE_SUMMARY = "practice.memory.active-summary";
+  /** 单次运行固定的学习者画像参考 section，不查询数据库。 */
+  public static final String SECTION_LEARNER_PROFILE = "practice.memory.learner-profile";
   public static final String SECTION_CURRENT_USER_MESSAGE = "practice.current-user-message";
   public static final String SECTION_HISTORY_PREFIX = "practice.history.";
 
@@ -31,6 +33,8 @@ public final class PracticeChatPromptConstants {
   public static final String VARIABLE_HISTORY = "history";
   public static final String VARIABLE_COACH_STYLE = "coachStyle";
   public static final String VARIABLE_RESPONSE_LANGUAGE = "responseLanguage";
+  /** loop 前读取一次的学习者画像快照，仅供 Prompt provider 渲染。 */
+  public static final String VARIABLE_LEARNER_PROFILE_SNAPSHOT = "learnerProfileSnapshot";
 
   /**
    * Agent 场景标识，用于把普通会话切换到题目训练聊天 prompt/profile 和治理观测语义。
@@ -68,6 +72,12 @@ public final class PracticeChatPromptConstants {
    * 当前请求语境推导出的 AI 回复语言，用于每轮动态注入语言约束。
    */
   public static final String METADATA_RESPONSE_LANGUAGE = "responseLanguage";
+  /** 画像 section 实际注入的 token 估算，不包含画像正文。 */
+  public static final String METADATA_LEARNER_PROFILE_TOKEN_ESTIMATE = "learnerProfileTokenEstimate";
+  /** 画像 section 是否因其 800 token 独立预算或总 Prompt 预算发生裁剪。 */
+  public static final String METADATA_LEARNER_PROFILE_TRIMMED = "learnerProfileTrimmed";
+  /** 画像快照中参与渲染的条目数，不包含条目正文。 */
+  public static final String METADATA_LEARNER_PROFILE_ENTRY_COUNT = "learnerProfileEntryCount";
 
   private PracticeChatPromptConstants() {
   }

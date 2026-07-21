@@ -31,13 +31,13 @@ class ProblemTagNormalizationMigrationIT extends PostgresIntegrationTestSupport 
 
     migrateLatest();
 
-    assertThat(queryString("SELECT to_regclass('public.problem_tag')")).isEqualTo("problem_tag");
-    assertThat(queryString("SELECT to_regclass('public.problem_tag_assignment')"))
+    assertThat(queryString("SELECT to_regclass('problem_tag')")).isEqualTo("problem_tag");
+    assertThat(queryString("SELECT to_regclass('problem_tag_assignment')"))
         .isEqualTo("problem_tag_assignment");
     assertThat(queryLong("""
         SELECT COUNT(*)
         FROM pg_indexes
-        WHERE schemaname = 'public'
+        WHERE schemaname = current_schema()
           AND indexname = 'idx_problem_tag_assignment_tag_problem'
         """)).isEqualTo(1L);
     assertThat(queryLong("SELECT COUNT(*) FROM problem_tag")).isEqualTo(3L);
@@ -96,8 +96,8 @@ class ProblemTagNormalizationMigrationIT extends PostgresIntegrationTestSupport 
 
     assertThatThrownBy(this::migrateLatest)
         .hasMessageContaining("Conflicting duplicate problem tag labels");
-    assertThat(queryString("SELECT to_regclass('public.problem_tag')")).isNull();
-    assertThat(queryString("SELECT to_regclass('public.problem_tag_assignment')")).isNull();
+    assertThat(queryString("SELECT to_regclass('problem_tag')")).isNull();
+    assertThat(queryString("SELECT to_regclass('problem_tag_assignment')")).isNull();
   }
 
   private String orderedArrayConsistencySql() {

@@ -749,6 +749,10 @@ export interface LocaleResources {
     reviewFailed: string;
     reviewToolRunning: string;
     reviewToolScoreSummary: (statusLabel: string, scoreText: string) => string;
+    learnerProfileToolRunning: string;
+    learnerProfileToolUpdated: string;
+    learnerProfileToolNoChange: string;
+    learnerProfileToolFailed: string;
     reviewVersionLabel: (versionNo: number) => string;
     reviewScoreText: (score: number, passScore?: number) => string;
     reviewPassScoreLabel: (passScore: number) => string;
@@ -1620,6 +1624,10 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       reviewFailed: '未通过',
       reviewToolRunning: '正在生成代码提交记录...',
       reviewToolScoreSummary: (statusLabel, scoreText) => `代码提交记录已生成：${statusLabel}，${scoreText}。`,
+      learnerProfileToolRunning: '正在更新学习记忆...',
+      learnerProfileToolUpdated: '已更新学习记忆',
+      learnerProfileToolNoChange: '学习记忆无需更新',
+      learnerProfileToolFailed: '学习记忆暂未更新',
       reviewVersionLabel: (versionNo) => `V${versionNo}`,
       reviewScoreText: (score, passScore) => passScore === undefined ? `${score} 分` : `${score} / ${passScore} 分`,
       reviewPassScoreLabel: (passScore) => `通过分 ${passScore}`,
@@ -2542,6 +2550,10 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       reviewFailed: 'Failed',
       reviewToolRunning: 'Generating code submission record...',
       reviewToolScoreSummary: (statusLabel, scoreText) => `Code submission record generated: ${statusLabel}, ${scoreText}.`,
+      learnerProfileToolRunning: 'Updating learning memory...',
+      learnerProfileToolUpdated: 'Learning memory updated',
+      learnerProfileToolNoChange: 'Learning memory did not need an update',
+      learnerProfileToolFailed: 'Learning memory was not updated',
       reviewVersionLabel: (versionNo) => `V${versionNo}`,
       reviewScoreText: (score, passScore) => passScore === undefined ? `${score} pts` : `${score} / ${passScore} pts`,
       reviewPassScoreLabel: (passScore) => `Pass score ${passScore}`,

@@ -1,8 +1,6 @@
 package org.congcong.algomentor.mentor.application.practice;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,6 +32,7 @@ public class PracticeCodeReviewService {
   private static final Logger log = LoggerFactory.getLogger(PracticeCodeReviewService.class);
 
   private final PracticeCodeReviewRepository repository;
+  private final PracticeCodeReviewCommitService commitService;
   private final AiCompletionGateway completionGateway;
   private final PracticeCodeReviewPromptBuilder promptBuilder;
   private final PracticeCodeReviewStructuredOutputMapper outputMapper;
@@ -43,25 +42,28 @@ public class PracticeCodeReviewService {
 
   public PracticeCodeReviewService(
       PracticeCodeReviewRepository repository,
+      PracticeCodeReviewCommitService commitService,
       LlmGateway llmGateway,
       PracticeCodeReviewPromptBuilder promptBuilder,
       PracticeCodeReviewStructuredOutputMapper outputMapper
   ) {
-    this(repository, llmGateway, promptBuilder, outputMapper, PracticeCodeReviewMetrics.NOOP);
+    this(repository, commitService, llmGateway, promptBuilder, outputMapper, PracticeCodeReviewMetrics.NOOP);
   }
 
   public PracticeCodeReviewService(
       PracticeCodeReviewRepository repository,
+      PracticeCodeReviewCommitService commitService,
       LlmGateway llmGateway,
       PracticeCodeReviewPromptBuilder promptBuilder,
       PracticeCodeReviewStructuredOutputMapper outputMapper,
       PracticeCodeReviewMetrics metrics
   ) {
-    this(repository, llmGateway, promptBuilder, outputMapper, metrics, PracticeCodeReviewObserver.NOOP);
+    this(repository, commitService, llmGateway, promptBuilder, outputMapper, metrics, PracticeCodeReviewObserver.NOOP);
   }
 
   public PracticeCodeReviewService(
       PracticeCodeReviewRepository repository,
+      PracticeCodeReviewCommitService commitService,
       LlmGateway llmGateway,
       PracticeCodeReviewPromptBuilder promptBuilder,
       PracticeCodeReviewStructuredOutputMapper outputMapper,
@@ -70,6 +72,7 @@ public class PracticeCodeReviewService {
   ) {
     this(
         repository,
+        commitService,
         new AiPassthroughCompletionGateway(llmGateway),
         promptBuilder,
         outputMapper,
@@ -79,6 +82,7 @@ public class PracticeCodeReviewService {
 
   public PracticeCodeReviewService(
       PracticeCodeReviewRepository repository,
+      PracticeCodeReviewCommitService commitService,
       AiCompletionGateway completionGateway,
       PracticeCodeReviewPromptBuilder promptBuilder,
       PracticeCodeReviewStructuredOutputMapper outputMapper,
@@ -86,6 +90,7 @@ public class PracticeCodeReviewService {
       PracticeCodeReviewObserver observer
   ) {
     this.repository = Objects.requireNonNull(repository, "repository must not be null");
+    this.commitService = Objects.requireNonNull(commitService, "commitService must not be null");
     this.completionGateway = Objects.requireNonNull(completionGateway, "completionGateway must not be null");
     this.promptBuilder = Objects.requireNonNull(promptBuilder, "promptBuilder must not be null");
     this.outputMapper = Objects.requireNonNull(outputMapper, "outputMapper must not be null");
@@ -96,6 +101,7 @@ public class PracticeCodeReviewService {
 
   protected PracticeCodeReviewService(Function<PracticeTurnContext, PracticeReviewResult> delegate) {
     this.repository = null;
+    this.commitService = null;
     this.completionGateway = null;
     this.promptBuilder = null;
     this.outputMapper = null;
@@ -183,10 +189,6 @@ public class PracticeCodeReviewService {
 
   private void recordReviewResult(PracticeReviewResult result) {
     if (result.status() == PracticeReviewStatus.SAVED) {
-      if (result.metadata().containsKey("reviewAttemptStatus")) {
-        metrics.recordReview(attemptMetricStatus(result.metadata().get("reviewAttemptStatus")));
-        return;
-      }
       metrics.recordReview(PracticeCodeReviewMetricStatus.COMPLETED);
       return;
     }
@@ -195,13 +197,6 @@ public class PracticeCodeReviewService {
       return;
     }
     metrics.recordReview(PracticeCodeReviewMetricStatus.UNREVIEWABLE);
-  }
-
-  private PracticeCodeReviewMetricStatus attemptMetricStatus(Object status) {
-    if (PracticeReviewStatus.FAILED.name().equals(status)) {
-      return PracticeCodeReviewMetricStatus.FAILED;
-    }
-    return PracticeCodeReviewMetricStatus.UNREVIEWABLE;
   }
 
   private PracticeReviewResult reviewWithLlm(
@@ -247,9 +242,9 @@ public class PracticeCodeReviewService {
             exception.getClass().getSimpleName(),
             exception);
       }
-      return saveRejectedAttempt(context, PracticeReviewResult.failed(
+      return PracticeReviewResult.failed(
           FAILURE_CODE_LLM_COMPLETION_FAILED,
-          Map.of("failureCode", FAILURE_CODE_LLM_COMPLETION_FAILED)));
+          Map.of("failureCode", FAILURE_CODE_LLM_COMPLETION_FAILED));
     }
 
     log.info(
@@ -280,7 +275,7 @@ public class PracticeCodeReviewService {
           context.agentRunDbId(),
           mapped.status(),
           mapped.failureCode());
-      return saveRejectedAttempt(context, mapped);
+      return mapped;
     }
 
     return saveReviewedDraft(context, mapped.draft().orElseThrow());
@@ -300,7 +295,8 @@ public class PracticeCodeReviewService {
           draft.evidence().size(),
           draft.score().total().toPlainString(),
           draft.passed());
-      PracticeCodeReview saved = repository.save(draft);
+      PracticeCodeReviewCommitResult committed = commitService.commit(draft);
+      PracticeCodeReview saved = committed.review();
       log.info(
           "Practice code review saved. sessionId={} userMessageId={} agentRunDbId={} reviewId={} versionNo={} totalScore={} passed={}",
           context.sessionId(),
@@ -310,7 +306,9 @@ public class PracticeCodeReviewService {
           saved.versionNo(),
           saved.score().total().toPlainString(),
           saved.passed());
-      notifyReviewSaved(saved);
+      if (committed.created()) {
+        notifyReviewSaved(saved);
+      }
       return PracticeReviewResult.saved(saved);
     } catch (RuntimeException exception) {
       log.warn(
@@ -338,75 +336,6 @@ public class PracticeCodeReviewService {
           exception.getClass().getSimpleName(),
           exception);
     }
-  }
-
-  private PracticeReviewResult saveRejectedAttempt(PracticeTurnContext context, PracticeReviewResult mapped) {
-    log.info(
-        "Practice code review rejected attempt will be persisted. sessionId={} userMessageId={} agentRunDbId={} mappedStatus={} failureCode={}",
-        context.sessionId(),
-        context.userMessageId(),
-        context.agentRunDbId(),
-        mapped.status(),
-        mapped.failureCode());
-    PracticeCodeReviewDraft draft = rejectedAttemptDraft(context, mapped);
-    PracticeReviewResult saved = saveReviewedDraft(context, draft);
-    if (saved.status() != PracticeReviewStatus.SAVED) {
-      return saved;
-    }
-    Map<String, Object> metadata = new java.util.LinkedHashMap<>(saved.metadata());
-    metadata.put("reviewAttemptStatus", mapped.status().name());
-    if (mapped.failureCode() != null) {
-      metadata.put("reviewAttemptFailureCode", mapped.failureCode());
-    }
-    return new PracticeReviewResult(saved.status(), saved.draft(), null, metadata);
-  }
-
-  private PracticeCodeReviewDraft rejectedAttemptDraft(PracticeTurnContext context, PracticeReviewResult mapped) {
-    String reason = switch (mapped.status()) {
-      case NOT_COMPLETE_SUBMISSION -> "代码提交分析已触发，但模型判断本轮内容不是当前题目的完整 LeetCode 提交。";
-      case NOT_CODE_LIKE -> "代码提交分析已触发，但模型判断本轮内容不像代码提交。";
-      case FAILED -> "代码提交分析已触发，但结构化结果无效，未能完成有效评分。";
-      default -> "代码提交分析已触发，但未形成可通过的有效代码提交记录。";
-    };
-    if (mapped.failureCode() != null) {
-      reason = reason + " failureCode=" + mapped.failureCode();
-    }
-    return new PracticeCodeReviewDraft(
-        context.userId(),
-        context.planId(),
-        context.phaseIndex(),
-        context.problemSlug(),
-        context.sessionId(),
-        context.userMessageId(),
-        context.assistantMessageId(),
-        context.agentRunDbId(),
-        fallbackCode(context),
-        fallbackCode(context),
-        "unknown",
-        List.of(new PracticeCodeReviewEvidence("REVIEW_ATTEMPT_REJECTED", mapped.status().name())),
-        "代码候选已进入代码提交分析，但未形成有效评分。",
-        zeroScore(),
-        false,
-        List.of(reason),
-        List.of("请确认粘贴的是当前题目的完整 LeetCode 解法，并包含 class Solution 与入口方法。"),
-        reason);
-  }
-
-  private String fallbackCode(PracticeTurnContext context) {
-    if (!context.extractedCode().isBlank()) {
-      return context.extractedCode();
-    }
-    return context.originalMessage().isBlank() ? "unavailable review candidate" : context.originalMessage();
-  }
-
-  private PracticeCodeReviewScore zeroScore() {
-    return new PracticeCodeReviewScore(
-        BigDecimal.ZERO,
-        BigDecimal.ZERO,
-        BigDecimal.ZERO,
-        BigDecimal.ZERO,
-        BigDecimal.ZERO,
-        BigDecimal.ZERO);
   }
 
   private LlmCompletionRequest request(PracticeTurnContext context) {

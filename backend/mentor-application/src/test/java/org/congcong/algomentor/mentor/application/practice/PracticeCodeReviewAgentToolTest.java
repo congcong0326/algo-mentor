@@ -25,6 +25,8 @@ import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
+import org.congcong.algomentor.queue.model.QueueMessage;
+import org.congcong.algomentor.queue.publisher.QueuePublisher;
 import org.junit.jupiter.api.Test;
 
 class PracticeCodeReviewAgentToolTest {
@@ -239,6 +241,7 @@ class PracticeCodeReviewAgentToolTest {
     CountingLlmGateway llmGateway = new CountingLlmGateway();
     PracticeCodeReviewService reviewService = new PracticeCodeReviewService(
         reviewRepository,
+        new PracticeCodeReviewCommitService(reviewRepository, queuePublisher()),
         llmGateway,
         new PracticeCodeReviewPromptBuilder(),
         new PracticeCodeReviewStructuredOutputMapper());
@@ -254,6 +257,10 @@ class PracticeCodeReviewAgentToolTest {
     assertThat(reviewRepository.findByUserMessageCalls).isEqualTo(1);
     assertThat(reviewRepository.savedDrafts).isEmpty();
     assertThat(llmGateway.completeCalls).isZero();
+  }
+
+  private QueuePublisher queuePublisher() {
+    return (topic, key, payload) -> new QueueMessage(1L, topic, key, "{}", Instant.EPOCH);
   }
 
   private PracticeCodeReviewAgentTool tool(

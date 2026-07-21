@@ -145,6 +145,21 @@ CREATE INDEX IF NOT EXISTS idx_practice_code_review_user_problem
   ON practice_code_review(user_id, plan_id, phase_index, problem_slug, created_at DESC);
 ```
 
+画像标签能力接入阶段新增 Review 与受影响标签关联表，迁移版本在实施时按当前 Flyway 序号确定：
+
+```sql
+CREATE TABLE practice_code_review_tag (
+  review_id BIGINT NOT NULL
+    REFERENCES practice_code_review(id) ON DELETE CASCADE,
+  tag_id BIGINT NOT NULL
+    REFERENCES problem_tag(id) ON DELETE RESTRICT,
+  PRIMARY KEY (review_id, tag_id)
+);
+
+CREATE INDEX idx_practice_code_review_tag_tag_review
+  ON practice_code_review_tag (tag_id, review_id);
+```
+
 说明：
 
 - `assistant_message_id` 允许为空，用于避免持久化 observer 极端延迟时阻塞正式 Review。正常路径应写入本次 AI 回复消息 ID。
@@ -152,6 +167,8 @@ CREATE INDEX IF NOT EXISTS idx_practice_code_review_user_problem
 - `version_no` 在同一个 `practice_session_id` 内递增。
 - `uk_practice_code_review_user_message` 保证同一条用户消息不会因客户端重试生成多个有效 Review。
 - `passed` 由应用层按 `total_score >= 6` 计算后落库。
+- Review 模型返回的合法 `affectedTagIds` 与正式 Review 在同一事务中保存；应用层在写入前去重并丢弃非当前题目候选的 ID。
+- `affectedTagIds` 允许为空，标签缺失或非法不阻止正式 Review 落库，也不影响 Review 已保存 observer；非法标签记录日志和低基数指标。
 
 ## 应用层模型与端口
 
@@ -342,10 +359,12 @@ Review 不使用流式输出，使用 `LlmGateway.complete()` 和 `LlmResponseFo
 public final class PracticeCodeReviewConstants {
   public static final String SCENARIO = "practice_code_review";
   public static final String SCHEMA_NAME = "practice_code_review_result";
-  public static final String SCHEMA_VERSION = "v1";
+  public static final String SCHEMA_VERSION = "v2";
   public static final BigDecimal PASS_SCORE = new BigDecimal("6.0");
 }
 ```
+
+现有实现仍为 `v1`。画像标签能力接入时因为新增 `affectedTagIds`，目标结构化输出版本升级为 `v2`，实现、测试和治理 metadata 需要同步切换。
 
 JSON Schema 顶层字段：
 
@@ -370,6 +389,7 @@ JSON Schema 顶层字段：
     "total": 8.0
   },
   "passed": true,
+  "affectedTagIds": [12, 18],
   "deductionReasons": ["..."],
   "improvementSuggestions": ["..."],
   "reviewMarkdown": "..."
@@ -391,18 +411,23 @@ isCompleteLeetCodeSolution == true
 - `passed` 必须等于 `total >= 6`；如不一致，以应用层计算为准。
 - 如果 `correctness <= 2` 且模型仍给出 `total > 5`，保存前把 `total` 截断到 5，并在 metadata/evidence 中记录 `CORRECTNESS_BLOCKING_CAP`。
 - `rawCode` 和 `normalizedCode` 不能为空；为空时视为结构化输出无效，不落库。
+- `affectedTagIds` 允许为空；重复 ID 在写入前去重，非当前题目 `problem_tag_assignment.tag_id` 的值被丢弃并记录日志和指标，不使结构化 Review 整体失败。
 
 ## Prompt 设计
 
 `PracticeCodeReviewPromptBuilder` 组装以下上下文：
 
 - 平台角色：算法刷题代码 Review 助教。
-- 当前题目事实：题号、标题、slug、难度、标签、题面摘要、样例摘要。
+- 当前题目事实：题号、标题、slug、难度、带 `tagId/value/label` 的受信候选标签、题面摘要、样例摘要。
 - 学习计划事实：planId、phaseIndex、阶段目标、计划题原因。
 - 当前用户提交：`PracticeTurnClassifier` 提取出的代码和原始消息。
 - 聊天上下文：本次提交前最近若干条 `agent_message`，排除题面 seed，并做长度裁剪。
 - 评分规则：正确性 0-4、复杂度 0-2、边界条件 0-2、代码质量 0-1、思路表达与题意贴合 0-1。
 - 识别规则：普通片段、报错、伪代码、非本题代码必须返回 false，不生成正式 Review。
+
+`PracticeCodeReviewService` 的结构化 Review 调用与 practice chat 主 Agent 调用相互独立。正式 Review prompt 不主动查询或注入学习者画像、画像生成的历史能力结论，也不复用主 Agent 已组装的 system prompt；即使 practice chat 主 Agent 已读取画像，画像片段也不会自动进入 `PracticeCodeReviewPromptBuilder`。正式评分只依据上述当前代码、题目事实、受信业务上下文和评分规则。
+
+这条约束依赖现有独立调用边界即可实现，不新增额外的 Prompt 清洗或隔离组件。对应画像场景 Policy 中，`practice_code_review` 必须保持 disabled，防止后续统一 Prompt Assembly 时发生回归。
 
 practice chat 的普通回复 prompt 同步增加一条场景策略：
 

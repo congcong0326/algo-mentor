@@ -21,6 +21,7 @@ import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
+import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredProfileToolContracts;
 
 public class PracticeChatPromptSectionProvider implements PromptSectionProvider {
 
@@ -57,6 +58,14 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
       PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW,
       PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW,
       PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW);
+
+  private static final String DECLARED_PROFILE_TOOL_BOUNDARY = """
+      学习者自述画像工具边界：
+      1. 仅当当前回合提供 %s 且用户明确表达长期、稳定、会影响后续学习辅导的背景、目标、时间约束、学习偏好或能力自评时，才可调用它。
+      2. 用户明确纠正既有长期事实时可调用；多个相关维度必须一次批量提交。
+      3. 一次做题表现、临时情绪、短期困惑、猜测、未明确表达的偏好和模型自行推断都不得调用它。
+      4. 工具结果为 FAILED 时，不得声称画像已保存；当前 run 不会重新读取新画像。
+      """.formatted(LearnerDeclaredProfileToolContracts.TOOL_NAME);
 
   @Override
   public List<PromptSection> sections(PromptAssemblyRequest request, PromptProfile profile) {
@@ -152,6 +161,7 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
 
   private PromptSection scenarioPolicy(PracticeChatMessageIntent intent) {
     String text = PRACTICE_INTERACTION_POLICY.strip() + "\n\n" + CODE_REVIEW_TOOL_BOUNDARY.strip()
+        + "\n\n" + DECLARED_PROFILE_TOOL_BOUNDARY.strip()
         + "\n\n本轮用户意图：" + intent.name() + "。";
     return new PromptSection(
         PracticeChatPromptConstants.SECTION_SCENARIO_POLICY,

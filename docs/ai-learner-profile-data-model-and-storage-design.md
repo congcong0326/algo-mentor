@@ -1,6 +1,6 @@
 # AI 学习者画像数据建模与存储研发设计
 
-更新时间：2026-07-17
+更新时间：2026-07-20
 
 状态：研发设计，第一版已收敛为自然语言画像正文
 
@@ -30,7 +30,7 @@ AI 学习者画像
 
 画像正文统一保存为简短自然语言，不再为不同条目类型设计多套 `detail_json`。需要被程序确定性读取的数据，例如正式学习时间、计划节奏和语言设置，继续放在各自的业务表中，不藏在画像正文里。
 
-本文只讨论题目标签和画像条目本身，不再展开通用证据表、独立 Memory Summary、异步任务、重建、性能和 API 设计。
+本文只讨论题目标签、正式 Review 的标签归因和画像条目本身，不再展开通用证据表、独立 Memory Summary、异步任务、重建、性能和 API 设计。
 
 ## 二、现状与约束
 
@@ -71,6 +71,7 @@ tag_labels_zh
 第一版形成画像时，直接从现有业务表读取必要信息：
 
 - `practice_code_review`：正式 Review、扣分原因、改进建议和版本变化；
+- `practice_code_review_tag`：Review 模型从当前题目受信标签中选择的本次解法实际影响标签；
 - `review_log`：复习评级和重做记录；
 - `review_recall_evaluation`：复述命中点、遗漏点和 AI 建议；
 - `learning_plan_problem_progress`：完成、跳过和重复训练状态；
@@ -90,7 +91,7 @@ tag_labels_zh
               │
               ▼
 现有业务事实
-    practice_code_review / review_log / agent_message / ...
+    practice_code_review / practice_code_review_tag / review_log / ...
               │
               ▼
 可版本化自然语言画像
@@ -205,7 +206,33 @@ CREATE INDEX idx_problem_tag_assignment_tag_problem
 - `PRIMARY KEY (problem_id, tag_id)`：读取一道题的全部受信标签；
 - `(tag_id, problem_id)`：按标签筛题和聚合雷达分数。
 
-### 4.3 与现有数组字段的迁移关系
+### 4.3 正式 Review 与受影响标签关系
+
+Code Review 模型结合完整代码和题目上下文，只能从当前题目的 `problem_tag_assignment` 候选中返回 `affectedTagIds`。使用规范化关联表保存本次解法实际影响的标签，不在 `practice_code_review` 中增加 JSON 数组：
+
+```sql
+CREATE TABLE practice_code_review_tag (
+  review_id BIGINT NOT NULL
+    REFERENCES practice_code_review(id) ON DELETE CASCADE,
+  tag_id BIGINT NOT NULL
+    REFERENCES problem_tag(id) ON DELETE RESTRICT,
+  PRIMARY KEY (review_id, tag_id)
+);
+
+CREATE INDEX idx_practice_code_review_tag_tag_review
+  ON practice_code_review_tag (tag_id, review_id);
+```
+
+两个方向的查询分别使用：
+
+- `PRIMARY KEY (review_id, tag_id)`：读取一条正式 Review 实际影响的全部标签；
+- `(tag_id, review_id)`：按标签聚合历史 Review，形成 `TAG_ASSESSMENT`。
+
+正式 Review 与合法标签关联在同一事务中保存。数据库外键保证标签存在，应用层额外校验 `tag_id` 必须属于当前题目的 `problem_tag_assignment`，在写入前对重复 ID 去重并丢弃非法 ID。
+
+`affectedTagIds` 允许为空，关联表不要求每条 Review 至少存在一行。标签输出缺失或非法不影响正式 Review 保存；该 Review 仍可作为通用观察事实，只是不参与标签能力评价。非法标签需要记录日志和低基数指标。
+
+### 4.4 与现有数组字段的迁移关系
 
 规范化关系在读取切换后成为权威来源，旧数组继续作为兼容副本。按以下顺序迁移：
 

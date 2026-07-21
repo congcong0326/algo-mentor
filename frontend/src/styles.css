@@ -3890,6 +3890,61 @@ a {
   font-weight: 650;
 }
 
+.practice-coach-work-status {
+  margin: 0;
+  color: var(--text-muted);
+  color: color-mix(in srgb, var(--text-muted) 78%, var(--surface-card));
+  font-size: 14px;
+  font-weight: 550;
+  line-height: 1.45;
+}
+
+.practice-coach-work-status.is-updated {
+  color: color-mix(in srgb, var(--success) 76%, var(--text-muted));
+}
+
+.practice-coach-work-status.is-failed {
+  color: color-mix(in srgb, var(--danger) 76%, var(--text-muted));
+}
+
+.practice-coach-work-status-text {
+  display: inline-block;
+}
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .practice-coach-work-status.is-running .practice-coach-work-status-text {
+    background-image: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--text-muted) 78%, var(--surface-card)) 0%,
+      color-mix(in srgb, var(--text-muted) 78%, var(--surface-card)) 42%,
+      color-mix(in srgb, var(--text-primary) 74%, var(--text-muted)) 50%,
+      color-mix(in srgb, var(--text-muted) 78%, var(--surface-card)) 58%,
+      color-mix(in srgb, var(--text-muted) 78%, var(--surface-card)) 100%
+    );
+    background-position: 100% 0;
+    background-repeat: repeat-x;
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: practice-coach-work-shimmer 1.45s linear infinite;
+  }
+}
+
+@keyframes practice-coach-work-shimmer {
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .practice-coach-work-status.is-running .practice-coach-work-status-text {
+    animation: none;
+    background-position: 0 0;
+  }
+}
+
 .practice-permission-backdrop {
   z-index: 140;
 }

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
+import org.congcong.algomentor.agent.core.runtime.context.ContextAssemblyPolicy;
+import org.congcong.algomentor.agent.core.prompt.DefaultPromptAssembler;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
@@ -30,6 +32,21 @@ import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptCon
 import org.congcong.algomentor.mentor.application.practice.PracticeChatReference;
 import org.congcong.algomentor.mentor.application.practice.PracticeCoachStyle;
 import org.congcong.algomentor.mentor.application.practice.PracticeResponseLanguage;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptProfileResolver;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptSectionProvider;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileDimension;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileEntry;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileEntryDraft;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileEntryKind;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileEntryStatus;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileIdentity;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileOriginType;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileQueryService;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileRepository;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfilePolicyResolver;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfilePromptSectionProvider;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfileRecallService;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfileRecallSnapshot;
 import org.junit.jupiter.api.Test;
 
 class AgentConversationServiceTest {
@@ -215,6 +232,40 @@ class AgentConversationServiceTest {
         .contains("Response language: English");
   }
 
+  @Test
+  void recallsLearnerProfileOnceBeforeAssemblyAndKeepsItInThisRunSnapshot() {
+    CapturingRepository repository = new CapturingRepository();
+    LearnerProfilePromptSectionProvider profileProvider = new LearnerProfilePromptSectionProvider(800);
+    CountingRecallService recallService = new CountingRecallService(snapshotEntry("immutable-profile"));
+    AgentConversationService service = new AgentConversationService(
+        repository,
+        new ContextAssembler(),
+        ContextAssemblyPolicy.defaultPolicy(),
+        new InMemoryPlanRepository(plan()),
+        new FakePracticeProblemCatalog(),
+        new DefaultPromptAssembler(
+            new PracticeChatPromptProfileResolver(),
+            List.of(new PracticeChatPromptSectionProvider(), profileProvider)),
+        recallService,
+        profileProvider);
+
+    AgentConversationRun run = service.prepareRun(new AgentConversationCommand(
+        null,
+        7L,
+        "给我一个提示",
+        "idem-profile-snapshot",
+        Map.of(),
+        new PracticeChatReference(12L, 1, "two-sum", "zh-CN")));
+
+    assertThat(recallService.calls).isEqualTo(1);
+    assertThat(run.agentRequest().messages().stream().map(LlmMessage::text).reduce("", String::concat))
+        .contains("immutable-profile");
+    assertThat(run.agentRequest().metadata())
+        .containsEntry(PracticeChatPromptConstants.METADATA_LEARNER_PROFILE_ENTRY_COUNT, 1)
+        .containsEntry(PracticeChatPromptConstants.METADATA_LEARNER_PROFILE_TRIMMED, false)
+        .doesNotContainKey("contentText");
+  }
+
   private static final class CapturingRepository implements AgentConversationRepository {
 
     private final List<AgentMessage> messages = new ArrayList<>();
@@ -335,6 +386,96 @@ class AgentConversationServiceTest {
           List.of("Array", "Hash Table"),
           "# Two Sum\nFind two numbers.",
           "https://leetcode.com/problems/two-sum/"));
+    }
+  }
+
+  private static LearnerProfileEntry snapshotEntry(String content) {
+    Instant now = Instant.parse("2026-01-01T00:00:00Z");
+    return new LearnerProfileEntry(
+        1L,
+        LearnerProfileIdentity.dimension(7L, LearnerProfileEntryKind.DECLARED_FACT,
+            LearnerProfileDimension.GOALS_AND_INTENTS),
+        1,
+        LearnerProfileEntryStatus.ACTIVE,
+        content,
+        null,
+        LearnerProfileOriginType.USER_EXPLICIT,
+        null,
+        null,
+        null,
+        now,
+        null,
+        now,
+        now);
+  }
+
+  private static final class CountingRecallService extends LearnerProfileRecallService {
+    private final LearnerProfileRecallSnapshot snapshot;
+    private int calls;
+
+    private CountingRecallService(LearnerProfileEntry entry) {
+      super(
+          new LearnerProfilePolicyResolver(false, 800),
+          new LearnerProfileQueryService(new NoOpProfileRepository()),
+          ignored -> List.of());
+      this.snapshot = new LearnerProfileRecallSnapshot(List.of(entry), List.of(), List.of());
+    }
+
+    @Override
+    public LearnerProfileRecallSnapshot recall(long userId, String scenario, String problemSlug) {
+      calls++;
+      return snapshot;
+    }
+  }
+
+  private static final class NoOpProfileRepository implements LearnerProfileRepository {
+    @Override
+    public Optional<LearnerProfileEntry> findCurrent(LearnerProfileIdentity identity) {
+      return Optional.empty();
+    }
+
+    @Override
+    public void lockUser(long userId) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Optional<LearnerProfileEntry> findCurrentForUpdate(LearnerProfileIdentity identity) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<LearnerProfileEntry> findHistory(LearnerProfileIdentity identity) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<LearnerProfileEntry> findCurrentByDimensions(
+        long userId,
+        LearnerProfileEntryKind entryKind,
+        java.util.Collection<LearnerProfileDimension> dimensions
+    ) {
+      return List.of();
+    }
+
+    @Override
+    public List<LearnerProfileEntry> findCurrentByTagIds(long userId, java.util.Collection<Long> tagIds) {
+      return List.of();
+    }
+
+    @Override
+    public LearnerProfileEntry insert(LearnerProfileEntryDraft draft) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void markInactive(long entryId, LearnerProfileEntryStatus status, Instant validTo) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteIdentity(LearnerProfileIdentity identity) {
+      throw new UnsupportedOperationException();
     }
   }
 }

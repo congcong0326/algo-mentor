@@ -24,6 +24,7 @@ public class PracticeCodeReviewPromptBuilder {
         3. 不要编造题目事实；如果代码不属于当前题目，belongsToCurrentProblem 必须为 false。
         4. 如果不是代码提交、不是当前题目、或不是完整可 Review 的 LeetCode 解法，对应布尔字段必须为 false。
         5. 最终只输出结构化 JSON，不要输出 Markdown 包裹、解释文本或额外字段。
+        6. affectedTagIds 只能从服务端提供的受信标签候选中选择；不确定或无关时返回空数组。
         """;
   }
 
@@ -51,6 +52,9 @@ public class PracticeCodeReviewPromptBuilder {
         最近对话摘要：
         %s
 
+        当前题目受信标签候选（只可从这些 tagId 选择 affectedTagIds）：
+        %s
+
         评分规则：
         - correctness: 0..4，算法正确性与是否能通过核心用例。
         - complexity: 0..2，时间/空间复杂度是否符合题目要求。
@@ -74,6 +78,17 @@ public class PracticeCodeReviewPromptBuilder {
         context.learningPlanFacts(),
         context.originalMessage(),
         context.extractedCode(),
-        context.recentChatSummary());
+        context.recentChatSummary(),
+        trustedTags(context));
+  }
+
+  private String trustedTags(PracticeTurnContext context) {
+    if (context.trustedProblemTags().isEmpty()) {
+      return "[]";
+    }
+    return context.trustedProblemTags().stream()
+        .map(tag -> "{tagId=%d,value=%s,labelEn=%s,labelZh=%s}".formatted(
+            tag.tagId(), tag.value(), tag.labelEn(), tag.labelZh()))
+        .collect(java.util.stream.Collectors.joining("\n"));
   }
 }

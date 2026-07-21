@@ -145,4 +145,13 @@
       </foreach>
     ORDER BY value ASC
   </select>
+
+  <select id="findTrustedByProblemSlug" resultType="org.congcong.algomentor.api.problem.mapper.model.TrustedProblemTagRow">
+    SELECT pt.id AS tag_id, pt.value, pt.label_en, pt.label_zh
+    FROM problem_tag_assignment assignment
+    JOIN problem p ON p.id = assignment.problem_id
+    JOIN problem_tag pt ON pt.id = assignment.tag_id
+    WHERE p.slug = #{problemSlug}
+    ORDER BY assignment.ordinal ASC
+  </select>
 </mapper>

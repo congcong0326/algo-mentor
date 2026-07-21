@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemTagAssignmentRow;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemTagCatalogUpsertRow;
+import org.congcong.algomentor.api.problem.mapper.model.TrustedProblemTagRow;
 
 @Mapper
 public interface ProblemTagMapper {
@@ -24,4 +25,6 @@ public interface ProblemTagMapper {
   List<String> findDuplicateCatalogValues();
 
   List<String> findInactiveCatalogValues(@Param("values") List<String> values);
+
+  List<TrustedProblemTagRow> findTrustedByProblemSlug(@Param("problemSlug") String problemSlug);
 }

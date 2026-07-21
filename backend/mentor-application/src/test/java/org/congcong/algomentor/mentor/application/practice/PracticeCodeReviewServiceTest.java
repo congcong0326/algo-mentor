@@ -22,6 +22,8 @@ import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.congcong.algomentor.queue.model.QueueMessage;
+import org.congcong.algomentor.queue.publisher.QueuePublisher;
 import org.junit.jupiter.api.Test;
 
 class PracticeCodeReviewServiceTest {
@@ -56,7 +58,7 @@ class PracticeCodeReviewServiceTest {
   }
 
   @Test
-  void nonCurrentProblemSavesRejectedAttempt() {
+  void nonCurrentProblemDoesNotPersistAFormalReview() {
     FakeRepository repository = new FakeRepository();
     FakeLlmGateway llmGateway = new FakeLlmGateway(structuredOutput(true, false, true));
     RecordingPracticeCodeReviewMetrics metrics = new RecordingPracticeCodeReviewMetrics();
@@ -64,14 +66,8 @@ class PracticeCodeReviewServiceTest {
 
     PracticeReviewResult result = service.review(context());
 
-    assertThat(result.status()).isEqualTo(PracticeReviewStatus.SAVED);
-    assertThat(result.metadata())
-        .containsEntry("reviewAttemptStatus", PracticeReviewStatus.NOT_COMPLETE_SUBMISSION.name())
-        .containsEntry("totalScore", "0")
-        .containsEntry("passed", false);
-    assertThat(repository.savedDrafts).hasSize(1);
-    assertThat(repository.savedDrafts.get(0).score().total()).isEqualByComparingTo(BigDecimal.ZERO);
-    assertThat(repository.savedDrafts.get(0).passed()).isFalse();
+    assertThat(result.status()).isEqualTo(PracticeReviewStatus.NOT_COMPLETE_SUBMISSION);
+    assertThat(repository.savedDrafts).isEmpty();
     assertThat(llmGateway.completeCalls).isEqualTo(1);
     assertThat(metrics.reviewStatuses).containsExactly(PracticeCodeReviewMetricStatus.UNREVIEWABLE);
   }
@@ -118,20 +114,9 @@ class PracticeCodeReviewServiceTest {
 
     PracticeReviewResult result = service.review(context());
 
-    assertThat(result.status()).isEqualTo(PracticeReviewStatus.SAVED);
-    assertThat(result.metadata())
-        .containsEntry("reviewAttemptStatus", PracticeReviewStatus.FAILED.name())
-        .containsEntry("reviewAttemptFailureCode", PracticeCodeReviewService.FAILURE_CODE_LLM_COMPLETION_FAILED)
-        .containsEntry("totalScore", "0")
-        .containsEntry("passed", false);
-    assertThat(repository.savedDrafts).hasSize(1);
-    PracticeCodeReviewDraft savedDraft = repository.savedDrafts.get(0);
-    assertThat(savedDraft.language()).isEqualTo("unknown");
-    assertThat(savedDraft.score().total()).isEqualByComparingTo(BigDecimal.ZERO);
-    assertThat(savedDraft.passed()).isFalse();
-    assertThat(savedDraft.evidence())
-        .contains(new PracticeCodeReviewEvidence("REVIEW_ATTEMPT_REJECTED", PracticeReviewStatus.FAILED.name()));
-    assertThat(savedDraft.reviewMarkdown()).contains(PracticeCodeReviewService.FAILURE_CODE_LLM_COMPLETION_FAILED);
+    assertThat(result.status()).isEqualTo(PracticeReviewStatus.FAILED);
+    assertThat(result.failureCode()).isEqualTo(PracticeCodeReviewService.FAILURE_CODE_LLM_COMPLETION_FAILED);
+    assertThat(repository.savedDrafts).isEmpty();
     assertThat(llmGateway.completeCalls).isEqualTo(1);
     assertThat(metrics.reviewStatuses).containsExactly(PracticeCodeReviewMetricStatus.FAILED);
   }
@@ -146,10 +131,16 @@ class PracticeCodeReviewServiceTest {
       PracticeCodeReviewMetrics metrics) {
     return new PracticeCodeReviewService(
         repository,
+        commitService(repository),
         llmGateway,
         new PracticeCodeReviewPromptBuilder(),
         new PracticeCodeReviewStructuredOutputMapper(),
         metrics);
+  }
+
+  private PracticeCodeReviewCommitService commitService(PracticeCodeReviewRepository repository) {
+    QueuePublisher publisher = (topic, key, payload) -> new QueueMessage(1L, topic, key, "{}", Instant.EPOCH);
+    return new PracticeCodeReviewCommitService(repository, publisher);
   }
 
   private PracticeTurnContext context() {
@@ -248,6 +239,7 @@ class PracticeCodeReviewServiceTest {
     output.put("deductionReasons", List.of("边界覆盖不足"));
     output.put("improvementSuggestions", List.of("补充 n=1 的处理"));
     output.put("reviewMarkdown", "整体可通过。");
+    output.put(PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS, List.of());
     return objectMapper.valueToTree(output);
   }
 

@@ -48,6 +48,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeSession;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
 import org.congcong.algomentor.mentor.application.practice.PracticeTurnOrchestrator;
+import org.congcong.algomentor.mentor.application.practice.TrustedProblemTagCatalog;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
@@ -55,6 +56,8 @@ import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
 import org.congcong.algomentor.ops.observability.OpsStatus;
 import org.congcong.algomentor.ops.observability.autoconfigure.OpsObservabilityAutoConfiguration;
+import org.congcong.algomentor.queue.model.QueueMessage;
+import org.congcong.algomentor.queue.publisher.QueuePublisher;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -282,6 +285,11 @@ class AgentConversationApiAutoConfigurationTest {
     LlmGateway llmGateway() {
       return new EmptyLlmGateway();
     }
+
+    @Bean
+    QueuePublisher queuePublisher() {
+      return (topic, key, payload) -> new QueueMessage(1L, topic, key, "{}", java.time.Instant.EPOCH);
+    }
   }
 
   @Configuration(proxyBeanMethods = false)
@@ -295,6 +303,11 @@ class AgentConversationApiAutoConfigurationTest {
     @Bean
     AgentTurnMessageLookupRepository agentTurnMessageLookupRepository() {
       return new EmptyAgentTurnMessageLookupRepository();
+    }
+
+    @Bean
+    TrustedProblemTagCatalog trustedProblemTagCatalog() {
+      return TrustedProblemTagCatalog.empty();
     }
   }
 

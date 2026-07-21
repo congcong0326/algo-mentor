@@ -170,8 +170,6 @@
       #{improvementSuggestionsJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{reviewMarkdown}
     FROM next_version
-    ON CONFLICT (practice_session_id, user_message_id) DO UPDATE
-      SET raw_code = practice_code_review.raw_code
     RETURNING
       <include refid="PracticeCodeReviewColumns"/>
   </select>
@@ -221,5 +219,83 @@
     WHERE user_id = #{userId}
       AND practice_session_id = #{sessionId}
       AND user_message_id = #{userMessageId}
+  </select>
+
+  <select id="findByUserMessageForUpdate" resultMap="PracticeCodeReviewRowMap">
+    SELECT <include refid="PracticeCodeReviewColumns"/> FROM practice_code_review
+    WHERE user_id = #{userId} AND practice_session_id = #{sessionId} AND user_message_id = #{userMessageId}
+    FOR UPDATE
+  </select>
+
+  <insert id="insertAffectedTags">
+    INSERT INTO practice_code_review_tag (review_id, tag_id)
+    VALUES <foreach collection="tagIds" item="tagId" separator=",">(#{reviewId}, #{tagId})</foreach>
+  </insert>
+
+  <select id="findAffectedTagIds" resultType="long">
+    SELECT tag_id FROM practice_code_review_tag WHERE review_id = #{reviewId} ORDER BY tag_id
+  </select>
+
+  <sql id="CodeReviewProfileFactColumns">
+    review.id AS review_id,
+    review.problem_slug,
+    review.version_no,
+    review.total_score,
+    review.correctness_score,
+    review.complexity_score,
+    review.edge_case_score,
+    review.code_quality_score,
+    review.problem_fit_score,
+    review.passed,
+    review.deduction_reasons_json::TEXT AS deduction_reasons_json,
+    review.improvement_suggestions_json::TEXT AS improvement_suggestions_json,
+    COALESCE((
+      SELECT jsonb_agg(review_tag.tag_id ORDER BY review_tag.tag_id)::TEXT
+      FROM practice_code_review_tag review_tag
+      WHERE review_tag.review_id = review.id
+    ), '[]') AS affected_tag_ids_json,
+    review.created_at
+  </sql>
+
+  <select id="findProfileFactsByReviewIds" resultType="org.congcong.algomentor.api.practice.mapper.model.CodeReviewProfileFactRow">
+    SELECT <include refid="CodeReviewProfileFactColumns"/>
+    FROM practice_code_review review
+    WHERE review.user_id = #{userId}
+      AND review.id IN
+      <foreach collection="reviewIds" item="reviewId" open="(" separator="," close=")">#{reviewId}</foreach>
+    ORDER BY review.id ASC
+  </select>
+
+  <select id="findLatestProfileFactsForProblemSlugs" resultType="org.congcong.algomentor.api.practice.mapper.model.CodeReviewProfileFactRow">
+    WITH latest AS (
+      SELECT DISTINCT ON (review.problem_slug) review.id
+      FROM practice_code_review review
+      WHERE review.user_id = #{userId}
+        AND review.problem_slug IN
+        <foreach collection="problemSlugs" item="problemSlug" open="(" separator="," close=")">#{problemSlug}</foreach>
+      ORDER BY review.problem_slug ASC, review.created_at DESC, review.id DESC
+    )
+    SELECT <include refid="CodeReviewProfileFactColumns"/>
+    FROM practice_code_review review
+    JOIN latest ON latest.id = review.id
+    ORDER BY review.created_at DESC, review.id DESC
+  </select>
+
+  <select id="findRecentDistinctProfileFacts" resultType="org.congcong.algomentor.api.practice.mapper.model.CodeReviewProfileFactRow">
+    WITH latest AS (
+      SELECT DISTINCT ON (review.problem_slug) review.id
+      FROM practice_code_review review
+      WHERE review.user_id = #{userId}
+      <if test="excludedProblemSlugs != null and !excludedProblemSlugs.isEmpty()">
+        AND review.problem_slug NOT IN
+        <foreach collection="excludedProblemSlugs" item="problemSlug" open="(" separator="," close=")">#{problemSlug}</foreach>
+      </if>
+      ORDER BY review.problem_slug ASC, review.created_at DESC, review.id DESC
+    )
+    SELECT <include refid="CodeReviewProfileFactColumns"/>
+    FROM practice_code_review review
+    JOIN latest ON latest.id = review.id
+    ORDER BY review.created_at DESC, review.id DESC
+    LIMIT #{limit}
   </select>
 </mapper>

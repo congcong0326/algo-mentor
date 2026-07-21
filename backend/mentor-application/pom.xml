@@ -35,6 +35,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.congcong.algomentor</groupId>
+      <artifactId>persistent-queue</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>io.github.open-spaced-repetition</groupId>
       <artifactId>fsrs</artifactId>
     </dependency>

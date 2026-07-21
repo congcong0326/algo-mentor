@@ -36,7 +36,8 @@ class PracticeCodeReviewStructuredOutputMapperTest {
           "passed": false,
           "deductionReasons": ["边界覆盖不足"],
           "improvementSuggestions": ["补充 n=1 的处理"],
-          "reviewMarkdown": "整体可改进。"
+          "reviewMarkdown": "整体可改进。",
+          "affectedTagIds": []
         }
         """));
 
@@ -76,7 +77,8 @@ class PracticeCodeReviewStructuredOutputMapperTest {
           "passed": true,
           "deductionReasons": [],
           "improvementSuggestions": [],
-          "reviewMarkdown": "通过。"
+          "reviewMarkdown": "通过。",
+          "affectedTagIds": []
         }
         """));
 
@@ -108,12 +110,38 @@ class PracticeCodeReviewStructuredOutputMapperTest {
           "passed": false,
           "deductionReasons": ["不是当前题目"],
           "improvementSuggestions": ["粘贴当前题目的完整代码"],
-          "reviewMarkdown": "这不是当前题目的提交。"
+          "reviewMarkdown": "这不是当前题目的提交。",
+          "affectedTagIds": []
         }
         """));
 
     assertThat(result.status()).isEqualTo(PracticeReviewStatus.NOT_COMPLETE_SUBMISSION);
     assertThat(result.failureCode()).isNull();
+    assertThat(result.draft()).isEmpty();
+  }
+
+  @Test
+  void returnsNotCodeLikeWhenModelRejectsCodeSubmission() {
+    PracticeReviewResult result = mapper.map(context(), structuredOutput("""
+        {
+          "isCodeSubmission": false,
+          "belongsToCurrentProblem": true,
+          "isCompleteLeetCodeSolution": true,
+          "language": "java",
+          "rawCode": "",
+          "normalizedCode": "",
+          "evidence": [],
+          "contextSummary": "不是代码。",
+          "scores": {"correctness": 0, "complexity": 0, "edgeCases": 0, "codeQuality": 0, "problemFit": 0, "total": 0},
+          "passed": false,
+          "deductionReasons": [],
+          "improvementSuggestions": [],
+          "reviewMarkdown": "",
+          "affectedTagIds": []
+        }
+        """));
+
+    assertThat(result.status()).isEqualTo(PracticeReviewStatus.NOT_CODE_LIKE);
     assertThat(result.draft()).isEmpty();
   }
 
@@ -140,7 +168,8 @@ class PracticeCodeReviewStructuredOutputMapperTest {
           "passed": true,
           "deductionReasons": ["递推关系错误"],
           "improvementSuggestions": ["使用 f(n)=f(n-1)+f(n-2)"],
-          "reviewMarkdown": "核心正确性不足。"
+          "reviewMarkdown": "核心正确性不足。",
+          "affectedTagIds": []
         }
         """));
 
@@ -176,7 +205,8 @@ class PracticeCodeReviewStructuredOutputMapperTest {
           "passed": true,
           "deductionReasons": [],
           "improvementSuggestions": [],
-          "reviewMarkdown": "无效分数。"
+          "reviewMarkdown": "无效分数。",
+          "affectedTagIds": []
         }
         """));
 
@@ -208,7 +238,8 @@ class PracticeCodeReviewStructuredOutputMapperTest {
           "passed": true,
           "deductionReasons": [],
           "improvementSuggestions": [],
-          "reviewMarkdown": "无效判定字段。"
+          "reviewMarkdown": "无效判定字段。",
+          "affectedTagIds": []
         }
         """));
 

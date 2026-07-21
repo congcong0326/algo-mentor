@@ -29,7 +29,8 @@ class PracticeCodeReviewJsonSchemaTest {
             "passed",
             "deductionReasons",
             "improvementSuggestions",
-            "reviewMarkdown"));
+            "reviewMarkdown",
+            PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS));
   }
 
   @Test

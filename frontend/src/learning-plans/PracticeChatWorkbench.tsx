@@ -30,6 +30,12 @@ import type {
   PracticeSessionResponse,
 } from '../types/api';
 import { AGENT_RUN_IN_PROGRESS_CODE } from '../types/api';
+import {
+  LEARNER_DECLARED_PROFILE_TOOL_NAME,
+  learnerDeclaredProfileToolEventKey,
+  parseLearnerDeclaredProfileToolResult,
+  type LearnerDeclaredProfileToolDisplayStatus,
+} from './profileToolContract';
 
 const LEETCODE_HOST_BY_LOCALE: Record<SupportedLocale, string> = {
   'zh-CN': 'leetcode.cn',
@@ -39,6 +45,7 @@ const LEETCODE_HOST_BY_LOCALE: Record<SupportedLocale, string> = {
 const LEETCODE_HOSTS = new Set(['leetcode.cn', 'www.leetcode.cn', 'leetcode.com', 'www.leetcode.com']);
 const AUTO_SCROLL_THRESHOLD_PX = 96;
 const ACTIVE_RUN_POLL_INTERVAL_MS = 3000;
+const LEARNER_PROFILE_TOOL_RUNNING_MIN_VISIBLE_MS = 700;
 // 后端 SSE/tool result 公共契约，用于识别 Review tool 是否真实落库。
 const REVIEW_TOOL_NAME = 'submit_practice_code_review';
 const REVIEW_SUBMITTED_RESULT_TYPE = 'practice_code_review_submitted';
@@ -60,6 +67,15 @@ interface PendingPermissionState {
   preview: PermissionPreview;
   submitting: boolean;
   error: string;
+}
+
+type CoachWorkStatus = 'ORGANIZING' | 'REVIEW_RUNNING' | LearnerDeclaredProfileToolDisplayStatus;
+
+interface AssistantWorkState {
+  status: CoachWorkStatus;
+  startedAt?: number;
+  terminalStatus?: Exclude<LearnerDeclaredProfileToolDisplayStatus, 'RUNNING'>;
+  toolCallKey?: string;
 }
 
 function problemLabel(problem: LearningPlanProblemDraft | undefined, locale: SupportedLocale, fallback: string): string {
@@ -302,6 +318,13 @@ function readResultType(result: unknown): string | undefined {
   return typeof type === 'string' && type.trim() ? type : undefined;
 }
 
+function isSavedReviewResult(result: unknown): boolean {
+  return typeof result === 'object'
+    && result !== null
+    && 'status' in result
+    && result.status === 'SAVED';
+}
+
 function readResultScore(result: unknown): number | undefined {
   if (typeof result !== 'object' || result === null || !('totalScore' in result)) {
     return undefined;
@@ -336,6 +359,51 @@ function readResultPassed(result: unknown): boolean | undefined {
     }
   }
   return undefined;
+}
+
+function learnerProfileToolStatusLabel(
+  status: LearnerDeclaredProfileToolDisplayStatus,
+  resources: LocaleResources,
+): string {
+  const labels: Record<LearnerDeclaredProfileToolDisplayStatus, string> = {
+    RUNNING: resources.learningPlans.learnerProfileToolRunning,
+    UPDATED: resources.learningPlans.learnerProfileToolUpdated,
+    NO_CHANGE: resources.learningPlans.learnerProfileToolNoChange,
+    FAILED: resources.learningPlans.learnerProfileToolFailed,
+  };
+  return labels[status];
+}
+
+function coachWorkStatusLabel(status: CoachWorkStatus, resources: LocaleResources): string {
+  if (status === 'ORGANIZING') {
+    return resources.learningPlans.organizingThoughts;
+  }
+  if (status === 'REVIEW_RUNNING') {
+    return resources.learningPlans.reviewToolRunning;
+  }
+  return learnerProfileToolStatusLabel(status, resources);
+}
+
+function isCoachWorkRunning(status: CoachWorkStatus): boolean {
+  return status === 'ORGANIZING' || status === 'REVIEW_RUNNING' || status === 'RUNNING';
+}
+
+function isLearnerProfileTerminalStatus(status: CoachWorkStatus): boolean {
+  return status === 'UPDATED' || status === 'NO_CHANGE' || status === 'FAILED';
+}
+
+function coachWorkStatusClassName(status: CoachWorkStatus): string {
+  const classes = ['practice-coach-work-status'];
+  if (isCoachWorkRunning(status)) {
+    classes.push('is-running');
+  } else if (status === 'UPDATED') {
+    classes.push('is-updated');
+  } else if (status === 'FAILED') {
+    classes.push('is-failed');
+  } else {
+    classes.push('is-no-change');
+  }
+  return classes.join(' ');
 }
 
 function nextIdempotencyKey(): string {
@@ -376,6 +444,7 @@ export default function PracticeChatWorkbench({
   const [reviewHistoryError, setReviewHistoryError] = useState('');
   const [pendingPermission, setPendingPermission] = useState<PendingPermissionState>();
   const [permissionNotice, setPermissionNotice] = useState('');
+  const [assistantWorkStates, setAssistantWorkStates] = useState<Record<number, AssistantWorkState>>({});
   const localMessageIdRef = useRef(-1);
   const streamControllerRef = useRef<AbortController | null>(null);
   const activeSessionIdRef = useRef<number | undefined>(undefined);
@@ -402,6 +471,7 @@ export default function PracticeChatWorkbench({
     setPendingPermission(undefined);
     pendingPermissionIdRef.current = undefined;
     setPermissionNotice('');
+    setAssistantWorkStates({});
     setStatus('loading');
 
     createOrReusePracticeSession(plan.id, phaseIndex, problemSlug, locale, controller.signal)
@@ -526,7 +596,38 @@ export default function PracticeChatWorkbench({
     if (messageList && shouldAutoScrollRef.current) {
       messageList.scrollTop = messageList.scrollHeight;
     }
-  }, [messages, error, status]);
+  }, [assistantWorkStates, messages, error, status]);
+
+  useEffect(() => {
+    const timers = Object.entries(assistantWorkStates).flatMap(([messageId, value]) => {
+      if (value.status !== 'RUNNING' || !value.terminalStatus) {
+        return [];
+      }
+      const terminalStatus = value.terminalStatus;
+      const remaining = Math.max(
+        0,
+        LEARNER_PROFILE_TOOL_RUNNING_MIN_VISIBLE_MS - (Date.now() - (value.startedAt ?? Date.now())),
+      );
+      return [window.setTimeout(() => {
+        setAssistantWorkStates((current) => {
+          const workState = current[Number(messageId)];
+          if (workState?.status !== 'RUNNING' || workState.terminalStatus !== terminalStatus) {
+            return current;
+          }
+          return {
+            ...current,
+            [Number(messageId)]: {
+              status: terminalStatus,
+              startedAt: workState.startedAt,
+              toolCallKey: workState.toolCallKey,
+            },
+          };
+        });
+      }, remaining)];
+    });
+
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [assistantWorkStates]);
 
   function updateAutoScrollState() {
     const messageList = messageListRef.current;
@@ -542,6 +643,13 @@ export default function PracticeChatWorkbench({
     assistantMessageId: number,
     contentMarkdown = resources.learningPlans.replyFailed,
   ) {
+    setAssistantWorkStates((current) => {
+      if (!(assistantMessageId in current)) {
+        return current;
+      }
+      const { [assistantMessageId]: _removed, ...remaining } = current;
+      return remaining;
+    });
     setMessages((current) => current.map((message) => (
       message.id === assistantMessageId
         ? {
@@ -553,19 +661,30 @@ export default function PracticeChatWorkbench({
     )));
   }
 
-  function replaceAssistantPlaceholder(assistantMessageId: number, contentMarkdown: string) {
-    setMessages((current) => current.map((message) => (
-      message.id === assistantMessageId
-        ? {
-            ...message,
-            contentMarkdown,
-            messageType: 'CHAT',
-          }
-        : message
-    )));
+  function setAssistantWorkState(assistantMessageId: number, workState: AssistantWorkState) {
+    setAssistantWorkStates((current) => ({ ...current, [assistantMessageId]: workState }));
+  }
+
+  function clearTransientAssistantWorkState(assistantMessageId: number) {
+    setAssistantWorkStates((current) => {
+      const workState = current[assistantMessageId];
+      if (!workState
+        || (!isCoachWorkRunning(workState.status) || workState.terminalStatus)) {
+        return current;
+      }
+      const { [assistantMessageId]: _removed, ...remaining } = current;
+      return remaining;
+    });
   }
 
   function appendAssistantContent(assistantMessageId: number, content: string) {
+    setAssistantWorkStates((current) => {
+      if (current[assistantMessageId]?.status !== 'ORGANIZING') {
+        return current;
+      }
+      const { [assistantMessageId]: _removed, ...remaining } = current;
+      return remaining;
+    });
     setMessages((current) => current.map((message) => {
       if (message.id !== assistantMessageId) {
         return message;
@@ -574,10 +693,7 @@ export default function PracticeChatWorkbench({
       const currentContent = message.contentMarkdown;
       return {
         ...message,
-        contentMarkdown: currentContent === resources.learningPlans.organizingThoughts
-          || currentContent === resources.learningPlans.reviewToolRunning
-          ? content
-          : `${currentContent}${content}`,
+        contentMarkdown: `${currentContent}${content}`,
       };
     }));
   }
@@ -594,6 +710,52 @@ export default function PracticeChatWorkbench({
       statusLabel,
       resources.learningPlans.reviewScoreText(totalScore, completionGate?.passScore),
     );
+  }
+
+  function updateLearnerProfileToolStatus(
+    assistantMessageId: number,
+    key: string,
+    status: LearnerDeclaredProfileToolDisplayStatus,
+  ) {
+    if (status === 'RUNNING') {
+      setAssistantWorkStates((current) => {
+        const workState = current[assistantMessageId];
+        if (workState?.toolCallKey === key
+          && (workState.status === 'RUNNING' || isLearnerProfileTerminalStatus(workState.status))) {
+          return current;
+        }
+        return {
+          ...current,
+          [assistantMessageId]: {
+            status,
+            startedAt: Date.now(),
+            toolCallKey: key,
+          },
+        };
+      });
+      return;
+    }
+    setAssistantWorkStates((current) => {
+      const workState = current[assistantMessageId];
+      if (workState?.toolCallKey && workState.toolCallKey !== key) {
+        return current;
+      }
+      if (workState?.status !== 'RUNNING') {
+        return workState?.status === status && workState.toolCallKey === key
+          ? current
+          : {
+              ...current,
+              [assistantMessageId]: {
+                status,
+                startedAt: workState?.startedAt ?? Date.now(),
+                toolCallKey: key,
+              },
+            };
+      }
+      return workState.terminalStatus === status
+        ? current
+        : { ...current, [assistantMessageId]: { ...workState, terminalStatus: status } };
+    });
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -616,6 +778,7 @@ export default function PracticeChatWorkbench({
 
     setError('');
     setPermissionNotice('');
+    setAssistantWorkState(assistantMessageId, { status: 'ORGANIZING' });
     setStatus('streaming');
     setComposerValue('');
     setMessages((current) => [
@@ -631,7 +794,7 @@ export default function PracticeChatWorkbench({
         id: assistantMessageId,
         role: 'ASSISTANT',
         messageType: 'CHAT',
-        contentMarkdown: resources.learningPlans.organizingThoughts,
+        contentMarkdown: '',
         createdAt: now,
       },
     ]);
@@ -661,12 +824,25 @@ export default function PracticeChatWorkbench({
 
           if (event.eventName === 'agent_tool_end') {
             const toolEnd = readAgentToolEndEvent(event.data);
-            if (!toolEnd || toolEnd.toolName !== REVIEW_TOOL_NAME) {
+            if (!toolEnd) {
+              return;
+            }
+
+            if (toolEnd.toolName === LEARNER_DECLARED_PROFILE_TOOL_NAME) {
+              const key = learnerDeclaredProfileToolEventKey(toolEnd);
+              const result = parseLearnerDeclaredProfileToolResult(toolEnd.result);
+              if (key && result) {
+                updateLearnerProfileToolStatus(assistantMessageId, key, result.status);
+              }
+              return;
+            }
+
+            if (toolEnd.toolName !== REVIEW_TOOL_NAME) {
               return;
             }
 
             const resultType = readResultType(toolEnd.result);
-            if (resultType === REVIEW_SUBMITTED_RESULT_TYPE) {
+            if (resultType === REVIEW_SUBMITTED_RESULT_TYPE && isSavedReviewResult(toolEnd.result)) {
               reviewRefreshRequested = true;
               setPostRunRefreshing(true);
               const scoreSummary = reviewToolScoreSummary(toolEnd.result);
@@ -682,11 +858,23 @@ export default function PracticeChatWorkbench({
 
           if (event.eventName === 'agent_tool_start') {
             const toolStart = readAgentToolStartEvent(event.data);
-            if (!toolStart || toolStart.toolName !== REVIEW_TOOL_NAME) {
+            if (!toolStart) {
               return;
             }
 
-            replaceAssistantPlaceholder(assistantMessageId, resources.learningPlans.reviewToolRunning);
+            if (toolStart.toolName === LEARNER_DECLARED_PROFILE_TOOL_NAME) {
+              const key = learnerDeclaredProfileToolEventKey(toolStart);
+              if (key) {
+                updateLearnerProfileToolStatus(assistantMessageId, key, 'RUNNING');
+              }
+              return;
+            }
+
+            if (toolStart.toolName !== REVIEW_TOOL_NAME) {
+              return;
+            }
+
+            setAssistantWorkState(assistantMessageId, { status: 'REVIEW_RUNNING' });
           }
 
           if (event.eventName === 'tool_permission_request') {
@@ -745,7 +933,7 @@ export default function PracticeChatWorkbench({
       if (agentRunEnded) {
         const activeLoadToken = practiceLoadTokenRef.current;
         try {
-          await refreshMessages(sessionId, activeLoadToken, controller.signal);
+          await refreshMessages(sessionId, activeLoadToken, controller.signal, assistantMessageId);
           await refreshSession(sessionId, activeLoadToken, controller.signal);
           await refreshReviews(sessionId, activeLoadToken, controller.signal);
           setStatus('idle');
@@ -791,6 +979,7 @@ export default function PracticeChatWorkbench({
         setStatus('error');
       }
     } finally {
+      clearTransientAssistantWorkState(assistantMessageId);
       if (streamControllerRef.current === controller) {
         streamControllerRef.current = null;
         submittingRef.current = false;
@@ -905,10 +1094,29 @@ export default function PracticeChatWorkbench({
     return activeSessionIdRef.current === activeSessionId && practiceLoadTokenRef.current === activeLoadToken;
   }
 
-  async function refreshMessages(activeSessionId: number, activeLoadToken: number, signal?: AbortSignal) {
+  async function refreshMessages(
+    activeSessionId: number,
+    activeLoadToken: number,
+    signal?: AbortSignal,
+    assistantMessageId?: number,
+  ) {
     const response = await getPracticeSessionMessages(activeSessionId, 50, signal);
     if (!signal?.aborted && isCurrentSession(activeSessionId, activeLoadToken)) {
-      setMessages(requireApiData(response, resources.learningPlans.practiceSessionLoadFailed));
+      const nextMessages = requireApiData(response, resources.learningPlans.practiceSessionLoadFailed);
+      setMessages(nextMessages);
+      if (assistantMessageId !== undefined) {
+        const finalAssistantMessage = [...nextMessages].reverse().find((message) => message.role === 'ASSISTANT');
+        if (finalAssistantMessage) {
+          setAssistantWorkStates((current) => {
+            const workState = current[assistantMessageId];
+            if (!workState || (!workState.terminalStatus && !isLearnerProfileTerminalStatus(workState.status))) {
+              return current;
+            }
+            const { [assistantMessageId]: _removed, ...remaining } = current;
+            return { ...remaining, [finalAssistantMessage.id]: workState };
+          });
+        }
+      }
     }
   }
 
@@ -1077,6 +1285,17 @@ export default function PracticeChatWorkbench({
             key={message.id}
           >
             <span>{message.role === 'USER' ? resources.learningPlans.you : resources.learningPlans.coach}</span>
+            {message.role === 'ASSISTANT' && assistantWorkStates[message.id] && (
+              <p
+                aria-label={coachWorkStatusLabel(assistantWorkStates[message.id].status, resources)}
+                className={coachWorkStatusClassName(assistantWorkStates[message.id].status)}
+                role="status"
+              >
+                <span className="practice-coach-work-status-text">
+                  {coachWorkStatusLabel(assistantWorkStates[message.id].status, resources)}
+                </span>
+              </p>
+            )}
             {message.contentMarkdown === resources.learningPlans.replyFailed
             || message.contentMarkdown === resources.learningPlans.practiceMessageBlocked ? (
               <p className="practice-message-failed">{message.contentMarkdown}</p>
@@ -1084,15 +1303,21 @@ export default function PracticeChatWorkbench({
               <p className="practice-message-plain-text">
                 {message.contentMarkdown || resources.learningPlans.organizingThoughts}
               </p>
-            ) : (
-              <MarkdownView content={message.contentMarkdown || resources.learningPlans.organizingThoughts} />
-            )}
+            ) : message.contentMarkdown ? <MarkdownView content={message.contentMarkdown} /> : null}
           </article>
         ))}
         {hasActiveRun && (
           <article className="practice-message assistant-message">
             <span>{resources.learningPlans.coach}</span>
-            <MarkdownView content={resources.learningPlans.organizingThoughts} />
+            <p
+              aria-label={coachWorkStatusLabel('ORGANIZING', resources)}
+              className={coachWorkStatusClassName('ORGANIZING')}
+              role="status"
+            >
+              <span className="practice-coach-work-status-text">
+                {coachWorkStatusLabel('ORGANIZING', resources)}
+              </span>
+            </p>
           </article>
         )}
       </section>

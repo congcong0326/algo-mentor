@@ -21,6 +21,23 @@
 - `docs/practice-code-review-technical-design.md`：练习代码 Review 技术设计，说明基于 practice turn orchestrator 与服务端 capability 的结构化 Review、数据模型、完成 gate、API 和前端闭环。
 - `docs/problem-agent-tools-design.md`：题目 Agent 工具体系设计，说明过滤项发现、查题、读取题面的用途、边界、返回内容和后续演进。
 - `docs/ai-learner-profile-data-model-and-storage-design.md`：AI 学习者画像数据建模与存储研发设计，说明题目标签规范化、自然语言画像正文、`NO_CHANGE / REPLACE` 更新、画像版本链和 PostgreSQL 表结构。
+- `docs/ai-learner-profile-agent-integration-technical-direction.md`：AI 学习者画像接入 Agent 与记忆更新的技术方向讨论稿，记录 loop 外围注入、双轨更新、Code Review 首个系统观察源、持久化消费队列和待讨论问题。
+- `docs/ai-learner-profile-implementation-plan-task-list.md`：AI 学习者画像第一版研发计划任务清单，按正式 Review、标签归因、画像存储、持久化队列、同步/异步更新、Prompt 召回和发布门禁拆分后续实施计划。
+- `docs/ai-learner-profile-implementation-plans/`：AI 学习者画像第一版 LP-01 至 LP-13 的完整研发实施计划目录，按 A-E 波次组织边界、事务、测试和发布门禁。
+- `docs/ai-learner-profile-implementation-plans/LP-01-formal-code-review-semantics.md`：收敛正式 Code Review 事实语义，失败和不可 Review 尝试不再写正式记录。
+- `docs/ai-learner-profile-implementation-plans/LP-02-review-affected-tags.md`：规划 Review 受信标签候选、`affectedTagIds` 校验和关联表原子持久化。
+- `docs/ai-learner-profile-implementation-plans/LP-03-profile-domain-and-storage.md`：规划画像领域枚举、统一版本表、约束、索引和 MyBatis 存储边界。
+- `docs/ai-learner-profile-implementation-plans/LP-04-profile-query-and-update-services.md`：规划画像 ACTIVE 查询、`NO_CHANGE / REPLACE`、用户行锁和并发陈旧检测。
+- `docs/ai-learner-profile-implementation-plans/LP-05-persistent-queue-storage-and-publisher.md`：规划独立持久化队列模块、消息表、Publisher 和事务内发布能力。
+- `docs/ai-learner-profile-implementation-plans/LP-06-persistent-queue-dispatch.md`：规划消费者注册、严格满批、key 公平轮转和最多一次出队。
+- `docs/ai-learner-profile-implementation-plans/LP-07-persistent-queue-runtime.md`：规划 topic worker、节点开关、优雅停止、清理和队列可观测性。
+- `docs/ai-learner-profile-implementation-plans/LP-08-code-review-profile-event-publishing.md`：规划正式 Review、标签关联和画像队列消息的原子提交。
+- `docs/ai-learner-profile-implementation-plans/LP-09-code-review-profile-consumer.md`：规划五条 Review 满批触发、十题窗口和异步画像批量更新。
+- `docs/ai-learner-profile-implementation-plans/LP-10-declared-profile-agent-tool.md`：规划用户自述同步更新 Agent 工具、批量原子语义和失败降级。
+- `docs/ai-learner-profile-implementation-plans/LP-11-practice-chat-profile-recall.md`：规划 `PRACTICE_CHAT` 画像白名单召回、800 预算和确定性 Prompt 裁剪。
+- `docs/ai-learner-profile-implementation-plans/LP-12-profile-tool-frontend-status.md`：规划前端学习记忆工具状态、SSE 幂等和中英文反馈。
+- `docs/ai-learner-profile-implementation-plans/LP-13-profile-end-to-end-rollout.md`：规划画像闭环联调、配置、灰度发布、治理审计和回滚门禁。
+- `docs/ai-learner-profile-rollout-runbook.md`：画像第一版的单节点发布顺序、配置映射、观测阈值、隐私门禁和不回放回滚规则。
 - `docs/problem-tag-modeling-spec.md`：题目标签建模完整闭环规格，说明规范化标签表、历史数组回填、seed 导入双写、题库与能力雷达读取切换、一致性校验、测试和旧数组手动删除门禁。
 - `docs/problem-tag-modeling-implementation-plan.md`：题目标签建模闭环研发实施计划，按 PostgreSQL 验证基线、V33 迁移、统一规范化、seed 双写、题库与能力雷达读取切换、发布观察和旧数组保留门禁拆分任务。
 - `docs/learning-plan-template-seed-design.md`：学习计划模板 seed 最小闭环设计，说明 NeetCode 模板 seed、模板表、导入配置、查询 API、从模板生成草稿和项目 Skill 沉淀。
@@ -56,15 +73,23 @@
 - `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/runtime/model/AgentRuntimeMetadataKeys.java`：Agent runtime 受信 metadata key，包含权限 owner 校验使用的 `USER_ID = "userId"` 和调用级台账关联所需的稳定 step index。
 - `backend/agent-persistence-postgres`：Agent 运行态 PostgreSQL/MyBatis 持久化模块，包含 MyBatis mapper interface/XML、JSONB type handler、repository、持久化 observer、trace snapshot observer 和 agent runtime Flyway migration。
 - `backend/mentor-application`：算法学习业务应用层，用 use case 组织 Agent 调用和领域对象；conversation 包只保留 mentor 场景命令、运行结果和业务编排服务。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/profile`：学习者画像的固定枚举、ACTIVE 查询、用户行锁版本切换和声明更新；批量更新在短事务内复核 snapshot revision，不在事务中调用模型。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/profile/review`：正式 Review 画像观察源，固定五条满批、十题窗口、`learner-profile.code-review.v1` 契约、严格 JSON 白名单、最多一次 callback 语义和低敏 Micrometer 指标。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/profile/recall`：PRACTICE_CHAT 一次性画像快照、受信当前题标签召回和 800 token 确定性裁剪；正式 Review 不走该路径。
+- `backend/persistent-queue`：独立持久化队列模块，提供事务内 Publisher、严格满批 dispatcher、`SUCCEEDED` 出队语义、单节点 worker、清理及低基数积压指标。
 - `backend/mentor-api`：Spring MVC API 应用，负责 controller、SSE adapter、配置属性和 bean wiring，不直接拥有 agent runtime SQL。
 - `backend/mentor-api/src/main/resources/application.yml`：默认应用配置，默认不强制连接数据库。
 - `backend/mentor-api/src/main/resources/application-local.yml`：本地 PostgreSQL 与 Flyway 配置。
 - `backend/mentor-api/src/main/resources/db/migration`：mentor API 自有 Flyway 迁移脚本目录。
 - `backend/mentor-api/src/main/resources/db/migration/V27__problem_recommendation_reasons.sql`：为题目表增加中英文推荐理由字段。
 - `backend/mentor-api/src/main/resources/db/migration/V33__problem_tag_normalization.sql`：创建题目标签目录和关联表，按稳定频次规则回填历史数组，并在迁移内校验有序双写一致性。
+- `backend/mentor-api/src/main/resources/db/migration/V34__learner_profile_entry.sql`：学习者画像版本链、ACTIVE 唯一约束和范围约束。
+- `backend/persistent-queue/src/main/resources/db/migration/queue/V35__persistent_queue_message.sql`：持久化 queue message、PENDING/SUCCEEDED 约束与派发/清理索引。
+- `backend/mentor-api/src/main/resources/db/migration/V36__practice_code_review_tags.sql`：正式 Review 到受信题目标签的关联表和按标签查询索引。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/service/ProblemSeedTagNormalizer.java`：题目 seed 标签 fallback、题内去重和跨题名称稳定决胜的唯一实现入口。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/service/ProblemSeedImporter.java`：按 `slug` 合并题目 JSONL 与推荐理由 JSON，在一个事务中规范化并双写题目兼容数组、标签目录和关联表，提交前执行一致性校验。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/problem/repository/ProblemTagRepository.java`：规范化标签目录 upsert 与题目标签关联完整替换的持久化边界。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/profile`：画像 MyBatis repository、轻量 Review 事实投影和 PostgreSQL 集成测试；`LearnerProfileFullUpgradeIT` 验证 V33 升级，`LearnerProfileEndToEndIT` 和 `LearnerProfileFailureDegradationIT` 验证闭环与最多一次降级。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/AgentToolPermissionController.java`：Agent Tool 权限决策 API，提供 `POST /api/agent/tool-permissions/{permissionRequestId}/decision`，通过当前认证用户提交允许或拒绝。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/AgentToolPermissionExceptionHandler.java`：权限决策异常到 HTTP 状态的映射，覆盖未登录、越权、不存在、已决策、过期和非法请求。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/agent/model`：权限决策 API 的 request/response DTO，只接收 `decision` 和 `reason`，不接收前端声明的 userId。
@@ -108,6 +133,7 @@
 - `frontend/src/admin/ai`：`/admin/ai` 治理工作区，提供全局 AI 止损、按用户/模型/场景的 Token 与当前价格成本观测、未定价模型告警和模型价格编辑。
 - `frontend/src/app/PasswordChangeRequiredPage.tsx`：临时密码登录后的独占改密页，成功后恢复普通 Session 路由。
 - `frontend/src/learning-plans/PracticeChatWorkbench.tsx`：题目训练聊天工作台，使用 practice session 专用 API 渲染题面 seed、流式 AI 回复、Review 入口、LeetCode 外链和题目完成状态；监听权限 SSE 并展示轻量原生确认弹窗。
+- `frontend/src/learning-plans/profileToolContract.ts`：学习者画像工具的固定状态和结果字段契约，供 SSE 状态去重渲染使用。
 - `frontend/src/i18n/locales.ts`：前端文案资源，包含权限弹窗、拒绝、超时“本次未执行。”和英文 “This action was not run.” 文案。
 - `frontend/package.json`：React 19、TypeScript 6、Vite 8、Vitest 4 依赖与脚本。
 - `frontend/vite.config.ts`：Vite、React 插件和 Vitest 配置。

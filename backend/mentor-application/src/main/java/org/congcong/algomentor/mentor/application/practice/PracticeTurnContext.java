@@ -14,8 +14,17 @@ public record PracticeTurnContext(
     String extractedCode,
     String originalMessage,
     String recentChatSummary,
-    String locale
+    String locale,
+    java.util.List<TrustedProblemTag> trustedProblemTags
 ) {
+
+  public PracticeTurnContext(
+      long userId, long planId, int phaseIndex, String problemSlug, long sessionId, long userMessageId,
+      Long assistantMessageId, Long agentRunDbId, String problemFacts, String learningPlanFacts,
+      String extractedCode, String originalMessage, String recentChatSummary, String locale) {
+    this(userId, planId, phaseIndex, problemSlug, sessionId, userMessageId, assistantMessageId, agentRunDbId,
+        problemFacts, learningPlanFacts, extractedCode, originalMessage, recentChatSummary, locale, java.util.List.of());
+  }
 
   public PracticeTurnContext {
     requirePositive(userId, "user id");
@@ -37,6 +46,8 @@ public record PracticeTurnContext(
     originalMessage = blankToEmpty(originalMessage);
     recentChatSummary = blankToEmpty(recentChatSummary);
     locale = locale == null || locale.isBlank() ? "zh-CN" : locale.trim();
+    trustedProblemTags = trustedProblemTags == null ? java.util.List.of() : trustedProblemTags.stream()
+        .filter(java.util.Objects::nonNull).distinct().toList();
   }
 
   private static void requirePositive(long value, String fieldName) {

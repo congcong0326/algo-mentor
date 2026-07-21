@@ -20,8 +20,19 @@ public record PracticeCodeReviewDraft(
     boolean passed,
     List<String> deductionReasons,
     List<String> improvementSuggestions,
-    String reviewMarkdown
+    String reviewMarkdown,
+    List<Long> affectedTagIds
 ) {
+
+  public PracticeCodeReviewDraft(
+      long userId, long planId, int phaseIndex, String problemSlug, long sessionId, long userMessageId,
+      Long assistantMessageId, Long agentRunDbId, String rawCode, String normalizedCode, String language,
+      List<PracticeCodeReviewEvidence> evidence, String contextSummary, PracticeCodeReviewScore score, boolean passed,
+      List<String> deductionReasons, List<String> improvementSuggestions, String reviewMarkdown) {
+    this(userId, planId, phaseIndex, problemSlug, sessionId, userMessageId, assistantMessageId, agentRunDbId,
+        rawCode, normalizedCode, language, evidence, contextSummary, score, passed, deductionReasons,
+        improvementSuggestions, reviewMarkdown, List.of());
+  }
 
   public PracticeCodeReviewDraft {
     requirePositive(userId, "user id");
@@ -54,6 +65,8 @@ public record PracticeCodeReviewDraft(
     deductionReasons = copyTrimmed(deductionReasons);
     improvementSuggestions = copyTrimmed(improvementSuggestions);
     reviewMarkdown = blankToNull(reviewMarkdown);
+    affectedTagIds = affectedTagIds == null ? List.of() : affectedTagIds.stream()
+        .filter(tagId -> tagId != null && tagId > 0).distinct().toList();
   }
 
   private static void requirePositive(long value, String fieldName) {

@@ -3,12 +3,9 @@ package org.congcong.algomentor.mentor.application.practice;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.math.BigDecimal;
-import java.util.Map;
 import java.util.Objects;
 
 public final class PracticeCodeReviewToolResultMapper {
-
-  private static final String METADATA_REVIEW_ATTEMPT_FAILURE_CODE = "reviewAttemptFailureCode";
 
   private final ObjectMapper objectMapper;
 
@@ -20,7 +17,7 @@ public final class PracticeCodeReviewToolResultMapper {
     Objects.requireNonNull(result, "result must not be null");
     Objects.requireNonNull(context, "context must not be null");
 
-    Map<String, Object> metadata = result.metadata();
+    boolean saved = result.status() == PracticeReviewStatus.SAVED;
     ObjectNode node = objectMapper.createObjectNode();
     node.put(
         PracticeCodeReviewAgentToolNames.RESULT_TYPE,
@@ -29,20 +26,20 @@ public final class PracticeCodeReviewToolResultMapper {
     putLongOrNull(
         node,
         PracticeCodeReviewAgentToolNames.RESULT_REVIEW_ID,
-        metadata.get(PracticeCodeReviewAgentToolNames.RESULT_REVIEW_ID));
+        saved ? result.metadata().get(PracticeCodeReviewAgentToolNames.RESULT_REVIEW_ID) : null);
     putIntegerOrNull(
         node,
         PracticeCodeReviewAgentToolNames.RESULT_VERSION_NO,
-        metadata.get(PracticeCodeReviewAgentToolNames.RESULT_VERSION_NO));
+        saved ? result.metadata().get(PracticeCodeReviewAgentToolNames.RESULT_VERSION_NO) : null);
     putDecimalOrNull(
         node,
         PracticeCodeReviewAgentToolNames.RESULT_TOTAL_SCORE,
-        metadata.get(PracticeCodeReviewAgentToolNames.RESULT_TOTAL_SCORE));
+        saved ? result.metadata().get(PracticeCodeReviewAgentToolNames.RESULT_TOTAL_SCORE) : null);
     putBooleanOrNull(
         node,
         PracticeCodeReviewAgentToolNames.RESULT_PASSED,
-        metadata.get(PracticeCodeReviewAgentToolNames.RESULT_PASSED));
-    putStringOrNull(node, PracticeCodeReviewAgentToolNames.RESULT_FAILURE_CODE, failureCode(result, metadata));
+        saved ? result.metadata().get(PracticeCodeReviewAgentToolNames.RESULT_PASSED) : null);
+    putStringOrNull(node, PracticeCodeReviewAgentToolNames.RESULT_FAILURE_CODE, result.failureCode());
     node.put(PracticeCodeReviewAgentToolNames.RESULT_PROBLEM_SLUG, context.problemSlug());
     node.put(PracticeCodeReviewAgentToolNames.RESULT_SESSION_ID, context.sessionId());
     node.put(PracticeCodeReviewAgentToolNames.RESULT_USER_MESSAGE_ID, context.userMessageId());
@@ -59,14 +56,6 @@ public final class PracticeCodeReviewToolResultMapper {
       case FAILED -> "代码提交记录未能生成。";
       case REVIEWED -> "代码提交分析已完成，等待保存。";
     };
-  }
-
-  private String failureCode(PracticeReviewResult result, Map<String, Object> metadata) {
-    if (result.failureCode() != null && !result.failureCode().isBlank()) {
-      return result.failureCode();
-    }
-    Object value = metadata.get(METADATA_REVIEW_ATTEMPT_FAILURE_CODE);
-    return value instanceof CharSequence text && !text.toString().isBlank() ? text.toString().trim() : null;
   }
 
   private void putLongOrNull(ObjectNode node, String fieldName, Object value) {

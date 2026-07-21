@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.queue.postgres.QueueMessageMapper">
+  <resultMap id="QueueMessageRowMap" type="org.congcong.algomentor.queue.postgres.QueueMessageRow">
+    <constructor><arg column="id" javaType="_long"/><arg column="topic" javaType="string"/><arg column="message_key" javaType="string"/><arg column="message_value" javaType="string"/><arg column="created_at" javaType="java.time.Instant"/></constructor>
+  </resultMap>
+  <sql id="QueueMessageColumns">id, topic, message_key, message_value, created_at</sql>
+  <select id="insertPending" resultMap="QueueMessageRowMap" affectData="true">
+    INSERT INTO queue_message (topic, message_key, message_value, status, succeeded_at) VALUES (#{topic}, #{key}, #{value}, 'PENDING', NULL) RETURNING <include refid="QueueMessageColumns"/>
+  </select>
+  <select id="findById" resultMap="QueueMessageRowMap">SELECT <include refid="QueueMessageColumns"/> FROM queue_message WHERE id = #{messageId}</select>
+  <select id="findPendingByTopicAndKey" resultMap="QueueMessageRowMap">SELECT <include refid="QueueMessageColumns"/> FROM queue_message WHERE topic = #{topic} AND message_key = #{key} AND status = 'PENDING' ORDER BY id</select>
+  <select id="findPendingByTopicAndKeyLimited" resultMap="QueueMessageRowMap">SELECT <include refid="QueueMessageColumns"/> FROM queue_message WHERE topic = #{topic} AND message_key = #{key} AND status = 'PENDING' ORDER BY id LIMIT #{limit}</select>
+  <select id="findEligibleKeys" resultType="org.congcong.algomentor.queue.dispatch.QueueEligibleKey">
+    SELECT message_key AS key, MIN(id) AS oldest_message_id FROM queue_message WHERE topic = #{topic} AND status = 'PENDING'
+    GROUP BY message_key HAVING COUNT(*) >= #{batchSize} ORDER BY MIN(id)
+  </select>
+  <update id="markSucceeded">UPDATE queue_message SET status = 'SUCCEEDED', succeeded_at = NOW() WHERE status = 'PENDING' AND id IN <foreach collection="messageIds" item="messageId" open="(" separator="," close=")">#{messageId}</foreach></update>
+  <select id="countPendingByTopic" resultType="long">SELECT COUNT(*) FROM queue_message WHERE topic = #{topic} AND status = 'PENDING'</select>
+  <select id="findOldestPendingCreatedAt" resultType="java.time.Instant">SELECT MIN(created_at) FROM queue_message WHERE topic = #{topic} AND status = 'PENDING'</select>
+  <delete id="deleteSucceededBefore">
+    WITH expired AS (
+      SELECT id FROM queue_message WHERE status = 'SUCCEEDED' AND succeeded_at &lt; #{cutoff}
+      ORDER BY succeeded_at, id LIMIT #{limit}
+    ) DELETE FROM queue_message WHERE id IN (SELECT id FROM expired)
+  </delete>
+</mapper>

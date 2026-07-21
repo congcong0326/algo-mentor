@@ -7,6 +7,7 @@ import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewInser
 import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewRow;
 import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewSessionLockRow;
 import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewSummaryRow;
+import org.congcong.algomentor.api.practice.mapper.model.CodeReviewProfileFactRow;
 
 @Mapper
 public interface PracticeCodeReviewMapper {
@@ -17,6 +18,16 @@ public interface PracticeCodeReviewMapper {
   );
 
   PracticeCodeReviewRow insert(PracticeCodeReviewInsertRow row);
+
+  PracticeCodeReviewRow findByUserMessageForUpdate(
+      @Param("userId") long userId,
+      @Param("sessionId") long sessionId,
+      @Param("userMessageId") long userMessageId
+  );
+
+  int insertAffectedTags(@Param("reviewId") long reviewId, @Param("tagIds") List<Long> tagIds);
+
+  List<Long> findAffectedTagIds(@Param("reviewId") long reviewId);
 
   PracticeCodeReviewRow findLatest(@Param("userId") long userId, @Param("sessionId") long sessionId);
 
@@ -34,5 +45,21 @@ public interface PracticeCodeReviewMapper {
       @Param("userId") long userId,
       @Param("sessionId") long sessionId,
       @Param("userMessageId") long userMessageId
+  );
+
+  List<CodeReviewProfileFactRow> findProfileFactsByReviewIds(
+      @Param("userId") long userId,
+      @Param("reviewIds") List<Long> reviewIds
+  );
+
+  List<CodeReviewProfileFactRow> findLatestProfileFactsForProblemSlugs(
+      @Param("userId") long userId,
+      @Param("problemSlugs") List<String> problemSlugs
+  );
+
+  List<CodeReviewProfileFactRow> findRecentDistinctProfileFacts(
+      @Param("userId") long userId,
+      @Param("excludedProblemSlugs") List<String> excludedProblemSlugs,
+      @Param("limit") int limit
   );
 }

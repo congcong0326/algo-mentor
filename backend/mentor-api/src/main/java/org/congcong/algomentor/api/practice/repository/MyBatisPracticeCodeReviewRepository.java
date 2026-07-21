@@ -16,6 +16,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewDraft;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewEvidence;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewSaveResult;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewScore;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewSummary;
 import org.slf4j.Logger;
@@ -41,6 +42,12 @@ public class MyBatisPracticeCodeReviewRepository implements PracticeCodeReviewRe
   @Override
   @Transactional
   public PracticeCodeReview save(PracticeCodeReviewDraft draft) {
+    return saveResult(draft).review();
+  }
+
+  @Override
+  @Transactional
+  public PracticeCodeReviewSaveResult saveResult(PracticeCodeReviewDraft draft) {
     log.info(
         "Practice code review repository save requested. sessionId={} userMessageId={} agentRunDbId={} problemSlug={} rawCodeLength={} evidenceCount={}",
         draft.sessionId(),
@@ -67,6 +74,11 @@ public class MyBatisPracticeCodeReviewRepository implements PracticeCodeReviewRe
         session.planId(),
         session.phaseIndex(),
         session.problemSlug());
+    PracticeCodeReviewRow existing = mapper.findByUserMessageForUpdate(
+        draft.userId(), draft.sessionId(), draft.userMessageId());
+    if (existing != null) {
+      return new PracticeCodeReviewSaveResult(toReview(existing), false);
+    }
     PracticeCodeReviewRow row = mapper.insert(toInsertRow(draft, session));
     if (row == null) {
       log.warn(
@@ -85,7 +97,13 @@ public class MyBatisPracticeCodeReviewRepository implements PracticeCodeReviewRe
         row.versionNo(),
         row.userMessageId(),
         row.agentRunDbId());
-    return toReview(row);
+    if (!draft.affectedTagIds().isEmpty()) {
+      int inserted = mapper.insertAffectedTags(row.id(), draft.affectedTagIds());
+      if (inserted != draft.affectedTagIds().size()) {
+        throw new IllegalStateException("Practice code review affected tag insert count mismatch");
+      }
+    }
+    return new PracticeCodeReviewSaveResult(toReview(row), true);
   }
 
   @Override
@@ -111,6 +129,11 @@ public class MyBatisPracticeCodeReviewRepository implements PracticeCodeReviewRe
   @Override
   public Optional<PracticeCodeReview> findByUserMessage(long userId, long sessionId, long userMessageId) {
     return Optional.ofNullable(mapper.findByUserMessage(userId, sessionId, userMessageId)).map(this::toReview);
+  }
+
+  @Override
+  public List<Long> findAffectedTagIds(long reviewId) {
+    return mapper.findAffectedTagIds(reviewId);
   }
 
   private PracticeCodeReviewInsertRow toInsertRow(PracticeCodeReviewDraft draft, PracticeCodeReviewSessionLockRow session) {
@@ -172,7 +195,8 @@ public class MyBatisPracticeCodeReviewRepository implements PracticeCodeReviewRe
         read(row.deductionReasonsJson(), STRING_LIST),
         read(row.improvementSuggestionsJson(), STRING_LIST),
         row.reviewMarkdown(),
-        row.createdAt());
+        row.createdAt(),
+        mapper.findAffectedTagIds(row.id()));
   }
 
   private PracticeCodeReviewSummary toSummary(PracticeCodeReviewSummaryRow row) {

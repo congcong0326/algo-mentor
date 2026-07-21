@@ -7,6 +7,10 @@ public interface PracticeCodeReviewRepository {
 
   PracticeCodeReview save(PracticeCodeReviewDraft draft);
 
+  default PracticeCodeReviewSaveResult saveResult(PracticeCodeReviewDraft draft) {
+    return new PracticeCodeReviewSaveResult(save(draft), true);
+  }
+
   Optional<PracticeCodeReviewSummary> findLatestSummary(long userId, long sessionId);
 
   Optional<PracticeCodeReview> findLatest(long userId, long sessionId);
@@ -16,6 +20,10 @@ public interface PracticeCodeReviewRepository {
   Optional<PracticeCodeReview> findById(long userId, long sessionId, long reviewId);
 
   Optional<PracticeCodeReview> findByUserMessage(long userId, long sessionId, long userMessageId);
+
+  default List<Long> findAffectedTagIds(long reviewId) {
+    return List.of();
+  }
 
   static PracticeCodeReviewRepository empty() {
     return EmptyPracticeCodeReviewRepository.INSTANCE;

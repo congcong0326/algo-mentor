@@ -74,6 +74,7 @@ describe('PracticeChatWorkbench review contracts', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     cleanup();
     vi.clearAllMocks();
   });
@@ -178,7 +179,7 @@ describe('PracticeChatWorkbench review contracts', () => {
     expect(await screen.findByText('Review 正在执行。')).toBeInTheDocument();
   });
 
-  it('updates the pending assistant bubble when Review tool starts', async () => {
+  it('uses the assistant bubble work area for organizing and Review progress', async () => {
     let streamOptions: Parameters<typeof api.streamPracticeMessage>[2] | undefined;
     streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
       streamOptions = options;
@@ -190,7 +191,10 @@ describe('PracticeChatWorkbench review contracts', () => {
       target: { value: 'class Solution { int[] twoSum() { return null; } }' },
     });
     fireEvent.click(screen.getByRole('button', { name: '发送' }));
-    expect(await screen.findByText('正在整理思路...')).toBeInTheDocument();
+    const organizingStatus = await screen.findByRole('status', { name: '正在整理思路...' });
+    expect(organizingStatus).toHaveClass('practice-coach-work-status', 'is-running');
+    expect(organizingStatus.querySelector('.practice-coach-work-status-text')).toBeInTheDocument();
+    expect(organizingStatus.closest('.practice-message')).toHaveClass('assistant-message');
 
     act(() => {
       streamOptions?.onEvent({
@@ -199,8 +203,103 @@ describe('PracticeChatWorkbench review contracts', () => {
       });
     });
 
-    expect(await screen.findByText('正在生成代码提交记录...')).toBeInTheDocument();
+    expect(await screen.findByRole('status', { name: '正在生成代码提交记录...' })).toHaveClass(
+      'practice-coach-work-status',
+      'is-running',
+    );
     expect(screen.queryByText('正在整理思路...')).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['UPDATED', '已更新学习记忆', 'is-updated'],
+    ['NO_CHANGE', '学习记忆无需更新', 'is-no-change'],
+    ['FAILED', '学习记忆暂未更新', 'is-failed'],
+  ] as const)('keeps learner profile RUNNING visible before %s', async (status, terminalLabel, terminalClassName) => {
+    let streamOptions: Parameters<typeof api.streamPracticeMessage>[2] | undefined;
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      streamOptions = options;
+      await new Promise<void>(() => undefined);
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '记录我的学习目标。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+    await waitFor(() => expect(streamOptions).toBeDefined());
+
+    vi.useFakeTimers();
+    act(() => {
+      streamOptions?.onEvent({ eventName: 'agent_tool_start', data: learnerProfileToolEvent() });
+      streamOptions?.onEvent({
+        eventName: 'agent_tool_end',
+        data: learnerProfileToolEndEvent({ status }),
+      });
+    });
+
+    expect(screen.getByRole('status', { name: '正在更新学习记忆...' })).toHaveClass('is-running');
+    act(() => {
+      vi.advanceTimersByTime(699);
+    });
+    expect(screen.getByRole('status', { name: '正在更新学习记忆...' })).toBeInTheDocument();
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+    expect(screen.getByRole('status', { name: terminalLabel })).toHaveClass(
+      'practice-coach-work-status',
+      terminalClassName,
+    );
+  });
+
+  it('keeps streamed content separate from the deduplicated learner profile work status', async () => {
+    let streamOptions: Parameters<typeof api.streamPracticeMessage>[2] | undefined;
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      streamOptions = options;
+      await new Promise<void>(() => undefined);
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '记录我的学习目标。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+    await waitFor(() => expect(streamOptions).toBeDefined());
+
+    vi.useFakeTimers();
+    act(() => {
+      streamOptions?.onEvent({ eventName: 'agent_tool_start', data: learnerProfileToolEvent() });
+      streamOptions?.onEvent({ eventName: 'agent_tool_start', data: learnerProfileToolEvent() });
+      streamOptions?.onEvent({ eventName: 'content_delta', data: { content: '继续说明下一步练习。' } });
+      streamOptions?.onEvent({
+        eventName: 'agent_tool_end',
+        data: learnerProfileToolEndEvent({ status: 'UPDATED' }),
+      });
+      streamOptions?.onEvent({
+        eventName: 'agent_tool_end',
+        data: learnerProfileToolEndEvent({ status: 'UPDATED' }),
+      });
+    });
+
+    const runningStatus = screen.getByRole('status', { name: '正在更新学习记忆...' });
+    expect(screen.getAllByRole('status', { name: '正在更新学习记忆...' })).toHaveLength(1);
+    const assistantMessage = screen.getByText('继续说明下一步练习。').closest('.practice-message');
+    expect(assistantMessage).toContainElement(runningStatus);
+    expect(assistantMessage?.querySelector('.markdown-view')).toHaveTextContent('继续说明下一步练习。');
+    expect(assistantMessage?.querySelector('.markdown-view')).not.toHaveTextContent('正在更新学习记忆...');
+
+    act(() => {
+      vi.advanceTimersByTime(700);
+    });
+    expect(screen.getAllByRole('status', { name: '已更新学习记忆' })).toHaveLength(1);
+
+    act(() => {
+      streamOptions?.onEvent({ eventName: 'agent_tool_start', data: learnerProfileToolEvent() });
+      streamOptions?.onEvent({
+        eventName: 'agent_tool_end',
+        data: learnerProfileToolEndEvent({ status: 'UPDATED' }),
+      });
+    });
+    expect(screen.getAllByRole('status', { name: '已更新学习记忆' })).toHaveLength(1);
   });
 
   it('shows failed Review score from tool result before the final assistant text', async () => {
@@ -347,7 +446,7 @@ describe('PracticeChatWorkbench review contracts', () => {
     });
 
     await waitFor(() => expect(screen.queryByRole('dialog', { name: '提交代码记录' })).not.toBeInTheDocument());
-    expect(screen.getByRole('status')).toHaveTextContent('本次未执行。');
+    expect(screen.getByText('本次未执行。')).toHaveClass('practice-status-note');
   });
 
   it('renders rounded guidance tooltip for generated problem statements', async () => {
@@ -472,7 +571,7 @@ describe('PracticeChatWorkbench review contracts', () => {
       streamOptions?.onEvent({
         eventName: 'agent_tool_end',
         data: agentToolEndEvent({
-          result: { type: 'practice_code_review_submitted' },
+          result: { type: 'practice_code_review_submitted', status: 'NOT_COMPLETE_SUBMISSION' },
           toolName: 'submit_practice_code_review',
         }),
       });
@@ -873,6 +972,30 @@ function agentToolEvent(overrides: {
     stepIndex: 1,
     toolCallId: 'call-1',
     toolName: overrides.toolName ?? 'submit_practice_code_review',
+  };
+}
+
+function learnerProfileToolEvent(overrides: {
+  toolCallId?: string;
+} = {}) {
+  return {
+    runId: 'run-1',
+    stepIndex: 2,
+    toolCallId: overrides.toolCallId ?? 'profile-call-1',
+    toolName: 'update_learner_declared_profile',
+  };
+}
+
+function learnerProfileToolEndEvent(overrides: {
+  toolCallId?: string;
+  status: 'UPDATED' | 'NO_CHANGE' | 'FAILED';
+}) {
+  return {
+    ...learnerProfileToolEvent({ toolCallId: overrides.toolCallId }),
+    result: {
+      type: 'learner_declared_profile_update',
+      status: overrides.status,
+    },
   };
 }
 
