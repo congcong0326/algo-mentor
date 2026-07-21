@@ -76,7 +76,7 @@ Practice chat prompt 应采用积极触发风格：
 - 保留“纯粘贴代码不会被后端自动写库”的反回归测试，防止旧自动 capability 回来。
 - 测试命名应表达“模型发起 tool call 后触发权限”，不要暗示后端 forced 或规则识别。
 - 检查 `practiceCapabilities`、`CodeReviewTurnCapability`、`PracticeTurnCapability`、自动 Review capability registry 等旧残留；若仍存在且未使用，应删除。
-- `PracticeChatMessageIntentClassifier` 若仅用于 prompt 中展示本轮意图，可以保留；prompt 不应依赖它决定是否调用 Review tool。
+- 不保留仅用于 Prompt 展示的关键词意图分类；模型直接读取当前用户消息，Review tool 是否调用仍由模型自主判断。
 
 文档层面：
 

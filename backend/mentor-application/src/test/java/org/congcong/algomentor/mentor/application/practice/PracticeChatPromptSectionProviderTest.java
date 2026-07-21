@@ -74,7 +74,6 @@ class PracticeChatPromptSectionProviderTest {
         .contains("引导型教练")
         .contains("Layered Hint Protocol")
         .contains("Response language: Simplified Chinese")
-        .contains("本轮用户意图：ASK_SOLUTION")
         .contains("- planId: 12")
         .contains("- phaseIndex: 1")
         .contains("- slug: two-sum")
@@ -83,6 +82,7 @@ class PracticeChatPromptSectionProviderTest {
         .contains("以下摘要由系统根据历史对话生成，仅供参考")
         .contains("我想要一个提示")
         .contains("直接给答案和 Java 解法")
+        .doesNotContain("本轮用户意图")
         .doesNotContain("seed statement");
     assertThat(assembly.metadata())
         .containsEntry("promptProfile", PracticeChatPromptConstants.PROFILE_ID)
@@ -150,7 +150,7 @@ class PracticeChatPromptSectionProviderTest {
         .contains("Layered Hint Protocol")
         .contains("MUST NOT")
         .contains("Starting Layer Selection")
-        .contains("TAKES PRECEDENCE");
+        .contains("Read the CURRENT user message directly");
     assertThat(coachStyleSection.section().version()).isEqualTo("v2");
     assertThat(coachStyleSection.section().sourceRef().attributes())
         .containsEntry(PracticeChatPromptConstants.METADATA_COACH_STYLE, PracticeCoachStyle.GUIDED.name());

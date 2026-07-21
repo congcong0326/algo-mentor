@@ -78,7 +78,7 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
     sections.add(baseInstruction());
     sections.add(coachStyle(coachStyle));
     sections.add(responseLanguage(responseLanguage));
-    sections.add(scenarioPolicy(PracticeChatMessageIntentClassifier.classify(currentUserMessage)));
+    sections.add(scenarioPolicy());
     sections.add(runtimeContext(context));
     activeSummary(request).ifPresent(sections::add);
     sections.addAll(history(request));
@@ -159,10 +159,9 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
         Map.of(TEXT, text));
   }
 
-  private PromptSection scenarioPolicy(PracticeChatMessageIntent intent) {
+  private PromptSection scenarioPolicy() {
     String text = PRACTICE_INTERACTION_POLICY.strip() + "\n\n" + CODE_REVIEW_TOOL_BOUNDARY.strip()
-        + "\n\n" + DECLARED_PROFILE_TOOL_BOUNDARY.strip()
-        + "\n\n本轮用户意图：" + intent.name() + "。";
+        + "\n\n" + DECLARED_PROFILE_TOOL_BOUNDARY.strip();
     return new PromptSection(
         PracticeChatPromptConstants.SECTION_SCENARIO_POLICY,
         "题目聊天教学策略",
@@ -172,11 +171,11 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
         PromptSensitivity.PUBLIC_FACT,
         40,
         true,
-        "v1",
+        "v2",
         PromptCachePolicy.CACHEABLE_BY_PROFILE,
         PromptBudgetPolicy.FAIL_IF_OVER_BUDGET,
         PromptRenderMode.MARKDOWN,
-        new PromptSourceRef("practice-chat", "scenario-policy", Map.of("intent", intent.name())),
+        new PromptSourceRef("practice-chat", "scenario-policy", Map.of()),
         Map.of(TEXT, text));
   }
 

@@ -219,8 +219,7 @@ class AgentConversationControllerTest {
     mockMvc.perform(asyncDispatch(result))
         .andExpect(status().isOk())
         .andExpect(content().string(containsString("\"promptProfile\":\"PRACTICE_CHAT_V1\"")))
-        .andExpect(content().string(containsString("\"problemSlug\":\"two-sum\"")))
-        .andExpect(content().string(containsString("\"messageIntent\":\"ASK_SOLUTION\"")));
+        .andExpect(content().string(containsString("\"problemSlug\":\"two-sum\"")));
 
     org.assertj.core.api.Assertions.assertThat(conversationRepository.lastRequest.metadata())
         .containsEntry(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO)
@@ -251,7 +250,8 @@ class AgentConversationControllerTest {
     org.assertj.core.api.Assertions.assertThat(allText)
         .contains("引导型教练")
         .contains("Layered Hint Protocol")
-        .contains("TAKES PRECEDENCE");
+        .contains("Read the CURRENT user message directly")
+        .contains("直接给答案和 Java 代码");
   }
 
   @Test

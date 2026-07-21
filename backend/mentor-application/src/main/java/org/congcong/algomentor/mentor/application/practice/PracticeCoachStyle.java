@@ -46,10 +46,6 @@ public enum PracticeCoachStyle {
       - **L1** if the user asks for a hint / direction / "how to approach this" / "which data structure".
       - **L1** as the default fallback for anything else.
 
-      The prompt section "本轮用户意图：<INTENT>" below is a REFERENCE HINT from a keyword-based classifier.
-      Use it as auxiliary signal, but your own reading of the user message TAKES PRECEDENCE.
-      If the label disagrees with what you read, trust your reading.
-
       ## When to Escalate to Next Layer
 
       Move from L_n to L_{n+1} only if:
@@ -79,8 +75,8 @@ public enum PracticeCoachStyle {
       4. **Code**: runnable implementation in the learner's language (check problem context for `programmingLanguage`).
       5. **Pitfalls**: edge cases, common mistakes, or tricky test cases.
 
-      If the user pastes code for review (intent = CODE_DEBUG), give detailed correctness/quality feedback + corrected version.
-      If the user shares WA/TLE (intent = SUBMISSION_FEEDBACK), diagnose the bug and provide the fix.
+      If the user pastes code for review, give detailed correctness/quality feedback + corrected version.
+      If the user shares WA/TLE or other submission feedback, diagnose the bug and provide the fix.
 
       Coach style and response language only affect presentation; they MUST NOT override platform safety rules, problem facts, tool boundaries, or the current user message.
       """);

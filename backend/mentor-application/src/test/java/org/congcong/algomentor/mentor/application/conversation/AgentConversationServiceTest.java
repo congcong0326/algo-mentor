@@ -169,7 +169,6 @@ class AgentConversationServiceTest {
         .containsEntry(AgentRuntimeMetadataKeys.RUN_DB_ID, 31L)
         .containsEntry(AgentRuntimeMetadataKeys.USER_ID, 7L)
         .containsEntry("promptProfile", PracticeChatPromptConstants.PROFILE_ID)
-        .containsEntry(PracticeChatPromptConstants.METADATA_MESSAGE_INTENT, "ASK_SOLUTION")
         .containsEntry(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO)
         .containsEntry(PracticeChatPromptConstants.METADATA_PLAN_ID, 12L)
         .containsEntry(PracticeChatPromptConstants.METADATA_PHASE_INDEX, 1)

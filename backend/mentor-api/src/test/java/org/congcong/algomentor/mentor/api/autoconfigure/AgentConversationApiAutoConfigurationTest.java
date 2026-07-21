@@ -1,6 +1,7 @@
 package org.congcong.algomentor.mentor.api.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -27,6 +28,7 @@ import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.InMemoryAgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.LocalAgentRunLockOwnerProvider;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
+import org.congcong.algomentor.api.problem.mapper.ProblemTagMapper;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
@@ -49,6 +51,9 @@ import org.congcong.algomentor.mentor.application.practice.PracticeSessionReposi
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
 import org.congcong.algomentor.mentor.application.practice.PracticeTurnOrchestrator;
 import org.congcong.algomentor.mentor.application.practice.TrustedProblemTagCatalog;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileQueryService;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileRepository;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfileRecallService;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
@@ -131,6 +136,35 @@ class AgentConversationApiAutoConfigurationTest {
           assertThat(context).doesNotHaveBean(PracticeCodeReviewService.class);
           assertThat(context).doesNotHaveBean(PracticeCodeReviewAgentTool.class);
           assertThat(context).hasSingleBean(PracticeCodeReviewPermissionHook.class);
+        });
+  }
+
+  @Test
+  void createsLearnerProfileRecallServiceWhenEnabledAndCatalogIsAutoConfigured() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
+        .withBean(ProblemTagMapper.class, () -> mock(ProblemTagMapper.class))
+        .withBean(LearnerProfileQueryService.class,
+            () -> new LearnerProfileQueryService(mock(LearnerProfileRepository.class)))
+        .withPropertyValues("algo-mentor.learner-profile.recall.practice-chat.enabled=true")
+        .run(context -> {
+          assertThat(context).hasNotFailed();
+          assertThat(context).hasSingleBean(TrustedProblemTagCatalog.class);
+          assertThat(context).hasSingleBean(LearnerProfileRecallService.class);
+        });
+  }
+
+  @Test
+  void failsStartupWhenLearnerProfileRecallIsEnabledWithoutTagCatalog() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
+        .withBean(LearnerProfileQueryService.class,
+            () -> new LearnerProfileQueryService(mock(LearnerProfileRepository.class)))
+        .withPropertyValues("algo-mentor.learner-profile.recall.practice-chat.enabled=true")
+        .run(context -> {
+          assertThat(context).hasFailed();
+          assertThat(context.getStartupFailure())
+              .hasMessageContaining(TrustedProblemTagCatalog.class.getName());
         });
   }
 

@@ -23,7 +23,6 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhase
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatContext;
-import org.congcong.algomentor.mentor.application.practice.PracticeChatMessageIntentClassifier;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemDetail;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptConstants;
@@ -249,9 +248,7 @@ public class AgentConversationService {
             PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, command.practiceChat().problemSlug(),
             PracticeChatPromptConstants.METADATA_LOCALE, command.practiceChat().locale(),
             PracticeChatPromptConstants.METADATA_COACH_STYLE, coachStyle.name(),
-            PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, responseLanguage.name(),
-            PracticeChatPromptConstants.METADATA_MESSAGE_INTENT,
-            PracticeChatMessageIntentClassifier.classify(command.userMessage()).name())));
+            PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, responseLanguage.name())));
     Map<String, Object> metadata = new HashMap<>(assembly.metadata());
     metadata.putAll(learnerProfilePromptSectionProvider.metadata(learnerProfileSnapshot, assembly));
     return new AssembledContext(assembly.canonicalMessages(), Map.copyOf(metadata), assembly.tokenEstimate());

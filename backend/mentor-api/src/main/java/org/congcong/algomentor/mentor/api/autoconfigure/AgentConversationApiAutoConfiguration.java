@@ -166,8 +166,8 @@ public class AgentConversationApiAutoConfiguration {
     return new LearnerProfilePolicyResolver(properties.isEnabled(), properties.getMaxTokenBudget());
   }
 
+  /** 开关开启后使用强依赖注入，避免条件评估顺序导致画像召回被静默跳过。 */
   @Bean
-  @ConditionalOnBean({LearnerProfileQueryService.class, TrustedProblemTagCatalog.class})
   @ConditionalOnProperty(
       prefix = LearnerProfileRecallProperties.PREFIX,
       name = "enabled",

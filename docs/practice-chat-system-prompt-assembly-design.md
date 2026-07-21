@@ -435,20 +435,12 @@ record PromptSectionSnapshot(
 scenario = PRACTICE_CHAT
 locale = zh-CN | en-US
 programmingLanguage = Java | ...
-messageIntent = ASK_HINT | ASK_SOLUTION | CODE_DEBUG | SUBMISSION_FEEDBACK | GENERAL
 problemStatus = NOT_STARTED | IN_PROGRESS | COMPLETED | SKIPPED
 modelCapabilities = tools | structuredOutput | contextWindow | promptCaching
 providerCapabilities = multiSystemMessage | cacheControl | toolRole
 ```
 
-首版 intent 不需要模型分类，可用轻量规则：
-
-- 包含“完整代码”“直接给答案”“Java 解法”等，标记为 `ASK_SOLUTION`。
-- 包含代码块或明显 Java/Python 片段，标记为 `CODE_DEBUG`。
-- 包含 WA、TLE、Runtime Error、Compile Error、用例不通过等，标记为 `SUBMISSION_FEEDBACK`。
-- 其他默认为 `ASK_HINT`。
-
-intent 只影响 `SCENARIO_POLICY` 的补充片段，不改变 `STATIC_INSTRUCTION` 安全基线。
+题目聊天不在 Java 侧预判消息意图。模型直接读取当前用户消息，并结合教练风格中的分层规则判断是否提供提示、完整解法、代码反馈或提交错误诊断；工具执行仍由服务端权限和业务校验控制。
 
 ## Token 预算策略
 
@@ -501,10 +493,10 @@ FAIL_REQUIRED     required 片段无法保留，终止组装
 ```json
 {
   "promptProfile": "PRACTICE_CHAT_V1",
-  "promptProfileVersion": "2026-06-24",
+  "promptProfileVersion": "2026-07-21",
   "promptSectionVersions": {
     "practice.base.identity": "v1",
-    "practice.strategy.coach": "v1",
+    "practice.strategy.coach": "v2",
     "practice.context.problem": "v1"
   },
   "promptPolicy": "practice-chat-prompt-assembly",

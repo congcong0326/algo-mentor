@@ -7,7 +7,7 @@ public final class PracticeChatPromptConstants {
 
   public static final String SCENARIO = "PRACTICE_CHAT";
   public static final String PROFILE_ID = "PRACTICE_CHAT_V1";
-  public static final String PROFILE_VERSION = "2026-06-24";
+  public static final String PROFILE_VERSION = "2026-07-21";
   public static final String POLICY_NAME = "practice-chat-prompt-assembly";
   public static final String POLICY_VERSION = "v1";
   public static final int DEFAULT_TOKEN_BUDGET = 8_000;
@@ -60,10 +60,6 @@ public final class PracticeChatPromptConstants {
    * 当前题目聊天语言，用于选择题面本地化版本，并作为 prompt 中的回复语言参考。
    */
   public static final String METADATA_LOCALE = "locale";
-  /**
-   * 本轮用户消息意图分类，用于在题目聊天 prompt 中调整教练策略。
-   */
-  public static final String METADATA_MESSAGE_INTENT = "messageIntent";
   /**
    * 当前用户选择的教练风格，用于每轮动态注入受控 style prompt。
    */
