@@ -1,5 +1,7 @@
 import {
+  Activity,
   ArrowRight,
+  BrainCircuit,
   CalendarDays,
   CheckCircle2,
   ChevronRight,
@@ -7,8 +9,17 @@ import {
   ClipboardList,
   RotateCcw,
   SlidersHorizontal,
+  Target,
+  Trophy,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import AbilityRadarChart from './ability/AbilityRadarChart';
+import {
+  defaultAbilityTagKeys,
+  findBreakthroughTag,
+  formatAbilityScore,
+  summarizeAbilityProfile,
+} from './ability/abilityProfile';
 import { APP_ROUTES, learningPlanPracticeChatPath, learningPlanTodayPackPath } from './app/navigation';
 import { formatDate, formatDifficulty, formatProblemTitle } from './i18n/formatters';
 import { useI18n } from './i18n/I18nProvider';
@@ -19,6 +30,7 @@ import {
 } from './learning-plans/learningPlanRhythm';
 import {
   getTodayPack,
+  getAbilityProfile,
   getReviewSummary,
   requireApiData,
   updateLearningPlanRhythm,
@@ -27,6 +39,7 @@ import {
 import type {
   LearningPlanDetailResponse,
   LearningPlanPaceStatus,
+  AbilityProfileResponse,
   TodayPackProblemResponse,
   TodayPackResponse,
 } from './types/api';
@@ -47,6 +60,7 @@ function browserTimezone() {
 }
 
 export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
+  const { locale, resources } = useI18n();
   const [timezone] = useState(browserTimezone);
   const [pack, setPack] = useState<TodayPackResponse>();
   const [loading, setLoading] = useState(true);
@@ -54,6 +68,9 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
   const [reviewDueCount, setReviewDueCount] = useState<number>();
   const [reviewLoading, setReviewLoading] = useState(true);
   const [reviewUnavailable, setReviewUnavailable] = useState(false);
+  const [abilityProfile, setAbilityProfile] = useState<AbilityProfileResponse>();
+  const [abilityLoading, setAbilityLoading] = useState(true);
+  const [abilityUnavailable, setAbilityUnavailable] = useState(false);
   const totalProblems = useMemo(
     () => pack?.sections.reduce((total, section) => total + section.problems.length, 0) ?? 0,
     [pack],
@@ -101,6 +118,27 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
     return () => controller.abort();
   }, []);
 
+  useEffect(() => {
+    const controller = new AbortController();
+    setAbilityLoading(true);
+    setAbilityUnavailable(false);
+    void getAbilityProfile(controller.signal)
+      .then((response) => {
+        setAbilityProfile(requireApiData(response, resources.home.abilityLoadFailed));
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          setAbilityUnavailable(true);
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setAbilityLoading(false);
+        }
+      });
+    return () => controller.abort();
+  }, [resources.home.abilityLoadFailed]);
+
   const activePlan = pack?.activePlan;
   const statusText = pack
     ? todayPackStatusText(pack, totalProblems)
@@ -122,25 +160,53 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
         ? `开始今日复习 ${reviewDueCount} 题`
         : '今日已完成';
   const reviewActionDisabled = reviewLoading || reviewUnavailable || !reviewDueCount;
+  const abilitySummary = summarizeAbilityProfile(abilityProfile);
+  const breakthroughTag = findBreakthroughTag(abilityProfile, abilitySummary.strongestTag);
+  const abilityRadarTags = abilityProfile
+    ? defaultAbilityTagKeys(abilityProfile)
+      .map((tag) => abilityProfile.tags.find((item) => item.tag === tag))
+      .filter((tag): tag is AbilityProfileResponse['tags'][number] => Boolean(tag))
+    : [];
+  const dashboardDate = new Intl.DateTimeFormat(locale, {
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+  }).format(new Date(`${pack?.localDate ?? new Date().toISOString().slice(0, 10)}T00:00:00`));
+  const weeklyTarget = activePlan ? activePlan.dailyProblemCount * activePlan.trainingDaysPerWeek : 0;
 
   return (
     <article className="today-pack-home" aria-label="首页">
+      <header className="home-dashboard-heading">
+        <div>
+          <p className="eyebrow">{resources.home.workspaceKicker}</p>
+          <h1>{resources.home.workspaceTitle}</h1>
+          <p>{resources.home.workspaceSubtitle}</p>
+        </div>
+        <span className="home-dashboard-date">
+          <CalendarDays aria-hidden="true" />
+          {dashboardDate}
+        </span>
+      </header>
+
       {error && <p className="error-text" role="alert">{error}</p>}
 
-      <div className="today-pack-home-entry-grid">
-        <section className="today-pack-home-entry" aria-label="题包入口">
-          <div className="today-pack-home-summary">
-            <span>{activePlan ? '今日题包' : '未采用方案'}</span>
+      <div className="home-focus-grid">
+        <section className="home-focus-panel training" aria-label="题包入口">
+          <div className="home-focus-panel-topline">
+            <span><Target aria-hidden="true" />{activePlan ? '今日题包' : '开始训练'}</span>
+            {activePlan ? <small>{activePlan.title}</small> : null}
+          </div>
+          <div className="home-focus-copy">
             <strong>{statusText}</strong>
-            {activePlan && (
-              <small>
-                {activePlan.title} · {activePlan.dailyProblemCount} 题/天 · 每周 {activePlan.trainingDaysPerWeek} 天
-              </small>
-            )}
+            <p>
+              {activePlan
+                ? `${activePlan.dailyProblemCount} 题/天 · 每周 ${activePlan.trainingDaysPerWeek} 天 · 计划剩余 ${activePlan.remainingProblemCount} 题`
+                : '先采用一份学习方案，首页会按节奏整理每天最该完成的训练。'}
+            </p>
           </div>
           {activePlan ? (
             <button
-              className="primary-button compact"
+              className="primary-button"
               onClick={() => onNavigate(learningPlanTodayPackPath(activePlan.planId))}
               type="button"
             >
@@ -149,7 +215,7 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
             </button>
           ) : (
             <button
-              className="primary-button compact"
+              className="primary-button"
               onClick={() => onNavigate(APP_ROUTES.learningPlans)}
               type="button"
             >
@@ -159,13 +225,16 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
           )}
         </section>
 
-        <section className="today-pack-home-entry" aria-busy={reviewLoading} aria-label="复习中心入口">
-          <div className="today-pack-home-summary">
-            <span>复习中心</span>
+        <section className="home-focus-panel review" aria-busy={reviewLoading} aria-label="复习中心入口">
+          <div className="home-focus-panel-topline">
+            <span><Activity aria-hidden="true" />复习中心</span>
+          </div>
+          <div className="home-focus-copy">
             <strong>{reviewStatusText}</strong>
+            <p>先复述、再评级，让错题按遗忘风险回到今天，而不是堆成一份静态清单。</p>
           </div>
           <button
-            className="secondary-button compact"
+            className="secondary-button"
             disabled={reviewActionDisabled}
             onClick={() => onNavigate(APP_ROUTES.reviewSession)}
             type="button"
@@ -174,6 +243,103 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
             <ArrowRight aria-hidden="true" />
           </button>
         </section>
+      </div>
+
+      <div className="home-dashboard-grid">
+        <section className="home-ability-panel" aria-labelledby="home-ability-title">
+          <div className="home-panel-heading">
+            <div>
+              <p className="eyebrow">ABILITY PROFILE</p>
+              <h2 id="home-ability-title">学习诊断</h2>
+              <p>把长期画像压缩成今天真正有用的判断。</p>
+            </div>
+            <button className="text-action-button" onClick={() => onNavigate(APP_ROUTES.my)} type="button">
+              <span>查看完整画像</span>
+              <ArrowRight aria-hidden="true" />
+            </button>
+          </div>
+          {abilityLoading ? (
+            <div className="home-panel-state" role="status">{resources.home.abilityLoading}</div>
+          ) : abilityUnavailable ? (
+            <div className="home-panel-state">能力画像暂不可用，今日训练入口不受影响。</div>
+          ) : abilityProfile && abilityProfile.tags.length > 0 ? (
+            <div className="home-ability-layout">
+              <button
+                aria-label="查看完整能力画像"
+                className="home-ability-radar-button"
+                onClick={() => onNavigate(APP_ROUTES.my)}
+                type="button"
+              >
+                <AbilityRadarChart profile={abilityProfile} tags={abilityRadarTags} />
+              </button>
+              <div className="home-ability-insights">
+                <div className="home-ability-stat-row">
+                  <span>
+                    <BrainCircuit aria-hidden="true" />
+                    平均能力
+                  </span>
+                  <strong>{formatAbilityScore(abilitySummary.averageScore, locale)} / 10</strong>
+                </div>
+                <div className="home-insight-block strength">
+                  <span><Trophy aria-hidden="true" />当前优势</span>
+                  <strong>{abilitySummary.strongestTag?.label ?? '暂无'}</strong>
+                  <p>
+                    {abilitySummary.strongestTag
+                      ? `已基于 ${abilitySummary.strongestTag.reviewedProblemCount} 道复盘题形成判断。`
+                      : resources.myPage.noTopAbilities}
+                  </p>
+                </div>
+                <div className="home-insight-block next">
+                  <span><Target aria-hidden="true" />下一步突破</span>
+                  <strong>{breakthroughTag?.label ?? '继续积累复盘数据'}</strong>
+                  <p>{breakthroughTag ? `今天优先补一题“${breakthroughTag.label}”基础练习。` : resources.myPage.noTopAbilities}</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="home-panel-state">{resources.home.abilityEmpty}</div>
+          )}
+        </section>
+
+        <aside className="home-plan-panel" aria-labelledby="home-plan-title">
+          <div className="home-panel-heading compact-heading">
+            <div>
+              <p className="eyebrow">CURRENT PLAN</p>
+              <h2 id="home-plan-title">本周节奏</h2>
+            </div>
+          </div>
+          {activePlan ? (
+            <>
+              <strong className="home-plan-title">{activePlan.title}</strong>
+              <dl className="home-plan-metrics">
+                <div>
+                  <dt>每日训练</dt>
+                  <dd>{activePlan.dailyProblemCount} 题</dd>
+                </div>
+                <div>
+                  <dt>每周目标</dt>
+                  <dd>{weeklyTarget} 题</dd>
+                </div>
+                <div>
+                  <dt>剩余题目</dt>
+                  <dd>{activePlan.remainingProblemCount} 题</dd>
+                </div>
+              </dl>
+              <button className="secondary-button compact" onClick={() => onNavigate(APP_ROUTES.learningPlans)} type="button">
+                <span>管理学习方案</span>
+                <ArrowRight aria-hidden="true" />
+              </button>
+            </>
+          ) : (
+            <div className="home-empty-plan">
+              <strong>{pack?.recommendedPlan?.title ?? '还没有进行中的学习方案'}</strong>
+              <p>{pack?.recommendedPlan?.summary ?? '创建方案后，这里会显示每周训练节奏和剩余任务。'}</p>
+              <button className="secondary-button compact" onClick={() => onNavigate(APP_ROUTES.learningPlans)} type="button">
+                查看训练方案
+              </button>
+            </div>
+          )}
+        </aside>
       </div>
     </article>
   );

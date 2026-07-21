@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import HomeDashboard from './HomeDashboard';
 import LearningPlans from './LearningPlans';
 import MyPage from './MyPage';
+import SettingsPage from './SettingsPage';
 import ProblemLibrary from './ProblemLibrary';
 import TodayPackPage from './TodayPackPage';
 import MistakeNotebookPage from './mistakes/MistakeNotebookPage';
@@ -39,7 +40,7 @@ import type { AuthPermission, CurrentUser, PasswordLoginRequest, PasswordRegiste
 
 const DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.home;
 const ADMIN_DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.adminOverview;
-const ADMIN_RESTRICTED_VIEWS: ReadonlySet<AppView> = new Set(['home', 'learningPlans', 'mistakes', 'my']);
+const ADMIN_RESTRICTED_VIEWS: ReadonlySet<AppView> = new Set(['home', 'learningPlans', 'mistakes', 'my', 'settings']);
 
 function hasPermission(user: CurrentUser | undefined, permission: AuthPermission): boolean {
   return !!user?.permissions?.includes(permission);
@@ -662,6 +663,14 @@ export default function App() {
           ? <TodayPackPage onNavigate={navigateToPath} />
           : activeView === 'my'
           ? <MyPage />
+          : activeView === 'settings'
+          ? (
+            <SettingsPage
+              currentUser={currentUser}
+              logoutPending={logoutPending}
+              onLogout={() => void handleLogout()}
+            />
+          )
           : activeView === 'problems' && hasPermission(currentUser, 'problem:read')
           ? <ProblemLibrary />
           : activeView === 'adminUsers' && hasPermission(currentUser, 'user:manage')

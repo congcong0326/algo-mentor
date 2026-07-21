@@ -1,21 +1,19 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { I18nProvider } from './i18n/I18nProvider';
-import MyPage from './MyPage';
+import SettingsPage from './SettingsPage';
 import {
-  getAbilityProfile,
   getReviewPreference,
   getUserAiPreference,
 } from './services/api';
 import type {
-  AbilityProfileResponse,
   ApiResponse,
+  CurrentUser,
   ReviewPreference,
   UserAiPreference,
 } from './types/api';
 
 vi.mock('./services/api', () => ({
-  getAbilityProfile: vi.fn(),
   getReviewPreference: vi.fn(),
   getUserAiPreference: vi.fn(),
   requireApiData: <T,>(response: ApiResponse<T>, fallbackMessage: string): T => {
@@ -30,7 +28,6 @@ vi.mock('./services/api', () => ({
 }));
 
 beforeEach(() => {
-  vi.mocked(getAbilityProfile).mockResolvedValue(apiResponse(abilityProfile()));
   vi.mocked(getUserAiPreference).mockResolvedValue(apiResponse(userAiPreference()));
   vi.mocked(getReviewPreference).mockResolvedValue(apiResponse(reviewPreference()));
 });
@@ -40,21 +37,17 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe('MyPage', () => {
+describe('SettingsPage', () => {
   it('associates every review setting help icon with its accessible tooltip', async () => {
     renderPage();
 
-    expect(await screen.findByRole('heading', { name: '复习设置' })).toBeInTheDocument();
-    expect(getAbilityProfile).toHaveBeenCalledTimes(1);
+    expect(await screen.findByRole('heading', { name: '复习策略' })).toBeInTheDocument();
     expect(getUserAiPreference).toHaveBeenCalledTimes(1);
     expect(getReviewPreference).toHaveBeenCalledTimes(1);
 
+    fireEvent.click(screen.getByText('高级复习设置'));
+
     const helpItems = [
-      {
-        description: 'AI 仅分析复述并给出建议，最终评级仍由用户确认；关闭后直接手动评级。',
-        label: 'AI 建议评级说明',
-        tooltipId: 'review-ai-suggestion-tooltip',
-      },
       {
         description: '数值越高，复习安排越频繁、遗忘风险越低。',
         label: '目标记忆率说明',
@@ -77,7 +70,7 @@ describe('MyPage', () => {
       },
     ];
 
-    expect(screen.getAllByRole('img', { name: /说明$/ })).toHaveLength(5);
+    expect(screen.getAllByRole('img', { name: /说明$/ })).toHaveLength(4);
     helpItems.forEach(({ description, label, tooltipId }) => {
       expect(screen.getByRole('img', { name: label })).toHaveAttribute('aria-describedby', tooltipId);
       expect(screen.getByRole('tooltip', { name: description })).toHaveAttribute('id', tooltipId);
@@ -88,7 +81,10 @@ describe('MyPage', () => {
 function renderPage() {
   render(
     <I18nProvider>
-      <MyPage />
+      <SettingsPage
+        currentUser={user}
+        onLogout={vi.fn()}
+      />
     </I18nProvider>,
   );
 }
@@ -101,24 +97,23 @@ function apiResponse<T>(data: T): ApiResponse<T> {
   };
 }
 
-function abilityProfile(): AbilityProfileResponse {
-  return {
-    tags: [],
-    scope: {
-      minProblemCount: 20,
-      scorePrecision: 1,
-      latestReviewOnly: true,
-      conservativeWeight: 4,
-    },
-  };
-}
-
 function userAiPreference(): UserAiPreference {
   return {
     coachStyle: 'GUIDED',
     coachStyleLabel: '引导型教练',
   };
 }
+
+const user: CurrentUser = {
+  id: 42,
+  email: 'user@example.com',
+  displayName: 'User Name',
+  avatarUrl: undefined,
+  roles: ['USER'],
+  permissions: [],
+  status: 'ACTIVE',
+  passwordChangeRequired: false,
+};
 
 function reviewPreference(): ReviewPreference {
   return {

@@ -392,15 +392,15 @@ describe('App', () => {
     expect(await screen.findByText('User Name')).toBeInTheDocument();
     expect(await screen.findByRole('article', { name: '首页' })).toHaveClass('today-pack-home');
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '我的' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.queryByRole('button', { name: '学习画像' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '去方案页创建或采用一个' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '一键生成并激活' })).not.toBeInTheDocument();
     expect(screen.queryByText('两数之和')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Start Reviewing' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('img', { name: '能力雷达图' })).not.toBeInTheDocument();
-    expect(fetchMock.mock.calls.some(([url]) => url === '/api/abilities/profile')).toBe(false);
+    expect(await screen.findByRole('img', { name: '能力雷达图' })).toBeInTheDocument();
+    expect(fetchMock.mock.calls.some(([url]) => url === '/api/abilities/profile')).toBe(true);
     expect(window.location.pathname).toBe('/');
   });
 
@@ -530,24 +530,41 @@ describe('App', () => {
     expect(screen.getByText('平均能力')).toBeInTheDocument();
     expect(screen.getByText('已复盘题量')).toBeInTheDocument();
     expect(screen.getByText('当前主攻优势')).toBeInTheDocument();
-    expect(screen.queryByText('教练模式')).not.toBeInTheDocument();
-    expect(screen.queryByText('精选能力')).not.toBeInTheDocument();
-    expect(await screen.findByRole('heading', { name: 'AI 教练偏好' })).toBeInTheDocument();
-    expect(await screen.findByRole('button', { name: /引导型教练/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.queryByRole('heading', { name: 'AI 教练偏好' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: '复习设置' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /English/ })).not.toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: '能力雷达图' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '诊断报告摘要' })).toBeInTheDocument();
     expect(screen.getByText('突破建议')).toBeInTheDocument();
     expect(screen.queryByText('下一次回复生效')).not.toBeInTheDocument();
     expect(screen.queryByText('Applies to the next reply')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '我的' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'false');
+    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
+    expect(screen.queryByRole('button', { name: '学习画像' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '设置' })).toBeInTheDocument();
     expect(document.querySelector('.my-card.ability-card')).toBeInTheDocument();
     expect(await screen.findAllByTestId('ability-radar-axis-label')).toHaveLength(8);
     expect(screen.getAllByTestId('ability-rose-petal')).toHaveLength(8);
     expect(screen.getByRole('button', { name: '放大能力画像' })).toHaveClass('ability-radar-open-button');
-    expect(screen.queryByText('二分查找')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '全量 tag 能力热力图' })).toBeInTheDocument();
+    expect(screen.getAllByTestId('ability-heatmap-tag')).toHaveLength(23);
+    expect(screen.getByText('二分查找')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '添加 二分查找' }));
+    expect(screen.getAllByTestId('ability-radar-axis-label')).toHaveLength(9);
     expect(window.location.pathname).toBe('/me');
+  });
+
+  it('opens the full learning profile with the heatmap from the home dashboard', async () => {
+    vi.stubGlobal('fetch', mockAuthenticatedAppFetch());
+    window.history.replaceState({}, '', '/');
+
+    render(<App />);
+
+    fireEvent.click(await screen.findByRole('button', { name: '查看完整画像' }));
+
+    expect(window.location.pathname).toBe('/me');
+    expect(await screen.findByRole('heading', { name: '全量 tag 能力热力图' })).toBeInTheDocument();
+    expect(screen.getAllByTestId('ability-heatmap-tag')).toHaveLength(23);
   });
 
   it('opens ability details, edits radar tags from the heatmap, caps selection, and keeps page state after close', async () => {
@@ -607,13 +624,14 @@ describe('App', () => {
     expect(within(dialog).getByText('至少保留 3 个 tag，避免雷达图失真。')).toBeInTheDocument();
   });
 
-  it('updates AI coach preferences from the my page', async () => {
+  it('updates AI coach preferences from the settings page', async () => {
     const fetchMock = mockAuthenticatedAppFetch();
     vi.stubGlobal('fetch', fetchMock);
-    window.history.replaceState({}, '', '/me');
+    window.history.replaceState({}, '', '/settings');
 
     render(<App />);
 
+    expect(await screen.findByRole('heading', { name: '设置' })).toBeInTheDocument();
     fireEvent.click(await screen.findByRole('button', { name: /直给型教练/ }));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
@@ -703,10 +721,10 @@ describe('App', () => {
 
     expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '我的' }));
+    window.history.pushState({}, '', '/me');
+    fireEvent(window, new PopStateEvent('popstate'));
 
     expect(await screen.findByRole('heading', { name: '我的学习画像' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '我的' })).toHaveAttribute('aria-pressed', 'true');
     expect(window.location.pathname).toBe('/me');
 
     window.history.back();
@@ -949,6 +967,7 @@ describe('App', () => {
     render(<App />);
 
     expect(await screen.findByText('User Name')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
     fireEvent.click(screen.getByRole('button', { name: '退出登录' }));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
@@ -980,7 +999,8 @@ describe('App', () => {
 
     render(<App />);
 
-    fireEvent.click(await screen.findByRole('button', { name: '退出登录' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'User Name' }));
+    fireEvent.click(screen.getByRole('button', { name: '退出登录' }));
 
     expect(screen.getByRole('button', { name: '退出中' })).toBeDisabled();
 
@@ -1017,6 +1037,7 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
     expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
     fireEvent.click(screen.getByRole('button', { name: '退出登录' }));
 
     expect(await screen.findByRole('button', { name: '登录' })).toBeInTheDocument();
@@ -1190,6 +1211,7 @@ describe('App', () => {
     expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
     await waitFor(() => expect(capturedSignal).toBeDefined());
+    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
     fireEvent.click(screen.getByRole('button', { name: '退出登录' }));
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
@@ -2487,6 +2509,13 @@ function mockUnauthenticatedFetch() {
 
 function mockAuthenticatedAppFetch() {
   let preference = userAiPreferenceData();
+  let reviewPreference = {
+    aiSuggestionEnabled: true,
+    dailyLearningLimit: 50,
+    dailyNewLimit: 10,
+    dailyReviewLimit: 30,
+    desiredRetention: 0.9,
+  };
   return vi.fn((url: string, init?: RequestInit) => {
     if (url === '/api/auth/me') {
       return Promise.resolve(authenticatedUserResponse());
@@ -2502,6 +2531,24 @@ function mockAuthenticatedAppFetch() {
         coachStyleLabel: coachStyleLabel(request.coachStyle ?? preference.coachStyle),
       };
       return Promise.resolve(userAiPreferenceResponse(preference));
+    }
+    if (url === '/api/me/review-preferences' && (!init?.method || init.method === 'GET')) {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: reviewPreference,
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
+    }
+    if (url === '/api/me/review-preferences' && init?.method === 'PATCH') {
+      reviewPreference = {
+        ...reviewPreference,
+        ...(JSON.parse(String(init.body ?? '{}')) as Partial<typeof reviewPreference>),
+      };
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: reviewPreference,
+        timestamp: '2026-06-22T00:00:00Z',
+      }));
     }
     if (url === '/api/abilities/profile') {
       return Promise.resolve(abilityProfileResponse());

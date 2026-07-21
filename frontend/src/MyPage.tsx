@@ -1,13 +1,8 @@
 import {
   Activity,
   AlertCircle,
-  BrainCircuit,
-  BookOpenCheck as BookOpenIcon,
-  Check,
-  CircleHelp,
   Gauge,
   X,
-  Settings2,
   Sparkles,
   Target,
   Trophy,
@@ -15,54 +10,24 @@ import {
 import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 import AbilityRadarChart from './ability/AbilityRadarChart';
+import {
+  defaultAbilityTagKeys,
+  findBreakthroughTag,
+  formatAbilityScore,
+  summarizeAbilityProfile,
+} from './ability/abilityProfile';
 import { useI18n } from './i18n/I18nProvider';
 import {
   getAbilityProfile,
-  getReviewPreference,
-  getUserAiPreference,
   requireApiData,
-  updateReviewPreference,
-  updateUserAiPreference,
 } from './services/api';
 import type {
   AbilityProfileResponse,
   AbilityTagScore,
-  PracticeCoachStyle,
-  ReviewPreference,
-  ReviewPreferenceRequest,
-  UserAiPreference,
-  UserAiPreferenceRequest,
 } from './types/api';
 
-const coachStyleOptions: PracticeCoachStyle[] = ['GUIDED', 'DIRECT'];
-const defaultRadarTagCount = 8;
 const maxRadarTagCount = 12;
 const minRadarTagCount = 3;
-
-interface ReviewSettingHelpProps {
-  description: string;
-  label: string;
-  tooltipId: string;
-}
-
-function ReviewSettingHelp({ description, label, tooltipId }: ReviewSettingHelpProps) {
-  return (
-    <span className="toolbar-tooltip-wrap review-setting-tooltip-wrap">
-      <span
-        aria-describedby={tooltipId}
-        aria-label={`${label}说明`}
-        className="icon-button review-setting-help"
-        role="img"
-        tabIndex={0}
-      >
-        <CircleHelp aria-hidden="true" />
-      </span>
-      <span className="toolbar-tooltip review-setting-tooltip" id={tooltipId} role="tooltip">
-        {description}
-      </span>
-    </span>
-  );
-}
 
 export default function MyPage() {
   const { locale, resources } = useI18n();
@@ -72,23 +37,10 @@ export default function MyPage() {
   const [selectedAbilityTags, setSelectedAbilityTags] = useState<string[]>([]);
   const [abilityDialogOpen, setAbilityDialogOpen] = useState(false);
   const [abilitySelectionNotice, setAbilitySelectionNotice] = useState('');
-  const [aiPreference, setAiPreference] = useState<UserAiPreference>();
-  const [preferenceLoading, setPreferenceLoading] = useState(true);
-  const [preferenceError, setPreferenceError] = useState('');
-  const [preferenceSaveError, setPreferenceSaveError] = useState('');
-  const [preferenceSaving, setPreferenceSaving] = useState(false);
-  const [preferenceSaved, setPreferenceSaved] = useState(false);
-  const [reviewPreference, setReviewPreference] = useState<ReviewPreference>();
-  const [reviewPreferenceLoading, setReviewPreferenceLoading] = useState(true);
-  const [reviewPreferenceError, setReviewPreferenceError] = useState('');
-  const [reviewPreferenceSaveError, setReviewPreferenceSaveError] = useState('');
-  const [reviewPreferenceSaving, setReviewPreferenceSaving] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
     void loadAbilityProfile(controller.signal);
-    void loadAiPreference(controller.signal);
-    void loadReviewPreference(controller.signal);
     return () => controller.abort();
   }, []);
 
@@ -113,107 +65,14 @@ export default function MyPage() {
     }
   }
 
-  async function loadAiPreference(signal?: AbortSignal) {
-    setPreferenceLoading(true);
-    setPreferenceError('');
-    setPreferenceSaveError('');
-    setPreferenceSaved(false);
-    try {
-      const response = await getUserAiPreference(signal);
-      setAiPreference(requireApiData(response, resources.aiPreference.loadFailed));
-    } catch (error) {
-      if (signal?.aborted) {
-        return;
-      }
-      setPreferenceError(error instanceof Error ? error.message : resources.aiPreference.loadFailed);
-    } finally {
-      if (!signal?.aborted) {
-        setPreferenceLoading(false);
-      }
-    }
-  }
-
-  async function saveAiPreference(update: UserAiPreferenceRequest) {
-    if (!aiPreference || preferenceSaving) {
-      return;
-    }
-    const previousPreference = aiPreference;
-    const nextRequest = {
-      coachStyle: update.coachStyle ?? aiPreference.coachStyle,
-    };
-    if (nextRequest.coachStyle === aiPreference.coachStyle) {
-      return;
-    }
-    setAiPreference({
-      ...aiPreference,
-      ...nextRequest,
-      coachStyleLabel: resources.aiPreference.coachStyleLabels[nextRequest.coachStyle],
-    });
-    setPreferenceSaving(true);
-    setPreferenceSaved(false);
-    setPreferenceSaveError('');
-    try {
-      const response = await updateUserAiPreference(nextRequest);
-      setAiPreference(requireApiData(response, resources.aiPreference.saveFailed));
-      setPreferenceSaved(true);
-    } catch (error) {
-      setAiPreference(previousPreference);
-      setPreferenceSaveError(error instanceof Error ? error.message : resources.aiPreference.saveFailed);
-    } finally {
-      setPreferenceSaving(false);
-    }
-  }
-
-  async function loadReviewPreference(signal?: AbortSignal) {
-    setReviewPreferenceLoading(true);
-    setReviewPreferenceError('');
-    setReviewPreferenceSaveError('');
-    try {
-      const response = await getReviewPreference(signal);
-      setReviewPreference(requireApiData(response, '复习设置加载失败'));
-    } catch (error) {
-      if (signal?.aborted) {
-        return;
-      }
-      setReviewPreferenceError(error instanceof Error ? error.message : '复习设置加载失败');
-    } finally {
-      if (!signal?.aborted) {
-        setReviewPreferenceLoading(false);
-      }
-    }
-  }
-
-  async function saveReviewPreference(update: ReviewPreferenceRequest) {
-    if (!reviewPreference || reviewPreferenceSaving) {
-      return;
-    }
-    const previousPreference = reviewPreference;
-    const nextPreference = {
-      ...reviewPreference,
-      ...update,
-    };
-    setReviewPreference(nextPreference);
-    setReviewPreferenceSaving(true);
-    setReviewPreferenceSaveError('');
-    try {
-      const response = await updateReviewPreference(update);
-      setReviewPreference(requireApiData(response, '复习设置保存失败'));
-    } catch (error) {
-      setReviewPreference(previousPreference);
-      setReviewPreferenceSaveError(error instanceof Error ? error.message : '复习设置保存失败');
-    } finally {
-      setReviewPreferenceSaving(false);
-    }
-  }
-
   const abilitySummary = summarizeAbilityProfile(abilityProfile);
   const selectedAbilityTagScores = selectedAbilityTags
     .map((tag) => abilityProfile?.tags.find((item) => item.tag === tag))
     .filter((tag): tag is AbilityTagScore => Boolean(tag));
   const defaultAbilityTags = new Set(abilityProfile ? defaultAbilityTagKeys(abilityProfile) : []);
-  const averageScore = formatScore(abilitySummary.averageScore, locale);
+  const averageScore = formatAbilityScore(abilitySummary.averageScore, locale);
   const strongestScore = abilitySummary.strongestTag
-    ? formatScore(abilitySummary.strongestTag.abilityScore, locale)
+    ? formatAbilityScore(abilitySummary.strongestTag.abilityScore, locale)
     : resources.myPage.noData;
   const breakthroughTag = findBreakthroughTag(abilityProfile, abilitySummary.strongestTag);
   const summaryCards = [
@@ -276,6 +135,57 @@ export default function MyPage() {
     });
   }
 
+  function renderAbilityHeatmap(titleId: string, className = '') {
+    if (!abilityProfile) {
+      return null;
+    }
+
+    return (
+      <section
+        className={`ability-heatmap-section ${className}`.trim()}
+        aria-labelledby={titleId}
+      >
+        <div className="ability-heatmap-heading">
+          <div>
+            <p className="my-section-eyebrow">ABILITY COVERAGE</p>
+            <h2 id={titleId}>{resources.myPage.abilityHeatmapTitle}</h2>
+          </div>
+          <span>{resources.myPage.abilityHeatmapHint}</span>
+        </div>
+        <div className="ability-heatmap-grid">
+          {abilityProfile.tags.map((tag) => {
+            const selected = selectedAbilityTags.includes(tag.tag);
+            const disabled = !selected && selectedAbilityTags.length >= maxRadarTagCount;
+            return (
+              <button
+                aria-label={selected ? resources.myPage.removeHeatmapTag(tag.label) : resources.myPage.addHeatmapTag(tag.label)}
+                aria-pressed={selected}
+                className={`ability-heatmap-cell ${selected ? 'selected' : ''}`}
+                data-testid="ability-heatmap-tag"
+                disabled={disabled}
+                key={tag.tag}
+                onClick={() => toggleAbilityTag(tag)}
+                style={heatmapCellStyle(tag.abilityScore)}
+                type="button"
+              >
+                <strong>{tag.label}</strong>
+                <span>{resources.myPage.scoreValue(formatAbilityScore(tag.abilityScore, locale))}</span>
+                <small>
+                  {resources.myPage.reviewedProblemsValue(tag.reviewedProblemCount)}
+                  {' / '}
+                  {resources.myPage.catalogProblemsValue(tag.problemCount)}
+                </small>
+              </button>
+            );
+          })}
+        </div>
+        {abilitySelectionNotice ? (
+          <p className="ability-selection-notice" role="status">{abilitySelectionNotice}</p>
+        ) : null}
+      </section>
+    );
+  }
+
   return (
     <section className="my-page" aria-label={resources.nav.my}>
       <header className="my-page-hero" aria-labelledby="my-page-title">
@@ -307,7 +217,7 @@ export default function MyPage() {
         })}
       </div>
 
-      <div className="my-workspace-grid">
+      <div className="my-workspace-grid profile-only">
         <article className="my-card ability-card" aria-labelledby="ability-radar-title">
           <div className="my-card-heading ability-heading">
             <div className="my-card-title">
@@ -376,223 +286,7 @@ export default function MyPage() {
             <div className="ability-state">{resources.home.abilityEmpty}</div>
           )}
         </article>
-
-        <article className="my-card ai-preference-card" aria-labelledby="ai-preference-title">
-          <div className="my-card-heading">
-            <div className="my-card-title">
-              <span className="my-card-title-icon" aria-hidden="true">
-                <Settings2 />
-              </span>
-              <div>
-                <p className="my-section-eyebrow">{resources.myPage.coachPanelEyebrow}</p>
-                <h2 id="ai-preference-title">{resources.aiPreference.title}</h2>
-              </div>
-            </div>
-            <div className="preference-save-status" aria-live="polite">
-              {preferenceSaving ? (
-                <span>{resources.aiPreference.saving}</span>
-              ) : preferenceSaved ? (
-                <span>{resources.aiPreference.saved}</span>
-              ) : null}
-            </div>
-          </div>
-
-          {preferenceLoading ? (
-            <div className="preference-state" role="status">{resources.aiPreference.loading}</div>
-          ) : preferenceError ? (
-            <div className="preference-state error" role="alert">
-              <AlertCircle aria-hidden="true" />
-              <span>{preferenceError}</span>
-              <button className="secondary-button compact" onClick={() => void loadAiPreference()} type="button">
-                {resources.app.retry}
-              </button>
-            </div>
-          ) : aiPreference ? (
-            <div className="preference-controls">
-              <div className="current-coach-strip">
-                <BrainCircuit aria-hidden="true" />
-                <div>
-                  <span>{resources.myPage.selectedCoach}</span>
-                  <strong>{aiPreference.coachStyleLabel}</strong>
-                </div>
-              </div>
-              <fieldset className="preference-control-group">
-                <legend>{resources.aiPreference.coachStyle}</legend>
-                <div className="coach-style-grid">
-                  {coachStyleOptions.map((style) => (
-                    <button
-                      aria-pressed={aiPreference.coachStyle === style}
-                      className={`preference-option ${aiPreference.coachStyle === style ? 'selected' : ''}`}
-                      disabled={preferenceSaving}
-                      key={style}
-                      onClick={() => void saveAiPreference({ coachStyle: style })}
-                      type="button"
-                    >
-                      <span className="preference-option-title">
-                        <span className="preference-option-check" aria-hidden="true">
-                          {aiPreference.coachStyle === style ? <Check /> : null}
-                        </span>
-                        {resources.aiPreference.coachStyleLabels[style]}
-                      </span>
-                      <span className="preference-option-description">
-                        {resources.aiPreference.coachStyleDescriptions[style]}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </fieldset>
-              {preferenceSaveError ? (
-                <div className="preference-save-error" role="alert">
-                  <AlertCircle aria-hidden="true" />
-                  <span>{preferenceSaveError}</span>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-        </article>
-
-        <article className="my-card ai-preference-card" aria-labelledby="review-preference-title">
-          <div className="my-card-heading">
-            <div className="my-card-title">
-              <span className="my-card-title-icon" aria-hidden="true">
-                <BookOpenIcon />
-              </span>
-              <div>
-                <p className="my-section-eyebrow">FSRS</p>
-                <h2 id="review-preference-title">复习设置</h2>
-              </div>
-            </div>
-            <div className="preference-save-status" aria-live="polite">
-              {reviewPreferenceSaving ? <span>保存中...</span> : null}
-            </div>
-          </div>
-
-          {reviewPreferenceLoading ? (
-            <div className="preference-state" role="status">正在加载复习设置...</div>
-          ) : reviewPreferenceError ? (
-            <div className="preference-state error" role="alert">
-              <AlertCircle aria-hidden="true" />
-              <span>{reviewPreferenceError}</span>
-              <button className="secondary-button compact" onClick={() => void loadReviewPreference()} type="button">
-                {resources.app.retry}
-              </button>
-            </div>
-          ) : reviewPreference ? (
-            <div className="preference-controls">
-              <label className="checkbox-control review-setting-checkbox">
-                <input
-                  checked={reviewPreference.aiSuggestionEnabled}
-                  disabled={reviewPreferenceSaving}
-                  onChange={(event) => void saveReviewPreference({ aiSuggestionEnabled: event.target.checked })}
-                  type="checkbox"
-                />
-                <span className="review-setting-label">
-                  <span>复习后启用 AI 建议评级</span>
-                  <ReviewSettingHelp
-                    description="AI 仅分析复述并给出建议，最终评级仍由用户确认；关闭后直接手动评级。"
-                    label="AI 建议评级"
-                    tooltipId="review-ai-suggestion-tooltip"
-                  />
-                </span>
-              </label>
-              <fieldset className="preference-control-group">
-                <legend>FSRS 参数</legend>
-                <label className="review-setting-field">
-                  <span className="review-setting-label">
-                    <span>目标记忆率</span>
-                    <ReviewSettingHelp
-                      description="数值越高，复习安排越频繁、遗忘风险越低。"
-                      label="目标记忆率"
-                      tooltipId="review-desired-retention-tooltip"
-                    />
-                  </span>
-                  <input
-                    disabled={reviewPreferenceSaving}
-                    max="0.97"
-                    min="0.70"
-                    onBlur={(event) => void saveReviewPreference({ desiredRetention: Number(event.target.value) })}
-                    step="0.01"
-                    type="number"
-                    value={reviewPreference.desiredRetention}
-                    onChange={(event) => setReviewPreference({
-                      ...reviewPreference,
-                      desiredRetention: Number(event.target.value),
-                    })}
-                  />
-                </label>
-                <label className="review-setting-field">
-                  <span className="review-setting-label">
-                    <span>每日新卡</span>
-                    <ReviewSettingHelp
-                      description="当天首次进入队列的卡片数量，0 表示不安排新卡。"
-                      label="每日新卡"
-                      tooltipId="review-daily-new-limit-tooltip"
-                    />
-                  </span>
-                  <input
-                    disabled={reviewPreferenceSaving}
-                    min="0"
-                    onBlur={(event) => void saveReviewPreference({ dailyNewLimit: Number(event.target.value) })}
-                    type="number"
-                    value={reviewPreference.dailyNewLimit}
-                    onChange={(event) => setReviewPreference({
-                      ...reviewPreference,
-                      dailyNewLimit: Number(event.target.value),
-                    })}
-                  />
-                </label>
-                <label className="review-setting-field">
-                  <span className="review-setting-label">
-                    <span>学习中上限</span>
-                    <ReviewSettingHelp
-                      description="当天处于学习或重新学习状态的到期卡数量。"
-                      label="学习中上限"
-                      tooltipId="review-daily-learning-limit-tooltip"
-                    />
-                  </span>
-                  <input
-                    disabled={reviewPreferenceSaving}
-                    min="1"
-                    onBlur={(event) => void saveReviewPreference({ dailyLearningLimit: Number(event.target.value) })}
-                    type="number"
-                    value={reviewPreference.dailyLearningLimit}
-                    onChange={(event) => setReviewPreference({
-                      ...reviewPreference,
-                      dailyLearningLimit: Number(event.target.value),
-                    })}
-                  />
-                </label>
-                <label className="review-setting-field">
-                  <span className="review-setting-label">
-                    <span>复习卡上限</span>
-                    <ReviewSettingHelp
-                      description="当天处于复习状态的到期卡数量。"
-                      label="复习卡上限"
-                      tooltipId="review-daily-review-limit-tooltip"
-                    />
-                  </span>
-                  <input
-                    disabled={reviewPreferenceSaving}
-                    min="1"
-                    onBlur={(event) => void saveReviewPreference({ dailyReviewLimit: Number(event.target.value) })}
-                    type="number"
-                    value={reviewPreference.dailyReviewLimit}
-                    onChange={(event) => setReviewPreference({
-                      ...reviewPreference,
-                      dailyReviewLimit: Number(event.target.value),
-                    })}
-                  />
-                </label>
-              </fieldset>
-              {reviewPreferenceSaveError ? (
-                <div className="preference-save-error" role="alert">
-                  <AlertCircle aria-hidden="true" />
-                  <span>{reviewPreferenceSaveError}</span>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-        </article>
+        {renderAbilityHeatmap('profile-ability-heatmap-title', 'my-card profile-heatmap-section')}
       </div>
       {abilityDialogOpen && abilityProfile ? (
         <div className="ability-dialog-backdrop">
@@ -644,44 +338,9 @@ export default function MyPage() {
                     )
                   ))}
                 </div>
-                {abilitySelectionNotice ? (
-                  <p className="ability-selection-notice" role="status">{abilitySelectionNotice}</p>
-                ) : null}
               </aside>
             </div>
-            <section className="ability-heatmap-section" aria-labelledby="ability-heatmap-title">
-              <div className="ability-heatmap-heading">
-                <h3 id="ability-heatmap-title">{resources.myPage.abilityHeatmapTitle}</h3>
-                <span>{resources.myPage.abilityHeatmapHint}</span>
-              </div>
-              <div className="ability-heatmap-grid">
-                {abilityProfile.tags.map((tag) => {
-                  const selected = selectedAbilityTags.includes(tag.tag);
-                  const disabled = !selected && selectedAbilityTags.length >= maxRadarTagCount;
-                  return (
-                    <button
-                      aria-label={selected ? resources.myPage.removeHeatmapTag(tag.label) : resources.myPage.addHeatmapTag(tag.label)}
-                      aria-pressed={selected}
-                      className={`ability-heatmap-cell ${selected ? 'selected' : ''}`}
-                      data-testid="ability-heatmap-tag"
-                      disabled={disabled}
-                      key={tag.tag}
-                      onClick={() => toggleAbilityTag(tag)}
-                      style={heatmapCellStyle(tag.abilityScore)}
-                      type="button"
-                    >
-                      <strong>{tag.label}</strong>
-                      <span>{resources.myPage.scoreValue(formatScore(tag.abilityScore, locale))}</span>
-                      <small>
-                        {resources.myPage.reviewedProblemsValue(tag.reviewedProblemCount)}
-                        {' / '}
-                        {resources.myPage.catalogProblemsValue(tag.problemCount)}
-                      </small>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
+            {renderAbilityHeatmap('ability-dialog-heatmap-title')}
           </section>
         </div>
       ) : null}
@@ -689,56 +348,7 @@ export default function MyPage() {
   );
 }
 
-interface AbilitySummary {
-  averageScore: number;
-  reviewedProblems: number;
-  reviewedTags: number;
-  strongestTag?: AbilityTagScore;
-  totalTags: number;
-}
-
-function summarizeAbilityProfile(profile?: AbilityProfileResponse): AbilitySummary {
-  const tags = profile?.tags ?? [];
-  const scoredTags = [...tags].sort((left, right) => {
-    if (right.abilityScore !== left.abilityScore) {
-      return right.abilityScore - left.abilityScore;
-    }
-    return right.reviewedProblemCount - left.reviewedProblemCount;
-  });
-  const reviewedProblems = tags.reduce((total, tag) => total + tag.reviewedProblemCount, 0);
-  return {
-    averageScore: tags.length === 0
-      ? 0
-      : tags.reduce((total, tag) => total + tag.abilityScore, 0) / tags.length,
-    reviewedProblems,
-    reviewedTags: tags.filter((tag) => tag.reviewedProblemCount > 0).length,
-    strongestTag: scoredTags[0],
-    totalTags: tags.length,
-  };
-}
-
-function formatScore(score: number, locale: string): string {
-  return new Intl.NumberFormat(locale, {
-    maximumFractionDigits: 1,
-    minimumFractionDigits: 1,
-  }).format(score);
-}
-
 function heatmapCellStyle(score: number): CSSProperties {
   const clampedScore = Math.max(0, Math.min(10, score));
   return { '--ability-heat-alpha': String(0.06 + clampedScore * 0.026) } as CSSProperties;
-}
-
-function defaultAbilityTagKeys(profile: AbilityProfileResponse): string[] {
-  return profile.tags.slice(0, defaultRadarTagCount).map((tag) => tag.tag);
-}
-
-function findBreakthroughTag(
-  profile?: AbilityProfileResponse,
-  strongestTag?: AbilityTagScore,
-): AbilityTagScore | undefined {
-  const tags = profile?.tags ?? [];
-  return tags.find((tag) => tag.reviewedProblemCount === 0)
-    ?? tags.find((tag) => tag.tag !== strongestTag?.tag)
-    ?? strongestTag;
 }

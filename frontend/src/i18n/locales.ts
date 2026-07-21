@@ -80,6 +80,7 @@ export interface LocaleResources {
   nav: {
     home: string;
     my: string;
+    settings: string;
     learningPlans: string;
     mistakes: string;
     problems: string;
@@ -392,6 +393,39 @@ export interface LocaleResources {
     coachStyle: string;
     coachStyleLabels: Record<'GUIDED' | 'DIRECT', string>;
     coachStyleDescriptions: Record<'GUIDED' | 'DIRECT', string>;
+  };
+  settingsPage: {
+    ariaLabel: string;
+    kicker: string;
+    title: string;
+    subtitle: string;
+    learningTitle: string;
+    learningDescription: string;
+    currentCoach: string;
+    reviewTitle: string;
+    reviewDescription: string;
+    reviewLoading: string;
+    reviewLoadFailed: string;
+    reviewSaveFailed: string;
+    reviewSaving: string;
+    aiSuggestionLabel: string;
+    aiSuggestionDescription: string;
+    advancedReviewTitle: string;
+    advancedReviewDescription: string;
+    fsrsParameters: string;
+    desiredRetention: string;
+    desiredRetentionDescription: string;
+    dailyNewLimit: string;
+    dailyNewLimitDescription: string;
+    dailyLearningLimit: string;
+    dailyLearningLimitDescription: string;
+    dailyReviewLimit: string;
+    dailyReviewLimitDescription: string;
+    helpSuffix: string;
+    accountTitle: string;
+    accountDescription: string;
+    signedInAs: string;
+    activeStatus: string;
   };
   myPage: {
     profileKicker: string;
@@ -906,7 +940,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     },
     nav: {
       home: '首页',
-      my: '我的',
+      my: '学习画像',
+      settings: '设置',
       learningPlans: '方案',
       mistakes: '复习中心',
       problems: '题库',
@@ -1234,10 +1269,43 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         DIRECT: '直接给完整思路、复杂度、坑点和可运行代码。',
       },
     },
+    settingsPage: {
+      ariaLabel: '个人设置',
+      kicker: 'PREFERENCES',
+      title: '设置',
+      subtitle: '管理 AI 教练、复习策略、界面偏好和当前账户。低频选项集中在这里，不打断日常训练。',
+      learningTitle: 'AI 教练',
+      learningDescription: '控制题目聊天中的讲解方式。修改后会应用到下一次 AI 回复。',
+      currentCoach: '当前教练',
+      reviewTitle: '复习策略',
+      reviewDescription: '决定复述后是否使用 AI 辅助评级，以及间隔重复的每日负载。',
+      reviewLoading: '正在加载复习设置...',
+      reviewLoadFailed: '复习设置加载失败',
+      reviewSaveFailed: '复习设置保存失败',
+      reviewSaving: '保存中',
+      aiSuggestionLabel: '复习后启用 AI 建议评级',
+      aiSuggestionDescription: 'AI 仅分析复述并给出建议，最终评级仍由用户确认；关闭后直接手动评级。',
+      advancedReviewTitle: '高级复习设置',
+      advancedReviewDescription: 'FSRS 参数会直接影响复习频率。没有明确需求时建议保持默认值。',
+      fsrsParameters: 'FSRS 参数',
+      desiredRetention: '目标记忆率',
+      desiredRetentionDescription: '数值越高，复习安排越频繁、遗忘风险越低。',
+      dailyNewLimit: '每日新卡',
+      dailyNewLimitDescription: '当天首次进入队列的卡片数量，0 表示不安排新卡。',
+      dailyLearningLimit: '学习中上限',
+      dailyLearningLimitDescription: '当天处于学习或重新学习状态的到期卡数量。',
+      dailyReviewLimit: '复习卡上限',
+      dailyReviewLimitDescription: '当天处于复习状态的到期卡数量。',
+      helpSuffix: '说明',
+      accountTitle: '账户',
+      accountDescription: '查看当前登录身份，或结束本次会话。',
+      signedInAs: '当前登录',
+      activeStatus: '账户正常',
+    },
     myPage: {
       profileKicker: 'PERSONAL TRAINING CENTER',
       title: '我的学习画像',
-      subtitle: '把 AI 教练偏好、训练覆盖度和能力雷达放到同一屏，先判断状态，再决定今天怎么练。',
+      subtitle: '集中查看训练覆盖度、能力雷达和长期诊断，设置项已迁移到右上角账户菜单。',
       coachPanelEyebrow: 'COACHING MODE',
       abilityPanelEyebrow: 'ABILITY PROFILE',
       selectedCoach: '当前教练',
@@ -1824,7 +1892,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     },
     nav: {
       home: 'Home',
-      my: 'Me',
+      my: 'Learning Profile',
+      settings: 'Settings',
       learningPlans: 'Plans',
       mistakes: 'Review Center',
       problems: 'Problems',
@@ -2152,10 +2221,43 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         DIRECT: 'Gives the full approach, complexity, pitfalls, and runnable code up front.',
       },
     },
+    settingsPage: {
+      ariaLabel: 'Personal settings',
+      kicker: 'PREFERENCES',
+      title: 'Settings',
+      subtitle: 'Manage AI coaching, review strategy, appearance, and your current account without interrupting daily practice.',
+      learningTitle: 'AI Coach',
+      learningDescription: 'Controls how practice chat explains solutions. Changes apply to the next AI response.',
+      currentCoach: 'Current coach',
+      reviewTitle: 'Review Strategy',
+      reviewDescription: 'Choose whether AI assists with recall ratings and tune the daily spaced-repetition load.',
+      reviewLoading: 'Loading review settings...',
+      reviewLoadFailed: 'Failed to load review settings',
+      reviewSaveFailed: 'Failed to save review settings',
+      reviewSaving: 'Saving',
+      aiSuggestionLabel: 'Enable AI rating suggestions after recall',
+      aiSuggestionDescription: 'AI analyzes the recall and suggests a rating, but you still make the final choice. Disable this to rate manually.',
+      advancedReviewTitle: 'Advanced review settings',
+      advancedReviewDescription: 'FSRS parameters directly affect review frequency. Keep the defaults unless you have a specific reason to change them.',
+      fsrsParameters: 'FSRS Parameters',
+      desiredRetention: 'Desired retention',
+      desiredRetentionDescription: 'Higher values schedule reviews more often and reduce forgetting risk.',
+      dailyNewLimit: 'Daily new cards',
+      dailyNewLimitDescription: 'Cards entering the queue for the first time today. Use 0 to pause new cards.',
+      dailyLearningLimit: 'Learning limit',
+      dailyLearningLimitDescription: 'Due cards currently in learning or relearning state.',
+      dailyReviewLimit: 'Review limit',
+      dailyReviewLimitDescription: 'Due cards currently in review state.',
+      helpSuffix: ' help',
+      accountTitle: 'Account',
+      accountDescription: 'Review the current identity or end this session.',
+      signedInAs: 'Signed in as',
+      activeStatus: 'Account active',
+    },
     myPage: {
       profileKicker: 'PERSONAL TRAINING CENTER',
       title: 'My Learning Profile',
-      subtitle: 'Coach preferences, training coverage, and the ability radar live together so status comes before today\'s practice decision.',
+      subtitle: 'Review training coverage, the ability radar, and long-term diagnostics. Preferences now live in the account menu.',
       coachPanelEyebrow: 'COACHING MODE',
       abilityPanelEyebrow: 'ABILITY PROFILE',
       selectedCoach: 'Current coach',

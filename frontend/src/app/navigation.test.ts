@@ -32,6 +32,11 @@ describe('learning plan practice submissions navigation', () => {
     expect(viewFromPath('/me')).toBe('my');
   });
 
+  it('maps personal settings outside the primary navigation', () => {
+    expect(viewFromPath('/settings')).toBe('settings');
+    expect(pathForView('settings')).toBe('/settings');
+  });
+
   it('maps the admin users route', () => {
     expect(viewFromPath('/admin/users')).toBe('adminUsers');
     expect(pathForView('adminUsers')).toBe('/admin/users');

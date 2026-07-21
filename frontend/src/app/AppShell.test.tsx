@@ -49,19 +49,20 @@ describe('AppShell', () => {
     expect(screen.getByRole('banner')).toBeInTheDocument();
     expect(document.querySelector('.app-brand-mark')).toHaveTextContent('AM');
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByRole('button', { name: '我的' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'AI 调试' })).toBeInTheDocument();
     expect(within(screen.getByRole('navigation', { name: '主导航' })).getAllByRole('button')
-      .map((button) => button.textContent)).toEqual(['首页', '方案', '复习中心', 'AI 调试', '我的']);
+      .map((button) => button.textContent)).toEqual(['首页', '方案', '复习中心', 'AI 调试']);
     fireEvent.click(screen.getByRole('button', { name: '打开反馈信箱' }));
     expect(onOpenFeedback).toHaveBeenCalledOnce();
     expect(screen.getByText('User Name')).toBeInTheDocument();
     expect(screen.getByText('Current page')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: '我的' }));
-    expect(onNavigate).toHaveBeenCalledWith('my');
+    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
+    expect(screen.queryByRole('button', { name: '学习画像' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '设置' }));
+    expect(onNavigate).toHaveBeenCalledWith('settings');
   });
 
   it('hides debug navigation when the user lacks debug permission', () => {
@@ -243,9 +244,11 @@ describe('AppShell', () => {
       });
 
       expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Me' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Plans' })).toHaveAttribute('aria-pressed', 'true');
       expect(screen.queryByRole('button', { name: 'Problems' })).not.toBeInTheDocument();
+      fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
+      expect(screen.queryByRole('button', { name: 'Learning Profile' })).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Settings' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Log out' })).toBeInTheDocument();
       expect(setItem).toHaveBeenCalledWith('algo-mentor-locale', 'en-US');
       expect(document.documentElement.lang).toBe('en-US');
@@ -291,6 +294,7 @@ describe('AppShell', () => {
       </AppShell>,
     );
 
+    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
     expect(screen.getByRole('button', { name: '退出中' })).toBeDisabled();
   });
 
