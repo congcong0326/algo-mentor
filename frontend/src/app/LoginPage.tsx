@@ -2,6 +2,7 @@ import { LogIn, Moon, Sun, UserPlus } from 'lucide-react';
 import { FormEvent, MouseEvent, useState } from 'react';
 import LanguageSelector from '../i18n/LanguageSelector';
 import { useI18n } from '../i18n/I18nProvider';
+import HeaderActionTooltip from './HeaderActionTooltip';
 import type { AppTheme } from './theme';
 import type { PasswordLoginRequest, PasswordRegisterRequest } from '../types/api';
 
@@ -84,15 +85,17 @@ export default function LoginPage({
   return (
     <main className="login-page" aria-labelledby="login-title">
       {onToggleTheme && (
-        <button
-          aria-label={themeLabel}
-          className="icon-button login-theme-toggle"
-          onClick={onToggleTheme}
-          title={themeLabel}
-          type="button"
-        >
-          <ThemeIcon aria-hidden="true" />
-        </button>
+        <HeaderActionTooltip className="login-theme-tooltip-wrap" id="login-theme-toggle-tooltip" label={themeLabel}>
+          <button
+            aria-describedby="login-theme-toggle-tooltip"
+            aria-label={themeLabel}
+            className="icon-button login-theme-toggle"
+            onClick={onToggleTheme}
+            type="button"
+          >
+            <ThemeIcon aria-hidden="true" />
+          </button>
+        </HeaderActionTooltip>
       )}
       <section className="login-panel" aria-label={resources.auth.loginModeTitle}>
         <div className="login-brand-lockup" aria-label={resources.app.brandName}>

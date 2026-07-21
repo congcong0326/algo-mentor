@@ -2050,9 +2050,8 @@ describe('App', () => {
     fireEvent.click(await screen.findByRole('button', { name: /两数之和/ }));
     fireEvent.click(await screen.findByRole('button', { name: '标记完成' }));
 
-    fireEvent.change(screen.getByRole('combobox', { name: '语言' }), {
-      target: { value: 'en-US' },
-    });
+    fireEvent.click(screen.getByRole('combobox', { name: '语言' }));
+    fireEvent.click(screen.getByRole('option', { name: 'English' }));
 
     expect(await screen.findByRole('heading', { level: 2, name: '1. Two Sum' })).toBeInTheDocument();
     await waitFor(() => expect(screen.getByRole('button', { name: 'Mark completed' })).not.toBeDisabled());

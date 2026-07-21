@@ -22,6 +22,18 @@ describe('LoginPage', () => {
     expect(screen.getByText('support@algomentor.local')).toBeInTheDocument();
   });
 
+  it('uses the rounded custom tooltip for the theme toggle', () => {
+    const onToggleTheme = vi.fn();
+    render(<LoginPage onToggleTheme={onToggleTheme} />);
+
+    const toggle = screen.getByRole('button', { name: '切换为深色模式' });
+    expect(toggle).not.toHaveAttribute('title');
+    expect(screen.getByRole('tooltip', { name: '切换为深色模式' })).toHaveClass('header-action-tooltip');
+
+    fireEvent.click(toggle);
+    expect(onToggleTheme).toHaveBeenCalledOnce();
+  });
+
   it('shows the authentication failure message when requested', () => {
     render(<LoginPage authFailed />);
 

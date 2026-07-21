@@ -22,6 +22,7 @@ import UserFeedbackDialog from './feedback/UserFeedbackDialog';
 import AppShell from './app/AppShell';
 import LoginPage from './app/LoginPage';
 import PasswordChangeRequiredPage from './app/PasswordChangeRequiredPage';
+import HeaderActionTooltip from './app/HeaderActionTooltip';
 import { APP_ROUTES, LEGACY_FEEDBACK_ROUTE, pathForView, type AppView, viewFromPath } from './app/navigation';
 import { applyTheme, nextTheme, readStoredTheme, storeTheme, type AppTheme } from './app/theme';
 import LanguageSelector from './i18n/LanguageSelector';
@@ -213,15 +214,17 @@ function PublicHomeShell({
           </button>
         </nav>
         <div className="app-header-actions">
-          <button
-            aria-label={themeLabel}
-            className="icon-button theme-toggle-button"
-            onClick={onToggleTheme}
-            title={themeLabel}
-            type="button"
-          >
-            <ThemeIcon aria-hidden="true" />
-          </button>
+          <HeaderActionTooltip id="theme-toggle-tooltip" label={themeLabel}>
+            <button
+              aria-describedby="theme-toggle-tooltip"
+              aria-label={themeLabel}
+              className="icon-button theme-toggle-button"
+              onClick={onToggleTheme}
+              type="button"
+            >
+              <ThemeIcon aria-hidden="true" />
+            </button>
+          </HeaderActionTooltip>
           <LanguageSelector />
           <button
             className="primary-button public-login-button"

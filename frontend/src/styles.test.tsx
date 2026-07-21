@@ -32,6 +32,17 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toContain('height: 38px');
   });
 
+  it('uses one rounded-corner token for menus, tooltips, and dialogs', () => {
+    expect(styles).toContain('--radius-overlay: 14px');
+    expect(styles).toMatch(/\.language-selector-menu \{[^}]*border-radius: var\(--radius-overlay\);/);
+    expect(styles).toMatch(/\.account-menu-popover \{[^}]*border-radius: var\(--radius-overlay\);/);
+    expect(styles).toMatch(/\.header-action-tooltip \{[^}]*border-radius: var\(--radius-overlay\);/);
+    expect(styles).toMatch(/\.toolbar-tooltip \{[^}]*border-radius: var\(--radius-overlay\);/);
+    expect(styles).toMatch(/\.feedback-dialog \{[^}]*border-radius: var\(--radius-overlay\);/);
+    expect(styles).toMatch(/\.admin-confirm-dialog \{[^}]*border-radius: var\(--radius-overlay\);/);
+    expect(styles).toMatch(/@media \(max-width: 760px\) \{\n  \.feedback-dialog \{\n    border-radius: var\(--radius-overlay\);/);
+  });
+
   it('keeps login light by default and dark through the root theme', () => {
     expect(styles).toContain('.login-page {\n  --login-background: #ffffff');
     expect(styles).toContain('--login-text: #0f172a');

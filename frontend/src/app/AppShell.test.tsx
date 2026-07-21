@@ -56,6 +56,10 @@ describe('AppShell', () => {
       .map((button) => button.textContent)).toEqual(['首页', '方案', '复习中心', 'AI 调试']);
     fireEvent.click(screen.getByRole('button', { name: '打开反馈信箱' }));
     expect(onOpenFeedback).toHaveBeenCalledOnce();
+    expect(screen.getByRole('tooltip', { name: '打开反馈信箱' })).toHaveClass('header-action-tooltip');
+    expect(screen.getByRole('button', { name: '打开反馈信箱' })).not.toHaveAttribute('title');
+    expect(screen.getByRole('tooltip', { name: '切换为深色模式' })).toHaveClass('header-action-tooltip');
+    expect(screen.getByRole('button', { name: '切换为深色模式' })).not.toHaveAttribute('title');
     expect(screen.getByText('User Name')).toBeInTheDocument();
     expect(screen.getByText('Current page')).toBeInTheDocument();
 
@@ -239,9 +243,8 @@ describe('AppShell', () => {
         </I18nProvider>,
       );
 
-      fireEvent.change(screen.getByRole('combobox', { name: '语言' }), {
-        target: { value: 'en-US' },
-      });
+      fireEvent.click(screen.getByRole('combobox', { name: '语言' }));
+      fireEvent.click(screen.getByRole('option', { name: 'English' }));
 
       expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Plans' })).toHaveAttribute('aria-pressed', 'true');

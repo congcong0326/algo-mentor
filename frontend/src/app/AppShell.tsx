@@ -6,6 +6,7 @@ import type { AppTheme } from './theme';
 import type { AuthPermission, CurrentUser } from '../types/api';
 import LanguageSelector from '../i18n/LanguageSelector';
 import { useI18n } from '../i18n/I18nProvider';
+import HeaderActionTooltip from './HeaderActionTooltip';
 
 interface AppShellProps {
   activeView: AppView;
@@ -131,26 +132,30 @@ export default function AppShell({
         <div className="app-header-actions">
           {debugStatus}
           {!isAdmin && onOpenFeedback ? (
+            <HeaderActionTooltip id="feedback-trigger-tooltip" label={resources.feedback.openDialog}>
+              <button
+                aria-describedby="feedback-trigger-tooltip"
+                aria-label={feedbackUnreadCount && feedbackUnreadCount > 0 ? resources.feedback.openDialogUnread : resources.feedback.openDialog}
+                className="icon-button feedback-trigger-button"
+                onClick={onOpenFeedback}
+                type="button"
+              >
+                <MessageSquare aria-hidden="true" />
+                {feedbackUnreadCount && feedbackUnreadCount > 0 ? <span aria-hidden="true" className="feedback-unread-dot" /> : null}
+              </button>
+            </HeaderActionTooltip>
+          ) : null}
+          <HeaderActionTooltip id="theme-toggle-tooltip" label={themeLabel}>
             <button
-              aria-label={feedbackUnreadCount && feedbackUnreadCount > 0 ? resources.feedback.openDialogUnread : resources.feedback.openDialog}
-              className="icon-button feedback-trigger-button"
-              onClick={onOpenFeedback}
-              title={resources.feedback.openDialog}
+              aria-describedby="theme-toggle-tooltip"
+              aria-label={themeLabel}
+              className="icon-button theme-toggle-button"
+              onClick={onToggleTheme}
               type="button"
             >
-              <MessageSquare aria-hidden="true" />
-              {feedbackUnreadCount && feedbackUnreadCount > 0 ? <span aria-hidden="true" className="feedback-unread-dot" /> : null}
+              <ThemeIcon aria-hidden="true" />
             </button>
-          ) : null}
-          <button
-            aria-label={themeLabel}
-            className="icon-button theme-toggle-button"
-            onClick={onToggleTheme}
-            title={themeLabel}
-            type="button"
-          >
-            <ThemeIcon aria-hidden="true" />
-          </button>
+          </HeaderActionTooltip>
           <LanguageSelector />
           <div className="account-menu" ref={accountMenuRef}>
             <button
