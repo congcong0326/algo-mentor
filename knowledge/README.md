@@ -1,6 +1,12 @@
 # knowledge 知识库索引
 
-本目录用于沉淀技术知识、复习笔记和面试表达素材。当前文档主要集中在 AI 应用方向，按主题归类如下。
+本目录用于沉淀技术知识、复习笔记和面试表达素材，按主题归类如下。
+
+## Java 后端
+
+### Spring Security
+
+- [Spring Security 中的 SecurityContext、Authentication 与 JSESSIONID](Java后端/Spring%20Security中的SecurityContext、Authentication与JSESSIONID.md)
 
 ## AI 应用
 

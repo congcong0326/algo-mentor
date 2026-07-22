@@ -8,6 +8,15 @@ spring:
   flyway:
     enabled: true
 algo-mentor:
+  cache:
+    shared-provider: ${CACHE_SHARED_PROVIDER:postgres-coherent-caffeine}
+    coherence:
+      enabled: ${CACHE_COHERENCE_ENABLED:true}
+      poll-interval: ${CACHE_COHERENCE_POLL_INTERVAL:1s}
+      batch-size: ${CACHE_COHERENCE_BATCH_SIZE:500}
+      jitter-ratio: ${CACHE_COHERENCE_JITTER_RATIO:0.2}
+      event-retention: ${CACHE_COHERENCE_EVENT_RETENTION:24h}
+      cleanup-interval: ${CACHE_COHERENCE_CLEANUP_INTERVAL:1h}
   queue:
     consumer:
       enabled: true

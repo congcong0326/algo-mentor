@@ -21,7 +21,8 @@ class BypassCacheRegionFactoryTest {
         new LocalTtlCacheSpec(new CacheRegionName("local-bypass"), 4, Duration.ofSeconds(1)));
     SharedTtlCacheRegion<String, String> shared = new BypassSharedCacheRegionFactory(registry).createTtl(
         new SharedTtlCacheSpec(new CacheRegionName("shared-bypass"), "test-cache", 1, 4,
-            Duration.ofSeconds(1)));
+            Duration.ofSeconds(1)),
+        key -> key);
     AtomicInteger loads = new AtomicInteger();
 
     local.put("key", "ignored");

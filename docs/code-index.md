@@ -13,6 +13,8 @@
 - `docs/agent-run-tool-result-compaction-design.md`：Agent run 内工具结果压缩设计，说明大结果预览、blob 引用、范围读取工具和 run-local 上下文预算。
 - `docs/agent-tool-permission-phase-one-design.md`：Agent Tool 人在回路权限阶段一设计，说明工具执行前门禁、权限 hook/coordinator、决策 API、SSE 和 Review 工具确认链路。
 - `docs/agent-tool-permission-phase-one-tasks/README.md`：Agent Tool 权限阶段一任务拆解与落地确认，记录 task 8-20 的完成备注、阶段一限制和验证命令。
+- `docs/cache-module-v1-design.md`：第一版缓存模块研发设计，规划独立 `backend/cache` Maven 模块、三类 Caffeine 缓存区域、旁路缓存与事务提交后失效、AI/认证首批接入及未来 Redis 迁移边界。
+- `docs/cache-business-data-decisions.md`：业务缓存数据与参数决策记录，固化 AI、认证、题库和学习计划模板的缓存类型、容量、TTL、失效入口及 PostgreSQL coherence 公共参数。
 - `docs/agent-runtime-refactoring-implementation-plan.md`：Agent 运行态模块拆分分阶段实施计划，说明模块边界、迁移步骤、验收标准和风险点。
 - `docs/practice-chat-workbench-design.md`：题目聊天工作台研发设计，说明方案详情、题目聊天页、固定工具栏、题目状态、训练会话和 AI 聊天接口草案。
 - `docs/practice-chat-agent-design.md`：题目聊天 Agent 研发设计，说明 prompt 组装、题面上下文注入、SSE 聊天气泡展示、后端会话/API 和测试计划。

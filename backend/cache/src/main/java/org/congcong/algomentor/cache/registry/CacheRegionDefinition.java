@@ -9,20 +9,27 @@ import org.congcong.algomentor.cache.spec.SharedTtlCacheSpec;
 public record CacheRegionDefinition(
     CacheRegionName name,
     CacheRegionType type,
-    String specification) {
+    String specification,
+    SharedCacheIdentity sharedIdentity) {
+
+  public CacheRegionDefinition(CacheRegionName name, CacheRegionType type, String specification) {
+    this(name, type, specification, null);
+  }
 
   public static CacheRegionDefinition bounded(LocalBoundedCacheSpec spec) {
     return new CacheRegionDefinition(
         spec.name(),
         CacheRegionType.LOCAL_BOUNDED,
-        "maximumSize=" + spec.maximumSize());
+        "maximumSize=" + spec.maximumSize(),
+        null);
   }
 
   public static CacheRegionDefinition ttl(LocalTtlCacheSpec spec) {
     return new CacheRegionDefinition(
         spec.name(),
         CacheRegionType.LOCAL_TTL,
-        "maximumSize=" + spec.maximumSize() + ",ttl=" + spec.ttl());
+        "maximumSize=" + spec.maximumSize() + ",ttl=" + spec.ttl(),
+        null);
   }
 
   public static CacheRegionDefinition sharedTtl(SharedTtlCacheSpec spec) {
@@ -32,6 +39,7 @@ public record CacheRegionDefinition(
         "namespace=" + spec.namespace()
             + ",schemaVersion=" + spec.schemaVersion()
             + ",maximumSize=" + spec.maximumSize()
-            + ",ttl=" + spec.ttl());
+            + ",ttl=" + spec.ttl(),
+        new SharedCacheIdentity(spec.namespace(), spec.schemaVersion()));
   }
 }

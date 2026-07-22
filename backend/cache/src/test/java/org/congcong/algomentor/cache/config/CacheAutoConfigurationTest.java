@@ -8,6 +8,10 @@ import org.congcong.algomentor.cache.caffeine.BypassLocalCacheRegionFactory;
 import org.congcong.algomentor.cache.caffeine.BypassSharedCacheRegionFactory;
 import org.congcong.algomentor.cache.caffeine.CaffeineLocalCacheRegionFactory;
 import org.congcong.algomentor.cache.caffeine.CaffeineSharedCacheRegionFactory;
+import org.congcong.algomentor.cache.coherence.LocalSharedCacheInvalidationCoordinator;
+import org.congcong.algomentor.cache.coherence.SharedCacheInvalidationCoordinator;
+import org.congcong.algomentor.cache.coherence.postgres.PostgresCoherentCaffeineSharedCacheRegionFactory;
+import org.congcong.algomentor.cache.coherence.postgres.PostgresSharedInvalidationPoller;
 import org.congcong.algomentor.cache.factory.LocalCacheRegionFactory;
 import org.congcong.algomentor.cache.factory.SharedCacheRegionFactory;
 import org.congcong.algomentor.cache.metrics.MicrometerCacheMetrics;
@@ -15,6 +19,8 @@ import org.congcong.algomentor.cache.metrics.NoopCacheMetrics;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import javax.sql.DataSource;
 
 class CacheAutoConfigurationTest {
 
@@ -52,5 +58,29 @@ class CacheAutoConfigurationTest {
   void rejectsUnsupportedSharedProvider() {
     contextRunner.withPropertyValues(CacheConfigurationKeys.SHARED_PROVIDER + "=redis").run(context ->
         assertThat(context).hasFailed());
+  }
+
+  @Test
+  void configuresPostgresCoherentProviderWhenDataSourceAndSpringJdbcAreAvailable() {
+    DataSource dataSource = new DriverManagerDataSource("jdbc:invalid:cache-test");
+    contextRunner
+        .withPropertyValues(
+            CacheConfigurationKeys.SHARED_PROVIDER + "=postgres-coherent-caffeine",
+            CacheConfigurationKeys.COHERENCE_ENABLED + "=false")
+        .withBean(DataSource.class, () -> dataSource)
+        .run(context -> {
+          assertThat(context.getBean(SharedCacheRegionFactory.class))
+              .isInstanceOf(PostgresCoherentCaffeineSharedCacheRegionFactory.class);
+          assertThat(context.getBean(SharedCacheInvalidationCoordinator.class))
+              .isInstanceOf(LocalSharedCacheInvalidationCoordinator.class);
+          assertThat(context).doesNotHaveBean(PostgresSharedInvalidationPoller.class);
+        });
+  }
+
+  @Test
+  void failsFastWhenPostgresCoherentProviderHasNoDataSource() {
+    contextRunner
+        .withPropertyValues(CacheConfigurationKeys.SHARED_PROVIDER + "=postgres-coherent-caffeine")
+        .run(context -> assertThat(context).hasFailed());
   }
 }

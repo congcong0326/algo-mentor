@@ -9,6 +9,19 @@ public final class CacheMetricNames {
   public static final String INVALIDATIONS = "algo_mentor_cache_invalidations_total";
   public static final String EVICTIONS = "algo_mentor_cache_evictions_total";
   public static final String ESTIMATED_SIZE = "algo_mentor_cache_estimated_size";
+  public static final String COHERENCE_EVENTS_PUBLISHED =
+      "algo_mentor_cache_coherence_events_published_total";
+  public static final String COHERENCE_POLLS = "algo_mentor_cache_coherence_polls_total";
+  public static final String COHERENCE_EVENTS_CONSUMED =
+      "algo_mentor_cache_coherence_events_consumed_total";
+  public static final String COHERENCE_POLL_LAG = "algo_mentor_cache_coherence_poll_lag_seconds";
+  public static final String COHERENCE_LAST_SUCCESS_AGE =
+      "algo_mentor_cache_coherence_last_success_age_seconds";
+  public static final String COHERENCE_GAP_RECOVERIES =
+      "algo_mentor_cache_coherence_gap_recoveries_total";
+  public static final String COHERENCE_GENERATION_RETRIES =
+      "algo_mentor_cache_coherence_generation_retries_total";
+  public static final String COHERENCE_CLEANUP = "algo_mentor_cache_coherence_cleanup_total";
 
   private CacheMetricNames() {
   }

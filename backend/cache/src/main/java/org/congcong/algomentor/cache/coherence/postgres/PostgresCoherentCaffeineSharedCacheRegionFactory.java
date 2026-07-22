@@ -1,73 +1,79 @@
-package org.congcong.algomentor.cache.caffeine;
+package org.congcong.algomentor.cache.coherence.postgres;
 
 import com.github.benmanes.caffeine.cache.Ticker;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import org.congcong.algomentor.cache.api.SharedTtlCacheRegion;
+import org.congcong.algomentor.cache.caffeine.CaffeineSharedTtlCacheRegion;
 import org.congcong.algomentor.cache.factory.SharedCacheRegionFactory;
 import org.congcong.algomentor.cache.metrics.CacheCoherenceMetrics;
 import org.congcong.algomentor.cache.metrics.CacheMetrics;
 import org.congcong.algomentor.cache.registry.CacheRegionDefinition;
 import org.congcong.algomentor.cache.registry.CacheRegionRegistry;
+import org.congcong.algomentor.cache.registry.SharedCacheInvalidationTargetRegistry;
 import org.congcong.algomentor.cache.spec.CacheRegionName;
 import org.congcong.algomentor.cache.spec.SharedCacheKeyCodec;
 import org.congcong.algomentor.cache.spec.SharedTtlCacheSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class CaffeineSharedCacheRegionFactory implements SharedCacheRegionFactory {
+/** PostgreSQL events coordinate precise invalidation of node-local Caffeine values. */
+public final class PostgresCoherentCaffeineSharedCacheRegionFactory
+    implements SharedCacheRegionFactory {
 
-  private static final Logger log = LoggerFactory.getLogger(CaffeineSharedCacheRegionFactory.class);
+  private static final Logger log = LoggerFactory.getLogger(
+      PostgresCoherentCaffeineSharedCacheRegionFactory.class);
 
   private final CacheRegionRegistry registry;
+  private final SharedCacheInvalidationTargetRegistry invalidationTargets;
   private final CacheMetrics metrics;
   private final CacheCoherenceMetrics coherenceMetrics;
   private final Ticker ticker;
   private final Map<CacheRegionName, SharedTtlCacheRegion<?, ?>> regions = new ConcurrentHashMap<>();
   private final Map<CacheRegionName, SharedCacheKeyCodec<?>> keyCodecs = new ConcurrentHashMap<>();
 
-  public CaffeineSharedCacheRegionFactory(CacheRegionRegistry registry, CacheMetrics metrics) {
-    this(registry, metrics, CacheCoherenceMetrics.noop(), Ticker.systemTicker());
-  }
-
-  public CaffeineSharedCacheRegionFactory(
+  public PostgresCoherentCaffeineSharedCacheRegionFactory(
       CacheRegionRegistry registry,
+      SharedCacheInvalidationTargetRegistry invalidationTargets,
       CacheMetrics metrics,
       CacheCoherenceMetrics coherenceMetrics) {
-    this(registry, metrics, coherenceMetrics, Ticker.systemTicker());
+    this(registry, invalidationTargets, metrics, coherenceMetrics, Ticker.systemTicker());
   }
 
-  CaffeineSharedCacheRegionFactory(CacheRegionRegistry registry, CacheMetrics metrics, Ticker ticker) {
-    this(registry, metrics, CacheCoherenceMetrics.noop(), ticker);
-  }
-
-  CaffeineSharedCacheRegionFactory(
+  PostgresCoherentCaffeineSharedCacheRegionFactory(
       CacheRegionRegistry registry,
+      SharedCacheInvalidationTargetRegistry invalidationTargets,
       CacheMetrics metrics,
       CacheCoherenceMetrics coherenceMetrics,
       Ticker ticker) {
     this.registry = Objects.requireNonNull(registry, "registry must not be null");
+    this.invalidationTargets = Objects.requireNonNull(
+        invalidationTargets, "invalidationTargets must not be null");
     this.metrics = Objects.requireNonNull(metrics, "metrics must not be null");
     this.coherenceMetrics = Objects.requireNonNull(coherenceMetrics, "coherenceMetrics must not be null");
     this.ticker = Objects.requireNonNull(ticker, "ticker must not be null");
-    log.info("Cache shared provider initialized: provider=caffeine scope=single-jvm");
+    log.info("Cache shared provider initialized: provider=postgres-coherent-caffeine scope=cluster");
   }
 
   @Override
   public <K, V> SharedTtlCacheRegion<K, V> createTtl(
-      SharedTtlCacheSpec spec,
+      SharedTtlCacheSpec specification,
       SharedCacheKeyCodec<K> keyCodec) {
-    Objects.requireNonNull(spec, "spec must not be null");
+    Objects.requireNonNull(specification, "specification must not be null");
     Objects.requireNonNull(keyCodec, "keyCodec must not be null");
-    registry.register(CacheRegionDefinition.sharedTtl(spec));
-    SharedCacheKeyCodec<?> existingCodec = keyCodecs.putIfAbsent(spec.name(), keyCodec);
+    registry.register(CacheRegionDefinition.sharedTtl(specification));
+    SharedCacheKeyCodec<?> existingCodec = keyCodecs.putIfAbsent(specification.name(), keyCodec);
     if (existingCodec != null && existingCodec != keyCodec) {
-      throw new IllegalStateException("Shared cache '" + spec.name().value()
+      throw new IllegalStateException("Shared cache '" + specification.name().value()
           + "' was already created with a different key codec instance");
     }
-    SharedTtlCacheRegion<?, ?> region = regions.computeIfAbsent(spec.name(), ignored ->
-        new CaffeineSharedTtlCacheRegion<>(spec, keyCodec, ticker, metrics, coherenceMetrics));
+    SharedTtlCacheRegion<?, ?> region = regions.computeIfAbsent(specification.name(), ignored -> {
+      CaffeineSharedTtlCacheRegion<K, V> created = new CaffeineSharedTtlCacheRegion<>(
+          specification, keyCodec, ticker, metrics, coherenceMetrics);
+      invalidationTargets.register(created);
+      return created;
+    });
     return cast(region);
   }
 

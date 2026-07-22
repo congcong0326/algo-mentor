@@ -36,4 +36,19 @@ class CacheRegionRegistryTest {
     assertThatIllegalArgumentException().isThrownBy(() -> new LocalBoundedCacheSpec(
         new CacheRegionName("bounded-cache"), 0));
   }
+
+  @Test
+  void rejectsDifferentCacheNamesForTheSameSharedNamespaceAndSchemaVersion() {
+    CacheRegionRegistry registry = new CacheRegionRegistry();
+    SharedTtlCacheSpec first = new SharedTtlCacheSpec(
+        new CacheRegionName("first-shared-cache"), "shared-contract", 1, 1, Duration.ofSeconds(1));
+    SharedTtlCacheSpec conflicting = new SharedTtlCacheSpec(
+        new CacheRegionName("second-shared-cache"), "shared-contract", 1, 1, Duration.ofSeconds(1));
+
+    registry.register(CacheRegionDefinition.sharedTtl(first));
+
+    assertThatIllegalStateException().isThrownBy(() ->
+        registry.register(CacheRegionDefinition.sharedTtl(conflicting)));
+    assertThat(registry.find(conflicting.name())).isEmpty();
+  }
 }
