@@ -15,6 +15,8 @@ import org.congcong.algomentor.ai.governance.metrics.AiRunMetricsObserver;
 import org.congcong.algomentor.ai.governance.policy.AiGovernanceProperties;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicyResolver;
 import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimeAdminService;
+import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimeCache;
+import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimeCacheProperties;
 import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimePolicyService;
 import org.congcong.algomentor.ai.governance.pricing.AiCostCalculator;
 import org.congcong.algomentor.ai.governance.pricing.AiModelPriceAdminService;
@@ -33,6 +35,9 @@ import org.congcong.algomentor.ai.governance.usage.AiDailyUsageStore;
 import org.congcong.algomentor.ai.governance.usage.PostgresAiDailyUsageStore;
 import org.congcong.algomentor.common.admin.audit.AdminOperationAuditRecorder;
 import org.congcong.algomentor.common.admin.audit.NoopAdminOperationAuditRecorder;
+import org.congcong.algomentor.cache.coherence.SharedCacheInvalidationCoordinator;
+import org.congcong.algomentor.cache.config.CacheAutoConfiguration;
+import org.congcong.algomentor.cache.factory.SharedCacheRegionFactory;
 import org.congcong.algomentor.identity.autoconfigure.IdentityAutoConfiguration;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -43,14 +48,24 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-@AutoConfiguration(after = IdentityAutoConfiguration.class)
-@EnableConfigurationProperties(AiGovernanceProperties.class)
+@AutoConfiguration(after = {CacheAutoConfiguration.class, IdentityAutoConfiguration.class})
+@EnableConfigurationProperties({AiGovernanceProperties.class, AiRuntimeCacheProperties.class})
 public class AiGovernanceAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
   public AiPurposePolicyResolver aiPurposePolicyResolver(AiGovernanceProperties properties) {
     return new AiPurposePolicyResolver(properties);
+  }
+
+  @Bean
+  @ConditionalOnBean({SharedCacheRegionFactory.class, SharedCacheInvalidationCoordinator.class})
+  @ConditionalOnMissingBean
+  public AiRuntimeCache aiRuntimeCache(
+      SharedCacheRegionFactory cacheFactory,
+      SharedCacheInvalidationCoordinator invalidationCoordinator,
+      AiRuntimeCacheProperties properties) {
+    return new AiRuntimeCache(cacheFactory, invalidationCoordinator, properties);
   }
 
   @Bean
@@ -108,8 +123,10 @@ public class AiGovernanceAutoConfiguration {
   public AiRuntimePolicyService aiRuntimePolicyService(
       AiGovernanceProperties properties,
       AiRuntimeSettingsMapper settingsMapper,
-      AiUserPolicyMapper userPolicyMapper) {
-    return new AiRuntimePolicyService(properties, settingsMapper, userPolicyMapper);
+      AiUserPolicyMapper userPolicyMapper,
+      ObjectProvider<AiRuntimeCache> runtimeCacheProvider) {
+    return new AiRuntimePolicyService(
+        properties, settingsMapper, userPolicyMapper, runtimeCacheProvider.getIfAvailable());
   }
 
   @Bean
@@ -122,14 +139,16 @@ public class AiGovernanceAutoConfiguration {
       AiUserPolicyMapper userPolicyMapper,
       IdentityUserRepository identityUserRepository,
       ObjectProvider<AdminOperationAuditRecorder> auditRecorderProvider,
-      ObjectProvider<Clock> clockProvider) {
+      ObjectProvider<Clock> clockProvider,
+      ObjectProvider<AiRuntimeCache> runtimeCacheProvider) {
     return new AiRuntimeAdminService(
         runtimePolicyService,
         settingsMapper,
         userPolicyMapper,
         identityUserRepository,
         auditRecorderProvider.getIfAvailable(NoopAdminOperationAuditRecorder::new),
-        clockProvider.getIfAvailable(Clock::systemUTC));
+        clockProvider.getIfAvailable(Clock::systemUTC),
+        runtimeCacheProvider.getIfAvailable());
   }
 
   @Bean

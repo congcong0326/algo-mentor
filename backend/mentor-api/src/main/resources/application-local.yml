@@ -9,6 +9,8 @@ spring:
     enabled: true
 algo-mentor:
   cache:
+    enabled: ${CACHE_ENABLED:true}
+    metrics-enabled: ${CACHE_METRICS_ENABLED:true}
     shared-provider: ${CACHE_SHARED_PROVIDER:postgres-coherent-caffeine}
     coherence:
       enabled: ${CACHE_COHERENCE_ENABLED:true}
@@ -17,6 +19,25 @@ algo-mentor:
       jitter-ratio: ${CACHE_COHERENCE_JITTER_RATIO:0.2}
       event-retention: ${CACHE_COHERENCE_EVENT_RETENTION:24h}
       cleanup-interval: ${CACHE_COHERENCE_CLEANUP_INTERVAL:1h}
+  ai-governance:
+    runtime-cache:
+      settings-ttl: ${AI_RUNTIME_SETTINGS_CACHE_TTL:2m}
+      user-policy-ttl: ${AI_USER_POLICY_CACHE_TTL:2m}
+      user-policy-maximum-size: ${AI_USER_POLICY_CACHE_MAXIMUM_SIZE:500}
+  auth:
+    cache:
+      access-snapshot-maximum-size: ${AUTH_ACCESS_SNAPSHOT_CACHE_MAXIMUM_SIZE:500}
+      access-snapshot-ttl: ${AUTH_ACCESS_SNAPSHOT_CACHE_TTL:1m}
+      beta-access-settings-ttl: ${AUTH_BETA_ACCESS_SETTINGS_CACHE_TTL:30s}
+      beta-email-membership-maximum-size: ${AUTH_BETA_EMAIL_MEMBERSHIP_CACHE_MAXIMUM_SIZE:500}
+      beta-email-membership-ttl: ${AUTH_BETA_EMAIL_MEMBERSHIP_CACHE_TTL:1m}
+  problem:
+    cache:
+      static-snapshot-maximum-size: ${PROBLEM_STATIC_SNAPSHOT_CACHE_MAXIMUM_SIZE:4000}
+      filters-maximum-size: ${PROBLEM_FILTERS_CACHE_MAXIMUM_SIZE:2}
+  learning-plan-template:
+    cache:
+      catalog-maximum-size: ${LEARNING_PLAN_TEMPLATE_CATALOG_CACHE_MAXIMUM_SIZE:1}
   queue:
     consumer:
       enabled: true

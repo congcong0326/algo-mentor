@@ -1,6 +1,7 @@
 package org.congcong.algomentor.cache.coherence.postgres;
 
 import com.github.benmanes.caffeine.cache.Ticker;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,6 +30,7 @@ public final class PostgresCoherentCaffeineSharedCacheRegionFactory
   private final SharedCacheInvalidationTargetRegistry invalidationTargets;
   private final CacheMetrics metrics;
   private final CacheCoherenceMetrics coherenceMetrics;
+  private final Duration eventRetention;
   private final Ticker ticker;
   private final Map<CacheRegionName, SharedTtlCacheRegion<?, ?>> regions = new ConcurrentHashMap<>();
   private final Map<CacheRegionName, SharedCacheKeyCodec<?>> keyCodecs = new ConcurrentHashMap<>();
@@ -41,18 +43,38 @@ public final class PostgresCoherentCaffeineSharedCacheRegionFactory
     this(registry, invalidationTargets, metrics, coherenceMetrics, Ticker.systemTicker());
   }
 
+  public PostgresCoherentCaffeineSharedCacheRegionFactory(
+      CacheRegionRegistry registry,
+      SharedCacheInvalidationTargetRegistry invalidationTargets,
+      CacheMetrics metrics,
+      CacheCoherenceMetrics coherenceMetrics,
+      Duration eventRetention) {
+    this(registry, invalidationTargets, metrics, coherenceMetrics, Ticker.systemTicker(), eventRetention);
+  }
+
   PostgresCoherentCaffeineSharedCacheRegionFactory(
       CacheRegionRegistry registry,
       SharedCacheInvalidationTargetRegistry invalidationTargets,
       CacheMetrics metrics,
       CacheCoherenceMetrics coherenceMetrics,
       Ticker ticker) {
+    this(registry, invalidationTargets, metrics, coherenceMetrics, ticker, null);
+  }
+
+  private PostgresCoherentCaffeineSharedCacheRegionFactory(
+      CacheRegionRegistry registry,
+      SharedCacheInvalidationTargetRegistry invalidationTargets,
+      CacheMetrics metrics,
+      CacheCoherenceMetrics coherenceMetrics,
+      Ticker ticker,
+      Duration eventRetention) {
     this.registry = Objects.requireNonNull(registry, "registry must not be null");
     this.invalidationTargets = Objects.requireNonNull(
         invalidationTargets, "invalidationTargets must not be null");
     this.metrics = Objects.requireNonNull(metrics, "metrics must not be null");
     this.coherenceMetrics = Objects.requireNonNull(coherenceMetrics, "coherenceMetrics must not be null");
     this.ticker = Objects.requireNonNull(ticker, "ticker must not be null");
+    this.eventRetention = eventRetention;
     log.info("Cache shared provider initialized: provider=postgres-coherent-caffeine scope=cluster");
   }
 
@@ -62,6 +84,10 @@ public final class PostgresCoherentCaffeineSharedCacheRegionFactory
       SharedCacheKeyCodec<K> keyCodec) {
     Objects.requireNonNull(specification, "specification must not be null");
     Objects.requireNonNull(keyCodec, "keyCodec must not be null");
+    if (eventRetention != null && eventRetention.compareTo(specification.ttl()) <= 0) {
+      throw new IllegalArgumentException(
+          "eventRetention must be greater than shared cache TTL for " + specification.name().value());
+    }
     registry.register(CacheRegionDefinition.sharedTtl(specification));
     SharedCacheKeyCodec<?> existingCodec = keyCodecs.putIfAbsent(specification.name(), keyCodec);
     if (existingCodec != null && existingCodec != keyCodec) {

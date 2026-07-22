@@ -27,7 +27,11 @@ public interface LearningPlanTemplateMapper {
 
   List<LearningPlanTemplatePhaseRow> findPhasesByTemplateDbId(@Param("templateDbId") long templateDbId);
 
+  List<LearningPlanTemplatePhaseRow> findAllPhases();
+
   List<LearningPlanTemplateProblemRefRow> findProblemRefsByTemplateDbId(@Param("templateDbId") long templateDbId);
+
+  List<LearningPlanTemplateProblemRefRow> findAllProblemRefs();
 
   int insertImportRun(LearningPlanTemplateImportRunRow row);
 }

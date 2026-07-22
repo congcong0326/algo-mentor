@@ -18,6 +18,7 @@ import org.congcong.algomentor.auth.betaaccess.model.BetaAllowedEmailBatchResult
 import org.congcong.algomentor.auth.betaaccess.model.BetaAllowedEmailPage;
 import org.congcong.algomentor.auth.betaaccess.model.BetaAllowedEmailRemovalResult;
 import org.congcong.algomentor.auth.betaaccess.repository.BetaAccessRepository;
+import org.congcong.algomentor.auth.cache.BetaAccessCache;
 import org.congcong.algomentor.auth.session.AuthSessionRevocationService;
 import org.congcong.algomentor.common.admin.audit.AdminAuditAction;
 import org.congcong.algomentor.common.admin.audit.AdminAuditMetadataKey;
@@ -28,6 +29,7 @@ import org.congcong.algomentor.identity.model.AuthUser;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 public class BetaAccessAdminService {
 
@@ -42,6 +44,7 @@ public class BetaAccessAdminService {
   private final BetaAllowedEmailRemovalExecutor removalExecutor;
   private final BetaAccessMetrics metrics;
   private final Clock clock;
+  private final BetaAccessCache cache;
 
   public BetaAccessAdminService(
       BetaAccessRepository repository,
@@ -52,6 +55,27 @@ public class BetaAccessAdminService {
       BetaAccessMetrics metrics,
       Clock clock
   ) {
+    this(
+        repository,
+        identityUserRepository,
+        sessionRevocationService,
+        auditRecorder,
+        removalExecutor,
+        metrics,
+        clock,
+        null);
+  }
+
+  public BetaAccessAdminService(
+      BetaAccessRepository repository,
+      IdentityUserRepository identityUserRepository,
+      AuthSessionRevocationService sessionRevocationService,
+      AdminOperationAuditRecorder auditRecorder,
+      BetaAllowedEmailRemovalExecutor removalExecutor,
+      BetaAccessMetrics metrics,
+      Clock clock,
+      BetaAccessCache cache
+  ) {
     this.repository = repository;
     this.identityUserRepository = identityUserRepository;
     this.sessionRevocationService = sessionRevocationService;
@@ -59,6 +83,7 @@ public class BetaAccessAdminService {
     this.removalExecutor = removalExecutor;
     this.metrics = metrics;
     this.clock = clock;
+    this.cache = cache;
   }
 
   public BetaAllowedEmailPage getPage(int page, int pageSize, String keyword) {
@@ -86,6 +111,7 @@ public class BetaAccessAdminService {
     return repository.userMembership(userId);
   }
 
+  @Transactional
   public BetaAccessSettings updateSettings(Boolean emailAllowlistEnabled, long operatorUserId) {
     if (emailAllowlistEnabled == null) {
       recordFailure(
@@ -112,6 +138,9 @@ public class BetaAccessAdminService {
           BetaAccessErrorCode.BETA_ACCESS_SETTINGS_CONFLICT,
           "内测准入设置更新冲突。");
     }
+    if (cache != null) {
+      cache.invalidateSettings();
+    }
     auditRecorder.record(AdminOperationAuditEvent.success(
         operatorUserId,
         AdminAuditAction.BETA_ACCESS_SETTING_UPDATE,
@@ -121,6 +150,7 @@ public class BetaAccessAdminService {
     return requireSettings();
   }
 
+  @Transactional
   public BetaAllowedEmailBatchResult addEmails(List<String> emails, long operatorUserId) {
     if (emails == null || emails.isEmpty() || emails.size() > MAX_BATCH_SIZE) {
       recordFailure(
@@ -180,6 +210,9 @@ public class BetaAccessAdminService {
         continue;
       }
       long allowedEmailId = insertedId.get();
+      if (cache != null) {
+        cache.invalidateEmail(normalized);
+      }
       results.add(new BetaAllowedEmailAddResult(email, BetaAllowedEmailAddStatus.ADDED, allowedEmailId));
       added++;
       auditRecorder.record(AdminOperationAuditEvent.success(

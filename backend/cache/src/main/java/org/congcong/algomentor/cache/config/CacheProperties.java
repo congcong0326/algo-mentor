@@ -46,6 +46,10 @@ public class CacheProperties {
 
   public static class Coherence {
 
+    private static final Duration MIN_POLL_INTERVAL = Duration.ofMillis(250);
+    private static final int MAX_BATCH_SIZE = 5_000;
+    private static final double MAX_JITTER_RATIO = 0.5;
+
     private boolean enabled = true;
     private Duration pollInterval = Duration.ofSeconds(1);
     private int batchSize = 500;
@@ -66,7 +70,11 @@ public class CacheProperties {
     }
 
     public void setPollInterval(Duration pollInterval) {
-      this.pollInterval = requirePositive(pollInterval, "pollInterval");
+      Duration value = requirePositive(pollInterval, "pollInterval");
+      if (value.compareTo(MIN_POLL_INTERVAL) < 0) {
+        throw new IllegalArgumentException("pollInterval must be at least " + MIN_POLL_INTERVAL);
+      }
+      this.pollInterval = value;
     }
 
     public int getBatchSize() {
@@ -74,8 +82,8 @@ public class CacheProperties {
     }
 
     public void setBatchSize(int batchSize) {
-      if (batchSize <= 0) {
-        throw new IllegalArgumentException("batchSize must be greater than zero");
+      if (batchSize < 1 || batchSize > MAX_BATCH_SIZE) {
+        throw new IllegalArgumentException("batchSize must be between 1 and " + MAX_BATCH_SIZE);
       }
       this.batchSize = batchSize;
     }
@@ -85,8 +93,9 @@ public class CacheProperties {
     }
 
     public void setJitterRatio(double jitterRatio) {
-      if (jitterRatio < 0 || jitterRatio >= 1) {
-        throw new IllegalArgumentException("jitterRatio must be between 0 (inclusive) and 1 (exclusive)");
+      if (jitterRatio < 0 || jitterRatio > MAX_JITTER_RATIO) {
+        throw new IllegalArgumentException(
+            "jitterRatio must be between 0 and " + MAX_JITTER_RATIO + " (inclusive)");
       }
       this.jitterRatio = jitterRatio;
     }

@@ -160,7 +160,11 @@ public class CacheAutoConfiguration {
         return new BypassSharedCacheRegionFactory(registry, invalidationTargets);
       }
       return new PostgresCoherentCaffeineSharedCacheRegionFactory(
-          registry, invalidationTargets, metrics, coherenceMetrics);
+          registry,
+          invalidationTargets,
+          metrics,
+          coherenceMetrics,
+          properties.getCoherence().getEventRetention());
     }
 
     @Bean

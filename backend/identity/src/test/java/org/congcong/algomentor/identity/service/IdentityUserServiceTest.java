@@ -166,7 +166,7 @@ class IdentityUserServiceTest {
   }
 
   @Test
-  void eventPublisherFailureDoesNotRevertIdentityState() {
+  void eventPublisherFailureIsPropagatedForTransactionRollback() {
     repository.save(user(42L, AuthUserStatus.ACTIVE));
     service = new IdentityUserService(
         repository,
@@ -175,13 +175,9 @@ class IdentityUserServiceTest {
         },
         Clock.fixed(NOW, ZoneOffset.UTC));
 
-    AuthUser updated = service.updateStatus(42L, 7L, AuthUserStatus.DISABLED);
-
-    assertThat(updated.status()).isEqualTo(AuthUserStatus.DISABLED);
-    assertThat(repository.findUserById(42L))
-        .get()
-        .extracting(AuthUser::status)
-        .isEqualTo(AuthUserStatus.DISABLED);
+    assertThatThrownBy(() -> service.updateStatus(42L, 7L, AuthUserStatus.DISABLED))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessage("listener failed");
   }
 
   private static AuthUser user(long id, AuthUserStatus status) {

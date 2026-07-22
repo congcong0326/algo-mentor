@@ -39,6 +39,16 @@
     </constructor>
   </resultMap>
 
+  <resultMap id="TrustedProblemTagRowMap"
+      type="org.congcong.algomentor.api.problem.mapper.model.TrustedProblemTagRow">
+    <constructor>
+      <arg column="tag_id" javaType="_long"/>
+      <arg column="value" javaType="string"/>
+      <arg column="label_en" javaType="string"/>
+      <arg column="label_zh" javaType="string"/>
+    </constructor>
+  </resultMap>
+
   <resultMap id="ProblemCategoryFilterRowMap"
       type="org.congcong.algomentor.api.problem.mapper.model.ProblemCategoryFilterRow">
     <constructor>
@@ -252,6 +262,19 @@
     FROM problem p
     <include refid="NormalizedTagLateralJoin"/>
     WHERE p.slug = #{slug}
+  </select>
+
+  <select id="findTrustedTagsByProblemSlug" resultMap="TrustedProblemTagRowMap">
+    SELECT
+      pt.id AS tag_id,
+      pt.value,
+      pt.label_en,
+      pt.label_zh
+    FROM problem_tag_assignment assignment
+    JOIN problem p ON p.id = assignment.problem_id
+    JOIN problem_tag pt ON pt.id = assignment.tag_id
+    WHERE p.slug = #{slug}
+    ORDER BY assignment.ordinal ASC
   </select>
 
   <select id="countAllProblems" resultType="_long">

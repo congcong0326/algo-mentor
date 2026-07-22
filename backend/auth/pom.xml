@@ -16,6 +16,11 @@
   <dependencies>
     <dependency>
       <groupId>org.congcong.algomentor</groupId>
+      <artifactId>cache</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.congcong.algomentor</groupId>
       <artifactId>common</artifactId>
       <version>${project.version}</version>
     </dependency>

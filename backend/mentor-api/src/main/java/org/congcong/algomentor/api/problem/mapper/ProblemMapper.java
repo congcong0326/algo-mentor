@@ -7,6 +7,7 @@ import org.congcong.algomentor.api.problem.mapper.model.ProblemCategoryFilterRow
 import org.congcong.algomentor.api.problem.mapper.model.ProblemFilterCountRow;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemRow;
 import org.congcong.algomentor.api.problem.mapper.model.ProblemUpsertRow;
+import org.congcong.algomentor.api.problem.mapper.model.TrustedProblemTagRow;
 
 @Mapper
 public interface ProblemMapper {
@@ -36,6 +37,8 @@ public interface ProblemMapper {
   );
 
   ProblemRow findProblemBySlug(@Param("slug") String slug);
+
+  List<TrustedProblemTagRow> findTrustedTagsByProblemSlug(@Param("slug") String slug);
 
   long countAllProblems();
 

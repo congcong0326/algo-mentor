@@ -1,6 +1,7 @@
 package org.congcong.algomentor.auth.betaaccess.service;
 
 import java.util.Optional;
+import org.congcong.algomentor.auth.cache.BetaAccessCache;
 import org.congcong.algomentor.auth.betaaccess.model.BetaAllowedEmail;
 import org.congcong.algomentor.auth.betaaccess.repository.BetaAccessRepository;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -11,12 +12,22 @@ public class BetaAllowedEmailRemovalExecutor {
 
   private final BetaAccessRepository repository;
   private final TransactionTemplate transactionTemplate;
+  private final BetaAccessCache cache;
 
   public BetaAllowedEmailRemovalExecutor(
       BetaAccessRepository repository,
       PlatformTransactionManager transactionManager
   ) {
+    this(repository, transactionManager, null);
+  }
+
+  public BetaAllowedEmailRemovalExecutor(
+      BetaAccessRepository repository,
+      PlatformTransactionManager transactionManager,
+      BetaAccessCache cache
+  ) {
     this.repository = repository;
+    this.cache = cache;
     if (transactionManager == null) {
       this.transactionTemplate = null;
     } else {
@@ -38,6 +49,9 @@ public class BetaAllowedEmailRemovalExecutor {
     Optional<BetaAllowedEmail> existing = repository.findAllowedEmailById(allowedEmailId);
     if (existing.isEmpty() || !repository.deleteAllowedEmail(allowedEmailId)) {
       return Optional.empty();
+    }
+    if (cache != null) {
+      cache.invalidateEmail(existing.get().emailNormalized());
     }
     return existing;
   }

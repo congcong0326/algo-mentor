@@ -9,6 +9,7 @@ import org.congcong.algomentor.api.learningplan.mapper.LearningPlanTemplateMappe
 import org.congcong.algomentor.api.learningplan.repository.MyBatisLearningPlanRepository;
 import org.congcong.algomentor.api.learningplan.repository.MyBatisLearningPlanProposalRepository;
 import org.congcong.algomentor.api.learningplan.repository.MyBatisLearningPlanTemplateRepository;
+import org.congcong.algomentor.api.learningplan.repository.LearningPlanTemplateCacheProperties;
 import org.congcong.algomentor.api.preference.mapper.UserAiPreferenceMapper;
 import org.congcong.algomentor.api.preference.repository.MyBatisUserAiPreferenceRepository;
 import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
@@ -26,6 +27,7 @@ import org.congcong.algomentor.api.problem.repository.MyBatisProblemTagRepositor
 import org.congcong.algomentor.api.problem.repository.ProblemCompanyRepository;
 import org.congcong.algomentor.api.problem.repository.ProblemRepository;
 import org.congcong.algomentor.api.problem.repository.ProblemTagRepository;
+import org.congcong.algomentor.api.problem.service.ProblemCacheProperties;
 import org.congcong.algomentor.api.review.mapper.MistakeNoteMapper;
 import org.congcong.algomentor.api.review.mapper.ReviewPreferenceMapper;
 import org.congcong.algomentor.api.review.mapper.ReviewRecallEvaluationMapper;
@@ -51,6 +53,7 @@ import org.congcong.algomentor.mentor.application.review.MistakeNoteRepository;
 import org.congcong.algomentor.mentor.application.review.ReviewPreferenceRepository;
 import org.congcong.algomentor.mentor.application.review.ReviewRecallEvaluationRepository;
 import org.congcong.algomentor.mentor.application.review.ReviewLogRepository;
+import org.congcong.algomentor.cache.factory.LocalCacheRegionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -66,7 +69,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnProperty(name = "spring.datasource.url")
 @EnableTransactionManagement
-@EnableConfigurationProperties(LearnerProfileProperties.class)
+@EnableConfigurationProperties({
+    LearnerProfileProperties.class,
+    ProblemCacheProperties.class,
+    LearningPlanTemplateCacheProperties.class
+})
 public class MentorApiMyBatisConfiguration {
 
   @Bean
@@ -206,8 +213,11 @@ public class MentorApiMyBatisConfiguration {
   @ConditionalOnMissingBean(LearningPlanTemplateRepository.class)
   public LearningPlanTemplateRepository learningPlanTemplateRepository(
       LearningPlanTemplateMapper learningPlanTemplateMapper,
-      ObjectMapper objectMapper) {
-    return new MyBatisLearningPlanTemplateRepository(learningPlanTemplateMapper, objectMapper);
+      ObjectMapper objectMapper,
+      LocalCacheRegionFactory cacheFactory,
+      LearningPlanTemplateCacheProperties cacheProperties) {
+    return new MyBatisLearningPlanTemplateRepository(
+        learningPlanTemplateMapper, objectMapper, cacheFactory, cacheProperties);
   }
 
   @Bean

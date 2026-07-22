@@ -11,6 +11,10 @@ import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
 import org.congcong.algomentor.auth.betaaccess.service.BetaAllowedEmailRemovalExecutor;
 import org.congcong.algomentor.auth.betaaccess.service.MicrometerBetaAccessMetrics;
 import org.congcong.algomentor.auth.betaaccess.service.NoopBetaAccessMetrics;
+import org.congcong.algomentor.auth.cache.AuthAccessSnapshotCache;
+import org.congcong.algomentor.auth.cache.AuthCacheProperties;
+import org.congcong.algomentor.auth.cache.BetaAccessCache;
+import org.congcong.algomentor.auth.cache.IdentityUserAccessCacheInvalidationListener;
 import org.congcong.algomentor.auth.config.AuthProperties;
 import org.congcong.algomentor.auth.controller.admin.BetaAccessController;
 import org.congcong.algomentor.auth.controller.admin.BetaAccessExceptionHandler;
@@ -44,6 +48,9 @@ import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
 import org.congcong.algomentor.common.api.ApiErrorMessageResolver;
 import org.congcong.algomentor.common.admin.audit.AdminOperationAuditRecorder;
 import org.congcong.algomentor.common.admin.audit.NoopAdminOperationAuditRecorder;
+import org.congcong.algomentor.cache.coherence.SharedCacheInvalidationCoordinator;
+import org.congcong.algomentor.cache.factory.SharedCacheRegionFactory;
+import org.congcong.algomentor.cache.config.CacheAutoConfiguration;
 import org.congcong.algomentor.identity.autoconfigure.IdentityAutoConfiguration;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -64,8 +71,8 @@ import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.transaction.PlatformTransactionManager;
 
-@AutoConfiguration(after = {IdentityAutoConfiguration.class, SessionAutoConfiguration.class})
-@EnableConfigurationProperties(AuthProperties.class)
+@AutoConfiguration(after = {CacheAutoConfiguration.class, IdentityAutoConfiguration.class, SessionAutoConfiguration.class})
+@EnableConfigurationProperties({AuthProperties.class, AuthCacheProperties.class})
 public class AuthApiAutoConfiguration {
 
   @Bean
@@ -128,6 +135,34 @@ public class AuthApiAutoConfiguration {
   }
 
   @Bean
+  @ConditionalOnBean({SharedCacheRegionFactory.class, SharedCacheInvalidationCoordinator.class})
+  @ConditionalOnMissingBean
+  public AuthAccessSnapshotCache authAccessSnapshotCache(
+      SharedCacheRegionFactory cacheFactory,
+      SharedCacheInvalidationCoordinator invalidationCoordinator,
+      AuthCacheProperties properties) {
+    return new AuthAccessSnapshotCache(cacheFactory, invalidationCoordinator, properties);
+  }
+
+  @Bean
+  @ConditionalOnBean({SharedCacheRegionFactory.class, SharedCacheInvalidationCoordinator.class})
+  @ConditionalOnMissingBean
+  public BetaAccessCache betaAccessCache(
+      SharedCacheRegionFactory cacheFactory,
+      SharedCacheInvalidationCoordinator invalidationCoordinator,
+      AuthCacheProperties properties) {
+    return new BetaAccessCache(cacheFactory, invalidationCoordinator, properties);
+  }
+
+  @Bean
+  @ConditionalOnBean(AuthAccessSnapshotCache.class)
+  @ConditionalOnMissingBean
+  public IdentityUserAccessCacheInvalidationListener identityUserAccessCacheInvalidationListener(
+      AuthAccessSnapshotCache cache) {
+    return new IdentityUserAccessCacheInvalidationListener(cache);
+  }
+
+  @Bean
   @ConditionalOnBean(IdentityUserRepository.class)
   @ConditionalOnMissingBean
   public AdminEmailRoleService adminEmailRoleService(
@@ -142,9 +177,13 @@ public class AuthApiAutoConfiguration {
   @ConditionalOnMissingBean
   public BetaAccessPolicy betaAccessPolicy(
       BetaAccessRepository betaAccessRepository,
-      ObjectProvider<AdminEmailRoleService> adminEmailRoleServiceProvider
+      ObjectProvider<AdminEmailRoleService> adminEmailRoleServiceProvider,
+      ObjectProvider<BetaAccessCache> cacheProvider
   ) {
-    return new BetaAccessPolicy(betaAccessRepository, adminEmailRoleServiceProvider.getIfAvailable());
+    return new BetaAccessPolicy(
+        betaAccessRepository,
+        adminEmailRoleServiceProvider.getIfAvailable(),
+        cacheProvider.getIfAvailable());
   }
 
   @Bean
@@ -159,11 +198,13 @@ public class AuthApiAutoConfiguration {
   @ConditionalOnMissingBean
   public BetaAllowedEmailRemovalExecutor betaAllowedEmailRemovalExecutor(
       BetaAccessRepository betaAccessRepository,
-      ObjectProvider<PlatformTransactionManager> transactionManagerProvider
+      ObjectProvider<PlatformTransactionManager> transactionManagerProvider,
+      ObjectProvider<BetaAccessCache> cacheProvider
   ) {
     return new BetaAllowedEmailRemovalExecutor(
         betaAccessRepository,
-        transactionManagerProvider.getIfAvailable());
+        transactionManagerProvider.getIfAvailable(),
+        cacheProvider.getIfAvailable());
   }
 
   @Bean
@@ -176,7 +217,8 @@ public class AuthApiAutoConfiguration {
       ObjectProvider<AdminOperationAuditRecorder> auditRecorderProvider,
       BetaAllowedEmailRemovalExecutor removalExecutor,
       BetaAccessMetrics betaAccessMetrics,
-      Clock authClock
+      Clock authClock,
+      ObjectProvider<BetaAccessCache> cacheProvider
   ) {
     return new BetaAccessAdminService(
         betaAccessRepository,
@@ -185,7 +227,8 @@ public class AuthApiAutoConfiguration {
         auditRecorderProvider.getIfAvailable(NoopAdminOperationAuditRecorder::new),
         removalExecutor,
         betaAccessMetrics,
-        authClock);
+        authClock,
+        cacheProvider.getIfAvailable());
   }
 
   @Bean

@@ -7,16 +7,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
 import org.congcong.algomentor.auth.betaaccess.service.BetaAccessErrorCode;
+import org.congcong.algomentor.auth.cache.AuthAccessSnapshot;
+import org.congcong.algomentor.auth.cache.AuthAccessSnapshotCache;
 import org.congcong.algomentor.auth.config.AuthSecurityPaths;
 import org.congcong.algomentor.common.api.ApiErrorLocales;
 import org.congcong.algomentor.common.api.ApiErrorMessageResolver;
 import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
 import org.congcong.algomentor.identity.model.AuthRole;
-import org.congcong.algomentor.identity.model.AuthUser;
 import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.slf4j.Logger;
@@ -38,6 +38,7 @@ public class ActiveIdentityUserFilter extends OncePerRequestFilter {
   private final BetaAccessPolicy betaAccessPolicy;
   private final ObjectMapper objectMapper;
   private final ApiErrorResponseFactory responseFactory;
+  private final AuthAccessSnapshotCache accessSnapshotCache;
   private final RequestMatcher apiRequestMatcher = new AntPathRequestMatcher(AuthSecurityPaths.API_PATTERN);
 
   public ActiveIdentityUserFilter(
@@ -49,7 +50,8 @@ public class ActiveIdentityUserFilter extends OncePerRequestFilter {
         authenticationEntryPoint,
         null,
         new ObjectMapper().findAndRegisterModules(),
-        new ApiErrorResponseFactory(new ApiErrorMessageResolver()));
+        new ApiErrorResponseFactory(new ApiErrorMessageResolver()),
+        null);
   }
 
   public ActiveIdentityUserFilter(
@@ -59,11 +61,29 @@ public class ActiveIdentityUserFilter extends OncePerRequestFilter {
       ObjectMapper objectMapper,
       ApiErrorResponseFactory responseFactory
   ) {
+    this(
+        identityUserRepository,
+        authenticationEntryPoint,
+        betaAccessPolicy,
+        objectMapper,
+        responseFactory,
+        null);
+  }
+
+  public ActiveIdentityUserFilter(
+      IdentityUserRepository identityUserRepository,
+      AuthenticationEntryPoint authenticationEntryPoint,
+      BetaAccessPolicy betaAccessPolicy,
+      ObjectMapper objectMapper,
+      ApiErrorResponseFactory responseFactory,
+      AuthAccessSnapshotCache accessSnapshotCache
+  ) {
     this.identityUserRepository = identityUserRepository;
     this.authenticationEntryPoint = authenticationEntryPoint;
     this.betaAccessPolicy = betaAccessPolicy;
     this.objectMapper = objectMapper;
     this.responseFactory = responseFactory;
+    this.accessSnapshotCache = accessSnapshotCache;
   }
 
   @Override
@@ -111,15 +131,17 @@ public class ActiveIdentityUserFilter extends OncePerRequestFilter {
 
   private IdentityValidation validate(AuthenticatedUserPrincipal principal) {
     try {
-      Optional<AuthUser> user = identityUserRepository.findUserById(principal.userId());
-      if (user.isEmpty() || user.get().status() != AuthUserStatus.ACTIVE) {
+      Optional<AuthAccessSnapshot> snapshot = accessSnapshotCache == null
+          ? loadSnapshot(principal.userId())
+          : accessSnapshotCache.get(principal.userId(), () -> loadSnapshot(principal.userId()));
+      if (snapshot.isEmpty() || snapshot.get().status() != AuthUserStatus.ACTIVE) {
         return IdentityValidation.INACTIVE;
       }
       if (betaAccessPolicy == null) {
         return IdentityValidation.ALLOWED;
       }
-      List<AuthRole> roles = identityUserRepository.findRoles(principal.userId());
-      return betaAccessPolicy.evaluate(user.get().email(), roles.contains(AuthRole.ADMIN)).allowed()
+      return betaAccessPolicy.evaluate(
+          snapshot.get().email(), snapshot.get().roles().contains(AuthRole.ADMIN)).allowed()
           ? IdentityValidation.ALLOWED
           : IdentityValidation.BETA_ACCESS_DENIED;
     } catch (RuntimeException exception) {
@@ -128,6 +150,12 @@ public class ActiveIdentityUserFilter extends OncePerRequestFilter {
           exception);
       return IdentityValidation.INACTIVE;
     }
+  }
+
+  private Optional<AuthAccessSnapshot> loadSnapshot(long userId) {
+    return identityUserRepository.findUserById(userId)
+        .map(user -> new AuthAccessSnapshot(user.id(), user.email(), user.status(),
+            identityUserRepository.findRoles(userId)));
   }
 
   private Optional<AuthenticatedUserPrincipal> authenticatedPrincipal(Authentication authentication) {

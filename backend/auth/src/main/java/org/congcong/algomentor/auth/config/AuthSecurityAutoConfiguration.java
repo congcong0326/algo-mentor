@@ -3,6 +3,7 @@ package org.congcong.algomentor.auth.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Locale;
 import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
+import org.congcong.algomentor.auth.cache.AuthAccessSnapshotCache;
 import org.congcong.algomentor.auth.security.ActiveIdentityUserFilter;
 import org.congcong.algomentor.auth.security.ApiAuthenticationEntryPoint;
 import org.congcong.algomentor.auth.security.AuthenticatedOAuth2UserService;
@@ -97,6 +98,7 @@ public class AuthSecurityAutoConfiguration {
       ObjectProvider<SecurityContextRepository> securityContextRepository,
       ObjectProvider<IdentityUserRepository> identityUserRepositoryProvider,
       ObjectProvider<BetaAccessPolicy> betaAccessPolicyProvider,
+      ObjectProvider<AuthAccessSnapshotCache> accessSnapshotCacheProvider,
       AuthProperties properties
   ) throws Exception {
     CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
@@ -170,7 +172,8 @@ public class AuthSecurityAutoConfiguration {
             objectMapper,
             apiErrorResponseFactory == null
                 ? new ApiErrorResponseFactory(new org.congcong.algomentor.common.api.ApiErrorMessageResolver())
-                : apiErrorResponseFactory),
+                : apiErrorResponseFactory,
+            accessSnapshotCacheProvider.getIfAvailable()),
         SecurityContextHolderFilter.class));
     http.addFilterAfter(
         new PasswordChangeRequiredFilter(

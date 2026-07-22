@@ -26,9 +26,11 @@ import org.congcong.algomentor.api.problem.model.ProblemPage;
 import org.congcong.algomentor.api.problem.model.ProblemSeedRecord;
 import org.congcong.algomentor.api.problem.model.NormalizedProblemSeed;
 import org.congcong.algomentor.api.problem.model.ProblemTag;
+import org.congcong.algomentor.api.problem.model.ProblemStaticSnapshot;
+import org.congcong.algomentor.api.problem.model.TrustedProblemTag;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
-public class MyBatisProblemRepository implements ProblemRepository {
+public class MyBatisProblemRepository implements ProblemRepository, ProblemStaticSnapshotRepository {
 
   private final ProblemMapper mapper;
   private final DataSource dataSource;
@@ -80,6 +82,30 @@ public class MyBatisProblemRepository implements ProblemRepository {
   @Override
   public Optional<ProblemDetail> findProblemBySlug(String slug, ProblemLocale locale) {
     return Optional.ofNullable(mapper.findProblemBySlug(slug)).map(row -> toDetail(row, locale));
+  }
+
+  @Override
+  public Optional<ProblemStaticSnapshot> findStaticSnapshotBySlug(String slug) {
+    return Optional.ofNullable(mapper.findProblemBySlug(slug))
+        .map(row -> new ProblemStaticSnapshot(
+            row.slug(),
+            row.frontendId(),
+            row.frontendDisplayId(),
+            row.titleEn(),
+            row.titleZh(),
+            parseDifficulty(row.difficulty()),
+            mapper.findTrustedTagsByProblemSlug(slug).stream()
+                .map(tag -> new TrustedProblemTag(tag.tagId(), tag.value(), tag.labelEn(), tag.labelZh()))
+                .toList(),
+            row.contentMarkdownEn(),
+            row.contentMarkdownZh(),
+            row.contentStatus(),
+            row.leetcodeUrl(),
+            row.sampleTestCase(),
+            row.python3Template(),
+            row.sourceCommit(),
+            row.recommendationReasonEn(),
+            row.recommendationReasonZh()));
   }
 
   @Override

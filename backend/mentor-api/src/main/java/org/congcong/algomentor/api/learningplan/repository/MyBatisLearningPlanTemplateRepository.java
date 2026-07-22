@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import org.congcong.algomentor.api.learningplan.mapper.LearningPlanTemplateMapper;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanTemplateImportRunRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanTemplatePhaseRow;
@@ -23,6 +24,10 @@ import org.congcong.algomentor.mentor.application.learningplan.template.Learning
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplatePhase;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateProblemRef;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateRepository;
+import org.congcong.algomentor.cache.api.LocalBoundedCacheRegion;
+import org.congcong.algomentor.cache.factory.LocalCacheRegionFactory;
+import org.congcong.algomentor.cache.spec.CacheRegionName;
+import org.congcong.algomentor.cache.spec.LocalBoundedCacheSpec;
 import org.springframework.transaction.annotation.Transactional;
 
 public class MyBatisLearningPlanTemplateRepository implements LearningPlanTemplateRepository {
@@ -31,27 +36,47 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
   };
   private static final TypeReference<Map<String, Object>> OBJECT_MAP = new TypeReference<>() {
   };
+  private static final String CATALOG_KEY = "singleton";
+  private static final CacheRegionName CATALOG_CACHE_NAME = new CacheRegionName("learning-plan-template-catalog");
 
   private final LearningPlanTemplateMapper mapper;
   private final ObjectMapper objectMapper;
+  private final LocalBoundedCacheRegion<String, LearningPlanTemplateCatalog> catalogCache;
 
   public MyBatisLearningPlanTemplateRepository(
       LearningPlanTemplateMapper mapper,
       ObjectMapper objectMapper
   ) {
+    this(mapper, objectMapper, null, null);
+  }
+
+  public MyBatisLearningPlanTemplateRepository(
+      LearningPlanTemplateMapper mapper,
+      ObjectMapper objectMapper,
+      LocalCacheRegionFactory cacheFactory,
+      LearningPlanTemplateCacheProperties cacheProperties
+  ) {
     this.mapper = mapper;
     this.objectMapper = objectMapper;
+    catalogCache = cacheFactory == null || cacheProperties == null
+        ? null
+        : cacheFactory.createBounded(new LocalBoundedCacheSpec(
+            CATALOG_CACHE_NAME, cacheProperties.getCatalogMaximumSize()));
   }
 
   @Override
   public List<LearningPlanTemplate> findAllTemplates() {
-    return mapper.findAllTemplates().stream()
-        .map(row -> toTemplate(row, false))
-        .toList();
+    if (catalogCache == null) {
+      return mapper.findAllTemplates().stream().map(row -> toTemplate(row, List.of())).toList();
+    }
+    return catalog().orderedTemplates();
   }
 
   @Override
   public Optional<LearningPlanTemplate> findByTemplateId(String templateId) {
+    if (catalogCache != null) {
+      return Optional.ofNullable(catalog().templatesById().get(templateId));
+    }
     return Optional.ofNullable(mapper.findByTemplateId(templateId))
         .map(row -> toTemplate(row, true));
   }
@@ -89,7 +114,10 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
   }
 
   private LearningPlanTemplate toTemplate(LearningPlanTemplateRow row, boolean includeDetails) {
-    List<LearningPlanTemplatePhase> phases = includeDetails ? loadPhases(row.id()) : List.of();
+    return toTemplate(row, includeDetails ? loadPhases(row.id()) : List.of());
+  }
+
+  private LearningPlanTemplate toTemplate(LearningPlanTemplateRow row, List<LearningPlanTemplatePhase> phases) {
     return new LearningPlanTemplate(
         row.id(),
         row.templateId(),
@@ -125,15 +153,54 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
   }
 
   private List<LearningPlanTemplatePhase> loadPhases(long templateDbId) {
-    List<LearningPlanTemplateProblemRefRow> refRows = mapper.findProblemRefsByTemplateDbId(templateDbId);
+    return toPhases(
+        mapper.findPhasesByTemplateDbId(templateDbId),
+        mapper.findProblemRefsByTemplateDbId(templateDbId));
+  }
+
+  private List<LearningPlanTemplatePhase> toPhases(
+      List<LearningPlanTemplatePhaseRow> phaseRows,
+      List<LearningPlanTemplateProblemRefRow> refRows
+  ) {
     Map<Integer, List<LearningPlanTemplateProblemRef>> refsByPhase = new LinkedHashMap<>();
     for (LearningPlanTemplateProblemRefRow refRow : refRows) {
       refsByPhase.computeIfAbsent(value(refRow.phaseIndex()), ignored -> new ArrayList<>())
           .add(toProblemRef(refRow));
     }
-    return mapper.findPhasesByTemplateDbId(templateDbId).stream()
+    return phaseRows.stream()
         .map(row -> toPhase(row, refsByPhase.getOrDefault(value(row.phaseIndex()), List.of())))
         .toList();
+  }
+
+  private LearningPlanTemplateCatalog catalog() {
+    return catalogCache.get(CATALOG_KEY, ignored -> loadCatalog());
+  }
+
+  private LearningPlanTemplateCatalog loadCatalog() {
+    List<LearningPlanTemplateRow> templateRows = mapper.findAllTemplates();
+    Map<Long, List<LearningPlanTemplatePhaseRow>> phasesByTemplate = mapper.findAllPhases().stream()
+        .collect(java.util.stream.Collectors.groupingBy(
+            LearningPlanTemplatePhaseRow::templateDbId,
+            LinkedHashMap::new,
+            java.util.stream.Collectors.toList()));
+    Map<Long, List<LearningPlanTemplateProblemRefRow>> refsByTemplate = mapper.findAllProblemRefs().stream()
+        .collect(java.util.stream.Collectors.groupingBy(
+            LearningPlanTemplateProblemRefRow::templateDbId,
+            LinkedHashMap::new,
+            java.util.stream.Collectors.toList()));
+    List<LearningPlanTemplate> templates = templateRows.stream()
+        .map(row -> toTemplate(
+            row,
+            toPhases(
+                phasesByTemplate.getOrDefault(row.id(), List.of()),
+                refsByTemplate.getOrDefault(row.id(), List.of()))))
+        .toList();
+    Map<String, LearningPlanTemplate> byId = templates.stream().collect(java.util.stream.Collectors.toMap(
+        LearningPlanTemplate::templateId,
+        Function.identity(),
+        (left, right) -> left,
+        LinkedHashMap::new));
+    return new LearningPlanTemplateCatalog(templates, byId);
   }
 
   private LearningPlanTemplatePhase toPhase(

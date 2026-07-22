@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -35,12 +36,13 @@ class PostgresSharedInvalidationPollerTest {
     properties.setBatchSize(10);
     ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     try {
+      MutableClock clock = new MutableClock(Instant.parse("2026-07-22T00:00:00Z"));
       PostgresSharedInvalidationPoller poller = new PostgresSharedInvalidationPoller(
           eventStore,
           targets,
           CacheCoherenceMetrics.noop(),
           properties,
-          Clock.fixed(Instant.parse("2026-07-22T00:00:00Z"), ZoneOffset.UTC),
+          clock,
           executor);
 
       poller.pollOnce();
@@ -52,11 +54,42 @@ class PostgresSharedInvalidationPollerTest {
       assertThat(poller.cursor()).isEqualTo(1);
 
       eventStore.replaceWith(event(5, "user-99", 1));
+      clock.advance(properties.getCleanupInterval());
       poller.pollOnce();
 
       assertThat(target.regionInvalidations).isEqualTo(1);
       assertThat(target.invalidatedKeyTokens).containsExactly("user-42");
       assertThat(poller.cursor()).isEqualTo(5);
+    } finally {
+      executor.shutdownNow();
+    }
+  }
+
+  @Test
+  void drainsAllAvailableBatchesWithoutWaitingForTheNextInterval() {
+    InMemoryEventStore eventStore = new InMemoryEventStore();
+    SharedCacheInvalidationTargetRegistry targets = new SharedCacheInvalidationTargetRegistry();
+    RecordingTarget target = new RecordingTarget();
+    targets.register(target);
+    CacheProperties.Coherence properties = new CacheProperties.Coherence();
+    properties.setBatchSize(1);
+    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    try {
+      PostgresSharedInvalidationPoller poller = new PostgresSharedInvalidationPoller(
+          eventStore,
+          targets,
+          CacheCoherenceMetrics.noop(),
+          properties,
+          Clock.fixed(Instant.parse("2026-07-22T00:00:00Z"), ZoneOffset.UTC),
+          executor);
+      poller.pollOnce();
+      eventStore.add(event(1, "user-42", 1));
+      eventStore.add(event(2, "user-99", 1));
+
+      poller.pollOnce();
+
+      assertThat(target.invalidatedKeyTokens).containsExactly("user-42", "user-99");
+      assertThat(poller.cursor()).isEqualTo(2);
     } finally {
       executor.shutdownNow();
     }
@@ -173,6 +206,33 @@ class PostgresSharedInvalidationPollerTest {
     void replaceWith(SharedCacheInvalidationEvent event) {
       events.clear();
       events.add(event);
+    }
+  }
+
+  private static final class MutableClock extends Clock {
+    private Instant instant;
+
+    private MutableClock(Instant instant) {
+      this.instant = instant;
+    }
+
+    @Override
+    public ZoneId getZone() {
+      return ZoneOffset.UTC;
+    }
+
+    @Override
+    public Clock withZone(ZoneId zone) {
+      return this;
+    }
+
+    @Override
+    public Instant instant() {
+      return instant;
+    }
+
+    private void advance(Duration duration) {
+      instant = instant.plus(duration);
     }
   }
 }

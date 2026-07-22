@@ -16,12 +16,14 @@ import org.congcong.algomentor.ai.governance.metrics.AiRunMetricsObserver;
 import org.congcong.algomentor.ai.governance.model.AiUsage;
 import org.congcong.algomentor.ai.governance.policy.AiGovernanceProperties;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicyResolver;
+import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimeCache;
 import org.congcong.algomentor.ai.governance.repository.mybatis.AiDailyUsageMapper;
 import org.congcong.algomentor.ai.governance.repository.mybatis.AiRunAdmissionMapper;
 import org.congcong.algomentor.ai.governance.repository.mybatis.model.AiDailyUsageRow;
 import org.congcong.algomentor.ai.governance.repository.mybatis.model.AiRunAdmissionRow;
 import org.congcong.algomentor.ai.governance.repository.mybatis.model.AiRunStatusUpdate;
 import org.congcong.algomentor.ai.governance.usage.AiDailyUsageStore;
+import org.congcong.algomentor.cache.config.CacheAutoConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -31,6 +33,11 @@ class AiGovernanceAutoConfigurationTest {
   private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
       .withConfiguration(AutoConfigurations.of(AiGovernanceAutoConfiguration.class));
 
+  private final ApplicationContextRunner cacheContextRunner = new ApplicationContextRunner()
+      .withConfiguration(AutoConfigurations.of(
+          AiGovernanceAutoConfiguration.class,
+          CacheAutoConfiguration.class));
+
   @Test
   void loadsWithoutDataSourceAndExposesProperties() {
     contextRunner
@@ -39,6 +46,11 @@ class AiGovernanceAutoConfigurationTest {
           assertThat(context).hasSingleBean(AiGovernanceProperties.class);
           assertThat(context).hasSingleBean(AiPurposePolicyResolver.class);
         });
+  }
+
+  @Test
+  void configuresRuntimeCacheAfterCacheAutoConfiguration() {
+    cacheContextRunner.run(context -> assertThat(context).hasSingleBean(AiRuntimeCache.class));
   }
 
   @Test

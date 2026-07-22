@@ -17,6 +17,7 @@ import org.congcong.algomentor.common.admin.audit.AdminOperationAuditEvent;
 import org.congcong.algomentor.common.admin.audit.AdminOperationAuditRecorder;
 import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 /** 管理员对全局 AI 策略和单用户覆盖的写入服务。 */
 public class AiRuntimeAdminService {
@@ -27,6 +28,7 @@ public class AiRuntimeAdminService {
   private final IdentityUserRepository identityUserRepository;
   private final AdminOperationAuditRecorder auditRecorder;
   private final Clock clock;
+  private final AiRuntimeCache runtimeCache;
 
   public AiRuntimeAdminService(
       AiRuntimePolicyService runtimePolicyService,
@@ -36,12 +38,32 @@ public class AiRuntimeAdminService {
       AdminOperationAuditRecorder auditRecorder,
       Clock clock
   ) {
+    this(
+        runtimePolicyService,
+        settingsMapper,
+        userPolicyMapper,
+        identityUserRepository,
+        auditRecorder,
+        clock,
+        null);
+  }
+
+  public AiRuntimeAdminService(
+      AiRuntimePolicyService runtimePolicyService,
+      AiRuntimeSettingsMapper settingsMapper,
+      AiUserPolicyMapper userPolicyMapper,
+      IdentityUserRepository identityUserRepository,
+      AdminOperationAuditRecorder auditRecorder,
+      Clock clock,
+      AiRuntimeCache runtimeCache
+  ) {
     this.runtimePolicyService = runtimePolicyService;
     this.settingsMapper = settingsMapper;
     this.userPolicyMapper = userPolicyMapper;
     this.identityUserRepository = identityUserRepository;
     this.auditRecorder = auditRecorder;
     this.clock = clock;
+    this.runtimeCache = runtimeCache;
   }
 
   public AiRuntimeSettings getSettings(AiPurposePolicy staticPolicy) {
@@ -52,6 +74,7 @@ public class AiRuntimeAdminService {
     return runtimePolicyService.userPolicy(userId);
   }
 
+  @Transactional
   public AiRuntimeSettings updateSettings(
       Boolean aiEnabled,
       Integer defaultDailyRequestLimit,
@@ -82,6 +105,9 @@ public class AiRuntimeAdminService {
             AiGovernanceErrorCode.AI_RUNTIME_SETTINGS_INVALID,
             "AI runtime settings row is unavailable.");
       }
+      if (runtimeCache != null) {
+        runtimeCache.invalidateSettings();
+      }
     } catch (AiRuntimePolicyException exception) {
       recordFailure(
           operatorUserId,
@@ -110,9 +136,10 @@ public class AiRuntimeAdminService {
         Map.of(
             AdminAuditMetadataKey.GLOBAL_AI_ENABLED, aiEnabled,
             AdminAuditMetadataKey.DEFAULT_DAILY_REQUEST_LIMIT, defaultDailyRequestLimit)));
-    return getSettings(staticPolicy);
+    return new AiRuntimeSettings(aiEnabled, defaultDailyRequestLimit, operatorUserId, now);
   }
 
+  @Transactional
   public AiUserPolicy updateUserPolicy(
       long userId,
       Boolean aiEnabledOverride,
@@ -145,6 +172,9 @@ public class AiRuntimeAdminService {
             operatorUserId,
             now));
       }
+      if (runtimeCache != null) {
+        runtimeCache.invalidateUserPolicy(userId);
+      }
     } catch (RuntimeException exception) {
       recordFailure(
           operatorUserId,
@@ -170,7 +200,12 @@ public class AiRuntimeAdminService {
         AdminAuditTargetType.AI_USER_POLICY,
         Long.toString(userId),
         metadata));
-    return getUserPolicy(userId);
+    return new AiUserPolicy(
+        userId,
+        normalizedEnabledOverride,
+        dailyRequestLimitOverride,
+        normalizedEnabledOverride == null && dailyRequestLimitOverride == null ? null : operatorUserId,
+        normalizedEnabledOverride == null && dailyRequestLimitOverride == null ? null : now);
   }
 
   private void validateTargetUser(long userId, long operatorUserId) {

@@ -9,12 +9,9 @@ import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.congcong.algomentor.identity.model.IdentityUserPage;
 import org.congcong.algomentor.identity.model.IdentityUserSearchQuery;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 public class IdentityUserService {
-
-  private static final Logger log = LoggerFactory.getLogger(IdentityUserService.class);
 
   private final IdentityUserRepository repository;
   private final IdentityEventPublisher eventPublisher;
@@ -41,6 +38,7 @@ public class IdentityUserService {
             "Identity user not found: " + userId));
   }
 
+  @Transactional
   public AuthUser updateStatus(long userId, long operatorUserId, AuthUserStatus requestedStatus) {
     rejectSelfOperation(userId, operatorUserId);
     if (requestedStatus == null) {
@@ -74,6 +72,7 @@ public class IdentityUserService {
     return updated;
   }
 
+  @Transactional
   public AuthUser softDelete(long userId, long operatorUserId) {
     rejectSelfOperation(userId, operatorUserId);
     AuthUser current = getUser(userId);
@@ -111,15 +110,11 @@ public class IdentityUserService {
       long operatorUserId,
       Instant occurredAt
   ) {
-    try {
-      eventPublisher.publish(new IdentityUserStatusChangedEvent(
-          userId,
-          previousStatus,
-          currentStatus,
-          operatorUserId,
-          occurredAt));
-    } catch (RuntimeException ex) {
-      log.warn("Failed to publish identity user status changed event: userId={}", userId, ex);
-    }
+    eventPublisher.publish(new IdentityUserStatusChangedEvent(
+        userId,
+        previousStatus,
+        currentStatus,
+        operatorUserId,
+        occurredAt));
   }
 }

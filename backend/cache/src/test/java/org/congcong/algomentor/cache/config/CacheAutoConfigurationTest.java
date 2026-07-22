@@ -12,6 +12,8 @@ import org.congcong.algomentor.cache.coherence.LocalSharedCacheInvalidationCoord
 import org.congcong.algomentor.cache.coherence.SharedCacheInvalidationCoordinator;
 import org.congcong.algomentor.cache.coherence.postgres.PostgresCoherentCaffeineSharedCacheRegionFactory;
 import org.congcong.algomentor.cache.coherence.postgres.PostgresSharedInvalidationPoller;
+import org.congcong.algomentor.cache.spec.CacheRegionName;
+import org.congcong.algomentor.cache.spec.SharedTtlCacheSpec;
 import org.congcong.algomentor.cache.factory.LocalCacheRegionFactory;
 import org.congcong.algomentor.cache.factory.SharedCacheRegionFactory;
 import org.congcong.algomentor.cache.metrics.MicrometerCacheMetrics;
@@ -82,5 +84,26 @@ class CacheAutoConfigurationTest {
     contextRunner
         .withPropertyValues(CacheConfigurationKeys.SHARED_PROVIDER + "=postgres-coherent-caffeine")
         .run(context -> assertThat(context).hasFailed());
+  }
+
+  @Test
+  void rejectsSharedTtlThatIsNotCoveredByEventRetention() {
+    DataSource dataSource = new DriverManagerDataSource("jdbc:invalid:cache-test");
+    contextRunner
+        .withPropertyValues(
+            CacheConfigurationKeys.SHARED_PROVIDER + "=postgres-coherent-caffeine",
+            CacheConfigurationKeys.COHERENCE_ENABLED + "=false",
+            CacheConfigurationKeys.COHERENCE_EVENT_RETENTION + "=30s")
+        .withBean(DataSource.class, () -> dataSource)
+        .run(context -> {
+          SharedCacheRegionFactory factory = context.getBean(SharedCacheRegionFactory.class);
+          org.assertj.core.api.Assertions.assertThatThrownBy(() -> factory.createTtl(
+              new SharedTtlCacheSpec(
+                  new CacheRegionName("retention-check"), "retention-check", 1, 1,
+                  java.time.Duration.ofSeconds(30)),
+              (String key) -> key))
+              .isInstanceOf(IllegalArgumentException.class)
+              .hasMessageContaining("eventRetention");
+        });
   }
 }

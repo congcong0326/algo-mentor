@@ -355,6 +355,22 @@
     ORDER BY phase_index ASC
   </select>
 
+  <select id="findAllPhases" resultMap="LearningPlanTemplatePhaseRowMap">
+    SELECT
+      id,
+      template_id,
+      phase_index,
+      title,
+      duration_weeks,
+      focus,
+      objectives_json,
+      recommended_tags_json,
+      acceptance_criteria_json,
+      review_advice
+    FROM learning_plan_template_phase
+    ORDER BY template_id ASC, phase_index ASC
+  </select>
+
   <select id="findProblemRefsByTemplateDbId" resultMap="LearningPlanTemplateProblemRefRowMap">
     SELECT
       id,
@@ -373,6 +389,25 @@
     FROM learning_plan_template_problem_ref
     WHERE template_id = #{templateDbId}
     ORDER BY phase_index ASC, sort_order ASC, id ASC
+  </select>
+
+  <select id="findAllProblemRefs" resultMap="LearningPlanTemplateProblemRefRowMap">
+    SELECT
+      id,
+      template_id,
+      phase_id,
+      phase_index,
+      sort_order,
+      source_order,
+      problem_slug,
+      source_title,
+      source_difficulty,
+      pattern,
+      source_url,
+      matched_problem,
+      metadata_json
+    FROM learning_plan_template_problem_ref
+    ORDER BY template_id ASC, phase_index ASC, sort_order ASC, id ASC
   </select>
 
   <insert id="insertImportRun"

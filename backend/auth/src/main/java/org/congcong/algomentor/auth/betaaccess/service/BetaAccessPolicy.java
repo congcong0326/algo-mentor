@@ -2,6 +2,7 @@ package org.congcong.algomentor.auth.betaaccess.service;
 
 import org.congcong.algomentor.auth.betaaccess.model.BetaAccessDecision;
 import org.congcong.algomentor.auth.betaaccess.repository.BetaAccessRepository;
+import org.congcong.algomentor.auth.cache.BetaAccessCache;
 import org.congcong.algomentor.auth.service.AdminEmailRoleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,18 +13,27 @@ public class BetaAccessPolicy {
 
   private final BetaAccessRepository repository;
   private final AdminEmailRoleService adminEmailRoleService;
+  private final BetaAccessCache cache;
 
   public BetaAccessPolicy(
       BetaAccessRepository repository,
       AdminEmailRoleService adminEmailRoleService
   ) {
+    this(repository, adminEmailRoleService, null);
+  }
+
+  public BetaAccessPolicy(
+      BetaAccessRepository repository,
+      AdminEmailRoleService adminEmailRoleService,
+      BetaAccessCache cache
+  ) {
     this.repository = repository;
     this.adminEmailRoleService = adminEmailRoleService;
+    this.cache = cache;
   }
 
   public BetaAccessDecision evaluate(String email, boolean hasAdminRole) {
-    boolean enabled = repository.findSettings()
-        .map(settings -> settings.emailAllowlistEnabled())
+    boolean enabled = loadAllowlistEnabled()
         .orElseGet(() -> {
           log.error("Beta access settings row is missing; treating allowlist as disabled.");
           return false;
@@ -37,7 +47,11 @@ public class BetaAccessPolicy {
     if (!BetaEmailAddress.isValid(email)) {
       return BetaAccessDecision.DENIED_INVALID_EMAIL;
     }
-    return repository.isAllowedEmail(BetaEmailAddress.normalize(email))
+    String normalizedEmail = BetaEmailAddress.normalize(email);
+    boolean allowed = cache == null
+        ? repository.isAllowedEmail(normalizedEmail)
+        : cache.isAllowedEmail(normalizedEmail, () -> repository.isAllowedEmail(normalizedEmail));
+    return allowed
         ? BetaAccessDecision.ALLOWED_EMAIL
         : BetaAccessDecision.DENIED_EMAIL_NOT_ALLOWED;
   }
@@ -48,5 +62,13 @@ public class BetaAccessPolicy {
           BetaAccessErrorCode.AUTH_BETA_ACCESS_DENIED,
           "当前邮箱不在内测准入名单中。");
     }
+  }
+
+  private java.util.Optional<Boolean> loadAllowlistEnabled() {
+    if (cache == null) {
+      return repository.findSettings().map(settings -> settings.emailAllowlistEnabled());
+    }
+    return cache.getAllowlistEnabled(
+        () -> repository.findSettings().map(settings -> settings.emailAllowlistEnabled()));
   }
 }

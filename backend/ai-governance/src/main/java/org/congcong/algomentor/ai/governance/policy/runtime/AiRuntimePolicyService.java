@@ -18,22 +18,35 @@ public class AiRuntimePolicyService {
   private final AiGovernanceProperties properties;
   private final AiRuntimeSettingsMapper settingsMapper;
   private final AiUserPolicyMapper userPolicyMapper;
+  private final AiRuntimeCache runtimeCache;
 
   public AiRuntimePolicyService(
       AiGovernanceProperties properties,
       AiRuntimeSettingsMapper settingsMapper,
       AiUserPolicyMapper userPolicyMapper
   ) {
+    this(properties, settingsMapper, userPolicyMapper, null);
+  }
+
+  public AiRuntimePolicyService(
+      AiGovernanceProperties properties,
+      AiRuntimeSettingsMapper settingsMapper,
+      AiUserPolicyMapper userPolicyMapper,
+      AiRuntimeCache runtimeCache
+  ) {
     this.properties = properties;
     this.settingsMapper = settingsMapper;
     this.userPolicyMapper = userPolicyMapper;
+    this.runtimeCache = runtimeCache;
   }
 
   public AiRuntimeSettings currentSettings(AiPurposePolicy staticPolicy) {
     try {
-      AiRuntimeSettingsRow row = settingsMapper.findSingleton();
-      if (row != null) {
-        return row.toDomain();
+      java.util.Optional<AiRuntimeSettings> loaded = runtimeCache == null
+          ? loadSettings()
+          : runtimeCache.getSettings(this::loadSettings);
+      if (loaded.isPresent()) {
+        return loaded.get();
       }
       log.error("AI runtime settings row is missing; using static daily limit fallback");
       return new AiRuntimeSettings(true, staticPolicy.dailyRequestLimit(), null, null);
@@ -47,14 +60,25 @@ public class AiRuntimePolicyService {
 
   public AiUserPolicy userPolicy(long userId) {
     try {
-      AiUserPolicyRow row = userPolicyMapper.findByUserId(userId);
-      return row == null ? AiUserPolicy.inherited(userId) : row.toDomain();
+      return runtimeCache == null
+          ? loadUserPolicy(userId)
+          : runtimeCache.getUserPolicy(userId, () -> loadUserPolicy(userId));
     } catch (RuntimeException exception) {
       throw new AiRuntimePolicyException(
           AiGovernanceErrorCode.AI_USER_POLICY_INVALID,
           "Failed to load AI user policy.",
           exception);
     }
+  }
+
+  private java.util.Optional<AiRuntimeSettings> loadSettings() {
+    AiRuntimeSettingsRow row = settingsMapper.findSingleton();
+    return row == null ? java.util.Optional.empty() : java.util.Optional.of(row.toDomain());
+  }
+
+  private AiUserPolicy loadUserPolicy(long userId) {
+    AiUserPolicyRow row = userPolicyMapper.findByUserId(userId);
+    return row == null ? AiUserPolicy.inherited(userId) : row.toDomain();
   }
 
   public EffectiveAiRuntimePolicy resolve(AiPurposePolicy staticPolicy, long userId) {

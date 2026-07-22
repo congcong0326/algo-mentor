@@ -482,7 +482,7 @@ class AuthSecurityAutoConfigurationTest {
 
     @Override
     public List<AuthRole> findRoles(long userId) {
-      throw new UnsupportedOperationException("findRoles is not used by this test.");
+      return users.containsKey(userId) ? List.of(AuthRole.USER) : List.of();
     }
 
     @Override

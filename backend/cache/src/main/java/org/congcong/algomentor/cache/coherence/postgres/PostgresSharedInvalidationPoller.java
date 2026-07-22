@@ -36,6 +36,7 @@ public final class PostgresSharedInvalidationPoller implements SmartLifecycle {
   private final AtomicBoolean running = new AtomicBoolean();
   private volatile long cursor;
   private volatile Instant lastCleanupAt = Instant.EPOCH;
+  private volatile Instant lastGapCheckAt = Instant.EPOCH;
   private volatile boolean initialized;
 
   public PostgresSharedInvalidationPoller(
@@ -112,26 +113,12 @@ public final class PostgresSharedInvalidationPoller implements SmartLifecycle {
       if (!initialized) {
         initializeCursor();
       }
-      if (recoverGapWhenNeeded()) {
-        metrics.recordPoll(CacheOperationResult.SUCCESS);
-        metrics.recordPollSuccess();
+      if (shouldCheckForGap() && recoverGapWhenNeeded()) {
+        recordPollSuccess();
         return;
       }
-      List<SharedCacheInvalidationEvent> events = eventStore.findAfter(cursor, properties.getBatchSize());
-      for (SharedCacheInvalidationEvent event : events) {
-        SharedInvalidationDispatchResult result = invalidationTargets.dispatch(event);
-        CacheRegionName metricName = result == SharedInvalidationDispatchResult.UNKNOWN_CACHE
-            ? SharedCacheInvalidationTargetRegistry.UNKNOWN_CACHE_NAME
-            : event.cacheName();
-        metrics.recordEventConsumed(metricName, event.eventType(), result);
-      }
-      if (!events.isEmpty()) {
-        cursor = events.get(events.size() - 1).id();
-        Instant newestCreatedAt = events.get(events.size() - 1).createdAt();
-        metrics.recordPollLag(Duration.between(newestCreatedAt, clock.instant()));
-      }
-      metrics.recordPoll(CacheOperationResult.SUCCESS);
-      metrics.recordPollSuccess();
+      drainAvailableEvents();
+      recordPollSuccess();
     } catch (RuntimeException exception) {
       metrics.recordPoll(CacheOperationResult.FAILURE);
       log.warn("Cache coherence poll failed at cursor={}", cursor, exception);
@@ -160,6 +147,7 @@ public final class PostgresSharedInvalidationPoller implements SmartLifecycle {
   }
 
   private boolean recoverGapWhenNeeded() {
+    lastGapCheckAt = clock.instant();
     OptionalLong lowestId = eventStore.findLowestId();
     if (lowestId.isEmpty() || cursor >= lowestId.getAsLong() - 1) {
       return false;
@@ -187,6 +175,41 @@ public final class PostgresSharedInvalidationPoller implements SmartLifecycle {
     if (running.get()) {
       scheduleNext(jitteredPollInterval());
     }
+  }
+
+  private boolean shouldCheckForGap() {
+    return Duration.between(lastGapCheckAt, clock.instant())
+        .compareTo(properties.getCleanupInterval()) >= 0;
+  }
+
+  private void drainAvailableEvents() {
+    while (true) {
+      List<SharedCacheInvalidationEvent> events = eventStore.findAfter(cursor, properties.getBatchSize());
+      dispatch(events);
+      if (events.size() < properties.getBatchSize()) {
+        return;
+      }
+    }
+  }
+
+  private void dispatch(List<SharedCacheInvalidationEvent> events) {
+    for (SharedCacheInvalidationEvent event : events) {
+      SharedInvalidationDispatchResult result = invalidationTargets.dispatch(event);
+      CacheRegionName metricName = result == SharedInvalidationDispatchResult.UNKNOWN_CACHE
+          ? SharedCacheInvalidationTargetRegistry.UNKNOWN_CACHE_NAME
+          : event.cacheName();
+      metrics.recordEventConsumed(metricName, event.eventType(), result);
+    }
+    if (!events.isEmpty()) {
+      cursor = events.get(events.size() - 1).id();
+      Instant newestCreatedAt = events.get(events.size() - 1).createdAt();
+      metrics.recordPollLag(Duration.between(newestCreatedAt, clock.instant()));
+    }
+  }
+
+  private void recordPollSuccess() {
+    metrics.recordPoll(CacheOperationResult.SUCCESS);
+    metrics.recordPollSuccess();
   }
 
   private Duration jitteredPollInterval() {
