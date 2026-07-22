@@ -43,6 +43,10 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toMatch(/@media \(max-width: 760px\) \{\n  \.feedback-dialog \{\n    border-radius: var\(--radius-overlay\);/);
   });
 
+  it('anchors review-setting tooltips to their help icons', () => {
+    expect(styles).toMatch(/\.review-setting-tooltip-wrap \{[^}]*position: relative;/);
+  });
+
   it('keeps login light by default and dark through the root theme', () => {
     expect(styles).toContain('.login-page {\n  --login-background: #ffffff');
     expect(styles).toContain('--login-text: #0f172a');
@@ -58,7 +62,8 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toContain('border: 1px solid var(--border-subtle)');
     expect(styles).toContain('background: var(--surface-elevated)');
     expect(styles).not.toContain(':root[data-theme="dark"] .app-header {\n  background: #ffffff;');
-    expect(styles).toContain('.app-brand-mark');
+    expect(styles).toMatch(/\.app-brand strong \{[^}]*font-weight: 760;/);
+    expect(styles).not.toContain('.app-brand-mark');
     expect(styles).not.toContain('.app-brand::before');
     expect(styles).toContain('color: var(--text-secondary)');
     expect(styles).toContain('color: var(--text-primary)');

@@ -431,7 +431,6 @@ export interface LocaleResources {
   myPage: {
     profileKicker: string;
     title: string;
-    subtitle: string;
     coachPanelEyebrow: string;
     abilityPanelEyebrow: string;
     selectedCoach: string;
@@ -534,7 +533,6 @@ export interface LocaleResources {
     workspaceAriaLabel: string;
     workspaceKicker: string;
     workspaceTitle: string;
-    workspaceSubtitle: string;
     workspaceSectionsLabel: string;
     recentPracticeTitle: string;
     recentPracticeEmpty: string;
@@ -1324,7 +1322,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     myPage: {
       profileKicker: 'PERSONAL TRAINING CENTER',
       title: '我的学习画像',
-      subtitle: '集中查看训练覆盖度、能力图谱和长期诊断，设置项已迁移到右上角账户菜单。',
       coachPanelEyebrow: 'COACHING MODE',
       abilityPanelEyebrow: 'ABILITY PROFILE',
       selectedCoach: '当前教练',
@@ -1438,7 +1435,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       workspaceAriaLabel: '学习工作台',
       workspaceKicker: 'WORKBENCH',
       workspaceTitle: '今日学习工作台',
-      workspaceSubtitle: '把最近练习、训练计划、待复盘和能力画像放在同一屏，先看状态，再进入具体任务。',
       workspaceSectionsLabel: '主页工作台模块',
       recentPracticeTitle: '最近练习',
       recentPracticeEmpty: '后续展示最近进入的题目和 Review 状态。',
@@ -2305,7 +2301,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     myPage: {
       profileKicker: 'PERSONAL TRAINING CENTER',
       title: 'My Learning Profile',
-      subtitle: 'Review training coverage, the ability map, and long-term diagnostics. Preferences now live in the account menu.',
       coachPanelEyebrow: 'COACHING MODE',
       abilityPanelEyebrow: 'ABILITY PROFILE',
       selectedCoach: 'Current coach',
@@ -2419,7 +2414,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       workspaceAriaLabel: 'Learning workbench',
       workspaceKicker: 'WORKBENCH',
       workspaceTitle: 'Today Workbench',
-      workspaceSubtitle: 'Recent practice, plans, review queue, and the ability profile live together so status comes before task switching.',
       workspaceSectionsLabel: 'Dashboard workbench modules',
       recentPracticeTitle: 'Recent Practice',
       recentPracticeEmpty: 'Recent problems and review state will appear here.',

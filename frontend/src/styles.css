@@ -9,9 +9,6 @@
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-muted: #64748b;
-  --brand-mark-background: #ffffff;
-  --brand-mark-ink: #0b0d12;
-  --brand-mark-accent: #ffba18;
   --action-primary: #ffc01e;
   --action-primary-hover: #ffb515;
   --action-ink: #0f172a;
@@ -51,9 +48,6 @@
   --text-primary: #f8fafc;
   --text-secondary: #cbd5e1;
   --text-muted: #94a3b8;
-  --brand-mark-background: #ffffff;
-  --brand-mark-ink: #0b0d12;
-  --brand-mark-accent: #ffba18;
   --action-primary: #ffc01e;
   --action-primary-hover: #f3b414;
   --action-ink: #0f172a;
@@ -898,33 +892,8 @@ a {
   margin-bottom: 20px;
 }
 
-.app-brand-mark {
-  display: inline-grid;
-  grid-template-columns: auto auto;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 13px;
-  background: var(--brand-mark-background);
-  color: var(--brand-mark-ink);
-  font-size: 16px;
-  font-weight: 850;
-  letter-spacing: 0;
-  box-shadow: 0 18px 50px rgb(0 0 0 / 34%);
-}
-
-.app-brand-mark span:first-child {
-  color: var(--brand-mark-accent);
-}
-
-.login-brand-mark {
-  width: 56px;
-  height: 56px;
-  font-size: 27px;
-}
-
 .login-brand-lockup h1 {
-  margin: 10px 0 0;
+  margin: 0;
   color: var(--login-text);
   font-size: 28px;
   font-weight: 800;
@@ -1151,7 +1120,7 @@ a {
   right: 0;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 20px;
+  gap: 30px;
   align-items: center;
   min-height: 64px;
   padding: 0 max(52px, calc((100vw - 1770px) / 2 + 52px));
@@ -1164,12 +1133,7 @@ a {
 .app-brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  min-width: 156px;
-}
-
-.app-brand .eyebrow {
-  display: none;
+  white-space: nowrap;
 }
 
 .app-brand strong {
@@ -1181,8 +1145,8 @@ a {
 
 .app-nav {
   display: flex;
-  justify-content: center;
-  gap: clamp(8px, 1.4vw, 20px);
+  justify-content: flex-start;
+  gap: clamp(14px, 1.4vw, 24px);
   min-width: 0;
   overflow-x: auto;
   scrollbar-width: none;
@@ -1523,7 +1487,7 @@ a {
 }
 
 .public-home-nav {
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .public-login-button {
@@ -6124,7 +6088,7 @@ a {
 
 .review-setting-tooltip-wrap {
   flex: 0 0 auto;
-  position: static;
+  position: relative;
 }
 
 .review-setting-help {
@@ -6974,10 +6938,6 @@ a {
     min-width: 0;
   }
 
-  .app-brand strong {
-    display: none;
-  }
-
   .app-nav {
     justify-content: flex-start;
     overflow-x: auto;
@@ -7304,7 +7264,7 @@ a {
 
   .app-nav {
     grid-area: nav;
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .app-header-actions {

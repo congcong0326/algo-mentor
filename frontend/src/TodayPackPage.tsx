@@ -180,7 +180,6 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
         <div>
           <p className="eyebrow">{resources.home.workspaceKicker}</p>
           <h1>{resources.home.workspaceTitle}</h1>
-          <p>{resources.home.workspaceSubtitle}</p>
         </div>
         <span className="home-dashboard-date">
           <CalendarDays aria-hidden="true" />

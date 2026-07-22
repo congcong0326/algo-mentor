@@ -272,7 +272,6 @@ export default function MyPage() {
             <span>{resources.myPage.profileKicker}</span>
           </p>
           <h1 id="my-page-title">{resources.myPage.title}</h1>
-          <p>{resources.myPage.subtitle}</p>
         </div>
       </header>
 

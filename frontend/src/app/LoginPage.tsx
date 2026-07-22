@@ -99,10 +99,6 @@ export default function LoginPage({
       )}
       <section className="login-panel" aria-label={resources.auth.loginModeTitle}>
         <div className="login-brand-lockup" aria-label={resources.app.brandName}>
-          <span className="login-brand-mark app-brand-mark" aria-hidden="true">
-            <span>A</span>
-            <span>M</span>
-          </span>
           <h1 id="login-title">
             <span>{brandLead}</span>{brandRest}
           </h1>

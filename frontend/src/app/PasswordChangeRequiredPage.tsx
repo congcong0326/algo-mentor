@@ -54,10 +54,6 @@ export default function PasswordChangeRequiredPage({
     <main className="password-change-page" aria-label={t.ariaLabel}>
       <section className="password-change-panel">
         <div className="login-brand-lockup">
-          <span className="login-brand-mark app-brand-mark" aria-hidden="true">
-            <span>A</span>
-            <span>M</span>
-          </span>
           <KeyRound aria-hidden="true" className="password-change-icon" />
           <h1>{t.title}</h1>
           <p>{t.description}</p>

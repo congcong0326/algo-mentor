@@ -201,11 +201,6 @@ function PublicHomeShell({
     <main className="app-shell public-home-shell">
       <header className="app-header" role="banner">
         <div className="app-brand">
-          <span className="app-brand-mark" aria-hidden="true">
-            <span>A</span>
-            <span>M</span>
-          </span>
-          <span className="eyebrow">{resources.app.brandKicker}</span>
           <strong>{resources.app.brandName}</strong>
         </div>
         <nav className="app-nav public-home-nav" aria-label={resources.app.mainNavigation}>
@@ -249,11 +244,6 @@ function AppLoadingShell() {
     <main className="app-shell loading-shell">
       <header className="app-header" role="banner">
         <div className="app-brand">
-          <span className="app-brand-mark" aria-hidden="true">
-            <span>A</span>
-            <span>M</span>
-          </span>
-          <span className="eyebrow">{resources.app.brandKicker}</span>
           <strong>{resources.app.brandName}</strong>
         </div>
         <nav className="app-nav" aria-label={resources.app.mainNavigation}>
@@ -575,10 +565,6 @@ export default function App() {
       <main className="login-page" aria-labelledby="auth-loading-title">
         <section className="login-panel">
           <div className="login-brand-lockup">
-            <span className="login-brand-mark app-brand-mark" aria-hidden="true">
-              <span>A</span>
-              <span>M</span>
-            </span>
             <h1 id="auth-loading-title">{resources.app.loading}</h1>
             <p role="status">{resources.app.checkingLoginStatus}</p>
           </div>
@@ -592,10 +578,6 @@ export default function App() {
       <main className="login-page" aria-labelledby="auth-error-title">
         <section className="login-panel">
           <div className="login-brand-lockup">
-            <span className="login-brand-mark app-brand-mark" aria-hidden="true">
-              <span>A</span>
-              <span>M</span>
-            </span>
             <h1 id="auth-error-title">{resources.app.brandName}</h1>
           </div>
           <p className="error-text" role="alert">{resources.app.loginCheckFailed}</p>

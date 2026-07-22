@@ -135,7 +135,8 @@ describe('App', () => {
 
     expect(await screen.findByRole('heading', { name: /用 AI 掌握算法刷题\s*智能复盘系统/ }))
       .toBeInTheDocument();
-    expect(document.querySelector('.app-brand-mark')).toHaveTextContent('AM');
+    expect(document.querySelector('.app-brand strong')).toHaveTextContent('Algo Mentor');
+    expect(document.querySelector('.app-brand-mark')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '切换为深色模式' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '登录' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '开始使用' })).toBeInTheDocument();
