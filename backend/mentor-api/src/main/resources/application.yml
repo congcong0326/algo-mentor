@@ -150,6 +150,9 @@ algo-mentor:
   practice-chat:
     prompt:
       total-token-budget: ${PRACTICE_CHAT_PROMPT_TOKEN_BUDGET:8000}
+  practice:
+    code-review:
+      enabled: ${PRACTICE_CODE_REVIEW_ENABLED:true}
   queue:
     message:
       max-value-bytes: ${QUEUE_MESSAGE_MAX_VALUE_BYTES:65536}

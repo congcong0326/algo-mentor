@@ -11,15 +11,15 @@ import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssemblyPolicy;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
-import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
 import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
-import org.congcong.algomentor.ai.governance.completion.AiPassthroughCompletionGateway;
 import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.config.CodeReviewProfileConsumerProperties;
 import org.congcong.algomentor.api.config.LearnerProfileAgentProperties;
 import org.congcong.algomentor.api.config.LearnerProfileRecallProperties;
+import org.congcong.algomentor.api.config.PracticeCodeReviewProperties;
 import org.congcong.algomentor.api.config.PracticeChatPromptProperties;
 import org.congcong.algomentor.agent.persistence.postgres.config.AgentPostgresPersistenceConfiguration;
+import org.congcong.algomentor.ai.governance.autoconfigure.AiGovernanceAutoConfiguration;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
 import org.congcong.algomentor.api.controller.AgentConversationController;
 import org.congcong.algomentor.api.controller.practice.PracticeSessionController;
@@ -30,7 +30,6 @@ import org.congcong.algomentor.api.profile.repository.MyBatisCodeReviewProfileFa
 import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
-import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunCoordinator;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
@@ -41,15 +40,9 @@ import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCa
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptProfileResolver;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptSectionProvider;
 import org.congcong.algomentor.mentor.application.practice.PracticeCompletionGate;
-import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
-import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCommitService;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetricStatus;
-import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPermissionHook;
-import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPromptBuilder;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
-import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
-import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewStructuredOutputMapper;
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
@@ -70,11 +63,10 @@ import org.congcong.algomentor.mentor.application.profile.review.MicrometerCodeR
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdatePromptBuilder;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateService;
 import org.congcong.algomentor.mentor.application.profile.tool.UpdateLearnerDeclaredProfileAgentTool;
-import org.congcong.algomentor.mentor.application.review.PracticeCodeReviewObserver;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
 import org.congcong.algomentor.ops.observability.OpsStatus;
 import org.congcong.algomentor.ops.observability.autoconfigure.OpsObservabilityAutoConfiguration;
-import org.congcong.algomentor.queue.publisher.QueuePublisher;
+import org.congcong.algomentor.queue.config.PersistentQueueAutoConfiguration;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -82,15 +74,20 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 @AutoConfiguration(after = {
     AgentPostgresPersistenceConfiguration.class,
+    AiGovernanceAutoConfiguration.class,
+    PersistentQueueAutoConfiguration.class,
     OpsObservabilityAutoConfiguration.class
 })
+@Import(PracticeCodeReviewConfiguration.class)
 @EnableConfigurationProperties({
     LearnerProfileAgentProperties.class,
     LearnerProfileRecallProperties.class,
+    PracticeCodeReviewProperties.class,
     PracticeChatPromptProperties.class,
     CodeReviewProfileConsumerProperties.class
 })
@@ -348,91 +345,10 @@ public class AgentConversationApiAutoConfiguration {
   }
 
   @Bean
-  @ConditionalOnBean({
-      LlmGateway.class,
-      PracticeCodeReviewRepository.class
-  })
-  @ConditionalOnMissingBean
-  public PracticeCodeReviewPromptBuilder practiceCodeReviewPromptBuilder() {
-    return new PracticeCodeReviewPromptBuilder();
-  }
-
-  @Bean
-  @ConditionalOnBean({
-      LlmGateway.class,
-      PracticeCodeReviewRepository.class
-  })
-  @ConditionalOnMissingBean
-  public PracticeCodeReviewStructuredOutputMapper practiceCodeReviewStructuredOutputMapper() {
-    return new PracticeCodeReviewStructuredOutputMapper();
-  }
-
-  @Bean
-  @ConditionalOnBean({PracticeCodeReviewRepository.class, QueuePublisher.class})
-  @ConditionalOnMissingBean
-  public PracticeCodeReviewCommitService practiceCodeReviewCommitService(
-      PracticeCodeReviewRepository reviewRepository, QueuePublisher queuePublisher) {
-    return new PracticeCodeReviewCommitService(reviewRepository, queuePublisher);
-  }
-
-  @Bean
-  @ConditionalOnBean({
-      LlmGateway.class,
-      PracticeCodeReviewRepository.class,
-      PracticeCodeReviewCommitService.class,
-      PracticeCodeReviewPromptBuilder.class,
-      PracticeCodeReviewStructuredOutputMapper.class
-  })
-  @ConditionalOnMissingBean
-  public PracticeCodeReviewService practiceCodeReviewService(
-      PracticeCodeReviewRepository reviewRepository,
-      PracticeCodeReviewCommitService commitService,
-      LlmGateway llmGateway,
-      PracticeCodeReviewPromptBuilder promptBuilder,
-      PracticeCodeReviewStructuredOutputMapper outputMapper,
-      ObjectProvider<PracticeCodeReviewMetrics> metrics,
-      ObjectProvider<PracticeCodeReviewObserver> observer,
-      ObjectProvider<AiCompletionGateway> completionGateway
-  ) {
-    return new PracticeCodeReviewService(
-        reviewRepository,
-        commitService,
-        completionGateway.getIfAvailable(() -> new AiPassthroughCompletionGateway(llmGateway)),
-        promptBuilder,
-        outputMapper,
-        metrics.getIfAvailable(() -> PracticeCodeReviewMetrics.NOOP),
-        observer.getIfAvailable(() -> PracticeCodeReviewObserver.NOOP));
-  }
-
-  @Bean
   @ConditionalOnBean(ProblemTagMapper.class)
   @ConditionalOnMissingBean
   public TrustedProblemTagCatalog trustedProblemTagCatalog(ProblemTagMapper mapper) {
     return new MyBatisTrustedProblemTagCatalog(mapper);
-  }
-
-  @Bean
-  @ConditionalOnBean({
-      PracticeSessionRepository.class,
-      AgentTurnMessageLookupRepository.class,
-      PracticeCodeReviewService.class,
-      ObjectMapper.class,
-      TrustedProblemTagCatalog.class
-  })
-  @ConditionalOnMissingBean
-  public PracticeCodeReviewAgentTool practiceCodeReviewAgentTool(
-      PracticeSessionRepository practiceSessionRepository,
-      AgentTurnMessageLookupRepository turnMessageLookupRepository,
-      PracticeCodeReviewService reviewService,
-      ObjectMapper objectMapper,
-      TrustedProblemTagCatalog trustedProblemTagCatalog
-  ) {
-    return new PracticeCodeReviewAgentTool(
-        practiceSessionRepository,
-        turnMessageLookupRepository,
-        reviewService,
-        objectMapper,
-        trustedProblemTagCatalog);
   }
 
   @Bean
@@ -476,19 +392,6 @@ public class AgentConversationApiAutoConfiguration {
       ObjectMapper objectMapper
   ) {
     return new UpdateLearnerDeclaredProfileAgentTool(updateService, objectMapper);
-  }
-
-  @Bean
-  @ConditionalOnBean({
-      PracticeSessionRepository.class,
-      AgentTurnMessageLookupRepository.class
-  })
-  @ConditionalOnMissingBean
-  public PracticeCodeReviewPermissionHook practiceCodeReviewPermissionHook(
-      PracticeSessionRepository practiceSessionRepository,
-      AgentTurnMessageLookupRepository turnMessageLookupRepository
-  ) {
-    return new PracticeCodeReviewPermissionHook(practiceSessionRepository, turnMessageLookupRepository);
   }
 
   @Bean

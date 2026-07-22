@@ -2,6 +2,7 @@ package org.congcong.algomentor.mentor.api.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -9,7 +10,6 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentLoopRunner;
@@ -28,21 +28,20 @@ import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.InMemoryAgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.LocalAgentRunLockOwnerProvider;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
+import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
+import org.congcong.algomentor.ai.governance.completion.AiPassthroughCompletionGateway;
 import org.congcong.algomentor.api.problem.mapper.ProblemTagMapper;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeCompletionGate;
-import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
-import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewDraft;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetricStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPermissionHook;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
-import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewSummary;
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
@@ -61,9 +60,10 @@ import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
 import org.congcong.algomentor.ops.observability.OpsStatus;
 import org.congcong.algomentor.ops.observability.autoconfigure.OpsObservabilityAutoConfiguration;
-import org.congcong.algomentor.queue.model.QueueMessage;
-import org.congcong.algomentor.queue.publisher.QueuePublisher;
+import org.congcong.algomentor.queue.config.PersistentQueueAutoConfiguration;
+import org.congcong.algomentor.queue.postgres.QueueMessageMapper;
 import org.junit.jupiter.api.Test;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -100,24 +100,18 @@ class AgentConversationApiAutoConfigurationTest {
   }
 
   @Test
-  void reviewInfrastructureDoesNotRegisterPostRunCapability() {
-    new ApplicationContextRunner()
-        .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
-        .withUserConfiguration(PracticeStreamWithReviewDependencies.class)
-        .run(context -> {
-          assertThat(context).hasSingleBean(PracticeCodeReviewService.class);
-          assertThat(context).hasSingleBean(PracticeTurnOrchestrator.class);
-        });
-  }
-
-  @Test
-  void registersPracticeCodeReviewToolAndPermissionHookWhenDependenciesExist() {
+  void registersCompletePracticeCodeReviewCapabilityFromRealQueueAutoConfiguration() {
     new ApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(
             JacksonAutoConfiguration.class,
+            PersistentQueueAutoConfiguration.class,
             AgentConversationApiAutoConfiguration.class))
-        .withUserConfiguration(PracticeReviewToolDependencies.class)
+        .withUserConfiguration(
+            PracticeReviewToolDependencies.class,
+            PersistentQueueStorageDependencies.class)
+        .withPropertyValues("algo-mentor.practice.code-review.enabled=true")
         .run(context -> {
+          assertThat(context).hasSingleBean(org.congcong.algomentor.queue.publisher.QueuePublisher.class);
           assertThat(context).hasSingleBean(PracticeCodeReviewService.class);
           assertThat(context).hasSingleBean(PracticeCodeReviewAgentTool.class);
           assertThat(context).hasSingleBean(PracticeCodeReviewPermissionHook.class);
@@ -125,7 +119,7 @@ class AgentConversationApiAutoConfigurationTest {
   }
 
   @Test
-  void missingPracticeCodeReviewServiceDoesNotRegisterToolOrBreakContext() {
+  void disabledPracticeCodeReviewDoesNotRegisterPartialCapability() {
     new ApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(
             JacksonAutoConfiguration.class,
@@ -135,7 +129,22 @@ class AgentConversationApiAutoConfigurationTest {
           assertThat(context).hasNotFailed();
           assertThat(context).doesNotHaveBean(PracticeCodeReviewService.class);
           assertThat(context).doesNotHaveBean(PracticeCodeReviewAgentTool.class);
-          assertThat(context).hasSingleBean(PracticeCodeReviewPermissionHook.class);
+          assertThat(context).doesNotHaveBean(PracticeCodeReviewPermissionHook.class);
+        });
+  }
+
+  @Test
+  void enabledPracticeCodeReviewFailsStartupWithoutQueuePublisher() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(
+            JacksonAutoConfiguration.class,
+            AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeReviewToolDependencies.class)
+        .withPropertyValues("algo-mentor.practice.code-review.enabled=true")
+        .run(context -> {
+          assertThat(context).hasFailed();
+          assertThat(context.getStartupFailure())
+              .hasMessageContaining(org.congcong.algomentor.queue.publisher.QueuePublisher.class.getName());
         });
   }
 
@@ -321,8 +330,8 @@ class AgentConversationApiAutoConfigurationTest {
     }
 
     @Bean
-    QueuePublisher queuePublisher() {
-      return (topic, key, payload) -> new QueueMessage(1L, topic, key, "{}", java.time.Instant.EPOCH);
+    AiCompletionGateway aiCompletionGateway(LlmGateway llmGateway) {
+      return new AiPassthroughCompletionGateway(llmGateway);
     }
   }
 
@@ -356,6 +365,17 @@ class AgentConversationApiAutoConfigurationTest {
     @Bean
     AgentTurnMessageLookupRepository agentTurnMessageLookupRepository() {
       return new EmptyAgentTurnMessageLookupRepository();
+    }
+  }
+
+  @Configuration(proxyBeanMethods = false)
+  static class PersistentQueueStorageDependencies {
+
+    @Bean
+    SqlSessionTemplate sqlSessionTemplate() {
+      SqlSessionTemplate template = mock(SqlSessionTemplate.class);
+      when(template.getMapper(QueueMessageMapper.class)).thenReturn(mock(QueueMessageMapper.class));
+      return template;
     }
   }
 

@@ -1,6 +1,7 @@
 package org.congcong.algomentor.agent.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,6 +52,13 @@ import org.junit.jupiter.api.Test;
 class AgentLoopRunnerTest {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+  @Test
+  void rejectsMissingToolRegistry() {
+    assertThatThrownBy(() -> new AgentLoopRunner(new FakeGateway(), testModelSelector(), null, 1))
+        .isInstanceOf(NullPointerException.class)
+        .hasMessage("agent tool registry must not be null");
+  }
 
   @Test
   void streamsOneStepWhenNoToolIsRequested() {

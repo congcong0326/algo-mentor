@@ -8,7 +8,13 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import javax.sql.DataSource;
+import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.identity.controller.AdminUserController;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentToolNames;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCommitService;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
+import org.congcong.algomentor.queue.publisher.QueuePublisher;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +23,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 
-@SpringBootTest(properties = "spring.datasource.url=jdbc:postgresql://localhost/algo_mentor_test")
+@SpringBootTest(properties = {
+    "spring.datasource.url=jdbc:postgresql://localhost/algo_mentor_test",
+    "algo-mentor.practice.code-review.enabled=true"
+})
 class MentorApiApplicationTest {
 
   @Autowired
@@ -26,6 +35,21 @@ class MentorApiApplicationTest {
   @Autowired
   private AdminUserController adminUserController;
 
+  @Autowired
+  private QueuePublisher queuePublisher;
+
+  @Autowired
+  private PracticeCodeReviewCommitService practiceCodeReviewCommitService;
+
+  @Autowired
+  private PracticeCodeReviewService practiceCodeReviewService;
+
+  @Autowired
+  private PracticeCodeReviewAgentTool practiceCodeReviewAgentTool;
+
+  @Autowired
+  private AgentToolRegistry agentToolRegistry;
+
   @Test
   void contextLoads() {
   }
@@ -33,6 +57,15 @@ class MentorApiApplicationTest {
   @Test
   void applicationContextLoadsAdminUserControllerFromIdentity() {
     assertThat(adminUserController).isNotNull();
+  }
+
+  @Test
+  void applicationContextLoadsCompletePracticeCodeReviewCapability() {
+    assertThat(queuePublisher).isNotNull();
+    assertThat(practiceCodeReviewCommitService).isNotNull();
+    assertThat(practiceCodeReviewService).isNotNull();
+    assertThat(practiceCodeReviewAgentTool).isNotNull();
+    assertThat(agentToolRegistry.find(PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW)).isPresent();
   }
 
   @Test

@@ -56,6 +56,7 @@ import org.congcong.algomentor.api.problem.tool.GetProblemStatementTool;
 import org.congcong.algomentor.api.problem.tool.ListProblemFiltersTool;
 import org.congcong.algomentor.api.problem.tool.SearchProblemsTool;
 import org.congcong.algomentor.mentor.application.ExplainTopicUseCase;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentToolNames;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.DefaultLlmGatewayFactory;
@@ -79,7 +80,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
     LlmGatewayProperties.class,
     AgentCompactionProperties.class,
     AgentToolPermissionProperties.class,
-    ApiSseProperties.class
+    ApiSseProperties.class,
+    PracticeCodeReviewProperties.class
 })
 public class MentorAiConfiguration {
 
@@ -169,8 +171,17 @@ public class MentorAiConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public AgentToolRegistry agentToolRegistry(List<AgentTool> tools) {
-    return AgentToolRegistry.of(tools);
+  public AgentToolRegistry agentToolRegistry(
+      List<AgentTool> tools,
+      PracticeCodeReviewProperties practiceCodeReviewProperties) {
+    AgentToolRegistry registry = AgentToolRegistry.of(tools);
+    if (practiceCodeReviewProperties.isEnabled()
+        && registry.find(PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW).isEmpty()) {
+      throw new IllegalStateException(
+          "Practice Code Review is enabled but required AgentTool is not registered: "
+              + PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW);
+    }
+    return registry;
   }
 
   @Bean

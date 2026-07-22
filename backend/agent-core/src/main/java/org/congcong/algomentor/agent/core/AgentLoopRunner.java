@@ -248,7 +248,7 @@ public class AgentLoopRunner {
     }
     this.llmGateway = Objects.requireNonNull(llmGateway, "llmGateway must not be null");
     this.requestFactory = Objects.requireNonNull(requestFactory, "agent LLM request factory must not be null");
-    this.toolRegistry = toolRegistry == null ? AgentToolRegistry.empty() : toolRegistry;
+    this.toolRegistry = Objects.requireNonNull(toolRegistry, "agent tool registry must not be null");
     this.toolChoice = toolChoice == null ? LlmToolChoice.auto() : toolChoice;
     this.maxSteps = maxSteps;
     this.observers = observers == null ? List.of() : List.copyOf(observers);

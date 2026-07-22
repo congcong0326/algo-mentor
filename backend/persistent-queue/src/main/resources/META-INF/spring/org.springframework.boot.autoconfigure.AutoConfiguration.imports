@@ -1,1 +1,2 @@
 org.congcong.algomentor.queue.config.PersistentQueueAutoConfiguration
+org.congcong.algomentor.queue.config.PersistentQueueWorkerAutoConfiguration

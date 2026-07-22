@@ -79,7 +79,7 @@
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/profile`：学习者画像的固定枚举、ACTIVE 查询、用户行锁版本切换和声明更新；批量更新在短事务内复核 snapshot revision，不在事务中调用模型。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/profile/review`：正式 Review 画像观察源，固定五条满批、十题窗口、`learner-profile.code-review.v1` 契约、严格 JSON 白名单、最多一次 callback 语义和低敏 Micrometer 指标。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/profile/recall`：PRACTICE_CHAT 一次性画像快照、受信当前题标签召回和 800 token 确定性裁剪；正式 Review 不走该路径。
-- `backend/persistent-queue`：独立持久化队列模块，提供事务内 Publisher、严格满批 dispatcher、`SUCCEEDED` 出队语义、单节点 worker、清理及低基数积压指标。
+- `backend/persistent-queue`：独立持久化队列模块；存储/Publisher 与 consumer worker 分为两个有序自动配置，worker 仅在 `algo-mentor.queue.consumer.enabled=true` 时启动。
 - `backend/mentor-api`：Spring MVC API 应用，负责 controller、SSE adapter、配置属性和 bean wiring，不直接拥有 agent runtime SQL。
 - `backend/mentor-api/src/main/resources/application.yml`：默认应用配置，默认不强制连接数据库。
 - `backend/mentor-api/src/main/resources/application-local.yml`：本地 PostgreSQL 与 Flyway 配置。
@@ -99,7 +99,8 @@
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/AgentToolPermissionProperties.java`：权限配置属性，绑定 `algo-mentor.agent.tool-permission.enabled/timeout/cleanup-interval`。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/MentorAiConfiguration.java`：装配权限 hook chain、coordinator、guard 和 API 层 Micrometer adapter；`enabled=false` 时清空业务 hooks 并使用默认 allow coordinator。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/service/LlmStreamSseMapper.java`：SSE mapper，负责把核心权限事件映射为前端可消费的 `tool_permission_request`、`tool_permission_decision`、`tool_permission_timeout`。
-- `backend/mentor-api/src/main/java/org/congcong/algomentor/mentor/api/autoconfigure/AgentConversationApiAutoConfiguration.java`：Agent conversation 自动配置，注册 practice code review tool 与权限 hook。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/mentor/api/autoconfigure/AgentConversationApiAutoConfiguration.java`：Agent conversation 自动配置，显式排在持久化、AI 治理、队列和可观测性自动配置之后。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/mentor/api/autoconfigure/PracticeCodeReviewConfiguration.java`：由默认开启的 `algo-mentor.practice.code-review.enabled` 控制的强依赖装配边界，完整注册 CommitService、ReviewService、AgentTool 与权限 hook；启用时任一核心依赖缺失都会阻止应用启动。
 - `backend/agent-persistence-postgres/src/main/java/org/congcong/algomentor/agent/persistence/postgres/config`：PostgreSQL persistence auto-configuration，装配 MyBatis `SqlSessionFactory`、mapper 和持久化 bean。
 - `backend/agent-persistence-postgres/src/main/java/org/congcong/algomentor/agent/persistence/postgres/mapper`：agent runtime MyBatis mapper interface 和 mapper 参数/结果模型。
 - `backend/agent-persistence-postgres/src/main/java/org/congcong/algomentor/agent/persistence/postgres/json`：PostgreSQL JSONB 与 agent message role 的 MyBatis type handler。

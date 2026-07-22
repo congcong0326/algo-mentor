@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 
@@ -12,8 +13,9 @@ public final class AgentToolRegistry {
   private final Map<String, AgentTool> toolsByName;
 
   private AgentToolRegistry(Collection<AgentTool> tools) {
+    Objects.requireNonNull(tools, "agent tools must not be null");
     Map<String, AgentTool> toolsByName = new LinkedHashMap<>();
-    for (AgentTool tool : tools == null ? List.<AgentTool>of() : tools) {
+    for (AgentTool tool : tools) {
       if (tool == null) {
         throw new IllegalArgumentException("Agent tool must not be null");
       }

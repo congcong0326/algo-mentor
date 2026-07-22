@@ -3,12 +3,18 @@ package org.congcong.algomentor.llm.openai;
 import com.openai.core.http.StreamResponse;
 import com.openai.models.responses.ResponseFunctionToolCall;
 import com.openai.models.responses.ResponseStreamEvent;
+import java.util.ArrayDeque;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.Flow;
-import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.congcong.algomentor.common.trace.RequestTraceContext;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.metadata.LlmMetadataKeys;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
@@ -18,7 +24,13 @@ import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
+/**
+ * 在订阅线程中同步消费 OpenAI SDK 的阻塞流。
+ *
+ * <p>Agent loop 已经运行在独立工作线程中，并且下一步必须等待当前模型流结束。这里不再额外创建
+ * OpenAI worker，而是让 Agent 工作线程顺序完成网络读取、事件投递和后续工具编排。</p>
+ */
+final class OpenAiStreamPublisher implements Flow.Publisher<LlmStreamEvent> {
 
   private static final Logger log = LoggerFactory.getLogger(OpenAiStreamPublisher.class);
 
@@ -27,9 +39,7 @@ final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
   private final LlmProviderId providerId;
   private final LlmModelId modelId;
   private final Map<String, StringBuilder> toolArgumentDeltas = new HashMap<>();
-  private final AtomicBoolean started = new AtomicBoolean(false);
-  private final AtomicBoolean cancelled = new AtomicBoolean(false);
-  private volatile Thread worker;
+  private final AtomicBoolean subscribed = new AtomicBoolean(false);
 
   OpenAiStreamPublisher(
       StreamResponse<ResponseStreamEvent> stream,
@@ -37,104 +47,70 @@ final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
       LlmProviderId providerId,
       LlmModelId modelId
   ) {
-    super(RequestTraceContext.contextAwareExecutor(java.util.concurrent.ForkJoinPool.commonPool()), Flow.defaultBufferSize());
-    this.stream = stream;
-    this.mapper = mapper;
-    this.providerId = providerId;
-    this.modelId = modelId;
+    this.stream = Objects.requireNonNull(stream, "stream must not be null");
+    this.mapper = Objects.requireNonNull(mapper, "mapper must not be null");
+    this.providerId = Objects.requireNonNull(providerId, "providerId must not be null");
+    this.modelId = Objects.requireNonNull(modelId, "modelId must not be null");
   }
 
   @Override
   public void subscribe(Flow.Subscriber<? super LlmStreamEvent> subscriber) {
-    super.subscribe(new CloseOnCancelSubscriber(subscriber));
-    start();
-  }
-
-  private void start() {
-    if (!started.compareAndSet(false, true)) {
+    Objects.requireNonNull(subscriber, "subscriber must not be null");
+    if (!subscribed.compareAndSet(false, true)) {
+      subscriber.onSubscribe(EmptySubscription.INSTANCE);
+      subscriber.onError(new IllegalStateException("OpenAI stream supports only one subscriber"));
       return;
     }
-    Thread worker = new Thread(RequestTraceContext.wrap(() -> {
-      try (stream) {
-        stream.stream()
-            .takeWhile(ignored -> !cancelled.get())
-            .forEach(this::publishEvent);
-        close();
-      } catch (Throwable error) {
-        if (cancelled.get()) {
-          close();
-          return;
-        }
-        LlmException mapped = OpenAiLlmExceptionMapper.map(error, providerId, modelId);
-        log.warn(
-            "OpenAI stream failed while consuming events. provider={} model={} code={} retryable={} metadata={} causeType={} causeMessage={}",
-            providerId.value(),
-            modelId.value(),
-            mapped.code(),
-            mapped.retryable(),
-            mapped.metadata(),
-            causeType(mapped),
-            causeMessage(mapped));
-        submit(new LlmStreamEvent.Error(mapped));
-        close();
-      }
-    }), "openai-llm-stream");
-    this.worker = worker;
-    worker.setDaemon(true);
-    worker.start();
+    subscriber.onSubscribe(new OpenAiStreamSubscription(subscriber));
   }
 
-  private void cancelStream(Flow.Subscription subscription) {
-    cancelled.set(true);
-    subscription.cancel();
-    stream.close();
-    Thread thread = worker;
-    if (thread != null) {
-      thread.interrupt();
-    }
-  }
-
-  private void publishEvent(ResponseStreamEvent event) {
+  private void publishEvent(ResponseStreamEvent event, Consumer<LlmStreamEvent> sink) {
     if (event.isCreated()) {
-      submit(new LlmStreamEvent.MessageStart(providerId, modelId));
+      sink.accept(new LlmStreamEvent.MessageStart(providerId, modelId));
       return;
     }
     if (event.isOutputTextDelta()) {
-      submit(new LlmStreamEvent.ContentDelta(event.asOutputTextDelta().delta()));
+      sink.accept(new LlmStreamEvent.ContentDelta(event.asOutputTextDelta().delta()));
       return;
     }
     if (event.isFunctionCallArgumentsDelta()) {
       var delta = event.asFunctionCallArgumentsDelta();
       toolArgumentDeltas.computeIfAbsent(delta.itemId(), ignored -> new StringBuilder()).append(delta.delta());
-      submit(new LlmStreamEvent.ToolCallDelta(delta.itemId(), delta.delta()));
+      sink.accept(new LlmStreamEvent.ToolCallDelta(delta.itemId(), delta.delta()));
       return;
     }
     if (event.isOutputItemAdded()) {
       event.asOutputItemAdded().item().functionCall()
-          .ifPresent(call -> submit(new LlmStreamEvent.ToolCallStart(call.callId(), call.name())));
+          .ifPresent(call -> sink.accept(new LlmStreamEvent.ToolCallStart(call.callId(), call.name())));
       return;
     }
     if (event.isOutputItemDone()) {
       event.asOutputItemDone().item().functionCall()
           .map(this::withAccumulatedArguments)
           .map(mapper::toToolCall)
-          .ifPresent(call -> submit(new LlmStreamEvent.ToolCallEnd(call)));
+          .ifPresent(call -> sink.accept(new LlmStreamEvent.ToolCallEnd(call)));
       return;
     }
     if (event.isCompleted()) {
       var response = event.asCompleted().response();
-      response.usage().map(mapper::toUsage).ifPresent(usage -> submit(new LlmStreamEvent.Usage(usage)));
-      submit(new LlmStreamEvent.MessageEnd(mapper.finishReason(response), Map.of(LlmMetadataKeys.RESPONSE_ID, response.id())));
+      response.usage().map(mapper::toUsage).ifPresent(usage -> sink.accept(new LlmStreamEvent.Usage(usage)));
+      sink.accept(new LlmStreamEvent.MessageEnd(
+          mapper.finishReason(response),
+          Map.of(LlmMetadataKeys.RESPONSE_ID, response.id())));
       return;
     }
     if (event.isIncomplete()) {
       var response = event.asIncomplete().response();
-      submit(new LlmStreamEvent.MessageEnd(LlmFinishReason.LENGTH, Map.of(LlmMetadataKeys.RESPONSE_ID, response.id())));
+      sink.accept(new LlmStreamEvent.MessageEnd(
+          LlmFinishReason.LENGTH,
+          Map.of(LlmMetadataKeys.RESPONSE_ID, response.id())));
       return;
     }
     if (event.isFailed()) {
       var response = event.asFailed().response();
-      submit(new LlmStreamEvent.MessageEnd(LlmFinishReason.ERROR, Map.of(LlmMetadataKeys.RESPONSE_ID, response.id())));
+      sink.accept(new LlmStreamEvent.MessageEnd(
+          LlmFinishReason.ERROR,
+          Map.of(LlmMetadataKeys.RESPONSE_ID, response.id())));
       return;
     }
     if (event.isError()) {
@@ -154,8 +130,22 @@ final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
           mapped.code(),
           mapped.retryable(),
           mapped.getMessage());
-      submit(new LlmStreamEvent.Error(mapped));
+      sink.accept(new LlmStreamEvent.Error(mapped));
     }
+  }
+
+  private LlmStreamEvent mapStreamFailure(Throwable error) {
+    LlmException mapped = OpenAiLlmExceptionMapper.map(error, providerId, modelId);
+    log.warn(
+        "OpenAI stream failed while consuming events. provider={} model={} code={} retryable={} metadata={} causeType={} causeMessage={}",
+        providerId.value(),
+        modelId.value(),
+        mapped.code(),
+        mapped.retryable(),
+        mapped.metadata(),
+        causeType(mapped),
+        causeMessage(mapped));
+    return new LlmStreamEvent.Error(mapped);
   }
 
   private String causeType(Throwable error) {
@@ -182,43 +172,174 @@ final class OpenAiStreamPublisher extends SubmissionPublisher<LlmStreamEvent> {
     return call.toBuilder().arguments(arguments.toString()).build();
   }
 
-  private final class CloseOnCancelSubscriber implements Flow.Subscriber<LlmStreamEvent> {
-    private final Flow.Subscriber<? super LlmStreamEvent> delegate;
+  private final class OpenAiStreamSubscription implements Flow.Subscription {
+    private final Flow.Subscriber<? super LlmStreamEvent> subscriber;
+    private final Queue<LlmStreamEvent> pendingEvents = new ArrayDeque<>();
+    private final AtomicLong requested = new AtomicLong();
+    private final AtomicInteger drainWork = new AtomicInteger();
+    private final AtomicBoolean cancelled = new AtomicBoolean(false);
+    private final AtomicBoolean resourcesClosed = new AtomicBoolean(false);
+    private final AtomicBoolean terminalSignalled = new AtomicBoolean(false);
+    private Stream<ResponseStreamEvent> responseEvents;
+    private Iterator<ResponseStreamEvent> iterator;
+    private boolean sourceCompleted;
+    private volatile Thread consumerThread;
 
-    private CloseOnCancelSubscriber(Flow.Subscriber<? super LlmStreamEvent> delegate) {
-      this.delegate = delegate;
+    private OpenAiStreamSubscription(Flow.Subscriber<? super LlmStreamEvent> subscriber) {
+      this.subscriber = subscriber;
     }
 
     @Override
-    public void onSubscribe(Flow.Subscription subscription) {
-      delegate.onSubscribe(new Flow.Subscription() {
-        @Override
-        public void request(long n) {
-          subscription.request(n);
-        }
-
-        @Override
-        public void cancel() {
-          cancelStream(subscription);
-        }
-      });
+    public void request(long count) {
+      if (count <= 0) {
+        signalInvalidDemand(count);
+        return;
+      }
+      addDemand(count);
+      drain();
     }
 
     @Override
-    public void onNext(LlmStreamEvent item) {
-      if (!cancelled.get()) {
-        delegate.onNext(item);
+    public void cancel() {
+      if (!cancelled.compareAndSet(false, true)) {
+        return;
+      }
+      closeResources();
+      Thread thread = consumerThread;
+      if (thread != null && thread != Thread.currentThread()) {
+        thread.interrupt();
       }
     }
 
+    private void drain() {
+      if (drainWork.getAndIncrement() != 0) {
+        return;
+      }
+      int missed = 1;
+      consumerThread = Thread.currentThread();
+      try {
+        while (true) {
+          long demand = requested.get();
+          long emitted = 0;
+          while (emitted < demand && !cancelled.get()) {
+            LlmStreamEvent next = nextEvent();
+            if (next == null) {
+              break;
+            }
+            subscriber.onNext(next);
+            emitted++;
+          }
+          if (emitted != 0 && demand != Long.MAX_VALUE) {
+            requested.addAndGet(-emitted);
+          }
+          if (!cancelled.get() && sourceCompleted && pendingEvents.isEmpty()) {
+            signalComplete();
+            return;
+          }
+          missed = drainWork.addAndGet(-missed);
+          if (missed == 0) {
+            return;
+          }
+        }
+      } catch (Throwable error) {
+        cancel();
+        if (terminalSignalled.compareAndSet(false, true)) {
+          subscriber.onError(error);
+        }
+      } finally {
+        consumerThread = null;
+      }
+    }
+
+    private LlmStreamEvent nextEvent() {
+      while (pendingEvents.isEmpty() && !sourceCompleted && !cancelled.get()) {
+        try {
+          ensureIterator();
+          if (iterator.hasNext()) {
+            publishEvent(iterator.next(), pendingEvents::add);
+          } else {
+            sourceCompleted = true;
+            closeResources();
+          }
+        } catch (Throwable error) {
+          if (cancelled.get()) {
+            sourceCompleted = true;
+            return null;
+          }
+          pendingEvents.add(mapStreamFailure(error));
+          sourceCompleted = true;
+          closeResources();
+        }
+      }
+      return pendingEvents.poll();
+    }
+
+    private void ensureIterator() {
+      if (iterator != null) {
+        return;
+      }
+      responseEvents = stream.stream();
+      iterator = responseEvents.iterator();
+    }
+
+    private void signalComplete() {
+      closeResources();
+      if (terminalSignalled.compareAndSet(false, true)) {
+        subscriber.onComplete();
+      }
+    }
+
+    private void signalInvalidDemand(long count) {
+      if (!cancelled.compareAndSet(false, true)) {
+        return;
+      }
+      closeResources();
+      if (terminalSignalled.compareAndSet(false, true)) {
+        subscriber.onError(new IllegalArgumentException("Flow request count must be positive: " + count));
+      }
+    }
+
+    private void closeResources() {
+      if (!resourcesClosed.compareAndSet(false, true)) {
+        return;
+      }
+      if (responseEvents != null) {
+        try {
+          responseEvents.close();
+        } catch (RuntimeException error) {
+          log.debug("Failed to close OpenAI response event stream", error);
+        }
+      }
+      try {
+        stream.close();
+      } catch (RuntimeException error) {
+        log.debug("Failed to close OpenAI SDK stream response", error);
+      }
+    }
+
+    private void addDemand(long count) {
+      while (true) {
+        long current = requested.get();
+        long updated = current + count;
+        if (updated < 0) {
+          updated = Long.MAX_VALUE;
+        }
+        if (requested.compareAndSet(current, updated)) {
+          return;
+        }
+      }
+    }
+  }
+
+  private enum EmptySubscription implements Flow.Subscription {
+    INSTANCE;
+
     @Override
-    public void onError(Throwable throwable) {
-      delegate.onError(throwable);
+    public void request(long count) {
     }
 
     @Override
-    public void onComplete() {
-      delegate.onComplete();
+    public void cancel() {
     }
   }
 }

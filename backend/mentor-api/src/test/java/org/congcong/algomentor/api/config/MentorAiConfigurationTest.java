@@ -45,7 +45,7 @@ import org.congcong.algomentor.mentor.api.autoconfigure.AgentConversationApiAuto
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentToolNames;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPermissionHook;
-import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.TrustedProblemTagCatalog;
 import org.congcong.algomentor.queue.model.QueueMessage;
@@ -282,6 +282,7 @@ class MentorAiConfigurationTest {
             JacksonAutoConfiguration.class,
             AgentConversationApiAutoConfiguration.class))
         .withUserConfiguration(PracticeReviewToolCollectionConfig.class, MentorAiConfiguration.class)
+        .withPropertyValues("algo-mentor.practice.code-review.enabled=true")
         .run(context -> {
           AgentToolRegistry registry = context.getBean(AgentToolRegistry.class);
           AgentToolPermissionHookChain hookChain = context.getBean(AgentToolPermissionHookChain.class);
@@ -292,6 +293,17 @@ class MentorAiConfigurationTest {
               .contains(PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW);
           assertThat(hookChain.hooks())
               .anySatisfy(hook -> assertThat(hook).isInstanceOf(PracticeCodeReviewPermissionHook.class));
+        });
+  }
+
+  @Test
+  void failsStartupWhenPracticeReviewIsEnabledWithoutRequiredTool() {
+    contextRunner
+        .withPropertyValues("algo-mentor.practice.code-review.enabled=true")
+        .run(context -> {
+          assertThat(context).hasFailed();
+          assertThat(context.getStartupFailure())
+              .hasMessageContaining(PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW);
         });
   }
 
@@ -413,8 +425,8 @@ class MentorAiConfigurationTest {
     }
 
     @Bean
-    PracticeCodeReviewService practiceCodeReviewService() {
-      return mock(PracticeCodeReviewService.class);
+    PracticeCodeReviewRepository practiceCodeReviewRepository() {
+      return PracticeCodeReviewRepository.empty();
     }
 
     @Bean

@@ -41,6 +41,9 @@ algo-mentor:
   queue:
     consumer:
       enabled: true
+  practice:
+    code-review:
+      enabled: true
   learner-profile:
     code-review-consumer:
       enabled: true

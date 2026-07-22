@@ -225,18 +225,21 @@ class OpenAiLlmProviderTest {
   }
 
   @Test
-  void streamWorkerPropagatesRequestTraceContext() throws Exception {
+  void streamConsumptionUsesSubscriberThreadAndKeepsTraceContext() throws Exception {
     AtomicReference<String> observedRequestId = new AtomicReference<>();
+    AtomicReference<Thread> observedThread = new AtomicReference<>();
     FakeResponsesClient client = new FakeResponsesClient(
         response("done"),
         new ObservingStreamResponse(
             observedRequestId,
+            observedThread,
             List.of(ResponseStreamEvent.ofCompleted(ResponseCompletedEvent.builder()
                 .response(response("hello"))
                 .sequenceNumber(1)
                 .build()))));
     OpenAiLlmProvider provider = new OpenAiLlmProvider(enabledProperties(), client);
     TestSubscriber subscriber = new TestSubscriber();
+    Thread subscriberThread = Thread.currentThread();
 
     try (RequestTraceContext.RequestTraceScope ignored = RequestTraceContext.withRequestId("request-openai-1")) {
       provider.stream(textRequest()).subscribe(subscriber);
@@ -244,6 +247,42 @@ class OpenAiLlmProviderTest {
 
     assertThat(subscriber.finished.await(2, TimeUnit.SECONDS)).isTrue();
     assertThat(observedRequestId).hasValue("request-openai-1");
+    assertThat(observedThread).hasValue(subscriberThread);
+  }
+
+  @Test
+  void supportsIncrementalDemandOnSubscriberThread() throws Exception {
+    AtomicReference<Thread> callbackThread = new AtomicReference<>();
+    FakeResponsesClient client = new FakeResponsesClient(response("done"), List.of(
+        ResponseStreamEvent.ofCreated(ResponseCreatedEvent.builder()
+            .response(response(""))
+            .sequenceNumber(1)
+            .build()),
+        ResponseStreamEvent.ofOutputTextDelta(ResponseTextDeltaEvent.builder()
+            .contentIndex(0)
+            .delta("hel")
+            .itemId("msg_123")
+            .logprobs(List.of())
+            .outputIndex(0)
+            .sequenceNumber(2)
+            .build()),
+        ResponseStreamEvent.ofCompleted(ResponseCompletedEvent.builder()
+            .response(response("hello"))
+            .sequenceNumber(3)
+            .build())));
+    OpenAiLlmProvider provider = new OpenAiLlmProvider(enabledProperties(), client);
+    IncrementalDemandSubscriber subscriber = new IncrementalDemandSubscriber(callbackThread);
+    Thread subscriberThread = Thread.currentThread();
+
+    provider.stream(textRequest()).subscribe(subscriber);
+
+    assertThat(subscriber.finished.await(2, TimeUnit.SECONDS)).isTrue();
+    assertThat(subscriber.error).isNull();
+    assertThat(subscriber.events)
+        .anySatisfy(event -> assertThat(event).isInstanceOf(LlmStreamEvent.MessageStart.class))
+        .anySatisfy(event -> assertThat(event).isEqualTo(new LlmStreamEvent.ContentDelta("hel")))
+        .anySatisfy(event -> assertThat(event).isInstanceOf(LlmStreamEvent.MessageEnd.class));
+    assertThat(callbackThread).hasValue(subscriberThread);
   }
 
   @Test
@@ -452,19 +491,23 @@ class OpenAiLlmProviderTest {
 
   private static final class ObservingStreamResponse implements StreamResponse<ResponseStreamEvent> {
     private final AtomicReference<String> observedRequestId;
+    private final AtomicReference<Thread> observedThread;
     private final List<ResponseStreamEvent> events;
 
     private ObservingStreamResponse(
         AtomicReference<String> observedRequestId,
+        AtomicReference<Thread> observedThread,
         List<ResponseStreamEvent> events
     ) {
       this.observedRequestId = observedRequestId;
+      this.observedThread = observedThread;
       this.events = events;
     }
 
     @Override
     public Stream<ResponseStreamEvent> stream() {
       observedRequestId.set(RequestTraceContext.currentRequestId().orElse(null));
+      observedThread.set(Thread.currentThread());
       return events.stream();
     }
 
@@ -527,6 +570,43 @@ class OpenAiLlmProviderTest {
     @Override
     public void onComplete() {
       cancelled.countDown();
+    }
+  }
+
+  private static final class IncrementalDemandSubscriber
+      implements java.util.concurrent.Flow.Subscriber<LlmStreamEvent> {
+    private final List<LlmStreamEvent> events = new java.util.concurrent.CopyOnWriteArrayList<>();
+    private final CountDownLatch finished = new CountDownLatch(1);
+    private final AtomicReference<Thread> callbackThread;
+    private java.util.concurrent.Flow.Subscription subscription;
+    private volatile Throwable error;
+
+    private IncrementalDemandSubscriber(AtomicReference<Thread> callbackThread) {
+      this.callbackThread = callbackThread;
+    }
+
+    @Override
+    public void onSubscribe(java.util.concurrent.Flow.Subscription subscription) {
+      this.subscription = subscription;
+      subscription.request(1);
+    }
+
+    @Override
+    public void onNext(LlmStreamEvent item) {
+      callbackThread.compareAndSet(null, Thread.currentThread());
+      events.add(item);
+      subscription.request(1);
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+      error = throwable;
+      finished.countDown();
+    }
+
+    @Override
+    public void onComplete() {
+      finished.countDown();
     }
   }
 }
