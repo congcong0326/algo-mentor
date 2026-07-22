@@ -1,6 +1,6 @@
 import type { AbilityProfileResponse, AbilityTagScore } from '../types/api';
 
-export const DEFAULT_RADAR_TAG_COUNT = 8;
+export const DEFAULT_ABILITY_BUBBLE_COUNT = 8;
 
 export interface AbilitySummary {
   averageScore: number;
@@ -39,7 +39,7 @@ export function formatAbilityScore(score: number, locale: string): string {
 }
 
 export function defaultAbilityTagKeys(profile: AbilityProfileResponse): string[] {
-  return profile.tags.slice(0, DEFAULT_RADAR_TAG_COUNT).map((tag) => tag.tag);
+  return profile.tags.slice(0, DEFAULT_ABILITY_BUBBLE_COUNT).map((tag) => tag.tag);
 }
 
 export function findBreakthroughTag(

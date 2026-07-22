@@ -446,7 +446,7 @@ export interface LocaleResources {
     currentStrengthDetail: (label: string, score: string, reviewedProblems: number) => string;
     breakthroughAdvice: string;
     breakthroughAdviceDetail: (label: string) => string;
-    radarSummaryTitle: string;
+    abilitySummaryTitle: string;
     strongestTag: string;
     topAbilities: string;
     selectedAbilityTags: string;
@@ -542,8 +542,8 @@ export interface LocaleResources {
     planPreviewEmpty: string;
     reviewQueueTitle: string;
     reviewQueueEmpty: string;
-    abilityRadarTitle: string;
-    abilityRadarSubtitle: string;
+    abilityMapTitle: string;
+    abilityMapSubtitle: string;
     abilityLoading: string;
     abilityLoadFailed: string;
     abilityEmpty: string;
@@ -1324,7 +1324,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     myPage: {
       profileKicker: 'PERSONAL TRAINING CENTER',
       title: '我的学习画像',
-      subtitle: '集中查看训练覆盖度、能力雷达和长期诊断，设置项已迁移到右上角账户菜单。',
+      subtitle: '集中查看训练覆盖度、能力图谱和长期诊断，设置项已迁移到右上角账户菜单。',
       coachPanelEyebrow: 'COACHING MODE',
       abilityPanelEyebrow: 'ABILITY PROFILE',
       selectedCoach: '当前教练',
@@ -1338,18 +1338,18 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       currentStrength: '当前优势',
       currentStrengthDetail: (label, score, reviewedProblems) => `${label} 当前能力为 ${score}，已复盘 ${reviewedProblems} 题，可作为今天训练的稳定支点。`,
       breakthroughAdvice: '突破建议',
-      breakthroughAdviceDetail: (label) => `建议今天开启一题“${label}”基础练习，补齐雷达图中的薄弱维度。`,
-      radarSummaryTitle: '能力画像摘要',
+      breakthroughAdviceDetail: (label) => `建议今天开启一题“${label}”基础练习，补齐能力图谱中的薄弱领域。`,
+      abilitySummaryTitle: '能力画像摘要',
       strongestTag: '当前优势',
       topAbilities: '优势标签',
-      selectedAbilityTags: '当前雷达标签',
+      selectedAbilityTags: '当前能力气泡',
       expandAbilityProfile: '放大能力画像',
       abilityDetailTitle: '能力画像详情',
-      abilityDetailSubtitle: (max) => `上方雷达图会随选择动态变化，最多展示 ${max} 个 tag。`,
+      abilityDetailSubtitle: (max) => `探索当前选择的专项能力，最多展示 ${max} 个 tag。`,
       closeAbilityDetail: '关闭能力画像详情',
       selectedTagCount: (selected, max) => `${selected}/${max} 个 tag`,
       minimumTagCount: (min) => `至少保留 ${min} 个 tag`,
-      minimumSelectionNotice: (min) => `至少保留 ${min} 个 tag，避免雷达图失真。`,
+      minimumSelectionNotice: (min) => `至少保留 ${min} 个 tag，让能力图谱保持有效。`,
       maximumSelectionNotice: (max) => `最多选择 ${max} 个 tag。`,
       removeSelectedTag: (label) => `移除 ${label}`,
       abilityHeatmapTitle: '全量 tag 能力热力图',
@@ -1446,8 +1446,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       planPreviewEmpty: '后续展示当前推进中的阶段和推荐任务。',
       reviewQueueTitle: '待复盘',
       reviewQueueEmpty: '后续汇总需要回看的代码 Review 和错题。',
-      abilityRadarTitle: '能力雷达图',
-      abilityRadarSubtitle: '常见 tag · 保守诊断 · 满分 10 分',
+      abilityMapTitle: '能力水球图',
+      abilityMapSubtitle: '常见 tag · 复盘样本 · 10 分制',
       abilityLoading: '正在加载能力画像...',
       abilityLoadFailed: '能力画像加载失败',
       abilityEmpty: '暂无能力画像数据',
@@ -2305,7 +2305,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
     myPage: {
       profileKicker: 'PERSONAL TRAINING CENTER',
       title: 'My Learning Profile',
-      subtitle: 'Review training coverage, the ability radar, and long-term diagnostics. Preferences now live in the account menu.',
+      subtitle: 'Review training coverage, the ability map, and long-term diagnostics. Preferences now live in the account menu.',
       coachPanelEyebrow: 'COACHING MODE',
       abilityPanelEyebrow: 'ABILITY PROFILE',
       selectedCoach: 'Current coach',
@@ -2319,18 +2319,18 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       currentStrength: 'Current Strength',
       currentStrengthDetail: (label, score, reviewedProblems) => `${label} is currently at ${score} across ${reviewedProblems} reviewed ${reviewedProblems === 1 ? 'problem' : 'problems'}, giving today\'s practice a stable anchor.`,
       breakthroughAdvice: 'Breakthrough Advice',
-      breakthroughAdviceDetail: (label) => `Start one foundational ${label} problem today to open a weaker radar dimension.`,
-      radarSummaryTitle: 'Ability profile summary',
+      breakthroughAdviceDetail: (label) => `Start one foundational ${label} problem today to strengthen a weaker area in the ability map.`,
+      abilitySummaryTitle: 'Ability profile summary',
       strongestTag: 'Strongest',
       topAbilities: 'Top Abilities',
-      selectedAbilityTags: 'Selected radar tags',
+      selectedAbilityTags: 'Selected ability bubbles',
       expandAbilityProfile: 'Expand ability profile',
       abilityDetailTitle: 'Ability Profile Details',
-      abilityDetailSubtitle: (max) => `The radar updates as tags change and supports up to ${max} tags.`,
+      abilityDetailSubtitle: (max) => `Explore the selected ability topics, with up to ${max} tags.`,
       closeAbilityDetail: 'Close ability profile details',
       selectedTagCount: (selected, max) => `${selected}/${max} tags`,
       minimumTagCount: (min) => `Keep at least ${min} tags`,
-      minimumSelectionNotice: (min) => `Keep at least ${min} tags so the radar remains readable.`,
+      minimumSelectionNotice: (min) => `Keep at least ${min} tags so the ability map remains useful.`,
       maximumSelectionNotice: (max) => `Select up to ${max} tags.`,
       removeSelectedTag: (label) => `Remove ${label}`,
       abilityHeatmapTitle: 'All-tag Ability Heatmap',
@@ -2427,8 +2427,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       planPreviewEmpty: 'Current phases and recommended tasks will appear here.',
       reviewQueueTitle: 'Review Queue',
       reviewQueueEmpty: 'Code reviews and missed problems to revisit will appear here.',
-      abilityRadarTitle: 'Ability Radar',
-      abilityRadarSubtitle: 'Common tags · conservative diagnosis · 10-point scale',
+      abilityMapTitle: 'Ability Pool',
+      abilityMapSubtitle: 'Common tags · review evidence · 10-point scale',
       abilityLoading: 'Loading ability profile...',
       abilityLoadFailed: 'Failed to load ability profile',
       abilityEmpty: 'No ability profile data',

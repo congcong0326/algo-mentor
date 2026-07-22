@@ -13,7 +13,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import AbilityRadarChart from './ability/AbilityRadarChart';
+import AbilityBubbleChart from './ability/AbilityBubbleChart';
 import {
   defaultAbilityTagKeys,
   findBreakthroughTag,
@@ -162,7 +162,7 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
   const reviewActionDisabled = reviewLoading || reviewUnavailable || !reviewDueCount;
   const abilitySummary = summarizeAbilityProfile(abilityProfile);
   const breakthroughTag = findBreakthroughTag(abilityProfile, abilitySummary.strongestTag);
-  const abilityRadarTags = abilityProfile
+  const abilityBubbleTags = abilityProfile
     ? defaultAbilityTagKeys(abilityProfile)
       .map((tag) => abilityProfile.tags.find((item) => item.tag === tag))
       .filter((tag): tag is AbilityProfileResponse['tags'][number] => Boolean(tag))
@@ -266,11 +266,11 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
             <div className="home-ability-layout">
               <button
                 aria-label="查看完整能力画像"
-                className="home-ability-radar-button"
+                className="home-ability-bubble-button"
                 onClick={() => onNavigate(APP_ROUTES.my)}
                 type="button"
               >
-                <AbilityRadarChart profile={abilityProfile} tags={abilityRadarTags} />
+                <AbilityBubbleChart profile={abilityProfile} tags={abilityBubbleTags} />
               </button>
               <div className="home-ability-insights">
                 <div className="home-ability-stat-row">

@@ -16,7 +16,7 @@ data/sources/
 
 backend/**/target/
 backend/mentor-api/src/main/resources/static/
-frontend/node_modules/
+node_modules/
 frontend/dist/
 frontend/build/
 frontend/.vite/

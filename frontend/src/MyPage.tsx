@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
-import AbilityRadarChart from './ability/AbilityRadarChart';
+import AbilityBubbleChart from './ability/AbilityBubbleChart';
 import {
   defaultAbilityTagKeys,
   findBreakthroughTag,
@@ -32,8 +32,8 @@ import type {
   LearnerProfileResponse,
 } from './types/api';
 
-const maxRadarTagCount = 12;
-const minRadarTagCount = 3;
+const maxAbilityBubbleCount = 12;
+const minAbilityBubbleCount = 3;
 const memoryPreviewCount = 5;
 
 type LearnerMemoryCategory = 'declaredFacts' | 'generalObservations' | 'tagAssessments';
@@ -136,7 +136,7 @@ export default function MyPage() {
       value: abilityProfile
         ? resources.myPage.tagCoverage(abilitySummary.reviewedTags, abilitySummary.totalTags)
         : (abilityLoading ? resources.myPage.dataPending : resources.myPage.noData),
-      detail: resources.home.abilityRadarSubtitle,
+      detail: resources.home.abilityMapSubtitle,
     },
     {
       className: 'score',
@@ -156,7 +156,7 @@ export default function MyPage() {
       value: abilityProfile
         ? resources.myPage.reviewedProblemsValue(abilitySummary.reviewedProblems)
         : (abilityLoading ? resources.myPage.dataPending : resources.myPage.noData),
-      detail: resources.myPage.radarSummaryTitle,
+      detail: resources.myPage.abilitySummaryTitle,
     },
     {
       className: 'strength',
@@ -172,15 +172,15 @@ export default function MyPage() {
   function toggleAbilityTag(tag: AbilityTagScore) {
     setSelectedAbilityTags((currentTags) => {
       if (currentTags.includes(tag.tag)) {
-        if (currentTags.length <= minRadarTagCount) {
-          setAbilitySelectionNotice(resources.myPage.minimumSelectionNotice(minRadarTagCount));
+        if (currentTags.length <= minAbilityBubbleCount) {
+          setAbilitySelectionNotice(resources.myPage.minimumSelectionNotice(minAbilityBubbleCount));
           return currentTags;
         }
         setAbilitySelectionNotice('');
         return currentTags.filter((selectedTag) => selectedTag !== tag.tag);
       }
-      if (currentTags.length >= maxRadarTagCount) {
-        setAbilitySelectionNotice(resources.myPage.maximumSelectionNotice(maxRadarTagCount));
+      if (currentTags.length >= maxAbilityBubbleCount) {
+        setAbilitySelectionNotice(resources.myPage.maximumSelectionNotice(maxAbilityBubbleCount));
         return currentTags;
       }
       setAbilitySelectionNotice('');
@@ -232,7 +232,7 @@ export default function MyPage() {
         <div className="ability-heatmap-grid">
           {abilityProfile.tags.map((tag) => {
             const selected = selectedAbilityTags.includes(tag.tag);
-            const disabled = !selected && selectedAbilityTags.length >= maxRadarTagCount;
+            const disabled = !selected && selectedAbilityTags.length >= maxAbilityBubbleCount;
             return (
               <button
                 aria-label={selected ? resources.myPage.removeHeatmapTag(tag.label) : resources.myPage.addHeatmapTag(tag.label)}
@@ -276,7 +276,7 @@ export default function MyPage() {
         </div>
       </header>
 
-      <div className="my-summary-grid" aria-label={resources.myPage.radarSummaryTitle}>
+      <div className="my-summary-grid" aria-label={resources.myPage.abilitySummaryTitle}>
         {summaryCards.map((card) => {
           const Icon = card.icon;
           return (
@@ -396,7 +396,7 @@ export default function MyPage() {
       </section>
 
       <div className="my-workspace-grid profile-only">
-        <article className="my-card ability-card" aria-labelledby="ability-radar-title">
+        <article className="my-card ability-card" aria-labelledby="ability-bubble-title">
           <div className="my-card-heading ability-heading">
             <div className="my-card-title">
               <span className="my-card-title-icon" aria-hidden="true">
@@ -404,8 +404,8 @@ export default function MyPage() {
               </span>
               <div>
                 <p className="my-section-eyebrow">{resources.myPage.abilityPanelEyebrow}</p>
-                <h2 id="ability-radar-title">{resources.home.abilityRadarTitle}</h2>
-                <p>{resources.home.abilityRadarSubtitle}</p>
+                <h2 id="ability-bubble-title">{resources.home.abilityMapTitle}</h2>
+                <p>{resources.home.abilityMapSubtitle}</p>
               </div>
             </div>
             <div className="ability-score-pill">
@@ -424,14 +424,14 @@ export default function MyPage() {
               </button>
             </div>
           ) : abilityProfile ? (
-            <div className="ability-radar-layout">
+            <div className="ability-profile-layout">
               <button
                 aria-label={resources.myPage.expandAbilityProfile}
-                className="ability-radar-open-button"
+                className="ability-bubble-open-button"
                 onClick={() => setAbilityDialogOpen(true)}
                 type="button"
               >
-                <AbilityRadarChart profile={abilityProfile} tags={selectedAbilityTagScores} />
+                <AbilityBubbleChart profile={abilityProfile} tags={selectedAbilityTagScores} />
               </button>
               <aside className="ability-diagnostics" aria-labelledby="ability-diagnostics-title">
                 <h3 id="ability-diagnostics-title">{resources.myPage.diagnosisSummaryTitle}</h3>
@@ -478,7 +478,7 @@ export default function MyPage() {
               <div>
                 <p className="my-section-eyebrow">{resources.myPage.abilityPanelEyebrow}</p>
                 <h2 id="ability-dialog-title">{resources.myPage.abilityDetailTitle}</h2>
-                <p>{resources.myPage.abilityDetailSubtitle(maxRadarTagCount)}</p>
+                <p>{resources.myPage.abilityDetailSubtitle(maxAbilityBubbleCount)}</p>
               </div>
               <button
                 aria-label={resources.myPage.closeAbilityDetail}
@@ -489,14 +489,14 @@ export default function MyPage() {
                 <X aria-hidden="true" />
               </button>
             </header>
-            <div className="ability-dialog-radar-grid">
-              <div className="ability-dialog-radar-stage">
-                <AbilityRadarChart profile={abilityProfile} tags={selectedAbilityTagScores} />
+            <div className="ability-dialog-visual-grid">
+              <div className="ability-dialog-bubble-stage">
+                <AbilityBubbleChart profile={abilityProfile} tags={selectedAbilityTagScores} />
               </div>
               <aside className="ability-dialog-selection" aria-label={resources.myPage.selectedAbilityTags}>
                 <div className="ability-dialog-selection-count">
-                  <strong>{resources.myPage.selectedTagCount(selectedAbilityTagScores.length, maxRadarTagCount)}</strong>
-                  <span>{resources.myPage.minimumTagCount(minRadarTagCount)}</span>
+                  <strong>{resources.myPage.selectedTagCount(selectedAbilityTagScores.length, maxAbilityBubbleCount)}</strong>
+                  <span>{resources.myPage.minimumTagCount(minAbilityBubbleCount)}</span>
                 </div>
                 <div className="ability-chip-list">
                   {selectedAbilityTagScores.map((tag) => (

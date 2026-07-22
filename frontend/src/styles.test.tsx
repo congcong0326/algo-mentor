@@ -87,6 +87,14 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toMatch(/\.ability-dialog-backdrop \{[^}]*padding: 88px 24px 24px;/);
   });
 
+  it('moves ability bubbles without scaling or rotating their rendered text', () => {
+    expect(styles).toContain('margin-left: calc(var(--bubble-parallax-x) + var(--bubble-float-x-primary));');
+    expect(styles).toContain('margin-top: calc(var(--bubble-parallax-y) + var(--bubble-float-y-primary));');
+    expect(styles).not.toContain('rotate(0.32deg)');
+    expect(styles).not.toContain('scale(1.01)');
+    expect(styles).not.toMatch(/\.ability-bubble-node \{[^}]*will-change: transform;/);
+  });
+
   it('keeps rendered Markdown lists compact and aligned', () => {
     expect(styles).toContain('.practice-message .markdown-view {\n  margin: 0;\n  min-height: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  overflow: visible;');
     expect(styles).toContain('.review-problem-full .markdown-view {\n  margin-top: 12px;\n  min-height: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  overflow: visible;');
