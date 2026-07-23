@@ -26,6 +26,7 @@ export type AuthPermission =
   | 'problem:read'
   | 'problem:write'
   | 'user:manage'
+  | 'policy:manage'
   | 'admin-overview:read'
   | 'beta-access:manage'
   | 'session:manage'
@@ -289,6 +290,68 @@ export interface AdminAuthSessionRevocationResponse {
   userId?: number | null;
   revoked: boolean;
   alreadyOffline: boolean;
+}
+
+export type GenericPolicyStatus = 'ENABLED' | 'DISABLED';
+export type PolicySubjectType = 'USER' | 'GROUP';
+
+export interface PolicySubject {
+  type: PolicySubjectType;
+  id: number;
+}
+
+export interface PolicySubjectRange {
+  allSubject: boolean;
+  subjects: PolicySubject[];
+}
+
+export interface UserSessionPolicyContent {
+  maxSessions: number;
+  absoluteTimeoutSeconds: number;
+}
+
+export interface AdminGenericPolicy {
+  id: number;
+  typeCode: string;
+  name: string;
+  description?: string | null;
+  status: GenericPolicyStatus;
+  priority: number;
+  subjectRange: PolicySubjectRange;
+  content: UserSessionPolicyContent;
+  version: number;
+  createdBy: number;
+  createdAt: string;
+  updatedBy: number;
+  updatedAt: string;
+}
+
+export interface AdminGenericPolicyPage {
+  items: AdminGenericPolicy[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface AdminGenericPolicyListQuery {
+  typeCode: string;
+  page?: number;
+  pageSize?: number;
+  keyword?: string;
+  status?: GenericPolicyStatus | '';
+}
+
+export interface AdminGenericPolicyWriteRequest {
+  typeCode: string;
+  name: string;
+  description: string;
+  status: GenericPolicyStatus;
+  subjectRange: PolicySubjectRange;
+  content: UserSessionPolicyContent;
+}
+
+export interface AdminGenericPolicyUpdateRequest extends Omit<AdminGenericPolicyWriteRequest, 'typeCode'> {
+  version: number;
 }
 
 export interface AdminPasswordResetResponse {

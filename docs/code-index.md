@@ -58,6 +58,8 @@
 - `docs/internal-beta-ai-governance-stage-2-implementation-plan.md`：内测管理员能力阶段二详细实施计划，固化 `/admin/ai` 与用户管理的产品边界，细化动态 AI 策略、V32 调用级 Token 台账、当前价格成本估算、直接 LLM 调用治理、管理员 API、前端工作区、测试和发布门禁。
 - `docs/internal-beta-feedback-overview-stage-4-implementation-plan.md`：内测管理员能力阶段四详细实施计划，仅细化反馈信箱与管理员概览，固定未读/事务语义、反馈 API、概览区块降级、前端徽标与跨页面联动，并明确阶段三 run 查询依赖。
 - `docs/admin-frontend-shell-refactoring-design.md`：管理员前端工作区重构设计，参考高密度管理台的信息层级，固定 `/admin/*` 使用全局顶栏、业务域侧栏、局部页签、紧凑命令栏和数据工作区，并保持普通用户界面不变。
+- `docs/admin-auth-session-monitoring-design.md`：管理员会话监控技术设计，定义有效/活跃会话语义、Spring Session 分页查询、单会话下线、当前会话保护、审计权限和前后端测试边界。
+- `docs/auth-user-session-policy-design.md`：用户会话策略技术设计，定义基于通用策略的会话数量与绝对超时契约、登录时按创建时间淘汰、会话快照、硬截止过滤与首版并发和策略变更边界。
 - `docs/user-group-management-design.md`：用户组与管理员成员管理设计，定义 `identity` 模块中的用户组和多对多成员关系、有效期语义、管理员 API、用户组页面及用户详情中的手动添加与移除，不包含访问策略和支付订阅。
 - `docs/generic-policy-foundation-design.md`：通用策略底座研发设计，固定单表 JSONB、业务 Spring Bean 注册强类型内容、全部用户/用户/用户组范围、全局优先级单条命中、整类编译失败日志、按类型策略缓存和按用户关系缓存失效语义。
 

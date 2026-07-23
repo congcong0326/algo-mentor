@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Type;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
 import org.congcong.algomentor.policy.service.GenericPolicyConstraints;
 
@@ -21,19 +22,34 @@ public final class GenericPolicyType<T> {
 
   private final String typeCode;
   private final Type contentType;
+  private final BiConsumer<JsonNode, T> contentValidator;
 
-  private GenericPolicyType(String typeCode, Type contentType) {
+  private GenericPolicyType(
+      String typeCode,
+      Type contentType,
+      BiConsumer<JsonNode, T> contentValidator
+  ) {
     this.typeCode = normalizeTypeCode(typeCode);
     this.contentType = Objects.requireNonNull(contentType, "contentType must not be null");
+    this.contentValidator = Objects.requireNonNull(contentValidator, "contentValidator must not be null");
   }
 
   public static <T> GenericPolicyType<T> of(String typeCode, Class<T> contentType) {
-    return new GenericPolicyType<>(typeCode, contentType);
+    return new GenericPolicyType<>(typeCode, contentType, GenericPolicyType::noOpValidation);
+  }
+
+  /** 注册带有业务 JSON 语义校验的强类型策略内容。 */
+  public static <T> GenericPolicyType<T> of(
+      String typeCode,
+      Class<T> contentType,
+      BiConsumer<JsonNode, T> contentValidator
+  ) {
+    return new GenericPolicyType<>(typeCode, contentType, contentValidator);
   }
 
   public static <T> GenericPolicyType<T> of(String typeCode, TypeReference<T> contentType) {
     Objects.requireNonNull(contentType, "contentType must not be null");
-    return new GenericPolicyType<>(typeCode, contentType.getType());
+    return new GenericPolicyType<>(typeCode, contentType.getType(), GenericPolicyType::noOpValidation);
   }
 
   public String typeCode() {
@@ -48,7 +64,12 @@ public final class GenericPolicyType<T> {
 
   public T deserialize(ObjectMapper objectMapper, JsonNode content) {
     Objects.requireNonNull(content, "content must not be null");
-    return objectMapper.convertValue(content, javaType(objectMapper));
+    T value = objectMapper.convertValue(content, javaType(objectMapper));
+    contentValidator.accept(content, value);
+    return value;
+  }
+
+  private static <T> void noOpValidation(JsonNode content, T value) {
   }
 
   public static String normalizeTypeCode(String value) {

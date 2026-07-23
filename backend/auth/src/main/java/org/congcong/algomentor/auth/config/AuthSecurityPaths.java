@@ -11,6 +11,7 @@ public final class AuthSecurityPaths {
   public static final String HEALTH_PATH = "/api/health";
   public static final String OAUTH2_AUTHORIZATION_PATTERN = "/oauth2/authorization/**";
   public static final String OAUTH2_CALLBACK_PATTERN = "/login/oauth2/code/**";
+  public static final String OAUTH2_SESSION_POLICY_FAILURE_URL = "/login?auth=session-policy-unavailable";
   public static final String AUTH_REGISTER_PATH = "/api/auth/register";
   public static final String AUTH_LOGIN_PATH = "/api/auth/login";
   public static final String AUTH_ME_PATH = "/api/auth/me";

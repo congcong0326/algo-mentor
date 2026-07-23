@@ -91,6 +91,7 @@ export interface LocaleResources {
     adminUserGroups: string;
     adminMonitoring: string;
     adminSessions: string;
+    adminSessionPolicies: string;
     adminAi: string;
     feedback: string;
     adminOverview: string;
@@ -108,7 +109,7 @@ export interface LocaleResources {
     businessNavigation: string;
     navigation: string;
     pageNavigation: string;
-    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'sessions' | 'ai' | 'content' | 'feedback' | 'development' | 'users' | 'userGroups' | 'betaAccess' | 'problems' | 'debug', string>;
+    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'sessions' | 'sessionPolicies' | 'ai' | 'content' | 'feedback' | 'development' | 'users' | 'userGroups' | 'betaAccess' | 'problems' | 'debug', string>;
   };
   feedback: {
     openDialog: string;
@@ -426,6 +427,62 @@ export interface LocaleResources {
     confirmDescription: (user: string, lastAccessedAt: string) => string;
     connectionNotice: string;
     revoking: string;
+  };
+  sessionPolicy: {
+    ariaLabel: string;
+    title: string;
+    pageDescription: string;
+    create: string;
+    createTitle: string;
+    editTitle: string;
+    dialogDescription: string;
+    refresh: string;
+    searchPlaceholder: string;
+    search: string;
+    priority: string;
+    name: string;
+    description: string;
+    scope: string;
+    allUsers: string;
+    selectedSubjects: string;
+    scopeSummary: (userCount: number, groupCount: number) => string;
+    subjectType: string;
+    subjectTypes: Record<'USER' | 'GROUP', string>;
+    subjectSearchPlaceholder: string;
+    subjectLoading: string;
+    subjectLoadFailed: string;
+    savedUserSubject: string;
+    savedGroupSubject: string;
+    removeSubject: (label: string) => string;
+    remove: string;
+    subjectEmpty: string;
+    subjectRequired: string;
+    maxSessions: string;
+    absoluteTimeout: string;
+    absoluteTimeoutSeconds: string;
+    duration: (value: string, unit: 'days' | 'hours' | 'minutes' | 'seconds') => string;
+    status: string;
+    statusAll: string;
+    statuses: Record<'ENABLED' | 'DISABLED', string>;
+    updatedAt: string;
+    actions: string;
+    empty: string;
+    loading: string;
+    loadFailed: string;
+    nameRequired: string;
+    valueInvalid: string;
+    save: string;
+    saving: string;
+    saveFailed: string;
+    saveSucceeded: string;
+    editPolicy: (name: string) => string;
+    delete: string;
+    deleting: string;
+    deleteTitle: string;
+    deleteDescription: (name: string) => string;
+    deletePolicy: (name: string) => string;
+    deleteFailed: string;
+    deleteSucceeded: string;
   };
   adminUserAi: {
     title: string;
@@ -1121,6 +1178,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminUserGroups: '用户组管理',
       adminMonitoring: '系统监控',
       adminSessions: '会话监控',
+      adminSessionPolicies: '会话策略',
       adminAi: 'AI 治理',
       feedback: '反馈',
       adminOverview: '概览',
@@ -1144,6 +1202,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         monitoring: '系统监控',
         systemStatus: '运行状态',
         sessions: '会话监控',
+        sessionPolicies: '会话策略',
         ai: 'AI 治理',
         content: '内容管理',
         feedback: '反馈与支持',
@@ -1471,6 +1530,62 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       confirmDescription: (user, lastAccessedAt) => `将下线 ${user} 的会话，最后访问于 ${lastAccessedAt}。`,
       connectionNotice: '下线后，该会话的后续请求需要重新登录；已建立的请求或流式连接可能继续到当前操作结束。',
       revoking: '下线中...',
+    },
+    sessionPolicy: {
+      ariaLabel: '会话策略',
+      title: '会话策略',
+      pageDescription: '新登录会话按优先级命中一条启用策略；已创建的会话不会因策略变更而调整。',
+      create: '新建策略',
+      createTitle: '新建会话策略',
+      editTitle: '编辑会话策略',
+      dialogDescription: '策略类型固定为 auth.user-session.v1，优先级由通用策略排序管理。',
+      refresh: '刷新策略列表',
+      searchPlaceholder: '搜索策略名称或描述',
+      search: '搜索',
+      priority: '优先级',
+      name: '策略名称',
+      description: '说明',
+      scope: '适用范围',
+      allUsers: '全体用户',
+      selectedSubjects: '指定用户或用户组',
+      scopeSummary: (userCount, groupCount) => `指定 ${userCount} 位用户、${groupCount} 个用户组`,
+      subjectType: '主体类型',
+      subjectTypes: { USER: '用户', GROUP: '用户组' },
+      subjectSearchPlaceholder: '搜索用户昵称、邮箱或用户组名称',
+      subjectLoading: '正在查找可选对象...',
+      subjectLoadFailed: '可选用户或用户组加载失败。',
+      savedUserSubject: '已选用户',
+      savedGroupSubject: '已选用户组',
+      removeSubject: (label) => `移除 ${label}`,
+      remove: '移除',
+      subjectEmpty: '没有符合条件的可选对象。',
+      subjectRequired: '指定范围时至少需要一个用户或用户组。',
+      maxSessions: '最大有效会话数',
+      absoluteTimeout: '绝对超时',
+      absoluteTimeoutSeconds: '绝对超时（秒）',
+      duration: (value, unit) => `${value} ${({ days: '天', hours: '小时', minutes: '分钟', seconds: '秒' })[unit]}`,
+      status: '状态',
+      statusAll: '全部状态',
+      statuses: { ENABLED: '已启用', DISABLED: '已停用' },
+      updatedAt: '更新时间',
+      actions: '操作',
+      empty: '没有符合条件的会话策略。',
+      loading: '正在加载会话策略...',
+      loadFailed: '会话策略列表加载失败。',
+      nameRequired: '请输入策略名称。',
+      valueInvalid: '最大有效会话数和绝对超时必须是正整数。',
+      save: '保存',
+      saving: '保存中...',
+      saveFailed: '会话策略保存失败。',
+      saveSucceeded: '会话策略已保存。',
+      editPolicy: (name) => `编辑策略 ${name}`,
+      delete: '删除',
+      deleting: '删除中...',
+      deleteTitle: '删除会话策略',
+      deleteDescription: (name) => `将删除策略“${name}”。此操作不会调整已创建的会话。`,
+      deletePolicy: (name) => `删除策略 ${name}`,
+      deleteFailed: '会话策略删除失败。',
+      deleteSucceeded: '会话策略已删除。',
     },
     adminUserAi: {
       title: 'AI 使用与控制',
@@ -2268,6 +2383,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminUserGroups: 'User Groups',
       adminMonitoring: 'System monitoring',
       adminSessions: 'Session monitoring',
+      adminSessionPolicies: 'Session policies',
       adminAi: 'AI Governance',
       feedback: 'Feedback',
       adminOverview: 'Overview',
@@ -2291,6 +2407,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         monitoring: 'System monitoring',
         systemStatus: 'Runtime status',
         sessions: 'Session monitoring',
+        sessionPolicies: 'Session policies',
         ai: 'AI Governance',
         content: 'Content',
         feedback: 'Feedback & Support',
@@ -2618,6 +2735,62 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       confirmDescription: (user, lastAccessedAt) => `This signs out ${user}'s session, last accessed ${lastAccessedAt}.`,
       connectionNotice: 'After sign-out, later requests need a new sign-in. Established requests or streams may continue until the current operation completes.',
       revoking: 'Signing out...',
+    },
+    sessionPolicy: {
+      ariaLabel: 'Session policies',
+      title: 'Session policies',
+      pageDescription: 'New sessions use the highest-priority enabled match. Existing sessions are not changed when policies are updated.',
+      create: 'New policy',
+      createTitle: 'New session policy',
+      editTitle: 'Edit session policy',
+      dialogDescription: 'The policy type is fixed to auth.user-session.v1. Priority is managed by generic policy ordering.',
+      refresh: 'Refresh policy list',
+      searchPlaceholder: 'Search policy name or description',
+      search: 'Search',
+      priority: 'Priority',
+      name: 'Policy name',
+      description: 'Description',
+      scope: 'Scope',
+      allUsers: 'All users',
+      selectedSubjects: 'Selected users or groups',
+      scopeSummary: (userCount, groupCount) => `${userCount} selected users, ${groupCount} selected user groups`,
+      subjectType: 'Subject type',
+      subjectTypes: { USER: 'User', GROUP: 'User group' },
+      subjectSearchPlaceholder: 'Search name, email, or user group',
+      subjectLoading: 'Finding available subjects...',
+      subjectLoadFailed: 'Failed to load available users or user groups.',
+      savedUserSubject: 'Saved user',
+      savedGroupSubject: 'Saved user group',
+      removeSubject: (label) => `Remove ${label}`,
+      remove: 'Remove',
+      subjectEmpty: 'No available subjects match the search.',
+      subjectRequired: 'A selected scope needs at least one user or user group.',
+      maxSessions: 'Maximum valid sessions',
+      absoluteTimeout: 'Absolute timeout',
+      absoluteTimeoutSeconds: 'Absolute timeout (seconds)',
+      duration: (value, unit) => `${value} ${value === '1' ? unit.slice(0, -1) : unit}`,
+      status: 'Status',
+      statusAll: 'All statuses',
+      statuses: { ENABLED: 'Enabled', DISABLED: 'Disabled' },
+      updatedAt: 'Updated',
+      actions: 'Actions',
+      empty: 'No session policies match the current filters.',
+      loading: 'Loading session policies...',
+      loadFailed: 'Failed to load session policies.',
+      nameRequired: 'Enter a policy name.',
+      valueInvalid: 'Maximum valid sessions and absolute timeout must be positive integers.',
+      save: 'Save',
+      saving: 'Saving...',
+      saveFailed: 'Failed to save session policy.',
+      saveSucceeded: 'Session policy saved.',
+      editPolicy: (name) => `Edit policy ${name}`,
+      delete: 'Delete',
+      deleting: 'Deleting...',
+      deleteTitle: 'Delete session policy',
+      deleteDescription: (name) => `Delete policy "${name}". Existing sessions are not changed.`,
+      deletePolicy: (name) => `Delete policy ${name}`,
+      deleteFailed: 'Failed to delete session policy.',
+      deleteSucceeded: 'Session policy deleted.',
     },
     adminUserAi: {
       title: 'AI usage & controls',

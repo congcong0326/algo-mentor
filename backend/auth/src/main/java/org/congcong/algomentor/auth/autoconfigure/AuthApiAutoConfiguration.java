@@ -35,11 +35,21 @@ import org.congcong.algomentor.auth.passwordreset.PasswordResetMutationExecutor;
 import org.congcong.algomentor.auth.passwordreset.PasswordResetService;
 import org.congcong.algomentor.auth.passwordreset.TemporaryPasswordGenerator;
 import org.congcong.algomentor.auth.session.AuthSessionMetrics;
+import org.congcong.algomentor.auth.session.AuthSessionRepository;
 import org.congcong.algomentor.auth.session.AuthSessionRevocationService;
 import org.congcong.algomentor.auth.session.IdentityUserStatusChangedEventListener;
 import org.congcong.algomentor.auth.session.MicrometerAuthSessionMetrics;
 import org.congcong.algomentor.auth.session.NoopAuthSessionMetrics;
+import org.congcong.algomentor.auth.session.SpringSessionAuthSessionRepository;
 import org.congcong.algomentor.auth.session.SpringSessionAuthSessionRevocationService;
+import org.congcong.algomentor.auth.session.policy.AuthSessionPolicyLoginService;
+import org.congcong.algomentor.auth.session.policy.AuthSessionPolicyMetrics;
+import org.congcong.algomentor.auth.session.policy.AuthSessionPolicyResolver;
+import org.congcong.algomentor.auth.session.policy.MicrometerAuthSessionPolicyMetrics;
+import org.congcong.algomentor.auth.session.policy.NoopAuthSessionPolicyMetrics;
+import org.congcong.algomentor.auth.session.policy.AuthSessionPolicyConstants;
+import org.congcong.algomentor.auth.session.policy.UserSessionPolicy;
+import org.congcong.algomentor.auth.session.policy.UserSessionPolicyConstraints;
 import org.congcong.algomentor.auth.session.admin.controller.AdminAuthSessionController;
 import org.congcong.algomentor.auth.session.admin.controller.AdminAuthSessionExceptionHandler;
 import org.congcong.algomentor.auth.session.admin.repository.AuthSessionAdminRepository;
@@ -62,6 +72,9 @@ import org.congcong.algomentor.cache.factory.SharedCacheRegionFactory;
 import org.congcong.algomentor.cache.config.CacheAutoConfiguration;
 import org.congcong.algomentor.identity.autoconfigure.IdentityAutoConfiguration;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
+import org.congcong.algomentor.policy.autoconfigure.GenericPolicyAutoConfiguration;
+import org.congcong.algomentor.policy.service.GenericPolicyQueryService;
+import org.congcong.algomentor.policy.type.GenericPolicyType;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -80,7 +93,12 @@ import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.transaction.PlatformTransactionManager;
 
-@AutoConfiguration(after = {CacheAutoConfiguration.class, IdentityAutoConfiguration.class, SessionAutoConfiguration.class})
+@AutoConfiguration(after = {
+    CacheAutoConfiguration.class,
+    IdentityAutoConfiguration.class,
+    SessionAutoConfiguration.class,
+    GenericPolicyAutoConfiguration.class
+})
 @EnableConfigurationProperties({AuthProperties.class, AuthCacheProperties.class})
 public class AuthApiAutoConfiguration {
 
@@ -135,6 +153,15 @@ public class AuthApiAutoConfiguration {
   @ConditionalOnMissingBean
   public Clock authClock() {
     return Clock.systemUTC();
+  }
+
+  @Bean("authUserSessionPolicyType")
+  @ConditionalOnMissingBean(name = "authUserSessionPolicyType")
+  public GenericPolicyType<UserSessionPolicy> authUserSessionPolicyType() {
+    return GenericPolicyType.of(
+        AuthSessionPolicyConstants.TYPE_CODE,
+        UserSessionPolicy.class,
+        UserSessionPolicyConstraints::validateContent);
   }
 
   @Bean
@@ -384,12 +411,60 @@ public class AuthApiAutoConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean
+  public AuthSessionPolicyMetrics authSessionPolicyMetrics(ObjectProvider<MeterRegistry> meterRegistryProvider) {
+    MeterRegistry registry = meterRegistryProvider.getIfAvailable();
+    return registry == null ? new NoopAuthSessionPolicyMetrics()
+        : new MicrometerAuthSessionPolicyMetrics(registry);
+  }
+
+  @Bean
   @ConditionalOnBean(FindByIndexNameSessionRepository.class)
   @ConditionalOnMissingBean
   public AuthSessionRevocationService authSessionRevocationService(
       FindByIndexNameSessionRepository<? extends Session> sessionRepository
   ) {
     return new SpringSessionAuthSessionRevocationService(sessionRepository);
+  }
+
+  @Bean
+  @ConditionalOnBean(FindByIndexNameSessionRepository.class)
+  @ConditionalOnMissingBean
+  public AuthSessionRepository authSessionRepository(
+      FindByIndexNameSessionRepository<? extends Session> sessionRepository
+  ) {
+    return new SpringSessionAuthSessionRepository(sessionRepository);
+  }
+
+  @Bean
+  @ConditionalOnBean(GenericPolicyQueryService.class)
+  @ConditionalOnMissingBean
+  public AuthSessionPolicyResolver authSessionPolicyResolver(
+      GenericPolicyQueryService genericPolicyQueryService,
+      GenericPolicyType<UserSessionPolicy> authUserSessionPolicyType,
+      AuthSessionPolicyMetrics metrics
+  ) {
+    return new AuthSessionPolicyResolver(genericPolicyQueryService, authUserSessionPolicyType, metrics);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public AuthSessionPolicyLoginService authSessionPolicyLoginService(
+      ObjectProvider<AuthSessionPolicyResolver> resolverProvider,
+      ObjectProvider<AuthSessionRepository> sessionRepositoryProvider,
+      ObjectProvider<AuthSessionRevocationService> revocationServiceProvider,
+      AuthSessionPolicyMetrics metrics,
+      Clock authClock,
+      AuthProperties authProperties
+  ) {
+    AuthSessionPolicyResolver resolver = resolverProvider.getIfAvailable();
+    AuthSessionRepository sessionRepository = sessionRepositoryProvider.getIfAvailable();
+    AuthSessionRevocationService revocationService = revocationServiceProvider.getIfAvailable();
+    if (resolver == null || sessionRepository == null || revocationService == null) {
+      return AuthSessionPolicyLoginService.unavailable(metrics);
+    }
+    return new AuthSessionPolicyLoginService(
+        resolver, sessionRepository, revocationService, metrics, authClock, authProperties);
   }
 
   @Bean
@@ -493,7 +568,8 @@ public class AuthApiAutoConfiguration {
       SecurityContextRepository securityContextRepository,
       AuthPermissionService authPermissionService,
       ObjectProvider<PasswordResetService> passwordResetServiceProvider,
-      ObjectProvider<ApiErrorResponseFactory> apiErrorResponseFactoryProvider
+      ObjectProvider<ApiErrorResponseFactory> apiErrorResponseFactoryProvider,
+      AuthSessionPolicyLoginService authSessionPolicyLoginService
   ) {
     ApiErrorResponseFactory responseFactory = apiErrorResponseFactoryProvider.getIfAvailable();
     return new PasswordAuthController(
@@ -504,7 +580,8 @@ public class AuthApiAutoConfiguration {
             ? new ApiErrorResponseFactory(new ApiErrorMessageResolver())
             : responseFactory,
         authPermissionService,
-        passwordResetServiceProvider.getIfAvailable());
+        passwordResetServiceProvider.getIfAvailable(),
+        authSessionPolicyLoginService);
   }
 
   @Bean

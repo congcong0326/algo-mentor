@@ -36,6 +36,10 @@ public class AuthProperties {
   }
 
   public void setSessionTimeout(Duration sessionTimeout) {
+    if (sessionTimeout == null || sessionTimeout.isZero() || sessionTimeout.isNegative()
+        || sessionTimeout.toSeconds() < 1 || sessionTimeout.toSeconds() > Integer.MAX_VALUE) {
+      throw new IllegalArgumentException("sessionTimeout must be positive and fit Servlet Session seconds.");
+    }
     this.sessionTimeout = sessionTimeout;
   }
 

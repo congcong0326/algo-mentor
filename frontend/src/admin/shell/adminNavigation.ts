@@ -4,13 +4,14 @@ import { APP_ROUTES } from '../../app/navigation';
 import type { AuthPermission } from '../../types/api';
 
 export type AdminModuleId = 'overview' | 'access' | 'monitoring' | 'content' | 'feedback' | 'development';
-export type AdminPageId = 'overview' | 'users' | 'userGroups' | 'betaAccess' | 'monitoring' | 'sessions' | 'ai' | 'problems' | 'feedback' | 'debug';
+export type AdminPageId = 'overview' | 'users' | 'userGroups' | 'betaAccess' | 'monitoring' | 'sessions' | 'sessionPolicies' | 'ai' | 'problems' | 'feedback' | 'debug';
 export type AdminNavigationLabelKey =
   | 'overview'
   | 'access'
   | 'monitoring'
   | 'systemStatus'
   | 'sessions'
+  | 'sessionPolicies'
   | 'ai'
   | 'content'
   | 'feedback'
@@ -59,6 +60,7 @@ export const ADMIN_MODULES: AdminModuleDefinition[] = [
     items: [
       { id: 'monitoring', labelKey: 'systemStatus', path: APP_ROUTES.adminMonitoring, permission: 'admin-overview:read' },
       { id: 'sessions', labelKey: 'sessions', path: APP_ROUTES.adminSessions, permission: 'session:manage' },
+      { id: 'sessionPolicies', labelKey: 'sessionPolicies', path: APP_ROUTES.adminSessionPolicies, permission: 'policy:manage' },
       { id: 'ai', labelKey: 'ai', path: APP_ROUTES.adminAi, permission: 'ai-governance:manage' },
     ],
   },

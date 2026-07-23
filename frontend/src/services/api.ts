@@ -35,6 +35,11 @@ import type {
   AdminAuthSessionListQuery,
   AdminAuthSessionPage,
   AdminAuthSessionRevocationResponse,
+  AdminGenericPolicy,
+  AdminGenericPolicyListQuery,
+  AdminGenericPolicyPage,
+  AdminGenericPolicyUpdateRequest,
+  AdminGenericPolicyWriteRequest,
   BetaAccessListQuery,
   BetaAccessPage,
   BetaAccessSettings,
@@ -775,6 +780,71 @@ export async function revokeAdminAuthSession(
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Auth session revocation failed');
+  }
+
+  return response.json();
+}
+
+export async function getAdminPolicies(
+  query: AdminGenericPolicyListQuery,
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminGenericPolicyPage>> {
+  const response = await apiFetch(`/api/admin/policies${toQueryString(query)}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Admin policy list request failed');
+  }
+
+  return response.json();
+}
+
+export async function createAdminPolicy(
+  request: AdminGenericPolicyWriteRequest,
+): Promise<ApiResponse<AdminGenericPolicy>> {
+  const response = await apiFetch('/api/admin/policies', {
+    method: 'POST',
+    headers: { ...jsonHeaders, 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Admin policy creation failed');
+  }
+
+  return response.json();
+}
+
+export async function updateAdminPolicy(
+  policyId: number,
+  request: AdminGenericPolicyUpdateRequest,
+): Promise<ApiResponse<AdminGenericPolicy>> {
+  const response = await apiFetch(`/api/admin/policies/${policyId}`, {
+    method: 'PATCH',
+    headers: { ...jsonHeaders, 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Admin policy update failed');
+  }
+
+  return response.json();
+}
+
+export async function deleteAdminPolicy(
+  policyId: number,
+  version: number,
+): Promise<ApiResponse<boolean>> {
+  const response = await apiFetch(`/api/admin/policies/${policyId}?version=${encodeURIComponent(String(version))}`, {
+    method: 'DELETE',
+    headers: jsonHeaders,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Admin policy deletion failed');
   }
 
   return response.json();
@@ -1728,6 +1798,7 @@ type QueryParams =
   | LearningPlanListQuery
   | PracticeSessionQuery
   | AdminUserListQuery
+  | AdminGenericPolicyListQuery
   | UserGroupListQuery
   | UserGroupMemberListQuery
   | AdminAiUsageQuery

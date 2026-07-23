@@ -10,6 +10,7 @@ import {
   getAdminUserDetail,
   getAdminUsers,
   getAdminAuthSessions,
+  getAdminPolicies,
   getHealth,
   getLearningPlanTemplate,
   getLearningPlanTemplates,
@@ -27,6 +28,9 @@ import {
   streamLearningPlanExtensionProposalRevision,
   updateAdminUserStatus,
   revokeAdminAuthSession,
+  createAdminPolicy,
+  updateAdminPolicy,
+  deleteAdminPolicy,
   updateUserAiPreference,
 } from './api';
 
@@ -277,6 +281,54 @@ describe('api service', () => {
     );
     const headers = requestHeaders(fetchMock, 1);
     expect(headers.get('X-XSRF-TOKEN')).toBe('csrf-token');
+  });
+
+  it('manages generic policies with versioned updates and deletions', async () => {
+    Object.defineProperty(document, 'cookie', {
+      configurable: true,
+      writable: true,
+      value: 'XSRF-TOKEN=csrf-token',
+    });
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {},
+      timestamp: '2026-07-23T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const writeRequest = {
+      typeCode: 'auth.user-session.v1',
+      name: 'baseline',
+      description: '',
+      status: 'ENABLED' as const,
+      subjectRange: { allSubject: true, subjects: [] },
+      content: { maxSessions: 2, absoluteTimeoutSeconds: 86400 },
+    };
+    const { typeCode: _, ...updateRequest } = writeRequest;
+    await getAdminPolicies({ typeCode: 'auth.user-session.v1', page: 1, pageSize: 20, status: 'ENABLED' });
+    await createAdminPolicy(writeRequest);
+    await updateAdminPolicy(15, { ...updateRequest, version: 4 });
+    await deleteAdminPolicy(15, 4);
+
+    expect(fetchMock).toHaveBeenNthCalledWith(1,
+      '/api/admin/policies?typeCode=auth.user-session.v1&page=1&pageSize=20&status=ENABLED',
+      expect.objectContaining({ credentials: 'same-origin', headers: expect.any(Headers) }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(2,
+      '/api/admin/policies',
+      expect.objectContaining({ method: 'POST', credentials: 'same-origin', headers: expect.any(Headers) }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(3,
+      '/api/admin/policies/15',
+      expect.objectContaining({ method: 'PATCH', credentials: 'same-origin', headers: expect.any(Headers) }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(4,
+      '/api/admin/policies/15?version=4',
+      expect.objectContaining({ method: 'DELETE', credentials: 'same-origin', headers: expect.any(Headers) }),
+    );
+    expect(JSON.parse(String(fetchMock.mock.calls[1][1]?.body))).toEqual(writeRequest);
+    expect(JSON.parse(String(fetchMock.mock.calls[2][1]?.body))).toEqual({ ...updateRequest, version: 4 });
+    expect(requestHeaders(fetchMock, 3).get('X-XSRF-TOKEN')).toBe('csrf-token');
   });
 
   it('loads admin user detail by id', async () => {

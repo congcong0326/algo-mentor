@@ -29,8 +29,11 @@
     version, created_by, created_at, updated_by, updated_at
   </sql>
 
-  <select id="acquireTypeLock">
-    select pg_advisory_xact_lock(hashtextextended(#{typeCode}, 0))
+  <select id="acquireTypeLock" resultType="int">
+    select 1
+    from (
+      select pg_advisory_xact_lock(hashtextextended(#{typeCode}, 0))
+    ) type_lock
   </select>
 
   <select id="findLiveByTypeForUpdate" resultMap="GenericPolicyRowMap">

@@ -10,6 +10,8 @@ import org.congcong.algomentor.auth.betaaccess.service.BetaAccessException;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.BetaAccessAuthenticationException;
 import org.congcong.algomentor.auth.security.TemporaryPasswordAuthenticationException;
+import org.congcong.algomentor.auth.session.policy.AuthSessionPolicyException;
+import org.congcong.algomentor.auth.session.policy.AuthSessionPolicyLoginService;
 import org.congcong.algomentor.auth.passwordreset.PasswordResetErrorCode;
 import org.congcong.algomentor.auth.passwordreset.PasswordResetException;
 import org.congcong.algomentor.auth.passwordreset.PasswordResetService;
@@ -45,6 +47,7 @@ public class PasswordAuthController {
   private final ApiErrorResponseFactory responseFactory;
   private final AuthPermissionService permissionService;
   private final PasswordResetService passwordResetService;
+  private final AuthSessionPolicyLoginService sessionPolicyLoginService;
 
   public PasswordAuthController(
       PasswordUserService passwordUserService,
@@ -58,6 +61,7 @@ public class PasswordAuthController {
         securityContextRepository,
         new ApiErrorResponseFactory(new ApiErrorMessageResolver()),
         permissionService,
+        null,
         null);
   }
 
@@ -74,6 +78,7 @@ public class PasswordAuthController {
         securityContextRepository,
         responseFactory,
         permissionService,
+        null,
         null);
   }
 
@@ -85,12 +90,32 @@ public class PasswordAuthController {
       AuthPermissionService permissionService,
       PasswordResetService passwordResetService
   ) {
+    this(
+        passwordUserService,
+        authenticationManager,
+        securityContextRepository,
+        responseFactory,
+        permissionService,
+        passwordResetService,
+        null);
+  }
+
+  public PasswordAuthController(
+      PasswordUserService passwordUserService,
+      AuthenticationManager authenticationManager,
+      SecurityContextRepository securityContextRepository,
+      ApiErrorResponseFactory responseFactory,
+      AuthPermissionService permissionService,
+      PasswordResetService passwordResetService,
+      AuthSessionPolicyLoginService sessionPolicyLoginService
+  ) {
     this.passwordUserService = passwordUserService;
     this.authenticationManager = authenticationManager;
     this.securityContextRepository = securityContextRepository;
     this.responseFactory = responseFactory;
     this.permissionService = permissionService;
     this.passwordResetService = passwordResetService;
+    this.sessionPolicyLoginService = sessionPolicyLoginService;
   }
 
   @PostMapping(AuthApiContractConstants.REGISTER_PATH)
@@ -108,8 +133,10 @@ public class PasswordAuthController {
           principal,
           null,
           org.congcong.algomentor.auth.security.AuthAuthorities.fromRoles(principal.roles()));
-      saveAuthentication(authentication, servletRequest, servletResponse);
+      saveAuthentication(authentication, servletRequest, servletResponse, true);
       return ResponseEntity.ok(ApiResponse.success(toResponse(principal)));
+    } catch (AuthSessionPolicyException exception) {
+      return sessionPolicyFailure(exception, servletRequest);
     } catch (PasswordRegistrationException exception) {
       HttpStatus status = PasswordAuthErrorCode.AUTH_EMAIL_ALREADY_REGISTERED.equals(exception.code())
           ? HttpStatus.CONFLICT
@@ -135,8 +162,10 @@ public class PasswordAuthController {
           UsernamePasswordAuthenticationToken.unauthenticated(
               request == null ? null : request.email(),
               request == null ? null : request.password()));
-      saveAuthentication(authentication, servletRequest, servletResponse);
+      saveAuthentication(authentication, servletRequest, servletResponse, true);
       return ResponseEntity.ok(ApiResponse.success(toResponse((AuthenticatedUserPrincipal) authentication.getPrincipal())));
+    } catch (AuthSessionPolicyException exception) {
+      return sessionPolicyFailure(exception, servletRequest);
     } catch (BetaAccessAuthenticationException exception) {
       return failure(
           HttpStatus.FORBIDDEN,
@@ -181,7 +210,7 @@ public class PasswordAuthController {
           updatedPrincipal,
           null,
           authentication.getAuthorities());
-      saveAuthentication(updatedAuthentication, servletRequest, servletResponse);
+      saveAuthentication(updatedAuthentication, servletRequest, servletResponse, false);
       return ResponseEntity.ok(ApiResponse.success(toResponse(updatedPrincipal)));
     } catch (PasswordResetException exception) {
       HttpStatus status = exception.code() == PasswordResetErrorCode.AUTH_REQUEST_INVALID
@@ -194,12 +223,25 @@ public class PasswordAuthController {
   private void saveAuthentication(
       Authentication authentication,
       HttpServletRequest request,
-      HttpServletResponse response
+      HttpServletResponse response,
+      boolean newLogin
   ) {
     SecurityContext context = SecurityContextHolder.createEmptyContext();
     context.setAuthentication(authentication);
     SecurityContextHolder.setContext(context);
     securityContextRepository.saveContext(context, request, response);
+    if (newLogin && sessionPolicyLoginService != null
+        && authentication.getPrincipal() instanceof AuthenticatedUserPrincipal principal) {
+      sessionPolicyLoginService.apply(principal.userId(), request.getSession(false));
+    }
+  }
+
+  private ResponseEntity<ApiResponse<CurrentUserResponse>> sessionPolicyFailure(
+      AuthSessionPolicyException exception,
+      HttpServletRequest request
+  ) {
+    SecurityContextHolder.clearContext();
+    return failure(HttpStatus.SERVICE_UNAVAILABLE, exception.code().name(), exception.getMessage(), request);
   }
 
   private CurrentUserResponse toResponse(AuthenticatedUserPrincipal principal) {

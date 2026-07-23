@@ -8,7 +8,7 @@ import org.congcong.algomentor.policy.repository.mybatis.model.GenericPolicyRow;
 
 public interface GenericPolicyMapper {
 
-  void acquireTypeLock(@Param("typeCode") String typeCode);
+  int acquireTypeLock(@Param("typeCode") String typeCode);
 
   List<GenericPolicyRow> findLiveByTypeForUpdate(@Param("typeCode") String typeCode);
 

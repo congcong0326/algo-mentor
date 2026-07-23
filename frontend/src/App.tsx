@@ -18,6 +18,7 @@ import BetaAccessPage from './admin/BetaAccessPage';
 import AiGovernancePage from './admin/ai/AiGovernancePage';
 import SystemMonitoringPage from './admin/monitoring/SystemMonitoringPage';
 import SessionMonitoringPage from './admin/sessions/SessionMonitoringPage';
+import SessionPolicyPage from './admin/session-policies/SessionPolicyPage';
 import FeedbackManagementPage from './admin/feedback/FeedbackManagementPage';
 import AdminOverviewPage from './admin/overview/AdminOverviewPage';
 import UserGroupManagementPage from './admin/groups/UserGroupManagementPage';
@@ -100,6 +101,9 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminSessions' && !hasPermission(user, 'session:manage')) {
+    return defaultAuthenticatedRouteForUser(user);
+  }
+  if (view === 'adminSessionPolicies' && !hasPermission(user, 'policy:manage')) {
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminOverview' && !hasPermission(user, 'admin-overview:read')) {
@@ -665,6 +669,8 @@ export default function App() {
     ? <SystemMonitoringPage />
     : activeView === 'adminSessions' && hasPermission(currentUser, 'session:manage')
     ? <SessionMonitoringPage />
+    : activeView === 'adminSessionPolicies' && hasPermission(currentUser, 'policy:manage')
+    ? <SessionPolicyPage />
     : activeView === 'adminOverview' && hasPermission(currentUser, 'admin-overview:read')
     ? <AdminOverviewPage onNavigate={navigateToPath} />
     : activeView === 'adminFeedback' && hasPermission(currentUser, 'feedback:manage')

@@ -64,11 +64,11 @@ describe('AdminShell', () => {
     expect(screen.queryByRole('button', { name: '反馈与支持' })).not.toBeInTheDocument();
   });
 
-  it('groups runtime status and AI governance under system monitoring', () => {
+  it('groups runtime status, session policies, and AI governance under system monitoring', () => {
     const onNavigate = vi.fn();
     render(
       <AdminShell
-        currentUser={{ ...admin, permissions: ['admin-overview:read', 'ai-governance:manage'] }}
+        currentUser={{ ...admin, permissions: ['admin-overview:read', 'policy:manage', 'ai-governance:manage'] }}
         onLogout={vi.fn()}
         onNavigate={onNavigate}
         onToggleTheme={vi.fn()}
@@ -82,7 +82,7 @@ describe('AdminShell', () => {
     expect(screen.getByRole('button', { name: '系统监控' })).toHaveAttribute('aria-current', 'page');
     const contextNav = screen.getByRole('navigation', { name: '当前业务页面' });
     expect(within(contextNav).getAllByRole('button').map((button) => button.textContent))
-      .toEqual(['运行状态', 'AI 治理']);
+      .toEqual(['运行状态', '会话策略', 'AI 治理']);
     expect(within(contextNav).getByRole('button', { name: 'AI 治理' })).toHaveAttribute('aria-current', 'page');
 
     fireEvent.click(within(contextNav).getByRole('button', { name: '运行状态' }));

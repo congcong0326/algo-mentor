@@ -1,6 +1,7 @@
 package org.congcong.algomentor.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Clock;
 import java.util.Locale;
 import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
 import org.congcong.algomentor.auth.cache.AuthAccessSnapshotCache;
@@ -13,6 +14,10 @@ import org.congcong.algomentor.auth.security.OAuth2AuthenticationFailureHandler;
 import org.congcong.algomentor.auth.security.OAuth2AuthenticationSuccessHandler;
 import org.congcong.algomentor.auth.security.PasswordChangeRequiredFilter;
 import org.congcong.algomentor.auth.security.SpaCsrfTokenRequestHandler;
+import org.congcong.algomentor.auth.session.policy.AuthSessionAbsoluteTimeoutFilter;
+import org.congcong.algomentor.auth.session.policy.AuthSessionPolicyLoginService;
+import org.congcong.algomentor.auth.session.policy.AuthSessionPolicyMetrics;
+import org.congcong.algomentor.auth.session.policy.NoopAuthSessionPolicyMetrics;
 import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.slf4j.Logger;
@@ -99,6 +104,9 @@ public class AuthSecurityAutoConfiguration {
       ObjectProvider<IdentityUserRepository> identityUserRepositoryProvider,
       ObjectProvider<BetaAccessPolicy> betaAccessPolicyProvider,
       ObjectProvider<AuthAccessSnapshotCache> accessSnapshotCacheProvider,
+      ObjectProvider<AuthSessionPolicyLoginService> sessionPolicyLoginServiceProvider,
+      ObjectProvider<AuthSessionPolicyMetrics> sessionPolicyMetricsProvider,
+      ObjectProvider<Clock> authClockProvider,
       AuthProperties properties
   ) throws Exception {
     CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
@@ -155,7 +163,8 @@ public class AuthSecurityAutoConfiguration {
               authenticatedOAuth2UserService.ifAvailable(userInfo::userService);
               authenticatedOidcUserService.ifAvailable(userInfo::oidcUserService);
             })
-            .successHandler(new OAuth2AuthenticationSuccessHandler(properties.getLoginSuccessUrl()))
+            .successHandler(new OAuth2AuthenticationSuccessHandler(
+                properties.getLoginSuccessUrl(), sessionPolicyLoginServiceProvider.getIfAvailable()))
             .failureHandler(new OAuth2AuthenticationFailureHandler()))
         .logout(logout -> logout
             .logoutUrl(AuthSecurityPaths.AUTH_LOGOUT_PATH)
@@ -164,6 +173,13 @@ public class AuthSecurityAutoConfiguration {
             .deleteCookies("JSESSIONID"))
         .sessionManagement(Customizer.withDefaults());
 
+    http.addFilterAfter(
+        new AuthSessionAbsoluteTimeoutFilter(
+            apiAuthenticationEntryPoint,
+            sessionPolicyMetricsProvider.getIfAvailable(NoopAuthSessionPolicyMetrics::new),
+            authClockProvider.getIfAvailable(Clock::systemUTC),
+            properties),
+        SecurityContextHolderFilter.class);
     identityUserRepositoryProvider.ifAvailable(repository -> http.addFilterAfter(
         new ActiveIdentityUserFilter(
             repository,

@@ -14,8 +14,11 @@ import org.congcong.algomentor.auth.session.admin.repository.mybatis.AuthSession
 import org.congcong.algomentor.auth.session.admin.service.AuthSessionAdminService;
 import org.congcong.algomentor.auth.service.OAuth2LoginUserService;
 import org.congcong.algomentor.auth.service.PasswordUserService;
+import org.congcong.algomentor.cache.config.CacheAutoConfiguration;
 import org.congcong.algomentor.identity.autoconfigure.IdentityAutoConfiguration;
 import org.congcong.algomentor.identity.repository.mybatis.IdentityUserMapper;
+import org.congcong.algomentor.policy.autoconfigure.GenericPolicyAutoConfiguration;
+import org.congcong.algomentor.policy.type.GenericPolicyTypeRegistry;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -47,6 +50,21 @@ class AuthApiAutoConfigurationTest {
     AutoConfiguration configuration = AuthApiAutoConfiguration.class.getAnnotation(AutoConfiguration.class);
 
     assertThat(configuration.after()).contains(SessionAutoConfiguration.class);
+  }
+
+  @Test
+  void registersUserSessionPolicyTypeWithGenericPolicyRegistry() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(
+            CacheAutoConfiguration.class,
+            GenericPolicyAutoConfiguration.class,
+            AuthApiAutoConfiguration.class))
+        .run(context -> {
+          GenericPolicyTypeRegistry registry = context.getBean(GenericPolicyTypeRegistry.class);
+
+          assertThat(registry.require("auth.user-session.v1"))
+              .isSameAs(context.getBean("authUserSessionPolicyType"));
+        });
   }
 
   @Test

@@ -8986,6 +8986,286 @@ a {
   justify-content: flex-end;
 }
 
+.session-policy-page {
+  max-width: 1440px;
+}
+
+.session-policy-page-description {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.session-policy-filters {
+  align-items: center;
+  display: flex;
+}
+
+.session-policy-search {
+  align-items: center;
+  background: var(--surface-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  display: flex;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 10px;
+  width: min(360px, 100%);
+}
+
+.session-policy-search svg,
+.session-policy-message svg {
+  color: var(--text-muted);
+  flex: 0 0 auto;
+  height: 16px;
+  width: 16px;
+}
+
+.session-policy-search input {
+  background: transparent;
+  border: 0;
+  min-width: 0;
+  outline: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.session-policy-status-filter {
+  align-items: center;
+  display: flex;
+  gap: 7px;
+  margin-left: auto;
+}
+
+.session-policy-status-filter > span {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.session-policy-status-filter select {
+  min-height: 38px;
+}
+
+.session-policy-message {
+  align-items: center;
+  display: flex;
+  gap: 7px;
+  margin: 0;
+}
+
+.session-policy-notice {
+  color: var(--success);
+  margin: 0;
+}
+
+.session-policy-table {
+  min-width: 1040px;
+}
+
+.session-policy-table th:nth-child(1) { width: 8%; }
+.session-policy-table th:nth-child(2) { width: 20%; }
+.session-policy-table th:nth-child(3) { width: 22%; }
+.session-policy-table th:nth-child(4) { width: 12%; }
+.session-policy-table th:nth-child(5) { width: 13%; }
+.session-policy-table th:nth-child(6) { width: 10%; }
+.session-policy-table th:nth-child(7) { width: 12%; }
+.session-policy-table th:nth-child(8) { width: 9%; }
+
+.session-policy-table td > strong {
+  display: block;
+}
+
+.session-policy-description {
+  color: var(--text-muted);
+  display: block;
+  margin-top: 3px;
+}
+
+.session-policy-empty {
+  color: var(--text-muted);
+  padding-block: 28px !important;
+  text-align: center !important;
+}
+
+.session-policy-dialog {
+  width: min(680px, 100%);
+}
+
+.session-policy-form-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.session-policy-name-field {
+  grid-column: span 2;
+}
+
+.session-policy-scope-fieldset {
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  min-width: 0;
+  padding: 12px;
+}
+
+.session-policy-scope-fieldset legend {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 650;
+  padding-inline: 4px;
+}
+
+.session-policy-scope-option {
+  align-items: center;
+  display: flex !important;
+  gap: 8px !important;
+}
+
+.session-policy-scope-option input {
+  accent-color: var(--action-primary);
+}
+
+.session-policy-subject-editor {
+  display: grid;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.session-policy-picker-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.session-policy-picker-tabs button {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  min-height: 34px;
+  padding: 0 10px;
+}
+
+.session-policy-picker-tabs button.selected {
+  background: var(--accent-warm-soft);
+  border-color: var(--action-primary);
+  color: var(--action-ink);
+}
+
+.session-policy-subject-search {
+  align-items: center;
+  background: var(--surface-card);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  display: flex !important;
+  gap: 8px !important;
+  min-height: 38px;
+  padding: 0 10px;
+}
+
+.session-policy-subject-search svg {
+  color: var(--text-muted);
+  flex: 0 0 auto;
+  height: 16px;
+  width: 16px;
+}
+
+.session-policy-subject-search input {
+  background: transparent;
+  border: 0;
+  min-width: 0;
+  outline: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.session-policy-subject-picker {
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  max-height: 192px;
+  overflow: auto;
+}
+
+.session-policy-subject-picker > p {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 0;
+  padding: 12px;
+}
+
+.session-policy-subject-picker > button {
+  align-items: flex-start;
+  background: var(--surface-card);
+  border: 0;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.session-policy-subject-picker > button:last-child {
+  border-bottom: 0;
+}
+
+.session-policy-subject-picker > button:hover:not(:disabled) {
+  background: var(--surface-muted);
+}
+
+.session-policy-subject-picker > button:disabled {
+  background: var(--surface-muted);
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.session-policy-subject-picker small,
+.session-policy-subject-list small {
+  color: var(--text-muted);
+  display: block;
+  font-size: 12px;
+}
+
+.session-policy-subject-list {
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  list-style: none;
+  margin: 0;
+  max-height: 180px;
+  overflow: auto;
+  padding: 0;
+}
+
+.session-policy-subject-list li {
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  min-height: 42px;
+  padding: 5px 8px 5px 12px;
+}
+
+.session-policy-subject-list li:last-child {
+  border-bottom: 0;
+}
+
+.session-policy-subject-list li > span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.session-policy-subject-empty {
+  color: var(--text-muted);
+  font-size: 13px;
+  justify-content: flex-start !important;
+}
+
 @media (max-width: 760px) {
   .session-monitoring-filters {
     align-items: stretch;
@@ -9011,6 +9291,28 @@ a {
   .session-monitoring-table {
     min-width: 720px;
   }
+
+  .session-policy-filters {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .session-policy-search {
+    width: 100%;
+  }
+
+  .session-policy-status-filter {
+    margin-left: 0;
+  }
+
+  .session-policy-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .session-policy-name-field {
+    grid-column: auto;
+  }
+
 }
 
 .ai-governance-page {
