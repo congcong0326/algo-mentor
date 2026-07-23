@@ -243,9 +243,16 @@ class AuthSecurityAutoConfigurationTest {
     mockMvc.perform(get("/api/admin/problems/two-sum").with(authentication(authenticationToken(AuthRole.USER))))
         .andExpect(status().isForbidden());
 
+    mockMvc.perform(get("/api/admin/user-groups").with(authentication(authenticationToken(AuthRole.USER))))
+        .andExpect(status().isForbidden());
+
     mockMvc.perform(get("/api/admin/users").with(authentication(authenticationToken(AuthRole.ADMIN))))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.status").value("admin"));
+
+    mockMvc.perform(get("/api/admin/user-groups").with(authentication(authenticationToken(AuthRole.ADMIN))))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status").value("groups"));
   }
 
   @Test
@@ -411,6 +418,11 @@ class AuthSecurityAutoConfigurationTest {
     @GetMapping("/api/admin/users")
     public StatusResponse adminUsers() {
       return new StatusResponse("admin");
+    }
+
+    @GetMapping("/api/admin/user-groups")
+    public StatusResponse adminUserGroups() {
+      return new StatusResponse("groups");
     }
 
     @GetMapping({"/api/admin/problems", "/api/admin/problems/{slug}"})

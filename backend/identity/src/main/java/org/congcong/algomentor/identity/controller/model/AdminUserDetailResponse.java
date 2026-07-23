@@ -17,10 +17,12 @@ public record AdminUserDetailResponse(
     Instant updatedAt,
     Instant lastLoginAt,
     Instant deletedAt,
-    Long deletedBy
+    Long deletedBy,
+    List<AdminUserGroupMembershipResponse> groups
 ) {
 
   public AdminUserDetailResponse {
     roles = roles == null ? List.of() : List.copyOf(roles);
+    groups = groups == null ? List.of() : List.copyOf(groups);
   }
 }

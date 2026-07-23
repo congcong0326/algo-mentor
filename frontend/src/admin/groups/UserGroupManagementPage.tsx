@@ -1,7 +1,7 @@
-import { Pencil, Plus, RefreshCw } from 'lucide-react';
+import { Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useI18n } from '../../i18n/I18nProvider';
-import { getUserGroups, requireApiData } from '../../services/api';
+import { deleteUserGroup, getUserGroups, requireApiData } from '../../services/api';
 import type { UserGroupPage, UserGroupStatus, UserGroupSummary } from '../../types/api';
 import { formatDateTime } from '../ai/aiFormat';
 import UserGroupDialog from './UserGroupDialog';
@@ -22,6 +22,8 @@ export default function UserGroupManagementPage({ onNavigate }: UserGroupManagem
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [editingGroup, setEditingGroup] = useState<UserGroupSummary | null>();
+  const [deletingGroup, setDeletingGroup] = useState<UserGroupSummary>();
+  const [deletePending, setDeletePending] = useState(false);
   const requestIdRef = useRef(0);
   const totalPages = useMemo(() => Math.max(1, Math.ceil(groupsPage.total / groupsPage.pageSize)), [groupsPage]);
 
@@ -42,6 +44,25 @@ export default function UserGroupManagementPage({ onNavigate }: UserGroupManagem
       if (requestId === requestIdRef.current && !signal?.aborted) setError(caught instanceof Error ? caught.message : t.loadFailed);
     } finally {
       if (requestId === requestIdRef.current && !signal?.aborted) setLoading(false);
+    }
+  }
+
+  async function confirmDelete() {
+    if (!deletingGroup || deletePending) return;
+    setDeletePending(true);
+    setError('');
+    try {
+      requireApiData(await deleteUserGroup(deletingGroup.id), t.deleteFailed);
+      setDeletingGroup(undefined);
+      if (groupsPage.items.length === 1 && page > 1) {
+        setPage((value) => Math.max(1, value - 1));
+      } else {
+        await loadGroups();
+      }
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : t.deleteFailed);
+    } finally {
+      setDeletePending(false);
     }
   }
 
@@ -74,7 +95,7 @@ export default function UserGroupManagementPage({ onNavigate }: UserGroupManagem
                 <td>{group.activeMemberCount}</td>
                 <td>{formatDateTime(group.createdAt)}</td>
                 <td>{formatDateTime(group.updatedAt)}</td>
-                <td><div className="admin-row-actions"><button className="secondary-button compact" onClick={() => onNavigate(`/admin/user-groups/${group.id}`)} type="button">{resources.common.view}</button><button aria-label={t.editGroup(group.name)} className="icon-button compact" onClick={() => setEditingGroup(group)} title={t.edit} type="button"><Pencil aria-hidden="true" /></button></div></td>
+                <td><div className="admin-row-actions"><button className="secondary-button compact" onClick={() => onNavigate(`/admin/user-groups/${group.id}`)} type="button">{resources.common.view}</button><button aria-label={t.editGroup(group.name)} className="icon-button compact" onClick={() => setEditingGroup(group)} title={t.edit} type="button"><Pencil aria-hidden="true" /></button><button aria-label={t.deleteGroup(group.name)} className="icon-button compact danger-icon-button" disabled={group.status !== 'DISABLED'} onClick={() => setDeletingGroup(group)} title={group.status === 'DISABLED' ? t.delete : t.deleteRequiresDisabled} type="button"><Trash2 aria-hidden="true" /></button></div></td>
               </tr>
             ))}
             {!loading && groupsPage.items.length === 0 ? <tr><td colSpan={7}>{t.empty}</td></tr> : null}
@@ -85,6 +106,15 @@ export default function UserGroupManagementPage({ onNavigate }: UserGroupManagem
       <footer className="admin-pagination"><span>{t.total(groupsPage.total)}</span><div><button className="secondary-button compact" disabled={page <= 1 || loading} onClick={() => setPage((value) => value - 1)} type="button">{resources.common.previousPage}</button><span>{resources.common.pageStatus(page, totalPages)}</span><button className="secondary-button compact" disabled={page >= totalPages || loading} onClick={() => setPage((value) => value + 1)} type="button">{resources.common.nextPage}</button></div></footer>
 
       {editingGroup !== undefined ? <UserGroupDialog group={editingGroup ?? undefined} onClose={() => setEditingGroup(undefined)} onSaved={() => { setEditingGroup(undefined); void loadGroups(); }} /> : null}
+      {deletingGroup ? (
+        <div className="admin-dialog-backdrop" role="presentation">
+          <section aria-labelledby="delete-user-group-title" aria-modal="true" className="admin-dialog compact-dialog" role="dialog">
+            <h2 id="delete-user-group-title">{t.deleteTitle}</h2>
+            <p>{t.deleteDescription(deletingGroup.name, deletingGroup.code)}</p>
+            <footer><button className="secondary-button" disabled={deletePending} onClick={() => setDeletingGroup(undefined)} type="button">{resources.common.cancel}</button><button className="danger-button" disabled={deletePending} onClick={() => void confirmDelete()} type="button">{deletePending ? t.deleting : t.delete}</button></footer>
+          </section>
+        </div>
+      ) : null}
     </section>
   );
 }

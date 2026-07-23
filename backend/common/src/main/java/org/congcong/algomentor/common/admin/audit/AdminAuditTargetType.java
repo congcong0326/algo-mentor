@@ -10,5 +10,6 @@ public enum AdminAuditTargetType {
   AI_RUNTIME_SETTINGS,
   AI_USER_POLICY,
   AI_MODEL_PRICE,
-  AI_RUN
+  AI_RUN,
+  USER_GROUP
 }

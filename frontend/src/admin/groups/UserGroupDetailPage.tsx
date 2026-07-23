@@ -1,7 +1,7 @@
-import { ArrowLeft, Pencil, Plus, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useI18n } from '../../i18n/I18nProvider';
-import { getUserGroup, getUserGroupMembers, removeUserGroupMember, requireApiData } from '../../services/api';
+import { deleteUserGroup, getUserGroup, getUserGroupMembers, removeUserGroupMember, requireApiData } from '../../services/api';
 import type { UserGroupDetail, UserGroupMember, UserGroupMemberPage } from '../../types/api';
 import UserGroupDialog from './UserGroupDialog';
 import UserGroupMemberDialog from './UserGroupMemberDialog';
@@ -28,6 +28,7 @@ export default function UserGroupDetailPage({ groupId, onNavigate }: UserGroupDe
   const [addingMembers, setAddingMembers] = useState(false);
   const [removing, setRemoving] = useState<UserGroupMember>();
   const [operationPending, setOperationPending] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState(false);
   const groupRequestRef = useRef(0);
   const memberRequestRef = useRef(0);
   const totalPages = useMemo(() => Math.max(1, Math.ceil(membersPage.total / membersPage.pageSize)), [membersPage]);
@@ -88,6 +89,20 @@ export default function UserGroupDetailPage({ groupId, onNavigate }: UserGroupDe
     }
   }
 
+  async function confirmDelete() {
+    if (!group || operationPending) return;
+    setOperationPending(true);
+    setError('');
+    try {
+      requireApiData(await deleteUserGroup(group.id), t.deleteFailed);
+      onNavigate('/admin/user-groups');
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : t.deleteFailed);
+    } finally {
+      setOperationPending(false);
+    }
+  }
+
   return (
     <section aria-label={t.detailTitle} className="admin-data-page user-group-detail-page">
       <header className="user-group-detail-header">
@@ -100,6 +115,7 @@ export default function UserGroupDetailPage({ groupId, onNavigate }: UserGroupDe
         <div className="admin-page-commands">
           <button className="secondary-button compact" disabled={!group} onClick={() => setEditing(true)} type="button"><Pencil aria-hidden="true" /><span>{t.edit}</span></button>
           <button className="primary-button compact" disabled={!group || group.status === 'DISABLED'} onClick={() => setAddingMembers(true)} title={group?.status === 'DISABLED' ? t.disabledCannotAdd : undefined} type="button"><Plus aria-hidden="true" /><span>{t.addMembers}</span></button>
+          <button aria-label={group ? t.deleteGroup(group.name) : t.delete} className="icon-button danger-icon-button" disabled={!group || group.status !== 'DISABLED'} onClick={() => setDeleteConfirmation(true)} title={group?.status === 'DISABLED' ? t.delete : t.deleteRequiresDisabled} type="button"><Trash2 aria-hidden="true" /></button>
         </div>
       </header>
 
@@ -117,6 +133,9 @@ export default function UserGroupDetailPage({ groupId, onNavigate }: UserGroupDe
       {addingMembers && group ? <UserGroupMemberDialog groupCode={group.code} groupId={group.id} onClose={() => setAddingMembers(false)} onCompleted={() => { void loadGroup(); void loadMembers(); }} /> : null}
       {removing ? (
         <div className="admin-dialog-backdrop" role="presentation"><section aria-labelledby="remove-member-title" aria-modal="true" className="admin-dialog compact-dialog" role="dialog"><h2 id="remove-member-title">{t.removeMemberTitle}</h2><p>{t.removeMemberDescription(removing.displayName || `#${removing.userId}`, group?.name || '')}</p><footer><button className="secondary-button" disabled={operationPending} onClick={() => setRemoving(undefined)} type="button">{resources.common.cancel}</button><button className="danger-button" disabled={operationPending} onClick={() => void confirmRemove()} type="button">{operationPending ? t.removing : t.remove}</button></footer></section></div>
+      ) : null}
+      {deleteConfirmation && group ? (
+        <div className="admin-dialog-backdrop" role="presentation"><section aria-labelledby="delete-user-group-title" aria-modal="true" className="admin-dialog compact-dialog" role="dialog"><h2 id="delete-user-group-title">{t.deleteTitle}</h2><p>{t.deleteDescription(group.name, group.code)}</p><footer><button className="secondary-button" disabled={operationPending} onClick={() => setDeleteConfirmation(false)} type="button">{resources.common.cancel}</button><button className="danger-button" disabled={operationPending} onClick={() => void confirmDelete()} type="button">{operationPending ? t.deleting : t.delete}</button></footer></section></div>
       ) : null}
     </section>
   );

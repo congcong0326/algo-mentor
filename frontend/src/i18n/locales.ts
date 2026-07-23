@@ -199,6 +199,8 @@ export interface LocaleResources {
     detailTitle: string;
     create: string;
     edit: string;
+    delete: string;
+    deleting: string;
     refresh: string;
     searchPlaceholder: string;
     memberSearchPlaceholder: string;
@@ -219,6 +221,11 @@ export interface LocaleResources {
     empty: string;
     total: (count: number) => string;
     editGroup: (name: string) => string;
+    deleteGroup: (name: string) => string;
+    deleteRequiresDisabled: string;
+    deleteTitle: string;
+    deleteDescription: (name: string, code: string) => string;
+    deleteFailed: string;
     createTitle: string;
     editTitle: string;
     createDescription: string;
@@ -1182,6 +1189,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       detailTitle: '用户组详情',
       create: '创建用户组',
       edit: '编辑',
+      delete: '删除',
+      deleting: '删除中...',
       refresh: '刷新',
       searchPlaceholder: '搜索名称或编码',
       memberSearchPlaceholder: '搜索用户 ID、邮箱或昵称',
@@ -1202,6 +1211,11 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       empty: '没有匹配的用户组。',
       total: (count) => `共 ${count} 项`,
       editGroup: (name) => `编辑用户组 ${name}`,
+      deleteGroup: (name) => `删除用户组 ${name}`,
+      deleteRequiresDisabled: '请先停用用户组后再删除',
+      deleteTitle: '确认删除用户组',
+      deleteDescription: (name, code) => `确认删除“${name}”（${code}）？删除后不可恢复，并会清理该组的全部成员关系。`,
+      deleteFailed: '用户组删除失败。',
       createTitle: '创建用户组',
       editTitle: '编辑用户组',
       createDescription: '编码创建后不可修改，请使用稳定的业务标识。',
@@ -2267,6 +2281,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       detailTitle: 'User group detail',
       create: 'Create group',
       edit: 'Edit',
+      delete: 'Delete',
+      deleting: 'Deleting...',
       refresh: 'Refresh',
       searchPlaceholder: 'Search name or code',
       memberSearchPlaceholder: 'Search user ID, email, or name',
@@ -2287,6 +2303,11 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       empty: 'No matching user groups.',
       total: (count) => `${count} items`,
       editGroup: (name) => `Edit user group ${name}`,
+      deleteGroup: (name) => `Delete user group ${name}`,
+      deleteRequiresDisabled: 'Disable the group before deleting it',
+      deleteTitle: 'Delete user group?',
+      deleteDescription: (name, code) => `Delete “${name}” (${code})? This cannot be undone and all memberships in the group will be removed.`,
+      deleteFailed: 'Failed to delete the user group.',
       createTitle: 'Create user group',
       editTitle: 'Edit user group',
       createDescription: 'The code cannot be changed after creation. Use a stable business identifier.',

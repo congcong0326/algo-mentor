@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.identity.group.repository.mybatis.UserGroupMapper">
+
+  <resultMap id="UserGroupRowMap" type="org.congcong.algomentor.identity.group.repository.mybatis.model.UserGroupRow">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Long" />
+      <arg column="code" javaType="java.lang.String" />
+      <arg column="name" javaType="java.lang.String" />
+      <arg column="description" javaType="java.lang.String" />
+      <arg column="status" javaType="java.lang.String" />
+      <arg column="active_member_count" javaType="_long" />
+      <arg column="created_at" javaType="java.time.Instant" />
+      <arg column="updated_at" javaType="java.time.Instant" />
+      <arg column="deleted_at" javaType="java.time.Instant" />
+      <arg column="deleted_by" javaType="java.lang.Long" />
+    </constructor>
+  </resultMap>
+
+  <resultMap id="UserGroupMemberRowMap" type="org.congcong.algomentor.identity.group.repository.mybatis.model.UserGroupMemberRow">
+    <constructor>
+      <idArg column="user_id" javaType="_long" />
+      <arg column="email" javaType="java.lang.String" />
+      <arg column="display_name" javaType="java.lang.String" />
+      <arg column="avatar_url" javaType="java.lang.String" />
+      <arg column="status" javaType="java.lang.String" />
+      <arg column="joined_at" javaType="java.time.Instant" />
+      <arg column="expires_at" javaType="java.time.Instant" />
+    </constructor>
+  </resultMap>
+
+  <resultMap id="MembershipRowMap" type="org.congcong.algomentor.identity.group.repository.mybatis.model.UserGroupMembershipRow">
+    <constructor>
+      <idArg column="user_id" javaType="_long" />
+      <arg column="group_id" javaType="_long" />
+      <arg column="joined_at" javaType="java.time.Instant" />
+      <arg column="expires_at" javaType="java.time.Instant" />
+      <arg column="created_at" javaType="java.time.Instant" />
+      <arg column="updated_at" javaType="java.time.Instant" />
+    </constructor>
+  </resultMap>
+
+  <resultMap id="MembershipSummaryRowMap" type="org.congcong.algomentor.identity.group.repository.mybatis.model.UserGroupMembershipSummaryRow">
+    <constructor>
+      <idArg column="user_id" javaType="_long" />
+      <arg column="group_id" javaType="_long" />
+      <arg column="code" javaType="java.lang.String" />
+      <arg column="name" javaType="java.lang.String" />
+      <arg column="joined_at" javaType="java.time.Instant" />
+      <arg column="expires_at" javaType="java.time.Instant" />
+    </constructor>
+  </resultMap>
+
+  <sql id="ActiveMemberCount">
+    case when g.status = 'ACTIVE' then (
+      select count(*)
+      from identity_user_group_membership m
+      join auth_users u on u.id = m.user_id
+      where m.group_id = g.id
+        and m.joined_at &lt;= #{now}
+        and (m.expires_at is null or m.expires_at &gt; #{now})
+        and u.status != 'DELETED'
+    ) else 0 end as active_member_count
+  </sql>
+
+  <select id="searchGroups" resultMap="UserGroupRowMap">
+    select g.id, g.code, g.name, g.description, g.status,
+           <include refid="ActiveMemberCount" />,
+           g.created_at, g.updated_at, g.deleted_at, g.deleted_by
+    from identity_user_group g
+    where g.status in
+    <foreach collection="statuses" item="status" open="(" separator="," close=")">
+      #{status}
+    </foreach>
+    <if test="keyword != null and keyword != ''">
+      and (
+        lower(g.code) like concat('%', lower(#{keyword}), '%')
+        or lower(g.name) like concat('%', lower(#{keyword}), '%')
+      )
+    </if>
+    order by g.created_at desc, g.id desc
+    limit #{limit}
+    offset #{offset}
+  </select>
+
+  <select id="countGroups" resultType="long">
+    select count(*)
+    from identity_user_group g
+    where g.status in
+    <foreach collection="statuses" item="status" open="(" separator="," close=")">
+      #{status}
+    </foreach>
+    <if test="keyword != null and keyword != ''">
+      and (
+        lower(g.code) like concat('%', lower(#{keyword}), '%')
+        or lower(g.name) like concat('%', lower(#{keyword}), '%')
+      )
+    </if>
+  </select>
+
+  <select id="findGroupById" resultMap="UserGroupRowMap">
+    select g.id, g.code, g.name, g.description, g.status,
+           <include refid="ActiveMemberCount" />,
+           g.created_at, g.updated_at, g.deleted_at, g.deleted_by
+    from identity_user_group g
+    where g.id = #{groupId}
+      and g.status != 'DELETED'
+  </select>
+
+  <select id="lockGroupById" resultMap="UserGroupRowMap">
+    select g.id, g.code, g.name, g.description, g.status,
+           0 as active_member_count,
+           g.created_at, g.updated_at, g.deleted_at, g.deleted_by
+    from identity_user_group g
+    where g.id = #{groupId}
+    for update
+  </select>
+
+  <insert id="insertGroup" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into identity_user_group (
+      code, name, description, status, created_at, updated_at
+    ) values (
+      #{code}, #{name}, #{description}, #{status}, #{createdAt}, #{updatedAt}
+    )
+  </insert>
+
+  <update id="updateGroup">
+    update identity_user_group
+    set name = #{name},
+        description = #{description},
+        status = #{status},
+        updated_at = #{updatedAt}
+    where id = #{groupId}
+      and status != 'DELETED'
+  </update>
+
+  <delete id="deleteAllMemberships">
+    delete from identity_user_group_membership
+    where group_id = #{groupId}
+  </delete>
+
+  <update id="markGroupDeleted">
+    update identity_user_group
+    set status = 'DELETED',
+        deleted_at = #{deletedAt},
+        deleted_by = #{operatorUserId},
+        updated_at = #{deletedAt}
+    where id = #{groupId}
+      and status = 'DISABLED'
+  </update>
+
+  <sql id="ActiveMemberWhere">
+    g.id = #{groupId}
+    and g.status = 'ACTIVE'
+    and m.joined_at &lt;= #{now}
+    and (m.expires_at is null or m.expires_at &gt; #{now})
+    and u.status != 'DELETED'
+    <if test="keyword != null and keyword != ''">
+      and (
+        lower(coalesce(u.email, '')) like concat('%', lower(#{keyword}), '%')
+        or lower(coalesce(u.display_name, '')) like concat('%', lower(#{keyword}), '%')
+        or cast(u.id as text) = #{keyword}
+      )
+    </if>
+  </sql>
+
+  <select id="searchActiveMembers" resultMap="UserGroupMemberRowMap">
+    select u.id as user_id, u.email, u.display_name, u.avatar_url, u.status,
+           m.joined_at, m.expires_at
+    from identity_user_group_membership m
+    join identity_user_group g on g.id = m.group_id
+    join auth_users u on u.id = m.user_id
+    where <include refid="ActiveMemberWhere" />
+    order by m.joined_at desc, u.id desc
+    limit #{limit}
+    offset #{offset}
+  </select>
+
+  <select id="countActiveMembers" resultType="long">
+    select count(*)
+    from identity_user_group_membership m
+    join identity_user_group g on g.id = m.group_id
+    join auth_users u on u.id = m.user_id
+    where <include refid="ActiveMemberWhere" />
+  </select>
+
+  <select id="findUsersByIds" resultMap="org.congcong.algomentor.identity.repository.mybatis.IdentityUserMapper.AuthUserRowMap">
+    select id, email, email_normalized, display_name, avatar_url, status,
+           created_at, updated_at, last_login_at, deleted_at, deleted_by
+    from auth_users
+    where id in
+    <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+      #{userId}
+    </foreach>
+  </select>
+
+  <select id="findMemberships" resultMap="MembershipRowMap">
+    select user_id, group_id, joined_at, expires_at, created_at, updated_at
+    from identity_user_group_membership
+    where group_id = #{groupId}
+      and user_id in
+    <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+      #{userId}
+    </foreach>
+  </select>
+
+  <insert id="upsertMembership">
+    insert into identity_user_group_membership (
+      user_id, group_id, joined_at, expires_at, created_at, updated_at
+    ) values (
+      #{userId}, #{groupId}, #{now}, #{expiresAt}, #{now}, #{now}
+    )
+    on conflict (user_id, group_id) do update
+    set joined_at = case
+          when identity_user_group_membership.expires_at is not null
+               and identity_user_group_membership.expires_at &lt;= #{now}
+            then #{now}
+          else identity_user_group_membership.joined_at
+        end,
+        expires_at = #{expiresAt},
+        updated_at = #{now}
+  </insert>
+
+  <delete id="removeMembership">
+    delete from identity_user_group_membership
+    where group_id = #{groupId}
+      and user_id = #{userId}
+  </delete>
+
+  <select id="findActiveMembershipsByUserIds" resultMap="MembershipSummaryRowMap">
+    select m.user_id, g.id as group_id, g.code, g.name, m.joined_at, m.expires_at
+    from identity_user_group_membership m
+    join identity_user_group g on g.id = m.group_id
+    join auth_users u on u.id = m.user_id
+    where m.user_id in
+    <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+      #{userId}
+    </foreach>
+      and g.status = 'ACTIVE'
+      and m.joined_at &lt;= #{now}
+      and (m.expires_at is null or m.expires_at &gt; #{now})
+      and u.status != 'DELETED'
+    order by m.user_id, g.name, g.id
+  </select>
+</mapper>

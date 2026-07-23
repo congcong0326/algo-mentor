@@ -21,6 +21,13 @@ public enum AdminAuditMetadataKey {
   OUTPUT_PRICE_PER_MILLION("outputPricePerMillion"),
   COST_MULTIPLIER("costMultiplier"),
   PRICE_ENABLED("priceEnabled"),
+  GROUP_CODE("groupCode"),
+  USER_ID("userId"),
+  USER_COUNT("userCount"),
+  UPDATED_COUNT("updatedCount"),
+  FAILED_COUNT("failedCount"),
+  REMOVED_MEMBERSHIP_COUNT("removedMembershipCount"),
+  REMOVED("removed"),
   ERROR_CODE("errorCode");
 
   private final String value;

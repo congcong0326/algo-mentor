@@ -9,6 +9,7 @@ import type {
   AdminUserStatusUpdateRequest,
   UserGroupCreateRequest,
   UserGroupDetail,
+  UserGroupDeletionResponse,
   UserGroupListQuery,
   UserGroupMemberAddRequest,
   UserGroupMemberBatchResponse,
@@ -679,6 +680,15 @@ export async function updateUserGroup(groupId: number, request: UserGroupUpdateR
     body: JSON.stringify(request),
   });
   if (!response.ok) throw await toApiRequestError(response, 'User group update failed');
+  return response.json();
+}
+
+export async function deleteUserGroup(groupId: number): Promise<ApiResponse<UserGroupDeletionResponse>> {
+  const response = await apiFetch(`/api/admin/user-groups/${groupId}`, {
+    method: 'DELETE',
+    headers: jsonHeaders,
+  });
+  if (!response.ok) throw await toApiRequestError(response, 'User group deletion failed');
   return response.json();
 }
 

@@ -2,10 +2,13 @@
 
 ## 文档状态
 
-- 状态：讨论稿
+- 状态：当前实施基线
 - 日期：2026-07-23
-- 适用范围：单实例 `mentor-api` 中的 Agent loop、SSE 事件投递和后续容量治理
-- 第一阶段已确认：移除 Agent SSE 事件投递对 `ForkJoinPool.commonPool()` 的依赖
+- 部署基线：单实例 `mentor-api`，4 核 CPU、8 GB 内存，机器资源主要供 Java 进程使用
+- 第一阶段：移除 Agent SSE 事件投递对 `ForkJoinPool.commonPool()` 的依赖
+- 第二阶段：使用 `20/100 + SynchronousQueue + AbortPolicy` 的专用 Agent 执行池
+- 当前不实施：独立的用户等级、业务 purpose、provider 和系统总容量准入限流
+- Tomcat：保持 Spring Boot/Tomcat 默认线程与连接参数，暂不在配置文件中覆盖
 
 ## 背景
 
@@ -54,7 +57,7 @@ CPU 密集型任务。SSE 下游回调最终会调用 `SseEmitter.send(...)`，�
 ### 每次 run 直接创建线程
 
 当前每个订阅通过 `new Thread(...)` 创建 Agent 工作线程，缺少统一的最大并发、拒绝策略、线程生命周期、
-优雅停止和 Micrometer 指标。请求数量超过机器和模型提供商承载能力时，应用层没有稳定的系统总容量边界。
+优雅停止和 Micrometer 指标。请求数量持续增长时，Java 进程没有明确的 Agent 工作线程硬上限。
 
 ### 超时配置不一致
 
@@ -68,16 +71,18 @@ SSE 默认超时为 6 分钟。正常的多步骤 Agent run 可能先被 SSE 层
 - 保持现有 `Flow.Publisher<AgentStreamEvent>` 对外契约和 SSE 事件协议不变。
 - 让一个慢客户端只影响自己的 Agent run，不占用 JVM 公共线程池。
 - 使用自然背压限制单条流的内存增长，不为慢客户端无限缓存 token。
-- 后续把每次创建线程改为 Spring 管理的有界 Agent 执行池。
-- 为约 100 名用户的并发使用建立可配置的系统总容量和明确的过载响应。
+- 把每次创建线程改为 Spring 管理的无队列、有最大线程数的 Agent 执行池。
+- 以 100 个 Agent 工作线程作为当前单实例的执行硬上限。
+- 线程池饱和时立即拒绝新任务，不让长时间 Agent run 在内存队列中等待。
 - 覆盖成功、异常、超时、客户端断连、任务取消和线程池拒绝的资源释放路径。
 
 ## 非目标
 
-- 第一阶段不调整 Tomcat、Hikari 或 OpenAI HTTP client 的最终生产参数。
-- 第一阶段不升级到 JDK 21 或引入虚拟线程。
-- 第一阶段不修改前端 SSE 事件名、数据结构和交互语义。
-- 第一阶段不引入多实例共享容量协调器；当前仍按单实例部署边界设计。
+- 当前不调整 Tomcat、Hikari 或模型 provider HTTP client 的默认线程与连接参数。
+- 当前不升级到 JDK 21 或引入虚拟线程。
+- 当前不修改前端 SSE 事件名、数据结构和交互语义。
+- 当前不实现用户等级、业务 purpose、provider 或系统总容量的独立准入许可。
+- 当前不引入多实例共享容量协调器，仍按单实例部署边界设计。
 - 不使用无界任务队列吸收超过承载能力的长时间 Agent run。
 
 ## 目标线程模型
@@ -107,15 +112,14 @@ Agent run 对应一个 SSE 消费者，不需要通过公共投递池提高多�
 
 ```text
 Tomcat 请求线程
-  -> 用户级并发检查
-  -> 系统级容量准入
+  -> 执行现有鉴权和 AI 治理检查
   -> 准备 run 和 SseEmitter
   -> 向 AgentExecutor 提交任务
   -> 返回 SseEmitter
 
 AgentExecutor 工作线程
   -> OpenAI stream + Agent loop + 工具调用 + 业务 SSE 事件投递
-  -> 终态释放用户锁和系统容量令牌
+  -> 终态释放现有用户锁和 task 锁
 ```
 
 ## 第一阶段：移除 ForkJoinPool SSE 投递
@@ -150,7 +154,7 @@ AgentExecutor 工作线程
 
 `SseEmitter.send(...)` 变慢时，对应 Agent 工作线程会暂停读取后续 OpenAI 事件。这是第一阶段接受的行为：
 
-- 慢客户端只占用自己的 Agent 工作线程和系统容量令牌。
+- 慢客户端只占用自己的 Agent 工作线程。
 - 不继续为该客户端堆积大量 token，降低内存风险。
 - SSE 写失败后应立即取消 OpenAI stream，避免继续产生费用和无效计算。
 
@@ -182,82 +186,108 @@ AgentExecutor 工作线程
 
 ## 第二阶段：Agent 执行线程池
 
-第一阶段稳定后，将 `new Thread(...)` 替换为 Spring 管理的专用 `AgentExecutor`。当前讨论形成的原则如下，
-具体数值需要结合部署规格和压测结果确认：
+第一阶段稳定后，将 `new Thread(...)` 替换为 Spring 管理的专用 `AgentExecutor`。当前参数以单实例
+4 核 CPU、8 GB 内存和最多约 100 条同时运行的 Agent 流为基线。
 
 - 使用平台线程和有界 `ThreadPoolExecutor`，适配当前 JDK 17 与阻塞式 OpenAI 流。
-- 长任务不进入无界队列；倾向使用零容量或极小容量队列。
+- 使用 `SynchronousQueue`，不在执行池内存中保存等待任务。
 - 拒绝策略使用 `AbortPolicy`，禁止 `CallerRunsPolicy`，避免 Agent loop 回退到 Tomcat 请求线程执行。
+- 允许核心线程超时，空闲时释放超过实际负载需要的工作线程。
 - 线程名称使用稳定前缀，例如 `agent-loop-`。
 - 通过 task decorator 或等价机制传递 `RequestTraceContext`。
 - 线程池暴露 active、pool size、completed、rejected 和 queue size 指标。
 - 应用停止时停止接收新 run，取消或等待已有任务，并设置明确的 shutdown timeout。
 
-初始容量候选值：
+已确认参数：
 
 ```text
 core pool size:       20
-max pool size:        120
-queue capacity:       0
+max pool size:        100
+work queue:           SynchronousQueue（零容量）
 keep alive:           60s
-system active limit:  100
+allow core timeout:   true
+rejection policy:     AbortPolicy
 ```
 
-这些参数表示单实例最多允许约 100 条用户 Agent run 同时占用容量，同时为执行池保留少量实现和收尾余量。
-最终值不在第一阶段固化。
+`SynchronousQueue` 只负责把任务直接交给空闲工作线程，不保存排队任务。当没有空闲线程且当前线程数低于
+100 时，执行池继续创建工作线程；达到 100 后，新任务立即触发 `RejectedExecutionException`。
 
-## 第三阶段：系统容量与过载处理
+当前不通过 `activeCount`、`poolSize` 等近似统计提前判断是否存在可用线程，也不改造
+`ThreadPoolExecutor` 内部调度逻辑。任务直接提交给执行池，由执行池的原子调度和拒绝机制维护硬边界。
 
-线程池最大线程数只是最后一道资源边界，不能代替业务准入。计划增加独立的系统级 Agent 容量限制，并在创建
-长连接、扣减每日额度和持久化 run 之前完成检查。
+### 线程池拒绝处理
 
-初步错误语义：
+由于当前不增加独立容量准入层，线程池拒绝是本阶段实际的过载信号。提交方必须捕获
+`RejectedExecutionException`，并区分以下情况：
 
-- 同一用户已有活跃 AI run：保持 `409 AI_CONCURRENT_RUN_CONFLICT`。
-- 用户额度耗尽：保持 `429 AI_QUOTA_EXCEEDED`。
-- 单实例系统容量已满：新增 `503 AI_CAPACITY_EXCEEDED`，附带 `Retry-After`。
-- Executor 意外拒绝任务：作为兜底映射为相同的系统容量错误。
+- 执行池已关闭：应用正在停止，按服务不可用处理。
+- 执行池仍在运行：100 个 Agent 工作线程均无法接收新任务，按临时过载处理。
 
-系统容量拒绝不应：
+拒绝发生时不得使用 `CallerRunsPolicy` 在 Tomcat 请求线程中执行 Agent loop，也不得把任务放入其他无界队列。
+API 层应返回稳定的服务繁忙错误；具体错误码可以在实现时沿用或补充 AI 治理错误枚举。
 
-- 扣减用户每日额度。
-- 创建新的 Agent run 或用户消息。
-- 打开一个无业务事件输出的 SSE 连接。
-- 遗留用户锁、task 锁或容量令牌。
+即使暂不实施独立准入，拒绝路径仍必须完成资源回滚：
 
-容量令牌需要在以下路径释放：
+- 释放本次请求已经获取的用户级 AI run 锁和 task 锁。
+- 将已经创建的 run 更新为明确的失败或取消终态，不能遗留为运行中。
+- 关闭尚未开始输出的 SSE emitter。
+- 不启动 OpenAI、DeepSeek 等模型 provider 调用。
+- 记录 executor rejected 指标和低敏结构化日志。
 
-- run 正常完成。
-- 模型或工具执行失败。
-- SSE 超时。
-- 客户端主动断连。
-- 模型调用超时。
-- 线程池提交失败。
-- run 准备或订阅阶段同步失败。
+## 延期项：独立容量准入
 
-## 第四阶段：容器线程和关联资源
+用户等级和会员模型尚未稳定，当前不实现线程池前置的多维容量管理器，也不增加以下准入维度：
 
-在 Agent 执行池和系统准入稳定后，再调整 Tomcat 和关联资源。当前讨论的单实例候选基线为：
+- 用户等级总并发。
+- 单用户可配置并发数。
+- 业务 purpose 并发上限。
+- OpenAI、DeepSeek 等 provider 并发上限。
+- 独立于线程池最大线程数的系统容量许可。
 
-```text
-Tomcat max threads:       64
-Tomcat min spare threads: 10
-Tomcat max connections:   512
-Tomcat accept count:      100
-Hikari max pool size:     20-30
-SSE timeout:              5-6m
-```
+现有 AI 治理中的用户锁、每日额度、功能开关和 purpose 策略继续生效。本阶段只用 Agent executor 的
+`maximumPoolSize=100` 作为进程内工作线程硬上限。
 
-Tomcat 线程可以小于 SSE 连接数，因为 Controller 返回 `SseEmitter` 后，请求线程不再持续占用；但鉴权、
-AI 治理准入、run 准备、普通 API 和突发建连仍需要 Tomcat 工作线程。连接数需要高于目标 SSE 数，因为同一
-用户还会发起普通 API 和静态资源请求。
+后续用户等级形成稳定模型后，可以在线程池之前增加容量管理器。该能力应与线程池解耦，通过全局、用户、业务和
+provider 许可控制任务是否允许提交；线程池的 `AbortPolicy` 继续作为最终物理保护。
+
+## Tomcat 配置决策
+
+当前部署机器为 4 核 CPU、8 GB 内存，并且资源主要供 Java 进程使用。Tomcat 保持 Spring Boot/Tomcat 默认
+线程池、连接数和 accept backlog 配置，本阶段不在 `application.yml` 中增加 `server.tomcat.*` 覆盖项。
+
+保持默认配置的原因：
+
+- `SseEmitter` 返回后，长连接不会持续占用 Tomcat 请求工作线程。
+- Tomcat 线程仍负责鉴权、AI 治理、数据库 run 准备、普通 API 和突发建连。
+- 8 GB 内存能够容纳默认 Tomcat 工作线程和最多 100 个 Agent 工作线程的线程栈与运行开销。
+- 当前没有压测数据证明 Tomcat 默认值构成资源浪费或性能瓶颈。
+
+Tomcat 参数仍需要通过 Actuator/Micrometer 观测。只有出现 Tomcat busy threads 长期偏低且线程内存成为问题，
+或连接数、accept queue、普通 API 延迟出现异常时，再单独调整。Agent executor 的最大线程数不能通过修改
+Tomcat 参数间接控制。
+
+Hikari、模型 provider HTTP client、JVM heap、线程栈和文件描述符配置不在本次参数决策范围内，后续结合
+100 并发压测结果单独确认。
+
+## 超时边界
+
+线程池没有等待队列，运行中的任务仍可能因为模型、工具、权限确认或慢客户端长时间占用工作线程。实现线程池
+时需要同步统一以下超时，但具体参数仍待后续确认：
+
+- 单次 provider stream timeout。
+- Agent run 总超时。
+- SSE emitter 总超时。
+- 工具权限等待超时。
+- 应用关闭时的 executor shutdown timeout。
+
+外层 SSE 超时应晚于 Agent run 和 provider 超时，确保内部任务先进入可观测终态并释放线程。通用 Agent 会话
+当前写死的 30 秒 SSE 超时需要在后续实现中改为统一配置。
 
 ## 观测与压测要求
 
 需要补充或确认以下指标：
 
 - Agent executor active、pool size、queue size、completed 和 rejected。
-- 系统容量已用、剩余和拒绝次数。
 - 按 stream type 统计的活跃 SSE 连接数。
 - Agent 首事件时间、首 token 时间、run 总耗时和取消耗时。
 - Tomcat current/busy threads 和当前连接数。
@@ -267,10 +297,11 @@ AI 治理准入、run 准备、普通 API 和突发建连仍需要 Tomcat 工作
 目标压测场景：
 
 - 100 条 SSE 同时运行 2 至 5 分钟，普通 API 保持可用。
-- 超过系统限制时，请求快速返回稳定的容量错误，不形成长任务排队。
-- 批量断开客户端后，Agent 线程、上游连接、用户锁和容量令牌及时释放。
+- 第 101 个及后续任务快速收到稳定的线程池饱和错误，不形成长任务排队。
+- 批量断开客户端后，Agent 线程、上游连接和现有运行锁及时释放。
 - 慢客户端只影响自身 run，不拖慢其他流。
 - 模型长时间无响应时，超时后可以恢复容量。
+- Tomcat 使用默认参数时，100 条 SSE 建连和普通 API 延迟保持稳定。
 
 ## 已确认与待确认事项
 
@@ -278,15 +309,18 @@ AI 治理准入、run 准备、普通 API 和突发建连仍需要 Tomcat 工作
 
 - 第一阶段移除 `ForkJoinPool.commonPool()`。
 - Agent loop 工作线程直接投递业务 SSE 事件。
-- 不为长时间 Agent run 使用无界队列。
-- 系统过载应快速拒绝，不让用户在无输出 SSE 连接中长时间等待。
+- Agent executor 使用 `core=20`、`max=100`、`keepAlive=60s`。
+- Agent executor 使用 `SynchronousQueue`、`allowCoreThreadTimeOut=true` 和 `AbortPolicy`。
+- 不为长时间 Agent run 保存等待队列，线程池饱和时立即拒绝。
+- 当前不增加独立准入限流，后续等待用户等级和会员模型稳定后再设计。
+- Tomcat 保持 Spring Boot/Tomcat 默认配置。
 
 待确认：
 
 - 同步单订阅 Publisher 的最终类名和内部接口形态。
 - 心跳间隔、调度器实现和代理层 idle timeout。
-- Agent executor 的 core/max/keep-alive 最终数值。
-- 单实例系统活跃上限是否直接设为 100，或为后台 AI 任务预留独立配额。
-- 不同 AI purpose 是否需要共享总容量下的子上限和公平策略。
-- 生产部署的 CPU、内存、OpenAI RPM/TPM 与数据库容量基线。
+- 线程池拒绝对应的稳定 API/SSE 错误码和前端提示。
+- provider、Agent run、SSE 和 shutdown 的最终超时数值。
+- 用户等级稳定后的全局、用户、业务 purpose 和 provider 容量模型。
+- OpenAI、DeepSeek 等 provider 的真实 RPM/TPM 与连接池容量基线。
 - 多实例部署前，用户锁、工具权限 coordinator 和系统容量是否迁移到共享存储。

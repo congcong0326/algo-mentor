@@ -14,10 +14,12 @@ public record AdminUserSummaryResponse(
     List<AuthRole> roles,
     Instant createdAt,
     Instant updatedAt,
-    Instant lastLoginAt
+    Instant lastLoginAt,
+    List<AdminUserGroupSummaryResponse> groups
 ) {
 
   public AdminUserSummaryResponse {
     roles = roles == null ? List.of() : List.copyOf(roles);
+    groups = groups == null ? List.of() : List.copyOf(groups);
   }
 }

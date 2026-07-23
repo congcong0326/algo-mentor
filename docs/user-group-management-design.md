@@ -9,9 +9,9 @@
 2. 用户和用户组采用多对多关系，同一用户可以同时属于多个组。
 3. 用户组与 `AuthRole` 分离：角色继续表示 `USER/ADMIN` 系统身份，用户组表示业务分组。
 4. 第一版不引入用户标签，不允许使用自由文本标签替代用户组。
-5. 用户组支持管理员手动创建、编辑、停用，以及手动添加和移除成员。
+5. 用户组支持管理员手动创建、编辑、停用、删除，以及手动添加和移除成员。
 6. 成员关系支持可选到期时间；有效性由查询时间判断，不依赖定时任务及时删除记录。
-7. 第一版不硬删除用户组。停用用户组后，其成员关系保留，但不再视为有效组成员。
+7. 用户组删除采用不可恢复的逻辑删除：仅允许删除已停用组，删除时清理全部成员关系，但保留组记录、`code` 和删除审计字段；第一版不支持恢复已删除用户组。
 8. 第一版不保留完整成员变更历史，管理员操作通过现有低敏审计能力留痕。
 9. 用户组管理复用现有 `user:manage` 权限，不新增更细管理员权限。
 
@@ -30,7 +30,8 @@ AuthUser
 - 系统中有哪些用户组；
 - 一个用户当前属于哪些用户组；
 - 一个用户组当前有哪些有效成员；
-- 管理员如何手动添加和移除成员。
+- 管理员如何手动添加和移除成员；
+- 管理员如何停用和删除不再使用的用户组。
 
 后续访问策略可以读取这些事实，但不属于本文范围。
 
@@ -39,7 +40,7 @@ AuthUser
 ### 2.1 目标
 
 - 在 `identity` 模块建立用户组和成员关系的统一模型。
-- 管理员可以分页查询、创建、编辑和停用用户组。
+- 管理员可以分页查询、创建、编辑、停用和删除用户组。
 - 管理员可以查看组内有效成员，并按用户 ID、邮箱或昵称搜索。
 - 管理员可以向组内批量添加用户，并设置可选到期时间。
 - 管理员可以从用户组详情或用户详情中移除成员。
@@ -55,6 +56,7 @@ AuthUser
 - 不实现组管理员、组内角色或用户自助加入。
 - 不实现导入文件、邀请链接和审批流程。
 - 不实现成员变更历史查询页面。
+- 不物理删除用户组，不恢复已逻辑删除用户组。
 - 不将用户组写入 Spring Security authority 或 Session。
 
 ## 3. 模块归属
@@ -96,13 +98,20 @@ CREATE TABLE identity_user_group (
   status VARCHAR(16) NOT NULL DEFAULT 'ACTIVE',
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  deleted_at TIMESTAMPTZ NULL,
+  deleted_by BIGINT NULL REFERENCES auth_users(id),
   CONSTRAINT uk_identity_user_group_code UNIQUE (code),
   CONSTRAINT ck_identity_user_group_code
     CHECK (code ~ '^[A-Z][A-Z0-9_]{0,63}$'),
   CONSTRAINT ck_identity_user_group_name
     CHECK (length(btrim(name)) > 0),
   CONSTRAINT ck_identity_user_group_status
-    CHECK (status IN ('ACTIVE', 'DISABLED'))
+    CHECK (status IN ('ACTIVE', 'DISABLED', 'DELETED')),
+  CONSTRAINT ck_identity_user_group_deleted_fields
+    CHECK (
+      (status = 'DELETED' AND deleted_at IS NOT NULL AND deleted_by IS NOT NULL)
+      OR (status != 'DELETED' AND deleted_at IS NULL AND deleted_by IS NULL)
+    )
 );
 ```
 
@@ -111,7 +120,9 @@ CREATE TABLE identity_user_group (
 - `code`：跨模块引用的稳定标识，例如 `PRO`、`BETA_TESTER`；创建后不可修改。
 - `name`：管理员可读名称，可以修改。
 - `description`：可选管理说明，不作为权限或程序判断依据。
-- `status`：`ACTIVE` 表示可以继续维护有效成员，`DISABLED` 表示整个组暂不生效。
+- `status`：`ACTIVE` 表示可以继续维护有效成员，`DISABLED` 表示整个组暂不生效，`DELETED` 表示已逻辑删除且不可恢复。
+- `deleted_at/deleted_by`：记录逻辑删除时间和管理员；仅 `DELETED` 状态允许非空。
+- `code` 的唯一约束覆盖已删除记录，因此删除后不得复用原编码，避免跨模块引用和审计记录产生歧义。
 
 ### 4.2 `identity_user_group_membership`
 
@@ -142,6 +153,8 @@ CREATE INDEX idx_identity_user_group_membership_user_expiry
 - 不存在：新增关系；
 - 手动移除：删除当前关系。
 
+用户组采用逻辑删除，因此外键继续使用 `ON DELETE RESTRICT`。删除用户组时由 Service 在同一事务中先删除该组全部成员关系，再将组状态更新为 `DELETED`；不依赖数据库物理级联。
+
 ### 4.3 有效成员定义
 
 当前有效成员必须同时满足：
@@ -162,7 +175,8 @@ AND user.status != DELETED
 ```java
 public enum UserGroupStatus {
   ACTIVE,
-  DISABLED
+  DISABLED,
+  DELETED
 }
 ```
 
@@ -177,6 +191,8 @@ UserGroup
   status
   createdAt
   updatedAt
+  deletedAt
+  deletedBy
 
 UserGroupMembership
   userId
@@ -204,6 +220,7 @@ GET    /api/admin/user-groups
 POST   /api/admin/user-groups
 GET    /api/admin/user-groups/{groupId}
 PATCH  /api/admin/user-groups/{groupId}
+DELETE /api/admin/user-groups/{groupId}
 ```
 
 查询参数：
@@ -212,7 +229,7 @@ PATCH  /api/admin/user-groups/{groupId}
 page
 pageSize
 keyword     按 code/name 模糊查询
-status      ACTIVE/DISABLED
+status      ACTIVE/DISABLED；不传时查询两种未删除状态
 ```
 
 创建请求：
@@ -235,7 +252,24 @@ status      ACTIVE/DISABLED
 }
 ```
 
-`code` 创建后不可修改。第一版不提供删除接口。
+`code` 创建后不可修改。
+
+`PATCH` 请求中的 `status` 只接受 `ACTIVE/DISABLED`，不得通过编辑接口写入 `DELETED`；逻辑删除只能通过 `DELETE` 接口触发。
+
+删除成功响应：
+
+```json
+{
+  "groupId": 1,
+  "deleted": true,
+  "removedMembershipCount": 42
+}
+```
+
+- 仅 `DISABLED` 用户组允许删除；删除 `ACTIVE` 用户组返回 `409 USER_GROUP_DELETE_REQUIRES_DISABLED`。
+- 删除为不可恢复的逻辑删除，同时清理该组的全部成员关系。
+- 重复删除按幂等成功处理，返回 `deleted=false`、`removedMembershipCount=0`。
+- 已删除组不出现在列表中，详情、编辑和成员接口统一按不存在处理；原 `code` 继续保留且不可复用。
 
 ### 6.2 成员 API
 
@@ -304,11 +338,22 @@ INVALID_EXPIRY
 
 - `code` 统一 `trim + uppercase(Locale.ROOT)` 后校验。
 - 相同 `code` 重复创建返回稳定冲突错误。
+- 编辑接口只允许 `ACTIVE <-> DISABLED`，不得写入 `DELETED`。
 - 停用组不会删除成员关系。
 - 停用组不允许新增成员；恢复为 `ACTIVE` 后原未过期关系重新生效。
 - 修改名称和说明不影响成员关系。
 
-### 7.2 添加成员
+### 7.2 删除用户组
+
+- 删除操作在一个事务中完成，并先对用户组记录加行锁，避免与停用、恢复或成员写入并发穿透。
+- 仅允许 `DISABLED -> DELETED`，不允许 `ACTIVE -> DELETED`，管理员必须先停用并确认该组不再生效。
+- 事务内先统计并删除全部成员关系，再写入 `status=DELETED`、`deleted_at`、`deleted_by` 和 `updated_at`。
+- 已删除用户组不可恢复、不可编辑、不可新增成员，普通列表和有效成员查询不得返回该组。
+- Repository 的创建冲突检查必须包含已删除记录，原 `code` 永久保留。
+- 重复删除不再次写审计记录，按幂等成功返回未发生删除。
+- 删除审计只记录 groupId、code、操作者、删除时间和清理的成员数量，不记录成员 ID、邮箱等明细。
+
+### 7.3 添加成员
 
 - 添加前验证用户存在且未软删除。
 - 添加到停用组返回 `USER_GROUP_DISABLED`。
@@ -317,7 +362,7 @@ INVALID_EXPIRY
 - 整批写入在一个事务中完成，单个用户的业务结果明确返回。
 - 管理员手动添加动作记录低敏审计，只记录 groupId、用户数量和结果，不记录邮箱等隐私字段。
 
-### 7.3 移除成员
+### 7.4 移除成员
 
 - 从用户详情或用户组详情发起的移除调用同一 Service。
 - 删除不存在的关系视为幂等成功。
@@ -356,7 +401,8 @@ INVALID_EXPIRY
 - 按状态筛选；
 - 创建用户组；
 - 打开用户组详情；
-- 编辑名称、说明和状态。
+- 编辑名称、说明和状态；
+- 删除已停用用户组。
 
 创建和编辑使用对话框。`code` 创建后显示为只读文本，不再提供输入控件。
 
@@ -375,7 +421,8 @@ INVALID_EXPIRY
 - 组内用户搜索；
 - 成员表格；
 - 添加成员；
-- 移除成员。
+- 移除成员；
+- 删除已停用用户组。
 
 成员表格字段：
 
@@ -408,7 +455,15 @@ INVALID_EXPIRY
 - 成功后保持当前搜索和分页位置。
 - 批量移除不作为第一版必需能力。
 
-### 8.6 用户管理页面扩展
+### 8.6 删除用户组
+
+- 列表行和详情页提供删除图标按钮及 tooltip；只有 `DISABLED` 状态可点击，`ACTIVE` 状态提示需先停用。
+- 点击后显示危险操作确认对话框，明确展示组名称、`code`，以及“删除后不可恢复且会清理全部成员关系”。
+- 确认期间禁用重复提交；成功后关闭对话框并返回或刷新用户组列表。
+- 删除失败时保留当前页面和确认上下文，展示统一错误响应；不做前端乐观删除。
+- 已删除用户组不提供恢复入口。
+
+### 8.7 用户管理页面扩展
 
 现有用户列表增加“用户组”列：
 
@@ -435,6 +490,7 @@ INVALID_EXPIRY
 USER_GROUP_NOT_FOUND
 USER_GROUP_CODE_CONFLICT
 USER_GROUP_DISABLED
+USER_GROUP_DELETE_REQUIRES_DISABLED
 USER_GROUP_INVALID_CODE
 USER_GROUP_INVALID_EXPIRY
 USER_GROUP_MEMBER_NOT_FOUND
@@ -449,11 +505,13 @@ USER_GROUP_BATCH_LIMIT_EXCEEDED
 
 - Flyway 迁移包含表、约束、外键和索引。
 - `code` 规范化、唯一冲突和不可修改。
+- 已停用组逻辑删除、成员关系清理、删除审计字段和重复删除幂等语义。
+- 活跃组删除返回 `USER_GROUP_DELETE_REQUIRES_DISABLED`，已删除组不可恢复、不可编辑且原 `code` 不可复用。
 - 用户组停用和恢复后的成员有效性。
 - 永久成员、未到期成员和已到期成员查询。
 - 重复添加的新增、更新和重新激活语义。
 - 批量请求去重、数量上限和部分业务结果。
-- 删除不存在关系的幂等语义。
+- 删除不存在成员关系的幂等语义。
 - 已删除用户不能被添加，禁用用户可以保留现有关系。
 - 用户列表批量加载组摘要，不产生 N+1 查询。
 - 非管理员访问所有用户组接口返回 `403`。
@@ -463,6 +521,7 @@ USER_GROUP_BATCH_LIMIT_EXCEEDED
 - 具有 `user:manage` 权限时显示用户组导航。
 - 用户组列表支持搜索、状态筛选和分页。
 - 创建和编辑对话框正确处理校验和冲突错误。
+- 活跃组不能直接删除，已停用组删除前展示不可恢复和成员清理确认，成功后从列表移除。
 - 用户组详情支持成员搜索和分页。
 - 添加成员支持多选、到期时间和结果汇总。
 - 移除成员需要确认，成功后保持当前列表状态。
@@ -474,14 +533,15 @@ USER_GROUP_BATCH_LIMIT_EXCEEDED
 
 1. 完成管理员 `AdminShell` 改造并验证现有管理员页面无回归。
 2. 新增用户组迁移、领域模型和 MyBatis Repository。
-3. 新增用户组与成员管理 Service、错误码和管理员 API。
-4. 新增用户组列表和详情页面，并启用管理员导航项。
+3. 新增用户组与成员管理 Service、逻辑删除事务、错误码和管理员 API。
+4. 新增用户组列表和详情页面、删除确认交互，并启用管理员导航项。
 5. 扩展用户列表和用户详情中的用户组展示与操作。
 6. 补充后端、前端和管理员权限测试。
 
 ## 12. 验收标准
 
-- 管理员可以创建、编辑和停用用户组。
+- 管理员可以创建、编辑、停用和逻辑删除用户组。
+- 用户组必须先停用才能删除；删除后不可恢复、全部成员关系被清理，原 `code` 不可复用。
 - 管理员可以查看组内当前有效成员。
 - 管理员可以批量添加用户并设置可选到期时间。
 - 管理员可以从用户组详情和用户详情移除成员。

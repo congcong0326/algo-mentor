@@ -106,6 +106,12 @@ export interface UserGroupSummary {
 
 export type UserGroupDetail = UserGroupSummary;
 
+export interface UserGroupDeletionResponse {
+  groupId: number;
+  deleted: boolean;
+  removedMembershipCount: number;
+}
+
 export interface UserGroupPage {
   items: UserGroupSummary[];
   total: number;

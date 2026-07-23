@@ -1,5 +1,6 @@
 package org.congcong.algomentor.identity.controller;
 
+import java.time.Clock;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.identity.controller.model.AdminUserDetailResponse;
 import org.congcong.algomentor.identity.controller.model.AdminUserListQuery;
@@ -7,6 +8,7 @@ import org.congcong.algomentor.identity.controller.model.AdminUserPageResponse;
 import org.congcong.algomentor.identity.controller.model.AdminUserResponseMapper;
 import org.congcong.algomentor.identity.controller.model.AdminUserStatusUpdateRequest;
 import org.congcong.algomentor.identity.model.AuthUser;
+import org.congcong.algomentor.identity.group.repository.UserGroupRepository;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 import org.congcong.algomentor.identity.service.IdentityUserErrorCode;
 import org.congcong.algomentor.identity.service.IdentityUserManagementException;
@@ -31,6 +33,16 @@ public class AdminUserController {
   public AdminUserController(IdentityUserService service, IdentityUserRepository repository) {
     this.service = service;
     this.responseMapper = new AdminUserResponseMapper(repository);
+  }
+
+  public AdminUserController(
+      IdentityUserService service,
+      IdentityUserRepository repository,
+      UserGroupRepository userGroupRepository,
+      Clock clock
+  ) {
+    this.service = service;
+    this.responseMapper = new AdminUserResponseMapper(repository, userGroupRepository, clock);
   }
 
   @GetMapping
