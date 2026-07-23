@@ -1,4 +1,4 @@
-import { AlertCircle, ArrowLeft, CheckCircle2, ClipboardList, Clock, ExternalLink, Info, SkipForward } from 'lucide-react';
+import { AlertCircle, ArrowLeft, CheckCircle2, ClipboardList, Clock, ExternalLink, Info, MoreHorizontal, SkipForward } from 'lucide-react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties, FormEvent } from 'react';
 import MarkdownView from '../components/MarkdownView';
@@ -440,6 +440,8 @@ export default function PracticeChatWorkbench({
   const [status, setStatus] = useState<'loading' | 'idle' | 'streaming' | 'blocked' | 'error'>('loading');
   const [error, setError] = useState('');
   const [completionUpdating, setCompletionUpdating] = useState(false);
+  const [moreActionsOpen, setMoreActionsOpen] = useState(false);
+  const [skipConfirmationOpen, setSkipConfirmationOpen] = useState(false);
   const [postRunRefreshing, setPostRunRefreshing] = useState(false);
   const [reviewHistory, setReviewHistory] = useState<PracticeCodeReviewHistoryResponse>();
   const [reviewHistoryLoading, setReviewHistoryLoading] = useState(false);
@@ -452,6 +454,7 @@ export default function PracticeChatWorkbench({
   const streamControllerRef = useRef<AbortController | null>(null);
   const activeSessionIdRef = useRef<number | undefined>(undefined);
   const pendingPermissionIdRef = useRef<string | undefined>(undefined);
+  const moreActionsRef = useRef<HTMLSpanElement | null>(null);
   const messageListRef = useRef<HTMLElement | null>(null);
   const shouldAutoScrollRef = useRef(true);
   const submittingRef = useRef(false);
@@ -468,6 +471,8 @@ export default function PracticeChatWorkbench({
     setMessages([]);
     setError('');
     setCompletionUpdating(false);
+    setMoreActionsOpen(false);
+    setSkipConfirmationOpen(false);
     setReviewHistory(undefined);
     setReviewHistoryError('');
     setReviewHistoryLoading(false);
@@ -513,6 +518,46 @@ export default function PracticeChatWorkbench({
       submittingRef.current = false;
     };
   }, [locale, phaseIndex, plan.id, problemSlug, resources.learningPlans.practiceSessionLoadFailed]);
+
+  useEffect(() => {
+    if (!moreActionsOpen) {
+      return undefined;
+    }
+
+    function closeMoreActions(event: MouseEvent) {
+      if (event.target instanceof Node && !moreActionsRef.current?.contains(event.target)) {
+        setMoreActionsOpen(false);
+      }
+    }
+
+    function closeMoreActionsOnEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setMoreActionsOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', closeMoreActions);
+    document.addEventListener('keydown', closeMoreActionsOnEscape);
+    return () => {
+      document.removeEventListener('mousedown', closeMoreActions);
+      document.removeEventListener('keydown', closeMoreActionsOnEscape);
+    };
+  }, [moreActionsOpen]);
+
+  useEffect(() => {
+    if (!skipConfirmationOpen || completionUpdating) {
+      return undefined;
+    }
+
+    function closeSkipConfirmationOnEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setSkipConfirmationOpen(false);
+      }
+    }
+
+    document.addEventListener('keydown', closeSkipConfirmationOnEscape);
+    return () => document.removeEventListener('keydown', closeSkipConfirmationOnEscape);
+  }, [completionUpdating, skipConfirmationOpen]);
 
   const sessionId = sessionResponse?.session.id;
   activeSessionIdRef.current = sessionId;
@@ -1059,11 +1104,13 @@ export default function PracticeChatWorkbench({
       || progressStatus === 'COMPLETED'
       || progressStatus === 'SKIPPED'
       || skipDisabled) {
+      setSkipConfirmationOpen(false);
       return;
     }
 
     const activeSessionId = sessionId;
     const activeLoadToken = practiceLoadTokenRef.current;
+    setSkipConfirmationOpen(false);
     setCompletionUpdating(true);
     setError('');
     try {
@@ -1229,17 +1276,6 @@ export default function PracticeChatWorkbench({
               )}
             </span>
           )}
-          {shouldShowSkipButton && (
-            <button
-              className="secondary-button compact"
-              disabled={skipDisabled}
-              onClick={handleSkipProblem}
-              type="button"
-            >
-              <SkipForward aria-hidden="true" />
-              <span>{resources.learningPlans.skipped}</span>
-            </button>
-          )}
           <button
             className="secondary-button compact"
             onClick={onOpenSubmissions}
@@ -1248,6 +1284,45 @@ export default function PracticeChatWorkbench({
             <ClipboardList aria-hidden="true" />
             <span>{resources.learningPlans.reviewHistory}</span>
           </button>
+          {shouldShowSkipButton && (
+            <span
+              className={`toolbar-tooltip-wrap practice-more-actions ${moreActionsOpen ? 'is-open' : ''}`}
+              ref={moreActionsRef}
+            >
+              <button
+                aria-controls="practice-more-actions-menu"
+                aria-expanded={moreActionsOpen}
+                aria-haspopup="menu"
+                aria-label={resources.learningPlans.practiceMoreActions}
+                className="icon-button"
+                disabled={skipDisabled}
+                onClick={() => setMoreActionsOpen((current) => !current)}
+                title={resources.learningPlans.practiceMoreActions}
+                type="button"
+              >
+                <MoreHorizontal aria-hidden="true" />
+              </button>
+              <span className="toolbar-tooltip practice-more-actions-tooltip" role="tooltip">
+                {resources.learningPlans.practiceMoreActions}
+              </span>
+              {moreActionsOpen && (
+                <div className="practice-actions-menu" id="practice-more-actions-menu" role="menu">
+                  <button
+                    className="practice-actions-menu-item"
+                    onClick={() => {
+                      setMoreActionsOpen(false);
+                      setSkipConfirmationOpen(true);
+                    }}
+                    role="menuitem"
+                    type="button"
+                  >
+                    <SkipForward aria-hidden="true" />
+                    <span>{resources.learningPlans.skipProblem}</span>
+                  </button>
+                </div>
+              )}
+            </span>
+          )}
           <span className="toolbar-tooltip-wrap">
             <span
               aria-describedby="practice-guidance-tooltip"
@@ -1373,6 +1448,41 @@ export default function PracticeChatWorkbench({
           <p className="practice-composer-hint">{resources.learningPlans.practiceComposerReviewHint}</p>
         )}
       </form>
+
+      {skipConfirmationOpen && (
+        <div className="modal-backdrop" role="presentation">
+          <section
+            aria-describedby="practice-skip-confirm-description"
+            aria-labelledby="practice-skip-confirm-title"
+            aria-modal="true"
+            className="practice-skip-confirm-dialog"
+            role="dialog"
+          >
+            <h3 id="practice-skip-confirm-title">{resources.learningPlans.skipProblemConfirmTitle}</h3>
+            <p id="practice-skip-confirm-description">{resources.learningPlans.skipProblemConfirmDescription}</p>
+            <div className="modal-actions practice-skip-confirm-actions">
+              <button
+                autoFocus
+                className="secondary-button compact"
+                disabled={completionUpdating}
+                onClick={() => setSkipConfirmationOpen(false)}
+                type="button"
+              >
+                {resources.common.cancel}
+              </button>
+              <button
+                className="practice-skip-confirm-button compact"
+                disabled={completionUpdating}
+                onClick={() => void handleSkipProblem()}
+                type="button"
+              >
+                <SkipForward aria-hidden="true" />
+                <span>{resources.learningPlans.confirmSkipProblem}</span>
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
 
       {pendingPermission && (
         <div className="modal-backdrop practice-permission-backdrop">

@@ -994,6 +994,11 @@ export interface LocaleResources {
     completed: string;
     skipped: string;
     markCompleted: string;
+    practiceMoreActions: string;
+    skipProblem: string;
+    skipProblemConfirmTitle: string;
+    skipProblemConfirmDescription: string;
+    confirmSkipProblem: string;
     organizingThoughts: string;
     replyFailed: string;
     practiceSessionLoadFailed: string;
@@ -2156,6 +2161,11 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       completed: '已完成',
       skipped: '已跳过',
       markCompleted: '标记完成',
+      practiceMoreActions: '更多操作',
+      skipProblem: '跳过本题',
+      skipProblemConfirmTitle: '跳过本题？',
+      skipProblemConfirmDescription: '跳过后仍可查看此题的对话，并可稍后标记完成。',
+      confirmSkipProblem: '确认跳过',
       organizingThoughts: '正在整理思路...',
       replyFailed: '回复失败，请重试。',
       practiceSessionLoadFailed: '训练会话加载失败',
@@ -3369,6 +3379,11 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       completed: 'Completed',
       skipped: 'Skipped',
       markCompleted: 'Mark completed',
+      practiceMoreActions: 'More actions',
+      skipProblem: 'Skip this problem',
+      skipProblemConfirmTitle: 'Skip this problem?',
+      skipProblemConfirmDescription: 'You can still view this problem\'s conversation and mark it complete later.',
+      confirmSkipProblem: 'Skip problem',
       organizingThoughts: 'Organizing thoughts...',
       replyFailed: 'Reply failed. Please retry.',
       practiceSessionLoadFailed: 'Failed to load practice session',

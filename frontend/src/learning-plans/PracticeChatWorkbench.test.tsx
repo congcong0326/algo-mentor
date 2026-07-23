@@ -920,6 +920,35 @@ describe('PracticeChatWorkbench review contracts', () => {
     expect(getPracticeSessionReviews).not.toHaveBeenCalled();
   });
 
+  it('requires confirmation before skipping a problem from more actions', async () => {
+    updatePracticeProgressStatus.mockResolvedValue(apiResponse(sessionFixture({
+      session: {
+        ...sessionFixture().session,
+        progressStatus: 'SKIPPED',
+      },
+    })));
+    renderWorkbench();
+
+    fireEvent.click(await screen.findByRole('button', { name: '更多操作' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: '跳过本题' }));
+
+    const dialog = await screen.findByRole('dialog', { name: '跳过本题？' });
+    expect(within(dialog).getByText('跳过后仍可查看此题的对话，并可稍后标记完成。')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '取消' })).toHaveFocus();
+    expect(updatePracticeProgressStatus).not.toHaveBeenCalled();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog', { name: '跳过本题？' })).not.toBeInTheDocument();
+    expect(updatePracticeProgressStatus).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: '更多操作' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: '跳过本题' }));
+    fireEvent.click(await screen.findByRole('button', { name: '确认跳过' }));
+
+    await waitFor(() => expect(updatePracticeProgressStatus).toHaveBeenCalledWith(101, 'SKIPPED'));
+    expect(await screen.findByText('已跳过')).toBeInTheDocument();
+  });
+
   it('clears stale review versions when session changes', async () => {
     createOrReusePracticeSession.mockResolvedValueOnce(apiResponse(sessionFixture({
       completionGate: {
