@@ -819,14 +819,13 @@ export interface LocaleResources {
     practiceComposerReviewHint: string;
     toolPermissionEyebrow: string;
     toolPermissionProblem: string;
-    toolPermissionLanguage: string;
-    toolPermissionCodeLength: string;
-    toolPermissionCodeLengthValue: (count: number) => string;
-    toolPermissionContext: string;
-    toolPermissionContextAvailable: string;
-    toolPermissionContextUnavailable: string;
+    toolPermissionContextWarning: string;
     toolPermissionCodePreview: string;
-    toolPermissionEffects: string;
+    toolPermissionEffectSummary: string;
+    toolPermissionCountdownLabel: string;
+    toolPermissionCountdownHint: string;
+    toolPermissionExpired: string;
+    toolPermissionExpiredHint: string;
     toolPermissionAllow: string;
     toolPermissionDeny: string;
     toolPermissionDecisionFailed: string;
@@ -1753,20 +1752,19 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       completionRequiresPassedReview: '完成前需要先粘贴完整代码生成一次代码提交记录，并且通过后才能标记完成。',
       practiceComposerPlaceholderReview: '粘贴完整代码、LeetCode 通过/失败反馈，或继续追问思路...',
       practiceComposerReviewHint: '粘贴完整代码生成代码提交记录，并通过后才能标记完成。',
-      toolPermissionEyebrow: '需要确认',
+      toolPermissionEyebrow: '限时确认',
       toolPermissionProblem: '题目',
-      toolPermissionLanguage: '语言',
-      toolPermissionCodeLength: '代码长度',
-      toolPermissionCodeLengthValue: (count) => `${count} 字符`,
-      toolPermissionContext: '上下文',
-      toolPermissionContextAvailable: '可用',
-      toolPermissionContextUnavailable: '不可用',
-      toolPermissionCodePreview: '代码预览',
-      toolPermissionEffects: '影响',
-      toolPermissionAllow: '允许',
-      toolPermissionDeny: '拒绝',
-      toolPermissionDecisionFailed: '提交授权决定失败，请重试。',
-      toolPermissionTimeoutNotice: '本次未执行。',
+      toolPermissionContextWarning: '暂时无法读取完整练习上下文，请确认代码和题目是否匹配。',
+      toolPermissionCodePreview: '将提交的代码',
+      toolPermissionEffectSummary: '确认后将生成代码提交记录，并可能影响题目完成状态。',
+      toolPermissionCountdownLabel: '超时后自动取消',
+      toolPermissionCountdownHint: '请在倒计时结束前确认，本次对话不会因取消而中断。',
+      toolPermissionExpired: '确认时间已结束',
+      toolPermissionExpiredHint: '正在取消本次代码 Review…',
+      toolPermissionAllow: '确认生成',
+      toolPermissionDeny: '暂不生成',
+      toolPermissionDecisionFailed: '提交确认结果失败，请重试。',
+      toolPermissionTimeoutNotice: '确认已超时，本次未生成代码提交记录。',
       chatMessages: '聊天消息',
       coach: '教练',
       you: '你',
@@ -2740,20 +2738,19 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       completionRequiresPassedReview: 'Paste complete code to generate a code submission record, then pass it before marking this practice complete.',
       practiceComposerPlaceholderReview: 'Paste complete code, LeetCode accepted/failed feedback, or continue asking...',
       practiceComposerReviewHint: 'Paste complete code to generate a code submission record, then pass it before marking this practice complete.',
-      toolPermissionEyebrow: 'Confirmation needed',
+      toolPermissionEyebrow: 'Timed confirmation',
       toolPermissionProblem: 'Problem',
-      toolPermissionLanguage: 'Language',
-      toolPermissionCodeLength: 'Code length',
-      toolPermissionCodeLengthValue: (count) => `${count} chars`,
-      toolPermissionContext: 'Context',
-      toolPermissionContextAvailable: 'Available',
-      toolPermissionContextUnavailable: 'Unavailable',
-      toolPermissionCodePreview: 'Code preview',
-      toolPermissionEffects: 'Effects',
-      toolPermissionAllow: 'Allow',
-      toolPermissionDeny: 'Deny',
-      toolPermissionDecisionFailed: 'Failed to submit the decision. Please retry.',
-      toolPermissionTimeoutNotice: 'This action was not run.',
+      toolPermissionContextWarning: 'The full practice context is temporarily unavailable. Confirm that the code matches this problem.',
+      toolPermissionCodePreview: 'Code to submit',
+      toolPermissionEffectSummary: 'Confirmation creates a code submission record and may affect problem completion.',
+      toolPermissionCountdownLabel: 'Cancels automatically at timeout',
+      toolPermissionCountdownHint: 'Confirm before the timer ends. Cancelling will not interrupt the conversation.',
+      toolPermissionExpired: 'Confirmation time has ended',
+      toolPermissionExpiredHint: 'Cancelling this code review…',
+      toolPermissionAllow: 'Generate review',
+      toolPermissionDeny: 'Not now',
+      toolPermissionDecisionFailed: 'Failed to submit your confirmation. Please retry.',
+      toolPermissionTimeoutNotice: 'Confirmation timed out. No code submission record was created.',
       chatMessages: 'Chat messages',
       coach: 'Coach',
       you: 'You',

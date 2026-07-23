@@ -92,7 +92,7 @@ describe('PracticeChatWorkbench review contracts', () => {
     expect(updatePracticeProgressStatus).not.toHaveBeenCalled();
   });
 
-  it('shows permission request details with preview and effects', async () => {
+  it('shows only decision-relevant permission details', async () => {
     streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
       options.onEvent?.({
         eventName: 'tool_permission_request',
@@ -110,11 +110,83 @@ describe('PracticeChatWorkbench review contracts', () => {
     const dialog = await screen.findByRole('dialog', { name: '提交代码记录' });
     expect(within(dialog).getByText('需要生成一次代码提交记录')).toBeInTheDocument();
     expect(within(dialog).getByText('两数之和 (two-sum)')).toBeInTheDocument();
-    expect(within(dialog).getByText('Java')).toBeInTheDocument();
-    expect(within(dialog).getByText('128 字符')).toBeInTheDocument();
     expect(within(dialog).getByText('class Solution { return; }')).toBeInTheDocument();
-    expect(within(dialog).getByText('会保存一条代码提交记录')).toBeInTheDocument();
-    expect(within(dialog).getByText('可能更新完成状态')).toBeInTheDocument();
+    expect(within(dialog).getByText('确认后将生成代码提交记录，并可能影响题目完成状态。')).toBeInTheDocument();
+    expect(within(dialog).queryByText('语言')).not.toBeInTheDocument();
+    expect(within(dialog).queryByText('Java')).not.toBeInTheDocument();
+    expect(within(dialog).queryByText('代码长度')).not.toBeInTheDocument();
+    expect(within(dialog).queryByText('128 字符')).not.toBeInTheDocument();
+    expect(within(dialog).queryByText('上下文')).not.toBeInTheDocument();
+  });
+
+  it('shows the remaining confirmation time and disables decisions after expiry', async () => {
+    let streamOptions: Parameters<typeof api.streamPracticeMessage>[2] | undefined;
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      streamOptions = options;
+      await new Promise<void>(() => undefined);
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '请 Review 这段代码。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+    await waitFor(() => expect(streamOptions).toBeDefined());
+
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-06-26T00:00:00Z'));
+    act(() => {
+      streamOptions?.onEvent({
+        eventName: 'tool_permission_request',
+        data: permissionRequestEvent({ expiresAt: '2026-06-26T00:00:12Z' }),
+      });
+    });
+
+    const timer = screen.getByRole('timer');
+    expect(timer).toHaveTextContent('超时后自动取消');
+    expect(timer).toHaveTextContent('请在倒计时结束前确认，本次对话不会因取消而中断。');
+    expect(timer).toHaveTextContent('00:12');
+    expect(timer).not.toHaveClass('is-urgent');
+    expect(timer.querySelector('.practice-permission-clock')).toHaveStyle({
+      '--permission-countdown-angle': '360deg',
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(2_000);
+    });
+    expect(timer).toHaveTextContent('00:10');
+    expect(timer).toHaveClass('is-urgent');
+
+    act(() => {
+      vi.advanceTimersByTime(10_000);
+    });
+    expect(timer).toHaveTextContent('确认时间已结束');
+    expect(timer).toHaveTextContent('正在取消本次代码 Review…');
+    expect(timer).toHaveTextContent('00:00');
+    expect(timer).toHaveClass('is-expired');
+    expect(screen.getByRole('button', { name: '确认生成' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '暂不生成' })).toBeDisabled();
+    expect(decideAgentToolPermission).not.toHaveBeenCalled();
+  });
+
+  it('shows a warning only when the trusted practice context is unavailable', async () => {
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      options.onEvent?.({
+        eventName: 'tool_permission_request',
+        data: permissionRequestEvent({ preview: { contextAvailable: false } }),
+      });
+      await new Promise<void>(() => undefined);
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '请 Review 这段代码。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+
+    const dialog = await screen.findByRole('dialog', { name: '提交代码记录' });
+    expect(within(dialog).getByText('暂时无法读取完整练习上下文，请确认代码和题目是否匹配。'))
+      .toBeInTheDocument();
   });
 
   it('uses the current locale for the workbench title and permission problem title', async () => {
@@ -161,7 +233,7 @@ describe('PracticeChatWorkbench review contracts', () => {
       target: { value: '请 Review 这段代码。' },
     });
     fireEvent.click(screen.getByRole('button', { name: '发送' }));
-    fireEvent.click(await screen.findByRole('button', { name: '允许' }));
+    fireEvent.click(await screen.findByRole('button', { name: '确认生成' }));
 
     await waitFor(() => expect(decideAgentToolPermission).toHaveBeenCalledWith(
       'permission-1',
@@ -358,7 +430,7 @@ describe('PracticeChatWorkbench review contracts', () => {
       target: { value: '请 Review 这段代码。' },
     });
     fireEvent.click(screen.getByRole('button', { name: '发送' }));
-    fireEvent.click(await screen.findByRole('button', { name: '拒绝' }));
+    fireEvent.click(await screen.findByRole('button', { name: '暂不生成' }));
 
     await waitFor(() => expect(decideAgentToolPermission).toHaveBeenCalledWith(
       'permission-1',
@@ -391,8 +463,8 @@ describe('PracticeChatWorkbench review contracts', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: '发送' }));
 
-    const allowButton = await screen.findByRole('button', { name: '允许' });
-    const denyButton = screen.getByRole('button', { name: '拒绝' });
+    const allowButton = await screen.findByRole('button', { name: '确认生成' });
+    const denyButton = screen.getByRole('button', { name: '暂不生成' });
     fireEvent.click(allowButton);
 
     expect(allowButton).toBeDisabled();
@@ -404,9 +476,9 @@ describe('PracticeChatWorkbench review contracts', () => {
 
     const dialog = await screen.findByRole('dialog', { name: '提交代码记录' });
     expect(within(dialog).getByText('授权提交失败')).toBeInTheDocument();
-    expect(within(dialog).getByRole('button', { name: '允许' })).not.toBeDisabled();
+    expect(within(dialog).getByRole('button', { name: '确认生成' })).not.toBeDisabled();
 
-    fireEvent.click(within(dialog).getByRole('button', { name: '允许' }));
+    fireEvent.click(within(dialog).getByRole('button', { name: '确认生成' }));
 
     await waitFor(() => expect(decideAgentToolPermission).toHaveBeenCalledTimes(2));
     expect(decideAgentToolPermission).toHaveBeenLastCalledWith(
@@ -446,7 +518,7 @@ describe('PracticeChatWorkbench review contracts', () => {
     });
 
     await waitFor(() => expect(screen.queryByRole('dialog', { name: '提交代码记录' })).not.toBeInTheDocument());
-    expect(screen.getByText('本次未执行。')).toHaveClass('practice-status-note');
+    expect(screen.getByText('确认已超时，本次未生成代码提交记录。')).toHaveClass('practice-status-note');
   });
 
   it('renders rounded guidance tooltip for generated problem statements', async () => {
@@ -932,7 +1004,18 @@ function apiResponse<T>(data: T): ApiResponse<T> {
   };
 }
 
-function permissionRequestEvent() {
+function permissionRequestEvent(overrides: {
+  expiresAt?: string;
+  preview?: Partial<{
+    problemSlug: string;
+    problemTitle: string;
+    languageHint: string;
+    codeLength: number;
+    codePreview: string;
+    effects: string[];
+    contextAvailable: boolean;
+  }>;
+} = {}) {
   return {
     runId: 'run-1',
     stepIndex: 1,
@@ -949,8 +1032,9 @@ function permissionRequestEvent() {
       codePreview: 'class Solution { return; }',
       effects: ['会保存一条代码提交记录', '可能更新完成状态'],
       contextAvailable: true,
+      ...overrides.preview,
     },
-    expiresAt: '2026-06-26T00:01:00Z',
+    expiresAt: overrides.expiresAt ?? new Date(Date.now() + 60_000).toISOString(),
   };
 }
 

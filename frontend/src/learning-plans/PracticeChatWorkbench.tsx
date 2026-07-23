@@ -1,6 +1,6 @@
-import { ArrowLeft, CheckCircle2, ClipboardList, ExternalLink, Info, SkipForward } from 'lucide-react';
+import { AlertCircle, ArrowLeft, CheckCircle2, ClipboardList, Clock, ExternalLink, Info, SkipForward } from 'lucide-react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import type { FormEvent } from 'react';
+import type { CSSProperties, FormEvent } from 'react';
 import MarkdownView from '../components/MarkdownView';
 import { formatDifficulty, formatProblemTitle } from '../i18n/formatters';
 import { useI18n } from '../i18n/I18nProvider';
@@ -51,20 +51,20 @@ const REVIEW_TOOL_NAME = 'submit_practice_code_review';
 const REVIEW_SUBMITTED_RESULT_TYPE = 'practice_code_review_submitted';
 const TOOL_PERMISSION_DENIED_RESULT_TYPE = 'tool_permission_denied';
 const TOOL_PERMISSION_TIMEOUT_RESULT_TYPE = 'tool_permission_timeout';
+const TOOL_PERMISSION_COUNTDOWN_REFRESH_MS = 250;
+const TOOL_PERMISSION_URGENT_SECONDS = 10;
 
 interface PermissionPreview {
   problemSlug?: string;
   problemTitle?: string;
-  languageHint?: string;
-  codeLength?: number;
   codePreview?: string;
-  effects: string[];
   contextAvailable?: boolean;
 }
 
 interface PendingPermissionState {
   request: AgentToolPermissionRequestEvent;
   preview: PermissionPreview;
+  initialRemainingSeconds?: number;
   submitting: boolean;
   error: string;
 }
@@ -153,28 +153,16 @@ function readBooleanField(source: Record<string, unknown>, key: string): boolean
   return typeof value === 'boolean' ? value : undefined;
 }
 
-function readStringListField(source: Record<string, unknown>, key: string): string[] {
-  const value = source[key];
-  if (!Array.isArray(value)) {
-    return [];
-  }
-
-  return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
-}
-
 function readPermissionPreview(data: unknown): PermissionPreview {
   if (typeof data !== 'object' || data === null) {
-    return { effects: [] };
+    return {};
   }
 
   const preview = data as Record<string, unknown>;
   return {
     problemSlug: readStringField(preview, 'problemSlug'),
     problemTitle: readStringField(preview, 'problemTitle'),
-    languageHint: readStringField(preview, 'languageHint'),
-    codeLength: readNumberField(preview, 'codeLength'),
     codePreview: readStringField(preview, 'codePreview'),
-    effects: readStringListField(preview, 'effects'),
     contextAvailable: readBooleanField(preview, 'contextAvailable'),
   };
 }
@@ -228,6 +216,20 @@ function readPermissionRequestId(data: unknown): string | undefined {
 
   const permissionRequestId = (data as { permissionRequestId?: unknown }).permissionRequestId;
   return typeof permissionRequestId === 'string' && permissionRequestId.trim() ? permissionRequestId : undefined;
+}
+
+function permissionRemainingSeconds(expiresAt: string, now = Date.now()): number | undefined {
+  const expiresAtMillis = Date.parse(expiresAt);
+  if (!Number.isFinite(expiresAtMillis)) {
+    return undefined;
+  }
+  return Math.max(0, Math.ceil((expiresAtMillis - now) / 1000));
+}
+
+function formatPermissionCountdown(seconds: number): string {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 }
 
 function permissionProblemLabel(
@@ -444,6 +446,7 @@ export default function PracticeChatWorkbench({
   const [reviewHistoryError, setReviewHistoryError] = useState('');
   const [pendingPermission, setPendingPermission] = useState<PendingPermissionState>();
   const [permissionNotice, setPermissionNotice] = useState('');
+  const [, setPermissionCountdownTick] = useState(0);
   const [assistantWorkStates, setAssistantWorkStates] = useState<Record<number, AssistantWorkState>>({});
   const localMessageIdRef = useRef(-1);
   const streamControllerRef = useRef<AbortController | null>(null);
@@ -547,6 +550,30 @@ export default function PracticeChatWorkbench({
   const pendingPermissionProblem = pendingPermission
     ? permissionProblemLabel(pendingPermission.preview, sessionResponse, problem, locale)
     : undefined;
+  const permissionSeconds = pendingPermission
+    ? permissionRemainingSeconds(pendingPermission.request.expiresAt)
+    : undefined;
+  const permissionExpired = permissionSeconds === 0;
+  const permissionUrgent = permissionSeconds !== undefined && permissionSeconds <= TOOL_PERMISSION_URGENT_SECONDS;
+  const permissionCountdownAngle = permissionSeconds !== undefined
+    && pendingPermission?.initialRemainingSeconds
+    && pendingPermission.initialRemainingSeconds > 0
+    ? Math.min(360, Math.max(0, (permissionSeconds / pendingPermission.initialRemainingSeconds) * 360))
+    : 0;
+  const permissionCountdownStyle = {
+    '--permission-countdown-angle': `${permissionCountdownAngle}deg`,
+  } as CSSProperties;
+
+  useEffect(() => {
+    if (!pendingPermission || permissionRemainingSeconds(pendingPermission.request.expiresAt) === undefined) {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setPermissionCountdownTick((current) => current + 1);
+    }, TOOL_PERMISSION_COUNTDOWN_REFRESH_MS);
+    return () => window.clearInterval(intervalId);
+  }, [pendingPermission?.request.expiresAt, pendingPermission?.request.permissionRequestId]);
 
   useEffect(() => {
     if (!sessionId || !hasActiveRun) {
@@ -888,6 +915,7 @@ export default function PracticeChatWorkbench({
             setPendingPermission({
               request: permissionRequest,
               preview: readPermissionPreview(permissionRequest.preview),
+              initialRemainingSeconds: permissionRemainingSeconds(permissionRequest.expiresAt),
               submitting: false,
               error: '',
             });
@@ -1062,7 +1090,7 @@ export default function PracticeChatWorkbench({
   }
 
   async function handlePermissionDecision(decision: AgentToolPermissionDecisionType) {
-    if (!pendingPermission || pendingPermission.submitting) {
+    if (!pendingPermission || pendingPermission.submitting || permissionExpired) {
       return;
     }
 
@@ -1360,54 +1388,56 @@ export default function PracticeChatWorkbench({
               <p>{pendingPermission.request.reason}</p>
             </div>
 
-            <dl className="practice-permission-details">
-              {pendingPermissionProblem && (
-                <div>
-                  <dt>{resources.learningPlans.toolPermissionProblem}</dt>
-                  <dd>{pendingPermissionProblem}</dd>
+            {permissionSeconds !== undefined && (
+              <div
+                aria-label={permissionExpired
+                  ? `${resources.learningPlans.toolPermissionExpired}. ${resources.learningPlans.toolPermissionExpiredHint}`
+                  : `${resources.learningPlans.toolPermissionCountdownLabel} ${formatPermissionCountdown(permissionSeconds)}. ${resources.learningPlans.toolPermissionCountdownHint}`}
+                className={`practice-permission-countdown ${permissionUrgent ? 'is-urgent' : ''} ${permissionExpired ? 'is-expired' : ''}`}
+                role="timer"
+              >
+                <div className="practice-permission-clock" style={permissionCountdownStyle}>
+                  <div className="practice-permission-clock-face">
+                    <Clock aria-hidden="true" />
+                    <time dateTime={`PT${permissionSeconds}S`}>{formatPermissionCountdown(permissionSeconds)}</time>
+                  </div>
                 </div>
-              )}
-              {pendingPermission.preview.languageHint && (
-                <div>
-                  <dt>{resources.learningPlans.toolPermissionLanguage}</dt>
-                  <dd>{pendingPermission.preview.languageHint}</dd>
+                <div className="practice-permission-countdown-copy">
+                  <strong>{permissionExpired
+                    ? resources.learningPlans.toolPermissionExpired
+                    : resources.learningPlans.toolPermissionCountdownLabel}</strong>
+                  <span>{permissionExpired
+                    ? resources.learningPlans.toolPermissionExpiredHint
+                    : resources.learningPlans.toolPermissionCountdownHint}</span>
                 </div>
-              )}
-              {pendingPermission.preview.codeLength !== undefined && (
-                <div>
-                  <dt>{resources.learningPlans.toolPermissionCodeLength}</dt>
-                  <dd>{resources.learningPlans.toolPermissionCodeLengthValue(pendingPermission.preview.codeLength)}</dd>
-                </div>
-              )}
-              {pendingPermission.preview.contextAvailable !== undefined && (
-                <div>
-                  <dt>{resources.learningPlans.toolPermissionContext}</dt>
-                  <dd>
-                    {pendingPermission.preview.contextAvailable
-                      ? resources.learningPlans.toolPermissionContextAvailable
-                      : resources.learningPlans.toolPermissionContextUnavailable}
-                  </dd>
-                </div>
-              )}
-            </dl>
+              </div>
+            )}
+
+            {pendingPermissionProblem && (
+              <div className="practice-permission-problem">
+                <span>{resources.learningPlans.toolPermissionProblem}</span>
+                <strong>{pendingPermissionProblem}</strong>
+              </div>
+            )}
+
+            {pendingPermission.preview.contextAvailable === false && (
+              <div className="practice-permission-context-warning" role="note">
+                <AlertCircle aria-hidden="true" />
+                <span>{resources.learningPlans.toolPermissionContextWarning}</span>
+              </div>
+            )}
 
             {pendingPermission.preview.codePreview && (
-              <div className="practice-permission-section">
+              <div className="practice-permission-code">
                 <strong>{resources.learningPlans.toolPermissionCodePreview}</strong>
                 <pre><code>{pendingPermission.preview.codePreview}</code></pre>
               </div>
             )}
 
-            {pendingPermission.preview.effects.length > 0 && (
-              <div className="practice-permission-section">
-                <strong>{resources.learningPlans.toolPermissionEffects}</strong>
-                <ul>
-                  {pendingPermission.preview.effects.map((effect) => (
-                    <li key={effect}>{effect}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            <p className="practice-permission-effect">
+              <CheckCircle2 aria-hidden="true" />
+              <span>{resources.learningPlans.toolPermissionEffectSummary}</span>
+            </p>
 
             {pendingPermission.error && (
               <p className="error-text practice-permission-error" role="alert">{pendingPermission.error}</p>
@@ -1416,7 +1446,7 @@ export default function PracticeChatWorkbench({
             <div className="modal-actions practice-permission-actions">
               <button
                 className="secondary-button compact"
-                disabled={pendingPermission.submitting}
+                disabled={pendingPermission.submitting || permissionExpired}
                 onClick={() => void handlePermissionDecision('DENY')}
                 type="button"
               >
@@ -1424,7 +1454,7 @@ export default function PracticeChatWorkbench({
               </button>
               <button
                 className="primary-button compact"
-                disabled={pendingPermission.submitting}
+                disabled={pendingPermission.submitting || permissionExpired}
                 onClick={() => void handlePermissionDecision('ALLOW')}
                 type="button"
               >
