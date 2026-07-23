@@ -52,9 +52,9 @@ describe('AppShell', () => {
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'AI 调试' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
     expect(within(screen.getByRole('navigation', { name: '主导航' })).getAllByRole('button')
-      .map((button) => button.textContent)).toEqual(['首页', '方案', '复习中心', 'AI 调试']);
+      .map((button) => button.textContent)).toEqual(['首页', '方案', '复习中心']);
     fireEvent.click(screen.getByRole('button', { name: '打开反馈信箱' }));
     expect(onOpenFeedback).toHaveBeenCalledOnce();
     expect(screen.getByRole('tooltip', { name: '打开反馈信箱' })).toHaveClass('header-action-tooltip');
@@ -125,16 +125,18 @@ describe('AppShell', () => {
     );
 
     expect(screen.queryByRole('button', { name: '打开反馈信箱' })).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '反馈1' })).toHaveTextContent('1');
+    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
+    expect(screen.getByRole('button', { name: '管理后台' })).toBeInTheDocument();
   });
 
   it('shows user management navigation only with user manage permission', () => {
+    const onNavigate = vi.fn();
     render(
       <AppShell
         activeView="adminUsers"
         currentUser={{ ...user, roles: ['ADMIN'], permissions: ['user:manage'] }}
         onLogout={vi.fn()}
-        onNavigate={vi.fn()}
+        onNavigate={onNavigate}
         onToggleTheme={vi.fn()}
         theme="light"
       >
@@ -142,7 +144,10 @@ describe('AppShell', () => {
       </AppShell>,
     );
 
-    expect(screen.getByRole('button', { name: '用户管理' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.queryByRole('button', { name: '用户管理' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
+    fireEvent.click(screen.getByRole('button', { name: '管理后台' }));
+    expect(onNavigate).toHaveBeenCalledWith('adminUsers');
   });
 
   it('shows beta access navigation only with beta access permission', () => {
@@ -163,9 +168,9 @@ describe('AppShell', () => {
       </AppShell>,
     );
 
-    expect(screen.getByRole('button', { name: '内测准入' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.queryByRole('button', { name: '内测准入' })).not.toBeInTheDocument();
     expect(within(screen.getByRole('navigation', { name: '主导航' })).getAllByRole('button')
-      .map((button) => button.textContent)).toEqual(['内测准入', '用户管理']);
+      .map((button) => button.textContent)).toEqual(['首页', '方案', '复习中心']);
   });
 
   it('shows AI governance navigation only with the governance permission', () => {
@@ -197,7 +202,7 @@ describe('AppShell', () => {
       </AppShell>,
     );
 
-    expect(screen.getByRole('button', { name: 'AI 治理' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.queryByRole('button', { name: 'AI 治理' })).not.toBeInTheDocument();
   });
 
   it('shows problem library navigation only with problem read permission', () => {
@@ -214,7 +219,7 @@ describe('AppShell', () => {
       </AppShell>,
     );
 
-    expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
   });
 
   it('switches the shell language and persists the selection', () => {

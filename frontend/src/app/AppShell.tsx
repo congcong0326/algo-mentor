@@ -1,4 +1,4 @@
-import { ChevronDown, LogOut, MessageSquare, Moon, Settings, Sun, UserRound } from 'lucide-react';
+import { ChevronDown, LayoutDashboard, LogOut, MessageSquare, Moon, Settings, Sun, UserRound } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { NAVIGATION_ITEMS, type AppView } from './navigation';
@@ -42,7 +42,15 @@ export default function AppShell({
   const ThemeIcon = theme === 'light' ? Moon : Sun;
   const themeLabel = theme === 'light' ? resources.app.switchToDarkMode : resources.app.switchToLightMode;
   const permissions = new Set<AuthPermission>(currentUser.permissions ?? []);
-  const isAdmin = permissions.has('admin-overview:read') || permissions.has('user:manage');
+  const isAdmin = currentUser.roles.includes('ADMIN');
+  const adminEntryView: AppView | undefined = permissions.has('admin-overview:read') ? 'adminOverview'
+    : permissions.has('user:manage') ? 'adminUsers'
+    : permissions.has('beta-access:manage') ? 'adminBetaAccess'
+    : permissions.has('ai-governance:manage') ? 'adminAi'
+    : permissions.has('problem:read') ? 'problems'
+    : permissions.has('feedback:manage') ? 'adminFeedback'
+    : permissions.has('debug:access') ? 'debug'
+    : undefined;
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const visibleNavigationItems = NAVIGATION_ITEMS.filter((item) => {
@@ -52,22 +60,7 @@ export default function AppShell({
     if (item.permission && !permissions.has(item.permission)) {
       return false;
     }
-    if (!isAdmin) {
-      return true;
-    }
-    return item.view === 'problems'
-      || item.view === 'adminOverview'
-      || item.view === 'adminBetaAccess'
-      || item.view === 'adminUsers'
-      || item.view === 'adminAi'
-      || item.view === 'adminFeedback'
-      || item.view === 'debug';
-  }).sort((left, right) => {
-    if (!isAdmin) {
-      return 0;
-    }
-    const order = ['adminOverview', 'adminBetaAccess', 'adminUsers', 'adminAi', 'adminFeedback', 'problems', 'debug'];
-    return order.indexOf(left.view) - order.indexOf(right.view);
+    return item.view === 'home' || item.view === 'learningPlans' || item.view === 'mistakes';
   });
 
   useEffect(() => {
@@ -172,9 +165,17 @@ export default function AppShell({
                   <strong>{userLabel}</strong>
                   <span>{currentUser.email}</span>
                 </div>
-                {!isAdmin ? (
-                  <div className="account-menu-links">
+                <div className="account-menu-links">
+                  {adminEntryView ? (
                     <button
+                      onClick={() => navigateFromAccountMenu(adminEntryView)}
+                      type="button"
+                    >
+                      <LayoutDashboard aria-hidden="true" />
+                      <span>{resources.adminShell.workspace}</span>
+                    </button>
+                  ) : null}
+                  <button
                       aria-current={activeView === 'settings' ? 'page' : undefined}
                       onClick={() => navigateFromAccountMenu('settings')}
                       type="button"
@@ -182,8 +183,7 @@ export default function AppShell({
                       <Settings aria-hidden="true" />
                       <span>{resources.nav.settings}</span>
                     </button>
-                  </div>
-                ) : null}
+                </div>
                 <button
                   className="account-menu-logout"
                   disabled={logoutPending}

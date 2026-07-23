@@ -7,6 +7,16 @@ import type {
   AdminUserListQuery,
   AdminUserPage,
   AdminUserStatusUpdateRequest,
+  UserGroupCreateRequest,
+  UserGroupDetail,
+  UserGroupListQuery,
+  UserGroupMemberAddRequest,
+  UserGroupMemberBatchResponse,
+  UserGroupMemberListQuery,
+  UserGroupMemberPage,
+  UserGroupMemberRemovalResponse,
+  UserGroupPage,
+  UserGroupUpdateRequest,
   AdminPasswordResetResponse,
   AdminAiModelPrice,
   AdminAiModelPricePage,
@@ -634,6 +644,76 @@ export async function deleteAdminUser(userId: number): Promise<ApiResponse<Admin
     throw await toApiRequestError(response, 'Admin user delete request failed');
   }
 
+  return response.json();
+}
+
+export async function getUserGroups(
+  query: UserGroupListQuery = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<UserGroupPage>> {
+  const response = await apiFetch(`/api/admin/user-groups${toQueryString(query)}`, { headers: jsonHeaders, signal });
+  if (!response.ok) throw await toApiRequestError(response, 'User groups request failed');
+  return response.json();
+}
+
+export async function getUserGroup(groupId: number, signal?: AbortSignal): Promise<ApiResponse<UserGroupDetail>> {
+  const response = await apiFetch(`/api/admin/user-groups/${groupId}`, { headers: jsonHeaders, signal });
+  if (!response.ok) throw await toApiRequestError(response, 'User group detail request failed');
+  return response.json();
+}
+
+export async function createUserGroup(request: UserGroupCreateRequest): Promise<ApiResponse<UserGroupDetail>> {
+  const response = await apiFetch('/api/admin/user-groups', {
+    method: 'POST',
+    headers: { ...jsonHeaders, 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  });
+  if (!response.ok) throw await toApiRequestError(response, 'User group creation failed');
+  return response.json();
+}
+
+export async function updateUserGroup(groupId: number, request: UserGroupUpdateRequest): Promise<ApiResponse<UserGroupDetail>> {
+  const response = await apiFetch(`/api/admin/user-groups/${groupId}`, {
+    method: 'PATCH',
+    headers: { ...jsonHeaders, 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  });
+  if (!response.ok) throw await toApiRequestError(response, 'User group update failed');
+  return response.json();
+}
+
+export async function getUserGroupMembers(
+  groupId: number,
+  query: UserGroupMemberListQuery = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<UserGroupMemberPage>> {
+  const response = await apiFetch(`/api/admin/user-groups/${groupId}/members${toQueryString(query)}`, { headers: jsonHeaders, signal });
+  if (!response.ok) throw await toApiRequestError(response, 'User group members request failed');
+  return response.json();
+}
+
+export async function addUserGroupMembers(
+  groupId: number,
+  request: UserGroupMemberAddRequest,
+): Promise<ApiResponse<UserGroupMemberBatchResponse>> {
+  const response = await apiFetch(`/api/admin/user-groups/${groupId}/members`, {
+    method: 'POST',
+    headers: { ...jsonHeaders, 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  });
+  if (!response.ok) throw await toApiRequestError(response, 'User group member update failed');
+  return response.json();
+}
+
+export async function removeUserGroupMember(
+  groupId: number,
+  userId: number,
+): Promise<ApiResponse<UserGroupMemberRemovalResponse>> {
+  const response = await apiFetch(`/api/admin/user-groups/${groupId}/members/${userId}`, {
+    method: 'DELETE',
+    headers: jsonHeaders,
+  });
+  if (!response.ok) throw await toApiRequestError(response, 'User group member removal failed');
   return response.json();
 }
 
@@ -1601,6 +1681,8 @@ type QueryParams =
   | LearningPlanListQuery
   | PracticeSessionQuery
   | AdminUserListQuery
+  | UserGroupListQuery
+  | UserGroupMemberListQuery
   | AdminAiUsageQuery
   | AdminAiUsageByUserQuery
   | MistakeNoteListQuery

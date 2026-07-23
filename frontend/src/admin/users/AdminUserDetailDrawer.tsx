@@ -6,6 +6,7 @@ import type { AdminUserDetail } from '../../types/api';
 import { formatDateTime } from '../ai/aiFormat';
 import AdminUserAiSection from './AdminUserAiSection';
 import AdminUserSupportSection from './AdminUserSupportSection';
+import AdminUserGroupsSection from './AdminUserGroupsSection';
 
 interface AdminUserDetailDrawerProps {
   onClose: () => void;
@@ -97,6 +98,7 @@ export default function AdminUserDetailDrawer({
               <dt>{t.deletedAt}</dt><dd>{formatDateTime(user.deletedAt, resources.common.empty)}</dd>
               <dt>{t.deletedBy}</dt><dd>{user.deletedBy ?? resources.common.empty}</dd>
             </dl>
+            <AdminUserGroupsSection onChanged={() => void load()} user={user} />
           </>
         ) : null}
 

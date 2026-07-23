@@ -745,7 +745,7 @@ describe('App', () => {
 
     expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     expect(screen.getByText('User Name')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'AI 调试' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '开发工具' })).toHaveAttribute('aria-current', 'page');
     expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'Message' })).toHaveValue(
       'Explain two pointers with a concrete example.',
@@ -855,41 +855,49 @@ describe('App', () => {
 
     expect(await screen.findByRole('heading', { name: '用户管理' })).toBeInTheDocument();
     expect(await screen.findByText('managed@example.com')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '用户管理' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '用户管理' })).toHaveAttribute('aria-current', 'page');
     expect(window.location.pathname).toBe('/admin/users');
   });
 
-  it('defaults admin users to user management and hides learner-only navigation', async () => {
+  it('lets admin users enter the workspace from the learning shell', async () => {
     vi.stubGlobal('fetch', mockAdminUserManagementFetch());
     window.history.replaceState({}, '', '/');
 
     render(<App />);
 
+    expect(await screen.findByText('User Name')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
+    fireEvent.click(screen.getByRole('button', { name: '管理后台' }));
+
     expect(await screen.findByRole('heading', { name: '用户管理' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '用户管理' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '题库' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'AI 调试' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '用户与访问' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('button', { name: '内容管理' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '开发工具' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '首页' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '方案' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '我的' })).not.toBeInTheDocument();
     expect(window.location.pathname).toBe('/admin/users');
   });
 
-  it('redirects admin users away from learner-only routes', async () => {
-    vi.stubGlobal('fetch', mockAdminUserManagementFetch());
-    window.history.replaceState({}, '', '/learning-plans/123');
+  it('keeps learner routes available to admin users', async () => {
+    const fallbackFetch = mockAuthenticatedAppFetch();
+    vi.stubGlobal('fetch', vi.fn((url: string, init?: RequestInit) => (
+      url === '/api/auth/me' ? Promise.resolve(adminUserResponse()) : fallbackFetch(url, init)
+    )));
+    window.history.replaceState({}, '', '/learning-plans');
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: '用户管理' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '用户管理' })).toHaveAttribute('aria-pressed', 'true');
-    expect(window.location.pathname).toBe('/admin/users');
+    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
+    expect(window.location.pathname).toBe('/learning-plans');
 
     window.history.pushState({}, '', '/me');
     fireEvent(window, new PopStateEvent('popstate'));
 
-    await waitFor(() => expect(window.location.pathname).toBe('/admin/users'));
-    expect(screen.getByRole('heading', { name: '用户管理' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '我的学习画像' })).toBeInTheDocument();
+    expect(window.location.pathname).toBe('/me');
   });
 
   it('keeps problem library and debug routes available to admin users', async () => {
@@ -899,14 +907,14 @@ describe('App', () => {
     render(<App />);
 
     expect(await screen.findByRole('textbox', { name: '搜索题目' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '题库' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: '内容管理' })).toHaveAttribute('aria-current', 'page');
     expect(window.location.pathname).toBe('/admin/problems');
 
-    fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
+    fireEvent.click(screen.getByRole('button', { name: '开发工具' }));
 
     expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'AI 调试' })).toHaveAttribute('aria-pressed', 'true');
-    expect(window.location.pathname).toBe('/debug');
+    expect(screen.getByRole('button', { name: '开发工具' })).toHaveAttribute('aria-current', 'page');
+    expect(window.location.pathname).toBe('/admin/debug');
   });
 
   it('exposes debug status labels for the app shell', () => {
@@ -1034,7 +1042,8 @@ describe('App', () => {
     render(<App />);
 
     expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
+    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
+    fireEvent.click(screen.getByRole('button', { name: '管理后台' }));
     expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
@@ -1253,12 +1262,14 @@ describe('App', () => {
     await waitFor(() => expect(capturedSignal).toBeDefined());
     expect(screen.getByText('connecting')).toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole('button', { name: '返回学习端' }));
     fireEvent.click(screen.getByRole('button', { name: '方案' }));
 
     expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
     expect(capturedSignal?.aborted).toBe(true);
 
-    fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
+    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
+    fireEvent.click(screen.getByRole('button', { name: '管理后台' }));
 
     expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     expect(screen.getByText('idle')).toBeInTheDocument();
@@ -1280,11 +1291,13 @@ describe('App', () => {
 
     expect(await screen.findByText('done')).toBeInTheDocument();
 
+    fireEvent.click(screen.getByRole('button', { name: '返回学习端' }));
     fireEvent.click(screen.getByRole('button', { name: '方案' }));
 
     expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: 'AI 调试' }));
+    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
+    fireEvent.click(screen.getByRole('button', { name: '管理后台' }));
 
     expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
     expect(screen.getByText('idle')).toBeInTheDocument();

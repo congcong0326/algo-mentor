@@ -14,19 +14,22 @@ export const APP_ROUTES = {
   problems: '/admin/problems',
   adminBetaAccess: '/admin/beta-access',
   adminUsers: '/admin/users',
+  adminUserGroups: '/admin/user-groups',
   adminAi: '/admin/ai',
   adminOverview: '/admin',
   adminFeedback: '/admin/feedback',
   passwordChangeRequired: '/password/change-required',
-  debug: '/debug',
+  debug: '/admin/debug',
 } as const;
 
 // Preserved only to normalize old bookmarks after the user inbox moved to a dialog.
 export const LEGACY_FEEDBACK_ROUTE = '/feedback';
+export const LEGACY_DEBUG_ROUTE = '/debug';
 
 const LEARNING_PLAN_DETAIL_PATTERN = /^\/learning-plans\/(\d+)$/;
 const LEARNING_PLAN_PRACTICE_CHAT_PATTERN = /^\/learning-plans\/(\d+)\/phases\/(\d+)\/problems\/([^/]+)\/chat$/;
 const LEARNING_PLAN_PRACTICE_SUBMISSIONS_PATTERN = /^\/learning-plans\/(\d+)\/phases\/(\d+)\/problems\/([^/]+)\/submissions$/;
+const ADMIN_USER_GROUP_DETAIL_PATTERN = /^\/admin\/user-groups\/(\d+)$/;
 
 export interface LearningPlanPracticeChatRoute {
   planId: number;
@@ -49,6 +52,7 @@ export type AppView =
   | 'problems'
   | 'adminBetaAccess'
   | 'adminUsers'
+  | 'adminUserGroups'
   | 'adminAi'
   | 'adminOverview'
   | 'adminFeedback'
@@ -114,6 +118,13 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     permission: 'user:manage',
   },
   {
+    view: 'adminUserGroups',
+    labelKey: 'adminUserGroups',
+    path: APP_ROUTES.adminUserGroups,
+    icon: UsersRound,
+    permission: 'user:manage',
+  },
+  {
     view: 'adminAi',
     labelKey: 'adminAi',
     path: APP_ROUTES.adminAi,
@@ -169,6 +180,9 @@ export function viewFromPath(pathname: string): AppView | undefined {
   if (pathname === APP_ROUTES.adminUsers) {
     return 'adminUsers';
   }
+  if (pathname === APP_ROUTES.adminUserGroups || ADMIN_USER_GROUP_DETAIL_PATTERN.test(pathname)) {
+    return 'adminUserGroups';
+  }
   if (pathname === APP_ROUTES.adminOverview) {
     return 'adminOverview';
   }
@@ -205,6 +219,16 @@ export function pathForView(view: AppView): string {
 
 export function isLoginPath(pathname: string): boolean {
   return pathname === APP_ROUTES.login;
+}
+
+export function isAdminPath(pathname: string): boolean {
+  return pathname === APP_ROUTES.adminOverview || pathname.startsWith('/admin/');
+}
+
+export function adminUserGroupIdFromPath(pathname: string): number | undefined {
+  const match = ADMIN_USER_GROUP_DETAIL_PATTERN.exec(pathname);
+  const groupId = Number(match?.[1]);
+  return Number.isSafeInteger(groupId) && groupId > 0 ? groupId : undefined;
 }
 
 export function learningPlanDetailPath(planId: number): string {

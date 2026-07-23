@@ -18,6 +18,7 @@ export interface HealthStatus {
 
 export type AuthRole = 'USER' | 'ADMIN';
 export type AuthUserStatus = 'ACTIVE' | 'DISABLED' | 'DELETED';
+export type UserGroupStatus = 'ACTIVE' | 'DISABLED';
 export type AuthPermission =
   | 'learning-plan:read:own'
   | 'learning-plan:write:own'
@@ -53,12 +54,25 @@ export interface AdminUserSummary {
   createdAt: string;
   updatedAt: string;
   lastLoginAt?: string | null;
+  groups?: AdminUserGroupSummary[];
 }
 
 export interface AdminUserDetail extends AdminUserSummary {
   emailNormalized?: string;
   deletedAt?: string | null;
   deletedBy?: number | null;
+  groups?: AdminUserGroupMembership[];
+}
+
+export interface AdminUserGroupSummary {
+  id: number;
+  code: string;
+  name: string;
+}
+
+export interface AdminUserGroupMembership extends AdminUserGroupSummary {
+  joinedAt?: string;
+  expiresAt?: string | null;
 }
 
 export interface AdminUserPage {
@@ -77,6 +91,93 @@ export interface AdminUserListQuery {
 
 export interface AdminUserStatusUpdateRequest {
   status: Extract<AuthUserStatus, 'ACTIVE' | 'DISABLED'>;
+}
+
+export interface UserGroupSummary {
+  id: number;
+  code: string;
+  name: string;
+  description?: string | null;
+  status: UserGroupStatus;
+  activeMemberCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type UserGroupDetail = UserGroupSummary;
+
+export interface UserGroupPage {
+  items: UserGroupSummary[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface UserGroupListQuery {
+  page?: number;
+  pageSize?: number;
+  keyword?: string;
+  status?: UserGroupStatus | '';
+}
+
+export interface UserGroupCreateRequest {
+  code: string;
+  name: string;
+  description?: string | null;
+}
+
+export interface UserGroupUpdateRequest {
+  name: string;
+  description?: string | null;
+  status: UserGroupStatus;
+}
+
+export interface UserGroupMember {
+  userId: number;
+  email?: string | null;
+  displayName?: string | null;
+  avatarUrl?: string | null;
+  status: AuthUserStatus;
+  joinedAt: string;
+  expiresAt?: string | null;
+}
+
+export interface UserGroupMemberPage {
+  items: UserGroupMember[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+export interface UserGroupMemberListQuery {
+  page?: number;
+  pageSize?: number;
+  keyword?: string;
+}
+
+export interface UserGroupMemberAddRequest {
+  userIds: number[];
+  expiresAt?: string | null;
+}
+
+export type UserGroupMemberAddStatus = 'ADDED' | 'UPDATED' | 'USER_NOT_FOUND' | 'USER_DELETED' | 'INVALID_EXPIRY';
+
+export interface UserGroupMemberAddResult {
+  userId: number;
+  status: UserGroupMemberAddStatus;
+}
+
+export interface UserGroupMemberBatchResponse {
+  addedCount: number;
+  updatedCount: number;
+  failedCount: number;
+  results: UserGroupMemberAddResult[];
+}
+
+export interface UserGroupMemberRemovalResponse {
+  groupId: number;
+  userId: number;
+  removed: boolean;
 }
 
 export interface BetaAccessSettings {

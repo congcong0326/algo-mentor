@@ -24,6 +24,8 @@ public final class SpaRoutes {
       "/learning-plans",
       "/admin/problems",
       "/admin/users",
+      "/admin/user-groups",
+      "/admin/debug",
       "/debug"
   };
 
@@ -32,7 +34,8 @@ public final class SpaRoutes {
    */
   public static final String[] FRONTEND_ROUTE_PATTERNS = {
       "/learning-plans/{planId:[0-9]+}",
-      "/learning-plans/{planId:[0-9]+}/phases/{phaseIndex:[0-9]+}/problems/{problemSlug}/chat"
+      "/learning-plans/{planId:[0-9]+}/phases/{phaseIndex:[0-9]+}/problems/{problemSlug}/chat",
+      "/admin/user-groups/{groupId:[0-9]+}"
   };
 
   /**

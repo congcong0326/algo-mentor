@@ -18,12 +18,16 @@ import BetaAccessPage from './admin/BetaAccessPage';
 import AiGovernancePage from './admin/ai/AiGovernancePage';
 import FeedbackManagementPage from './admin/feedback/FeedbackManagementPage';
 import AdminOverviewPage from './admin/overview/AdminOverviewPage';
+import UserGroupManagementPage from './admin/groups/UserGroupManagementPage';
+import UserGroupDetailPage from './admin/groups/UserGroupDetailPage';
+import AdminShell from './admin/shell/AdminShell';
+import { firstAccessibleAdminPath } from './admin/shell/adminNavigation';
 import UserFeedbackDialog from './feedback/UserFeedbackDialog';
 import AppShell from './app/AppShell';
 import LoginPage from './app/LoginPage';
 import PasswordChangeRequiredPage from './app/PasswordChangeRequiredPage';
 import HeaderActionTooltip from './app/HeaderActionTooltip';
-import { APP_ROUTES, LEGACY_FEEDBACK_ROUTE, pathForView, type AppView, viewFromPath } from './app/navigation';
+import { adminUserGroupIdFromPath, APP_ROUTES, isAdminPath, LEGACY_DEBUG_ROUTE, LEGACY_FEEDBACK_ROUTE, pathForView, type AppView, viewFromPath } from './app/navigation';
 import { applyTheme, nextTheme, readStoredTheme, storeTheme, type AppTheme } from './app/theme';
 import LanguageSelector from './i18n/LanguageSelector';
 import { useI18n } from './i18n/I18nProvider';
@@ -40,20 +44,18 @@ import {
 import type { AuthPermission, CurrentUser, PasswordLoginRequest, PasswordRegisterRequest } from './types/api';
 
 const DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.home;
-const ADMIN_DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.adminOverview;
-const ADMIN_RESTRICTED_VIEWS: ReadonlySet<AppView> = new Set(['home', 'learningPlans', 'mistakes', 'my', 'settings']);
 
 function hasPermission(user: CurrentUser | undefined, permission: AuthPermission): boolean {
   return !!user?.permissions?.includes(permission);
 }
 
 function isAdminUser(user: CurrentUser | undefined): boolean {
-  return hasPermission(user, 'admin-overview:read') || hasPermission(user, 'user:manage');
+  return user?.roles.includes('ADMIN') ?? false;
 }
 
 function defaultAuthenticatedRouteForUser(user?: CurrentUser): string {
-  if (hasPermission(user, 'admin-overview:read')) return ADMIN_DEFAULT_AUTHENTICATED_ROUTE;
-  return hasPermission(user, 'user:manage') ? APP_ROUTES.adminUsers : DEFAULT_AUTHENTICATED_ROUTE;
+  if (!user || !isAdminUser(user)) return DEFAULT_AUTHENTICATED_ROUTE;
+  return firstAccessibleAdminPath(new Set(user.permissions)) ?? DEFAULT_AUTHENTICATED_ROUTE;
 }
 
 function normalizeAuthenticatedView(pathname: string, user?: CurrentUser): AppView {
@@ -70,6 +72,9 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
   if (pathname === LEGACY_FEEDBACK_ROUTE) {
     return isAdminUser(user) ? defaultAuthenticatedRouteForUser(user) : APP_ROUTES.home;
   }
+  if (pathname === LEGACY_DEBUG_ROUTE) {
+    return hasPermission(user, 'debug:access') ? APP_ROUTES.debug : defaultAuthenticatedRouteForUser(user);
+  }
   const view = viewFromPath(pathname);
   if (!view) {
     return defaultAuthenticatedRouteForUser(user);
@@ -78,6 +83,9 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminUsers' && !hasPermission(user, 'user:manage')) {
+    return defaultAuthenticatedRouteForUser(user);
+  }
+  if (view === 'adminUserGroups' && !hasPermission(user, 'user:manage')) {
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminBetaAccess' && !hasPermission(user, 'beta-access:manage')) {
@@ -93,9 +101,6 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'problems' && !hasPermission(user, 'problem:read')) {
-    return defaultAuthenticatedRouteForUser(user);
-  }
-  if (isAdminUser(user) && ADMIN_RESTRICTED_VIEWS.has(view)) {
     return defaultAuthenticatedRouteForUser(user);
   }
   return pathname;
@@ -624,6 +629,68 @@ export default function App() {
     );
   }
 
+  const pageContent = activeView === 'home'
+    ? <TodayPackPage onNavigate={navigateToPath} />
+    : activeView === 'my'
+    ? <MyPage />
+    : activeView === 'settings'
+    ? (
+      <SettingsPage
+        currentUser={currentUser}
+        logoutPending={logoutPending}
+        onLogout={() => void handleLogout()}
+      />
+    )
+    : activeView === 'problems' && hasPermission(currentUser, 'problem:read')
+    ? <ProblemLibrary />
+    : activeView === 'adminUsers' && hasPermission(currentUser, 'user:manage')
+    ? <UserManagementPage onNavigateHome={() => navigateToView('home')} onNavigate={navigateToPath} search={search} />
+    : activeView === 'adminUserGroups' && hasPermission(currentUser, 'user:manage')
+    ? adminUserGroupIdFromPath(pathname)
+      ? <UserGroupDetailPage groupId={adminUserGroupIdFromPath(pathname)!} onNavigate={navigateToPath} />
+      : <UserGroupManagementPage onNavigate={navigateToPath} />
+    : activeView === 'adminBetaAccess' && hasPermission(currentUser, 'beta-access:manage')
+    ? <BetaAccessPage onNavigateHome={() => navigateToView('home')} />
+    : activeView === 'adminAi' && hasPermission(currentUser, 'ai-governance:manage')
+    ? <AiGovernancePage onNavigate={navigateToPath} search={search} />
+    : activeView === 'adminOverview' && hasPermission(currentUser, 'admin-overview:read')
+    ? <AdminOverviewPage onNavigate={navigateToPath} />
+    : activeView === 'adminFeedback' && hasPermission(currentUser, 'feedback:manage')
+    ? <FeedbackManagementPage onNavigate={navigateToPath} onUnreadCountChanged={setFeedbackUnreadCount} search={search} />
+    : activeView === 'mistakes'
+      ? pathname === APP_ROUTES.reviewSession
+        ? <ReviewSessionPage onNavigate={navigateToPath} />
+        : <MistakeNotebookPage onNavigate={navigateToPath} />
+      : activeView === 'learningPlans'
+      ? <LearningPlans onNavigate={navigateToPath} pathname={pathname} search={search} />
+      : hasPermission(currentUser, 'debug:access')
+        ? <AiDebugConsole ref={debugConsoleRef} onConnectionStateChange={setDebugConnectionState} />
+        : <HomeDashboard onNavigate={navigateToView} />;
+
+  if (isAdminPath(pathname)) {
+    return (
+      <AdminShell
+        currentUser={currentUser}
+        feedbackUnreadCount={feedbackUnreadCount}
+        logoutError={logoutError}
+        logoutPending={logoutPending}
+        onLogout={() => void handleLogout()}
+        onNavigate={navigateToPath}
+        onToggleTheme={handleToggleTheme}
+        pageStatus={activeView === 'debug' ? (
+          <div className={`status-pill ${debugConnectionState}`}>
+            <Radio aria-hidden="true" />
+            <span>{debugStatusLabel(debugConnectionState)}</span>
+          </div>
+        ) : undefined}
+        pathname={pathname}
+        theme={theme}
+      >
+        {pageContent}
+      </AdminShell>
+    );
+  }
+
   return (
     <>
       <AppShell
@@ -644,39 +711,7 @@ export default function App() {
         onToggleTheme={handleToggleTheme}
         theme={theme}
       >
-        {activeView === 'home'
-          ? <TodayPackPage onNavigate={navigateToPath} />
-          : activeView === 'my'
-          ? <MyPage />
-          : activeView === 'settings'
-          ? (
-            <SettingsPage
-              currentUser={currentUser}
-              logoutPending={logoutPending}
-              onLogout={() => void handleLogout()}
-            />
-          )
-          : activeView === 'problems' && hasPermission(currentUser, 'problem:read')
-          ? <ProblemLibrary />
-          : activeView === 'adminUsers' && hasPermission(currentUser, 'user:manage')
-          ? <UserManagementPage onNavigateHome={() => navigateToView('home')} onNavigate={navigateToPath} search={search} />
-          : activeView === 'adminBetaAccess' && hasPermission(currentUser, 'beta-access:manage')
-          ? <BetaAccessPage onNavigateHome={() => navigateToView('home')} />
-          : activeView === 'adminAi' && hasPermission(currentUser, 'ai-governance:manage')
-          ? <AiGovernancePage onNavigate={navigateToPath} search={search} />
-          : activeView === 'adminOverview' && hasPermission(currentUser, 'admin-overview:read')
-          ? <AdminOverviewPage onNavigate={navigateToPath} />
-          : activeView === 'adminFeedback' && hasPermission(currentUser, 'feedback:manage')
-          ? <FeedbackManagementPage onNavigate={navigateToPath} onUnreadCountChanged={setFeedbackUnreadCount} search={search} />
-          : activeView === 'mistakes'
-            ? pathname === APP_ROUTES.reviewSession
-              ? <ReviewSessionPage onNavigate={navigateToPath} />
-              : <MistakeNotebookPage onNavigate={navigateToPath} />
-            : activeView === 'learningPlans'
-            ? <LearningPlans onNavigate={navigateToPath} pathname={pathname} search={search} />
-            : hasPermission(currentUser, 'debug:access')
-              ? <AiDebugConsole ref={debugConsoleRef} onConnectionStateChange={setDebugConnectionState} />
-              : <HomeDashboard onNavigate={navigateToView} />}
+        {pageContent}
       </AppShell>
       {feedbackDialogOpen && !isAdminUser(currentUser) ? (
         <UserFeedbackDialog

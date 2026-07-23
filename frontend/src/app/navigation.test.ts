@@ -42,6 +42,12 @@ describe('learning plan practice submissions navigation', () => {
     expect(pathForView('adminUsers')).toBe('/admin/users');
   });
 
+  it('maps user group list and detail routes to the same admin view', () => {
+    expect(viewFromPath('/admin/user-groups')).toBe('adminUserGroups');
+    expect(viewFromPath('/admin/user-groups/42')).toBe('adminUserGroups');
+    expect(pathForView('adminUserGroups')).toBe('/admin/user-groups');
+  });
+
   it('maps the beta access and required password change routes', () => {
     expect(viewFromPath('/admin/beta-access')).toBe('adminBetaAccess');
     expect(pathForView('adminBetaAccess')).toBe('/admin/beta-access');

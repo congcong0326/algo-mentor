@@ -5,6 +5,7 @@ import type {
   LearningPlanStatus,
   LearnerProfileDimension,
   ProblemDifficulty,
+  AuthUserStatus,
 } from '../types/api';
 
 export const SUPPORTED_LOCALES = ['zh-CN', 'en-US'] as const;
@@ -87,12 +88,25 @@ export interface LocaleResources {
     problems: string;
     adminBetaAccess: string;
     adminUsers: string;
+    adminUserGroups: string;
     adminAi: string;
     feedback: string;
     adminOverview: string;
     adminFeedback: string;
     debug: string;
     forbidden: string;
+  };
+  adminShell: {
+    workspace: string;
+    returnToLearning: string;
+    openNavigation: string;
+    closeNavigation: string;
+    collapseNavigation: string;
+    expandNavigation: string;
+    businessNavigation: string;
+    navigation: string;
+    pageNavigation: string;
+    labels: Record<'overview' | 'access' | 'ai' | 'content' | 'feedback' | 'development' | 'users' | 'userGroups' | 'betaAccess' | 'problems' | 'debug', string>;
   };
   feedback: {
     openDialog: string;
@@ -153,6 +167,7 @@ export interface LocaleResources {
     email: string;
     displayName: string;
     roles: string;
+    groups: string;
     status: string;
     createdAt: string;
     lastLoginAt: string;
@@ -178,6 +193,87 @@ export interface LocaleResources {
     temporaryPasswordExpiresAt: string;
     copyTemporaryPassword: string;
     temporaryPasswordCopied: string;
+  };
+  adminGroups: {
+    title: string;
+    detailTitle: string;
+    create: string;
+    edit: string;
+    refresh: string;
+    searchPlaceholder: string;
+    memberSearchPlaceholder: string;
+    status: string;
+    statusAll: string;
+    statusActive: string;
+    statusDisabled: string;
+    name: string;
+    code: string;
+    description: string;
+    activeMembers: string;
+    createdAt: string;
+    updatedAt: string;
+    actions: string;
+    loading: string;
+    loadFailed: string;
+    detailLoadFailed: string;
+    empty: string;
+    total: (count: number) => string;
+    editGroup: (name: string) => string;
+    createTitle: string;
+    editTitle: string;
+    createDescription: string;
+    editDescription: string;
+    codeInvalid: string;
+    nameRequired: string;
+    saveFailed: string;
+    saving: string;
+    save: string;
+    backToGroups: string;
+    disabledCannotAdd: string;
+    membersTitle: string;
+    membersLoadFailed: string;
+    membersLoading: string;
+    membersEmpty: string;
+    memberUser: string;
+    email: string;
+    accountStatus: string;
+    joinedAt: string;
+    expiresAt: string;
+    expiresAtOptional: string;
+    neverExpires: string;
+    userStatuses: Record<AuthUserStatus, string>;
+    remove: string;
+    removing: string;
+    removeMember: (name: string) => string;
+    removeMemberTitle: string;
+    removeMemberDescription: (user: string, group: string) => string;
+    memberRemoveFailed: string;
+    addMembers: string;
+    addMembersTitle: string;
+    addMembersDescription: (code: string) => string;
+    userSearchPlaceholder: string;
+    userSearching: string;
+    userSearchFailed: string;
+    userSearchEmpty: string;
+    alreadyMember: string;
+    expiryInvalid: string;
+    noUsersSelected: string;
+    selectedUsers: (count: number, names: string[]) => string;
+    addSelected: (count: number) => string;
+    addingMembers: string;
+    memberAddFailed: string;
+    addCompleted: string;
+    addResult: (added: number, updated: number, failed: number) => string;
+    userGroupsTitle: string;
+    userGroupsDescription: string;
+    addToGroup: string;
+    addToGroupTitle: string;
+    addToGroupDescription: (user: string) => string;
+    targetGroup: string;
+    selectGroup: string;
+    noAvailableGroups: string;
+    noUserGroups: string;
+    expiresOn: (date: string) => string;
   };
   adminAi: {
     ariaLabel: string;
@@ -963,12 +1059,37 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       problems: '题库',
       adminBetaAccess: '内测准入',
       adminUsers: '用户管理',
+      adminUserGroups: '用户组管理',
       adminAi: 'AI 治理',
       feedback: '反馈',
       adminOverview: '概览',
       adminFeedback: '反馈',
       debug: 'AI 调试',
       forbidden: '无权访问',
+    },
+    adminShell: {
+      workspace: '管理后台',
+      returnToLearning: '返回学习端',
+      openNavigation: '打开管理导航',
+      closeNavigation: '关闭管理导航',
+      collapseNavigation: '折叠左侧栏',
+      expandNavigation: '展开左侧栏',
+      businessNavigation: '管理业务域',
+      navigation: '管理导航',
+      pageNavigation: '当前业务页面',
+      labels: {
+        overview: '运营概览',
+        access: '用户与访问',
+        ai: 'AI 治理',
+        content: '内容管理',
+        feedback: '反馈与支持',
+        development: '开发工具',
+        users: '用户管理',
+        userGroups: '用户组管理',
+        betaAccess: '内测准入',
+        problems: '题库管理',
+        debug: 'AI 调试',
+      },
     },
     feedback: {
       openDialog: '打开反馈信箱',
@@ -1029,6 +1150,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       email: '邮箱',
       displayName: '昵称',
       roles: '角色',
+      groups: '用户组',
       status: '状态',
       createdAt: '创建时间',
       lastLoginAt: '最近登录',
@@ -1054,6 +1176,87 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       temporaryPasswordExpiresAt: '有效期至',
       copyTemporaryPassword: '复制临时密码',
       temporaryPasswordCopied: '已复制',
+    },
+    adminGroups: {
+      title: '用户组管理',
+      detailTitle: '用户组详情',
+      create: '创建用户组',
+      edit: '编辑',
+      refresh: '刷新',
+      searchPlaceholder: '搜索名称或编码',
+      memberSearchPlaceholder: '搜索用户 ID、邮箱或昵称',
+      status: '状态',
+      statusAll: '全部状态',
+      statusActive: '正常',
+      statusDisabled: '已停用',
+      name: '名称',
+      code: '编码',
+      description: '说明',
+      activeMembers: '有效成员数',
+      createdAt: '创建时间',
+      updatedAt: '更新时间',
+      actions: '操作',
+      loading: '正在加载用户组...',
+      loadFailed: '用户组列表加载失败。',
+      detailLoadFailed: '用户组详情加载失败。',
+      empty: '没有匹配的用户组。',
+      total: (count) => `共 ${count} 项`,
+      editGroup: (name) => `编辑用户组 ${name}`,
+      createTitle: '创建用户组',
+      editTitle: '编辑用户组',
+      createDescription: '编码创建后不可修改，请使用稳定的业务标识。',
+      editDescription: '可以修改名称、说明和状态，编码保持不变。',
+      codeInvalid: '编码必须以大写字母开头，并且只能包含大写字母、数字和下划线。',
+      nameRequired: '请输入用户组名称。',
+      saveFailed: '用户组保存失败。',
+      saving: '保存中...',
+      save: '保存',
+      backToGroups: '返回用户组列表',
+      disabledCannotAdd: '停用的用户组不能添加成员',
+      membersTitle: '组内成员',
+      membersLoadFailed: '成员列表加载失败。',
+      membersLoading: '正在加载成员...',
+      membersEmpty: '没有匹配的有效成员。',
+      memberUser: '用户',
+      email: '邮箱',
+      accountStatus: '账号状态',
+      joinedAt: '加入时间',
+      expiresAt: '到期时间',
+      expiresAtOptional: '到期时间（可选）',
+      neverExpires: '长期有效',
+      userStatuses: { ACTIVE: '正常', DISABLED: '已禁用', DELETED: '已删除' },
+      remove: '移除',
+      removing: '移除中...',
+      removeMember: (name) => `移除成员 ${name}`,
+      removeMemberTitle: '确认移除成员',
+      removeMemberDescription: (user, group) => `确认将“${user}”从“${group}”中移除？用户账号和业务数据不会被修改。`,
+      memberRemoveFailed: '移除成员失败。',
+      addMembers: '添加用户',
+      addMembersTitle: '添加用户到组',
+      addMembersDescription: (code) => `搜索并选择要加入 ${code} 的用户，单次最多 100 人。`,
+      userSearchPlaceholder: '搜索用户 ID、邮箱或昵称',
+      userSearching: '正在搜索用户...',
+      userSearchFailed: '用户搜索失败。',
+      userSearchEmpty: '没有匹配的用户。',
+      alreadyMember: '已在组内',
+      expiryInvalid: '到期时间必须晚于当前时间。',
+      noUsersSelected: '尚未选择用户。',
+      selectedUsers: (count, names) => `已选择 ${count} 人：${names.join('、')}`,
+      addSelected: (count) => `添加 ${count} 人`,
+      addingMembers: '添加中...',
+      memberAddFailed: '添加成员失败。',
+      addCompleted: '成员处理完成',
+      addResult: (added, updated, failed) => `新增 ${added} 人，更新 ${updated} 人，失败 ${failed} 人。`,
+      userGroupsTitle: '所属用户组',
+      userGroupsDescription: '仅展示当前有效的用户组关系。',
+      addToGroup: '添加到用户组',
+      addToGroupTitle: '添加到用户组',
+      addToGroupDescription: (user) => `为“${user}”选择目标用户组和可选到期时间。`,
+      targetGroup: '目标用户组',
+      selectGroup: '请选择用户组',
+      noAvailableGroups: '没有可添加的正常用户组。',
+      noUserGroups: '当前没有有效用户组。',
+      expiresOn: (date) => `${date} 到期`,
     },
     adminAi: {
       ariaLabel: 'AI 治理',
@@ -1941,12 +2144,37 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       problems: 'Problems',
       adminBetaAccess: 'Beta Access',
       adminUsers: 'Users',
+      adminUserGroups: 'User Groups',
       adminAi: 'AI Governance',
       feedback: 'Feedback',
       adminOverview: 'Overview',
       adminFeedback: 'Feedback',
       debug: 'AI Debug',
       forbidden: 'Not authorized',
+    },
+    adminShell: {
+      workspace: 'Admin Console',
+      returnToLearning: 'Back to learning',
+      openNavigation: 'Open admin navigation',
+      closeNavigation: 'Close admin navigation',
+      collapseNavigation: 'Collapse sidebar',
+      expandNavigation: 'Expand sidebar',
+      businessNavigation: 'Admin business areas',
+      navigation: 'Admin navigation',
+      pageNavigation: 'Current area pages',
+      labels: {
+        overview: 'Operations',
+        access: 'Users & Access',
+        ai: 'AI Governance',
+        content: 'Content',
+        feedback: 'Feedback & Support',
+        development: 'Developer Tools',
+        users: 'Users',
+        userGroups: 'User Groups',
+        betaAccess: 'Beta Access',
+        problems: 'Problem Library',
+        debug: 'AI Debug',
+      },
     },
     feedback: {
       openDialog: 'Open feedback inbox',
@@ -2007,6 +2235,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       email: 'Email',
       displayName: 'Display name',
       roles: 'Roles',
+      groups: 'Groups',
       status: 'Status',
       createdAt: 'Created',
       lastLoginAt: 'Last login',
@@ -2032,6 +2261,87 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       temporaryPasswordExpiresAt: 'Expires at',
       copyTemporaryPassword: 'Copy temporary password',
       temporaryPasswordCopied: 'Copied',
+    },
+    adminGroups: {
+      title: 'User groups',
+      detailTitle: 'User group detail',
+      create: 'Create group',
+      edit: 'Edit',
+      refresh: 'Refresh',
+      searchPlaceholder: 'Search name or code',
+      memberSearchPlaceholder: 'Search user ID, email, or name',
+      status: 'Status',
+      statusAll: 'All statuses',
+      statusActive: 'Active',
+      statusDisabled: 'Disabled',
+      name: 'Name',
+      code: 'Code',
+      description: 'Description',
+      activeMembers: 'Active members',
+      createdAt: 'Created',
+      updatedAt: 'Updated',
+      actions: 'Actions',
+      loading: 'Loading user groups...',
+      loadFailed: 'Failed to load user groups.',
+      detailLoadFailed: 'Failed to load the user group.',
+      empty: 'No matching user groups.',
+      total: (count) => `${count} items`,
+      editGroup: (name) => `Edit user group ${name}`,
+      createTitle: 'Create user group',
+      editTitle: 'Edit user group',
+      createDescription: 'The code cannot be changed after creation. Use a stable business identifier.',
+      editDescription: 'You can update the name, description, and status. The code remains fixed.',
+      codeInvalid: 'The code must start with an uppercase letter and contain only uppercase letters, digits, and underscores.',
+      nameRequired: 'Enter a user group name.',
+      saveFailed: 'Failed to save the user group.',
+      saving: 'Saving...',
+      save: 'Save',
+      backToGroups: 'Back to user groups',
+      disabledCannotAdd: 'Members cannot be added to a disabled group',
+      membersTitle: 'Group members',
+      membersLoadFailed: 'Failed to load group members.',
+      membersLoading: 'Loading members...',
+      membersEmpty: 'No matching active members.',
+      memberUser: 'User',
+      email: 'Email',
+      accountStatus: 'Account status',
+      joinedAt: 'Joined',
+      expiresAt: 'Expires',
+      expiresAtOptional: 'Expiration (optional)',
+      neverExpires: 'No expiration',
+      userStatuses: { ACTIVE: 'Active', DISABLED: 'Disabled', DELETED: 'Deleted' },
+      remove: 'Remove',
+      removing: 'Removing...',
+      removeMember: (name) => `Remove member ${name}`,
+      removeMemberTitle: 'Remove group member?',
+      removeMemberDescription: (user, group) => `Remove “${user}” from “${group}”? The user account and business data will not be changed.`,
+      memberRemoveFailed: 'Failed to remove the member.',
+      addMembers: 'Add users',
+      addMembersTitle: 'Add users to group',
+      addMembersDescription: (code) => `Search and select users to add to ${code}. Up to 100 users can be added at once.`,
+      userSearchPlaceholder: 'Search user ID, email, or name',
+      userSearching: 'Searching users...',
+      userSearchFailed: 'Failed to search users.',
+      userSearchEmpty: 'No matching users.',
+      alreadyMember: 'Already a member',
+      expiryInvalid: 'The expiration must be later than the current time.',
+      noUsersSelected: 'No users selected.',
+      selectedUsers: (count, names) => `${count} selected: ${names.join(', ')}`,
+      addSelected: (count) => `Add ${count}`,
+      addingMembers: 'Adding...',
+      memberAddFailed: 'Failed to add members.',
+      addCompleted: 'Member update completed',
+      addResult: (added, updated, failed) => `${added} added, ${updated} updated, ${failed} failed.`,
+      userGroupsTitle: 'User groups',
+      userGroupsDescription: 'Only currently active group memberships are shown.',
+      addToGroup: 'Add to group',
+      addToGroupTitle: 'Add to user group',
+      addToGroupDescription: (user) => `Choose a target group and optional expiration for “${user}”.`,
+      targetGroup: 'Target group',
+      selectGroup: 'Select a group',
+      noAvailableGroups: 'There are no active groups available to add.',
+      noUserGroups: 'No active user groups.',
+      expiresOn: (date) => `Expires ${date}`,
     },
     adminAi: {
       ariaLabel: 'AI governance',

@@ -57,6 +57,8 @@
 - `docs/internal-beta-admin-capabilities-implementation-plan.md`：内测管理员业务能力分阶段实施计划，按准入与账号运维、AI 止损与成本观测、run 排障、反馈与概览拆分任务、测试和发布门禁。
 - `docs/internal-beta-ai-governance-stage-2-implementation-plan.md`：内测管理员能力阶段二详细实施计划，固化 `/admin/ai` 与用户管理的产品边界，细化动态 AI 策略、V32 调用级 Token 台账、当前价格成本估算、直接 LLM 调用治理、管理员 API、前端工作区、测试和发布门禁。
 - `docs/internal-beta-feedback-overview-stage-4-implementation-plan.md`：内测管理员能力阶段四详细实施计划，仅细化反馈信箱与管理员概览，固定未读/事务语义、反馈 API、概览区块降级、前端徽标与跨页面联动，并明确阶段三 run 查询依赖。
+- `docs/admin-frontend-shell-refactoring-design.md`：管理员前端工作区重构设计，参考高密度管理台的信息层级，固定 `/admin/*` 使用全局顶栏、业务域侧栏、局部页签、紧凑命令栏和数据工作区，并保持普通用户界面不变。
+- `docs/user-group-management-design.md`：用户组与管理员成员管理设计，定义 `identity` 模块中的用户组和多对多成员关系、有效期语义、管理员 API、用户组页面及用户详情中的手动添加与移除，不包含访问策略和支付订阅。
 
 ## 后端
 

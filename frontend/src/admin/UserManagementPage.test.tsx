@@ -9,6 +9,11 @@ const activeUser = userSummary({
   email: 'active@example.com',
   displayName: 'Active User',
   status: 'ACTIVE',
+  groups: [
+    { id: 1, code: 'PRO', name: '专业会员' },
+    { id: 2, code: 'BETA_TESTER', name: '内测用户' },
+    { id: 3, code: 'EVENT_2026', name: '活动用户' },
+  ],
 });
 
 const disabledUser = userSummary({
@@ -67,6 +72,9 @@ describe('UserManagementPage', () => {
     expect(await screen.findByRole('heading', { name: '用户管理' })).toBeInTheDocument();
     expect(screen.getByText('active@example.com')).toBeInTheDocument();
     expect(screen.getByText('disabled@example.com')).toBeInTheDocument();
+    expect(screen.getByText('专业会员')).toBeInTheDocument();
+    expect(screen.getByText('内测用户')).toBeInTheDocument();
+    expect(screen.getByText('+1')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '上一页' })).toBeDisabled();
     expect(screen.getByRole('button', { name: '下一页' })).toBeEnabled();
 

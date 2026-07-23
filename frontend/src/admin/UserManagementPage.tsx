@@ -262,6 +262,7 @@ export default function UserManagementPage({ onNavigate, onNavigateHome, search 
               <th>{t.email}</th>
               <th>{t.displayName}</th>
               <th>{t.roles}</th>
+              <th>{t.groups}</th>
               <th>{t.status}</th>
               <th>{t.createdAt}</th>
               <th>{t.lastLoginAt}</th>
@@ -271,7 +272,7 @@ export default function UserManagementPage({ onNavigate, onNavigateHome, search 
           <tbody>
             {loading ? Array.from({ length: 4 }, (_, index) => (
               <tr className="admin-users-skeleton-row" key={`loading-${index}`}>
-                <td colSpan={8}>{t.loading}</td>
+                <td colSpan={9}>{t.loading}</td>
               </tr>
             )) : null}
             {!loading && usersPage.items.map((user) => (
@@ -280,6 +281,7 @@ export default function UserManagementPage({ onNavigate, onNavigateHome, search 
                 <td>{user.email ?? resources.app.unknownUser(user.id)}</td>
                 <td>{user.displayName ?? resources.common.empty}</td>
                 <td>{user.roles.join(', ')}</td>
+                <td><UserGroupSummaryCell groups={user.groups ?? []} empty={resources.common.empty} /></td>
                 <td>
                   <span className={`admin-user-status ${user.status.toLowerCase()}`}>
                     {statusLabel(user.status, t)}
@@ -313,7 +315,7 @@ export default function UserManagementPage({ onNavigate, onNavigateHome, search 
             ))}
             {!loading && usersPage.items.length === 0 ? (
               <tr>
-                <td colSpan={8}>{t.empty}</td>
+                <td colSpan={9}>{t.empty}</td>
               </tr>
             ) : null}
           </tbody>
@@ -393,6 +395,19 @@ export default function UserManagementPage({ onNavigate, onNavigateHome, search 
         </div>
       ) : null}
     </section>
+  );
+}
+
+function UserGroupSummaryCell({ groups, empty }: { groups: AdminUserSummary['groups']; empty: string }) {
+  if (!groups?.length) return <span>{empty}</span>;
+  const visible = groups.slice(0, 2);
+  const remaining = groups.length - visible.length;
+  const fullLabel = groups.map((group) => `${group.name} (${group.code})`).join(', ');
+  return (
+    <span aria-label={fullLabel} className="admin-user-group-summary" tabIndex={0} title={fullLabel}>
+      {visible.map((group) => <span key={group.id}>{group.name}</span>)}
+      {remaining > 0 ? <b>+{remaining}</b> : null}
+    </span>
   );
 }
 
