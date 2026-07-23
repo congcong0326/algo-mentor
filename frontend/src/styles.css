@@ -8630,6 +8630,114 @@ a {
   text-transform: uppercase;
 }
 
+.system-monitoring-page {
+  display: grid;
+  gap: 14px;
+  max-width: 960px;
+}
+
+.system-monitoring-header,
+.system-monitoring-health-heading {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.system-monitoring-header h1,
+.system-monitoring-health-heading h2 {
+  margin: 0;
+}
+
+.system-monitoring-header h1 {
+  font-size: 20px;
+}
+
+.system-monitoring-header p {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+
+.system-monitoring-health {
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--surface-card);
+}
+
+.system-monitoring-health-heading {
+  min-height: 56px;
+  padding: 0 16px;
+}
+
+.system-monitoring-health-heading h2 {
+  font-size: 16px;
+}
+
+.system-monitoring-status {
+  align-items: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 9px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.system-monitoring-status svg {
+  height: 15px;
+  width: 15px;
+}
+
+.system-monitoring-status.healthy {
+  border-color: #bbf7d0;
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.system-monitoring-status.unavailable {
+  border-color: #fecaca;
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.system-monitoring-status.checking {
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+}
+
+.system-monitoring-health-grid {
+  border-top: 1px solid var(--border-subtle);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.system-monitoring-health-grid > div {
+  display: grid;
+  gap: 6px;
+  min-height: 86px;
+  padding: 16px;
+}
+
+.system-monitoring-health-grid > div + div {
+  border-left: 1px solid var(--border-subtle);
+}
+
+.system-monitoring-health-grid dt {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.system-monitoring-health-grid dd {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
 .ai-governance-page {
   display: grid;
   gap: 22px;
@@ -9223,6 +9331,15 @@ a {
 }
 
 @media (max-width: 760px) {
+  .system-monitoring-health-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .system-monitoring-health-grid > div + div {
+    border-left: 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+
   .ai-runtime-policy-bar {
     padding: 16px;
   }

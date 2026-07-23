@@ -1,13 +1,15 @@
 import type { LucideIcon } from 'lucide-react';
-import { Bot, LayoutDashboard, Library, MessageSquare, ShieldCheck, SlidersHorizontal, UsersRound } from 'lucide-react';
+import { Activity, Bot, LayoutDashboard, Library, MessageSquare, ShieldCheck, UsersRound } from 'lucide-react';
 import { APP_ROUTES } from '../../app/navigation';
 import type { AuthPermission } from '../../types/api';
 
-export type AdminModuleId = 'overview' | 'access' | 'ai' | 'content' | 'feedback' | 'development';
-export type AdminPageId = 'overview' | 'users' | 'userGroups' | 'betaAccess' | 'ai' | 'problems' | 'feedback' | 'debug';
+export type AdminModuleId = 'overview' | 'access' | 'monitoring' | 'content' | 'feedback' | 'development';
+export type AdminPageId = 'overview' | 'users' | 'userGroups' | 'betaAccess' | 'monitoring' | 'ai' | 'problems' | 'feedback' | 'debug';
 export type AdminNavigationLabelKey =
   | 'overview'
   | 'access'
+  | 'monitoring'
+  | 'systemStatus'
   | 'ai'
   | 'content'
   | 'feedback'
@@ -50,10 +52,13 @@ export const ADMIN_MODULES: AdminModuleDefinition[] = [
     ],
   },
   {
-    id: 'ai',
-    labelKey: 'ai',
-    icon: SlidersHorizontal,
-    items: [{ id: 'ai', labelKey: 'ai', path: APP_ROUTES.adminAi, permission: 'ai-governance:manage' }],
+    id: 'monitoring',
+    labelKey: 'monitoring',
+    icon: Activity,
+    items: [
+      { id: 'monitoring', labelKey: 'systemStatus', path: APP_ROUTES.adminMonitoring, permission: 'admin-overview:read' },
+      { id: 'ai', labelKey: 'ai', path: APP_ROUTES.adminAi, permission: 'ai-governance:manage' },
+    ],
   },
   {
     id: 'content',

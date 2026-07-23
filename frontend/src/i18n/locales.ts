@@ -89,6 +89,7 @@ export interface LocaleResources {
     adminBetaAccess: string;
     adminUsers: string;
     adminUserGroups: string;
+    adminMonitoring: string;
     adminAi: string;
     feedback: string;
     adminOverview: string;
@@ -106,7 +107,7 @@ export interface LocaleResources {
     businessNavigation: string;
     navigation: string;
     pageNavigation: string;
-    labels: Record<'overview' | 'access' | 'ai' | 'content' | 'feedback' | 'development' | 'users' | 'userGroups' | 'betaAccess' | 'problems' | 'debug', string>;
+    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'ai' | 'content' | 'feedback' | 'development' | 'users' | 'userGroups' | 'betaAccess' | 'problems' | 'debug', string>;
   };
   feedback: {
     openDialog: string;
@@ -374,6 +375,20 @@ export interface LocaleResources {
     historicalPriceNotice: string;
     updatedBy: string;
     updatedAt: string;
+  };
+  adminMonitoring: {
+    ariaLabel: string;
+    title: string;
+    serviceHealth: string;
+    apiService: string;
+    status: string;
+    healthy: string;
+    unavailable: string;
+    checking: string;
+    lastChecked: string;
+    notChecked: string;
+    refresh: string;
+    loadFailed: string;
   };
   adminUserAi: {
     title: string;
@@ -1067,6 +1082,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminBetaAccess: '内测准入',
       adminUsers: '用户管理',
       adminUserGroups: '用户组管理',
+      adminMonitoring: '系统监控',
       adminAi: 'AI 治理',
       feedback: '反馈',
       adminOverview: '概览',
@@ -1087,6 +1103,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       labels: {
         overview: '运营概览',
         access: '用户与访问',
+        monitoring: '系统监控',
+        systemStatus: '运行状态',
         ai: 'AI 治理',
         content: '内容管理',
         feedback: '反馈与支持',
@@ -1364,6 +1382,20 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       historicalPriceNotice: '历史区间会按当前启用价格重新估算。',
       updatedBy: '更新人',
       updatedAt: '更新时间',
+    },
+    adminMonitoring: {
+      ariaLabel: '系统监控',
+      title: '运行状态',
+      serviceHealth: '服务健康检查',
+      apiService: 'API 服务',
+      status: '当前状态',
+      healthy: '运行正常',
+      unavailable: '不可用',
+      checking: '检查中',
+      lastChecked: '最近检查',
+      notChecked: '尚未检查',
+      refresh: '刷新运行状态',
+      loadFailed: '服务健康检查失败。',
     },
     adminUserAi: {
       title: 'AI 使用与控制',
@@ -2159,6 +2191,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminBetaAccess: 'Beta Access',
       adminUsers: 'Users',
       adminUserGroups: 'User Groups',
+      adminMonitoring: 'System monitoring',
       adminAi: 'AI Governance',
       feedback: 'Feedback',
       adminOverview: 'Overview',
@@ -2179,6 +2212,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       labels: {
         overview: 'Operations',
         access: 'Users & Access',
+        monitoring: 'System monitoring',
+        systemStatus: 'Runtime status',
         ai: 'AI Governance',
         content: 'Content',
         feedback: 'Feedback & Support',
@@ -2456,6 +2491,20 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       historicalPriceNotice: 'Historical ranges are recalculated at current enabled prices.',
       updatedBy: 'Updated by',
       updatedAt: 'Updated at',
+    },
+    adminMonitoring: {
+      ariaLabel: 'System monitoring',
+      title: 'Runtime status',
+      serviceHealth: 'Service health check',
+      apiService: 'API service',
+      status: 'Current status',
+      healthy: 'Operational',
+      unavailable: 'Unavailable',
+      checking: 'Checking',
+      lastChecked: 'Last checked',
+      notChecked: 'Not checked yet',
+      refresh: 'Refresh runtime status',
+      loadFailed: 'Service health check failed.',
     },
     adminUserAi: {
       title: 'AI usage & controls',

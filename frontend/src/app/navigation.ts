@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Bot, ClipboardList, House, LayoutDashboard, Library, MessageSquare, NotebookTabs, Settings, ShieldCheck, SlidersHorizontal, UserRound, UsersRound } from 'lucide-react';
+import { Activity, Bot, ClipboardList, House, LayoutDashboard, Library, MessageSquare, NotebookTabs, Settings, ShieldCheck, SlidersHorizontal, UserRound, UsersRound } from 'lucide-react';
 import type { AuthPermission } from '../types/api';
 
 export const APP_ROUTES = {
@@ -15,6 +15,7 @@ export const APP_ROUTES = {
   adminBetaAccess: '/admin/beta-access',
   adminUsers: '/admin/users',
   adminUserGroups: '/admin/user-groups',
+  adminMonitoring: '/admin/monitoring',
   adminAi: '/admin/ai',
   adminOverview: '/admin',
   adminFeedback: '/admin/feedback',
@@ -53,6 +54,7 @@ export type AppView =
   | 'adminBetaAccess'
   | 'adminUsers'
   | 'adminUserGroups'
+  | 'adminMonitoring'
   | 'adminAi'
   | 'adminOverview'
   | 'adminFeedback'
@@ -125,6 +127,13 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     permission: 'user:manage',
   },
   {
+    view: 'adminMonitoring',
+    labelKey: 'adminMonitoring',
+    path: APP_ROUTES.adminMonitoring,
+    icon: Activity,
+    permission: 'admin-overview:read',
+  },
+  {
     view: 'adminAi',
     labelKey: 'adminAi',
     path: APP_ROUTES.adminAi,
@@ -185,6 +194,9 @@ export function viewFromPath(pathname: string): AppView | undefined {
   }
   if (pathname === APP_ROUTES.adminOverview) {
     return 'adminOverview';
+  }
+  if (pathname === APP_ROUTES.adminMonitoring) {
+    return 'adminMonitoring';
   }
   if (pathname === APP_ROUTES.adminFeedback) {
     return 'adminFeedback';

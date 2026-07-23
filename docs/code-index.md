@@ -140,6 +140,7 @@
 - `frontend/src/types/api.ts`：前后端共享契约的 TypeScript 表示，包含权限 SSE 事件、决策请求/响应、Review tool result 和 AI 治理 DTO。
 - `frontend/src/admin/BetaAccessPage.tsx`：内测准入管理页，提供开关确认、搜索、批量添加、分页列表、移除确认和 Session 吊销失败提示。
 - `frontend/src/admin/UserManagementPage.tsx`：管理员用户列表与 URL 驱动的详情抽屉；支持一次性临时密码重置、单用户 AI 暂停/额度覆盖和跳转至筛选后的 AI 用量页。
+- `frontend/src/admin/monitoring/SystemMonitoringPage.tsx`：`/admin/monitoring` 运行状态页，基于 `/api/health` 展示 API 服务健康状态，支持手动与每分钟自动刷新；与 `/admin/ai` 同属系统监控分类。
 - `frontend/src/admin/ai`：`/admin/ai` 治理工作区，提供全局 AI 止损、按用户/模型/场景的 Token 与当前价格成本观测、未定价模型告警和模型价格编辑。
 - `frontend/src/app/PasswordChangeRequiredPage.tsx`：临时密码登录后的独占改密页，成功后恢复普通 Session 路由。
 - `frontend/src/learning-plans/PracticeChatWorkbench.tsx`：题目训练聊天工作台，使用 practice session 专用 API 渲染题面 seed、流式 AI 回复、Review 入口、LeetCode 外链和题目完成状态；监听权限 SSE 并展示轻量原生确认弹窗。

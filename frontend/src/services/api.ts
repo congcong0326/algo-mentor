@@ -151,9 +151,10 @@ export function setApiLocale(locale: string): void {
   apiLocale = supportedLocales.has(locale) ? locale : defaultLocale;
 }
 
-export async function getHealth(): Promise<ApiResponse<HealthStatus>> {
+export async function getHealth(signal?: AbortSignal): Promise<ApiResponse<HealthStatus>> {
   const response = await apiFetch('/api/health', {
     headers: jsonHeaders,
+    signal,
   });
 
   if (!response.ok) {
