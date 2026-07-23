@@ -9,6 +9,9 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class AgentCancellationToken {
 
+  /** SSE 下游取消 Agent run 时写入错误 metadata 的原因值。 */
+  public static final String STREAM_CANCELLED_REASON = "stream_cancelled";
+
   private final AtomicBoolean cancelled = new AtomicBoolean(false);
   private final AtomicReference<Flow.Subscription> llmSubscription = new AtomicReference<>();
   private final AtomicReference<Thread> worker = new AtomicReference<>();

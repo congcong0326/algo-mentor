@@ -293,9 +293,15 @@ public class AgentConversationApiAutoConfiguration {
       AgentConversationRunCoordinator runCoordinator,
       LlmStreamSseMapper sseMapper,
       AiActorResolver actorResolver,
-      AiRunAdmissionService admissionService
+      AiRunAdmissionService admissionService,
+      ApiSseProperties sseProperties
   ) {
-    return new AgentConversationController(runCoordinator, sseMapper, actorResolver, admissionService);
+    return new AgentConversationController(
+        runCoordinator,
+        sseMapper,
+        actorResolver,
+        admissionService,
+        sseProperties);
   }
 
   @Bean

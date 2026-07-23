@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow;
-import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.atomic.AtomicReference;
 import org.congcong.algomentor.agent.core.compaction.RunMessageCompactionResult;
 import org.congcong.algomentor.agent.core.compaction.RunMessageCompactor;
@@ -27,7 +26,6 @@ import org.congcong.algomentor.agent.core.permission.InMemoryAgentToolPermission
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
-import org.congcong.algomentor.common.trace.RequestTraceContext;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
@@ -265,25 +263,15 @@ public class AgentLoopRunner {
   /**
    * 以 Reactive Streams 的 {@link Flow.Publisher} 形式启动一次 Agent run。
    *
-   * <p>这里为每个订阅者创建独立的 {@link SubmissionPublisher} 和后台线程，而不是在调用方线程中直接运行。
-   * 这样 API 层可以立即返回 Publisher，并把后续 LLM token、工具执行状态、错误和完成事件持续转成 SSE；
-   * 同时一次订阅对应一次 run，避免多个客户端共享同一组可变消息上下文。</p>
+   * <p>这里为每个 run 创建单订阅者同步事件出口和独立后台线程。下游声明 demand 后，Agent 工作线程
+   * 会直接调用 Subscriber 回调，因此慢客户端只会阻塞自己的 run，不会占用公共投递线程池或堆积异步缓冲。</p>
    */
   public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
     Objects.requireNonNull(request, "request must not be null");
-    return subscriber -> {
-      SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>(
-          RequestTraceContext.contextAwareExecutor(java.util.concurrent.ForkJoinPool.commonPool()),
-          Flow.defaultBufferSize());
-      AgentCancellationToken cancellationToken = new AgentCancellationToken();
-      publisher.subscribe(new CancellableForwardingSubscriber(subscriber, cancellationToken));
-      Thread worker = new Thread(
-          RequestTraceContext.wrap(() -> runLoop(request, publisher, cancellationToken)),
-          "agent-loop-stream");
-      worker.setDaemon(true);
-      cancellationToken.worker(worker);
-      worker.start();
-    };
+    AgentCancellationToken cancellationToken = new AgentCancellationToken();
+    return new SingleSubscriberAgentStreamPublisher(
+        cancellationToken,
+        eventSink -> runLoop(request, eventSink, cancellationToken));
   }
 
   /**
@@ -312,7 +300,7 @@ public class AgentLoopRunner {
    */
   private void runLoop(
       AgentRequest request,
-      SubmissionPublisher<AgentStreamEvent> publisher,
+      AgentStreamEventSink eventSink,
       AgentCancellationToken cancellationToken
   ) {
     // runId 由上游传入时用于恢复/串联已有会话，否则本地生成，保证每个流式事件都有稳定关联键。
@@ -322,11 +310,11 @@ public class AgentLoopRunner {
         maxSteps,
         request.metadata(),
         cancellationToken);
-    AgentLoopLifecycle lifecycle = new AgentLoopLifecycle(publisher, observers, interceptors, permissionGuard);
-    // messages 是本次 run 内的可变工作上下文：初始用户/系统消息、assistant tool_calls、tool result 都按顺序追加。
-    List<LlmMessage> messages = new ArrayList<>(requestFactory.initialMessages(request));
-    lifecycle.runStarted(context);
+    AgentLoopLifecycle lifecycle = new AgentLoopLifecycle(eventSink, observers, interceptors, permissionGuard);
     try {
+      lifecycle.runStarted(context);
+      // messages 是本次 run 内的可变工作上下文：初始用户/系统消息、assistant tool_calls、tool result 都按顺序追加。
+      List<LlmMessage> messages = new ArrayList<>(requestFactory.initialMessages(request));
       for (int stepIndex = 1; stepIndex <= maxSteps; stepIndex++) {
         throwIfCancelled(context);
         AgentStepResult stepResult = runStep(context, stepIndex, messages, lifecycle);
@@ -340,7 +328,6 @@ public class AgentLoopRunner {
               stepResult.finishReason(),
               output,
               Map.of()));
-          publisher.close();
           return;
         }
         List<LlmToolCall> effectiveToolCalls = new ArrayList<>();
@@ -406,13 +393,10 @@ public class AgentLoopRunner {
           false,
           Map.of(AgentRuntimeMetadataKeys.MAX_STEPS, maxSteps),
           null));
-      publisher.close();
     } catch (AgentException ex) {
       lifecycle.error(context, ex);
-      publisher.close();
     } catch (RuntimeException ex) {
       lifecycle.error(context, new AgentException(AgentErrorCode.UNKNOWN, "Agent loop failed", false, Map.of(), ex));
-      publisher.close();
     }
   }
 
@@ -423,7 +407,7 @@ public class AgentLoopRunner {
           AgentErrorCode.CANCELLED,
           "Agent run was cancelled",
           false,
-          Map.of(AgentRuntimeMetadataKeys.CANCELLATION_REASON, "stream_cancelled"),
+          Map.of(AgentRuntimeMetadataKeys.CANCELLATION_REASON, AgentCancellationToken.STREAM_CANCELLED_REASON),
           null);
     }
   }
@@ -667,52 +651,6 @@ public class AgentLoopRunner {
    * 因此 collector 在 {@link #onNext(LlmStreamEvent)} 中同步转发生命周期事件，并只保留驱动下一步所需的最小状态：
    * 工具调用列表、结束原因和错误引用。</p>
    */
-  private static final class CancellableForwardingSubscriber implements Flow.Subscriber<AgentStreamEvent> {
-    private final Flow.Subscriber<? super AgentStreamEvent> delegate;
-    private final AgentCancellationToken cancellationToken;
-
-    private CancellableForwardingSubscriber(
-        Flow.Subscriber<? super AgentStreamEvent> delegate,
-        AgentCancellationToken cancellationToken
-    ) {
-      this.delegate = delegate;
-      this.cancellationToken = cancellationToken;
-    }
-
-    @Override
-    public void onSubscribe(Flow.Subscription subscription) {
-      delegate.onSubscribe(new Flow.Subscription() {
-        @Override
-        public void request(long n) {
-          subscription.request(n);
-        }
-
-        @Override
-        public void cancel() {
-          cancellationToken.cancel();
-          subscription.cancel();
-        }
-      });
-    }
-
-    @Override
-    public void onNext(AgentStreamEvent item) {
-      if (!cancellationToken.isCancelled()) {
-        delegate.onNext(item);
-      }
-    }
-
-    @Override
-    public void onError(Throwable throwable) {
-      delegate.onError(throwable);
-    }
-
-    @Override
-    public void onComplete() {
-      delegate.onComplete();
-    }
-  }
-
   private static final class StepCollector implements Flow.Subscriber<LlmStreamEvent> {
     private final AgentLoopContext context;
     private final int stepIndex;
@@ -787,7 +725,7 @@ public class AgentLoopRunner {
             AgentErrorCode.CANCELLED,
             "Agent run was cancelled",
             false,
-            Map.of(AgentRuntimeMetadataKeys.CANCELLATION_REASON, "stream_cancelled"),
+            Map.of(AgentRuntimeMetadataKeys.CANCELLATION_REASON, AgentCancellationToken.STREAM_CANCELLED_REASON),
             ex);
       }
     }

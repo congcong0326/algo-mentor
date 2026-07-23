@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
@@ -19,6 +20,7 @@ import org.congcong.algomentor.ai.governance.model.AiPurpose;
 import org.congcong.algomentor.ai.governance.model.AiRunContext;
 import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.api.config.ApiContractConstants;
+import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.api.service.SseLlmStreamSubscriber;
@@ -54,6 +56,7 @@ public class AgentConversationController {
   private final LlmStreamSseMapper sseMapper;
   private final AiActorResolver actorResolver;
   private final AiRunAdmissionService admissionService;
+  private final ApiSseProperties sseProperties;
   private final SseOpsRecorder sseOpsRecorder;
   private final LearningOpsRecorder learningOpsRecorder;
   private final StructuredOpsLogger opsLogger;
@@ -64,10 +67,21 @@ public class AgentConversationController {
       AiActorResolver actorResolver,
       AiRunAdmissionService admissionService
   ) {
+    this(runCoordinator, sseMapper, actorResolver, admissionService, new ApiSseProperties());
+  }
+
+  public AgentConversationController(
+      AgentConversationRunCoordinator runCoordinator,
+      LlmStreamSseMapper sseMapper,
+      AiActorResolver actorResolver,
+      AiRunAdmissionService admissionService,
+      ApiSseProperties sseProperties
+  ) {
     this.runCoordinator = runCoordinator;
     this.sseMapper = sseMapper;
     this.actorResolver = actorResolver;
     this.admissionService = admissionService;
+    this.sseProperties = Objects.requireNonNull(sseProperties, "sseProperties must not be null");
     this.sseOpsRecorder = NoopOpsRecorders.sse();
     this.learningOpsRecorder = NoopOpsRecorders.learning();
     this.opsLogger = new StructuredOpsLogger();
@@ -80,12 +94,14 @@ public class AgentConversationController {
       AiActorResolver actorResolver,
       AiRunAdmissionService admissionService,
       ObjectProvider<SseOpsRecorder> sseOpsRecorder,
-      ObjectProvider<LearningOpsRecorder> learningOpsRecorder
+      ObjectProvider<LearningOpsRecorder> learningOpsRecorder,
+      ApiSseProperties sseProperties
   ) {
     this.runCoordinator = runCoordinator;
     this.sseMapper = sseMapper;
     this.actorResolver = actorResolver;
     this.admissionService = admissionService;
+    this.sseProperties = Objects.requireNonNull(sseProperties, "sseProperties must not be null");
     this.sseOpsRecorder = sseOpsRecorder.getIfAvailable(NoopOpsRecorders::sse);
     this.learningOpsRecorder = learningOpsRecorder.getIfAvailable(NoopOpsRecorders::learning);
     this.opsLogger = new StructuredOpsLogger();
@@ -167,7 +183,7 @@ public class AgentConversationController {
      *     -> subscriber.onNext(...) 调用 emitter.send(...)
      *     -> 浏览器 EventSource/fetch stream 按 SSE 事件名消费数据
      */
-    SseEmitter emitter = new SseEmitter(30_000L);
+    SseEmitter emitter = new SseEmitter(sseProperties.agentConversationTimeoutMillis());
     SseLlmStreamSubscriber subscriber = new SseLlmStreamSubscriber(
         emitter,
         sseMapper,

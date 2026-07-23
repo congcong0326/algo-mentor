@@ -151,6 +151,86 @@ class AgentLoopRunnerTest {
   }
 
   @Test
+  void deliversAgentEventsOnAgentLoopWorkerThread() {
+    SynchronousGateway gateway = new SynchronousGateway(List.of(
+        new LlmStreamEvent.ContentDelta("Use two indices."),
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        4);
+    ThreadRecordingSubscriber subscriber = new ThreadRecordingSubscriber();
+
+    runner.stream(new AgentRequest(List.of(LlmMessage.user("two pointers")))).subscribe(subscriber);
+
+    subscriber.await();
+    assertThat(subscriber.error).isNull();
+    assertThat(subscriber.callbackThreads)
+        .isNotEmpty()
+        .allMatch(threadName -> threadName.equals(SingleSubscriberAgentStreamPublisher.WORKER_THREAD_NAME))
+        .noneMatch(threadName -> threadName.startsWith("ForkJoinPool.commonPool-worker-"));
+  }
+
+  @Test
+  void slowSubscriberOnlyBlocksItsOwnAgentRun() {
+    AgentLoopRunner slowRunner = new AgentLoopRunner(
+        new SynchronousGateway(List.of(new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of()))),
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        4);
+    BlockingSubscriber slowSubscriber = new BlockingSubscriber();
+    slowRunner.stream(new AgentRequest(List.of(LlmMessage.user("slow")))).subscribe(slowSubscriber);
+    slowSubscriber.awaitBlocked();
+
+    try {
+      AgentLoopRunner fastRunner = new AgentLoopRunner(
+          new SynchronousGateway(List.of(new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of()))),
+          testModelSelector(),
+          AgentToolRegistry.empty(),
+          4);
+
+      List<AgentStreamEvent> fastEvents = collect(
+          fastRunner.stream(new AgentRequest(List.of(LlmMessage.user("fast")))));
+
+      assertThat(fastEvents).extracting(AgentStreamEvent::name).endsWith(AgentStreamEventNames.AGENT_RUN_END);
+    } finally {
+      slowSubscriber.release();
+    }
+    slowSubscriber.awaitCompletion();
+  }
+
+  @Test
+  void cancelDuringSubscriptionStillNotifiesTerminalObserversWithoutCallingLlm() {
+    SynchronousGateway gateway = new SynchronousGateway(List.of(
+        new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
+    AtomicReference<AgentErrorCode> observedError = new AtomicReference<>();
+    CountDownLatch errorObserved = new CountDownLatch(1);
+    AgentLoopObserver observer = new AgentLoopObserver() {
+      @Override
+      public void onError(AgentLoopContext context, AgentException error) {
+        observedError.set(error.code());
+        errorObserved.countDown();
+      }
+    };
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        LlmToolChoice.auto(),
+        4,
+        List.of(observer),
+        List.of());
+
+    runner.stream(new AgentRequest(List.of(LlmMessage.user("cancel"))))
+        .subscribe(new CancellingOnSubscribeSubscriber());
+
+    await(errorObserved);
+    assertThat(observedError).hasValue(AgentErrorCode.CANCELLED);
+    assertThat(gateway.streamCalls).isZero();
+  }
+
+  @Test
   void executesToolCallAndContinuesWithToolResultMessage() {
     FakeGateway gateway = new FakeGateway();
     LlmToolCall toolCall = new LlmToolCall(
@@ -1314,6 +1394,113 @@ class AgentLoopRunnerTest {
     }
   }
 
+  private static final class ThreadRecordingSubscriber implements Flow.Subscriber<AgentStreamEvent> {
+    private final List<String> callbackThreads = new ArrayList<>();
+    private final CountDownLatch done = new CountDownLatch(1);
+    private Throwable error;
+
+    @Override
+    public void onSubscribe(Flow.Subscription subscription) {
+      subscription.request(Long.MAX_VALUE);
+    }
+
+    @Override
+    public void onNext(AgentStreamEvent item) {
+      callbackThreads.add(Thread.currentThread().getName());
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+      error = throwable;
+      done.countDown();
+    }
+
+    @Override
+    public void onComplete() {
+      done.countDown();
+    }
+
+    private void await() {
+      try {
+        assertThat(done.await(5, TimeUnit.SECONDS)).isTrue();
+      } catch (InterruptedException interrupted) {
+        Thread.currentThread().interrupt();
+        throw new AssertionError(interrupted);
+      }
+    }
+  }
+
+  private static final class BlockingSubscriber implements Flow.Subscriber<AgentStreamEvent> {
+    private final CountDownLatch blocked = new CountDownLatch(1);
+    private final CountDownLatch release = new CountDownLatch(1);
+    private final CountDownLatch completed = new CountDownLatch(1);
+    private final AtomicBoolean firstEvent = new AtomicBoolean(true);
+
+    @Override
+    public void onSubscribe(Flow.Subscription subscription) {
+      subscription.request(Long.MAX_VALUE);
+    }
+
+    @Override
+    public void onNext(AgentStreamEvent item) {
+      if (firstEvent.compareAndSet(true, false)) {
+        blocked.countDown();
+        await(release);
+      }
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+      completed.countDown();
+    }
+
+    @Override
+    public void onComplete() {
+      completed.countDown();
+    }
+
+    private void awaitBlocked() {
+      await(blocked);
+    }
+
+    private void release() {
+      release.countDown();
+    }
+
+    private void awaitCompletion() {
+      await(completed);
+    }
+
+    private void await(CountDownLatch latch) {
+      try {
+        assertThat(latch.await(5, TimeUnit.SECONDS)).isTrue();
+      } catch (InterruptedException interrupted) {
+        Thread.currentThread().interrupt();
+        throw new AssertionError(interrupted);
+      }
+    }
+  }
+
+  private static final class CancellingOnSubscribeSubscriber implements Flow.Subscriber<AgentStreamEvent> {
+
+    @Override
+    public void onSubscribe(Flow.Subscription subscription) {
+      subscription.cancel();
+    }
+
+    @Override
+    public void onNext(AgentStreamEvent item) {
+    }
+
+    @Override
+    public void onError(Throwable throwable) {
+    }
+
+    @Override
+    public void onComplete() {
+    }
+  }
+
   private static final class CancellingSubscriber implements Flow.Subscriber<AgentStreamEvent> {
     private final List<AgentStreamEvent> events = new ArrayList<>();
     private final CountDownLatch stepStarted = new CountDownLatch(1);
@@ -1441,6 +1628,56 @@ class AgentLoopRunnerTest {
         events.forEach(publisher::submit);
         publisher.close();
       };
+    }
+  }
+
+  private static final class SynchronousGateway implements LlmGateway {
+    private final List<LlmStreamEvent> events;
+    private int streamCalls;
+
+    private SynchronousGateway(List<LlmStreamEvent> events) {
+      this.events = List.copyOf(events);
+    }
+
+    @Override
+    public LlmCompletionResult complete(LlmCompletionRequest request) {
+      throw new UnsupportedOperationException("Agent loop should use stream calls internally");
+    }
+
+    @Override
+    public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
+      streamCalls++;
+      return subscriber -> subscriber.onSubscribe(new Flow.Subscription() {
+        private boolean completed;
+        private boolean cancelled;
+
+        @Override
+        public void request(long count) {
+          if (completed || cancelled) {
+            return;
+          }
+          if (count <= 0) {
+            completed = true;
+            subscriber.onError(new IllegalArgumentException("Flow request count must be positive: " + count));
+            return;
+          }
+          completed = true;
+          for (LlmStreamEvent event : events) {
+            if (cancelled) {
+              return;
+            }
+            subscriber.onNext(event);
+          }
+          if (!cancelled) {
+            subscriber.onComplete();
+          }
+        }
+
+        @Override
+        public void cancel() {
+          cancelled = true;
+        }
+      });
     }
   }
 

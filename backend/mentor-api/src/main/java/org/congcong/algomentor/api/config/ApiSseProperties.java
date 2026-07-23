@@ -8,6 +8,7 @@ public class ApiSseProperties {
 
   private Duration learningPlanDraftTimeout = Duration.ofMinutes(6);
   private Duration practiceMessageTimeout = Duration.ofMinutes(6);
+  private Duration agentConversationTimeout = Duration.ofMinutes(6);
 
   public Duration getLearningPlanDraftTimeout() {
     return learningPlanDraftTimeout;
@@ -25,6 +26,14 @@ public class ApiSseProperties {
     this.practiceMessageTimeout = practiceMessageTimeout;
   }
 
+  public Duration getAgentConversationTimeout() {
+    return agentConversationTimeout;
+  }
+
+  public void setAgentConversationTimeout(Duration agentConversationTimeout) {
+    this.agentConversationTimeout = agentConversationTimeout;
+  }
+
   public void validate() {
     if (learningPlanDraftTimeout == null
         || learningPlanDraftTimeout.isZero()
@@ -36,6 +45,11 @@ public class ApiSseProperties {
         || practiceMessageTimeout.isNegative()) {
       throw new IllegalArgumentException("Practice message SSE timeout must be positive");
     }
+    if (agentConversationTimeout == null
+        || agentConversationTimeout.isZero()
+        || agentConversationTimeout.isNegative()) {
+      throw new IllegalArgumentException("Agent conversation SSE timeout must be positive");
+    }
   }
 
   public long learningPlanDraftTimeoutMillis() {
@@ -46,5 +60,10 @@ public class ApiSseProperties {
   public long practiceMessageTimeoutMillis() {
     validate();
     return practiceMessageTimeout.toMillis();
+  }
+
+  public long agentConversationTimeoutMillis() {
+    validate();
+    return agentConversationTimeout.toMillis();
   }
 }

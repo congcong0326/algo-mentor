@@ -8,6 +8,7 @@
 - `.env.example`：本地开发环境变量样例，不包含真实密钥。
 - `deploy/docker/docker-compose.yml`：本地 PostgreSQL 服务。
 - `docs/agent-loop-lifecycle-design.md`：Agent loop 生命周期扩展设计，说明 observer、interceptor、lifecycle 与 SSE 边界。
+- `docs/agent-thread-model-refactoring-design.md`：Agent 线程模型改造设计，记录移除 common pool、Agent 工作线程同步投递 SSE、后续有界执行池与系统过载治理方案。
 - `docs/agent-conversation-context-recall-design.md`：Agent 多轮上下文召回与压缩研发设计，说明会话存储、运行轨迹、压缩策略和上下文快照。
 - `docs/agent-structured-output-design.md`：Agent 结构化输出与最终结果捕获设计，说明执行配置、provider-native structured output、AgentOutput 和最终输出持久化边界。
 - `docs/agent-run-tool-result-compaction-design.md`：Agent run 内工具结果压缩设计，说明大结果预览、blob 引用、范围读取工具和 run-local 上下文预算。

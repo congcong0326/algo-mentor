@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.SubmissionPublisher;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionAuthorization;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionCoordinator;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecision;
@@ -17,6 +16,7 @@ import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHookChai
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionRequest;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionResultFactory;
 import org.congcong.algomentor.agent.core.permission.InMemoryAgentToolPermissionCoordinator;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
@@ -27,18 +27,18 @@ public final class AgentLoopLifecycle {
 
   private static final Logger log = LoggerFactory.getLogger(AgentLoopLifecycle.class);
 
-  private final SubmissionPublisher<AgentStreamEvent> publisher;
+  private final AgentStreamEventSink eventSink;
   private final List<AgentLoopObserver> observers;
   private final List<AgentLoopInterceptor> interceptors;
   private final AgentToolPermissionGuard permissionGuard;
 
   public AgentLoopLifecycle(
-      SubmissionPublisher<AgentStreamEvent> publisher,
+      AgentStreamEventSink eventSink,
       List<AgentLoopObserver> observers,
       List<AgentLoopInterceptor> interceptors
   ) {
     this(
-        publisher,
+        eventSink,
         observers,
         interceptors,
         new AgentToolPermissionGuard(
@@ -48,12 +48,12 @@ public final class AgentLoopLifecycle {
   }
 
   public AgentLoopLifecycle(
-      SubmissionPublisher<AgentStreamEvent> publisher,
+      AgentStreamEventSink eventSink,
       List<AgentLoopObserver> observers,
       List<AgentLoopInterceptor> interceptors,
       AgentToolPermissionGuard permissionGuard
   ) {
-    this.publisher = Objects.requireNonNull(publisher, "publisher must not be null");
+    this.eventSink = Objects.requireNonNull(eventSink, "eventSink must not be null");
     this.observers = observers == null ? List.of() : List.copyOf(observers);
     this.interceptors = interceptors == null ? List.of() : List.copyOf(interceptors);
     this.permissionGuard = Objects.requireNonNull(permissionGuard, "permissionGuard must not be null");
@@ -61,7 +61,7 @@ public final class AgentLoopLifecycle {
 
   public void runStarted(AgentLoopContext context) {
     notifyObserver(observer -> observer.onRunStart(context), "onRunStart");
-    publisher.submit(new AgentStreamEvent.AgentRunStart(
+    publish(new AgentStreamEvent.AgentRunStart(
         context.runId(),
         context.request().displayTitle(),
         context.maxSteps(),
@@ -70,7 +70,7 @@ public final class AgentLoopLifecycle {
 
   public void stepStarted(AgentLoopContext context, int stepIndex) {
     notifyObserver(observer -> observer.onStepStart(context, stepIndex), "onStepStart");
-    publisher.submit(new AgentStreamEvent.AgentStepStart(context.runId(), stepIndex));
+    publish(new AgentStreamEvent.AgentStepStart(context.runId(), stepIndex));
   }
 
   public LlmCompletionRequest beforeLlmRequest(
@@ -97,12 +97,12 @@ public final class AgentLoopLifecycle {
 
   public void llmEvent(AgentLoopContext context, int stepIndex, LlmStreamEvent event) {
     notifyObserver(observer -> observer.onLlmEvent(context, stepIndex, event), "onLlmEvent");
-    publisher.submit(AgentStreamEvent.fromLlm(event));
+    publish(AgentStreamEvent.fromLlm(event));
   }
 
   public void stepEnded(AgentLoopContext context, int stepIndex, AgentStepResult result) {
     notifyObserver(observer -> observer.onStepEnd(context, stepIndex, result), "onStepEnd");
-    publisher.submit(new AgentStreamEvent.AgentStepEnd(
+    publish(new AgentStreamEvent.AgentStepEnd(
         context.runId(),
         stepIndex,
         result.finishReason(),
@@ -129,7 +129,7 @@ public final class AgentLoopLifecycle {
 
   public void toolStarted(AgentLoopContext context, int stepIndex, LlmToolCall toolCall) {
     notifyObserver(observer -> observer.onToolStart(context, stepIndex, toolCall), "onToolStart");
-    publisher.submit(new AgentStreamEvent.AgentToolStart(
+    publish(new AgentStreamEvent.AgentToolStart(
         context.runId(),
         stepIndex,
         toolCall.id(),
@@ -158,7 +158,7 @@ public final class AgentLoopLifecycle {
       JsonNode result
   ) {
     notifyObserver(observer -> observer.onToolEnd(context, stepIndex, toolCall, result), "onToolEnd");
-    publisher.submit(new AgentStreamEvent.AgentToolEnd(
+    publish(new AgentStreamEvent.AgentToolEnd(
         context.runId(),
         stepIndex,
         toolCall.id(),
@@ -188,7 +188,7 @@ public final class AgentLoopLifecycle {
     notifyObserver(
         observer -> observer.onToolPermissionRequest(context, request, plan),
         "onToolPermissionRequest");
-    publisher.submit(new AgentStreamEvent.ToolPermissionRequest(request));
+    publish(new AgentStreamEvent.ToolPermissionRequest(request));
   }
 
   public void toolPermissionDecided(
@@ -200,7 +200,7 @@ public final class AgentLoopLifecycle {
     notifyObserver(
         observer -> observer.onToolPermissionDecision(context, request, decision, plan),
         "onToolPermissionDecision");
-    publisher.submit(new AgentStreamEvent.ToolPermissionDecision(request, decision));
+    publish(new AgentStreamEvent.ToolPermissionDecision(request, decision));
   }
 
   public void toolPermissionTimedOut(
@@ -213,7 +213,7 @@ public final class AgentLoopLifecycle {
     notifyObserver(
         observer -> observer.onToolPermissionTimeout(context, request, reason, expiredAt, plan),
         "onToolPermissionTimeout");
-    publisher.submit(new AgentStreamEvent.ToolPermissionTimeout(request, reason, expiredAt));
+    publish(new AgentStreamEvent.ToolPermissionTimeout(request, reason, expiredAt));
   }
 
   public void toolErrored(
@@ -227,7 +227,7 @@ public final class AgentLoopLifecycle {
 
   public void runEnded(AgentLoopContext context, AgentRunResult result) {
     notifyObserver(observer -> observer.onRunEnd(context, result), "onRunEnd");
-    publisher.submit(new AgentStreamEvent.AgentRunEnd(
+    publish(new AgentStreamEvent.AgentRunEnd(
         context.runId(),
         result.steps(),
         result.finishReason(),
@@ -245,7 +245,18 @@ public final class AgentLoopLifecycle {
         safeMetadata(error.metadata()),
         error);
     notifyObserver(observer -> observer.onError(context, error), "onError");
-    publisher.submit(new AgentStreamEvent.AgentError(context.runId(), error));
+    eventSink.emit(new AgentStreamEvent.AgentError(context.runId(), error));
+  }
+
+  private void publish(AgentStreamEvent event) {
+    if (!eventSink.emit(event)) {
+      throw new AgentException(
+          AgentErrorCode.CANCELLED,
+          "Agent run was cancelled",
+          false,
+          Map.of(AgentRuntimeMetadataKeys.CANCELLATION_REASON, AgentCancellationToken.STREAM_CANCELLED_REASON),
+          null);
+    }
   }
 
   private void notifyObserver(ObserverCallback callback, String methodName) {

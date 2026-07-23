@@ -8,7 +8,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.SubmissionPublisher;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionAuthorization;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionBehavior;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionCoordinator;
@@ -32,9 +31,7 @@ class AgentLoopLifecycleTest {
 
   @Test
   void lifecyclePublishesPermissionEventsAndNotifiesObservers() {
-    SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
-    CollectingSubscriber subscriber = new CollectingSubscriber();
-    publisher.subscribe(subscriber);
+    List<AgentStreamEvent> events = new ArrayList<>();
     List<String> observed = new ArrayList<>();
     AgentLoopObserver observer = new AgentLoopObserver() {
       @Override
@@ -67,7 +64,7 @@ class AgentLoopLifecycleTest {
         observed.add("timeout:" + reason);
       }
     };
-    AgentLoopLifecycle lifecycle = new AgentLoopLifecycle(publisher, List.of(observer), List.of());
+    AgentLoopLifecycle lifecycle = new AgentLoopLifecycle(event -> events.add(event), List.of(observer), List.of());
     AgentLoopContext context = context();
     AgentToolPermissionRequest request = request();
     AgentToolPermissionDecisionPlan plan = askPlan();
@@ -81,10 +78,8 @@ class AgentLoopLifecycleTest {
     lifecycle.toolPermissionRequested(context, request, plan);
     lifecycle.toolPermissionDecided(context, request, decision, plan);
     lifecycle.toolPermissionTimedOut(context, request, "timeout", request.expiresAt(), plan);
-    subscriber.awaitEventCount(3);
-    publisher.close();
 
-    assertThat(subscriber.events())
+    assertThat(events)
         .extracting(AgentStreamEvent::name)
         .containsExactly(
             AgentStreamEventNames.TOOL_PERMISSION_REQUEST,
@@ -120,11 +115,9 @@ class AgentLoopLifecycleTest {
         throw new UnsupportedOperationException();
       }
     };
-    SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
-    CollectingSubscriber subscriber = new CollectingSubscriber();
-    publisher.subscribe(subscriber);
+    List<AgentStreamEvent> events = new ArrayList<>();
     AgentLoopLifecycle lifecycle = new AgentLoopLifecycle(
-        publisher,
+        event -> events.add(event),
         List.of(),
         List.of(),
         new AgentToolPermissionGuard(
@@ -150,11 +143,9 @@ class AgentLoopLifecycleTest {
         1,
         new LlmToolCall("call-1", "submit_practice_code_review", OBJECT_MAPPER.createObjectNode()),
         tool());
-    subscriber.awaitEventCount(1);
-    publisher.close();
 
     assertThat(authorization).isInstanceOf(AgentToolPermissionAuthorization.Allowed.class);
-    assertThat(subscriber.events())
+    assertThat(events)
         .extracting(AgentStreamEvent::name)
         .containsExactly(AgentStreamEventNames.TOOL_PERMISSION_REQUEST);
   }
@@ -208,47 +199,4 @@ class AgentLoopLifecycleTest {
     };
   }
 
-  private static final class CollectingSubscriber implements java.util.concurrent.Flow.Subscriber<AgentStreamEvent> {
-
-    private final List<AgentStreamEvent> events = java.util.Collections.synchronizedList(new ArrayList<>());
-    private java.util.concurrent.Flow.Subscription subscription;
-
-    @Override
-    public void onSubscribe(java.util.concurrent.Flow.Subscription subscription) {
-      this.subscription = subscription;
-      subscription.request(Long.MAX_VALUE);
-    }
-
-    @Override
-    public void onNext(AgentStreamEvent item) {
-      events.add(item);
-    }
-
-    @Override
-    public void onError(Throwable throwable) {
-    }
-
-    @Override
-    public void onComplete() {
-    }
-
-    List<AgentStreamEvent> events() {
-      if (subscription != null) {
-        subscription.request(Long.MAX_VALUE);
-      }
-      return List.copyOf(events);
-    }
-
-    private void awaitEventCount(int expectedCount) {
-      long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(1);
-      while (System.nanoTime() < deadline && events.size() < expectedCount) {
-        try {
-          Thread.sleep(5);
-        } catch (InterruptedException ex) {
-          Thread.currentThread().interrupt();
-          return;
-        }
-      }
-    }
-  }
 }
