@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow;
 import java.util.concurrent.atomic.AtomicReference;
+import org.congcong.algomentor.agent.core.execution.AgentExecutor;
 import org.congcong.algomentor.agent.core.compaction.RunMessageCompactionResult;
 import org.congcong.algomentor.agent.core.compaction.RunMessageCompactor;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompaction;
@@ -49,6 +50,17 @@ import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
 public class AgentLoopRunner {
 
   private static final String DEFAULT_PURPOSE = "topic-explanation";
+  private static final AgentExecutor UNCONFIGURED_EXECUTOR = new AgentExecutor() {
+    @Override
+    public void execute(Runnable task) {
+      throw new IllegalStateException("Agent executor must be configured before starting a stream");
+    }
+
+    @Override
+    public boolean isShutdown() {
+      return false;
+    }
+  };
 
   private final LlmGateway llmGateway;
   private final AgentLlmRequestFactory requestFactory;
@@ -61,10 +73,22 @@ public class AgentLoopRunner {
   private final RunMessageCompactor runMessageCompactor;
   private final ObjectMapper objectMapper;
   private final AgentToolPermissionGuard permissionGuard;
+  private final AgentExecutor executor;
 
   @Deprecated(forRemoval = false)
   public AgentLoopRunner(LlmGateway llmGateway, String model, AgentToolRegistry toolRegistry, int maxSteps) {
     this(llmGateway, selectorFromModel(model), toolRegistry, maxSteps);
+  }
+
+  @Deprecated(forRemoval = false)
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
+      String model,
+      AgentToolRegistry toolRegistry,
+      int maxSteps,
+      AgentExecutor executor
+  ) {
+    this(llmGateway, selectorFromModel(model), toolRegistry, maxSteps, executor);
   }
 
   public AgentLoopRunner(
@@ -78,11 +102,31 @@ public class AgentLoopRunner {
 
   public AgentLoopRunner(
       LlmGateway llmGateway,
+      LlmModelSelector modelSelector,
+      AgentToolRegistry toolRegistry,
+      int maxSteps,
+      AgentExecutor executor
+  ) {
+    this(llmGateway, new AgentLlmRequestFactory(modelSelector), toolRegistry, null, maxSteps, executor);
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
       AgentLlmRequestFactory requestFactory,
       AgentToolRegistry toolRegistry,
       int maxSteps
   ) {
     this(llmGateway, requestFactory, toolRegistry, null, maxSteps);
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
+      AgentLlmRequestFactory requestFactory,
+      AgentToolRegistry toolRegistry,
+      int maxSteps,
+      AgentExecutor executor
+  ) {
+    this(llmGateway, requestFactory, toolRegistry, null, maxSteps, executor);
   }
 
   public AgentLoopRunner(
@@ -97,6 +141,25 @@ public class AgentLoopRunner {
 
   public AgentLoopRunner(
       LlmGateway llmGateway,
+      LlmModelSelector modelSelector,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps,
+      AgentExecutor executor
+  ) {
+    this(
+        llmGateway,
+        new AgentLlmRequestFactory(modelSelector),
+        toolRegistry,
+        toolChoice,
+        maxSteps,
+        List.of(),
+        List.of(),
+        executor);
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
       AgentLlmRequestFactory requestFactory,
       AgentToolRegistry toolRegistry,
       LlmToolChoice toolChoice,
@@ -107,6 +170,17 @@ public class AgentLoopRunner {
 
   public AgentLoopRunner(
       LlmGateway llmGateway,
+      AgentLlmRequestFactory requestFactory,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps,
+      AgentExecutor executor
+  ) {
+    this(llmGateway, requestFactory, toolRegistry, toolChoice, maxSteps, List.of(), List.of(), executor);
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
       LlmModelSelector modelSelector,
       AgentToolRegistry toolRegistry,
       LlmToolChoice toolChoice,
@@ -129,6 +203,31 @@ public class AgentLoopRunner {
 
   public AgentLoopRunner(
       LlmGateway llmGateway,
+      LlmModelSelector modelSelector,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps,
+      List<AgentLoopObserver> observers,
+      List<AgentLoopInterceptor> interceptors,
+      AgentExecutor executor
+  ) {
+    this(
+        llmGateway,
+        new AgentLlmRequestFactory(modelSelector),
+        toolRegistry,
+        toolChoice,
+        maxSteps,
+        observers,
+        interceptors,
+        ToolResultCompactionPolicy.defaults(),
+        new InMemoryToolResultStore(),
+        new ObjectMapper(),
+        null,
+        executor);
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
       AgentLlmRequestFactory requestFactory,
       AgentToolRegistry toolRegistry,
       LlmToolChoice toolChoice,
@@ -147,6 +246,31 @@ public class AgentLoopRunner {
         ToolResultCompactionPolicy.defaults(),
         new InMemoryToolResultStore(),
         new ObjectMapper());
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
+      AgentLlmRequestFactory requestFactory,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps,
+      List<AgentLoopObserver> observers,
+      List<AgentLoopInterceptor> interceptors,
+      AgentExecutor executor
+  ) {
+    this(
+        llmGateway,
+        requestFactory,
+        toolRegistry,
+        toolChoice,
+        maxSteps,
+        observers,
+        interceptors,
+        ToolResultCompactionPolicy.defaults(),
+        new InMemoryToolResultStore(),
+        new ObjectMapper(),
+        null,
+        executor);
   }
 
   public AgentLoopRunner(
@@ -225,7 +349,37 @@ public class AgentLoopRunner {
         toolResultPolicy,
         toolResultStore,
         objectMapper,
-        permissionGuard);
+        permissionGuard,
+        UNCONFIGURED_EXECUTOR);
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
+      LlmModelSelector modelSelector,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps,
+      List<AgentLoopObserver> observers,
+      List<AgentLoopInterceptor> interceptors,
+      ToolResultCompactionPolicy toolResultPolicy,
+      ToolResultStore toolResultStore,
+      ObjectMapper objectMapper,
+      AgentToolPermissionGuard permissionGuard,
+      AgentExecutor executor
+  ) {
+    this(
+        llmGateway,
+        new AgentLlmRequestFactory(modelSelector),
+        toolRegistry,
+        toolChoice,
+        maxSteps,
+        observers,
+        interceptors,
+        toolResultPolicy,
+        toolResultStore,
+        objectMapper,
+        permissionGuard,
+        executor);
   }
 
   public AgentLoopRunner(
@@ -240,6 +394,35 @@ public class AgentLoopRunner {
       ToolResultStore toolResultStore,
       ObjectMapper objectMapper,
       AgentToolPermissionGuard permissionGuard
+  ) {
+    this(
+        llmGateway,
+        requestFactory,
+        toolRegistry,
+        toolChoice,
+        maxSteps,
+        observers,
+        interceptors,
+        toolResultPolicy,
+        toolResultStore,
+        objectMapper,
+        permissionGuard,
+        UNCONFIGURED_EXECUTOR);
+  }
+
+  public AgentLoopRunner(
+      LlmGateway llmGateway,
+      AgentLlmRequestFactory requestFactory,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps,
+      List<AgentLoopObserver> observers,
+      List<AgentLoopInterceptor> interceptors,
+      ToolResultCompactionPolicy toolResultPolicy,
+      ToolResultStore toolResultStore,
+      ObjectMapper objectMapper,
+      AgentToolPermissionGuard permissionGuard,
+      AgentExecutor executor
   ) {
     if (maxSteps < 1) {
       throw new IllegalArgumentException("Agent loop max steps must be positive");
@@ -258,12 +441,14 @@ public class AgentLoopRunner {
     this.runMessageCompactor = new RunMessageCompactor(mapper, toolResultCompactor);
     this.objectMapper = mapper;
     this.permissionGuard = permissionGuard == null ? defaultPermissionGuard(mapper) : permissionGuard;
+    this.executor = Objects.requireNonNull(executor, "agent executor must not be null");
   }
 
   /**
    * 以 Reactive Streams 的 {@link Flow.Publisher} 形式启动一次 Agent run。
    *
-   * <p>这里为每个 run 创建单订阅者同步事件出口和独立后台线程。下游声明 demand 后，Agent 工作线程
+   * <p>这里为每个 run 创建单订阅者同步事件出口，并把任务提交给专用 Agent executor。下游声明 demand 后，
+   * Agent 工作线程
    * 会直接调用 Subscriber 回调，因此慢客户端只会阻塞自己的 run，不会占用公共投递线程池或堆积异步缓冲。</p>
    */
   public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
@@ -271,7 +456,19 @@ public class AgentLoopRunner {
     AgentCancellationToken cancellationToken = new AgentCancellationToken();
     return new SingleSubscriberAgentStreamPublisher(
         cancellationToken,
-        eventSink -> runLoop(request, eventSink, cancellationToken));
+        executor,
+        eventSink -> runLoop(request, eventSink, cancellationToken),
+        failure -> failRunSubmission(request, cancellationToken, failure));
+  }
+
+  private void failRunSubmission(
+      AgentRequest request,
+      AgentCancellationToken cancellationToken,
+      Throwable failure
+  ) {
+    AgentLoopContext context = newContext(request, cancellationToken);
+    AgentLoopLifecycle lifecycle = new AgentLoopLifecycle(event -> true, observers, interceptors, permissionGuard);
+    lifecycle.error(context, toAgentException(failure));
   }
 
   /**
@@ -304,12 +501,7 @@ public class AgentLoopRunner {
       AgentCancellationToken cancellationToken
   ) {
     // runId 由上游传入时用于恢复/串联已有会话，否则本地生成，保证每个流式事件都有稳定关联键。
-    AgentLoopContext context = new AgentLoopContext(
-        request.runId() == null ? UUID.randomUUID().toString() : request.runId(),
-        request,
-        maxSteps,
-        request.metadata(),
-        cancellationToken);
+    AgentLoopContext context = newContext(request, cancellationToken);
     AgentLoopLifecycle lifecycle = new AgentLoopLifecycle(eventSink, observers, interceptors, permissionGuard);
     try {
       lifecycle.runStarted(context);
@@ -398,6 +590,15 @@ public class AgentLoopRunner {
     } catch (RuntimeException ex) {
       lifecycle.error(context, new AgentException(AgentErrorCode.UNKNOWN, "Agent loop failed", false, Map.of(), ex));
     }
+  }
+
+  private AgentLoopContext newContext(AgentRequest request, AgentCancellationToken cancellationToken) {
+    return new AgentLoopContext(
+        request.runId() == null ? UUID.randomUUID().toString() : request.runId(),
+        request,
+        maxSteps,
+        request.metadata(),
+        cancellationToken);
   }
 
   private void throwIfCancelled(AgentLoopContext context) {

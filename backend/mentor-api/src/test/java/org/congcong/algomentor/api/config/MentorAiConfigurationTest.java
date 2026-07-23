@@ -21,6 +21,7 @@ import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentModelSelectorResolver;
 import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
+import org.congcong.algomentor.agent.core.execution.AgentExecutor;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionBehavior;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionCoordinator;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionPlan;
@@ -37,6 +38,7 @@ import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
 import org.congcong.algomentor.agent.core.tool.CalculatorTool;
 import org.congcong.algomentor.api.problem.service.ProblemService;
+import org.congcong.algomentor.api.agent.execution.ManagedAgentExecutor;
 import org.congcong.algomentor.api.problem.tool.GetProblemStatementTool;
 import org.congcong.algomentor.api.problem.tool.ListProblemFiltersTool;
 import org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames;
@@ -93,6 +95,7 @@ class MentorAiConfigurationTest {
             "algo-mentor.ai.gateway.default-model=test-model")
         .run(context -> {
           LlmGateway gateway = context.getBean(LlmGateway.class);
+          assertThat(context.getBean(AgentExecutor.class)).isInstanceOf(ManagedAgentExecutor.class);
           LlmCompletionResult result = gateway.complete(LlmCompletionRequest.builder()
               .modelSelector(new LlmModelSelector(null, null, Set.of(), null))
               .messages(List.of(LlmMessage.user("hello")))

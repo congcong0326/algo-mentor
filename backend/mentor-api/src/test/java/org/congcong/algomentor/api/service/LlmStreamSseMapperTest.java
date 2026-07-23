@@ -9,6 +9,8 @@ import java.util.Map;
 import org.congcong.algomentor.agent.core.AgentErrorCode;
 import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionConstants;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionRejectionReason;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionType;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
@@ -221,6 +223,33 @@ class LlmStreamSseMapperTest {
         .contains("\"message\":\"Unknown agent tool: search\"")
         .contains("\"retryable\":false")
         .contains("\"toolName\":\"search\"");
+  }
+
+  @Test
+  void mapsAgentExecutorErrorsWithStableCodes() throws Exception {
+    for (AgentErrorCode code : new AgentErrorCode[] {
+        AgentErrorCode.AGENT_EXECUTOR_OVERLOADED,
+        AgentErrorCode.AGENT_EXECUTOR_SHUTDOWN
+    }) {
+      AgentException exception = new AgentException(
+          code,
+          "Agent executor unavailable",
+          true,
+          Map.of(
+              AgentExecutionConstants.REJECTION_REASON_METADATA_KEY,
+              code == AgentErrorCode.AGENT_EXECUTOR_OVERLOADED
+                  ? AgentExecutionRejectionReason.SATURATED.name()
+                  : AgentExecutionRejectionReason.SHUTDOWN.name()),
+          null);
+
+      SseEmitter.SseEventBuilder event = mapper.toSseEvent(new AgentStreamEvent.AgentError("run_1", exception));
+
+      assertThat(sseText(event)).contains("event:agent_error");
+      assertThat(serializedData(event))
+          .contains("\"code\":\"" + code.name() + "\"")
+          .contains("\"retryable\":true")
+          .contains("\"" + AgentExecutionConstants.REJECTION_REASON_METADATA_KEY + "\":");
+    }
   }
 
   private String sseText(SseEmitter.SseEventBuilder event) {

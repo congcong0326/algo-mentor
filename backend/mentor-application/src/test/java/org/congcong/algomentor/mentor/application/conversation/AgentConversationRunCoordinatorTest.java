@@ -91,6 +91,29 @@ class AgentConversationRunCoordinatorTest {
   }
 
   @Test
+  void upstreamErrorBeforeRunStartReleasesLock() {
+    InMemoryAgentRunLockManager lockManager = new InMemoryAgentRunLockManager();
+    CapturingConversationRepository repository = new CapturingConversationRepository();
+    AgentConversationRunCoordinator coordinator = coordinator(
+        repository,
+        new ErrorSignallingAgentLoopRunner(),
+        lockManager);
+    Flow.Publisher<AgentStreamEvent> publisher = coordinator.stream(new AgentConversationCommand(
+        42L,
+        7L,
+        "hello",
+        "idem-1"));
+
+    publisher.subscribe(new NoopSubscriber());
+
+    assertThat(lockManager.tryAcquire(new AgentRunLockRequest(
+        AgentRunLockConstants.TASK_LOCK_KEY_PREFIX + 42,
+        "owner-a",
+        null,
+        Map.of("taskId", 42L))).acquired()).isTrue();
+  }
+
+  @Test
   void idempotentReplayReturnsExistingRunIdentityWithoutStartingAgentLoop() {
     InMemoryAgentRunLockManager lockManager = new InMemoryAgentRunLockManager();
     ReplayConversationRepository repository = new ReplayConversationRepository();
@@ -274,6 +297,29 @@ class AgentConversationRunCoordinatorTest {
     public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
       return subscriber -> {
         throw new IllegalStateException("subscribe failed");
+      };
+    }
+  }
+
+  private static final class ErrorSignallingAgentLoopRunner extends AgentLoopRunner {
+
+    private ErrorSignallingAgentLoopRunner() {
+      super(new UnusedLlmGateway(), "stub-model", AgentToolRegistry.empty(), 1);
+    }
+
+    @Override
+    public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
+      return subscriber -> {
+        subscriber.onSubscribe(new Flow.Subscription() {
+          @Override
+          public void request(long count) {
+          }
+
+          @Override
+          public void cancel() {
+          }
+        });
+        subscriber.onError(new IllegalStateException("executor rejected"));
       };
     }
   }

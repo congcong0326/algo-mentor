@@ -23,6 +23,7 @@ import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
+import org.congcong.algomentor.agent.core.execution.AgentExecutor;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionType;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionGuard;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHookChain;
@@ -60,6 +61,19 @@ import org.junit.jupiter.api.Test;
 class PracticeCodeReviewFlowTest {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static final AgentExecutor TEST_EXECUTOR = new AgentExecutor() {
+    @Override
+    public void execute(Runnable task) {
+      Thread worker = new Thread(task, "practice-review-agent-test");
+      worker.setDaemon(true);
+      worker.start();
+    }
+
+    @Override
+    public boolean isShutdown() {
+      return false;
+    }
+  };
   private static final String LEGACY_PRACTICE_CAPABILITIES_METADATA = "practiceCapabilities";
   private static final long USER_ID = 7L;
   private static final long SESSION_ID = 50L;
@@ -342,7 +356,8 @@ class PracticeCodeReviewFlowTest {
             new AgentToolPermissionHookChain(List.of(new PracticeCodeReviewPermissionHook(
                 sessionRepository,
                 turnMessageLookupRepository))),
-            coordinator));
+            coordinator),
+        TEST_EXECUTOR);
   }
 
   private FakeGateway reviewToolGateway(String finalText) {

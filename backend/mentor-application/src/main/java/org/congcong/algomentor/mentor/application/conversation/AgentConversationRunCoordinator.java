@@ -198,7 +198,29 @@ public class AgentConversationRunCoordinator {
     @Override
     public void subscribe(Flow.Subscriber<? super AgentStreamEvent> subscriber) {
       try {
-        delegate.subscribe(subscriber);
+        delegate.subscribe(new Flow.Subscriber<>() {
+          @Override
+          public void onSubscribe(Flow.Subscription subscription) {
+            subscriber.onSubscribe(subscription);
+          }
+
+          @Override
+          public void onNext(AgentStreamEvent item) {
+            subscriber.onNext(item);
+          }
+
+          @Override
+          public void onError(Throwable throwable) {
+            // 上游在正式 run 启动前失败时，也必须由应用层兜底释放 task 锁。
+            lockManager.release(lockToken);
+            subscriber.onError(throwable);
+          }
+
+          @Override
+          public void onComplete() {
+            subscriber.onComplete();
+          }
+        });
       } catch (RuntimeException ex) {
         // 只处理启动/订阅阶段的同步失败；异步 run 结束由 AgentLoopObserver 释放锁。
         lockManager.release(lockToken);

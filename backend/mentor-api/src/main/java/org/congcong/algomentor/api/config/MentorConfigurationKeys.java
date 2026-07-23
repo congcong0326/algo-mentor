@@ -20,6 +20,9 @@ public final class MentorConfigurationKeys {
    */
   public static final String AGENT_TOOL_PERMISSION_PREFIX = "algo-mentor.agent.tool-permission";
 
+  /** Agent loop 专用执行线程池配置前缀。 */
+  public static final String AGENT_EXECUTOR_PREFIX = "algo-mentor.agent.executor";
+
   /**
    * API SSE 连接配置前缀。
    */

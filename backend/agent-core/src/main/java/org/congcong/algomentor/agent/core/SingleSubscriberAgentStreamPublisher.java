@@ -2,8 +2,12 @@ package org.congcong.algomentor.agent.core;
 
 import java.util.Objects;
 import java.util.concurrent.Flow;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.function.Consumer;
-import org.congcong.algomentor.common.trace.RequestTraceContext;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionConstants;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionRejectedException;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionRejectionReason;
+import org.congcong.algomentor.agent.core.execution.AgentExecutor;
 
 /**
  * 单订阅者、同步投递的 Agent 事件出口。
@@ -14,12 +18,12 @@ import org.congcong.algomentor.common.trace.RequestTraceContext;
 final class SingleSubscriberAgentStreamPublisher
     implements Flow.Publisher<AgentStreamEvent>, AgentStreamEventSink {
 
-  static final String WORKER_THREAD_NAME = "agent-loop-stream";
-
   private final Object stateMonitor = new Object();
   private final Object signalMonitor = new Object();
   private final AgentCancellationToken cancellationToken;
+  private final AgentExecutor executor;
   private final Consumer<AgentStreamEventSink> workerTask;
+  private final Consumer<Throwable> submissionFailureHandler;
 
   private Flow.Subscriber<? super AgentStreamEvent> subscriber;
   private boolean subscribed;
@@ -30,10 +34,16 @@ final class SingleSubscriberAgentStreamPublisher
 
   SingleSubscriberAgentStreamPublisher(
       AgentCancellationToken cancellationToken,
-      Consumer<AgentStreamEventSink> workerTask
+      AgentExecutor executor,
+      Consumer<AgentStreamEventSink> workerTask,
+      Consumer<Throwable> submissionFailureHandler
   ) {
     this.cancellationToken = Objects.requireNonNull(cancellationToken, "cancellationToken must not be null");
+    this.executor = Objects.requireNonNull(executor, "executor must not be null");
     this.workerTask = Objects.requireNonNull(workerTask, "workerTask must not be null");
+    this.submissionFailureHandler = Objects.requireNonNull(
+        submissionFailureHandler,
+        "submissionFailureHandler must not be null");
   }
 
   @Override
@@ -104,21 +114,57 @@ final class SingleSubscriberAgentStreamPublisher
   }
 
   private void startWorker() {
-    Thread worker = new Thread(
-        RequestTraceContext.wrap(this::runWorker),
-        WORKER_THREAD_NAME);
-    worker.setDaemon(true);
-    cancellationToken.worker(worker);
-    worker.start();
+    try {
+      executor.execute(this::runWorker);
+    } catch (RejectedExecutionException rejected) {
+      handleSubmissionFailure(toAgentException(rejected));
+    } catch (RuntimeException submissionFailure) {
+      handleSubmissionFailure(submissionFailure);
+    }
+  }
+
+  private void handleSubmissionFailure(Throwable failure) {
+    try {
+      submissionFailureHandler.accept(failure);
+    } catch (RuntimeException handlerFailure) {
+      if (handlerFailure != failure) {
+        failure.addSuppressed(handlerFailure);
+      }
+    }
+    fail(failure);
   }
 
   private void runWorker() {
+    Thread worker = Thread.currentThread();
+    cancellationToken.worker(worker);
     try {
       workerTask.accept(this);
       complete();
     } catch (Throwable failure) {
       fail(failure);
+    } finally {
+      cancellationToken.clearWorker(worker);
     }
+  }
+
+  private AgentException toAgentException(RejectedExecutionException rejected) {
+    AgentExecutionRejectionReason reason = rejected instanceof AgentExecutionRejectedException executionRejected
+        ? executionRejected.reason()
+        : executor.isShutdown()
+            ? AgentExecutionRejectionReason.SHUTDOWN
+            : AgentExecutionRejectionReason.SATURATED;
+    AgentErrorCode code = reason == AgentExecutionRejectionReason.SHUTDOWN
+        ? AgentErrorCode.AGENT_EXECUTOR_SHUTDOWN
+        : AgentErrorCode.AGENT_EXECUTOR_OVERLOADED;
+    String message = reason == AgentExecutionRejectionReason.SHUTDOWN
+        ? "Agent service is shutting down"
+        : "Agent service is temporarily busy";
+    return new AgentException(
+        code,
+        message,
+        true,
+        java.util.Map.of(AgentExecutionConstants.REJECTION_REASON_METADATA_KEY, reason.name()),
+        rejected);
   }
 
   private void request(long count) {

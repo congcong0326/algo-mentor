@@ -6,15 +6,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import org.congcong.algomentor.agent.core.execution.AgentExecutor;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.junit.jupiter.api.Test;
 
 class SingleSubscriberAgentStreamPublisherTest {
+
+  private static final AtomicInteger WORKER_SEQUENCE = new AtomicInteger(1);
+  private static final AgentExecutor TEST_EXECUTOR = new AgentExecutor() {
+    @Override
+    public void execute(Runnable task) {
+      Thread worker = new Thread(task, "agent-publisher-test-" + WORKER_SEQUENCE.getAndIncrement());
+      worker.setDaemon(true);
+      worker.start();
+    }
+
+    @Override
+    public boolean isShutdown() {
+      return false;
+    }
+  };
 
   @Test
   void waitsForDemandAndPreservesEventOrder() {
@@ -22,11 +41,14 @@ class SingleSubscriberAgentStreamPublisherTest {
     CountDownLatch secondEmitStarted = new CountDownLatch(1);
     SingleSubscriberAgentStreamPublisher publisher = new SingleSubscriberAgentStreamPublisher(
         new AgentCancellationToken(),
+        TEST_EXECUTOR,
         sink -> {
           workerStarted.countDown();
           sink.emit(new AgentStreamEvent.AgentStepStart("run-1", 1));
           secondEmitStarted.countDown();
           sink.emit(new AgentStreamEvent.AgentStepStart("run-1", 2));
+        },
+        ignored -> {
         });
     ManualDemandSubscriber subscriber = new ManualDemandSubscriber();
 
@@ -52,6 +74,9 @@ class SingleSubscriberAgentStreamPublisherTest {
   void rejectsDuplicateSubscriberWithStableError() {
     SingleSubscriberAgentStreamPublisher publisher = new SingleSubscriberAgentStreamPublisher(
         new AgentCancellationToken(),
+        TEST_EXECUTOR,
+        ignored -> {
+        },
         ignored -> {
         });
     CancellingOnSubscribeSubscriber first = new CancellingOnSubscribeSubscriber();
@@ -74,9 +99,12 @@ class SingleSubscriberAgentStreamPublisherTest {
     CountDownLatch workerCompleted = new CountDownLatch(1);
     SingleSubscriberAgentStreamPublisher publisher = new SingleSubscriberAgentStreamPublisher(
         cancellationToken,
+        TEST_EXECUTOR,
         ignored -> {
           workerStarted.set(true);
           workerCompleted.countDown();
+        },
+        ignored -> {
         });
     TerminalRecordingSubscriber subscriber = new TerminalRecordingSubscriber() {
       @Override
@@ -102,6 +130,7 @@ class SingleSubscriberAgentStreamPublisherTest {
     AtomicReference<Boolean> secondDelivered = new AtomicReference<>();
     SingleSubscriberAgentStreamPublisher publisher = new SingleSubscriberAgentStreamPublisher(
         new AgentCancellationToken(),
+        TEST_EXECUTOR,
         sink -> {
           firstDelivered.set(sink.emit(new AgentStreamEvent.AgentError(
               "run-1",
@@ -111,6 +140,8 @@ class SingleSubscriberAgentStreamPublisherTest {
               1,
               LlmFinishReason.ERROR,
               null)));
+        },
+        ignored -> {
         });
     CollectingSubscriber subscriber = new CollectingSubscriber();
 
@@ -122,6 +153,68 @@ class SingleSubscriberAgentStreamPublisherTest {
     assertThat(subscriber.events).singleElement().isInstanceOf(AgentStreamEvent.AgentError.class);
     assertThat(subscriber.completed.get()).isTrue();
     assertThat(subscriber.error.get()).isNull();
+  }
+
+  @Test
+  void completedTaskCannotInterruptNextTaskOnReusedWorker() {
+    ExecutorService workerPool = Executors.newSingleThreadExecutor(runnable -> {
+      Thread worker = new Thread(runnable, "agent-publisher-reused-worker");
+      worker.setDaemon(true);
+      return worker;
+    });
+    AgentExecutor pooledExecutor = new AgentExecutor() {
+      @Override
+      public void execute(Runnable task) {
+        workerPool.execute(task);
+      }
+
+      @Override
+      public boolean isShutdown() {
+        return workerPool.isShutdown();
+      }
+    };
+    AgentCancellationToken completedRunToken = new AgentCancellationToken();
+    AtomicReference<Thread> firstWorker = new AtomicReference<>();
+    SingleSubscriberAgentStreamPublisher publisher = new SingleSubscriberAgentStreamPublisher(
+        completedRunToken,
+        pooledExecutor,
+        ignored -> firstWorker.set(Thread.currentThread()),
+        ignored -> {
+        });
+    TerminalRecordingSubscriber subscriber = new TerminalRecordingSubscriber();
+    CountDownLatch nextTaskStarted = new CountDownLatch(1);
+    CountDownLatch releaseNextTask = new CountDownLatch(1);
+    CountDownLatch nextTaskCompleted = new CountDownLatch(1);
+    AtomicReference<Thread> nextWorker = new AtomicReference<>();
+    AtomicBoolean nextTaskInterrupted = new AtomicBoolean(false);
+
+    try {
+      publisher.subscribe(subscriber);
+      subscriber.awaitTerminal();
+      workerPool.execute(() -> {
+        nextWorker.set(Thread.currentThread());
+        nextTaskStarted.countDown();
+        try {
+          releaseNextTask.await();
+        } catch (InterruptedException interrupted) {
+          nextTaskInterrupted.set(true);
+          Thread.currentThread().interrupt();
+        } finally {
+          nextTaskCompleted.countDown();
+        }
+      });
+      await(nextTaskStarted);
+
+      completedRunToken.cancel();
+      releaseNextTask.countDown();
+      await(nextTaskCompleted);
+
+      assertThat(nextWorker.get()).isSameAs(firstWorker.get());
+      assertThat(nextTaskInterrupted).isFalse();
+    } finally {
+      releaseNextTask.countDown();
+      workerPool.shutdownNow();
+    }
   }
 
   private static void await(CountDownLatch latch) {

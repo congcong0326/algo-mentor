@@ -17,8 +17,12 @@ import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionRejectedException;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionRejectionReason;
+import org.congcong.algomentor.agent.core.execution.AgentExecutor;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionType;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionPlan;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionGuard;
@@ -30,6 +34,7 @@ import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys
 import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultJsonKeys;
 import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultTypes;
 import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.common.trace.RequestTraceContext;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
@@ -52,10 +57,26 @@ import org.junit.jupiter.api.Test;
 class AgentLoopRunnerTest {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static final AtomicInteger WORKER_SEQUENCE = new AtomicInteger(1);
+  private static final AgentExecutor TEST_EXECUTOR = new AgentExecutor() {
+    @Override
+    public void execute(Runnable task) {
+      Thread worker = new Thread(
+          RequestTraceContext.wrap(task),
+          "agent-loop-test-" + WORKER_SEQUENCE.getAndIncrement());
+      worker.setDaemon(true);
+      worker.start();
+    }
+
+    @Override
+    public boolean isShutdown() {
+      return false;
+    }
+  };
 
   @Test
   void rejectsMissingToolRegistry() {
-    assertThatThrownBy(() -> new AgentLoopRunner(new FakeGateway(), testModelSelector(), null, 1))
+    assertThatThrownBy(() -> newTestRunner(new FakeGateway(), testModelSelector(), null, 1))
         .isInstanceOf(NullPointerException.class)
         .hasMessage("agent tool registry must not be null");
   }
@@ -68,7 +89,7 @@ class AgentLoopRunnerTest {
         new LlmStreamEvent.ContentDelta("Use two indices."),
         new LlmStreamEvent.Usage(LlmUsage.empty()),
         new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         new LlmModelSelector(
             LlmProviderId.of("test-provider"),
@@ -107,7 +128,7 @@ class AgentLoopRunnerTest {
     gateway.steps.add(List.of(
         new LlmStreamEvent.ContentDelta("Use two indices."),
         new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of("finish", "stop"))));
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.empty(),
@@ -137,7 +158,7 @@ class AgentLoopRunnerTest {
     gateway.steps.add(List.of(
         new LlmStreamEvent.ContentDelta("Use two indices."),
         new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.empty(),
@@ -155,7 +176,7 @@ class AgentLoopRunnerTest {
     SynchronousGateway gateway = new SynchronousGateway(List.of(
         new LlmStreamEvent.ContentDelta("Use two indices."),
         new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.empty(),
@@ -168,13 +189,13 @@ class AgentLoopRunnerTest {
     assertThat(subscriber.error).isNull();
     assertThat(subscriber.callbackThreads)
         .isNotEmpty()
-        .allMatch(threadName -> threadName.equals(SingleSubscriberAgentStreamPublisher.WORKER_THREAD_NAME))
+        .allMatch(threadName -> threadName.startsWith("agent-loop-test-"))
         .noneMatch(threadName -> threadName.startsWith("ForkJoinPool.commonPool-worker-"));
   }
 
   @Test
   void slowSubscriberOnlyBlocksItsOwnAgentRun() {
-    AgentLoopRunner slowRunner = new AgentLoopRunner(
+    AgentLoopRunner slowRunner = newTestRunner(
         new SynchronousGateway(List.of(new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of()))),
         testModelSelector(),
         AgentToolRegistry.empty(),
@@ -184,7 +205,7 @@ class AgentLoopRunnerTest {
     slowSubscriber.awaitBlocked();
 
     try {
-      AgentLoopRunner fastRunner = new AgentLoopRunner(
+      AgentLoopRunner fastRunner = newTestRunner(
           new SynchronousGateway(List.of(new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of()))),
           testModelSelector(),
           AgentToolRegistry.empty(),
@@ -213,7 +234,7 @@ class AgentLoopRunnerTest {
         errorObserved.countDown();
       }
     };
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.empty(),
@@ -228,6 +249,112 @@ class AgentLoopRunnerTest {
     await(errorObserved);
     assertThat(observedError).hasValue(AgentErrorCode.CANCELLED);
     assertThat(gateway.streamCalls).isZero();
+  }
+
+  @Test
+  void executorRejectionNotifiesTerminalObserversWithoutCallingLlm() {
+    FakeGateway gateway = new FakeGateway();
+    AtomicReference<AgentException> observedError = new AtomicReference<>();
+    AgentLoopObserver observer = new AgentLoopObserver() {
+      @Override
+      public void onError(AgentLoopContext context, AgentException error) {
+        observedError.set(error);
+      }
+    };
+    AgentExecutor rejectingExecutor = new AgentExecutor() {
+      @Override
+      public void execute(Runnable task) {
+        throw new AgentExecutionRejectedException(
+            AgentExecutionRejectionReason.SATURATED,
+            "saturated",
+            new java.util.concurrent.RejectedExecutionException("saturated"));
+      }
+
+      @Override
+      public boolean isShutdown() {
+        return false;
+      }
+    };
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        LlmToolChoice.auto(),
+        4,
+        List.of(observer),
+        List.of(),
+        rejectingExecutor);
+    CollectingSubscriber subscriber = new CollectingSubscriber();
+
+    runner.stream(new AgentRequest(List.of(LlmMessage.user("busy")))).subscribe(subscriber);
+
+    subscriber.await();
+    assertThat(subscriber.error)
+        .isInstanceOf(AgentException.class)
+        .extracting(error -> ((AgentException) error).code())
+        .isEqualTo(AgentErrorCode.AGENT_EXECUTOR_OVERLOADED);
+    assertThat(observedError.get().code()).isEqualTo(AgentErrorCode.AGENT_EXECUTOR_OVERLOADED);
+    assertThat(observedError.get().retryable()).isTrue();
+    assertThat(subscriber.events).isEmpty();
+    assertThat(gateway.requests).isEmpty();
+  }
+
+  @Test
+  void executorSubmissionFailureNotifiesObserverBeforeSubscriber() {
+    FakeGateway gateway = new FakeGateway();
+    List<String> notifications = new ArrayList<>();
+    AgentLoopObserver observer = new AgentLoopObserver() {
+      @Override
+      public void onError(AgentLoopContext context, AgentException error) {
+        notifications.add("observer:" + error.code());
+      }
+    };
+    AgentExecutor failingExecutor = new AgentExecutor() {
+      @Override
+      public void execute(Runnable task) {
+        throw new IllegalStateException("executor unavailable");
+      }
+
+      @Override
+      public boolean isShutdown() {
+        return false;
+      }
+    };
+    AgentLoopRunner runner = new AgentLoopRunner(
+        gateway,
+        testModelSelector(),
+        AgentToolRegistry.empty(),
+        LlmToolChoice.auto(),
+        4,
+        List.of(observer),
+        List.of(),
+        failingExecutor);
+    Flow.Subscriber<AgentStreamEvent> subscriber = new Flow.Subscriber<>() {
+      @Override
+      public void onSubscribe(Flow.Subscription subscription) {
+        subscription.request(Long.MAX_VALUE);
+      }
+
+      @Override
+      public void onNext(AgentStreamEvent item) {
+      }
+
+      @Override
+      public void onError(Throwable throwable) {
+        notifications.add("subscriber:" + throwable.getMessage());
+      }
+
+      @Override
+      public void onComplete() {
+      }
+    };
+
+    runner.stream(new AgentRequest(List.of(LlmMessage.user("submission failure")))).subscribe(subscriber);
+
+    assertThat(notifications).containsExactly(
+        "observer:UNKNOWN",
+        "subscriber:executor unavailable");
+    assertThat(gateway.requests).isEmpty();
   }
 
   @Test
@@ -247,7 +374,7 @@ class AgentLoopRunnerTest {
         new LlmStreamEvent.ContentDelta("Tool result explained."),
         new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
     FakeTool tool = new FakeTool("fake_lookup", JsonNodeFactory.instance.objectNode().put("summary", "two pointers data"));
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         "gpt-test",
         AgentToolRegistry.of(List.of(tool)),
@@ -608,7 +735,7 @@ class AgentLoopRunnerTest {
         new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
     gateway.steps.add(List.of(new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
     String largePayload = "abcdefghijklmnopqrstuvwxyz";
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.of(List.of(new FakeTool(
@@ -637,7 +764,7 @@ class AgentLoopRunnerTest {
     gateway.steps.add(List.of(
         new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
     FakeTool tool = new FakeTool("calculator", JsonNodeFactory.instance.objectNode().put("value", "3"));
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         new LlmModelSelector(null, LlmModelId.of("gpt-test"), Set.of(), null),
         AgentToolRegistry.of(List.of(tool)),
@@ -672,7 +799,7 @@ class AgentLoopRunnerTest {
         observed.add("run-end:" + result.output().text());
       }
     };
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.empty(),
@@ -704,7 +831,7 @@ class AgentLoopRunnerTest {
         outputs.add(output);
       }
     };
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.empty(),
@@ -746,7 +873,7 @@ class AgentLoopRunnerTest {
     gateway.steps.add(List.of(
         new LlmStreamEvent.ContentDelta("not-json"),
         new LlmStreamEvent.MessageEnd(LlmFinishReason.STOP, Map.of())));
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.empty(),
@@ -798,7 +925,7 @@ class AgentLoopRunnerTest {
         outputs.add(output);
       }
     };
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.of(List.of(new FakeTool("fake_lookup", JsonNodeFactory.instance.objectNode()))),
@@ -819,7 +946,7 @@ class AgentLoopRunnerTest {
         new LlmStreamEvent.ToolCallEnd(
             new LlmToolCall("call_1", "missing_tool", JsonNodeFactory.instance.objectNode())),
         new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         new LlmModelSelector(null, LlmModelId.of("gpt-test"), Set.of(), null),
         AgentToolRegistry.empty(),
@@ -846,7 +973,7 @@ class AgentLoopRunnerTest {
         new LlmStreamEvent.ToolCallEnd(
             new LlmToolCall("call_2", "fake_lookup", JsonNodeFactory.instance.objectNode())),
         new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         "gpt-test",
         AgentToolRegistry.of(List.of(new FakeTool("fake_lookup", JsonNodeFactory.instance.objectNode()))),
@@ -867,7 +994,7 @@ class AgentLoopRunnerTest {
         new LlmStreamEvent.ToolCallEnd(
             new LlmToolCall("call_1", "fake_lookup", JsonNodeFactory.instance.objectNode())),
         new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         "gpt-test",
         AgentToolRegistry.of(List.of(new FailingTool("fake_lookup"))),
@@ -894,7 +1021,7 @@ class AgentLoopRunnerTest {
         new LlmStreamEvent.ToolCallEnd(
             new LlmToolCall("call_1", "fake_lookup", JsonNodeFactory.instance.objectNode())),
         new LlmStreamEvent.MessageEnd(LlmFinishReason.TOOL_CALLS, Map.of())));
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         "gpt-test",
         AgentToolRegistry.of(List.of(new AgentFailingTool("fake_lookup"))),
@@ -937,7 +1064,7 @@ class AgentLoopRunnerTest {
         observed.add(stepIndex + ":" + toolCall.id() + ":" + error.code());
       }
     };
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.of(List.of(new FailingTool("fake_lookup"))),
@@ -1012,7 +1139,7 @@ class AgentLoopRunnerTest {
         observed.add("run-end-" + result.steps());
       }
     };
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.of(List.of(new FakeTool(
@@ -1092,7 +1219,7 @@ class AgentLoopRunnerTest {
       }
     };
     gateway.beforeStream = () -> order.add("gateway");
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.empty(),
@@ -1118,7 +1245,7 @@ class AgentLoopRunnerTest {
         throw new IllegalStateException("observer failed");
       }
     };
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.empty(),
@@ -1178,7 +1305,7 @@ class AgentLoopRunnerTest {
             .put("source", "interceptor");
       }
     };
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.of(List.of(tool)),
@@ -1218,7 +1345,7 @@ class AgentLoopRunnerTest {
         throw new AgentException(AgentErrorCode.UNKNOWN, "blocked by interceptor");
       }
     };
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.empty(),
@@ -1250,7 +1377,7 @@ class AgentLoopRunnerTest {
         errorObserved.countDown();
       }
     };
-    AgentLoopRunner runner = new AgentLoopRunner(
+    AgentLoopRunner runner = newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.empty(),
@@ -1282,6 +1409,109 @@ class AgentLoopRunnerTest {
     return new LlmModelSelector(null, LlmModelId.of("gpt-test"), Set.of(), null);
   }
 
+  private static AgentLoopRunner newTestRunner(
+      LlmGateway gateway,
+      String model,
+      AgentToolRegistry toolRegistry,
+      int maxSteps
+  ) {
+    return new AgentLoopRunner(gateway, model, toolRegistry, maxSteps, TEST_EXECUTOR);
+  }
+
+  private static AgentLoopRunner newTestRunner(
+      LlmGateway gateway,
+      LlmModelSelector modelSelector,
+      AgentToolRegistry toolRegistry,
+      int maxSteps
+  ) {
+    return new AgentLoopRunner(gateway, modelSelector, toolRegistry, maxSteps, TEST_EXECUTOR);
+  }
+
+  private static AgentLoopRunner newTestRunner(
+      LlmGateway gateway,
+      LlmModelSelector modelSelector,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps
+  ) {
+    return new AgentLoopRunner(gateway, modelSelector, toolRegistry, toolChoice, maxSteps, TEST_EXECUTOR);
+  }
+
+  private static AgentLoopRunner newTestRunner(
+      LlmGateway gateway,
+      LlmModelSelector modelSelector,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps,
+      List<AgentLoopObserver> observers,
+      List<AgentLoopInterceptor> interceptors
+  ) {
+    return new AgentLoopRunner(
+        gateway,
+        modelSelector,
+        toolRegistry,
+        toolChoice,
+        maxSteps,
+        observers,
+        interceptors,
+        TEST_EXECUTOR);
+  }
+
+  private static AgentLoopRunner newTestRunner(
+      LlmGateway gateway,
+      LlmModelSelector modelSelector,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps,
+      List<AgentLoopObserver> observers,
+      List<AgentLoopInterceptor> interceptors,
+      ToolResultCompactionPolicy toolResultPolicy,
+      ToolResultStore toolResultStore,
+      ObjectMapper objectMapper
+  ) {
+    return new AgentLoopRunner(
+        gateway,
+        modelSelector,
+        toolRegistry,
+        toolChoice,
+        maxSteps,
+        observers,
+        interceptors,
+        toolResultPolicy,
+        toolResultStore,
+        objectMapper,
+        null,
+        TEST_EXECUTOR);
+  }
+
+  private static AgentLoopRunner newTestRunner(
+      LlmGateway gateway,
+      LlmModelSelector modelSelector,
+      AgentToolRegistry toolRegistry,
+      LlmToolChoice toolChoice,
+      int maxSteps,
+      List<AgentLoopObserver> observers,
+      List<AgentLoopInterceptor> interceptors,
+      ToolResultCompactionPolicy toolResultPolicy,
+      ToolResultStore toolResultStore,
+      ObjectMapper objectMapper,
+      AgentToolPermissionGuard permissionGuard
+  ) {
+    return new AgentLoopRunner(
+        gateway,
+        modelSelector,
+        toolRegistry,
+        toolChoice,
+        maxSteps,
+        observers,
+        interceptors,
+        toolResultPolicy,
+        toolResultStore,
+        objectMapper,
+        permissionGuard,
+        TEST_EXECUTOR);
+  }
+
   private AgentLoopRunner runnerWithPermissionPlan(
       FakeGateway gateway,
       AgentTool tool,
@@ -1303,7 +1533,7 @@ class AgentLoopRunnerTest {
       InMemoryAgentToolPermissionCoordinator coordinator,
       List<AgentLoopObserver> observers
   ) {
-    return new AgentLoopRunner(
+    return newTestRunner(
         gateway,
         testModelSelector(),
         AgentToolRegistry.of(List.of(tool)),

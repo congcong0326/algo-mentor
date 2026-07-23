@@ -78,9 +78,12 @@ public class AiRunGovernanceObserver implements AgentLoopObserver {
       lifecycleService.markCancelled(admission, usage(buffer), provider(buffer), model(buffer));
       return;
     }
-    AiGovernanceErrorCode code = error.code() == AgentErrorCode.STRUCTURED_OUTPUT_INVALID
-        ? AiGovernanceErrorCode.AI_STRUCTURED_OUTPUT_INVALID
-        : AiGovernanceErrorCode.AI_UNKNOWN;
+    AiGovernanceErrorCode code = switch (error.code()) {
+      case STRUCTURED_OUTPUT_INVALID -> AiGovernanceErrorCode.AI_STRUCTURED_OUTPUT_INVALID;
+      case AGENT_EXECUTOR_OVERLOADED -> AiGovernanceErrorCode.AI_RATE_LIMITED;
+      case AGENT_EXECUTOR_SHUTDOWN -> AiGovernanceErrorCode.AI_PROVIDER_UNAVAILABLE;
+      default -> AiGovernanceErrorCode.AI_UNKNOWN;
+    };
     lifecycleService.markFailed(admission, code, usage(buffer), provider(buffer), model(buffer));
   }
 

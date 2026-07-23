@@ -19,6 +19,7 @@ import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.agent.core.DefaultAgentModelSelectorResolver;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
+import org.congcong.algomentor.agent.core.execution.AgentExecutor;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionAuthorization;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionCheck;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionCoordinator;
@@ -51,6 +52,7 @@ import org.congcong.algomentor.ai.governance.completion.AiGovernedCompletionServ
 import org.congcong.algomentor.ai.governance.completion.AiPassthroughCompletionGateway;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicyResolver;
 import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimePolicyService;
+import org.congcong.algomentor.api.agent.execution.ManagedAgentExecutor;
 import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.congcong.algomentor.api.problem.tool.GetProblemStatementTool;
 import org.congcong.algomentor.api.problem.tool.ListProblemFiltersTool;
@@ -79,6 +81,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 @EnableConfigurationProperties({
     LlmGatewayProperties.class,
     AgentCompactionProperties.class,
+    AgentExecutorProperties.class,
     AgentToolPermissionProperties.class,
     ApiSseProperties.class,
     PracticeCodeReviewProperties.class
@@ -89,6 +92,15 @@ public class MentorAiConfiguration {
   @ConditionalOnMissingBean
   public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
     return builder.build();
+  }
+
+  @Bean(destroyMethod = "shutdown")
+  @ConditionalOnMissingBean(AgentExecutor.class)
+  public ManagedAgentExecutor agentExecutor(
+      AgentExecutorProperties properties,
+      ObjectProvider<MeterRegistry> meterRegistry
+  ) {
+    return new ManagedAgentExecutor(properties, meterRegistry.getIfAvailable());
   }
 
   @Bean
@@ -332,7 +344,8 @@ public class MentorAiConfiguration {
       ToolResultCompactionPolicy toolResultPolicy,
       org.springframework.beans.factory.ObjectProvider<ToolResultStore> toolResultStore,
       ObjectMapper objectMapper,
-      AgentToolPermissionGuard permissionGuard
+      AgentToolPermissionGuard permissionGuard,
+      AgentExecutor agentExecutor
   ) {
     return new AgentLoopRunner(
         llmGateway,
@@ -345,7 +358,8 @@ public class MentorAiConfiguration {
         toolResultPolicy,
         toolResultStore.getIfAvailable(),
         objectMapper,
-        permissionGuard);
+        permissionGuard,
+        agentExecutor);
   }
 
   @Bean

@@ -15,6 +15,7 @@ import org.congcong.algomentor.agent.core.AgentLoopContext;
 import org.congcong.algomentor.agent.core.AgentOutput;
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentRunResult;
+import org.congcong.algomentor.agent.core.execution.AgentExecutionConstants;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.RunErrorUpdate;
@@ -128,6 +129,23 @@ class PersistentAgentRunObserverTest {
         "markRunStarted",
         "markRunFailed",
         "markTurnFailed");
+  }
+
+  @Test
+  void marksPreparedRunFailedWhenExecutionIsRejectedBeforeRunStart() {
+    AgentLoopContext context = context();
+
+    observer.onError(context, new AgentException(
+        AgentErrorCode.AGENT_EXECUTOR_OVERLOADED,
+        "Agent service is temporarily busy",
+        true,
+        Map.of(AgentExecutionConstants.REJECTION_REASON_METADATA_KEY, "SATURATED"),
+        null));
+
+    assertThat(mapper.errorUpdate.status()).isEqualTo("failed");
+    assertThat(mapper.errorUpdate.error().get("code").asText()).isEqualTo("AGENT_EXECUTOR_OVERLOADED");
+    assertThat(mapper.turnFailed).isEqualTo(new TurnFailed(21L, NOW));
+    assertThat(mapper.calls).containsExactly("markRunFailed", "markTurnFailed");
   }
 
   @Test

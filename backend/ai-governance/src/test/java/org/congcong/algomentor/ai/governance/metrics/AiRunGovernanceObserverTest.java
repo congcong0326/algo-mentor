@@ -63,6 +63,34 @@ class AiRunGovernanceObserverTest {
     assertThat(lifecycle.released).isTrue();
   }
 
+  @Test
+  void mapsExecutorOverloadToRateLimitedAndReleasesLockBeforeRunStart() {
+    RecordingLifecycleService lifecycle = new RecordingLifecycleService();
+    AiRunGovernanceObserver observer = new AiRunGovernanceObserver(lifecycle);
+
+    observer.onError(
+        contextWithAdmission(admittedRun()),
+        new AgentException(AgentErrorCode.AGENT_EXECUTOR_OVERLOADED, "busy"));
+
+    assertThat(lifecycle.events).containsExactly("failed");
+    assertThat(lifecycle.lastErrorCode).isEqualTo(AiGovernanceErrorCode.AI_RATE_LIMITED);
+    assertThat(lifecycle.released).isTrue();
+  }
+
+  @Test
+  void mapsExecutorShutdownToProviderUnavailableAndReleasesLockBeforeRunStart() {
+    RecordingLifecycleService lifecycle = new RecordingLifecycleService();
+    AiRunGovernanceObserver observer = new AiRunGovernanceObserver(lifecycle);
+
+    observer.onError(
+        contextWithAdmission(admittedRun()),
+        new AgentException(AgentErrorCode.AGENT_EXECUTOR_SHUTDOWN, "shutting down"));
+
+    assertThat(lifecycle.events).containsExactly("failed");
+    assertThat(lifecycle.lastErrorCode).isEqualTo(AiGovernanceErrorCode.AI_PROVIDER_UNAVAILABLE);
+    assertThat(lifecycle.released).isTrue();
+  }
+
   static AiRunAdmission admittedRun() {
     AiPurposePolicy policy = new AiPurposePolicy(
         true, 50, 1, 32768, 2048, 8, true, true, false, false,
@@ -98,6 +126,7 @@ class AiRunGovernanceObserverTest {
 
     final List<String> events = new ArrayList<>();
     AiUsage lastUsage = AiUsage.zero();
+    AiGovernanceErrorCode lastErrorCode;
     boolean released;
 
     RecordingLifecycleService() {
@@ -125,6 +154,7 @@ class AiRunGovernanceObserverTest {
         String model) {
       events.add("failed");
       lastUsage = usage;
+      lastErrorCode = errorCode;
       released = true;
     }
 

@@ -41,6 +41,10 @@ public final class AgentCancellationToken {
     }
   }
 
+  void clearWorker(Thread thread) {
+    worker.compareAndSet(thread, null);
+  }
+
   void llmSubscription(Flow.Subscription subscription) {
     llmSubscription.set(subscription);
     if (isCancelled() && subscription != null) {

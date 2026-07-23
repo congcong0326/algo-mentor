@@ -73,6 +73,7 @@
 - `backend/agent-core`：Agent 核心编排模型，面向 `LlmGateway` 组织模型调用和后续工具执行流程；`runtime` 子包提供通用会话模型、上下文组装策略和 repository 端口。
 - `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/permission`：Agent Tool 执行前权限核心包，包含 `AgentToolPermissionGuard`、hook chain、内存 coordinator、permission request/decision 模型、synthetic result factory 和 no-op metrics。
 - `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/AgentLoopRunner.java`：Agent 主循环，在真实工具执行前调用 lifecycle 权限门禁，并支持 synthetic permission result 回填模型上下文。
+- `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/execution`：Agent loop 执行器边界，固定任务提交、关停状态、拒绝原因和线程名称/metadata 公共契约。
 - `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/AgentLoopLifecycle.java`：Agent lifecycle 门面，发布 `tool_permission_request`、`tool_permission_decision`、`tool_permission_timeout` 事件并调用权限 guard。
 - `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/runtime/model/AgentRuntimeMetadataKeys.java`：Agent runtime 受信 metadata key，包含权限 owner 校验使用的 `USER_ID = "userId"` 和调用级台账关联所需的稳定 step index。
 - `backend/agent-persistence-postgres`：Agent 运行态 PostgreSQL/MyBatis 持久化模块，包含 MyBatis mapper interface/XML、JSONB type handler、repository、持久化 observer、trace snapshot observer 和 agent runtime Flyway migration。
@@ -82,7 +83,9 @@
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/profile/recall`：PRACTICE_CHAT 一次性画像快照、受信当前题标签召回和 800 token 确定性裁剪；正式 Review 不走该路径。
 - `backend/persistent-queue`：独立持久化队列模块；存储/Publisher 与 consumer worker 分为两个有序自动配置，worker 仅在 `algo-mentor.queue.consumer.enabled=true` 时启动。
 - `backend/mentor-api`：Spring MVC API 应用，负责 controller、SSE adapter、配置属性和 bean wiring，不直接拥有 agent runtime SQL。
-- `backend/mentor-api/src/main/resources/application.yml`：默认应用配置，默认不强制连接数据库。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/agent/execution/ManagedAgentExecutor.java`：Spring 管理的 Agent 专用线程池，使用 `20/100 + SynchronousQueue + AbortPolicy`，负责 trace 透传、执行指标和限时优雅关闭。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/AgentExecutorProperties.java`：绑定 `algo-mentor.agent.executor` 的线程数、空闲回收、关停超时和线程名前缀配置。
+- `backend/mentor-api/src/main/resources/application.yml`：默认应用配置，包含 Agent executor 环境变量映射，默认不强制连接数据库。
 - `backend/mentor-api/src/main/resources/application-local.yml`：本地 PostgreSQL 与 Flyway 配置。
 - `backend/mentor-api/src/main/resources/db/migration`：mentor API 自有 Flyway 迁移脚本目录。
 - `backend/mentor-api/src/main/resources/db/migration/V27__problem_recommendation_reasons.sql`：为题目表增加中英文推荐理由字段。
