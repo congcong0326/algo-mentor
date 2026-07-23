@@ -59,6 +59,7 @@
 - `docs/internal-beta-feedback-overview-stage-4-implementation-plan.md`：内测管理员能力阶段四详细实施计划，仅细化反馈信箱与管理员概览，固定未读/事务语义、反馈 API、概览区块降级、前端徽标与跨页面联动，并明确阶段三 run 查询依赖。
 - `docs/admin-frontend-shell-refactoring-design.md`：管理员前端工作区重构设计，参考高密度管理台的信息层级，固定 `/admin/*` 使用全局顶栏、业务域侧栏、局部页签、紧凑命令栏和数据工作区，并保持普通用户界面不变。
 - `docs/user-group-management-design.md`：用户组与管理员成员管理设计，定义 `identity` 模块中的用户组和多对多成员关系、有效期语义、管理员 API、用户组页面及用户详情中的手动添加与移除，不包含访问策略和支付订阅。
+- `docs/generic-policy-foundation-design.md`：通用策略底座研发设计，固定单表 JSONB、业务 Spring Bean 注册强类型内容、全部用户/用户/用户组范围、全局优先级单条命中、整类编译失败日志、按类型策略缓存和按用户关系缓存失效语义。
 
 ## 后端
 
@@ -66,7 +67,8 @@
 - `backend/common`：跨模块公共模型、DTO 和工具。
 - `backend/common/src/main/java/org/congcong/algomentor/common/admin/audit`：低敏管理员审计公共端口、强类型动作/目标/结果、受控 metadata 和 no-op 实现。
 - `backend/domain`：业务领域模型，例如算法学习主题、题目、学习计划、会话等。
-- `backend/identity`：身份本体模块，拥有用户/角色模型、用户与角色 MyBatis mapper、管理员用户管理 API、身份状态事件和用户软删除迁移；`auth` 依赖该模块完成认证流程中的用户创建、查询、角色和状态校验。
+- `backend/identity`：身份本体模块，拥有用户/角色模型、用户与角色 MyBatis mapper、管理员用户管理 API、身份状态事件和用户软删除迁移；`group/relation` 提供按用户缓存、按当前时间过滤成员有效期的用户组关系查询，并由用户组写路径精确失效；`auth` 依赖该模块完成认证流程中的用户创建、查询、角色和状态校验。
+- `backend/policy`：通用策略底座，包含业务 Bean 类型注册、JSONB/MyBatis 持久化、类型级事务锁和全局优先级、按类型已启用策略缓存、强类型运行时解析、管理 CRUD/排序 API、当前用户有效策略 API，以及 `V39` Flyway 迁移。
 - `backend/auth/src/main/java/org/congcong/algomentor/auth/betaaccess`：内测邮箱准入的模型、独立 repository/service、管理员 API 和三类认证入口共用策略。
 - `backend/auth/src/main/java/org/congcong/algomentor/auth/passwordreset`：管理员临时密码重置、24 小时有效期、原子单次消费、强制改密和 Session 吊销事务边界。
 - `backend/auth/src/main/resources/db/migration/auth/V28__beta_access_and_password_reset.sql`：内测准入设置、邮箱白名单和密码凭据临时状态迁移，白名单默认关闭。

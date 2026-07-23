@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.policy.repository.mybatis.GenericPolicyMapper">
+
+  <resultMap id="GenericPolicyRowMap" type="org.congcong.algomentor.policy.repository.mybatis.model.GenericPolicyRow">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Long" />
+      <arg column="type_code" javaType="java.lang.String" />
+      <arg column="name" javaType="java.lang.String" />
+      <arg column="description" javaType="java.lang.String" />
+      <arg column="status" javaType="java.lang.String" />
+      <arg column="priority" javaType="_int" />
+      <arg column="subject_range" javaType="com.fasterxml.jackson.databind.JsonNode"
+           typeHandler="org.congcong.algomentor.policy.repository.mybatis.JsonNodeJsonbTypeHandler" />
+      <arg column="content" javaType="com.fasterxml.jackson.databind.JsonNode"
+           typeHandler="org.congcong.algomentor.policy.repository.mybatis.JsonNodeJsonbTypeHandler" />
+      <arg column="version" javaType="_long" />
+      <arg column="created_by" javaType="_long" />
+      <arg column="created_at" javaType="java.time.Instant" />
+      <arg column="updated_by" javaType="_long" />
+      <arg column="updated_at" javaType="java.time.Instant" />
+    </constructor>
+  </resultMap>
+
+  <sql id="PolicyColumns">
+    id, type_code, name, description, status, priority, subject_range, content,
+    version, created_by, created_at, updated_by, updated_at
+  </sql>
+
+  <select id="acquireTypeLock">
+    select pg_advisory_xact_lock(hashtextextended(#{typeCode}, 0))
+  </select>
+
+  <select id="findLiveByTypeForUpdate" resultMap="GenericPolicyRowMap">
+    select <include refid="PolicyColumns" />
+    from generic_policy
+    where type_code = #{typeCode}
+      and status != 'DELETED'
+    order by priority asc, id asc
+    for update
+  </select>
+
+  <select id="findEnabledByType" resultMap="GenericPolicyRowMap">
+    select <include refid="PolicyColumns" />
+    from generic_policy
+    where type_code = #{typeCode}
+      and status = 'ENABLED'
+    order by priority asc, id asc
+  </select>
+
+  <select id="findById" resultMap="GenericPolicyRowMap">
+    select <include refid="PolicyColumns" />
+    from generic_policy
+    where id = #{policyId}
+  </select>
+
+  <select id="findByIdForUpdate" resultMap="GenericPolicyRowMap">
+    select <include refid="PolicyColumns" />
+    from generic_policy
+    where id = #{policyId}
+    for update
+  </select>
+
+  <select id="search" resultMap="GenericPolicyRowMap">
+    select <include refid="PolicyColumns" />
+    from generic_policy
+    where type_code = #{typeCode}
+      and status != 'DELETED'
+    <if test="status != null">
+      and status = #{status}
+    </if>
+    <if test="keyword != null and keyword != ''">
+      and (
+        lower(name) like concat('%', lower(#{keyword}), '%')
+        or lower(coalesce(description, '')) like concat('%', lower(#{keyword}), '%')
+      )
+    </if>
+    order by priority asc, id asc
+    limit #{limit}
+    offset #{offset}
+  </select>
+
+  <select id="count" resultType="long">
+    select count(*)
+    from generic_policy
+    where type_code = #{typeCode}
+      and status != 'DELETED'
+    <if test="status != null">
+      and status = #{status}
+    </if>
+    <if test="keyword != null and keyword != ''">
+      and (
+        lower(name) like concat('%', lower(#{keyword}), '%')
+        or lower(coalesce(description, '')) like concat('%', lower(#{keyword}), '%')
+      )
+    </if>
+  </select>
+
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into generic_policy (
+      type_code, name, description, status, priority, subject_range, content, version,
+      created_by, created_at, updated_by, updated_at
+    ) values (
+      #{typeCode}, #{name}, #{description}, #{status}, #{priority},
+      #{subjectRange,typeHandler=org.congcong.algomentor.policy.repository.mybatis.JsonNodeJsonbTypeHandler},
+      #{content,typeHandler=org.congcong.algomentor.policy.repository.mybatis.JsonNodeJsonbTypeHandler},
+      #{version}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+    )
+  </insert>
+
+  <update id="update">
+    update generic_policy
+    set name = #{name},
+        description = #{description},
+        status = #{status},
+        subject_range = #{subjectRange,typeHandler=org.congcong.algomentor.policy.repository.mybatis.JsonNodeJsonbTypeHandler},
+        content = #{content,typeHandler=org.congcong.algomentor.policy.repository.mybatis.JsonNodeJsonbTypeHandler},
+        version = version + 1,
+        updated_by = #{operatorUserId},
+        updated_at = #{updatedAt}
+    where id = #{policyId}
+      and version = #{version}
+      and status != 'DELETED'
+  </update>
+
+  <update id="markDeleted">
+    update generic_policy
+    set status = 'DELETED',
+        version = version + 1,
+        updated_by = #{operatorUserId},
+        updated_at = #{now},
+        deleted_by = #{operatorUserId},
+        deleted_at = #{now}
+    where id = #{policyId}
+      and version = #{version}
+      and status != 'DELETED'
+  </update>
+
+  <update id="moveLivePrioritiesToTemporaryRange">
+    update generic_policy
+    set priority = priority + 1000
+    where type_code = #{typeCode}
+      and status != 'DELETED'
+  </update>
+
+  <update id="updatePriority">
+    update generic_policy
+    set priority = #{priority},
+        version = version + 1,
+        updated_by = #{operatorUserId},
+        updated_at = #{updatedAt}
+    where id = #{policyId}
+      and status != 'DELETED'
+  </update>
+
+  <update id="updatePriorityIfVersion">
+    update generic_policy
+    set priority = #{priority},
+        version = version + 1,
+        updated_by = #{operatorUserId},
+        updated_at = #{updatedAt}
+    where id = #{policyId}
+      and version = #{version}
+      and status != 'DELETED'
+  </update>
+</mapper>

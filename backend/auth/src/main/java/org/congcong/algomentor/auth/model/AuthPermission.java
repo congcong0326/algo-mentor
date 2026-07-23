@@ -11,6 +11,7 @@ public enum AuthPermission {
   PROBLEM_READ("problem:read"),
   PROBLEM_WRITE("problem:write"),
   USER_MANAGE("user:manage"),
+  POLICY_MANAGE("policy:manage"),
   ADMIN_OVERVIEW_READ("admin-overview:read"),
   BETA_ACCESS_MANAGE("beta-access:manage"),
   AI_GOVERNANCE_MANAGE("ai-governance:manage"),

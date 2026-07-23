@@ -138,6 +138,24 @@ public class MyBatisUserGroupRepository implements UserGroupRepository {
   }
 
   @Override
+  public List<UserGroupMembership> findRelationMembershipsByUserId(long userId) {
+    if (userId < 1) {
+      return List.of();
+    }
+    return mapper.findRelationMembershipsByUserId(userId).stream()
+        .map(UserGroupMembershipRow::toDomain)
+        .toList();
+  }
+
+  @Override
+  public List<Long> findCurrentMembershipUserIds(long groupId, Instant now) {
+    if (groupId < 1) {
+      return List.of();
+    }
+    return mapper.findCurrentMembershipUserIds(groupId, now).stream().distinct().toList();
+  }
+
+  @Override
   public Map<Long, List<UserGroupMembershipSummary>> findActiveMembershipsByUserIds(
       Collection<Long> userIds,
       Instant now

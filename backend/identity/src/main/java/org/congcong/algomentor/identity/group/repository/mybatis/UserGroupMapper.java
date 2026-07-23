@@ -66,6 +66,10 @@ public interface UserGroupMapper {
 
   int removeMembership(@Param("groupId") long groupId, @Param("userId") long userId);
 
+  List<UserGroupMembershipRow> findRelationMembershipsByUserId(@Param("userId") long userId);
+
+  List<Long> findCurrentMembershipUserIds(@Param("groupId") long groupId, @Param("now") Instant now);
+
   List<UserGroupMembershipSummaryRow> findActiveMembershipsByUserIds(
       @Param("userIds") List<Long> userIds,
       @Param("now") Instant now);

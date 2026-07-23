@@ -41,6 +41,12 @@ public interface UserGroupRepository {
 
   boolean removeMembership(long groupId, long userId);
 
+  /** 仅返回当前 ACTIVE 用户组的成员关系，保留 joinedAt/expiresAt 供缓存读取时过滤。 */
+  List<UserGroupMembership> findRelationMembershipsByUserId(long userId);
+
+  /** 用户组状态变更或删除前取得当前未过期成员，供逐用户缓存失效。 */
+  List<Long> findCurrentMembershipUserIds(long groupId, Instant now);
+
   Map<Long, List<UserGroupMembershipSummary>> findActiveMembershipsByUserIds(
       Collection<Long> userIds,
       Instant now);

@@ -20,6 +20,8 @@ import org.congcong.algomentor.identity.group.model.UserGroupPage;
 import org.congcong.algomentor.identity.group.model.UserGroupSearchQuery;
 import org.congcong.algomentor.identity.group.model.UserGroupStatus;
 import org.congcong.algomentor.identity.group.repository.UserGroupRepository;
+import org.congcong.algomentor.identity.group.relation.NoopUserRelationCacheInvalidator;
+import org.congcong.algomentor.identity.group.relation.UserRelationCacheInvalidator;
 import org.congcong.algomentor.identity.model.AuthUser;
 import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.springframework.dao.DuplicateKeyException;
@@ -29,6 +31,7 @@ public class UserGroupService {
 
   private final UserGroupRepository repository;
   private final AdminOperationAuditRecorder auditRecorder;
+  private final UserRelationCacheInvalidator userRelationCacheInvalidator;
   private final Clock clock;
 
   public UserGroupService(
@@ -36,8 +39,18 @@ public class UserGroupService {
       AdminOperationAuditRecorder auditRecorder,
       Clock clock
   ) {
+    this(repository, auditRecorder, new NoopUserRelationCacheInvalidator(), clock);
+  }
+
+  public UserGroupService(
+      UserGroupRepository repository,
+      AdminOperationAuditRecorder auditRecorder,
+      UserRelationCacheInvalidator userRelationCacheInvalidator,
+      Clock clock
+  ) {
     this.repository = repository;
     this.auditRecorder = auditRecorder;
+    this.userRelationCacheInvalidator = userRelationCacheInvalidator;
     this.clock = clock;
   }
 
@@ -109,9 +122,13 @@ public class UserGroupService {
       String normalizedName = normalizeName(name);
       String normalizedDescription = normalizeDescription(description);
       Instant now = Instant.now(clock);
+      List<Long> affectedUserIds = current.status() == status
+          ? List.of()
+          : repository.findCurrentMembershipUserIds(groupId, now);
       if (!repository.updateGroup(groupId, normalizedName, normalizedDescription, status, now)) {
         throw notFound(groupId);
       }
+      invalidateRelations(affectedUserIds, "group_status");
       UserGroup updated = repository.findGroupById(groupId, now).orElseThrow(() -> notFound(groupId));
       auditRecorder.record(AdminOperationAuditEvent.success(
           operatorUserId,
@@ -139,13 +156,15 @@ public class UserGroupService {
             UserGroupErrorCode.USER_GROUP_DELETE_REQUIRES_DISABLED,
             "用户组必须先停用后才能删除。");
       }
-      int removed = repository.deleteAllMemberships(groupId);
       Instant now = Instant.now(clock);
+      List<Long> affectedUserIds = repository.findCurrentMembershipUserIds(groupId, now);
+      int removed = repository.deleteAllMemberships(groupId);
       if (!repository.markGroupDeleted(groupId, operatorUserId, now)) {
         throw new UserGroupManagementException(
             UserGroupErrorCode.USER_GROUP_DELETE_REQUIRES_DISABLED,
             "用户组状态已变化，请刷新后重试。");
       }
+      invalidateRelations(affectedUserIds, "group_deleted");
       auditRecorder.record(AdminOperationAuditEvent.success(
           operatorUserId,
           AdminAuditAction.USER_GROUP_DELETE,
@@ -189,6 +208,7 @@ public class UserGroupService {
       Map<Long, AuthUser> users = repository.findUsersByIds(userIds);
       Map<Long, UserGroupMembership> memberships = repository.findMemberships(groupId, userIds);
       List<UserGroupMemberAddResult> results = new ArrayList<>(userIds.size());
+      List<Long> affectedUserIds = new ArrayList<>();
       for (Long userId : userIds) {
         AuthUser user = users.get(userId);
         if (user == null) {
@@ -201,11 +221,13 @@ public class UserGroupService {
         }
         boolean existed = memberships.containsKey(userId);
         repository.upsertMembership(groupId, userId, expiresAt, now);
+        affectedUserIds.add(userId);
         results.add(new UserGroupMemberAddResult(
             userId,
             existed ? UserGroupMemberAddStatus.UPDATED : UserGroupMemberAddStatus.ADDED));
       }
       UserGroupMemberBatchResult batch = UserGroupMemberBatchResult.from(results);
+      invalidateRelations(affectedUserIds, "membership_upsert");
       recordMemberAddSuccess(operatorUserId, groupId, userIds.size(), batch);
       return batch;
     } catch (UserGroupManagementException exception) {
@@ -219,6 +241,9 @@ public class UserGroupService {
     try {
       lockExistingGroup(groupId);
       boolean removed = repository.removeMembership(groupId, userId);
+      if (removed) {
+        invalidateRelations(List.of(userId), "membership_remove");
+      }
       auditRecorder.record(AdminOperationAuditEvent.success(
           operatorUserId,
           AdminAuditAction.USER_GROUP_MEMBER_REMOVE,
@@ -337,5 +362,13 @@ public class UserGroupService {
         AdminAuditTargetType.USER_GROUP,
         groupId == null || groupId < 1 ? null : Long.toString(groupId),
         errorCode.name()));
+  }
+
+  private void invalidateRelations(List<Long> userIds, String reason) {
+    for (Long userId : userIds) {
+      if (userId != null && userId > 0) {
+        userRelationCacheInvalidator.invalidate(userId, reason);
+      }
+    }
   }
 }

@@ -28,7 +28,10 @@ public enum AdminAuditMetadataKey {
   FAILED_COUNT("failedCount"),
   REMOVED_MEMBERSHIP_COUNT("removedMembershipCount"),
   REMOVED("removed"),
-  ERROR_CODE("errorCode");
+  ERROR_CODE("errorCode"),
+  POLICY_TYPE_CODE("policyTypeCode"),
+  POLICY_STATUS("policyStatus"),
+  SUBJECT_COUNT("subjectCount");
 
   private final String value;
 
