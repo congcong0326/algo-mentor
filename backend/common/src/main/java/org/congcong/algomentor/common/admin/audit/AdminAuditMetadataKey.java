@@ -10,6 +10,8 @@ public enum AdminAuditMetadataKey {
   INVALID_COUNT("invalidCount"),
   REVOKED_SESSION_COUNT("revokedSessionCount"),
   SESSION_REVOCATION_SUCCEEDED("sessionRevocationSucceeded"),
+  SESSION_REVOKED("sessionRevoked"),
+  SESSION_ALREADY_OFFLINE("sessionAlreadyOffline"),
   GLOBAL_AI_ENABLED("globalAiEnabled"),
   DEFAULT_DAILY_REQUEST_LIMIT("defaultDailyRequestLimit"),
   AI_ENABLED_OVERRIDE("aiEnabledOverride"),

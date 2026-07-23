@@ -64,6 +64,11 @@ describe('learning plan practice submissions navigation', () => {
     expect(pathForView('adminMonitoring')).toBe('/admin/monitoring');
   });
 
+  it('maps the session monitoring route as an admin view', () => {
+    expect(viewFromPath('/admin/sessions')).toBe('adminSessions');
+    expect(pathForView('adminSessions')).toBe('/admin/sessions');
+  });
+
   it('maps the problem library to the admin route only', () => {
     expect(viewFromPath('/admin/problems')).toBe('problems');
     expect(pathForView('problems')).toBe('/admin/problems');

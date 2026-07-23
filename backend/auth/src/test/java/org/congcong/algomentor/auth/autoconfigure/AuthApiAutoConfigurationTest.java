@@ -8,6 +8,10 @@ import org.congcong.algomentor.auth.controller.PasswordAuthController;
 import org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper;
 import org.congcong.algomentor.auth.security.PasswordUserDetailsService;
 import org.congcong.algomentor.auth.session.AuthSessionRevocationService;
+import org.congcong.algomentor.auth.session.admin.controller.AdminAuthSessionController;
+import org.congcong.algomentor.auth.session.admin.repository.AuthSessionAdminRepository;
+import org.congcong.algomentor.auth.session.admin.repository.mybatis.AuthSessionAdminMapper;
+import org.congcong.algomentor.auth.session.admin.service.AuthSessionAdminService;
 import org.congcong.algomentor.auth.service.OAuth2LoginUserService;
 import org.congcong.algomentor.auth.service.PasswordUserService;
 import org.congcong.algomentor.identity.autoconfigure.IdentityAutoConfiguration;
@@ -50,7 +54,12 @@ class AuthApiAutoConfigurationTest {
     new ApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(AuthApiAutoConfiguration.class, IdentityAutoConfiguration.class))
         .withUserConfiguration(SqlSessionTemplateConfig.class, IndexedSessionRepositoryConfig.class)
-        .run(context -> assertThat(context).hasSingleBean(AuthSessionRevocationService.class));
+        .run(context -> {
+          assertThat(context).hasSingleBean(AuthSessionRevocationService.class);
+          assertThat(context).hasSingleBean(AuthSessionAdminRepository.class);
+          assertThat(context).hasSingleBean(AuthSessionAdminService.class);
+          assertThat(context).hasSingleBean(AdminAuthSessionController.class);
+        });
   }
 
   @Configuration(proxyBeanMethods = false)
@@ -60,6 +69,7 @@ class AuthApiAutoConfigurationTest {
     SqlSessionTemplate sqlSessionTemplate() {
       SqlSessionTemplate sqlSessionTemplate = mock(SqlSessionTemplate.class);
       when(sqlSessionTemplate.getMapper(AuthUserMapper.class)).thenReturn(mock(AuthUserMapper.class));
+      when(sqlSessionTemplate.getMapper(AuthSessionAdminMapper.class)).thenReturn(mock(AuthSessionAdminMapper.class));
       when(sqlSessionTemplate.getMapper(IdentityUserMapper.class)).thenReturn(mock(IdentityUserMapper.class));
       return sqlSessionTemplate;
     }

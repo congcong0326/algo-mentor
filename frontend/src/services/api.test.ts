@@ -9,6 +9,7 @@ import {
   getAbilityProfile,
   getAdminUserDetail,
   getAdminUsers,
+  getAdminAuthSessions,
   getHealth,
   getLearningPlanTemplate,
   getLearningPlanTemplates,
@@ -25,6 +26,7 @@ import {
   streamLearningPlanExtensionProposal,
   streamLearningPlanExtensionProposalRevision,
   updateAdminUserStatus,
+  revokeAdminAuthSession,
   updateUserAiPreference,
 } from './api';
 
@@ -239,6 +241,42 @@ describe('api service', () => {
       }),
     );
     expect(requestHeaders(fetchMock).get('Accept-Language')).toBe('zh-CN');
+  });
+
+  it('loads and revokes admin auth sessions without exposing a cookie session id', async () => {
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x71, 0x72, 0x73, 0x74, 0x75, 0x76]) });
+    Object.defineProperty(document, 'cookie', {
+      configurable: true,
+      writable: true,
+      value: 'XSRF-TOKEN=csrf-token',
+    });
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        items: [],
+        total: 0,
+        page: 1,
+        pageSize: 20,
+        summary: { validSessionCount: 0, activeSessionCount: 0, validUserCount: 0 },
+        checkedAt: '2026-07-23T00:00:00Z',
+      },
+      timestamp: '2026-07-23T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getAdminAuthSessions({ page: 1, pageSize: 20, keyword: 'alice', activity: 'ACTIVE' });
+    await revokeAdminAuthSession('0f5cdb19-97f8-4e52-9ca8-218bfa8b3d44');
+
+    expect(fetchMock).toHaveBeenNthCalledWith(1,
+      '/api/admin/auth-sessions?page=1&pageSize=20&keyword=alice&activity=ACTIVE',
+      expect.objectContaining({ credentials: 'same-origin', headers: expect.any(Headers) }),
+    );
+    expect(fetchMock).toHaveBeenNthCalledWith(2,
+      '/api/admin/auth-sessions/0f5cdb19-97f8-4e52-9ca8-218bfa8b3d44',
+      expect.objectContaining({ method: 'DELETE', credentials: 'same-origin', headers: expect.any(Headers) }),
+    );
+    const headers = requestHeaders(fetchMock, 1);
+    expect(headers.get('X-XSRF-TOKEN')).toBe('csrf-token');
   });
 
   it('loads admin user detail by id', async () => {

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.auth.session.admin.repository.mybatis.AuthSessionAdminMapper">
+  <resultMap id="AuthSessionAdminRowMap" type="org.congcong.algomentor.auth.session.admin.repository.mybatis.model.AuthSessionAdminRow">
+    <constructor>
+      <idArg column="session_ref" javaType="java.lang.String"/>
+      <arg column="session_id" javaType="java.lang.String"/>
+      <arg column="user_id" javaType="long"/>
+      <arg column="creation_time" javaType="long"/>
+      <arg column="last_access_time" javaType="long"/>
+      <arg column="expiry_time" javaType="long"/>
+      <arg column="email" javaType="java.lang.String"/>
+      <arg column="display_name" javaType="java.lang.String"/>
+      <arg column="user_status" javaType="java.lang.String"/>
+    </constructor>
+  </resultMap>
+
+  <resultMap id="AuthSessionAdminSummaryRowMap" type="org.congcong.algomentor.auth.session.admin.repository.mybatis.model.AuthSessionAdminSummaryRow">
+    <constructor>
+      <arg column="valid_session_count" javaType="long"/>
+      <arg column="active_session_count" javaType="long"/>
+      <arg column="valid_user_count" javaType="long"/>
+    </constructor>
+  </resultMap>
+
+  <sql id="validSessionConditions">
+    s.PRINCIPAL_NAME ~ '^[0-9]+$'
+    and s.EXPIRY_TIME &gt; #{nowEpochMillis}
+    <if test="query != null and query.keyword != null and query.keyword != ''">
+      and (
+        <if test="query.keywordUserId != null">
+          cast(s.PRINCIPAL_NAME as bigint) = #{query.keywordUserId}
+          or
+        </if>
+        lower(coalesce(u.email_normalized, '')) like concat('%', lower(#{query.keyword}), '%')
+        or lower(coalesce(u.display_name, '')) like concat('%', lower(#{query.keyword}), '%')
+      )
+    </if>
+    <if test="query != null and query.active">
+      and s.LAST_ACCESS_TIME &gt;= #{activeSinceEpochMillis}
+    </if>
+    <if test="query != null and query.idle">
+      and s.LAST_ACCESS_TIME &lt; #{activeSinceEpochMillis}
+    </if>
+  </sql>
+
+  <sql id="sessionColumns">
+    s.PRIMARY_ID as session_ref,
+    s.SESSION_ID as session_id,
+    cast(s.PRINCIPAL_NAME as bigint) as user_id,
+    s.CREATION_TIME as creation_time,
+    s.LAST_ACCESS_TIME as last_access_time,
+    s.EXPIRY_TIME as expiry_time,
+    u.email,
+    u.display_name,
+    coalesce(u.status, 'DELETED') as user_status
+  </sql>
+
+  <select id="findPage" resultMap="AuthSessionAdminRowMap">
+    select <include refid="sessionColumns"/>
+    from SPRING_SESSION s
+    left join auth_users u on u.id = cast(s.PRINCIPAL_NAME as bigint)
+    where <include refid="validSessionConditions"/>
+    order by s.LAST_ACCESS_TIME desc, s.PRIMARY_ID asc
+    limit #{query.pageSize}
+    offset #{query.offset}
+  </select>
+
+  <select id="count" resultType="long">
+    select count(*)
+    from SPRING_SESSION s
+    left join auth_users u on u.id = cast(s.PRINCIPAL_NAME as bigint)
+    where <include refid="validSessionConditions"/>
+  </select>
+
+  <select id="summary" resultMap="AuthSessionAdminSummaryRowMap">
+    select count(*) as valid_session_count,
+           count(*) filter (where LAST_ACCESS_TIME &gt;= #{activeSinceEpochMillis}) as active_session_count,
+           count(distinct PRINCIPAL_NAME) as valid_user_count
+    from SPRING_SESSION
+    where PRINCIPAL_NAME ~ '^[0-9]+$'
+      and EXPIRY_TIME &gt; #{nowEpochMillis}
+  </select>
+
+  <select id="findValidBySessionRef" resultMap="AuthSessionAdminRowMap">
+    select <include refid="sessionColumns"/>
+    from SPRING_SESSION s
+    left join auth_users u on u.id = cast(s.PRINCIPAL_NAME as bigint)
+    where s.PRIMARY_ID = #{sessionRef}
+      and s.PRINCIPAL_NAME ~ '^[0-9]+$'
+      and s.EXPIRY_TIME &gt; #{nowEpochMillis}
+  </select>
+</mapper>

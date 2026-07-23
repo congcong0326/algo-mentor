@@ -90,6 +90,7 @@ export interface LocaleResources {
     adminUsers: string;
     adminUserGroups: string;
     adminMonitoring: string;
+    adminSessions: string;
     adminAi: string;
     feedback: string;
     adminOverview: string;
@@ -107,7 +108,7 @@ export interface LocaleResources {
     businessNavigation: string;
     navigation: string;
     pageNavigation: string;
-    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'ai' | 'content' | 'feedback' | 'development' | 'users' | 'userGroups' | 'betaAccess' | 'problems' | 'debug', string>;
+    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'sessions' | 'ai' | 'content' | 'feedback' | 'development' | 'users' | 'userGroups' | 'betaAccess' | 'problems' | 'debug', string>;
   };
   feedback: {
     openDialog: string;
@@ -389,6 +390,42 @@ export interface LocaleResources {
     notChecked: string;
     refresh: string;
     loadFailed: string;
+  };
+  sessionMonitoring: {
+    ariaLabel: string;
+    title: string;
+    lastRefreshed: string;
+    notRefreshed: string;
+    refresh: string;
+    validSessions: string;
+    activeSessions: string;
+    validUsers: string;
+    searchPlaceholder: string;
+    search: string;
+    activityLabel: string;
+    activityFilters: Record<'ALL' | 'ACTIVE' | 'IDLE', string>;
+    user: string;
+    userStatus: string;
+    sessionStatus: string;
+    createdAt: string;
+    lastAccessedAt: string;
+    expiresAt: string;
+    currentSession: string;
+    actions: string;
+    userStatuses: Record<'ACTIVE' | 'DISABLED' | 'DELETED', string>;
+    activities: Record<'ACTIVE' | 'IDLE', string>;
+    empty: string;
+    loading: string;
+    loadFailed: string;
+    operationFailed: string;
+    alreadyOffline: string;
+    revoke: string;
+    revokeSession: (user: string) => string;
+    currentSessionHint: string;
+    confirmTitle: string;
+    confirmDescription: (user: string, lastAccessedAt: string) => string;
+    connectionNotice: string;
+    revoking: string;
   };
   adminUserAi: {
     title: string;
@@ -1083,6 +1120,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminUsers: '用户管理',
       adminUserGroups: '用户组管理',
       adminMonitoring: '系统监控',
+      adminSessions: '会话监控',
       adminAi: 'AI 治理',
       feedback: '反馈',
       adminOverview: '概览',
@@ -1105,6 +1143,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         access: '用户与访问',
         monitoring: '系统监控',
         systemStatus: '运行状态',
+        sessions: '会话监控',
         ai: 'AI 治理',
         content: '内容管理',
         feedback: '反馈与支持',
@@ -1396,6 +1435,42 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       notChecked: '尚未检查',
       refresh: '刷新运行状态',
       loadFailed: '服务健康检查失败。',
+    },
+    sessionMonitoring: {
+      ariaLabel: '会话监控',
+      title: '会话监控',
+      lastRefreshed: '最后刷新',
+      notRefreshed: '尚未刷新',
+      refresh: '刷新会话列表',
+      validSessions: '有效会话',
+      activeSessions: '活跃会话',
+      validUsers: '涉及用户',
+      searchPlaceholder: '搜索用户 ID、邮箱或昵称',
+      search: '搜索',
+      activityLabel: '会话状态',
+      activityFilters: { ALL: '全部', ACTIVE: '活跃', IDLE: '空闲' },
+      user: '用户',
+      userStatus: '用户状态',
+      sessionStatus: '会话状态',
+      createdAt: '创建时间',
+      lastAccessedAt: '最后访问',
+      expiresAt: '过期时间',
+      currentSession: '当前会话',
+      actions: '操作',
+      userStatuses: { ACTIVE: '正常', DISABLED: '已禁用', DELETED: '已删除' },
+      activities: { ACTIVE: '活跃', IDLE: '空闲' },
+      empty: '没有符合条件的有效会话。',
+      loading: '正在加载会话...',
+      loadFailed: '会话列表加载失败。',
+      operationFailed: '会话下线失败。',
+      alreadyOffline: '目标会话已经离线。',
+      revoke: '下线',
+      revokeSession: (user) => `下线 ${user} 的会话`,
+      currentSessionHint: '请使用退出登录结束当前会话。',
+      confirmTitle: '下线会话',
+      confirmDescription: (user, lastAccessedAt) => `将下线 ${user} 的会话，最后访问于 ${lastAccessedAt}。`,
+      connectionNotice: '下线后，该会话的后续请求需要重新登录；已建立的请求或流式连接可能继续到当前操作结束。',
+      revoking: '下线中...',
     },
     adminUserAi: {
       title: 'AI 使用与控制',
@@ -2192,6 +2267,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminUsers: 'Users',
       adminUserGroups: 'User Groups',
       adminMonitoring: 'System monitoring',
+      adminSessions: 'Session monitoring',
       adminAi: 'AI Governance',
       feedback: 'Feedback',
       adminOverview: 'Overview',
@@ -2214,6 +2290,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         access: 'Users & Access',
         monitoring: 'System monitoring',
         systemStatus: 'Runtime status',
+        sessions: 'Session monitoring',
         ai: 'AI Governance',
         content: 'Content',
         feedback: 'Feedback & Support',
@@ -2505,6 +2582,42 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       notChecked: 'Not checked yet',
       refresh: 'Refresh runtime status',
       loadFailed: 'Service health check failed.',
+    },
+    sessionMonitoring: {
+      ariaLabel: 'Session monitoring',
+      title: 'Session monitoring',
+      lastRefreshed: 'Last refreshed',
+      notRefreshed: 'Not refreshed yet',
+      refresh: 'Refresh session list',
+      validSessions: 'Valid sessions',
+      activeSessions: 'Active sessions',
+      validUsers: 'Users represented',
+      searchPlaceholder: 'Search user ID, email, or name',
+      search: 'Search',
+      activityLabel: 'Session status',
+      activityFilters: { ALL: 'All', ACTIVE: 'Active', IDLE: 'Idle' },
+      user: 'User',
+      userStatus: 'User status',
+      sessionStatus: 'Session status',
+      createdAt: 'Created',
+      lastAccessedAt: 'Last accessed',
+      expiresAt: 'Expires',
+      currentSession: 'Current session',
+      actions: 'Actions',
+      userStatuses: { ACTIVE: 'Active', DISABLED: 'Disabled', DELETED: 'Deleted' },
+      activities: { ACTIVE: 'Active', IDLE: 'Idle' },
+      empty: 'No valid sessions match the current filters.',
+      loading: 'Loading sessions...',
+      loadFailed: 'Failed to load session list.',
+      operationFailed: 'Failed to sign out the session.',
+      alreadyOffline: 'The target session is already offline.',
+      revoke: 'Sign out',
+      revokeSession: (user) => `Sign out ${user}'s session`,
+      currentSessionHint: 'Use sign out to end the current session.',
+      confirmTitle: 'Sign out session',
+      confirmDescription: (user, lastAccessedAt) => `This signs out ${user}'s session, last accessed ${lastAccessedAt}.`,
+      connectionNotice: 'After sign-out, later requests need a new sign-in. Established requests or streams may continue until the current operation completes.',
+      revoking: 'Signing out...',
     },
     adminUserAi: {
       title: 'AI usage & controls',

@@ -16,6 +16,7 @@ export const APP_ROUTES = {
   adminUsers: '/admin/users',
   adminUserGroups: '/admin/user-groups',
   adminMonitoring: '/admin/monitoring',
+  adminSessions: '/admin/sessions',
   adminAi: '/admin/ai',
   adminOverview: '/admin',
   adminFeedback: '/admin/feedback',
@@ -55,6 +56,7 @@ export type AppView =
   | 'adminUsers'
   | 'adminUserGroups'
   | 'adminMonitoring'
+  | 'adminSessions'
   | 'adminAi'
   | 'adminOverview'
   | 'adminFeedback'
@@ -134,6 +136,13 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     permission: 'admin-overview:read',
   },
   {
+    view: 'adminSessions',
+    labelKey: 'adminSessions',
+    path: APP_ROUTES.adminSessions,
+    icon: Activity,
+    permission: 'session:manage',
+  },
+  {
     view: 'adminAi',
     labelKey: 'adminAi',
     path: APP_ROUTES.adminAi,
@@ -197,6 +206,9 @@ export function viewFromPath(pathname: string): AppView | undefined {
   }
   if (pathname === APP_ROUTES.adminMonitoring) {
     return 'adminMonitoring';
+  }
+  if (pathname === APP_ROUTES.adminSessions) {
+    return 'adminSessions';
   }
   if (pathname === APP_ROUTES.adminFeedback) {
     return 'adminFeedback';

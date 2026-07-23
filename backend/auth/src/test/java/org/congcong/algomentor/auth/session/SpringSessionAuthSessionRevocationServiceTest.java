@@ -32,6 +32,17 @@ class SpringSessionAuthSessionRevocationServiceTest {
     assertThat(repository.deletedSessionIds).containsExactlyInAnyOrder("session-1", "session-2");
   }
 
+  @Test
+  void revokesOneExistingSessionAndReportsAlreadyMissingSession() {
+    FakeSessionRepository repository = new FakeSessionRepository();
+    repository.sessionsByPrincipalName.put("42", Map.of("session-1", new FakeSession("session-1")));
+    SpringSessionAuthSessionRevocationService service = new SpringSessionAuthSessionRevocationService(repository);
+
+    assertThat(service.revokeSession("session-1")).isTrue();
+    assertThat(service.revokeSession("missing-session")).isFalse();
+    assertThat(repository.deletedSessionIds).containsExactly("session-1");
+  }
+
   private static final class FakeSessionRepository implements FindByIndexNameSessionRepository<FakeSession> {
 
     private final Map<String, Map<String, FakeSession>> sessionsByPrincipalName = new HashMap<>();

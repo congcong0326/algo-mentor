@@ -32,6 +32,7 @@ public class AuthPermissionService {
       permissions.add(AuthPermission.AI_RUN_READ);
       permissions.add(AuthPermission.FEEDBACK_MANAGE);
       permissions.add(AuthPermission.DEBUG_ACCESS);
+      permissions.add(AuthPermission.SESSION_MANAGE);
     }
     return permissions.stream()
         .map(AuthPermission::value)

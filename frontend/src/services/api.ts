@@ -32,6 +32,9 @@ import type {
   AdminAiUsageSummary,
   AdminUserAiPolicy,
   AdminUserAiPolicyUpdateRequest,
+  AdminAuthSessionListQuery,
+  AdminAuthSessionPage,
+  AdminAuthSessionRevocationResponse,
   BetaAccessListQuery,
   BetaAccessPage,
   BetaAccessSettings,
@@ -739,6 +742,39 @@ export async function getBetaAccess(
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Beta access request failed');
+  }
+
+  return response.json();
+}
+
+export async function getAdminAuthSessions(
+  query: AdminAuthSessionListQuery = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminAuthSessionPage>> {
+  const response = await apiFetch(`/api/admin/auth-sessions${toQueryString(query)}`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Auth session monitoring request failed');
+  }
+
+  return response.json();
+}
+
+export async function revokeAdminAuthSession(
+  sessionRef: string,
+  signal?: AbortSignal,
+): Promise<ApiResponse<AdminAuthSessionRevocationResponse>> {
+  const response = await apiFetch(`/api/admin/auth-sessions/${encodeURIComponent(sessionRef)}`, {
+    method: 'DELETE',
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Auth session revocation failed');
   }
 
   return response.json();

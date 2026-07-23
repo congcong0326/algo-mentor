@@ -10,6 +10,7 @@ public class AuthProperties {
   private String loginSuccessUrl = "/";
   private String logoutSuccessUrl = "/";
   private Duration sessionTimeout = Duration.ofDays(7);
+  private Duration sessionMonitoringActiveWindow = Duration.ofMinutes(5);
   private boolean cookieSecure;
   private String cookieSameSite = "Lax";
   private List<String> adminEmails = List.of();
@@ -36,6 +37,18 @@ public class AuthProperties {
 
   public void setSessionTimeout(Duration sessionTimeout) {
     this.sessionTimeout = sessionTimeout;
+  }
+
+  public Duration getSessionMonitoringActiveWindow() {
+    return sessionMonitoringActiveWindow;
+  }
+
+  public void setSessionMonitoringActiveWindow(Duration sessionMonitoringActiveWindow) {
+    if (sessionMonitoringActiveWindow == null || sessionMonitoringActiveWindow.isZero()
+        || sessionMonitoringActiveWindow.isNegative()) {
+      throw new IllegalArgumentException("sessionMonitoringActiveWindow must be positive.");
+    }
+    this.sessionMonitoringActiveWindow = sessionMonitoringActiveWindow;
   }
 
   public boolean isCookieSecure() {

@@ -15,6 +15,15 @@ public class SpringSessionAuthSessionRevocationService implements AuthSessionRev
   }
 
   @Override
+  public boolean revokeSession(String sessionId) {
+    if (sessionId == null || sessionId.isBlank() || sessionRepository.findById(sessionId) == null) {
+      return false;
+    }
+    sessionRepository.deleteById(sessionId);
+    return true;
+  }
+
+  @Override
   public int revokeSessionsForUser(long userId) {
     Map<String, ? extends Session> sessions = sessionRepository.findByPrincipalName(Long.toString(userId));
     sessions.keySet().forEach(sessionRepository::deleteById);

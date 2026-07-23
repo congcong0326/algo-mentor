@@ -99,8 +99,9 @@ class PasswordAuthControllerTest {
         .andExpect(jsonPath("$.data.roles[1]").value("ADMIN"))
         .andExpect(jsonPath("$.data.permissions").isArray())
         .andExpect(jsonPath("$.data.permissions[3]").value("problem:read"))
-        .andExpect(jsonPath("$.data.permissions[7]").value("beta-access:manage"))
-        .andExpect(jsonPath("$.data.permissions[11]").value("debug:access"))
+        .andExpect(jsonPath("$.data.permissions[8]").value("beta-access:manage"))
+        .andExpect(jsonPath("$.data.permissions[12]").value("debug:access"))
+        .andExpect(jsonPath("$.data.permissions[13]").value("session:manage"))
         .andReturn();
 
     Object context = result.getRequest().getSession(false).getAttribute(

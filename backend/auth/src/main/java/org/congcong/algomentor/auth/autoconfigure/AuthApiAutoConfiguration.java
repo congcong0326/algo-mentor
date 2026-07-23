@@ -40,6 +40,15 @@ import org.congcong.algomentor.auth.session.IdentityUserStatusChangedEventListen
 import org.congcong.algomentor.auth.session.MicrometerAuthSessionMetrics;
 import org.congcong.algomentor.auth.session.NoopAuthSessionMetrics;
 import org.congcong.algomentor.auth.session.SpringSessionAuthSessionRevocationService;
+import org.congcong.algomentor.auth.session.admin.controller.AdminAuthSessionController;
+import org.congcong.algomentor.auth.session.admin.controller.AdminAuthSessionExceptionHandler;
+import org.congcong.algomentor.auth.session.admin.repository.AuthSessionAdminRepository;
+import org.congcong.algomentor.auth.session.admin.repository.mybatis.AuthSessionAdminMapper;
+import org.congcong.algomentor.auth.session.admin.repository.mybatis.MyBatisAuthSessionAdminRepository;
+import org.congcong.algomentor.auth.session.admin.service.AuthSessionAdminMetrics;
+import org.congcong.algomentor.auth.session.admin.service.AuthSessionAdminService;
+import org.congcong.algomentor.auth.session.admin.service.MicrometerAuthSessionAdminMetrics;
+import org.congcong.algomentor.auth.session.admin.service.NoopAuthSessionAdminMetrics;
 import org.congcong.algomentor.auth.service.AdminEmailRoleService;
 import org.congcong.algomentor.auth.service.AuthPermissionService;
 import org.congcong.algomentor.auth.service.OAuth2LoginUserService;
@@ -381,6 +390,64 @@ public class AuthApiAutoConfiguration {
       FindByIndexNameSessionRepository<? extends Session> sessionRepository
   ) {
     return new SpringSessionAuthSessionRevocationService(sessionRepository);
+  }
+
+  @Bean
+  @ConditionalOnBean(SqlSessionTemplate.class)
+  @ConditionalOnMissingBean
+  public AuthSessionAdminMapper authSessionAdminMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(AuthSessionAdminMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnBean(AuthSessionAdminMapper.class)
+  @ConditionalOnMissingBean
+  public AuthSessionAdminRepository authSessionAdminRepository(AuthSessionAdminMapper authSessionAdminMapper) {
+    return new MyBatisAuthSessionAdminRepository(authSessionAdminMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public AuthSessionAdminMetrics authSessionAdminMetrics(ObjectProvider<MeterRegistry> meterRegistryProvider) {
+    MeterRegistry registry = meterRegistryProvider.getIfAvailable();
+    return registry == null ? new NoopAuthSessionAdminMetrics() : new MicrometerAuthSessionAdminMetrics(registry);
+  }
+
+  @Bean
+  @ConditionalOnBean({AuthSessionAdminRepository.class, AuthSessionRevocationService.class})
+  @ConditionalOnMissingBean
+  public AuthSessionAdminService authSessionAdminService(
+      AuthSessionAdminRepository repository,
+      AuthSessionRevocationService revocationService,
+      ObjectProvider<AdminOperationAuditRecorder> auditRecorderProvider,
+      AuthSessionAdminMetrics metrics,
+      Clock authClock,
+      AuthProperties authProperties
+  ) {
+    return new AuthSessionAdminService(
+        repository,
+        revocationService,
+        auditRecorderProvider.getIfAvailable(NoopAdminOperationAuditRecorder::new),
+        metrics,
+        authClock,
+        authProperties);
+  }
+
+  @Bean
+  @ConditionalOnBean(AuthSessionAdminService.class)
+  @ConditionalOnMissingBean
+  public AdminAuthSessionController adminAuthSessionController(AuthSessionAdminService service) {
+    return new AdminAuthSessionController(service);
+  }
+
+  @Bean
+  @ConditionalOnBean(AdminAuthSessionController.class)
+  @ConditionalOnMissingBean
+  public AdminAuthSessionExceptionHandler adminAuthSessionExceptionHandler(
+      ObjectProvider<ApiErrorResponseFactory> responseFactoryProvider
+  ) {
+    return new AdminAuthSessionExceptionHandler(responseFactoryProvider.getIfAvailable(
+        () -> new ApiErrorResponseFactory(new ApiErrorMessageResolver())));
   }
 
   @Bean

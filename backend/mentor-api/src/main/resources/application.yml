@@ -65,6 +65,7 @@ algo-mentor:
     login-success-url: ${AUTH_LOGIN_SUCCESS_URL:/}
     logout-success-url: ${AUTH_LOGOUT_SUCCESS_URL:/}
     session-timeout: ${AUTH_SESSION_TIMEOUT:7d}
+    session-monitoring-active-window: ${AUTH_SESSION_MONITORING_ACTIVE_WINDOW:5m}
     cookie-secure: ${AUTH_COOKIE_SECURE:false}
     cookie-same-site: ${AUTH_COOKIE_SAME_SITE:Lax}
     admin-emails: ${AUTH_ADMIN_EMAILS:}

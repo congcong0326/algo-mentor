@@ -28,6 +28,7 @@ export type AuthPermission =
   | 'user:manage'
   | 'admin-overview:read'
   | 'beta-access:manage'
+  | 'session:manage'
   | 'ai-governance:manage'
   | 'ai-run:read'
   | 'feedback:manage'
@@ -244,6 +245,50 @@ export interface BetaAllowedEmailRemovalResponse {
   associatedUserStatus?: AuthUserStatus | null;
   revokedSessionCount: number;
   sessionRevocationSucceeded: boolean;
+}
+
+export type AuthSessionActivity = 'ACTIVE' | 'IDLE';
+
+export interface AdminAuthSession {
+  sessionRef: string;
+  userId: number;
+  email?: string | null;
+  displayName?: string | null;
+  userStatus: AuthUserStatus;
+  createdAt: string;
+  lastAccessedAt: string;
+  expiresAt: string;
+  activity: AuthSessionActivity;
+  current: boolean;
+}
+
+export interface AdminAuthSessionSummary {
+  validSessionCount: number;
+  activeSessionCount: number;
+  validUserCount: number;
+}
+
+export interface AdminAuthSessionPage {
+  items: AdminAuthSession[];
+  total: number;
+  page: number;
+  pageSize: number;
+  summary: AdminAuthSessionSummary;
+  checkedAt: string;
+}
+
+export interface AdminAuthSessionListQuery {
+  page?: number;
+  pageSize?: number;
+  keyword?: string;
+  activity?: AuthSessionActivity | '';
+}
+
+export interface AdminAuthSessionRevocationResponse {
+  sessionRef: string;
+  userId?: number | null;
+  revoked: boolean;
+  alreadyOffline: boolean;
 }
 
 export interface AdminPasswordResetResponse {

@@ -14,6 +14,7 @@ public enum AuthPermission {
   POLICY_MANAGE("policy:manage"),
   ADMIN_OVERVIEW_READ("admin-overview:read"),
   BETA_ACCESS_MANAGE("beta-access:manage"),
+  SESSION_MANAGE("session:manage"),
   AI_GOVERNANCE_MANAGE("ai-governance:manage"),
   AI_RUN_READ("ai-run:read"),
   FEEDBACK_MANAGE("feedback:manage"),
