@@ -1337,28 +1337,33 @@ export default function PracticeChatWorkbench({
               {resources.learningPlans.practiceLeetCodeGuidance}
             </span>
           </span>
-          {leetcodeUrl ? (
-            <a
-              aria-label={resources.learningPlans.openLeetCode}
-              className="icon-button practice-leetcode-link"
-              href={leetcodeUrl}
-              rel="noreferrer"
-              target="_blank"
-              title={resources.learningPlans.openLeetCode}
-            >
-              <ExternalLink aria-hidden="true" />
-            </a>
-          ) : (
-            <button
-              aria-label={resources.learningPlans.leetcodeUnavailable}
-              className="icon-button practice-leetcode-link"
-              disabled
-              title={resources.learningPlans.leetcodeUnavailable}
-              type="button"
-            >
-              <ExternalLink aria-hidden="true" />
-            </button>
-          )}
+          <span className="toolbar-tooltip-wrap">
+            {leetcodeUrl ? (
+              <a
+                aria-describedby="practice-leetcode-tooltip"
+                aria-label={resources.learningPlans.openLeetCode}
+                className="icon-button practice-leetcode-link"
+                href={leetcodeUrl}
+                rel="noreferrer"
+                target="_blank"
+              >
+                <ExternalLink aria-hidden="true" />
+              </a>
+            ) : (
+              <button
+                aria-describedby="practice-leetcode-tooltip"
+                aria-label={resources.learningPlans.leetcodeUnavailable}
+                className="icon-button practice-leetcode-link"
+                disabled
+                type="button"
+              >
+                <ExternalLink aria-hidden="true" />
+              </button>
+            )}
+            <span className="toolbar-tooltip practice-leetcode-tooltip" id="practice-leetcode-tooltip" role="tooltip">
+              {leetcodeUrl ? resources.learningPlans.openLeetCode : resources.learningPlans.leetcodeUnavailable}
+            </span>
+          </span>
         </div>
       </header>
 

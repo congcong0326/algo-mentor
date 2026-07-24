@@ -529,6 +529,16 @@ describe('PracticeChatWorkbench review contracts', () => {
       .toHaveClass('toolbar-tooltip', 'practice-guidance-tooltip');
   });
 
+  it('renders a rounded tooltip for the LeetCode action', async () => {
+    renderWorkbench();
+
+    const link = await screen.findByRole('link', { name: '打开 LeetCode 题目' });
+    expect(link).toHaveAttribute('aria-describedby', 'practice-leetcode-tooltip');
+    expect(link).not.toHaveAttribute('title');
+    expect(screen.getByRole('tooltip', { name: '打开 LeetCode 题目' }))
+      .toHaveClass('toolbar-tooltip', 'practice-leetcode-tooltip');
+  });
+
   it('renders user messages as plain text without markdown parsing', async () => {
     const pastedCode = '# class Solution\n\n**bold**\n<script>alert("xss")</script>';
     createOrReusePracticeSession.mockResolvedValue(apiResponse(sessionFixture({
