@@ -25,12 +25,46 @@ class PracticeCodeReviewJsonSchemaTest {
             "normalizedCode",
             "evidence",
             "contextSummary",
+            PracticeCodeReviewConstants.JSON_JUDGE_ASSESSMENT,
             "scores",
             "passed",
             "deductionReasons",
             "improvementSuggestions",
             "reviewMarkdown",
             PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS));
+  }
+
+  @Test
+  void definesRequiredJudgeAssessmentAndAllowedVerdicts() {
+    JsonNode assessment = PracticeCodeReviewJsonSchema.schema()
+        .path("properties")
+        .path(PracticeCodeReviewConstants.JSON_JUDGE_ASSESSMENT);
+
+    assertThat(assessment.path("additionalProperties").asBoolean()).isFalse();
+    assertThat(assessment.path("required"))
+        .extracting(JsonNode::asText)
+        .containsExactly(
+            PracticeCodeReviewConstants.JSON_JUDGE_VERDICT,
+            PracticeCodeReviewConstants.JSON_VERDICT_BASIS,
+            PracticeCodeReviewConstants.JSON_BLOCKING_ISSUE,
+            PracticeCodeReviewConstants.JSON_MEETS_EXPECTED_COMPLEXITY,
+            PracticeCodeReviewConstants.JSON_TIME_COMPLEXITY,
+            PracticeCodeReviewConstants.JSON_SPACE_COMPLEXITY,
+            PracticeCodeReviewConstants.JSON_EXPECTED_TIME_COMPLEXITY,
+            PracticeCodeReviewConstants.JSON_CONSTRAINT_ANALYSIS);
+    assertThat(assessment.path("properties")
+        .path(PracticeCodeReviewConstants.JSON_JUDGE_VERDICT)
+        .path("enum"))
+        .extracting(JsonNode::asText)
+        .containsExactly(
+            "ACCEPTED",
+            "LIKELY_ACCEPTED",
+            "WRONG_ANSWER",
+            "TIME_LIMIT_EXCEEDED",
+            "MEMORY_LIMIT_EXCEEDED",
+            "COMPILE_ERROR",
+            "RUNTIME_ERROR",
+            "UNKNOWN");
   }
 
   @Test

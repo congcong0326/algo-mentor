@@ -113,6 +113,11 @@ class PracticeCodeReviewAgentToolTest {
       assertThat(context.agentRunDbId()).isEqualTo(RUN_DB_ID);
       assertThat(context.originalMessage()).isEqualTo(USER_MESSAGE_CONTENT);
       assertThat(context.extractedCode()).isEqualTo(USER_MESSAGE_CONTENT);
+      assertThat(context.problemFacts())
+          .contains("title: Climbing Stairs")
+          .contains("titleCn: 爬楼梯")
+          .contains("difficulty: EASY")
+          .contains("n 最大为 45");
     });
     assertThat(result.path(PracticeCodeReviewAgentToolNames.RESULT_TYPE).asText())
         .isEqualTo(PracticeCodeReviewAgentToolNames.RESULT_TYPE_PRACTICE_CODE_REVIEW_SUBMITTED);
@@ -272,7 +277,21 @@ class PracticeCodeReviewAgentToolTest {
         sessionRepository,
         turnMessageLookupRepository,
         reviewService,
-        objectMapper);
+        objectMapper,
+        TrustedProblemTagCatalog.empty(),
+        problemCatalog());
+  }
+
+  private PracticeChatProblemCatalog problemCatalog() {
+    return (slug, locale) -> Optional.of(new PracticeChatProblemDetail(
+        slug,
+        70,
+        "Climbing Stairs",
+        "爬楼梯",
+        "EASY",
+        List.of("Dynamic Programming"),
+        "给定 n 个台阶，n 最大为 45。",
+        "https://leetcode.com/problems/climbing-stairs/"));
   }
 
   private AgentExecutionContext executionContext(Map<String, Object> metadata) {

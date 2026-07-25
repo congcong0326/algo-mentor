@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import org.congcong.algomentor.agent.core.AgentErrorCode;
 import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentExecutionContext;
@@ -56,6 +57,7 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
   private final AgentTurnMessageLookupRepository turnMessageLookupRepository;
   private final PracticeCodeReviewService reviewService;
   private final TrustedProblemTagCatalog trustedProblemTagCatalog;
+  private final PracticeChatProblemCatalog problemCatalog;
   private final PracticeCodeReviewToolResultMapper resultMapper;
 
   public PracticeCodeReviewAgentTool(
@@ -64,7 +66,13 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
       PracticeCodeReviewService reviewService,
       ObjectMapper objectMapper
   ) {
-    this(sessionRepository, turnMessageLookupRepository, reviewService, objectMapper, TrustedProblemTagCatalog.empty());
+    this(
+        sessionRepository,
+        turnMessageLookupRepository,
+        reviewService,
+        objectMapper,
+        TrustedProblemTagCatalog.empty(),
+        emptyProblemCatalog());
   }
 
   public PracticeCodeReviewAgentTool(
@@ -74,6 +82,23 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
       ObjectMapper objectMapper,
       TrustedProblemTagCatalog trustedProblemTagCatalog
   ) {
+    this(
+        sessionRepository,
+        turnMessageLookupRepository,
+        reviewService,
+        objectMapper,
+        trustedProblemTagCatalog,
+        emptyProblemCatalog());
+  }
+
+  public PracticeCodeReviewAgentTool(
+      PracticeSessionRepository sessionRepository,
+      AgentTurnMessageLookupRepository turnMessageLookupRepository,
+      PracticeCodeReviewService reviewService,
+      ObjectMapper objectMapper,
+      TrustedProblemTagCatalog trustedProblemTagCatalog,
+      PracticeChatProblemCatalog problemCatalog
+  ) {
     this.sessionRepository = Objects.requireNonNull(sessionRepository, "sessionRepository must not be null");
     this.turnMessageLookupRepository = Objects.requireNonNull(
         turnMessageLookupRepository,
@@ -81,6 +106,7 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
     this.reviewService = Objects.requireNonNull(reviewService, "reviewService must not be null");
     this.trustedProblemTagCatalog = Objects.requireNonNull(
         trustedProblemTagCatalog, "trustedProblemTagCatalog must not be null");
+    this.problemCatalog = Objects.requireNonNull(problemCatalog, "problemCatalog must not be null");
     this.resultMapper = new PracticeCodeReviewToolResultMapper(
         Objects.requireNonNull(objectMapper, "objectMapper must not be null"));
   }
@@ -127,7 +153,7 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
         userMessage.id(),
         turnMessages.assistantMessage().map(AgentMessage::id).orElse(null),
         runDbId,
-        "",
+        problemFacts(session),
         "",
         userMessage.content(),
         userMessage.content(),
@@ -156,6 +182,44 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
     } catch (RuntimeException exception) {
       throw failure("Practice code review result mapping failed", ERROR_RESULT_MAPPING_FAILED, errorIds, exception);
     }
+  }
+
+  private String problemFacts(PracticeSession session) {
+    return problemCatalog.findProblemBySlug(session.problemSlug(), session.locale())
+        .map(this::renderProblemFacts)
+        .orElseGet(() -> "problemSlug: %s\n题面详情不可用，不能仅凭题名断言复杂度要求。"
+            .formatted(session.problemSlug()));
+  }
+
+  private String renderProblemFacts(PracticeChatProblemDetail detail) {
+    String statement = Optional.ofNullable(detail.contentMarkdown())
+        .orElse("")
+        .replace("</problem_statement>", "<\\/problem_statement>")
+        .strip();
+    return """
+        frontendId: %s
+        title: %s
+        titleCn: %s
+        difficulty: %s
+        tags: %s
+        <problem_statement>
+        %s
+        </problem_statement>
+        """.formatted(
+        detail.frontendId(),
+        valueOrEmpty(detail.title()),
+        valueOrEmpty(detail.titleCn()),
+        valueOrEmpty(detail.difficulty()),
+        detail.tags(),
+        statement).strip();
+  }
+
+  private String valueOrEmpty(String value) {
+    return value == null ? "" : value;
+  }
+
+  private static PracticeChatProblemCatalog emptyProblemCatalog() {
+    return (slug, locale) -> Optional.empty();
   }
 
   private void validatePracticeChat(Map<String, Object> metadata) {

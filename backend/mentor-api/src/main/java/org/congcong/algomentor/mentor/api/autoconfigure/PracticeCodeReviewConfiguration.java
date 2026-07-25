@@ -5,6 +5,7 @@ import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLoo
 import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
 import org.congcong.algomentor.api.config.PracticeCodeReviewProperties;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCommitService;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPermissionHook;
@@ -71,13 +72,15 @@ public class PracticeCodeReviewConfiguration {
       AgentTurnMessageLookupRepository turnMessageLookupRepository,
       PracticeCodeReviewService reviewService,
       ObjectMapper objectMapper,
-      TrustedProblemTagCatalog trustedProblemTagCatalog) {
+      TrustedProblemTagCatalog trustedProblemTagCatalog,
+      PracticeChatProblemCatalog practiceChatProblemCatalog) {
     return new PracticeCodeReviewAgentTool(
         practiceSessionRepository,
         turnMessageLookupRepository,
         reviewService,
         objectMapper,
-        trustedProblemTagCatalog);
+        trustedProblemTagCatalog,
+        practiceChatProblemCatalog);
   }
 
   @Bean

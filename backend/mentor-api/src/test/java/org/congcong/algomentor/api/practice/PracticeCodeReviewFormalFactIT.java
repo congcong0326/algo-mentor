@@ -22,6 +22,7 @@ import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCommitService;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewConstants;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewDraft;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPromptBuilder;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
@@ -132,6 +133,15 @@ class PracticeCodeReviewFormalFactIT extends PostgresIntegrationTestSupport {
         Map.entry("normalizedCode", "class Solution {}"),
         Map.entry("evidence", List.of()),
         Map.entry("contextSummary", ""),
+        Map.entry(PracticeCodeReviewConstants.JSON_JUDGE_ASSESSMENT, Map.of(
+            PracticeCodeReviewConstants.JSON_JUDGE_VERDICT, "LIKELY_ACCEPTED",
+            PracticeCodeReviewConstants.JSON_VERDICT_BASIS, "STATIC_ANALYSIS",
+            PracticeCodeReviewConstants.JSON_BLOCKING_ISSUE, false,
+            PracticeCodeReviewConstants.JSON_MEETS_EXPECTED_COMPLEXITY, true,
+            PracticeCodeReviewConstants.JSON_TIME_COMPLEXITY, "O(1)",
+            PracticeCodeReviewConstants.JSON_SPACE_COMPLEXITY, "O(1)",
+            PracticeCodeReviewConstants.JSON_EXPECTED_TIME_COMPLEXITY, "O(1)",
+            PracticeCodeReviewConstants.JSON_CONSTRAINT_ANALYSIS, "最大约束下预计可以通过。")),
         Map.entry("scores", Map.of(
             "correctness", new BigDecimal("4"), "complexity", new BigDecimal("2"),
             "edgeCases", new BigDecimal("2"), "codeQuality", BigDecimal.ONE,

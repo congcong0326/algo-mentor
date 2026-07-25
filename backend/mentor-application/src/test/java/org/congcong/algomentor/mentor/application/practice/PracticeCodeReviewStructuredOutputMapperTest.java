@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 
@@ -248,6 +249,105 @@ class PracticeCodeReviewStructuredOutputMapperTest {
     assertThat(result.draft()).isEmpty();
   }
 
+  @Test
+  void capsTimeLimitExceededAsBlockingFailure() {
+    PracticeReviewResult result = mapper.map(context(), structuredOutput("""
+        {
+          "isCodeSubmission": true,
+          "belongsToCurrentProblem": true,
+          "isCompleteLeetCodeSolution": true,
+          "language": "java",
+          "rawCode": "class Solution { int twoSum(int[] nums) { return 0; } }",
+          "normalizedCode": "class Solution { int twoSum(int[] nums) { return 0; } }",
+          "evidence": [],
+          "contextSummary": "平方级枚举在最大约束下会超时。",
+          "judgeAssessment": {
+            "verdict": "TIME_LIMIT_EXCEEDED",
+            "basis": "STATIC_ANALYSIS",
+            "blockingIssue": true,
+            "meetsExpectedComplexity": false,
+            "timeComplexity": "O(n^2)",
+            "spaceComplexity": "O(1)",
+            "expectedTimeComplexity": "O(n)",
+            "constraintAnalysis": "最大输入规模下需要平方级比较，预计超过时间限制。"
+          },
+          "scores": {
+            "correctness": 4.0,
+            "complexity": 2.0,
+            "edgeCases": 2.0,
+            "codeQuality": 1.0,
+            "problemFit": 1.0,
+            "total": 10.0
+          },
+          "passed": true,
+          "deductionReasons": [],
+          "improvementSuggestions": ["使用哈希表。"],
+          "reviewMarkdown": "需要优化复杂度。",
+          "affectedTagIds": []
+        }
+        """));
+
+    PracticeCodeReviewDraft draft = result.draft().orElseThrow();
+    assertThat(draft.score().correctness()).isEqualByComparingTo("2.0");
+    assertThat(draft.score().complexity()).isEqualByComparingTo("0");
+    assertThat(draft.score().total()).isEqualByComparingTo("5.0");
+    assertThat(draft.passed()).isFalse();
+    assertThat(draft.deductionReasons().get(0)).contains("评测阻断");
+    assertThat(draft.evidence())
+        .extracting(PracticeCodeReviewEvidence::type)
+        .contains(
+            PracticeCodeReviewConstants.EVIDENCE_JUDGE_VERDICT,
+            PracticeCodeReviewConstants.EVIDENCE_JUDGE_BLOCKING_CAP);
+  }
+
+  @Test
+  void capsClearlySuboptimalButLikelyAcceptedSolutionAtEight() {
+    PracticeReviewResult result = mapper.map(context(), structuredOutput("""
+        {
+          "isCodeSubmission": true,
+          "belongsToCurrentProblem": true,
+          "isCompleteLeetCodeSolution": true,
+          "language": "java",
+          "rawCode": "class Solution { int twoSum(int[] nums) { return 0; } }",
+          "normalizedCode": "class Solution { int twoSum(int[] nums) { return 0; } }",
+          "evidence": [],
+          "contextSummary": "暴力枚举预计可以通过，但没有达到目标复杂度。",
+          "judgeAssessment": {
+            "verdict": "LIKELY_ACCEPTED",
+            "basis": "STATIC_ANALYSIS",
+            "blockingIssue": false,
+            "meetsExpectedComplexity": false,
+            "timeComplexity": "O(n^2)",
+            "spaceComplexity": "O(1)",
+            "expectedTimeComplexity": "O(n)",
+            "constraintAnalysis": "能够完成求解，但明显慢于哈希表方案。"
+          },
+          "scores": {
+            "correctness": 4.0,
+            "complexity": 2.0,
+            "edgeCases": 2.0,
+            "codeQuality": 1.0,
+            "problemFit": 1.0,
+            "total": 10.0
+          },
+          "passed": true,
+          "deductionReasons": [],
+          "improvementSuggestions": ["使用哈希表。"],
+          "reviewMarkdown": "功能正确但复杂度不是目标解法。",
+          "affectedTagIds": []
+        }
+        """));
+
+    PracticeCodeReviewDraft draft = result.draft().orElseThrow();
+    assertThat(draft.score().complexity()).isEqualByComparingTo("1.0");
+    assertThat(draft.score().total()).isEqualByComparingTo("8.0");
+    assertThat(draft.passed()).isTrue();
+    assertThat(draft.deductionReasons().get(0)).contains("总分最高为 8.0");
+    assertThat(draft.evidence())
+        .extracting(PracticeCodeReviewEvidence::type)
+        .contains(PracticeCodeReviewConstants.EVIDENCE_SUBOPTIMAL_COMPLEXITY_CAP);
+  }
+
   private PracticeTurnContext context() {
     return new PracticeTurnContext(
         7L,
@@ -268,9 +368,26 @@ class PracticeCodeReviewStructuredOutputMapperTest {
 
   private JsonNode structuredOutput(String json) {
     try {
-      return objectMapper.readTree(json);
+      ObjectNode output = (ObjectNode) objectMapper.readTree(json);
+      if (!output.has(PracticeCodeReviewConstants.JSON_JUDGE_ASSESSMENT)) {
+        output.set(PracticeCodeReviewConstants.JSON_JUDGE_ASSESSMENT, defaultJudgeAssessment());
+      }
+      return output;
     } catch (JsonProcessingException exception) {
       throw new IllegalArgumentException(exception);
     }
+  }
+
+  private ObjectNode defaultJudgeAssessment() {
+    ObjectNode assessment = objectMapper.createObjectNode();
+    assessment.put(PracticeCodeReviewConstants.JSON_JUDGE_VERDICT, "LIKELY_ACCEPTED");
+    assessment.put(PracticeCodeReviewConstants.JSON_VERDICT_BASIS, "STATIC_ANALYSIS");
+    assessment.put(PracticeCodeReviewConstants.JSON_BLOCKING_ISSUE, false);
+    assessment.put(PracticeCodeReviewConstants.JSON_MEETS_EXPECTED_COMPLEXITY, true);
+    assessment.put(PracticeCodeReviewConstants.JSON_TIME_COMPLEXITY, "O(n)");
+    assessment.put(PracticeCodeReviewConstants.JSON_SPACE_COMPLEXITY, "O(1)");
+    assessment.put(PracticeCodeReviewConstants.JSON_EXPECTED_TIME_COMPLEXITY, "O(n)");
+    assessment.put(PracticeCodeReviewConstants.JSON_CONSTRAINT_ANALYSIS, "最大约束下预计可以通过。");
+    return assessment;
   }
 }

@@ -25,6 +25,7 @@ public final class PracticeCodeReviewJsonSchema {
     properties.set("normalizedCode", string());
     properties.set("evidence", evidenceArray());
     properties.set("contextSummary", string());
+    properties.set(PracticeCodeReviewConstants.JSON_JUDGE_ASSESSMENT, judgeAssessment());
     properties.set("scores", scores());
     properties.set("passed", bool());
     properties.set("deductionReasons", stringArray());
@@ -32,7 +33,8 @@ public final class PracticeCodeReviewJsonSchema {
     properties.set("reviewMarkdown", string());
     properties.set(PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS, positiveIntegerArray());
     require(root, "isCodeSubmission", "belongsToCurrentProblem", "isCompleteLeetCodeSolution", "language",
-        "rawCode", "normalizedCode", "evidence", "contextSummary", "scores", "passed", "deductionReasons",
+        "rawCode", "normalizedCode", "evidence", "contextSummary",
+        PracticeCodeReviewConstants.JSON_JUDGE_ASSESSMENT, "scores", "passed", "deductionReasons",
         "improvementSuggestions", "reviewMarkdown", PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS);
     return root;
   }
@@ -68,6 +70,35 @@ public final class PracticeCodeReviewJsonSchema {
     return root;
   }
 
+  private static JsonNode judgeAssessment() {
+    ObjectNode root = object();
+    root.put("additionalProperties", false);
+    ObjectNode properties = root.putObject("properties");
+    properties.set(
+        PracticeCodeReviewConstants.JSON_JUDGE_VERDICT,
+        enumString(PracticeCodeReviewJudgeVerdict.values()));
+    properties.set(
+        PracticeCodeReviewConstants.JSON_VERDICT_BASIS,
+        enumString(PracticeCodeReviewVerdictBasis.values()));
+    properties.set(PracticeCodeReviewConstants.JSON_BLOCKING_ISSUE, bool());
+    properties.set(PracticeCodeReviewConstants.JSON_MEETS_EXPECTED_COMPLEXITY, bool());
+    properties.set(PracticeCodeReviewConstants.JSON_TIME_COMPLEXITY, string());
+    properties.set(PracticeCodeReviewConstants.JSON_SPACE_COMPLEXITY, string());
+    properties.set(PracticeCodeReviewConstants.JSON_EXPECTED_TIME_COMPLEXITY, string());
+    properties.set(PracticeCodeReviewConstants.JSON_CONSTRAINT_ANALYSIS, string());
+    require(
+        root,
+        PracticeCodeReviewConstants.JSON_JUDGE_VERDICT,
+        PracticeCodeReviewConstants.JSON_VERDICT_BASIS,
+        PracticeCodeReviewConstants.JSON_BLOCKING_ISSUE,
+        PracticeCodeReviewConstants.JSON_MEETS_EXPECTED_COMPLEXITY,
+        PracticeCodeReviewConstants.JSON_TIME_COMPLEXITY,
+        PracticeCodeReviewConstants.JSON_SPACE_COMPLEXITY,
+        PracticeCodeReviewConstants.JSON_EXPECTED_TIME_COMPLEXITY,
+        PracticeCodeReviewConstants.JSON_CONSTRAINT_ANALYSIS);
+    return root;
+  }
+
   private static ObjectNode object() {
     ObjectNode node = JsonNodeFactory.instance.objectNode();
     node.put("type", "object");
@@ -77,6 +108,15 @@ public final class PracticeCodeReviewJsonSchema {
   private static ObjectNode string() {
     ObjectNode node = JsonNodeFactory.instance.objectNode();
     node.put("type", "string");
+    return node;
+  }
+
+  private static ObjectNode enumString(Enum<?>[] values) {
+    ObjectNode node = string();
+    ArrayNode allowedValues = node.putArray("enum");
+    for (Enum<?> value : values) {
+      allowedValues.add(value.name());
+    }
     return node;
   }
 

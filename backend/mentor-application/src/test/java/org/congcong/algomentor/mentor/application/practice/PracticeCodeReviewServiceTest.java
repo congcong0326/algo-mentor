@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Flow;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.provider.LlmCapability;
@@ -53,7 +54,8 @@ class PracticeCodeReviewServiceTest {
         });
     assertThat(llmGateway.lastRequest.metadata())
         .containsEntry(PracticeCodeReviewConstants.METADATA_REVIEW_CANDIDATE, true)
-        .containsEntry(PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, 50L);
+        .containsEntry(PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, 50L)
+        .containsEntry(AgentRuntimeMetadataKeys.SCHEMA_VERSION, PracticeCodeReviewConstants.SCHEMA_VERSION);
     assertThat(metrics.reviewStatuses).containsExactly(PracticeCodeReviewMetricStatus.COMPLETED);
   }
 
@@ -228,6 +230,15 @@ class PracticeCodeReviewServiceTest {
     output.put("normalizedCode", "class Solution { public int climbStairs(int n) { return n; } }");
     output.put("evidence", List.of(Map.of("type", "ENTRY_FUNCTION", "value", "climbStairs")));
     output.put("contextSummary", "用户提交了 Java 解法。");
+    output.put(PracticeCodeReviewConstants.JSON_JUDGE_ASSESSMENT, Map.of(
+        PracticeCodeReviewConstants.JSON_JUDGE_VERDICT, "LIKELY_ACCEPTED",
+        PracticeCodeReviewConstants.JSON_VERDICT_BASIS, "STATIC_ANALYSIS",
+        PracticeCodeReviewConstants.JSON_BLOCKING_ISSUE, false,
+        PracticeCodeReviewConstants.JSON_MEETS_EXPECTED_COMPLEXITY, true,
+        PracticeCodeReviewConstants.JSON_TIME_COMPLEXITY, "O(n)",
+        PracticeCodeReviewConstants.JSON_SPACE_COMPLEXITY, "O(1)",
+        PracticeCodeReviewConstants.JSON_EXPECTED_TIME_COMPLEXITY, "O(n)",
+        PracticeCodeReviewConstants.JSON_CONSTRAINT_ANALYSIS, "最大约束下预计可以通过。"));
     output.put("scores", Map.of(
             "correctness", 3.0,
             "complexity", 2.0,

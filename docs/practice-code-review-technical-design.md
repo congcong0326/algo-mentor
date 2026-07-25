@@ -359,12 +359,12 @@ Review 不使用流式输出，使用 `LlmGateway.complete()` 和 `LlmResponseFo
 public final class PracticeCodeReviewConstants {
   public static final String SCENARIO = "practice_code_review";
   public static final String SCHEMA_NAME = "practice_code_review_result";
-  public static final String SCHEMA_VERSION = "v2";
+  public static final String SCHEMA_VERSION = "v3";
   public static final BigDecimal PASS_SCORE = new BigDecimal("6.0");
 }
 ```
 
-现有实现仍为 `v1`。画像标签能力接入时因为新增 `affectedTagIds`，目标结构化输出版本升级为 `v2`，实现、测试和治理 metadata 需要同步切换。
+`v2` 因画像标签能力增加 `affectedTagIds`。评测硬门槛接入后新增 `judgeAssessment`，结构化输出版本升级为 `v3`。
 
 JSON Schema 顶层字段：
 
@@ -380,10 +380,20 @@ JSON Schema 顶层字段：
     {"type": "ENTRY_FUNCTION", "value": "climbStairs"}
   ],
   "contextSummary": "...",
+  "judgeAssessment": {
+    "verdict": "LIKELY_ACCEPTED",
+    "basis": "STATIC_ANALYSIS",
+    "blockingIssue": false,
+    "meetsExpectedComplexity": false,
+    "timeComplexity": "O(n^2)",
+    "spaceComplexity": "O(1)",
+    "expectedTimeComplexity": "O(n)",
+    "constraintAnalysis": "最大约束下预计可以通过，但没有达到题目目标复杂度。"
+  },
   "scores": {
-    "correctness": 3.0,
-    "complexity": 2.0,
-    "edgeCases": 1.0,
+    "correctness": 4.0,
+    "complexity": 1.0,
+    "edgeCases": 2.0,
     "codeQuality": 1.0,
     "problemFit": 1.0,
     "total": 8.0
@@ -407,9 +417,12 @@ isCompleteLeetCodeSolution == true
 应用层校验：
 
 - 五个维度分不能超过产品定义上限。
-- `total` 必须等于五个维度分之和；允许 0.1 以内小数误差，保存前归一化为求和结果。
-- `passed` 必须等于 `total >= 6`；如不一致，以应用层计算为准。
-- 如果 `correctness <= 2` 且模型仍给出 `total > 5`，保存前把 `total` 截断到 5，并在 metadata/evidence 中记录 `CORRECTNESS_BLOCKING_CAP`。
+- 模型给出的 `total` 仅供参考，保存前始终按归一化后的五个维度重新求和。
+- `judgeAssessment.verdict` 只有 `ACCEPTED` 和 `LIKELY_ACCEPTED` 允许通过；其他 verdict 或 `blockingIssue=true` 都按评测阻断处理。
+- 评测阻断时把 `correctness` 截断到 2、`total` 截断到 5；TLE 把 `complexity` 归零，MLE 把 `complexity` 截断到 0.5，并记录 `JUDGE_BLOCKING_CAP` evidence。
+- 无评测阻断但 `meetsExpectedComplexity=false` 时，把 `complexity` 截断到 1、`total` 截断到 8，并记录 `SUBOPTIMAL_COMPLEXITY_CAP` evidence。
+- `passed` 必须同时满足：评测结论允许通过、没有阻断项、归一化总分不低于 6；模型初始值与应用层不一致时以应用层为准。
+- 如果 `correctness <= 2` 且模型仍给出 `total > 5`，保存前把 `total` 截断到 5，并记录 `CORRECTNESS_BLOCKING_CAP` evidence。
 - `rawCode` 和 `normalizedCode` 不能为空；为空时视为结构化输出无效，不落库。
 - `affectedTagIds` 允许为空；重复 ID 在写入前去重，非当前题目 `problem_tag_assignment.tag_id` 的值被丢弃并记录日志和指标，不使结构化 Review 整体失败。
 
@@ -418,12 +431,14 @@ isCompleteLeetCodeSolution == true
 `PracticeCodeReviewPromptBuilder` 组装以下上下文：
 
 - 平台角色：算法刷题代码 Review 助教。
-- 当前题目事实：题号、标题、slug、难度、带 `tagId/value/label` 的受信候选标签、题面摘要、样例摘要。
-- 学习计划事实：planId、phaseIndex、阶段目标、计划题原因。
-- 当前用户提交：`PracticeTurnClassifier` 提取出的代码和原始消息。
-- 聊天上下文：本次提交前最近若干条 `agent_message`，排除题面 seed，并做长度裁剪。
-- 评分规则：正确性 0-4、复杂度 0-2、边界条件 0-2、代码质量 0-1、思路表达与题意贴合 0-1。
+- 当前题目事实：题号、标题、slug、难度、带 `tagId/value/label` 的受信候选标签和完整题面正文；`PracticeCodeReviewAgentTool` 通过 `PracticeChatProblemCatalog` 按会话 locale 服务端读取，不再传空字符串。
+- 学习计划事实：当前工具链路提供受信的 planId 和 phaseIndex；阶段目标与计划题原因仍作为后续上下文增强项。
+- 当前用户提交：服务端按当前 run 的 user message 读取原始消息和待 Review 代码，不接受模型参数传入代码或身份信息。
+- 评测硬门槛：先输出 verdict、依据、阻断标记、最坏时间/空间复杂度、目标复杂度和约束分析，再进行分项评分。
+- 评分规则：正确性 0-4、复杂度 0-2、边界条件 0-2、代码质量 0-1、思路表达与题意贴合 0-1；评测阻断最高 5 分，明显非最优但预计可通过最高 8 分。
 - 识别规则：普通片段、报错、伪代码、非本题代码必须返回 false，不生成正式 Review。
+
+当前 `judgeAssessment` 主要来自模型对题面约束、代码和用户反馈的静态分析，并不等同于真实代码沙箱结果。后续接入执行服务时，服务端应把 AC/WA/TLE/MLE/CE/RE 作为受信事实注入；`SERVER_EXECUTION` 的优先级必须高于用户自报和静态分析。
 
 `PracticeCodeReviewService` 的结构化 Review 调用与 practice chat 主 Agent 调用相互独立。正式 Review prompt 不主动查询或注入学习者画像、画像生成的历史能力结论，也不复用主 Agent 已组装的 system prompt；即使 practice chat 主 Agent 已读取画像，画像片段也不会自动进入 `PracticeCodeReviewPromptBuilder`。正式评分只依据上述当前代码、题目事实、受信业务上下文和评分规则。
 

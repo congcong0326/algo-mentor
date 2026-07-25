@@ -6,6 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.ai.governance.completion.AiCompletionContext;
 import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
 import org.congcong.algomentor.ai.governance.completion.AiPassthroughCompletionGateway;
@@ -348,7 +349,8 @@ public class PracticeCodeReviewService {
             true))
         .metadata(Map.of(
             PracticeCodeReviewConstants.METADATA_REVIEW_CANDIDATE, true,
-            PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, context.sessionId()))
+            PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, context.sessionId(),
+            AgentRuntimeMetadataKeys.SCHEMA_VERSION, PracticeCodeReviewConstants.SCHEMA_VERSION))
         .build();
   }
 
@@ -378,11 +380,14 @@ public class PracticeCodeReviewService {
     if (!output.isObject()) {
       return "type=%s".formatted(output.getNodeType());
     }
-    return "isCodeSubmission=%s,belongsToCurrentProblem=%s,isCompleteLeetCodeSolution=%s,hasScores=%s,rawCodeLength=%d,normalizedCodeLength=%d,fieldCount=%d"
+    return "isCodeSubmission=%s,belongsToCurrentProblem=%s,isCompleteLeetCodeSolution=%s,judgeVerdict=%s,hasScores=%s,rawCodeLength=%d,normalizedCodeLength=%d,fieldCount=%d"
         .formatted(
             booleanField(output, "isCodeSubmission"),
             booleanField(output, "belongsToCurrentProblem"),
             booleanField(output, "isCompleteLeetCodeSolution"),
+            textField(
+                output.path(PracticeCodeReviewConstants.JSON_JUDGE_ASSESSMENT),
+                PracticeCodeReviewConstants.JSON_JUDGE_VERDICT),
             output.path("scores").isObject(),
             textLength(output, "rawCode"),
             textLength(output, "normalizedCode"),
@@ -397,6 +402,11 @@ public class PracticeCodeReviewService {
   private int textLength(JsonNode output, String field) {
     JsonNode value = output.path(field);
     return value.isTextual() ? value.asText().length() : 0;
+  }
+
+  private String textField(JsonNode output, String field) {
+    JsonNode value = output.path(field);
+    return value.isTextual() ? value.asText() : "missing";
   }
 
   private String draftSummary(Optional<PracticeCodeReviewDraft> draft) {
