@@ -68,13 +68,20 @@ describe('SettingsPage', () => {
         label: '复习卡上限说明',
         tooltipId: 'review-daily-review-limit-tooltip',
       },
+      {
+        description: '限制 FSRS 排出的最长天数，避免单次间隔无限增长。',
+        label: '最长复习间隔说明',
+        tooltipId: 'review-maximum-interval-tooltip',
+      },
     ];
 
-    expect(screen.getAllByRole('img', { name: /说明$/ })).toHaveLength(4);
+    expect(screen.getAllByRole('img', { name: /说明$/ })).toHaveLength(5);
     helpItems.forEach(({ description, label, tooltipId }) => {
       expect(screen.getByRole('img', { name: label })).toHaveAttribute('aria-describedby', tooltipId);
       expect(screen.getByRole('tooltip', { name: description })).toHaveAttribute('id', tooltipId);
     });
+    expect(screen.getByRole('checkbox', { name: /启用间隔扰动/ })).toBeChecked();
+    expect(screen.queryByText(/AI 评价建议/)).not.toBeInTheDocument();
   });
 });
 
@@ -117,10 +124,11 @@ const user: CurrentUser = {
 
 function reviewPreference(): ReviewPreference {
   return {
-    aiSuggestionEnabled: true,
     dailyLearningLimit: 50,
     dailyNewLimit: 10,
     dailyReviewLimit: 30,
     desiredRetention: 0.9,
+    enableFuzzing: true,
+    maximumIntervalDays: 36500,
   };
 }

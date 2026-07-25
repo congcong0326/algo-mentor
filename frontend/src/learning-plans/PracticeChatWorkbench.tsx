@@ -1449,9 +1449,6 @@ export default function PracticeChatWorkbench({
         <button className="primary-button compact" disabled={sendDisabled} type="submit">
           {resources.learningPlans.send}
         </button>
-        {completionGate && !completionGate.canComplete && (
-          <p className="practice-composer-hint">{resources.learningPlans.practiceComposerReviewHint}</p>
-        )}
       </form>
 
       {skipConfirmationOpen && (

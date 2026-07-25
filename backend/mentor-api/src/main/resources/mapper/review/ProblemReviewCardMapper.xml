@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.review.mapper.ProblemReviewCardMapper">
+
+  <resultMap id="ProblemReviewCardRowMap"
+      type="org.congcong.algomentor.api.review.mapper.model.ProblemReviewCardRow">
+    <constructor>
+      <arg column="id" javaType="_long"/>
+      <arg column="user_id" javaType="_long"/>
+      <arg column="problem_slug" javaType="string"/>
+      <arg column="source" javaType="string"/>
+      <arg column="source_detail_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="repetitions" javaType="_int"/>
+      <arg column="interval_days" javaType="_int"/>
+      <arg column="fsrs_state" javaType="string"/>
+      <arg column="fsrs_step" javaType="java.lang.Integer"/>
+      <arg column="fsrs_stability" javaType="java.math.BigDecimal"/>
+      <arg column="fsrs_difficulty" javaType="java.math.BigDecimal"/>
+      <arg column="due_at" javaType="java.time.Instant"/>
+      <arg column="lapses" javaType="_int"/>
+      <arg column="last_reviewed_at" javaType="java.time.Instant"/>
+      <arg column="last_rating" javaType="string"/>
+      <arg column="archived" javaType="_boolean"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <sql id="ProblemReviewCardColumns">
+    id,
+    user_id,
+    problem_slug,
+    source,
+    source_detail_json,
+    repetitions,
+    interval_days,
+    fsrs_state,
+    fsrs_step,
+    fsrs_stability,
+    fsrs_difficulty,
+    due_at,
+    lapses,
+    last_reviewed_at,
+    last_rating,
+    archived,
+    created_at,
+    updated_at
+  </sql>
+
+  <select id="upsertForReview" resultMap="ProblemReviewCardRowMap" affectData="true">
+    INSERT INTO problem_review_card (
+      user_id,
+      problem_slug,
+      source,
+      source_detail_json,
+      repetitions,
+      interval_days,
+      fsrs_state,
+      fsrs_step,
+      fsrs_stability,
+      fsrs_difficulty,
+      due_at,
+      lapses
+    ) VALUES (
+      #{userId},
+      #{problemSlug},
+      #{source},
+      #{sourceDetailJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{repetitions},
+      #{intervalDays},
+      #{fsrsState},
+      #{fsrsStep},
+      #{fsrsStability},
+      #{fsrsDifficulty},
+      #{dueAt},
+      #{lapses}
+    )
+    ON CONFLICT (user_id, problem_slug) DO UPDATE SET
+      source = CASE
+        WHEN EXCLUDED.source = 'REVIEW_FAILED' THEN 'REVIEW_FAILED'
+        WHEN problem_review_card.source = 'USER_MARKED' THEN EXCLUDED.source
+        ELSE problem_review_card.source
+      END,
+      source_detail_json = EXCLUDED.source_detail_json,
+      repetitions = CASE
+        WHEN problem_review_card.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN 0
+        ELSE problem_review_card.repetitions
+      END,
+      interval_days = CASE
+        WHEN problem_review_card.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN 0
+        ELSE problem_review_card.interval_days
+      END,
+      fsrs_state = CASE
+        WHEN problem_review_card.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN 'RELEARNING'
+        ELSE problem_review_card.fsrs_state
+      END,
+      fsrs_step = CASE
+        WHEN problem_review_card.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN 0
+        ELSE problem_review_card.fsrs_step
+      END,
+      due_at = CASE
+        WHEN problem_review_card.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN EXCLUDED.due_at
+        ELSE problem_review_card.due_at
+      END,
+      lapses = CASE
+        WHEN problem_review_card.source = 'REVIEW_PASSED' AND EXCLUDED.source = 'REVIEW_FAILED'
+          THEN problem_review_card.lapses + 1
+        ELSE problem_review_card.lapses
+      END,
+      archived = FALSE,
+      updated_at = NOW()
+    RETURNING <include refid="ProblemReviewCardColumns"/>
+  </select>
+
+  <select id="mark" resultMap="ProblemReviewCardRowMap" affectData="true">
+    INSERT INTO problem_review_card (
+      user_id,
+      problem_slug,
+      source,
+      source_detail_json,
+      due_at,
+      created_at,
+      updated_at
+    ) VALUES (
+      #{userId},
+      #{problemSlug},
+      #{source},
+      #{sourceDetailJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{now},
+      #{now},
+      #{now}
+    )
+    ON CONFLICT (user_id, problem_slug) DO UPDATE SET
+      source_detail_json = problem_review_card.source_detail_json || EXCLUDED.source_detail_json,
+      archived = FALSE,
+      updated_at = EXCLUDED.updated_at
+    RETURNING <include refid="ProblemReviewCardColumns"/>
+  </select>
+
+  <select id="findForUser" resultMap="ProblemReviewCardRowMap">
+    SELECT <include refid="ProblemReviewCardColumns"/>
+    FROM problem_review_card
+    WHERE id = #{cardId}
+      AND user_id = #{userId}
+  </select>
+
+  <select id="findForUpdate" resultMap="ProblemReviewCardRowMap">
+    SELECT <include refid="ProblemReviewCardColumns"/>
+    FROM problem_review_card
+    WHERE id = #{cardId}
+      AND user_id = #{userId}
+    FOR UPDATE
+  </select>
+
+  <select id="findByUserAndSlug" resultMap="ProblemReviewCardRowMap">
+    SELECT <include refid="ProblemReviewCardColumns"/>
+    FROM problem_review_card
+    WHERE user_id = #{userId}
+      AND problem_slug = #{problemSlug}
+  </select>
+
+  <select id="findDue" resultMap="ProblemReviewCardRowMap">
+    SELECT <include refid="ProblemReviewCardColumns"/>
+    FROM problem_review_card
+    WHERE user_id = #{userId}
+      AND archived = FALSE
+      AND due_at &lt;= #{now}
+    ORDER BY
+      CASE fsrs_state
+        WHEN 'RELEARNING' THEN 0
+        WHEN 'LEARNING' THEN 1
+        WHEN 'REVIEW' THEN 2
+        ELSE 3
+      END,
+      (source = 'REVIEW_FAILED' OR lapses &gt; 0) DESC,
+      due_at ASC,
+      id ASC
+    LIMIT #{limit}
+  </select>
+
+  <select id="list" resultMap="ProblemReviewCardRowMap">
+    SELECT prc.*
+    FROM problem_review_card prc
+    LEFT JOIN user_problem_note upn
+      ON upn.user_id = prc.user_id AND upn.problem_slug = prc.problem_slug
+    LEFT JOIN problem p ON p.slug = prc.problem_slug
+    WHERE prc.user_id = #{userId}
+      <if test="source != null">
+        AND prc.source = #{source}
+      </if>
+      <if test="mistakeOnly">
+        AND (prc.source = 'REVIEW_FAILED' OR prc.lapses &gt; 0)
+      </if>
+      <if test="keyword != null and keyword != ''">
+        AND (
+          prc.problem_slug ILIKE CONCAT('%', #{keyword}, '%')
+          OR COALESCE(p.title_zh, '') ILIKE CONCAT('%', #{keyword}, '%')
+          OR COALESCE(p.title_en, '') ILIKE CONCAT('%', #{keyword}, '%')
+          OR COALESCE(upn.note_markdown, '') ILIKE CONCAT('%', #{keyword}, '%')
+        )
+      </if>
+    ORDER BY
+      prc.archived ASC,
+      (prc.source = 'REVIEW_FAILED' OR prc.lapses &gt; 0) DESC,
+      prc.due_at ASC,
+      prc.updated_at DESC
+    LIMIT #{limit}
+    OFFSET #{offset}
+  </select>
+
+  <select id="countDue" resultType="_int">
+    SELECT COUNT(*)
+    FROM problem_review_card
+    WHERE user_id = #{userId}
+      AND archived = FALSE
+      AND due_at &lt;= #{now}
+  </select>
+
+  <select id="countScheduledBefore" resultType="_int">
+    SELECT COUNT(*)
+    FROM problem_review_card
+    WHERE user_id = #{userId}
+      AND archived = FALSE
+      AND due_at &lt; #{exclusiveEnd}
+  </select>
+
+  <select id="findNextDueAt" resultType="java.time.Instant">
+    SELECT MIN(due_at)
+    FROM problem_review_card
+    WHERE user_id = #{userId}
+      AND archived = FALSE
+      AND due_at &gt; #{after}
+      AND due_at &lt; #{exclusiveEnd}
+  </select>
+
+  <select id="updateArchived" resultMap="ProblemReviewCardRowMap" affectData="true">
+    UPDATE problem_review_card
+    SET archived = #{archived},
+        updated_at = #{now}
+    WHERE id = #{cardId}
+      AND user_id = #{userId}
+    RETURNING <include refid="ProblemReviewCardColumns"/>
+  </select>
+
+  <select id="updateScheduling" resultMap="ProblemReviewCardRowMap" affectData="true">
+    UPDATE problem_review_card
+    SET repetitions = #{repetitions},
+        interval_days = #{intervalDays},
+        fsrs_state = #{fsrsState},
+        fsrs_step = #{fsrsStep},
+        fsrs_stability = #{fsrsStability},
+        fsrs_difficulty = #{fsrsDifficulty},
+        lapses = #{lapses},
+        due_at = #{dueAt},
+        last_rating = #{lastRating},
+        last_reviewed_at = #{reviewedAt},
+        updated_at = #{reviewedAt}
+    WHERE id = #{cardId}
+      AND user_id = #{userId}
+    RETURNING <include refid="ProblemReviewCardColumns"/>
+  </select>
+</mapper>

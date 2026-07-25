@@ -9,7 +9,7 @@ import org.congcong.algomentor.api.controller.preference.UserAiPreferenceUnauthe
 import org.congcong.algomentor.api.controller.practice.PracticeProgressStatusInvalidException;
 import org.congcong.algomentor.api.controller.practice.PracticeSessionUnauthenticatedException;
 import org.congcong.algomentor.api.controller.profile.LearnerProfileUnauthenticatedException;
-import org.congcong.algomentor.api.controller.review.MistakeReviewUnauthenticatedException;
+import org.congcong.algomentor.api.controller.review.ReviewUnauthenticatedException;
 import org.congcong.algomentor.api.profile.service.LearnerProfileViewService;
 import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.api.problem.service.ProblemService;
@@ -18,7 +18,7 @@ import org.congcong.algomentor.common.api.ApiErrorMessageResolver;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunInProgressException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
-import org.congcong.algomentor.mentor.application.review.MistakeReviewException;
+import org.congcong.algomentor.mentor.application.review.ReviewException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -96,7 +96,7 @@ public class LocalizedApiExceptionHandler {
       AbilityProfileUnauthenticatedException.class,
       LearnerProfileUnauthenticatedException.class,
       UserAiPreferenceUnauthenticatedException.class,
-      MistakeReviewUnauthenticatedException.class
+      ReviewUnauthenticatedException.class
   })
   public ResponseEntity<ApiResponse<Void>> unauthenticated(RuntimeException exception) {
     return failure(HttpStatus.UNAUTHORIZED, AUTH_UNAUTHENTICATED_CODE, exception.getMessage());
@@ -107,12 +107,15 @@ public class LocalizedApiExceptionHandler {
     return failure(HttpStatus.BAD_REQUEST, exception.code(), exception.messageKey(), exception.getMessage());
   }
 
-  @ExceptionHandler(MistakeReviewException.class)
-  public ResponseEntity<ApiResponse<Void>> mistakeReviewException(MistakeReviewException exception) {
-    HttpStatus status = "MISTAKE_NOTE_NOT_FOUND".equals(exception.code())
-        || "MISTAKE_NOTE_PROBLEM_NOT_FOUND".equals(exception.code())
-        ? HttpStatus.NOT_FOUND
-        : HttpStatus.BAD_REQUEST;
+  @ExceptionHandler(ReviewException.class)
+  public ResponseEntity<ApiResponse<Void>> reviewException(ReviewException exception) {
+    HttpStatus status = switch (exception.code()) {
+      case "REVIEW_CARD_NOT_FOUND", "REVIEW_PROBLEM_NOT_FOUND" -> HttpStatus.NOT_FOUND;
+      case "PROBLEM_NOTE_REVISION_CONFLICT", "REVIEW_ATTEMPT_CONFLICT" -> HttpStatus.CONFLICT;
+      case "REVIEW_CARD_SERVICE_UNAVAILABLE", "REVIEW_QUEUE_SERVICE_UNAVAILABLE",
+           "REVIEW_ATTEMPT_SERVICE_UNAVAILABLE", "PROBLEM_NOTE_SERVICE_UNAVAILABLE" -> HttpStatus.SERVICE_UNAVAILABLE;
+      default -> HttpStatus.BAD_REQUEST;
+    };
     return failure(status, exception.code(), exception.getMessage());
   }
 

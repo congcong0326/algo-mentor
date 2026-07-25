@@ -1,6 +1,6 @@
 package org.congcong.algomentor.api.review.service;
 
-import org.congcong.algomentor.mentor.application.review.MistakeReviewConstants;
+import org.congcong.algomentor.mentor.application.review.ReviewContractConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public final class ProblemStatementExtractor {
       if (isMetadataSection(normalized)) {
         break;
       }
-      return clamp(normalized, MistakeReviewConstants.STATEMENT_SUMMARY_MAX_CHARS);
+      return clamp(normalized, ReviewContractConstants.STATEMENT_SUMMARY_MAX_CHARS);
     }
     log.debug("Problem statement summary extraction produced empty result. markdownLength={}",
         contentMarkdown.length());

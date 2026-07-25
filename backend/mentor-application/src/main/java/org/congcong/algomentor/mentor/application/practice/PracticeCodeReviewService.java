@@ -19,7 +19,7 @@ import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
-import org.congcong.algomentor.mentor.application.review.PracticeCodeReviewObserver;
+import org.congcong.algomentor.mentor.application.review.card.PracticeCodeReviewObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

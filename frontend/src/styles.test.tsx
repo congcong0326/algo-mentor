@@ -100,18 +100,18 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).not.toMatch(/\.ability-bubble-node \{[^}]*will-change: transform;/);
   });
 
-  it('keeps rendered Markdown lists compact and aligned', () => {
-    expect(styles).toContain('.practice-message .markdown-view {\n  margin: 0;\n  min-height: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  overflow: visible;');
+  it('keeps chat and review problem Markdown rendering aligned', () => {
+    expect(styles).toContain('.practice-message .markdown-view,\n.review-problem-content .markdown-view {\n  margin: 0;\n  min-height: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  overflow: visible;');
     expect(styles).toContain('.review-problem-full .markdown-view {\n  margin-top: 12px;\n  min-height: 0;\n  padding: 0;\n  border: 0;\n  background: transparent;\n  overflow: visible;');
     expect(styles).toContain('line-height: 1.55;\n  white-space: normal;');
     expect(styles).toContain('margin-bottom: 10px;');
-    expect(styles).toContain('.practice-message .markdown-view p,\n.practice-message .markdown-view li {\n  color: var(--text-secondary);\n  line-height: 1.55;');
+    expect(styles).toContain('.practice-message .markdown-view p,\n.practice-message .markdown-view li,\n.review-problem-content .markdown-view p,\n.review-problem-content .markdown-view li {\n  color: var(--text-secondary);\n  line-height: 1.55;');
     expect(styles).toContain('.review-problem-full .markdown-view p,\n.review-problem-full .markdown-view li {\n  color: var(--text-secondary);\n  line-height: 1.55;');
-    expect(styles).toContain('.practice-message .markdown-view li {\n  margin: 4px 0;\n  padding-left: 2px;');
+    expect(styles).toContain('.practice-message .markdown-view li,\n.review-problem-content .markdown-view li {\n  margin: 4px 0;\n  padding-left: 2px;');
     expect(styles).toContain('.review-problem-full .markdown-view li {\n  margin: 4px 0;\n  padding-left: 2px;');
-    expect(styles).toContain('.practice-message .markdown-view li > p {\n  display: inline;');
+    expect(styles).toContain('.practice-message .markdown-view li > p,\n.review-problem-content .markdown-view li > p {\n  display: inline;');
     expect(styles).toContain('.review-problem-full .markdown-view li > p {\n  display: inline;');
-    expect(styles).toContain('.practice-message .markdown-view > :last-child {\n  margin-bottom: 0;');
+    expect(styles).toContain('.practice-message .markdown-view > :last-child,\n.review-problem-content .markdown-view > :last-child {\n  margin-bottom: 0;');
     expect(styles).toContain('.review-problem-full .markdown-view > :last-child {\n  margin-bottom: 0;');
   });
 

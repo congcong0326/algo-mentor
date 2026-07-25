@@ -621,8 +621,6 @@ export interface LocaleResources {
     reviewLoadFailed: string;
     reviewSaveFailed: string;
     reviewSaving: string;
-    aiSuggestionLabel: string;
-    aiSuggestionDescription: string;
     advancedReviewTitle: string;
     advancedReviewDescription: string;
     fsrsParameters: string;
@@ -634,6 +632,10 @@ export interface LocaleResources {
     dailyLearningLimitDescription: string;
     dailyReviewLimit: string;
     dailyReviewLimitDescription: string;
+    maximumIntervalDays: string;
+    maximumIntervalDaysDescription: string;
+    enableFuzzing: string;
+    enableFuzzingDescription: string;
     helpSuffix: string;
     accountTitle: string;
     accountDescription: string;
@@ -1033,7 +1035,6 @@ export interface LocaleResources {
     completionGateFallback: string;
     completionRequiresPassedReview: string;
     practiceComposerPlaceholderReview: string;
-    practiceComposerReviewHint: string;
     toolPermissionEyebrow: string;
     toolPermissionProblem: string;
     toolPermissionContextWarning: string;
@@ -1738,13 +1739,11 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       learningDescription: '控制题目聊天中的讲解方式。修改后会应用到下一次 AI 回复。',
       currentCoach: '当前教练',
       reviewTitle: '复习策略',
-      reviewDescription: '决定复述后是否使用 AI 辅助评级，以及间隔重复的每日负载。',
+      reviewDescription: '调整 FSRS 目标记忆率、每日复习负载和最长复习间隔。',
       reviewLoading: '正在加载复习设置...',
       reviewLoadFailed: '复习设置加载失败',
       reviewSaveFailed: '复习设置保存失败',
       reviewSaving: '保存中',
-      aiSuggestionLabel: '复习后启用 AI 建议评级',
-      aiSuggestionDescription: 'AI 仅分析复述并给出建议，最终评级仍由用户确认；关闭后直接手动评级。',
       advancedReviewTitle: '高级复习设置',
       advancedReviewDescription: 'FSRS 参数会直接影响复习频率。没有明确需求时建议保持默认值。',
       fsrsParameters: 'FSRS 参数',
@@ -1756,6 +1755,10 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       dailyLearningLimitDescription: '当天处于学习或重新学习状态的到期卡数量。',
       dailyReviewLimit: '复习卡上限',
       dailyReviewLimitDescription: '当天处于复习状态的到期卡数量。',
+      maximumIntervalDays: '最长复习间隔',
+      maximumIntervalDaysDescription: '限制 FSRS 排出的最长天数，避免单次间隔无限增长。',
+      enableFuzzing: '启用间隔扰动',
+      enableFuzzingDescription: '在相近日期内轻微分散复习时间，避免大量卡片集中到同一天。',
       helpSuffix: '说明',
       accountTitle: '账户',
       accountDescription: '查看当前登录身份，或结束本次会话。',
@@ -2200,7 +2203,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       completionGateFallback: '完成状态需要等待代码提交记录结果。',
       completionRequiresPassedReview: '完成前需要先粘贴完整代码生成一次代码提交记录，并且通过后才能标记完成。',
       practiceComposerPlaceholderReview: '粘贴完整代码、LeetCode 通过/失败反馈，或继续追问思路...',
-      practiceComposerReviewHint: '粘贴完整代码生成代码提交记录，并通过后才能标记完成。',
       toolPermissionEyebrow: '限时确认',
       toolPermissionProblem: '题目',
       toolPermissionContextWarning: '暂时无法读取完整练习上下文，请确认代码和题目是否匹配。',
@@ -2948,13 +2950,11 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       learningDescription: 'Controls how practice chat explains solutions. Changes apply to the next AI response.',
       currentCoach: 'Current coach',
       reviewTitle: 'Review Strategy',
-      reviewDescription: 'Choose whether AI assists with recall ratings and tune the daily spaced-repetition load.',
+      reviewDescription: 'Tune FSRS retention, daily review load, and the maximum review interval.',
       reviewLoading: 'Loading review settings...',
       reviewLoadFailed: 'Failed to load review settings',
       reviewSaveFailed: 'Failed to save review settings',
       reviewSaving: 'Saving',
-      aiSuggestionLabel: 'Enable AI rating suggestions after recall',
-      aiSuggestionDescription: 'AI analyzes the recall and suggests a rating, but you still make the final choice. Disable this to rate manually.',
       advancedReviewTitle: 'Advanced review settings',
       advancedReviewDescription: 'FSRS parameters directly affect review frequency. Keep the defaults unless you have a specific reason to change them.',
       fsrsParameters: 'FSRS Parameters',
@@ -2966,6 +2966,10 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       dailyLearningLimitDescription: 'Due cards currently in learning or relearning state.',
       dailyReviewLimit: 'Review limit',
       dailyReviewLimitDescription: 'Due cards currently in review state.',
+      maximumIntervalDays: 'Maximum interval',
+      maximumIntervalDaysDescription: 'Caps the longest interval FSRS can schedule.',
+      enableFuzzing: 'Enable interval fuzzing',
+      enableFuzzingDescription: 'Slightly spreads nearby due dates to avoid review spikes.',
       helpSuffix: ' help',
       accountTitle: 'Account',
       accountDescription: 'Review the current identity or end this session.',
@@ -3418,7 +3422,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       completionGateFallback: 'Completion is waiting for a code submission result.',
       completionRequiresPassedReview: 'Paste complete code to generate a code submission record, then pass it before marking this practice complete.',
       practiceComposerPlaceholderReview: 'Paste complete code, LeetCode accepted/failed feedback, or continue asking...',
-      practiceComposerReviewHint: 'Paste complete code to generate a code submission record, then pass it before marking this practice complete.',
       toolPermissionEyebrow: 'Timed confirmation',
       toolPermissionProblem: 'Problem',
       toolPermissionContextWarning: 'The full practice context is temporarily unavailable. Confirm that the code matches this problem.',

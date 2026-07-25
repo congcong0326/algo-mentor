@@ -212,19 +212,14 @@ public final class ApiContractConstants {
   public static final String PRACTICE_SESSION_REVIEW_DETAIL_PATH = "/{sessionId}/reviews/{reviewId}";
 
   /**
-   * 错题本接口根路径。
+   * 当前用户复习卡接口根路径。
    */
-  public static final String MISTAKE_NOTES_BASE_PATH = "/api/mistake-notes";
+  public static final String REVIEW_CARDS_BASE_PATH = "/api/review-cards";
 
   /**
-   * 错题题面详情路径后缀。
+   * 当前用户题目级笔记接口根路径。
    */
-  public static final String MISTAKE_NOTES_PROBLEM_STATEMENT_PATH_SUFFIX = "/problem-statement";
-
-  /**
-   * 错题复述直接自评提交路径后缀。
-   */
-  public static final String MISTAKE_NOTES_RECALL_RATING_PATH_SUFFIX = "/recall/rating";
+  public static final String USER_PROBLEMS_BASE_PATH = "/api/problems";
 
   /**
    * 复习会话接口根路径。

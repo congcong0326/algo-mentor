@@ -1,4 +1,10 @@
 package org.congcong.algomentor.api.review.model;
 
-public record ReviewSummaryResponse(int dueCount) {
+import java.time.Instant;
+
+public record ReviewSummaryResponse(
+    int dueCount,
+    int remainingTodayCount,
+    Instant nextDueAt
+) {
 }

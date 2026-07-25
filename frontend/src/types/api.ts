@@ -1474,21 +1474,19 @@ export interface MessageEndData {
   finishReason?: string;
 }
 
-export type MistakeSource = 'REVIEW_FAILED' | 'REVIEW_PASSED' | 'USER_MARKED' | 'AI_WEAK';
+export type ReviewCardSource = 'REVIEW_FAILED' | 'REVIEW_PASSED' | 'USER_MARKED';
 export type ReviewRating = 'AGAIN' | 'HARD' | 'GOOD' | 'EASY';
-export type CardVariant = 'STATIC' | 'RULE_BASED' | 'AI_GENERATED';
 
-export interface MistakeNote {
+export interface ReviewCard {
   id: number;
   problemSlug: string;
   problemTitle?: string | null;
-  problemLocale?: string | null;
   problemDifficulty?: string | null;
-  source: MistakeSource;
+  source: ReviewCardSource;
   sourceDetail: Record<string, unknown>;
   repetitions: number;
   intervalDays: number;
-  fsrsState?: 'LEARNING' | 'REVIEW' | 'RELEARNING' | string;
+  fsrsState: 'LEARNING' | 'REVIEW' | 'RELEARNING';
   fsrsStep?: number | null;
   fsrsStability?: number | null;
   fsrsDifficulty?: number | null;
@@ -1497,68 +1495,15 @@ export interface MistakeNote {
   lastReviewedAt?: string | null;
   lastRating?: ReviewRating | null;
   archived: boolean;
-  userNotePersistent?: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface ReviewCardPrompt {
-  key: string;
-  label: string;
-  hint?: string | null;
-}
-
-export interface ReviewCardScaffold {
-  templateMarkdown: string;
-  maxInputChars: number;
-}
-
-export interface ReviewProblemStatementSummary {
-  summary: string;
-  hasFullContent: boolean;
-}
-
-export interface ReviewRecallHistory {
-  id: number;
-  rating: ReviewRating;
-  userRecallText?: string | null;
-  userNoteTransient?: string | null;
-  reviewedAt: string;
-  intervalAfter: number;
-}
-
-export interface ReviewCard {
-  cardVariant: CardVariant;
-  problemRef: {
-    slug: string;
-    titleCn: string;
-    difficulty: string;
-  };
-  problemStatement?: ReviewProblemStatementSummary | null;
-  contextSummary: string;
-  prompts: ReviewCardPrompt[];
-  scaffold?: ReviewCardScaffold | null;
-  revealPolicy: string;
-  expectedEffort: 'LIGHT' | 'MEDIUM' | 'HEAVY' | string;
-  userNotePersistent?: string | null;
-  recentRecallHistory: ReviewRecallHistory[];
-}
-
-export interface ReviewProblemStatementResponse {
+export interface ReviewProblem {
   slug: string;
   titleCn: string;
   difficulty: string;
   contentMarkdown: string;
-}
-
-export interface RecallReviewResult {
-  suggestedRating: ReviewRating;
-  hitPoints: string[];
-  missedPoints: string[];
-  gapSummary: string;
-  nextDueAt: string;
-  intervalDays: number;
-  repetitions: number;
 }
 
 export interface ReviewIntervalPreview {
@@ -1567,24 +1512,111 @@ export interface ReviewIntervalPreview {
   intervalDays: number;
 }
 
-export interface RecallEvaluationResult {
-  evaluationId: number;
-  suggestedRating?: ReviewRating | null;
-  hitPoints: string[];
-  missedPoints: string[];
-  gapSummary: string;
-  aiSuggested: boolean;
-  createdAt: string;
-  intervals: ReviewIntervalPreview[];
+export interface ReviewSchedulingSnapshot {
+  repetitions: number;
+  intervalDays: number;
+  lapses: number;
+  fsrsState: 'LEARNING' | 'REVIEW' | 'RELEARNING';
+  fsrsStep?: number | null;
+  fsrsStability?: number | null;
+  fsrsDifficulty?: number | null;
+  dueAt: string;
+  lastReviewedAt?: string | null;
+  lastRating?: ReviewRating | null;
 }
 
-export interface RecallConfirmResult {
+export interface ReviewAttempt {
+  id: number;
+  reviewCardId: number;
+  clientAttemptId: string;
   rating: ReviewRating;
-  suggestedRating?: ReviewRating | null;
-  nextDueAt: string;
-  intervalDays: number;
-  repetitions: number;
-  aiSuggested: boolean;
+  schedulingBefore: ReviewSchedulingSnapshot;
+  schedulingAfter: ReviewSchedulingSnapshot;
+  reviewedAt: string;
+  duplicate: boolean;
+}
+
+export type ProblemDataStructureKey =
+  | 'ARRAY'
+  | 'HASH_MAP'
+  | 'LINKED_LIST'
+  | 'STACK'
+  | 'QUEUE'
+  | 'HEAP'
+  | 'TREE'
+  | 'GRAPH'
+  | 'TRIE'
+  | 'UNION_FIND'
+  | 'OTHER';
+
+export type ProblemAlgorithmKey =
+  | 'TWO_POINTERS'
+  | 'SLIDING_WINDOW'
+  | 'BINARY_SEARCH'
+  | 'DFS'
+  | 'BFS'
+  | 'BACKTRACKING'
+  | 'GREEDY'
+  | 'DYNAMIC_PROGRAMMING'
+  | 'PREFIX_SUM'
+  | 'SORTING'
+  | 'MONOTONIC_STACK'
+  | 'DIJKSTRA'
+  | 'OTHER';
+
+export type ProblemComplexityKey =
+  | 'O_1'
+  | 'O_LOG_N'
+  | 'O_N'
+  | 'O_N_LOG_N'
+  | 'O_N2'
+  | 'O_N3'
+  | 'O_2N'
+  | 'OTHER';
+
+export interface ProblemComplexityValue {
+  key?: ProblemComplexityKey | null;
+  customText?: string | null;
+}
+
+export interface ProblemSolutionOutlineV1 {
+  schemaVersion: 1;
+  coreIdea: string;
+  dataStructures: ProblemDataStructureKey[];
+  customDataStructures: string[];
+  dataStructureNotes: string;
+  algorithms: ProblemAlgorithmKey[];
+  customAlgorithms: string[];
+  algorithmNotes: string;
+  timeComplexity: ProblemComplexityValue;
+  spaceComplexity: ProblemComplexityValue;
+  edgeCases: string;
+}
+
+export interface UserProblemNote {
+  id?: number | null;
+  problemSlug: string;
+  outline: ProblemSolutionOutlineV1;
+  noteMarkdown: string;
+  revision: number;
+  exists: boolean;
+  hasContent: boolean;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface UserProblemNoteRequest {
+  outline: ProblemSolutionOutlineV1;
+  noteMarkdown: string;
+  expectedRevision: number;
+}
+
+export interface ReviewCardContext {
+  card: ReviewCard;
+  problem: ReviewProblem;
+  note: UserProblemNote;
+  recentAttempts: ReviewAttempt[];
+  intervalPreviews: ReviewIntervalPreview[];
 }
 
 export interface ReviewPreference {
@@ -1592,7 +1624,8 @@ export interface ReviewPreference {
   dailyNewLimit: number;
   dailyLearningLimit: number;
   dailyReviewLimit: number;
-  aiSuggestionEnabled: boolean;
+  maximumIntervalDays: number;
+  enableFuzzing: boolean;
 }
 
 export interface ReviewPreferenceRequest {
@@ -1600,14 +1633,17 @@ export interface ReviewPreferenceRequest {
   dailyNewLimit?: number;
   dailyLearningLimit?: number;
   dailyReviewLimit?: number;
-  aiSuggestionEnabled?: boolean;
+  maximumIntervalDays?: number;
+  enableFuzzing?: boolean;
 }
 
 export interface ReviewQueueResponse {
-  items: MistakeNote[];
+  items: ReviewCard[];
   dueCount: number;
 }
 
 export interface ReviewSummaryResponse {
   dueCount: number;
+  remainingTodayCount: number;
+  nextDueAt?: string | null;
 }

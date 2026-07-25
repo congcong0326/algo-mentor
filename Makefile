@@ -117,19 +117,19 @@ observability-logs: observability-check
 	$(COMPOSE) $(OBSERVABILITY_PROFILE) logs -f --tail=200 prometheus grafana loki promtail
 
 backend-build:
-	$(MAVEN) package
+	$(MAVEN) clean package
 
 backend-build-skip-tests:
-	$(MAVEN) -DskipTests package
+	$(MAVEN) -DskipTests clean package
 
 backend-test:
-	$(MAVEN) test
+	$(MAVEN) clean test
 
 backend-it:
-	$(MAVEN) -pl mentor-api -am -Dtest=NoUnitTestsSpecified -Dit.test='**/*IT' verify
+	$(MAVEN) -pl mentor-api -am -Dtest=NoUnitTestsSpecified -Dit.test='**/*IT' clean verify
 
 backend-dev:
-	API_PORT="$(API_PORT)" SERVER_PORT="$(API_PORT)" $(MAVEN) -pl mentor-api -am spring-boot:run
+	API_PORT="$(API_PORT)" SERVER_PORT="$(API_PORT)" $(MAVEN) -pl mentor-api -am clean spring-boot:run
 
 frontend-install:
 	$(NPM) install

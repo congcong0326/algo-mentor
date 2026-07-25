@@ -17,7 +17,6 @@ public interface ReviewPreferenceMapper {
       @Param("dailyNewLimit") int dailyNewLimit,
       @Param("dailyLearningLimit") int dailyLearningLimit,
       @Param("dailyReviewLimit") int dailyReviewLimit,
-      @Param("aiSuggestionEnabled") boolean aiSuggestionEnabled,
       @Param("maximumIntervalDays") int maximumIntervalDays,
       @Param("enableFuzzing") boolean enableFuzzing,
       @Param("createdAt") Instant createdAt,

@@ -48,11 +48,12 @@
 - `docs/learning-plan-template-source-research.md`：学习计划模板资料源调研，按最终计划价值排序 LeetCode 官方计划、NeetCode、TIH、代码随想录、halfrost、labuladong 等候选来源。
 - `docs/learning-plan-template-internalization-plan.md`：学习计划模板资料源内部化实施计划，定义第一批 10 个模板、资料源转换清单、完成标记、subagent 派发模式、seed 生成和验证门禁。
 - `docs/product-planning/learning-plan-load-and-weekly-loop-design.md`：训练方案负载计算与周执行闭环设计，说明模板「推荐/舒缓/冲刺」节奏、AI 时间预算约束、负载估算、周桶进度和分阶段落地方案。
-- `docs/product-planning/p0-mistake-notebook-spaced-repetition-design.md`：错题本 + 间隔重复复习产品形态设计（P0·3.4），说明 Recall-first、AI 判定驱动调度、C 档 AI 卡片全量 + 异步预生成、每日配额、备注两级和会员切面。
+- `docs/product-planning/p0-mistake-notebook-spaced-repetition-design.md`：旧版错题本产品设计，已由题目复习卡双面重构方案取代，仅保留历史决策背景。
 - `docs/product-planning/p1-4.0-problem-bank-foundation-design.md`：P1-4.0 题库基座官方 API 全量构建与校验设计，说明以 LeetCode 官方（`.com` 英文 + `.cn` 中文，按 slug join）为唯一内容源、退役 fishjar，分三阶段推进（阶段一原始抓取入本地、阶段二数据画像分类 complete/zh_missing/cn_only/premium/deprecated、阶段三数据驱动加工含是否 AI 翻译），含字段映射、校验规则与 `azl397985856`/`LeetcodeTop` 可选交叉校验。
 - `docs/product-planning/p1-4.0-a-company-problem-metadata-design.md`：P1-4.0-A 公司维度题目元数据设计，说明 `liquidslr`（欧美/时间桶）与 `afatcoder/LeetcodeTop`（国内/岗位）双主源、`role` 岗位维度、cn/com 链接归一、公司高频 seed、数据库模型、题库/API/Agent 工具扩展和测试计划。
-- `docs/mistake-notebook-review-technical-design.md`：错题本 + 间隔重复复习技术详设，说明 `mistake_note`/`review_log` 迁移（V18）、`mentor.application.review` 模块划分、SM-2 调度引擎、事件驱动入库、卡片生成/预生成/配额、复述判定、API 契约与任务拆解。
-- `docs/review-card-content-fix-design.md`：复习卡内容修复研发设计，说明复习卡标题补齐 `titleCn/difficulty`、题面通过 `GET /api/mistake-notes/{id}/problem-statement` 按需查询、`review.note.ingest{outcome}` 埋点扩展与任务拆解。
+- `docs/mistake-notebook-review-technical-design.md`：旧版错题本技术详设，已由 V40 双面复习卡架构取代，仅用于追溯历史实现。
+- `docs/review-card-content-fix-design.md`：旧版复习卡内容修复设计，相关 `/api/mistake-notes` 契约已删除。
+- `docs/problem-review-card-dual-side-refactoring-plan.md`：当前题目复习卡与题目笔记实施基线，将复习收敛为“完整题面 + 默认折叠的题目级用户笔记 + 直接自评 + FSRS”，并破坏性删除 AI 卡片生成、AI 复述评价、旧表和旧接口。
 - `docs/internal-beta-admin-capabilities-design.md`：5-20 人封闭内测管理员业务能力研发设计，说明数据库邮箱白名单、临时密码、动态 AI 额度、模型价格与成本估算、AI run 排障、30 天诊断保留、反馈信箱、管理员概览和低敏审计边界。
 - `docs/internal-beta-admin-capabilities-implementation-plan.md`：内测管理员业务能力分阶段实施计划，按准入与账号运维、AI 止损与成本观测、run 排障、反馈与概览拆分任务、测试和发布门禁。
 - `docs/internal-beta-ai-governance-stage-2-implementation-plan.md`：内测管理员能力阶段二详细实施计划，固化 `/admin/ai` 与用户管理的产品边界，细化动态 AI 策略、V32 调用级 Token 台账、当前价格成本估算、直接 LLM 调用治理、管理员 API、前端工作区、测试和发布门禁。
@@ -121,7 +122,7 @@
 - `backend/ai-governance/src/main/resources/db/migration/ai/V32__ai_usage_accounting_hardening.sql`：为调用级 Token 台账追加非负约束、索引、provider 规范化约束，并从历史 run 聚合幂等回填 legacy 调用记录。
 - `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/policy/runtime`：动态全局 AI 设置、用户暂停/额度覆盖、有效策略计算和管理员审计写入服务。
 - `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/accounting`：真实 `LlmGateway` 的调用级记账装饰器，覆盖同步、流式、失败、取消与每日 Token 累计。
-- `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/completion`：代码 Review、复述判定、复习卡生成等直接 completion 的准入、动态开关和受信 metadata 包装。
+- `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/completion`：代码 Review 等直接 completion 的准入、动态开关和受信 metadata 包装；题目复习不调用模型。
 - `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/pricing` 与 `adminquery`：当前模型价格管理、Decimal 成本计算及按用户、模型、业务场景聚合的管理查询。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/admin/ai`：AI 设置、单用户策略、模型价格、用量查询的管理员 HTTP 契约、DTO 映射与错误响应。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/admin/audit`：管理员审计 PostgreSQL/MyBatis 实现，以独立 `REQUIRES_NEW` 事务写入并对失败计数降级。
@@ -132,6 +133,10 @@
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewAgentToolNames.java`：Review Agent 工具名、参数名、preview 字段和 tool result 字段常量。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewToolResultMapper.java`：Review 工具结果映射，输出 `practice_code_review_submitted` 摘要给 Agent 主模型。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeChatPromptSectionProvider.java`：题目聊天 prompt 片段，包含 Review 工具调用边界和拒绝/超时后的回复约束。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/review`：题目复习应用层，按 `card`、`attempt`、`note`、`schedule`、`preference`、`catalog` 分包，分别负责复习卡、幂等评级流水、题目级长期笔记、FSRS、用户配置和题库读取。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/review`：复习卡、复习队列和题目笔记 API，使用 `/api/review-cards`、`/api/review-sessions`、`/api/problems/{slug}/note` 契约。
+- `backend/mentor-api/src/main/resources/db/migration/V40__rebuild_problem_review_card.sql`：破坏性删除旧错题/复述表和 AI 建议字段，创建 `problem_review_card`、`problem_review_attempt`、`user_problem_note`。
+- `backend/mentor-api/src/main/resources/mapper/review`：三张新复习表的 MyBatis XML mapper，评级幂等键使用 PostgreSQL UUID。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/practice/PracticeSessionController.java`：题目训练会话 API，提供创建/读取 session、更新题目进度和专用 SSE 聊天入口。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/practice/repository/MyBatisPracticeSessionRepository.java`：practice session 的 PostgreSQL/MyBatis repository 实现，负责会话、进度和 agent message 映射。
 - `backend/mentor-api/src/main/resources/mapper/practice/PracticeSessionMapper.xml`：practice session SQL mapper，包含会话 upsert、进度更新和消息读取。
@@ -140,14 +145,17 @@
 ## 前端
 
 - `frontend/src/App.tsx`：学习工作台首屏。
-- `frontend/src/services/api.ts`：前端 API 调用封装，包含 Agent Tool 权限决策和 AI 治理设置、策略、价格、用量查询 API。
-- `frontend/src/types/api.ts`：前后端共享契约的 TypeScript 表示，包含权限 SSE 事件、决策请求/响应、Review tool result 和 AI 治理 DTO。
+- `frontend/src/services/api.ts`：前端 API 调用封装，包含复习卡、题目笔记、Agent Tool 权限决策和 AI 治理 API。
+- `frontend/src/types/api.ts`：前后端共享契约的 TypeScript 表示，包含复习卡/评级/题目笔记、权限 SSE 事件和 AI 治理 DTO。
 - `frontend/src/admin/BetaAccessPage.tsx`：内测准入管理页，提供开关确认、搜索、批量添加、分页列表、移除确认和 Session 吊销失败提示。
 - `frontend/src/admin/UserManagementPage.tsx`：管理员用户列表与 URL 驱动的详情抽屉；支持一次性临时密码重置、单用户 AI 暂停/额度覆盖和跳转至筛选后的 AI 用量页。
 - `frontend/src/admin/monitoring/SystemMonitoringPage.tsx`：`/admin/monitoring` 运行状态页，基于 `/api/health` 展示 API 服务健康状态，支持手动与每分钟自动刷新；与 `/admin/ai` 同属系统监控分类。
 - `frontend/src/admin/ai`：`/admin/ai` 治理工作区，提供全局 AI 止损、按用户/模型/场景的 Token 与当前价格成本观测、未定价模型告警和模型价格编辑。
 - `frontend/src/app/PasswordChangeRequiredPage.tsx`：临时密码登录后的独占改密页，成功后恢复普通 Session 路由。
-- `frontend/src/learning-plans/PracticeChatWorkbench.tsx`：题目训练聊天工作台，使用 practice session 专用 API 渲染题面 seed、流式 AI 回复、Review 入口、LeetCode 外链和题目完成状态；监听权限 SSE 并展示轻量原生确认弹窗。
+- `frontend/src/learning-plans/PracticeChatWorkbench.tsx`：题目训练聊天工作台，使用 practice session 专用 API 渲染题面 seed、流式 AI 回复、Review 入口、LeetCode 外链和题目完成状态。
+- `frontend/src/problem-notes`：可复用的题目笔记折叠编辑器、结构化纲要表单和固定选项，按 `problemSlug` 读写同一份长期笔记并处理 revision 冲突。
+- `frontend/src/mistakes/MistakeNotebookPage.tsx`：复习中心列表和详情弹窗，展示到期状态、完整题面、折叠笔记与不可变评级历史。
+- `frontend/src/mistakes/ReviewSessionPage.tsx`：复习工作台，默认展示完整题面和四档 FSRS 评级，笔记与历史位于题面下方折叠区，并处理未保存笔记离开确认和评级幂等提交。
 - `frontend/src/learning-plans/profileToolContract.ts`：学习者画像工具的固定状态和结果字段契约，供 SSE 状态去重渲染使用。
 - `frontend/src/i18n/locales.ts`：前端文案资源，包含权限弹窗、拒绝、超时“本次未执行。”和英文 “This action was not run.” 文案。
 - `frontend/package.json`：React 19、TypeScript 6、Vite 8、Vitest 4 依赖与脚本。

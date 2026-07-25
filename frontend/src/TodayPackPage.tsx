@@ -42,7 +42,9 @@ import type {
   AbilityProfileResponse,
   TodayPackProblemResponse,
   TodayPackResponse,
+  ReviewSummaryResponse,
 } from './types/api';
+import { browserTimezone, formatUpcomingReviewTime } from './utils/time';
 
 interface TodayPackPageProps {
   onNavigate: (pathname: string) => void;
@@ -55,17 +57,15 @@ interface TodayPackPanelProps {
   plan: LearningPlanDetailResponse;
 }
 
-function browserTimezone() {
-  return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-}
-
 export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
   const { locale, resources } = useI18n();
   const [timezone] = useState(browserTimezone);
   const [pack, setPack] = useState<TodayPackResponse>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [reviewDueCount, setReviewDueCount] = useState<number>();
+  const [reviewSummary, setReviewSummary] = useState<ReviewSummaryResponse>();
+  const [reviewRefreshVersion, setReviewRefreshVersion] = useState(0);
+  const [reviewClock, setReviewClock] = useState(Date.now);
   const [reviewLoading, setReviewLoading] = useState(true);
   const [reviewUnavailable, setReviewUnavailable] = useState(false);
   const [abilityProfile, setAbilityProfile] = useState<AbilityProfileResponse>();
@@ -99,11 +99,25 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
 
   useEffect(() => {
     const controller = new AbortController();
-    setReviewLoading(true);
+    let refreshTimer: number | undefined;
+    if (reviewRefreshVersion === 0) {
+      setReviewLoading(true);
+    }
     setReviewUnavailable(false);
     void getReviewSummary(controller.signal)
       .then((response) => {
-        setReviewDueCount(requireApiData(response, '复习摘要加载失败').dueCount);
+        const summary = requireApiData(response, '复习摘要加载失败');
+        setReviewSummary(summary);
+        const nextDueTime = summary.nextDueAt ? new Date(summary.nextDueAt).getTime() : Number.NaN;
+        if (summary.dueCount === 0
+          && summary.remainingTodayCount > 0
+          && Number.isFinite(nextDueTime)
+          && nextDueTime > Date.now()) {
+          refreshTimer = window.setTimeout(
+            () => setReviewRefreshVersion((current) => current + 1),
+            nextDueTime - Date.now() + 250,
+          );
+        }
       })
       .catch(() => {
         if (!controller.signal.aborted) {
@@ -115,8 +129,22 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
           setReviewLoading(false);
         }
       });
-    return () => controller.abort();
-  }, []);
+    return () => {
+      controller.abort();
+      if (refreshTimer !== undefined) {
+        window.clearTimeout(refreshTimer);
+      }
+    };
+  }, [reviewRefreshVersion]);
+
+  useEffect(() => {
+    if (reviewSummary?.dueCount !== 0 || !reviewSummary.nextDueAt) {
+      return undefined;
+    }
+    setReviewClock(Date.now());
+    const timer = window.setInterval(() => setReviewClock(Date.now()), 30_000);
+    return () => window.clearInterval(timer);
+  }, [reviewSummary?.dueCount, reviewSummary?.nextDueAt]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -145,21 +173,28 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
     : loading
       ? '正在加载'
       : '暂时无法读取今日训练状态。';
+  const reviewDueCount = reviewSummary?.dueCount ?? 0;
+  const remainingTodayCount = reviewSummary?.remainingTodayCount ?? reviewDueCount;
+  const hasUpcomingReview = reviewDueCount === 0 && remainingTodayCount > 0;
   const reviewStatusText = reviewLoading
     ? '正在加载复习状态'
     : reviewUnavailable
       ? '复习状态暂不可用'
-      : reviewDueCount && reviewDueCount > 0
+      : reviewDueCount > 0
         ? `今日待复习 ${reviewDueCount} 题`
-        : '今日已完成';
+        : hasUpcomingReview
+          ? `今日还有 ${remainingTodayCount} 题，${formatUpcomingReviewTime(reviewSummary?.nextDueAt, reviewClock)}可复习`
+          : '今日已完成';
   const reviewActionLabel = reviewLoading
     ? '正在加载复习状态'
     : reviewUnavailable
       ? '复习状态暂不可用'
-      : reviewDueCount && reviewDueCount > 0
+      : reviewDueCount > 0
         ? `开始今日复习 ${reviewDueCount} 题`
-        : '今日已完成';
-  const reviewActionDisabled = reviewLoading || reviewUnavailable || !reviewDueCount;
+        : hasUpcomingReview
+          ? '查看今日复习安排'
+          : '今日已完成';
+  const reviewActionDisabled = reviewLoading || reviewUnavailable || remainingTodayCount === 0;
   const abilitySummary = summarizeAbilityProfile(abilityProfile);
   const breakthroughTag = findBreakthroughTag(abilityProfile, abilitySummary.strongestTag);
   const abilityBubbleTags = abilityProfile
@@ -235,7 +270,7 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
           <button
             className="secondary-button"
             disabled={reviewActionDisabled}
-            onClick={() => onNavigate(APP_ROUTES.reviewSession)}
+            onClick={() => onNavigate(reviewDueCount > 0 ? APP_ROUTES.reviewSession : APP_ROUTES.mistakes)}
             type="button"
           >
             <span>{reviewActionLabel}</span>

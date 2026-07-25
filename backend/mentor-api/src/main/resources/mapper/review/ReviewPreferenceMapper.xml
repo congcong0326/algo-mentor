@@ -11,7 +11,6 @@
       <arg column="daily_new_limit" javaType="_int"/>
       <arg column="daily_learning_limit" javaType="_int"/>
       <arg column="daily_review_limit" javaType="_int"/>
-      <arg column="ai_suggestion_enabled" javaType="_boolean"/>
       <arg column="maximum_interval_days" javaType="_int"/>
       <arg column="enable_fuzzing" javaType="_boolean"/>
       <arg column="created_at" javaType="java.time.Instant"/>
@@ -25,7 +24,6 @@
     daily_new_limit,
     daily_learning_limit,
     daily_review_limit,
-    ai_suggestion_enabled,
     maximum_interval_days,
     enable_fuzzing,
     created_at,
@@ -45,7 +43,6 @@
       daily_new_limit,
       daily_learning_limit,
       daily_review_limit,
-      ai_suggestion_enabled,
       maximum_interval_days,
       enable_fuzzing,
       created_at,
@@ -56,7 +53,6 @@
       #{dailyNewLimit},
       #{dailyLearningLimit},
       #{dailyReviewLimit},
-      #{aiSuggestionEnabled},
       #{maximumIntervalDays},
       #{enableFuzzing},
       #{createdAt},
@@ -67,7 +63,6 @@
       daily_new_limit = EXCLUDED.daily_new_limit,
       daily_learning_limit = EXCLUDED.daily_learning_limit,
       daily_review_limit = EXCLUDED.daily_review_limit,
-      ai_suggestion_enabled = EXCLUDED.ai_suggestion_enabled,
       maximum_interval_days = EXCLUDED.maximum_interval_days,
       enable_fuzzing = EXCLUDED.enable_fuzzing,
       updated_at = EXCLUDED.updated_at

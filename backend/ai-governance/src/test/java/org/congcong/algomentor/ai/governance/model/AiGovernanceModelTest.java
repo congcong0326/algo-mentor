@@ -53,10 +53,7 @@ class AiGovernanceModelTest {
   }
 
   @Test
-  void stageTwoSourcesRemainStable() {
-    assertThat(AiRunSource.values()).contains(
-        AiRunSource.PRACTICE_CODE_REVIEW,
-        AiRunSource.RECALL_JUDGE,
-        AiRunSource.REVIEW_CARD_GENERATION);
+  void activeDirectCompletionSourcesRemainStable() {
+    assertThat(AiRunSource.values()).contains(AiRunSource.PRACTICE_CODE_REVIEW);
   }
 }

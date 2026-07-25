@@ -7,6 +7,7 @@ public record ReviewPreferenceRequest(
     Integer dailyNewLimit,
     Integer dailyLearningLimit,
     Integer dailyReviewLimit,
-    Boolean aiSuggestionEnabled
+    Integer maximumIntervalDays,
+    Boolean enableFuzzing
 ) {
 }

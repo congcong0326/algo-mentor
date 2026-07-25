@@ -14,7 +14,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewSer
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewStructuredOutputMapper;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.TrustedProblemTagCatalog;
-import org.congcong.algomentor.mentor.application.review.PracticeCodeReviewObserver;
+import org.congcong.algomentor.mentor.application.review.card.PracticeCodeReviewObserver;
 import org.congcong.algomentor.queue.publisher.QueuePublisher;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

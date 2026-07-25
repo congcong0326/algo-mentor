@@ -28,14 +28,14 @@ import org.congcong.algomentor.api.problem.repository.ProblemCompanyRepository;
 import org.congcong.algomentor.api.problem.repository.ProblemRepository;
 import org.congcong.algomentor.api.problem.repository.ProblemTagRepository;
 import org.congcong.algomentor.api.problem.service.ProblemCacheProperties;
-import org.congcong.algomentor.api.review.mapper.MistakeNoteMapper;
+import org.congcong.algomentor.api.review.mapper.ProblemReviewAttemptMapper;
+import org.congcong.algomentor.api.review.mapper.ProblemReviewCardMapper;
 import org.congcong.algomentor.api.review.mapper.ReviewPreferenceMapper;
-import org.congcong.algomentor.api.review.mapper.ReviewRecallEvaluationMapper;
-import org.congcong.algomentor.api.review.mapper.ReviewLogMapper;
-import org.congcong.algomentor.api.review.repository.MyBatisMistakeNoteRepository;
+import org.congcong.algomentor.api.review.mapper.UserProblemNoteMapper;
+import org.congcong.algomentor.api.review.repository.MyBatisReviewAttemptRepository;
+import org.congcong.algomentor.api.review.repository.MyBatisReviewCardRepository;
 import org.congcong.algomentor.api.review.repository.MyBatisReviewPreferenceRepository;
-import org.congcong.algomentor.api.review.repository.MyBatisReviewRecallEvaluationRepository;
-import org.congcong.algomentor.api.review.repository.MyBatisReviewLogRepository;
+import org.congcong.algomentor.api.review.repository.MyBatisUserProblemNoteRepository;
 import org.congcong.algomentor.agent.persistence.postgres.json.AgentMessageRoleTypeHandler;
 import org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
@@ -49,10 +49,10 @@ import org.congcong.algomentor.mentor.application.profile.LearnerProfileContentP
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileQueryService;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileRepository;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileUpdateService;
-import org.congcong.algomentor.mentor.application.review.MistakeNoteRepository;
-import org.congcong.algomentor.mentor.application.review.ReviewPreferenceRepository;
-import org.congcong.algomentor.mentor.application.review.ReviewRecallEvaluationRepository;
-import org.congcong.algomentor.mentor.application.review.ReviewLogRepository;
+import org.congcong.algomentor.mentor.application.review.attempt.ReviewAttemptRepository;
+import org.congcong.algomentor.mentor.application.review.card.ReviewCardRepository;
+import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteRepository;
+import org.congcong.algomentor.mentor.application.review.preference.ReviewPreferenceRepository;
 import org.congcong.algomentor.cache.factory.LocalCacheRegionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -149,14 +149,14 @@ public class MentorApiMyBatisConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public MistakeNoteMapper mistakeNoteMapper(SqlSessionTemplate sqlSessionTemplate) {
-    return sqlSessionTemplate.getMapper(MistakeNoteMapper.class);
+  public ProblemReviewCardMapper problemReviewCardMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(ProblemReviewCardMapper.class);
   }
 
   @Bean
   @ConditionalOnMissingBean
-  public ReviewLogMapper reviewLogMapper(SqlSessionTemplate sqlSessionTemplate) {
-    return sqlSessionTemplate.getMapper(ReviewLogMapper.class);
+  public ProblemReviewAttemptMapper problemReviewAttemptMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(ProblemReviewAttemptMapper.class);
   }
 
   @Bean
@@ -167,8 +167,8 @@ public class MentorApiMyBatisConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public ReviewRecallEvaluationMapper reviewRecallEvaluationMapper(SqlSessionTemplate sqlSessionTemplate) {
-    return sqlSessionTemplate.getMapper(ReviewRecallEvaluationMapper.class);
+  public UserProblemNoteMapper userProblemNoteMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(UserProblemNoteMapper.class);
   }
 
   @Bean
@@ -271,15 +271,18 @@ public class MentorApiMyBatisConfiguration {
   }
 
   @Bean
-  @ConditionalOnMissingBean(MistakeNoteRepository.class)
-  public MistakeNoteRepository mistakeNoteRepository(MistakeNoteMapper mapper, ObjectMapper objectMapper) {
-    return new MyBatisMistakeNoteRepository(mapper, objectMapper);
+  @ConditionalOnMissingBean(ReviewCardRepository.class)
+  public ReviewCardRepository reviewCardRepository(ProblemReviewCardMapper mapper, ObjectMapper objectMapper) {
+    return new MyBatisReviewCardRepository(mapper, objectMapper);
   }
 
   @Bean
-  @ConditionalOnMissingBean(ReviewLogRepository.class)
-  public ReviewLogRepository reviewLogRepository(ReviewLogMapper mapper) {
-    return new MyBatisReviewLogRepository(mapper);
+  @ConditionalOnMissingBean(ReviewAttemptRepository.class)
+  public ReviewAttemptRepository reviewAttemptRepository(
+      ProblemReviewAttemptMapper mapper,
+      ObjectMapper objectMapper
+  ) {
+    return new MyBatisReviewAttemptRepository(mapper, objectMapper);
   }
 
   @Bean
@@ -289,12 +292,12 @@ public class MentorApiMyBatisConfiguration {
   }
 
   @Bean
-  @ConditionalOnMissingBean(ReviewRecallEvaluationRepository.class)
-  public ReviewRecallEvaluationRepository reviewRecallEvaluationRepository(
-      ReviewRecallEvaluationMapper mapper,
+  @ConditionalOnMissingBean(UserProblemNoteRepository.class)
+  public UserProblemNoteRepository userProblemNoteRepository(
+      UserProblemNoteMapper mapper,
       ObjectMapper objectMapper
   ) {
-    return new MyBatisReviewRecallEvaluationRepository(mapper, objectMapper);
+    return new MyBatisUserProblemNoteRepository(mapper, objectMapper);
   }
 
   @Bean

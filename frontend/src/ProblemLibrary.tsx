@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import MarkdownView from './components/MarkdownView';
 import { formatDifficulty } from './i18n/formatters';
 import { useI18n } from './i18n/I18nProvider';
+import ProblemNoteEditor from './problem-notes/ProblemNoteEditor';
 import { getProblemDetail, getProblemFilters, getProblems, requireApiData } from './services/api';
 import type { ProblemDetail, ProblemDifficulty, ProblemFilters, ProblemListItem, ProblemListQuery, ProblemPage } from './types/api';
 
@@ -332,6 +333,7 @@ export default function ProblemLibrary() {
                 </section>
               )}
               <MarkdownView content={detail.contentMarkdown} />
+              <ProblemNoteEditor problemSlug={detail.slug} />
               {detail.sampleTestCase && (
                 <section className="code-section">
                   <h3>{resources.problems.sampleInput}</h3>

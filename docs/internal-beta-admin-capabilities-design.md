@@ -689,18 +689,14 @@ PATCH /api/admin/users/{userId}/ai-policy
 1. **Agent 调用**：`AgentLoopRunner` 每个 step 的 provider 调用写入一条 `AGENT_STEP` 用量记录；run 入口只消费一次共享每日额度。
 2. **直接调用**：业务服务直接调用 `LlmGateway.complete/stream` 时，通过 `AiGovernedCompletionService` 或等价统一包装记录 provider、model 和 usage，禁止继续裸调用后不记账。
 
-当前至少需要迁移以下直接调用：
+当前需要迁移以下直接调用：
 
 - `PracticeCodeReviewService`
-- `ReviewCardService`
-- `RecallJudgeService`
 
 为调用级统计补充稳定 source：
 
 ```text
 PRACTICE_CODE_REVIEW
-REVIEW_CARD_GENERATION
-RECALL_JUDGE
 ```
 
 第一版复用现有 `AiPurpose`，通过更细的 `AiRunSource` 区分这些调用，不为成本展示新增 purpose 策略。
@@ -708,8 +704,7 @@ RECALL_JUDGE
 规则：
 
 - 代码 Review 如果是 Agent tool 的子调用，关联父 `runId`，不再次消费用户入口额度，但必须单独记录实际模型和 Token。
-- 复述判定属于用户主动发起的 AI 入口，应走正常共享 admission。
-- 复习卡后台预生成保留现有 `REVIEW_CARD_GEN` 专用安全配额，不重复消费用户入口额度；全局 AI 关闭或用户 AI 暂停时必须停止生成，并记录为 `BACKGROUND` 调用。
+- 题目复习已改为用户直接评级 + FSRS，不再调用模型，也不再占用 AI 额度。
 - provider 在返回 usage 前失败时仍记录失败调用；没有 usage 时 Token 为零，错误码保留。
 - 禁止同时把同一调用写入 `LEGACY_RUN_AGGREGATE` 和新调用级记录。
 
@@ -1038,7 +1033,7 @@ FEEDBACK_MESSAGE_INVALID
 - 临时密码生成、过期、单次消费、强制改密和 Session 吊销。
 - 全局 AI 开关、用户暂停和额度覆盖的有效策略解析。
 - 并发额度消费继续保持原子性。
-- Agent step、代码 Review、复述判定和复习卡预生成的调用级 Token 全部入账且不重复。
+- Agent step 和代码 Review 的调用级 Token 全部入账且不重复。
 - 成本公式、缓存 Token、倍率、未定价和高精度舍入。
 - run 查询筛选和 30 天 trace 访问边界。
 - trace 清理幂等且不删除业务 message。

@@ -6,7 +6,7 @@
 
 > 上游设计：`knowledge/AI应用/记忆系统/AI学习者画像的维度设计与设计依据.md`
 >
-> 关联实现：题库 `problem`、代码 Review `practice_code_review`、错题复习 `mistake_note` / `review_log` / `review_recall_evaluation`、能力雷达 `GET /api/abilities/profile`。
+> 关联实现：题库 `problem`、代码 Review `practice_code_review`、题目复习 `problem_review_card` / `problem_review_attempt`、能力雷达 `GET /api/abilities/profile`。
 
 ## 一、背景与目标
 
@@ -72,8 +72,7 @@ tag_labels_zh
 
 - `practice_code_review`：正式 Review、扣分原因、改进建议和版本变化；
 - `practice_code_review_tag`：Review 模型从当前题目受信标签中选择的本次解法实际影响标签；
-- `review_log`：复习评级和重做记录；
-- `review_recall_evaluation`：复述命中点、遗漏点和 AI 建议；
+- `problem_review_attempt`：用户直接评级和 FSRS 调度前后快照；
 - `learning_plan_problem_progress`：完成、跳过和重复训练状态；
 - `agent_message`：用户明确自述和纠正。
 
@@ -91,7 +90,7 @@ tag_labels_zh
               │
               ▼
 现有业务事实
-    practice_code_review / practice_code_review_tag / review_log / ...
+    practice_code_review / practice_code_review_tag / problem_review_attempt / ...
               │
               ▼
 可版本化自然语言画像

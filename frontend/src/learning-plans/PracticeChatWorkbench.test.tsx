@@ -89,6 +89,8 @@ describe('PracticeChatWorkbench review contracts', () => {
     })).toHaveClass('completion-disabled-tooltip');
     expect(screen.queryByText('暂无 Review')).not.toBeInTheDocument();
     expect(screen.queryByText('通过分 80')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /我的题目笔记/ })).not.toBeInTheDocument();
+    expect(screen.queryByText('粘贴完整代码生成代码提交记录，并通过后才能标记完成。')).not.toBeInTheDocument();
     expect(updatePracticeProgressStatus).not.toHaveBeenCalled();
   });
 

@@ -73,8 +73,10 @@ import type {
   PracticeCodeReviewHistoryResponse,
   PracticeProgressStatus,
   PracticeSessionResponse,
-  MistakeNote,
-  MistakeSource,
+  ReviewAttempt,
+  ReviewCard,
+  ReviewCardContext,
+  ReviewCardSource,
   PasswordLoginRequest,
   PasswordRegisterRequest,
   ProblemDetail,
@@ -82,16 +84,12 @@ import type {
   ProblemListItem,
   ProblemListQuery,
   ProblemPage,
-  RecallConfirmResult,
-  RecallEvaluationResult,
-  RecallReviewResult,
-  ReviewCard,
-  ReviewIntervalPreview,
   ReviewPreference,
   ReviewPreferenceRequest,
-  ReviewProblemStatementResponse,
   ReviewQueueResponse,
   ReviewSummaryResponse,
+  UserProblemNote,
+  UserProblemNoteRequest,
   SseEventName,
   SseStreamEvent,
   UserAiPreference,
@@ -107,6 +105,7 @@ import type {
   BetaAccessUserMembership,
 } from '../types/api';
 import { recordFeedbackRequestContext } from '../feedback/feedbackSourceContext';
+import { browserTimezone } from '../utils/time';
 
 const jsonHeaders: HeadersInit = {
   Accept: 'application/json',
@@ -252,30 +251,33 @@ export async function completePasswordReset(request: CompletePasswordResetReques
   return requireApiData(body, 'Password reset completion failed');
 }
 
-export async function listMistakeNotes(
+export async function listReviewCards(
   query: {
-    source?: MistakeSource | '';
+    source?: ReviewCardSource | '';
     mistakeOnly?: boolean;
     keyword?: string;
     limit?: number;
     offset?: number;
   } = {},
   signal?: AbortSignal,
-): Promise<ApiResponse<MistakeNote[]>> {
-  const response = await apiFetch(`/api/mistake-notes${toQueryString(query)}`, {
+): Promise<ApiResponse<ReviewCard[]>> {
+  const response = await apiFetch(`/api/review-cards${toQueryString(query)}`, {
     headers: jsonHeaders,
     signal,
   });
 
   if (!response.ok) {
-    throw await toApiRequestError(response, 'Mistake notes request failed');
+    throw await toApiRequestError(response, 'Review cards request failed');
   }
 
   return response.json();
 }
 
-export async function markMistake(problemSlug: string, signal?: AbortSignal): Promise<ApiResponse<MistakeNote>> {
-  const response = await apiFetch('/api/mistake-notes', {
+export async function createReviewCard(
+  problemSlug: string,
+  signal?: AbortSignal,
+): Promise<ApiResponse<ReviewCard>> {
+  const response = await apiFetch('/api/review-cards', {
     method: 'POST',
     headers: {
       ...jsonHeaders,
@@ -286,18 +288,18 @@ export async function markMistake(problemSlug: string, signal?: AbortSignal): Pr
   });
 
   if (!response.ok) {
-    throw await toApiRequestError(response, 'Mark mistake request failed');
+    throw await toApiRequestError(response, 'Create review card request failed');
   }
 
   return response.json();
 }
 
-export async function archiveMistake(
-  noteId: number,
+export async function archiveReviewCard(
+  cardId: number,
   archived: boolean,
   signal?: AbortSignal,
-): Promise<ApiResponse<MistakeNote>> {
-  const response = await apiFetch(`/api/mistake-notes/${noteId}/archive`, {
+): Promise<ApiResponse<ReviewCard>> {
+  const response = await apiFetch(`/api/review-cards/${cardId}/archive`, {
     method: 'PATCH',
     headers: {
       ...jsonHeaders,
@@ -308,165 +310,118 @@ export async function archiveMistake(
   });
 
   if (!response.ok) {
-    throw await toApiRequestError(response, 'Archive mistake request failed');
+    throw await toApiRequestError(response, 'Archive review card request failed');
   }
 
   return response.json();
 }
 
-export async function updateMistakeNote(
-  noteId: number,
-  text: string,
+export async function getReviewCardContext(
+  cardId: number,
   signal?: AbortSignal,
-): Promise<ApiResponse<MistakeNote>> {
-  const response = await apiFetch(`/api/mistake-notes/${noteId}/note`, {
-    method: 'PATCH',
-    headers: {
-      ...jsonHeaders,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ text }),
-    signal,
-  });
-
-  if (!response.ok) {
-    throw await toApiRequestError(response, 'Update mistake note request failed');
-  }
-
-  return response.json();
-}
-
-export async function getReviewCard(noteId: number, signal?: AbortSignal): Promise<ApiResponse<ReviewCard>> {
-  const response = await apiFetch(`/api/mistake-notes/${noteId}/card`, {
+): Promise<ApiResponse<ReviewCardContext>> {
+  const response = await apiFetch(`/api/review-cards/${cardId}/context`, {
     headers: jsonHeaders,
     signal,
   });
 
   if (!response.ok) {
-    throw await toApiRequestError(response, 'Review card request failed');
+    throw await toApiRequestError(response, 'Review card context request failed');
   }
 
   return response.json();
 }
 
-export async function getReviewProblemStatement(
-  noteId: number,
-  signal?: AbortSignal,
-): Promise<ApiResponse<ReviewProblemStatementResponse>> {
-  const response = await apiFetch(`/api/mistake-notes/${noteId}/problem-statement`, {
-    headers: jsonHeaders,
-    signal,
-  });
-
-  if (!response.ok) {
-    throw await toApiRequestError(response, 'Review problem statement request failed');
-  }
-
-  return response.json();
-}
-
-export async function getReviewIntervals(
-  noteId: number,
-  signal?: AbortSignal,
-): Promise<ApiResponse<ReviewIntervalPreview[]>> {
-  const response = await apiFetch(`/api/mistake-notes/${noteId}/recall/intervals`, {
-    headers: jsonHeaders,
-    signal,
-  });
-
-  if (!response.ok) {
-    throw await toApiRequestError(response, 'Review interval preview request failed');
-  }
-
-  return response.json();
-}
-
-export async function submitRecall(
-  noteId: number,
-  recallText: string,
-  transientNote?: string,
-  signal?: AbortSignal,
-): Promise<ApiResponse<RecallReviewResult>> {
-  const response = await apiFetch(`/api/mistake-notes/${noteId}/recall`, {
-    method: 'POST',
-    headers: {
-      ...jsonHeaders,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ recallText, transientNote }),
-    signal,
-  });
-
-  if (!response.ok) {
-    throw await toApiRequestError(response, 'Submit recall request failed');
-  }
-
-  return response.json();
-}
-
-export async function evaluateRecall(
-  noteId: number,
-  recallText: string,
-  transientNote?: string,
-  signal?: AbortSignal,
-): Promise<ApiResponse<RecallEvaluationResult>> {
-  const response = await apiFetch(`/api/mistake-notes/${noteId}/recall/evaluation`, {
-    method: 'POST',
-    headers: {
-      ...jsonHeaders,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ recallText, transientNote }),
-    signal,
-  });
-
-  if (!response.ok) {
-    throw await toApiRequestError(response, 'Recall evaluation request failed');
-  }
-
-  return response.json();
-}
-
-export async function confirmRecall(
-  noteId: number,
-  evaluationId: number,
+export async function submitReviewAttempt(
+  cardId: number,
+  clientAttemptId: string,
   rating: string,
   signal?: AbortSignal,
-): Promise<ApiResponse<RecallConfirmResult>> {
-  const response = await apiFetch(`/api/mistake-notes/${noteId}/recall/confirm`, {
+): Promise<ApiResponse<ReviewAttempt>> {
+  const response = await apiFetch(`/api/review-cards/${cardId}/attempts`, {
     method: 'POST',
     headers: {
       ...jsonHeaders,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ evaluationId, rating }),
+    body: JSON.stringify({ clientAttemptId, rating }),
     signal,
   });
 
   if (!response.ok) {
-    throw await toApiRequestError(response, 'Recall confirm request failed');
+    throw await toApiRequestError(response, 'Review attempt request failed');
   }
 
   return response.json();
 }
 
-export async function rateRecall(
-  noteId: number,
-  rating: string,
+export async function getReviewAttempts(
+  cardId: number,
+  limit = 20,
   signal?: AbortSignal,
-): Promise<ApiResponse<RecallConfirmResult>> {
-  const response = await apiFetch(`/api/mistake-notes/${noteId}/recall/rating`, {
-    method: 'POST',
-    headers: {
-      ...jsonHeaders,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ rating }),
+): Promise<ApiResponse<ReviewAttempt[]>> {
+  const response = await apiFetch(`/api/review-cards/${cardId}/attempts${toQueryString({ limit })}`, {
+    headers: jsonHeaders,
     signal,
   });
 
   if (!response.ok) {
-    throw await toApiRequestError(response, 'Recall rating request failed');
+    throw await toApiRequestError(response, 'Review attempt history request failed');
+  }
+
+  return response.json();
+}
+
+export async function getProblemNote(
+  problemSlug: string,
+  signal?: AbortSignal,
+): Promise<ApiResponse<UserProblemNote>> {
+  const response = await apiFetch(`/api/problems/${encodeURIComponent(problemSlug)}/note`, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Problem note request failed');
+  }
+
+  return response.json();
+}
+
+export async function upsertProblemNote(
+  problemSlug: string,
+  request: UserProblemNoteRequest,
+  signal?: AbortSignal,
+): Promise<ApiResponse<UserProblemNote>> {
+  const response = await apiFetch(`/api/problems/${encodeURIComponent(problemSlug)}/note`, {
+    method: 'PUT',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Problem note update request failed');
+  }
+
+  return response.json();
+}
+
+export async function deleteProblemNote(
+  problemSlug: string,
+  signal?: AbortSignal,
+): Promise<ApiResponse<void>> {
+  const response = await apiFetch(`/api/problems/${encodeURIComponent(problemSlug)}/note`, {
+    method: 'DELETE',
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Problem note delete request failed');
   }
 
   return response.json();
@@ -520,7 +475,8 @@ export async function updateReviewPreference(
 }
 
 export async function getReviewSummary(signal?: AbortSignal): Promise<ApiResponse<ReviewSummaryResponse>> {
-  const response = await apiFetch('/api/review-sessions/summary', {
+  const query = new URLSearchParams({ timezone: browserTimezone() });
+  const response = await apiFetch(`/api/review-sessions/summary?${query.toString()}`, {
     headers: jsonHeaders,
     signal,
   });
@@ -1780,8 +1736,8 @@ interface PracticeSessionQuery {
   limit?: number;
 }
 
-interface MistakeNoteListQuery {
-  source?: MistakeSource | '';
+interface ReviewCardListQuery {
+  source?: ReviewCardSource | '';
   mistakeOnly?: boolean;
   keyword?: string;
   limit?: number;
@@ -1803,7 +1759,7 @@ type QueryParams =
   | UserGroupMemberListQuery
   | AdminAiUsageQuery
   | AdminAiUsageByUserQuery
-  | MistakeNoteListQuery
+  | ReviewCardListQuery
   | TodayPackQuery
   | FeedbackListQuery
   | AdminFeedbackListQuery;

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.review.mapper.ProblemReviewAttemptMapper">
+
+  <resultMap id="ProblemReviewAttemptRowMap"
+      type="org.congcong.algomentor.api.review.mapper.model.ProblemReviewAttemptRow">
+    <constructor>
+      <arg column="id" javaType="_long"/>
+      <arg column="review_card_id" javaType="_long"/>
+      <arg column="user_id" javaType="_long"/>
+      <arg column="client_attempt_id" javaType="string"/>
+      <arg column="rating" javaType="string"/>
+      <arg column="scheduling_before_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="scheduling_after_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="reviewed_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <sql id="ProblemReviewAttemptColumns">
+    id,
+    review_card_id,
+    user_id,
+    client_attempt_id::TEXT AS client_attempt_id,
+    rating,
+    scheduling_before_json,
+    scheduling_after_json,
+    reviewed_at
+  </sql>
+
+  <select id="findByUserAndClientAttemptId" resultMap="ProblemReviewAttemptRowMap">
+    SELECT <include refid="ProblemReviewAttemptColumns"/>
+    FROM problem_review_attempt
+    WHERE user_id = #{userId}
+      AND client_attempt_id = CAST(#{clientAttemptId} AS UUID)
+  </select>
+
+  <select id="insertIfAbsent" resultMap="ProblemReviewAttemptRowMap" affectData="true">
+    INSERT INTO problem_review_attempt (
+      review_card_id,
+      user_id,
+      client_attempt_id,
+      rating,
+      scheduling_before_json,
+      scheduling_after_json,
+      reviewed_at
+    ) VALUES (
+      #{reviewCardId},
+      #{userId},
+      CAST(#{clientAttemptId} AS UUID),
+      #{rating},
+      #{schedulingBeforeJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{schedulingAfterJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{reviewedAt}
+    )
+    ON CONFLICT (user_id, client_attempt_id) DO NOTHING
+    RETURNING <include refid="ProblemReviewAttemptColumns"/>
+  </select>
+
+  <select id="findRecent" resultMap="ProblemReviewAttemptRowMap">
+    SELECT pra.*
+    FROM problem_review_attempt pra
+    JOIN problem_review_card prc ON prc.id = pra.review_card_id
+    WHERE pra.review_card_id = #{reviewCardId}
+      AND pra.user_id = #{userId}
+      AND prc.user_id = #{userId}
+    ORDER BY pra.reviewed_at DESC, pra.id DESC
+    LIMIT #{limit}
+  </select>
+</mapper>

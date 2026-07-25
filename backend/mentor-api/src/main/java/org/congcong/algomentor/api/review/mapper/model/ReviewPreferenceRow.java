@@ -9,7 +9,6 @@ public record ReviewPreferenceRow(
     int dailyNewLimit,
     int dailyLearningLimit,
     int dailyReviewLimit,
-    boolean aiSuggestionEnabled,
     int maximumIntervalDays,
     boolean enableFuzzing,
     Instant createdAt,

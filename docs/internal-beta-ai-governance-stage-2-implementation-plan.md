@@ -22,7 +22,7 @@
 4. 查看按用户、模型和业务场景聚合的调用数、Token 与估算成本。
 5. 为实际出现的模型配置非缓存输入、缓存输入、输出三类单价和成本倍率。
 6. 识别未定价模型，且未定价调用不会以 `$0` 混入已定价成本。
-7. 确认 Agent step、代码 Review、复述判定和复习卡后台生成都进入调用级 Token 台账。
+7. 确认 Agent step 和代码 Review 都进入调用级 Token 台账；题目复习不调用模型。
 8. 在全局或用户级关闭 AI 后，下一次相应准入或后台生成不再调用模型。
 
 ### 1.2 已确认的产品边界
@@ -146,7 +146,7 @@ AI 治理
 
 全局 AI 开关使用 toggle，但点击后先显示确认对话框：
 
-- 关闭文案明确说明：下一次用户 AI 准入将被拒绝，复习卡后台 AI 生成将停止。
+- 关闭文案明确说明：下一次用户 AI 准入将被拒绝。
 - 开启文案明确说明：仍会继续执行用户暂停、每日额度和静态 purpose 策略。
 - 保存期间禁用 toggle；失败时保留原状态并显示 API 错误。
 - 不做前端乐观更新，后端成功后再刷新状态。
@@ -237,7 +237,7 @@ AI 治理
 | `llm-core` | 保持 provider 无感；只补充必要的通用 metadata/stream 包装支持，不依赖治理模块 |
 | `agent-core` | 把稳定 step index 放入最终 LLM request metadata |
 | `ai-governance` | 动态策略、调用级记账、价格、成本计算和管理员查询核心逻辑 |
-| `mentor-application` | 使用治理 completion 包装接入代码 Review、复述判定和复习卡生成 |
+| `mentor-application` | 使用治理 completion 包装接入代码 Review；题目复习保持纯 FSRS 路径 |
 | `mentor-api` | 组装记账网关、暴露管理员 API、处理认证操作者和错误响应 |
 | `identity` | 继续拥有用户基础信息；不依赖 `ai-governance` |
 | `frontend` | `/admin/ai` 工作区和用户详情 AI 区域 |
@@ -310,16 +310,13 @@ AiAccountingLlmGateway（统一包裹真实 LlmGateway）
 | --- | --- | --- | --- | --- | --- | --- |
 | Agent 每个模型 step | 继承 admission | 继承 admission | `AGENT_STEP` | run 入口只消费一次 | admission 时 | 当前 runId + stepIndex |
 | 代码 Review 工具子调用 | 继承父 run，默认 `LEARNING_CHAT` | `PRACTICE_CODE_REVIEW` | `DIRECT` | 不重复消费 | 子调用前重新检查全局/用户开关 | 父 runId + 当前 stepIndex |
-| 复述判定 | `PROBLEM_EXPLANATION` | `RECALL_JUDGE` | `DIRECT` | 每次判定消费一次共享入口额度 | 完整 admission | 独立 runId |
-| 复习卡后台生成 | `PROBLEM_EXPLANATION` | `REVIEW_CARD_GENERATION` | `BACKGROUND` | 只消费现有 `REVIEW_CARD_GEN` 专用额度 | 生成前检查全局/用户开关 | `runId=NULL` |
 
 实现细节：
 
-- `AiRunSource` 增加 `PRACTICE_CODE_REVIEW`、`RECALL_JUDGE`、`REVIEW_CARD_GENERATION`。
+- `AiRunSource` 增加 `PRACTICE_CODE_REVIEW`。
 - `AgentLlmRequestFactory` 在最终 request metadata 写入通用 `AgentRuntimeMetadataKeys.STEP_INDEX`。
 - 代码 Review 工具从 `AgentExecutionContext` 取得父 `runId`、`stepIndex` 和 admission metadata，不接受模型提供的用户或 run 标识。
-- 复述判定使用独立稳定 runId，例如 UUID；业务主流程仍可在治理拒绝或 provider 失败时使用现有保守 fallback。
-- 复习卡生成在专用额度消费前先检查动态开关，关闭时不消耗专用额度、不调用 provider，并继续使用规则卡片。
+- 题目复习不创建 AI run；用户直接评级是 FSRS 的唯一调度输入。
 - provider 在 usage 返回前失败仍保存 FAILED 调用，Token 为 0，provider/model 尽可能从 `LlmException` 获取。
 
 ### 4.5 `ai_daily_usage` 的唯一写入职责
@@ -329,9 +326,7 @@ AiAccountingLlmGateway（统一包裹真实 LlmGateway）
 - `AiRunLifecycleService` 只更新 `ai_run_admissions` 聚合和释放 run lock。
 - 每个真实 provider 调用终止时，由 `AiLlmCallAccountingService` 调用一次 `AiDailyUsageStore.addUsage(...)`。
 - Agent step 使用 `ALL` scope。
-- 复述判定使用 `ALL` scope。
 - 代码 Review 子调用使用父 admission 的 `ALL` scope，但不增加 request count。
-- 复习卡后台调用使用 `REVIEW_CARD_GEN` scope。
 
 这样可以同时避免 Agent run 聚合重复累计，并覆盖父 run observer 看不到的代码 Review 子调用。
 
@@ -817,7 +812,7 @@ legacy-run-{ai_run_admissions.id}
 
 **完成标准：** 使用 fake provider 的单元测试可以证明 provider 调用数与 `ai_llm_call_usage` 新增行数一一对应。
 
-### Task 4：实现受治理的直接 completion 并迁移三个入口
+### Task 4：实现受治理的直接 completion 并迁移代码 Review 入口
 
 **目标：** 直接调用不再裸用 `LlmGateway`，并按入口语义正确处理额度、开关和父 run。
 
@@ -829,35 +824,26 @@ legacy-run-{ai_run_admissions.id}
 - Modify: `PracticeCodeReviewService.java`
 - Modify: `PracticeCodeReviewAgentTool.java`
 - Modify: `PracticeTurnContext.java`
-- Modify: `RecallJudgeService.java`
-- Modify: `ReviewSessionService.java`（仅在需要区分治理 fallback 时）
-- Modify: `ReviewCardService.java`
-- Modify: `ReviewCardPregenerationService.java`
 - Modify: `AgentConversationApiAutoConfiguration.java`
-- Modify: `MistakeReviewApiAutoConfiguration.java`
 - Modify: corresponding unit tests
 
 **实施步骤：**
 
-- [ ] completion service 提供三种明确模式：独立用户入口、父 run 子调用、后台调用。
+- [ ] completion service 提供独立用户入口和父 run 子调用两种明确模式。
 - [ ] 独立用户入口创建 admission、标记生命周期并消费一次 `ALL` 请求额度。
 - [ ] 独立用户入口在 provider 调用前 markRunning，成功/失败后更新 run 聚合并保证释放 lock；daily Token 仍只由记账 service 累计。
 - [ ] 父 run 子调用不创建新 admission、不获取第二把锁、不增加 request count，但重新检查全局/用户开关。
-- [ ] 后台调用只检查开关，由原 `REVIEW_CARD_GEN` 逻辑消费专用额度。
 - [ ] 代码 Review 从 trusted tool context 传父 runId、stepIndex、userId，不从模型参数读取。
-- [ ] 复述判定生成独立 runId，治理拒绝时不调用 provider，并保持现有可用的保守复习 fallback。
-- [ ] 复习卡在动态关闭时直接跳过 AI 生成，不先消耗后台额度。
-- [ ] 三个入口的 request metadata 写入明确 source、call kind、quota scope。
+- [ ] 代码 Review request metadata 写入明确 source、call kind、quota scope。
+- [ ] 题目复习保持用户直接评级 + FSRS 路径，不接入 completion service。
 - [ ] 删除生产代码中的对应裸 `llmGateway.complete(...)`。
 
 **关键测试：**
 
 - 代码 Review 子调用关联父 run，调用入账但共享 request count 不增加。
 - 父 run 已准入后全局关闭，后续代码 Review 子调用不再 dispatch。
-- 复述判定每次消费一个共享入口额度并记录 DIRECT。
-- 复述判定达到额度或被暂停时 provider 调用数为 0。
-- 复习卡保留 `REVIEW_CARD_GEN` 限额，且全局/用户关闭优先于专用额度消费。
-- 三个入口成功、provider 失败、结构化输出失败均有正确调用终态。
+- 代码 Review 成功、provider 失败、结构化输出失败均有正确调用终态。
+- 题目复习评级不会产生 AI 调用或用量记录。
 
 **源码门禁：**
 
@@ -867,9 +853,9 @@ rg -n "llmGateway\.(complete|stream)" \
   --glob '!**/target/**'
 ```
 
-结果中不得再出现上述三个业务服务的裸调用。
+结果中不得再出现代码 Review 业务服务的裸调用。
 
-**完成标准：** Agent、代码 Review、复述判定和复习卡四类调用均有可区分的 source，且额度不会重复消费。
+**完成标准：** Agent 和代码 Review 调用均有可区分的 source，且额度不会重复消费；题目复习不产生 AI 调用。
 
 ### Task 5：实现价格、成本和管理员查询 API
 
@@ -1047,7 +1033,7 @@ make build
 - [ ] 停用价格后重新显示未定价，而不是 `$0`。
 - [ ] 多步 Agent run 产生多条 `AGENT_STEP`。
 - [ ] 代码 Review 子调用关联父 run 且不增加入口 request count。
-- [ ] 复述判定和复习卡分别记录 DIRECT/BACKGROUND。
+- [ ] 题目复习路径不会写入调用级 Token 台账。
 - [ ] 全局关闭后复习卡不再调用 provider，也不先消费后台额度。
 
 依赖真实 provider 的 smoke 只在测试 key/本地 fake provider 可用时运行；设置、策略、价格和查询 API 的 smoke 不应依赖外部 AI。
@@ -1145,7 +1131,7 @@ Task 1/2 与 Task 3 的内部实现可以在契约固定后分别开发，但 Ta
 - [ ] 每次 provider dispatch 恰好对应一条调用记录。
 - [ ] Agent 多 step 不合并成单条成本记录。
 - [ ] 代码 Review 子调用不重复消费入口额度。
-- [ ] 复述判定消费一次入口额度。
+- [ ] 题目复习评级不消费 AI 入口额度。
 - [ ] 复习卡保留专用额度并受动态开关控制。
 - [ ] daily Token 不再被 run aggregate 重复累计。
 - [ ] reasoning Token 不重复计费。

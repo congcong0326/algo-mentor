@@ -294,8 +294,6 @@ make frontend-test
 - Create: `backend/ai-governance/src/main/resources/mapper/ai/AiAdminUsageMapper.xml`
 - Modify: `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/metrics/AiRunGovernanceObserver.java`
 - Modify: `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewService.java`
-- Modify: `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/review/ReviewCardService.java`
-- Modify: `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/review/RecallJudgeService.java`
 - Create: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/admin/AdminAiPriceController.java`
 - Create: `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/admin/AdminAiUsageController.java`
 
@@ -306,7 +304,7 @@ make frontend-test
 - [ ] Agent loop 每个 LLM step 单独记录实际 provider、model 和 usage。
 - [ ] 提供统一 direct completion accounting 包装，禁止业务服务裸调用后不记账。
 - [ ] 代码 Review 子调用关联父 run，不重复消费用户入口额度。
-- [ ] 复述判定走共享 admission；复习卡预生成保留专用后台配额，但受全局和用户 AI 开关控制。
+- [ ] 题目复习不调用模型，用户评级和 FSRS 调度不进入 AI 用量台账。
 - [ ] 对 input、cached input、output 和 multiplier 分别校验非负/正数。
 - [ ] 使用 `max(input-cached, 0)` 防御 provider usage 异常。
 - [ ] `reasoningTokens` 不重复计费。
@@ -323,7 +321,7 @@ make frontend-test
 - 调价后历史查询金额变化。
 - 停用或缺少价格时显示未定价。
 - 大 Token 数仍保持 Decimal 精度。
-- Agent step、代码 Review、复述判定和复习卡预生成全部入账。
+- Agent step 和代码 Review 全部入账。
 - 父 run 聚合与子调用不会重复计费。
 
 ### Task 8：实现 AI 治理管理员页面和用户级控制

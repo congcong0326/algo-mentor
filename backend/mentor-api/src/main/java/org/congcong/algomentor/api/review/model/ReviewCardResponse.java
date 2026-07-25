@@ -1,17 +1,28 @@
 package org.congcong.algomentor.api.review.model;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.Map;
 
 public record ReviewCardResponse(
-    String cardVariant,
-    ProblemRefResponse problemRef,
-    ReviewProblemStatementSummaryResponse problemStatement,
-    String contextSummary,
-    List<ReviewCardPromptResponse> prompts,
-    ReviewCardScaffoldResponse scaffold,
-    String revealPolicy,
-    String expectedEffort,
-    String userNotePersistent,
-    List<ReviewRecallHistoryResponse> recentRecallHistory
+    long id,
+    String problemSlug,
+    String problemTitle,
+    String problemDifficulty,
+    String source,
+    Map<String, Object> sourceDetail,
+    int repetitions,
+    int intervalDays,
+    String fsrsState,
+    Integer fsrsStep,
+    BigDecimal fsrsStability,
+    BigDecimal fsrsDifficulty,
+    Instant dueAt,
+    int lapses,
+    Instant lastReviewedAt,
+    String lastRating,
+    boolean archived,
+    Instant createdAt,
+    Instant updatedAt
 ) {
 }

@@ -16,8 +16,9 @@ import {
   getLearningPlanTemplates,
   getLearningPlans,
   getLearnerProfile,
+  getReviewSummary,
   getUserAiPreference,
-  listMistakeNotes,
+  listReviewCards,
   logout,
   requireApiData,
   setApiLocale,
@@ -81,6 +82,27 @@ function createFakeStorage(initialValues: Record<string, string> = {}): Storage 
 }
 
 describe('api service', () => {
+  it('requests the review summary in the browser timezone', async () => {
+    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x11, 0x12, 0x13, 0x14, 0x15, 0x16]) });
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: {
+        dueCount: 0,
+        remainingTodayCount: 1,
+        nextDueAt: '2026-07-24T08:10:00Z',
+      },
+      timestamp: '2026-07-24T08:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getReviewSummary();
+
+    const [calledUrl] = fetchMock.mock.calls[0];
+    const url = new URL(String(calledUrl), 'http://localhost');
+    expect(url.pathname).toBe('/api/review-sessions/summary');
+    expect(url.searchParams.get('timezone')).toBeTruthy();
+  });
+
   it('requests the current ability profile with json and locale headers', async () => {
     setApiLocale('zh-CN');
     vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x21, 0x22, 0x23, 0x24, 0x25, 0x26]) });
@@ -358,7 +380,7 @@ describe('api service', () => {
     );
   });
 
-  it('loads mistake notes without legacy mastery state query parameters', async () => {
+  it('loads review cards without legacy mastery state query parameters', async () => {
     vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e]) });
     const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
       success: true,
@@ -367,10 +389,10 @@ describe('api service', () => {
     })));
     vi.stubGlobal('fetch', fetchMock);
 
-    await listMistakeNotes({ keyword: 'two-sum', mistakeOnly: true, limit: 80 });
+    await listReviewCards({ keyword: 'two-sum', mistakeOnly: true, limit: 80 });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/mistake-notes?keyword=two-sum&mistakeOnly=true&limit=80',
+      '/api/review-cards?keyword=two-sum&mistakeOnly=true&limit=80',
       expect.objectContaining({
         credentials: 'same-origin',
         headers: expect.any(Headers),

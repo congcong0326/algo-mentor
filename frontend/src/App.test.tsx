@@ -10,6 +10,7 @@ import type {
   PracticeCodeReviewSummary,
   PracticeMessage,
   PracticeSessionResponse,
+  ReviewSummaryResponse,
   TodayPackResponse,
 } from './types/api';
 
@@ -413,7 +414,7 @@ describe('App', () => {
       if (isTodayPackUrl(url)) {
         return Promise.resolve(todayPackApiResponse(activeTodayPack()));
       }
-      if (url === '/api/review-sessions/summary') {
+      if (isReviewSummaryUrl(url)) {
         return Promise.resolve(reviewSummaryApiResponse(3));
       }
       if (url === '/api/learning-plans/900') {
@@ -456,7 +457,7 @@ describe('App', () => {
       if (isTodayPackUrl(url)) {
         return Promise.resolve(todayPackApiResponse(activeTodayPack()));
       }
-      if (url === '/api/review-sessions/summary') {
+      if (isReviewSummaryUrl(url)) {
         return Promise.resolve(reviewSummaryApiResponse(3));
       }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
@@ -469,7 +470,7 @@ describe('App', () => {
     const reviewButton = await screen.findByRole('button', { name: '开始今日复习 3 题' });
     expect(screen.getByText('今日待复习 3 题')).toBeInTheDocument();
     expect(fetchMock.mock.calls.some(([url]) => isTodayPackUrl(url))).toBe(true);
-    expect(fetchMock.mock.calls.some(([url]) => url === '/api/review-sessions/summary')).toBe(true);
+    expect(fetchMock.mock.calls.some(([url]) => isReviewSummaryUrl(url))).toBe(true);
 
     fireEvent.click(reviewButton);
 
@@ -484,7 +485,7 @@ describe('App', () => {
       if (isTodayPackUrl(url)) {
         return Promise.resolve(todayPackApiResponse());
       }
-      if (url === '/api/review-sessions/summary') {
+      if (isReviewSummaryUrl(url)) {
         return Promise.resolve(reviewSummaryApiResponse(0));
       }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
@@ -496,6 +497,36 @@ describe('App', () => {
     expect(await screen.findByRole('button', { name: '今日已完成' })).toBeDisabled();
   });
 
+  it('shows a review scheduled later today without marking the day complete', async () => {
+    const nextDueAt = new Date(Date.now() + 10 * 60_000).toISOString();
+    const fetchMock = vi.fn((url: string) => {
+      if (url === '/api/auth/me') {
+        return Promise.resolve(authenticatedUserResponse());
+      }
+      if (isTodayPackUrl(url)) {
+        return Promise.resolve(todayPackApiResponse());
+      }
+      if (isReviewSummaryUrl(url)) {
+        return Promise.resolve(reviewSummaryApiResponse(0, {
+          remainingTodayCount: 1,
+          nextDueAt,
+        }));
+      }
+      return Promise.reject(new Error(`Unexpected URL: ${url}`));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    render(<App />);
+
+    expect(await screen.findByText('今日还有 1 题，10 分钟后可复习')).toBeInTheDocument();
+    const reviewButton = screen.getByRole('button', { name: '查看今日复习安排' });
+    expect(reviewButton).toBeEnabled();
+
+    fireEvent.click(reviewButton);
+
+    expect(window.location.pathname).toBe('/mistakes');
+  });
+
   it('keeps the today pack entry available when the home review summary fails', async () => {
     const fetchMock = vi.fn((url: string) => {
       if (url === '/api/auth/me') {
@@ -504,7 +535,7 @@ describe('App', () => {
       if (isTodayPackUrl(url)) {
         return Promise.resolve(todayPackApiResponse(activeTodayPack()));
       }
-      if (url === '/api/review-sessions/summary') {
+      if (isReviewSummaryUrl(url)) {
         return Promise.reject(new Error('review summary unavailable'));
       }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
@@ -935,7 +966,7 @@ describe('App', () => {
     render(<App />);
 
     expect((await screen.findByRole<HTMLInputElement>('textbox', { name: 'Idempotency Key' })).value).toMatch(
-      /^client-/,
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
     );
   });
 
@@ -2522,11 +2553,12 @@ function mockUnauthenticatedFetch() {
 function mockAuthenticatedAppFetch() {
   let preference = userAiPreferenceData();
   let reviewPreference = {
-    aiSuggestionEnabled: true,
     dailyLearningLimit: 50,
     dailyNewLimit: 10,
     dailyReviewLimit: 30,
     desiredRetention: 0.9,
+    enableFuzzing: true,
+    maximumIntervalDays: 36500,
   };
   return vi.fn((url: string, init?: RequestInit) => {
     if (url === '/api/auth/me') {
@@ -2568,7 +2600,7 @@ function mockAuthenticatedAppFetch() {
     if (isTodayPackUrl(url)) {
       return Promise.resolve(todayPackApiResponse());
     }
-    if (url === '/api/review-sessions/summary') {
+    if (isReviewSummaryUrl(url)) {
       return Promise.resolve(reviewSummaryApiResponse(0));
     }
     if (isLearningPlanListUrl(url)) {
@@ -2671,7 +2703,7 @@ function mockAuthenticatedUserWithoutUserManageFetch() {
     if (isTodayPackUrl(url)) {
       return Promise.resolve(todayPackApiResponse());
     }
-    if (url === '/api/review-sessions/summary') {
+    if (isReviewSummaryUrl(url)) {
       return Promise.resolve(reviewSummaryApiResponse(0));
     }
     return Promise.reject(new Error(`Unexpected URL: ${url}`));
@@ -3415,6 +3447,10 @@ function isTodayPackUrl(url: string): boolean {
   return url === '/api/today-pack' || url.startsWith('/api/today-pack?');
 }
 
+function isReviewSummaryUrl(url: string): boolean {
+  return url === '/api/review-sessions/summary' || url.startsWith('/api/review-sessions/summary?');
+}
+
 function todayPackApiResponse(overrides: Partial<TodayPackResponse> = {}) {
   return jsonResponse({
     success: true,
@@ -3423,10 +3459,18 @@ function todayPackApiResponse(overrides: Partial<TodayPackResponse> = {}) {
   });
 }
 
-function reviewSummaryApiResponse(dueCount: number) {
+function reviewSummaryApiResponse(
+  dueCount: number,
+  overrides: Partial<ReviewSummaryResponse> = {},
+) {
   return jsonResponse({
     success: true,
-    data: { dueCount },
+    data: {
+      dueCount,
+      remainingTodayCount: dueCount,
+      nextDueAt: null,
+      ...overrides,
+    },
     timestamp: '2026-06-22T00:00:00Z',
   });
 }

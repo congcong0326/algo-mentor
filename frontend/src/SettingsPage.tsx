@@ -275,19 +275,6 @@ export default function SettingsPage({
             </div>
           ) : reviewPreference ? (
             <div className="preference-controls">
-              <label className="settings-toggle-row">
-                <span>
-                  <strong>{resources.settingsPage.aiSuggestionLabel}</strong>
-                  <small>{resources.settingsPage.aiSuggestionDescription}</small>
-                </span>
-                <input
-                  checked={reviewPreference.aiSuggestionEnabled}
-                  disabled={reviewPreferenceSaving}
-                  onChange={(event) => void saveReviewPreference({ aiSuggestionEnabled: event.target.checked })}
-                  type="checkbox"
-                />
-              </label>
-
               <details className="advanced-settings">
                 <summary>
                   <span>
@@ -340,6 +327,28 @@ export default function SettingsPage({
                     tooltipId="review-daily-review-limit-tooltip"
                     value={reviewPreference.dailyReviewLimit}
                   />
+                  <ReviewNumberField
+                    description={resources.settingsPage.maximumIntervalDaysDescription}
+                    disabled={reviewPreferenceSaving}
+                    label={resources.settingsPage.maximumIntervalDays}
+                    min="1"
+                    onBlur={(value) => void saveReviewPreference({ maximumIntervalDays: value })}
+                    onChange={(value) => setReviewPreference({ ...reviewPreference, maximumIntervalDays: value })}
+                    tooltipId="review-maximum-interval-tooltip"
+                    value={reviewPreference.maximumIntervalDays}
+                  />
+                  <label className="settings-toggle-row advanced-settings-toggle">
+                    <span>
+                      <strong>{resources.settingsPage.enableFuzzing}</strong>
+                      <small>{resources.settingsPage.enableFuzzingDescription}</small>
+                    </span>
+                    <input
+                      checked={reviewPreference.enableFuzzing}
+                      disabled={reviewPreferenceSaving}
+                      onChange={(event) => void saveReviewPreference({ enableFuzzing: event.target.checked })}
+                      type="checkbox"
+                    />
+                  </label>
                 </fieldset>
               </details>
               {reviewPreferenceSaveError ? (
