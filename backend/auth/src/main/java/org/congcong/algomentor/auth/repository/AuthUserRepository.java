@@ -40,6 +40,23 @@ public interface AuthUserRepository {
     return false;
   }
 
+  default boolean updatePasswordCredentialCompareAndSet(
+      long userId,
+      String expectedPasswordHash,
+      String newPasswordHash,
+      Instant changedAt
+  ) {
+    return false;
+  }
+
+  default boolean insertPasswordCredentialIfAbsent(long userId, String passwordHash, Instant changedAt) {
+    return false;
+  }
+
+  default boolean replacePasswordCredential(long userId, String passwordHash, Instant changedAt) {
+    return false;
+  }
+
   OAuthAccount createOAuthAccount(OAuthAccount account);
 
   void updateOAuthAccountProfile(

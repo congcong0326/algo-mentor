@@ -31,6 +31,11 @@ public final class AuthApiContractConstants {
   public static final String COMPLETE_PASSWORD_RESET_PATH = "/password/complete-reset";
 
   /**
+   * 当前用户主动设置或修改邮箱登录密码的路径。
+   */
+  public static final String PASSWORD_PATH = "/password";
+
+  /**
    * 当前请求没有可用登录用户时返回的错误码。
    */
   public static final String AUTH_UNAUTHENTICATED_CODE = "AUTH_UNAUTHENTICATED";

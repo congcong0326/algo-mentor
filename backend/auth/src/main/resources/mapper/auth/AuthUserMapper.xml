@@ -141,6 +141,55 @@
       and temporary_password_consumed_at is not null
   </update>
 
+  <update id="updatePasswordCredentialCompareAndSet">
+    update auth_password_credentials
+    set password_hash = #{newPasswordHash},
+        reset_required = FALSE,
+        temporary_password_expires_at = NULL,
+        temporary_password_consumed_at = NULL,
+        password_changed_at = #{changedAt},
+        reset_by = NULL,
+        updated_at = #{changedAt}
+    where user_id = #{userId}
+      and password_hash = #{expectedPasswordHash}
+  </update>
+
+  <insert id="insertPasswordCredentialIfAbsent">
+    insert into auth_password_credentials (
+      user_id,
+      password_hash,
+      reset_required,
+      temporary_password_expires_at,
+      temporary_password_consumed_at,
+      password_changed_at,
+      reset_by,
+      created_at,
+      updated_at
+    ) values (
+      #{userId},
+      #{passwordHash},
+      FALSE,
+      NULL,
+      NULL,
+      #{changedAt},
+      NULL,
+      #{changedAt},
+      #{changedAt}
+    ) on conflict (user_id) do nothing
+  </insert>
+
+  <update id="replacePasswordCredential">
+    update auth_password_credentials
+    set password_hash = #{passwordHash},
+        reset_required = FALSE,
+        temporary_password_expires_at = NULL,
+        temporary_password_consumed_at = NULL,
+        password_changed_at = #{changedAt},
+        reset_by = NULL,
+        updated_at = #{changedAt}
+    where user_id = #{userId}
+  </update>
+
   <insert id="insertOAuthAccount"
           parameterType="org.congcong.algomentor.auth.repository.mybatis.model.OAuthAccountRow"
           useGeneratedKeys="true"

@@ -1,6 +1,7 @@
 package org.congcong.algomentor.auth.model;
 
 import java.util.List;
+import org.congcong.algomentor.auth.security.AuthSessionAuthenticationMethod;
 import org.congcong.algomentor.identity.model.AuthRole;
 import org.congcong.algomentor.identity.model.AuthUserStatus;
 
@@ -12,7 +13,9 @@ public record CurrentUserResponse(
     List<AuthRole> roles,
     List<String> permissions,
     AuthUserStatus status,
-    boolean passwordChangeRequired
+    boolean passwordChangeRequired,
+    boolean passwordConfigured,
+    AuthSessionAuthenticationMethod sessionAuthenticationMethod
 ) {
 
   public CurrentUserResponse(
@@ -24,7 +27,20 @@ public record CurrentUserResponse(
       List<String> permissions,
       AuthUserStatus status
   ) {
-    this(id, email, displayName, avatarUrl, roles, permissions, status, false);
+    this(id, email, displayName, avatarUrl, roles, permissions, status, false, false, null);
+  }
+
+  public CurrentUserResponse(
+      Long id,
+      String email,
+      String displayName,
+      String avatarUrl,
+      List<AuthRole> roles,
+      List<String> permissions,
+      AuthUserStatus status,
+      boolean passwordChangeRequired
+  ) {
+    this(id, email, displayName, avatarUrl, roles, permissions, status, passwordChangeRequired, false, null);
   }
 
   public CurrentUserResponse {

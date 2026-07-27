@@ -18,6 +18,8 @@ const user: CurrentUser = {
   ],
   status: 'ACTIVE',
   passwordChangeRequired: false,
+  passwordConfigured: true,
+  sessionAuthenticationMethod: 'PASSWORD',
 };
 
 afterEach(() => {

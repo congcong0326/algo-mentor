@@ -46,7 +46,7 @@ public class PasswordAuthController {
   private final AuthenticationManager authenticationManager;
   private final SecurityContextRepository securityContextRepository;
   private final ApiErrorResponseFactory responseFactory;
-  private final AuthPermissionService permissionService;
+  private final CurrentUserResponseFactory currentUserResponseFactory;
   private final PasswordResetService passwordResetService;
   private final AuthSessionPolicyLoginService sessionPolicyLoginService;
 
@@ -61,7 +61,7 @@ public class PasswordAuthController {
         authenticationManager,
         securityContextRepository,
         new ApiErrorResponseFactory(new ApiErrorMessageResolver()),
-        permissionService,
+        new CurrentUserResponseFactory(permissionService),
         null,
         null);
   }
@@ -78,7 +78,7 @@ public class PasswordAuthController {
         authenticationManager,
         securityContextRepository,
         responseFactory,
-        permissionService,
+        new CurrentUserResponseFactory(permissionService),
         null,
         null);
   }
@@ -96,7 +96,7 @@ public class PasswordAuthController {
         authenticationManager,
         securityContextRepository,
         responseFactory,
-        permissionService,
+        new CurrentUserResponseFactory(permissionService),
         passwordResetService,
         null);
   }
@@ -110,11 +110,30 @@ public class PasswordAuthController {
       PasswordResetService passwordResetService,
       AuthSessionPolicyLoginService sessionPolicyLoginService
   ) {
+    this(
+        passwordUserService,
+        authenticationManager,
+        securityContextRepository,
+        responseFactory,
+        new CurrentUserResponseFactory(permissionService),
+        passwordResetService,
+        sessionPolicyLoginService);
+  }
+
+  public PasswordAuthController(
+      PasswordUserService passwordUserService,
+      AuthenticationManager authenticationManager,
+      SecurityContextRepository securityContextRepository,
+      ApiErrorResponseFactory responseFactory,
+      CurrentUserResponseFactory currentUserResponseFactory,
+      PasswordResetService passwordResetService,
+      AuthSessionPolicyLoginService sessionPolicyLoginService
+  ) {
     this.passwordUserService = passwordUserService;
     this.authenticationManager = authenticationManager;
     this.securityContextRepository = securityContextRepository;
     this.responseFactory = responseFactory;
-    this.permissionService = permissionService;
+    this.currentUserResponseFactory = currentUserResponseFactory;
     this.passwordResetService = passwordResetService;
     this.sessionPolicyLoginService = sessionPolicyLoginService;
   }
@@ -248,15 +267,7 @@ public class PasswordAuthController {
   }
 
   private CurrentUserResponse toResponse(AuthenticatedUserPrincipal principal) {
-    return new CurrentUserResponse(
-        principal.userId(),
-        principal.email(),
-        principal.displayName(),
-        principal.avatarUrl(),
-        principal.roles(),
-        permissionService.permissionsFor(principal.roles()),
-        principal.status(),
-        principal.passwordChangeRequired());
+    return currentUserResponseFactory.create(principal);
   }
 
   private ResponseEntity<ApiResponse<CurrentUserResponse>> failure(

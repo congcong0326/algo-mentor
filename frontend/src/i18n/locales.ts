@@ -642,6 +642,29 @@ export interface LocaleResources {
     accountDescription: string;
     signedInAs: string;
     activeStatus: string;
+    passwordTitle: string;
+    passwordNotConfigured: string;
+    passwordConfigured: string;
+    passwordEmailUnavailable: string;
+    setPassword: string;
+    changePassword: string;
+    passwordDialogSetTitle: string;
+    passwordDialogChangeTitle: string;
+    passwordDialogSetDescription: string;
+    passwordDialogChangeDescription: string;
+    currentPassword: string;
+    newPassword: string;
+    confirmNewPassword: string;
+    passwordMinimumLength: string;
+    showPassword: string;
+    hidePassword: string;
+    passwordUpdating: string;
+    passwordUpdate: string;
+    passwordMismatch: string;
+    passwordTooShort: string;
+    passwordUpdateFailed: string;
+    passwordCreated: string;
+    passwordUpdated: string;
   };
   myPage: {
     profileKicker: string;
@@ -1767,6 +1790,29 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       accountDescription: '查看当前登录身份，或结束本次会话。',
       signedInAs: '当前登录',
       activeStatus: '账户正常',
+      passwordTitle: '登录密码',
+      passwordNotConfigured: '未设置，可添加邮箱密码登录方式',
+      passwordConfigured: '已设置，可使用邮箱和密码登录',
+      passwordEmailUnavailable: '账号信息异常，暂时无法设置邮箱登录密码',
+      setPassword: '设置密码',
+      changePassword: '修改密码',
+      passwordDialogSetTitle: '设置登录密码',
+      passwordDialogChangeTitle: '修改登录密码',
+      passwordDialogSetDescription: '设置后可使用当前邮箱和此密码登录，OIDC 登录仍然有效。',
+      passwordDialogChangeDescription: '修改后，其他已登录的会话将退出。',
+      currentPassword: '当前密码',
+      newPassword: '新密码',
+      confirmNewPassword: '确认新密码',
+      passwordMinimumLength: '至少 8 个字符',
+      showPassword: '显示密码',
+      hidePassword: '隐藏密码',
+      passwordUpdating: '更新中...',
+      passwordUpdate: '更新密码',
+      passwordMismatch: '两次输入的新密码不一致',
+      passwordTooShort: '新密码至少需要 8 个字符',
+      passwordUpdateFailed: '密码更新失败',
+      passwordCreated: '已设置登录密码，以后可使用当前邮箱和此密码登录。',
+      passwordUpdated: '密码已更新，其他已登录的会话已退出。',
     },
     myPage: {
       profileKicker: 'PERSONAL TRAINING CENTER',
@@ -2980,6 +3026,29 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       accountDescription: 'Review the current identity or end this session.',
       signedInAs: 'Signed in as',
       activeStatus: 'Account active',
+      passwordTitle: 'Sign-in password',
+      passwordNotConfigured: 'Not configured. Add email and password sign-in.',
+      passwordConfigured: 'Configured. You can sign in with email and password.',
+      passwordEmailUnavailable: 'Account information is incomplete, so a password cannot be set yet.',
+      setPassword: 'Set password',
+      changePassword: 'Change password',
+      passwordDialogSetTitle: 'Set sign-in password',
+      passwordDialogChangeTitle: 'Change sign-in password',
+      passwordDialogSetDescription: 'You can then sign in with your current email and this password. OIDC sign-in remains available.',
+      passwordDialogChangeDescription: 'Changing the password signs out your other active sessions.',
+      currentPassword: 'Current password',
+      newPassword: 'New password',
+      confirmNewPassword: 'Confirm new password',
+      passwordMinimumLength: 'At least 8 characters',
+      showPassword: 'Show password',
+      hidePassword: 'Hide password',
+      passwordUpdating: 'Updating...',
+      passwordUpdate: 'Update password',
+      passwordMismatch: 'The new passwords do not match',
+      passwordTooShort: 'The new password must contain at least 8 characters',
+      passwordUpdateFailed: 'Password update failed',
+      passwordCreated: 'Sign-in password set. You can now use your current email and this password.',
+      passwordUpdated: 'Password updated. Your other active sessions have been signed out.',
     },
     myPage: {
       profileKicker: 'PERSONAL TRAINING CENTER',

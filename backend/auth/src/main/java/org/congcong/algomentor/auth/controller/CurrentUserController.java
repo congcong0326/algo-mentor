@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.congcong.algomentor.auth.model.CurrentUserResponse;
 import org.congcong.algomentor.auth.security.AuthDiagnosticSupport;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
-import org.congcong.algomentor.auth.service.AuthPermissionService;
 import org.congcong.algomentor.common.api.ApiErrorLocales;
 import org.congcong.algomentor.common.api.ApiErrorMessageResolver;
 import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
@@ -25,30 +24,33 @@ public class CurrentUserController {
 
   private final CurrentUserIdProvider currentUserIdProvider;
   private final ApiErrorResponseFactory responseFactory;
-  private final AuthPermissionService permissionService;
+  private final CurrentUserResponseFactory currentUserResponseFactory;
 
   public CurrentUserController(CurrentUserIdProvider currentUserIdProvider) {
     this(
         currentUserIdProvider,
         new ApiErrorResponseFactory(new ApiErrorMessageResolver()),
-        new AuthPermissionService());
+        new CurrentUserResponseFactory(new org.congcong.algomentor.auth.service.AuthPermissionService()));
   }
 
   public CurrentUserController(
       CurrentUserIdProvider currentUserIdProvider,
       ApiErrorResponseFactory responseFactory
   ) {
-    this(currentUserIdProvider, responseFactory, new AuthPermissionService());
+    this(
+        currentUserIdProvider,
+        responseFactory,
+        new CurrentUserResponseFactory(new org.congcong.algomentor.auth.service.AuthPermissionService()));
   }
 
   public CurrentUserController(
       CurrentUserIdProvider currentUserIdProvider,
       ApiErrorResponseFactory responseFactory,
-      AuthPermissionService permissionService
+      CurrentUserResponseFactory currentUserResponseFactory
   ) {
     this.currentUserIdProvider = currentUserIdProvider;
     this.responseFactory = responseFactory;
-    this.permissionService = permissionService;
+    this.currentUserResponseFactory = currentUserResponseFactory;
   }
 
   @GetMapping(AuthApiContractConstants.ME_PATH)
@@ -57,15 +59,7 @@ public class CurrentUserController {
     return currentUserIdProvider.currentUser()
         .map(principal -> {
           log.info("Current user endpoint returning authenticated user. userId={}", principal.userId());
-          return ResponseEntity.ok(ApiResponse.success(new CurrentUserResponse(
-              principal.userId(),
-              principal.email(),
-              principal.displayName(),
-              principal.avatarUrl(),
-              principal.roles(),
-              permissionService.permissionsFor(principal.roles()),
-              principal.status(),
-              principal.passwordChangeRequired())));
+          return ResponseEntity.ok(ApiResponse.success(currentUserResponseFactory.create(principal)));
         })
         .orElseGet(() -> {
           log.info("Current user endpoint returning unauthenticated response.");

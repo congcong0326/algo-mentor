@@ -21,7 +21,14 @@ import org.congcong.algomentor.auth.controller.admin.BetaAccessExceptionHandler;
 import org.congcong.algomentor.auth.controller.admin.AdminPasswordResetController;
 import org.congcong.algomentor.auth.controller.admin.AdminPasswordResetExceptionHandler;
 import org.congcong.algomentor.auth.controller.CurrentUserController;
+import org.congcong.algomentor.auth.controller.CurrentUserResponseFactory;
 import org.congcong.algomentor.auth.controller.PasswordAuthController;
+import org.congcong.algomentor.auth.controller.UserPasswordController;
+import org.congcong.algomentor.auth.password.MicrometerUserPasswordMetrics;
+import org.congcong.algomentor.auth.password.NoopUserPasswordMetrics;
+import org.congcong.algomentor.auth.password.UserPasswordMetrics;
+import org.congcong.algomentor.auth.password.UserPasswordMutationExecutor;
+import org.congcong.algomentor.auth.password.UserPasswordService;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper;
 import org.congcong.algomentor.auth.repository.mybatis.MyBatisAuthUserRepository;
@@ -29,6 +36,7 @@ import org.congcong.algomentor.auth.security.AuthenticatedDaoAuthenticationProvi
 import org.congcong.algomentor.auth.security.AuthenticatedOAuth2UserService;
 import org.congcong.algomentor.auth.security.AuthenticatedOidcUserService;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
+import org.congcong.algomentor.auth.security.CurrentAuthenticationContextResolver;
 import org.congcong.algomentor.auth.security.PasswordUserDetailsService;
 import org.congcong.algomentor.auth.security.SecurityContextCurrentUserIdProvider;
 import org.congcong.algomentor.auth.passwordreset.PasswordResetMutationExecutor;
@@ -110,15 +118,34 @@ public class AuthApiAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
+  public CurrentAuthenticationContextResolver currentAuthenticationContextResolver() {
+    return new CurrentAuthenticationContextResolver();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public CurrentUserResponseFactory currentUserResponseFactory(
+      ObjectProvider<AuthUserRepository> authUserRepositoryProvider,
+      CurrentAuthenticationContextResolver authenticationContextResolver,
+      AuthPermissionService authPermissionService
+  ) {
+    return new CurrentUserResponseFactory(
+        authUserRepositoryProvider.getIfAvailable(),
+        authenticationContextResolver,
+        authPermissionService);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
   public CurrentUserController currentUserController(
       CurrentUserIdProvider currentUserIdProvider,
       ObjectProvider<ApiErrorResponseFactory> apiErrorResponseFactoryProvider,
-      AuthPermissionService authPermissionService
+      CurrentUserResponseFactory currentUserResponseFactory
   ) {
     ApiErrorResponseFactory responseFactory = apiErrorResponseFactoryProvider.getIfAvailable();
     return responseFactory == null
         ? new CurrentUserController(currentUserIdProvider)
-        : new CurrentUserController(currentUserIdProvider, responseFactory, authPermissionService);
+        : new CurrentUserController(currentUserIdProvider, responseFactory, currentUserResponseFactory);
   }
 
   @Bean
@@ -359,6 +386,60 @@ public class AuthApiAutoConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean
+  public UserPasswordMetrics userPasswordMetrics(ObjectProvider<MeterRegistry> meterRegistryProvider) {
+    MeterRegistry registry = meterRegistryProvider.getIfAvailable();
+    return registry == null ? new NoopUserPasswordMetrics() : new MicrometerUserPasswordMetrics(registry);
+  }
+
+  @Bean
+  @ConditionalOnBean(AuthUserRepository.class)
+  @ConditionalOnMissingBean
+  public UserPasswordMutationExecutor userPasswordMutationExecutor(
+      AuthUserRepository authUserRepository,
+      ObjectProvider<AuthSessionRevocationService> sessionRevocationServiceProvider,
+      ObjectProvider<PlatformTransactionManager> transactionManagerProvider
+  ) {
+    return new UserPasswordMutationExecutor(
+        authUserRepository,
+        sessionRevocationServiceProvider.getIfAvailable(),
+        transactionManagerProvider.getIfAvailable());
+  }
+
+  @Bean
+  @ConditionalOnBean({AuthUserRepository.class, IdentityUserRepository.class, UserPasswordMutationExecutor.class})
+  @ConditionalOnMissingBean
+  public UserPasswordService userPasswordService(
+      AuthUserRepository authUserRepository,
+      IdentityUserRepository identityUserRepository,
+      CurrentAuthenticationContextResolver authenticationContextResolver,
+      PasswordEncoder passwordEncoder,
+      UserPasswordMutationExecutor mutationExecutor,
+      UserPasswordMetrics metrics,
+      Clock authClock
+  ) {
+    return new UserPasswordService(
+        authUserRepository,
+        identityUserRepository,
+        authenticationContextResolver,
+        passwordEncoder,
+        mutationExecutor,
+        metrics,
+        authClock);
+  }
+
+  @Bean
+  @ConditionalOnBean(UserPasswordService.class)
+  @ConditionalOnMissingBean
+  public UserPasswordController userPasswordController(
+      UserPasswordService userPasswordService,
+      ObjectProvider<ApiErrorResponseFactory> responseFactoryProvider
+  ) {
+    return new UserPasswordController(userPasswordService, responseFactoryProvider.getIfAvailable(
+        () -> new ApiErrorResponseFactory(new ApiErrorMessageResolver())));
+  }
+
+  @Bean
   @ConditionalOnBean({AuthUserRepository.class, IdentityUserRepository.class, PasswordResetMutationExecutor.class})
   @ConditionalOnMissingBean
   public PasswordResetService passwordResetService(
@@ -566,7 +647,7 @@ public class AuthApiAutoConfiguration {
       PasswordUserService passwordUserService,
       AuthenticationManager authenticationManager,
       SecurityContextRepository securityContextRepository,
-      AuthPermissionService authPermissionService,
+      CurrentUserResponseFactory currentUserResponseFactory,
       ObjectProvider<PasswordResetService> passwordResetServiceProvider,
       ObjectProvider<ApiErrorResponseFactory> apiErrorResponseFactoryProvider,
       AuthSessionPolicyLoginService authSessionPolicyLoginService
@@ -579,7 +660,7 @@ public class AuthApiAutoConfiguration {
         responseFactory == null
             ? new ApiErrorResponseFactory(new ApiErrorMessageResolver())
             : responseFactory,
-        authPermissionService,
+        currentUserResponseFactory,
         passwordResetServiceProvider.getIfAvailable(),
         authSessionPolicyLoginService);
   }

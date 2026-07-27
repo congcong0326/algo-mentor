@@ -89,6 +89,26 @@ class MyBatisAuthUserRepositoryTest {
     }
 
     @Override
+    public int updatePasswordCredentialCompareAndSet(
+        long userId,
+        String expectedPasswordHash,
+        String newPasswordHash,
+        Instant changedAt
+    ) {
+      return 0;
+    }
+
+    @Override
+    public int insertPasswordCredentialIfAbsent(long userId, String passwordHash, Instant changedAt) {
+      return 0;
+    }
+
+    @Override
+    public int replacePasswordCredential(long userId, String passwordHash, Instant changedAt) {
+      return 0;
+    }
+
+    @Override
     public int insertOAuthAccount(OAuthAccountRow account) {
       account.setId(99L);
       return 1;

@@ -11,6 +11,8 @@ const admin: CurrentUser = {
   permissions: ['admin-overview:read', 'user:manage', 'beta-access:manage', 'feedback:manage'],
   status: 'ACTIVE',
   passwordChangeRequired: false,
+  passwordConfigured: true,
+  sessionAuthenticationMethod: 'PASSWORD',
 };
 
 afterEach(cleanup);

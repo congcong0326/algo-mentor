@@ -1,10 +1,11 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { I18nProvider } from './i18n/I18nProvider';
 import SettingsPage from './SettingsPage';
 import {
   getReviewPreference,
   getUserAiPreference,
+  updateUserPassword,
 } from './services/api';
 import type {
   ApiResponse,
@@ -25,11 +26,17 @@ vi.mock('./services/api', () => ({
   setApiLocale: vi.fn(),
   updateReviewPreference: vi.fn(),
   updateUserAiPreference: vi.fn(),
+  updateUserPassword: vi.fn(),
 }));
 
 beforeEach(() => {
   vi.mocked(getUserAiPreference).mockResolvedValue(apiResponse(userAiPreference()));
   vi.mocked(getReviewPreference).mockResolvedValue(apiResponse(reviewPreference()));
+  vi.mocked(updateUserPassword).mockResolvedValue(apiResponse({
+    passwordConfigured: true,
+    operation: 'CREATED',
+    revokedSessionCount: 0,
+  }));
 });
 
 afterEach(() => {
@@ -83,13 +90,79 @@ describe('SettingsPage', () => {
     expect(screen.getByRole('checkbox', { name: /启用间隔扰动/ })).toBeChecked();
     expect(screen.queryByText(/AI 评价建议/)).not.toBeInTheDocument();
   });
+
+  it('shows the set-password flow without a current-password field for an OIDC session', async () => {
+    renderPage();
+
+    fireEvent.click(await screen.findByRole('button', { name: '设置密码' }));
+
+    expect(screen.getByRole('dialog', { name: '设置登录密码' })).toBeInTheDocument();
+    expect(screen.queryByLabelText('当前密码')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('新密码')).toHaveAttribute('autocomplete', 'new-password');
+    expect(screen.getByLabelText('确认新密码')).toHaveAttribute('autocomplete', 'new-password');
+  });
+
+  it('shows the current-password field when the current session was created by password sign-in', async () => {
+    renderPage({ passwordConfigured: true, sessionAuthenticationMethod: 'PASSWORD' });
+
+    fireEvent.click(await screen.findByRole('button', { name: '修改密码' }));
+
+    expect(screen.getByRole('dialog', { name: '修改登录密码' })).toBeInTheDocument();
+    expect(screen.getByLabelText('当前密码')).toHaveAttribute('autocomplete', 'current-password');
+  });
+
+  it('does not send an update when confirmation does not match', async () => {
+    renderPage();
+    fireEvent.click(await screen.findByRole('button', { name: '设置密码' }));
+    fireEvent.change(screen.getByLabelText('新密码'), { target: { value: 'new-password' } });
+    fireEvent.change(screen.getByLabelText('确认新密码'), { target: { value: 'different-password' } });
+    fireEvent.click(screen.getByRole('button', { name: '更新密码' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('两次输入的新密码不一致');
+    expect(updateUserPassword).not.toHaveBeenCalled();
+  });
+
+  it('updates local password state and closes the dialog after a successful update', async () => {
+    const onCurrentUserUpdated = vi.fn();
+    renderPage(undefined, onCurrentUserUpdated);
+    fireEvent.click(await screen.findByRole('button', { name: '设置密码' }));
+    fireEvent.change(screen.getByLabelText('新密码'), { target: { value: 'new-password' } });
+    fireEvent.change(screen.getByLabelText('确认新密码'), { target: { value: 'new-password' } });
+    fireEvent.click(screen.getByRole('button', { name: '更新密码' }));
+
+    await waitFor(() => expect(updateUserPassword).toHaveBeenCalledWith({
+      newPassword: 'new-password',
+      confirmPassword: 'new-password',
+    }));
+    expect(onCurrentUserUpdated).toHaveBeenCalledWith(expect.objectContaining({ passwordConfigured: true }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByText('已设置登录密码，以后可使用当前邮箱和此密码登录。')).toBeInTheDocument();
+  });
+
+  it('shows API failures inside the dialog', async () => {
+    vi.mocked(updateUserPassword).mockRejectedValueOnce(new Error('当前密码不正确。'));
+    renderPage({ passwordConfigured: true, sessionAuthenticationMethod: 'PASSWORD' });
+    fireEvent.click(await screen.findByRole('button', { name: '修改密码' }));
+    fireEvent.change(screen.getByLabelText('当前密码'), { target: { value: 'old-password' } });
+    fireEvent.change(screen.getByLabelText('新密码'), { target: { value: 'new-password' } });
+    fireEvent.change(screen.getByLabelText('确认新密码'), { target: { value: 'new-password' } });
+    fireEvent.click(screen.getByRole('button', { name: '更新密码' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('当前密码不正确。');
+    expect(updateUserPassword).toHaveBeenCalledWith({
+      currentPassword: 'old-password',
+      newPassword: 'new-password',
+      confirmPassword: 'new-password',
+    });
+  });
 });
 
-function renderPage() {
+function renderPage(currentUser: Partial<CurrentUser> = user, onCurrentUserUpdated = vi.fn()) {
   render(
     <I18nProvider>
       <SettingsPage
-        currentUser={user}
+        currentUser={{ ...user, ...currentUser }}
+        onCurrentUserUpdated={onCurrentUserUpdated}
         onLogout={vi.fn()}
       />
     </I18nProvider>,
@@ -120,6 +193,8 @@ const user: CurrentUser = {
   permissions: [],
   status: 'ACTIVE',
   passwordChangeRequired: false,
+  passwordConfigured: false,
+  sessionAuthenticationMethod: 'OIDC',
 };
 
 function reviewPreference(): ReviewPreference {

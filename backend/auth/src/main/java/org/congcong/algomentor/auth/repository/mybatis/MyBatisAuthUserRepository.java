@@ -74,6 +74,30 @@ public class MyBatisAuthUserRepository implements AuthUserRepository {
   }
 
   @Override
+  public boolean updatePasswordCredentialCompareAndSet(
+      long userId,
+      String expectedPasswordHash,
+      String newPasswordHash,
+      Instant changedAt
+  ) {
+    return mapper.updatePasswordCredentialCompareAndSet(
+        userId,
+        expectedPasswordHash,
+        newPasswordHash,
+        changedAt) == 1;
+  }
+
+  @Override
+  public boolean insertPasswordCredentialIfAbsent(long userId, String passwordHash, Instant changedAt) {
+    return mapper.insertPasswordCredentialIfAbsent(userId, passwordHash, changedAt) == 1;
+  }
+
+  @Override
+  public boolean replacePasswordCredential(long userId, String passwordHash, Instant changedAt) {
+    return mapper.replacePasswordCredential(userId, passwordHash, changedAt) == 1;
+  }
+
+  @Override
   public OAuthAccount createOAuthAccount(OAuthAccount account) {
     OAuthAccountRow row = new OAuthAccountRow(
         null,

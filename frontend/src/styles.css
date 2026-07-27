@@ -6952,6 +6952,99 @@ a {
   white-space: nowrap;
 }
 
+.account-settings-control {
+  gap: 10px;
+}
+
+.password-dialog-backdrop {
+  align-items: center;
+  background: rgb(15 23 42 / 48%);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 180;
+}
+
+.password-dialog {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  box-shadow: var(--shadow-hover);
+  display: grid;
+  gap: 16px;
+  max-height: calc(100dvh - 40px);
+  overflow: auto;
+  padding: 20px;
+  width: min(440px, 100%);
+}
+
+.password-dialog header,
+.password-dialog footer {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.password-dialog header {
+  align-items: flex-start;
+}
+
+.password-dialog h2,
+.password-dialog p {
+  margin: 0;
+}
+
+.password-dialog h2 {
+  font-size: 18px;
+}
+
+.password-dialog header p,
+.password-dialog-hint {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.password-dialog-field {
+  display: grid;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.password-dialog-input {
+  align-items: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  display: flex;
+  min-height: 42px;
+  padding-left: 10px;
+}
+
+.password-dialog-input:focus-within {
+  border-color: var(--action-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--action-primary) 18%, transparent);
+}
+
+.password-dialog-input input {
+  background: transparent;
+  border: 0;
+  color: var(--text-primary);
+  flex: 1;
+  font: inherit;
+  min-width: 0;
+  outline: 0;
+}
+
+.password-dialog-input .icon-button {
+  flex: 0 0 auto;
+  margin-right: 3px;
+}
+
 .my-card {
   min-width: 0;
   border: 1px solid var(--border-subtle);
@@ -8244,6 +8337,20 @@ a {
 
   .account-settings-row {
     padding: 14px;
+  }
+
+  .password-dialog-backdrop {
+    padding: 12px;
+  }
+
+  .password-dialog footer {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .password-dialog footer button {
+    justify-content: center;
+    width: 100%;
   }
 
   .account-menu-trigger > svg {

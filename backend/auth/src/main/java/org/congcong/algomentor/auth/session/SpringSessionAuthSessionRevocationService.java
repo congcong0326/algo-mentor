@@ -29,4 +29,17 @@ public class SpringSessionAuthSessionRevocationService implements AuthSessionRev
     sessions.keySet().forEach(sessionRepository::deleteById);
     return sessions.size();
   }
+
+  @Override
+  public int revokeOtherSessionsForUser(long userId, String currentSessionId) {
+    Map<String, ? extends Session> sessions = sessionRepository.findByPrincipalName(Long.toString(userId));
+    int revoked = 0;
+    for (String sessionId : sessions.keySet()) {
+      if (!sessionId.equals(currentSessionId)) {
+        sessionRepository.deleteById(sessionId);
+        revoked++;
+      }
+    }
+    return revoked;
+  }
 }

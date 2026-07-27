@@ -95,6 +95,8 @@ import type {
   SseStreamEvent,
   UserAiPreference,
   UserAiPreferenceRequest,
+  UserPasswordUpdateRequest,
+  UserPasswordUpdateResponse,
   UserSessionPolicyContent,
   FeedbackCreateRequest,
   FeedbackMessageRequest,
@@ -254,6 +256,25 @@ export async function completePasswordReset(request: CompletePasswordResetReques
 
   const body = await response.json() as ApiResponse<CurrentUser>;
   return requireApiData(body, 'Password reset completion failed');
+}
+
+export async function updateUserPassword(
+  request: UserPasswordUpdateRequest,
+): Promise<ApiResponse<UserPasswordUpdateResponse>> {
+  const response = await apiFetch('/api/auth/password', {
+    method: 'PUT',
+    headers: {
+      ...jsonHeaders,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Password update failed');
+  }
+
+  return response.json();
 }
 
 export async function listReviewCards(

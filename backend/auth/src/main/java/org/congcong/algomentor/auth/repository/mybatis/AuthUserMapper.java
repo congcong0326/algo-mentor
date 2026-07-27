@@ -34,6 +34,22 @@ public interface AuthUserMapper {
       @Param("passwordHash") String passwordHash,
       @Param("changedAt") Instant changedAt);
 
+  int updatePasswordCredentialCompareAndSet(
+      @Param("userId") long userId,
+      @Param("expectedPasswordHash") String expectedPasswordHash,
+      @Param("newPasswordHash") String newPasswordHash,
+      @Param("changedAt") Instant changedAt);
+
+  int insertPasswordCredentialIfAbsent(
+      @Param("userId") long userId,
+      @Param("passwordHash") String passwordHash,
+      @Param("changedAt") Instant changedAt);
+
+  int replacePasswordCredential(
+      @Param("userId") long userId,
+      @Param("passwordHash") String passwordHash,
+      @Param("changedAt") Instant changedAt);
+
   int insertOAuthAccount(OAuthAccountRow account);
 
   int updateOAuthAccountProfile(

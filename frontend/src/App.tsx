@@ -654,6 +654,7 @@ export default function App() {
       <SettingsPage
         currentUser={currentUser}
         logoutPending={logoutPending}
+        onCurrentUserUpdated={setCurrentUser}
         onLogout={() => void handleLogout()}
       />
     )

@@ -18,6 +18,7 @@ export interface HealthStatus {
 
 export type AuthRole = 'USER' | 'ADMIN';
 export type AuthUserStatus = 'ACTIVE' | 'DISABLED' | 'DELETED';
+export type AuthSessionAuthenticationMethod = 'PASSWORD' | 'OIDC';
 export type UserGroupStatus = 'ACTIVE' | 'DISABLED';
 export type AuthPermission =
   | 'learning-plan:read:own'
@@ -44,6 +45,8 @@ export interface CurrentUser {
   permissions: AuthPermission[];
   status: AuthUserStatus;
   passwordChangeRequired: boolean;
+  passwordConfigured: boolean;
+  sessionAuthenticationMethod: AuthSessionAuthenticationMethod | null;
 }
 
 export interface AdminUserSummary {
@@ -712,6 +715,20 @@ export interface PasswordRegisterRequest extends PasswordLoginRequest {
 export interface CompletePasswordResetRequest {
   newPassword: string;
   confirmPassword: string;
+}
+
+export interface UserPasswordUpdateRequest {
+  currentPassword?: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export type UserPasswordUpdateOperation = 'CREATED' | 'UPDATED';
+
+export interface UserPasswordUpdateResponse {
+  passwordConfigured: true;
+  operation: UserPasswordUpdateOperation;
+  revokedSessionCount: number;
 }
 
 export type ProblemDifficulty = 'EASY' | 'MEDIUM' | 'HARD';

@@ -5,11 +5,15 @@ import {
   Check,
   ChevronDown,
   CircleHelp,
+  Eye,
+  EyeOff,
+  KeyRound,
   LogOut,
   Settings2,
   UserRound,
+  X,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { useI18n } from './i18n/I18nProvider';
 import {
   getReviewPreference,
@@ -17,6 +21,7 @@ import {
   requireApiData,
   updateReviewPreference,
   updateUserAiPreference,
+  updateUserPassword,
 } from './services/api';
 import type {
   CurrentUser,
@@ -25,6 +30,7 @@ import type {
   ReviewPreferenceRequest,
   UserAiPreference,
   UserAiPreferenceRequest,
+  UserPasswordUpdateResponse,
 } from './types/api';
 
 const coachStyleOptions: PracticeCoachStyle[] = ['GUIDED', 'DIRECT'];
@@ -32,6 +38,7 @@ const coachStyleOptions: PracticeCoachStyle[] = ['GUIDED', 'DIRECT'];
 interface SettingsPageProps {
   currentUser: CurrentUser;
   logoutPending?: boolean;
+  onCurrentUserUpdated?: (user: CurrentUser) => void;
   onLogout: () => void;
 }
 
@@ -65,6 +72,7 @@ function ReviewSettingHelp({ description, label, tooltipId }: ReviewSettingHelpP
 export default function SettingsPage({
   currentUser,
   logoutPending = false,
+  onCurrentUserUpdated,
   onLogout,
 }: SettingsPageProps) {
   const { resources } = useI18n();
@@ -79,7 +87,18 @@ export default function SettingsPage({
   const [reviewPreferenceError, setReviewPreferenceError] = useState('');
   const [reviewPreferenceSaveError, setReviewPreferenceSaveError] = useState('');
   const [reviewPreferenceSaving, setReviewPreferenceSaving] = useState(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPasswords, setShowPasswords] = useState(false);
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
   const userLabel = currentUser.displayName || currentUser.email || resources.app.unknownUser(currentUser.id);
+  const passwordSession = currentUser.sessionAuthenticationMethod === 'PASSWORD';
+  const passwordManagementAvailable = passwordSession || currentUser.sessionAuthenticationMethod === 'OIDC';
+  const passwordEmailAvailable = Boolean(currentUser.email?.trim());
 
   useEffect(() => {
     const controller = new AbortController();
@@ -87,6 +106,19 @@ export default function SettingsPage({
     void loadReviewPreference(controller.signal);
     return () => controller.abort();
   }, []);
+
+  useEffect(() => {
+    if (!passwordDialogOpen) {
+      return undefined;
+    }
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === 'Escape' && !passwordSaving) {
+        closePasswordDialog();
+      }
+    }
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [passwordDialogOpen, passwordSaving]);
 
   async function loadAiPreference(signal?: AbortSignal) {
     setPreferenceLoading(true);
@@ -170,6 +202,57 @@ export default function SettingsPage({
       setReviewPreferenceSaveError(error instanceof Error ? error.message : resources.settingsPage.reviewSaveFailed);
     } finally {
       setReviewPreferenceSaving(false);
+    }
+  }
+
+  function openPasswordDialog() {
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setShowPasswords(false);
+    setPasswordError('');
+    setPasswordDialogOpen(true);
+  }
+
+  function closePasswordDialog() {
+    if (!passwordSaving) {
+      setPasswordDialogOpen(false);
+      setPasswordError('');
+    }
+  }
+
+  async function savePassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (passwordSaving) {
+      return;
+    }
+    setPasswordError('');
+    if (newPassword.length < 8) {
+      setPasswordError(resources.settingsPage.passwordTooShort);
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError(resources.settingsPage.passwordMismatch);
+      return;
+    }
+    setPasswordSaving(true);
+    try {
+      const result = requireApiData<UserPasswordUpdateResponse>(
+        await updateUserPassword({
+          ...(passwordSession ? { currentPassword } : {}),
+          newPassword,
+          confirmPassword,
+        }),
+        resources.settingsPage.passwordUpdateFailed);
+      onCurrentUserUpdated?.({ ...currentUser, passwordConfigured: result.passwordConfigured });
+      setPasswordSuccess(result.operation === 'CREATED'
+        ? resources.settingsPage.passwordCreated
+        : resources.settingsPage.passwordUpdated);
+      setPasswordDialogOpen(false);
+    } catch (error) {
+      setPasswordError(error instanceof Error ? error.message : resources.settingsPage.passwordUpdateFailed);
+    } finally {
+      setPasswordSaving(false);
     }
   }
 
@@ -370,19 +453,158 @@ export default function SettingsPage({
             <p>{resources.settingsPage.accountDescription}</p>
           </div>
         </div>
-        <div className="settings-section-control account-settings-row">
-          <div>
-            <span>{resources.settingsPage.signedInAs}</span>
-            <strong>{userLabel}</strong>
-            <small>{currentUser.email} · {resources.settingsPage.activeStatus}</small>
+        <div className="settings-section-control account-settings-control">
+          <div className="account-settings-row">
+            <div>
+              <span>{resources.settingsPage.signedInAs}</span>
+              <strong>{userLabel}</strong>
+              <small>{currentUser.email} · {resources.settingsPage.activeStatus}</small>
+            </div>
+            <button className="secondary-button compact" disabled={logoutPending} onClick={onLogout} type="button">
+              <LogOut aria-hidden="true" />
+              <span>{logoutPending ? resources.app.loggingOut : resources.app.logout}</span>
+            </button>
           </div>
-          <button className="secondary-button compact" disabled={logoutPending} onClick={onLogout} type="button">
-            <LogOut aria-hidden="true" />
-            <span>{logoutPending ? resources.app.loggingOut : resources.app.logout}</span>
-          </button>
+          <div className="account-settings-row password-settings-row">
+            <div>
+              <span>{resources.settingsPage.passwordTitle}</span>
+              <strong>{currentUser.passwordConfigured
+                ? resources.settingsPage.passwordConfigured
+                : !passwordEmailAvailable
+                  ? resources.settingsPage.passwordEmailUnavailable
+                  : resources.settingsPage.passwordNotConfigured}</strong>
+              {passwordSuccess ? <small aria-live="polite">{passwordSuccess}</small> : null}
+            </div>
+            {passwordManagementAvailable && (currentUser.passwordConfigured || passwordEmailAvailable) ? (
+              <button className="secondary-button compact" onClick={openPasswordDialog} type="button">
+                <KeyRound aria-hidden="true" />
+                <span>{currentUser.passwordConfigured
+                  ? resources.settingsPage.changePassword
+                  : resources.settingsPage.setPassword}</span>
+              </button>
+            ) : null}
+          </div>
         </div>
       </section>
+      {passwordDialogOpen ? (
+        <div className="password-dialog-backdrop" onMouseDown={(event) => {
+          if (event.target === event.currentTarget) {
+            closePasswordDialog();
+          }
+        }}>
+          <form
+            aria-describedby="password-dialog-description"
+            aria-labelledby="password-dialog-title"
+            aria-modal="true"
+            className="password-dialog"
+            onSubmit={(event) => void savePassword(event)}
+            role="dialog"
+          >
+            <header>
+              <div>
+                <h2 id="password-dialog-title">{currentUser.passwordConfigured
+                  ? resources.settingsPage.passwordDialogChangeTitle
+                  : resources.settingsPage.passwordDialogSetTitle}</h2>
+                <p id="password-dialog-description">{currentUser.passwordConfigured
+                  ? resources.settingsPage.passwordDialogChangeDescription
+                  : resources.settingsPage.passwordDialogSetDescription}</p>
+              </div>
+              <button
+                aria-label={resources.common.close}
+                className="icon-button"
+                disabled={passwordSaving}
+                onClick={closePasswordDialog}
+                title={resources.common.close}
+                type="button"
+              >
+                <X aria-hidden="true" />
+              </button>
+            </header>
+            {passwordError ? <p className="error-text" role="alert">{passwordError}</p> : null}
+            {passwordSession ? (
+              <PasswordField
+                autoComplete="current-password"
+                autoFocus
+                label={resources.settingsPage.currentPassword}
+                onChange={setCurrentPassword}
+                showPassword={showPasswords}
+                toggleLabel={showPasswords ? resources.settingsPage.hidePassword : resources.settingsPage.showPassword}
+                onToggle={() => setShowPasswords((value) => !value)}
+                value={currentPassword}
+              />
+            ) : null}
+            <PasswordField
+              autoComplete="new-password"
+              autoFocus={!passwordSession}
+              label={resources.settingsPage.newPassword}
+              onChange={setNewPassword}
+              showPassword={showPasswords}
+              toggleLabel={showPasswords ? resources.settingsPage.hidePassword : resources.settingsPage.showPassword}
+              onToggle={() => setShowPasswords((value) => !value)}
+              value={newPassword}
+            />
+            <PasswordField
+              autoComplete="new-password"
+              label={resources.settingsPage.confirmNewPassword}
+              onChange={setConfirmPassword}
+              showPassword={showPasswords}
+              toggleLabel={showPasswords ? resources.settingsPage.hidePassword : resources.settingsPage.showPassword}
+              onToggle={() => setShowPasswords((value) => !value)}
+              value={confirmPassword}
+            />
+            <small className="password-dialog-hint">{resources.settingsPage.passwordMinimumLength}</small>
+            <footer>
+              <button className="secondary-button" disabled={passwordSaving} onClick={closePasswordDialog} type="button">
+                {resources.common.cancel}
+              </button>
+              <button className="primary-button" disabled={passwordSaving} type="submit">
+                {passwordSaving ? resources.settingsPage.passwordUpdating : resources.settingsPage.passwordUpdate}
+              </button>
+            </footer>
+          </form>
+        </div>
+      ) : null}
     </section>
+  );
+}
+
+interface PasswordFieldProps {
+  autoComplete: 'current-password' | 'new-password';
+  autoFocus?: boolean;
+  label: string;
+  onChange: (value: string) => void;
+  onToggle: () => void;
+  showPassword: boolean;
+  toggleLabel: string;
+  value: string;
+}
+
+function PasswordField({
+  autoComplete,
+  autoFocus = false,
+  label,
+  onChange,
+  onToggle,
+  showPassword,
+  toggleLabel,
+  value,
+}: PasswordFieldProps) {
+  return (
+    <label className="password-dialog-field">
+      <span>{label}</span>
+      <span className="password-dialog-input">
+        <input
+          autoComplete={autoComplete}
+          autoFocus={autoFocus}
+          onChange={(event) => onChange(event.target.value)}
+          type={showPassword ? 'text' : 'password'}
+          value={value}
+        />
+        <button aria-label={toggleLabel} className="icon-button" onClick={onToggle} title={toggleLabel} type="button">
+          {showPassword ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
+        </button>
+      </span>
+    </label>
   );
 }
 

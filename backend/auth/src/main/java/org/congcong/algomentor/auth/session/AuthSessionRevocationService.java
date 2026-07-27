@@ -9,5 +9,12 @@ public interface AuthSessionRevocationService {
     throw new UnsupportedOperationException("Single session revocation is not supported.");
   }
 
+  /**
+   * 吊销用户除当前 Session 外的所有其他 Session。
+   */
+  default int revokeOtherSessionsForUser(long userId, String currentSessionId) {
+    throw new UnsupportedOperationException("Selective session revocation is not supported.");
+  }
+
   int revokeSessionsForUser(long userId);
 }

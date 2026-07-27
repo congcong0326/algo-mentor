@@ -41,6 +41,12 @@ class AuthUserMapperXmlTest {
         "org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper.consumeTemporaryPassword")).isTrue();
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper.completePasswordReset")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper.updatePasswordCredentialCompareAndSet")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper.insertPasswordCredentialIfAbsent")).isTrue();
+    assertThat(configuration.hasStatement(
+        "org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper.replacePasswordCredential")).isTrue();
     assertThat(configuration.getResultMap(
         "org.congcong.algomentor.auth.repository.mybatis.AuthUserMapper.PasswordCredentialRowMap")
         .getConstructorResultMappings().get(3).getJavaType()).isEqualTo(boolean.class);

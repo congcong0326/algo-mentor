@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 import org.congcong.algomentor.auth.model.PasswordCredential;
+import org.congcong.algomentor.auth.password.PasswordPolicyConstraints;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.common.admin.audit.AdminAuditAction;
@@ -20,7 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class PasswordResetService {
 
   public static final Duration TEMPORARY_PASSWORD_TTL = Duration.ofHours(24);
-  public static final int MIN_PASSWORD_LENGTH = 8;
+  public static final int MIN_PASSWORD_LENGTH = PasswordPolicyConstraints.MIN_LENGTH;
 
   private final AuthUserRepository authUserRepository;
   private final IdentityUserRepository identityUserRepository;

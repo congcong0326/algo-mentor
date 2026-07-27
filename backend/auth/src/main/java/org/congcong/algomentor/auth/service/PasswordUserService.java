@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.List;
 import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
 import org.congcong.algomentor.auth.betaaccess.service.BetaEmailAddress;
+import org.congcong.algomentor.auth.password.PasswordPolicyConstraints;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.identity.model.AuthRole;
@@ -16,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class PasswordUserService {
 
-  private static final int MIN_PASSWORD_LENGTH = 8;
+  private static final int MIN_PASSWORD_LENGTH = PasswordPolicyConstraints.MIN_LENGTH;
 
   private final AuthUserRepository authRepository;
   private final IdentityUserRepository identityRepository;
