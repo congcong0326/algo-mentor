@@ -1,4 +1,4 @@
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, LayoutTemplate, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import {
   createLearningPlanDraftFromTemplate,
@@ -199,14 +199,15 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
     <section className="learning-shell learning-create-shell" aria-label={resources.learningPlans.createAriaLabel}>
       <div className="learning-create-heading">
         <button
-          className="secondary-button compact"
+          aria-label={resources.learningPlans.backToPlans}
+          className="icon-button learning-create-back"
           disabled={flowState === 'generating' || flowState === 'confirming'}
           onClick={onBackToPlans}
           type="button"
         >
           <ArrowLeft aria-hidden="true" />
-          <span>{resources.learningPlans.backToPlans}</span>
         </button>
+        <h1>{resources.learningPlans.newPlan}</h1>
       </div>
 
       {draft ? (
@@ -237,7 +238,8 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
                 }}
                 type="button"
               >
-                {resources.learningPlans.createWithAi}
+                <Sparkles aria-hidden="true" />
+                <span>{resources.learningPlans.createWithAi}</span>
               </button>
               <button
                 aria-pressed={createMode === 'template'}
@@ -249,7 +251,8 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
                 }}
                 type="button"
               >
-                {resources.learningPlans.createFromTemplate}
+                <LayoutTemplate aria-hidden="true" />
+                <span>{resources.learningPlans.createFromTemplate}</span>
               </button>
             </div>
           </section>

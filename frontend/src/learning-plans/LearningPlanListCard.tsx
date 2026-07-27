@@ -75,7 +75,6 @@ export default function LearningPlanListCard({
     <section className="plan-workspace" aria-label={resources.learningPlans.ariaLabel}>
       <div className="plan-overview">
         <div className="plan-overview-copy">
-          <p className="eyebrow">Learning Plans</p>
           <h2 className="plan-overview-title">{resources.learningPlans.overviewTitle}</h2>
           <p>{resources.learningPlans.overviewDescription}</p>
         </div>

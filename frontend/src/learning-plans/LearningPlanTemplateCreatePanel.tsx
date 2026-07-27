@@ -186,7 +186,9 @@ export default function LearningPlanTemplateCreatePanel({
                 type="button"
               >
                 <span className="template-card-title">
-                  <Layers aria-hidden="true" />
+                  <span className="template-card-icon" aria-hidden="true">
+                    <Layers />
+                  </span>
                   <strong>{template.title}</strong>
                 </span>
                 <span>{template.summary}</span>

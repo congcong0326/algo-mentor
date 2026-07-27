@@ -13,9 +13,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import AbilityBubbleChart from './ability/AbilityBubbleChart';
 import {
-  defaultAbilityTagKeys,
   findBreakthroughTag,
   formatAbilityScore,
   summarizeAbilityProfile,
@@ -197,11 +195,6 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
   const reviewActionDisabled = reviewLoading || reviewUnavailable || remainingTodayCount === 0;
   const abilitySummary = summarizeAbilityProfile(abilityProfile);
   const breakthroughTag = findBreakthroughTag(abilityProfile, abilitySummary.strongestTag);
-  const abilityBubbleTags = abilityProfile
-    ? defaultAbilityTagKeys(abilityProfile)
-      .map((tag) => abilityProfile.tags.find((item) => item.tag === tag))
-      .filter((tag): tag is AbilityProfileResponse['tags'][number] => Boolean(tag))
-    : [];
   const dashboardDate = new Intl.DateTimeFormat(locale, {
     month: 'long',
     day: 'numeric',
@@ -213,7 +206,6 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
     <article className="today-pack-home" aria-label="首页">
       <header className="home-dashboard-heading">
         <div>
-          <p className="eyebrow">{resources.home.workspaceKicker}</p>
           <h1>{resources.home.workspaceTitle}</h1>
         </div>
         <span className="home-dashboard-date">
@@ -283,9 +275,8 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
         <section className="home-ability-panel" aria-labelledby="home-ability-title">
           <div className="home-panel-heading">
             <div>
-              <p className="eyebrow">ABILITY PROFILE</p>
               <h2 id="home-ability-title">学习诊断</h2>
-              <p>把长期画像压缩成今天真正有用的判断。</p>
+              <p>由练习与复盘持续更新。</p>
             </div>
             <button className="text-action-button" onClick={() => onNavigate(APP_ROUTES.my)} type="button">
               <span>查看完整画像</span>
@@ -297,37 +288,27 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
           ) : abilityUnavailable ? (
             <div className="home-panel-state">能力画像暂不可用，今日训练入口不受影响。</div>
           ) : abilityProfile && abilityProfile.tags.length > 0 ? (
-            <div className="home-ability-layout">
-              <button
-                aria-label="查看完整能力画像"
-                className="home-ability-bubble-button"
-                onClick={() => onNavigate(APP_ROUTES.my)}
-                type="button"
-              >
-                <AbilityBubbleChart profile={abilityProfile} tags={abilityBubbleTags} />
-              </button>
-              <div className="home-ability-insights">
-                <div className="home-ability-stat-row">
-                  <span>
-                    <BrainCircuit aria-hidden="true" />
-                    平均能力
-                  </span>
-                  <strong>{formatAbilityScore(abilitySummary.averageScore, locale)} / 10</strong>
-                </div>
-                <div className="home-insight-block strength">
-                  <span><Trophy aria-hidden="true" />当前优势</span>
-                  <strong>{abilitySummary.strongestTag?.label ?? '暂无'}</strong>
-                  <p>
-                    {abilitySummary.strongestTag
-                      ? `已基于 ${abilitySummary.strongestTag.reviewedProblemCount} 道复盘题形成判断。`
-                      : resources.myPage.noTopAbilities}
-                  </p>
-                </div>
-                <div className="home-insight-block next">
-                  <span><Target aria-hidden="true" />下一步突破</span>
-                  <strong>{breakthroughTag?.label ?? '继续积累复盘数据'}</strong>
-                  <p>{breakthroughTag ? `今天优先补一题“${breakthroughTag.label}”基础练习。` : resources.myPage.noTopAbilities}</p>
-                </div>
+            <div className="home-ability-insights">
+              <div className="home-ability-stat-row">
+                <span>
+                  <BrainCircuit aria-hidden="true" />
+                  平均能力
+                </span>
+                <strong>{formatAbilityScore(abilitySummary.averageScore, locale)} / 10</strong>
+              </div>
+              <div className="home-insight-block strength">
+                <span><Trophy aria-hidden="true" />当前优势</span>
+                <strong>{abilitySummary.strongestTag?.label ?? '暂无'}</strong>
+                <p>
+                  {abilitySummary.strongestTag
+                    ? `基于 ${abilitySummary.strongestTag.reviewedProblemCount} 道复盘题。`
+                    : resources.myPage.noTopAbilities}
+                </p>
+              </div>
+              <div className="home-insight-block next">
+                <span><Target aria-hidden="true" />下一步突破</span>
+                <strong>{breakthroughTag?.label ?? '继续积累复盘数据'}</strong>
+                <p>{breakthroughTag ? `今天优先补一题“${breakthroughTag.label}”基础练习。` : resources.myPage.noTopAbilities}</p>
               </div>
             </div>
           ) : (
@@ -338,7 +319,6 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
         <aside className="home-plan-panel" aria-labelledby="home-plan-title">
           <div className="home-panel-heading compact-heading">
             <div>
-              <p className="eyebrow">CURRENT PLAN</p>
               <h2 id="home-plan-title">本周节奏</h2>
             </div>
           </div>

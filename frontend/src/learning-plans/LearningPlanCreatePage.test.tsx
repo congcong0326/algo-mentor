@@ -119,7 +119,11 @@ describe('LearningPlanCreatePage', () => {
   it('keeps the AI questionnaire as the default creation path', async () => {
     render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
 
+    expect(screen.getByRole('heading', { name: '新建方案' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '返回方案页' })).toHaveClass('icon-button', 'learning-create-back');
     expect(screen.getByRole('button', { name: 'AI 个性化生成' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('button', { name: 'AI 个性化生成' }).querySelector('svg')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '从模板创建' }).querySelector('svg')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
     fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
 

@@ -1,4 +1,4 @@
-import { Archive, BookOpenCheck, Eye, RefreshCw, Search, X } from 'lucide-react';
+import { Archive, ArchiveRestore, BookOpenCheck, Eye, RefreshCw, Search, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { APP_ROUTES } from '../app/navigation';
 import MarkdownView from '../components/MarkdownView';
@@ -171,12 +171,9 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
   return (
     <section className="mistake-page" aria-labelledby="mistake-title">
       <header className="mistake-header">
-        <div>
-          <p className="eyebrow">Review Center</p>
-          <h1 id="mistake-title">复习中心</h1>
-        </div>
+        <h1 id="mistake-title">复习中心</h1>
         <button
-          className="primary-button"
+          className="primary-button mistake-review-button"
           disabled={currentDueCount === 0}
           onClick={() => currentDueCount > 0 && onNavigate(APP_ROUTES.reviewSession)}
           type="button"
@@ -186,11 +183,11 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
         </button>
       </header>
 
-      <section className="mistake-stat-grid" aria-label="复习概览">
-        <div><span>今日剩余</span><strong>{remainingTodayCount}</strong></div>
-        <div><span>复习题</span><strong>{stats.active}</strong></div>
-        <div><span>错题</span><strong>{stats.mistakes}</strong></div>
-      </section>
+      <dl className="mistake-stat-grid" aria-label="复习概览">
+        <div><dt>今日剩余</dt><dd>{remainingTodayCount}</dd></div>
+        <div><dt>复习题</dt><dd>{stats.active}</dd></div>
+        <div><dt>错题</dt><dd>{stats.mistakes}</dd></div>
+      </dl>
 
       <section className="mistake-toolbar" aria-label="复习筛选">
         <label className="search-field">
@@ -221,14 +218,12 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
           <article className="mistake-note-card" key={card.id}>
             <div className="mistake-note-main">
               <h2>{card.problemTitle || card.problemSlug}</h2>
-              <p>{sourceLabels[card.source]} · {dueTimingLabel(card.dueAt)}</p>
-              {(card.lastRating || card.lapses > 0) && (
-                <p className="mistake-note-muted">
-                  {card.lastRating ? `上次：${ratingLabels[card.lastRating]}` : ''}
-                  {card.lastRating && card.lapses > 0 ? ' · ' : ''}
-                  {card.lapses > 0 ? `忘记过 ${card.lapses} 次` : ''}
-                </p>
-              )}
+              <div className="mistake-note-meta">
+                <span>{sourceLabels[card.source]}</span>
+                <span>{dueTimingLabel(card.dueAt)}</span>
+                {card.lastRating && <span className="mistake-note-rating">上次 {ratingLabels[card.lastRating]}</span>}
+                {card.lapses > 0 && <span className="mistake-note-lapses">忘记 {card.lapses} 次</span>}
+              </div>
             </div>
             <div className="mistake-note-actions">
               <button
@@ -240,9 +235,14 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
               >
                 <Eye aria-hidden="true" />
               </button>
-              <button className="secondary-button compact" onClick={() => void handleArchive(card)} type="button">
-                <Archive aria-hidden="true" />
-                <span>{card.archived ? '恢复复习' : '移出复习'}</span>
+              <button
+                aria-label={card.archived ? '恢复复习' : '移出复习'}
+                className="icon-button"
+                onClick={() => void handleArchive(card)}
+                title={card.archived ? '恢复复习' : '移出复习'}
+                type="button"
+              >
+                {card.archived ? <ArchiveRestore aria-hidden="true" /> : <Archive aria-hidden="true" />}
               </button>
             </div>
           </article>

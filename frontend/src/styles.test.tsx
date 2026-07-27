@@ -28,8 +28,8 @@ describe('LeetReviewer-inspired visual system', () => {
 
   it('styles the theme toggle as a stable icon control', () => {
     expect(styles).toContain('.theme-toggle-button');
-    expect(styles).toContain('width: 38px');
-    expect(styles).toContain('height: 38px');
+    expect(styles).toContain('width: 34px');
+    expect(styles).toContain('height: 34px');
   });
 
   it('uses one rounded-corner token for menus, tooltips, and dialogs', () => {
@@ -47,28 +47,69 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toMatch(/\.review-setting-tooltip-wrap \{[^}]*position: relative;/);
   });
 
-  it('keeps login light by default and dark through the root theme', () => {
-    expect(styles).toContain('.login-page {\n  --login-background: #ffffff');
-    expect(styles).toContain('--login-text: #0f172a');
-    expect(styles).toContain('--login-submit-background: #0f172a');
+  it('keeps login quiet and removes decorative watermark content', () => {
+    expect(styles).toContain('.login-page {\n  --login-background: #f7f7f5');
+    expect(styles).toContain('--login-text: #191918');
+    expect(styles).toContain('--login-submit-background: #191918');
     expect(styles).toContain(':root[data-theme="dark"] .login-page');
-    expect(styles).toContain('--login-background: #090a0f');
-    expect(styles).toContain('--login-text: #f9fafb');
+    expect(styles).toContain('--login-background: #111110');
+    expect(styles).toContain('--login-text: #f5f5f2');
+    expect(styles).not.toContain('QIANXIN');
+    expect(styles).not.toContain('曹明英');
   });
 
-  it('keeps primary UI chrome within the reference landing vocabulary', () => {
+  it('keeps signed-in chrome compact and neutral', () => {
     expect(styles).toContain('position: fixed');
-    expect(styles).toContain('backdrop-filter: saturate(180%) blur(20px)');
+    expect(styles).toContain('backdrop-filter: blur(12px)');
     expect(styles).toContain('border: 1px solid var(--border-subtle)');
     expect(styles).toContain('background: var(--surface-elevated)');
     expect(styles).not.toContain(':root[data-theme="dark"] .app-header {\n  background: #ffffff;');
-    expect(styles).toMatch(/\.app-brand strong \{[^}]*font-weight: 760;/);
+    expect(styles).toMatch(/\.app-brand strong \{[^}]*font-weight: 700;/);
     expect(styles).not.toContain('.app-brand-mark');
     expect(styles).not.toContain('.app-brand::before');
+    expect(styles).toMatch(/\.app-shell \{[^}]*--action-primary: #191918;/);
+    expect(styles).toMatch(/\.app-nav-button\[aria-pressed="true"\]::after \{[^}]*height: 2px;/);
     expect(styles).toContain('color: var(--text-secondary)');
     expect(styles).toContain('color: var(--text-primary)');
     expect(styles).toContain('background: var(--action-primary)');
     expect(styles).toContain('border-radius: var(--radius-pill)');
+  });
+
+  it('uses one compact control and surface vocabulary across user pages', () => {
+    expect(styles).toMatch(/\.primary-button,[\s\S]*?\.secondary-button \{[^}]*min-height: 38px;[^}]*border-radius: 7px;/);
+    expect(styles).toMatch(/\.secondary-button \{[^}]*border: 1px solid var\(--border-strong\);[^}]*box-shadow: none;/);
+    expect(styles).toMatch(/\.icon-button \{[^}]*width: 34px;[^}]*height: 34px;[^}]*border-radius: 7px;/);
+    expect(styles).toMatch(/\.search-field \{[^}]*min-height: 38px;[^}]*border: 1px solid var\(--border-subtle\);/);
+    expect(styles).toMatch(/\.plan-overview,[\s\S]*?\.plan-insight-panel \{[^}]*box-shadow: none;/);
+    expect(styles).toMatch(/\.my-card \{[^}]*box-shadow: none;/);
+  });
+
+  it('keeps plan and profile summaries compact without nested cards', () => {
+    expect(styles).toMatch(/\.plan-stat-grid \{[^}]*gap: 0;[^}]*border-top: 1px solid var\(--border-subtle\);/);
+    expect(styles).toMatch(/\.plan-stat-card \{[^}]*display: flex;[^}]*border: 0;[^}]*background: transparent;/);
+    expect(styles).toMatch(/\.plan-list-row \{[^}]*min-height: 72px;[^}]*padding: 11px 12px;/);
+    expect(styles).toMatch(/\.my-summary-card \{[^}]*min-height: 82px;[^}]*padding: 13px;[^}]*box-shadow: none;/);
+    expect(styles).toMatch(/\.my-page-kicker,[\s\S]*?\.my-section-eyebrow \{[^}]*letter-spacing: 0;[^}]*text-transform: none;/);
+    expect(styles).toMatch(/@media \(max-width: 980px\) \{[\s\S]*?\.plan-stat-grid \{[^}]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\);/);
+    expect(styles).toMatch(/@media \(max-width: 640px\) \{[\s\S]*?\.my-summary-grid \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+    expect(styles).toMatch(/@media \(max-width: 640px\) \{[\s\S]*?\.my-summary-card p \{[^}]*display: none;/);
+  });
+
+  it('uses one icon-control vocabulary on the plan creation page', () => {
+    expect(styles).toMatch(/\.learning-create-back \{[^}]*width: 34px;[^}]*height: 34px;[^}]*border-radius: 7px;/);
+    expect(styles).toMatch(/\.create-mode-switch button svg \{[^}]*width: 16px;[^}]*height: 16px;/);
+    expect(styles).toMatch(/\.template-card-icon \{[^}]*width: 28px;[^}]*height: 28px;[^}]*border-radius: 6px;/);
+    expect(styles).toMatch(/\.segmented-grid button\.selected,[\s\S]*?\.topic-option-grid button\.selected \{[^}]*background: var\(--text-primary\);[^}]*color: var\(--surface-card\);/);
+  });
+
+  it('keeps the review center compact and list-oriented', () => {
+    expect(styles).toMatch(/\.mistake-page \{[^}]*align-content: start;[^}]*gap: 16px;[^}]*width: min\(920px, 100%\);/);
+    expect(styles).toMatch(/\.mistake-stat-grid \{[^}]*border-top: 1px solid var\(--border-subtle\);[^}]*border-bottom: 1px solid var\(--border-subtle\);/);
+    expect(styles).toMatch(/\.mistake-note-card \{[^}]*grid-template-columns: minmax\(0, 1fr\) auto;[^}]*min-height: 64px;[^}]*padding: 10px 12px;/);
+    expect(styles).toMatch(/\.mistake-note-actions \.icon-button \{[^}]*width: 34px;[^}]*height: 34px;[^}]*border-radius: 7px;/);
+    expect(styles).toMatch(/\.mistake-header \.mistake-review-button \{[^}]*min-height: 38px;[^}]*border-radius: 7px;/);
+    expect(styles).toMatch(/\.mistake-list > \.loading-panel \{[^}]*min-height: 152px;[^}]*box-shadow: none;/);
+    expect(styles).toMatch(/@media \(max-width: 720px\) \{[\s\S]*?\.mistake-note-meta \.mistake-note-rating \{[^}]*display: none;/);
   });
 
   it('uses theme tokens for the public home surfaces and text', () => {
@@ -83,7 +124,10 @@ describe('LeetReviewer-inspired visual system', () => {
   it('keeps signed-in home shortcuts compact without stretching the page', () => {
     expect(styles).toMatch(/\.today-pack-home \{[^}]*align-content: start;/);
     expect(styles).toMatch(/\.today-pack-home-entry-grid \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
+    expect(styles).toMatch(/\.home-ability-insights \{[^}]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\);/);
     expect(styles).toMatch(/@media \(max-width: 640px\) \{[\s\S]*?\.today-pack-home-entry-grid \{[^}]*grid-template-columns: 1fr;/);
+    expect(styles).toMatch(/@media \(max-width: 640px\) \{[\s\S]*?\.home-ability-insights \{[^}]*grid-template-columns: minmax\(0, 1fr\);/);
+    expect(styles).toMatch(/@media \(max-width: 980px\) \{[\s\S]*?\.today-pack-problem-row \{[^}]*grid-template-columns: 40px minmax\(0, 1fr\) auto 18px;/);
   });
 
   it('keeps the ability detail dialog above the fixed app header with top safe spacing', () => {

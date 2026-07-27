@@ -401,7 +401,9 @@ describe('App', () => {
     expect(screen.queryByRole('button', { name: '一键生成并激活' })).not.toBeInTheDocument();
     expect(screen.queryByText('两数之和')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Start Reviewing' })).not.toBeInTheDocument();
-    expect(await screen.findByRole('img', { name: /能力水球图/ })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '学习诊断' })).toBeInTheDocument();
+    expect(screen.getByText('平均能力')).toBeInTheDocument();
+    expect(screen.queryByRole('img', { name: /能力水球图/ })).not.toBeInTheDocument();
     expect(fetchMock.mock.calls.some(([url]) => url === '/api/abilities/profile')).toBe(true);
     expect(window.location.pathname).toBe('/');
   });
