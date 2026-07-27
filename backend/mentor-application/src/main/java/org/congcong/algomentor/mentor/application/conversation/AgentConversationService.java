@@ -31,14 +31,18 @@ import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptSec
 import org.congcong.algomentor.mentor.application.practice.PracticeChatReference;
 import org.congcong.algomentor.mentor.application.practice.PracticeCoachStyle;
 import org.congcong.algomentor.mentor.application.practice.PracticeResponseLanguage;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinition;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinitions;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
+import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
+import org.congcong.algomentor.mentor.application.prompt.SystemPromptMetadataKeys;
+import org.congcong.algomentor.mentor.application.prompt.SystemPromptSectionKeys;
 import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfilePromptSectionProvider;
 import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfileRecallService;
 import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfileRecallSnapshot;
 
 public class AgentConversationService {
-
-  private static final String DEFAULT_MENTOR_SYSTEM_PROMPT =
-      "You are an algorithm learning mentor. Explain clearly, ask guiding questions when useful, and prefer Java examples.";
 
   private final AgentConversationRepository conversationRepository;
   private final ContextAssembler contextAssembler;
@@ -48,6 +52,7 @@ public class AgentConversationService {
   private final PromptAssembler practicePromptAssembler;
   private final LearnerProfileRecallService learnerProfileRecallService;
   private final LearnerProfilePromptSectionProvider learnerProfilePromptSectionProvider;
+  private final ManagedSystemPromptResolver systemPromptResolver;
 
   public AgentConversationService(
       AgentConversationRepository conversationRepository,
@@ -101,7 +106,8 @@ public class AgentConversationService {
         practiceProblemCatalog,
         practicePromptAssembler,
         null,
-        new LearnerProfilePromptSectionProvider(LearnerProfilePromptSectionProvider.DEFAULT_MAX_TOKEN_BUDGET));
+        new LearnerProfilePromptSectionProvider(LearnerProfilePromptSectionProvider.DEFAULT_MAX_TOKEN_BUDGET),
+        ManagedSystemPrompts.defaultResolver());
   }
 
   public AgentConversationService(
@@ -113,6 +119,29 @@ public class AgentConversationService {
       PromptAssembler practicePromptAssembler,
       LearnerProfileRecallService learnerProfileRecallService,
       LearnerProfilePromptSectionProvider learnerProfilePromptSectionProvider
+  ) {
+    this(
+        conversationRepository,
+        contextAssembler,
+        contextPolicy,
+        learningPlanRepository,
+        practiceProblemCatalog,
+        practicePromptAssembler,
+        learnerProfileRecallService,
+        learnerProfilePromptSectionProvider,
+        ManagedSystemPrompts.defaultResolver());
+  }
+
+  public AgentConversationService(
+      AgentConversationRepository conversationRepository,
+      ContextAssembler contextAssembler,
+      ContextAssemblyPolicy contextPolicy,
+      LearningPlanRepository learningPlanRepository,
+      PracticeChatProblemCatalog practiceProblemCatalog,
+      PromptAssembler practicePromptAssembler,
+      LearnerProfileRecallService learnerProfileRecallService,
+      LearnerProfilePromptSectionProvider learnerProfilePromptSectionProvider,
+      ManagedSystemPromptResolver systemPromptResolver
   ) {
     this.conversationRepository = conversationRepository;
     this.contextAssembler = contextAssembler;
@@ -126,6 +155,9 @@ public class AgentConversationService {
     this.learnerProfilePromptSectionProvider = learnerProfilePromptSectionProvider == null
         ? new LearnerProfilePromptSectionProvider(LearnerProfilePromptSectionProvider.DEFAULT_MAX_TOKEN_BUDGET)
         : learnerProfilePromptSectionProvider;
+    this.systemPromptResolver = systemPromptResolver == null
+        ? ManagedSystemPrompts.defaultResolver()
+        : systemPromptResolver;
   }
 
   public AgentConversationRun prepareRun(AgentConversationCommand command) {
@@ -178,19 +210,25 @@ public class AgentConversationService {
   }
 
   private AgentRunPreparationRequest toPreparationRequest(AgentConversationCommand command) {
+    ResolvedSystemPromptSnapshot promptSnapshot = systemPromptResolver.resolve(
+        ManagedSystemPromptDefinitions.MENTOR_CONVERSATION, command.userId());
     return new AgentRunPreparationRequest(
         command.taskId(),
         command.userId(),
         command.userMessage(),
         command.idempotencyKey(),
-        DEFAULT_MENTOR_SYSTEM_PROMPT,
-        preparationMetadata(command),
+        promptSnapshot.requireSection(SystemPromptSectionKeys.MENTOR_CONVERSATION_BASE).text(),
+        preparationMetadata(command, promptSnapshot),
         userMessageMetadata(command));
   }
 
-  private Map<String, Object> preparationMetadata(AgentConversationCommand command) {
+  private Map<String, Object> preparationMetadata(
+      AgentConversationCommand command,
+      ResolvedSystemPromptSnapshot promptSnapshot
+  ) {
     Map<String, Object> metadata = new HashMap<>();
     metadata.put("triggerType", "user_request");
+    metadata.putAll(SystemPromptMetadataKeys.from(promptSnapshot));
     if (command.practiceChatEnabled()) {
       metadata.putAll(practiceReferenceMetadata(command.practiceChat()));
     }
@@ -227,6 +265,8 @@ public class AgentConversationService {
         ? LearnerProfileRecallSnapshot.empty()
         : learnerProfileRecallService.recall(
             command.userId(), PracticeChatPromptConstants.SCENARIO, command.practiceChat().problemSlug());
+    ResolvedSystemPromptSnapshot promptSnapshot = systemPromptResolver.resolve(
+        ManagedSystemPromptDefinitions.PRACTICE_CHAT, command.userId());
     Map<String, Object> variables = new HashMap<>();
     variables.put(PracticeChatPromptConstants.VARIABLE_CONTEXT, practiceContext);
     variables.put(PracticeChatPromptConstants.VARIABLE_ACTIVE_SUMMARY,
@@ -236,6 +276,7 @@ public class AgentConversationService {
     variables.put(PracticeChatPromptConstants.VARIABLE_COACH_STYLE, coachStyle);
     variables.put(PracticeChatPromptConstants.VARIABLE_RESPONSE_LANGUAGE, responseLanguage);
     variables.put(PracticeChatPromptConstants.VARIABLE_LEARNER_PROFILE_SNAPSHOT, learnerProfileSnapshot);
+    variables.put(PracticeChatPromptConstants.VARIABLE_SYSTEM_PROMPT_SNAPSHOT, promptSnapshot);
     PromptAssembly assembly = practicePromptAssembler.assemble(new PromptAssemblyRequest(
         PracticeChatPromptConstants.SCENARIO,
         PracticeChatPromptConstants.PROFILE_ID,
@@ -250,7 +291,8 @@ public class AgentConversationService {
             PracticeChatPromptConstants.METADATA_COACH_STYLE, coachStyle.name(),
             PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, responseLanguage.name())));
     Map<String, Object> metadata = new HashMap<>(assembly.metadata());
-    metadata.putAll(learnerProfilePromptSectionProvider.metadata(learnerProfileSnapshot, assembly));
+    metadata.putAll(SystemPromptMetadataKeys.from(promptSnapshot));
+    metadata.putAll(learnerProfilePromptSectionProvider.metadata(learnerProfileSnapshot, assembly, promptSnapshot));
     return new AssembledContext(assembly.canonicalMessages(), Map.copyOf(metadata), assembly.tokenEstimate());
   }
 

@@ -1355,6 +1355,7 @@ export default function PracticeChatWorkbench({
                 aria-label={resources.learningPlans.leetcodeUnavailable}
                 className="icon-button practice-leetcode-link"
                 disabled
+                title={resources.learningPlans.leetcodeUnavailable}
                 type="button"
               >
                 <ExternalLink aria-hidden="true" />

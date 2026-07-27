@@ -35,6 +35,8 @@ public final class PracticeChatPromptConstants {
   public static final String VARIABLE_RESPONSE_LANGUAGE = "responseLanguage";
   /** loop 前读取一次的学习者画像快照，仅供 Prompt provider 渲染。 */
   public static final String VARIABLE_LEARNER_PROFILE_SNAPSHOT = "learnerProfileSnapshot";
+  /** 同一 practice run 在组装前解析一次的受管理系统提示词快照。 */
+  public static final String VARIABLE_SYSTEM_PROMPT_SNAPSHOT = "systemPromptSnapshot";
 
   /**
    * Agent 场景标识，用于把普通会话切换到题目训练聊天 prompt/profile 和治理观测语义。

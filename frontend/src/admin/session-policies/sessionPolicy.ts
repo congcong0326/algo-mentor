@@ -12,7 +12,7 @@ export function defaultUserSessionPolicyContent(): UserSessionPolicyContent {
   };
 }
 
-export function userSessionPolicyContent(policy: AdminGenericPolicy): UserSessionPolicyContent {
+export function userSessionPolicyContent(policy: AdminGenericPolicy<UserSessionPolicyContent>): UserSessionPolicyContent {
   return policy.content;
 }
 

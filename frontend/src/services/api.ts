@@ -37,6 +37,7 @@ import type {
   AdminAuthSessionRevocationResponse,
   AdminGenericPolicy,
   AdminGenericPolicyListQuery,
+  AdminGenericPolicyOrderRequest,
   AdminGenericPolicyPage,
   AdminGenericPolicyUpdateRequest,
   AdminGenericPolicyWriteRequest,
@@ -94,6 +95,7 @@ import type {
   SseStreamEvent,
   UserAiPreference,
   UserAiPreferenceRequest,
+  UserSessionPolicyContent,
   FeedbackCreateRequest,
   FeedbackMessageRequest,
   FeedbackThreadDetail,
@@ -103,6 +105,9 @@ import type {
   FeedbackReadResult,
   AdminOverview,
   BetaAccessUserMembership,
+  SystemPromptEffective,
+  SystemPromptTypeDetail,
+  SystemPromptTypeSummary,
 } from '../types/api';
 import { recordFeedbackRequestContext } from '../feedback/feedbackSourceContext';
 import { browserTimezone } from '../utils/time';
@@ -741,10 +746,10 @@ export async function revokeAdminAuthSession(
   return response.json();
 }
 
-export async function getAdminPolicies(
+export async function getAdminPolicies<TContent = UserSessionPolicyContent>(
   query: AdminGenericPolicyListQuery,
   signal?: AbortSignal,
-): Promise<ApiResponse<AdminGenericPolicyPage>> {
+): Promise<ApiResponse<AdminGenericPolicyPage<TContent>>> {
   const response = await apiFetch(`/api/admin/policies${toQueryString(query)}`, {
     headers: jsonHeaders,
     signal,
@@ -757,9 +762,9 @@ export async function getAdminPolicies(
   return response.json();
 }
 
-export async function createAdminPolicy(
-  request: AdminGenericPolicyWriteRequest,
-): Promise<ApiResponse<AdminGenericPolicy>> {
+export async function createAdminPolicy<TContent = UserSessionPolicyContent>(
+  request: AdminGenericPolicyWriteRequest<TContent>,
+): Promise<ApiResponse<AdminGenericPolicy<TContent>>> {
   const response = await apiFetch('/api/admin/policies', {
     method: 'POST',
     headers: { ...jsonHeaders, 'Content-Type': 'application/json' },
@@ -773,10 +778,10 @@ export async function createAdminPolicy(
   return response.json();
 }
 
-export async function updateAdminPolicy(
+export async function updateAdminPolicy<TContent = UserSessionPolicyContent>(
   policyId: number,
-  request: AdminGenericPolicyUpdateRequest,
-): Promise<ApiResponse<AdminGenericPolicy>> {
+  request: AdminGenericPolicyUpdateRequest<TContent>,
+): Promise<ApiResponse<AdminGenericPolicy<TContent>>> {
   const response = await apiFetch(`/api/admin/policies/${policyId}`, {
     method: 'PATCH',
     headers: { ...jsonHeaders, 'Content-Type': 'application/json' },
@@ -803,6 +808,41 @@ export async function deleteAdminPolicy(
     throw await toApiRequestError(response, 'Admin policy deletion failed');
   }
 
+  return response.json();
+}
+
+export async function reorderAdminPolicies(
+  typeCode: string,
+  request: AdminGenericPolicyOrderRequest,
+): Promise<ApiResponse<void>> {
+  const response = await apiFetch(`/api/admin/policy-types/${encodeURIComponent(typeCode)}/order`, {
+    method: 'PUT',
+    headers: { ...jsonHeaders, 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Admin policy reorder request failed');
+  }
+
+  return response.json();
+}
+
+export async function getSystemPromptTypes(): Promise<ApiResponse<{ items: SystemPromptTypeSummary[] }>> {
+  const response = await apiFetch('/api/admin/system-prompt-types', { headers: jsonHeaders });
+  if (!response.ok) throw await toApiRequestError(response, 'System prompt type list request failed');
+  return response.json();
+}
+
+export async function getSystemPromptType(typeCode: string): Promise<ApiResponse<SystemPromptTypeDetail>> {
+  const response = await apiFetch(`/api/admin/system-prompt-types/${encodeURIComponent(typeCode)}`, { headers: jsonHeaders });
+  if (!response.ok) throw await toApiRequestError(response, 'System prompt detail request failed');
+  return response.json();
+}
+
+export async function getEffectiveSystemPrompt(typeCode: string, userId: number): Promise<ApiResponse<SystemPromptEffective>> {
+  const response = await apiFetch(`/api/admin/system-prompt-types/${encodeURIComponent(typeCode)}/effective?userId=${encodeURIComponent(String(userId))}`, { headers: jsonHeaders });
+  if (!response.ok) throw await toApiRequestError(response, 'System prompt simulation request failed');
   return response.json();
 }
 

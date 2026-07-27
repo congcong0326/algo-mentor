@@ -20,6 +20,7 @@
 - `docs/practice-chat-workbench-design.md`：题目聊天工作台研发设计，说明方案详情、题目聊天页、固定工具栏、题目状态、训练会话和 AI 聊天接口草案。
 - `docs/practice-chat-agent-design.md`：题目聊天 Agent 研发设计，说明 prompt 组装、题面上下文注入、SSE 聊天气泡展示、后端会话/API 和测试计划。
 - `docs/practice-chat-system-prompt-assembly-design.md`：题目聊天系统提示词拼装设计，说明结构化片段、分层 prompt、动态 profile、预算裁剪、metadata 追踪和测试策略。
+- `docs/system-prompt-generic-policy-management-design.md`：系统提示词通用策略管理研发设计，定义代码默认兜底、section 覆盖、启动幂等注册、通用管理界面、用户灰度、运行时快照和架构门禁。
 - `docs/practice-code-review-product-design.md`：练习代码 Review 产品设计，说明自动识别完整代码提交、多版本 Review、评分规则、完成门槛和 Review 抽屉体验。
 - `docs/practice-code-review-technical-design.md`：练习代码 Review 技术设计，说明基于 practice turn orchestrator 与服务端 capability 的结构化 Review、数据模型、完成 gate、API 和前端闭环。
 - `docs/problem-agent-tools-design.md`：题目 Agent 工具体系设计，说明过滤项发现、查题、读取题面的用途、边界、返回内容和后续演进。

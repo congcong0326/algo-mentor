@@ -92,6 +92,7 @@ export interface LocaleResources {
     adminMonitoring: string;
     adminSessions: string;
     adminSessionPolicies: string;
+    adminSystemPrompts: string;
     adminAi: string;
     feedback: string;
     adminOverview: string;
@@ -109,7 +110,7 @@ export interface LocaleResources {
     businessNavigation: string;
     navigation: string;
     pageNavigation: string;
-    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'sessions' | 'sessionPolicies' | 'ai' | 'content' | 'feedback' | 'development' | 'users' | 'userGroups' | 'betaAccess' | 'problems' | 'debug', string>;
+    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'sessions' | 'sessionPolicies' | 'systemPrompts' | 'ai' | 'content' | 'feedback' | 'development' | 'users' | 'userGroups' | 'betaAccess' | 'problems' | 'debug', string>;
   };
   feedback: {
     openDialog: string;
@@ -1185,6 +1186,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminMonitoring: '系统监控',
       adminSessions: '会话监控',
       adminSessionPolicies: '会话策略',
+      adminSystemPrompts: '系统提示词',
       adminAi: 'AI 治理',
       feedback: '反馈',
       adminOverview: '概览',
@@ -1209,6 +1211,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         systemStatus: '运行状态',
         sessions: '会话监控',
         sessionPolicies: '会话策略',
+        systemPrompts: '系统提示词',
         ai: 'AI 治理',
         content: '内容管理',
         feedback: '反馈与支持',
@@ -2396,6 +2399,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminMonitoring: 'System monitoring',
       adminSessions: 'Session monitoring',
       adminSessionPolicies: 'Session policies',
+      adminSystemPrompts: 'System prompts',
       adminAi: 'AI Governance',
       feedback: 'Feedback',
       adminOverview: 'Overview',
@@ -2420,6 +2424,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         systemStatus: 'Runtime status',
         sessions: 'Session monitoring',
         sessionPolicies: 'Session policies',
+        systemPrompts: 'System prompts',
         ai: 'AI Governance',
         content: 'Content',
         feedback: 'Feedback & Support',

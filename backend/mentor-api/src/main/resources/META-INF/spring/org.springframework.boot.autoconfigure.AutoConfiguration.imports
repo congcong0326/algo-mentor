@@ -1,2 +1,3 @@
 org.congcong.algomentor.mentor.api.autoconfigure.AgentConversationApiAutoConfiguration
+org.congcong.algomentor.api.systemprompt.SystemPromptManagementConfiguration
 org.congcong.algomentor.mentor.api.autoconfigure.ReviewApiAutoConfiguration

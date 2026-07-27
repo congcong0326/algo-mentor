@@ -24,6 +24,8 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionStreamService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionProposalStreamService;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftPromptBuilder;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamService;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateDraftService;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateRepository;
@@ -31,6 +33,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeSessionReposi
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.support.TransactionOperations;
 
@@ -83,8 +86,11 @@ public class LearningPlanConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public LearningPlanDraftPromptBuilder learningPlanDraftPromptBuilder(LearningPlanLoadService loadService) {
-    return new LearningPlanDraftPromptBuilder(loadService);
+  public LearningPlanDraftPromptBuilder learningPlanDraftPromptBuilder(
+      LearningPlanLoadService loadService,
+      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
+  ) {
+    return new LearningPlanDraftPromptBuilder(loadService, systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
   }
 
   @Bean
@@ -126,8 +132,11 @@ public class LearningPlanConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public LearningPlanProposalPromptBuilder learningPlanProposalPromptBuilder(ObjectMapper objectMapper) {
-    return new LearningPlanProposalPromptBuilder(objectMapper);
+  public LearningPlanProposalPromptBuilder learningPlanProposalPromptBuilder(
+      ObjectMapper objectMapper,
+      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
+  ) {
+    return new LearningPlanProposalPromptBuilder(objectMapper, systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
   }
 
   @Bean

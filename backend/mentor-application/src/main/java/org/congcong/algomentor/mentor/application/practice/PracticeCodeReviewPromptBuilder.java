@@ -2,32 +2,42 @@ package org.congcong.algomentor.mentor.application.practice;
 
 import java.util.List;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemMessageFactory;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinitions;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
+import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
+import org.congcong.algomentor.mentor.application.prompt.SystemPromptSectionKeys;
 
 /**
  * 练习代码 Review structured output prompt 构造器。
  */
 public class PracticeCodeReviewPromptBuilder {
 
+  private final ManagedSystemPromptResolver systemPromptResolver;
+
+  public PracticeCodeReviewPromptBuilder() {
+    this(ManagedSystemPrompts.defaultResolver());
+  }
+
+  public PracticeCodeReviewPromptBuilder(ManagedSystemPromptResolver systemPromptResolver) {
+    this.systemPromptResolver = systemPromptResolver == null
+        ? ManagedSystemPrompts.defaultResolver()
+        : systemPromptResolver;
+  }
+
   public List<LlmMessage> build(PracticeTurnContext context) {
+    return build(context, snapshot(context.userId()));
+  }
+
+  public List<LlmMessage> build(PracticeTurnContext context, ResolvedSystemPromptSnapshot promptSnapshot) {
     return List.of(
-        LlmMessage.system(systemPrompt()),
+        ManagedSystemMessageFactory.system(promptSnapshot, SystemPromptSectionKeys.PRACTICE_CODE_REVIEW_BASE),
         LlmMessage.user(userPrompt(context)));
   }
 
-  private String systemPrompt() {
-    return """
-        你是 algo-mentor 的算法代码 Review 助手。你必须判断用户当前轮次是否提交了当前题目的完整 LeetCode 风格解法，并只输出符合 JSON Schema 的结构化结果。
-
-        安全与隐私规则：
-        1. 不要在输出中复述、暴露或推断 API key、访问令牌、Authorization 头、数据库密码或其他密钥。
-        2. 如果用户消息里包含疑似密钥，只评价算法代码本身，并在 reviewMarkdown 中用概括性中文提醒移除敏感信息。
-        3. 不要编造题目事实；如果代码不属于当前题目，belongsToCurrentProblem 必须为 false。
-        4. 如果不是代码提交、不是当前题目、或不是完整可 Review 的 LeetCode 解法，对应布尔字段必须为 false。
-        5. 最终只输出结构化 JSON，不要输出 Markdown 包裹、解释文本或额外字段。
-        6. affectedTagIds 只能从服务端提供的受信标签候选中选择；不确定或无关时返回空数组。
-        7. 不得把“思路基本正确”直接等同于“能够通过在线评测”；必须检查编译、反例、最大约束下的时间复杂度和空间复杂度。
-        8. 用户明确提供的 AC、WA、TLE、MLE、Compile Error 或 Runtime Error 只能标记为 USER_REPORTED_EXECUTION；只有服务端事实中明确提供的执行结果才能标记为 SERVER_EXECUTION。
-        """;
+  public ResolvedSystemPromptSnapshot snapshot(long userId) {
+    return systemPromptResolver.resolve(ManagedSystemPromptDefinitions.PRACTICE_CODE_REVIEW, userId);
   }
 
   private String userPrompt(PracticeTurnContext context) {

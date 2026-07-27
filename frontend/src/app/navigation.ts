@@ -18,6 +18,7 @@ export const APP_ROUTES = {
   adminMonitoring: '/admin/monitoring',
   adminSessions: '/admin/sessions',
   adminSessionPolicies: '/admin/session-policies',
+  adminSystemPrompts: '/admin/system-prompts',
   adminAi: '/admin/ai',
   adminOverview: '/admin',
   adminFeedback: '/admin/feedback',
@@ -59,6 +60,7 @@ export type AppView =
   | 'adminMonitoring'
   | 'adminSessions'
   | 'adminSessionPolicies'
+  | 'adminSystemPrompts'
   | 'adminAi'
   | 'adminOverview'
   | 'adminFeedback'
@@ -152,6 +154,13 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     permission: 'policy:manage',
   },
   {
+    view: 'adminSystemPrompts',
+    labelKey: 'adminSystemPrompts',
+    path: APP_ROUTES.adminSystemPrompts,
+    icon: SlidersHorizontal,
+    permission: 'policy:manage',
+  },
+  {
     view: 'adminAi',
     labelKey: 'adminAi',
     path: APP_ROUTES.adminAi,
@@ -221,6 +230,9 @@ export function viewFromPath(pathname: string): AppView | undefined {
   }
   if (pathname === APP_ROUTES.adminSessionPolicies) {
     return 'adminSessionPolicies';
+  }
+  if (pathname === APP_ROUTES.adminSystemPrompts) {
+    return 'adminSystemPrompts';
   }
   if (pathname === APP_ROUTES.adminFeedback) {
     return 'adminFeedback';

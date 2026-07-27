@@ -62,6 +62,8 @@ import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfi
 import org.congcong.algomentor.mentor.application.profile.review.MicrometerCodeReviewProfileMetrics;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdatePromptBuilder;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateService;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
 import org.congcong.algomentor.mentor.application.profile.tool.UpdateLearnerDeclaredProfileAgentTool;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
 import org.congcong.algomentor.ops.observability.OpsStatus;
@@ -104,7 +106,8 @@ public class AgentConversationApiAutoConfiguration {
       PracticeChatPromptProperties promptProperties,
       @Qualifier("practiceChatPromptAssembler") PromptAssembler practicePromptAssembler,
       LearnerProfilePromptSectionProvider learnerProfilePromptSectionProvider,
-      ObjectProvider<LearnerProfileRecallService> learnerProfileRecallService
+      ObjectProvider<LearnerProfileRecallService> learnerProfileRecallService,
+      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
   ) {
     LearningPlanRepository planRepository = learningPlanRepository.getIfAvailable();
     PracticeChatProblemCatalog problemCatalog = practiceProblemCatalog.getIfAvailable();
@@ -123,7 +126,8 @@ public class AgentConversationApiAutoConfiguration {
           problemCatalog,
           practicePromptAssembler,
           learnerProfileRecallService.getIfAvailable(),
-          learnerProfilePromptSectionProvider);
+          learnerProfilePromptSectionProvider,
+          systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
     }
     return new AgentConversationService(
         conversationRepository,
@@ -133,26 +137,31 @@ public class AgentConversationApiAutoConfiguration {
         null,
         practicePromptAssembler,
         learnerProfileRecallService.getIfAvailable(),
-        learnerProfilePromptSectionProvider);
+        learnerProfilePromptSectionProvider,
+        systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
   }
 
   @Bean("practiceChatPromptAssembler")
   @ConditionalOnMissingBean(name = "practiceChatPromptAssembler")
   public PromptAssembler practiceChatPromptAssembler(
       PracticeChatPromptProperties promptProperties,
-      LearnerProfilePromptSectionProvider learnerProfilePromptSectionProvider
+      LearnerProfilePromptSectionProvider learnerProfilePromptSectionProvider,
+      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
   ) {
     return new DefaultPromptAssembler(
         new PracticeChatPromptProfileResolver(promptProperties.getTotalTokenBudget()),
-        java.util.List.of(new PracticeChatPromptSectionProvider(), learnerProfilePromptSectionProvider));
+        java.util.List.of(new PracticeChatPromptSectionProvider(
+            systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver)), learnerProfilePromptSectionProvider));
   }
 
   @Bean
   @ConditionalOnMissingBean
   public LearnerProfilePromptSectionProvider learnerProfilePromptSectionProvider(
-      LearnerProfileRecallProperties properties
+      LearnerProfileRecallProperties properties,
+      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
   ) {
-    return new LearnerProfilePromptSectionProvider(properties.getMaxTokenBudget());
+    return new LearnerProfilePromptSectionProvider(
+        properties.getMaxTokenBudget(), systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
   }
 
   @Bean
@@ -190,8 +199,10 @@ public class AgentConversationApiAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public CodeReviewProfilePromptBuilder codeReviewProfilePromptBuilder() {
-    return new CodeReviewProfilePromptBuilder();
+  public CodeReviewProfilePromptBuilder codeReviewProfilePromptBuilder(
+      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
+  ) {
+    return new CodeReviewProfilePromptBuilder(systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
   }
 
   @Bean
@@ -318,7 +329,8 @@ public class AgentConversationApiAutoConfiguration {
       PracticeSessionRepository practiceSessionRepository,
       AgentTaskMessageRepository agentTaskMessageRepository,
       ObjectProvider<PracticeCodeReviewRepository> reviewRepository,
-      ObjectProvider<PracticeCodeReviewMetrics> reviewMetrics
+      ObjectProvider<PracticeCodeReviewMetrics> reviewMetrics,
+      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
   ) {
     return new PracticeSessionService(
         learningPlanRepository,
@@ -326,7 +338,8 @@ public class AgentConversationApiAutoConfiguration {
         practiceSessionRepository,
         agentTaskMessageRepository,
         reviewRepository.getIfAvailable(PracticeCodeReviewRepository::empty),
-        reviewMetrics.getIfAvailable(() -> PracticeCodeReviewMetrics.NOOP));
+        reviewMetrics.getIfAvailable(() -> PracticeCodeReviewMetrics.NOOP),
+        systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
   }
 
   @Bean
@@ -359,8 +372,10 @@ public class AgentConversationApiAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public DeclaredProfileUpdatePromptBuilder declaredProfileUpdatePromptBuilder() {
-    return new DeclaredProfileUpdatePromptBuilder();
+  public DeclaredProfileUpdatePromptBuilder declaredProfileUpdatePromptBuilder(
+      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
+  ) {
+    return new DeclaredProfileUpdatePromptBuilder(systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
   }
 
   @Bean

@@ -23,19 +23,23 @@ public final class GenericPolicyType<T> {
   private final String typeCode;
   private final Type contentType;
   private final BiConsumer<JsonNode, T> contentValidator;
+  private final GenericPolicyTypeExposure exposure;
 
   private GenericPolicyType(
       String typeCode,
       Type contentType,
-      BiConsumer<JsonNode, T> contentValidator
+      BiConsumer<JsonNode, T> contentValidator,
+      GenericPolicyTypeExposure exposure
   ) {
     this.typeCode = normalizeTypeCode(typeCode);
     this.contentType = Objects.requireNonNull(contentType, "contentType must not be null");
     this.contentValidator = Objects.requireNonNull(contentValidator, "contentValidator must not be null");
+    this.exposure = Objects.requireNonNull(exposure, "exposure must not be null");
   }
 
   public static <T> GenericPolicyType<T> of(String typeCode, Class<T> contentType) {
-    return new GenericPolicyType<>(typeCode, contentType, GenericPolicyType::noOpValidation);
+    return new GenericPolicyType<>(typeCode, contentType, GenericPolicyType::noOpValidation,
+        GenericPolicyTypeExposure.CURRENT_USER_READABLE);
   }
 
   /** 注册带有业务 JSON 语义校验的强类型策略内容。 */
@@ -44,16 +48,31 @@ public final class GenericPolicyType<T> {
       Class<T> contentType,
       BiConsumer<JsonNode, T> contentValidator
   ) {
-    return new GenericPolicyType<>(typeCode, contentType, contentValidator);
+    return new GenericPolicyType<>(typeCode, contentType, contentValidator,
+        GenericPolicyTypeExposure.CURRENT_USER_READABLE);
+  }
+
+  public static <T> GenericPolicyType<T> of(
+      String typeCode,
+      Class<T> contentType,
+      BiConsumer<JsonNode, T> contentValidator,
+      GenericPolicyTypeExposure exposure
+  ) {
+    return new GenericPolicyType<>(typeCode, contentType, contentValidator, exposure);
   }
 
   public static <T> GenericPolicyType<T> of(String typeCode, TypeReference<T> contentType) {
     Objects.requireNonNull(contentType, "contentType must not be null");
-    return new GenericPolicyType<>(typeCode, contentType.getType(), GenericPolicyType::noOpValidation);
+    return new GenericPolicyType<>(typeCode, contentType.getType(), GenericPolicyType::noOpValidation,
+        GenericPolicyTypeExposure.CURRENT_USER_READABLE);
   }
 
   public String typeCode() {
     return typeCode;
+  }
+
+  public GenericPolicyTypeExposure exposure() {
+    return exposure;
   }
 
   public JavaType javaType(ObjectMapper objectMapper) {

@@ -10,6 +10,8 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCom
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPermissionHook;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPromptBuilder;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewStructuredOutputMapper;
@@ -31,8 +33,10 @@ import org.springframework.context.annotation.Configuration;
 public class PracticeCodeReviewConfiguration {
 
   @Bean
-  public PracticeCodeReviewPromptBuilder practiceCodeReviewPromptBuilder() {
-    return new PracticeCodeReviewPromptBuilder();
+  public PracticeCodeReviewPromptBuilder practiceCodeReviewPromptBuilder(
+      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
+  ) {
+    return new PracticeCodeReviewPromptBuilder(systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
   }
 
   @Bean

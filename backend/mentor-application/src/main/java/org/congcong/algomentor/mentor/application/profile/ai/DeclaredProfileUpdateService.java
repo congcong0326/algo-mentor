@@ -28,6 +28,8 @@ import org.congcong.algomentor.mentor.application.profile.ProfileUpdateDecision;
 import org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateRequest;
 import org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateResult;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredProfileToolContracts;
+import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
+import org.congcong.algomentor.mentor.application.prompt.SystemPromptMetadataKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +77,7 @@ public class DeclaredProfileUpdateService {
     try {
       List<CandidateState> candidates = loadCandidates(userId, request);
       for (int attempt = 0; attempt <= maxStaleRetries; attempt++) {
-        DecisionRound round = decide(candidates, completionContext);
+        DecisionRound round = decide(userId, candidates, completionContext);
         List<ProfileUpdateApplyResult> applied = updateService.applyBatch(commands(candidates, round));
         if (applied.size() != candidates.size()) {
           throw new IllegalStateException("Declared profile update returned an unexpected result count");
@@ -108,19 +110,23 @@ public class DeclaredProfileUpdateService {
     }).toList();
   }
 
-  private DecisionRound decide(List<CandidateState> candidates, AiCompletionContext completionContext) {
+  private DecisionRound decide(long userId, List<CandidateState> candidates, AiCompletionContext completionContext) {
+    ResolvedSystemPromptSnapshot promptSnapshot = promptBuilder.snapshot(userId);
+    Map<String, Object> metadata = new HashMap<>();
+    metadata.put(LearnerDeclaredProfileToolContracts.METADATA_DIMENSION_COUNT, candidates.size());
+    metadata.putAll(SystemPromptMetadataKeys.from(promptSnapshot));
     LlmCompletionRequest request = LlmCompletionRequest.builder()
         .modelSelector(LlmModelSelector.requiring(Set.of(LlmCapability.JSON_SCHEMA_OUTPUT)))
         .messages(promptBuilder.build(candidates.stream().map(candidate -> new DeclaredProfileUpdatePromptBuilder.Candidate(
             candidate.update().dimension(),
             candidate.update().statement(),
             candidate.update().intent(),
-            candidate.currentContent())).toList()))
+            candidate.currentContent())).toList(), promptSnapshot))
         .responseFormat(new LlmResponseFormat.JsonSchema(
             DeclaredProfileUpdateJsonSchema.SCHEMA_NAME,
             DeclaredProfileUpdateJsonSchema.schema(),
             true))
-        .metadata(Map.of(LearnerDeclaredProfileToolContracts.METADATA_DIMENSION_COUNT, candidates.size()))
+        .metadata(Map.copyOf(metadata))
         .build();
     log.info("Declared profile AI decision started. dimensions={} stepIndex={}",
         candidates.size(), completionContext.stepIndex());

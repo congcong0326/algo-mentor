@@ -264,7 +264,7 @@ public class LearningPlanDraftRevisionStreamService {
   }
 
   private List<LlmMessage> buildRevisionPrompt(LearningPlanDraft draft, String instruction) {
-    List<LlmMessage> messages = new ArrayList<>(promptBuilder.build(draft.command()));
+    List<LlmMessage> messages = new ArrayList<>(promptBuilder.build(draft.command(), draft.userId()));
     messages.add(LlmMessage.assistant("""
         当前学习计划草案 JSON：
         %s

@@ -89,7 +89,7 @@ public class LearningPlanDraftStreamService {
     AgentRequest request = new AgentRequest(
         runId,
         null,
-        promptBuilder.build(command),
+        promptBuilder.build(command, userId),
         metadata,
         executionOptions());
     return subscriber -> {

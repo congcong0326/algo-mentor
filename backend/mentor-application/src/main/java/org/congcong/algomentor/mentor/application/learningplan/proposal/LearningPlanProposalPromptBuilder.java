@@ -12,6 +12,13 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemMessageFactory;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinition;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinitions;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
+import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
+import org.congcong.algomentor.mentor.application.prompt.SystemPromptSectionKeys;
 
 /**
  * 学习计划提案 prompt 构造器。
@@ -19,9 +26,20 @@ import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 public class LearningPlanProposalPromptBuilder {
 
   private final ObjectMapper objectMapper;
+  private final ManagedSystemPromptResolver systemPromptResolver;
 
   public LearningPlanProposalPromptBuilder(ObjectMapper objectMapper) {
+    this(objectMapper, ManagedSystemPrompts.defaultResolver());
+  }
+
+  public LearningPlanProposalPromptBuilder(
+      ObjectMapper objectMapper,
+      ManagedSystemPromptResolver systemPromptResolver
+  ) {
     this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper");
+    this.systemPromptResolver = systemPromptResolver == null
+        ? ManagedSystemPrompts.defaultResolver()
+        : systemPromptResolver;
   }
 
   public List<LlmMessage> buildDraftRevisionPrompt(
@@ -29,8 +47,18 @@ public class LearningPlanProposalPromptBuilder {
       LearningPlanDraftCommand command,
       LearningPlanDraftPlan currentPlan
   ) {
+    return buildDraftRevisionPrompt(instruction, command, currentPlan, 1L);
+  }
+
+  public List<LlmMessage> buildDraftRevisionPrompt(
+      String instruction,
+      LearningPlanDraftCommand command,
+      LearningPlanDraftPlan currentPlan,
+      long userId
+  ) {
     return List.of(
-        LlmMessage.system("你是 algo-mentor 的学习计划修订 Agent。最终只输出完整学习计划草案 JSON。"),
+        ManagedSystemMessageFactory.system(snapshot(ManagedSystemPromptDefinitions.LEARNING_PLAN_REVISION, userId),
+            SystemPromptSectionKeys.LEARNING_PLAN_REVISION_BASE),
         LlmMessage.user("""
             用户修订要求：
             %s
@@ -48,8 +76,18 @@ public class LearningPlanProposalPromptBuilder {
       LearningPlan currentPlan,
       List<PracticeProgress> progress
   ) {
+    return buildExtensionPrompt(instruction, currentPlan, progress, 1L);
+  }
+
+  public List<LlmMessage> buildExtensionPrompt(
+      String instruction,
+      LearningPlan currentPlan,
+      List<PracticeProgress> progress,
+      long userId
+  ) {
     return List.of(
-        LlmMessage.system(extensionSystemPrompt()),
+        ManagedSystemMessageFactory.system(snapshot(ManagedSystemPromptDefinitions.LEARNING_PLAN_EXTENSION, userId),
+            SystemPromptSectionKeys.LEARNING_PLAN_EXTENSION_BASE),
         LlmMessage.user("""
             请基于当前学习计划和练习进度生成学习计划扩展草案。
 
@@ -70,8 +108,19 @@ public class LearningPlanProposalPromptBuilder {
       List<PracticeProgress> progress,
       LearningPlanExtensionDraft previousExtension
   ) {
+    return buildExtensionRevisionPrompt(instruction, currentPlan, progress, previousExtension, 1L);
+  }
+
+  public List<LlmMessage> buildExtensionRevisionPrompt(
+      String instruction,
+      LearningPlan currentPlan,
+      List<PracticeProgress> progress,
+      LearningPlanExtensionDraft previousExtension,
+      long userId
+  ) {
     return List.of(
-        LlmMessage.system(extensionSystemPrompt()),
+        ManagedSystemMessageFactory.system(snapshot(ManagedSystemPromptDefinitions.LEARNING_PLAN_EXTENSION, userId),
+            SystemPromptSectionKeys.LEARNING_PLAN_EXTENSION_BASE),
         LlmMessage.assistant("""
             上一版扩展草案 JSON：
             %s
@@ -90,19 +139,8 @@ public class LearningPlanProposalPromptBuilder {
             """.formatted(instruction, toJson(currentPlan.plan()), toJson(progressSummary(progress)))));
   }
 
-  private String extensionSystemPrompt() {
-    return """
-        你是 algo-mentor 的学习计划扩展 Agent。你必须输出符合 JSON Schema 的扩展草案。
-
-        规则：
-        1. 先使用 list_problem_filters 了解本地题库标签和难度，再用 search_problems 搜索候选题。
-        2. 只能追加新阶段，不能删除、修改、重排已有阶段。
-        3. 新增题目不能和已有计划题目重复。
-        4. 新增题目必须来自本地题库工具。
-        5. 每个新增阶段最多 5 道题；候选不足时可以少推荐，并在 metadata.problemRecommendationIncomplete 标记 true。
-        6. 阶段、目标、验收标准、复盘建议和 summary 使用中文。
-        7. 最终只输出扩展草案 JSON，不输出完整替换版计划。
-        """;
+  public ResolvedSystemPromptSnapshot snapshot(ManagedSystemPromptDefinition definition, long userId) {
+    return systemPromptResolver.resolve(definition, userId);
   }
 
   private List<Map<String, Object>> progressSummary(List<PracticeProgress> progress) {

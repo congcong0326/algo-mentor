@@ -8,6 +8,7 @@ import org.congcong.algomentor.auth.model.PasswordLoginRequest;
 import org.congcong.algomentor.auth.model.PasswordRegisterRequest;
 import org.congcong.algomentor.auth.betaaccess.service.BetaAccessException;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
+import org.congcong.algomentor.auth.security.AuthenticatedUserResponseHeaders;
 import org.congcong.algomentor.auth.security.BetaAccessAuthenticationException;
 import org.congcong.algomentor.auth.security.TemporaryPasswordAuthenticationException;
 import org.congcong.algomentor.auth.session.policy.AuthSessionPolicyException;
@@ -230,9 +231,11 @@ public class PasswordAuthController {
     context.setAuthentication(authentication);
     SecurityContextHolder.setContext(context);
     securityContextRepository.saveContext(context, request, response);
-    if (newLogin && sessionPolicyLoginService != null
-        && authentication.getPrincipal() instanceof AuthenticatedUserPrincipal principal) {
-      sessionPolicyLoginService.apply(principal.userId(), request.getSession(false));
+    if (authentication.getPrincipal() instanceof AuthenticatedUserPrincipal principal) {
+      if (newLogin && sessionPolicyLoginService != null) {
+        sessionPolicyLoginService.apply(principal.userId(), request.getSession(false));
+      }
+      AuthenticatedUserResponseHeaders.write(response, principal);
     }
   }
 

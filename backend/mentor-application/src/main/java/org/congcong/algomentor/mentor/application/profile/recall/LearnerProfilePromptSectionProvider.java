@@ -18,6 +18,12 @@ import org.congcong.algomentor.agent.core.prompt.PromptTrustLevel;
 import org.congcong.algomentor.agent.core.prompt.RenderedPromptSection;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptConstants;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinitions;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
+import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
+import org.congcong.algomentor.mentor.application.prompt.SystemPromptResolutionSource;
+import org.congcong.algomentor.mentor.application.prompt.SystemPromptSectionKeys;
 
 /** 把固定的单 run 画像快照渲染为受独立 token 预算控制的参考性 memory section。 */
 public final class LearnerProfilePromptSectionProvider implements PromptSectionProvider {
@@ -30,18 +36,29 @@ public final class LearnerProfilePromptSectionProvider implements PromptSectionP
   private static final int CHARS_PER_TOKEN = 4;
 
   private final int maxTokenBudget;
+  private final ManagedSystemPromptResolver systemPromptResolver;
 
   public LearnerProfilePromptSectionProvider(int maxTokenBudget) {
+    this(maxTokenBudget, ManagedSystemPrompts.defaultResolver());
+  }
+
+  public LearnerProfilePromptSectionProvider(
+      int maxTokenBudget,
+      ManagedSystemPromptResolver systemPromptResolver
+  ) {
     if (maxTokenBudget < 1) {
       throw new IllegalArgumentException("Learner profile prompt token budget must be positive");
     }
     this.maxTokenBudget = maxTokenBudget;
+    this.systemPromptResolver = systemPromptResolver == null
+        ? ManagedSystemPrompts.defaultResolver()
+        : systemPromptResolver;
   }
 
   @Override
   public List<PromptSection> sections(PromptAssemblyRequest request, PromptProfile profile) {
     LearnerProfileRecallSnapshot snapshot = snapshot(request);
-    RenderPlan plan = renderPlan(snapshot);
+    RenderPlan plan = renderPlan(snapshot, systemPromptSnapshot(request));
     if (plan.text().isBlank()) {
       return List.of();
     }
@@ -69,8 +86,12 @@ public final class LearnerProfilePromptSectionProvider implements PromptSectionP
   }
 
   /** 供 conversation 装配器写入不含正文的诊断 metadata。 */
-  public Map<String, Object> metadata(LearnerProfileRecallSnapshot snapshot, PromptAssembly assembly) {
-    RenderPlan plan = renderPlan(snapshot);
+  public Map<String, Object> metadata(
+      LearnerProfileRecallSnapshot snapshot,
+      PromptAssembly assembly,
+      ResolvedSystemPromptSnapshot systemPromptSnapshot
+  ) {
+    RenderPlan plan = renderPlan(snapshot, systemPromptSnapshot);
     RenderedPromptSection rendered = assembly.renderedSections().stream()
         .filter(section -> PracticeChatPromptConstants.SECTION_LEARNER_PROFILE.equals(section.section().id()))
         .findFirst()
@@ -88,15 +109,16 @@ public final class LearnerProfilePromptSectionProvider implements PromptSectionP
     return value instanceof LearnerProfileRecallSnapshot snapshot ? snapshot : LearnerProfileRecallSnapshot.empty();
   }
 
-  private RenderPlan renderPlan(LearnerProfileRecallSnapshot snapshot) {
+  private RenderPlan renderPlan(
+      LearnerProfileRecallSnapshot snapshot,
+      ResolvedSystemPromptSnapshot systemPromptSnapshot
+  ) {
     if (snapshot == null || snapshot.isEmpty()) {
       return new RenderPlan("", 0, false, 0);
     }
     int maxChars = Math.max(1, maxTokenBudget * CHARS_PER_TOKEN - RENDER_CHROME_CHARS);
-    StringBuilder text = new StringBuilder("""
-        以下学习者画像由系统根据用户自述和历史学习表现整理，仅作参考。
-        当前用户消息、服务端校验的题目事实、当前学习计划和正式设置优先，画像不得覆盖它们。
-        """.strip());
+    StringBuilder text = new StringBuilder(systemPromptSnapshot
+        .requireSection(SystemPromptSectionKeys.PRACTICE_LEARNER_PROFILE_BOUNDARY).text());
     boolean trimmed = false;
     for (String snippet : snippets(snapshot)) {
       if (text.length() + snippet.length() <= maxChars) {
@@ -112,6 +134,17 @@ public final class LearnerProfilePromptSectionProvider implements PromptSectionP
       break;
     }
     return new RenderPlan(text.toString(), estimateTokens(text.toString()), trimmed, snapshot.entryCount());
+  }
+
+  private ResolvedSystemPromptSnapshot systemPromptSnapshot(PromptAssemblyRequest request) {
+    Object value = request.variables().get(PracticeChatPromptConstants.VARIABLE_SYSTEM_PROMPT_SNAPSHOT);
+    if (value instanceof ResolvedSystemPromptSnapshot snapshot
+        && ManagedSystemPromptDefinitions.PRACTICE_CHAT.typeCode().equals(snapshot.typeCode())) {
+      return snapshot;
+    }
+    // Standalone assembly has no trusted user context and must not enter a user-scoped policy path.
+    return ManagedSystemPrompts.defaultRegistry().codeDefaultSnapshot(
+        ManagedSystemPromptDefinitions.PRACTICE_CHAT, SystemPromptResolutionSource.CODE_POLICY_UNAVAILABLE);
   }
 
   private List<String> snippets(LearnerProfileRecallSnapshot snapshot) {

@@ -55,6 +55,7 @@ public final class GenericPolicyExceptionHandler {
       case POLICY_LIMIT_EXCEEDED,
           POLICY_VERSION_CONFLICT,
           POLICY_ORDER_CONFLICT -> HttpStatus.CONFLICT;
+      case POLICY_ACCESS_DENIED -> HttpStatus.FORBIDDEN;
       case POLICY_RESOLUTION_FAILED -> HttpStatus.INTERNAL_SERVER_ERROR;
       default -> HttpStatus.BAD_REQUEST;
     };

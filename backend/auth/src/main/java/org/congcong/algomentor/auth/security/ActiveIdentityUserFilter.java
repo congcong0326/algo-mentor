@@ -104,6 +104,7 @@ public class ActiveIdentityUserFilter extends OncePerRequestFilter {
 
     IdentityValidation validation = validate(principal.get());
     if (validation == IdentityValidation.ALLOWED) {
+      AuthenticatedUserResponseHeaders.write(response, principal.get());
       filterChain.doFilter(request, response);
       return;
     }

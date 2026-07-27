@@ -3,6 +3,7 @@ package org.congcong.algomentor.auth.controller;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,6 +22,7 @@ import org.congcong.algomentor.auth.passwordreset.PasswordResetService;
 import org.congcong.algomentor.auth.security.AuthAuthorities;
 import org.congcong.algomentor.auth.security.AuthenticatedDaoAuthenticationProvider;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
+import org.congcong.algomentor.auth.security.AuthenticatedUserResponseHeaders;
 import org.congcong.algomentor.auth.security.PasswordUserDetailsService;
 import org.congcong.algomentor.auth.service.AdminEmailRoleService;
 import org.congcong.algomentor.auth.service.AuthPermissionService;
@@ -94,6 +96,8 @@ class PasswordAuthControllerTest {
                 "password-123",
                 "Admin User"))))
         .andExpect(status().isOk())
+        .andExpect(header().string(AuthenticatedUserResponseHeaders.USER, "admin@example.com"))
+        .andExpect(header().string(AuthenticatedUserResponseHeaders.USER_ID, "1"))
         .andExpect(jsonPath("$.data.email").value("admin@example.com"))
         .andExpect(jsonPath("$.data.roles[0]").value("USER"))
         .andExpect(jsonPath("$.data.roles[1]").value("ADMIN"))
@@ -125,6 +129,8 @@ class PasswordAuthControllerTest {
                 "USER@example.com",
                 "password-123"))))
         .andExpect(status().isOk())
+        .andExpect(header().string(AuthenticatedUserResponseHeaders.USER, "user@example.com"))
+        .andExpect(header().string(AuthenticatedUserResponseHeaders.USER_ID, "1"))
         .andExpect(jsonPath("$.data.email").value("user@example.com"))
         .andExpect(jsonPath("$.data.roles[0]").value("USER"));
   }
@@ -225,6 +231,8 @@ class PasswordAuthControllerTest {
                 "new-password-123",
                 "new-password-123"))))
         .andExpect(status().isOk())
+        .andExpect(header().string(AuthenticatedUserResponseHeaders.USER, "member@example.com"))
+        .andExpect(header().string(AuthenticatedUserResponseHeaders.USER_ID, "42"))
         .andExpect(jsonPath("$.data.passwordChangeRequired").value(false))
         .andReturn();
 

@@ -4,6 +4,12 @@ import java.util.List;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemMessageFactory;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinitions;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
+import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
+import org.congcong.algomentor.mentor.application.prompt.SystemPromptSectionKeys;
 
 /**
  * 学习计划草案生成 prompt 构造器。
@@ -11,34 +17,45 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadS
 public class LearningPlanDraftPromptBuilder {
 
   private final LearningPlanLoadService loadService;
+  private final ManagedSystemPromptResolver systemPromptResolver;
 
   public LearningPlanDraftPromptBuilder() {
     this(new LearningPlanLoadService());
   }
 
   public LearningPlanDraftPromptBuilder(LearningPlanLoadService loadService) {
+    this(loadService, ManagedSystemPrompts.defaultResolver());
+  }
+
+  public LearningPlanDraftPromptBuilder(
+      LearningPlanLoadService loadService,
+      ManagedSystemPromptResolver systemPromptResolver
+  ) {
     this.loadService = loadService;
+    this.systemPromptResolver = systemPromptResolver == null
+        ? ManagedSystemPrompts.defaultResolver()
+        : systemPromptResolver;
   }
 
   public List<LlmMessage> build(LearningPlanDraftCommand command) {
+    return build(command, 1L);
+  }
+
+  public List<LlmMessage> build(LearningPlanDraftCommand command, long userId) {
+    return build(command, snapshot(userId));
+  }
+
+  public List<LlmMessage> build(
+      LearningPlanDraftCommand command,
+      ResolvedSystemPromptSnapshot promptSnapshot
+  ) {
     return List.of(
-        LlmMessage.system(systemPrompt()),
+        ManagedSystemMessageFactory.system(promptSnapshot, SystemPromptSectionKeys.LEARNING_PLAN_DRAFT_BASE),
         LlmMessage.user(userPrompt(command)));
   }
 
-  private String systemPrompt() {
-    return """
-        你是 algo-mentor 的算法学习计划规划 Agent。你必须输出符合 JSON Schema 的学习计划草案。
-
-        规则：
-        1. 先使用 list_problem_filters 了解本地题库标签和难度，再用 search_problems 搜索候选题。
-        2. 推荐题必须来自 search_problems 返回的本地题库候选；不要编造 slug、标题、难度或标签。
-        3. 如果候选不足，可以少推荐题，并在 metadata.problemRecommendationIncomplete 标记 true。
-        4. 计划阶段、目标、验收标准和复盘建议使用中文。
-        5. 阶段数按周期规划：1 周 1 阶段，2 周 2 阶段，3-6 周 3 阶段，7 周及以上 4 阶段。
-        6. 各阶段 durationWeeks 之和必须等于总周期；每阶段最多 5 道题。
-        7. 最终只输出结构化 JSON，不要输出 Markdown 或解释文本。
-        """;
+  public ResolvedSystemPromptSnapshot snapshot(long userId) {
+    return systemPromptResolver.resolve(ManagedSystemPromptDefinitions.LEARNING_PLAN_DRAFT, userId);
   }
 
   private String userPrompt(LearningPlanDraftCommand command) {

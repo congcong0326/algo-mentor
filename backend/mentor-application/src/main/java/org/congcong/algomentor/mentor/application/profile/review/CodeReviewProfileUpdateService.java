@@ -24,7 +24,8 @@ import org.congcong.algomentor.mentor.application.profile.ProfileUpdateApplyResu
 import org.congcong.algomentor.mentor.application.profile.ProfileUpdateApplyStatus;
 import org.congcong.algomentor.mentor.application.profile.ProfileUpdateCommand;
 import org.congcong.algomentor.mentor.application.profile.ProfileUpdateDecision;
-import java.util.Set;
+import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
+import org.congcong.algomentor.mentor.application.prompt.SystemPromptMetadataKeys;
 
 /** 事务外模型批量决策，事务内锁用户和 revision 复核；STALE 至多重算一次。 */
 public class CodeReviewProfileUpdateService {
@@ -149,12 +150,16 @@ public class CodeReviewProfileUpdateService {
     if (!completionGateway.isAllowed(context)) {
       return null;
     }
+    ResolvedSystemPromptSnapshot promptSnapshot = promptBuilder.snapshot(userId);
+    java.util.Map<String, Object> metadata = new java.util.LinkedHashMap<>();
+    metadata.put("promptVersion", CodeReviewProfileConsumerConstants.PROMPT_VERSION);
+    metadata.putAll(SystemPromptMetadataKeys.from(promptSnapshot));
     LlmCompletionResult completion = completionGateway.complete(LlmCompletionRequest.builder()
         .modelSelector(LlmModelSelector.requiring(Set.of(LlmCapability.JSON_SCHEMA_OUTPUT)))
-        .messages(promptBuilder.build(facts, candidates))
+        .messages(promptBuilder.build(facts, candidates, promptSnapshot))
         .responseFormat(new LlmResponseFormat.JsonSchema(
             CodeReviewProfileJsonSchema.SCHEMA_NAME, CodeReviewProfileJsonSchema.schema(), true))
-        .metadata(java.util.Map.of("promptVersion", CodeReviewProfileConsumerConstants.PROMPT_VERSION))
+        .metadata(java.util.Map.copyOf(metadata))
         .build(), context);
     JsonNode output = completion.structuredOutput();
     List<ProfileUpdateDecision> decisions;

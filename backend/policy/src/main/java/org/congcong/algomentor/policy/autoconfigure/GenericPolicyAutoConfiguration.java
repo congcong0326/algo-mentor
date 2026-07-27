@@ -30,6 +30,7 @@ import org.congcong.algomentor.policy.service.GenericPolicyManagementService;
 import org.congcong.algomentor.policy.service.GenericPolicyQueryService;
 import org.congcong.algomentor.policy.type.GenericPolicyType;
 import org.congcong.algomentor.policy.type.GenericPolicyTypeRegistry;
+import org.congcong.algomentor.policy.type.GenericPolicyTypeContributor;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -46,9 +47,16 @@ public class GenericPolicyAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean
   public GenericPolicyTypeRegistry genericPolicyTypeRegistry(
-      ObjectProvider<GenericPolicyType<?>> policyTypes
+      ObjectProvider<GenericPolicyType<?>> policyTypes,
+      ObjectProvider<GenericPolicyTypeContributor> contributors
   ) {
-    return new GenericPolicyTypeRegistry(policyTypes.orderedStream().toList());
+    java.util.List<GenericPolicyType<?>> allTypes = new java.util.ArrayList<>(policyTypes.orderedStream().toList());
+    contributors.orderedStream().forEach(contributor -> {
+      if (contributor.policyTypes() != null) {
+        allTypes.addAll(contributor.policyTypes());
+      }
+    });
+    return new GenericPolicyTypeRegistry(allTypes);
   }
 
   @Bean
@@ -174,9 +182,10 @@ public class GenericPolicyAutoConfiguration {
   @ConditionalOnBean(EffectiveGenericPolicyQueryService.class)
   @ConditionalOnMissingBean
   public EffectiveGenericPolicyController effectiveGenericPolicyController(
-      EffectiveGenericPolicyQueryService queryService
+      EffectiveGenericPolicyQueryService queryService,
+      GenericPolicyTypeRegistry typeRegistry
   ) {
-    return new EffectiveGenericPolicyController(queryService);
+    return new EffectiveGenericPolicyController(queryService, typeRegistry);
   }
 
   @Bean

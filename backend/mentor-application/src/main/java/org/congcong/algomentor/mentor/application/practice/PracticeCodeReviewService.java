@@ -21,6 +21,8 @@ import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.congcong.algomentor.mentor.application.review.card.PracticeCodeReviewObserver;
+import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
+import org.congcong.algomentor.mentor.application.prompt.SystemPromptMetadataKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -340,17 +342,20 @@ public class PracticeCodeReviewService {
   }
 
   private LlmCompletionRequest request(PracticeTurnContext context) {
+    ResolvedSystemPromptSnapshot promptSnapshot = promptBuilder.snapshot(context.userId());
+    Map<String, Object> metadata = new java.util.LinkedHashMap<>();
+    metadata.put(PracticeCodeReviewConstants.METADATA_REVIEW_CANDIDATE, true);
+    metadata.put(PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, context.sessionId());
+    metadata.put(AgentRuntimeMetadataKeys.SCHEMA_VERSION, PracticeCodeReviewConstants.SCHEMA_VERSION);
+    metadata.putAll(SystemPromptMetadataKeys.from(promptSnapshot));
     return LlmCompletionRequest.builder()
         .modelSelector(LlmModelSelector.requiring(Set.of(LlmCapability.JSON_SCHEMA_OUTPUT)))
-        .messages(promptBuilder.build(context))
+        .messages(promptBuilder.build(context, promptSnapshot))
         .responseFormat(new LlmResponseFormat.JsonSchema(
             PracticeCodeReviewConstants.SCHEMA_NAME,
             PracticeCodeReviewJsonSchema.schema(),
             true))
-        .metadata(Map.of(
-            PracticeCodeReviewConstants.METADATA_REVIEW_CANDIDATE, true,
-            PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, context.sessionId(),
-            AgentRuntimeMetadataKeys.SCHEMA_VERSION, PracticeCodeReviewConstants.SCHEMA_VERSION))
+        .metadata(Map.copyOf(metadata))
         .build();
   }
 

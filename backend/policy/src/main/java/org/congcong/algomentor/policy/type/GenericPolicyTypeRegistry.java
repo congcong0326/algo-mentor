@@ -1,6 +1,7 @@
 package org.congcong.algomentor.policy.type;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -24,7 +25,7 @@ public final class GenericPolicyTypeRegistry {
         }
       }
     }
-    this.typesByCode = Map.copyOf(types);
+    this.typesByCode = Collections.unmodifiableMap(new LinkedHashMap<>(types));
   }
 
   public GenericPolicyType<?> require(String typeCode) {

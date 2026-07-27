@@ -27,6 +27,7 @@ import org.congcong.algomentor.auth.betaaccess.service.BetaAccessErrorCode;
 import org.congcong.algomentor.auth.security.AuthAuthorities;
 import org.congcong.algomentor.auth.security.AuthenticatedOidcUser;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
+import org.congcong.algomentor.auth.security.AuthenticatedUserResponseHeaders;
 import org.congcong.algomentor.auth.security.OAuth2AuthenticationFailureHandler;
 import org.congcong.algomentor.identity.model.AuthUser;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -121,6 +122,8 @@ class AuthSecurityAutoConfigurationTest {
   void protectedApiReturnsJson401WhenUnauthenticated() throws Exception {
     mockMvc.perform(get("/api/protected").header("Accept-Language", "en-US"))
         .andExpect(status().isUnauthorized())
+        .andExpect(header().doesNotExist(AuthenticatedUserResponseHeaders.USER))
+        .andExpect(header().doesNotExist(AuthenticatedUserResponseHeaders.USER_ID))
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"))
         .andExpect(jsonPath("$.error.messageKey").value("api.error.AUTH_UNAUTHENTICATED"))
@@ -186,6 +189,8 @@ class AuthSecurityAutoConfigurationTest {
   void authenticatedCurrentUserEndpointReturnsPrincipal() throws Exception {
     mockMvc.perform(get("/api/auth/me").with(authentication(authenticationToken())))
         .andExpect(status().isOk())
+        .andExpect(header().string(AuthenticatedUserResponseHeaders.USER, "user@example.com"))
+        .andExpect(header().string(AuthenticatedUserResponseHeaders.USER_ID, "42"))
         .andExpect(cookie().exists("XSRF-TOKEN"))
         .andExpect(cookie().httpOnly("XSRF-TOKEN", false))
         .andExpect(jsonPath("$.data.email").value("user@example.com"))
@@ -198,8 +203,40 @@ class AuthSecurityAutoConfigurationTest {
 
     mockMvc.perform(get("/api/protected").with(authentication(authenticationToken())))
         .andExpect(status().isUnauthorized())
+        .andExpect(header().doesNotExist(AuthenticatedUserResponseHeaders.USER))
+        .andExpect(header().doesNotExist(AuthenticatedUserResponseHeaders.USER_ID))
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHENTICATED"));
+  }
+
+  @Test
+  void authenticatedOAuth2ApiResponseIncludesUserHeaders() throws Exception {
+    mockMvc.perform(get("/api/protected")
+            .with(authentication(securityContext().getAuthentication())))
+        .andExpect(status().isOk())
+        .andExpect(header().string(AuthenticatedUserResponseHeaders.USER, "user@example.com"))
+        .andExpect(header().string(AuthenticatedUserResponseHeaders.USER_ID, "42"));
+  }
+
+  @Test
+  void restrictedAuthenticatedSessionIncludesUserHeadersOnForbiddenResponse() throws Exception {
+    AuthenticatedUserPrincipal principal = new AuthenticatedUserPrincipal(
+        42L,
+        "user@example.com",
+        "User Name",
+        "https://example.com/avatar.png",
+        List.of(AuthRole.USER),
+        AuthUserStatus.ACTIVE,
+        true);
+
+    mockMvc.perform(get("/api/protected")
+            .with(authentication(new UsernamePasswordAuthenticationToken(
+                principal,
+                "n/a",
+                AuthAuthorities.fromRoles(principal.roles())))))
+        .andExpect(status().isForbidden())
+        .andExpect(header().string(AuthenticatedUserResponseHeaders.USER, "user@example.com"))
+        .andExpect(header().string(AuthenticatedUserResponseHeaders.USER_ID, "42"));
   }
 
   @Test

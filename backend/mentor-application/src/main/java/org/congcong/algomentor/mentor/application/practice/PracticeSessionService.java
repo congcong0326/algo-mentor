@@ -15,12 +15,17 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanExcep
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinitions;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
+import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
+import org.congcong.algomentor.mentor.application.prompt.SystemPromptMetadataKeys;
+import org.congcong.algomentor.mentor.application.prompt.SystemPromptSectionKeys;
 import org.springframework.transaction.annotation.Transactional;
 
 public class PracticeSessionService {
 
   private static final int MESSAGE_LIMIT = 200;
-  private static final String DEFAULT_SYSTEM_PROMPT = "你是 algo-mentor 的算法刷题教练，请基于题目和学习计划进行分层引导。";
 
   private final LearningPlanRepository learningPlanRepository;
   private final PracticeChatProblemCatalog problemCatalog;
@@ -28,6 +33,7 @@ public class PracticeSessionService {
   private final AgentTaskMessageRepository agentTaskMessageRepository;
   private final PracticeCodeReviewRepository reviewRepository;
   private final PracticeCompletionGateService completionGateService;
+  private final ManagedSystemPromptResolver systemPromptResolver;
 
   public PracticeSessionService(
       LearningPlanRepository learningPlanRepository,
@@ -35,7 +41,7 @@ public class PracticeSessionService {
       PracticeSessionRepository practiceSessionRepository,
       AgentTaskMessageRepository agentTaskMessageRepository) {
     this(learningPlanRepository, problemCatalog, practiceSessionRepository, agentTaskMessageRepository,
-        PracticeCodeReviewRepository.empty());
+        PracticeCodeReviewRepository.empty(), PracticeCodeReviewMetrics.NOOP, ManagedSystemPrompts.defaultResolver());
   }
 
   public PracticeSessionService(
@@ -50,7 +56,8 @@ public class PracticeSessionService {
         practiceSessionRepository,
         agentTaskMessageRepository,
         reviewRepository,
-        PracticeCodeReviewMetrics.NOOP);
+        PracticeCodeReviewMetrics.NOOP,
+        ManagedSystemPrompts.defaultResolver());
   }
 
   public PracticeSessionService(
@@ -60,12 +67,33 @@ public class PracticeSessionService {
       AgentTaskMessageRepository agentTaskMessageRepository,
       PracticeCodeReviewRepository reviewRepository,
       PracticeCodeReviewMetrics metrics) {
+    this(
+        learningPlanRepository,
+        problemCatalog,
+        practiceSessionRepository,
+        agentTaskMessageRepository,
+        reviewRepository,
+        metrics,
+        ManagedSystemPrompts.defaultResolver());
+  }
+
+  public PracticeSessionService(
+      LearningPlanRepository learningPlanRepository,
+      PracticeChatProblemCatalog problemCatalog,
+      PracticeSessionRepository practiceSessionRepository,
+      AgentTaskMessageRepository agentTaskMessageRepository,
+      PracticeCodeReviewRepository reviewRepository,
+      PracticeCodeReviewMetrics metrics,
+      ManagedSystemPromptResolver systemPromptResolver) {
     this.learningPlanRepository = learningPlanRepository;
     this.problemCatalog = problemCatalog;
     this.practiceSessionRepository = practiceSessionRepository;
     this.agentTaskMessageRepository = agentTaskMessageRepository;
     this.reviewRepository = reviewRepository;
     this.completionGateService = new PracticeCompletionGateService(reviewRepository, metrics);
+    this.systemPromptResolver = systemPromptResolver == null
+        ? ManagedSystemPrompts.defaultResolver()
+        : systemPromptResolver;
   }
 
   @Transactional
@@ -77,11 +105,13 @@ public class PracticeSessionService {
         userId, reference.planId(), reference.phaseIndex(), reference.problemSlug(), reference.locale());
 
     if (session.agentTaskId() == null) {
+      ResolvedSystemPromptSnapshot promptSnapshot = systemPromptResolver.resolve(
+          ManagedSystemPromptDefinitions.PRACTICE_CHAT, userId);
       AgentTaskCreationRequest request = new AgentTaskCreationRequest(
           userId,
           taskTitle(context.planProblem()),
-          DEFAULT_SYSTEM_PROMPT,
-          metadata(session.id(), reference));
+          promptSnapshot.requireSection(SystemPromptSectionKeys.PRACTICE_TASK_BOOTSTRAP).text(),
+          metadata(session.id(), reference, promptSnapshot));
       session = practiceSessionRepository.attachAgentTask(
           session.id(), agentTaskMessageRepository.createTask(request).taskId());
     }
@@ -237,6 +267,16 @@ public class PracticeSessionService {
     metadata.put(PracticeChatPromptConstants.METADATA_PHASE_INDEX, reference.phaseIndex());
     metadata.put(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, reference.problemSlug());
     metadata.put(PracticeChatPromptConstants.METADATA_LOCALE, reference.locale());
+    return metadata;
+  }
+
+  private Map<String, Object> metadata(
+      long sessionId,
+      PracticeChatReference reference,
+      ResolvedSystemPromptSnapshot promptSnapshot
+  ) {
+    Map<String, Object> metadata = metadata(sessionId, reference);
+    metadata.putAll(SystemPromptMetadataKeys.from(promptSnapshot));
     return metadata;
   }
 

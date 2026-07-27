@@ -3,9 +3,11 @@ package org.congcong.algomentor.policy.autoconfigure;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Modifier;
+import java.util.List;
 import org.congcong.algomentor.cache.config.CacheAutoConfiguration;
 import org.congcong.algomentor.policy.service.GenericPolicyManagementService;
 import org.congcong.algomentor.policy.type.GenericPolicyType;
+import org.congcong.algomentor.policy.type.GenericPolicyTypeContributor;
 import org.congcong.algomentor.policy.type.GenericPolicyTypeRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -30,6 +32,17 @@ class GenericPolicyAutoConfigurationTest {
   }
 
   @Test
+  void registersTypesContributedByBusinessModules() {
+    contextRunner.run(context -> {
+      GenericPolicyTypeRegistry registry = context.getBean(GenericPolicyTypeRegistry.class);
+      GenericPolicyTypeContributor contributor = context.getBean(GenericPolicyTypeContributor.class);
+
+      assertThat(registry.require("contributed-policy"))
+          .isSameAs(contributor.policyTypes().iterator().next());
+    });
+  }
+
+  @Test
   void keepsTransactionalManagementServiceCglibProxyable() {
     assertThat(Modifier.isFinal(GenericPolicyManagementService.class.getModifiers())).isFalse();
   }
@@ -40,6 +53,12 @@ class GenericPolicyAutoConfigurationTest {
     @Bean
     GenericPolicyType<String> testPolicyType() {
       return GenericPolicyType.of("test-policy", String.class);
+    }
+
+    @Bean
+    GenericPolicyTypeContributor contributedPolicyTypes() {
+      GenericPolicyType<String> contributed = GenericPolicyType.of("contributed-policy", String.class);
+      return () -> List.of(contributed);
     }
   }
 }

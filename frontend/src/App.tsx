@@ -19,6 +19,7 @@ import AiGovernancePage from './admin/ai/AiGovernancePage';
 import SystemMonitoringPage from './admin/monitoring/SystemMonitoringPage';
 import SessionMonitoringPage from './admin/sessions/SessionMonitoringPage';
 import SessionPolicyPage from './admin/session-policies/SessionPolicyPage';
+import SystemPromptManagementPage from './admin/system-prompts/SystemPromptManagementPage';
 import FeedbackManagementPage from './admin/feedback/FeedbackManagementPage';
 import AdminOverviewPage from './admin/overview/AdminOverviewPage';
 import UserGroupManagementPage from './admin/groups/UserGroupManagementPage';
@@ -104,6 +105,9 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminSessionPolicies' && !hasPermission(user, 'policy:manage')) {
+    return defaultAuthenticatedRouteForUser(user);
+  }
+  if (view === 'adminSystemPrompts' && !hasPermission(user, 'policy:manage')) {
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminOverview' && !hasPermission(user, 'admin-overview:read')) {
@@ -671,6 +675,8 @@ export default function App() {
     ? <SessionMonitoringPage />
     : activeView === 'adminSessionPolicies' && hasPermission(currentUser, 'policy:manage')
     ? <SessionPolicyPage />
+    : activeView === 'adminSystemPrompts' && hasPermission(currentUser, 'policy:manage')
+    ? <SystemPromptManagementPage />
     : activeView === 'adminOverview' && hasPermission(currentUser, 'admin-overview:read')
     ? <AdminOverviewPage onNavigate={navigateToPath} />
     : activeView === 'adminFeedback' && hasPermission(currentUser, 'feedback:manage')

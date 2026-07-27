@@ -222,7 +222,7 @@ public class LearningPlanExtensionProposalStreamService {
         new AgentRequest(
             runId,
             null,
-            promptBuilder.buildExtensionPrompt(instruction, lockedPlan, progress),
+            promptBuilder.buildExtensionPrompt(instruction, lockedPlan, progress, userId),
             metadata,
             executionOptions()));
   }
@@ -258,7 +258,8 @@ public class LearningPlanExtensionProposalStreamService {
         new AgentRequest(
             runId,
             null,
-            promptBuilder.buildExtensionRevisionPrompt(instruction, lockedPlan, progress, latestReady.proposedExtension()),
+            promptBuilder.buildExtensionRevisionPrompt(
+                instruction, lockedPlan, progress, latestReady.proposedExtension(), userId),
             metadata,
             executionOptions()));
   }

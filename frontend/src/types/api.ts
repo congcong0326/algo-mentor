@@ -310,7 +310,7 @@ export interface UserSessionPolicyContent {
   absoluteTimeoutSeconds: number;
 }
 
-export interface AdminGenericPolicy {
+export interface AdminGenericPolicy<TContent = UserSessionPolicyContent> {
   id: number;
   typeCode: string;
   name: string;
@@ -318,7 +318,7 @@ export interface AdminGenericPolicy {
   status: GenericPolicyStatus;
   priority: number;
   subjectRange: PolicySubjectRange;
-  content: UserSessionPolicyContent;
+  content: TContent;
   version: number;
   createdBy: number;
   createdAt: string;
@@ -326,8 +326,8 @@ export interface AdminGenericPolicy {
   updatedAt: string;
 }
 
-export interface AdminGenericPolicyPage {
-  items: AdminGenericPolicy[];
+export interface AdminGenericPolicyPage<TContent = UserSessionPolicyContent> {
+  items: AdminGenericPolicy<TContent>[];
   total: number;
   page: number;
   pageSize: number;
@@ -341,18 +341,30 @@ export interface AdminGenericPolicyListQuery {
   status?: GenericPolicyStatus | '';
 }
 
-export interface AdminGenericPolicyWriteRequest {
+export interface AdminGenericPolicyWriteRequest<TContent = UserSessionPolicyContent> {
   typeCode: string;
   name: string;
   description: string;
   status: GenericPolicyStatus;
   subjectRange: PolicySubjectRange;
-  content: UserSessionPolicyContent;
+  content: TContent;
 }
 
-export interface AdminGenericPolicyUpdateRequest extends Omit<AdminGenericPolicyWriteRequest, 'typeCode'> {
+export interface AdminGenericPolicyUpdateRequest<TContent = UserSessionPolicyContent> extends Omit<AdminGenericPolicyWriteRequest<TContent>, 'typeCode'> {
   version: number;
 }
+
+export interface AdminGenericPolicyOrderRequest {
+  policyIds: number[];
+  versions: Record<number, number>;
+}
+
+export interface ManagedSystemPromptPolicyContent { sectionOverrides: Record<string, string>; }
+export interface SystemPromptTypeSummary { typeCode: string; categoryCode: string; displayName: string; description: string; sourceRevision: string; snapshotScope: string; sectionCount: number; configured: boolean; livePolicyCount: number; effectiveSource: string; }
+export interface SystemPromptTypeDetail { typeCode: string; sourceRevision: string; snapshotScope: string; sections: SystemPromptSection[]; }
+export interface SystemPromptSection { key: string; displayName: string; description: string; displayOrder: number; required: boolean; maxLength: number; defaultText: string; }
+export interface SystemPromptEffectiveSection { key: string; text: string; source: string; contentHash: string; charCount: number; }
+export interface SystemPromptEffective { typeCode: string; resolutionSource: string; policyId?: number | null; policyVersion?: number | null; matchSource?: string | null; matchedSubjectId?: number | null; combinedContentHash: string; sections: SystemPromptEffectiveSection[]; }
 
 export interface AdminPasswordResetResponse {
   temporaryPassword: string;
