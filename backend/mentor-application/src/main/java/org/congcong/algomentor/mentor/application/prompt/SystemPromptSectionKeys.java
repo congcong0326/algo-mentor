@@ -4,6 +4,7 @@ package org.congcong.algomentor.mentor.application.prompt;
 public final class SystemPromptSectionKeys {
 
   public static final String MENTOR_CONVERSATION_BASE = "mentor-conversation.base";
+  public static final String TOPIC_EXPLANATION_BASE = "topic-explanation.base";
   public static final String PRACTICE_TASK_BOOTSTRAP = "practice.task.bootstrap";
   public static final String PRACTICE_BASE_IDENTITY = "practice.base.identity";
   public static final String PRACTICE_COACH_GUIDED = "practice.strategy.coach-style.guided";

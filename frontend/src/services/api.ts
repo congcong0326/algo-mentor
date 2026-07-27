@@ -1060,6 +1060,66 @@ export async function updateAdminAiModelPrice(
   return response.json();
 }
 
+export async function getAdminAiProviderTypes(): Promise<ApiResponse<{ items: import('../types/api').AdminAiProviderType[] }>> {
+  const response = await apiFetch('/api/admin/ai/provider-types', { headers: jsonHeaders });
+  if (!response.ok) throw await toApiRequestError(response, 'AI provider types request failed');
+  return response.json();
+}
+
+export async function getAdminAiProviders(): Promise<ApiResponse<{ items: import('../types/api').AdminAiProvider[] }>> {
+  const response = await apiFetch('/api/admin/ai/providers', { headers: jsonHeaders });
+  if (!response.ok) throw await toApiRequestError(response, 'AI providers request failed');
+  return response.json();
+}
+
+export async function getAdminAiProvider(id: number): Promise<ApiResponse<import('../types/api').AdminAiProvider>> {
+  const response = await apiFetch(`/api/admin/ai/providers/${id}`, { headers: jsonHeaders });
+  if (!response.ok) throw await toApiRequestError(response, 'AI provider request failed');
+  return response.json();
+}
+
+export async function createAdminAiProvider(request: import('../types/api').AdminAiProviderWriteRequest): Promise<ApiResponse<import('../types/api').AdminAiProvider>> {
+  const response = await apiFetch('/api/admin/ai/providers', { method: 'POST', headers: { ...jsonHeaders, 'Content-Type': 'application/json' }, body: JSON.stringify(request) });
+  if (!response.ok) throw await toApiRequestError(response, 'AI provider create failed');
+  return response.json();
+}
+
+export async function updateAdminAiProvider(id: number, request: import('../types/api').AdminAiProviderUpdateRequest): Promise<ApiResponse<import('../types/api').AdminAiProvider>> {
+  const response = await apiFetch(`/api/admin/ai/providers/${id}`, { method: 'PUT', headers: { ...jsonHeaders, 'Content-Type': 'application/json' }, body: JSON.stringify(request) });
+  if (!response.ok) throw await toApiRequestError(response, 'AI provider update failed');
+  return response.json();
+}
+
+export async function getAdminAiProviderModels(id: number): Promise<ApiResponse<{ items: import('../types/api').AdminAiConfiguredModel[] }>> {
+  const response = await apiFetch(`/api/admin/ai/providers/${id}/models`, { headers: jsonHeaders });
+  if (!response.ok) throw await toApiRequestError(response, 'AI provider models request failed');
+  return response.json();
+}
+
+export async function createAdminAiProviderModel(id: number, request: import('../types/api').AdminAiModelWriteRequest): Promise<ApiResponse<import('../types/api').AdminAiConfiguredModel>> {
+  const response = await apiFetch(`/api/admin/ai/providers/${id}/models`, { method: 'POST', headers: { ...jsonHeaders, 'Content-Type': 'application/json' }, body: JSON.stringify(request) });
+  if (!response.ok) throw await toApiRequestError(response, 'AI model create failed');
+  return response.json();
+}
+
+export async function updateAdminAiModel(id: number, request: import('../types/api').AdminAiModelWriteRequest): Promise<ApiResponse<import('../types/api').AdminAiConfiguredModel>> {
+  const response = await apiFetch(`/api/admin/ai/models/${id}`, { method: 'PUT', headers: { ...jsonHeaders, 'Content-Type': 'application/json' }, body: JSON.stringify(request) });
+  if (!response.ok) throw await toApiRequestError(response, 'AI model update failed');
+  return response.json();
+}
+
+export async function getAdminAiRoutingScenarios(): Promise<ApiResponse<{ items: import('../types/api').AdminAiRoutingScenario[] }>> {
+  const response = await apiFetch('/api/admin/ai/model-routing/scenarios', { headers: jsonHeaders });
+  if (!response.ok) throw await toApiRequestError(response, 'AI routing scenarios request failed');
+  return response.json();
+}
+
+export async function getAdminAiEffectiveRoute(scenarioCode: string, userId: number): Promise<ApiResponse<import('../types/api').AdminAiEffectiveRoute>> {
+  const response = await apiFetch(`/api/admin/ai/model-routing/scenarios/${encodeURIComponent(scenarioCode)}/effective?userId=${encodeURIComponent(String(userId))}`, { headers: jsonHeaders });
+  if (!response.ok) throw await toApiRequestError(response, 'AI route simulation request failed');
+  return response.json();
+}
+
 export async function getAdminAiUsageSummary(
   query: AdminAiUsageQuery = {},
   signal?: AbortSignal,

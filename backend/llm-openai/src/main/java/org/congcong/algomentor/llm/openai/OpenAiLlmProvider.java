@@ -100,15 +100,13 @@ public class OpenAiLlmProvider implements LlmProvider {
     } catch (Throwable error) {
       LlmException mapped = OpenAiLlmExceptionMapper.map(error, PROVIDER_ID, modelId);
       log.warn(
-          "OpenAI completion request failed. provider={} model={} elapsedMs={} code={} retryable={} metadata={} causeType={} causeMessage={}",
+          "OpenAI completion request failed. provider={} model={} elapsedMs={} code={} retryable={} causeType={}",
           PROVIDER_ID.value(),
           modelId.value(),
           Duration.between(startedAt, Instant.now()).toMillis(),
           mapped.code(),
           mapped.retryable(),
-          mapped.metadata(),
-          causeType(mapped),
-          causeMessage(mapped));
+          causeType(mapped));
       throw mapped;
     }
   }
@@ -134,15 +132,13 @@ public class OpenAiLlmProvider implements LlmProvider {
     } catch (Throwable error) {
       LlmException mapped = OpenAiLlmExceptionMapper.map(error, PROVIDER_ID, modelId);
       log.warn(
-          "OpenAI stream request failed before subscription. provider={} model={} elapsedMs={} code={} retryable={} metadata={} causeType={} causeMessage={}",
+          "OpenAI stream request failed before subscription. provider={} model={} elapsedMs={} code={} retryable={} causeType={}",
           PROVIDER_ID.value(),
           modelId.value(),
           Duration.between(startedAt, Instant.now()).toMillis(),
           mapped.code(),
           mapped.retryable(),
-          mapped.metadata(),
-          causeType(mapped),
-          causeMessage(mapped));
+          causeType(mapped));
       throw mapped;
     }
   }
@@ -192,11 +188,4 @@ public class OpenAiLlmProvider implements LlmProvider {
     return cause == null ? "none" : cause.getClass().getName();
   }
 
-  private String causeMessage(Throwable error) {
-    Throwable cause = error.getCause();
-    if (cause == null || cause.getMessage() == null || cause.getMessage().isBlank()) {
-      return "";
-    }
-    return cause.getMessage();
-  }
 }

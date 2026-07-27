@@ -50,6 +50,7 @@ import org.congcong.algomentor.ai.governance.admission.AiRunLifecycleService;
 import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
 import org.congcong.algomentor.ai.governance.completion.AiGovernedCompletionService;
 import org.congcong.algomentor.ai.governance.completion.AiPassthroughCompletionGateway;
+import org.congcong.algomentor.ai.governance.metrics.AiProviderCallMetricsLlmGateway;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicyResolver;
 import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimePolicyService;
 import org.congcong.algomentor.api.agent.execution.ManagedAgentExecutor;
@@ -58,13 +59,16 @@ import org.congcong.algomentor.api.problem.tool.GetProblemStatementTool;
 import org.congcong.algomentor.api.problem.tool.ListProblemFiltersTool;
 import org.congcong.algomentor.api.problem.tool.SearchProblemsTool;
 import org.congcong.algomentor.mentor.application.ExplainTopicUseCase;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentToolNames;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
-import org.congcong.algomentor.llm.core.gateway.DefaultLlmGatewayFactory;
+import org.congcong.algomentor.agent.core.AgentInvocationTargetResolver;
+import org.congcong.algomentor.ai.governance.routing.AiModelRouteResolver;
+import org.congcong.algomentor.ai.governance.routing.AiRunInvocationTargetStore;
+import org.congcong.algomentor.llm.core.gateway.DynamicLlmGateway;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
-import org.congcong.algomentor.llm.core.gateway.LlmGatewayFactory;
-import org.congcong.algomentor.llm.core.provider.LlmProvider;
+import org.congcong.algomentor.llm.core.model.LlmModelSelector;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
@@ -79,7 +83,6 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({
-    LlmGatewayProperties.class,
     AgentCompactionProperties.class,
     AgentExecutorProperties.class,
     AgentToolPermissionProperties.class,
@@ -104,34 +107,27 @@ public class MentorAiConfiguration {
   }
 
   @Bean
-  @ConditionalOnMissingBean
-  public LlmGatewayFactory llmGatewayFactory() {
-    return new DefaultLlmGatewayFactory();
-  }
-
-  @Bean
   @ConditionalOnMissingBean(LlmGateway.class)
-  public LlmGatewayDelegate llmGatewayDelegate(
-      List<LlmProvider> providers,
-      LlmGatewayProperties gatewayProperties,
-      LlmGatewayFactory gatewayFactory
-  ) {
-    if (providers.isEmpty()) {
-      return new LlmGatewayDelegate(new UnconfiguredLlmGateway());
-    }
-    return new LlmGatewayDelegate(gatewayFactory.create(providers, gatewayProperties.toOptions()));
+  public LlmGatewayDelegate llmGatewayDelegate() {
+    return new LlmGatewayDelegate(new DynamicLlmGateway());
   }
 
   @Bean
   @ConditionalOnMissingBean(LlmGateway.class)
   public LlmGateway llmGateway(
       LlmGatewayDelegate delegate,
-      ObjectProvider<AiLlmCallAccountingService> accountingServiceProvider
+      ObjectProvider<AiLlmCallAccountingService> accountingServiceProvider,
+      ObjectProvider<MeterRegistry> meterRegistryProvider
   ) {
+    LlmGateway gateway = delegate.gateway();
+    MeterRegistry meterRegistry = meterRegistryProvider.getIfAvailable();
+    if (meterRegistry != null) {
+      gateway = new AiProviderCallMetricsLlmGateway(gateway, meterRegistry);
+    }
     AiLlmCallAccountingService accountingService = accountingServiceProvider.getIfAvailable();
     return accountingService == null
-        ? delegate.gateway()
-        : new AiAccountingLlmGateway(delegate.gateway(), accountingService);
+        ? gateway
+        : new AiAccountingLlmGateway(gateway, accountingService);
   }
 
   @Bean
@@ -141,7 +137,9 @@ public class MentorAiConfiguration {
       ObjectProvider<AiRunAdmissionService> admissionServiceProvider,
       ObjectProvider<AiRunLifecycleService> lifecycleServiceProvider,
       ObjectProvider<AiPurposePolicyResolver> policyResolverProvider,
-      ObjectProvider<AiRuntimePolicyService> runtimePolicyServiceProvider
+      ObjectProvider<AiRuntimePolicyService> runtimePolicyServiceProvider,
+      ObjectProvider<AiModelRouteResolver> modelRouteResolverProvider,
+      ObjectProvider<AiRunInvocationTargetStore> invocationTargetStoreProvider
   ) {
     AiRunAdmissionService admissionService = admissionServiceProvider.getIfAvailable();
     AiRunLifecycleService lifecycleService = lifecycleServiceProvider.getIfAvailable();
@@ -155,7 +153,9 @@ public class MentorAiConfiguration {
         admissionService,
         lifecycleService,
         policyResolver,
-        runtimePolicyService);
+        runtimePolicyService,
+        modelRouteResolverProvider.getIfAvailable(),
+        invocationTargetStoreProvider.getIfAvailable());
   }
 
   @Bean
@@ -167,12 +167,14 @@ public class MentorAiConfiguration {
   @Bean
   @ConditionalOnMissingBean
   public AgentLlmRequestFactory agentLlmRequestFactory(
-      LlmGatewayProperties gatewayProperties,
-      AgentModelSelectorResolver modelSelectorResolver
+      AgentModelSelectorResolver modelSelectorResolver,
+      ObjectProvider<AiRunInvocationTargetStore> invocationTargetStoreProvider
   ) {
+    AiRunInvocationTargetStore invocationTargetStore = invocationTargetStoreProvider.getIfAvailable();
     return new AgentLlmRequestFactory(
-        gatewayProperties.defaultSelector(MentorPurposes.TOPIC_EXPLANATION),
-        modelSelectorResolver);
+        LlmModelSelector.requiring(java.util.Set.of()),
+        modelSelectorResolver,
+        invocationTargetStore == null ? AgentInvocationTargetResolver.none() : invocationTargetStore);
   }
 
   @Bean
@@ -372,9 +374,13 @@ public class MentorAiConfiguration {
   @ConditionalOnMissingBean
   public ExplainTopicUseCase explainTopicUseCase(
       AgentRunner agentRunner,
-      AgentLoopRunner agentLoopRunner
+      AgentLoopRunner agentLoopRunner,
+      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolverProvider
   ) {
-    return new ExplainTopicUseCase(agentRunner, agentLoopRunner);
+    return new ExplainTopicUseCase(
+        agentRunner,
+        agentLoopRunner,
+        systemPromptResolverProvider.getIfAvailable());
   }
 
   private LlmToolChoice toToolChoice(String value, String specificToolName) {

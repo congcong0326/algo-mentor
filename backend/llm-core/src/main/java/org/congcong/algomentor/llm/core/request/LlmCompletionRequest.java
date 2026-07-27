@@ -2,6 +2,7 @@ package org.congcong.algomentor.llm.core.request;
 
 import java.util.List;
 import java.util.Map;
+import org.congcong.algomentor.llm.core.model.LlmInvocationTarget;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
 import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
@@ -16,8 +17,21 @@ public record LlmCompletionRequest(
     List<LlmToolSpec> tools,
     LlmToolChoice toolChoice,
     LlmResponseFormat responseFormat,
-    Map<String, Object> metadata
+    Map<String, Object> metadata,
+    LlmInvocationTarget invocationTarget
 ) {
+
+  public LlmCompletionRequest(
+      LlmModelSelector modelSelector,
+      List<LlmMessage> messages,
+      LlmGenerationOptions options,
+      List<LlmToolSpec> tools,
+      LlmToolChoice toolChoice,
+      LlmResponseFormat responseFormat,
+      Map<String, Object> metadata
+  ) {
+    this(modelSelector, messages, options, tools, toolChoice, responseFormat, metadata, null);
+  }
 
   public LlmCompletionRequest {
     if (modelSelector == null) {
@@ -47,7 +61,20 @@ public record LlmCompletionRequest(
         tools,
         toolChoice,
         responseFormat,
-        metadata);
+        metadata,
+        invocationTarget);
+  }
+
+  public LlmCompletionRequest withInvocationTarget(LlmInvocationTarget invocationTarget) {
+    return new LlmCompletionRequest(
+        modelSelector,
+        messages,
+        options,
+        tools,
+        toolChoice,
+        responseFormat,
+        metadata,
+        invocationTarget);
   }
 
   private static void validateToolChoice(List<LlmToolSpec> tools, LlmToolChoice toolChoice) {
@@ -72,6 +99,7 @@ public record LlmCompletionRequest(
     private LlmToolChoice toolChoice;
     private LlmResponseFormat responseFormat;
     private Map<String, Object> metadata;
+    private LlmInvocationTarget invocationTarget;
 
     public Builder modelSelector(LlmModelSelector modelSelector) {
       this.modelSelector = modelSelector;
@@ -108,8 +136,14 @@ public record LlmCompletionRequest(
       return this;
     }
 
+    public Builder invocationTarget(LlmInvocationTarget invocationTarget) {
+      this.invocationTarget = invocationTarget;
+      return this;
+    }
+
     public LlmCompletionRequest build() {
-      return new LlmCompletionRequest(modelSelector, messages, options, tools, toolChoice, responseFormat, metadata);
+      return new LlmCompletionRequest(
+          modelSelector, messages, options, tools, toolChoice, responseFormat, metadata, invocationTarget);
     }
   }
 }

@@ -1,6 +1,7 @@
 package org.congcong.algomentor.mentor.application.prompt;
 
 import java.util.List;
+import org.congcong.algomentor.ai.governance.model.AiBusinessScenario;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentToolNames;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredProfileToolContracts;
 
@@ -12,6 +13,7 @@ import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredPr
 public final class ManagedSystemPromptDefinitions {
 
   public static final ManagedSystemPromptDefinition MENTOR_CONVERSATION = definition(
+      AiBusinessScenario.MENTOR_CONVERSATION,
       SystemPromptTypeCodes.MENTOR_CONVERSATION_V1,
       "2026-07-25.1",
       SystemPromptSnapshotScope.TASK,
@@ -19,7 +21,17 @@ public final class ManagedSystemPromptDefinitions {
       section(SystemPromptSectionKeys.MENTOR_CONVERSATION_BASE, "导师基线", 10, true,
           "You are an algorithm learning mentor. Explain clearly, ask guiding questions when useful, and prefer Java examples."));
 
+  public static final ManagedSystemPromptDefinition TOPIC_EXPLANATION = definition(
+      AiBusinessScenario.TOPIC_EXPLANATION,
+      SystemPromptTypeCodes.TOPIC_EXPLANATION_V1,
+      "2026-07-27.1",
+      SystemPromptSnapshotScope.TASK,
+      descriptor("CONVERSATION", "主题讲解", "Topic explanation", "主题讲解的固定系统指令。"),
+      section(SystemPromptSectionKeys.TOPIC_EXPLANATION_BASE, "主题讲解基线", 10, true,
+          "You are an algorithm learning mentor. Explain the requested topic precisely, use approachable examples, and prefer Java examples when code is useful."));
+
   public static final ManagedSystemPromptDefinition PRACTICE_CHAT = definition(
+      AiBusinessScenario.PRACTICE_CHAT,
       SystemPromptTypeCodes.PRACTICE_CHAT_V1,
       "2026-07-25.1",
       SystemPromptSnapshotScope.RUN,
@@ -114,6 +126,7 @@ public final class ManagedSystemPromptDefinitions {
           """.strip()));
 
   public static final ManagedSystemPromptDefinition LEARNING_PLAN_DRAFT = definition(
+      AiBusinessScenario.LEARNING_PLAN_DRAFT,
       SystemPromptTypeCodes.LEARNING_PLAN_DRAFT_V1,
       "2026-07-25.1",
       SystemPromptSnapshotScope.RUN,
@@ -132,6 +145,7 @@ public final class ManagedSystemPromptDefinitions {
           """.strip()));
 
   public static final ManagedSystemPromptDefinition LEARNING_PLAN_REVISION = definition(
+      AiBusinessScenario.LEARNING_PLAN_REVISION,
       SystemPromptTypeCodes.LEARNING_PLAN_REVISION_V1,
       "2026-07-25.1",
       SystemPromptSnapshotScope.RUN,
@@ -140,6 +154,7 @@ public final class ManagedSystemPromptDefinitions {
           "你是 algo-mentor 的学习计划修订 Agent。最终只输出完整学习计划草案 JSON。"));
 
   public static final ManagedSystemPromptDefinition LEARNING_PLAN_EXTENSION = definition(
+      AiBusinessScenario.LEARNING_PLAN_EXTENSION,
       SystemPromptTypeCodes.LEARNING_PLAN_EXTENSION_V1,
       "2026-07-25.1",
       SystemPromptSnapshotScope.RUN,
@@ -158,6 +173,7 @@ public final class ManagedSystemPromptDefinitions {
           """.strip()));
 
   public static final ManagedSystemPromptDefinition PRACTICE_CODE_REVIEW = definition(
+      AiBusinessScenario.PRACTICE_CODE_REVIEW,
       SystemPromptTypeCodes.PRACTICE_CODE_REVIEW_V1,
       "2026-07-25.1",
       SystemPromptSnapshotScope.RUN,
@@ -177,6 +193,7 @@ public final class ManagedSystemPromptDefinitions {
           """.strip()));
 
   public static final ManagedSystemPromptDefinition DECLARED_PROFILE_UPDATE = definition(
+      AiBusinessScenario.LEARNER_DECLARED_PROFILE_UPDATE,
       SystemPromptTypeCodes.LEARNER_DECLARED_PROFILE_UPDATE_V1,
       "2026-07-25.1",
       SystemPromptSnapshotScope.RUN,
@@ -191,6 +208,7 @@ public final class ManagedSystemPromptDefinitions {
           """.strip()));
 
   public static final ManagedSystemPromptDefinition CODE_REVIEW_PROFILE_UPDATE = definition(
+      AiBusinessScenario.CODE_REVIEW_PROFILE_UPDATE,
       SystemPromptTypeCodes.CODE_REVIEW_PROFILE_UPDATE_V1,
       "2026-07-25.1",
       SystemPromptSnapshotScope.BATCH,
@@ -205,6 +223,7 @@ public final class ManagedSystemPromptDefinitions {
 
   private static final List<ManagedSystemPromptDefinition> ALL = List.of(
       MENTOR_CONVERSATION,
+      TOPIC_EXPLANATION,
       PRACTICE_CHAT,
       LEARNING_PLAN_DRAFT,
       LEARNING_PLAN_REVISION,
@@ -221,13 +240,14 @@ public final class ManagedSystemPromptDefinitions {
   }
 
   private static ManagedSystemPromptDefinition definition(
+      AiBusinessScenario scenario,
       String typeCode,
       String sourceRevision,
       SystemPromptSnapshotScope scope,
       ManagedSystemPromptTypeDescriptor descriptor,
       ManagedSystemPromptSectionDefinition... sections
   ) {
-    return new StaticDefinition(typeCode, sourceRevision, scope, descriptor, List.of(sections));
+    return new StaticDefinition(scenario, typeCode, sourceRevision, scope, descriptor, List.of(sections));
   }
 
   private static ManagedSystemPromptTypeDescriptor descriptor(
@@ -252,6 +272,7 @@ public final class ManagedSystemPromptDefinitions {
   }
 
   private record StaticDefinition(
+      AiBusinessScenario scenario,
       String typeCode,
       String sourceRevision,
       SystemPromptSnapshotScope snapshotScope,

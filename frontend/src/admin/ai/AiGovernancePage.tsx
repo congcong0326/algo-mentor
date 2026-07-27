@@ -3,16 +3,17 @@ import { useI18n } from '../../i18n/I18nProvider';
 import { ApiRequestError, getAdminAiSettings, requireApiData, updateAdminAiSettings } from '../../services/api';
 import type { AdminAiSettings } from '../../types/api';
 import AiModelPricingPanel from './AiModelPricingPanel';
+import AiModelRoutingPanel from './AiModelRoutingPanel';
+import AiProviderModelPanel from './AiProviderModelPanel';
 import AiRuntimePolicyBar from './AiRuntimePolicyBar';
 import AiUsagePanel, { type AiUsageDimension, type AiUsageRouteState } from './AiUsagePanel';
+import { aiGovernanceTabFromParam, type AiGovernanceTab } from './aiGovernanceRoute';
 import { isoDateToday } from './aiFormat';
 
 interface AiGovernancePageProps {
   onNavigate: (path: string) => void;
   search: string;
 }
-
-type AiGovernanceTab = 'usage' | 'pricing';
 
 export default function AiGovernancePage({ onNavigate, search }: AiGovernancePageProps) {
   const { resources } = useI18n();
@@ -85,6 +86,26 @@ export default function AiGovernancePage({ onNavigate, search }: AiGovernancePag
 
       <div className="ai-governance-tabs" role="tablist" aria-label={t.title}>
         <button
+          aria-controls="ai-providers-tab-panel"
+          aria-selected={route.tab === 'providers'}
+          className="ai-tab-button"
+          onClick={() => updateRoute(route.filters, 'providers')}
+          role="tab"
+          type="button"
+        >
+          提供商与模型
+        </button>
+        <button
+          aria-controls="ai-routing-tab-panel"
+          aria-selected={route.tab === 'routing'}
+          className="ai-tab-button"
+          onClick={() => updateRoute(route.filters, 'routing')}
+          role="tab"
+          type="button"
+        >
+          模型路由
+        </button>
+        <button
           aria-controls="ai-usage-tab-panel"
           aria-selected={route.tab === 'usage'}
           className="ai-tab-button"
@@ -106,7 +127,11 @@ export default function AiGovernancePage({ onNavigate, search }: AiGovernancePag
         </button>
       </div>
 
-      {route.tab === 'usage' ? (
+      {route.tab === 'providers' ? (
+        <div id="ai-providers-tab-panel" role="tabpanel"><AiProviderModelPanel /></div>
+      ) : route.tab === 'routing' ? (
+        <div id="ai-routing-tab-panel" role="tabpanel"><AiModelRoutingPanel /></div>
+      ) : route.tab === 'usage' ? (
         <div id="ai-usage-tab-panel" role="tabpanel">
           <AiUsagePanel
             filters={route.filters}
@@ -135,7 +160,7 @@ function routeFromSearch(search: string): { filters: AiUsageRouteState; tab: AiG
   const dimension = params.get('dimension');
   const userId = parseUserId(params.get('userId'));
   return {
-    tab: params.get('tab') === 'pricing' ? 'pricing' : 'usage',
+    tab: aiGovernanceTabFromParam(params.get('tab')),
     filters: {
       from: validDate(params.get('from')) ?? today,
       to: validDate(params.get('to')) ?? today,

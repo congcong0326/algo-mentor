@@ -20,6 +20,17 @@ import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimeCacheProper
 import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimePolicyService;
 import org.congcong.algomentor.ai.governance.pricing.AiCostCalculator;
 import org.congcong.algomentor.ai.governance.pricing.AiModelPriceAdminService;
+import org.congcong.algomentor.ai.governance.provider.repository.AiConfiguredModelRepository;
+import org.congcong.algomentor.ai.governance.provider.repository.AiProviderInstanceRepository;
+import org.congcong.algomentor.ai.governance.provider.repository.mybatis.AiConfiguredModelMapper;
+import org.congcong.algomentor.ai.governance.provider.repository.mybatis.AiProviderInstanceMapper;
+import org.congcong.algomentor.ai.governance.provider.repository.mybatis.MyBatisAiConfiguredModelRepository;
+import org.congcong.algomentor.ai.governance.provider.repository.mybatis.MyBatisAiProviderInstanceRepository;
+import org.congcong.algomentor.ai.governance.provider.runtime.ProviderClientRegistry;
+import org.congcong.algomentor.ai.governance.provider.service.AiProviderManagementService;
+import org.congcong.algomentor.ai.governance.routing.AiModelRoutePolicyTypeContributor;
+import org.congcong.algomentor.ai.governance.routing.AiModelRouteResolver;
+import org.congcong.algomentor.ai.governance.routing.AiRunInvocationTargetStore;
 import org.congcong.algomentor.ai.governance.repository.mybatis.AiAdminUsageMapper;
 import org.congcong.algomentor.ai.governance.repository.mybatis.AiDailyUsageMapper;
 import org.congcong.algomentor.ai.governance.repository.mybatis.AiLlmCallUsageMapper;
@@ -40,6 +51,9 @@ import org.congcong.algomentor.cache.config.CacheAutoConfiguration;
 import org.congcong.algomentor.cache.factory.SharedCacheRegionFactory;
 import org.congcong.algomentor.identity.autoconfigure.IdentityAutoConfiguration;
 import org.congcong.algomentor.identity.repository.IdentityUserRepository;
+import org.congcong.algomentor.llm.core.provider.LlmProviderAdapter;
+import org.congcong.algomentor.llm.core.provider.LlmProviderAdapterRegistry;
+import org.congcong.algomentor.policy.autoconfigure.GenericPolicyAutoConfiguration;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -48,7 +62,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
-@AutoConfiguration(after = {CacheAutoConfiguration.class, IdentityAutoConfiguration.class})
+@AutoConfiguration(
+    after = {CacheAutoConfiguration.class, IdentityAutoConfiguration.class},
+    before = GenericPolicyAutoConfiguration.class)
 @EnableConfigurationProperties({AiGovernanceProperties.class, AiRuntimeCacheProperties.class})
 public class AiGovernanceAutoConfiguration {
 
@@ -108,6 +124,82 @@ public class AiGovernanceAutoConfiguration {
   @ConditionalOnMissingBean
   public AiModelPriceMapper aiModelPriceMapper(SqlSessionTemplate template) {
     return template.getMapper(AiModelPriceMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnBean(SqlSessionTemplate.class)
+  @ConditionalOnMissingBean
+  public AiProviderInstanceMapper aiProviderInstanceMapper(SqlSessionTemplate template) {
+    return template.getMapper(AiProviderInstanceMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnBean(SqlSessionTemplate.class)
+  @ConditionalOnMissingBean
+  public AiConfiguredModelMapper aiConfiguredModelMapper(SqlSessionTemplate template) {
+    return template.getMapper(AiConfiguredModelMapper.class);
+  }
+
+  @Bean
+  @ConditionalOnBean(AiProviderInstanceMapper.class)
+  @ConditionalOnMissingBean
+  public AiProviderInstanceRepository aiProviderInstanceRepository(AiProviderInstanceMapper mapper) {
+    return new MyBatisAiProviderInstanceRepository(mapper);
+  }
+
+  @Bean
+  @ConditionalOnBean(AiConfiguredModelMapper.class)
+  @ConditionalOnMissingBean
+  public AiConfiguredModelRepository aiConfiguredModelRepository(AiConfiguredModelMapper mapper) {
+    return new MyBatisAiConfiguredModelRepository(mapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LlmProviderAdapterRegistry llmProviderAdapterRegistry(
+      ObjectProvider<LlmProviderAdapter> adapters
+  ) {
+    return new LlmProviderAdapterRegistry(adapters.orderedStream().toList());
+  }
+
+  @Bean
+  @ConditionalOnBean({AiProviderInstanceRepository.class, AiConfiguredModelRepository.class,
+      LlmProviderAdapterRegistry.class})
+  @ConditionalOnMissingBean
+  public AiProviderManagementService aiProviderManagementService(
+      AiProviderInstanceRepository providerRepository,
+      AiConfiguredModelRepository modelRepository,
+      LlmProviderAdapterRegistry adapterRegistry,
+      ObjectProvider<Clock> clockProvider
+  ) {
+    return new AiProviderManagementService(
+        providerRepository,
+        modelRepository,
+        adapterRegistry,
+        clockProvider.getIfAvailable(Clock::systemUTC));
+  }
+
+  @Bean
+  @ConditionalOnBean(AiProviderManagementService.class)
+  @ConditionalOnMissingBean
+  public AiModelRoutePolicyTypeContributor aiModelRoutePolicyTypeContributor(
+      AiProviderManagementService providerManagementService
+  ) {
+    return new AiModelRoutePolicyTypeContributor(providerManagementService);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ProviderClientRegistry providerClientRegistry(
+      ObjectProvider<MeterRegistry> meterRegistryProvider
+  ) {
+    return new ProviderClientRegistry(meterRegistryProvider.getIfAvailable());
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public AiRunInvocationTargetStore aiRunInvocationTargetStore() {
+    return new AiRunInvocationTargetStore();
   }
 
   @Bean
@@ -249,14 +341,18 @@ public class AiGovernanceAutoConfiguration {
       AiDailyUsageStore usageStore,
       AiRunLockService runLockService,
       PostgresAiRunAdmissionRepository admissionRepository,
-      ObjectProvider<AiRuntimePolicyService> runtimePolicyServiceProvider) {
+      ObjectProvider<AiRuntimePolicyService> runtimePolicyServiceProvider,
+      ObjectProvider<AiModelRouteResolver> modelRouteResolverProvider,
+      ObjectProvider<AiRunInvocationTargetStore> invocationTargetStoreProvider) {
     return new AiRunAdmissionService(
         properties,
         policyResolver,
         usageStore,
         runLockService,
         admissionRepository,
-        runtimePolicyServiceProvider.getIfAvailable());
+        runtimePolicyServiceProvider.getIfAvailable(),
+        modelRouteResolverProvider.getIfAvailable(),
+        invocationTargetStoreProvider.getIfAvailable());
   }
 
   @Bean
@@ -266,8 +362,14 @@ public class AiGovernanceAutoConfiguration {
       AiGovernanceProperties properties,
       PostgresAiRunAdmissionRepository admissionRepository,
       AiDailyUsageStore usageStore,
-      AiRunLockService runLockService) {
-    return new AiRunLifecycleService(properties, admissionRepository, usageStore, runLockService);
+      AiRunLockService runLockService,
+      ObjectProvider<AiRunInvocationTargetStore> invocationTargetStoreProvider) {
+    return new AiRunLifecycleService(
+        properties,
+        admissionRepository,
+        usageStore,
+        runLockService,
+        invocationTargetStoreProvider.getIfAvailable());
   }
 
   @Bean

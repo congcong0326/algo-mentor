@@ -137,6 +137,9 @@ public final class ManagedSystemPromptDefinitionRegistry {
 
   private void validateDefinition(ManagedSystemPromptDefinition definition) {
     String typeCode = definition.typeCode();
+    if (definition.scenario() == null) {
+      throw new IllegalArgumentException("System prompt scenario is required: " + typeCode);
+    }
     if (typeCode == null || !TYPE_CODE_PATTERN.matcher(typeCode).matches()) {
       throw new IllegalArgumentException("Invalid managed system prompt typeCode: " + typeCode);
     }

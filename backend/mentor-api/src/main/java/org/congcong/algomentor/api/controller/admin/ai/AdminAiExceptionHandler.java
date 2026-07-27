@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
     AdminAiSettingsController.class,
     AdminUserAiPolicyController.class,
     AdminAiModelPriceController.class,
-    AdminAiUsageController.class
+    AdminAiUsageController.class,
+    AdminAiProviderController.class,
+    AdminAiModelRoutingController.class
 })
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class AdminAiExceptionHandler {
@@ -55,6 +57,8 @@ public class AdminAiExceptionHandler {
       case AI_USER_DISABLED -> HttpStatus.FORBIDDEN;
       case AI_MODEL_PRICE_NOT_FOUND -> HttpStatus.NOT_FOUND;
       case AI_MODEL_PRICE_ALREADY_EXISTS -> HttpStatus.CONFLICT;
+      case AI_PROVIDER_NOT_FOUND, AI_MODEL_NOT_FOUND -> HttpStatus.NOT_FOUND;
+      case AI_PROVIDER_NAME_ALREADY_EXISTS, AI_MODEL_ALREADY_EXISTS -> HttpStatus.CONFLICT;
       default -> HttpStatus.BAD_REQUEST;
     };
   }

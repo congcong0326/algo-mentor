@@ -8,12 +8,12 @@
       parameterType="org.congcong.algomentor.ai.governance.repository.mybatis.model.AiLlmCallUsageRow">
     INSERT INTO ai_llm_call_usage (
       call_id, run_id, user_id, purpose, source, call_kind, step_index,
-      provider, model, status, error_code, input_tokens, output_tokens,
+      provider, model, provider_instance_id, ai_model_id, status, error_code, input_tokens, output_tokens,
       cached_tokens, reasoning_tokens, total_tokens, started_at, completed_at
     )
     VALUES (
       #{callId}, #{runId}, #{userId}, #{purpose}, #{source}, #{callKind}, #{stepIndex},
-      #{provider}, #{model}, #{status}, #{errorCode}, #{usage.inputTokens}, #{usage.outputTokens},
+      #{provider}, #{model}, #{providerInstanceId}, #{aiModelId}, #{status}, #{errorCode}, #{usage.inputTokens}, #{usage.outputTokens},
       #{usage.cachedTokens}, #{usage.reasoningTokens}, #{usage.totalTokens}, #{startedAt}, #{completedAt}
     )
   </insert>

@@ -103,9 +103,9 @@ final class OpenAiLlmExceptionMapper {
   }
 
   private static String safeMessage(Throwable error) {
-    if (error == null || error.getMessage() == null || error.getMessage().isBlank()) {
-      return "OpenAI provider call failed";
+    if (error instanceof OpenAIServiceException serviceException) {
+      return "OpenAI provider returned HTTP " + serviceException.statusCode();
     }
-    return error.getMessage();
+    return "OpenAI provider call failed";
   }
 }

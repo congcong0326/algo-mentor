@@ -18,6 +18,8 @@ class AiGovernanceMapperXmlTest {
         "mapper/ai/AiRunAdmissionMapper.xml",
         "mapper/ai/AiLlmCallUsageMapper.xml",
         "mapper/ai/AiModelPriceMapper.xml",
+        "mapper/ai/AiProviderInstanceMapper.xml",
+        "mapper/ai/AiConfiguredModelMapper.xml",
         "mapper/ai/AiAdminUsageMapper.xml",
         "mapper/ai/AiRuntimeSettingsMapper.xml",
         "mapper/ai/AiUserPolicyMapper.xml")) {

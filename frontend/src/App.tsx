@@ -16,6 +16,7 @@ import AiDebugConsole, {
 import UserManagementPage from './admin/UserManagementPage';
 import BetaAccessPage from './admin/BetaAccessPage';
 import AiGovernancePage from './admin/ai/AiGovernancePage';
+import { isAiGovernanceTab } from './admin/ai/aiGovernanceRoute';
 import SystemMonitoringPage from './admin/monitoring/SystemMonitoringPage';
 import SessionMonitoringPage from './admin/sessions/SessionMonitoringPage';
 import SessionPolicyPage from './admin/session-policies/SessionPolicyPage';
@@ -138,7 +139,7 @@ function normalizeAuthenticatedSearch(pathname: string, search: string): string 
     const to = validIsoDate(params.get('to'));
     const dimension = params.get('dimension');
     const userId = positiveInteger(params.get('userId'));
-    if (tab === 'usage' || tab === 'pricing') {
+    if (isAiGovernanceTab(tab)) {
       normalized.set('tab', tab);
     }
     if (from) {

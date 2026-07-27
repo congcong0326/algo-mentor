@@ -17,19 +17,31 @@ public final class AgentLlmRequestFactory {
 
   private final LlmModelSelector defaultModelSelector;
   private final AgentModelSelectorResolver modelSelectorResolver;
+  private final AgentInvocationTargetResolver invocationTargetResolver;
 
   public AgentLlmRequestFactory(LlmModelSelector defaultModelSelector) {
-    this(defaultModelSelector, new DefaultAgentModelSelectorResolver());
+    this(defaultModelSelector, new DefaultAgentModelSelectorResolver(), AgentInvocationTargetResolver.none());
   }
 
   public AgentLlmRequestFactory(
       LlmModelSelector defaultModelSelector,
       AgentModelSelectorResolver modelSelectorResolver
   ) {
+    this(defaultModelSelector, modelSelectorResolver, AgentInvocationTargetResolver.none());
+  }
+
+  public AgentLlmRequestFactory(
+      LlmModelSelector defaultModelSelector,
+      AgentModelSelectorResolver modelSelectorResolver,
+      AgentInvocationTargetResolver invocationTargetResolver
+  ) {
     this.defaultModelSelector = validatedSelector(defaultModelSelector);
     this.modelSelectorResolver = Objects.requireNonNull(
         modelSelectorResolver,
         "agent model selector resolver must not be null");
+    this.invocationTargetResolver = Objects.requireNonNull(
+        invocationTargetResolver,
+        "agent invocation target resolver must not be null");
   }
 
   static LlmCompletionRequest build(String model, AgentRequest request) {
@@ -117,6 +129,7 @@ public final class AgentLlmRequestFactory {
         .toolChoice(tools == null || tools.isEmpty() ? LlmToolChoice.none() : toolChoice)
         .responseFormat(executionOptions.responseFormat())
         .metadata(executionMetadata(metadata, stepIndex, executionOptions.structuredOutput()))
+        .invocationTarget(invocationTargetResolver.resolve(request).orElse(null))
         .build();
   }
 

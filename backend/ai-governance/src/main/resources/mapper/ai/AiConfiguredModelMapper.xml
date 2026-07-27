@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.ai.governance.provider.repository.mybatis.AiConfiguredModelMapper">
+
+  <resultMap id="AiConfiguredModelRowMap"
+      type="org.congcong.algomentor.ai.governance.provider.repository.mybatis.model.AiConfiguredModelRow">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Long"/>
+      <arg column="provider_instance_id" javaType="_long"/>
+      <arg column="display_name" javaType="java.lang.String"/>
+      <arg column="model_id" javaType="java.lang.String"/>
+      <arg column="enabled" javaType="_boolean"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
+  <sql id="ConfiguredModelColumns">
+    id, provider_instance_id, display_name, model_id, enabled, created_at, updated_at
+  </sql>
+
+  <select id="findByProviderInstanceId" resultMap="AiConfiguredModelRowMap">
+    SELECT <include refid="ConfiguredModelColumns" />
+    FROM ai_model
+    WHERE provider_instance_id = #{providerInstanceId}
+    ORDER BY display_name, id
+  </select>
+
+  <select id="findById" resultMap="AiConfiguredModelRowMap">
+    SELECT <include refid="ConfiguredModelColumns" />
+    FROM ai_model
+    WHERE id = #{id}
+  </select>
+
+  <select id="findByProviderInstanceIdAndModelId" resultMap="AiConfiguredModelRowMap">
+    SELECT <include refid="ConfiguredModelColumns" />
+    FROM ai_model
+    WHERE provider_instance_id = #{providerInstanceId}
+      AND model_id = #{modelId}
+  </select>
+
+  <select id="insert"
+      parameterType="org.congcong.algomentor.ai.governance.provider.repository.mybatis.model.AiConfiguredModelRow"
+      resultType="long"
+      affectData="true">
+    INSERT INTO ai_model (
+      provider_instance_id, display_name, model_id, enabled, created_at, updated_at
+    )
+    VALUES (
+      #{providerInstanceId}, #{displayName}, #{modelId}, #{enabled}, #{createdAt}, #{updatedAt}
+    )
+    RETURNING id
+  </select>
+
+  <update id="update"
+      parameterType="org.congcong.algomentor.ai.governance.provider.repository.mybatis.model.AiConfiguredModelRow">
+    UPDATE ai_model
+    SET display_name = #{displayName},
+        model_id = #{modelId},
+        enabled = #{enabled},
+        updated_at = #{updatedAt}
+    WHERE id = #{id}
+  </update>
+</mapper>

@@ -41,10 +41,9 @@ final class SdkOpenAiResponsesClient implements OpenAiResponsesClient {
       return response;
     } catch (RuntimeException exception) {
       log.warn(
-          "OpenAI SDK responses.create failed. elapsedMs={} exceptionType={} message={}",
+          "OpenAI SDK responses.create failed. elapsedMs={} exceptionType={}",
           Duration.between(startedAt, Instant.now()).toMillis(),
-          exception.getClass().getName(),
-          exception.getMessage());
+          exception.getClass().getName());
       throw exception;
     }
   }

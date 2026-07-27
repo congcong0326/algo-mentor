@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.Map;
+import org.congcong.algomentor.ai.governance.model.AiBusinessScenario;
 import org.junit.jupiter.api.Test;
 
 class ManagedSystemPromptDefinitionRegistryTest {
@@ -63,6 +64,9 @@ class ManagedSystemPromptDefinitionRegistryTest {
             SystemPromptTypeCodes.LEARNING_PLAN_REVISION_V1,
             SystemPromptTypeCodes.MENTOR_CONVERSATION_V1,
             SystemPromptTypeCodes.PRACTICE_CHAT_V1,
-            SystemPromptTypeCodes.PRACTICE_CODE_REVIEW_V1));
+            SystemPromptTypeCodes.PRACTICE_CODE_REVIEW_V1,
+            SystemPromptTypeCodes.TOPIC_EXPLANATION_V1));
+    assertThat(registry.definitions()).extracting(ManagedSystemPromptDefinition::scenario)
+        .containsExactlyInAnyOrderElementsOf(List.of(AiBusinessScenario.values()));
   }
 }

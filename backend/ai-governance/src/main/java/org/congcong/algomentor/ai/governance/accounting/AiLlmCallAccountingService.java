@@ -54,8 +54,13 @@ public class AiLlmCallAccountingService {
       log.warn("AI accounting request metadata is incomplete. callId={}", context.callId());
       increment(MISSING_CONTEXT_TOTAL);
     }
-    String provider = request.modelSelector().providerId().map(value -> value.value()).orElse(null);
-    String model = request.modelSelector().modelId().map(value -> value.value()).orElse(null);
+    org.congcong.algomentor.llm.core.model.LlmInvocationTarget target = request.invocationTarget();
+    String provider = target == null
+        ? request.modelSelector().providerId().map(value -> value.value()).orElse(null)
+        : target.providerType().value();
+    String model = target == null
+        ? request.modelSelector().modelId().map(value -> value.value()).orElse(null)
+        : target.upstreamModelId().value();
     AiLlmCallUsage usage = new AiLlmCallUsage(
         context,
         AiLlmCallStatus.RUNNING,
@@ -158,6 +163,8 @@ public class AiLlmCallAccountingService {
         call.context().stepIndex(),
         call.provider(),
         call.model(),
+        call.context().providerInstanceId(),
+        call.context().configuredModelId(),
         call.status(),
         call.errorCode(),
         call.usage(),

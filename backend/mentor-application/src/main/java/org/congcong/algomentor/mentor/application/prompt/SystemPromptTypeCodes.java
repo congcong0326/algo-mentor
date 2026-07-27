@@ -4,6 +4,7 @@ package org.congcong.algomentor.mentor.application.prompt;
 public final class SystemPromptTypeCodes {
 
   public static final String MENTOR_CONVERSATION_V1 = "ai.system-prompt.mentor-conversation.v1";
+  public static final String TOPIC_EXPLANATION_V1 = "ai.system-prompt.topic-explanation.v1";
   public static final String PRACTICE_CHAT_V1 = "ai.system-prompt.practice-chat.v1";
   public static final String LEARNING_PLAN_DRAFT_V1 = "ai.system-prompt.learning-plan-draft.v1";
   public static final String LEARNING_PLAN_REVISION_V1 = "ai.system-prompt.learning-plan-revision.v1";

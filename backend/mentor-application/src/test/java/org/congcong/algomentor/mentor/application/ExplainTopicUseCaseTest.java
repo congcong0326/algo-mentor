@@ -40,7 +40,11 @@ class ExplainTopicUseCaseTest {
 
     assertThat(publisher).isSameAs(streamingRunner.publisher);
     assertThat(streamingRunner.lastStreamRequest.metadata()).containsEntry("topicTitle", "binary search");
-    assertThat(streamingRunner.lastStreamRequest.messages().get(0).text()).contains("binary search");
+    assertThat(streamingRunner.lastStreamRequest.metadata())
+        .containsEntry("systemPromptTypeCode", "ai.system-prompt.topic-explanation.v1");
+    assertThat(streamingRunner.lastStreamRequest.messages().get(0).text())
+        .contains("algorithm learning mentor");
+    assertThat(streamingRunner.lastStreamRequest.messages().get(1).text()).contains("binary search");
   }
 
   private static final class StubAgentRunner extends AgentRunner {

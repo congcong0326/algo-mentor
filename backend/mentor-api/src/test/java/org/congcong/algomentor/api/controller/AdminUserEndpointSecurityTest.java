@@ -67,6 +67,13 @@ class AdminUserEndpointSecurityTest {
         AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.USAGE_BY_USER_PATH,
         AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.USAGE_BY_MODEL_PATH,
         AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.USAGE_BY_SOURCE_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.PROVIDER_TYPES_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.PROVIDERS_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.PROVIDER_ID_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.PROVIDER_MODELS_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.MODEL_ID_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.MODEL_ROUTING_SCENARIOS_PATH,
+        AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.MODEL_ROUTING_EFFECTIVE_PATH,
         AdminAiApiContractConstants.ADMIN_USERS_BASE_PATH + AdminAiApiContractConstants.USER_AI_POLICY_PATH);
 
     assertTrue(mappedPaths.containsAll(expectedPaths), () -> "Missing mappings: " + expectedPaths.stream()

@@ -21,6 +21,8 @@ import org.congcong.algomentor.ai.governance.policy.AiGovernanceProperties;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicyResolver;
 import org.congcong.algomentor.ai.governance.repository.mybatis.PostgresAiRunAdmissionRepository;
 import org.congcong.algomentor.ai.governance.runlock.AiRunLockService;
+import org.congcong.algomentor.ai.governance.routing.AiModelRouteException;
+import org.congcong.algomentor.ai.governance.routing.AiModelRouteResolver;
 import org.congcong.algomentor.ai.governance.usage.AiDailyUsageStore;
 import org.congcong.algomentor.identity.model.AuthRole;
 import org.junit.jupiter.api.Test;
@@ -90,6 +92,36 @@ class AiRunAdmissionServiceTest {
 
     assertThat(ex.code()).isEqualTo(AiGovernanceErrorCode.AI_CONCURRENT_RUN_CONFLICT);
     assertThat(fixture.usage.consumeCalls).isEqualTo(1);
+  }
+
+  @Test
+  void rejectsUnavailableModelRouteBeforeQuotaConsumptionAndRunLock() {
+    Fixture fixture = new Fixture();
+    AiModelRouteResolver routeResolver = (scenario, userId) -> {
+      throw new AiModelRouteException(
+          AiGovernanceErrorCode.AI_MODEL_ROUTE_NOT_CONFIGURED,
+          "No AI model route is configured for this request.");
+    };
+    AiRunAdmissionService service = new AiRunAdmissionService(
+        fixture.properties,
+        new AiPurposePolicyResolver(fixture.properties),
+        fixture.usage,
+        fixture.locks,
+        fixture.repository,
+        null,
+        routeResolver,
+        null);
+
+    AiRunAdmissionException ex = catchThrowableOfType(
+        () -> service.admit(fixture.context(fixture.user(), AiPurpose.LEARNING_PLAN, 10)),
+        AiRunAdmissionException.class);
+
+    assertThat(ex.code()).isEqualTo(AiGovernanceErrorCode.AI_MODEL_ROUTE_NOT_CONFIGURED);
+    assertThat(fixture.usage.consumeCalls).isZero();
+    assertThat(fixture.locks.acquireCalls).isZero();
+    assertThat(fixture.repository.lastRejectedCode)
+        .isEqualTo(AiGovernanceErrorCode.AI_MODEL_ROUTE_NOT_CONFIGURED);
+    assertThat(fixture.repository.lastRejectedSource).isEqualTo(AiRunSource.LEARNING_PLAN_DRAFT);
   }
 
   @Test
@@ -177,6 +209,8 @@ class AiRunAdmissionServiceTest {
   private static final class RecordingAdmissionRepository extends PostgresAiRunAdmissionRepository {
 
     private long nextId = 1;
+    private AiGovernanceErrorCode lastRejectedCode;
+    private AiRunSource lastRejectedSource;
 
     private RecordingAdmissionRepository() {
       super(null);
@@ -197,6 +231,8 @@ class AiRunAdmissionServiceTest {
         int requestSize,
         AiRunStatus status,
         AiGovernanceErrorCode rejectionCode) {
+      lastRejectedCode = rejectionCode;
+      lastRejectedSource = source;
       return nextId++;
     }
   }

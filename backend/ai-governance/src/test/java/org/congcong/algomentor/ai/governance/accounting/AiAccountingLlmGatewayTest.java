@@ -2,6 +2,7 @@ package org.congcong.algomentor.ai.governance.accounting;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.time.Clock;
@@ -10,6 +11,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.ai.governance.model.AiGovernanceMetadataKeys;
@@ -21,9 +23,13 @@ import org.congcong.algomentor.ai.governance.usage.AiDailyUsageStore;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
+import org.congcong.algomentor.llm.core.model.LlmInvocationTarget;
 import org.congcong.algomentor.llm.core.model.LlmModelId;
 import org.congcong.algomentor.llm.core.model.LlmModelSelector;
+import org.congcong.algomentor.llm.core.provider.LlmCapability;
+import org.congcong.algomentor.llm.core.provider.LlmProviderClient;
 import org.congcong.algomentor.llm.core.provider.LlmProviderId;
+import org.congcong.algomentor.llm.core.provider.LlmProviderType;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
@@ -52,19 +58,43 @@ class AiAccountingLlmGatewayTest {
         AiGovernanceMetadataKeys.SOURCE, "PRACTICE_CHAT",
         AiGovernanceMetadataKeys.QUOTA_SCOPE, "ALL",
         AiGovernanceMetadataKeys.CALL_KIND, "AGENT_STEP",
+        AiGovernanceMetadataKeys.PROVIDER_INSTANCE_ID, 12L,
+        AiGovernanceMetadataKeys.CONFIGURED_MODEL_ID, 42L,
         AgentRuntimeMetadataKeys.STEP_INDEX, 2)));
 
     assertThat(result.model()).isEqualTo(MODEL);
     assertThat(mapper.rows).hasSize(1);
     assertThat(mapper.rows.get(0))
-        .extracting(AiLlmCallUsageRow::callKind, AiLlmCallUsageRow::stepIndex)
-        .containsExactly(AiLlmCallKind.AGENT_STEP, 2);
+        .extracting(
+            AiLlmCallUsageRow::callKind,
+            AiLlmCallUsageRow::stepIndex,
+            AiLlmCallUsageRow::providerInstanceId,
+            AiLlmCallUsageRow::aiModelId)
+        .containsExactly(AiLlmCallKind.AGENT_STEP, 2, 12L, 42L);
     assertThat(mapper.updates).singleElement()
         .extracting(AiLlmCallUsageUpdate::status, AiLlmCallUsageUpdate::errorCode)
         .containsExactly(AiLlmCallStatus.COMPLETED, null);
     assertThat(usageStore.usages).singleElement()
         .extracting(AiUsage::inputTokens, AiUsage::cachedTokens, AiUsage::outputTokens, AiUsage::totalTokens)
         .containsExactly(10L, 3L, 4L, 14L);
+  }
+
+  @Test
+  void dynamicTargetWritesProviderAndModelSnapshotsBeforeDispatch() {
+    RecordingMapper mapper = new RecordingMapper();
+    AiAccountingLlmGateway gateway = new AiAccountingLlmGateway(
+        new CompletionGateway(result()),
+        accountingService(mapper, new RecordingUsageStore()));
+
+    gateway.complete(dynamicRequest(trustedMetadata()));
+
+    assertThat(mapper.rows).singleElement()
+        .extracting(
+            AiLlmCallUsageRow::provider,
+            AiLlmCallUsageRow::model,
+            AiLlmCallUsageRow::providerInstanceId,
+            AiLlmCallUsageRow::aiModelId)
+        .containsExactly("openai", "gpt-test", 12L, 42L);
   }
 
   @Test
@@ -168,6 +198,22 @@ class AiAccountingLlmGatewayTest {
         .modelSelector(LlmModelSelector.of(PROVIDER, MODEL))
         .messages(List.of(LlmMessage.user("hello")))
         .metadata(metadata)
+        .build();
+  }
+
+  private static LlmCompletionRequest dynamicRequest(Map<String, Object> metadata) {
+    return LlmCompletionRequest.builder()
+        .modelSelector(LlmModelSelector.requiring(Set.of()))
+        .messages(List.of(LlmMessage.user("hello")))
+        .metadata(metadata)
+        .invocationTarget(new LlmInvocationTarget(
+            LlmProviderType.of("openai"),
+            12L,
+            42L,
+            MODEL,
+            Instant.parse("2026-07-27T00:00:00Z"),
+            Set.of(LlmCapability.CHAT_COMPLETION),
+            mock(LlmProviderClient.class)))
         .build();
   }
 

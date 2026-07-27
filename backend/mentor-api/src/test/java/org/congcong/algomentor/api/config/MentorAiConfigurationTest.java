@@ -48,6 +48,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAge
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentToolNames;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPermissionHook;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
 import org.congcong.algomentor.mentor.application.practice.TrustedProblemTagCatalog;
 import org.congcong.algomentor.queue.model.QueueMessage;
@@ -87,59 +88,16 @@ class MentorAiConfigurationTest {
       .withUserConfiguration(MentorAiConfiguration.class);
 
   @Test
-  void createsGatewayAndAgentsFromGatewayProperties() {
-    contextRunner
-        .withUserConfiguration(FakeProviderConfig.class)
-        .withPropertyValues(
-            "algo-mentor.ai.gateway.default-provider=test-provider",
-            "algo-mentor.ai.gateway.default-model=test-model")
-        .run(context -> {
+  void createsDynamicGatewayWithoutFileConfiguredDefaultModel() {
+    contextRunner.run(context -> {
           LlmGateway gateway = context.getBean(LlmGateway.class);
           assertThat(context.getBean(AgentExecutor.class)).isInstanceOf(ManagedAgentExecutor.class);
-          LlmCompletionResult result = gateway.complete(LlmCompletionRequest.builder()
+          assertThatThrownBy(() -> gateway.complete(LlmCompletionRequest.builder()
               .modelSelector(new LlmModelSelector(null, null, Set.of(), null))
               .messages(List.of(LlmMessage.user("hello")))
-              .build());
-
-          assertThat(result.provider()).isEqualTo(TEST_PROVIDER);
-          assertThat(result.model()).isEqualTo(TEST_MODEL);
-
-          AgentRunner agentRunner = context.getBean(AgentRunner.class);
-          agentRunner.run(new AgentRequest(List.of(LlmMessage.user("binary search"))));
-
-          FakeProvider provider = context.getBean(FakeProvider.class);
-          assertThat(provider.lastRequest.modelSelector().providerId()).contains(TEST_PROVIDER);
-          assertThat(provider.lastRequest.modelSelector().modelId()).contains(TEST_MODEL);
-          assertThat(provider.lastRequest.modelSelector().purpose()).isEqualTo("topic-explanation");
-        });
-  }
-
-  @Test
-  void allowsReplacingAgentModelSelectorResolver() {
-    CustomModelSelectorResolverConfig.capturedUserId = null;
-    new ApplicationContextRunner()
-        .withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
-        .withUserConfiguration(
-            FakeProviderConfig.class,
-            CustomModelSelectorResolverConfig.class,
-            MentorAiConfiguration.class)
-        .withPropertyValues(
-            "algo-mentor.ai.gateway.default-provider=test-provider",
-            "algo-mentor.ai.gateway.default-model=test-model")
-        .run(context -> {
-          AgentRunner agentRunner = context.getBean(AgentRunner.class);
-
-          agentRunner.run(new AgentRequest(
-              "run-1",
-              "request-1",
-              List.of(LlmMessage.user("hello")),
-              Map.of(AgentRuntimeMetadataKeys.USER_ID, 42L)));
-
-          FakeProvider provider = context.getBean(FakeProvider.class);
-          assertThat(provider.lastRequest.modelSelector().providerId()).contains(TEST_PROVIDER);
-          assertThat(provider.lastRequest.modelSelector().modelId()).contains(TEST_MODEL);
-          assertThat(provider.lastRequest.modelSelector().purpose()).isEqualTo("custom-user-routing");
-          assertThat(CustomModelSelectorResolverConfig.capturedUserId).isEqualTo(42L);
+              .build()))
+              .isInstanceOfSatisfying(LlmException.class, exception ->
+                  assertThat(exception.code()).isEqualTo(LlmErrorCode.INVALID_REQUEST));
         });
   }
 
@@ -154,8 +112,7 @@ class MentorAiConfigurationTest {
           .build()))
           .isInstanceOfSatisfying(LlmException.class, exception -> {
             assertThat(exception.code()).isEqualTo(LlmErrorCode.INVALID_REQUEST);
-            assertThat(exception).hasMessage(
-                "AI provider is not configured. Enable a provider and configure credentials to use explanations.");
+            assertThat(exception).hasMessage("Dynamic LLM invocation target is required");
           });
     });
   }
@@ -435,6 +392,11 @@ class MentorAiConfigurationTest {
     @Bean
     TrustedProblemTagCatalog trustedProblemTagCatalog() {
       return TrustedProblemTagCatalog.empty();
+    }
+
+    @Bean
+    PracticeChatProblemCatalog practiceChatProblemCatalog() {
+      return mock(PracticeChatProblemCatalog.class);
     }
 
     @Bean

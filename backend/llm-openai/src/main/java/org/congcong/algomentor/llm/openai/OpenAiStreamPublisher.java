@@ -137,28 +137,18 @@ final class OpenAiStreamPublisher implements Flow.Publisher<LlmStreamEvent> {
   private LlmStreamEvent mapStreamFailure(Throwable error) {
     LlmException mapped = OpenAiLlmExceptionMapper.map(error, providerId, modelId);
     log.warn(
-        "OpenAI stream failed while consuming events. provider={} model={} code={} retryable={} metadata={} causeType={} causeMessage={}",
+        "OpenAI stream failed while consuming events. provider={} model={} code={} retryable={} causeType={}",
         providerId.value(),
         modelId.value(),
         mapped.code(),
         mapped.retryable(),
-        mapped.metadata(),
-        causeType(mapped),
-        causeMessage(mapped));
+        causeType(mapped));
     return new LlmStreamEvent.Error(mapped);
   }
 
   private String causeType(Throwable error) {
     Throwable cause = error.getCause();
     return cause == null ? "none" : cause.getClass().getName();
-  }
-
-  private String causeMessage(Throwable error) {
-    Throwable cause = error.getCause();
-    if (cause == null || cause.getMessage() == null || cause.getMessage().isBlank()) {
-      return "";
-    }
-    return cause.getMessage();
   }
 
   private ResponseFunctionToolCall withAccumulatedArguments(ResponseFunctionToolCall call) {

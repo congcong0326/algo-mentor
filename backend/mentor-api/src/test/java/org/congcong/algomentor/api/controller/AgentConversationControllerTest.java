@@ -77,7 +77,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.SimpleTransactionStatus;
 
-@SpringBootTest
+@SpringBootTest(properties = "algo-mentor.practice.code-review.enabled=false")
 @AutoConfigureMockMvc(addFilters = false)
 class AgentConversationControllerTest {
 

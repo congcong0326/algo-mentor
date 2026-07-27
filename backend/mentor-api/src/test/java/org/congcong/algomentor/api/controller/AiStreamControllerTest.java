@@ -35,7 +35,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-@SpringBootTest
+@SpringBootTest(properties = "algo-mentor.practice.code-review.enabled=false")
 @AutoConfigureMockMvc(addFilters = false)
 class AiStreamControllerTest {
 

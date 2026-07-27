@@ -45,6 +45,7 @@ final class AiCompletionRequestEnricher {
         request.tools(),
         request.toolChoice(),
         request.responseFormat(),
-        metadata);
+        metadata,
+        request.invocationTarget());
   }
 }

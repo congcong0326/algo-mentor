@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
+import org.congcong.algomentor.ai.governance.model.AiActor;
 import org.congcong.algomentor.ai.governance.model.AiPurpose;
 import org.congcong.algomentor.ai.governance.model.AiRunContext;
 import org.congcong.algomentor.ai.governance.model.AiRunSource;
@@ -84,9 +85,10 @@ public class AiExplanationService {
   }
 
   public SseEmitter streamExplanation(String topic) {
+    AiActor actor = actorResolver.currentActor();
     AiRunAdmission admission = admissionService.admit(new AiRunContext(
         UUID.randomUUID().toString(),
-        actorResolver.currentActor(),
+        actor,
         AiPurpose.PROBLEM_EXPLANATION,
         AiRunSource.PROBLEM_DETAIL,
         null,
@@ -109,7 +111,7 @@ public class AiExplanationService {
     emitter.onError(subscriber::clientDisconnected);
 
     try {
-      explainTopicUseCase.stream(topic, admission.metadata()).subscribe(subscriber);
+      explainTopicUseCase.stream(topic, admission.userId(), admission.metadata()).subscribe(subscriber);
     } catch (RuntimeException ex) {
       subscriber.onError(ex);
     }

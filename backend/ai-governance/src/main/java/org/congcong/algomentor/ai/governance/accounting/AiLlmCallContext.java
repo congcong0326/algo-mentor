@@ -12,6 +12,8 @@ public record AiLlmCallContext(
     AiLlmCallKind callKind,
     Integer stepIndex,
     String quotaScope,
+    Long providerInstanceId,
+    Long configuredModelId,
     boolean missingTrustedContext
 ) {
 
@@ -27,6 +29,12 @@ public record AiLlmCallContext(
     if (stepIndex != null && stepIndex < 1) {
       throw new IllegalArgumentException("stepIndex must be positive when present");
     }
+    if (providerInstanceId != null && providerInstanceId < 1) {
+      throw new IllegalArgumentException("providerInstanceId must be positive when present");
+    }
+    if (configuredModelId != null && configuredModelId < 1) {
+      throw new IllegalArgumentException("configuredModelId must be positive when present");
+    }
     quotaScope = quotaScope == null || quotaScope.isBlank() ? "ALL" : quotaScope.trim();
   }
 
@@ -40,6 +48,8 @@ public record AiLlmCallContext(
         stepIndex == null ? AiLlmCallKind.DIRECT : AiLlmCallKind.AGENT_STEP,
         stepIndex,
         "ALL",
+        null,
+        null,
         true);
   }
 

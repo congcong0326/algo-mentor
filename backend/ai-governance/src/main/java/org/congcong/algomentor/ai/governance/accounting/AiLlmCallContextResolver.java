@@ -18,6 +18,15 @@ public final class AiLlmCallContextResolver {
     String purpose = text(metadata.get(AiGovernanceMetadataKeys.PURPOSE));
     String source = text(metadata.get(AiGovernanceMetadataKeys.SOURCE));
     String quotaScope = text(metadata.get(AiGovernanceMetadataKeys.QUOTA_SCOPE));
+    org.congcong.algomentor.llm.core.model.LlmInvocationTarget target = request == null
+        ? null
+        : request.invocationTarget();
+    Long providerInstanceId = positiveLong(metadata.get(AiGovernanceMetadataKeys.PROVIDER_INSTANCE_ID));
+    Long configuredModelId = positiveLong(metadata.get(AiGovernanceMetadataKeys.CONFIGURED_MODEL_ID));
+    if (target != null) {
+      providerInstanceId = providerInstanceId == null ? target.providerInstanceId() : providerInstanceId;
+      configuredModelId = configuredModelId == null ? target.configuredModelId() : configuredModelId;
+    }
     AiLlmCallKind callKind = callKind(metadata.get(AiGovernanceMetadataKeys.CALL_KIND), stepIndex);
     boolean missingContext = userId == null || purpose == null || source == null;
     return new AiLlmCallContext(
@@ -29,6 +38,8 @@ public final class AiLlmCallContextResolver {
         callKind,
         stepIndex,
         quotaScope,
+        providerInstanceId,
+        configuredModelId,
         missingContext);
   }
 

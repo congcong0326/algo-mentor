@@ -446,6 +446,74 @@ export interface AdminAiModelPricePage {
   unpricedModels: AdminAiUnpricedModel[];
 }
 
+export interface AdminAiProviderType { code: string; displayName: string; }
+export interface AdminAiProvider {
+  id: number;
+  name: string;
+  providerType: string;
+  enabled: boolean;
+  baseUrl?: string | null;
+  config?: Record<string, unknown> | null;
+  modelCount: number;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
+export interface AdminAiProviderWriteRequest {
+  name: string;
+  providerType: string;
+  enabled: boolean;
+  config: Record<string, unknown>;
+}
+export interface AdminAiProviderUpdateRequest {
+  name: string;
+  enabled: boolean;
+  config: Record<string, unknown>;
+}
+export interface AdminAiConfiguredModel {
+  id: number;
+  providerInstanceId: number;
+  displayName: string;
+  modelId: string;
+  enabled: boolean;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+}
+export interface AdminAiModelWriteRequest { displayName: string; modelId: string; enabled: boolean; }
+export interface AiModelRoutePolicyContent { modelId: number; }
+export interface AdminAiRoutingScenario {
+  scenarioCode: string;
+  categoryCode: string;
+  displayName: string;
+  description: string;
+  policyTypeCode: string;
+  configured: boolean;
+  enabledPolicyCount: number;
+  totalPolicyCount: number;
+}
+export interface AdminAiRouteModel {
+  id: number;
+  displayName?: string | null;
+  modelId?: string | null;
+  enabled: boolean;
+  providerInstanceId?: number | null;
+  providerInstanceName?: string | null;
+  providerType?: string | null;
+  providerEnabled: boolean;
+  reason?: string | null;
+}
+export interface AdminAiEffectiveRoute {
+  scenarioCode: string;
+  configured: boolean;
+  matched: boolean;
+  policyId?: number | null;
+  policyVersion?: number | null;
+  priority?: number | null;
+  matchSource?: string | null;
+  matchedSubjectId?: number | null;
+  reason?: string | null;
+  model?: AdminAiRouteModel | null;
+}
+
 export interface AdminAiUsageMetrics {
   modelCallCount: number;
   inputTokens: number;

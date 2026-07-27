@@ -21,6 +21,7 @@
 - `docs/practice-chat-agent-design.md`：题目聊天 Agent 研发设计，说明 prompt 组装、题面上下文注入、SSE 聊天气泡展示、后端会话/API 和测试计划。
 - `docs/practice-chat-system-prompt-assembly-design.md`：题目聊天系统提示词拼装设计，说明结构化片段、分层 prompt、动态 profile、预算裁剪、metadata 追踪和测试策略。
 - `docs/system-prompt-generic-policy-management-design.md`：系统提示词通用策略管理研发设计，定义代码默认兜底、section 覆盖、启动幂等注册、通用管理界面、用户灰度、运行时快照和架构门禁。
+- `docs/ai-provider-and-model-routing-design.md`：AI 提供商配置与模型路由研发设计，定义明文 JSONB 多实例配置、显式模型资源、统一业务场景目录、用户/用户组路由、执行快照、动态 OpenAI Client 和无兜底语义。
 - `docs/practice-code-review-product-design.md`：练习代码 Review 产品设计，说明自动识别完整代码提交、多版本 Review、评分规则、完成门槛和 Review 抽屉体验。
 - `docs/practice-code-review-technical-design.md`：练习代码 Review 技术设计，说明基于 practice turn orchestrator 与服务端 capability 的结构化 Review、数据模型、完成 gate、API 和前端闭环。
 - `docs/problem-agent-tools-design.md`：题目 Agent 工具体系设计，说明过滤项发现、查题、读取题面的用途、边界、返回内容和后续演进。
@@ -62,6 +63,7 @@
 - `docs/admin-frontend-shell-refactoring-design.md`：管理员前端工作区重构设计，参考高密度管理台的信息层级，固定 `/admin/*` 使用全局顶栏、业务域侧栏、局部页签、紧凑命令栏和数据工作区，并保持普通用户界面不变。
 - `docs/admin-auth-session-monitoring-design.md`：管理员会话监控技术设计，定义有效/活跃会话语义、Spring Session 分页查询、单会话下线、当前会话保护、审计权限和前后端测试边界。
 - `docs/auth-user-session-policy-design.md`：用户会话策略技术设计，定义基于通用策略的会话数量与绝对超时契约、登录时按创建时间淘汰、会话快照、硬截止过滤与首版并发和策略变更边界。
+- `docs/user-login-password-management-design.md`：用户登录密码管理研发设计，定义密码 Session 校验原密码、OIDC Session 直接新增或覆盖密码、统一改密 API、其他 Session 吊销和设置页交互边界。
 - `docs/user-group-management-design.md`：用户组与管理员成员管理设计，定义 `identity` 模块中的用户组和多对多成员关系、有效期语义、管理员 API、用户组页面及用户详情中的手动添加与移除，不包含访问策略和支付订阅。
 - `docs/generic-policy-foundation-design.md`：通用策略底座研发设计，固定单表 JSONB、业务 Spring Bean 注册强类型内容、全部用户/用户/用户组范围、全局优先级单条命中、整类编译失败日志、按类型策略缓存和按用户关系缓存失效语义。
 
@@ -77,7 +79,7 @@
 - `backend/auth/src/main/java/org/congcong/algomentor/auth/passwordreset`：管理员临时密码重置、24 小时有效期、原子单次消费、强制改密和 Session 吊销事务边界。
 - `backend/auth/src/main/resources/db/migration/auth/V28__beta_access_and_password_reset.sql`：内测准入设置、邮箱白名单和密码凭据临时状态迁移，白名单默认关闭。
 - `backend/llm-core`：项目内 LLM 抽象契约，按职责拆分为 `gateway`、`provider`、`model`、`request`、`response`、`stream`、`tool`、`exception` 子包。
-- `backend/llm-openai`：OpenAI provider 适配模块，隔离 `openai-java` SDK、OpenAI 配置、provider 能力描述和后续请求/响应映射。
+- `backend/llm-openai`：OpenAI 动态 provider adapter 模块，隔离 `openai-java` SDK、严格 JSON 配置校验、provider 能力描述和请求/响应映射；不再从应用配置创建运行时连接。
 - `backend/agent-core`：Agent 核心编排模型，面向 `LlmGateway` 组织模型调用和后续工具执行流程；`runtime` 子包提供通用会话模型、上下文组装策略和 repository 端口。
 - `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/permission`：Agent Tool 执行前权限核心包，包含 `AgentToolPermissionGuard`、hook chain、内存 coordinator、permission request/decision 模型、synthetic result factory 和 no-op metrics。
 - `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/AgentLoopRunner.java`：Agent 主循环，在真实工具执行前调用 lifecycle 权限门禁，并支持 synthetic permission result 回填模型上下文。
@@ -125,7 +127,8 @@
 - `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/accounting`：真实 `LlmGateway` 的调用级记账装饰器，覆盖同步、流式、失败、取消与每日 Token 累计。
 - `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/completion`：代码 Review 等直接 completion 的准入、动态开关和受信 metadata 包装；题目复习不调用模型。
 - `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/pricing` 与 `adminquery`：当前模型价格管理、Decimal 成本计算及按用户、模型、业务场景聚合的管理查询。
-- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/admin/ai`：AI 设置、单用户策略、模型价格、用量查询的管理员 HTTP 契约、DTO 映射与错误响应。
+- `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/provider` 与 `routing`：`V41` provider instance/显式模型持久化、版本化 SDK Client、稳定场景路由策略、执行快照和无 fallback 的路由解析。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/admin/ai`：AI 设置、单用户策略、provider/model、模型路由、模型价格和用量查询的管理员 HTTP 契约、DTO 映射与错误响应。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/admin/audit`：管理员审计 PostgreSQL/MyBatis 实现，以独立 `REQUIRES_NEW` 事务写入并对失败计数降级。
 - `backend/mentor-api/src/main/resources/db/migration/V30__admin_audit_and_user_feedback.sql`：提前固定管理员审计和用户反馈表结构，本阶段只启用审计写入。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice`：题目训练会话应用层，包含 `PracticeSessionService`、`PracticeMessageStreamService`、prompt assembly 片段 provider、题面 catalog 端口和训练进度/消息领域模型。
@@ -151,7 +154,7 @@
 - `frontend/src/admin/BetaAccessPage.tsx`：内测准入管理页，提供开关确认、搜索、批量添加、分页列表、移除确认和 Session 吊销失败提示。
 - `frontend/src/admin/UserManagementPage.tsx`：管理员用户列表与 URL 驱动的详情抽屉；支持一次性临时密码重置、单用户 AI 暂停/额度覆盖和跳转至筛选后的 AI 用量页。
 - `frontend/src/admin/monitoring/SystemMonitoringPage.tsx`：`/admin/monitoring` 运行状态页，基于 `/api/health` 展示 API 服务健康状态，支持手动与每分钟自动刷新；与 `/admin/ai` 同属系统监控分类。
-- `frontend/src/admin/ai`：`/admin/ai` 治理工作区，提供全局 AI 止损、按用户/模型/场景的 Token 与当前价格成本观测、未定价模型告警和模型价格编辑。
+- `frontend/src/admin/ai`：`/admin/ai` 治理工作区，提供全局 AI 止损、provider/model 维护、模型路由目录与用户命中模拟、按用户/模型/场景的 Token 与当前价格成本观测和模型价格编辑。
 - `frontend/src/app/PasswordChangeRequiredPage.tsx`：临时密码登录后的独占改密页，成功后恢复普通 Session 路由。
 - `frontend/src/learning-plans/PracticeChatWorkbench.tsx`：题目训练聊天工作台，使用 practice session 专用 API 渲染题面 seed、流式 AI 回复、Review 入口、LeetCode 外链和题目完成状态。
 - `frontend/src/problem-notes`：可复用的题目笔记折叠编辑器、结构化纲要表单和固定选项，按 `problemSlug` 读写同一份长期笔记并处理 revision 冲突。

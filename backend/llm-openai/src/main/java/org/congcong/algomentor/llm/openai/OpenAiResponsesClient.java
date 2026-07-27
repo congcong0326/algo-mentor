@@ -32,4 +32,14 @@ public interface OpenAiResponsesClient {
         .build();
     return new SdkOpenAiResponsesClient(client, streamingClient);
   }
+
+  static OpenAiResponsesClient fromConfig(OpenAiProviderConfig config) {
+    OpenAIClient client = OpenAIOkHttpClient.builder()
+        .apiKey(config.apiKey())
+        .baseUrl(config.baseUrl().toString())
+        .timeout(java.time.Duration.ofSeconds(config.timeoutSeconds()))
+        .maxRetries(config.maxRetries())
+        .build();
+    return new SdkOpenAiResponsesClient(client);
+  }
 }

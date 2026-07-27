@@ -1,1 +1,2 @@
 org.congcong.algomentor.ai.governance.autoconfigure.AiGovernanceAutoConfiguration
+org.congcong.algomentor.ai.governance.autoconfigure.AiModelRoutingAutoConfiguration

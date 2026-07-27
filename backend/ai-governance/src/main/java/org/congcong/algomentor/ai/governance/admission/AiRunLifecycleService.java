@@ -5,19 +5,31 @@ import org.congcong.algomentor.ai.governance.model.AiRunStatus;
 import org.congcong.algomentor.ai.governance.model.AiUsage;
 import org.congcong.algomentor.ai.governance.repository.mybatis.PostgresAiRunAdmissionRepository;
 import org.congcong.algomentor.ai.governance.runlock.AiRunLockService;
+import org.congcong.algomentor.ai.governance.routing.AiRunInvocationTargetStore;
 
 public class AiRunLifecycleService {
 
   private final PostgresAiRunAdmissionRepository admissionRepository;
   private final AiRunLockService runLockService;
+  private final AiRunInvocationTargetStore invocationTargetStore;
 
   public AiRunLifecycleService(
       org.congcong.algomentor.ai.governance.policy.AiGovernanceProperties properties,
       PostgresAiRunAdmissionRepository admissionRepository,
       org.congcong.algomentor.ai.governance.usage.AiDailyUsageStore usageStore,
       AiRunLockService runLockService) {
+    this(properties, admissionRepository, usageStore, runLockService, null);
+  }
+
+  public AiRunLifecycleService(
+      org.congcong.algomentor.ai.governance.policy.AiGovernanceProperties properties,
+      PostgresAiRunAdmissionRepository admissionRepository,
+      org.congcong.algomentor.ai.governance.usage.AiDailyUsageStore usageStore,
+      AiRunLockService runLockService,
+      AiRunInvocationTargetStore invocationTargetStore) {
     this.admissionRepository = admissionRepository;
     this.runLockService = runLockService;
+    this.invocationTargetStore = invocationTargetStore;
   }
 
   public void markRunning(AiRunAdmission admission, String provider, String model) {
@@ -52,6 +64,9 @@ public class AiRunLifecycleService {
   public void release(AiRunAdmission admission) {
     if (admission != null) {
       runLockService.release(admission.lockToken());
+      if (invocationTargetStore != null) {
+        invocationTargetStore.remove(admission.runId());
+      }
     }
   }
 

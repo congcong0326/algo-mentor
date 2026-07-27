@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
+@SpringBootTest(properties = "algo-mentor.practice.code-review.enabled=false")
 @AutoConfigureMockMvc(addFilters = false)
 class AuthCurrentUserEndpointTest {
 

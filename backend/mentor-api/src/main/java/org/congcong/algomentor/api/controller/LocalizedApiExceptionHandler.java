@@ -2,6 +2,7 @@ package org.congcong.algomentor.api.controller;
 
 import jakarta.validation.ConstraintViolationException;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionException;
+import org.congcong.algomentor.ai.governance.routing.AiModelRouteException;
 import org.congcong.algomentor.api.ability.service.AbilityProfileService;
 import org.congcong.algomentor.api.controller.ability.AbilityProfileUnauthenticatedException;
 import org.congcong.algomentor.api.controller.learningplan.LearningPlanUnauthenticatedException;
@@ -127,6 +128,11 @@ public class LocalizedApiExceptionHandler {
   @ExceptionHandler(AiRunAdmissionException.class)
   public ResponseEntity<ApiResponse<Void>> aiRunAdmission(AiRunAdmissionException exception) {
     return failure(exception.suggestedStatus(), exception.code().name(), exception.getMessage(), exception.metadata());
+  }
+
+  @ExceptionHandler(AiModelRouteException.class)
+  public ResponseEntity<ApiResponse<Void>> aiModelRoute(AiModelRouteException exception) {
+    return failure(HttpStatus.SERVICE_UNAVAILABLE, exception.code().name(), exception.getMessage());
   }
 
   @ExceptionHandler(PracticeProgressStatusInvalidException.class)

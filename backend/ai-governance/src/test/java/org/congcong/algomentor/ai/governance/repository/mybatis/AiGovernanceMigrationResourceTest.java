@@ -52,4 +52,20 @@ class AiGovernanceMigrationResourceTest {
         .contains("legacy-run-")
         .contains("ON CONFLICT (call_id) DO NOTHING");
   }
+
+  @Test
+  void providerAndModelMigrationDefinesConfigurationResourcesAndNullableUsageLinks() throws IOException {
+    Resource resource = new PathMatchingResourcePatternResolver()
+        .getResource("classpath:db/migration/ai/V41__ai_provider_instance_and_model.sql");
+
+    assertThat(resource.exists()).isTrue();
+    String sql = resource.getContentAsString(StandardCharsets.UTF_8);
+    assertThat(sql)
+        .contains("CREATE TABLE ai_provider_instance")
+        .contains("CREATE TABLE ai_model")
+        .contains("jsonb_typeof(config) = 'object'")
+        .contains("ADD COLUMN provider_instance_id BIGINT NULL")
+        .contains("ADD COLUMN ai_model_id BIGINT NULL")
+        .contains("ON DELETE RESTRICT");
+  }
 }

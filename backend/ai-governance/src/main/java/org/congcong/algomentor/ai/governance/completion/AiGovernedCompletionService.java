@@ -16,10 +16,15 @@ import org.congcong.algomentor.ai.governance.policy.AiPurposePolicyResolver;
 import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimeDisabledReason;
 import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimePolicyService;
 import org.congcong.algomentor.ai.governance.policy.runtime.EffectiveAiRuntimePolicy;
+import org.congcong.algomentor.ai.governance.routing.AiModelRouteException;
+import org.congcong.algomentor.ai.governance.routing.AiModelRouteResolver;
+import org.congcong.algomentor.ai.governance.routing.AiRunInvocationTargetStore;
+import org.congcong.algomentor.ai.governance.routing.ResolvedAiModelSnapshot;
 import org.congcong.algomentor.identity.model.AuthRole;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
+import org.congcong.algomentor.llm.core.model.LlmInvocationTarget;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.springframework.http.HttpStatus;
@@ -32,19 +37,43 @@ public class AiGovernedCompletionService implements AiCompletionGateway {
   private final AiRunLifecycleService lifecycleService;
   private final AiPurposePolicyResolver policyResolver;
   private final AiRuntimePolicyService runtimePolicyService;
+  private final AiModelRouteResolver modelRouteResolver;
+  private final AiRunInvocationTargetStore invocationTargetStore;
 
   public AiGovernedCompletionService(
       LlmGateway delegate,
       AiRunAdmissionService admissionService,
       AiRunLifecycleService lifecycleService,
       AiPurposePolicyResolver policyResolver,
-      AiRuntimePolicyService runtimePolicyService
+      AiRuntimePolicyService runtimePolicyService,
+      AiModelRouteResolver modelRouteResolver
+  ) {
+    this(
+        delegate,
+        admissionService,
+        lifecycleService,
+        policyResolver,
+        runtimePolicyService,
+        modelRouteResolver,
+        null);
+  }
+
+  public AiGovernedCompletionService(
+      LlmGateway delegate,
+      AiRunAdmissionService admissionService,
+      AiRunLifecycleService lifecycleService,
+      AiPurposePolicyResolver policyResolver,
+      AiRuntimePolicyService runtimePolicyService,
+      AiModelRouteResolver modelRouteResolver,
+      AiRunInvocationTargetStore invocationTargetStore
   ) {
     this.delegate = delegate;
     this.admissionService = admissionService;
     this.lifecycleService = lifecycleService;
     this.policyResolver = policyResolver;
     this.runtimePolicyService = runtimePolicyService;
+    this.modelRouteResolver = modelRouteResolver;
+    this.invocationTargetStore = invocationTargetStore;
   }
 
   @Override
@@ -63,7 +92,8 @@ public class AiGovernedCompletionService implements AiCompletionGateway {
       case USER_ENTRY -> completeUserEntry(request, context);
       case PARENT_RUN, BACKGROUND -> {
         assertDynamicEnabled(context);
-        yield delegate.complete(AiCompletionRequestEnricher.enrich(request, context, null));
+        ResolvedAiModelSnapshot snapshot = resolveSnapshot(context);
+        yield delegate.complete(enrich(request, context, null, snapshot));
       }
     };
   }
@@ -72,6 +102,7 @@ public class AiGovernedCompletionService implements AiCompletionGateway {
       LlmCompletionRequest request,
       AiCompletionContext context
   ) {
+    assertDynamicEnabled(context);
     AiRunAdmission admission = admissionService.admit(new AiRunContext(
         context.runId(),
         new AiActor(context.userId(), Set.of(AuthRole.USER), true),
@@ -82,10 +113,7 @@ public class AiGovernedCompletionService implements AiCompletionGateway {
         false,
         context.metadata(),
         null));
-    LlmCompletionRequest governedRequest = AiCompletionRequestEnricher.enrich(
-        request,
-        context,
-        admission.metadata());
+    LlmCompletionRequest governedRequest = enrich(request, context, admission.metadata(), admissionTarget(admission));
     lifecycleService.markRunning(admission, null, null);
     try {
       LlmCompletionResult result = delegate.complete(governedRequest);
@@ -104,6 +132,70 @@ public class AiGovernedCompletionService implements AiCompletionGateway {
           model(exception));
       throw exception;
     }
+  }
+
+  private ResolvedAiModelSnapshot resolveSnapshot(AiCompletionContext context) {
+    if (modelRouteResolver == null) {
+      throw new AiModelRouteException(
+          AiGovernanceErrorCode.AI_MODEL_ROUTE_NOT_CONFIGURED,
+          "No AI model route is configured for this request.");
+    }
+    return context.source().businessScenario()
+        .map(scenario -> modelRouteResolver.resolve(scenario, context.userId()))
+        .orElseThrow(() -> new AiModelRouteException(
+            AiGovernanceErrorCode.AI_MODEL_ROUTE_NOT_CONFIGURED,
+            "No AI model route is configured for this request."));
+  }
+
+  private LlmInvocationTarget admissionTarget(AiRunAdmission admission) {
+    if (invocationTargetStore == null) {
+      throw new AiModelRouteException(
+          AiGovernanceErrorCode.AI_MODEL_ROUTE_NOT_CONFIGURED,
+          "No AI model route is configured for this request.");
+    }
+    return invocationTargetStore.find(admission.runId()).orElseThrow(() -> new AiModelRouteException(
+        AiGovernanceErrorCode.AI_MODEL_ROUTE_NOT_CONFIGURED,
+        "No AI model route is configured for this request."));
+  }
+
+  private static LlmCompletionRequest enrich(
+      LlmCompletionRequest request,
+      AiCompletionContext context,
+      Map<String, Object> admissionMetadata,
+      ResolvedAiModelSnapshot snapshot
+  ) {
+    return enrich(
+        request,
+        context,
+        mergeMetadata(admissionMetadata, snapshot.trustedMetadata()),
+        snapshot.invocationTarget());
+  }
+
+  private static LlmCompletionRequest enrich(
+      LlmCompletionRequest request,
+      AiCompletionContext context,
+      Map<String, Object> admissionMetadata,
+      LlmInvocationTarget invocationTarget
+  ) {
+    LlmCompletionRequest targeted = request.withInvocationTarget(invocationTarget);
+    return AiCompletionRequestEnricher.enrich(
+        targeted,
+        context,
+        admissionMetadata);
+  }
+
+  private static Map<String, Object> mergeMetadata(
+      Map<String, Object> first,
+      Map<String, Object> second
+  ) {
+    java.util.LinkedHashMap<String, Object> merged = new java.util.LinkedHashMap<>();
+    if (first != null) {
+      merged.putAll(first);
+    }
+    if (second != null) {
+      merged.putAll(second);
+    }
+    return Map.copyOf(merged);
   }
 
   private void assertDynamicEnabled(AiCompletionContext context) {

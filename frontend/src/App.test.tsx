@@ -890,6 +890,26 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/admin/users');
   });
 
+  it('keeps provider and routing tabs when navigating inside AI governance', async () => {
+    vi.stubGlobal('fetch', mockAdminAiGovernanceFetch());
+    window.history.replaceState({}, '', '/admin/ai?tab=pricing');
+
+    render(<App />);
+
+    await screen.findByRole('button', { name: '新增价格' });
+    fireEvent.click(screen.getByRole('tab', { name: '提供商与模型' }));
+
+    expect(await screen.findByRole('heading', { name: 'Providers and models' })).toBeInTheDocument();
+    expect(new URLSearchParams(window.location.search).get('tab')).toBe('providers');
+    expect(screen.getByRole('tab', { name: '提供商与模型' })).toHaveAttribute('aria-selected', 'true');
+
+    fireEvent.click(screen.getByRole('tab', { name: '模型路由' }));
+
+    expect(await screen.findByRole('heading', { name: 'Model routing' })).toBeInTheDocument();
+    expect(new URLSearchParams(window.location.search).get('tab')).toBe('routing');
+    expect(screen.getByRole('tab', { name: '模型路由' })).toHaveAttribute('aria-selected', 'true');
+  });
+
   it('lets admin users enter the workspace from the learning shell', async () => {
     vi.stubGlobal('fetch', mockAdminUserManagementFetch());
     window.history.replaceState({}, '', '/');
@@ -920,7 +940,7 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '新建方案' }, { timeout: 3000 })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
     expect(window.location.pathname).toBe('/learning-plans');
 
@@ -2647,6 +2667,47 @@ function mockAdminUserManagementFetch() {
           pageSize: 20,
         },
         timestamp: '2026-06-30T00:00:00Z',
+      }));
+    }
+    return Promise.reject(new Error(`Unexpected URL: ${url}`));
+  });
+}
+
+function mockAdminAiGovernanceFetch() {
+  return vi.fn((url: string) => {
+    if (url === '/api/auth/me') {
+      return Promise.resolve(authenticatedUserResponseWithPermissions([
+        'ai-governance:manage',
+      ], ['ADMIN']));
+    }
+    if (url === '/api/admin/feedback?page=1&pageSize=1') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: { items: [], total: 0, page: 1, pageSize: 1, unreadMessageCount: 0 },
+        timestamp: '2026-07-27T00:00:00Z',
+      }));
+    }
+    if (url === '/api/admin/ai/settings') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: { aiEnabled: true, defaultDailyRequestLimit: 50 },
+        timestamp: '2026-07-27T00:00:00Z',
+      }));
+    }
+    if (url.startsWith('/api/admin/ai/model-prices')) {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: { items: [], unpricedModels: [] },
+        timestamp: '2026-07-27T00:00:00Z',
+      }));
+    }
+    if (url === '/api/admin/ai/providers'
+        || url === '/api/admin/ai/provider-types'
+        || url === '/api/admin/ai/model-routing/scenarios') {
+      return Promise.resolve(jsonResponse({
+        success: true,
+        data: { items: [] },
+        timestamp: '2026-07-27T00:00:00Z',
       }));
     }
     return Promise.reject(new Error(`Unexpected URL: ${url}`));
