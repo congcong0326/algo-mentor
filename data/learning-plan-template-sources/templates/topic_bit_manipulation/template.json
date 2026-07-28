@@ -1,5 +1,6 @@
 {
   "templateId": "topic_bit_manipulation",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "位运算专项",
   "summary": "2 周覆盖基础位操作、异或技巧、子集枚举、位掩码和进阶图状态题。",
   "goal": "掌握常见位操作、异或性质、bitmask 状态表示和枚举边界。",

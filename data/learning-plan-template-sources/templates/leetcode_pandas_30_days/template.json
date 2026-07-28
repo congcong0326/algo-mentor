@@ -141,6 +141,7 @@
   "summary": "用 5 周完成 Pandas 30 天官方路线，覆盖过滤、字符串、统计、聚合和数据集成。",
   "targetAudience": "已经掌握 Pandas 基础，希望通过连续练习提升数据处理熟练度的学习者。",
   "templateId": "leetcode_pandas_30_days",
+  "catalogCategory": "LANGUAGE_AND_ROLE",
   "title": "LeetCode Pandas 30 天进阶计划",
   "topicPreferences": [
     "Python",

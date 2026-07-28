@@ -1,5 +1,6 @@
 {
   "templateId": "topic_data_structure_design",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "数据结构设计专项",
   "summary": "2 周覆盖栈队列设计、缓存结构、随机集合、迭代器、Trie 和时间序列结构。",
   "goal": "建立从操作复杂度反推底层结构和组合数据结构的设计能力。",

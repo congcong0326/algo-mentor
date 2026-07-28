@@ -47,6 +47,7 @@
 - `docs/problem-tag-modeling-spec.md`：题目标签建模完整闭环规格，说明规范化标签表、历史数组回填、seed 导入双写、题库与能力雷达读取切换、一致性校验、测试和旧数组手动删除门禁。
 - `docs/problem-tag-modeling-implementation-plan.md`：题目标签建模闭环研发实施计划，按 PostgreSQL 验证基线、V33 迁移、统一规范化、seed 双写、题库与能力雷达读取切换、发布观察和旧数组保留门禁拆分任务。
 - `docs/learning-plan-template-seed-design.md`：学习计划模板 seed 完整闭环设计，说明 35 个多来源模板的源数据、聚合产物、导入配置、查询 API、从模板生成草稿和项目 Skill 沉淀。
+- `docs/learning-plan-template-catalog-design.md`：学习计划模板一级分类与推荐展示研发设计，固定 4 个分类、6 个首批推荐顺序、公共 API 字段收口、前端索引交互和迁移测试方案。
 - `docs/learning-plan-template-source-research.md`：学习计划模板资料源调研，按最终计划价值排序 LeetCode 官方计划、NeetCode、TIH、代码随想录、halfrost、labuladong 等候选来源。
 - `docs/learning-plan-template-internalization-plan.md`：学习计划模板资料源内部化实施计划，定义第一批 10 个模板、资料源转换清单、完成标记、subagent 派发模式、seed 生成和验证门禁。
 - `tools/learning_plan_template_seed/prepare_p1b_template_sources.py`：固定版本生成 TIH 核心专题、动态规划进阶、剑指 Offer、算法模式入门、程序员面试金典、LeetCode 75 和 LeetCode 面试经典 150 七个模板源目录。

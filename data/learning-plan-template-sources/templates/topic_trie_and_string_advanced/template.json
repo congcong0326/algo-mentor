@@ -1,5 +1,6 @@
 {
   "templateId": "topic_trie_and_string_advanced",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "字典树与字符串进阶",
   "summary": "2 周覆盖 Trie 构建与检索、前缀应用、字符串匹配、回文和编辑距离。",
   "goal": "建立前缀结构、模式匹配和字符串动态规划之间的完整知识路线。",

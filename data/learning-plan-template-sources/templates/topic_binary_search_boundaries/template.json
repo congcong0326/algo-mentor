@@ -1,5 +1,6 @@
 {
   "templateId": "topic_binary_search_boundaries",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "二分与边界专项计划",
   "summary": "2 周集中训练基础二分、旋转数组、左右边界、答案二分和矩阵变体。",
   "goal": "掌握二分搜索模板、边界收缩和答案空间建模。",

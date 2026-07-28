@@ -1,32 +1,30 @@
 package org.congcong.algomentor.api.learningplan.model;
 
 import java.util.List;
-import java.util.Map;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadSummary;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRhythmSettings;
+import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateCatalogCategory;
 
 public record LearningPlanTemplateSummaryResponse(
     String templateId,
     String title,
     String summary,
+    LearningPlanTemplateCatalogCategory catalogCategory,
+    Integer recommendedOrder,
     LearningPlanIntent intent,
     int defaultDurationWeeks,
     LearningPlanLevel level,
     int defaultWeeklyHours,
+    String programmingLanguage,
     LearningPlanDifficultyPreference difficultyPreference,
     boolean interviewOriented,
     List<String> topicPreferences,
     String targetAudience,
-    Map<String, Object> difficultyMix,
     String expectedOutcome,
-    String sourceName,
-    String sourceCommit,
-    int problemCount,
-    int matchedProblemCount,
-    int missingProblemCount,
+    int plannedProblemCount,
     LearningPlanLoadSummary defaultLoadSummary,
     LearningPlanRhythmSettings defaultRhythmSettings
 ) {

@@ -1,5 +1,6 @@
 {
   "templateId": "neetcode_blind_75_interview_core",
+  "catalogCategory": "INTERVIEW_PREP",
   "title": "NeetCode Blind 75 面试核心计划",
   "summary": "用 4 周跑完面试最核心的 75 道题路线，优先覆盖高频数据结构、图搜索和动态规划基础。",
   "goal": "用 Blind 75 题单建立算法面试核心题型覆盖。",

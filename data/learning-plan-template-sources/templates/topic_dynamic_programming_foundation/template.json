@@ -1,5 +1,7 @@
 {
   "templateId": "topic_dynamic_programming_foundation",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
+  "recommendedOrder": 6,
   "title": "动态规划专项突破计划",
   "summary": "4 周集中突破 DP，按一维状态、背包与路径、子序列、状态机和区间/回文问题递进。",
   "goal": "建立动态规划状态定义、转移方程和复盘表达能力。",

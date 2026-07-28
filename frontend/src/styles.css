@@ -4583,6 +4583,35 @@ a {
   gap: 12px;
 }
 
+.template-catalog-tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.template-catalog-tabs button {
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.template-catalog-tabs button:hover:not(:disabled) {
+  color: var(--text-primary);
+}
+
+.template-catalog-tabs button.selected {
+  border-bottom-color: var(--action-primary);
+  color: var(--text-primary);
+}
+
 .template-card {
   display: grid;
   gap: 10px;
@@ -4651,6 +4680,16 @@ a {
 
 .template-card-title strong {
   overflow-wrap: anywhere;
+}
+
+.template-recommended-badge {
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  border: 1px solid var(--accent-warm);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .template-card > span:not(.template-card-title):not(.template-card-meta) {

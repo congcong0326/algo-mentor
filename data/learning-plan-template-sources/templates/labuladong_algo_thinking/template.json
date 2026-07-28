@@ -199,6 +199,8 @@
   "summary": "用 8 周跨题型训练双指针、搜索、树图、动态规划和单调结构等核心解题框架。",
   "targetAudience": "已经刷过基础题，但知识点分散、希望用框架思维串联不同题型的学习者。",
   "templateId": "labuladong_algo_thinking",
+  "catalogCategory": "SYSTEMATIC_LEARNING",
+  "recommendedOrder": 5,
   "title": "labuladong 核心算法框架训练计划",
   "topicPreferences": [
     "Array",

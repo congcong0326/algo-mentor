@@ -1,5 +1,6 @@
 {
   "templateId": "topic_greedy_strategies",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "贪心策略专项",
   "summary": "3 周覆盖区间调度、跳跃/加油站、分配/找零和字符串排序贪心。",
   "goal": "建立局部最优选择、排序依据和反例检查的贪心证明能力。",

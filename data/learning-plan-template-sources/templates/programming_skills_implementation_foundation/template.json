@@ -1,5 +1,6 @@
 {
   "templateId": "programming_skills_implementation_foundation",
+  "catalogCategory": "SYSTEMATIC_LEARNING",
   "title": "编程基础与实现力计划",
   "summary": "4 周补齐基础实现能力，覆盖模拟、字符串、数组、矩阵、基础数据结构和简单设计题。",
   "goal": "通过 Easy/Medium 本地题库提升换语言或基础实现薄弱时的编码稳定性。",

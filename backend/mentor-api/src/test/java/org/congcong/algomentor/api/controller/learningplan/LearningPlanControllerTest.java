@@ -385,7 +385,11 @@ class LearningPlanControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.draftId").value(101))
         .andExpect(jsonPath("$.data.status").value("GENERATED"))
-        .andExpect(jsonPath("$.data.draftPlan.title").value("四周 Java 算法面试冲刺计划"));
+        .andExpect(jsonPath("$.data.draftPlan.title").value("四周 Java 算法面试冲刺计划"))
+        .andExpect(jsonPath("$.data.draftPlan.metadata.dailyProblemCount").value(1))
+        .andExpect(jsonPath("$.data.draftPlan.metadata.template").doesNotExist())
+        .andExpect(jsonPath("$.data.draftPlan.metadata.sourceCommit").doesNotExist())
+        .andExpect(jsonPath("$.data.draftPlan.metadata.problemRefs").doesNotExist());
 
     ArgumentCaptor<LearningPlanTemplateDraftCommand> commandCaptor =
         ArgumentCaptor.forClass(LearningPlanTemplateDraftCommand.class);
@@ -432,6 +436,10 @@ class LearningPlanControllerTest {
         .andExpect(jsonPath("$.data.nextTrainingPackage.newProblemCount").exists())
         .andExpect(jsonPath("$.data.rhythmSettings.dailyProblemCount").value(1))
         .andExpect(jsonPath("$.data.rhythmSettings.trainingDaysPerWeek").value(5))
+        .andExpect(jsonPath("$.data.metadata.dailyProblemCount").value(1))
+        .andExpect(jsonPath("$.data.metadata.template").doesNotExist())
+        .andExpect(jsonPath("$.data.metadata.sourceCommit").doesNotExist())
+        .andExpect(jsonPath("$.data.metadata.problemRefs").doesNotExist())
         .andExpect(jsonPath("$.data.paceSummary.currentWeek").exists());
   }
 
@@ -610,7 +618,11 @@ class LearningPlanControllerTest {
                 List.of("Array", "Hash Table"),
                 "恢复哈希表查找。",
                 1)))),
-        Map.of("problemRecommendationIncomplete", false));
+        Map.of(
+            "dailyProblemCount", 1,
+            "template", Map.of("sourceCommit", "internal-commit", "problemRefs", List.of("two-sum")),
+            "sourceCommit", "internal-commit",
+            "problemRefs", List.of("two-sum")));
   }
 
   private LearningPlanDraftPlan draftPlanWithMultipleProblems() {

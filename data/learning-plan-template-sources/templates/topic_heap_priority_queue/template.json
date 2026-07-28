@@ -1,5 +1,6 @@
 {
   "templateId": "topic_heap_priority_queue",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "堆与优先队列专项",
   "summary": "2 周集中训练 TopK、第 K 大、多路合并、调度和双堆中位数。",
   "goal": "掌握堆的排序视角、在线维护和多路合并建模方式。",

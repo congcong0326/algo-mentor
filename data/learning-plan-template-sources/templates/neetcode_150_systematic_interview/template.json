@@ -1,5 +1,6 @@
 {
   "templateId": "neetcode_150_systematic_interview",
+  "catalogCategory": "INTERVIEW_PREP",
   "title": "NeetCode 150 系统面试计划",
   "summary": "用 12 周覆盖 NeetCode 150 的主流算法面试模式，适合中期系统备战。",
   "goal": "用 NeetCode 150 系统覆盖主流算法面试题型。",

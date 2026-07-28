@@ -1,12 +1,11 @@
-import { Database, GitCommit, Layers, Sparkles } from 'lucide-react';
+import { Layers, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import {
-  getLearningPlanTemplate,
   getLearningPlanTemplates,
   requireApiData,
 } from '../services/api';
 import type {
-  LearningPlanTemplateDetailResponse,
+  LearningPlanTemplateCatalogCategory,
   LearningPlanTemplateDraftRequest,
   LearningPlanRhythmSettings,
   LearningPlanTemplateSummaryResponse,
@@ -34,6 +33,8 @@ const MAX_DAILY_PROBLEM_COUNT = 10;
 const MIN_TRAINING_DAYS_PER_WEEK = 1;
 const MAX_TRAINING_DAYS_PER_WEEK = 7;
 
+type TemplateCatalogView = 'RECOMMENDED' | LearningPlanTemplateCatalogCategory;
+
 export default function LearningPlanTemplateCreatePanel({
   loading,
   error,
@@ -42,13 +43,12 @@ export default function LearningPlanTemplateCreatePanel({
 }: LearningPlanTemplateCreatePanelProps) {
   const { resources } = useI18n();
   const [templates, setTemplates] = useState<LearningPlanTemplateSummaryResponse[]>([]);
+  const [catalogView, setCatalogView] = useState<TemplateCatalogView>('RECOMMENDED');
   const [selectedTemplateId, setSelectedTemplateId] = useState('');
-  const [selectedTemplateDetail, setSelectedTemplateDetail] = useState<LearningPlanTemplateDetailResponse>();
   const [dailyProblemCount, setDailyProblemCount] = useState(DEFAULT_DAILY_PROBLEM_COUNT);
   const [trainingDaysPerWeek, setTrainingDaysPerWeek] = useState(DEFAULT_TRAINING_DAYS_PER_WEEK);
   const [programmingLanguage, setProgrammingLanguage] = useState(DEFAULT_PROGRAMMING_LANGUAGE);
   const [listLoading, setListLoading] = useState(true);
-  const [detailLoading, setDetailLoading] = useState(false);
   const [loadError, setLoadError] = useState('');
   const [validationError, setValidationError] = useState('');
 
@@ -56,10 +56,13 @@ export default function LearningPlanTemplateCreatePanel({
     () => templates.find((template) => template.templateId === selectedTemplateId),
     [selectedTemplateId, templates],
   );
-  const defaultRhythmSettings = selectedTemplateDetail?.defaultRhythmSettings ?? selectedTemplate?.defaultRhythmSettings;
+  const visibleTemplates = useMemo(
+    () => filterTemplates(templates, catalogView),
+    [catalogView, templates],
+  );
+  const defaultRhythmSettings = selectedTemplate?.defaultRhythmSettings;
   const totalProblemCount = defaultRhythmSettings?.totalProblemCount
-    ?? selectedTemplateDetail?.matchedProblemCount
-    ?? selectedTemplate?.matchedProblemCount
+    ?? selectedTemplate?.plannedProblemCount
     ?? 0;
   const standardRhythm = selectedTemplate
     ? buildStandardRhythmReference({
@@ -70,7 +73,7 @@ export default function LearningPlanTemplateCreatePanel({
     : undefined;
   const estimatedWeeks = estimateRhythmWeeks(totalProblemCount, dailyProblemCount, trainingDaysPerWeek);
   const effectiveError = validationError || error || loadError;
-  const submitDisabled = loading || listLoading || detailLoading || !selectedTemplate;
+  const submitDisabled = loading || listLoading || !selectedTemplate;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -81,10 +84,10 @@ export default function LearningPlanTemplateCreatePanel({
       .then((response) => {
         const nextTemplates = requireApiData(response, resources.learningPlans.templateLoadFailed);
         setTemplates(nextTemplates);
-        const [firstTemplate] = nextTemplates;
+        const [firstTemplate] = filterTemplates(nextTemplates, 'RECOMMENDED');
         if (firstTemplate) {
           setSelectedTemplateId(firstTemplate.templateId);
-          applyDefaultRhythm(firstTemplate.defaultRhythmSettings);
+          applyTemplateDefaults(firstTemplate);
         }
       })
       .catch((nextError) => {
@@ -102,47 +105,29 @@ export default function LearningPlanTemplateCreatePanel({
     return () => controller.abort();
   }, [resources.learningPlans.templateLoadFailed]);
 
-  useEffect(() => {
-    if (!selectedTemplate) {
-      setSelectedTemplateDetail(undefined);
-      return undefined;
-    }
-
-    const controller = new AbortController();
-    setSelectedTemplateDetail(undefined);
-    applyDefaultRhythm(selectedTemplate.defaultRhythmSettings);
-    setProgrammingLanguage(DEFAULT_PROGRAMMING_LANGUAGE);
-    setDetailLoading(true);
-    setLoadError('');
-
-    void getLearningPlanTemplate(selectedTemplate.templateId, controller.signal)
-      .then((response) => {
-        const detail = requireApiData(response, resources.learningPlans.templateDetailLoadFailed);
-        setSelectedTemplateDetail(detail);
-        setProgrammingLanguage(detail.programmingLanguage?.trim() || DEFAULT_PROGRAMMING_LANGUAGE);
-        applyDefaultRhythm(detail.defaultRhythmSettings);
-      })
-      .catch((nextError) => {
-        if (controller.signal.aborted) {
-          return;
-        }
-        setLoadError(nextError instanceof Error ? nextError.message : resources.learningPlans.templateDetailLoadFailed);
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) {
-          setDetailLoading(false);
-        }
-      });
-
-    return () => controller.abort();
-  }, [resources.learningPlans.templateDetailLoadFailed, selectedTemplate]);
-
   function selectTemplate(template: LearningPlanTemplateSummaryResponse) {
     if (loading || listLoading) {
       return;
     }
     setValidationError('');
     setSelectedTemplateId(template.templateId);
+    applyTemplateDefaults(template);
+  }
+
+  function selectCatalogView(view: TemplateCatalogView) {
+    if (loading || listLoading) {
+      return;
+    }
+    setValidationError('');
+    setCatalogView(view);
+    const nextTemplates = filterTemplates(templates, view);
+    if (!nextTemplates.some((template) => template.templateId === selectedTemplateId)) {
+      const [firstTemplate] = nextTemplates;
+      setSelectedTemplateId(firstTemplate?.templateId ?? '');
+      if (firstTemplate) {
+        applyTemplateDefaults(firstTemplate);
+      }
+    }
   }
 
   function submit() {
@@ -164,6 +149,11 @@ export default function LearningPlanTemplateCreatePanel({
     setTrainingDaysPerWeek(settings?.trainingDaysPerWeek ?? DEFAULT_TRAINING_DAYS_PER_WEEK);
   }
 
+  function applyTemplateDefaults(template: LearningPlanTemplateSummaryResponse) {
+    applyDefaultRhythm(template.defaultRhythmSettings);
+    setProgrammingLanguage(template.programmingLanguage?.trim() || DEFAULT_PROGRAMMING_LANGUAGE);
+  }
+
   return (
     <>
       {effectiveError && <p className="error-text" role="alert">{effectiveError}</p>}
@@ -175,8 +165,39 @@ export default function LearningPlanTemplateCreatePanel({
         )}
 
         {templates.length > 0 && (
-          <section className="template-card-grid" aria-label={resources.learningPlans.createFromTemplate}>
-            {templates.map((template) => (
+          <section aria-label={resources.learningPlans.createFromTemplate}>
+            <div aria-label={resources.learningPlans.templateCatalog} className="template-catalog-tabs" role="tablist">
+              {[
+                ['RECOMMENDED', resources.learningPlans.templateCatalogRecommended],
+                ['SYSTEMATIC_LEARNING', resources.learningPlans.templateCatalogSystematicLearning],
+                ['INTERVIEW_PREP', resources.learningPlans.templateCatalogInterviewPrep],
+                ['TOPIC_BREAKTHROUGH', resources.learningPlans.templateCatalogTopicBreakthrough],
+                ['LANGUAGE_AND_ROLE', resources.learningPlans.templateCatalogLanguageAndRole],
+              ].map(([view, label]) => (
+                <button
+                  aria-controls={`template-catalog-panel-${view}`}
+                  aria-selected={catalogView === view}
+                  className={catalogView === view ? 'selected' : ''}
+                  id={`template-catalog-tab-${view}`}
+                  key={view}
+                  onClick={() => selectCatalogView(view as TemplateCatalogView)}
+                  role="tab"
+                  type="button"
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div
+              aria-labelledby={`template-catalog-tab-${catalogView}`}
+              id={`template-catalog-panel-${catalogView}`}
+              role="tabpanel"
+            >
+              {visibleTemplates.length === 0 && (
+                <p className="empty-log">{resources.learningPlans.templateCatalogEmpty}</p>
+              )}
+              <div className="template-card-grid">
+                {visibleTemplates.map((template) => (
               <button
                 aria-pressed={selectedTemplateId === template.templateId}
                 className={`template-card${selectedTemplateId === template.templateId ? ' selected' : ''}`}
@@ -190,31 +211,23 @@ export default function LearningPlanTemplateCreatePanel({
                     <Layers />
                   </span>
                   <strong>{template.title}</strong>
+                  {template.recommendedOrder != null && (
+                    <span className="template-recommended-badge">{resources.learningPlans.templateRecommendedBadge}</span>
+                  )}
                 </span>
                 <span>{template.summary}</span>
+                <span className="template-card-meta">{formatPlanLevel(template.level, resources)}</span>
                 <span className="template-card-meta">
                   {resources.learningPlans.templateRouteSummary(
-                    template.defaultLoadSummary?.plannedProblemCount ?? template.matchedProblemCount,
+                    template.plannedProblemCount,
                     template.defaultDurationWeeks,
                     template.defaultWeeklyHours,
                   )}
                 </span>
-                {template.sourceCommit && (
-                  <span className="template-card-meta">
-                    <GitCommit aria-hidden="true" />
-                    {resources.learningPlans.templateSourceCommit(template.sourceCommit)}
-                  </span>
-                )}
-                <span className="template-card-meta">
-                  <Database aria-hidden="true" />
-                  {resources.learningPlans.templateProblemStats(
-                    template.matchedProblemCount,
-                    template.missingProblemCount,
-                    template.problemCount,
-                  )}
-                </span>
               </button>
-            ))}
+                ))}
+              </div>
+            </div>
           </section>
         )}
 
@@ -234,13 +247,6 @@ export default function LearningPlanTemplateCreatePanel({
                 <strong>{formatPlanLevel(selectedTemplate.level, resources)}</strong>
               </div>
             </section>
-
-            {detailLoading && <p className="empty-log">{resources.learningPlans.templateDetailLoading}</p>}
-            {!detailLoading && selectedTemplateDetail && selectedTemplate.missingProblemCount > 0 && (
-              <p className="empty-log">
-                {resources.learningPlans.templateMissingNotice(selectedTemplate.missingProblemCount)}
-              </p>
-            )}
 
             <section className="question-block">
               <strong>{resources.learningPlans.standardRhythmTitle}</strong>
@@ -267,7 +273,7 @@ export default function LearningPlanTemplateCreatePanel({
                   <span>{resources.learningPlans.dailyProblemCount}</span>
                   <input
                     aria-label={resources.learningPlans.dailyProblemCount}
-                    disabled={loading || detailLoading}
+                    disabled={loading}
                     max={MAX_DAILY_PROBLEM_COUNT}
                     min={MIN_DAILY_PROBLEM_COUNT}
                     onChange={(event) => setDailyProblemCount(clampNumber(
@@ -283,7 +289,7 @@ export default function LearningPlanTemplateCreatePanel({
                   <span>{resources.learningPlans.trainingDaysPerWeek}</span>
                   <input
                     aria-label={resources.learningPlans.trainingDaysPerWeek}
-                    disabled={loading || detailLoading}
+                    disabled={loading}
                     max={MAX_TRAINING_DAYS_PER_WEEK}
                     min={MIN_TRAINING_DAYS_PER_WEEK}
                     onChange={(event) => setTrainingDaysPerWeek(clampNumber(
@@ -310,7 +316,7 @@ export default function LearningPlanTemplateCreatePanel({
               <span>{resources.learningPlans.programmingLanguage}</span>
               <select
                 aria-label={resources.learningPlans.programmingLanguage}
-                disabled={loading || detailLoading}
+                disabled={loading}
                 onChange={(event) => setProgrammingLanguage(event.target.value)}
                 value={programmingLanguage}
               >
@@ -336,6 +342,19 @@ export default function LearningPlanTemplateCreatePanel({
       </div>
     </>
   );
+}
+
+function filterTemplates(
+  templates: LearningPlanTemplateSummaryResponse[],
+  view: TemplateCatalogView,
+): LearningPlanTemplateSummaryResponse[] {
+  if (view !== 'RECOMMENDED') {
+    return templates.filter((template) => template.catalogCategory === view);
+  }
+  return templates
+    .filter((template) => template.recommendedOrder != null)
+    .sort((left, right) => (left.recommendedOrder ?? Number.MAX_SAFE_INTEGER)
+      - (right.recommendedOrder ?? Number.MAX_SAFE_INTEGER));
 }
 
 function clampNumber(value: number, min: number, max: number) {

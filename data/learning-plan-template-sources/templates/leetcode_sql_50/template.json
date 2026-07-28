@@ -179,6 +179,7 @@
   "summary": "用 7 周完成 LeetCode SQL 50，从基础查询推进到连接、聚合、子查询和字符串处理。",
   "targetAudience": "希望系统学习 SQL 查询、准备数据或后端岗位面试的学习者。",
   "templateId": "leetcode_sql_50",
+  "catalogCategory": "LANGUAGE_AND_ROLE",
   "title": "LeetCode SQL 50 系统训练计划",
   "topicPreferences": [
     "Database",

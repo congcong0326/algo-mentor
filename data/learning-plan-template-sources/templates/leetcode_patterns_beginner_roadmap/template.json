@@ -226,6 +226,7 @@
   "summary": "用 10 周按常见算法模式建立刷题基础，从数组哈希逐步推进到图、堆、矩阵和前缀和。",
   "targetAudience": "具备基础语法，但尚未形成数据结构与算法题型地图的入门学习者。",
   "templateId": "leetcode_patterns_beginner_roadmap",
+  "catalogCategory": "SYSTEMATIC_LEARNING",
   "title": "算法模式入门训练计划",
   "topicPreferences": [
     "Array",

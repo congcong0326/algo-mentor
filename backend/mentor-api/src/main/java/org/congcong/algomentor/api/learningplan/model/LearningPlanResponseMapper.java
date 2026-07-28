@@ -25,7 +25,7 @@ public final class LearningPlanResponseMapper {
         result.status(),
         result.assistantMessage(),
         result.missingFields(),
-        result.draftPlan());
+        toDraftPlanResponse(result.draftPlan()));
   }
 
   public static LearningPlanConfirmResponse toConfirmResponse(LearningPlanConfirmResult result) {
@@ -141,7 +141,7 @@ public final class LearningPlanResponseMapper {
                             PracticeProgressStatus.NOT_STARTED)))
                     .toList()))
             .toList(),
-        snapshot.metadata(),
+        LearningPlanPublicMetadataMapper.project(snapshot.metadata()),
         loadService.summarize(snapshot),
         loadService.weeklyBuckets(snapshot),
         loadService.nextTrainingPackage(plan, progress),
@@ -164,6 +164,27 @@ public final class LearningPlanResponseMapper {
       progressByProblem.put(new ProgressKey(item.phaseIndex(), item.problemSlug()), item.status());
     }
     return progressByProblem;
+  }
+
+  private static LearningPlanDraftPlanResponse toDraftPlanResponse(LearningPlanDraftPlan plan) {
+    if (plan == null) {
+      return null;
+    }
+    return new LearningPlanDraftPlanResponse(
+        plan.title(),
+        plan.summary(),
+        plan.intent(),
+        plan.goal(),
+        plan.durationWeeks(),
+        plan.level(),
+        plan.weeklyHours(),
+        plan.programmingLanguage(),
+        plan.difficultyPreference(),
+        plan.interviewOriented(),
+        plan.topicPreferences(),
+        plan.profileSummary(),
+        plan.phases(),
+        LearningPlanPublicMetadataMapper.project(plan.metadata()));
   }
 
   private record ProgressKey(int phaseIndex, String problemSlug) {

@@ -11,6 +11,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDiffi
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplate;
+import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateCatalogCategory;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateDraftService;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplatePhase;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateProblemRef;
@@ -38,9 +39,15 @@ class LearningPlanTemplateControllerTest {
     mockMvc.perform(get("/api/learning-plan-templates"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data[0].templateId").value("neetcode_blind_75_interview_core"))
+        .andExpect(jsonPath("$.data[0].catalogCategory").value("INTERVIEW_PREP"))
+        .andExpect(jsonPath("$.data[0].recommendedOrder").value(1))
+        .andExpect(jsonPath("$.data[0].programmingLanguage").value("Java"))
         .andExpect(jsonPath("$.data[0].defaultDurationWeeks").value(4))
-        .andExpect(jsonPath("$.data[0].matchedProblemCount").value(69))
-        .andExpect(jsonPath("$.data[0].missingProblemCount").value(6))
+        .andExpect(jsonPath("$.data[0].plannedProblemCount").value(69))
+        .andExpect(jsonPath("$.data[0].sourceCommit").doesNotExist())
+        .andExpect(jsonPath("$.data[0].problemCount").doesNotExist())
+        .andExpect(jsonPath("$.data[0].matchedProblemCount").doesNotExist())
+        .andExpect(jsonPath("$.data[0].missingProblemCount").doesNotExist())
         .andExpect(jsonPath("$.data[0].defaultLoadSummary.plannedProblemCount").value(1))
         .andExpect(jsonPath("$.data[0].defaultRhythmSettings.dailyProblemCount").value(4))
         .andExpect(jsonPath("$.data[0].defaultRhythmSettings.trainingDaysPerWeek").value(5))
@@ -54,13 +61,20 @@ class LearningPlanTemplateControllerTest {
     mockMvc.perform(get("/api/learning-plan-templates/neetcode_blind_75_interview_core"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.templateId").value("neetcode_blind_75_interview_core"))
-        .andExpect(jsonPath("$.data.sourceCommit").value("9907b7fed441fa55083c0751e208b7197101dbba"))
+        .andExpect(jsonPath("$.data.sourceName").value("neetcode-gh/leetcode"))
+        .andExpect(jsonPath("$.data.plannedProblemCount").value(69))
+        .andExpect(jsonPath("$.data.sourceCommit").doesNotExist())
+        .andExpect(jsonPath("$.data.sourceDataPath").doesNotExist())
+        .andExpect(jsonPath("$.data.metadata").doesNotExist())
+        .andExpect(jsonPath("$.data.problemCount").doesNotExist())
+        .andExpect(jsonPath("$.data.matchedProblemCount").doesNotExist())
+        .andExpect(jsonPath("$.data.missingProblemCount").doesNotExist())
         .andExpect(jsonPath("$.data.defaultLoadSummary.intensity").exists())
         .andExpect(jsonPath("$.data.defaultRhythmSettings.remainingProblemCount").value(69))
         .andExpect(jsonPath("$.data.defaultRhythmSettings.completedProblemCount").value(0))
         .andExpect(jsonPath("$.data.phases[0].phaseIndex").value(1))
-        .andExpect(jsonPath("$.data.phases[0].problemRefs[0].problemSlug").value("two-sum"))
-        .andExpect(jsonPath("$.data.phases[0].problemRefs[0].matchedProblem").value(true));
+        .andExpect(jsonPath("$.data.phases[0].plannedProblemCount").value(1))
+        .andExpect(jsonPath("$.data.phases[0].problemRefs").doesNotExist());
   }
 
   private LearningPlanTemplate template() {
@@ -69,6 +83,8 @@ class LearningPlanTemplateControllerTest {
         "neetcode_blind_75_interview_core",
         "Blind 75",
         "summary",
+        LearningPlanTemplateCatalogCategory.INTERVIEW_PREP,
+        1,
         LearningPlanIntent.INTERVIEW_SPRINT,
         "goal",
         4,

@@ -1,5 +1,7 @@
 {
   "templateId": "cn_algorithm_foundation_12weeks",
+  "catalogCategory": "SYSTEMATIC_LEARNING",
+  "recommendedOrder": 2,
   "title": "中文系统刷题入门计划",
   "summary": "面向中文初学者的 12 周系统路线，按数组、链表、哈希、字符串、树、回溯、贪心、动态规划和图论逐步推进。",
   "goal": "用中文学习习惯友好的顺序建立算法刷题基础。",

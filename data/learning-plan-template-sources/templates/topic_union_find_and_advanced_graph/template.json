@@ -1,5 +1,6 @@
 {
   "templateId": "topic_union_find_and_advanced_graph",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "并查集与进阶图论专项",
   "summary": "3 周覆盖并查集、拓扑排序、最短路和最小生成树等进阶图论模型。",
   "goal": "建立连通性维护、有向依赖排序和带权图路径问题的系统解题能力。",

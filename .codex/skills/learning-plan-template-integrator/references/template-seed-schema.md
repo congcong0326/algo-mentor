@@ -12,6 +12,7 @@
 Required fields:
 
 - `templateId`
+- `catalogCategory`
 - `title`
 - `summary`
 - `intent`
@@ -39,6 +40,8 @@ Required fields:
 - `phases`
 
 `level` must be `BEGINNER`, `INTERMEDIATE`, or `ADVANCED`. `intent`, `difficultyPreference`, and phase shape must match backend DTO enums and `LearningPlanPhaseDraft` expectations.
+
+`catalogCategory` must be one of `SYSTEMATIC_LEARNING`, `INTERVIEW_PREP`, `TOPIC_BREAKTHROUGH`, or `LANGUAGE_AND_ROLE`. An optional `recommendedOrder` must be a positive integer; non-null orders are unique and contiguous from 1 within one seed.
 
 Phase requirements:
 

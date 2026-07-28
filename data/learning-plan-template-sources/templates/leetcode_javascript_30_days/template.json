@@ -138,6 +138,7 @@
   "summary": "用 5 周完成 JavaScript 30 天官方路线，覆盖闭包、高阶函数、Promise、JSON 和类。",
   "targetAudience": "有基础编程经验，希望系统补齐现代 JavaScript 核心语言能力的学习者。",
   "templateId": "leetcode_javascript_30_days",
+  "catalogCategory": "LANGUAGE_AND_ROLE",
   "title": "LeetCode JavaScript 30 天训练计划",
   "topicPreferences": [
     "JavaScript",

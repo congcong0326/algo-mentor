@@ -1,5 +1,6 @@
 {
   "templateId": "topic_graph_bfs_dfs",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "图论专项突破计划",
   "summary": "4 周覆盖 DFS/BFS、岛屿网格、拓扑排序、并查集和最短路基础，适合补齐图论薄弱项。",
   "goal": "建立图搜索建模、遍历状态和连通性判断能力。",

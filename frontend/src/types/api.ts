@@ -1000,6 +1000,11 @@ export type LearningPlanIntent =
   | 'LONG_TERM_LEARNING';
 
 export type LearningPlanLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+export type LearningPlanTemplateCatalogCategory =
+  | 'SYSTEMATIC_LEARNING'
+  | 'INTERVIEW_PREP'
+  | 'TOPIC_BREAKTHROUGH'
+  | 'LANGUAGE_AND_ROLE';
 export type LearningPlanDifficultyPreference = 'EASY' | 'MEDIUM' | 'HARD' | 'MIXED';
 export type LearningPlanDraftStatus = 'COLLECTING' | 'GENERATED' | 'CONFIRMED' | 'GENERATION_FAILED' | 'EXPIRED';
 export type LearningPlanStatus = 'ACTIVE' | 'ARCHIVED';
@@ -1119,36 +1124,21 @@ export interface LearningPlanTemplateSummaryResponse {
   templateId: string;
   title: string;
   summary: string;
+  catalogCategory: LearningPlanTemplateCatalogCategory;
+  recommendedOrder?: number | null;
   intent: LearningPlanIntent;
   defaultDurationWeeks: number;
   level: LearningPlanLevel;
   defaultWeeklyHours: number;
+  programmingLanguage?: string | null;
   difficultyPreference: LearningPlanDifficultyPreference;
   interviewOriented: boolean;
   topicPreferences: string[];
   targetAudience: string;
-  difficultyMix: Record<string, unknown>;
   expectedOutcome: string;
-  sourceName: string;
-  sourceCommit?: string | null;
-  problemCount: number;
-  matchedProblemCount: number;
-  missingProblemCount: number;
+  plannedProblemCount: number;
   defaultLoadSummary?: LearningPlanLoadSummary;
   defaultRhythmSettings?: LearningPlanRhythmSettings;
-}
-
-export interface LearningPlanTemplateProblemRefResponse {
-  phaseIndex: number;
-  sortOrder: number;
-  sourceOrder: number;
-  problemSlug?: string | null;
-  sourceTitle: string;
-  sourceDifficulty?: string | null;
-  pattern?: string | null;
-  sourceUrl?: string | null;
-  matchedProblem: boolean;
-  metadata: Record<string, unknown>;
 }
 
 export interface LearningPlanTemplatePhaseResponse {
@@ -1160,7 +1150,7 @@ export interface LearningPlanTemplatePhaseResponse {
   recommendedTags: string[];
   acceptanceCriteria: string[];
   reviewAdvice: string;
-  problemRefs: LearningPlanTemplateProblemRefResponse[];
+  plannedProblemCount: number;
 }
 
 export interface LearningPlanTemplateDetailResponse extends LearningPlanTemplateSummaryResponse {
@@ -1169,12 +1159,8 @@ export interface LearningPlanTemplateDetailResponse extends LearningPlanTemplate
   prerequisites: string[];
   recommendedFor: string[];
   notRecommendedFor: string[];
-  sourceUrl?: string | null;
-  sourceDataPath?: string | null;
-  sourceDescription: string;
-  curationNotes: string;
-  licenseNotice: string;
-  metadata: Record<string, unknown>;
+  sourceName: string;
+  sourceUrl: string;
   phases: LearningPlanTemplatePhaseResponse[];
 }
 

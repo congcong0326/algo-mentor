@@ -1,5 +1,6 @@
 {
   "templateId": "topic_sliding_window_two_pointers",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "滑动窗口与双指针专项计划",
   "summary": "2 周覆盖固定窗口、可变窗口、相向指针、快慢指针和排序去重组合。",
   "goal": "提升字符串和数组窗口题的建模与边界维护能力。",

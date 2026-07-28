@@ -119,6 +119,7 @@
   "summary": "用 4 周完成 Pandas 入门官方路线，覆盖 DataFrame、选择、清洗和表结构变换。",
   "targetAudience": "掌握 Python 基础，希望开始进行表格数据处理和分析的学习者。",
   "templateId": "leetcode_pandas_introduction",
+  "catalogCategory": "LANGUAGE_AND_ROLE",
   "title": "LeetCode Pandas 入门训练计划",
   "topicPreferences": [
     "Python",

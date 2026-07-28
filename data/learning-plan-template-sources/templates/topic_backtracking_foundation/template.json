@@ -1,5 +1,6 @@
 {
   "templateId": "topic_backtracking_foundation",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "回溯专项突破",
   "summary": "3 周突破回溯搜索，按子集/组合/排列、棋盘与字符串切割、剪枝和约束搜索递进。",
   "goal": "掌握选择列表、路径状态、撤销选择和剪枝条件的表达方式。",

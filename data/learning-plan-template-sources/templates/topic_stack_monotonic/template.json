@@ -1,5 +1,6 @@
 {
   "templateId": "topic_stack_monotonic",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "栈与单调栈专项",
   "summary": "2 周补齐基础栈、表达式求值、单调栈和单调队列窗口题。",
   "goal": "掌握栈状态维护、表达式解析和单调结构的入栈/出栈不变量。",

@@ -896,6 +896,14 @@ export interface LocaleResources {
     templateGenerateFailed: string;
     templateGenerateDraft: string;
     templateSelected: string;
+    templateCatalog: string;
+    templateCatalogRecommended: string;
+    templateCatalogSystematicLearning: string;
+    templateCatalogInterviewPrep: string;
+    templateCatalogTopicBreakthrough: string;
+    templateCatalogLanguageAndRole: string;
+    templateCatalogEmpty: string;
+    templateRecommendedBadge: string;
     templateDefaultRhythm: (weeks: number, hours: number) => string;
     templateRouteSummary: (problems: number, weeks: number, hours: number) => string;
     templateRhythm: string;
@@ -2065,6 +2073,14 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       templateGenerateFailed: '按模板生成训练方案失败',
       templateGenerateDraft: '按模板生成草案',
       templateSelected: '当前模板',
+      templateCatalog: '模板目录',
+      templateCatalogRecommended: '推荐',
+      templateCatalogSystematicLearning: '系统学习',
+      templateCatalogInterviewPrep: '面试备战',
+      templateCatalogTopicBreakthrough: '专题突破',
+      templateCatalogLanguageAndRole: '语言与岗位',
+      templateCatalogEmpty: '该分类暂无可用模板',
+      templateRecommendedBadge: '推荐',
       templateDefaultRhythm: (weeks, hours) => `默认 ${weeks} 周 · ${hours}h/周`,
       templateRouteSummary: (problems, weeks, hours) => (
         `${problems} 道可练题 · 推荐 ${weeks} 周 · 每周 ${hours}h`
@@ -3311,6 +3327,14 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       templateGenerateFailed: 'Failed to generate a plan from the template',
       templateGenerateDraft: 'Generate from Template',
       templateSelected: 'Selected Template',
+      templateCatalog: 'Template catalog',
+      templateCatalogRecommended: 'Recommended',
+      templateCatalogSystematicLearning: 'Systematic Learning',
+      templateCatalogInterviewPrep: 'Interview Prep',
+      templateCatalogTopicBreakthrough: 'Topic Breakthrough',
+      templateCatalogLanguageAndRole: 'Language & Role',
+      templateCatalogEmpty: 'No templates are available in this category',
+      templateRecommendedBadge: 'Recommended',
       templateDefaultRhythm: (weeks, hours) => `${weeks} ${weeks === 1 ? 'week' : 'weeks'} · ${hours}h/week default`,
       templateRouteSummary: (problems, weeks, hours) => (
         `${problems} practice problems · recommended ${weeks} ${weeks === 1 ? 'week' : 'weeks'} · ${hours}h/week`

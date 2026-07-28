@@ -159,6 +159,7 @@
   "summary": "用 6 周覆盖 Tech Interview Handbook 的核心算法主题，形成可复用的面试题型地图。",
   "targetAudience": "已有基础刷题经验，希望按主题系统补齐算法面试知识结构的学习者。",
   "templateId": "tih_algorithm_essentials",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "算法面试核心专题计划",
   "topicPreferences": [
     "Array",

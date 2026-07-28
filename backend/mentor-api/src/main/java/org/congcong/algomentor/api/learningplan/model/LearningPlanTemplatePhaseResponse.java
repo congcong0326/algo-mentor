@@ -11,6 +11,6 @@ public record LearningPlanTemplatePhaseResponse(
     List<String> recommendedTags,
     List<String> acceptanceCriteria,
     String reviewAdvice,
-    List<LearningPlanTemplateProblemRefResponse> problemRefs
+    int plannedProblemCount
 ) {
 }

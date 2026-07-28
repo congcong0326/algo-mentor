@@ -22,6 +22,25 @@ class PrepareTemplateSeedTest(unittest.TestCase):
         self.assertGreaterEqual(len(report["sources"]), 5)
         self.assertGreater(report["matchedProblemCount"], 0)
         self.assertGreaterEqual(report["missingProblemCount"], 4)
+        self.assertEqual(5, sum(template["catalogCategory"] == "SYSTEMATIC_LEARNING" for template in templates))
+        self.assertEqual(8, sum(template["catalogCategory"] == "INTERVIEW_PREP" for template in templates))
+        self.assertEqual(18, sum(template["catalogCategory"] == "TOPIC_BREAKTHROUGH" for template in templates))
+        self.assertEqual(4, sum(template["catalogCategory"] == "LANGUAGE_AND_ROLE" for template in templates))
+        self.assertEqual(
+            {
+                "leetcode_75_core_sprint": 1,
+                "cn_algorithm_foundation_12weeks": 2,
+                "carl_algorithm_roadmap_full": 3,
+                "leetcode_top_interview_150": 4,
+                "labuladong_algo_thinking": 5,
+                "topic_dynamic_programming_foundation": 6,
+            },
+            {
+                template["templateId"]: template["recommendedOrder"]
+                for template in templates
+                if template.get("recommendedOrder") is not None
+            },
+        )
         for template in templates:
             self.assertTrue(template["targetAudience"])
             self.assertTrue(template["difficultyMix"])
@@ -276,6 +295,22 @@ class PrepareTemplateSeedTest(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "targetAudience"):
             seed.validate_template(template)
+
+    def test_validate_seed_rejects_invalid_catalog_category_and_recommendation_order(self) -> None:
+        templates, refs, _ = seed.build_seed(
+            source_data(),
+            build_problem_index(exclude=known_missing_slugs()),
+        )
+        templates[0]["catalogCategory"] = "UNSUPPORTED"
+
+        with self.assertRaisesRegex(ValueError, "catalogCategory"):
+            seed.validate_seed(templates, refs)
+
+        templates[0]["catalogCategory"] = "INTERVIEW_PREP"
+        templates[0]["recommendedOrder"] = 0
+
+        with self.assertRaisesRegex(ValueError, "recommendedOrder"):
+            seed.validate_seed(templates, refs)
 
     def test_validate_seed_rejects_problem_ref_with_unknown_phase(self) -> None:
         templates, refs, _ = seed.build_seed(

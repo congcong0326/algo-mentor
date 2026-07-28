@@ -117,6 +117,7 @@
   "summary": "4 周突破区间、树形、状压、数位与博弈动态规划，补齐基础 DP 之后的进阶模型。",
   "targetAudience": "已完成动态规划基础专题，能独立写出常见一维、背包和子序列 DP 的学习者。",
   "templateId": "topic_dp_advanced",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "动态规划进阶专项计划",
   "topicPreferences": [
     "Dynamic Programming",

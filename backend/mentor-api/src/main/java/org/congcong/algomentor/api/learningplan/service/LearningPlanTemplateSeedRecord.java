@@ -5,11 +5,14 @@ import java.util.Map;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
+import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateCatalogCategory;
 
 public record LearningPlanTemplateSeedRecord(
     String templateId,
     String title,
     String summary,
+    LearningPlanTemplateCatalogCategory catalogCategory,
+    Integer recommendedOrder,
     LearningPlanIntent intent,
     String goal,
     int defaultDurationWeeks,

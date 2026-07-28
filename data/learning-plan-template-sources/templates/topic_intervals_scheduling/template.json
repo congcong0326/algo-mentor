@@ -1,5 +1,6 @@
 {
   "templateId": "topic_intervals_scheduling",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "区间与调度专项",
   "summary": "2 周覆盖区间合并、覆盖删除、日历调度、扫描线和事件统计。",
   "goal": "掌握区间排序依据、重叠判定和扫描事件的统一建模方式。",

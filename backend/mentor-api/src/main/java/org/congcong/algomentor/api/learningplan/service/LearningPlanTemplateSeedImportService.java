@@ -127,6 +127,8 @@ public class LearningPlanTemplateSeedImportService {
         record.templateId(),
         record.title(),
         record.summary(),
+        record.catalogCategory(),
+        record.recommendedOrder(),
         record.intent(),
         record.goal(),
         record.defaultDurationWeeks(),
@@ -190,8 +192,21 @@ public class LearningPlanTemplateSeedImportService {
               throw new IllegalArgumentException("Duplicate learning plan template id: " + left.templateId());
             },
             LinkedHashMap::new));
+    Set<Integer> recommendedOrders = new HashSet<>();
     for (LearningPlanTemplateSeedRecord template : seed.templates()) {
       validateTemplate(template);
+      if (template.recommendedOrder() != null && !recommendedOrders.add(template.recommendedOrder())) {
+        throw new IllegalArgumentException("Duplicate learning plan template recommendedOrder: "
+            + template.recommendedOrder());
+      }
+    }
+    if (recommendedOrders.isEmpty()) {
+      throw new IllegalArgumentException("Learning plan template seed must include a recommended template.");
+    }
+    for (int order = 1; order <= recommendedOrders.size(); order++) {
+      if (!recommendedOrders.contains(order)) {
+        throw new IllegalArgumentException("Learning plan template recommendedOrder must be contiguous from 1.");
+      }
     }
     Map<String, Integer> refCountByTemplate = new HashMap<>();
     Map<String, Set<Integer>> phaseIndexesByTemplate = phaseIndexesByTemplate(seed.templates());
@@ -255,8 +270,15 @@ public class LearningPlanTemplateSeedImportService {
     requireNonBlank(template.sourceDescription(), "sourceDescription");
     requireNonBlank(template.curationNotes(), "curationNotes");
     requireNonBlank(template.licenseNotice(), "licenseNotice");
-    if (template.intent() == null || template.level() == null || template.difficultyPreference() == null) {
+    if (template.catalogCategory() == null
+        || template.intent() == null
+        || template.level() == null
+        || template.difficultyPreference() == null) {
       throw new IllegalArgumentException("Learning plan template has invalid enum fields: " + template.templateId());
+    }
+    if (template.recommendedOrder() != null && template.recommendedOrder() < 1) {
+      throw new IllegalArgumentException("Learning plan template recommendedOrder must be positive: "
+          + template.templateId());
     }
     if (template.defaultDurationWeeks() < 1 || template.defaultWeeklyHours() < 1) {
       throw new IllegalArgumentException("Learning plan template has invalid default duration or hours: "

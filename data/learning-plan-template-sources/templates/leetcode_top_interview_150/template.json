@@ -234,6 +234,8 @@
   "summary": "用 10 周完成 LeetCode Top Interview 150 官方路线，系统覆盖经典面试数据结构与算法。",
   "targetAudience": "有稳定刷题时间，希望按官方经典 150 题路线进行系统面试备战的学习者。",
   "templateId": "leetcode_top_interview_150",
+  "catalogCategory": "INTERVIEW_PREP",
+  "recommendedOrder": 4,
   "title": "LeetCode 面试经典 150 题计划",
   "topicPreferences": [
     "Array",

@@ -1,5 +1,6 @@
 {
   "templateId": "topic_prefix_sum_difference",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "前缀和与差分专项",
   "summary": "2 周掌握一维与二维前缀和、前缀和加哈希以及差分数组的高频模型。",
   "goal": "把重复区间统计和批量区间更新转换为稳定的预处理或差分模型。",

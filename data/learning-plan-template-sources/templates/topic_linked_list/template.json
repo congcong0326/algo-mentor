@@ -1,5 +1,6 @@
 {
   "templateId": "topic_linked_list",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "链表专项",
   "summary": "2 周系统补齐链表基础操作、双指针、合并排序和复杂结构设计。",
   "goal": "建立链表指针改写、快慢指针和复杂节点关系的稳定解题能力。",

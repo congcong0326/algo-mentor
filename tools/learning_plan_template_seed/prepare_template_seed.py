@@ -38,6 +38,12 @@ DERIVED_TEMPLATE_METADATA_KEYS = {
     "missingProblems",
     "sourceTags",
 }
+CATALOG_CATEGORIES = {
+    "SYSTEMATIC_LEARNING",
+    "INTERVIEW_PREP",
+    "TOPIC_BREAKTHROUGH",
+    "LANGUAGE_AND_ROLE",
+}
 
 NEETCODE_SOURCE = {
     "key": "neetcode",
@@ -1642,6 +1648,8 @@ def template_report(template: dict[str, Any], refs: list[dict[str, Any]]) -> dic
     ]
     return {
         "title": template["title"],
+        "catalogCategory": template["catalogCategory"],
+        "recommendedOrder": template.get("recommendedOrder"),
         "phaseCount": len(template["phases"]),
         "problemCount": len(refs),
         "matchedProblemCount": sum(1 for ref in refs if ref["metadata"]["matchedLocalProblem"]),
@@ -1663,6 +1671,18 @@ def validate_seed(templates: list[dict[str, Any]], refs: list[dict[str, Any]]) -
         phase_indexes_by_template[template_id] = {
             int(phase["phaseIndex"]) for phase in template["phases"]
         }
+
+    recommended_orders = [
+        template["recommendedOrder"]
+        for template in templates
+        if template.get("recommendedOrder") is not None
+    ]
+    if not recommended_orders:
+        raise ValueError("learning plan template seed must include at least one recommended template")
+    if len(recommended_orders) != len(set(recommended_orders)):
+        raise ValueError("recommendedOrder must be unique across learning plan templates")
+    if sorted(recommended_orders) != list(range(1, len(recommended_orders) + 1)):
+        raise ValueError("recommendedOrder must be contiguous from 1")
 
     ref_count_by_template: Counter[str] = Counter()
     source_orders_by_template: dict[str, set[int]] = defaultdict(set)
@@ -1727,6 +1747,16 @@ def validate_template(template: dict[str, Any]) -> None:
     for field in required_text_fields:
         if not template.get(field):
             raise ValueError(f"missing required template field: {field}")
+    catalog_category = clean_text(template.get("catalogCategory"))
+    if catalog_category not in CATALOG_CATEGORIES:
+        raise ValueError(f"invalid catalogCategory: {template.get('templateId')}")
+    recommended_order = template.get("recommendedOrder")
+    if recommended_order is not None and (
+        isinstance(recommended_order, bool)
+        or not isinstance(recommended_order, int)
+        or recommended_order < 1
+    ):
+        raise ValueError(f"invalid recommendedOrder: {template.get('templateId')}")
     for field in ["difficultyMix", "prerequisites", "recommendedFor", "notRecommendedFor", "phases"]:
         if not template.get(field):
             raise ValueError(f"missing required template field: {field}")

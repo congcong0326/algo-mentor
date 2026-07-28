@@ -21,6 +21,8 @@
 - `templates/<templateId>/template.json`：单个模板的主体字段、用户边界、来源归因和阶段规划。
 - `templates/<templateId>/problem_refs.jsonl`：单个模板的题目引用明细。
 
+每个 `template.json` 必须维护固定枚举值 `catalogCategory`，并可按需维护正整数 `recommendedOrder`；非推荐模板省略推荐顺序字段。
+
 源目录按模板拆分，不再把所有模板手工维护在一个 JSONL 中。`template.json` 不维护 `difficultyMix`、本地匹配数、缺失题列表和 `sourceTags` 这类派生统计；`problem_refs.jsonl` 不维护 `metadata.matchedLocalProblem`。生成器会根据当前 `data/seed/problems.jsonl` 重新计算这些字段。
 
 ## Seed 产物
@@ -37,6 +39,8 @@
 这四个文件是后端导入使用的运行时 seed，必须由 `tools/learning_plan_template_seed/prepare_template_seed.py` 从模板源目录聚合生成，不应手工编辑。
 
 模板 JSONL 必须包含目标人群、级别、难度分布、前置基础、适用和不适用边界、完成目标、来源说明、整理口径和授权说明。
+
+模板 JSONL 的 `catalogCategory` 只能是 `SYSTEMATIC_LEARNING`、`INTERVIEW_PREP`、`TOPIC_BREAKTHROUGH` 或 `LANGUAGE_AND_ROLE`。`recommendedOrder` 非空时必须为唯一的正整数，整批推荐顺序从 1 连续递增，并且至少存在一个推荐模板。
 
 题目引用 JSONL 必须记录完整路线，并包含 `templateId`、`phaseIndex`、`sortOrder`、`sourceOrder`、slug、来源标题、来源难度、pattern、来源 URL 和本地匹配 metadata。
 

@@ -20,6 +20,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanExcep
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplate;
+import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateCatalogCategory;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateImportRun;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplatePhase;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateProblemRef;
@@ -123,6 +124,8 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
         row.templateId(),
         row.title(),
         row.summary(),
+        LearningPlanTemplateCatalogCategory.valueOf(row.catalogCategory()),
+        row.recommendedOrder(),
         LearningPlanIntent.valueOf(row.intent()),
         row.goal(),
         value(row.defaultDurationWeeks()),
@@ -241,6 +244,8 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
         template.templateId(),
         template.title(),
         template.summary(),
+        template.catalogCategory().name(),
+        template.recommendedOrder(),
         template.intent().name(),
         template.goal(),
         template.defaultDurationWeeks(),

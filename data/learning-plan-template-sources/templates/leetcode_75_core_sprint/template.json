@@ -163,6 +163,8 @@
   "summary": "用 6 周完成 LeetCode 75 官方路线，覆盖 22 类核心面试主题。",
   "targetAudience": "已有基础数据结构知识，希望用 1 到 2 个月完成高质量面试核心路线的学习者。",
   "templateId": "leetcode_75_core_sprint",
+  "catalogCategory": "INTERVIEW_PREP",
+  "recommendedOrder": 1,
   "title": "LeetCode 75 核心冲刺计划",
   "topicPreferences": [
     "Array",

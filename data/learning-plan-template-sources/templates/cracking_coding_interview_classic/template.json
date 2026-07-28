@@ -248,6 +248,7 @@
   "summary": "用 10 周完成程序员面试金典 109 题路线，覆盖字符串、链表、树图、位运算、递归和综合难题。",
   "targetAudience": "已有数据结构基础，希望系统训练经典程序员面试题并逐步进入综合难题的学习者。",
   "templateId": "cracking_coding_interview_classic",
+  "catalogCategory": "INTERVIEW_PREP",
   "title": "程序员面试金典系统训练计划",
   "topicPreferences": [
     "String",

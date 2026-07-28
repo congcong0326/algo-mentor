@@ -11,6 +11,8 @@
       <arg column="template_id" javaType="string"/>
       <arg column="title" javaType="string"/>
       <arg column="summary" javaType="string"/>
+      <arg column="catalog_category" javaType="string"/>
+      <arg column="recommended_order" javaType="java.lang.Integer"/>
       <arg column="intent" javaType="string"/>
       <arg column="goal" javaType="string"/>
       <arg column="default_duration_weeks" javaType="java.lang.Integer"/>
@@ -92,6 +94,8 @@
       template_id,
       title,
       summary,
+      catalog_category,
+      recommended_order,
       intent,
       goal,
       default_duration_weeks,
@@ -125,6 +129,8 @@
       #{templateId},
       #{title},
       #{summary},
+      #{catalogCategory},
+      #{recommendedOrder},
       #{intent},
       #{goal},
       #{defaultDurationWeeks},
@@ -157,6 +163,8 @@
     ON CONFLICT (template_id) DO UPDATE
     SET title = EXCLUDED.title,
         summary = EXCLUDED.summary,
+        catalog_category = EXCLUDED.catalog_category,
+        recommended_order = EXCLUDED.recommended_order,
         intent = EXCLUDED.intent,
         goal = EXCLUDED.goal,
         default_duration_weeks = EXCLUDED.default_duration_weeks,
@@ -268,6 +276,8 @@
       template_id,
       title,
       summary,
+      catalog_category,
+      recommended_order,
       intent,
       goal,
       default_duration_weeks,
@@ -297,7 +307,11 @@
       created_at,
       updated_at
     FROM learning_plan_template
-    ORDER BY default_duration_weeks ASC, template_id ASC
+    ORDER BY
+      CASE WHEN recommended_order IS NULL THEN 1 ELSE 0 END ASC,
+      recommended_order ASC,
+      default_duration_weeks ASC,
+      template_id ASC
   </select>
 
   <select id="findByTemplateId" resultMap="LearningPlanTemplateRowMap">
@@ -306,6 +320,8 @@
       template_id,
       title,
       summary,
+      catalog_category,
+      recommended_order,
       intent,
       goal,
       default_duration_weeks,

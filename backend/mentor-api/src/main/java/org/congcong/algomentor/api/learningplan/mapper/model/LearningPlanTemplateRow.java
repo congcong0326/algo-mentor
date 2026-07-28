@@ -8,6 +8,8 @@ public record LearningPlanTemplateRow(
     String templateId,
     String title,
     String summary,
+    String catalogCategory,
+    Integer recommendedOrder,
     String intent,
     String goal,
     Integer defaultDurationWeeks,

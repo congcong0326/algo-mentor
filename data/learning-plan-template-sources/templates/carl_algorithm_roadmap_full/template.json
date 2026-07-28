@@ -253,6 +253,8 @@
   "summary": "用 16 周按数组、链表、哈希、树、回溯、贪心、动态规划和图论完成中文系统刷题路线。",
   "targetAudience": "希望按中文知识脉络长期学习、已经掌握一门编程语言基础但缺少系统刷题顺序的学习者。",
   "templateId": "carl_algorithm_roadmap_full",
+  "catalogCategory": "SYSTEMATIC_LEARNING",
+  "recommendedOrder": 3,
   "title": "代码随想录完整刷题路线",
   "topicPreferences": [
     "Array",

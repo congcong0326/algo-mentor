@@ -4,7 +4,6 @@ import java.util.List;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplate;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplatePhase;
-import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateProblemRef;
 
 public final class LearningPlanTemplateResponseMapper {
 
@@ -20,21 +19,19 @@ public final class LearningPlanTemplateResponseMapper {
         template.templateId(),
         template.title(),
         template.summary(),
+        template.catalogCategory(),
+        template.recommendedOrder(),
         template.intent(),
         template.defaultDurationWeeks(),
         template.level(),
         template.defaultWeeklyHours(),
+        template.programmingLanguage(),
         template.difficultyPreference(),
         template.interviewOriented(),
         template.topicPreferences(),
         template.targetAudience(),
-        template.difficultyMix(),
         template.expectedOutcome(),
-        template.sourceName(),
-        template.sourceCommit(),
-        template.problemCount(),
         template.matchedProblemCount(),
-        template.missingProblemCount(),
         loadService.defaultLoadSummary(template),
         loadService.defaultRhythmSettings(template));
   }
@@ -51,6 +48,8 @@ public final class LearningPlanTemplateResponseMapper {
         template.templateId(),
         template.title(),
         template.summary(),
+        template.catalogCategory(),
+        template.recommendedOrder(),
         template.intent(),
         template.goal(),
         template.defaultDurationWeeks(),
@@ -61,24 +60,15 @@ public final class LearningPlanTemplateResponseMapper {
         template.interviewOriented(),
         template.topicPreferences(),
         template.targetAudience(),
-        template.difficultyMix(),
         template.prerequisites(),
         template.recommendedFor(),
         template.notRecommendedFor(),
         template.expectedOutcome(),
         template.sourceName(),
         template.sourceUrl(),
-        template.sourceCommit(),
-        template.sourceDataPath(),
-        template.sourceDescription(),
-        template.curationNotes(),
-        template.licenseNotice(),
-        template.problemCount(),
         template.matchedProblemCount(),
-        template.missingProblemCount(),
         loadService.defaultLoadSummary(template),
         loadService.defaultRhythmSettings(template),
-        template.metadata(),
         template.phases().stream().map(LearningPlanTemplateResponseMapper::toPhaseResponse).toList());
   }
 
@@ -92,21 +82,7 @@ public final class LearningPlanTemplateResponseMapper {
         phase.recommendedTags(),
         phase.acceptanceCriteria(),
         phase.reviewAdvice(),
-        phase.problemRefs().stream().map(LearningPlanTemplateResponseMapper::toProblemRefResponse).toList());
-  }
-
-  private static LearningPlanTemplateProblemRefResponse toProblemRefResponse(LearningPlanTemplateProblemRef ref) {
-    return new LearningPlanTemplateProblemRefResponse(
-        ref.phaseIndex(),
-        ref.sortOrder(),
-        ref.sourceOrder(),
-        ref.problemSlug(),
-        ref.sourceTitle(),
-        ref.sourceDifficulty(),
-        ref.pattern(),
-        ref.sourceUrl(),
-        ref.matchedProblem(),
-        ref.metadata());
+        (int) phase.problemRefs().stream().filter(ref -> ref.matchedProblem()).count());
   }
 
   public static List<LearningPlanTemplateSummaryResponse> toSummaryResponses(List<LearningPlanTemplate> templates) {

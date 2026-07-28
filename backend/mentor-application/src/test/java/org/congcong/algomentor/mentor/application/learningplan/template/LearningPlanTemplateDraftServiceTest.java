@@ -391,6 +391,8 @@ class LearningPlanTemplateDraftServiceTest {
         templateId,
         templateId,
         "summary",
+        LearningPlanTemplateCatalogCategory.INTERVIEW_PREP,
+        1,
         LearningPlanIntent.INTERVIEW_SPRINT,
         "准备算法面试",
         durationWeeks,

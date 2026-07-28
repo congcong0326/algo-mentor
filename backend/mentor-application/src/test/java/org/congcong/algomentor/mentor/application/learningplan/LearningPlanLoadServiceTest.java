@@ -8,6 +8,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplate;
+import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateCatalogCategory;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplatePhase;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateProblemRef;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
@@ -166,6 +167,8 @@ class LearningPlanLoadServiceTest {
         "template",
         "模板",
         "summary",
+        LearningPlanTemplateCatalogCategory.INTERVIEW_PREP,
+        1,
         LearningPlanIntent.INTERVIEW_SPRINT,
         "准备算法面试",
         4,

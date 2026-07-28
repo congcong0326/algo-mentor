@@ -1,5 +1,6 @@
 {
   "templateId": "topic_tree_binary_tree_foundation",
+  "catalogCategory": "TOPIC_BREAKTHROUGH",
   "title": "树与二叉树专项",
   "summary": "3 周系统补齐树与二叉树基础，覆盖遍历、BST 性质、路径/LCA、构造和序列化。",
   "goal": "建立树递归返回值、层序遍历和二叉搜索树性质的稳定解题能力。",
