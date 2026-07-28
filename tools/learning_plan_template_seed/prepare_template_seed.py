@@ -24,7 +24,7 @@ DEFAULT_OUTPUT_DIR = Path("data/learning-plan-template-seed")
 DEFAULT_TEMPLATE_SOURCE_DIR = Path("data/learning-plan-template-sources/templates")
 DEFAULT_TEMPLATE_ORDER_PATH = Path("data/learning-plan-template-sources/template_order.json")
 DEFAULT_LOCAL_PROBLEMS_PATH = Path("data/seed/problems.jsonl")
-DEFAULT_GENERATED_AT = "2026-07-09T00:00:00+00:00"
+DEFAULT_GENERATED_AT = "2026-07-28T00:00:00+00:00"
 
 TEMPLATES_FILE = "learning_plan_templates.jsonl"
 PROBLEM_REFS_FILE = "learning_plan_template_problem_refs.jsonl"
@@ -98,7 +98,7 @@ LOCAL_SOURCE = {
 ROOT_SOURCE = {
     "name": "algo-mentor learning-plan-template-sources",
     "url": "data/learning-plan-template-sources",
-    "commit": "template-source-split-2026-07-09",
+    "commit": "p1-a-batch-2-2026-07-28",
     "dataPath": "data/learning-plan-template-sources/templates/*/{template.json,problem_refs.jsonl}",
 }
 SOURCE_DEFINITIONS = [
@@ -822,6 +822,15 @@ P1_A_BATCH_ONE_TEMPLATE_IDS = [
     "topic_greedy_strategies",
     "topic_stack_monotonic",
     "topic_bit_manipulation",
+]
+
+P1_A_BATCH_TWO_TEMPLATE_IDS = [
+    "topic_linked_list",
+    "topic_union_find_and_advanced_graph",
+    "topic_prefix_sum_difference",
+    "topic_trie_and_string_advanced",
+    "topic_intervals_scheduling",
+    "topic_data_structure_design",
 ]
 
 

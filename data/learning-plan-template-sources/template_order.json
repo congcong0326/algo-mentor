@@ -15,6 +15,12 @@
     "topic_greedy_strategies",
     "topic_stack_monotonic",
     "topic_bit_manipulation",
+    "topic_linked_list",
+    "topic_union_find_and_advanced_graph",
+    "topic_prefix_sum_difference",
+    "topic_trie_and_string_advanced",
+    "topic_intervals_scheduling",
+    "topic_data_structure_design",
     "leetcode_top_100_liked_revision",
     "programming_skills_implementation_foundation"
   ]

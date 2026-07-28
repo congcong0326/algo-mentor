@@ -1,0 +1,90 @@
+{
+  "templateId": "topic_intervals_scheduling",
+  "title": "区间与调度专项",
+  "summary": "2 周覆盖区间合并、覆盖删除、日历调度、扫描线和事件统计。",
+  "goal": "掌握区间排序依据、重叠判定和扫描事件的统一建模方式。",
+  "intent": "TOPIC_BREAKTHROUGH",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 2,
+  "defaultWeeklyHours": 7,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Intervals",
+    "Sorting",
+    "Greedy",
+    "Line Sweep"
+  ],
+  "targetAudience": "区间题能写基础排序，但遇到覆盖、查询、日历冲突或扫描线时缺少统一模型的学习者。",
+  "prerequisites": [
+    "熟悉数组和排序",
+    "理解二分查找与优先队列基础",
+    "能处理开闭区间边界"
+  ],
+  "recommendedFor": [
+    "区间排序键和重叠条件经常写错",
+    "会议调度、日历或事件扫描题不稳定",
+    "需要补齐扫描线和前缀事件模型"
+  ],
+  "notRecommendedFor": [
+    "尚未掌握数组排序",
+    "主要薄弱点是树递归或链表"
+  ],
+  "expectedOutcome": "完成后能根据合并、选择、查询或并发计数目标选择排序、贪心、堆、二分或扫描线。",
+  "sourceName": "algo-mentor local problem seed",
+  "sourceUrl": "data/seed/problems.jsonl",
+  "sourceCommit": "local-2026-07-06",
+  "sourceDataPath": "data/seed/problems.jsonl",
+  "sourceDescription": "按本地题库 sorting、greedy、line-sweep、prefix-sum 和 calendar 相关题目人工策划。",
+  "curationNotes": "本地题库没有统一 intervals 标签，因此使用明确的经典区间题清单并逐题审核阶段归属。",
+  "licenseNotice": "使用项目本地题库中的 slug、frontendId、标题、difficulty 和 tagValues 组织内部模板；不复制题面、题解或外部文章。",
+  "metadata": {
+    "sourceProblemCount": 18,
+    "sourceStrategy": "local_curated_interval_route"
+  },
+  "phases": [
+    {
+      "phaseIndex": 1,
+      "title": "区间合并、覆盖与查询",
+      "durationWeeks": 1,
+      "focus": "训练按起点或终点排序后的合并、插入、删除、覆盖和查询。",
+      "objectives": [
+        "掌握区间重叠判定和排序键选择",
+        "理解贪心选终点、二分找区间和堆维护候选的差异"
+      ],
+      "recommendedTags": [
+        "Intervals",
+        "Sorting",
+        "Greedy",
+        "Binary Search"
+      ],
+      "acceptanceCriteria": [
+        "能独立完成合并、插入、删除和相交题",
+        "能说明查询型区间题中堆和二分的状态含义"
+      ],
+      "reviewAdvice": "每题先写清排序键和开闭区间约定，再验证相邻、包含和完全分离三类边界。"
+    },
+    {
+      "phaseIndex": 2,
+      "title": "日历调度与扫描线",
+      "durationWeeks": 1,
+      "focus": "用有序集合、差分事件、前缀计数和堆处理重叠次数与在线调度。",
+      "objectives": [
+        "掌握日历冲突检测和最大并发数维护",
+        "理解扫描线事件排序、差分恢复和活动区间维护"
+      ],
+      "recommendedTags": [
+        "Line Sweep",
+        "Prefix Sum",
+        "Ordered Set",
+        "Heap"
+      ],
+      "acceptanceCriteria": [
+        "能独立实现单次、双重和多重日历重叠",
+        "能用事件点或堆解决并发区间统计问题"
+      ],
+      "reviewAdvice": "把开始和结束事件的同点排序规则单独列出，并用时间轴检查并发计数变化。"
+    }
+  ]
+}

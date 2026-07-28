@@ -48,7 +48,7 @@ class PrepareTemplateSeedTest(unittest.TestCase):
     def test_template_source_directory_contains_ordered_template_files(self) -> None:
         expected_template_ids = seed.load_template_order(seed.DEFAULT_TEMPLATE_SOURCE_DIR, seed.DEFAULT_TEMPLATE_ORDER_PATH)
 
-        self.assertEqual(16, len(expected_template_ids))
+        self.assertEqual(22, len(expected_template_ids))
         for template_id in expected_template_ids:
             template_dir = seed.DEFAULT_TEMPLATE_SOURCE_DIR / template_id
             self.assertTrue((template_dir / seed.TEMPLATE_SOURCE_TEMPLATE_FILE).exists(), template_id)
@@ -83,6 +83,42 @@ class PrepareTemplateSeedTest(unittest.TestCase):
                     if ref["phaseIndex"] == phase["phaseIndex"] and ref["metadata"]["matchedLocalProblem"]
                 ]
                 self.assertGreaterEqual(len(matched_refs), 3, f"{template_id} phase {phase['phaseIndex']}")
+
+    def test_p1_a_batch_two_templates_meet_topic_breakthrough_thresholds(self) -> None:
+        templates, refs, _ = seed.build_seed(
+            source_data(),
+            build_problem_index(exclude=known_missing_slugs()),
+        )
+        templates_by_id = {template["templateId"]: template for template in templates}
+
+        self.assertEqual(6, len(seed.P1_A_BATCH_TWO_TEMPLATE_IDS))
+        batch_refs = []
+        for template_id in seed.P1_A_BATCH_TWO_TEMPLATE_IDS:
+            template = templates_by_id[template_id]
+            template_refs = [ref for ref in refs if ref["templateId"] == template_id]
+            batch_refs.extend(template_refs)
+
+            self.assertEqual("TOPIC_BREAKTHROUGH", template["intent"])
+            expected_level = "BEGINNER" if template_id == "topic_linked_list" else "INTERMEDIATE"
+            self.assertEqual(expected_level, template["level"])
+            self.assertGreaterEqual(len(template_refs), 15)
+            self.assertEqual(
+                template["defaultDurationWeeks"],
+                sum(phase["durationWeeks"] for phase in template["phases"]),
+            )
+            if template["defaultDurationWeeks"] == 2:
+                self.assertEqual(2, len(template["phases"]))
+            if template["defaultDurationWeeks"] == 3:
+                self.assertEqual(3, len(template["phases"]))
+            for phase in template["phases"]:
+                matched_refs = [
+                    ref for ref in template_refs
+                    if ref["phaseIndex"] == phase["phaseIndex"] and ref["metadata"]["matchedLocalProblem"]
+                ]
+                self.assertGreaterEqual(len(matched_refs), 3, f"{template_id} phase {phase['phaseIndex']}")
+
+        self.assertEqual(111, len(batch_refs))
+        self.assertTrue(all(ref["metadata"]["matchedLocalProblem"] for ref in batch_refs))
 
     def test_write_seed_creates_all_required_files_and_stable_output(self) -> None:
         templates, refs, report = seed.build_seed(

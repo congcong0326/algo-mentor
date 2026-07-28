@@ -1,0 +1,88 @@
+{
+  "templateId": "topic_prefix_sum_difference",
+  "title": "前缀和与差分专项",
+  "summary": "2 周掌握一维与二维前缀和、前缀和加哈希以及差分数组的高频模型。",
+  "goal": "把重复区间统计和批量区间更新转换为稳定的预处理或差分模型。",
+  "intent": "TOPIC_BREAKTHROUGH",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 2,
+  "defaultWeeklyHours": 6,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Prefix Sum",
+    "Hash Table",
+    "Matrix",
+    "Difference Array"
+  ],
+  "targetAudience": "区间和、子数组计数或批量区间更新题仍依赖暴力枚举的学习者。",
+  "prerequisites": [
+    "熟悉数组和哈希表",
+    "理解下标和区间边界",
+    "能分析双重循环复杂度"
+  ],
+  "recommendedFor": [
+    "子数组计数题无法识别前缀状态",
+    "二维区域和或差分更新容易写错边界",
+    "希望补齐高频数组优化技巧"
+  ],
+  "notRecommendedFor": [
+    "尚未掌握数组遍历",
+    "主要目标是树、图或链表专项"
+  ],
+  "expectedOutcome": "完成后能从区间查询、目标差值和批量更新三类信号判断是否使用前缀和或差分。",
+  "sourceName": "algo-mentor local problem seed",
+  "sourceUrl": "data/seed/problems.jsonl",
+  "sourceCommit": "local-2026-07-06",
+  "sourceDataPath": "data/seed/problems.jsonl",
+  "sourceDescription": "按本地题库 prefix-sum、matrix 和 hash-table 标签筛选并人工组织完整路线。",
+  "curationNotes": "题目顺序由 algo-mentor 按一维统计、哈希计数、二维前缀和和差分更新重建。",
+  "licenseNotice": "使用项目本地题库中的 slug、frontendId、标题、difficulty 和 tagValues 组织内部模板；不复制题面、题解或外部文章。",
+  "metadata": {
+    "sourceProblemCount": 18,
+    "sourceStrategy": "local_tag_curated_route"
+  },
+  "phases": [
+    {
+      "phaseIndex": 1,
+      "title": "一维前缀和与哈希计数",
+      "durationWeeks": 1,
+      "focus": "从区间查询过渡到前缀状态差值，并用哈希表统计满足条件的子数组。",
+      "objectives": [
+        "掌握前缀数组的下标约定和区间公式",
+        "能把目标子数组转换为两个前缀状态之间的关系"
+      ],
+      "recommendedTags": [
+        "Prefix Sum",
+        "Hash Table",
+        "Array"
+      ],
+      "acceptanceCriteria": [
+        "能独立完成区间和与前缀和加哈希题",
+        "能说明先查询还是先更新哈希计数的原因"
+      ],
+      "reviewAdvice": "统一使用长度为 n+1 的前缀数组思考边界，并记录哈希表中键和值的语义。"
+    },
+    {
+      "phaseIndex": 2,
+      "title": "二维前缀和与差分更新",
+      "durationWeeks": 1,
+      "focus": "训练矩阵区域统计、一维差分事件和批量区间增减。",
+      "objectives": [
+        "掌握二维前缀和的容斥公式",
+        "能使用差分数组表达区间增量和扫描事件"
+      ],
+      "recommendedTags": [
+        "Prefix Sum",
+        "Matrix",
+        "Difference Array"
+      ],
+      "acceptanceCriteria": [
+        "能独立完成二维区域和与目标矩阵计数",
+        "能正确处理差分的起点、终点后一位和还原过程"
+      ],
+      "reviewAdvice": "对二维题画出四块容斥区域；对差分题逐项还原一次，检查终点后一位是否越界。"
+    }
+  ]
+}

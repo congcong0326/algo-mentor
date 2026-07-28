@@ -1,0 +1,110 @@
+{
+  "templateId": "topic_union_find_and_advanced_graph",
+  "title": "并查集与进阶图论专项",
+  "summary": "3 周覆盖并查集、拓扑排序、最短路和最小生成树等进阶图论模型。",
+  "goal": "建立连通性维护、有向依赖排序和带权图路径问题的系统解题能力。",
+  "intent": "TOPIC_BREAKTHROUGH",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 3,
+  "defaultWeeklyHours": 8,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Union Find",
+    "Topological Sort",
+    "Shortest Path",
+    "Minimum Spanning Tree"
+  ],
+  "targetAudience": "已掌握 BFS/DFS，但遇到动态连通性、有向依赖或带权图时缺少稳定模型的学习者。",
+  "prerequisites": [
+    "会写图的邻接表",
+    "掌握 BFS 和 DFS",
+    "理解基本的堆操作和复杂度分析"
+  ],
+  "recommendedFor": [
+    "并查集模板和路径压缩不熟练",
+    "课程依赖或拓扑排序题经常漏边界",
+    "需要补齐 Dijkstra、Bellman-Ford 和 MST"
+  ],
+  "notRecommendedFor": [
+    "尚未掌握基础图遍历",
+    "只需要入门级数组练习"
+  ],
+  "expectedOutcome": "完成后能根据连通性、依赖顺序或边权目标选择并查集、拓扑排序、最短路或 MST。",
+  "sourceName": "halfrost/LeetCode-Go",
+  "sourceUrl": "https://github.com/halfrost/LeetCode-Go",
+  "sourceCommit": "3bcc916680298295e06060ca9790304c1f1b78b6",
+  "sourceDataPath": "ctl/meta/Union_Find; data/seed/problems.jsonl",
+  "sourceDescription": "以 halfrost Union_Find 元数据和本地题库 union-find/topological-sort/shortest-path/minimum-spanning-tree 标签重组。",
+  "curationNotes": "完整路线按连通性、依赖图和带权图拆为三阶段；不复制第三方题解、文章或代码。",
+  "licenseNotice": "halfrost/LeetCode-Go 使用 MIT License；本 seed 只使用题号、slug、难度和标签，不包含题解代码。项目本地题库仅用于结构化匹配。",
+  "metadata": {
+    "secondarySources": [
+      "algo-mentor local problem seed"
+    ],
+    "sourceProblemCount": 21,
+    "sourceStrategy": "mixed_halfrost_metadata_and_local_tag_rebuild"
+  },
+  "phases": [
+    {
+      "phaseIndex": 1,
+      "title": "并查集基础与连通性应用",
+      "durationWeeks": 1,
+      "focus": "用路径压缩和按秩合并处理连通块、冗余边和多集合合并。",
+      "objectives": [
+        "实现稳定的 find、union 和连通块计数模板",
+        "识别二维坐标、字符串账户和多角色边的并查集映射"
+      ],
+      "recommendedTags": [
+        "Union Find",
+        "Graph"
+      ],
+      "acceptanceCriteria": [
+        "能说明路径压缩和按秩合并的作用",
+        "能独立把问题实体映射为并查集节点"
+      ],
+      "reviewAdvice": "复盘每题的节点定义、初始连通块数量和 union 成功时的计数变化。"
+    },
+    {
+      "phaseIndex": 2,
+      "title": "拓扑排序与有向依赖",
+      "durationWeeks": 1,
+      "focus": "训练入度 BFS、DFS 染色、分组依赖和 DAG 上的动态规划。",
+      "objectives": [
+        "掌握拓扑序、环检测和安全节点的两类实现",
+        "理解拓扑顺序与 DAG 动态规划的结合"
+      ],
+      "recommendedTags": [
+        "Topological Sort",
+        "Graph",
+        "Dynamic Programming"
+      ],
+      "acceptanceCriteria": [
+        "能独立判断有向图是否存在环并生成拓扑序",
+        "能处理分组依赖和拓扑序上的状态转移"
+      ],
+      "reviewAdvice": "同时记录入度法和 DFS 染色法的状态含义，并检查孤立点与重复边。"
+    },
+    {
+      "phaseIndex": 3,
+      "title": "最短路与最小生成树",
+      "durationWeeks": 1,
+      "focus": "比较 Dijkstra、限制边数松弛、最小瓶颈路径和 Kruskal/Prim 的适用条件。",
+      "objectives": [
+        "根据负权、边数限制和最小瓶颈目标选择路径算法",
+        "掌握最小生成树的选边过程和关键边判断"
+      ],
+      "recommendedTags": [
+        "Shortest Path",
+        "Heap",
+        "Minimum Spanning Tree"
+      ],
+      "acceptanceCriteria": [
+        "能写出堆优化 Dijkstra 并说明过期状态处理",
+        "能区分最短路与最小生成树的目标"
+      ],
+      "reviewAdvice": "按图的方向、边权、目标函数和状态维度建立算法选择表，再复盘复杂度。"
+    }
+  ]
+}

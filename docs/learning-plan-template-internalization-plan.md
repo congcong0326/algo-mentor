@@ -9,14 +9,14 @@
 当前状态：
 
 - P0 首批 10 个内部模板已写入 `data/learning-plan-template-seed/`，生成器已从 NeetCode 单源脚本演进为多 source 生成器。
-- P1-A 批次 1 已完成 6 个核心专项模板：树/二叉树、回溯、堆/优先队列、贪心、栈/单调栈、位运算。
-- 当前 seed manifest 显示：模板数 `16`，题目引用数 `631`，本地匹配 `611`，本地缺失 `20`；其中 P1-A 批次 1 合计 `122` refs、匹配 `122`、缺失 `0`。
-- 当前 16 个模板已拆分到 `data/learning-plan-template-sources/templates/<templateId>/`，每个模板目录包含 `template.json` 和 `problem_refs.jsonl`；`template_order.json` 控制聚合顺序。
+- P1-A 两个批次已完成 12 个核心专项模板；批次 2 新增链表、并查集与进阶图论、前缀和与差分、字典树与字符串进阶、区间与调度、数据结构设计。
+- 当前 seed manifest 显示：模板数 `22`，题目引用数 `742`，本地匹配 `722`，本地缺失 `20`；其中 P1-A 批次 2 合计 `111` refs、匹配 `111`、缺失 `0`。
+- 当前 22 个模板已拆分到 `data/learning-plan-template-sources/templates/<templateId>/`，每个模板目录包含 `template.json` 和 `problem_refs.jsonl`；`template_order.json` 控制聚合顺序。
 - 当前 seed 目录固定为 `data/learning-plan-template-seed/`，包含 `learning_plan_templates.jsonl`、`learning_plan_template_problem_refs.jsonl`、`learning_plan_template_seed_manifest.json`、`learning_plan_template_seed_metadata.md` 四个文件。
 - `data/learning-plan-template-seed/` 是后端导入使用的聚合产物，必须由 `tools/learning_plan_template_seed/prepare_template_seed.py` 从模板源目录生成，不再作为人工维护入口。
 - 后端导入已经要求每个模板有完整 source attribution、非空 phases、至少一个 problem ref；缺失本地题目保留在 refs 和 metadata，但不进入生成草稿。
 - 从模板生成草稿必须满足：阶段周数合计等于总周期；模板阶段承载完整路线；所有本地匹配 refs 默认进入草稿推荐题；缺失 refs 只保留在模板明细和草稿 metadata；草稿状态继续落为 `GENERATED`，并复用现有草稿确认流程。
-- 已完成验证：`python3 -m unittest discover -s tools -p '*_test.py'`；`mvn -f backend/pom.xml -B -ntp -Dmaven.repo.local=./.m2/repository -pl mentor-application,mentor-api -am -Dtest=LearningPlanTemplateDraftServiceTest,LearningPlanTemplateSeedImportServiceTest,LearningPlanTemplateControllerTest test`；`make backend-test`。
+- 本批已完成验证：`python3 -m unittest discover -s tools -p '*_test.py'`；模板导入、草稿生成、模板 API 和迁移资源定向 Maven 测试；本地数据库导入结果为 22 模板 / 742 refs / 722 匹配 / 20 缺失。`make backend-test` 已执行，但 mentor-api 中 7 个既有 Web 测试因缺少 `AiModelRoutePolicyTypeContributor` Bean 而失败，与本批模板改动无关。
 
 实施边界：
 
@@ -36,7 +36,7 @@
 | P0 | 当前已完成 | 将 `prepare_template_seed.py` 从 NeetCode 单源脚本演进为多 source 生成器 | source adapter、统一 schema 校验、确定性排序、统计报告 | 相同输入重复生成 hash 稳定；四个 seed 文件一次性生成；metadata 不输出 Java 不可导入的 null |
 | P0 | 当前已完成 | 验证后端导入和草稿生成 | 后端测试、导入审计、草稿生成样例 | 10 个模板均可导入；2/4/5/6/12 周模板可生成草稿；匹配 refs 默认全部进入草稿 |
 | P1-A 批次 1 | 当前已完成 | 扩展核心专项第一波 | Trees、Backtracking、Heap、Greedy、Stack/Monotonic Stack、Bit Manipulation 六个专项模板 | 已生成 6 模板 / 122 refs / 122 匹配 / 0 缺失；每模板题量不低于 15 条 refs；Python seed、后端导入和草稿生成回归已通过 |
-| P1-A 批次 2 | 待执行 | 扩展核心专项第二波 | Linked List、Union Find + Advanced Graph、Prefix Sum、Trie、Intervals、Data Structure Design 等专项模板 | 可由能力画像按薄弱标签命中；每个模板题量不低于 15 条 refs |
+| P1-A 批次 2 | 当前已完成 | 扩展核心专项第二波 | Linked List、Union Find + Advanced Graph、Prefix Sum、Trie、Intervals、Data Structure Design 六个专项模板 | 已生成 6 模板 / 111 refs / 111 匹配 / 0 缺失；每模板不少于 18 条 refs，每阶段不少于 7 条匹配题 |
 | P1-B | 待执行 | 扩展模式化和面试路线模板 | seanprashad、代码随想录完整版、LeetCode 75、TIH essentials、doocs 剑指 Offer 等 | 路线结构、授权边界、matched/missing 统计和草稿生成均可审计 |
 | P1 | 待执行 | 增强多来源 manifest 和导入审计 | `sources` 统计、每模板来源版本、每来源匹配率 | import run metadata 能定位每个来源的版本、路径、授权和缺失题 |
 | P1 | 待执行 | 前端模板入口优化 | 模板列表分组、标签筛选、模板详情缺失题提示 | 用户能按面试冲刺、长期学习、专项突破、复盘选择模板 |
@@ -67,7 +67,7 @@ P0 完成后，后续任务按资料源和用户场景继续拆分。以下模�
 | 批次 | 候选模板方向 | 参考来源 | 进入后续批次原因 |
 | --- | --- | --- | --- |
 | P1-A 批次 1 | Trees 专项、Backtracking 专项、Heap / Priority Queue 专项、Greedy 专项、Stack / Monotonic Stack 专项、Bit Manipulation 专项 | NeetCode pattern、halfrost 标签、TIH algorithm guides、本地题库 tag | 当前已完成；适合能力画像命中薄弱标签 |
-| P1-A 批次 2 | Linked List、Union Find + Advanced Graph、Prefix Sum、Trie、Intervals、Data Structure Design 专项 | halfrost 标签、NeetCode pattern、本地题库 tag | 继续补齐高频薄弱标签，放在 P1-A 第二波 |
+| P1-A 批次 2 | Linked List、Union Find + Advanced Graph、Prefix Sum、Trie、Intervals、Data Structure Design 专项 | halfrost 标签、本地题库 tag | 当前已完成；补齐高频薄弱标签并保持 111 refs 全部本地匹配 |
 | P1 | NeetCode pattern track 系列 | `neetcode-gh/leetcode` | NeetCode 已有 pattern 结构，但 P0 先只发布 75/150 两条高认知路线 |
 | P1 | TIH algorithm essentials / recommended 系列 | `yangshun/tech-interview-handbook` | 适合做专题和复盘模板；需要先完成 Best Practice 50 的 Markdown adapter |
 | P1 | leetcode-patterns Beginner / Experienced Roadmap | `seanprashad/leetcode-patterns` | 路线结构价值高，但 CC-BY-NC-4.0 授权边界需要单独审计，首版只借鉴阶段思想 |

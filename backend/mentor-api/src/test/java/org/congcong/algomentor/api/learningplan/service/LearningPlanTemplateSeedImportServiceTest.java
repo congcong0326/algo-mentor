@@ -45,18 +45,24 @@ class LearningPlanTemplateSeedImportServiceTest {
 
     LearningPlanTemplateSeedImportResult result = service.importSeed(repoRoot.resolve("data/learning-plan-template-seed"));
 
-    assertThat(result.templateCount()).isEqualTo(16);
-    assertThat(result.problemRefCount()).isEqualTo(631);
-    assertThat(result.matchedProblemCount()).isEqualTo(611);
+    assertThat(result.templateCount()).isEqualTo(22);
+    assertThat(result.problemRefCount()).isEqualTo(742);
+    assertThat(result.matchedProblemCount()).isEqualTo(722);
     assertThat(result.missingProblemCount()).isEqualTo(20);
-    assertThat(templateRepository.templates).hasSize(16);
+    assertThat(templateRepository.templates).hasSize(22);
     assertThat(templateRepository.templates)
         .extracting(LearningPlanTemplate::templateId)
         .contains(
             "tih_best_practice_50_5weeks",
             "topic_binary_search_boundaries",
             "topic_tree_binary_tree_foundation",
-            "topic_bit_manipulation");
+            "topic_bit_manipulation",
+            "topic_linked_list",
+            "topic_union_find_and_advanced_graph",
+            "topic_prefix_sum_difference",
+            "topic_trie_and_string_advanced",
+            "topic_intervals_scheduling",
+            "topic_data_structure_design");
     Map<?, ?> manifest = (Map<?, ?>) templateRepository.importRuns.get(0).metadata().get("manifest");
     assertThat((List<?>) manifest.get("sources")).hasSizeGreaterThanOrEqualTo(5);
   }
@@ -86,6 +92,27 @@ class LearningPlanTemplateSeedImportServiceTest {
         .containsExactly("two-sum:true", "missing-problem:false");
     assertThat(templateRepository.importRuns).hasSize(1);
     assertThat(templateRepository.importRuns.get(0).checksum()).isNotBlank();
+  }
+
+  @Test
+  void importSeedTreatsProblemWithoutRecommendationReasonAsMissing() throws Exception {
+    writeValidSeed(tempDir);
+    InMemoryTemplateRepository templateRepository = new InMemoryTemplateRepository();
+    LearningPlanTemplateSeedImportService service = new LearningPlanTemplateSeedImportService(
+        new StaticObjectProvider<>(templateRepository),
+        new StaticObjectProvider<>(new InMemoryProblemRepository(
+            Set.of("two-sum", "missing-problem"),
+            Set.of("missing-problem"))),
+        new LearningPlanTemplateSeedReader(new ObjectMapper()),
+        new ObjectMapper());
+
+    LearningPlanTemplateSeedImportResult result = service.importSeed(tempDir);
+
+    assertThat(result.matchedProblemCount()).isEqualTo(1);
+    assertThat(result.missingProblemCount()).isEqualTo(1);
+    assertThat(templateRepository.templates.get(0).phases().get(0).problemRefs())
+        .extracting(ref -> ref.problemSlug() + ":" + ref.matchedProblem())
+        .containsExactly("two-sum:true", "missing-problem:false");
   }
 
   @Test
@@ -271,9 +298,15 @@ class LearningPlanTemplateSeedImportServiceTest {
   private static class InMemoryProblemRepository implements ProblemRepository {
 
     private final Set<String> knownSlugs;
+    private final Set<String> missingRecommendationReasonSlugs;
 
     InMemoryProblemRepository(Set<String> knownSlugs) {
+      this(knownSlugs, Set.of());
+    }
+
+    InMemoryProblemRepository(Set<String> knownSlugs, Set<String> missingRecommendationReasonSlugs) {
       this.knownSlugs = knownSlugs;
+      this.missingRecommendationReasonSlugs = missingRecommendationReasonSlugs;
     }
 
     @Override
@@ -286,7 +319,21 @@ class LearningPlanTemplateSeedImportServiceTest {
       if (!knownSlugs.contains(slug)) {
         return Optional.empty();
       }
-      return Optional.of(new ProblemDetail(slug, 1, "1", slug, null, List.of(), null, null, null, null, null, null, null));
+      String recommendationReason = missingRecommendationReasonSlugs.contains(slug) ? null : "reason";
+      return Optional.of(new ProblemDetail(
+          slug,
+          1,
+          "1",
+          slug,
+          null,
+          List.of(),
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          recommendationReason));
     }
 
     @Override

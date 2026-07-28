@@ -84,6 +84,8 @@ PGPASSWORD=algo_mentor_dev psql -h localhost -p 5432 -U algo_mentor -d algo_ment
 
 如果本地库已有旧题目数据，`problem` 总数或 `BILINGUAL` 数量可能大于当前 seed 的 `3202`。当前导入策略不会硬删除旧业务数据，只会 upsert 当前 seed 内的题目，并在必要时清理旧 slug 上冲突的 `frontend_id` / `frontend_display_id`。
 
+`V43__remove_legacy_problem_batch.sql` 会一次性删除旧来源 commit `6bd9323f1a542eac6997f9f76656842333d96c45` 中未进入当前正式 seed、且没有中英文推荐理由的历史题，并同步清理用户计划快照、过期草稿、练习进度、练习会话和专属 Agent 线程。学习计划模板中的外部题单引用继续保留，但会保持 `matched_problem = false`，用于说明原始题单覆盖和本地缺失情况。
+
 ## 重新生成 Seed
 
 通常不需要重新生成 seed。只有当需要更新题库来源、重新抓取 LeetCode 数据或调整 seed 生成逻辑时，才执行本节流程。

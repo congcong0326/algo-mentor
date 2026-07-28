@@ -1,10 +1,10 @@
 # 学习计划模板 Seed 元数据
 
-- 生成时间：`2026-07-09T00:00:00+00:00`
+- 生成时间：`2026-07-28T00:00:00+00:00`
 - 根来源：`algo-mentor learning-plan-template-sources`
-- 模板数：`16`
-- 题目引用数：`631`
-- 本地题库匹配：`611`
+- 模板数：`22`
+- 题目引用数：`742`
+- 本地题库匹配：`722`
 - 本地题库缺失：`20`
 
 ## 来源归因
@@ -32,8 +32,8 @@
 - URL：https://github.com/halfrost/LeetCode-Go
 - 固定版本：`3bcc916680298295e06060ca9790304c1f1b78b6`
 - 源路径：`ctl/meta/*`
-- 覆盖模板：`topic_backtracking_foundation, topic_binary_search_boundaries, topic_bit_manipulation, topic_dynamic_programming_foundation, topic_graph_bfs_dfs, topic_greedy_strategies, topic_heap_priority_queue, topic_sliding_window_two_pointers, topic_stack_monotonic, topic_tree_binary_tree_foundation`
-- refs / matched / missing：`278 / 277 / 1`
+- 覆盖模板：`topic_backtracking_foundation, topic_binary_search_boundaries, topic_bit_manipulation, topic_dynamic_programming_foundation, topic_graph_bfs_dfs, topic_greedy_strategies, topic_heap_priority_queue, topic_linked_list, topic_sliding_window_two_pointers, topic_stack_monotonic, topic_tree_binary_tree_foundation, topic_union_find_and_advanced_graph`
+- refs / matched / missing：`300 / 299 / 1`
 - 授权备注：MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。
 
 ### youngyangyang04/leetcode-master
@@ -68,8 +68,8 @@
 - URL：data/seed/problems.jsonl
 - 固定版本：`local-2026-07-06`
 - 源路径：`data/seed/problems.jsonl`
-- 覆盖模板：`cn_algorithm_foundation_12weeks, leetcode_top_100_liked_revision, programming_skills_implementation_foundation, topic_backtracking_foundation, topic_binary_search_boundaries, topic_bit_manipulation, topic_dynamic_programming_foundation, topic_graph_bfs_dfs, topic_greedy_strategies, topic_heap_priority_queue, topic_sliding_window_two_pointers, topic_stack_monotonic, topic_tree_binary_tree_foundation`
-- refs / matched / missing：`0 / 0 / 0`
+- 覆盖模板：`cn_algorithm_foundation_12weeks, leetcode_top_100_liked_revision, programming_skills_implementation_foundation, topic_backtracking_foundation, topic_binary_search_boundaries, topic_bit_manipulation, topic_data_structure_design, topic_dynamic_programming_foundation, topic_graph_bfs_dfs, topic_greedy_strategies, topic_heap_priority_queue, topic_intervals_scheduling, topic_linked_list, topic_prefix_sum_difference, topic_sliding_window_two_pointers, topic_stack_monotonic, topic_tree_binary_tree_foundation, topic_trie_and_string_advanced, topic_union_find_and_advanced_graph`
+- refs / matched / missing：`89 / 89 / 0`
 - 授权备注：使用项目本地题库中的 slug、frontendId、标题、difficulty 和 tagValues 组织内部模板。
 
 ## 本批模板
@@ -213,6 +213,66 @@
 - 缺失题：`0`
 - 缺失题示例：`无`
 - 难度分布：`{"Easy": {"count": 6, "ratio": 0.3333}, "Medium": {"count": 11, "ratio": 0.6111}, "Hard": {"count": 1, "ratio": 0.0556}}`
+
+### topic_linked_list
+
+- 标题：链表专项
+- 题目数：`18`
+- 阶段数：`2`
+- 匹配题：`18`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 6, "ratio": 0.3333}, "Medium": {"count": 11, "ratio": 0.6111}, "Hard": {"count": 1, "ratio": 0.0556}}`
+
+### topic_union_find_and_advanced_graph
+
+- 标题：并查集与进阶图论专项
+- 题目数：`21`
+- 阶段数：`3`
+- 匹配题：`21`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 0, "ratio": 0.0}, "Medium": {"count": 15, "ratio": 0.7143}, "Hard": {"count": 6, "ratio": 0.2857}}`
+
+### topic_prefix_sum_difference
+
+- 标题：前缀和与差分专项
+- 题目数：`18`
+- 阶段数：`2`
+- 匹配题：`18`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 4, "ratio": 0.2222}, "Medium": {"count": 13, "ratio": 0.7222}, "Hard": {"count": 1, "ratio": 0.0556}}`
+
+### topic_trie_and_string_advanced
+
+- 标题：字典树与字符串进阶
+- 题目数：`18`
+- 阶段数：`2`
+- 匹配题：`18`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 2, "ratio": 0.1111}, "Medium": {"count": 11, "ratio": 0.6111}, "Hard": {"count": 5, "ratio": 0.2778}}`
+
+### topic_intervals_scheduling
+
+- 标题：区间与调度专项
+- 题目数：`18`
+- 阶段数：`2`
+- 匹配题：`18`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 0, "ratio": 0.0}, "Medium": {"count": 14, "ratio": 0.7778}, "Hard": {"count": 4, "ratio": 0.2222}}`
+
+### topic_data_structure_design
+
+- 标题：数据结构设计专项
+- 题目数：`18`
+- 阶段数：`2`
+- 匹配题：`18`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 2, "ratio": 0.1111}, "Medium": {"count": 13, "ratio": 0.7222}, "Hard": {"count": 3, "ratio": 0.1667}}`
 
 ### leetcode_top_100_liked_revision
 

@@ -67,13 +67,15 @@ public class LearningPlanTemplateSeedImportService {
       List<LearningPlanTemplateProblemRef> refs = new ArrayList<>();
       for (LearningPlanTemplateProblemRefSeedRecord refRecord :
           refsByTemplate.getOrDefault(templateRecord.templateId(), List.of())) {
-        boolean problemExists = problemRepository.findProblemBySlug(refRecord.problemSlug()).isPresent();
-        if (problemExists) {
+        boolean problemAvailable = problemRepository.findProblemBySlug(refRecord.problemSlug())
+            .map(problem -> hasText(problem.recommendationReason()))
+            .orElse(false);
+        if (problemAvailable) {
           matched += 1;
         } else {
           missing += 1;
         }
-        refs.add(toProblemRef(refRecord, problemExists));
+        refs.add(toProblemRef(refRecord, problemAvailable));
       }
       templateRepository.saveTemplate(toTemplate(templateRecord, refs));
     }
@@ -170,6 +172,10 @@ public class LearningPlanTemplateSeedImportService {
         record.sourceUrl(),
         matchedProblem,
         record.metadata());
+  }
+
+  private boolean hasText(String value) {
+    return value != null && !value.isBlank();
   }
 
   private void validate(LearningPlanTemplateSeedReader.LearningPlanTemplateSeedData seed) {

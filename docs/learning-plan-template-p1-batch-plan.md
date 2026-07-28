@@ -5,7 +5,7 @@
 ## 目的与范围
 
 - 本文档只关注**后续需要导入的模板计划**，是 `docs/learning-plan-template-internalization-plan.md` 的批次续篇。
-- P0 首批 10 个模板已完成闭环；P1-A 批次 1 已生成后，`data/learning-plan-template-seed/` 当前为 16 模板 / 631 refs / 611 匹配 / 20 缺失。本文档继续规划从 16 个扩展到约 26–30 个的路线。
+- P0 首批 10 个模板和 P1-A 两个专项批次已完成闭环；`data/learning-plan-template-seed/` 当前为 22 模板 / 742 refs / 722 匹配 / 20 缺失。本文档继续规划从 22 个扩展到约 26–30 个的路线。
 - 所有资料源统一按“直接内置结构化题单/路线数据”处理：题号、slug、难度、标签、顺序、roadmap 阶段划分与来源 note 均可直接内置；仍不复制文章正文、题解代码与图示。seed 保留 `sourceName/sourceUrl/sourceCommit/licenseNotice` 做归因记录。
 
 ## 现状底座
@@ -26,7 +26,7 @@
 | 批次 | 主题 | 模板数 | 优先级 | 备注 |
 | --- | --- | ---: | --- | --- |
 | P1-A 批次 1 | 核心专项突破（第一波） | 6 | 最高 | 题库全就绪、直接内置，先做 |
-| P1-A 批次 2 | 核心专项突破（第二波） | 6 | 高 | 补齐剩余高频薄弱标签 |
+| P1-A 批次 2 | 核心专项突破（第二波） | 6 | 高 | 已完成，补齐剩余高频薄弱标签 |
 | P1-B | 面试路线 / 复盘 / 模式化 roadmap | 5–6 | 中 | 含 seanprashad 两条 roadmap、代码随想录扩容、doocs 中文经典 |
 | P2 | 长周期 CS / 非算法 | 视依赖 | 低 | SQL 50 可提前，其余待数据模型扩展 |
 
@@ -51,6 +51,8 @@
 
 ### 批次 2
 
+> 导入状态：已完成并写入固定 seed 目录，批次合计 6 模板 / 111 refs / 111 匹配 / 0 缺失；各模板每阶段至少 7 道匹配题，Python seed、后端导入和草稿生成回归已通过，并已写入本地数据库。
+
 | templateId | 标题 | 周期 | level | 阶段骨架 | 目标 refs |
 | --- | --- | ---: | --- | --- | ---: |
 | `topic_linked_list` | 链表专项 | 2 周 | BEGINNER | 基础操作/反转→双指针(环/中点)→合并/排序→复杂结构(复制/LRU 入门) | 15–18 |
@@ -68,7 +70,7 @@
 
 ## P1-B｜面试路线 / 复盘 / 模式化 roadmap
 
-> **导入现状（截至 2026-07-08）**：下表来源在当前 seed 中均**尚未真正内置为题单**——seanprashad / doocs / CS 完全缺席；labuladong 仅作结构参考、贡献 0 refs；代码随想录只有部分“参考后重建”的 25 refs。本批次的目标就是把这些源按“直接内置结构化题单/路线数据”补齐。
+> **导入现状（截至 2026-07-28）**：下表来源在当前 seed 中均**尚未真正内置为完整题单**——seanprashad / doocs / CS 完全缺席；labuladong 仅作结构参考、贡献 0 refs；代码随想录仍只有部分参考后重建内容。本批次的目标是把通过授权和结构评估的路线补齐。
 
 | templateId | 标题 | 周期 | intent | 来源与策略 |
 | --- | --- | ---: | --- | --- |
@@ -124,9 +126,9 @@
 
 ## 排期建议
 
-1. **P1-A 批次 1**（tree / backtracking / heap / greedy / stack / bit）——确定性最高，先做。
-2. **P1-A 批次 2**（linked-list / union-find+advanced-graph / prefix-sum / trie / intervals / design），其后可补 `topic_dp_advanced`。
-3. **P1-B**（seanprashad 两条 roadmap、代码随想录完整版、leetcode_75、tih_algorithm_essentials、可选 doocs 剑指 Offer）；同期做 manifest 审计增强 + 前端入口。
+1. **P1-A 批次 1**（tree / backtracking / heap / greedy / stack / bit）——已完成。
+2. **P1-A 批次 2**（linked-list / union-find+advanced-graph / prefix-sum / trie / intervals / design）——已完成；其后可补 `topic_dp_advanced`。
+3. **P1-B**（seanprashad 两条 roadmap、代码随想录完整版、leetcode_75、tih_algorithm_essentials、可选 doocs 剑指 Offer）——下一执行批次；同期做 manifest 审计增强 + 前端入口。
 4. **P2**（先做 SQL 50；CS/JS/Pandas 待数据模型扩展）。
 
 完成后模板池预计从 10 → 约 26–30 个，覆盖：系统面试 / 短期冲刺 / 中文入门 / 全套主题专项 / 模式化 roadmap / 复盘 / SQL。

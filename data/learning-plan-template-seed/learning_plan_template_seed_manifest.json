@@ -1,34 +1,34 @@
 {
   "files": {
     "learning_plan_template_problem_refs.jsonl": {
-      "bytes": 393913,
+      "bytes": 461560,
       "path": "learning_plan_template_problem_refs.jsonl",
-      "sha256": "ef06dc1c7eed1d3e5c5d8f4c0cecfca6367f30dfaaacf595501ea28e56a2edfc"
+      "sha256": "0e52d93d21952b0bb494818e19dc2f0dc3877591c0d615b1705d06db165a3172"
     },
     "learning_plan_template_seed_manifest.json": {
-      "bytes": 15357,
+      "bytes": 18666,
       "hashInput": "manifest payload before self file stat insertion",
       "path": "learning_plan_template_seed_manifest.json",
-      "sha256": "5524d33189d8dcfa548c628e63cbb871cb1f35b55914a0030623fbd4366526b3"
+      "sha256": "4db4ff434903cec2529f11787e37b558279d9fc84064afb42050808e132f704a"
     },
     "learning_plan_template_seed_metadata.md": {
-      "bytes": 10326,
+      "bytes": 12406,
       "path": "learning_plan_template_seed_metadata.md",
-      "sha256": "e082c5a196dbcbe5bac5531e31894f1f2da0ef4a45235b2452af2f056e9e3358"
+      "sha256": "50cc70fae507bcddad7e76140a8cd2a22ca493c70dddc67e62d4363f149f4819"
     },
     "learning_plan_templates.jsonl": {
-      "bytes": 76501,
+      "bytes": 98562,
       "path": "learning_plan_templates.jsonl",
-      "sha256": "53a7bee0e1f39864a989acc2dfe05bd4b4eb84aaca825d2a728069c57ca80849"
+      "sha256": "d870b666e4aae2204b775d9e04835cae6eff58d9fd31a50dba83babdeeddc1ce"
     }
   },
-  "generatedAt": "2026-07-09T00:00:00+00:00",
-  "matchedProblemCount": 611,
+  "generatedAt": "2026-07-28T00:00:00+00:00",
+  "matchedProblemCount": 722,
   "missingProblemCount": 20,
-  "problemRefCount": 631,
+  "problemRefCount": 742,
   "schemaVersion": 1,
   "source": {
-    "commit": "template-source-split-2026-07-09",
+    "commit": "p1-a-batch-2-2026-07-28",
     "dataPath": "data/learning-plan-template-sources/templates/*/{template.json,problem_refs.jsonl}",
     "name": "algo-mentor learning-plan-template-sources",
     "url": "data/learning-plan-template-sources"
@@ -73,10 +73,10 @@
       "commitOrVersion": "3bcc916680298295e06060ca9790304c1f1b78b6",
       "dataPath": "ctl/meta/*",
       "licenseNotice": "MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。",
-      "matchedProblemCount": 277,
+      "matchedProblemCount": 299,
       "missingProblemCount": 1,
       "name": "halfrost/LeetCode-Go",
-      "problemRefCount": 278,
+      "problemRefCount": 300,
       "templateIds": [
         "topic_backtracking_foundation",
         "topic_binary_search_boundaries",
@@ -85,9 +85,11 @@
         "topic_graph_bfs_dfs",
         "topic_greedy_strategies",
         "topic_heap_priority_queue",
+        "topic_linked_list",
         "topic_sliding_window_two_pointers",
         "topic_stack_monotonic",
-        "topic_tree_binary_tree_foundation"
+        "topic_tree_binary_tree_foundation",
+        "topic_union_find_and_advanced_graph"
       ],
       "url": "https://github.com/halfrost/LeetCode-Go"
     },
@@ -143,10 +145,10 @@
       "commitOrVersion": "local-2026-07-06",
       "dataPath": "data/seed/problems.jsonl",
       "licenseNotice": "使用项目本地题库中的 slug、frontendId、标题、difficulty 和 tagValues 组织内部模板。",
-      "matchedProblemCount": 0,
+      "matchedProblemCount": 89,
       "missingProblemCount": 0,
       "name": "algo-mentor local problem seed",
-      "problemRefCount": 0,
+      "problemRefCount": 89,
       "templateIds": [
         "cn_algorithm_foundation_12weeks",
         "leetcode_top_100_liked_revision",
@@ -154,18 +156,24 @@
         "topic_backtracking_foundation",
         "topic_binary_search_boundaries",
         "topic_bit_manipulation",
+        "topic_data_structure_design",
         "topic_dynamic_programming_foundation",
         "topic_graph_bfs_dfs",
         "topic_greedy_strategies",
         "topic_heap_priority_queue",
+        "topic_intervals_scheduling",
+        "topic_linked_list",
+        "topic_prefix_sum_difference",
         "topic_sliding_window_two_pointers",
         "topic_stack_monotonic",
-        "topic_tree_binary_tree_foundation"
+        "topic_tree_binary_tree_foundation",
+        "topic_trie_and_string_advanced",
+        "topic_union_find_and_advanced_graph"
       ],
       "url": "data/seed/problems.jsonl"
     }
   ],
-  "templateCount": 16,
+  "templateCount": 22,
   "templates": {
     "cn_algorithm_foundation_12weeks": {
       "difficultyMix": {
@@ -387,6 +395,28 @@
       "problemCount": 18,
       "title": "位运算专项"
     },
+    "topic_data_structure_design": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 2,
+          "ratio": 0.1111
+        },
+        "Hard": {
+          "count": 3,
+          "ratio": 0.1667
+        },
+        "Medium": {
+          "count": 13,
+          "ratio": 0.7222
+        }
+      },
+      "matchedProblemCount": 18,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 2,
+      "problemCount": 18,
+      "title": "数据结构设计专项"
+    },
     "topic_dynamic_programming_foundation": {
       "difficultyMix": {
         "Easy": {
@@ -477,6 +507,72 @@
       "problemCount": 18,
       "title": "堆与优先队列专项"
     },
+    "topic_intervals_scheduling": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "Hard": {
+          "count": 4,
+          "ratio": 0.2222
+        },
+        "Medium": {
+          "count": 14,
+          "ratio": 0.7778
+        }
+      },
+      "matchedProblemCount": 18,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 2,
+      "problemCount": 18,
+      "title": "区间与调度专项"
+    },
+    "topic_linked_list": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 6,
+          "ratio": 0.3333
+        },
+        "Hard": {
+          "count": 1,
+          "ratio": 0.0556
+        },
+        "Medium": {
+          "count": 11,
+          "ratio": 0.6111
+        }
+      },
+      "matchedProblemCount": 18,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 2,
+      "problemCount": 18,
+      "title": "链表专项"
+    },
+    "topic_prefix_sum_difference": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 4,
+          "ratio": 0.2222
+        },
+        "Hard": {
+          "count": 1,
+          "ratio": 0.0556
+        },
+        "Medium": {
+          "count": 13,
+          "ratio": 0.7222
+        }
+      },
+      "matchedProblemCount": 18,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 2,
+      "problemCount": 18,
+      "title": "前缀和与差分专项"
+    },
     "topic_sliding_window_two_pointers": {
       "difficultyMix": {
         "Easy": {
@@ -542,6 +638,50 @@
       "phaseCount": 3,
       "problemCount": 24,
       "title": "树与二叉树专项"
+    },
+    "topic_trie_and_string_advanced": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 2,
+          "ratio": 0.1111
+        },
+        "Hard": {
+          "count": 5,
+          "ratio": 0.2778
+        },
+        "Medium": {
+          "count": 11,
+          "ratio": 0.6111
+        }
+      },
+      "matchedProblemCount": 18,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 2,
+      "problemCount": 18,
+      "title": "字典树与字符串进阶"
+    },
+    "topic_union_find_and_advanced_graph": {
+      "difficultyMix": {
+        "Easy": {
+          "count": 0,
+          "ratio": 0.0
+        },
+        "Hard": {
+          "count": 6,
+          "ratio": 0.2857
+        },
+        "Medium": {
+          "count": 15,
+          "ratio": 0.7143
+        }
+      },
+      "matchedProblemCount": 21,
+      "missingProblemCount": 0,
+      "missingProblemExamples": [],
+      "phaseCount": 3,
+      "problemCount": 21,
+      "title": "并查集与进阶图论专项"
     }
   }
 }

@@ -159,6 +159,9 @@ public class LearningPlanTemplateDraftService {
   ) {
     List<LearningPlanProblemDraft> problems = new ArrayList<>();
     for (LearningPlanTemplateProblemRef ref : refs) {
+      if (!ref.matchedProblem()) {
+        continue;
+      }
       LearningPlanProblemCandidate candidate = problemCatalog
           .findBySlug(ref.problemSlug(), recommendationReasonLocale)
           .orElse(null);

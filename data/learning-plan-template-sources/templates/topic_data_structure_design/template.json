@@ -1,0 +1,91 @@
+{
+  "templateId": "topic_data_structure_design",
+  "title": "数据结构设计专项",
+  "summary": "2 周覆盖栈队列设计、缓存结构、随机集合、迭代器、Trie 和时间序列结构。",
+  "goal": "建立从操作复杂度反推底层结构和组合数据结构的设计能力。",
+  "intent": "TOPIC_BREAKTHROUGH",
+  "level": "INTERMEDIATE",
+  "defaultDurationWeeks": 2,
+  "defaultWeeklyHours": 7,
+  "programmingLanguage": "Java",
+  "difficultyPreference": "MEDIUM",
+  "interviewOriented": true,
+  "topicPreferences": [
+    "Design",
+    "Hash Table",
+    "Linked List",
+    "Iterator"
+  ],
+  "targetAudience": "会使用常见集合，但面对 O(1) 操作约束、缓存淘汰或多结构组合时缺少设计思路的学习者。",
+  "prerequisites": [
+    "熟悉数组、哈希表、链表、栈和队列",
+    "理解接口与类的基本设计",
+    "能分析单次操作复杂度"
+  ],
+  "recommendedFor": [
+    "LRU/LFU 或随机集合题无从下手",
+    "迭代器、时间序列和在线数据结构不稳定",
+    "需要面试前训练数据结构组合能力"
+  ],
+  "notRecommendedFor": [
+    "尚未掌握基础集合类型",
+    "主要目标是纯数学或动态规划专项"
+  ],
+  "expectedOutcome": "完成后能从接口操作和复杂度约束选择数组、哈希、链表、堆、Trie 或有序结构的组合。",
+  "sourceName": "algo-mentor local problem seed",
+  "sourceUrl": "data/seed/problems.jsonl",
+  "sourceCommit": "local-2026-07-06",
+  "sourceDataPath": "data/seed/problems.jsonl",
+  "sourceDescription": "按本地题库 design、data-stream、iterator、linked-list、queue 和 trie 标签人工策划。",
+  "curationNotes": "按基础容器与缓存、集合迭代器与时间序列拆成两阶段，突出接口约束和复杂度推导。",
+  "licenseNotice": "使用项目本地题库中的 slug、frontendId、标题、difficulty 和 tagValues 组织内部模板；不复制题面、题解或外部文章。",
+  "metadata": {
+    "sourceProblemCount": 18,
+    "sourceStrategy": "local_tag_curated_route"
+  },
+  "phases": [
+    {
+      "phaseIndex": 1,
+      "title": "栈队列、双向链表与缓存",
+      "durationWeeks": 1,
+      "focus": "从基础容器互相实现过渡到循环结构、LRU/LFU 和多位置队列。",
+      "objectives": [
+        "根据接口操作选择数组、队列、栈或双向链表",
+        "掌握哈希表加双向链表维护 O(1) 查询和更新"
+      ],
+      "recommendedTags": [
+        "Design",
+        "Stack",
+        "Queue",
+        "Doubly Linked List"
+      ],
+      "acceptanceCriteria": [
+        "能独立实现循环队列、循环双端队列和最小栈",
+        "能解释 LRU、LFU 和 All O(1) 的节点组织与复杂度"
+      ],
+      "reviewAdvice": "为每个接口建立操作复杂度表，并画出插入、删除、淘汰时的节点关系。"
+    },
+    {
+      "phaseIndex": 2,
+      "title": "随机集合、迭代器与时间序列设计",
+      "durationWeeks": 1,
+      "focus": "训练数组加哈希随机化、迭代状态、Trie、时间索引和事件聚合。",
+      "objectives": [
+        "掌握 O(1) 随机集合中的交换删除",
+        "理解迭代器惰性展开、时间索引和在线事件状态"
+      ],
+      "recommendedTags": [
+        "Design",
+        "Iterator",
+        "Trie",
+        "Binary Search",
+        "Data Stream"
+      ],
+      "acceptanceCriteria": [
+        "能独立设计随机集合和惰性迭代器",
+        "能说明时间键值、快照数组和在线系统的查询索引"
+      ],
+      "reviewAdvice": "从接口调用序列反推必须保存的最小状态，并为每个字段写明不变量。"
+    }
+  ]
+}

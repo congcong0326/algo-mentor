@@ -206,6 +206,37 @@ class LearningPlanTemplateDraftServiceTest {
         });
   }
 
+  @org.junit.jupiter.api.Test
+  void templateDraftSkipsUnmatchedLegacyProblemWithoutRecommendationReason() {
+    problemCatalog.add("legacy-premium-problem", 271, "Legacy Premium Problem", "MEDIUM", "Array");
+    problemCatalog.removeRecommendationReason("legacy-premium-problem");
+    LearningPlanTemplatePhase templatePhase = phase(
+        1,
+        "数组",
+        List.of("two-sum", "legacy-premium-problem"));
+    templatePhase = templatePhase.withProblemRefs(templatePhase.problemRefs().stream()
+        .map(ref -> "legacy-premium-problem".equals(ref.problemSlug())
+            ? ref.withMatchedProblem(false)
+            : ref)
+        .toList());
+    templateRepository.saveTemplate(template(
+        "legacy_premium_template",
+        1,
+        2,
+        1,
+        1,
+        List.of(templatePhase)));
+
+    LearningPlanDraftResult result = templateDraftService.createDraft(
+        7L,
+        new LearningPlanTemplateDraftCommand("legacy_premium_template", null, null, null));
+
+    assertThat(result.draftPlan().phases())
+        .flatExtracting(LearningPlanPhaseDraft::problems)
+        .extracting(LearningPlanProblemDraft::slug)
+        .containsExactly("two-sum");
+  }
+
   private List<String> problemReasons(LearningPlanDraftResult result) {
     return result.draftPlan().phases().stream()
         .flatMap(phase -> phase.problems().stream())
