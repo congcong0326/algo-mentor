@@ -364,7 +364,12 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
   const requestBody = buildRequestBody();
 
   return (
-    <>
+    <section className="admin-debug-page" aria-label={resources.nav.debug}>
+      <header className="admin-page-toolbar admin-debug-header">
+        <div>
+          <h1>{resources.nav.debug}</h1>
+        </div>
+      </header>
       <section className="control-panel" aria-label={resources.debug.controls}>
         <label className="topic-field">
           <span>Message</span>
@@ -509,7 +514,7 @@ const AiDebugConsole = forwardRef<AiDebugConsoleHandle, AiDebugConsoleProps>(fun
           </div>
         </article>
       </section>
-    </>
+    </section>
   );
 });
 

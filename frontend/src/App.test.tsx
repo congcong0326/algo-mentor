@@ -892,24 +892,24 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/admin/users');
   });
 
-  it('keeps provider and routing tabs when navigating inside AI governance', async () => {
+  it('navigates AI governance views from the sidebar tree', async () => {
     vi.stubGlobal('fetch', mockAdminAiGovernanceFetch());
     window.history.replaceState({}, '', '/admin/ai?tab=pricing');
 
     render(<App />);
 
     await screen.findByRole('button', { name: '新增价格' });
-    fireEvent.click(screen.getByRole('tab', { name: '提供商与模型' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Provider 与模型' }));
 
     expect(await screen.findByRole('heading', { name: 'Providers and models' })).toBeInTheDocument();
     expect(new URLSearchParams(window.location.search).get('tab')).toBe('providers');
-    expect(screen.getByRole('tab', { name: '提供商与模型' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('button', { name: 'Provider 与模型' })).toHaveAttribute('aria-current', 'page');
 
-    fireEvent.click(screen.getByRole('tab', { name: '模型路由' }));
+    fireEvent.click(screen.getByRole('button', { name: '模型路由' }));
 
     expect(await screen.findByRole('heading', { name: 'Model routing' })).toBeInTheDocument();
     expect(new URLSearchParams(window.location.search).get('tab')).toBe('routing');
-    expect(screen.getByRole('tab', { name: '模型路由' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('button', { name: '模型路由' })).toHaveAttribute('aria-current', 'page');
   });
 
   it('lets admin users enter the workspace from the learning shell', async () => {
@@ -924,7 +924,7 @@ describe('App', () => {
     fireEvent.click(screen.getByRole('button', { name: '管理后台' }));
 
     expect(await screen.findByRole('heading', { name: '用户管理' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '用户与访问' })).toHaveAttribute('aria-current', 'page');
+    expect(screen.getByRole('button', { name: '身份与访问' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('button', { name: '内容管理' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '开发工具' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '首页' })).not.toBeInTheDocument();

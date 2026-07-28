@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronDown, LogOut, Menu, Moon, PanelLeftClose, PanelLeftOpen, Sun, UserRound, X } from 'lucide-react';
+import { ArrowLeft, ChevronDown, LogOut, Menu, Moon, Sun, UserRound } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import HeaderActionTooltip from '../../app/HeaderActionTooltip';
@@ -6,7 +6,14 @@ import type { AppTheme } from '../../app/theme';
 import LanguageSelector from '../../i18n/LanguageSelector';
 import { useI18n } from '../../i18n/I18nProvider';
 import type { AuthPermission, CurrentUser } from '../../types/api';
-import { accessibleAdminModules, adminModuleFromPath } from './adminNavigation';
+import AdminSidebar from './AdminSidebar';
+import {
+  accessibleAdminModules,
+  adminModuleFromLocation,
+  adminPageFromLocation,
+  flattenAdminPages,
+  type AdminModuleId,
+} from './adminNavigation';
 
 interface AdminShellProps {
   children: ReactNode;
@@ -19,6 +26,7 @@ interface AdminShellProps {
   onToggleTheme: () => void;
   pageStatus?: ReactNode;
   pathname: string;
+  search?: string;
   theme: AppTheme;
 }
 
@@ -33,37 +41,49 @@ export default function AdminShell({
   onToggleTheme,
   pageStatus,
   pathname,
+  search = '',
   theme,
 }: AdminShellProps) {
   const { resources } = useI18n();
   const t = resources.adminShell;
   const permissions = new Set<AuthPermission>(currentUser.permissions ?? []);
   const modules = accessibleAdminModules(permissions);
-  const activeModule = adminModuleFromPath(pathname, modules);
+  const activeModule = adminModuleFromLocation(pathname, search, modules);
+  const activePage = adminPageFromLocation(pathname, search, modules);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [expandedModuleId, setExpandedModuleId] = useState<AdminModuleId | undefined>(activeModule?.id);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
   const userLabel = currentUser.displayName || currentUser.email || resources.app.unknownUser(currentUser.id);
   const ThemeIcon = theme === 'light' ? Moon : Sun;
   const themeLabel = theme === 'light' ? resources.app.switchToDarkMode : resources.app.switchToLightMode;
-  const SidebarToggleIcon = sidebarCollapsed ? PanelLeftOpen : PanelLeftClose;
-  const sidebarToggleLabel = sidebarCollapsed ? t.expandNavigation : t.collapseNavigation;
+  const activeModuleLabel = activeModule ? t.labels[activeModule.labelKey] : t.workspace;
+  const activePageLabel = activePage ? t.labels[activePage.labelKey] : activeModuleLabel;
 
   useEffect(() => {
     setSidebarOpen(false);
-  }, [pathname]);
+  }, [pathname, search]);
 
   useEffect(() => {
-    if (!sidebarOpen && !accountMenuOpen) return undefined;
+    if (activeModule && flattenAdminPages(activeModule).length > 1) {
+      setExpandedModuleId(activeModule.id);
+    }
+  }, [activeModule?.id]);
+
+  useEffect(() => {
+    if (!accountMenuOpen) {
+      return undefined;
+    }
     function handleEscape(event: KeyboardEvent) {
       if (event.key === 'Escape') {
-        setSidebarOpen(false);
         setAccountMenuOpen(false);
       }
     }
     function handleOutside(event: MouseEvent) {
-      if (accountMenuOpen && !accountMenuRef.current?.contains(event.target as Node)) {
+      if (!accountMenuRef.current?.contains(event.target as Node)) {
         setAccountMenuOpen(false);
       }
     }
@@ -73,21 +93,90 @@ export default function AdminShell({
       document.removeEventListener('keydown', handleEscape);
       document.removeEventListener('mousedown', handleOutside);
     };
-  }, [accountMenuOpen, sidebarOpen]);
+  }, [accountMenuOpen]);
+
+  useEffect(() => {
+    if (!sidebarOpen) {
+      return undefined;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const focusTimer = window.setTimeout(() => {
+      sidebarRef.current?.querySelector<HTMLElement>('.admin-sidebar-heading button')?.focus();
+    });
+
+    function handleDrawerKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeMobileSidebar(true);
+        return;
+      }
+      if (event.key !== 'Tab') {
+        return;
+      }
+      const focusable = Array.from(sidebarRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled)') ?? []);
+      if (focusable.length === 0) {
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener('keydown', handleDrawerKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleDrawerKeyDown);
+    };
+  }, [sidebarOpen]);
+
+  function closeMobileSidebar(restoreFocus = false) {
+    setSidebarOpen(false);
+    if (restoreFocus) {
+      window.setTimeout(() => mobileMenuButtonRef.current?.focus());
+    }
+  }
+
+  function toggleModule(moduleId: AdminModuleId) {
+    if (sidebarCollapsed) {
+      setSidebarCollapsed(false);
+      setExpandedModuleId(moduleId);
+      return;
+    }
+    setExpandedModuleId((current) => current === moduleId ? undefined : moduleId);
+  }
 
   return (
     <main className={`admin-shell${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>
       <header className="admin-shell-header" role="banner">
         <div className="admin-mobile-header-start">
-          <button aria-label={t.openNavigation} className="icon-button admin-mobile-menu" onClick={() => setSidebarOpen(true)} type="button">
+          <button
+            aria-label={t.openNavigation}
+            className="icon-button admin-mobile-menu"
+            onClick={() => setSidebarOpen(true)}
+            ref={mobileMenuButtonRef}
+            type="button"
+          >
             <Menu aria-hidden="true" />
           </button>
           <div aria-hidden="true" className="admin-shell-brand admin-mobile-brand">
             <strong>{resources.app.brandName}</strong>
-            <span />
-            <b>{t.workspace}</b>
           </div>
         </div>
+
+        <div className="admin-header-location" aria-label={t.pageNavigation}>
+          <span>{activeModuleLabel}</span>
+          {activePageLabel !== activeModuleLabel ? <strong>{activePageLabel}</strong> : null}
+        </div>
+
         <div className="admin-shell-header-actions">
           <button className="admin-return-button" onClick={() => onNavigate('/')} type="button">
             <ArrowLeft aria-hidden="true" />
@@ -120,68 +209,26 @@ export default function AdminShell({
         </div>
       </header>
 
-      {sidebarOpen ? <button aria-label={t.closeNavigation} className="admin-sidebar-scrim" onClick={() => setSidebarOpen(false)} type="button" /> : null}
-      <aside className={`admin-sidebar ${sidebarOpen ? 'open' : ''}`} aria-label={t.businessNavigation}>
-        <div className="admin-sidebar-topbar">
-          <div className="admin-sidebar-brand">
-            <strong>{resources.app.brandName}</strong>
-            <span>{t.workspace}</span>
-          </div>
-          <HeaderActionTooltip className="admin-sidebar-toggle-tooltip" id="admin-sidebar-toggle-tooltip" label={sidebarToggleLabel}>
-            <button
-              aria-controls="admin-business-navigation"
-              aria-describedby="admin-sidebar-toggle-tooltip"
-              aria-expanded={!sidebarCollapsed}
-              aria-label={sidebarToggleLabel}
-              className="icon-button admin-sidebar-collapse"
-              onClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
-              type="button"
-            >
-              <SidebarToggleIcon aria-hidden="true" />
-            </button>
-          </HeaderActionTooltip>
-        </div>
-        <div className="admin-sidebar-heading">
-          <span>{t.navigation}</span>
-          <button aria-label={t.closeNavigation} className="icon-button" onClick={() => setSidebarOpen(false)} type="button"><X aria-hidden="true" /></button>
-        </div>
-        <nav id="admin-business-navigation">
-          {modules.map((module) => {
-            const Icon = module.icon;
-            const unread = module.id === 'feedback' && feedbackUnreadCount && feedbackUnreadCount > 0;
-            return (
-              <button
-                aria-current={activeModule?.id === module.id ? 'page' : undefined}
-                className="admin-sidebar-item"
-                key={module.id}
-                onClick={() => onNavigate(module.items[0].path)}
-                title={t.labels[module.labelKey]}
-                type="button"
-              >
-                <Icon aria-hidden="true" />
-                <span>{t.labels[module.labelKey]}</span>
-                {unread ? <b>{feedbackUnreadCount > 99 ? '99+' : feedbackUnreadCount}</b> : null}
-              </button>
-            );
-          })}
-        </nav>
-      </aside>
+      {sidebarOpen ? (
+        <button aria-label={t.closeNavigation} className="admin-sidebar-scrim" onClick={() => closeMobileSidebar(true)} type="button" />
+      ) : null}
+      <AdminSidebar
+        activeModuleId={activeModule?.id}
+        activePageId={activePage?.id}
+        collapsed={sidebarCollapsed}
+        expandedModuleId={expandedModuleId}
+        feedbackUnreadCount={feedbackUnreadCount}
+        modules={modules}
+        onClose={() => closeMobileSidebar(true)}
+        onNavigate={onNavigate}
+        onToggleCollapsed={() => setSidebarCollapsed((collapsed) => !collapsed)}
+        onToggleModule={toggleModule}
+        open={sidebarOpen}
+        resources={resources}
+        sidebarRef={sidebarRef}
+      />
 
       <section className="admin-main-column">
-        {activeModule && activeModule.items.length > 1 ? (
-          <nav className="admin-context-nav" aria-label={t.pageNavigation}>
-            {activeModule.items.map((item) => (
-              <button
-                aria-current={pathname === item.path || (item.id === 'userGroups' && pathname.startsWith(`${item.path}/`)) ? 'page' : undefined}
-                key={item.id}
-                onClick={() => onNavigate(item.path)}
-                type="button"
-              >
-                {t.labels[item.labelKey]}
-              </button>
-            ))}
-          </nav>
-        ) : null}
         {logoutError ? <p className="error-text admin-shell-error" role="alert">{logoutError}</p> : null}
         <section className="admin-workspace">
           {pageStatus ? <div className="admin-workspace-status">{pageStatus}</div> : null}

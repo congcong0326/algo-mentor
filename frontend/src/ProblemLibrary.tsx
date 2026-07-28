@@ -165,6 +165,11 @@ export default function ProblemLibrary() {
 
   return (
     <section className="problem-shell" aria-label={resources.problems.ariaLabel}>
+      <header className="admin-page-toolbar problem-page-header">
+        <div>
+          <h1>{resources.problems.ariaLabel}</h1>
+        </div>
+      </header>
       <div className="problem-toolbar">
         <label className="search-field">
           <Search aria-hidden="true" />

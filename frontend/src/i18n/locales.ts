@@ -110,7 +110,9 @@ export interface LocaleResources {
     businessNavigation: string;
     navigation: string;
     pageNavigation: string;
-    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'sessions' | 'sessionPolicies' | 'systemPrompts' | 'ai' | 'content' | 'feedback' | 'development' | 'users' | 'userGroups' | 'betaAccess' | 'problems' | 'debug', string>;
+    expandSection: (label: string) => string;
+    collapseSection: (label: string) => string;
+    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'sessions' | 'sessionPolicies' | 'systemPrompts' | 'ai' | 'aiPlatform' | 'operations' | 'modelResources' | 'costGovernance' | 'aiProviders' | 'aiRouting' | 'aiUsage' | 'aiPricing' | 'content' | 'feedback' | 'development' | 'users' | 'userGroups' | 'betaAccess' | 'problems' | 'debug', string>;
   };
   feedback: {
     openDialog: string;
@@ -1227,15 +1229,25 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       businessNavigation: '管理业务域',
       navigation: '管理导航',
       pageNavigation: '当前业务页面',
+      expandSection: (label) => `展开${label}`,
+      collapseSection: (label) => `收起${label}`,
       labels: {
         overview: '运营概览',
-        access: '用户与访问',
+        access: '身份与访问',
         monitoring: '系统监控',
         systemStatus: '运行状态',
         sessions: '会话监控',
         sessionPolicies: '会话策略',
         systemPrompts: '系统提示词',
         ai: 'AI 治理',
+        aiPlatform: 'AI 平台',
+        operations: '运营与支持',
+        modelResources: '模型资源',
+        costGovernance: '成本治理',
+        aiProviders: 'Provider 与模型',
+        aiRouting: '模型路由',
+        aiUsage: '用量与成本',
+        aiPricing: '模型定价',
         content: '内容管理',
         feedback: '反馈与支持',
         development: '开发工具',
@@ -2463,15 +2475,25 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       businessNavigation: 'Admin business areas',
       navigation: 'Admin navigation',
       pageNavigation: 'Current area pages',
+      expandSection: (label) => `Expand ${label}`,
+      collapseSection: (label) => `Collapse ${label}`,
       labels: {
         overview: 'Operations',
-        access: 'Users & Access',
+        access: 'Identity & Access',
         monitoring: 'System monitoring',
         systemStatus: 'Runtime status',
         sessions: 'Session monitoring',
         sessionPolicies: 'Session policies',
         systemPrompts: 'System prompts',
         ai: 'AI Governance',
+        aiPlatform: 'AI Platform',
+        operations: 'Operations & Support',
+        modelResources: 'Model resources',
+        costGovernance: 'Cost governance',
+        aiProviders: 'Providers & Models',
+        aiRouting: 'Model routing',
+        aiUsage: 'Usage & Cost',
+        aiPricing: 'Model pricing',
         content: 'Content',
         feedback: 'Feedback & Support',
         development: 'Developer Tools',

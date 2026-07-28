@@ -710,6 +710,7 @@ export default function App() {
           </div>
         ) : undefined}
         pathname={pathname}
+        search={search}
         theme={theme}
       >
         {pageContent}

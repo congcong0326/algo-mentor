@@ -84,55 +84,12 @@ export default function AiGovernancePage({ onNavigate, search }: AiGovernancePag
         updating={settingsUpdating}
       />
 
-      <div className="ai-governance-tabs" role="tablist" aria-label={t.title}>
-        <button
-          aria-controls="ai-providers-tab-panel"
-          aria-selected={route.tab === 'providers'}
-          className="ai-tab-button"
-          onClick={() => updateRoute(route.filters, 'providers')}
-          role="tab"
-          type="button"
-        >
-          提供商与模型
-        </button>
-        <button
-          aria-controls="ai-routing-tab-panel"
-          aria-selected={route.tab === 'routing'}
-          className="ai-tab-button"
-          onClick={() => updateRoute(route.filters, 'routing')}
-          role="tab"
-          type="button"
-        >
-          模型路由
-        </button>
-        <button
-          aria-controls="ai-usage-tab-panel"
-          aria-selected={route.tab === 'usage'}
-          className="ai-tab-button"
-          onClick={() => updateRoute(route.filters, 'usage')}
-          role="tab"
-          type="button"
-        >
-          {t.usageTab}
-        </button>
-        <button
-          aria-controls="ai-pricing-tab-panel"
-          aria-selected={route.tab === 'pricing'}
-          className="ai-tab-button"
-          onClick={() => updateRoute(route.filters, 'pricing')}
-          role="tab"
-          type="button"
-        >
-          {t.pricingTab}
-        </button>
-      </div>
-
       {route.tab === 'providers' ? (
-        <div id="ai-providers-tab-panel" role="tabpanel"><AiProviderModelPanel /></div>
+        <div><AiProviderModelPanel /></div>
       ) : route.tab === 'routing' ? (
-        <div id="ai-routing-tab-panel" role="tabpanel"><AiModelRoutingPanel /></div>
+        <div><AiModelRoutingPanel /></div>
       ) : route.tab === 'usage' ? (
-        <div id="ai-usage-tab-panel" role="tabpanel">
+        <div>
           <AiUsagePanel
             filters={route.filters}
             onFiltersChange={(next) => updateRoute(next)}
@@ -141,7 +98,7 @@ export default function AiGovernancePage({ onNavigate, search }: AiGovernancePag
           />
         </div>
       ) : (
-        <div id="ai-pricing-tab-panel" role="tabpanel">
+        <div>
           <AiModelPricingPanel
             from={route.filters.from}
             onPricingChanged={() => setUsageRefreshKey((current) => current + 1)}
