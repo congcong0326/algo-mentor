@@ -84,12 +84,18 @@
 
 ## 当前 Seed 状态
 
-当前已移除旧版 NeetCode seed 产物，下一批模板需要按完整阶段规则重新生成：
+截至 2026-07-28，聚合 seed 已包含 35 个模板、1705 条题目引用，其中 1667 条本地匹配、38 条本地缺失。完整路线已覆盖 NeetCode、TIH、代码随想录、labuladong、LeetCode 官方面试计划、中文经典题单、算法专项以及 SQL、JavaScript、Pandas 练习计划。
 
-- `neetcode_blind_75_interview_core`
-- `neetcode_150_systematic_interview`
+本轮新增 6 个模板、336 条 refs，其中 331 条匹配、5 条缺失：
 
-重新生成时应让模板阶段承载完整路线。例如 Blind 75 可以规划为 4 到 6 个完整阶段，NeetCode 150 可以规划为 10 到 12 个完整阶段；具体阶段数以路线可执行性、周期和每阶段题量均衡为准。
+- `carl_algorithm_roadmap_full`
+- `labuladong_algo_thinking`
+- `leetcode_sql_50`
+- `leetcode_javascript_30_days`
+- `leetcode_pandas_introduction`
+- `leetcode_pandas_30_days`
+
+高级 SQL 50 和 Premium Algo 100 的官方接口当前不再返回可用计划数据，因此未生成模板。Coding Interview University、CS-Notes 仍需要非题目任务和外链学习材料模型，不进入当前 phase/problem-ref seed。
 
 ## 验证
 

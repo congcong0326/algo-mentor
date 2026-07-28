@@ -1,0 +1,154 @@
+{
+  "curationNotes": "保留官方主题内题目顺序，并把相邻主题合并为可执行阶段；不复制题面、题解或代码。",
+  "defaultDurationWeeks": 5,
+  "defaultWeeklyHours": 5,
+  "difficultyPreference": "EASY",
+  "expectedOutcome": "完成后能熟练使用闭包、高阶函数、Promise、JSON 和类完成常见 JavaScript 编程任务。",
+  "goal": "通过短题训练巩固现代 JavaScript 的函数式、异步和对象建模能力。",
+  "intent": "PRACTICE_GOAL",
+  "interviewOriented": false,
+  "level": "BEGINNER",
+  "licenseNotice": "LeetCode 官方 Study Plan；内部 seed 仅使用结构化题目元数据和来源链接。",
+  "metadata": {
+    "sourceGroupCount": 7,
+    "sourceProblemCount": 30,
+    "sourceStrategy": "direct_official_study_plan_metadata"
+  },
+  "notRecommendedFor": [
+    "只需要算法数据结构训练",
+    "完全没有编程基础",
+    "需要浏览器框架专项课程"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立说明“闭包与函数作用域”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "掌握闭包、词法作用域和函数状态保存。",
+      "objectives": [
+        "完成“闭包与函数作用域”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "JavaScript",
+        "Closure"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "闭包与函数作用域"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“数组与函数变换”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练 map/filter/reduce 和高阶函数变换。",
+      "objectives": [
+        "完成“数组与函数变换”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "JavaScript",
+        "Array",
+        "Function"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "数组与函数变换"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“Promise 与时间控制”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "掌握异步 Promise、延迟、取消和并发时序。",
+      "objectives": [
+        "完成“Promise 与时间控制”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "JavaScript",
+        "Promise",
+        "Async"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "Promise 与时间控制"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“JSON 与对象操作”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练对象遍历、序列化、组合和深层变换。",
+      "objectives": [
+        "完成“JSON 与对象操作”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 4,
+      "recommendedTags": [
+        "JavaScript",
+        "JSON",
+        "Object"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "JSON 与对象操作"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“类与综合收尾”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成类、事件和综合挑战，整理 JavaScript 常用实现模式。",
+      "objectives": [
+        "完成“类与综合收尾”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 5,
+      "recommendedTags": [
+        "JavaScript",
+        "Class",
+        "Design"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "类与综合收尾"
+    }
+  ],
+  "prerequisites": [
+    "了解变量、函数、数组和对象",
+    "能运行基础 JavaScript 代码"
+  ],
+  "programmingLanguage": "JavaScript",
+  "recommendedFor": [
+    "前端或 Node.js 初学者",
+    "准备 JavaScript 基础面试",
+    "希望完成结构化 30 天练习"
+  ],
+  "sourceCommit": "accessed-2026-07-28",
+  "sourceDataPath": "GraphQL studyPlanV2Detail:30-days-of-javascript",
+  "sourceDescription": "LeetCode 官方 30 Days of JavaScript Study Plan 的主题分组、题目顺序、标题、slug 和难度元数据。",
+  "sourceName": "LeetCode official Study Plan",
+  "sourceUrl": "https://leetcode.com/studyplan/30-days-of-javascript/",
+  "summary": "用 5 周完成 JavaScript 30 天官方路线，覆盖闭包、高阶函数、Promise、JSON 和类。",
+  "targetAudience": "有基础编程经验，希望系统补齐现代 JavaScript 核心语言能力的学习者。",
+  "templateId": "leetcode_javascript_30_days",
+  "title": "LeetCode JavaScript 30 天训练计划",
+  "topicPreferences": [
+    "JavaScript",
+    "Closure",
+    "Array",
+    "Function",
+    "Promise",
+    "Async",
+    "JSON",
+    "Object",
+    "Class",
+    "Design"
+  ]
+}

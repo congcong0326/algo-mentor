@@ -4,8 +4,17 @@
     "neetcode_150_systematic_interview",
     "neetcode_blind_75_interview_core",
     "tih_best_practice_50_5weeks",
+    "tih_algorithm_essentials",
+    "sword_offer_classic",
+    "cracking_coding_interview_classic",
+    "leetcode_75_core_sprint",
+    "leetcode_top_interview_150",
     "cn_algorithm_foundation_12weeks",
+    "carl_algorithm_roadmap_full",
+    "leetcode_patterns_beginner_roadmap",
+    "labuladong_algo_thinking",
     "topic_dynamic_programming_foundation",
+    "topic_dp_advanced",
     "topic_graph_bfs_dfs",
     "topic_binary_search_boundaries",
     "topic_sliding_window_two_pointers",
@@ -22,6 +31,10 @@
     "topic_intervals_scheduling",
     "topic_data_structure_design",
     "leetcode_top_100_liked_revision",
-    "programming_skills_implementation_foundation"
+    "programming_skills_implementation_foundation",
+    "leetcode_sql_50",
+    "leetcode_javascript_30_days",
+    "leetcode_pandas_introduction",
+    "leetcode_pandas_30_days"
   ]
 }

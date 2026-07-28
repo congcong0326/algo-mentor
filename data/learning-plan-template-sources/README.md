@@ -12,6 +12,16 @@
 
 ## 生成命令
 
+当前由批次生成器管理的 13 个模板包括 TIH、动态规划进阶、剑指 Offer、算法模式入门、程序员面试金典、LeetCode 75、LeetCode 面试经典 150、代码随想录完整版、labuladong 算法框架、SQL 50、JavaScript 30 天和两套 Pandas 计划，可通过固定来源版本重新生成：
+
+```bash
+python3 tools/learning_plan_template_seed/prepare_p1b_template_sources.py
+```
+
+其中代码随想录固定到 commit `86f78fde8cb62d10c3b5e38b7e6b6e0705850f92`，labuladong 固定到 commit `b1f23cb9605f6146ff78bafad71e795176439b99`，LeetCode 官方计划记录为 `accessed-2026-07-28`。当前聚合 seed 共 35 个模板 / 1705 refs / 1667 匹配 / 38 缺失。
+
+生成或修改单模板源文件后，再统一重建聚合 seed：
+
 ```bash
 python3 tools/learning_plan_template_seed/prepare_template_seed.py
 ```

@@ -9,20 +9,20 @@
 当前状态：
 
 - P0 首批 10 个内部模板已写入 `data/learning-plan-template-seed/`，生成器已从 NeetCode 单源脚本演进为多 source 生成器。
-- P1-A 两个批次已完成 12 个核心专项模板；批次 2 新增链表、并查集与进阶图论、前缀和与差分、字典树与字符串进阶、区间与调度、数据结构设计。
-- 当前 seed manifest 显示：模板数 `22`，题目引用数 `742`，本地匹配 `722`，本地缺失 `20`；其中 P1-A 批次 2 合计 `111` refs、匹配 `111`、缺失 `0`。
-- 当前 22 个模板已拆分到 `data/learning-plan-template-sources/templates/<templateId>/`，每个模板目录包含 `template.json` 和 `problem_refs.jsonl`；`template_order.json` 控制聚合顺序。
+- P1-A 两个核心批次和动态规划进阶扩展已完成，共形成 17 个专项模板；P1-B 已完成 TIH 核心专题、剑指 Offer、算法模式入门、程序员面试金典、LeetCode 75、LeetCode 面试经典 150、代码随想录完整版和 labuladong 核心算法框架路线。
+- 当前 seed manifest 显示：模板数 `35`，题目引用数 `1705`，本地匹配 `1667`，本地缺失 `38`；本批新增 `6` 模板 / `336` refs / `331` 匹配 / `5` 缺失。
+- 当前 35 个模板已拆分到 `data/learning-plan-template-sources/templates/<templateId>/`，每个模板目录包含 `template.json` 和 `problem_refs.jsonl`；`template_order.json` 控制聚合顺序。
 - 当前 seed 目录固定为 `data/learning-plan-template-seed/`，包含 `learning_plan_templates.jsonl`、`learning_plan_template_problem_refs.jsonl`、`learning_plan_template_seed_manifest.json`、`learning_plan_template_seed_metadata.md` 四个文件。
 - `data/learning-plan-template-seed/` 是后端导入使用的聚合产物，必须由 `tools/learning_plan_template_seed/prepare_template_seed.py` 从模板源目录生成，不再作为人工维护入口。
 - 后端导入已经要求每个模板有完整 source attribution、非空 phases、至少一个 problem ref；缺失本地题目保留在 refs 和 metadata，但不进入生成草稿。
 - 从模板生成草稿必须满足：阶段周数合计等于总周期；模板阶段承载完整路线；所有本地匹配 refs 默认进入草稿推荐题；缺失 refs 只保留在模板明细和草稿 metadata；草稿状态继续落为 `GENERATED`，并复用现有草稿确认流程。
-- 本批已完成验证：`python3 -m unittest discover -s tools -p '*_test.py'`；模板导入、草稿生成、模板 API 和迁移资源定向 Maven 测试；本地数据库导入结果为 22 模板 / 742 refs / 722 匹配 / 20 缺失。`make backend-test` 已执行，但 mentor-api 中 7 个既有 Web 测试因缺少 `AiModelRoutePolicyTypeContributor` Bean 而失败，与本批模板改动无关。
+- 本批已完成生成与回归验证：`python3 -m unittest discover -s tools -p '*_test.py'` 共 59 个测试通过；模板导入、草稿生成和模板 API 定向 Maven 测试共 48 个测试通过；前端 43 个测试文件、340 个测试通过。`make db-seed` 已成功导入 35 模板 / 1705 refs / 1667 匹配 / 38 缺失，最新 import run `id=7`、`error_count=0`。全量 `make backend-test` 最近一次仍有 mentor-api 中 7 个既有 Web 上下文测试因缺少 `AiModelRoutePolicyTypeContributor` Bean 失败，与本批模板改动无关。
 
 实施边界：
 
 - seed 只保存题单元数据、阶段目标、推荐理由和来源归因；不复制第三方题解、文章正文、图示、代码或题面。
 - 模板内部化不是一比一搬运外部计划，而是把高价值路线重建为 algo-mentor 自己的阶段计划。
-- 第一批 P0 目标是先把内部模板池扩展到 10 个可发布模板；这不是全部资料源转换任务上限。更多模式化专项、长周期 CS 路线、SQL/JS/Pandas 等非算法计划放到 P1/P2 后续批次。
+- 第一批 P0 目标是先把内部模板池扩展到 10 个可发布模板；当前可直接落入 phase/problem-ref 模型的 P1/P2 路线已继续扩展到 35 个。剩余长周期 CS 路线需等非题目任务和外链材料模型完善后再处理。
 
 ## 待执行列表
 
@@ -37,11 +37,12 @@
 | P0 | 当前已完成 | 验证后端导入和草稿生成 | 后端测试、导入审计、草稿生成样例 | 10 个模板均可导入；2/4/5/6/12 周模板可生成草稿；匹配 refs 默认全部进入草稿 |
 | P1-A 批次 1 | 当前已完成 | 扩展核心专项第一波 | Trees、Backtracking、Heap、Greedy、Stack/Monotonic Stack、Bit Manipulation 六个专项模板 | 已生成 6 模板 / 122 refs / 122 匹配 / 0 缺失；每模板题量不低于 15 条 refs；Python seed、后端导入和草稿生成回归已通过 |
 | P1-A 批次 2 | 当前已完成 | 扩展核心专项第二波 | Linked List、Union Find + Advanced Graph、Prefix Sum、Trie、Intervals、Data Structure Design 六个专项模板 | 已生成 6 模板 / 111 refs / 111 匹配 / 0 缺失；每模板不少于 18 条 refs，每阶段不少于 7 条匹配题 |
-| P1-B | 待执行 | 扩展模式化和面试路线模板 | seanprashad、代码随想录完整版、LeetCode 75、TIH essentials、doocs 剑指 Offer 等 | 路线结构、授权边界、matched/missing 统计和草稿生成均可审计 |
-| P1 | 待执行 | 增强多来源 manifest 和导入审计 | `sources` 统计、每模板来源版本、每来源匹配率 | import run metadata 能定位每个来源的版本、路径、授权和缺失题 |
+| P1-A 扩展 | 当前已完成 | 扩展动态规划进阶专项 | `topic_dp_advanced`，4 阶段覆盖区间、树形、状压、数位与博弈 DP | 31 refs / 31 匹配 / 0 缺失；四阶段每阶段至少 7 题，草稿生成回归已通过 |
+| P1-B | 当前已完成 | 扩展模式化和面试路线模板 | 已完成 TIH essentials、剑指 Offer、seanprashad Beginner、程序员面试金典、LeetCode 75、LeetCode 面试经典 150、代码随想录完整版和 labuladong 核心算法框架 | 本轮 2 个 roadmap 模板 / 208 refs / 208 匹配 / 0 缺失；P1-B 候选中 Experienced Roadmap 和 NeetCode pattern 因高度重复不再单列 |
+| P1 | 当前已完成 | 增强多来源 manifest 和导入审计 | `sources` 统计、每模板来源版本、每来源匹配率 | import run metadata 已保存完整 manifest，可定位来源版本、路径和缺失题 |
 | P1 | 待执行 | 前端模板入口优化 | 模板列表分组、标签筛选、模板详情缺失题提示 | 用户能按面试冲刺、长期学习、专项突破、复盘选择模板 |
-| P2 | 后续批次 | 长周期 CS/综合学习模板 | Coding Interview University、CS-Notes、doocs 等参考路线 | 不影响算法刷题主线；明确外链和非题目任务的展示方式 |
-| P2 | 后续批次 | 非算法专项模板 | SQL、JavaScript、Pandas 等扩展计划 | 明确题库域、练习入口和现有算法题库不匹配时的降级策略 |
+| P2 | 当前已完成 | 当前 phase/problem-ref 模型兼容的非算法专项模板 | SQL 50、JavaScript 30 天、Pandas 入门、Pandas 30 天 | 4 模板 / 128 refs / 123 匹配 / 5 缺失；前端编程语言选项已补充 SQL |
+| P2 | 后续批次 | 非题目任务和外链型长周期计划 | Coding Interview University、CS-Notes | 需要先扩展任务类型和外链学习材料模型 |
 
 ## 第一批 10 个内部模板
 
@@ -68,12 +69,16 @@ P0 完成后，后续任务按资料源和用户场景继续拆分。以下模�
 | --- | --- | --- | --- |
 | P1-A 批次 1 | Trees 专项、Backtracking 专项、Heap / Priority Queue 专项、Greedy 专项、Stack / Monotonic Stack 专项、Bit Manipulation 专项 | NeetCode pattern、halfrost 标签、TIH algorithm guides、本地题库 tag | 当前已完成；适合能力画像命中薄弱标签 |
 | P1-A 批次 2 | Linked List、Union Find + Advanced Graph、Prefix Sum、Trie、Intervals、Data Structure Design 专项 | halfrost 标签、本地题库 tag | 当前已完成；补齐高频薄弱标签并保持 111 refs 全部本地匹配 |
+| P1-A 扩展 | 动态规划进阶专项 | 本地题库 dynamic-programming / bitmask / tree / game-theory 标签 | 当前已完成；31 refs 全部匹配，覆盖区间、树形、状压、数位与博弈 DP |
 | P1 | NeetCode pattern track 系列 | `neetcode-gh/leetcode` | NeetCode 已有 pattern 结构，但 P0 先只发布 75/150 两条高认知路线 |
-| P1 | TIH algorithm essentials / recommended 系列 | `yangshun/tech-interview-handbook` | 适合做专题和复盘模板；需要先完成 Best Practice 50 的 Markdown adapter |
-| P1 | leetcode-patterns Beginner / Experienced Roadmap | `seanprashad/leetcode-patterns` | 路线结构价值高，但 CC-BY-NC-4.0 授权边界需要单独审计，首版只借鉴阶段思想 |
+| P1 | TIH algorithm essentials / recommended 系列 | `yangshun/tech-interview-handbook` | 当前已完成 `tih_algorithm_essentials`；119 refs、110 匹配、9 缺失 |
+| P1 | leetcode-patterns Beginner / Experienced Roadmap | `seanprashad/leetcode-patterns` | Beginner 当前已完成；Experienced 与现有 Blind 75 高度重合，暂不单独发布 |
+| P1 | LeetCode 75 / Top Interview 150 官方路线 | LeetCode 官方 Study Plan、本地题库 | 当前已完成；两模板合计 225 refs、225 匹配、0 缺失 |
+| P1 | 代码随想录完整版 / labuladong 算法框架 | `youngyangyang04/leetcode-master`、`labuladong/fucking-algorithm`、本地题库 | 当前已完成；两模板合计 208 refs、208 匹配、0 缺失 |
 | P2 | Coding Interview University / CS-Notes 长周期 CS 综合计划 | `jwasham/coding-interview-university`、`CyC2018/CS-Notes` | 范围超过刷题计划，需要非题目任务、外链资源和学习材料模型支持 |
-| P2 | doocs / 剑指 Offer / 面试金典辅助计划 | `doocs/leetcode`、本地题库 | 中文覆盖价值高，但与首批面试/专项模板相比优先级较低 |
-| P2 | SQL 50、Advanced SQL 50、JavaScript 30、Pandas 计划 | LeetCode 官方 Study Plan | 偏离当前算法学习主线，需要题库域和练习入口扩展 |
+| P1 | doocs / 剑指 Offer / 面试金典路线 | `doocs/leetcode`、本地题库 | 当前已完成；两模板合计 184 refs、184 匹配、0 缺失 |
+| P2 | SQL 50、JavaScript 30 天、Pandas 入门 / 30 天 | LeetCode 官方 Study Plan | 当前已完成；四模板合计 128 refs、123 匹配、5 缺失 |
+| P2 | Advanced SQL 50、Premium Algo 100 | LeetCode 官方 Study Plan | 官方接口当前不返回计划数据，暂不生成空模板 |
 
 ## 资料源和仓库转换清单
 
@@ -88,14 +93,15 @@ P0 完成后，后续任务按资料源和用户场景继续拆分。以下模�
 | 完成标记 | 来源或仓库 | 覆盖模板 | 转换方式 | 子 agent 任务 | 完成时必须记录 |
 | --- | --- | --- | --- | --- | --- |
 | [x] 当前已完成 | `neetcode-gh/leetcode` | `neetcode_blind_75_interview_core`、`neetcode_150_systematic_interview` | 直接内置 MIT 题单元数据，固定 commit `9907b7fed441fa55083c0751e208b7197101dbba` | NeetCode 重建 | 225 refs，匹配 212、缺失 13；缺失题示例已写入 metadata；验证命令见当前状态 |
-| [x] 当前已完成 | `yangshun/tech-interview-handbook` | `tih_best_practice_50_5weeks`，后续可扩展 `tih_algorithm_essentials` | 直接内置 MIT 题单元数据；不复制文章正文，固定 commit `8ee2acb54a05c4add123a824d15e7dfc4e703b2f` | TIH 面试冲刺 | 61 refs，匹配 55、缺失 6；optional 11、premium 6；Markdown 源路径和 MIT notice 已记录 |
-| [x] 当前已完成 | `youngyangyang04/leetcode-master` | `cn_algorithm_foundation_12weeks` | 参考后重建；不复制文章、图示、题解和 README 原文，固定 commit `86f78fde8cb62d10c3b5e38b7e6b6e0705850f92` | 中文入门路线 | 46 refs，匹配 46、缺失 0；阶段顺序和复盘建议均为自写；无 LICENSE 备注已记录 |
+| [x] 当前已完成 | `yangshun/tech-interview-handbook` | `tih_best_practice_50_5weeks`、`tih_algorithm_essentials` | 直接内置 MIT 题单元数据；不复制文章正文，固定 commit `8ee2acb54a05c4add123a824d15e7dfc4e703b2f` | TIH 面试路线 | 两模板合计 180 refs，匹配 165、缺失 15；算法专题按 18 个有效主题重组为 6 阶段 |
+| [x] 当前已完成 | `youngyangyang04/leetcode-master` | `cn_algorithm_foundation_12weeks`、`carl_algorithm_roadmap_full` | 参考后重建；不复制文章、图示、题解和 README 原文，固定 commit `86f78fde8cb62d10c3b5e38b7e6b6e0705850f92` | 中文系统路线 | 代码随想录完整版 11 阶段 / 144 refs，全部匹配；阶段说明和复盘建议均为自写 |
 | [x] 当前已完成 | `halfrost/LeetCode-Go` | `topic_dynamic_programming_foundation`、`topic_graph_bfs_dfs`、`topic_binary_search_boundaries`、`topic_sliding_window_two_pointers` | 直接内置 MIT 题号、slug、标签和难度；复杂度只作内部参考，固定 commit `3bcc916680298295e06060ca9790304c1f1b78b6` | 专项模板包 | P0 四个专项合计 76 refs，匹配 75、缺失 1；每个模板题量不低于 15；MIT notice 已记录 |
 | [x] 当前已完成 | `halfrost/LeetCode-Go` + 本地题库 tag 重组 | `topic_tree_binary_tree_foundation`、`topic_backtracking_foundation`、`topic_heap_priority_queue`、`topic_greedy_strategies`、`topic_stack_monotonic`、`topic_bit_manipulation` | 直接内置 halfrost MIT 题号/标签中可审计元数据，并用本地题库 tag 补齐 heap/greedy 等专题结构；固定 commit `3bcc916680298295e06060ca9790304c1f1b78b6` | P1-A 批次 1 | 六个专项合计 122 refs，匹配 122、缺失 0；2 周模板 2 阶段，3 周模板 3 阶段；Python、后端导入、草稿生成回归已通过 |
-| [x] 当前已完成 | `labuladong/fucking-algorithm` | `topic_dynamic_programming_foundation` 的阶段结构参考，后续可扩展算法思维训练 | 参考后重建；不复制文章正文、图示或代码，固定 commit `b1f23cb9605f6146ff78bafad71e795176439b99` | 专项模板包 | 只记录参考 URL、固定版本、无 LICENSE 备注和自写阶段说明；不直接产生 refs |
-| [x] 当前已完成 | LeetCode 官方 Study Plan | `leetcode_top_100_liked_revision`、`programming_skills_implementation_foundation`，以及 LeetCode 75 / Top Interview 150 的目标描述 | 官方外链参考；用本地题库和开源元数据重建可执行路线，访问日期 `2026-07-06` | 复盘和实现力模板 | 官方 URL、访问日期、未直接复制题面/题解/付费内容说明已写入 metadata |
-| [ ] 待执行 | `seanprashad/leetcode-patterns` | P1 模式化路线、Beginner / Experienced roadmap 参考 | CC-BY-NC-4.0，第一版只借鉴阶段思想并自写说明 | P1 模式化模板 | roadmap 阶段映射、授权边界、是否进入第一批的决策 |
-| [ ] 后续批次 | `doocs/leetcode` | 中文覆盖补充、剑指 Offer / 面试金典辅助计划 | CC-BY-SA-4.0，第一版不作为主模板直接来源 | P2 中文覆盖补充 | 只在 P2 决策时补授权和题库覆盖评估 |
+| [x] 当前已完成 | `algo-mentor` 本地题库 | `topic_dp_advanced` | 按 dynamic-programming、bitmask、tree、game-theory 标签精选并人工分阶段 | P1-A 动态规划进阶 | 31 refs，匹配 31、缺失 0；4 周 4 阶段，草稿生成回归已通过 |
+| [x] 当前已完成 | `labuladong/fucking-algorithm` | `topic_dynamic_programming_foundation`、`labuladong_algo_thinking` | 参考后重建；不复制文章正文、图示或代码，固定 commit `b1f23cb9605f6146ff78bafad71e795176439b99` | 专项和算法框架路线 | 算法框架模板 8 阶段 / 64 refs，全部匹配；题目从本地题库精选重建 |
+| [x] 当前已完成 | LeetCode 官方 Study Plan | `leetcode_75_core_sprint`、`leetcode_top_interview_150`、`leetcode_sql_50`、`leetcode_javascript_30_days`、`leetcode_pandas_introduction`、`leetcode_pandas_30_days` 等 | 官方结构化计划元数据和外链参考，固定到 `accessed-2026-07-28`，并与本地题库匹配 | 面试、复盘、实现力和非算法练习模板 | 本轮四套非算法计划 128 refs / 123 匹配 / 5 缺失；未复制题面、题解或付费内容 |
+| [x] 当前已完成 | `seanprashad/leetcode-patterns` | `leetcode_patterns_beginner_roadmap` | 固定 commit `514b971570bcc8d6cd9a354d561245e8ef52a603`，直接转换 Beginner roadmap 顺序和 questions 元数据 | P1 模式化模板 | 10 阶段 / 68 refs / 64 匹配 / 4 缺失；Experienced 因与 Blind 75 高度重合暂不单列 |
+| [x] 当前已完成 | `doocs/leetcode` | `sword_offer_classic`、`cracking_coding_interview_classic` | 固定 commit `c0a8f9df1b2e6e2da564acda398d345cb3dd0710`，直接转换 `lcof/lcof.json` 和 `lcci/lcci.json` 结构化题单 | P1 中文经典路线 | 剑指 Offer 8 阶段 / 75 refs，程序员面试金典 10 阶段 / 109 refs；合计 184 refs 全部匹配 |
 | [ ] 后续批次 | `jwasham/coding-interview-university`、`CyC2018/CS-Notes` | 长周期 CS/综合学习模板 | 外链参考或任务型路线，不进入当前算法刷题 seed 主线 | P2 综合学习 | 非题目任务展示方式、外链授权备注、是否需要新数据模型 |
 
 ### 完成标记规则

@@ -2,10 +2,10 @@
 
 - 生成时间：`2026-07-28T00:00:00+00:00`
 - 根来源：`algo-mentor learning-plan-template-sources`
-- 模板数：`22`
-- 题目引用数：`742`
-- 本地题库匹配：`722`
-- 本地题库缺失：`20`
+- 模板数：`35`
+- 题目引用数：`1705`
+- 本地题库匹配：`1667`
+- 本地题库缺失：`38`
 
 ## 来源归因
 
@@ -22,10 +22,10 @@
 
 - URL：https://github.com/yangshun/tech-interview-handbook
 - 固定版本：`8ee2acb54a05c4add123a824d15e7dfc4e703b2f`
-- 源路径：`apps/website/contents/best-practice-questions.md`
-- 覆盖模板：`leetcode_top_100_liked_revision, tih_best_practice_50_5weeks, topic_greedy_strategies, topic_heap_priority_queue, topic_sliding_window_two_pointers`
-- refs / matched / missing：`61 / 55 / 6`
-- 授权备注：MIT License；本 seed 只解析题名、difficulty、LeetCode URL、周次和 optional/premium 标记，不复制文章正文。
+- 源路径：`apps/website/contents/best-practice-questions.md; apps/website/contents/algorithms/*.md`
+- 覆盖模板：`leetcode_top_100_liked_revision, tih_algorithm_essentials, tih_best_practice_50_5weeks, topic_greedy_strategies, topic_heap_priority_queue, topic_sliding_window_two_pointers`
+- refs / matched / missing：`180 / 165 / 15`
+- 授权备注：MIT License；本 seed 只解析题名、difficulty、LeetCode URL、主题和 optional/premium 标记，不复制文章正文。
 
 ### halfrost/LeetCode-Go
 
@@ -41,8 +41,8 @@
 - URL：https://github.com/youngyangyang04/leetcode-master
 - 固定版本：`86f78fde8cb62d10c3b5e38b7e6b6e0705850f92`
 - 源路径：`README.md`
-- 覆盖模板：`cn_algorithm_foundation_12weeks, topic_graph_bfs_dfs, topic_greedy_strategies`
-- refs / matched / missing：`15 / 15 / 0`
+- 覆盖模板：`carl_algorithm_roadmap_full, cn_algorithm_foundation_12weeks, topic_graph_bfs_dfs, topic_greedy_strategies`
+- refs / matched / missing：`159 / 159 / 0`
 - 授权备注：未发现仓库 LICENSE；本 seed 只作学习顺序参考，阶段说明、题目组合和复盘建议由 algo-mentor 重建。
 
 ### labuladong/fucking-algorithm
@@ -50,27 +50,45 @@
 - URL：https://github.com/labuladong/fucking-algorithm
 - 固定版本：`b1f23cb9605f6146ff78bafad71e795176439b99`
 - 源路径：`README.md; labuladong.online/algo/`
-- 覆盖模板：`topic_dynamic_programming_foundation`
-- refs / matched / missing：`0 / 0 / 0`
+- 覆盖模板：`labuladong_algo_thinking, topic_dynamic_programming_foundation`
+- refs / matched / missing：`64 / 64 / 0`
 - 授权备注：未发现可用于直接内置的 LICENSE；本 seed 只记录为专题结构参考，不复制文章、图示或代码。
 
 ### LeetCode official Study Plan
 
 - URL：https://leetcode.com/studyplan/
-- 固定版本：`accessed-2026-07-06`
-- 源路径：`top-100-liked; programming-skills; dynamic-programming; graph-theory; binary-search`
-- 覆盖模板：`cn_algorithm_foundation_12weeks, leetcode_top_100_liked_revision, programming_skills_implementation_foundation, topic_binary_search_boundaries, topic_bit_manipulation, topic_dynamic_programming_foundation, topic_graph_bfs_dfs, topic_tree_binary_tree_foundation`
-- refs / matched / missing：`52 / 52 / 0`
+- 固定版本：`accessed-2026-07-28`
+- 源路径：`leetcode-75; top-interview-150; top-100-liked; programming-skills; dynamic-programming; graph-theory; binary-search; top-sql-50; 30-days-of-javascript; introduction-to-pandas; 30-days-of-pandas`
+- 覆盖模板：`cn_algorithm_foundation_12weeks, leetcode_75_core_sprint, leetcode_javascript_30_days, leetcode_pandas_30_days, leetcode_pandas_introduction, leetcode_sql_50, leetcode_top_100_liked_revision, leetcode_top_interview_150, programming_skills_implementation_foundation, topic_binary_search_boundaries, topic_bit_manipulation, topic_dynamic_programming_foundation, topic_graph_bfs_dfs, topic_tree_binary_tree_foundation`
+- refs / matched / missing：`405 / 400 / 5`
 - 授权备注：官方网页仅作外链和目标参考；本 seed 不复制题面、题解、付费内容或官方题单全文。
 
 ### algo-mentor local problem seed
 
 - URL：data/seed/problems.jsonl
-- 固定版本：`local-2026-07-06`
+- 固定版本：`local-2026-07-28`
 - 源路径：`data/seed/problems.jsonl`
-- 覆盖模板：`cn_algorithm_foundation_12weeks, leetcode_top_100_liked_revision, programming_skills_implementation_foundation, topic_backtracking_foundation, topic_binary_search_boundaries, topic_bit_manipulation, topic_data_structure_design, topic_dynamic_programming_foundation, topic_graph_bfs_dfs, topic_greedy_strategies, topic_heap_priority_queue, topic_intervals_scheduling, topic_linked_list, topic_prefix_sum_difference, topic_sliding_window_two_pointers, topic_stack_monotonic, topic_tree_binary_tree_foundation, topic_trie_and_string_advanced, topic_union_find_and_advanced_graph`
-- refs / matched / missing：`89 / 89 / 0`
+- 覆盖模板：`cn_algorithm_foundation_12weeks, leetcode_top_100_liked_revision, programming_skills_implementation_foundation, topic_backtracking_foundation, topic_binary_search_boundaries, topic_bit_manipulation, topic_data_structure_design, topic_dp_advanced, topic_dynamic_programming_foundation, topic_graph_bfs_dfs, topic_greedy_strategies, topic_heap_priority_queue, topic_intervals_scheduling, topic_linked_list, topic_prefix_sum_difference, topic_sliding_window_two_pointers, topic_stack_monotonic, topic_tree_binary_tree_foundation, topic_trie_and_string_advanced, topic_union_find_and_advanced_graph`
+- refs / matched / missing：`120 / 120 / 0`
 - 授权备注：使用项目本地题库中的 slug、frontendId、标题、difficulty 和 tagValues 组织内部模板。
+
+### seanprashad/leetcode-patterns
+
+- URL：https://github.com/seanprashad/leetcode-patterns
+- 固定版本：`514b971570bcc8d6cd9a354d561245e8ef52a603`
+- 源路径：`src/data/questions.json; src/data/roadmaps.ts#beginnerRoadmap`
+- 覆盖模板：`leetcode_patterns_beginner_roadmap`
+- refs / matched / missing：`68 / 64 / 4`
+- 授权备注：CC-BY-NC-4.0；内部 seed 只使用 roadmap 顺序和题目元数据，不复制来源说明或推荐 note。
+
+### doocs/leetcode
+
+- URL：https://github.com/doocs/leetcode
+- 固定版本：`c0a8f9df1b2e6e2da564acda398d345cb3dd0710`
+- 源路径：`lcof/lcof.json; lcci/lcci.json`
+- 覆盖模板：`cracking_coding_interview_classic, sword_offer_classic`
+- refs / matched / missing：`184 / 184 / 0`
+- 授权备注：CC-BY-SA-4.0；内部 seed 只使用剑指 Offer 和面试金典的题号、slug、标题、难度和标签。
 
 ## 本批模板
 
@@ -104,6 +122,56 @@
 - 缺失题示例：`encode-and-decode-strings, meeting-rooms, meeting-rooms-ii, graph-valid-tree, number-of-connected-components-in-an-undirected-graph, alien-dictionary`
 - 难度分布：`{"Easy": {"count": 15, "ratio": 0.2459}, "Medium": {"count": 39, "ratio": 0.6393}, "Hard": {"count": 7, "ratio": 0.1148}}`
 
+### tih_algorithm_essentials
+
+- 标题：算法面试核心专题计划
+- 题目数：`119`
+- 阶段数：`6`
+- 匹配题：`110`
+- 缺失题：`9`
+- 缺失题示例：`encode-and-decode-strings, design-hit-counter, strobogrammatic-number-ii, minimum-knight-moves, number-of-connected-components-in-an-undirected-graph, graph-valid-tree, alien-dictionary, meeting-rooms, meeting-rooms-ii`
+- 难度分布：`{"Easy": {"count": 26, "ratio": 0.2185}, "Medium": {"count": 78, "ratio": 0.6555}, "Hard": {"count": 15, "ratio": 0.1261}}`
+
+### sword_offer_classic
+
+- 标题：剑指 Offer 经典面试计划
+- 题目数：`75`
+- 阶段数：`8`
+- 匹配题：`75`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 42, "ratio": 0.56}, "Medium": {"count": 29, "ratio": 0.3867}, "Hard": {"count": 4, "ratio": 0.0533}}`
+
+### cracking_coding_interview_classic
+
+- 标题：程序员面试金典系统训练计划
+- 题目数：`109`
+- 阶段数：`10`
+- 匹配题：`109`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 37, "ratio": 0.3394}, "Medium": {"count": 61, "ratio": 0.5596}, "Hard": {"count": 11, "ratio": 0.1009}}`
+
+### leetcode_75_core_sprint
+
+- 标题：LeetCode 75 核心冲刺计划
+- 题目数：`75`
+- 阶段数：`6`
+- 匹配题：`75`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 22, "ratio": 0.2933}, "Medium": {"count": 53, "ratio": 0.7067}, "Hard": {"count": 0, "ratio": 0.0}}`
+
+### leetcode_top_interview_150
+
+- 标题：LeetCode 面试经典 150 题计划
+- 题目数：`150`
+- 阶段数：`10`
+- 匹配题：`150`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 39, "ratio": 0.26}, "Medium": {"count": 93, "ratio": 0.62}, "Hard": {"count": 18, "ratio": 0.12}}`
+
 ### cn_algorithm_foundation_12weeks
 
 - 标题：中文系统刷题入门计划
@@ -114,6 +182,36 @@
 - 缺失题示例：`无`
 - 难度分布：`{"Easy": {"count": 21, "ratio": 0.4565}, "Medium": {"count": 24, "ratio": 0.5217}, "Hard": {"count": 1, "ratio": 0.0217}}`
 
+### carl_algorithm_roadmap_full
+
+- 标题：代码随想录完整刷题路线
+- 题目数：`144`
+- 阶段数：`11`
+- 匹配题：`144`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 47, "ratio": 0.3264}, "Medium": {"count": 84, "ratio": 0.5833}, "Hard": {"count": 13, "ratio": 0.0903}}`
+
+### leetcode_patterns_beginner_roadmap
+
+- 标题：算法模式入门训练计划
+- 题目数：`68`
+- 阶段数：`10`
+- 匹配题：`64`
+- 缺失题：`4`
+- 缺失题示例：`meeting-rooms, graph-valid-tree, number-of-connected-components-in-an-undirected-graph, meeting-rooms-ii`
+- 难度分布：`{"Easy": {"count": 31, "ratio": 0.4559}, "Medium": {"count": 37, "ratio": 0.5441}, "Hard": {"count": 0, "ratio": 0.0}}`
+
+### labuladong_algo_thinking
+
+- 标题：labuladong 核心算法框架训练计划
+- 题目数：`64`
+- 阶段数：`8`
+- 匹配题：`64`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 14, "ratio": 0.2188}, "Medium": {"count": 41, "ratio": 0.6406}, "Hard": {"count": 9, "ratio": 0.1406}}`
+
 ### topic_dynamic_programming_foundation
 
 - 标题：动态规划专项突破计划
@@ -123,6 +221,16 @@
 - 缺失题：`0`
 - 缺失题示例：`无`
 - 难度分布：`{"Easy": {"count": 5, "ratio": 0.2174}, "Medium": {"count": 18, "ratio": 0.7826}, "Hard": {"count": 0, "ratio": 0.0}}`
+
+### topic_dp_advanced
+
+- 标题：动态规划进阶专项计划
+- 题目数：`31`
+- 阶段数：`4`
+- 匹配题：`31`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 0, "ratio": 0.0}, "Medium": {"count": 12, "ratio": 0.3871}, "Hard": {"count": 19, "ratio": 0.6129}}`
 
 ### topic_graph_bfs_dfs
 
@@ -293,6 +401,46 @@
 - 缺失题：`0`
 - 缺失题示例：`无`
 - 难度分布：`{"Easy": {"count": 31, "ratio": 0.9118}, "Medium": {"count": 3, "ratio": 0.0882}, "Hard": {"count": 0, "ratio": 0.0}}`
+
+### leetcode_sql_50
+
+- 标题：LeetCode SQL 50 系统训练计划
+- 题目数：`50`
+- 阶段数：`7`
+- 匹配题：`50`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 32, "ratio": 0.64}, "Medium": {"count": 17, "ratio": 0.34}, "Hard": {"count": 1, "ratio": 0.02}}`
+
+### leetcode_javascript_30_days
+
+- 标题：LeetCode JavaScript 30 天训练计划
+- 题目数：`30`
+- 阶段数：`5`
+- 匹配题：`30`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 20, "ratio": 0.6667}, "Medium": {"count": 10, "ratio": 0.3333}, "Hard": {"count": 0, "ratio": 0.0}}`
+
+### leetcode_pandas_introduction
+
+- 标题：LeetCode Pandas 入门训练计划
+- 题目数：`15`
+- 阶段数：`4`
+- 匹配题：`15`
+- 缺失题：`0`
+- 缺失题示例：`无`
+- 难度分布：`{"Easy": {"count": 15, "ratio": 1.0}, "Medium": {"count": 0, "ratio": 0.0}, "Hard": {"count": 0, "ratio": 0.0}}`
+
+### leetcode_pandas_30_days
+
+- 标题：LeetCode Pandas 30 天进阶计划
+- 题目数：`33`
+- 阶段数：`5`
+- 匹配题：`28`
+- 缺失题：`5`
+- 缺失题示例：`count-occurrences-in-text, the-number-of-rich-customers, immediate-food-delivery-i, ads-performance, accepted-candidates-from-the-interviews`
+- 难度分布：`{"Easy": {"count": 25, "ratio": 0.7576}, "Medium": {"count": 8, "ratio": 0.2424}, "Hard": {"count": 0, "ratio": 0.0}}`
 
 ## 已知限制
 

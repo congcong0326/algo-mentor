@@ -1,0 +1,249 @@
+{
+  "curationNotes": "保留 Beginner Roadmap 顺序，将矩阵遍历与前缀和合并为第 10 周；阶段目标和复盘标准由 algo-mentor 自写。",
+  "defaultDurationWeeks": 10,
+  "defaultWeeklyHours": 6,
+  "difficultyPreference": "MIXED",
+  "expectedOutcome": "完成后能识别十类常见算法模式，独立完成基础题并为后续系统面试路线打好基础。",
+  "goal": "通过稳定的题型顺序建立算法面试入门者的模式识别和基础实现能力。",
+  "intent": "LONG_TERM_LEARNING",
+  "interviewOriented": true,
+  "level": "BEGINNER",
+  "licenseNotice": "CC-BY-NC-4.0；内部 seed 仅使用 roadmap 顺序和题目元数据，不复制来源说明或推荐 note。",
+  "metadata": {
+    "sourceProblemCount": 68,
+    "sourceStrategy": "direct_beginner_roadmap_metadata"
+  },
+  "notRecommendedFor": [
+    "已经完成系统面试 150 题路线",
+    "只想集中攻克 Hard 级专项"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立说明“数组与哈希”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "建立遍历、索引、去重和常数时间查找的基础模型。",
+      "objectives": [
+        "完成“数组与哈希”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Array",
+        "Hash Table"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "数组与哈希"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“双指针”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "掌握同向、相向和快慢指针，并结合排序处理数组问题。",
+      "objectives": [
+        "完成“双指针”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Two Pointers"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "双指针"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“滑动窗口”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练固定窗口、可变窗口和窗口收缩条件。",
+      "objectives": [
+        "完成“滑动窗口”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Sliding Window",
+        "String"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "滑动窗口"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“链表指针”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "熟悉链表遍历、反转、环检测、合并和删除操作。",
+      "objectives": [
+        "完成“链表指针”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 4,
+      "recommendedTags": [
+        "Linked List"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "链表指针"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“二分搜索”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "建立有序区间、旋转数组和答案边界的二分思维。",
+      "objectives": [
+        "完成“二分搜索”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 5,
+      "recommendedTags": [
+        "Binary Search"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "二分搜索"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“树的 DFS 与 BFS”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "用递归和队列完成树的遍历、路径与性质判断。",
+      "objectives": [
+        "完成“树的 DFS 与 BFS”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 6,
+      "recommendedTags": [
+        "Tree",
+        "Depth First Search",
+        "Breadth First Search"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "树的 DFS 与 BFS"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“排序与区间”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "通过排序预处理掌握区间合并、插入和冲突判断。",
+      "objectives": [
+        "完成“排序与区间”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 7,
+      "recommendedTags": [
+        "Sorting",
+        "Intervals"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "排序与区间"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“图的 BFS 与 DFS”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练连通块、网格搜索、图建模和课程依赖。",
+      "objectives": [
+        "完成“图的 BFS 与 DFS”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 8,
+      "recommendedTags": [
+        "Graph",
+        "Breadth First Search",
+        "Depth First Search"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "图的 BFS 与 DFS"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“堆与优先队列”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "掌握 Top K、最近点、多路选择和调度问题。",
+      "objectives": [
+        "完成“堆与优先队列”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 9,
+      "recommendedTags": [
+        "Heap",
+        "Priority Queue"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "堆与优先队列"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“矩阵遍历与前缀和”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成矩阵模拟并用前缀和建立区间查询基础。",
+      "objectives": [
+        "完成“矩阵遍历与前缀和”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 10,
+      "recommendedTags": [
+        "Matrix",
+        "Prefix Sum"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "矩阵遍历与前缀和"
+    }
+  ],
+  "prerequisites": [
+    "能使用一种语言编写函数、循环和基础集合操作",
+    "愿意按周完成同类题复盘"
+  ],
+  "programmingLanguage": "Java",
+  "recommendedFor": [
+    "第一次系统准备算法面试",
+    "刷题顺序混乱",
+    "希望从 Easy 逐步过渡到 Medium"
+  ],
+  "sourceCommit": "514b971570bcc8d6cd9a354d561245e8ef52a603",
+  "sourceDataPath": "src/data/questions.json; src/data/roadmaps.ts#beginnerRoadmap",
+  "sourceDescription": "leetcode-patterns 的 Beginner Roadmap 阶段顺序及 questions.json 结构化题目元数据。",
+  "sourceName": "seanprashad/leetcode-patterns",
+  "sourceUrl": "https://github.com/seanprashad/leetcode-patterns",
+  "summary": "用 10 周按常见算法模式建立刷题基础，从数组哈希逐步推进到图、堆、矩阵和前缀和。",
+  "targetAudience": "具备基础语法，但尚未形成数据结构与算法题型地图的入门学习者。",
+  "templateId": "leetcode_patterns_beginner_roadmap",
+  "title": "算法模式入门训练计划",
+  "topicPreferences": [
+    "Array",
+    "Hash Table",
+    "Two Pointers",
+    "Sliding Window",
+    "String",
+    "Linked List",
+    "Binary Search",
+    "Tree",
+    "Depth First Search",
+    "Breadth First Search",
+    "Sorting",
+    "Intervals",
+    "Graph",
+    "Heap",
+    "Priority Queue",
+    "Matrix",
+    "Prefix Sum"
+  ]
+}

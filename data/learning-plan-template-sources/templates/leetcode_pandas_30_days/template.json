@@ -1,0 +1,156 @@
+{
+  "curationNotes": "保留官方主题内题目顺序，并把相邻主题合并为可执行阶段；不复制题面、题解或代码。",
+  "defaultDurationWeeks": 5,
+  "defaultWeeklyHours": 6,
+  "difficultyPreference": "MIXED",
+  "expectedOutcome": "完成后能熟练完成过滤、字符串处理、统计、聚合和多表集成，并形成 Pandas 常用操作清单。",
+  "goal": "通过完整题单提升 Pandas 数据清洗、统计聚合和多表处理能力。",
+  "intent": "LONG_TERM_LEARNING",
+  "interviewOriented": false,
+  "level": "INTERMEDIATE",
+  "licenseNotice": "LeetCode 官方 Study Plan；内部 seed 仅使用结构化题目元数据和来源链接。",
+  "metadata": {
+    "sourceGroupCount": 9,
+    "sourceProblemCount": 33,
+    "sourceStrategy": "direct_official_study_plan_metadata"
+  },
+  "notRecommendedFor": [
+    "完全没有 Python 基础",
+    "只需要算法数据结构训练",
+    "需要机器学习建模课程"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立说明“过滤与字符串处理”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练条件过滤、文本匹配和字符串列变换。",
+      "objectives": [
+        "完成“过滤与字符串处理”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Python",
+        "Pandas",
+        "Filtering",
+        "String"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "过滤与字符串处理"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“数据操作”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成列变换、排序、去重和组合操作。",
+      "objectives": [
+        "完成“数据操作”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Python",
+        "Pandas",
+        "Data Manipulation"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "数据操作"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“统计分析”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "掌握基础统计、排名和分布计算。",
+      "objectives": [
+        "完成“统计分析”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Python",
+        "Pandas",
+        "Statistics"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "统计分析"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“数据聚合”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练 groupby、聚合函数和分组指标计算。",
+      "objectives": [
+        "完成“数据聚合”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 4,
+      "recommendedTags": [
+        "Python",
+        "Pandas",
+        "Aggregation"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "数据聚合"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“数据集成与综合复盘”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成多表连接、拼接和整套 Pandas 路线复盘。",
+      "objectives": [
+        "完成“数据集成与综合复盘”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 5,
+      "recommendedTags": [
+        "Python",
+        "Pandas",
+        "Join",
+        "Integration"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "数据集成与综合复盘"
+    }
+  ],
+  "prerequisites": [
+    "完成 Pandas 基础学习",
+    "能使用 DataFrame 进行选择和清洗"
+  ],
+  "programmingLanguage": "Python3",
+  "recommendedFor": [
+    "准备数据分析岗位",
+    "需要强化 Pandas 实战",
+    "希望完成 30 天连续训练"
+  ],
+  "sourceCommit": "accessed-2026-07-28",
+  "sourceDataPath": "GraphQL studyPlanV2Detail:30-days-of-pandas",
+  "sourceDescription": "LeetCode 官方 30 Days of Pandas Study Plan 的主题分组、题目顺序、标题、slug 和难度元数据。",
+  "sourceName": "LeetCode official Study Plan",
+  "sourceUrl": "https://leetcode.com/studyplan/30-days-of-pandas/",
+  "summary": "用 5 周完成 Pandas 30 天官方路线，覆盖过滤、字符串、统计、聚合和数据集成。",
+  "targetAudience": "已经掌握 Pandas 基础，希望通过连续练习提升数据处理熟练度的学习者。",
+  "templateId": "leetcode_pandas_30_days",
+  "title": "LeetCode Pandas 30 天进阶计划",
+  "topicPreferences": [
+    "Python",
+    "Pandas",
+    "Filtering",
+    "String",
+    "Data Manipulation",
+    "Statistics",
+    "Aggregation",
+    "Join",
+    "Integration"
+  ]
+}

@@ -45,11 +45,11 @@ class LearningPlanTemplateSeedImportServiceTest {
 
     LearningPlanTemplateSeedImportResult result = service.importSeed(repoRoot.resolve("data/learning-plan-template-seed"));
 
-    assertThat(result.templateCount()).isEqualTo(22);
-    assertThat(result.problemRefCount()).isEqualTo(742);
-    assertThat(result.matchedProblemCount()).isEqualTo(722);
-    assertThat(result.missingProblemCount()).isEqualTo(20);
-    assertThat(templateRepository.templates).hasSize(22);
+    assertThat(result.templateCount()).isEqualTo(35);
+    assertThat(result.problemRefCount()).isEqualTo(1705);
+    assertThat(result.matchedProblemCount()).isEqualTo(1667);
+    assertThat(result.missingProblemCount()).isEqualTo(38);
+    assertThat(templateRepository.templates).hasSize(35);
     assertThat(templateRepository.templates)
         .extracting(LearningPlanTemplate::templateId)
         .contains(
@@ -62,7 +62,20 @@ class LearningPlanTemplateSeedImportServiceTest {
             "topic_prefix_sum_difference",
             "topic_trie_and_string_advanced",
             "topic_intervals_scheduling",
-            "topic_data_structure_design");
+            "topic_data_structure_design",
+            "tih_algorithm_essentials",
+            "topic_dp_advanced",
+            "sword_offer_classic",
+            "leetcode_patterns_beginner_roadmap",
+            "cracking_coding_interview_classic",
+            "leetcode_75_core_sprint",
+            "leetcode_top_interview_150",
+            "carl_algorithm_roadmap_full",
+            "labuladong_algo_thinking",
+            "leetcode_sql_50",
+            "leetcode_javascript_30_days",
+            "leetcode_pandas_introduction",
+            "leetcode_pandas_30_days");
     Map<?, ?> manifest = (Map<?, ?>) templateRepository.importRuns.get(0).metadata().get("manifest");
     assertThat((List<?>) manifest.get("sources")).hasSizeGreaterThanOrEqualTo(5);
   }

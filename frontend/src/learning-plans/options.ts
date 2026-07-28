@@ -38,6 +38,7 @@ export const programmingLanguageOptions = [
   'Kotlin',
   'Swift',
   'Rust',
+  'SQL',
 ] as const;
 
 export const difficultyDistributionOptions: ReadonlyArray<{

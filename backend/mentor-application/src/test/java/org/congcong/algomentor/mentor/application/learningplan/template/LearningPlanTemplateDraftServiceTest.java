@@ -136,6 +136,71 @@ class LearningPlanTemplateDraftServiceTest {
   }
 
   @org.junit.jupiter.api.Test
+  void tihAlgorithmEssentialsCreatesCompleteSixWeekDraft() {
+    assertTemplateDraftMatchesLocalRefs("tih_algorithm_essentials", 6, 6, 119, 9);
+  }
+
+  @org.junit.jupiter.api.Test
+  void advancedDynamicProgrammingCreatesCompleteFourWeekDraft() {
+    assertTemplateDraftMatchesLocalRefs("topic_dp_advanced", 4, 4, 31, 0);
+  }
+
+  @org.junit.jupiter.api.Test
+  void swordOfferCreatesCompleteEightWeekDraft() {
+    assertTemplateDraftMatchesLocalRefs("sword_offer_classic", 8, 8, 75, 0);
+  }
+
+  @org.junit.jupiter.api.Test
+  void beginnerPatternRoadmapCreatesCompleteTenWeekDraft() {
+    assertTemplateDraftMatchesLocalRefs("leetcode_patterns_beginner_roadmap", 10, 10, 68, 4);
+  }
+
+  @org.junit.jupiter.api.Test
+  void crackingCodingInterviewCreatesCompleteTenWeekDraft() {
+    assertTemplateDraftMatchesLocalRefs("cracking_coding_interview_classic", 10, 10, 109, 0);
+  }
+
+  @org.junit.jupiter.api.Test
+  void leetcode75CreatesCompleteSixWeekDraft() {
+    assertTemplateDraftMatchesLocalRefs("leetcode_75_core_sprint", 6, 6, 75, 0);
+  }
+
+  @org.junit.jupiter.api.Test
+  void topInterview150CreatesCompleteTenWeekDraft() {
+    assertTemplateDraftMatchesLocalRefs("leetcode_top_interview_150", 10, 10, 150, 0);
+  }
+
+  @org.junit.jupiter.api.Test
+  void carlFullRoadmapCreatesCompleteSixteenWeekDraft() {
+    assertTemplateDraftMatchesLocalRefs("carl_algorithm_roadmap_full", 16, 11, 144, 0);
+  }
+
+  @org.junit.jupiter.api.Test
+  void labuladongThinkingRouteCreatesCompleteEightWeekDraft() {
+    assertTemplateDraftMatchesLocalRefs("labuladong_algo_thinking", 8, 8, 64, 0);
+  }
+
+  @org.junit.jupiter.api.Test
+  void sql50CreatesCompleteSevenWeekDraft() {
+    assertTemplateDraftMatchesLocalRefs("leetcode_sql_50", 7, 7, 50, 0);
+  }
+
+  @org.junit.jupiter.api.Test
+  void javascript30DaysCreatesCompleteFiveWeekDraft() {
+    assertTemplateDraftMatchesLocalRefs("leetcode_javascript_30_days", 5, 5, 30, 0);
+  }
+
+  @org.junit.jupiter.api.Test
+  void pandasIntroductionCreatesCompleteFourWeekDraft() {
+    assertTemplateDraftMatchesLocalRefs("leetcode_pandas_introduction", 4, 4, 15, 0);
+  }
+
+  @org.junit.jupiter.api.Test
+  void pandas30DaysKeepsFiveMissingProblemsOnlyInMetadata() {
+    assertTemplateDraftMatchesLocalRefs("leetcode_pandas_30_days", 5, 5, 33, 5);
+  }
+
+  @org.junit.jupiter.api.Test
   void invalidRhythmIsRejected() {
     templateRepository.saveTemplate(generatedTemplate("neetcode_150_systematic_interview", 12, 12, 150, 1));
 

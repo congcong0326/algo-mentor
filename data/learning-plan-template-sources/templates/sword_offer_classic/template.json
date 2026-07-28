@@ -1,0 +1,228 @@
+{
+  "curationNotes": "按剑指 Offer 题号升序保留完整路线，并按连续题号划分为 8 个可执行阶段。",
+  "defaultDurationWeeks": 8,
+  "defaultWeeklyHours": 8,
+  "difficultyPreference": "MIXED",
+  "expectedOutcome": "完成后能独立处理剑指 Offer 的主要题型，并形成适合中文面试表达的解法、复杂度和边界复盘。",
+  "goal": "按经典题序建立稳定的中文算法面试知识脉络和复盘材料。",
+  "intent": "INTERVIEW_SPRINT",
+  "interviewOriented": true,
+  "level": "INTERMEDIATE",
+  "licenseNotice": "CC-BY-SA-4.0；内部 seed 仅使用结构化题目元数据，并保留来源与版本信息。",
+  "metadata": {
+    "sourceProblemCount": 75,
+    "sourceStrategy": "direct_lcof_problem_metadata"
+  },
+  "notRecommendedFor": [
+    "完全没有编程基础",
+    "只需要单一专题的短期突破"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立说明“数据结构与查找入门”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "从数组、链表、树重建、栈队列和基础搜索开始建立经典题手感。",
+      "objectives": [
+        "完成“数据结构与查找入门”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Array",
+        "Linked List",
+        "Tree",
+        "Stack"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "数据结构与查找入门"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“递归、数值与边界”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练递归拆分、动态规划、位运算和数值边界处理。",
+      "objectives": [
+        "完成“递归、数值与边界”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Recursion",
+        "Dynamic Programming",
+        "Math",
+        "Bit Manipulation"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "递归、数值与边界"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“链表、树与栈队列”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "集中处理指针改写、树结构判断、矩阵模拟和带最值的数据结构。",
+      "objectives": [
+        "完成“链表、树与栈队列”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Linked List",
+        "Tree",
+        "Stack",
+        "Matrix"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "链表、树与栈队列"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“树遍历、复制与回溯”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成树的层序与深度遍历、复杂链表复制、序列化和排列搜索。",
+      "objectives": [
+        "完成“树遍历、复制与回溯”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 4,
+      "recommendedTags": [
+        "Tree",
+        "Breadth First Search",
+        "Depth First Search",
+        "Backtracking"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "树遍历、复制与回溯"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“数组统计、堆与连续状态”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练多数元素、Top K、数据流中位数、连续子数组和数字规律。",
+      "objectives": [
+        "完成“数组统计、堆与连续状态”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 5,
+      "recommendedTags": [
+        "Array",
+        "Heap",
+        "Dynamic Programming",
+        "Math"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "数组统计、堆与连续状态"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“动态规划、哈希与归并”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "覆盖网格 DP、滑动窗口、哈希计数、逆序对和链表交点。",
+      "objectives": [
+        "完成“动态规划、哈希与归并”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 6,
+      "recommendedTags": [
+        "Dynamic Programming",
+        "Hash Table",
+        "Sliding Window",
+        "Merge Sort"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "动态规划、哈希与归并"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“树、位运算与窗口综合”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "补齐 BST、树深度、位运算计数、双指针、字符串和单调队列。",
+      "objectives": [
+        "完成“树、位运算与窗口综合”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 7,
+      "recommendedTags": [
+        "Tree",
+        "Bit Manipulation",
+        "Two Pointers",
+        "Sliding Window"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "树、位运算与窗口综合"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“概率、数学与综合收尾”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "用概率、约瑟夫环、股票 DP、位运算和最近公共祖先完成路线收尾。",
+      "objectives": [
+        "完成“概率、数学与综合收尾”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 8,
+      "recommendedTags": [
+        "Math",
+        "Dynamic Programming",
+        "Bit Manipulation",
+        "Tree"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "概率、数学与综合收尾"
+    }
+  ],
+  "prerequisites": [
+    "掌握一种编程语言",
+    "了解数组、链表、树、栈队列和基础动态规划"
+  ],
+  "programmingLanguage": "Java",
+  "recommendedFor": [
+    "准备中文技术面试",
+    "希望按经典题序系统查漏补缺",
+    "需要 6 到 8 周完整路线"
+  ],
+  "sourceCommit": "c0a8f9df1b2e6e2da564acda398d345cb3dd0710",
+  "sourceDataPath": "lcof/lcof.json",
+  "sourceDescription": "doocs/leetcode 剑指 Offer 结构化题目清单，包含题号、标题、难度、标签和 LeetCode CN slug。",
+  "sourceName": "doocs/leetcode",
+  "sourceUrl": "https://github.com/doocs/leetcode",
+  "summary": "用 8 周完成剑指 Offer 经典题路线，系统训练中文面试中的数据结构、算法和边界处理。",
+  "targetAudience": "偏好中文题单、希望系统复习经典校招和社招算法题的学习者。",
+  "templateId": "sword_offer_classic",
+  "title": "剑指 Offer 经典面试计划",
+  "topicPreferences": [
+    "Array",
+    "Linked List",
+    "Tree",
+    "Stack",
+    "Recursion",
+    "Dynamic Programming",
+    "Math",
+    "Bit Manipulation",
+    "Matrix",
+    "Breadth First Search",
+    "Depth First Search",
+    "Backtracking",
+    "Heap",
+    "Hash Table",
+    "Sliding Window",
+    "Merge Sort",
+    "Two Pointers"
+  ]
+}

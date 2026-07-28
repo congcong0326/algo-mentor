@@ -52,8 +52,8 @@ TIH_SOURCE = {
     "name": "yangshun/tech-interview-handbook",
     "url": "https://github.com/yangshun/tech-interview-handbook",
     "commit": "8ee2acb54a05c4add123a824d15e7dfc4e703b2f",
-    "dataPath": "apps/website/contents/best-practice-questions.md",
-    "licenseNotice": "MIT License；本 seed 只解析题名、difficulty、LeetCode URL、周次和 optional/premium 标记，不复制文章正文。",
+    "dataPath": "apps/website/contents/best-practice-questions.md; apps/website/contents/algorithms/*.md",
+    "licenseNotice": "MIT License；本 seed 只解析题名、difficulty、LeetCode URL、主题和 optional/premium 标记，不复制文章正文。",
 }
 HALFROST_SOURCE = {
     "key": "halfrost",
@@ -83,22 +83,38 @@ LEETCODE_OFFICIAL_SOURCE = {
     "key": "leetcode_official_reference",
     "name": "LeetCode official Study Plan",
     "url": "https://leetcode.com/studyplan/",
-    "commit": "accessed-2026-07-06",
-    "dataPath": "top-100-liked; programming-skills; dynamic-programming; graph-theory; binary-search",
+    "commit": "accessed-2026-07-28",
+    "dataPath": "leetcode-75; top-interview-150; top-100-liked; programming-skills; dynamic-programming; graph-theory; binary-search; top-sql-50; 30-days-of-javascript; introduction-to-pandas; 30-days-of-pandas",
     "licenseNotice": "官方网页仅作外链和目标参考；本 seed 不复制题面、题解、付费内容或官方题单全文。",
 }
 LOCAL_SOURCE = {
     "key": "algo_mentor_local_problem_seed",
     "name": "algo-mentor local problem seed",
     "url": "data/seed/problems.jsonl",
-    "commit": "local-2026-07-06",
+    "commit": "local-2026-07-28",
     "dataPath": "data/seed/problems.jsonl",
     "licenseNotice": "使用项目本地题库中的 slug、frontendId、标题、difficulty 和 tagValues 组织内部模板。",
+}
+SEAN_PATTERNS_SOURCE = {
+    "key": "sean_patterns",
+    "name": "seanprashad/leetcode-patterns",
+    "url": "https://github.com/seanprashad/leetcode-patterns",
+    "commit": "514b971570bcc8d6cd9a354d561245e8ef52a603",
+    "dataPath": "src/data/questions.json; src/data/roadmaps.ts#beginnerRoadmap",
+    "licenseNotice": "CC-BY-NC-4.0；内部 seed 只使用 roadmap 顺序和题目元数据，不复制来源说明或推荐 note。",
+}
+DOOCS_SOURCE = {
+    "key": "doocs",
+    "name": "doocs/leetcode",
+    "url": "https://github.com/doocs/leetcode",
+    "commit": "c0a8f9df1b2e6e2da564acda398d345cb3dd0710",
+    "dataPath": "lcof/lcof.json; lcci/lcci.json",
+    "licenseNotice": "CC-BY-SA-4.0；内部 seed 只使用剑指 Offer 和面试金典的题号、slug、标题、难度和标签。",
 }
 ROOT_SOURCE = {
     "name": "algo-mentor learning-plan-template-sources",
     "url": "data/learning-plan-template-sources",
-    "commit": "p1-a-batch-2-2026-07-28",
+    "commit": "all-compatible-templates-2026-07-28",
     "dataPath": "data/learning-plan-template-sources/templates/*/{template.json,problem_refs.jsonl}",
 }
 SOURCE_DEFINITIONS = [
@@ -109,6 +125,8 @@ SOURCE_DEFINITIONS = [
     LABULADONG_SOURCE,
     LEETCODE_OFFICIAL_SOURCE,
     LOCAL_SOURCE,
+    SEAN_PATTERNS_SOURCE,
+    DOOCS_SOURCE,
 ]
 
 NEETCODE_RAW_URL = (
@@ -831,6 +849,31 @@ P1_A_BATCH_TWO_TEMPLATE_IDS = [
     "topic_trie_and_string_advanced",
     "topic_intervals_scheduling",
     "topic_data_structure_design",
+]
+
+P1_B_SELECTED_BATCH_TEMPLATE_IDS = [
+    "tih_algorithm_essentials",
+    "topic_dp_advanced",
+    "sword_offer_classic",
+    "leetcode_patterns_beginner_roadmap",
+]
+
+P1_B_INTERVIEW_ROUTE_TEMPLATE_IDS = [
+    "cracking_coding_interview_classic",
+    "leetcode_75_core_sprint",
+    "leetcode_top_interview_150",
+]
+
+P1_B_FINAL_ROADMAP_TEMPLATE_IDS = [
+    "carl_algorithm_roadmap_full",
+    "labuladong_algo_thinking",
+]
+
+P2_COMPATIBLE_TEMPLATE_IDS = [
+    "leetcode_sql_50",
+    "leetcode_javascript_30_days",
+    "leetcode_pandas_introduction",
+    "leetcode_pandas_30_days",
 ]
 
 

@@ -1,0 +1,131 @@
+{
+  "curationNotes": "保留官方主题内题目顺序，并把相邻主题合并为可执行阶段；不复制题面、题解或代码。",
+  "defaultDurationWeeks": 4,
+  "defaultWeeklyHours": 4,
+  "difficultyPreference": "EASY",
+  "expectedOutcome": "完成后能独立创建、检查、选择、清洗和重塑常见 DataFrame。",
+  "goal": "建立使用 Pandas 读取、选择、清洗和重塑表格数据的基础能力。",
+  "intent": "PRACTICE_GOAL",
+  "interviewOriented": false,
+  "level": "BEGINNER",
+  "licenseNotice": "LeetCode 官方 Study Plan；内部 seed 仅使用结构化题目元数据和来源链接。",
+  "metadata": {
+    "sourceGroupCount": 6,
+    "sourceProblemCount": 15,
+    "sourceStrategy": "direct_official_study_plan_metadata"
+  },
+  "notRecommendedFor": [
+    "只需要算法数据结构训练",
+    "已经熟练使用 Pandas",
+    "需要机器学习建模课程"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立说明“DataFrame 创建与检查”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "掌握 DataFrame 创建、形状检查和基础数据预览。",
+      "objectives": [
+        "完成“DataFrame 创建与检查”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Python",
+        "Pandas",
+        "DataFrame"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "DataFrame 创建与检查"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“数据选择”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练行列选择、条件过滤和索引操作。",
+      "objectives": [
+        "完成“数据选择”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Python",
+        "Pandas",
+        "Selection"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "数据选择"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“数据清洗”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "处理缺失值、重复值、类型转换和列修改。",
+      "objectives": [
+        "完成“数据清洗”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Python",
+        "Pandas",
+        "Data Cleaning"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "数据清洗"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“表结构变换”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "掌握拼接、透视、熔化和链式调用。",
+      "objectives": [
+        "完成“表结构变换”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 4,
+      "recommendedTags": [
+        "Python",
+        "Pandas",
+        "Reshaping"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "表结构变换"
+    }
+  ],
+  "prerequisites": [
+    "掌握 Python 基础语法",
+    "了解列表、字典和函数"
+  ],
+  "programmingLanguage": "Python3",
+  "recommendedFor": [
+    "Pandas 初学者",
+    "需要数据清洗基础",
+    "准备数据分析岗位基础练习"
+  ],
+  "sourceCommit": "accessed-2026-07-28",
+  "sourceDataPath": "GraphQL studyPlanV2Detail:introduction-to-pandas",
+  "sourceDescription": "LeetCode 官方 Introduction to Pandas Study Plan 的主题分组、题目顺序、标题、slug 和难度元数据。",
+  "sourceName": "LeetCode official Study Plan",
+  "sourceUrl": "https://leetcode.com/studyplan/introduction-to-pandas/",
+  "summary": "用 4 周完成 Pandas 入门官方路线，覆盖 DataFrame、选择、清洗和表结构变换。",
+  "targetAudience": "掌握 Python 基础，希望开始进行表格数据处理和分析的学习者。",
+  "templateId": "leetcode_pandas_introduction",
+  "title": "LeetCode Pandas 入门训练计划",
+  "topicPreferences": [
+    "Python",
+    "Pandas",
+    "DataFrame",
+    "Selection",
+    "Data Cleaning",
+    "Reshaping"
+  ]
+}

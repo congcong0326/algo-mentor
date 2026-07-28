@@ -1,0 +1,191 @@
+{
+  "curationNotes": "保留官方主题内题目顺序，并把相邻主题合并为可执行阶段；不复制题面、题解或代码。",
+  "defaultDurationWeeks": 6,
+  "defaultWeeklyHours": 9,
+  "difficultyPreference": "MIXED",
+  "expectedOutcome": "完成后能识别 22 类核心题型，并对常见数据结构、图搜索和动态规划题形成稳定解题模板。",
+  "goal": "以题量适中的官方路线建立主流面试题型覆盖和稳定完成体验。",
+  "intent": "INTERVIEW_SPRINT",
+  "interviewOriented": true,
+  "level": "INTERMEDIATE",
+  "licenseNotice": "LeetCode 官方 Study Plan；内部 seed 仅使用结构化题目元数据和来源链接。",
+  "metadata": {
+    "sourceGroupCount": 22,
+    "sourceProblemCount": 75,
+    "sourceStrategy": "direct_official_study_plan_metadata"
+  },
+  "notRecommendedFor": [
+    "完全没有数据结构基础",
+    "已经完整掌握 LeetCode 75",
+    "只需要单一专题突破"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立说明“数组、双指针与窗口”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "从数组和字符串开始，训练双指针、滑动窗口与前缀和。",
+      "objectives": [
+        "完成“数组、双指针与窗口”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Array",
+        "String",
+        "Two Pointers",
+        "Sliding Window",
+        "Prefix Sum"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "数组、双指针与窗口"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“哈希、栈队列与链表”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "建立哈希映射、栈队列状态和链表指针改写的稳定模板。",
+      "objectives": [
+        "完成“哈希、栈队列与链表”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Hash Table",
+        "Stack",
+        "Queue",
+        "Linked List"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "哈希、栈队列与链表"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“二叉树与搜索树”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "集中训练树的 DFS、BFS 和二叉搜索树性质。",
+      "objectives": [
+        "完成“二叉树与搜索树”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Tree",
+        "Depth First Search",
+        "Breadth First Search",
+        "Binary Search Tree"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "二叉树与搜索树"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“图、堆、二分与回溯”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "覆盖图搜索、优先队列、边界二分和基础回溯。",
+      "objectives": [
+        "完成“图、堆、二分与回溯”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 4,
+      "recommendedTags": [
+        "Graph",
+        "Heap",
+        "Binary Search",
+        "Backtracking"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "图、堆、二分与回溯"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“一维与多维动态规划”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "通过一维和多维状态设计完成动态规划主线，并补齐位运算。",
+      "objectives": [
+        "完成“一维与多维动态规划”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 5,
+      "recommendedTags": [
+        "Dynamic Programming",
+        "Bit Manipulation"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "一维与多维动态规划"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“Trie、区间与单调栈收尾”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "用前缀树、区间和单调栈完成专项收尾与整套路线复盘。",
+      "objectives": [
+        "完成“Trie、区间与单调栈收尾”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 6,
+      "recommendedTags": [
+        "Trie",
+        "Intervals",
+        "Monotonic Stack"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "Trie、区间与单调栈收尾"
+    }
+  ],
+  "prerequisites": [
+    "掌握一种主力编程语言",
+    "了解数组、链表、树和图的基础概念"
+  ],
+  "programmingLanguage": "Java",
+  "recommendedFor": [
+    "需要中短期面试冲刺",
+    "希望使用官方 75 题路线",
+    "不想直接进入 150 题长计划"
+  ],
+  "sourceCommit": "accessed-2026-07-28",
+  "sourceDataPath": "GraphQL studyPlanV2Detail:leetcode-75",
+  "sourceDescription": "LeetCode 官方 LeetCode 75 Study Plan 的主题分组、题目顺序、标题、slug 和难度元数据。",
+  "sourceName": "LeetCode official Study Plan",
+  "sourceUrl": "https://leetcode.com/studyplan/leetcode-75/",
+  "summary": "用 6 周完成 LeetCode 75 官方路线，覆盖 22 类核心面试主题。",
+  "targetAudience": "已有基础数据结构知识，希望用 1 到 2 个月完成高质量面试核心路线的学习者。",
+  "templateId": "leetcode_75_core_sprint",
+  "title": "LeetCode 75 核心冲刺计划",
+  "topicPreferences": [
+    "Array",
+    "String",
+    "Two Pointers",
+    "Sliding Window",
+    "Prefix Sum",
+    "Hash Table",
+    "Stack",
+    "Queue",
+    "Linked List",
+    "Tree",
+    "Depth First Search",
+    "Breadth First Search",
+    "Binary Search Tree",
+    "Graph",
+    "Heap",
+    "Binary Search",
+    "Backtracking",
+    "Dynamic Programming",
+    "Bit Manipulation",
+    "Trie",
+    "Intervals",
+    "Monotonic Stack"
+  ]
+}

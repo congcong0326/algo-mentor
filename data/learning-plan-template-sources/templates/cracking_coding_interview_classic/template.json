@@ -1,0 +1,278 @@
+{
+  "curationNotes": "按面试题章节和题号升序保留完整 109 题路线；章节 16 和 17 按题号区间拆分，来源拼写错误的 05.02 slug 通过 frontendDisplayId 归一化。",
+  "defaultDurationWeeks": 10,
+  "defaultWeeklyHours": 10,
+  "difficultyPreference": "MIXED",
+  "expectedOutcome": "完成后能按章节识别高频面试模型，并形成覆盖基础结构、递归搜索和综合设计题的完整复盘材料。",
+  "goal": "按面试金典章节顺序建立从基础数据结构到综合难题的系统面试能力。",
+  "intent": "INTERVIEW_SPRINT",
+  "interviewOriented": true,
+  "level": "INTERMEDIATE",
+  "licenseNotice": "CC-BY-SA-4.0；内部 seed 仅使用结构化题目元数据，并保留来源与版本信息。",
+  "metadata": {
+    "sourceProblemCount": 109,
+    "sourceStrategy": "direct_lcci_problem_metadata"
+  },
+  "notRecommendedFor": [
+    "完全没有编程基础",
+    "只剩一周进行极限冲刺",
+    "只需要单一专题训练"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立说明“字符串与数组”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练字符串判定、矩阵操作、字符计数和基础模拟。",
+      "objectives": [
+        "完成“字符串与数组”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "String",
+        "Array",
+        "Matrix"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "字符串与数组"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“链表、栈与队列”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "集中处理链表改写、环与交点，以及栈队列的状态设计。",
+      "objectives": [
+        "完成“链表、栈与队列”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Linked List",
+        "Stack",
+        "Queue",
+        "Design"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "链表、栈与队列"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“树与图”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "覆盖树遍历、二叉搜索树、公共祖先、路径和与图搜索。",
+      "objectives": [
+        "完成“树与图”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Tree",
+        "Graph",
+        "Depth First Search",
+        "Breadth First Search"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "树与图"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“位运算与递归基础”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "先完成位操作，再进入递归、子集、排列和基础动态规划。",
+      "objectives": [
+        "完成“位运算与递归基础”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 4,
+      "recommendedTags": [
+        "Bit Manipulation",
+        "Recursion",
+        "Backtracking",
+        "Dynamic Programming"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "位运算与递归基础"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“回溯、动态规划与排序搜索”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成递归章节后半段，并衔接排序、二分和矩阵搜索。",
+      "objectives": [
+        "完成“回溯、动态规划与排序搜索”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 5,
+      "recommendedTags": [
+        "Backtracking",
+        "Dynamic Programming",
+        "Sorting",
+        "Binary Search"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "回溯、动态规划与排序搜索"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“中等题：数值、数组与几何”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练数值边界、数组统计、几何和不使用额外运算符的设计题。",
+      "objectives": [
+        "完成“中等题：数值、数组与几何”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 6,
+      "recommendedTags": [
+        "Math",
+        "Array",
+        "Geometry",
+        "Design"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "中等题：数值、数组与几何"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“中等题：字符串、搜索与设计”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "覆盖字符串匹配、网格搜索、缓存、表达式和综合模拟。",
+      "objectives": [
+        "完成“中等题：字符串、搜索与设计”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 7,
+      "recommendedTags": [
+        "String",
+        "Search",
+        "Design",
+        "Hash Table"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "中等题：字符串、搜索与设计"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“困难题：位运算、统计与图”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "用高阶位运算、计数、并查集和动态规划进入困难题训练。",
+      "objectives": [
+        "完成“困难题：位运算、统计与图”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 8,
+      "recommendedTags": [
+        "Bit Manipulation",
+        "Math",
+        "Graph",
+        "Dynamic Programming"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "困难题：位运算、统计与图"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“困难题：搜索、字符串与窗口”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练 Top K、字典树、多模式搜索和最短窗口类问题。",
+      "objectives": [
+        "完成“困难题：搜索、字符串与窗口”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 9,
+      "recommendedTags": [
+        "Heap",
+        "Trie",
+        "String",
+        "Sliding Window"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "困难题：搜索、字符串与窗口"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“困难题：堆、矩阵与综合设计”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "以连续中值、矩阵动态规划、图搜索和综合设计完成路线收尾。",
+      "objectives": [
+        "完成“困难题：堆、矩阵与综合设计”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 10,
+      "recommendedTags": [
+        "Heap",
+        "Dynamic Programming",
+        "Graph",
+        "Design"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "困难题：堆、矩阵与综合设计"
+    }
+  ],
+  "prerequisites": [
+    "掌握一种主力编程语言",
+    "理解数组、链表、树、图和递归基础",
+    "能独立完成常见 Easy 和部分 Medium 题"
+  ],
+  "programmingLanguage": "Java",
+  "recommendedFor": [
+    "准备中文技术面试",
+    "希望按经典章节系统训练",
+    "需要覆盖基础题和综合难题"
+  ],
+  "sourceCommit": "c0a8f9df1b2e6e2da564acda398d345cb3dd0710",
+  "sourceDataPath": "lcci/lcci.json",
+  "sourceDescription": "doocs/leetcode 程序员面试金典结构化清单，包含题号、标题、难度、标签和 LeetCode CN slug。",
+  "sourceName": "doocs/leetcode",
+  "sourceUrl": "https://github.com/doocs/leetcode",
+  "summary": "用 10 周完成程序员面试金典 109 题路线，覆盖字符串、链表、树图、位运算、递归和综合难题。",
+  "targetAudience": "已有数据结构基础，希望系统训练经典程序员面试题并逐步进入综合难题的学习者。",
+  "templateId": "cracking_coding_interview_classic",
+  "title": "程序员面试金典系统训练计划",
+  "topicPreferences": [
+    "String",
+    "Array",
+    "Matrix",
+    "Linked List",
+    "Stack",
+    "Queue",
+    "Design",
+    "Tree",
+    "Graph",
+    "Depth First Search",
+    "Breadth First Search",
+    "Bit Manipulation",
+    "Recursion",
+    "Backtracking",
+    "Dynamic Programming",
+    "Sorting",
+    "Binary Search",
+    "Math",
+    "Geometry",
+    "Search",
+    "Hash Table",
+    "Heap",
+    "Trie",
+    "Sliding Window"
+  ]
+}

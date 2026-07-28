@@ -48,7 +48,7 @@ class PrepareTemplateSeedTest(unittest.TestCase):
     def test_template_source_directory_contains_ordered_template_files(self) -> None:
         expected_template_ids = seed.load_template_order(seed.DEFAULT_TEMPLATE_SOURCE_DIR, seed.DEFAULT_TEMPLATE_ORDER_PATH)
 
-        self.assertEqual(22, len(expected_template_ids))
+        self.assertEqual(35, len(expected_template_ids))
         for template_id in expected_template_ids:
             template_dir = seed.DEFAULT_TEMPLATE_SOURCE_DIR / template_id
             self.assertTrue((template_dir / seed.TEMPLATE_SOURCE_TEMPLATE_FILE).exists(), template_id)
@@ -119,6 +119,106 @@ class PrepareTemplateSeedTest(unittest.TestCase):
 
         self.assertEqual(111, len(batch_refs))
         self.assertTrue(all(ref["metadata"]["matchedLocalProblem"] for ref in batch_refs))
+
+    def test_selected_p1_b_batch_has_complete_routes(self) -> None:
+        templates, refs, _ = seed.build_seed(
+            source_data(),
+            build_problem_index(exclude=known_missing_slugs()),
+        )
+        templates_by_id = {template["templateId"]: template for template in templates}
+
+        self.assertEqual(4, len(seed.P1_B_SELECTED_BATCH_TEMPLATE_IDS))
+        expected = {
+            "tih_algorithm_essentials": (6, 119),
+            "topic_dp_advanced": (4, 31),
+            "sword_offer_classic": (8, 75),
+            "leetcode_patterns_beginner_roadmap": (10, 68),
+        }
+        for template_id, (phase_count, problem_count) in expected.items():
+            template = templates_by_id[template_id]
+            template_refs = [ref for ref in refs if ref["templateId"] == template_id]
+
+            self.assertEqual(phase_count, len(template["phases"]))
+            self.assertEqual(problem_count, len(template_refs))
+            self.assertEqual(
+                template["defaultDurationWeeks"],
+                sum(phase["durationWeeks"] for phase in template["phases"]),
+            )
+            self.assertEqual(problem_count, len({ref["problemSlug"] for ref in template_refs}))
+
+        dp_refs = [ref for ref in refs if ref["templateId"] == "topic_dp_advanced"]
+        self.assertTrue(all(ref["metadata"]["matchedLocalProblem"] for ref in dp_refs))
+
+    def test_p1_b_interview_routes_are_complete_and_fully_matched(self) -> None:
+        templates, refs, _ = seed.build_seed(
+            source_data(),
+            build_problem_index(exclude=known_missing_slugs()),
+        )
+        templates_by_id = {template["templateId"]: template for template in templates}
+        expected = {
+            "cracking_coding_interview_classic": (10, 109),
+            "leetcode_75_core_sprint": (6, 75),
+            "leetcode_top_interview_150": (10, 150),
+        }
+
+        self.assertEqual(list(expected), seed.P1_B_INTERVIEW_ROUTE_TEMPLATE_IDS)
+        for template_id, (phase_count, problem_count) in expected.items():
+            template = templates_by_id[template_id]
+            template_refs = [ref for ref in refs if ref["templateId"] == template_id]
+
+            self.assertEqual(phase_count, len(template["phases"]))
+            self.assertEqual(problem_count, len(template_refs))
+            self.assertEqual(problem_count, len({ref["problemSlug"] for ref in template_refs}))
+            self.assertTrue(all(ref["metadata"]["matchedLocalProblem"] for ref in template_refs))
+            self.assertEqual(
+                template["defaultDurationWeeks"],
+                sum(phase["durationWeeks"] for phase in template["phases"]),
+            )
+
+    def test_final_compatible_templates_are_complete_and_auditable(self) -> None:
+        templates, refs, _ = seed.build_seed(
+            source_data(),
+            build_problem_index(exclude=known_missing_slugs()),
+        )
+        templates_by_id = {template["templateId"]: template for template in templates}
+        expected = {
+            "carl_algorithm_roadmap_full": (11, 144, 0, "Java"),
+            "labuladong_algo_thinking": (8, 64, 0, "Java"),
+            "leetcode_sql_50": (7, 50, 0, "SQL"),
+            "leetcode_javascript_30_days": (5, 30, 0, "JavaScript"),
+            "leetcode_pandas_introduction": (4, 15, 0, "Python3"),
+            "leetcode_pandas_30_days": (5, 33, 5, "Python3"),
+        }
+
+        self.assertEqual(
+            ["carl_algorithm_roadmap_full", "labuladong_algo_thinking"],
+            seed.P1_B_FINAL_ROADMAP_TEMPLATE_IDS,
+        )
+        self.assertEqual(
+            [
+                "leetcode_sql_50",
+                "leetcode_javascript_30_days",
+                "leetcode_pandas_introduction",
+                "leetcode_pandas_30_days",
+            ],
+            seed.P2_COMPATIBLE_TEMPLATE_IDS,
+        )
+        for template_id, (phase_count, problem_count, missing_count, language) in expected.items():
+            template = templates_by_id[template_id]
+            template_refs = [ref for ref in refs if ref["templateId"] == template_id]
+
+            self.assertEqual(phase_count, len(template["phases"]))
+            self.assertEqual(problem_count, len(template_refs))
+            self.assertEqual(language, template["programmingLanguage"])
+            self.assertEqual(
+                missing_count,
+                sum(not ref["metadata"]["matchedLocalProblem"] for ref in template_refs),
+            )
+            self.assertEqual(problem_count, len({ref["problemSlug"] for ref in template_refs}))
+            self.assertEqual(
+                template["defaultDurationWeeks"],
+                sum(phase["durationWeeks"] for phase in template["phases"]),
+            )
 
     def test_write_seed_creates_all_required_files_and_stable_output(self) -> None:
         templates, refs, report = seed.build_seed(
@@ -232,7 +332,15 @@ def known_missing_slugs() -> set[str]:
         "meeting-rooms",
         "meeting-rooms-ii",
         "number-of-connected-components-in-an-undirected-graph",
+        "minimum-knight-moves",
+        "design-hit-counter",
+        "strobogrammatic-number-ii",
         "walls-and-gates",
+        "count-occurrences-in-text",
+        "the-number-of-rich-customers",
+        "immediate-food-delivery-i",
+        "ads-performance",
+        "accepted-candidates-from-the-interviews",
     }
 
 

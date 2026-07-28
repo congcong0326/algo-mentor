@@ -1,0 +1,184 @@
+{
+  "curationNotes": "按主题首次出现位置去重，再重组为 6 个可执行阶段；只保留题名、slug、主题和来源区段。",
+  "defaultDurationWeeks": 6,
+  "defaultWeeklyHours": 10,
+  "difficultyPreference": "MIXED",
+  "expectedOutcome": "完成后能根据题目特征快速定位核心数据结构和算法，并形成覆盖主要面试专题的复盘清单。",
+  "goal": "系统掌握算法面试中常见数据结构、搜索、动态规划和综合建模方法。",
+  "intent": "TOPIC_BREAKTHROUGH",
+  "interviewOriented": true,
+  "level": "INTERMEDIATE",
+  "licenseNotice": "MIT License；内部 seed 仅使用结构化题目元数据，不包含文章正文或题解。",
+  "metadata": {
+    "sourceProblemCount": 119,
+    "sourceStrategy": "direct_algorithm_essential_metadata",
+    "sourceThemeCount": 18
+  },
+  "notRecommendedFor": [
+    "完全没有数据结构基础",
+    "只剩一周进行极限冲刺"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "能独立说明“线性结构与查找基础”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "集中训练数组、哈希、字符串与排序搜索中的面试核心模型。",
+      "objectives": [
+        "完成“线性结构与查找基础”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 1,
+      "recommendedTags": [
+        "Array",
+        "Hash Table",
+        "String",
+        "Sorting",
+        "Binary Search"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "线性结构与查找基础"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“链表、栈队列与递归”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "建立指针改写、栈队列状态和递归分解的稳定解题模板。",
+      "objectives": [
+        "完成“链表、栈队列与递归”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 2,
+      "recommendedTags": [
+        "Linked List",
+        "Stack",
+        "Queue",
+        "Recursion"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "链表、栈队列与递归"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“树、Trie 与优先队列”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "覆盖树遍历、二叉搜索树、前缀树和堆的高频面试题。",
+      "objectives": [
+        "完成“树、Trie 与优先队列”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 3,
+      "recommendedTags": [
+        "Tree",
+        "Trie",
+        "Heap"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "树、Trie 与优先队列"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“图、区间与矩阵建模”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练图搜索、依赖关系、区间边界和二维矩阵遍历。",
+      "objectives": [
+        "完成“图、区间与矩阵建模”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 4,
+      "recommendedTags": [
+        "Graph",
+        "Intervals",
+        "Matrix"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "图、区间与矩阵建模"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“动态规划与二进制技巧”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "用状态定义、转移顺序和位运算完成高频综合题。",
+      "objectives": [
+        "完成“动态规划与二进制技巧”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 5,
+      "recommendedTags": [
+        "Dynamic Programming",
+        "Bit Manipulation"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "动态规划与二进制技巧"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立说明“数学与几何综合收尾”主要题型的识别信号和核心解法",
+        "能复盘复杂度、边界条件和一次典型错误"
+      ],
+      "durationWeeks": 1,
+      "focus": "补齐数值规律、坐标关系和几何边界，完成整套题型复盘。",
+      "objectives": [
+        "完成“数学与几何综合收尾”阶段的全部本地匹配题，并记录状态或数据结构选择依据",
+        "整理至少 2 个易错边界和可复用解题模板"
+      ],
+      "phaseIndex": 6,
+      "recommendedTags": [
+        "Math",
+        "Geometry"
+      ],
+      "reviewAdvice": "按题型归类错题，先复述建模和状态，再重写关键边界。",
+      "title": "数学与几何综合收尾"
+    }
+  ],
+  "prerequisites": [
+    "掌握数组、链表、树和图的基本概念",
+    "能独立完成常见 Easy 和部分 Medium 题"
+  ],
+  "programmingLanguage": "Java",
+  "recommendedFor": [
+    "需要系统查漏补缺",
+    "希望建立面试题型选择框架",
+    "准备中期算法面试"
+  ],
+  "sourceCommit": "8ee2acb54a05c4add123a824d15e7dfc4e703b2f",
+  "sourceDataPath": "apps/website/contents/algorithms/*.md",
+  "sourceDescription": "Tech Interview Handbook 算法主题页中的 Essential 和 Recommended practice 题目元数据。",
+  "sourceName": "yangshun/tech-interview-handbook",
+  "sourceUrl": "https://github.com/yangshun/tech-interview-handbook",
+  "summary": "用 6 周覆盖 Tech Interview Handbook 的核心算法主题，形成可复用的面试题型地图。",
+  "targetAudience": "已有基础刷题经验，希望按主题系统补齐算法面试知识结构的学习者。",
+  "templateId": "tih_algorithm_essentials",
+  "title": "算法面试核心专题计划",
+  "topicPreferences": [
+    "Array",
+    "Hash Table",
+    "String",
+    "Sorting",
+    "Binary Search",
+    "Linked List",
+    "Stack",
+    "Queue",
+    "Recursion",
+    "Tree",
+    "Trie",
+    "Heap",
+    "Graph",
+    "Intervals",
+    "Matrix",
+    "Dynamic Programming",
+    "Bit Manipulation",
+    "Math",
+    "Geometry"
+  ]
+}
