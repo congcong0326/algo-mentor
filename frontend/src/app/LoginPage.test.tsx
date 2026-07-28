@@ -10,7 +10,7 @@ describe('LoginPage', () => {
   it('renders the welcome page with Google and email sign-in entries', () => {
     render(<LoginPage />);
 
-    expect(screen.getByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Leet Mentor' })).toBeInTheDocument();
     expect(screen.getByText('算法学习、刷题训练和 AI 训练方案生成工具')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '邮箱密码登录' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '邮箱登录' })).toBeInTheDocument();
@@ -19,7 +19,7 @@ describe('LoginPage', () => {
       '/oauth2/authorization/google',
     );
     expect(screen.getByRole('button', { name: '创建邮箱账号' })).toBeInTheDocument();
-    expect(screen.getByText('support@algomentor.local')).toBeInTheDocument();
+    expect(screen.getByText('support@leetmentor.local')).toBeInTheDocument();
   });
 
   it('uses the rounded custom tooltip for the theme toggle', () => {

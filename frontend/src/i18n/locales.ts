@@ -837,8 +837,7 @@ export interface LocaleResources {
     overviewDescription: string;
     newPlan: string;
     overviewStats: string;
-    active: string;
-    archived: string;
+    total: string;
     latestCreated: string;
     listTitle: string;
     totalPlans: (count: number) => string;
@@ -849,9 +848,6 @@ export interface LocaleResources {
     deletePlan: (title: string) => string;
     currentRhythm: string;
     rhythmOverview: string;
-    noRhythm: string;
-    activePlans: (count: number) => string;
-    archivedPlans: (count: number) => string;
     maintainByScenario: string;
     maintainByScenarioDescription: string;
     latestCreatedLabel: (date: string) => string;
@@ -1131,8 +1127,8 @@ export interface LocaleResources {
 export const localeResources: Record<SupportedLocale, LocaleResources> = {
   'zh-CN': {
     app: {
-      brandKicker: 'ALGO MENTOR',
-      brandName: 'Algo Mentor',
+      brandKicker: 'LEET MENTOR',
+      brandName: 'Leet Mentor',
       mainNavigation: '主导航',
       loginStatus: '登录状态',
       checkingLogin: '检查登录状态',
@@ -1179,7 +1175,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       emailAuthDivider: '或使用邮箱继续',
       socialAuthDivider: '或继续使用',
       needHelpPrefix: '需要帮助？联系 ',
-      supportEmail: 'support@algomentor.local',
+      supportEmail: 'support@leetmentor.local',
       termsPrefix: '继续即表示你理解并同意',
       termsLabel: '服务条款',
       termsConnector: ' 和 ',
@@ -2014,8 +2010,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       overviewDescription: '按目标、时间、当前水平与自身想法生成训练方案。',
       newPlan: '新建方案',
       overviewStats: '方案概览',
-      active: '进行中',
-      archived: '已归档',
+      total: '方案总数',
       latestCreated: '最近创建',
       listTitle: '方案库',
       totalPlans: (count) => `共 ${count} 个方案`,
@@ -2026,9 +2021,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       deletePlan: (title) => `删除 ${title}`,
       currentRhythm: '当前节奏',
       rhythmOverview: '方案执行概览',
-      noRhythm: '还没有训练节奏',
-      activePlans: (count) => `${count} 个方案正在推进`,
-      archivedPlans: (count) => `${count} 个方案已沉淀为历史记录`,
       maintainByScenario: '按场景维护方案',
       maintainByScenarioDescription: '面试冲刺、专题突破和长期学习不要混在同一个方案里。',
       latestCreatedLabel: (date) => `最近创建：${date}`,
@@ -2385,8 +2377,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
   },
   'en-US': {
     app: {
-      brandKicker: 'ALGO MENTOR',
-      brandName: 'Algo Mentor',
+      brandKicker: 'LEET MENTOR',
+      brandName: 'Leet Mentor',
       mainNavigation: 'Main navigation',
       loginStatus: 'Login status',
       checkingLogin: 'Checking sign-in',
@@ -2433,7 +2425,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       emailAuthDivider: 'Or continue with email',
       socialAuthDivider: 'or continue with',
       needHelpPrefix: 'Need help? Contact ',
-      supportEmail: 'support@algomentor.local',
+      supportEmail: 'support@leetmentor.local',
       termsPrefix: 'By continuing, you acknowledge and agree to the ',
       termsLabel: 'Terms & Conditions',
       termsConnector: ' and ',
@@ -3268,8 +3260,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       overviewDescription: 'Generate training plans from goals, time, current level, and your own notes.',
       newPlan: 'New Plan',
       overviewStats: 'Plan overview',
-      active: 'Active',
-      archived: 'Archived',
+      total: 'Plans',
       latestCreated: 'Latest',
       listTitle: 'Plan Library',
       totalPlans: (count) => `${count} ${count === 1 ? 'plan' : 'plans'}`,
@@ -3280,9 +3271,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       deletePlan: (title) => `Delete ${title}`,
       currentRhythm: 'Current Rhythm',
       rhythmOverview: 'Plan progress overview',
-      noRhythm: 'No training rhythm yet',
-      activePlans: (count) => `${count} ${count === 1 ? 'plan is' : 'plans are'} active`,
-      archivedPlans: (count) => `${count} ${count === 1 ? 'plan has' : 'plans have'} been archived`,
       maintainByScenario: 'Organize by scenario',
       maintainByScenarioDescription: 'Keep interview sprints, topic breakthroughs, and long-term learning in separate plans.',
       latestCreatedLabel: (date) => `Latest: ${date}`,

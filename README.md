@@ -1,4 +1,4 @@
-# Algo Mentor
+# Leet Mentor
 
 `algo-mentor` 是一个 AI 个人学习项目，目标是把算法学习、刷题训练、错题复盘、学习计划和 AI 辅助讲解整合到一个可本地运行、可持续迭代的系统中。
 

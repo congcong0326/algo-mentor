@@ -1,4 +1,4 @@
-import { Layers, Sparkles } from 'lucide-react';
+import { Info, Layers, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import {
   getLearningPlanTemplates,
@@ -198,33 +198,61 @@ export default function LearningPlanTemplateCreatePanel({
               )}
               <div className="template-card-grid">
                 {visibleTemplates.map((template) => (
-              <button
-                aria-pressed={selectedTemplateId === template.templateId}
-                className={`template-card${selectedTemplateId === template.templateId ? ' selected' : ''}`}
-                disabled={loading}
-                key={template.templateId}
-                onClick={() => selectTemplate(template)}
-                type="button"
-              >
-                <span className="template-card-title">
-                  <span className="template-card-icon" aria-hidden="true">
-                    <Layers />
-                  </span>
-                  <strong>{template.title}</strong>
-                  {template.recommendedOrder != null && (
-                    <span className="template-recommended-badge">{resources.learningPlans.templateRecommendedBadge}</span>
-                  )}
-                </span>
-                <span>{template.summary}</span>
-                <span className="template-card-meta">{formatPlanLevel(template.level, resources)}</span>
-                <span className="template-card-meta">
-                  {resources.learningPlans.templateRouteSummary(
-                    template.plannedProblemCount,
-                    template.defaultDurationWeeks,
-                    template.defaultWeeklyHours,
-                  )}
-                </span>
-              </button>
+                  <button
+                    aria-describedby={`template-preview-${template.templateId}`}
+                    aria-label={[
+                      template.title,
+                      template.summary,
+                      formatPlanLevel(template.level, resources),
+                      resources.learningPlans.templateRouteSummary(
+                        template.plannedProblemCount,
+                        template.defaultDurationWeeks,
+                        template.defaultWeeklyHours,
+                      ),
+                    ].join(', ')}
+                    aria-pressed={selectedTemplateId === template.templateId}
+                    className={`template-card${selectedTemplateId === template.templateId ? ' selected' : ''}`}
+                    disabled={loading}
+                    key={template.templateId}
+                    onClick={() => selectTemplate(template)}
+                    type="button"
+                  >
+                    <span className="template-card-title">
+                      <span className="template-card-icon" aria-hidden="true">
+                        <Layers />
+                      </span>
+                      <strong>{template.title}</strong>
+                      {template.recommendedOrder != null && (
+                        <span className="template-recommended-badge">{resources.learningPlans.templateRecommendedBadge}</span>
+                      )}
+                      <span className="template-card-preview-icon" aria-hidden="true">
+                        <Info />
+                      </span>
+                    </span>
+                    <span>{template.summary}</span>
+                    <span className="template-card-meta">{formatPlanLevel(template.level, resources)}</span>
+                    <span className="template-card-meta">
+                      {resources.learningPlans.templateRouteSummary(
+                        template.plannedProblemCount,
+                        template.defaultDurationWeeks,
+                        template.defaultWeeklyHours,
+                      )}
+                    </span>
+                    <span
+                      className="template-card-preview"
+                      id={`template-preview-${template.templateId}`}
+                      role="tooltip"
+                    >
+                      <span>
+                        <small>{resources.learningPlans.templateTargetAudience}</small>
+                        <strong>{template.targetAudience}</strong>
+                      </span>
+                      <span>
+                        <small>{resources.learningPlans.templateExpectedOutcome}</small>
+                        <strong>{template.expectedOutcome}</strong>
+                      </span>
+                    </span>
+                  </button>
                 ))}
               </div>
             </div>
@@ -233,21 +261,6 @@ export default function LearningPlanTemplateCreatePanel({
 
         {selectedTemplate && (
           <>
-            <section className="template-detail-strip" aria-label={resources.learningPlans.templateSelected}>
-              <div>
-                <span>{resources.learningPlans.templateTargetAudience}</span>
-                <strong>{selectedTemplate.targetAudience}</strong>
-              </div>
-              <div>
-                <span>{resources.learningPlans.templateExpectedOutcome}</span>
-                <strong>{selectedTemplate.expectedOutcome}</strong>
-              </div>
-              <div>
-                <span>{resources.learningPlans.level}</span>
-                <strong>{formatPlanLevel(selectedTemplate.level, resources)}</strong>
-              </div>
-            </section>
-
             <section className="question-block">
               <strong>{resources.learningPlans.standardRhythmTitle}</strong>
               {standardRhythm && (

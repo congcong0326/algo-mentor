@@ -87,8 +87,8 @@ describe('AdminShell', () => {
     renderShell({ pathname: '/admin' });
 
     const sidebar = screen.getByRole('complementary', { name: '管理业务域' });
-    expect(within(sidebar).getByText('AM')).toBeInTheDocument();
-    expect(within(sidebar).getByText('Algo Mentor')).toBeInTheDocument();
+    expect(within(sidebar).getByText('LM')).toBeInTheDocument();
+    expect(within(sidebar).getByText('Leet Mentor')).toBeInTheDocument();
     expect(within(sidebar).getByText('管理后台')).toBeInTheDocument();
 
     const collapseButton = within(sidebar).getByRole('button', { name: '折叠左侧栏' });

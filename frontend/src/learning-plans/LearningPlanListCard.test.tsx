@@ -56,8 +56,11 @@ describe('LearningPlanListCard', () => {
     expect(screen.getByText('4 周')).toBeInTheDocument();
     expect(screen.getByText('6h/周')).toBeInTheDocument();
     expect(screen.getByText('共 12 个方案')).toBeInTheDocument();
+    expect(screen.getByText('方案总数')).toBeInTheDocument();
+    expect(screen.queryByText('今日题包')).not.toBeInTheDocument();
+    expect(screen.queryByText('已设置')).not.toBeInTheDocument();
+    expect(screen.queryByText('已归档')).not.toBeInTheDocument();
     expect(screen.getByText('1-10')).toBeInTheDocument();
-    expect(screen.getByText('8 个方案正在推进')).toBeInTheDocument();
     expect(screen.getByText('第 1 / 2 页')).toBeInTheDocument();
 
     const selectedRow = screen.getByTestId('learning-plan-row-900');

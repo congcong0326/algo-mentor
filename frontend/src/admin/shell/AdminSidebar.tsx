@@ -55,7 +55,7 @@ export default function AdminSidebar({
     <aside className={`admin-sidebar ${open ? 'open' : ''}`} aria-label={t.businessNavigation} ref={sidebarRef}>
       <div className="admin-sidebar-topbar">
         <div className="admin-sidebar-brand">
-          <span className="admin-sidebar-brand-mark" aria-hidden="true">AM</span>
+          <span className="admin-sidebar-brand-mark" aria-hidden="true">LM</span>
           <span className="admin-sidebar-brand-copy">
             <strong>{resources.app.brandName}</strong>
             <small>{t.workspace}</small>

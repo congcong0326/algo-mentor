@@ -256,7 +256,6 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
                 setContractFeedback('');
                 return refreshCurrentPlanDetail(planDetail.id);
               }}
-              onActivatePlan={() => activatePlan(planDetail.id)}
               onProblemSelect={(phaseIndex, problemSlug) => {
                 onNavigate(learningPlanPracticeChatPath(planDetail.id, phaseIndex, problemSlug));
               }}

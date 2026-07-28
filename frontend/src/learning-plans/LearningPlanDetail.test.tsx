@@ -73,6 +73,7 @@ describe('LearningPlanDetail extension orchestration', () => {
     expect(screen.queryByRole('heading', { name: '下一次训练包' })).not.toBeInTheDocument();
     expect(screen.queryByText('此题在今日题包中')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '开始下一包' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '采用为今日题包' })).not.toBeInTheDocument();
   });
 
   it('preserves a work_error message when the stream closes without a terminal event', async () => {
@@ -166,7 +167,6 @@ function renderDetail({
   render(
     <LearningPlanDetail
       onBack={vi.fn()}
-      onActivatePlan={vi.fn(() => Promise.resolve())}
       onPlanUpdated={onPlanUpdated}
       onProblemSelect={vi.fn()}
       plan={plan}

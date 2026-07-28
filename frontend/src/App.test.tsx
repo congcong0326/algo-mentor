@@ -136,7 +136,7 @@ describe('App', () => {
 
     expect(await screen.findByRole('heading', { name: /用 AI 掌握算法刷题\s*智能复盘系统/ }))
       .toBeInTheDocument();
-    expect(document.querySelector('.app-brand strong')).toHaveTextContent('Algo Mentor');
+    expect(document.querySelector('.app-brand strong')).toHaveTextContent('Leet Mentor');
     expect(document.querySelector('.app-brand-mark')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '切换为深色模式' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '登录' })).toBeInTheDocument();
@@ -166,7 +166,7 @@ describe('App', () => {
 
     fireEvent.click(await screen.findByRole('button', { name: '登录' }));
 
-    expect(await screen.findByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Leet Mentor' })).toBeInTheDocument();
     expect(window.location.pathname).toBe('/login');
 
     window.history.replaceState({}, '', '/');
@@ -174,7 +174,7 @@ describe('App', () => {
 
     fireEvent.click(await screen.findByRole('button', { name: '开始使用' }));
 
-    expect(await screen.findByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Leet Mentor' })).toBeInTheDocument();
     expect(window.location.pathname).toBe('/login');
   });
 
@@ -184,7 +184,7 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Leet Mentor' })).toBeInTheDocument();
     expect(screen.getByText('登录失败，请重新尝试。')).toBeInTheDocument();
     expect(window.location.pathname).toBe('/login');
     expect(window.location.search).toBe('?auth=failed');
@@ -730,7 +730,7 @@ describe('App', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { name: 'Algo Mentor' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Leet Mentor' })).toBeInTheDocument();
     expect(document.documentElement.dataset.theme).toBe('dark');
     fireEvent.click(screen.getByRole('button', { name: '切换为浅色模式' }));
     await waitFor(() => expect(document.documentElement.dataset.theme).toBe('light'));
@@ -1478,6 +1478,7 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/learning-plans/new');
     expect(await screen.findByRole('button', { name: '返回方案页' })).toBeInTheDocument();
     expect(screen.queryByRole('textbox', { name: '学习目标' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'AI 个性化生成' }));
     fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
     fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
 
@@ -2240,6 +2241,7 @@ describe('App', () => {
     expect(await screen.findByText(/共\s*1\s*个方案/)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '新建方案' }));
+    fireEvent.click(screen.getByRole('button', { name: 'AI 个性化生成' }));
     fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
     fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
     expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();
@@ -2377,6 +2379,7 @@ describe('App', () => {
 
     expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '新建方案' }));
+    fireEvent.click(screen.getByRole('button', { name: 'AI 个性化生成' }));
     fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
 
     expect(await screen.findByRole('button', { name: '返回方案页' })).toBeInTheDocument();
@@ -3596,6 +3599,7 @@ async function createCollectingLearningPlanDraft() {
   expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: '新建方案' }));
   expect(await screen.findByRole('button', { name: '返回方案页' })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'AI 个性化生成' }));
   fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
 
   expect(await screen.findByText('请补充目标主题。')).toBeInTheDocument();

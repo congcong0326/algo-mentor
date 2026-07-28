@@ -38,7 +38,7 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
   const [draft, setDraft] = useState<LearningPlanDraftResponse>();
   const [workEvent, setWorkEvent] = useState<AgentWorkStatusEvent>();
   const [flowState, setFlowState] = useState<LearningPlanCreateState>('editing');
-  const [createMode, setCreateMode] = useState<LearningPlanCreateMode>('ai');
+  const [createMode, setCreateMode] = useState<LearningPlanCreateMode>('template');
   const [error, setError] = useState('');
 
   async function submitDraft(request: LearningPlanCreateDraftRequest) {
@@ -229,19 +229,6 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
             <strong>{resources.learningPlans.createMode}</strong>
             <div className="segmented-grid create-mode-switch">
               <button
-                aria-pressed={createMode === 'ai'}
-                className={createMode === 'ai' ? 'selected' : ''}
-                disabled={flowState === 'generating'}
-                onClick={() => {
-                  setCreateMode('ai');
-                  setError('');
-                }}
-                type="button"
-              >
-                <Sparkles aria-hidden="true" />
-                <span>{resources.learningPlans.createWithAi}</span>
-              </button>
-              <button
                 aria-pressed={createMode === 'template'}
                 className={createMode === 'template' ? 'selected' : ''}
                 disabled={flowState === 'generating'}
@@ -253,6 +240,19 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
               >
                 <LayoutTemplate aria-hidden="true" />
                 <span>{resources.learningPlans.createFromTemplate}</span>
+              </button>
+              <button
+                aria-pressed={createMode === 'ai'}
+                className={createMode === 'ai' ? 'selected' : ''}
+                disabled={flowState === 'generating'}
+                onClick={() => {
+                  setCreateMode('ai');
+                  setError('');
+                }}
+                type="button"
+              >
+                <Sparkles aria-hidden="true" />
+                <span>{resources.learningPlans.createWithAi}</span>
               </button>
             </div>
           </section>

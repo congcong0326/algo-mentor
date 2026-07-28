@@ -112,14 +112,22 @@ afterEach(() => {
 });
 
 describe('LearningPlanCreatePage', () => {
-  it('keeps the AI questionnaire as the default creation path', async () => {
+  it('uses template creation as the default path and allows switching to AI generation', async () => {
     render(<LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />);
 
     expect(screen.getByRole('heading', { name: '新建方案' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '返回方案页' })).toHaveClass('icon-button', 'learning-create-back');
-    expect(screen.getByRole('button', { name: 'AI 个性化生成' })).toHaveAttribute('aria-pressed', 'true');
+    expect(Array.from(document.querySelectorAll('.create-mode-switch > button')).map((button) => button.textContent))
+      .toEqual(['从模板创建', 'AI 个性化生成']);
+    expect(screen.getByRole('button', { name: '从模板创建' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: 'AI 个性化生成' }).querySelector('svg')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '从模板创建' }).querySelector('svg')).toBeInTheDocument();
+
+    await screen.findByText('LeetCode 75');
+    expect(getLearningPlanTemplatesMock).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole('button', { name: 'AI 个性化生成' }));
+    expect(screen.getByRole('button', { name: 'AI 个性化生成' })).toHaveAttribute('aria-pressed', 'true');
     fireEvent.click(screen.getByRole('button', { name: '动态规划' }));
     fireEvent.click(screen.getByRole('button', { name: '生成训练方案' }));
 
@@ -131,7 +139,6 @@ describe('LearningPlanCreatePage', () => {
       }),
       expect.objectContaining({ onEvent: expect.any(Function) }),
     );
-    expect(getLearningPlanTemplatesMock).not.toHaveBeenCalled();
   });
 
   it('creates a generated draft from a selected template and can revise it from preview', async () => {
@@ -143,6 +150,16 @@ describe('LearningPlanCreatePage', () => {
     expect(screen.getByText('NeetCode 150')).toBeInTheDocument();
     expect(getLearningPlanTemplateMock).not.toHaveBeenCalled();
     await waitFor(() => expect(screen.getByRole('combobox', { name: '编程语言' })).toHaveValue('Java'));
+    const leetCodeTemplateCard = screen.getByRole('button', { name: /LeetCode 75/ });
+    expect(leetCodeTemplateCard).toHaveAttribute(
+      'aria-describedby',
+      'template-preview-leetcode_75_core_sprint',
+    );
+    expect(document.getElementById('template-preview-leetcode_75_core_sprint')).toHaveTextContent(
+      '适合人群准备算法面试的学习者完成目标掌握核心题型',
+    );
+    expect(screen.queryByRole('region', { name: '当前模板' })).not.toBeInTheDocument();
+    expect(document.querySelector('.template-detail-strip')).not.toBeInTheDocument();
     expect(screen.queryByRole('spinbutton', { name: '训练周期' })).not.toBeInTheDocument();
     expect(screen.queryByRole('spinbutton', { name: '每周投入' })).not.toBeInTheDocument();
 
@@ -203,6 +220,7 @@ describe('LearningPlanCreatePage', () => {
     fireEvent.click(screen.getByRole('button', { name: '从模板创建' }));
     fireEvent.click(await screen.findByRole('button', { name: /NeetCode 150/ }));
 
+    expect(screen.queryByRole('region', { name: '当前模板' })).not.toBeInTheDocument();
     expect(await screen.findByText('每天 3 题 · 每周 5 天 · 推荐 12 周')).toBeInTheDocument();
     expect(screen.getByText(
       '按 150 题 / 推荐 12 周 / 每周 5 天反算，适合作为稳定推进的起点；周内训练，周末留给复盘或缓冲。',

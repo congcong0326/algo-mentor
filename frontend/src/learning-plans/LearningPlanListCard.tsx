@@ -86,12 +86,8 @@ export default function LearningPlanListCard({
         </div>
         <dl className="plan-stat-grid" aria-label={resources.learningPlans.overviewStats}>
           <div className="plan-stat-card">
-            <dt>{resources.learningPlans.active}</dt>
-            <dd>{page.activeCount}</dd>
-          </div>
-          <div className="plan-stat-card">
-            <dt>{resources.learningPlans.archived}</dt>
-            <dd>{page.archivedCount}</dd>
+            <dt>{resources.learningPlans.total}</dt>
+            <dd>{page.total}</dd>
           </div>
           <div className="plan-stat-card">
             <dt>{resources.learningPlans.latestCreated}</dt>
@@ -226,8 +222,8 @@ export default function LearningPlanListCard({
             <div className="plan-insight-item">
               <Activity aria-hidden="true" />
               <div>
-                <strong>{page.total === 0 ? resources.learningPlans.noRhythm : resources.learningPlans.activePlans(page.activeCount)}</strong>
-                <span>{resources.learningPlans.archivedPlans(page.archivedCount)}</span>
+                <strong>{resources.learningPlans.overviewTitle}</strong>
+                <span>{resources.learningPlans.overviewDescription}</span>
               </div>
             </div>
             <div className="plan-insight-item">

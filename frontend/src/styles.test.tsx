@@ -47,6 +47,11 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toMatch(/\.review-setting-tooltip-wrap \{[^}]*position: relative;/);
   });
 
+  it('positions template previews outside their source cards', () => {
+    expect(styles).toMatch(/\.template-card-preview \{[^}]*bottom: calc\(100% \+ 10px\);/);
+    expect(styles).not.toContain('.template-selected-summary');
+  });
+
   it('keeps login quiet and removes decorative watermark content', () => {
     expect(styles).toContain('.login-page {\n  --login-background: #f7f7f5');
     expect(styles).toContain('--login-text: #191918');
@@ -90,7 +95,7 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toMatch(/\.plan-list-row \{[^}]*min-height: 72px;[^}]*padding: 11px 12px;/);
     expect(styles).toMatch(/\.my-summary-card \{[^}]*min-height: 82px;[^}]*padding: 13px;[^}]*box-shadow: none;/);
     expect(styles).toMatch(/\.my-page-kicker,[\s\S]*?\.my-section-eyebrow \{[^}]*letter-spacing: 0;[^}]*text-transform: none;/);
-    expect(styles).toMatch(/@media \(max-width: 980px\) \{[\s\S]*?\.plan-stat-grid \{[^}]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\);/);
+    expect(styles).toMatch(/@media \(max-width: 980px\) \{[\s\S]*?\.plan-stat-grid \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
     expect(styles).toMatch(/@media \(max-width: 640px\) \{[\s\S]*?\.my-summary-grid \{[^}]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\);/);
     expect(styles).toMatch(/@media \(max-width: 640px\) \{[\s\S]*?\.my-summary-card p \{[^}]*display: none;/);
   });

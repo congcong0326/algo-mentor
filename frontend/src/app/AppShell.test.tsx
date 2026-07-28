@@ -49,7 +49,7 @@ describe('AppShell', () => {
     );
 
     expect(screen.getByRole('banner')).toBeInTheDocument();
-    expect(document.querySelector('.app-brand strong')).toHaveTextContent('Algo Mentor');
+    expect(document.querySelector('.app-brand strong')).toHaveTextContent('Leet Mentor');
     expect(document.querySelector('.app-brand-mark')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');

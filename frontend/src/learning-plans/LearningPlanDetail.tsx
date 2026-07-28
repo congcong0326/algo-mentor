@@ -23,13 +23,11 @@ import { PlanPhaseDetails } from './PlanPreview';
 
 export default function LearningPlanDetail({
   onBack,
-  onActivatePlan,
   onPlanUpdated,
   onProblemSelect,
   plan,
 }: {
   onBack: () => void;
-  onActivatePlan: () => Promise<void>;
   onPlanUpdated: () => Promise<void>;
   onProblemSelect: (phaseIndex: number, problemSlug: string) => void;
   plan: LearningPlanDetailResponse;
@@ -39,16 +37,6 @@ export default function LearningPlanDetail({
   const [extensionWorkEvent, setExtensionWorkEvent] = useState<AgentWorkStatusEvent>();
   const [extensionLoading, setExtensionLoading] = useState(false);
   const [extensionError, setExtensionError] = useState('');
-  const [activating, setActivating] = useState(false);
-
-  async function activateThisPlan() {
-    setActivating(true);
-    try {
-      await onActivatePlan();
-    } finally {
-      setActivating(false);
-    }
-  }
 
   function handleExtensionStreamEvent(event: SseStreamEvent) {
     if (event.eventName.startsWith('work_')) {
@@ -223,11 +211,7 @@ export default function LearningPlanDetail({
         </div>
         {plan.active ? (
           <span className="status-badge current-plan-badge">当前采用</span>
-        ) : (
-          <button className="primary-button compact" disabled={activating} onClick={() => void activateThisPlan()} type="button">
-            {activating ? '切换中' : '采用为今日题包'}
-          </button>
-        )}
+        ) : null}
       </div>
       <PlanPhaseDetails
         onProblemSelect={onProblemSelect}
