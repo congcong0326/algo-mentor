@@ -19,6 +19,7 @@ export type AdminPageId =
   | 'systemPrompts'
   | 'problems'
   | 'monitoring'
+  | 'databaseBackup'
   | 'feedback'
   | 'debug';
 export type AdminNavigationLabelKey =
@@ -42,6 +43,7 @@ export type AdminNavigationLabelKey =
   | 'systemPrompts'
   | 'problems'
   | 'systemStatus'
+  | 'databaseBackup'
   | 'feedback'
   | 'debug';
 
@@ -149,6 +151,7 @@ export const ADMIN_MODULES: AdminModuleDefinition[] = [
     icon: Activity,
     items: [
       { id: 'monitoring', labelKey: 'systemStatus', path: APP_ROUTES.adminMonitoring, permission: 'admin-overview:read' },
+      { id: 'databaseBackup', labelKey: 'databaseBackup', path: APP_ROUTES.adminDatabaseBackup, permission: 'database-backup:manage' },
       { id: 'feedback', labelKey: 'feedback', path: APP_ROUTES.adminFeedback, permission: 'feedback:manage' },
     ],
   },

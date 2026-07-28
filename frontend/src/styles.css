@@ -9743,6 +9743,138 @@ a {
   max-width: 960px;
 }
 
+.database-backup-page {
+  display: grid;
+  gap: 14px;
+  max-width: 860px;
+}
+
+.database-backup-header h1,
+.database-backup-operation h2 {
+  margin: 0;
+}
+
+.database-backup-header h1 {
+  font-size: 20px;
+}
+
+.database-backup-operation {
+  border-bottom: 1px solid var(--border-subtle);
+  display: grid;
+  gap: 14px;
+  padding: 0 0 16px;
+}
+
+.database-backup-operation-heading,
+.database-backup-file-controls,
+.database-backup-restore-action,
+.database-backup-confirm-actions,
+.database-backup-confirm-heading {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.database-backup-operation-heading {
+  justify-content: space-between;
+}
+
+.database-backup-operation h2 {
+  font-size: 16px;
+}
+
+.database-backup-warning {
+  align-items: center;
+  color: var(--accent-warm-text);
+  display: flex;
+  font-size: 13px;
+  gap: 8px;
+  margin: 0;
+}
+
+.database-backup-warning svg {
+  flex: 0 0 auto;
+  height: 18px;
+  width: 18px;
+}
+
+.database-backup-file-picker {
+  align-items: center;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+}
+
+.database-backup-file-picker input {
+  block-size: 1px;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  inline-size: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+}
+
+.database-backup-selected-file {
+  color: var(--text-secondary);
+  font-size: 13px;
+  max-width: min(420px, 50vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-backup-restore-action > span {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.database-backup-confirm-backdrop {
+  align-items: center;
+  background: rgb(15 23 42 / 40%);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 180;
+}
+
+.database-backup-confirm-dialog {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  box-shadow: var(--shadow-hover);
+  display: grid;
+  gap: 16px;
+  max-width: 460px;
+  padding: 20px;
+  width: 100%;
+}
+
+.database-backup-confirm-heading {
+  color: var(--danger);
+}
+
+.database-backup-confirm-heading h2 {
+  color: var(--text-primary);
+  font-size: 18px;
+  margin: 0;
+}
+
+.database-backup-confirm-dialog p {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.database-backup-confirm-actions {
+  justify-content: flex-end;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
 .system-monitoring-header,
 .system-monitoring-health-heading {
   align-items: center;
@@ -11652,6 +11784,24 @@ a {
 
   .system-monitoring-health-grid {
     grid-template-columns: 1fr;
+  }
+
+  .database-backup-operation-heading,
+  .database-backup-file-controls,
+  .database-backup-restore-action,
+  .database-backup-confirm-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .database-backup-operation-heading .primary-button,
+  .database-backup-restore-action .danger-button,
+  .database-backup-confirm-actions button {
+    width: 100%;
+  }
+
+  .database-backup-selected-file {
+    max-width: 100%;
   }
 
   .system-monitoring-health-grid > div + div {

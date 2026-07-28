@@ -50,6 +50,7 @@ import type {
   CompletePasswordResetRequest,
   ApiResponse,
   CurrentUser,
+  DatabaseRestoreResponse,
   HealthStatus,
   LearningPlanConfirmResponse,
   LearningPlanActivationResponse,
@@ -175,6 +176,37 @@ export async function getHealth(signal?: AbortSignal): Promise<ApiResponse<Healt
     throw await toApiRequestError(response, 'Health request failed');
   }
 
+  return response.json();
+}
+
+export interface DatabaseBackupDownload {
+  blob: Blob;
+  filename: string;
+}
+
+export async function downloadDatabaseBackup(): Promise<DatabaseBackupDownload> {
+  const response = await apiFetch('/api/admin/database/backup');
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Database backup download failed');
+  }
+  return {
+    blob: await response.blob(),
+    filename: filenameFromContentDisposition(response.headers.get('Content-Disposition'))
+      ?? 'algo-mentor-data.ambak',
+  };
+}
+
+export async function restoreDatabaseBackup(file: File): Promise<ApiResponse<DatabaseRestoreResponse>> {
+  const form = new FormData();
+  form.append('file', file);
+  form.append('confirmation', 'OVERWRITE_ALL_DATA');
+  const response = await apiFetch('/api/admin/database/restore', {
+    method: 'POST',
+    body: form,
+  });
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Database restore failed');
+  }
   return response.json();
 }
 
@@ -2024,6 +2056,11 @@ function readCookie(name: string): string | undefined {
     .map((part) => part.trim())
     .find((part) => part.startsWith(prefix))
     ?.slice(prefix.length);
+}
+
+function filenameFromContentDisposition(value: string | null): string | undefined {
+  const match = /filename="?([^";]+)"?/i.exec(value ?? '');
+  return match?.[1];
 }
 
 async function toApiRequestError(response: Response, fallbackMessage: string): Promise<ApiRequestError> {

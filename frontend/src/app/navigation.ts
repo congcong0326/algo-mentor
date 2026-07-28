@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Activity, Bot, ClipboardList, House, LayoutDashboard, Library, MessageSquare, NotebookTabs, Settings, ShieldCheck, SlidersHorizontal, UserRound, UsersRound } from 'lucide-react';
+import { Activity, Archive, Bot, ClipboardList, House, LayoutDashboard, Library, MessageSquare, NotebookTabs, Settings, ShieldCheck, SlidersHorizontal, UserRound, UsersRound } from 'lucide-react';
 import type { AuthPermission } from '../types/api';
 
 export const APP_ROUTES = {
@@ -16,6 +16,7 @@ export const APP_ROUTES = {
   adminUsers: '/admin/users',
   adminUserGroups: '/admin/user-groups',
   adminMonitoring: '/admin/monitoring',
+  adminDatabaseBackup: '/admin/database-backup',
   adminSessions: '/admin/sessions',
   adminSessionPolicies: '/admin/session-policies',
   adminSystemPrompts: '/admin/system-prompts',
@@ -58,6 +59,7 @@ export type AppView =
   | 'adminUsers'
   | 'adminUserGroups'
   | 'adminMonitoring'
+  | 'adminDatabaseBackup'
   | 'adminSessions'
   | 'adminSessionPolicies'
   | 'adminSystemPrompts'
@@ -138,6 +140,13 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     path: APP_ROUTES.adminMonitoring,
     icon: Activity,
     permission: 'admin-overview:read',
+  },
+  {
+    view: 'adminDatabaseBackup',
+    labelKey: 'adminDatabaseBackup',
+    path: APP_ROUTES.adminDatabaseBackup,
+    icon: Archive,
+    permission: 'database-backup:manage',
   },
   {
     view: 'adminSessions',
@@ -224,6 +233,9 @@ export function viewFromPath(pathname: string): AppView | undefined {
   }
   if (pathname === APP_ROUTES.adminMonitoring) {
     return 'adminMonitoring';
+  }
+  if (pathname === APP_ROUTES.adminDatabaseBackup) {
+    return 'adminDatabaseBackup';
   }
   if (pathname === APP_ROUTES.adminSessions) {
     return 'adminSessions';

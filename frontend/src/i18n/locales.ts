@@ -90,6 +90,7 @@ export interface LocaleResources {
     adminUsers: string;
     adminUserGroups: string;
     adminMonitoring: string;
+    adminDatabaseBackup: string;
     adminSessions: string;
     adminSessionPolicies: string;
     adminSystemPrompts: string;
@@ -112,7 +113,7 @@ export interface LocaleResources {
     pageNavigation: string;
     expandSection: (label: string) => string;
     collapseSection: (label: string) => string;
-    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'sessions' | 'sessionPolicies' | 'systemPrompts' | 'ai' | 'aiPlatform' | 'operations' | 'modelResources' | 'costGovernance' | 'aiProviders' | 'aiRouting' | 'aiUsage' | 'aiPricing' | 'content' | 'feedback' | 'development' | 'users' | 'userGroups' | 'betaAccess' | 'problems' | 'debug', string>;
+    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'databaseBackup' | 'sessions' | 'sessionPolicies' | 'systemPrompts' | 'ai' | 'aiPlatform' | 'operations' | 'modelResources' | 'costGovernance' | 'aiProviders' | 'aiRouting' | 'aiUsage' | 'aiPricing' | 'content' | 'feedback' | 'development' | 'users' | 'userGroups' | 'betaAccess' | 'problems' | 'debug', string>;
   };
   feedback: {
     openDialog: string;
@@ -394,6 +395,26 @@ export interface LocaleResources {
     notChecked: string;
     refresh: string;
     loadFailed: string;
+  };
+  databaseBackup: {
+    ariaLabel: string;
+    title: string;
+    backupTitle: string;
+    download: string;
+    downloading: string;
+    restoreTitle: string;
+    restoreWarning: string;
+    chooseFile: string;
+    noFileSelected: string;
+    clearFile: string;
+    overwrite: string;
+    restoring: string;
+    confirmTitle: string;
+    confirmDescription: string;
+    cancel: string;
+    confirmOverwrite: string;
+    downloadFailed: string;
+    restoreFailed: string;
   };
   sessionMonitoring: {
     ariaLabel: string;
@@ -1213,6 +1234,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminUsers: '用户管理',
       adminUserGroups: '用户组管理',
       adminMonitoring: '系统监控',
+      adminDatabaseBackup: '数据备份',
       adminSessions: '会话监控',
       adminSessionPolicies: '会话策略',
       adminSystemPrompts: '系统提示词',
@@ -1240,6 +1262,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         access: '身份与访问',
         monitoring: '系统监控',
         systemStatus: '运行状态',
+        databaseBackup: '数据备份',
         sessions: '会话监控',
         sessionPolicies: '会话策略',
         systemPrompts: '系统提示词',
@@ -1542,6 +1565,26 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       notChecked: '尚未检查',
       refresh: '刷新运行状态',
       loadFailed: '服务健康检查失败。',
+    },
+    databaseBackup: {
+      ariaLabel: '数据备份',
+      title: '数据备份',
+      backupTitle: '全表备份',
+      download: '下载全表备份',
+      downloading: '正在准备备份',
+      restoreTitle: '覆盖恢复',
+      restoreWarning: '恢复会覆盖当前全部数据，完成后需要重新登录。',
+      chooseFile: '选择备份文件',
+      noFileSelected: '尚未选择文件',
+      clearFile: '清除已选文件',
+      overwrite: '覆盖全部数据',
+      restoring: '正在恢复',
+      confirmTitle: '确认覆盖全部数据',
+      confirmDescription: '此操作不可撤销，当前全部数据将被备份文件覆盖。',
+      cancel: '取消',
+      confirmOverwrite: '确认覆盖',
+      downloadFailed: '下载数据库备份失败。',
+      restoreFailed: '恢复数据库备份失败。',
     },
     sessionMonitoring: {
       ariaLabel: '会话监控',
@@ -2463,6 +2506,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       adminUsers: 'Users',
       adminUserGroups: 'User Groups',
       adminMonitoring: 'System monitoring',
+      adminDatabaseBackup: 'Data backup',
       adminSessions: 'Session monitoring',
       adminSessionPolicies: 'Session policies',
       adminSystemPrompts: 'System prompts',
@@ -2490,6 +2534,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         access: 'Identity & Access',
         monitoring: 'System monitoring',
         systemStatus: 'Runtime status',
+        databaseBackup: 'Data backup',
         sessions: 'Session monitoring',
         sessionPolicies: 'Session policies',
         systemPrompts: 'System prompts',
@@ -2792,6 +2837,26 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       notChecked: 'Not checked yet',
       refresh: 'Refresh runtime status',
       loadFailed: 'Service health check failed.',
+    },
+    databaseBackup: {
+      ariaLabel: 'Data backup',
+      title: 'Data backup',
+      backupTitle: 'Full data backup',
+      download: 'Download full backup',
+      downloading: 'Preparing backup',
+      restoreTitle: 'Overwrite restore',
+      restoreWarning: 'Restoring replaces all current data and requires a new sign-in.',
+      chooseFile: 'Choose backup file',
+      noFileSelected: 'No file selected',
+      clearFile: 'Clear selected file',
+      overwrite: 'Overwrite all data',
+      restoring: 'Restoring',
+      confirmTitle: 'Overwrite all data?',
+      confirmDescription: 'This cannot be undone. The backup file replaces all current data.',
+      cancel: 'Cancel',
+      confirmOverwrite: 'Overwrite data',
+      downloadFailed: 'Database backup download failed.',
+      restoreFailed: 'Database backup restore failed.',
     },
     sessionMonitoring: {
       ariaLabel: 'Session monitoring',

@@ -25,6 +25,8 @@ import org.congcong.algomentor.api.controller.admin.ai.AdminAiApiContractConstan
 import org.congcong.algomentor.api.controller.admin.feedback.AdminFeedbackApiContractConstants;
 import org.congcong.algomentor.api.controller.admin.overview.AdminOverviewApiContractConstants;
 import org.congcong.algomentor.api.controller.feedback.FeedbackApiContractConstants;
+import org.congcong.algomentor.api.databasebackup.controller.DatabaseBackupApiContractConstants;
+import org.congcong.algomentor.api.databasebackup.service.DatabaseBackupErrorCode;
 import org.congcong.algomentor.auth.config.AuthSecurityPaths;
 import org.congcong.algomentor.auth.controller.admin.AdminPasswordResetApiContractConstants;
 import org.congcong.algomentor.auth.controller.admin.BetaAccessApiContractConstants;
@@ -105,10 +107,36 @@ class AdminUserEndpointSecurityTest {
   }
 
   @Test
+  void databaseBackupEndpointsAreMappedWhenDataSourceIsConfigured() {
+    Set<String> mappedPaths = requestMappingHandlerMapping.getHandlerMethods().keySet().stream()
+        .flatMap(mapping -> mapping.getPatternValues().stream())
+        .collect(Collectors.toSet());
+
+    Set<String> expectedPaths = Set.of(
+        DatabaseBackupApiContractConstants.ADMIN_DATABASE_BASE_PATH
+            + DatabaseBackupApiContractConstants.BACKUP_PATH,
+        DatabaseBackupApiContractConstants.ADMIN_DATABASE_BASE_PATH
+            + DatabaseBackupApiContractConstants.RESTORE_PATH);
+
+    assertTrue(mappedPaths.containsAll(expectedPaths), () -> "Missing mappings: " + expectedPaths.stream()
+        .filter(path -> !mappedPaths.contains(path))
+        .toList());
+  }
+
+  @Test
   void nonAdminCannotAccessAdminUsersEndpoint() throws Exception {
     mockMvc.perform(get(AdminUserApiContractConstants.ADMIN_USERS_BASE_PATH)
             .with(authentication(authenticationToken("ROLE_USER"))))
         .andExpect(status().isForbidden());
+  }
+
+  @Test
+  void disabledDatabaseBackupReturnsItsControlledErrorCode() throws Exception {
+    mockMvc.perform(get(DatabaseBackupApiContractConstants.ADMIN_DATABASE_BASE_PATH
+            + DatabaseBackupApiContractConstants.BACKUP_PATH)
+            .with(authentication(authenticationToken("ROLE_ADMIN"))))
+        .andExpect(status().isInternalServerError())
+        .andExpect(jsonPath("$.error.code").value(DatabaseBackupErrorCode.DATABASE_BACKUP_FAILED.name()));
   }
 
   @Test
@@ -118,6 +146,11 @@ class AdminUserEndpointSecurityTest {
         .andExpect(status().isForbidden());
 
     mockMvc.perform(get(AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.SETTINGS_PATH)
+            .with(authentication(authenticationToken("ROLE_USER"))))
+        .andExpect(status().isForbidden());
+
+    mockMvc.perform(get(DatabaseBackupApiContractConstants.ADMIN_DATABASE_BASE_PATH
+            + DatabaseBackupApiContractConstants.BACKUP_PATH)
             .with(authentication(authenticationToken("ROLE_USER"))))
         .andExpect(status().isForbidden());
 
@@ -145,6 +178,10 @@ class AdminUserEndpointSecurityTest {
             .with(authentication(authenticationToken("ROLE_USER"))))
         .andExpect(status().isForbidden());
     mockMvc.perform(patch(AdminAiApiContractConstants.ADMIN_AI_BASE_PATH + AdminAiApiContractConstants.SETTINGS_PATH)
+            .with(authentication(authenticationToken("ROLE_ADMIN"))))
+        .andExpect(status().isForbidden());
+    mockMvc.perform(post(DatabaseBackupApiContractConstants.ADMIN_DATABASE_BASE_PATH
+            + DatabaseBackupApiContractConstants.RESTORE_PATH)
             .with(authentication(authenticationToken("ROLE_ADMIN"))))
         .andExpect(status().isForbidden());
   }

@@ -1,4 +1,5 @@
 server:
+  forward-headers-strategy: framework
   port: ${API_PORT:${SERVER_PORT:18080}}
 
 spring:
@@ -38,6 +39,10 @@ spring:
     timeout: ${AUTH_SESSION_TIMEOUT:7d}
     jdbc:
       initialize-schema: never
+  servlet:
+    multipart:
+      max-file-size: ${DATABASE_BACKUP_MAX_UPLOAD_SIZE:2GB}
+      max-request-size: ${DATABASE_BACKUP_MAX_UPLOAD_SIZE:2GB}
 
 management:
   endpoints:
@@ -61,6 +66,14 @@ algo-mentor:
       learning-plan-draft-timeout: ${LEARNING_PLAN_DRAFT_SSE_TIMEOUT:6m}
       practice-message-timeout: ${PRACTICE_MESSAGE_SSE_TIMEOUT:6m}
       agent-conversation-timeout: ${AGENT_CONVERSATION_SSE_TIMEOUT:6m}
+  database-backup:
+    enabled: ${DATABASE_BACKUP_ENABLED:false}
+    pg-dump-path: ${PG_DUMP_PATH:pg_dump}
+    pg-restore-path: ${PG_RESTORE_PATH:pg_restore}
+    psql-path: ${PSQL_PATH:psql}
+    command-timeout: ${DATABASE_BACKUP_COMMAND_TIMEOUT:10m}
+    max-upload-size: ${DATABASE_BACKUP_MAX_UPLOAD_SIZE:2GB}
+    application-version: ${DATABASE_BACKUP_APPLICATION_VERSION:0.1.0-SNAPSHOT}
   auth:
     login-success-url: ${AUTH_LOGIN_SUCCESS_URL:/}
     logout-success-url: ${AUTH_LOGOUT_SUCCESS_URL:/}

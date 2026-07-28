@@ -18,7 +18,8 @@ public enum AuthPermission {
   AI_GOVERNANCE_MANAGE("ai-governance:manage"),
   AI_RUN_READ("ai-run:read"),
   FEEDBACK_MANAGE("feedback:manage"),
-  DEBUG_ACCESS("debug:access");
+  DEBUG_ACCESS("debug:access"),
+  DATABASE_BACKUP_MANAGE("database-backup:manage");
 
   private final String value;
 

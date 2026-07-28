@@ -16,6 +16,13 @@ export interface HealthStatus {
   status: 'UP' | 'DOWN';
 }
 
+export interface DatabaseRestoreResponse {
+  restoredAt: string;
+  tableCount: number;
+  dumpSizeBytes: number;
+  loginRequired: boolean;
+}
+
 export type AuthRole = 'USER' | 'ADMIN';
 export type AuthUserStatus = 'ACTIVE' | 'DISABLED' | 'DELETED';
 export type AuthSessionAuthenticationMethod = 'PASSWORD' | 'OIDC';
@@ -34,7 +41,8 @@ export type AuthPermission =
   | 'ai-governance:manage'
   | 'ai-run:read'
   | 'feedback:manage'
-  | 'debug:access';
+  | 'debug:access'
+  | 'database-backup:manage';
 
 export interface CurrentUser {
   id: number;

@@ -8,6 +8,8 @@ spring:
   flyway:
     enabled: true
 algo-mentor:
+  database-backup:
+    enabled: ${DATABASE_BACKUP_ENABLED:true}
   cache:
     enabled: ${CACHE_ENABLED:true}
     metrics-enabled: ${CACHE_METRICS_ENABLED:true}

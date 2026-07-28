@@ -68,6 +68,8 @@ public final class CaffeineSharedCacheRegionFactory implements SharedCacheRegion
     }
     SharedTtlCacheRegion<?, ?> region = regions.computeIfAbsent(spec.name(), ignored ->
         new CaffeineSharedTtlCacheRegion<>(spec, keyCodec, ticker, metrics, coherenceMetrics));
+    CaffeineSharedTtlCacheRegion<?, ?> invalidationTarget = (CaffeineSharedTtlCacheRegion<?, ?>) region;
+    registry.registerSharedRegion(spec.name(), invalidationTarget, invalidationTarget::invalidateAllLocal);
     return cast(region);
   }
 

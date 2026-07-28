@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.congcong.algomentor.cache.api.LocalCacheRegion;
 import org.congcong.algomentor.cache.spec.CacheRegionName;
 import org.congcong.algomentor.cache.spec.LocalBoundedCacheSpec;
 import org.congcong.algomentor.cache.spec.LocalTtlCacheSpec;
@@ -50,5 +52,43 @@ class CacheRegionRegistryTest {
     assertThatIllegalStateException().isThrownBy(() ->
         registry.register(CacheRegionDefinition.sharedTtl(conflicting)));
     assertThat(registry.find(conflicting.name())).isEmpty();
+  }
+
+  @Test
+  void invalidatesRegisteredLocalAndSharedRegions() {
+    CacheRegionRegistry registry = new CacheRegionRegistry();
+    AtomicInteger localInvalidations = new AtomicInteger();
+    AtomicInteger sharedInvalidations = new AtomicInteger();
+    registry.registerLocalRegion(new CacheRegionName("local-cache"), new LocalCacheRegion<String, String>() {
+      @Override
+      public java.util.Optional<String> getIfPresent(String key) {
+        return java.util.Optional.empty();
+      }
+
+      @Override
+      public String get(String key, java.util.function.Function<? super String, ? extends String> loader) {
+        return loader.apply(key);
+      }
+
+      @Override
+      public void put(String key, String value) {
+      }
+
+      @Override
+      public void invalidate(String key) {
+      }
+
+      @Override
+      public void invalidateAll() {
+        localInvalidations.incrementAndGet();
+      }
+    });
+    registry.registerSharedRegion(
+        new CacheRegionName("shared-cache"), new Object(), sharedInvalidations::incrementAndGet);
+
+    registry.invalidateAllRegions();
+
+    assertThat(localInvalidations).hasValue(1);
+    assertThat(sharedInvalidations).hasValue(1);
   }
 }

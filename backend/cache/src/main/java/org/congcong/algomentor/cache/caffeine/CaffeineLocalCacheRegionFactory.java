@@ -39,6 +39,7 @@ public final class CaffeineLocalCacheRegionFactory implements LocalCacheRegionFa
     LocalCacheRegion<?, ?> region = regions.computeIfAbsent(spec.name(), ignored ->
         new CaffeineLocalBoundedCacheRegion<>(
             CaffeineCacheRegion.create(spec.name(), spec.maximumSize(), null, ticker, metrics)));
+    registry.registerLocalRegion(spec.name(), region);
     return castBounded(region);
   }
 
@@ -49,6 +50,7 @@ public final class CaffeineLocalCacheRegionFactory implements LocalCacheRegionFa
     LocalCacheRegion<?, ?> region = regions.computeIfAbsent(spec.name(), ignored ->
         new CaffeineLocalTtlCacheRegion<>(
             CaffeineCacheRegion.create(spec.name(), spec.maximumSize(), spec.ttl(), ticker, metrics)));
+    registry.registerLocalRegion(spec.name(), region);
     return castTtl(region);
   }
 

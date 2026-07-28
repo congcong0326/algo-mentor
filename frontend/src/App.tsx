@@ -18,6 +18,7 @@ import BetaAccessPage from './admin/BetaAccessPage';
 import AiGovernancePage from './admin/ai/AiGovernancePage';
 import { isAiGovernanceTab } from './admin/ai/aiGovernanceRoute';
 import SystemMonitoringPage from './admin/monitoring/SystemMonitoringPage';
+import DatabaseBackupPage from './admin/database-backup/DatabaseBackupPage';
 import SessionMonitoringPage from './admin/sessions/SessionMonitoringPage';
 import SessionPolicyPage from './admin/session-policies/SessionPolicyPage';
 import SystemPromptManagementPage from './admin/system-prompts/SystemPromptManagementPage';
@@ -100,6 +101,9 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminMonitoring' && !hasPermission(user, 'admin-overview:read')) {
+    return defaultAuthenticatedRouteForUser(user);
+  }
+  if (view === 'adminDatabaseBackup' && !hasPermission(user, 'database-backup:manage')) {
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminSessions' && !hasPermission(user, 'session:manage')) {
@@ -506,6 +510,15 @@ export default function App() {
     }
   }
 
+  function handleDatabaseRestoreCompleted() {
+    setCurrentUser(undefined);
+    setFeedbackDialogOpen(false);
+    setActiveView('home');
+    setPathname(APP_ROUTES.login);
+    setSearch('');
+    window.history.replaceState({}, '', APP_ROUTES.login);
+  }
+
   async function handlePasswordLogin(request: PasswordLoginRequest) {
     if (passwordAuthPending) {
       return;
@@ -673,6 +686,8 @@ export default function App() {
     ? <AiGovernancePage onNavigate={navigateToPath} search={search} />
     : activeView === 'adminMonitoring' && hasPermission(currentUser, 'admin-overview:read')
     ? <SystemMonitoringPage />
+    : activeView === 'adminDatabaseBackup' && hasPermission(currentUser, 'database-backup:manage')
+    ? <DatabaseBackupPage onRestoreCompleted={handleDatabaseRestoreCompleted} />
     : activeView === 'adminSessions' && hasPermission(currentUser, 'session:manage')
     ? <SessionMonitoringPage />
     : activeView === 'adminSessionPolicies' && hasPermission(currentUser, 'policy:manage')

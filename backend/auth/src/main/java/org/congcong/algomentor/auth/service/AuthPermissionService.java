@@ -33,6 +33,7 @@ public class AuthPermissionService {
       permissions.add(AuthPermission.FEEDBACK_MANAGE);
       permissions.add(AuthPermission.DEBUG_ACCESS);
       permissions.add(AuthPermission.SESSION_MANAGE);
+      permissions.add(AuthPermission.DATABASE_BACKUP_MANAGE);
     }
     return permissions.stream()
         .map(AuthPermission::value)

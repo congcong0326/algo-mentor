@@ -33,7 +33,10 @@ public enum AdminAuditMetadataKey {
   ERROR_CODE("errorCode"),
   POLICY_TYPE_CODE("policyTypeCode"),
   POLICY_STATUS("policyStatus"),
-  SUBJECT_COUNT("subjectCount");
+  SUBJECT_COUNT("subjectCount"),
+  APPLICATION_VERSION("applicationVersion"),
+  TABLE_COUNT("tableCount"),
+  DUMP_SIZE_BYTES("dumpSizeBytes");
 
   private final String value;
 

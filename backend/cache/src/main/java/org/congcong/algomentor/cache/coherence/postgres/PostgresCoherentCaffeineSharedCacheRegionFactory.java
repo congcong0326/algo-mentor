@@ -100,6 +100,9 @@ public final class PostgresCoherentCaffeineSharedCacheRegionFactory
       invalidationTargets.register(created);
       return created;
     });
+    CaffeineSharedTtlCacheRegion<?, ?> invalidationTarget = (CaffeineSharedTtlCacheRegion<?, ?>) region;
+    registry.registerSharedRegion(
+        specification.name(), invalidationTarget, invalidationTarget::invalidateAllLocal);
     return cast(region);
   }
 
