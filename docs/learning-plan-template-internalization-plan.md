@@ -10,13 +10,13 @@
 
 - P0 首批 10 个内部模板已写入 `data/learning-plan-template-seed/`，生成器已从 NeetCode 单源脚本演进为多 source 生成器。
 - P1-A 两个核心批次和动态规划进阶扩展已完成，共形成 17 个专项模板；P1-B 已完成 TIH 核心专题、剑指 Offer、算法模式入门、程序员面试金典、LeetCode 75、LeetCode 面试经典 150、代码随想录完整版和 labuladong 核心算法框架路线。
-- 当前 seed manifest 显示：模板数 `35`，题目引用数 `1705`，本地匹配 `1667`，本地缺失 `38`；本批新增 `6` 模板 / `336` refs / `331` 匹配 / `5` 缺失。
+- 当前 seed manifest 显示：模板数 `35`，题目引用数 `1738`，本地匹配 `1699`，本地缺失 `39`；本批新增 `6` 模板 / `336` refs / `331` 匹配 / `5` 缺失。
 - 当前 35 个模板已拆分到 `data/learning-plan-template-sources/templates/<templateId>/`，每个模板目录包含 `template.json` 和 `problem_refs.jsonl`；`template_order.json` 控制聚合顺序。
 - 当前 seed 目录固定为 `data/learning-plan-template-seed/`，包含 `learning_plan_templates.jsonl`、`learning_plan_template_problem_refs.jsonl`、`learning_plan_template_seed_manifest.json`、`learning_plan_template_seed_metadata.md` 四个文件。
 - `data/learning-plan-template-seed/` 是后端导入使用的聚合产物，必须由 `tools/learning_plan_template_seed/prepare_template_seed.py` 从模板源目录生成，不再作为人工维护入口。
 - 后端导入已经要求每个模板有完整 source attribution、非空 phases、至少一个 problem ref；缺失本地题目保留在 refs 和 metadata，但不进入生成草稿。
 - 从模板生成草稿必须满足：阶段周数合计等于总周期；模板阶段承载完整路线；所有本地匹配 refs 默认进入草稿推荐题；缺失 refs 只保留在模板明细和草稿 metadata；草稿状态继续落为 `GENERATED`，并复用现有草稿确认流程。
-- 本批已完成生成与回归验证：`python3 -m unittest discover -s tools -p '*_test.py'` 共 59 个测试通过；模板导入、草稿生成和模板 API 定向 Maven 测试共 48 个测试通过；前端 43 个测试文件、340 个测试通过。`make db-seed` 已成功导入 35 模板 / 1705 refs / 1667 匹配 / 38 缺失，最新 import run `id=7`、`error_count=0`。全量 `make backend-test` 最近一次仍有 mentor-api 中 7 个既有 Web 上下文测试因缺少 `AiModelRoutePolicyTypeContributor` Bean 失败，与本批模板改动无关。
+- 本轮将热题模板扩展为完整 100 题并完成生成与回归验证：`python3 -m unittest discover -s tools -p '*_test.py'` 共 61 个测试通过；模板导入、草稿生成和模板 API 定向 Maven 测试共 24 个测试通过；前端模板入口定向测试共 1 个文件、5 个测试通过。本轮未执行 `make db-seed`，运行中的本地数据库需在发布时通过该命令重新导入 35 模板 / 1738 refs / 1699 匹配 / 39 缺失。
 
 实施边界：
 
@@ -58,7 +58,7 @@
 | `topic_graph_bfs_dfs` | 当前已完成 | 图论专项突破计划 | LeetCode Graph Theory、代码随想录图论、halfrost BFS/DFS/Union Find | 4 周 | `TOPIC_BREAKTHROUGH` | `INTERMEDIATE` | halfrost MIT 题号/标签直接内置；其他来源外链参考和阶段重建 | 20 refs，匹配 19、缺失 1（`alien-dictionary`）；草稿不推荐未匹配题 |
 | `topic_binary_search_boundaries` | 当前已完成 | 二分与边界专项计划 | LeetCode Binary Search、halfrost Binary Search | 2 周 | `TOPIC_BREAKTHROUGH` | `INTERMEDIATE` | halfrost 可直接内置；LeetCode 官方计划外链参考 | 18 refs，匹配 18、缺失 0；2 周 2 阶段草稿生成已覆盖 |
 | `topic_sliding_window_two_pointers` | 当前已完成 | 滑动窗口与双指针专项计划 | NeetCode pattern、halfrost Two Pointers / Sliding Window、Tech Interview Handbook | 2 周 | `TOPIC_BREAKTHROUGH` | `INTERMEDIATE` | 多源参考后重建；只内置 slug、题号、标签和自写推荐理由 | 15 refs，匹配 15、缺失 0；固定窗口、可变窗口和双指针分层 |
-| `leetcode_top_100_liked_revision` | 当前已完成 | Top 100 Liked 复盘计划 | LeetCode Top 100 Liked、Tech Interview Handbook essential/recommended | 6 周 | `MISTAKE_REVIEW` | `INTERMEDIATE` | 外链参考和参考后重建；不直接复制官方题单内容，按本地题库和高赞经典标签重组 | 67 refs，匹配 67、缺失 0；6 周复盘模板草稿生成已覆盖 |
+| `leetcode_top_100_liked_revision` | 当前已完成 | LeetCode 热题 100 | LeetCode Hot 100 结构化题目元数据 | 10 周 | `INTERVIEW_SPRINT` | `INTERMEDIATE` | 保留 Hot 100 完整题目 ID、标题、难度和顺序，再按题型重组为 10 个阶段；不复制题面、题解或代码 | 100 refs，匹配 99、缺失 1（`meeting-rooms-ii`）；本地匹配题默认进入草稿 |
 | `programming_skills_implementation_foundation` | 当前已完成 | 编程基础与实现力计划 | LeetCode Programming Skills、本地 Easy/Medium 题库 | 4 周 | `PRACTICE_GOAL` | `BEGINNER` | 外链参考后用本地题库重建；官方计划只作为目标描述和入口 | 34 refs，匹配 34、缺失 0；Easy/Medium 基础实现路线完整 |
 
 ## 后续模板扩展池
@@ -133,7 +133,7 @@ P0 完成后，后续任务按资料源和用户场景继续拆分。以下模�
 | TIH 面试冲刺 | 来源子 agent | TIH 仓库固定 commit、Best Practice 50 Markdown、local problems | `tih_best_practice_50_5weeks` 候选模板、refs、license note | 临时候选目录或 PR patch；不直接覆盖 seed 目录 | core/optional 标记清楚；MIT 归因完整；5 周计划生成 5 个有效阶段 |
 | 中文入门路线 | 来源子 agent | 代码随想录目录、Programming Skills 外链、本地题库标签 | `cn_algorithm_foundation_12weeks` 阶段草案和题目候选 | 临时候选目录；不复制第三方正文 | 阶段顺序可解释；所有推荐理由为自写；无 LICENSE 来源只作为参考后重建 |
 | 专项模板包 | 批次子 agent | halfrost meta、NeetCode pattern、LeetCode 官方专题外链 | DP、图、二分、滑窗/双指针四个专项候选 | 临时候选目录；仅提交候选 JSONL 片段 | 每个模板至少 15 条 refs；2 周模板生成 2 阶段，4 周模板生成约 3 阶段 |
-| 复盘和实现力模板 | 批次子 agent | Top 100 Liked 外链、TIH essential/recommended、本地题库 | Top 100 复盘和编程基础模板候选 | 临时候选目录；不直接写前端 | 复盘模板标记 `MISTAKE_REVIEW`；基础模板 Easy/Medium 结构合理 |
+| 热题和实现力模板 | 批次子 agent | LeetCode Hot 100 结构化题目元数据、本地题库 | 热题 100 和编程基础模板候选 | 临时候选目录；不直接写前端 | 热题模板保留完整 100 refs 与缺失审计；基础模板 Easy/Medium 结构合理 |
 | 集成验收 | 主 agent | 所有候选片段、脚本、测试 | 四个 seed 文件、测试结果、变更说明 | `tools/learning_plan_template_seed/`、`data/learning-plan-template-seed/`、必要测试文件 | 所有模板可导入、可查询、可生成草稿；manifest/metadata 数字一致 |
 
 ### 子 agent 交付格式

@@ -194,6 +194,35 @@ class PrepareTemplateSeedTest(unittest.TestCase):
                 sum(phase["durationWeeks"] for phase in template["phases"]),
             )
 
+    def test_hot_100_template_keeps_the_complete_route_and_missing_ref_auditable(self) -> None:
+        templates, refs, _ = seed.build_seed(
+            source_data(),
+            build_problem_index(exclude=known_missing_slugs()),
+        )
+        template = next(
+            item for item in templates if item["templateId"] == "leetcode_top_100_liked_revision"
+        )
+        template_refs = [ref for ref in refs if ref["templateId"] == template["templateId"]]
+
+        self.assertEqual("LeetCode 热题 100", template["title"])
+        self.assertEqual("INTERVIEW_SPRINT", template["intent"])
+        self.assertEqual(10, template["defaultDurationWeeks"])
+        self.assertEqual(10, len(template["phases"]))
+        self.assertEqual(100, len(template_refs))
+        self.assertEqual(100, len({ref["problemSlug"] for ref in template_refs}))
+        self.assertEqual(
+            list(range(1, 101)),
+            sorted(ref["sourceOrder"] for ref in template_refs),
+        )
+        self.assertEqual(
+            ["meeting-rooms-ii"],
+            [ref["problemSlug"] for ref in template_refs if not ref["metadata"]["matchedLocalProblem"]],
+        )
+        self.assertEqual(
+            "LeetCode 热题 HOT 100",
+            template["metadata"]["sourceCollectionName"],
+        )
+
     def test_final_compatible_templates_are_complete_and_auditable(self) -> None:
         templates, refs, _ = seed.build_seed(
             source_data(),

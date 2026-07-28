@@ -18,7 +18,7 @@
 python3 tools/learning_plan_template_seed/prepare_p1b_template_sources.py
 ```
 
-其中代码随想录固定到 commit `86f78fde8cb62d10c3b5e38b7e6b6e0705850f92`，labuladong 固定到 commit `b1f23cb9605f6146ff78bafad71e795176439b99`，LeetCode 官方计划记录为 `accessed-2026-07-28`。当前聚合 seed 共 35 个模板 / 1705 refs / 1667 匹配 / 38 缺失。
+其中代码随想录固定到 commit `86f78fde8cb62d10c3b5e38b7e6b6e0705850f92`，labuladong 固定到 commit `b1f23cb9605f6146ff78bafad71e795176439b99`，LeetCode 官方计划记录为 `accessed-2026-07-28`。当前聚合 seed 共 35 个模板 / 1738 refs / 1699 匹配 / 39 缺失。
 
 生成或修改单模板源文件后，再统一重建聚合 seed：
 

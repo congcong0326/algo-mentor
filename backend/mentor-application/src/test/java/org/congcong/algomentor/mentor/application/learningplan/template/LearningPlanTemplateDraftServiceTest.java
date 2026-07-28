@@ -126,8 +126,8 @@ class LearningPlanTemplateDraftServiceTest {
   }
 
   @org.junit.jupiter.api.Test
-  void sixWeekRevisionTemplateCreatesFullMatchedDraft() {
-    assertTemplateDraftMatchesLocalRefs("leetcode_top_100_liked_revision", 6, 6, 67, 0);
+  void hot100TemplateCreatesCompleteTenWeekDraftAndKeepsMissingProblemInMetadata() {
+    assertTemplateDraftMatchesLocalRefs("leetcode_top_100_liked_revision", 10, 10, 100, 1);
   }
 
   @org.junit.jupiter.api.Test

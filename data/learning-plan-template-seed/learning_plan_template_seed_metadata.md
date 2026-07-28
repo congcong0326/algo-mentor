@@ -3,9 +3,9 @@
 - 生成时间：`2026-07-28T00:00:00+00:00`
 - 根来源：`algo-mentor learning-plan-template-sources`
 - 模板数：`35`
-- 题目引用数：`1705`
-- 本地题库匹配：`1667`
-- 本地题库缺失：`38`
+- 题目引用数：`1738`
+- 本地题库匹配：`1699`
+- 本地题库缺失：`39`
 
 ## 来源归因
 
@@ -23,7 +23,7 @@
 - URL：https://github.com/yangshun/tech-interview-handbook
 - 固定版本：`8ee2acb54a05c4add123a824d15e7dfc4e703b2f`
 - 源路径：`apps/website/contents/best-practice-questions.md; apps/website/contents/algorithms/*.md`
-- 覆盖模板：`leetcode_top_100_liked_revision, tih_algorithm_essentials, tih_best_practice_50_5weeks, topic_greedy_strategies, topic_heap_priority_queue, topic_sliding_window_two_pointers`
+- 覆盖模板：`tih_algorithm_essentials, tih_best_practice_50_5weeks, topic_greedy_strategies, topic_heap_priority_queue, topic_sliding_window_two_pointers`
 - refs / matched / missing：`180 / 165 / 15`
 - 授权备注：MIT License；本 seed 只解析题名、difficulty、LeetCode URL、主题和 optional/premium 标记，不复制文章正文。
 
@@ -33,7 +33,7 @@
 - 固定版本：`3bcc916680298295e06060ca9790304c1f1b78b6`
 - 源路径：`ctl/meta/*`
 - 覆盖模板：`topic_backtracking_foundation, topic_binary_search_boundaries, topic_bit_manipulation, topic_dynamic_programming_foundation, topic_graph_bfs_dfs, topic_greedy_strategies, topic_heap_priority_queue, topic_linked_list, topic_sliding_window_two_pointers, topic_stack_monotonic, topic_tree_binary_tree_foundation, topic_union_find_and_advanced_graph`
-- refs / matched / missing：`300 / 299 / 1`
+- refs / matched / missing：`260 / 259 / 1`
 - 授权备注：MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。
 
 ### youngyangyang04/leetcode-master
@@ -60,7 +60,7 @@
 - 固定版本：`accessed-2026-07-28`
 - 源路径：`leetcode-75; top-interview-150; top-100-liked; programming-skills; dynamic-programming; graph-theory; binary-search; top-sql-50; 30-days-of-javascript; introduction-to-pandas; 30-days-of-pandas`
 - 覆盖模板：`cn_algorithm_foundation_12weeks, leetcode_75_core_sprint, leetcode_javascript_30_days, leetcode_pandas_30_days, leetcode_pandas_introduction, leetcode_sql_50, leetcode_top_100_liked_revision, leetcode_top_interview_150, programming_skills_implementation_foundation, topic_binary_search_boundaries, topic_bit_manipulation, topic_dynamic_programming_foundation, topic_graph_bfs_dfs, topic_tree_binary_tree_foundation`
-- refs / matched / missing：`405 / 400 / 5`
+- refs / matched / missing：`478 / 472 / 6`
 - 授权备注：官方网页仅作外链和目标参考；本 seed 不复制题面、题解、付费内容或官方题单全文。
 
 ### algo-mentor local problem seed
@@ -384,13 +384,13 @@
 
 ### leetcode_top_100_liked_revision
 
-- 标题：Top 100 Liked 复盘计划
-- 题目数：`67`
-- 阶段数：`6`
-- 匹配题：`67`
-- 缺失题：`0`
-- 缺失题示例：`无`
-- 难度分布：`{"Easy": {"count": 18, "ratio": 0.2687}, "Medium": {"count": 45, "ratio": 0.6716}, "Hard": {"count": 4, "ratio": 0.0597}}`
+- 标题：LeetCode 热题 100
+- 题目数：`100`
+- 阶段数：`10`
+- 匹配题：`99`
+- 缺失题：`1`
+- 缺失题示例：`meeting-rooms-ii`
+- 难度分布：`{"Easy": {"count": 22, "ratio": 0.22}, "Medium": {"count": 63, "ratio": 0.63}, "Hard": {"count": 15, "ratio": 0.15}}`
 
 ### programming_skills_implementation_foundation
 

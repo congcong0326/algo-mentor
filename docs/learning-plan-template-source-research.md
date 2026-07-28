@@ -18,7 +18,7 @@
 - 短期面试冲刺计划：4-6 周，覆盖 Blind 75 / LeetCode 75 / Grind 75 / Best Practice 50，适合有明确面试时间的用户。
 - 中文新手系统刷题计划：8-16 周，参考代码随想录这类按知识脉络组织的路线，解决“从哪里开始、下一步刷什么”的问题。
 - 专项突破计划：2-4 周，覆盖动态规划、图论、二分、滑动窗口、树、回溯、贪心等薄弱主题，适合能力画像驱动的补强。
-- 复盘与查漏补缺计划：2-6 周，覆盖 Top 100 Liked、Tech Interview Handbook essential/recommended、Halfrost 标签题单。
+- 高频经典题计划：8-10 周，覆盖 LeetCode 热题 100，并按常见题型完成系统训练和复盘。
 
 许可证不作为第一版排序的核心依据，但仍在文档中保留为后续真正内置和发布时的风险提示。
 
@@ -33,7 +33,7 @@
 | 3 | 中文新手系统入门计划 | 刚开始刷题、中文学习偏好强、需要按知识脉络推进 | 代码随想录、LeetCode Programming Skills、NeetCode beginner 类路线 | 降低入门门槛，适合作为产品留存型长期计划 | P0 |
 | 4 | 专项突破计划 | 已刷过一部分题，但某类题明显薄弱 | LeetCode Dynamic Programming、Graph Theory、Binary Search、halfrost 标签题单、labuladong 专题 | 和能力画像结合价值高，适合后续自动推荐 | P1 |
 | 5 | 模式化刷题路线 | 想按题型模式建立解题套路 | NeetCode pattern、leetcode-patterns、Tech Interview Handbook algorithm guides | 比纯题单更强调解题模式，适合 AI 讲解和复盘 | P1 |
-| 6 | 高频经典复盘计划 | 刷过一轮后准备查漏补缺 | LeetCode Top 100 Liked、Tech Interview Handbook essential/recommended、halfrost 高频标签 | 适合二刷、错题复盘和面试前最后整理 | P1 |
+| 6 | LeetCode 热题 100 | 希望系统覆盖常见经典算法题型 | LeetCode Hot 100 结构化题目元数据 | 题量完整、用户认知强，适合系统训练与面试前复盘 | P1 |
 | 7 | 长周期 CS/面试综合计划 | 目标不只是刷题，还要补 CS 基础 | Coding Interview University、CS-Notes、doocs/leetcode | 内容广但不够聚焦“新建刷题方案”，可后续扩展 | P2 |
 | 8 | 非算法专项计划 | SQL、前端 JS、数据分析方向用户 | SQL 50、Advanced SQL 50、30 Days of JavaScript、Pandas plans | 有价值但偏离当前算法学习主线 | P2 |
 
@@ -69,7 +69,7 @@ LeetCode 官方计划适合作为“参考模板”和用户外链入口。建�
 | --- | --- | --- | --- |
 | LeetCode 75 | `https://leetcode.com/studyplan/leetcode-75/` | 面试基础、高频核心题 | P0 参考；可用本地题库生成 4-8 周版本 |
 | Top Interview 150 | `https://leetcode.com/studyplan/top-interview-150/` | 系统面试准备 | P0 参考；可映射到 NeetCode 150 / 本地题库 |
-| Top 100 Liked | `https://leetcode.com/studyplan/top-100-liked/` | 高频经典题复盘 | P1 参考；适合刷过一轮后的综合复盘 |
+| LeetCode 热题 100 | `https://leetcode.com/studyplan/top-100-liked/` | 高频经典题系统训练 | P1 参考；保留完整 100 题并按题型拆分阶段 |
 | Binary Search | `https://leetcode.com/studyplan/binary-search/` | 二分专项，官方标注 8 类模式 / 42 题 / 1 个月 | P1 参考；可做 1-2 周专题模板 |
 | Graph Theory | `https://leetcode.com/studyplan/graph-theory/` | 图论专项，官方标注 8 个主题 / 45 题 | P1 参考；适合 DFS/BFS/拓扑/并查集分阶段 |
 | Dynamic Programming | `https://leetcode.com/studyplan/dynamic-programming/` | 动态规划专项，官方标注 10 个核心 DP 模式 | P1 参考；建议按一维、二维、背包、区间、状态机拆阶段 |
@@ -254,7 +254,7 @@ LeetCode 官方计划适合作为“参考模板”和用户外链入口。建�
 | 6 | 图论专项突破 | LeetCode Graph Theory、代码随想录图论、halfrost BFS/DFS/Union Find | 2-4 周 | 能补一个明确薄弱区，适合能力画像推荐 | DFS/BFS -> 岛屿问题 -> 拓扑排序 -> 并查集 -> 最短路/MST 选修 |
 | 7 | 二分与边界专项 | LeetCode Binary Search、halfrost Binary Search | 1-2 周 | 小而高频，容易形成“短计划完成体验” | 基础二分 -> 搜索旋转数组 -> 答案二分 -> 矩阵/区间变体 |
 | 8 | 滑动窗口与双指针专项 | NeetCode pattern、halfrost Two Pointers / Sliding Window、Tech Interview Handbook | 1-2 周 | 适合快速提升字符串和数组题正确率 | 固定窗口 -> 可变窗口 -> 双端指针 -> 去重与排序组合 |
-| 9 | Top 100 Liked 复盘 | LeetCode Top 100 Liked、Tech Interview Handbook essential/recommended | 4-6 周 | 适合二刷和面试前查漏补缺 | 按用户历史练习和错题优先重排，覆盖高赞经典题 |
+| 9 | LeetCode 热题 100 | LeetCode Hot 100 结构化题目元数据 | 8-10 周 | 覆盖常见经典题型，适合系统训练与面试前复盘 | 保留完整 100 题，按哈希/数组、链表、树图、二分、堆和 DP 分阶段 |
 | 10 | 编程基础与实现力 | LeetCode Programming Skills、Easy/Medium 本地题库 | 2-4 周 | 适合刚换语言或基础实现薄弱的用户 | 模拟、字符串、数组、矩阵、基础数据结构操作 |
 
 第二版再考虑：

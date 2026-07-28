@@ -88,7 +88,7 @@
 
 ## 当前 Seed 状态
 
-截至 2026-07-28，聚合 seed 已包含 35 个模板、1705 条题目引用，其中 1667 条本地匹配、38 条本地缺失。完整路线已覆盖 NeetCode、TIH、代码随想录、labuladong、LeetCode 官方面试计划、中文经典题单、算法专项以及 SQL、JavaScript、Pandas 练习计划。
+截至 2026-07-28，聚合 seed 已包含 35 个模板、1738 条题目引用，其中 1699 条本地匹配、39 条本地缺失。完整路线已覆盖 NeetCode、TIH、代码随想录、labuladong、LeetCode 官方面试计划、中文经典题单、算法专项以及 SQL、JavaScript、Pandas 练习计划。
 
 本轮新增 6 个模板、336 条 refs，其中 331 条匹配、5 条缺失：
 

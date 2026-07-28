@@ -20,7 +20,7 @@
 
 ## 2. 背景与问题
 
-当前聚合 seed 已包含 35 个模板、1705 条题目引用。模板列表接口一次返回全部模板，前端以双列大卡片完整铺开，并自动选中接口返回的第一个模板。
+当前聚合 seed 已包含 35 个模板、1738 条题目引用。模板列表接口一次返回全部模板，前端以双列大卡片完整铺开，并自动选中接口返回的第一个模板。
 
 当前实现存在以下问题：
 
@@ -147,7 +147,7 @@ public enum LearningPlanTemplateCatalogCategory {
 | `cracking_coding_interview_classic` | 程序员面试金典系统训练计划 |
 | `leetcode_75_core_sprint` | LeetCode 75 核心冲刺计划 |
 | `leetcode_top_interview_150` | LeetCode 面试经典 150 题计划 |
-| `leetcode_top_100_liked_revision` | Top 100 Liked 复盘计划 |
+| `leetcode_top_100_liked_revision` | LeetCode 热题 100 |
 
 #### 专题突破：18 个
 

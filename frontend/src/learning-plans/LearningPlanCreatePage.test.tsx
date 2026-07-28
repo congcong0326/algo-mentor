@@ -326,7 +326,7 @@ const additionalTemplateDefinitions: Array<{
   { templateId: 'sword_offer_classic', title: '剑指 Offer 经典面试计划', catalogCategory: 'INTERVIEW_PREP' },
   { templateId: 'cracking_coding_interview_classic', title: '程序员面试金典系统训练计划', catalogCategory: 'INTERVIEW_PREP' },
   { templateId: 'leetcode_top_interview_150', title: 'LeetCode 面试经典 150 题计划', catalogCategory: 'INTERVIEW_PREP' },
-  { templateId: 'leetcode_top_100_liked_revision', title: 'Top 100 Liked 复盘计划', catalogCategory: 'INTERVIEW_PREP' },
+  { templateId: 'leetcode_top_100_liked_revision', title: 'LeetCode 热题 100', catalogCategory: 'INTERVIEW_PREP' },
   { templateId: 'tih_algorithm_essentials', title: '算法面试核心专题计划', catalogCategory: 'TOPIC_BREAKTHROUGH' },
   { templateId: 'topic_dynamic_programming_foundation', title: '动态规划专项突破计划', catalogCategory: 'TOPIC_BREAKTHROUGH', recommendedOrder: 6 },
   { templateId: 'topic_dp_advanced', title: '动态规划进阶专项计划', catalogCategory: 'TOPIC_BREAKTHROUGH' },

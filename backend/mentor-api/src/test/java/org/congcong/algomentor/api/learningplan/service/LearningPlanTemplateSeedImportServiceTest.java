@@ -43,13 +43,16 @@ class LearningPlanTemplateSeedImportServiceTest {
         new LearningPlanTemplateSeedReader(objectMapper),
         objectMapper);
 
-    LearningPlanTemplateSeedImportResult result = service.importSeed(repoRoot.resolve("data/learning-plan-template-seed"));
+    Path seedDirectory = repoRoot.resolve("data/learning-plan-template-seed");
+    JsonNode manifestNode = objectMapper.readTree(Files.readString(
+        seedDirectory.resolve(LearningPlanTemplateSeedConstants.MANIFEST_FILE)));
+    LearningPlanTemplateSeedImportResult result = service.importSeed(seedDirectory);
 
-    assertThat(result.templateCount()).isEqualTo(35);
-    assertThat(result.problemRefCount()).isEqualTo(1705);
-    assertThat(result.matchedProblemCount()).isEqualTo(1667);
-    assertThat(result.missingProblemCount()).isEqualTo(38);
-    assertThat(templateRepository.templates).hasSize(35);
+    assertThat(result.templateCount()).isEqualTo(manifestNode.path("templateCount").asInt());
+    assertThat(result.problemRefCount()).isEqualTo(manifestNode.path("problemRefCount").asInt());
+    assertThat(result.matchedProblemCount()).isEqualTo(manifestNode.path("matchedProblemCount").asInt());
+    assertThat(result.missingProblemCount()).isEqualTo(manifestNode.path("missingProblemCount").asInt());
+    assertThat(templateRepository.templates).hasSize(manifestNode.path("templateCount").asInt());
     assertThat(templateRepository.templates)
         .extracting(LearningPlanTemplate::templateId)
         .contains(

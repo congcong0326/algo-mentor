@@ -5,7 +5,7 @@
 ## 目的与范围
 
 - 本文档只关注**后续需要导入的模板计划**，是 `docs/learning-plan-template-internalization-plan.md` 的批次续篇。
-- P0、P1-A、P1-B 以及当前 phase/problem-ref 模型兼容的 P2 官方计划均已完成闭环；`data/learning-plan-template-seed/` 当前为 35 模板 / 1705 refs / 1667 匹配 / 38 缺失。
+- P0、P1-A、P1-B 以及当前 phase/problem-ref 模型兼容的 P2 官方计划均已完成闭环；`data/learning-plan-template-seed/` 当前为 35 模板 / 1738 refs / 1699 匹配 / 39 缺失。
 - 所有资料源统一按“直接内置结构化题单/路线数据”处理：题号、slug、难度、标签、顺序、roadmap 阶段划分与来源 note 均可直接内置；仍不复制文章正文、题解代码与图示。seed 保留 `sourceName/sourceUrl/sourceCommit/licenseNotice` 做归因记录。
 
 ## 现状底座
@@ -104,7 +104,7 @@
 
 ## 缺失题处理
 
-- 当前 38 条缺失 refs 除既有锁题外，还包含 Pandas 30 天中 5 条本地题库尚未收录的引用；它们保留在 refs 和审计 metadata 中，不进入生成草稿。
+- 当前 39 条缺失 refs 除既有锁题外，还包含 LeetCode 热题 100 的 `meeting-rooms-ii` 及 Pandas 30 天中 5 条本地题库尚未收录的引用；它们保留在 refs 和审计 metadata 中，不进入生成草稿。
 - P1 专项走本地 tag 重组，基本不产生新缺失。
 - 短期维持现状：缺失题保留在 refs + metadata、不进草稿、前端轻提示。
 - 可选中期动作：若要把 NeetCode 150 匹配率补满，单独补这几道锁题的本地题库 seed 后重生成；**不阻塞 P1**。

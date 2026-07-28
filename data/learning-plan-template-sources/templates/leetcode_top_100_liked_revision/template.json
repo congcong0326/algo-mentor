@@ -1,179 +1,268 @@
 {
   "templateId": "leetcode_top_100_liked_revision",
   "catalogCategory": "INTERVIEW_PREP",
-  "title": "Top 100 Liked 复盘计划",
-  "summary": "6 周二刷和查漏补缺路线，覆盖高赞经典题中的数组、链表、树、图、动态规划和综合专题。",
-  "goal": "围绕高赞经典题完成一轮面试前复盘和错题分类。",
-  "intent": "MISTAKE_REVIEW",
+  "title": "LeetCode 热题 100",
+  "summary": "10 周完整覆盖 LeetCode 热题 100，按数组、链表、树、图、二分、堆与动态规划等高频面试题型渐进训练。",
+  "goal": "完成 LeetCode 热题 100 的全量训练，建立可迁移的高频算法题型清单。",
+  "intent": "INTERVIEW_SPRINT",
   "level": "INTERMEDIATE",
-  "defaultDurationWeeks": 6,
-  "defaultWeeklyHours": 8,
+  "defaultDurationWeeks": 10,
+  "defaultWeeklyHours": 10,
   "programmingLanguage": "Java",
   "difficultyPreference": "MIXED",
   "interviewOriented": true,
   "topicPreferences": [
     "Array",
     "Hash Table",
-    "String",
+    "Two Pointers",
     "Linked List",
     "Stack",
-    "Sorting",
+    "Binary Search",
     "Tree",
-    "Binary Tree",
-    "Backtracking",
     "Graph",
     "Heap",
-    "Dynamic Programming",
-    "Binary Search",
-    "Design"
+    "Dynamic Programming"
   ],
-  "targetAudience": "已刷过一轮基础题、希望通过经典高赞题二刷查漏补缺的学习者。",
+  "targetAudience": "已具备数组、链表、递归和基础数据结构能力，希望系统覆盖常见算法面试题型的学习者。",
   "prerequisites": [
-    "至少完成过 50 道题",
-    "有错题复盘记录或薄弱标签",
-    "能阅读 Medium 题解并复述思路"
+    "完成过基础数组、链表和字符串练习",
+    "会使用哈希表、栈、队列与递归",
+    "能阅读并实现 Medium 难度题目的基础解法"
   ],
   "recommendedFor": [
-    "面试前 1 到 2 个月复盘",
-    "需要覆盖高频经典题并整理错题"
+    "准备 2 到 3 个月内的算法面试",
+    "希望按常见题型系统补齐经典题",
+    "完成基础题后需要一条完整进阶路线"
   ],
   "notRecommendedFor": [
-    "完全零基础",
-    "只想用少量题做快速入门"
+    "完全没有编程和数据结构基础",
+    "只剩一周且只能挑选少量重点题",
+    "只需要 SQL、JavaScript 或 Pandas 专项训练"
   ],
-  "expectedOutcome": "完成后能按主题复盘高赞经典题，并把错题归入数组、链表、树图、DP 和综合题型。",
+  "expectedOutcome": "完成后能覆盖 LeetCode 热题 100 的完整范围，并按核心题型复述建模、复杂度、边界条件和替代解法。",
   "sourceName": "LeetCode official Study Plan",
-  "sourceUrl": "https://leetcode.com/studyplan/",
-  "sourceCommit": "accessed-2026-07-06",
-  "sourceDataPath": "top-100-liked; programming-skills; dynamic-programming; graph-theory; binary-search",
-  "sourceDescription": "LeetCode Top 100 Liked 官方计划只作外链参考；题目路线按本地题库和经典高赞标签重建。",
-  "curationNotes": "不直接复制官方题单全文或题面；按本地题库 slug 组织二刷路线，metadata 标记复盘导向。",
-  "licenseNotice": "官方网页仅作外链和目标参考；本 seed 不复制题面、题解、付费内容或官方题单全文。",
+  "sourceUrl": "https://leetcode.com/studyplan/top-100-liked/",
+  "sourceCommit": "accessed-2026-07-28",
+  "sourceDataPath": "top-100-liked; data/sources/leetcode-problemset/tmp/json/favorites.json#2cktkvj",
+  "sourceDescription": "以仓库存档的“LeetCode 热题 HOT 100”结构化题目 ID、标题、难度和顺序为准，按题型重组为 10 周可执行路线。",
+  "curationNotes": "保留完整 100 题，每题仅出现一次；阶段按算法题型重新编排，避免复制题面、题解、代码或来源正文。",
+  "licenseNotice": "LeetCode 官方题单；内部 seed 仅使用结构化题目元数据、标签和来源链接，不复制题面、题解、付费内容或官方题单正文。",
   "metadata": {
+    "sourceCollectionId": "2cktkvj",
+    "sourceCollectionName": "LeetCode 热题 HOT 100",
+    "sourceProblemCount": 100,
+    "sourceStrategy": "direct_official_hot_100_metadata",
     "secondarySources": [
-      "yangshun/tech-interview-handbook",
       "algo-mentor local problem seed"
-    ],
-    "sourceProblemCount": 67,
-    "sourceStrategy": "official_reference_after_rebuild"
+    ]
   },
   "phases": [
     {
       "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
+        "能判断哈希、双指针和数组原地操作的适用信号",
+        "能说明线性题的去重、边界和复杂度取舍"
       ],
       "durationWeeks": 1,
-      "focus": "先复盘最高频线性结构，整理哈希、窗口和前缀关系。",
+      "focus": "建立哈希计数、双指针、数组遍历和线性结构的高频解题骨架。",
       "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
+        "完成本阶段全部题目并标注所用的数据结构",
+        "整理两类容易混淆的双指针和哈希建模边界"
       ],
       "phaseIndex": 1,
       "recommendedTags": [
         "Array",
         "Hash Table",
-        "String"
+        "Two Pointers"
       ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
-      "title": "数组、字符串与哈希复盘"
+      "reviewAdvice": "优先复盘去重、指针移动条件和前缀信息的维护时机。",
+      "title": "哈希、数组与双指针"
     },
     {
       "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
+        "能处理原地变换、区间合并和二维矩阵遍历",
+        "能为数组题选择排序、前缀和或模拟策略"
       ],
       "durationWeeks": 1,
-      "focus": "复盘链表改写、括号/栈结构和排序后组合题。",
+      "focus": "训练数组原地修改、区间关系、矩阵模拟与前缀和建模。",
       "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
+        "完成本阶段全部题目并记录不变量",
+        "整理矩阵边界和区间端点的常见错误"
       ],
       "phaseIndex": 2,
       "recommendedTags": [
-        "Linked List",
-        "Stack",
-        "Sorting"
+        "Array",
+        "Intervals",
+        "Matrix",
+        "Prefix Sum"
       ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
-      "title": "链表、栈与排序变体"
+      "reviewAdvice": "复盘原地修改时的读写顺序，以及区间端点的开闭定义。",
+      "title": "数组、区间与矩阵"
     },
     {
       "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
+        "能稳定改写链表指针并处理虚拟头节点",
+        "能解释缓存设计中哈希表与双向链表的协作"
       ],
       "durationWeeks": 1,
-      "focus": "集中复盘递归返回值、层序遍历、构造和树形 DP 前置。",
+      "focus": "系统训练链表反转、快慢指针、合并排序、相交与缓存设计。",
       "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
+        "完成本阶段全部题目并画出关键指针变化",
+        "总结环检测、合并和 LRU 的状态不变量"
       ],
       "phaseIndex": 3,
       "recommendedTags": [
-        "Tree",
-        "Binary Tree"
+        "Linked List",
+        "Two Pointers",
+        "Design"
       ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
-      "title": "树与递归结构"
+      "reviewAdvice": "每次复盘先明确谁持有 next 指针，再验证断链和空节点边界。",
+      "title": "链表与设计"
     },
     {
       "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
+        "能写出二分搜索的循环不变量和终止条件",
+        "能识别单调栈、滑动窗口和栈解析的适用场景"
       ],
       "durationWeeks": 1,
-      "focus": "复盘回溯、图搜索、拓扑和堆相关经典题。",
+      "focus": "覆盖括号、表达式、单调栈、滑动窗口和二分边界。",
       "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
+        "完成本阶段全部题目并记录单调性或搜索区间",
+        "整理至少两种二分模板的左右边界写法"
       ],
       "phaseIndex": 4,
       "recommendedTags": [
-        "Backtracking",
-        "Graph",
-        "Heap"
+        "Stack",
+        "Monotonic Stack",
+        "Sliding Window",
+        "Binary Search"
       ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
-      "title": "搜索、图与堆"
+      "reviewAdvice": "对二分题逐轮验证区间含义；对单调结构写清入栈和出栈条件。",
+      "title": "栈、单调结构与二分"
     },
     {
       "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
+        "能区分前中后序递归返回值与层序遍历状态",
+        "能使用 BST 性质完成校验和构造"
       ],
       "durationWeeks": 1,
-      "focus": "按一维、背包、字符串和区间/回文重新整理 DP 错题。",
+      "focus": "掌握二叉树遍历、递归分治、树构造和二叉搜索树性质。",
       "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
+        "完成本阶段全部题目并写出每个递归函数的含义",
+        "归纳树题中的空节点、路径和左右子树边界"
       ],
       "phaseIndex": 5,
       "recommendedTags": [
-        "Dynamic Programming"
+        "Tree",
+        "Binary Tree",
+        "Binary Search Tree",
+        "Depth First Search"
       ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
-      "title": "动态规划与状态复盘"
+      "reviewAdvice": "先写清递归函数的输入输出，再处理空节点和合并左右子树结果。",
+      "title": "树、递归与搜索树"
     },
     {
       "acceptanceCriteria": [
-        "能独立复述本阶段每类题的适用条件",
-        "能写出错题的边界条件、复杂度和可迁移模板"
+        "能完成树形 DP、LCA 和序列化的状态设计",
+        "能实现图遍历和 Trie 的基础操作"
       ],
       "durationWeeks": 1,
-      "focus": "用难度混合题检查边界、复杂度和口述表达。",
+      "focus": "衔接树的进阶递归、图连通性和 Trie 前缀结构。",
       "objectives": [
-        "完成本阶段推荐题并记录每题的核心建模方式",
-        "整理本阶段至少 2 条高频错因和复盘策略"
+        "完成本阶段全部题目并记录图的节点、边和访问状态",
+        "整理树形 DP 与普通递归的状态差异"
       ],
       "phaseIndex": 6,
       "recommendedTags": [
-        "Binary Search",
-        "Design",
-        "Stack"
+        "Tree",
+        "Graph",
+        "Trie",
+        "Dynamic Programming"
       ],
-      "reviewAdvice": "先按题型归类错题，再用同类题检查模板是否真正掌握。",
-      "title": "综合收尾与模拟面试"
+      "reviewAdvice": "图题先确定访问标记的生命周期；树形 DP 先定义节点返回的状态。",
+      "title": "树进阶、图与 Trie"
+    },
+    {
+      "acceptanceCriteria": [
+        "能画出回溯决策树并在正确位置恢复状态",
+        "能区分 DFS、BFS、拓扑排序和加权图建模"
+      ],
+      "durationWeeks": 1,
+      "focus": "训练组合枚举、剪枝、网格搜索、课程依赖和变量关系图。",
+      "objectives": [
+        "完成本阶段全部题目并标注选择、剪枝和回退位置",
+        "整理图遍历中的 visited、入度和路径状态"
+      ],
+      "phaseIndex": 7,
+      "recommendedTags": [
+        "Backtracking",
+        "Graph",
+        "Breadth First Search",
+        "Depth First Search"
+      ],
+      "reviewAdvice": "复盘时区分全局状态和路径状态，避免在回溯后遗漏恢复。",
+      "title": "回溯、搜索与图建模"
+    },
+    {
+      "acceptanceCriteria": [
+        "能为 Top K、调度和区间问题选择堆或排序策略",
+        "能说明贪心选择为何不会破坏最优性"
+      ],
+      "durationWeeks": 1,
+      "focus": "覆盖二分变体、Top K、会议调度、贪心和排序重建。",
+      "objectives": [
+        "完成本阶段全部题目并记录排序键或堆中元素含义",
+        "为每类贪心题写出局部选择的证明思路"
+      ],
+      "phaseIndex": 8,
+      "recommendedTags": [
+        "Binary Search",
+        "Heap",
+        "Greedy",
+        "Sorting"
+      ],
+      "reviewAdvice": "先说明排序或优先队列维持的顺序，再验证每次选择的正确性。",
+      "title": "二分、堆、贪心与调度"
+    },
+    {
+      "acceptanceCriteria": [
+        "能独立定义一维、网格和背包问题的状态与转移",
+        "能解释初始化、遍历方向和空间优化"
+      ],
+      "durationWeeks": 1,
+      "focus": "建立路径、子序列、背包、股票和计数类动态规划基础。",
+      "objectives": [
+        "完成本阶段全部题目并写出状态定义和转移方程",
+        "整理至少三类 DP 初始化和遍历方向错误"
+      ],
+      "phaseIndex": 9,
+      "recommendedTags": [
+        "Dynamic Programming",
+        "Array",
+        "Matrix"
+      ],
+      "reviewAdvice": "先用二维或完整状态验证正确性，再决定是否压缩空间。",
+      "title": "动态规划基础"
+    },
+    {
+      "acceptanceCriteria": [
+        "能完成编辑距离、区间 DP 和状态压缩类转移",
+        "能在综合题中清晰口述建模、复杂度和边界"
+      ],
+      "durationWeeks": 1,
+      "focus": "完成高阶 DP，并用字符串、位运算和综合题进行面试前闭环复盘。",
+      "objectives": [
+        "完成本阶段全部题目并对难题写出状态图或转移表",
+        "完成一次限时模拟，复盘表达、复杂度和遗漏边界"
+      ],
+      "phaseIndex": 10,
+      "recommendedTags": [
+        "Dynamic Programming",
+        "String",
+        "Bit Manipulation",
+        "Backtracking"
+      ],
+      "reviewAdvice": "优先复盘状态设计失败的题，再用口述方式检验是否真正掌握。",
+      "title": "动态规划进阶与综合题"
     }
   ]
 }

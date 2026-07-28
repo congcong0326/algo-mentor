@@ -1,31 +1,31 @@
 {
   "files": {
     "learning_plan_template_problem_refs.jsonl": {
-      "bytes": 1082168,
+      "bytes": 1111897,
       "path": "learning_plan_template_problem_refs.jsonl",
-      "sha256": "47b3c02acf59310cde8a0728858ed6e7b4dc0023c6a9942878afeef487d0d022"
+      "sha256": "ba0ea38c6951617373c656f126dd4963d2ff7750bdf504e0a0943d9d862022f0"
     },
     "learning_plan_template_seed_manifest.json": {
-      "bytes": 30341,
+      "bytes": 30322,
       "hashInput": "manifest payload before self file stat insertion",
       "path": "learning_plan_template_seed_manifest.json",
-      "sha256": "a81a84e583d0361947bf560a27b719743368525f57ea983caf56a827db9576ff"
+      "sha256": "45c30e423ccf524c5f3dc32d680421782744bca66abcb87d877d89be31587ae6"
     },
     "learning_plan_template_seed_metadata.md": {
-      "bytes": 18263,
+      "bytes": 18233,
       "path": "learning_plan_template_seed_metadata.md",
-      "sha256": "d31904fa89ccdfd0b36b83dcc5dac910040db4adb91d63f19cb4dff653f921ef"
+      "sha256": "813b9c0981f503a39900a5523e2758b05e5bbfa8167f1474401f45c9c60336c8"
     },
     "learning_plan_templates.jsonl": {
-      "bytes": 194570,
+      "bytes": 197646,
       "path": "learning_plan_templates.jsonl",
-      "sha256": "1ed21cab3d90f32479f81147ce1982bbfdebdb712fd68d4cbc799a589a525411"
+      "sha256": "b8a03c4258ab2762ea1ba749b0c7d3e5e444176861211012c5ebecc188605796"
     }
   },
   "generatedAt": "2026-07-28T00:00:00+00:00",
-  "matchedProblemCount": 1667,
-  "missingProblemCount": 38,
-  "problemRefCount": 1705,
+  "matchedProblemCount": 1699,
+  "missingProblemCount": 39,
+  "problemRefCount": 1738,
   "schemaVersion": 1,
   "source": {
     "commit": "all-compatible-templates-2026-07-28",
@@ -61,7 +61,6 @@
       "name": "yangshun/tech-interview-handbook",
       "problemRefCount": 180,
       "templateIds": [
-        "leetcode_top_100_liked_revision",
         "tih_algorithm_essentials",
         "tih_best_practice_50_5weeks",
         "topic_greedy_strategies",
@@ -74,10 +73,10 @@
       "commitOrVersion": "3bcc916680298295e06060ca9790304c1f1b78b6",
       "dataPath": "ctl/meta/*",
       "licenseNotice": "MIT License；本 seed 只使用题号、题名、difficulty、标签来源和顺序，不包含题解代码。",
-      "matchedProblemCount": 299,
+      "matchedProblemCount": 259,
       "missingProblemCount": 1,
       "name": "halfrost/LeetCode-Go",
-      "problemRefCount": 300,
+      "problemRefCount": 260,
       "templateIds": [
         "topic_backtracking_foundation",
         "topic_binary_search_boundaries",
@@ -128,10 +127,10 @@
       "commitOrVersion": "accessed-2026-07-28",
       "dataPath": "leetcode-75; top-interview-150; top-100-liked; programming-skills; dynamic-programming; graph-theory; binary-search; top-sql-50; 30-days-of-javascript; introduction-to-pandas; 30-days-of-pandas",
       "licenseNotice": "官方网页仅作外链和目标参考；本 seed 不复制题面、题解、付费内容或官方题单全文。",
-      "matchedProblemCount": 400,
-      "missingProblemCount": 5,
+      "matchedProblemCount": 472,
+      "missingProblemCount": 6,
       "name": "LeetCode official Study Plan",
-      "problemRefCount": 405,
+      "problemRefCount": 478,
       "templateIds": [
         "cn_algorithm_foundation_12weeks",
         "leetcode_75_core_sprint",
@@ -467,25 +466,27 @@
       "catalogCategory": "INTERVIEW_PREP",
       "difficultyMix": {
         "Easy": {
-          "count": 18,
-          "ratio": 0.2687
+          "count": 22,
+          "ratio": 0.22
         },
         "Hard": {
-          "count": 4,
-          "ratio": 0.0597
+          "count": 15,
+          "ratio": 0.15
         },
         "Medium": {
-          "count": 45,
-          "ratio": 0.6716
+          "count": 63,
+          "ratio": 0.63
         }
       },
-      "matchedProblemCount": 67,
-      "missingProblemCount": 0,
-      "missingProblemExamples": [],
-      "phaseCount": 6,
-      "problemCount": 67,
+      "matchedProblemCount": 99,
+      "missingProblemCount": 1,
+      "missingProblemExamples": [
+        "meeting-rooms-ii"
+      ],
+      "phaseCount": 10,
+      "problemCount": 100,
       "recommendedOrder": null,
-      "title": "Top 100 Liked 复盘计划"
+      "title": "LeetCode 热题 100"
     },
     "leetcode_top_interview_150": {
       "catalogCategory": "INTERVIEW_PREP",
