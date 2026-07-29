@@ -69,4 +69,23 @@ class ManagedSystemPromptDefinitionRegistryTest {
     assertThat(registry.definitions()).extracting(ManagedSystemPromptDefinition::scenario)
         .containsExactlyInAnyOrderElementsOf(List.of(AiBusinessScenario.values()));
   }
+
+  @Test
+  void codeReviewProfilePromptRequiresRecognizableCrossProblemObservations() {
+    ManagedSystemPromptDefinition definition = ManagedSystemPromptDefinitions.CODE_REVIEW_PROFILE_UPDATE;
+    String prompt = definition.sections().stream()
+        .filter(section -> SystemPromptSectionKeys.CODE_REVIEW_PROFILE_UPDATE_BASE.equals(section.key()))
+        .findFirst()
+        .orElseThrow()
+        .defaultText();
+
+    assertThat(definition.sourceRevision()).isEqualTo("2026-07-29.1");
+    assertThat(prompt)
+        .contains("保留能够唤起学习经历的具体锚点")
+        .contains("至少两道不同题目")
+        .contains("证据不足时返回 NO_CHANGE")
+        .contains("PROBLEM_SOLVING_APPROACH")
+        .contains("IMPLEMENTATION_AND_ERROR_PATTERN")
+        .contains("2 至 4 句话");
+  }
 }
