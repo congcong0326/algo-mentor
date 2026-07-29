@@ -28,6 +28,20 @@ describe('MarkdownView', () => {
     expect(screen.getByText('a **注意：**给定 n').closest('code')).toBeInTheDocument();
   });
 
+  it('renders superscript tags inside inline code spans', () => {
+    render(<MarkdownView content="- `2 <= nums.length <= 10<sup>4</sup>`\n- `O(n<sup>2</sup>)`" />);
+
+    expect(screen.getByText('4').closest('sup')).toBeInTheDocument();
+    expect(screen.getByText('2').closest('sup')).toBeInTheDocument();
+    expect(screen.queryByText('<sup>4</sup>')).not.toBeInTheDocument();
+  });
+
+  it('keeps superscript tags literal inside fenced code blocks', () => {
+    render(<MarkdownView content={'```text\n10<sup>4</sup>\n```'} />);
+
+    expect(screen.getByText('10<sup>4</sup>').closest('code')).toBeInTheDocument();
+  });
+
   it('renders bold text with extra spaces inside delimiters', () => {
     render(<MarkdownView content="** 注意** 和 **边界 ** 都很重要。" />);
 

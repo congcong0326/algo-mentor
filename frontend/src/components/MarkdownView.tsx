@@ -2,6 +2,8 @@ import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
+import type { ExtraProps } from 'react-markdown';
+import type { ComponentProps, ReactNode } from 'react';
 
 const BOLD_LABEL_WITHOUT_SPACE = /(^|[\s([{"'“‘])\*\*([^*\n]+[:：])\*\*(?=\S)/g;
 const BOLD_WITH_EXTRA_SPACE = /\*\*([ \t]*[^*\n]*?\S[^*\n]*?[ \t]*)\*\*/g;
@@ -11,6 +13,7 @@ const ESCAPED_LINE_BREAK = /\\r\\n|\\n|\\r/g;
 const LINE_BREAK = /(\r\n|\n|\r)/;
 const FENCE_MARKER = /^ {0,3}(`{3,}|~{3,})/;
 const INLINE_CODE_SPAN = /(`+)([\s\S]*?)\1/g;
+const INLINE_CODE_SUPERSCRIPT = /<sup>([\s\S]*?)<\/sup>/g;
 
 interface MarkdownViewProps {
   content: string;
@@ -100,12 +103,36 @@ function normalizeEscapedLineBreaks(content: string): string {
   });
 }
 
+function MarkdownCode({ children, node, ...props }: ComponentProps<'code'> & ExtraProps) {
+  const isInlineCode = node?.position?.start.line === node?.position?.end.line;
+  const renderedChildren = isInlineCode && typeof children === 'string'
+    ? renderInlineCodeSuperscripts(children)
+    : children;
+
+  return <code {...props}>{renderedChildren}</code>;
+}
+
+function renderInlineCodeSuperscripts(content: string): ReactNode {
+  const segments = content.split(INLINE_CODE_SUPERSCRIPT);
+  if (segments.length === 1) {
+    return content;
+  }
+
+  return segments.map((segment, index) => (
+    index % 2 === 0 ? segment : <sup key={index}>{segment}</sup>
+  ));
+}
+
 export default function MarkdownView({ content }: MarkdownViewProps) {
   const normalizedContent = normalizeMarkdownContent(content);
 
   return (
     <div className="markdown-view">
-      <ReactMarkdown rehypePlugins={[rehypeRaw, rehypeSanitize]} remarkPlugins={[remarkGfm]}>
+      <ReactMarkdown
+        components={{ code: MarkdownCode }}
+        rehypePlugins={[rehypeRaw, rehypeSanitize]}
+        remarkPlugins={[remarkGfm]}
+      >
         {normalizedContent}
       </ReactMarkdown>
     </div>
