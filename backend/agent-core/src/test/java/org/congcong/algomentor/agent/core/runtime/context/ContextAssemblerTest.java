@@ -39,7 +39,7 @@ class ContextAssemblerTest {
         .extracting(LlmMessage::text)
         .containsExactly(
             "system prompt",
-            "Conversation summary:\nsummary text",
+            "会话摘要：\nsummary text",
             "recent user",
             "recent assistant",
             "current question");

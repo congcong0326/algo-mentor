@@ -49,7 +49,7 @@ final class LegacyContextPromptSectionProvider implements PromptSectionProvider 
     }
     sections.add(new PromptSection(
         LegacyContextPromptConstants.SYSTEM_SECTION_ID,
-        "System prompt",
+        "系统提示词",
         PromptSlot.STATIC_INSTRUCTION,
         LlmMessage.Role.SYSTEM,
         PromptTrustLevel.SYSTEM_STATIC,
@@ -71,7 +71,7 @@ final class LegacyContextPromptSectionProvider implements PromptSectionProvider 
     }
     sections.add(new PromptSection(
         LegacyContextPromptConstants.SUMMARY_SECTION_ID,
-        "Conversation summary",
+        "会话摘要",
         PromptSlot.MEMORY_SUMMARY,
         LlmMessage.Role.SYSTEM,
         PromptTrustLevel.MODEL_GENERATED,
@@ -83,7 +83,7 @@ final class LegacyContextPromptSectionProvider implements PromptSectionProvider 
         PromptBudgetPolicy.TRUNCATE_IF_NEEDED,
         PromptRenderMode.PLAIN_TEXT,
         new PromptSourceRef("legacy-context", "active-summary", Map.of()),
-        Map.of(TEXT, "Conversation summary:\n" + activeSummary)));
+        Map.of(TEXT, "会话摘要：\n" + activeSummary)));
   }
 
   private void addHistory(PromptAssemblyRequest request, List<PromptSection> sections) {

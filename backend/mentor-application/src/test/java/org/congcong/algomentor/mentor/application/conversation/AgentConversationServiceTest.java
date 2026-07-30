@@ -79,7 +79,7 @@ class AgentConversationServiceTest {
     assertThat(repository.lastRequest.userId()).isEqualTo(7L);
     assertThat(repository.lastRequest.userMessage()).isEqualTo("请讲滑动窗口");
     assertThat(repository.lastRequest.idempotencyKey()).isEqualTo("idem-1");
-    assertThat(repository.lastRequest.systemPrompt()).contains("algorithm learning mentor");
+    assertThat(repository.lastRequest.systemPrompt()).contains("Leet Mentor 中负责算法学习辅导的导师");
     assertThat(repository.lastRequest.metadata()).containsEntry("triggerType", "user_request");
 
     assertThat(run.taskId()).isEqualTo(11);
@@ -190,8 +190,8 @@ class AgentConversationServiceTest {
     assertThat(allText)
         .contains("平台与安全基线")
         .contains("引导型教练")
-        .contains("Layered Hint Protocol")
-        .contains("Response language: Simplified Chinese")
+        .contains("分层提示协议")
+        .contains("面向学习者的回复语言：简体中文")
         .contains("题目聊天教学策略")
         .contains("当前训练上下文")
         .contains("- planId: 12")
@@ -227,8 +227,8 @@ class AgentConversationServiceTest {
     String allText = run.agentRequest().messages().stream().map(LlmMessage::text).reduce("", String::concat);
     assertThat(allText)
         .contains("直给型教练")
-        .contains("Act as a concise, direct explainer")
-        .contains("Response language: English");
+        .contains("采用简洁、直接的讲解方式")
+        .contains("面向学习者的回复语言：英语");
   }
 
   @Test

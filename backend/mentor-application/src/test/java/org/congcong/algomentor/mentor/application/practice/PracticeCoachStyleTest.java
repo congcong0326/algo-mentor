@@ -50,12 +50,12 @@ class PracticeCoachStyleTest {
   @Test
   void guidedInstructionContainsLayeredKeywords() {
     assertThat(PracticeCoachStyle.GUIDED.instruction())
-        .contains("L1", "L4", "Layered Hint Protocol", "TAKES PRECEDENCE");
+        .contains("L1", "L4", "分层提示协议", "优先级最高");
   }
 
   @Test
   void directInstructionContainsIntuitionKeyword() {
     assertThat(PracticeCoachStyle.DIRECT.instruction())
-        .contains("Intuition", "complete reasoning");
+        .contains("直觉", "完整推导");
   }
 }

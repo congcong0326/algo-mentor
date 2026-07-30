@@ -70,10 +70,10 @@ class PracticeChatPromptSectionProviderTest {
 
     String allText = assembly.canonicalMessages().stream().map(LlmMessage::text).reduce("", String::concat);
     assertThat(allText)
-        .contains("algo-mentor 的算法刷题教练")
+        .contains("Leet Mentor 中负责当前 LeetCode 题目训练的算法刷题教练")
         .contains("引导型教练")
-        .contains("Layered Hint Protocol")
-        .contains("Response language: Simplified Chinese")
+        .contains("分层提示协议")
+        .contains("面向学习者的回复语言：简体中文")
         .contains("- planId: 12")
         .contains("- phaseIndex: 1")
         .contains("- slug: two-sum")
@@ -117,10 +117,10 @@ class PracticeChatPromptSectionProviderTest {
     String allText = assembly.canonicalMessages().stream().map(LlmMessage::text).reduce("", String::concat);
     assertThat(allText)
         .contains("直给型教练")
-        .contains("Act as a concise, direct explainer")
-        .contains("Intuition")
-        .contains("Response language: English")
-        .contains("Coach style and response language only affect presentation")
+        .contains("采用简洁、直接的讲解方式")
+        .contains("直觉")
+        .contains("面向学习者的回复语言：英语")
+        .contains("教练风格和回复语言只影响表达方式与教学流程")
         .contains("题目聊天教学策略");
     RenderedPromptSection coachStyleSection = section(assembly, PracticeChatPromptConstants.SECTION_COACH_STYLE);
     assertThat(coachStyleSection.section().version()).isEqualTo("v2");
@@ -147,10 +147,10 @@ class PracticeChatPromptSectionProviderTest {
     RenderedPromptSection coachStyleSection = section(assembly, PracticeChatPromptConstants.SECTION_COACH_STYLE);
     assertThat(coachStyleSection.renderedText())
         .contains("引导型教练")
-        .contains("Layered Hint Protocol")
-        .contains("MUST NOT")
-        .contains("Starting Layer Selection")
-        .contains("Read the CURRENT user message directly");
+        .contains("分层提示协议")
+        .contains("不得给出算法名称")
+        .contains("起始层级选择")
+        .contains("直接读取当前用户消息");
     assertThat(coachStyleSection.section().version()).isEqualTo("v2");
     assertThat(coachStyleSection.section().sourceRef().attributes())
         .containsEntry(PracticeChatPromptConstants.METADATA_COACH_STYLE, PracticeCoachStyle.GUIDED.name());
