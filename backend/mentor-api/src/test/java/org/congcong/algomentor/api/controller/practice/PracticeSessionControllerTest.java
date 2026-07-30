@@ -2,6 +2,7 @@ package org.congcong.algomentor.api.controller.practice;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -102,17 +103,11 @@ class PracticeSessionControllerTest {
   private CurrentUserIdProvider currentUserIdProvider;
 
   @Autowired
-  private AiActorResolver actorResolver;
-
-  @Autowired
-  private AiRunAdmissionService admissionService;
-
-  @Autowired
   private ApiSseProperties sseProperties;
 
   @BeforeEach
   void resetMocks() {
-    reset(practiceSessionService, streamService, currentUserIdProvider, actorResolver, admissionService, sseProperties);
+    reset(practiceSessionService, streamService, currentUserIdProvider, sseProperties);
     when(sseProperties.practiceMessageTimeoutMillis()).thenReturn(360_000L);
   }
 
@@ -281,11 +276,9 @@ class PracticeSessionControllerTest {
   }
 
   @Test
-  void streamPracticeMessageUsesPracticeGovernanceAndEffectiveIdempotencyKey() throws Exception {
+  void streamPracticeMessageDelegatesRequestContextToApplicationService() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
-    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
-    when(streamService.stream(eq(42L), eq(50L), eq("提示一下思路"), eq("idem-50"), eq("zh-CN"), any()))
+    when(streamService.stream(eq(42L), eq(50L), eq("提示一下思路"), eq("idem-50"), eq("zh-CN"), anyInt()))
         .thenReturn(streamPublisher());
 
     MvcResult result = mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
@@ -301,29 +294,15 @@ class PracticeSessionControllerTest {
         .andExpect(header().string(HttpHeaders.CONTENT_TYPE, containsString(MediaType.TEXT_EVENT_STREAM_VALUE)))
         .andExpect(content().string(containsString("event:agent_run_start")));
 
-    ArgumentCaptor<AiRunContext> governanceCaptor = ArgumentCaptor.forClass(AiRunContext.class);
-    verify(admissionService).admit(governanceCaptor.capture());
-    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().purpose()).isEqualTo(AiPurpose.LEARNING_CHAT);
-    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().source()).isEqualTo(AiRunSource.PRACTICE_CHAT);
-    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().streaming()).isTrue();
-    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().metadata())
-        .containsEntry(PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, 50L);
-
-    ArgumentCaptor<Map<String, Object>> metadataCaptor = ArgumentCaptor.captor();
     verify(streamService).stream(eq(42L), eq(50L), eq("提示一下思路"), eq("idem-50"), eq("zh-CN"),
-        metadataCaptor.capture());
+        eq("提示一下思路".getBytes(java.nio.charset.StandardCharsets.UTF_8).length));
     verify(sseProperties).practiceMessageTimeoutMillis();
-    org.assertj.core.api.Assertions.assertThat(metadataCaptor.getValue())
-        .containsEntry(AiGovernanceMetadataKeys.SOURCE, "PRACTICE_CHAT")
-        .containsEntry(PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, 50L);
   }
 
   @Test
   void streamPracticeMessageUsesAcceptLanguageAsDynamicResponseContext() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
-    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
-    when(streamService.stream(eq(42L), eq(50L), eq("give me a hint"), eq("idem-50"), eq("en-US"), any()))
+    when(streamService.stream(eq(42L), eq(50L), eq("give me a hint"), eq("idem-50"), eq("en-US"), anyInt()))
         .thenReturn(streamPublisher());
 
     MvcResult result = mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
@@ -338,7 +317,7 @@ class PracticeSessionControllerTest {
     mockMvc.perform(asyncDispatch(result))
         .andExpect(status().isOk());
 
-    verify(streamService).stream(eq(42L), eq(50L), eq("give me a hint"), eq("idem-50"), eq("en-US"), any());
+    verify(streamService).stream(eq(42L), eq(50L), eq("give me a hint"), eq("idem-50"), eq("en-US"), anyInt());
   }
 
   @Test
@@ -352,7 +331,7 @@ class PracticeSessionControllerTest {
         .andExpect(jsonPath("$.error.messageKey").value("api.error.PRACTICE_MESSAGE_INVALID"))
         .andExpect(jsonPath("$.error.message").value("练习消息不能为空。"));
 
-    verifyNoInteractions(admissionService, streamService);
+    verifyNoInteractions(streamService);
   }
 
   @Test
@@ -364,7 +343,7 @@ class PracticeSessionControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.error.code").value("PRACTICE_MESSAGE_INVALID"));
 
-    verifyNoInteractions(admissionService, streamService);
+    verifyNoInteractions(streamService);
   }
 
   @Test
@@ -376,7 +355,7 @@ class PracticeSessionControllerTest {
         .andExpect(jsonPath("$.error.code").value("REQUEST_BODY_INVALID"))
         .andExpect(jsonPath("$.error.messageKey").value("api.error.REQUEST_BODY_INVALID"));
 
-    verifyNoInteractions(admissionService, streamService);
+    verifyNoInteractions(streamService);
   }
 
   @Test
@@ -390,7 +369,7 @@ class PracticeSessionControllerTest {
         .andExpect(jsonPath("$.error.messageKey").value("api.error.REQUEST_BODY_INVALID"))
         .andExpect(jsonPath("$.error.message").value("请求体不是合法 JSON 或与接口结构不匹配。"));
 
-    verifyNoInteractions(admissionService, streamService);
+    verifyNoInteractions(streamService);
   }
 
   @Test
@@ -417,9 +396,7 @@ class PracticeSessionControllerTest {
   @Test
   void streamRunInProgressReturns409() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
-    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
-    when(streamService.stream(eq(42L), eq(50L), eq("提示一下思路"), eq("idem-50"), eq("zh-CN"), any()))
+    when(streamService.stream(eq(42L), eq(50L), eq("提示一下思路"), eq("idem-50"), eq("zh-CN"), anyInt()))
         .thenThrow(new AgentConversationRunInProgressException(50L));
 
     mockMvc.perform(post("/api/practice-sessions/50/messages/stream")
@@ -597,28 +574,6 @@ class PracticeSessionControllerTest {
         "zh-CN");
   }
 
-  private AiRunAdmission admitted(AiRunContext context) {
-    AiPurposePolicy policy = new AiPurposePolicy(
-        true, 50, 1, 16384, 2048, 8, true, true, false, false,
-        null, null, "practice-chat-p0");
-    return new AiRunAdmission(
-        1L,
-        context.runId(),
-        context.actor().userId(),
-        context.purpose(),
-        context.source(),
-        AiRunStatus.ADMITTED,
-        "ALL",
-        null,
-        policy,
-        Map.of(
-            AiGovernanceMetadataKeys.RUN_ID, context.runId(),
-            AiGovernanceMetadataKeys.PURPOSE, context.purpose().name(),
-            AiGovernanceMetadataKeys.SOURCE, context.source().name(),
-            PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, 50L),
-        Instant.now());
-  }
-
   private Flow.Publisher<AgentStreamEvent> streamPublisher() {
     return subscriber -> {
       SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
@@ -647,16 +602,6 @@ class PracticeSessionControllerTest {
     }
 
     @Bean
-    AiActorResolver aiActorResolver() {
-      return mock(AiActorResolver.class);
-    }
-
-    @Bean
-    AiRunAdmissionService aiRunAdmissionService() {
-      return mock(AiRunAdmissionService.class);
-    }
-
-    @Bean
     ApiSseProperties apiSseProperties() {
       return mock(ApiSseProperties.class);
     }
@@ -666,8 +611,6 @@ class PracticeSessionControllerTest {
         ObjectProvider<PracticeSessionService> practiceSessionService,
         ObjectProvider<PracticeMessageStreamService> streamService,
         CurrentUserIdProvider currentUserIdProvider,
-        ObjectProvider<AiActorResolver> actorResolver,
-        ObjectProvider<AiRunAdmissionService> admissionService,
         ObjectProvider<LlmStreamSseMapper> sseMapper,
         ApiSseProperties sseProperties,
         ObjectProvider<SseOpsRecorder> sseOpsRecorder,
@@ -677,8 +620,6 @@ class PracticeSessionControllerTest {
           practiceSessionService,
           streamService,
           currentUserIdProvider,
-          actorResolver,
-          admissionService,
           sseMapper,
           sseProperties,
           sseOpsRecorder,

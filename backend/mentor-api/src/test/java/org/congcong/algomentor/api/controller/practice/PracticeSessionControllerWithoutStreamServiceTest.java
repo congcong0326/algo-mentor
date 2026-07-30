@@ -111,8 +111,6 @@ class PracticeSessionControllerWithoutStreamServiceTest {
         ObjectProvider<PracticeSessionService> practiceSessionService,
         ObjectProvider<org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService> streamService,
         CurrentUserIdProvider currentUserIdProvider,
-        ObjectProvider<org.congcong.algomentor.api.service.AiActorResolver> actorResolver,
-        ObjectProvider<org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService> admissionService,
         ObjectProvider<org.congcong.algomentor.api.service.LlmStreamSseMapper> sseMapper,
         ApiSseProperties sseProperties
     ) {
@@ -120,8 +118,6 @@ class PracticeSessionControllerWithoutStreamServiceTest {
           practiceSessionService,
           streamService,
           currentUserIdProvider,
-          actorResolver,
-          admissionService,
           sseMapper,
           sseProperties);
     }

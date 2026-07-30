@@ -15,17 +15,14 @@ import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import org.congcong.algomentor.agent.core.AgentExecutionOptions;
-import org.congcong.algomentor.agent.core.AgentLoopRunner;
-import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
-import org.congcong.algomentor.agent.core.AgentStructuredOutputOptions;
-import org.congcong.algomentor.agent.core.StructuredOutputStrategy;
 import org.congcong.algomentor.agent.core.work.AgentWorkStatusProfile;
 import org.congcong.algomentor.agent.core.work.AgentWorkStatusProjector;
-import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
-import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
@@ -43,6 +40,7 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRevisionStatus;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalTargetType;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalType;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanAgentToolNames;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanStreamConstants;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
@@ -65,8 +63,7 @@ public class LearningPlanExtensionProposalStreamService {
   private final LearningPlanProposalGroupService groupService;
   private final PracticeSessionRepository practiceSessionRepository;
   private final LearningPlanExtensionValidator validator;
-  private final AgentLoopRunner agentLoopRunner;
-  private final LearningPlanProposalPromptBuilder promptBuilder;
+  private final AgentRuntime agentRuntime;
   private final ObjectMapper objectMapper;
   private final LearningPlanExtensionStructuredOutputMapper outputMapper;
   private final TransactionOperations transactionOperations;
@@ -78,8 +75,7 @@ public class LearningPlanExtensionProposalStreamService {
       LearningPlanProposalGroupService groupService,
       PracticeSessionRepository practiceSessionRepository,
       LearningPlanExtensionValidator validator,
-      AgentLoopRunner agentLoopRunner,
-      LearningPlanProposalPromptBuilder promptBuilder,
+      AgentRuntime agentRuntime,
       ObjectMapper objectMapper,
       TransactionOperations transactionOperations,
       Clock clock
@@ -89,8 +85,7 @@ public class LearningPlanExtensionProposalStreamService {
     this.groupService = Objects.requireNonNull(groupService, "groupService");
     this.practiceSessionRepository = Objects.requireNonNull(practiceSessionRepository, "practiceSessionRepository");
     this.validator = Objects.requireNonNull(validator, "validator");
-    this.agentLoopRunner = Objects.requireNonNull(agentLoopRunner, "agentLoopRunner");
-    this.promptBuilder = Objects.requireNonNull(promptBuilder, "promptBuilder");
+    this.agentRuntime = Objects.requireNonNull(agentRuntime, "agentRuntime");
     this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper");
     this.outputMapper = new LearningPlanExtensionStructuredOutputMapper(objectMapper);
     this.transactionOperations = Objects.requireNonNull(transactionOperations, "transactionOperations");
@@ -148,7 +143,7 @@ public class LearningPlanExtensionProposalStreamService {
       try {
         context = transactionOperations.execute(status -> factory.create());
         AgentWorkStatusProjector projector = new AgentWorkStatusProjector(learningPlanProfile(), clock);
-        agentLoopRunner.stream(context.request()).subscribe(new StreamSubscriber(
+        agentRuntime.stream(context.invocation()).subscribe(new StreamSubscriber(
             publisher,
             projector,
             context.revision()));
@@ -219,12 +214,7 @@ public class LearningPlanExtensionProposalStreamService {
         null);
     return new SubscriptionRevisionContext(
         revision,
-        new AgentRequest(
-            runId,
-            null,
-            promptBuilder.buildExtensionPrompt(instruction, lockedPlan, progress, userId),
-            metadata,
-            executionOptions()));
+        invocation(lockedPlan, group.id(), instruction, progress, null, runId));
   }
 
   private SubscriptionRevisionContext createNextRevision(
@@ -255,13 +245,7 @@ public class LearningPlanExtensionProposalStreamService {
         latestReady.proposedExtension());
     return new SubscriptionRevisionContext(
         revision,
-        new AgentRequest(
-            runId,
-            null,
-            promptBuilder.buildExtensionRevisionPrompt(
-                instruction, lockedPlan, progress, latestReady.proposedExtension(), userId),
-            metadata,
-            executionOptions()));
+        invocation(lockedPlan, group.id(), instruction, progress, latestReady.proposedExtension(), runId));
   }
 
   private LearningPlan lockActivePlan(long userId, long planId) {
@@ -366,17 +350,25 @@ public class LearningPlanExtensionProposalStreamService {
         retryable);
   }
 
-  private AgentExecutionOptions executionOptions() {
-    return new AgentExecutionOptions(
-        LlmGenerationOptions.defaults(),
-        new LlmResponseFormat.JsonSchema(
-            LearningPlanStreamConstants.EXTENSION_SCHEMA_NAME,
-            LearningPlanExtensionJsonSchema.schema(),
-            true),
-        new AgentStructuredOutputOptions(
-            StructuredOutputStrategy.PROVIDER_NATIVE,
-            LearningPlanStreamConstants.EXTENSION_SCHEMA_NAME,
-            LearningPlanStreamConstants.EXTENSION_SCHEMA_VERSION,
+  private AgentInvocation<LearningPlanExtensionAgentInput> invocation(
+      LearningPlan plan,
+      long proposalGroupId,
+      String instruction,
+      List<PracticeProgress> progress,
+      LearningPlanExtensionDraft previousExtension,
+      String idempotencyKey
+  ) {
+    return new AgentInvocation<>(
+        LearningPlanExtensionAgentDefinition.KEY,
+        new LearningPlanExtensionAgentInput(
+            plan.userId(), plan.id(), proposalGroupId, instruction, plan, progress, previousExtension, idempotencyKey),
+        new AgentInvocationContext(
+            plan.userId(),
+            AgentInvocationMode.USER_ENTRY,
+            idempotencyKey,
+            null,
+            null,
+            instruction.getBytes(java.nio.charset.StandardCharsets.UTF_8).length,
             true));
   }
 
@@ -386,9 +378,8 @@ public class LearningPlanExtensionProposalStreamService {
         "开始生成学习计划扩展",
         "正在生成扩展",
         Map.of(
-            "list_problem_filters", "正在查询题库标签",
-            "search_problems", "正在搜索候选题",
-            "get_problem_statement", "正在读取题目信息"),
+            LearningPlanAgentToolNames.LIST_PROBLEM_FILTERS, "正在查询题库标签",
+            LearningPlanAgentToolNames.SEARCH_PROBLEMS, "正在搜索候选题"),
         24,
         Duration.ofMillis(500),
         true);
@@ -396,7 +387,7 @@ public class LearningPlanExtensionProposalStreamService {
 
   private record SubscriptionRevisionContext(
       LearningPlanExtensionRevision revision,
-      AgentRequest request
+      AgentInvocation<LearningPlanExtensionAgentInput> invocation
   ) {
   }
 

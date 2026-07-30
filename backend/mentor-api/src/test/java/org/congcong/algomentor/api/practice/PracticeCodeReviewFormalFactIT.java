@@ -8,23 +8,20 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Flow;
 import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewRepository;
 import org.congcong.algomentor.api.support.PostgresIntegrationTestSupport;
-import org.congcong.algomentor.llm.core.gateway.LlmGateway;
-import org.congcong.algomentor.llm.core.model.LlmModelId;
-import org.congcong.algomentor.llm.core.provider.LlmProviderId;
-import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
-import org.congcong.algomentor.llm.core.request.LlmMessage;
-import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
+import java.util.concurrent.Flow;
+import org.congcong.algomentor.agent.core.AgentOutput;
+import org.congcong.algomentor.agent.core.AgentRunResult;
+import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
-import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReview;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCommitService;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewConstants;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewDraft;
-import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPromptBuilder;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewStructuredOutputMapper;
@@ -46,9 +43,10 @@ class PracticeCodeReviewFormalFactIT extends PostgresIntegrationTestSupport {
     long userId = insertUser();
     long sessionId = insertPracticeSession(userId, "two-sum");
     long messageId = insertUserMessage(userId);
+    long parentRunId = insertParentRun(userId);
     PracticeCodeReviewRepository repository = transactionalRepository(repository());
     PracticeTurnContext context = new PracticeTurnContext(
-        userId, 1, 1, "two-sum", sessionId, messageId, null, null,
+        userId, 1, 1, "two-sum", sessionId, messageId, null, parentRunId,
         "", "", "class Solution {}", "class Solution {}", "", "zh-CN");
 
     PracticeReviewResult nonReview = service(repository, structuredOutput(false), null).review(context);
@@ -68,13 +66,38 @@ class PracticeCodeReviewFormalFactIT extends PostgresIntegrationTestSupport {
     return new PracticeCodeReviewService(
         repository,
         new PracticeCodeReviewCommitService(repository, queuePublisher()),
-        new FixedGateway(output, failure),
-        new PracticeCodeReviewPromptBuilder(),
-        new PracticeCodeReviewStructuredOutputMapper());
+        new FixedRuntime(output, failure),
+        new PracticeCodeReviewStructuredOutputMapper(),
+        org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics.NOOP,
+        org.congcong.algomentor.mentor.application.review.card.PracticeCodeReviewObserver.NOOP);
   }
 
   private QueuePublisher queuePublisher() {
     return (topic, key, payload) -> new QueueMessage(1L, topic, key, "{}", java.time.Instant.EPOCH);
+  }
+
+  private long insertParentRun(long userId) throws Exception {
+    String unique = Long.toUnsignedString(System.nanoTime(), 36);
+    return queryLong("""
+        WITH created_task AS (
+          INSERT INTO agent_task (user_id, status, context_policy, metadata, created_at, updated_at)
+          VALUES (?, 'COMPLETED', '{}'::jsonb, '{}'::jsonb, NOW(), NOW())
+          RETURNING id
+        ), created_turn AS (
+          INSERT INTO agent_turn (task_id, sequence_no, status, created_at, updated_at)
+          SELECT id, 1, 'COMPLETED', NOW(), NOW()
+          FROM created_task
+          RETURNING id, task_id
+        )
+        INSERT INTO agent_run (
+          task_id, turn_id, run_uuid, attempt_no, idempotency_key, trigger_type, status, max_steps,
+          usage, error, started_at, ended_at
+        )
+        SELECT task_id, id, ?, 1, ?, 'USER_ENTRY', 'COMPLETED', 1,
+          '{}'::jsonb, '{}'::jsonb, NOW(), NOW()
+        FROM created_turn
+        RETURNING id
+        """, userId, "parent-run-" + unique, "parent-idempotency-" + unique);
   }
 
   private MyBatisPracticeCodeReviewRepository repository() throws Exception {
@@ -153,27 +176,30 @@ class PracticeCodeReviewFormalFactIT extends PostgresIntegrationTestSupport {
         Map.entry("affectedTagIds", List.of())));
   }
 
-  private static final class FixedGateway implements LlmGateway {
+  private static final class FixedRuntime implements AgentRuntime {
     private final JsonNode output;
     private final RuntimeException failure;
 
-    private FixedGateway(JsonNode output, RuntimeException failure) {
+    private FixedRuntime(JsonNode output, RuntimeException failure) {
       this.output = output;
       this.failure = failure;
     }
 
     @Override
-    public LlmCompletionResult complete(LlmCompletionRequest request) {
+    public AgentRunResult execute(AgentInvocation<?> invocation) {
       if (failure != null) {
         throw failure;
       }
-      return new LlmCompletionResult(
-          LlmMessage.assistant("{}"), List.of(), output, LlmFinishReason.STOP, null,
-          new LlmProviderId("test"), new LlmModelId("test"), Map.of());
+      return new AgentRunResult(
+          1,
+          LlmFinishReason.STOP,
+          new AgentOutput("{}", output, PracticeCodeReviewConstants.SCHEMA_NAME,
+              PracticeCodeReviewConstants.SCHEMA_VERSION, Map.of()),
+          Map.of());
     }
 
     @Override
-    public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
+    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
       throw new UnsupportedOperationException();
     }
   }

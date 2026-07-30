@@ -1,6 +1,5 @@
 package org.congcong.algomentor.mentor.application.practice;
 
-import java.util.Map;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
@@ -16,6 +15,7 @@ import org.slf4j.LoggerFactory;
 public class PracticeMessageStreamService {
 
   private static final Logger log = LoggerFactory.getLogger(PracticeMessageStreamService.class);
+  private static final String DEFAULT_LOCALE = "zh-CN";
 
   private final PracticeSessionRepository sessionRepository;
   private final PracticeTurnOrchestrator orchestrator;
@@ -52,7 +52,7 @@ public class PracticeMessageStreamService {
       String message,
       String idempotencyKey,
       String locale,
-      Map<String, Object> governanceMetadata
+      int requestSize
   ) {
     PracticeSession session = sessionRepository.findSessionForUser(sessionId, userId)
         .orElseThrow(() -> new LearningPlanException("PRACTICE_SESSION_NOT_FOUND", "题目训练会话不存在。"));
@@ -63,21 +63,32 @@ public class PracticeMessageStreamService {
       throw new LearningPlanException("PRACTICE_SESSION_AGENT_TASK_MISSING", "题目训练会话缺少运行任务。");
     }
 
+    String effectiveLocale = effectiveLocale(session.locale(), locale);
     UserAiPreference preference = preferenceService.get(userId);
-    PracticeResponseLanguage responseLanguage = PracticeResponseLanguage.fromLocale(locale);
-    Map<String, Object> metadata = new java.util.LinkedHashMap<>(
-        governanceMetadata == null ? Map.of() : governanceMetadata);
-    metadata.put(PracticeChatPromptConstants.METADATA_COACH_STYLE, preference.coachStyle().name());
-    metadata.put(PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, responseLanguage.name());
-
-    Flow.Publisher<AgentStreamEvent> delegate = orchestrator.stream(
+    Flow.Publisher<AgentStreamEvent> delegate = orchestrator.stream(new PracticeChatAgentInput(
         userId,
-        sessionId,
+        session.id(),
+        session.agentTaskId(),
+        session.planId(),
+        session.phaseIndex(),
+        session.problemSlug(),
         message,
         idempotencyKey,
-        locale,
-        Map.copyOf(metadata));
+        effectiveLocale,
+        preference.coachStyle(),
+        PracticeResponseLanguage.fromLocale(effectiveLocale),
+        requestSize));
     return new TouchingPublisher(delegate, sessionRepository, session.id());
+  }
+
+  private String effectiveLocale(String sessionLocale, String requestedLocale) {
+    if (sessionLocale != null && !sessionLocale.isBlank()) {
+      return sessionLocale.trim();
+    }
+    if (requestedLocale != null && !requestedLocale.isBlank()) {
+      return requestedLocale.trim();
+    }
+    return DEFAULT_LOCALE;
   }
 
   private record TouchingPublisher(

@@ -31,6 +31,7 @@
     <module>policy</module>
     <module>auth</module>
     <module>ai-governance</module>
+    <module>agent-runtime</module>
     <module>persistent-queue</module>
     <module>mentor-application</module>
     <module>ops-observability</module>

@@ -11,14 +11,16 @@ import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentCancellationToken;
 import org.congcong.algomentor.agent.core.AgentLlmRequestFactory;
 import org.congcong.algomentor.agent.core.AgentLoopDefaults;
+import org.congcong.algomentor.agent.core.AgentLoopEngine;
+import org.congcong.algomentor.agent.core.AgentLoopInterceptor;
 import org.congcong.algomentor.agent.core.AgentLoopObserver;
-import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentModelSelectorResolver;
-import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.agent.core.DefaultAgentModelSelectorResolver;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
+import org.congcong.algomentor.agent.core.compaction.RunMessageCompactor;
+import org.congcong.algomentor.agent.core.compaction.ToolResultCompactor;
 import org.congcong.algomentor.agent.core.execution.AgentExecutor;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionAuthorization;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionCheck;
@@ -40,31 +42,40 @@ import org.congcong.algomentor.agent.core.runlock.AgentRunLockReleaseObserver;
 import org.congcong.algomentor.agent.core.runlock.InMemoryAgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.LocalAgentRunLockOwnerProvider;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
+import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.core.tool.ReadToolResultTool;
 import org.congcong.algomentor.agent.core.tool.CalculatorTool;
+import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
+import org.congcong.algomentor.agent.runtime.DefaultAgentRuntime;
+import org.congcong.algomentor.agent.runtime.definition.AgentDefinitionRegistry;
+import org.congcong.algomentor.agent.runtime.governance.AgentRuntimeGovernanceService;
 import org.congcong.algomentor.ai.governance.accounting.AiAccountingLlmGateway;
 import org.congcong.algomentor.ai.governance.accounting.AiLlmCallAccountingService;
-import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
-import org.congcong.algomentor.ai.governance.admission.AiRunLifecycleService;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
-import org.congcong.algomentor.ai.governance.completion.AiGovernedCompletionService;
-import org.congcong.algomentor.ai.governance.completion.AiPassthroughCompletionGateway;
+import org.congcong.algomentor.ai.governance.execution.AiRunGovernanceService;
 import org.congcong.algomentor.ai.governance.metrics.AiProviderCallMetricsLlmGateway;
-import org.congcong.algomentor.ai.governance.policy.AiPurposePolicyResolver;
-import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimePolicyService;
 import org.congcong.algomentor.api.agent.execution.ManagedAgentExecutor;
 import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.congcong.algomentor.api.problem.tool.GetProblemStatementTool;
 import org.congcong.algomentor.api.problem.tool.ListProblemFiltersTool;
 import org.congcong.algomentor.api.problem.tool.SearchProblemsTool;
 import org.congcong.algomentor.mentor.application.ExplainTopicUseCase;
+import org.congcong.algomentor.mentor.application.conversation.MentorConversationAgentDefinition;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionAgentDefinition;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionAgentDefinition;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftAgentDefinition;
+import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateAgentDefinition;
+import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileUpdateAgentDefinition;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
+import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentToolNames;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentDefinition;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatAgentDefinition;
+import org.congcong.algomentor.mentor.application.topic.TopicExplanationAgentDefinition;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.agent.core.AgentInvocationTargetResolver;
-import org.congcong.algomentor.ai.governance.routing.AiModelRouteResolver;
 import org.congcong.algomentor.ai.governance.routing.AiRunInvocationTargetStore;
 import org.congcong.algomentor.llm.core.gateway.DynamicLlmGateway;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
@@ -72,13 +83,15 @@ import org.congcong.algomentor.llm.core.model.LlmModelSelector;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
-import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 @Configuration(proxyBeanMethods = false)
@@ -132,34 +145,6 @@ public class MentorAiConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public AiCompletionGateway aiCompletionGateway(
-      LlmGateway llmGateway,
-      ObjectProvider<AiRunAdmissionService> admissionServiceProvider,
-      ObjectProvider<AiRunLifecycleService> lifecycleServiceProvider,
-      ObjectProvider<AiPurposePolicyResolver> policyResolverProvider,
-      ObjectProvider<AiRuntimePolicyService> runtimePolicyServiceProvider,
-      ObjectProvider<AiModelRouteResolver> modelRouteResolverProvider,
-      ObjectProvider<AiRunInvocationTargetStore> invocationTargetStoreProvider
-  ) {
-    AiRunAdmissionService admissionService = admissionServiceProvider.getIfAvailable();
-    AiRunLifecycleService lifecycleService = lifecycleServiceProvider.getIfAvailable();
-    AiPurposePolicyResolver policyResolver = policyResolverProvider.getIfAvailable();
-    AiRuntimePolicyService runtimePolicyService = runtimePolicyServiceProvider.getIfAvailable();
-    if (admissionService == null || lifecycleService == null || policyResolver == null || runtimePolicyService == null) {
-      return new AiPassthroughCompletionGateway(llmGateway);
-    }
-    return new AiGovernedCompletionService(
-        llmGateway,
-        admissionService,
-        lifecycleService,
-        policyResolver,
-        runtimePolicyService,
-        modelRouteResolverProvider.getIfAvailable(),
-        invocationTargetStoreProvider.getIfAvailable());
-  }
-
-  @Bean
-  @ConditionalOnMissingBean
   public AgentModelSelectorResolver agentModelSelectorResolver() {
     return new DefaultAgentModelSelectorResolver();
   }
@@ -175,12 +160,6 @@ public class MentorAiConfiguration {
         LlmModelSelector.requiring(java.util.Set.of()),
         modelSelectorResolver,
         invocationTargetStore == null ? AgentInvocationTargetResolver.none() : invocationTargetStore);
-  }
-
-  @Bean
-  @ConditionalOnMissingBean
-  public AgentRunner agentRunner(LlmGateway llmGateway, AgentLlmRequestFactory requestFactory) {
-    return new AgentRunner(llmGateway, requestFactory);
   }
 
   @Bean
@@ -335,33 +314,111 @@ public class MentorAiConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public AgentLoopRunner agentLoopRunner(
+  public AgentLoopEngine agentLoopEngine(
       LlmGateway llmGateway,
       AgentLlmRequestFactory requestFactory,
-      AgentToolRegistry agentToolRegistry,
       List<AgentLoopObserver> observers,
-      @Value("${" + MentorConfigurationKeys.AGENT_TOOL_CHOICE + ":auto}") String toolChoice,
-      @Value("${" + MentorConfigurationKeys.AGENT_SPECIFIC_TOOL_NAME + ":}") String specificToolName,
-      @Value("${" + MentorConfigurationKeys.AGENT_MAX_STEPS + ":" + AgentLoopDefaults.DEFAULT_MAX_STEPS + "}") int maxSteps,
+      List<AgentLoopInterceptor> interceptors,
       ToolResultCompactionPolicy toolResultPolicy,
-      org.springframework.beans.factory.ObjectProvider<ToolResultStore> toolResultStore,
+      ObjectProvider<ToolResultStore> toolResultStore,
       ObjectMapper objectMapper,
-      AgentToolPermissionGuard permissionGuard,
-      AgentExecutor agentExecutor
+      AgentToolPermissionGuard permissionGuard
   ) {
-    return new AgentLoopRunner(
+    ToolResultCompactor toolResultCompactor = new ToolResultCompactor(
+        objectMapper,
+        toolResultPolicy,
+        toolResultStore.getIfAvailable(InMemoryToolResultStore::new));
+    return new AgentLoopEngine(
         llmGateway,
         requestFactory,
-        agentToolRegistry,
-        toToolChoice(toolChoice, specificToolName),
-        maxSteps,
         observers,
-        List.of(),
-        toolResultPolicy,
-        toolResultStore.getIfAvailable(),
+        interceptors,
+        toolResultCompactor,
+        new RunMessageCompactor(objectMapper, toolResultCompactor),
         objectMapper,
-        permissionGuard,
-        agentExecutor);
+        permissionGuard);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public TopicExplanationAgentDefinition topicExplanationAgentDefinition(
+      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolverProvider
+  ) {
+    return new TopicExplanationAgentDefinition(
+        systemPromptResolverProvider.getIfAvailable(ManagedSystemPrompts::defaultResolver));
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public AgentDefinitionRegistry agentDefinitionRegistry(
+      TopicExplanationAgentDefinition topicDefinition,
+      ObjectProvider<MentorConversationAgentDefinition> mentorDefinitionProvider,
+      ObjectProvider<PracticeChatAgentDefinition> practiceDefinitionProvider,
+      ObjectProvider<PracticeCodeReviewAgentDefinition> practiceCodeReviewDefinitionProvider,
+      ObjectProvider<DeclaredProfileUpdateAgentDefinition> declaredProfileUpdateDefinitionProvider,
+      ObjectProvider<CodeReviewProfileUpdateAgentDefinition> codeReviewProfileUpdateDefinitionProvider,
+      ObjectProvider<LearningPlanDraftAgentDefinition> learningPlanDraftDefinitionProvider,
+      ObjectProvider<LearningPlanDraftRevisionAgentDefinition> learningPlanRevisionDefinitionProvider,
+      ObjectProvider<LearningPlanExtensionAgentDefinition> learningPlanExtensionDefinitionProvider,
+      AgentToolRegistry agentToolRegistry
+  ) {
+    List<org.congcong.algomentor.agent.core.runtime.definition.AgentDefinition<?>> definitions =
+        new java.util.ArrayList<>(List.of(topicDefinition));
+    mentorDefinitionProvider.ifAvailable(definitions::add);
+    practiceDefinitionProvider.ifAvailable(definitions::add);
+    practiceCodeReviewDefinitionProvider.ifAvailable(definitions::add);
+    declaredProfileUpdateDefinitionProvider.ifAvailable(definitions::add);
+    codeReviewProfileUpdateDefinitionProvider.ifAvailable(definitions::add);
+    learningPlanDraftDefinitionProvider.ifAvailable(definitions::add);
+    learningPlanRevisionDefinitionProvider.ifAvailable(definitions::add);
+    learningPlanExtensionDefinitionProvider.ifAvailable(definitions::add);
+    definitions.forEach(definition -> definition.allowedToolNames().forEach(toolName -> {
+      if (agentToolRegistry.find(toolName).isEmpty()) {
+        throw new IllegalStateException(
+            "Agent Definition requires an unregistered tool: " + definition.key().value() + "/" + toolName);
+      }
+    }));
+    return new AgentDefinitionRegistry(definitions);
+  }
+
+  @Bean
+  @Lazy
+  @ConditionalOnProperty(
+      prefix = MentorConfigurationKeys.AGENT_RUNTIME_PREFIX,
+      name = MentorConfigurationKeys.ENABLED,
+      havingValue = MentorConfigurationKeys.TRUE,
+      matchIfMissing = false)
+  @ConditionalOnMissingBean
+  public AgentRuntimeGovernanceService agentRuntimeGovernanceService(AiRunGovernanceService governanceService) {
+    return new AgentRuntimeGovernanceService(governanceService);
+  }
+
+  @Bean
+  @Lazy
+  @ConditionalOnProperty(
+      prefix = MentorConfigurationKeys.AGENT_RUNTIME_PREFIX,
+      name = MentorConfigurationKeys.ENABLED,
+      havingValue = MentorConfigurationKeys.TRUE,
+      matchIfMissing = false)
+  @ConditionalOnMissingBean(AgentRuntime.class)
+  public AgentRuntime agentRuntime(
+      AgentDefinitionRegistry definitionRegistry,
+      AgentRuntimeGovernanceService governanceService,
+      AgentConversationRepository conversationRepository,
+      AgentLoopEngine loopEngine,
+      AgentToolRegistry agentToolRegistry,
+      AgentExecutor agentExecutor,
+      @Value("${" + MentorConfigurationKeys.AGENT_MAX_STEPS + ":" + AgentLoopDefaults.DEFAULT_MAX_STEPS + "}")
+      int maxStepsHardLimit
+  ) {
+    return new DefaultAgentRuntime(
+        definitionRegistry,
+        governanceService,
+        conversationRepository,
+        loopEngine,
+        agentToolRegistry,
+        agentExecutor,
+        maxStepsHardLimit);
   }
 
   @Bean
@@ -371,27 +428,12 @@ public class MentorAiConfiguration {
   }
 
   @Bean
+  @ConditionalOnBean(AgentRuntime.class)
   @ConditionalOnMissingBean
   public ExplainTopicUseCase explainTopicUseCase(
-      AgentRunner agentRunner,
-      AgentLoopRunner agentLoopRunner,
-      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolverProvider
+      AgentRuntime agentRuntime
   ) {
-    return new ExplainTopicUseCase(
-        agentRunner,
-        agentLoopRunner,
-        systemPromptResolverProvider.getIfAvailable());
-  }
-
-  private LlmToolChoice toToolChoice(String value, String specificToolName) {
-    String normalized = value == null ? "auto" : value.trim().toLowerCase();
-    return switch (normalized) {
-      case "auto" -> LlmToolChoice.auto();
-      case "none" -> LlmToolChoice.none();
-      case "required" -> LlmToolChoice.required();
-      case "specific" -> LlmToolChoice.specific(specificToolName);
-      default -> throw new IllegalArgumentException("Unsupported agent tool choice: " + value);
-    };
+    return new ExplainTopicUseCase(agentRuntime);
   }
 
   private static final class DefaultAllowAgentToolPermissionCoordinator implements AgentToolPermissionCoordinator {

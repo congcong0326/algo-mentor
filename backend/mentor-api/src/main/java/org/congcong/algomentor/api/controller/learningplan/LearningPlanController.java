@@ -1,23 +1,13 @@
 package org.congcong.algomentor.api.controller.learningplan;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Flow;
-import java.util.function.Supplier;
-import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionException;
-import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
-import org.congcong.algomentor.ai.governance.admission.AiRunLifecycleService;
-import org.congcong.algomentor.ai.governance.model.AiActor;
 import org.congcong.algomentor.ai.governance.model.AiGovernanceErrorCode;
-import org.congcong.algomentor.ai.governance.model.AiPurpose;
-import org.congcong.algomentor.ai.governance.model.AiRunContext;
-import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.ai.governance.model.AiRunStatus;
-import org.congcong.algomentor.ai.governance.model.AiUsage;
 import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanConfirmResponse;
@@ -36,7 +26,6 @@ import org.congcong.algomentor.api.learningplan.service.LearningPlanDraftStreamS
 import org.congcong.algomentor.api.learningplan.service.LearningPlanProposalStreamSseMapper;
 import org.congcong.algomentor.api.learningplan.service.SseLearningPlanDraftStreamSubscriber;
 import org.congcong.algomentor.api.learningplan.service.SseLearningPlanProposalStreamSubscriber;
-import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.common.api.ApiErrorLocales;
@@ -87,9 +76,6 @@ public class LearningPlanController {
   private final LearningPlanDraftService draftService;
   private final LearningPlanService planService;
   private final CurrentUserIdProvider currentUserIdProvider;
-  private final AiActorResolver actorResolver;
-  private final ObjectProvider<AiRunAdmissionService> admissionServiceProvider;
-  private final ObjectProvider<AiRunLifecycleService> lifecycleServiceProvider;
   private final ObjectProvider<LearningPlanDraftStreamService> draftStreamServiceProvider;
   private final ObjectProvider<LearningPlanDraftRevisionStreamService> draftRevisionStreamServiceProvider;
   private final ObjectProvider<LearningPlanExtensionProposalStreamService> extensionProposalStreamServiceProvider;
@@ -112,9 +98,6 @@ public class LearningPlanController {
       LearningPlanDraftService draftService,
       LearningPlanService planService,
       CurrentUserIdProvider currentUserIdProvider,
-      AiActorResolver actorResolver,
-      ObjectProvider<AiRunAdmissionService> admissionServiceProvider,
-      ObjectProvider<AiRunLifecycleService> lifecycleServiceProvider,
       ObjectProvider<LearningPlanDraftStreamService> draftStreamServiceProvider,
       ObjectProvider<LearningPlanDraftRevisionStreamService> draftRevisionStreamServiceProvider,
       ObjectProvider<LearningPlanExtensionProposalStreamService> extensionProposalStreamServiceProvider,
@@ -132,9 +115,6 @@ public class LearningPlanController {
     this.draftService = draftService;
     this.planService = planService;
     this.currentUserIdProvider = currentUserIdProvider;
-    this.actorResolver = actorResolver;
-    this.admissionServiceProvider = admissionServiceProvider;
-    this.lifecycleServiceProvider = lifecycleServiceProvider;
     this.draftStreamServiceProvider = draftStreamServiceProvider;
     this.draftRevisionStreamServiceProvider = draftRevisionStreamServiceProvider;
     this.extensionProposalStreamServiceProvider = extensionProposalStreamServiceProvider;
@@ -159,26 +139,10 @@ public class LearningPlanController {
   public SseEmitter streamDraft(@RequestBody LearningPlanCreateDraftRequest request) {
     long userId = requireCurrentUserId();
     String runId = UUID.randomUUID().toString();
-    AiActor actor = actorResolver.currentActor();
-    AiRunAdmission admission = requiredAdmissionService().admit(new AiRunContext(
-        runId,
-        actor,
-        AiPurpose.LEARNING_PLAN,
-        AiRunSource.LEARNING_PLAN_DRAFT,
-        runId,
-        requestSize(request),
-        true,
-        Map.of(),
-        Instant.now()));
-    AiRunLifecycleService lifecycleService = requiredLifecycleService();
-    lifecycleService.markRunning(admission, null, null);
-
     SseEmitter emitter = new SseEmitter(sseProperties.learningPlanDraftTimeoutMillis());
     SseLearningPlanDraftStreamSubscriber subscriber = new SseLearningPlanDraftStreamSubscriber(
         emitter,
         draftStreamSseMapper,
-        lifecycleService,
-        admission,
         SseStreamType.LEARNING_PLAN_DRAFT,
         sseOpsRecorder,
         learningOpsRecorder,
@@ -189,7 +153,7 @@ public class LearningPlanController {
 
     try {
       requiredDraftStreamService()
-          .stream(userId, request.toCommand(), runId, admission.metadata())
+          .stream(userId, request.toCommand(), runId, Map.of())
           .subscribe(subscriber);
     } catch (RuntimeException exception) {
       subscriber.onError(exception);
@@ -205,11 +169,8 @@ public class LearningPlanController {
       @RequestBody LearningPlanRevisionRequest request) {
     long userId = requireCurrentUserId();
     String instruction = normalizedInstruction(request);
-    return proposalStream(
-        AiRunSource.LEARNING_PLAN_DRAFT_REVISION,
-        requestSize(instruction),
-        (runId, metadata) -> requiredDraftRevisionStreamService()
-            .stream(userId, draftId, instruction, runId, metadata));
+    return proposalStream(runId -> requiredDraftRevisionStreamService()
+        .stream(userId, draftId, instruction, runId, Map.of()));
   }
 
   @PostMapping(value = ApiContractConstants.LEARNING_PLAN_EXTENSION_PROPOSALS_STREAM_PATH,
@@ -219,11 +180,8 @@ public class LearningPlanController {
       @RequestBody LearningPlanRevisionRequest request) {
     long userId = requireCurrentUserId();
     String instruction = normalizedInstruction(request);
-    return proposalStream(
-        AiRunSource.LEARNING_PLAN_EXTENSION_PROPOSAL,
-        requestSize(instruction),
-        (runId, metadata) -> requiredExtensionProposalStreamService()
-            .streamFirstRevision(userId, planId, instruction, runId, metadata));
+    return proposalStream(runId -> requiredExtensionProposalStreamService()
+        .streamFirstRevision(userId, planId, instruction, runId, Map.of()));
   }
 
   @PostMapping(value = ApiContractConstants.LEARNING_PLAN_EXTENSION_PROPOSAL_REVISIONS_STREAM_PATH,
@@ -234,11 +192,8 @@ public class LearningPlanController {
       @RequestBody LearningPlanRevisionRequest request) {
     long userId = requireCurrentUserId();
     String instruction = normalizedInstruction(request);
-    return proposalStream(
-        AiRunSource.LEARNING_PLAN_EXTENSION_PROPOSAL,
-        requestSize(instruction),
-        (runId, metadata) -> requiredExtensionProposalStreamService()
-            .streamNextRevision(userId, planId, proposalGroupId, instruction, runId, metadata));
+    return proposalStream(runId -> requiredExtensionProposalStreamService()
+        .streamNextRevision(userId, planId, proposalGroupId, instruction, runId, Map.of()));
   }
 
   @PostMapping(ApiContractConstants.LEARNING_PLAN_DRAFTS_PATH
@@ -247,10 +202,8 @@ public class LearningPlanController {
       @PathVariable long draftId,
       @RequestBody LearningPlanMessageRequest request) {
     long userId = requireCurrentUserId();
-    return governedDraft(
-        "learning-plan-draft-" + draftId + "-" + UUID.randomUUID(),
-        request.message() == null ? 0 : request.message().getBytes(StandardCharsets.UTF_8).length,
-        () -> draftService.continueDraft(userId, draftId, request.message()));
+    return ApiResponse.success(LearningPlanResponseMapper.toDraftResponse(
+        draftService.continueDraft(userId, draftId, request.message())));
   }
 
   @PostMapping(ApiContractConstants.LEARNING_PLAN_DRAFT_FROM_TEMPLATE_PATH)
@@ -418,59 +371,12 @@ public class LearningPlanController {
     });
   }
 
-  private ApiResponse<LearningPlanDraftResponse> governedDraft(
-      String runId,
-      int requestSize,
-      Supplier<LearningPlanDraftResult> action) {
-    AiActor actor = actorResolver.currentActor();
-    AiRunAdmissionService admissionService = requiredAdmissionService();
-    AiRunLifecycleService lifecycleService = requiredLifecycleService();
-    AiRunAdmission admission = admissionService.admit(new AiRunContext(
-        runId,
-        actor,
-        AiPurpose.LEARNING_PLAN,
-        AiRunSource.LEARNING_PLAN_DRAFT,
-        runId,
-        requestSize,
-        false,
-        Map.of(),
-        Instant.now()));
-    lifecycleService.markRunning(admission, null, null);
-    try {
-      LearningPlanDraftResult result = action.get();
-      lifecycleService.markCompleted(admission, AiUsage.zero(), null, null);
-      return ApiResponse.success(LearningPlanResponseMapper.toDraftResponse(result));
-    } catch (RuntimeException exception) {
-      lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
-      throw exception;
-    }
-  }
-
-  private SseEmitter proposalStream(
-      AiRunSource source,
-      int requestSize,
-      ProposalStreamFactory streamFactory) {
+  private SseEmitter proposalStream(ProposalStreamFactory streamFactory) {
     String runId = UUID.randomUUID().toString();
-    AiActor actor = actorResolver.currentActor();
-    AiRunAdmission admission = requiredAdmissionService().admit(new AiRunContext(
-        runId,
-        actor,
-        AiPurpose.LEARNING_PLAN,
-        source,
-        runId,
-        requestSize,
-        true,
-        Map.of(),
-        Instant.now()));
-    AiRunLifecycleService lifecycleService = requiredLifecycleService();
-    lifecycleService.markRunning(admission, null, null);
-
     SseEmitter emitter = new SseEmitter(sseProperties.learningPlanDraftTimeoutMillis());
     SseLearningPlanProposalStreamSubscriber subscriber = new SseLearningPlanProposalStreamSubscriber(
         emitter,
         proposalStreamSseMapper,
-        lifecycleService,
-        admission,
         SseStreamType.LEARNING_PLAN_PROPOSAL,
         sseOpsRecorder,
         opsLogger);
@@ -479,48 +385,15 @@ public class LearningPlanController {
     emitter.onError(subscriber::clientDisconnected);
 
     try {
-      streamFactory.stream(runId, admission.metadata()).subscribe(subscriber);
+      streamFactory.stream(runId).subscribe(subscriber);
     } catch (RuntimeException exception) {
       subscriber.onError(exception);
     }
     return emitter;
   }
 
-  private int requestSize(LearningPlanCreateDraftRequest request) {
-    int size = 0;
-    if (request.goal() != null) {
-      size += request.goal().getBytes(StandardCharsets.UTF_8).length;
-    }
-    if (request.programmingLanguage() != null) {
-      size += request.programmingLanguage().getBytes(StandardCharsets.UTF_8).length;
-    }
-    if (request.topicPreferences() != null) {
-      size += request.topicPreferences().stream()
-          .filter(topic -> topic != null)
-          .mapToInt(topic -> topic.getBytes(StandardCharsets.UTF_8).length)
-          .sum();
-    }
-    return size;
-  }
-
   private String normalizedInstruction(LearningPlanRevisionRequest request) {
     return request == null ? "" : request.normalizedInstruction();
-  }
-
-  private int requestSize(String content) {
-    return content == null ? 0 : content.getBytes(StandardCharsets.UTF_8).length;
-  }
-
-  private AiRunAdmissionService requiredAdmissionService() {
-    return admissionServiceProvider.getIfAvailable(() -> {
-      throw unavailableGovernance();
-    });
-  }
-
-  private AiRunLifecycleService requiredLifecycleService() {
-    return lifecycleServiceProvider.getIfAvailable(() -> {
-      throw unavailableGovernance();
-    });
   }
 
   private LearningPlanDraftStreamService requiredDraftStreamService() {
@@ -580,6 +453,6 @@ public class LearningPlanController {
 
   @FunctionalInterface
   private interface ProposalStreamFactory {
-    Flow.Publisher<LearningPlanProposalStreamEvent> stream(String runId, Map<String, Object> metadata);
+    Flow.Publisher<LearningPlanProposalStreamEvent> stream(String runId);
   }
 }

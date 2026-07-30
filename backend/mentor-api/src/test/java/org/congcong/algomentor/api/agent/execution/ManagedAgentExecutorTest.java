@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -90,6 +92,78 @@ class ManagedAgentExecutorTest {
     assertThat(registry.get(AgentExecutorMetrics.REJECTED).counter().count()).isEqualTo(1.0);
   }
 
+  @Test
+  void marksExecutorThreadsWithoutDependingOnTheirNamesAndRestoresTraceContext() throws Exception {
+    ManagedAgentExecutor executor = new ManagedAgentExecutor(singleThreadProperties(), new SimpleMeterRegistry());
+    AtomicReference<Boolean> markedDuringManagedTask = new AtomicReference<>();
+    AtomicReference<String> tracedRequestId = new AtomicReference<>();
+    AtomicReference<Boolean> rawTaskMarked = new AtomicReference<>();
+    AtomicReference<String> rawTaskRequestId = new AtomicReference<>();
+    AtomicReference<Boolean> renamedWorkerStillMarked = new AtomicReference<>();
+    CountDownLatch firstManagedTaskDone = new CountDownLatch(1);
+    CountDownLatch secondManagedTaskDone = new CountDownLatch(1);
+
+    try {
+      try (RequestTraceContext.RequestTraceScope ignored = RequestTraceContext.withRequestId("request-executor-marker")) {
+        executor.execute(() -> {
+          markedDuringManagedTask.set(executor.inExecutorThread());
+          tracedRequestId.set(RequestTraceContext.currentRequestId().orElse(null));
+          Thread.currentThread().setName("renamed-agent-worker");
+          firstManagedTaskDone.countDown();
+        });
+      }
+      await(firstManagedTaskDone);
+      awaitIdle(executor.threadPoolExecutor());
+
+      Future<?> rawTask = submitRaw(executor.threadPoolExecutor(), () -> {
+        rawTaskMarked.set(executor.inExecutorThread());
+        rawTaskRequestId.set(RequestTraceContext.currentRequestId().orElse(null));
+      });
+      rawTask.get(5, TimeUnit.SECONDS);
+
+      executor.execute(() -> {
+        renamedWorkerStillMarked.set(executor.inExecutorThread());
+        secondManagedTaskDone.countDown();
+      });
+      await(secondManagedTaskDone);
+
+      assertThat(markedDuringManagedTask).hasValue(true);
+      assertThat(tracedRequestId).hasValue("request-executor-marker");
+      assertThat(rawTaskMarked).hasValue(false);
+      assertThat(rawTaskRequestId).hasValue(null);
+      assertThat(renamedWorkerStillMarked).hasValue(true);
+    } finally {
+      executor.shutdown();
+    }
+  }
+
+  @Test
+  void clearsExecutorThreadMarkerWhenTaskFails() {
+    ManagedAgentExecutor executor = new ManagedAgentExecutor(singleThreadProperties(), new SimpleMeterRegistry());
+    CountDownLatch failedTaskEntered = new CountDownLatch(1);
+    AtomicReference<Boolean> rawTaskMarked = new AtomicReference<>();
+
+    try {
+      executor.execute(() -> {
+        failedTaskEntered.countDown();
+        throw new IllegalStateException("expected task failure");
+      });
+      await(failedTaskEntered);
+      awaitIdle(executor.threadPoolExecutor());
+
+      Future<?> rawTask = submitRaw(
+          executor.threadPoolExecutor(),
+          () -> rawTaskMarked.set(executor.inExecutorThread()));
+      rawTask.get(5, TimeUnit.SECONDS);
+
+      assertThat(rawTaskMarked).hasValue(false);
+    } catch (Exception exception) {
+      throw new AssertionError(exception);
+    } finally {
+      executor.shutdown();
+    }
+  }
+
   private static AgentExecutorProperties singleThreadProperties() {
     AgentExecutorProperties properties = new AgentExecutorProperties();
     properties.setCorePoolSize(1);
@@ -105,5 +179,27 @@ class ManagedAgentExecutorTest {
       Thread.currentThread().interrupt();
       throw new AssertionError(interrupted);
     }
+  }
+
+  private static void awaitIdle(ThreadPoolExecutor executor) {
+    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+    while (executor.getActiveCount() > 0 && System.nanoTime() < deadline) {
+      Thread.onSpinWait();
+    }
+    assertThat(executor.getActiveCount()).isZero();
+  }
+
+  private static Future<?> submitRaw(ThreadPoolExecutor executor, Runnable task) {
+    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+    RejectedExecutionException lastFailure = null;
+    while (System.nanoTime() < deadline) {
+      try {
+        return executor.submit(task);
+      } catch (RejectedExecutionException rejected) {
+        lastFailure = rejected;
+        Thread.onSpinWait();
+      }
+    }
+    throw lastFailure == null ? new IllegalStateException("Raw agent executor task was not submitted") : lastFailure;
   }
 }

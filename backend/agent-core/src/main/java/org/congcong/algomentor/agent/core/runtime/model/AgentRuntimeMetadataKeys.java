@@ -62,6 +62,26 @@ public final class AgentRuntimeMetadataKeys {
    */
   public static final String AGENT_RUN_ID = "agentRunId";
 
+  /** Runtime Definition 的稳定 Agent key。 */
+  public static final String AGENT_KEY = "agentKey";
+
+  /**
+   * 由业务适配器提供、可安全持久化到最终 assistant 消息的受信 metadata。
+   */
+  public static final String ASSISTANT_MESSAGE_METADATA = "assistantMessageMetadata";
+
+  /** 当前 Agent 调用模式。 */
+  public static final String INVOCATION_MODE = "invocationMode";
+
+  /** 父 Agent run 的数据库 ID。 */
+  public static final String PARENT_RUN_ID = "parentRunId";
+
+  /** 发起 child run 的父 step 编号。 */
+  public static final String PARENT_STEP_INDEX = "parentStepIndex";
+
+  /** 当前 retry attempt 所重试的 run 数据库 ID。 */
+  public static final String RETRY_OF_RUN_ID = "retryOfRunId";
+
   /**
    * 当前模型调用在 Agent run 内的稳定正序 step 编号。
    */
@@ -191,6 +211,21 @@ public final class AgentRuntimeMetadataKeys {
    * 结构化输出 schema 版本。
    */
   public static final String SCHEMA_VERSION = "schemaVersion";
+
+  /**
+   * Runtime 从实际 LLM MessageStart 事件采集的 provider，不是调用前的路由快照。
+   */
+  public static final String RUNTIME_PROVIDER = "runtimeProvider";
+
+  /**
+   * Runtime 从实际 LLM MessageStart 事件采集的模型，不是调用前的路由快照。
+   */
+  public static final String RUNTIME_MODEL = "runtimeModel";
+
+  /**
+   * Runtime 从实际 LLM Usage 事件采集的 token 使用量。
+   */
+  public static final String RUNTIME_USAGE = "runtimeUsage";
 
   /**
    * 最终输出解析策略。

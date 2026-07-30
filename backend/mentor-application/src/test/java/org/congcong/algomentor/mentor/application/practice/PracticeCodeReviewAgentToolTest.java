@@ -16,14 +16,16 @@ import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentErrorCode;
 import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.AgentExecutionContext;
+import org.congcong.algomentor.agent.core.AgentOutput;
+import org.congcong.algomentor.agent.core.AgentRunResult;
+import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.runtime.model.AgentTurnMessages;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
-import org.congcong.algomentor.llm.core.gateway.LlmGateway;
-import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
-import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
-import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 import org.congcong.algomentor.queue.model.QueueMessage;
 import org.congcong.algomentor.queue.publisher.QueuePublisher;
@@ -243,13 +245,14 @@ class PracticeCodeReviewAgentToolTest {
   @Test
   void executeReusesExistingReviewForSameUserMessageWithoutCallingLlmOrSavingAgain() {
     ExistingReviewRepository reviewRepository = new ExistingReviewRepository(review());
-    CountingLlmGateway llmGateway = new CountingLlmGateway();
+    CountingAgentRuntime runtime = new CountingAgentRuntime();
     PracticeCodeReviewService reviewService = new PracticeCodeReviewService(
         reviewRepository,
         new PracticeCodeReviewCommitService(reviewRepository, queuePublisher()),
-        llmGateway,
-        new PracticeCodeReviewPromptBuilder(),
-        new PracticeCodeReviewStructuredOutputMapper());
+        runtime,
+        new PracticeCodeReviewStructuredOutputMapper(),
+        PracticeCodeReviewMetrics.NOOP,
+        org.congcong.algomentor.mentor.application.review.card.PracticeCodeReviewObserver.NOOP);
     PracticeCodeReviewAgentTool tool = tool(
         new FakePracticeSessionRepository(),
         new FakeTurnMessageLookupRepository(turnMessages()),
@@ -261,7 +264,35 @@ class PracticeCodeReviewAgentToolTest {
     assertThat(result.path(PracticeCodeReviewAgentToolNames.RESULT_VERSION_NO).asInt()).isEqualTo(3);
     assertThat(reviewRepository.findByUserMessageCalls).isEqualTo(1);
     assertThat(reviewRepository.savedDrafts).isEmpty();
-    assertThat(llmGateway.completeCalls).isZero();
+    assertThat(runtime.executeCalls).isZero();
+  }
+
+  @Test
+  void executeCreatesChildInvocationFromParentDatabaseRunAndCurrentStep() {
+    ExistingReviewRepository reviewRepository = new ExistingReviewRepository(null);
+    CapturingAgentRuntime runtime = new CapturingAgentRuntime();
+    PracticeCodeReviewService reviewService = new PracticeCodeReviewService(
+        reviewRepository,
+        new PracticeCodeReviewCommitService(reviewRepository, queuePublisher()),
+        runtime,
+        new PracticeCodeReviewStructuredOutputMapper(),
+        PracticeCodeReviewMetrics.NOOP,
+        org.congcong.algomentor.mentor.application.review.card.PracticeCodeReviewObserver.NOOP);
+    PracticeCodeReviewAgentTool tool = tool(
+        new FakePracticeSessionRepository(),
+        new FakeTurnMessageLookupRepository(turnMessages()),
+        reviewService);
+
+    JsonNode result = tool.execute(objectMapper.createObjectNode(), new AgentExecutionContext("trace-only-run", 3, metadata(), false));
+
+    assertThat(result.path(PracticeCodeReviewAgentToolNames.RESULT_STATUS).asText())
+        .isEqualTo(PracticeReviewStatus.FAILED.name());
+    assertThat(runtime.invocations).singleElement().satisfies(invocation -> {
+      assertThat(invocation.agentKey()).isEqualTo(PracticeCodeReviewAgentDefinition.KEY);
+      assertThat(invocation.context().parentRunId()).isEqualTo(Long.toString(RUN_DB_ID));
+      assertThat(invocation.context().parentStepIndex()).isEqualTo(3);
+      assertThat(invocation.context().idempotencyKey()).isEqualTo("practice-code-review:50:701");
+    });
   }
 
   private QueuePublisher queuePublisher() {
@@ -514,6 +545,9 @@ class PracticeCodeReviewAgentToolTest {
     @Override
     public PracticeCodeReview save(PracticeCodeReviewDraft draft) {
       savedDrafts.add(draft);
+      if (existingReview == null) {
+        throw new AssertionError("Save is not expected in this test");
+      }
       return existingReview;
     }
 
@@ -540,7 +574,8 @@ class PracticeCodeReviewAgentToolTest {
     @Override
     public Optional<PracticeCodeReview> findByUserMessage(long userId, long sessionId, long userMessageId) {
       findByUserMessageCalls++;
-      if (existingReview.userId() == userId
+      if (existingReview != null
+          && existingReview.userId() == userId
           && existingReview.sessionId() == sessionId
           && existingReview.userMessageId() == userMessageId) {
         return Optional.of(existingReview);
@@ -549,17 +584,37 @@ class PracticeCodeReviewAgentToolTest {
     }
   }
 
-  private static final class CountingLlmGateway implements LlmGateway {
-    private int completeCalls;
+  private static final class CountingAgentRuntime implements AgentRuntime {
+    private int executeCalls;
 
     @Override
-    public LlmCompletionResult complete(LlmCompletionRequest request) {
-      completeCalls++;
-      throw new AssertionError("LLM should not be called when review already exists");
+    public AgentRunResult execute(AgentInvocation<?> invocation) {
+      executeCalls++;
+      throw new AssertionError("Child Runtime should not run when review already exists");
     }
 
     @Override
-    public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
+    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
+      throw new UnsupportedOperationException("stream not used");
+    }
+  }
+
+  private final class CapturingAgentRuntime implements AgentRuntime {
+    private final List<AgentInvocation<?>> invocations = new ArrayList<>();
+
+    @Override
+    public AgentRunResult execute(AgentInvocation<?> invocation) {
+      invocations.add(invocation);
+      return new AgentRunResult(
+          1,
+          LlmFinishReason.STOP,
+          new AgentOutput("{}", objectMapper.createObjectNode(), PracticeCodeReviewConstants.SCHEMA_NAME,
+              PracticeCodeReviewConstants.SCHEMA_VERSION, Map.of()),
+          Map.of());
+    }
+
+    @Override
+    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
       throw new UnsupportedOperationException("stream not used");
     }
   }

@@ -2,7 +2,7 @@ package org.congcong.algomentor.api.learningplan.config;
 
 import java.time.Clock;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.congcong.algomentor.agent.core.AgentLoopRunner;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.api.learningplan.repository.UnavailableLearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanAgentService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivationRepository;
@@ -22,7 +22,10 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalPromptBuilder;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRepository;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionStreamService;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionAgentDefinition;
+import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionAgentDefinition;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionProposalStreamService;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftAgentDefinition;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftPromptBuilder;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
@@ -95,11 +98,36 @@ public class LearningPlanConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
+  public LearningPlanDraftAgentDefinition learningPlanDraftAgentDefinition(
+      LearningPlanDraftPromptBuilder promptBuilder
+  ) {
+    return new LearningPlanDraftAgentDefinition(promptBuilder);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanDraftRevisionAgentDefinition learningPlanDraftRevisionAgentDefinition(
+      LearningPlanDraftPromptBuilder promptBuilder,
+      ObjectMapper objectMapper
+  ) {
+    return new LearningPlanDraftRevisionAgentDefinition(promptBuilder, objectMapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearningPlanExtensionAgentDefinition learningPlanExtensionAgentDefinition(
+      LearningPlanProposalPromptBuilder promptBuilder
+  ) {
+    return new LearningPlanExtensionAgentDefinition(promptBuilder);
+  }
+
+  @Bean
+  @ConditionalOnBean(AgentRuntime.class)
+  @ConditionalOnMissingBean
   public LearningPlanDraftStreamService learningPlanDraftStreamService(
       LearningPlanDraftRepository draftRepository,
       LearningPlanDraftValidator validator,
-      AgentLoopRunner agentLoopRunner,
-      LearningPlanDraftPromptBuilder promptBuilder,
+      AgentRuntime agentRuntime,
       ObjectMapper objectMapper,
       LearningPlanProblemCatalog problemCatalog,
       LearningPlanLoadService loadService,
@@ -107,8 +135,7 @@ public class LearningPlanConfiguration {
     return new LearningPlanDraftStreamService(
         draftRepository,
         validator,
-        agentLoopRunner,
-        promptBuilder,
+        agentRuntime,
         objectMapper,
         problemCatalog,
         loadService,
@@ -140,15 +167,18 @@ public class LearningPlanConfiguration {
   }
 
   @Bean
-  @ConditionalOnBean(LearningPlanProposalRepository.class)
+  @ConditionalOnBean({
+      LearningPlanProposalRepository.class,
+      LearningPlanProposalGroupService.class,
+      AgentRuntime.class
+  })
   @ConditionalOnMissingBean
   public LearningPlanDraftRevisionStreamService learningPlanDraftRevisionStreamService(
       LearningPlanDraftRepository draftRepository,
       LearningPlanProposalRepository proposalRepository,
       LearningPlanProposalGroupService groupService,
       LearningPlanDraftValidator validator,
-      AgentLoopRunner agentLoopRunner,
-      LearningPlanDraftPromptBuilder promptBuilder,
+      AgentRuntime agentRuntime,
       ObjectMapper objectMapper,
       LearningPlanProblemCatalog problemCatalog,
       LearningPlanLoadService loadService,
@@ -159,8 +189,7 @@ public class LearningPlanConfiguration {
         proposalRepository,
         groupService,
         validator,
-        agentLoopRunner,
-        promptBuilder,
+        agentRuntime,
         objectMapper,
         problemCatalog,
         loadService,
@@ -169,7 +198,11 @@ public class LearningPlanConfiguration {
   }
 
   @Bean
-  @ConditionalOnBean(LearningPlanProposalRepository.class)
+  @ConditionalOnBean({
+      LearningPlanProposalRepository.class,
+      LearningPlanProposalGroupService.class,
+      AgentRuntime.class
+  })
   @ConditionalOnMissingBean
   public LearningPlanExtensionProposalStreamService learningPlanExtensionProposalStreamService(
       LearningPlanRepository planRepository,
@@ -177,8 +210,7 @@ public class LearningPlanConfiguration {
       LearningPlanProposalGroupService groupService,
       PracticeSessionRepository practiceSessionRepository,
       LearningPlanExtensionValidator validator,
-      AgentLoopRunner agentLoopRunner,
-      LearningPlanProposalPromptBuilder promptBuilder,
+      AgentRuntime agentRuntime,
       ObjectMapper objectMapper,
       TransactionOperations transactionOperations,
       Clock learningPlanClock) {
@@ -188,8 +220,7 @@ public class LearningPlanConfiguration {
         groupService,
         practiceSessionRepository,
         validator,
-        agentLoopRunner,
-        promptBuilder,
+        agentRuntime,
         objectMapper,
         transactionOperations,
         learningPlanClock);

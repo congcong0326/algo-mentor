@@ -30,6 +30,8 @@ import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHookChai
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionResultFactory;
 import org.congcong.algomentor.agent.core.permission.InMemoryAgentToolPermissionCoordinator;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
@@ -54,7 +56,6 @@ import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationCommand;
-import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunCoordinator;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
 import org.junit.jupiter.api.Test;
 
@@ -97,7 +98,7 @@ class PracticeCodeReviewFlowTest {
         plainPastedMergeCode(),
         "idem-plain-code",
         "zh-CN",
-        Map.of("requestId", "req-1")));
+        plainPastedMergeCode().length()));
 
     AgentStreamEvent.AgentRunEnd runEnd = onlyRunEnd(events);
     assertThat(runEnd.metadata())
@@ -226,8 +227,7 @@ class PracticeCodeReviewFlowTest {
   private PracticeMessageStreamService streamService() {
     PracticeSessionRepository sessionRepository = new InMemoryPracticeSessionRepository();
     PracticeTurnOrchestrator orchestrator = new PracticeTurnOrchestrator(
-        sessionRepository,
-        new CapturingCoordinator(runEnd()));
+        new CapturingRuntime(runEnd()));
     return new PracticeMessageStreamService(sessionRepository, orchestrator);
   }
 
@@ -655,20 +655,20 @@ class PracticeCodeReviewFlowTest {
     }
   }
 
-  private static final class CapturingCoordinator extends AgentConversationRunCoordinator {
+  private static final class CapturingRuntime implements AgentRuntime {
     private final AgentStreamEvent.AgentRunEnd runEnd;
 
-    private CapturingCoordinator(AgentStreamEvent.AgentRunEnd runEnd) {
-      super(
-          new AgentConversationService(new UnusedConversationRepository(), new ContextAssembler()),
-          new UnusedAgentLoopRunner(),
-          new InMemoryAgentRunLockManager(),
-          new LocalAgentRunLockOwnerProvider("owner-a"));
+    private CapturingRuntime(AgentStreamEvent.AgentRunEnd runEnd) {
       this.runEnd = runEnd;
     }
 
     @Override
-    public Flow.Publisher<AgentStreamEvent> stream(AgentConversationCommand command) {
+    public org.congcong.algomentor.agent.core.AgentRunResult execute(AgentInvocation<?> invocation) {
+      throw new UnsupportedOperationException("execute not used");
+    }
+
+    @Override
+    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
       return subscriber -> subscriber.onSubscribe(new Flow.Subscription() {
         private boolean completed;
 

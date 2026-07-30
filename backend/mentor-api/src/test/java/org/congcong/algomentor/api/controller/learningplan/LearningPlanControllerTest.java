@@ -153,8 +153,6 @@ class LearningPlanControllerTest {
   @Test
   void continueDraftReturnsAssistantQuestion() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
-    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
     when(draftService.continueDraft(42L, 100L, "想练数组")).thenReturn(new LearningPlanDraftResult(
         100L,
         LearningPlanDraftStatus.COLLECTING,
@@ -169,15 +167,12 @@ class LearningPlanControllerTest {
         .andExpect(jsonPath("$.data.status").value("COLLECTING"))
         .andExpect(jsonPath("$.data.assistantMessage").value("你每周可以投入几小时？"))
         .andExpect(jsonPath("$.data.missingFields[0]").value("weeklyHours"));
-    verify(admissionService).admit(any(AiRunContext.class));
-    verify(lifecycleService).markCompleted(any(AiRunAdmission.class), any(), eq(null), eq(null));
+    verifyNoInteractions(admissionService, lifecycleService);
   }
 
   @Test
   void streamDraftReturnsSseAndUsesStreamingGovernance() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
-    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
     when(sseProperties.learningPlanDraftTimeoutMillis()).thenReturn(360_000L);
     when(draftStreamService.stream(eq(42L), any(), any(), any())).thenReturn(streamPublisher(new LearningPlanDraftResult(
         100L,
@@ -209,19 +204,14 @@ class LearningPlanControllerTest {
         .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
             .string(org.hamcrest.Matchers.containsString("event:draft_ready")));
 
-    ArgumentCaptor<AiRunContext> governanceCaptor = ArgumentCaptor.forClass(AiRunContext.class);
-    verify(admissionService).admit(governanceCaptor.capture());
-    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().streaming()).isTrue();
+    verify(draftStreamService).stream(eq(42L), any(), any(), eq(Map.of()));
+    verifyNoInteractions(admissionService, lifecycleService);
     verify(sseProperties).learningPlanDraftTimeoutMillis();
-    verify(lifecycleService).markRunning(any(AiRunAdmission.class), eq(null), eq(null));
-    verify(lifecycleService).markCompleted(any(AiRunAdmission.class), any(), eq(null), eq(null));
   }
 
   @Test
   void streamDraftRevisionReturnsSseAndUsesLearningPlanDraftRevisionSource() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
-    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
     when(sseProperties.learningPlanDraftTimeoutMillis()).thenReturn(360_000L);
     when(draftRevisionStreamService.stream(eq(42L), eq(100L), eq("请增加动态规划训练"), any(), any()))
         .thenReturn(proposalPublisher(new LearningPlanProposalStreamEvent.Proposal(
@@ -259,19 +249,13 @@ class LearningPlanControllerTest {
                 org.hamcrest.Matchers.containsString("\"programmingLanguage\":\"Java\""),
                 org.hamcrest.Matchers.containsString("\"slug\":\"two-sum\""))));
 
-    ArgumentCaptor<AiRunContext> governanceCaptor = ArgumentCaptor.forClass(AiRunContext.class);
-    verify(admissionService).admit(governanceCaptor.capture());
-    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().source())
-        .isEqualTo(AiRunSource.LEARNING_PLAN_DRAFT_REVISION);
-    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().streaming()).isTrue();
-    verify(draftRevisionStreamService).stream(eq(42L), eq(100L), eq("请增加动态规划训练"), any(), any());
+    verify(draftRevisionStreamService).stream(eq(42L), eq(100L), eq("请增加动态规划训练"), any(), eq(Map.of()));
+    verifyNoInteractions(admissionService, lifecycleService);
   }
 
   @Test
   void streamExtensionProposalReturnsSseAndUsesLearningPlanExtensionSource() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(actorResolver.currentActor()).thenReturn(new AiActor(42L, Set.of(), true));
-    when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> admitted(invocation.getArgument(0)));
     when(sseProperties.learningPlanDraftTimeoutMillis()).thenReturn(360_000L);
     when(extensionProposalStreamService.streamFirstRevision(eq(42L), eq(900L), eq("补充图论训练"), any(), any()))
         .thenReturn(proposalPublisher(new LearningPlanProposalStreamEvent.Proposal(
@@ -306,12 +290,8 @@ class LearningPlanControllerTest {
                 org.hamcrest.Matchers.containsString("\"recommendedTags\":[\"Graph\"]"),
                 org.hamcrest.Matchers.containsString("\"title\":\"Number of Islands\""))));
 
-    ArgumentCaptor<AiRunContext> governanceCaptor = ArgumentCaptor.forClass(AiRunContext.class);
-    verify(admissionService).admit(governanceCaptor.capture());
-    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().source())
-        .isEqualTo(AiRunSource.LEARNING_PLAN_EXTENSION_PROPOSAL);
-    org.assertj.core.api.Assertions.assertThat(governanceCaptor.getValue().streaming()).isTrue();
-    verify(extensionProposalStreamService).streamFirstRevision(eq(42L), eq(900L), eq("补充图论训练"), any(), any());
+    verify(extensionProposalStreamService).streamFirstRevision(eq(42L), eq(900L), eq("补充图论训练"), any(), eq(Map.of()));
+    verifyNoInteractions(admissionService, lifecycleService);
   }
 
   @Test

@@ -16,9 +16,9 @@ import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.runtime.model.AgentTurnMessages;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionContext;
-import org.congcong.algomentor.ai.governance.model.AiPurpose;
-import org.congcong.algomentor.ai.governance.model.AiRunSource;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 
 public final class PracticeCodeReviewAgentTool implements AgentTool {
@@ -163,16 +163,7 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
 
     PracticeReviewResult reviewResult;
     try {
-      reviewResult = reviewService.review(
-          turnContext,
-          AiCompletionContext.parentRun(
-              userId,
-              context.runId(),
-              purpose(metadata),
-              AiRunSource.PRACTICE_CODE_REVIEW,
-              context.stepIndex()));
-    } catch (AgentException exception) {
-      throw exception;
+      reviewResult = reviewService.review(childInvocation(turnContext, context));
     } catch (RuntimeException exception) {
       throw failure("Practice code review service failed", ERROR_REVIEW_SERVICE_FAILED, errorIds, exception);
     }
@@ -232,16 +223,22 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
     }
   }
 
-  private AiPurpose purpose(Map<String, Object> metadata) {
-    Object value = metadata.get(org.congcong.algomentor.ai.governance.model.AiGovernanceMetadataKeys.PURPOSE);
-    if (value == null) {
-      return AiPurpose.LEARNING_CHAT;
-    }
-    try {
-      return AiPurpose.valueOf(value.toString());
-    } catch (IllegalArgumentException exception) {
-      return AiPurpose.LEARNING_CHAT;
-    }
+  private AgentInvocation<PracticeCodeReviewAgentInput> childInvocation(
+      PracticeTurnContext turnContext,
+      AgentExecutionContext executionContext
+  ) {
+    String idempotencyKey = PracticeCodeReviewService.childIdempotencyKey(turnContext);
+    return new AgentInvocation<>(
+        PracticeCodeReviewAgentDefinition.KEY,
+        new PracticeCodeReviewAgentInput(turnContext, idempotencyKey),
+        new AgentInvocationContext(
+            turnContext.userId(),
+            AgentInvocationMode.CHILD,
+            idempotencyKey,
+            Long.toString(turnContext.agentRunDbId()),
+            executionContext.stepIndex(),
+            turnContext.originalMessage().length(),
+            false));
   }
 
   private void validateArguments(JsonNode arguments) {

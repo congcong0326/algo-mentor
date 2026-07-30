@@ -10,6 +10,7 @@ import org.congcong.algomentor.ai.governance.admission.AiRunLifecycleService;
 import org.congcong.algomentor.ai.governance.accounting.AiLlmCallAccountingService;
 import org.congcong.algomentor.ai.governance.accounting.AiLlmCallContextResolver;
 import org.congcong.algomentor.ai.governance.adminquery.AiAdminUsageQueryService;
+import org.congcong.algomentor.ai.governance.execution.AiRunGovernanceService;
 import org.congcong.algomentor.ai.governance.metrics.AiRunGovernanceObserver;
 import org.congcong.algomentor.ai.governance.metrics.AiRunMetricsObserver;
 import org.congcong.algomentor.ai.governance.policy.AiGovernanceProperties;
@@ -369,6 +370,25 @@ public class AiGovernanceAutoConfiguration {
         admissionRepository,
         usageStore,
         runLockService,
+        invocationTargetStoreProvider.getIfAvailable());
+  }
+
+  @Bean
+  @ConditionalOnBean({AiRunAdmissionService.class, AiRunLifecycleService.class, AiRuntimePolicyService.class})
+  @ConditionalOnMissingBean
+  public AiRunGovernanceService aiRunGovernanceService(
+      AiRunAdmissionService admissionService,
+      AiRunLifecycleService lifecycleService,
+      AiPurposePolicyResolver policyResolver,
+      AiRuntimePolicyService runtimePolicyService,
+      ObjectProvider<AiModelRouteResolver> modelRouteResolverProvider,
+      ObjectProvider<AiRunInvocationTargetStore> invocationTargetStoreProvider) {
+    return new AiRunGovernanceService(
+        admissionService,
+        lifecycleService,
+        policyResolver,
+        runtimePolicyService,
+        modelRouteResolverProvider.getIfAvailable(),
         invocationTargetStoreProvider.getIfAvailable());
   }
 

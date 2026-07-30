@@ -112,7 +112,7 @@ class CodeReviewProfileBatchConsumerTest {
     private final List<List<CodeReviewProfileFact>> calls = new ArrayList<>();
 
     private RecordingUpdateService() {
-      super(null, null, null, null, null, null, 1);
+      super(null, null, null, null, null, 1);
     }
 
     @Override

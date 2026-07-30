@@ -10,6 +10,15 @@ public final class LearningPlanStreamConstants {
    */
   public static final String SCENARIO = "learning_plan";
 
+  /** Runtime audit 与 Agent work event 使用的草案显示标题。 */
+  public static final String DRAFT_AGENT_TITLE = "learning-plan-draft";
+
+  /** Runtime audit 与 Agent work event 使用的草案修订显示标题。 */
+  public static final String DRAFT_REVISION_AGENT_TITLE = "learning-plan-draft-revision";
+
+  /** Runtime audit 与 Agent work event 使用的扩展提案显示标题。 */
+  public static final String EXTENSION_AGENT_TITLE = "learning-plan-extension";
+
   /**
    * 学习计划草案结构化输出 schema 名。
    */

@@ -2,93 +2,73 @@ package org.congcong.algomentor.mentor.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
-import org.congcong.algomentor.agent.core.AgentLoopRunner;
-import org.congcong.algomentor.agent.core.AgentRequest;
-import org.congcong.algomentor.agent.core.AgentResponse;
-import org.congcong.algomentor.agent.core.AgentRunner;
+import org.congcong.algomentor.agent.core.AgentOutput;
+import org.congcong.algomentor.agent.core.AgentRunResult;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
-import org.congcong.algomentor.agent.core.AgentToolRegistry;
-import org.congcong.algomentor.llm.core.gateway.LlmGateway;
-import org.congcong.algomentor.llm.core.model.LlmModelId;
-import org.congcong.algomentor.llm.core.model.LlmModelSelector;
-import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
-import org.congcong.algomentor.llm.core.request.LlmMessage;
-import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
-import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
+import org.congcong.algomentor.ai.governance.model.AiBusinessScenario;
+import org.congcong.algomentor.mentor.application.topic.TopicExplanationAgentInput;
+import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.junit.jupiter.api.Test;
 
 class ExplainTopicUseCaseTest {
 
   @Test
-  void delegatesTopicExplanationToAgentRunner() {
-    ExplainTopicUseCase useCase = new ExplainTopicUseCase(new StubAgentRunner(), new StubAgentLoopRunner());
+  void delegatesSynchronousTopicExplanationToAgentRuntime() {
+    RecordingRuntime runtime = new RecordingRuntime();
+    ExplainTopicUseCase useCase = new ExplainTopicUseCase(runtime);
 
-    String explanation = useCase.explain("binary search");
+    String explanation = useCase.explain(7L, "binary search");
 
     assertThat(explanation).isEqualTo("Explain binary search with invariants.");
+    assertThat(runtime.lastInvocation.agentKey().value()).isEqualTo(AiBusinessScenario.TOPIC_EXPLANATION.code());
+    assertThat(runtime.lastInvocation.context().mode()).isEqualTo(AgentInvocationMode.USER_ENTRY);
+    assertThat(runtime.lastInvocation.context().streaming()).isFalse();
+    assertThat(input(runtime.lastInvocation).topic().title()).isEqualTo("binary search");
   }
 
   @Test
-  void delegatesStreamingTopicExplanationToAgentLoopRunner() {
-    StubAgentLoopRunner streamingRunner = new StubAgentLoopRunner();
-    ExplainTopicUseCase useCase = new ExplainTopicUseCase(new StubAgentRunner(), streamingRunner);
+  void delegatesStreamingTopicExplanationToTheSameRuntimeDefinition() {
+    RecordingRuntime runtime = new RecordingRuntime();
+    ExplainTopicUseCase useCase = new ExplainTopicUseCase(runtime);
 
-    Flow.Publisher<AgentStreamEvent> publisher = useCase.stream("binary search");
+    Flow.Publisher<AgentStreamEvent> publisher = useCase.stream("binary search", 7L);
 
-    assertThat(publisher).isSameAs(streamingRunner.publisher);
-    assertThat(streamingRunner.lastStreamRequest.metadata()).containsEntry("topicTitle", "binary search");
-    assertThat(streamingRunner.lastStreamRequest.metadata())
-        .containsEntry("systemPromptTypeCode", "ai.system-prompt.topic-explanation.v1");
-    assertThat(streamingRunner.lastStreamRequest.messages().get(0).text())
-        .contains("algorithm learning mentor");
-    assertThat(streamingRunner.lastStreamRequest.messages().get(1).text()).contains("binary search");
+    assertThat(publisher).isSameAs(runtime.publisher);
+    assertThat(runtime.lastInvocation.agentKey().value()).isEqualTo(AiBusinessScenario.TOPIC_EXPLANATION.code());
+    assertThat(runtime.lastInvocation.context().streaming()).isTrue();
+    assertThat(runtime.lastInvocation.context().requestSize()).isPositive();
+    assertThat(input(runtime.lastInvocation).displayMetadata()).containsEntry("topicCharCount", 13);
   }
 
-  private static final class StubAgentRunner extends AgentRunner {
-
-    private StubAgentRunner() {
-      super(request -> new AgentResponse("unused"));
-    }
-
-    @Override
-    public AgentResponse run(AgentRequest request) {
-      return new AgentResponse("Explain " + request.metadata().get("topicTitle") + " with invariants.");
-    }
+  private static TopicExplanationAgentInput input(AgentInvocation<?> invocation) {
+    return (TopicExplanationAgentInput) invocation.input();
   }
 
-  private static final class StubAgentLoopRunner extends AgentLoopRunner {
+  private static final class RecordingRuntime implements AgentRuntime {
 
     private final SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
-    private AgentRequest lastStreamRequest;
+    private AgentInvocation<?> lastInvocation;
 
-    private StubAgentLoopRunner() {
-      super(
-          new UnusedGateway(),
-          new LlmModelSelector(null, LlmModelId.of("gpt-test"), Set.of(), null),
-          AgentToolRegistry.empty(),
-          1);
+    @Override
+    public AgentRunResult execute(AgentInvocation<?> invocation) {
+      lastInvocation = invocation;
+      return new AgentRunResult(
+          1,
+          LlmFinishReason.STOP,
+          new AgentOutput("Explain binary search with invariants.", null, null, null, Map.of()),
+          Map.of());
     }
 
     @Override
-    public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
-      this.lastStreamRequest = request;
+    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
+      lastInvocation = invocation;
       return publisher;
-    }
-  }
-
-  private static final class UnusedGateway implements LlmGateway {
-
-    @Override
-    public LlmCompletionResult complete(LlmCompletionRequest request) {
-      throw new UnsupportedOperationException("gateway stub must not be called");
-    }
-
-    @Override
-    public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
-      throw new UnsupportedOperationException("gateway stub must not be called");
     }
   }
 }

@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.api.MentorApiApplication;
 import org.congcong.algomentor.api.controller.admin.ai.AdminAiApiContractConstants;
 import org.congcong.algomentor.api.controller.admin.feedback.AdminFeedbackApiContractConstants;
@@ -215,6 +216,11 @@ class AdminUserEndpointSecurityTest {
 
   @TestConfiguration(proxyBeanMethods = false)
   static class TestConfig {
+
+    @Bean
+    AgentRuntime agentRuntime() {
+      return mock(AgentRuntime.class);
+    }
 
     @Bean
     DataSource dataSource() throws SQLException {

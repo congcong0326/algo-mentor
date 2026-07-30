@@ -8,17 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionContext;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
-import org.congcong.algomentor.ai.governance.model.AiPurpose;
-import org.congcong.algomentor.ai.governance.model.AiRunSource;
-import org.congcong.algomentor.llm.core.model.LlmModelId;
-import org.congcong.algomentor.llm.core.provider.LlmProviderId;
-import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
-import org.congcong.algomentor.llm.core.request.LlmMessage;
-import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
+import java.util.concurrent.Flow;
+import org.congcong.algomentor.agent.core.AgentOutput;
+import org.congcong.algomentor.agent.core.AgentRunResult;
+import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
-import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileDimension;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileQueryService;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileSnapshot;
@@ -29,6 +27,7 @@ import org.congcong.algomentor.mentor.application.profile.ProfileUpdateCommand;
 import org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateIntent;
 import org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateRequest;
 import org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateResult;
+import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredProfileToolContracts;
 import org.junit.jupiter.api.Test;
 
 class DeclaredProfileUpdateServiceTest {
@@ -36,21 +35,17 @@ class DeclaredProfileUpdateServiceTest {
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Test
-  void appliesAllDimensionsFromOneGovernedModelDecision() throws Exception {
+  void appliesAllDimensionsFromOneChildRuntimeDecision() throws Exception {
     RecordingQueryService queryService = new RecordingQueryService();
     RecordingUpdateService updateService = new RecordingUpdateService(List.of(
         List.of(apply(ProfileUpdateApplyStatus.APPLIED), apply(ProfileUpdateApplyStatus.NO_CHANGE))));
-    RecordingGateway gateway = new RecordingGateway(List.of(
-        completion(decisions("REPLACE", "Java 后端转算法面试", "NO_CHANGE", ""))));
+    RecordingRuntime runtime = new RecordingRuntime(List.of(
+        result(801L, decisions("REPLACE", "Backend role", "NO_CHANGE", ""))));
 
-    DeclaredProfileUpdateResult result = service(queryService, updateService, gateway, 1).update(
-        17L,
-        request(),
-        context());
+    DeclaredProfileUpdateResult result = service(queryService, updateService, runtime, 1).update(
+        17L, request(), 401L, 3);
 
     assertThat(result.status()).isEqualTo(DeclaredProfileUpdateResult.Status.UPDATED);
-    assertThat(result.items()).extracting(DeclaredProfileUpdateResult.Item::status)
-        .containsExactly(DeclaredProfileUpdateResult.ItemStatus.APPLIED, DeclaredProfileUpdateResult.ItemStatus.NO_CHANGE);
     assertThat(updateService.calls).hasSize(1);
     assertThat(updateService.calls.get(0)).extracting(command -> command.identity().dimension())
         .containsExactly(LearnerProfileDimension.GOALS_AND_INTENTS, LearnerProfileDimension.SELF_ABILITY_ASSESSMENT);
@@ -60,42 +55,50 @@ class DeclaredProfileUpdateServiceTest {
             org.congcong.algomentor.mentor.application.profile.LearnerProfileOriginType.USER_CORRECTION);
     assertThat(updateService.calls.get(0).get(0).modelProvider()).isEqualTo("test-provider");
     assertThat(updateService.calls.get(0).get(0).modelName()).isEqualTo("test-model");
-    assertThat(gateway.requests).hasSize(1);
-    assertThat(gateway.contexts).containsExactly(context());
+    assertThat(runtime.invocations).hasSize(1);
+    AgentInvocation<?> invocation = runtime.invocations.get(0);
+    assertThat(invocation.agentKey()).isEqualTo(DeclaredProfileUpdateAgentDefinition.KEY);
+    assertThat(invocation.context().mode()).isEqualTo(AgentInvocationMode.CHILD);
+    assertThat(invocation.context().parentRunId()).isEqualTo("401");
+    assertThat(invocation.context().parentStepIndex()).isEqualTo(3);
+    assertThat(invocation.context().idempotencyKey()).doesNotContain(request().updates().get(0).statement());
   }
 
   @Test
-  void retriesTheWholeBatchOnceAfterStaleAndNeverPartiallyReportsSuccess() throws Exception {
+  void retriesTheWholeBatchInTheSameChildTurnAfterStale() throws Exception {
     RecordingQueryService queryService = new RecordingQueryService();
     RecordingUpdateService updateService = new RecordingUpdateService(List.of(
         List.of(apply(ProfileUpdateApplyStatus.STALE), apply(ProfileUpdateApplyStatus.STALE)),
         List.of(apply(ProfileUpdateApplyStatus.NO_CHANGE), apply(ProfileUpdateApplyStatus.NO_CHANGE))));
-    RecordingGateway gateway = new RecordingGateway(List.of(
-        completion(decisions("NO_CHANGE", "", "NO_CHANGE", "")),
-        completion(decisions("NO_CHANGE", "", "NO_CHANGE", ""))));
+    RecordingRuntime runtime = new RecordingRuntime(List.of(
+        result(801L, decisions("NO_CHANGE", "", "NO_CHANGE", "")),
+        result(802L, decisions("NO_CHANGE", "", "NO_CHANGE", ""))));
 
-    DeclaredProfileUpdateResult result = service(queryService, updateService, gateway, 1).update(
-        17L,
-        request(),
-        context());
+    DeclaredProfileUpdateResult result = service(queryService, updateService, runtime, 1).update(
+        17L, request(), 401L, 3);
 
     assertThat(result.status()).isEqualTo(DeclaredProfileUpdateResult.Status.NO_CHANGE);
-    assertThat(gateway.requests).hasSize(2);
     assertThat(updateService.calls).hasSize(2);
     assertThat(queryService.calls).isEqualTo(4);
+    assertThat(runtime.invocations).hasSize(2);
+    AgentInvocation<?> first = runtime.invocations.get(0);
+    AgentInvocation<?> retry = runtime.invocations.get(1);
+    assertThat(retry.context().parentRunId()).isEqualTo(first.context().parentRunId());
+    assertThat(retry.context().parentStepIndex()).isEqualTo(first.context().parentStepIndex());
+    assertThat(retry.context().idempotencyKey()).isEqualTo(
+        first.context().idempotencyKey() + LearnerDeclaredProfileToolContracts.CHILD_RETRY_IDEMPOTENCY_KEY_SEPARATOR + "1");
+    assertThat(((DeclaredProfileUpdateAgentInput) retry.input()).retryOfRunId()).isEqualTo(801L);
   }
 
   @Test
   void returnsFailedWithoutWritingWhenStructuredOutputIsInvalid() throws Exception {
     RecordingQueryService queryService = new RecordingQueryService();
     RecordingUpdateService updateService = new RecordingUpdateService(List.of());
-    RecordingGateway gateway = new RecordingGateway(List.of(
-        completion(objectMapper.readTree("{\"decisions\":[]}"))));
+    RecordingRuntime runtime = new RecordingRuntime(List.of(
+        result(801L, objectMapper.readTree("{\"decisions\":[]}"))));
 
-    DeclaredProfileUpdateResult result = service(queryService, updateService, gateway, 1).update(
-        17L,
-        request(),
-        context());
+    DeclaredProfileUpdateResult result = service(queryService, updateService, runtime, 1).update(
+        17L, request(), 401L, 3);
 
     assertThat(result.status()).isEqualTo(DeclaredProfileUpdateResult.Status.FAILED);
     assertThat(result.items()).allSatisfy(item -> assertThat(item.status())
@@ -103,27 +106,36 @@ class DeclaredProfileUpdateServiceTest {
     assertThat(updateService.calls).isEmpty();
   }
 
+  @Test
+  void returnsFailedWithoutWritingWhenChildRuntimeFails() {
+    RecordingQueryService queryService = new RecordingQueryService();
+    RecordingUpdateService updateService = new RecordingUpdateService(List.of());
+    RecordingRuntime runtime = new RecordingRuntime(List.of());
+    runtime.failure = new IllegalStateException("route unavailable");
+
+    DeclaredProfileUpdateResult result = service(queryService, updateService, runtime, 1).update(
+        17L, request(), 401L, 3);
+
+    assertThat(result.status()).isEqualTo(DeclaredProfileUpdateResult.Status.FAILED);
+    assertThat(updateService.calls).isEmpty();
+  }
+
   private DeclaredProfileUpdateService service(
       LearnerProfileQueryService queryService,
       LearnerProfileUpdateService updateService,
-      AiCompletionGateway gateway,
+      AgentRuntime runtime,
       int maxStaleRetries
   ) {
     return new DeclaredProfileUpdateService(
-        queryService, updateService, gateway, new DeclaredProfileUpdatePromptBuilder(), maxStaleRetries, 300);
+        queryService, updateService, runtime, new DeclaredProfileUpdatePromptBuilder(), maxStaleRetries, 300);
   }
 
   private DeclaredProfileUpdateRequest request() {
     return new DeclaredProfileUpdateRequest(List.of(
         new DeclaredProfileUpdateRequest.Item(
-            LearnerProfileDimension.GOALS_AND_INTENTS, "我要准备 Java 算法面试", DeclaredProfileUpdateIntent.DECLARE),
+            LearnerProfileDimension.GOALS_AND_INTENTS, "Prepare Java interview", DeclaredProfileUpdateIntent.DECLARE),
         new DeclaredProfileUpdateRequest.Item(
-            LearnerProfileDimension.SELF_ABILITY_ASSESSMENT, "我不是算法初学者", DeclaredProfileUpdateIntent.CORRECT)));
-  }
-
-  private AiCompletionContext context() {
-    return AiCompletionContext.parentRun(
-        17L, "run-17", AiPurpose.LEARNING_CHAT, AiRunSource.LEARNER_PROFILE_DECLARED_UPDATE, 3);
+            LearnerProfileDimension.SELF_ABILITY_ASSESSMENT, "Not a beginner", DeclaredProfileUpdateIntent.CORRECT)));
   }
 
   private JsonNode decisions(String firstAction, String firstContent, String secondAction, String secondContent)
@@ -136,16 +148,16 @@ class DeclaredProfileUpdateServiceTest {
         """.formatted(firstAction, firstContent, secondAction, secondContent));
   }
 
-  private LlmCompletionResult completion(JsonNode output) {
-    return new LlmCompletionResult(
-        LlmMessage.assistant("{}"),
-        List.of(),
-        output,
+  private AgentRunResult result(long runDbId, JsonNode output) {
+    return new AgentRunResult(
+        1,
         LlmFinishReason.STOP,
-        LlmUsage.empty(),
-        LlmProviderId.of("test-provider"),
-        LlmModelId.of("test-model"),
-        Map.of());
+        new AgentOutput("", output, DeclaredProfileUpdateJsonSchema.SCHEMA_NAME,
+            LearnerDeclaredProfileToolContracts.SCHEMA_VERSION, Map.of()),
+        Map.of(
+            AgentRuntimeMetadataKeys.RUN_DB_ID, runDbId,
+            AgentRuntimeMetadataKeys.RUNTIME_PROVIDER, "test-provider",
+            AgentRuntimeMetadataKeys.RUNTIME_MODEL, "test-model"));
   }
 
   private ProfileUpdateApplyResult apply(ProfileUpdateApplyStatus status) {
@@ -182,25 +194,27 @@ class DeclaredProfileUpdateServiceTest {
     }
   }
 
-  private static final class RecordingGateway implements AiCompletionGateway {
-    private final List<LlmCompletionResult> results;
-    private final List<LlmCompletionRequest> requests = new ArrayList<>();
-    private final List<AiCompletionContext> contexts = new ArrayList<>();
+  private static final class RecordingRuntime implements AgentRuntime {
+    private final List<AgentRunResult> results;
+    private final List<AgentInvocation<?>> invocations = new ArrayList<>();
+    private RuntimeException failure;
 
-    private RecordingGateway(List<LlmCompletionResult> results) {
+    private RecordingRuntime(List<AgentRunResult> results) {
       this.results = List.copyOf(results);
     }
 
     @Override
-    public boolean isAllowed(AiCompletionContext context) {
-      return true;
+    public AgentRunResult execute(AgentInvocation<?> invocation) {
+      invocations.add(invocation);
+      if (failure != null) {
+        throw failure;
+      }
+      return results.get(invocations.size() - 1);
     }
 
     @Override
-    public LlmCompletionResult complete(LlmCompletionRequest request, AiCompletionContext context) {
-      requests.add(request);
-      contexts.add(context);
-      return results.get(requests.size() - 1);
+    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
+      throw new UnsupportedOperationException("stream not used");
     }
   }
 }

@@ -7,6 +7,11 @@ public final class PracticeCodeReviewConstants {
   public static final String SCENARIO = "practice_code_review";
   public static final String SCHEMA_NAME = "practice_code_review_result";
   public static final String SCHEMA_VERSION = "v3";
+  public static final String AGENT_TITLE = "practice-code-review";
+  /**
+   * 基于受信 sessionId 与 userMessageId 组成 Review child run 的稳定幂等键前缀。
+   */
+  public static final String CHILD_IDEMPOTENCY_KEY_PREFIX = "practice-code-review:";
   public static final String JSON_JUDGE_ASSESSMENT = "judgeAssessment";
   public static final String JSON_JUDGE_VERDICT = "verdict";
   public static final String JSON_VERDICT_BASIS = "basis";

@@ -81,8 +81,8 @@ import org.congcong.algomentor.identity.repository.IdentityUserRepository;
 @SpringBootTest(
     classes = AuthSecurityAutoConfigurationTest.TestApplication.class,
     properties = {
-        "spring.security.oauth2.client.registration.google.client-id=test-client-id",
-        "spring.security.oauth2.client.registration.google.client-secret=test-client-secret"
+        "GOOGLE_CLIENT_ID=test-client-id",
+        "GOOGLE_CLIENT_SECRET=test-client-secret"
     })
 @AutoConfigureMockMvc
 class AuthSecurityAutoConfigurationTest {

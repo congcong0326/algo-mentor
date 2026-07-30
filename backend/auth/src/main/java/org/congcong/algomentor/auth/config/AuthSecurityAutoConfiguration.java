@@ -5,6 +5,7 @@ import java.time.Clock;
 import java.util.Locale;
 import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
 import org.congcong.algomentor.auth.cache.AuthAccessSnapshotCache;
+import org.congcong.algomentor.auth.model.OAuthProvider;
 import org.congcong.algomentor.auth.security.ActiveIdentityUserFilter;
 import org.congcong.algomentor.auth.security.ApiAuthenticationEntryPoint;
 import org.congcong.algomentor.auth.security.AuthenticatedOAuth2UserService;
@@ -28,6 +29,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.core.env.Environment;
+import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
 import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
@@ -43,6 +47,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
@@ -61,6 +66,8 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 public class AuthSecurityAutoConfiguration {
 
   private static final Logger log = LoggerFactory.getLogger(AuthSecurityAutoConfiguration.class);
+  private static final String GOOGLE_TOKEN_URI = "https://oauth2.googleapis.com/token";
+  private static final String GOOGLE_USER_INFO_URI = "https://openidconnect.googleapis.com/v1/userinfo";
 
   @Bean
   public ServletContextInitializer authSessionCookieInitializer(AuthProperties properties) {
@@ -90,6 +97,24 @@ public class AuthSecurityAutoConfiguration {
   @ConditionalOnMissingBean(PostgreSqlJdbcIndexedSessionRepositoryCustomizer.class)
   public SessionRepositoryCustomizer<JdbcIndexedSessionRepository> authPostgreSqlJdbcSessionRepositoryCustomizer() {
     return new PostgreSqlJdbcIndexedSessionRepositoryCustomizer();
+  }
+
+  @Bean
+  @Conditional(GoogleOAuth2ClientConfiguredCondition.class)
+  @ConditionalOnMissingBean(ClientRegistrationRepository.class)
+  public ClientRegistrationRepository googleOAuth2ClientRegistrationRepository(Environment environment) {
+    String clientId = requiredGoogleOAuth2Credential(
+        environment, AuthConfigurationKeys.GOOGLE_OAUTH2_CLIENT_ID_ENV);
+    String clientSecret = requiredGoogleOAuth2Credential(
+        environment, AuthConfigurationKeys.GOOGLE_OAUTH2_CLIENT_SECRET_ENV);
+    ClientRegistration google = CommonOAuth2Provider.GOOGLE
+        .getBuilder(OAuthProvider.GOOGLE.value())
+        .clientId(clientId)
+        .clientSecret(clientSecret)
+        .tokenUri(GOOGLE_TOKEN_URI)
+        .userInfoUri(GOOGLE_USER_INFO_URI)
+        .build();
+    return new InMemoryClientRegistrationRepository(google);
   }
 
   @Bean
@@ -156,16 +181,21 @@ public class AuthSecurityAutoConfiguration {
             .requestMatchers(new AntPathRequestMatcher("/assets/**")).permitAll()
             .requestMatchers(new AntPathRequestMatcher("/favicon.ico")).permitAll()
             .requestMatchers(new AntPathRequestMatcher(AuthSecurityPaths.API_PATTERN)).authenticated()
-            .anyRequest().permitAll())
-        .oauth2Login(oauth2 -> oauth2
-            .loginPage("/login")
-            .userInfoEndpoint(userInfo -> {
-              authenticatedOAuth2UserService.ifAvailable(userInfo::userService);
-              authenticatedOidcUserService.ifAvailable(userInfo::oidcUserService);
-            })
-            .successHandler(new OAuth2AuthenticationSuccessHandler(
-                properties.getLoginSuccessUrl(), sessionPolicyLoginServiceProvider.getIfAvailable()))
-            .failureHandler(new OAuth2AuthenticationFailureHandler()))
+            .anyRequest().permitAll());
+
+    if (registrations != null) {
+      http.oauth2Login(oauth2 -> oauth2
+          .loginPage("/login")
+          .userInfoEndpoint(userInfo -> {
+            authenticatedOAuth2UserService.ifAvailable(userInfo::userService);
+            authenticatedOidcUserService.ifAvailable(userInfo::oidcUserService);
+          })
+          .successHandler(new OAuth2AuthenticationSuccessHandler(
+              properties.getLoginSuccessUrl(), sessionPolicyLoginServiceProvider.getIfAvailable()))
+          .failureHandler(new OAuth2AuthenticationFailureHandler()));
+    }
+
+    http
         .logout(logout -> logout
             .logoutUrl(AuthSecurityPaths.AUTH_LOGOUT_PATH)
             .logoutSuccessUrl(properties.getLogoutSuccessUrl())
@@ -222,6 +252,14 @@ public class AuthSecurityAutoConfiguration {
         hasText(google.getProviderDetails().getUserInfoEndpoint().getUri()),
         hasText(google.getProviderDetails().getJwkSetUri()),
         google.getProviderDetails().getJwkSetUri());
+  }
+
+  private static String requiredGoogleOAuth2Credential(Environment environment, String key) {
+    String value = environment.getProperty(key);
+    if (!hasText(value)) {
+      throw new IllegalStateException(key + " must not be blank when Google OAuth2 is enabled.");
+    }
+    return value;
   }
 
   private static boolean hasText(String value) {

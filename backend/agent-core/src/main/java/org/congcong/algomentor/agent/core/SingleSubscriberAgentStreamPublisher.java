@@ -15,13 +15,15 @@ import org.congcong.algomentor.agent.core.execution.AgentExecutor;
  * <p>工作线程只有在下游声明 demand 后才会继续投递，慢消费者因此会自然阻塞自己的 Agent run，
  * 不需要额外的异步缓冲或公共线程池。</p>
  */
-final class SingleSubscriberAgentStreamPublisher
+public final class SingleSubscriberAgentStreamPublisher
     implements Flow.Publisher<AgentStreamEvent>, AgentStreamEventSink {
 
   private final Object stateMonitor = new Object();
   private final Object signalMonitor = new Object();
   private final AgentCancellationToken cancellationToken;
   private final AgentExecutor executor;
+  private final boolean inlineExecution;
+  private final Runnable beforeSubmission;
   private final Consumer<AgentStreamEventSink> workerTask;
   private final Consumer<Throwable> submissionFailureHandler;
 
@@ -32,14 +34,33 @@ final class SingleSubscriberAgentStreamPublisher
   private boolean terminalEventEmitted;
   private long demand;
 
-  SingleSubscriberAgentStreamPublisher(
+  public SingleSubscriberAgentStreamPublisher(
       AgentCancellationToken cancellationToken,
       AgentExecutor executor,
       Consumer<AgentStreamEventSink> workerTask,
       Consumer<Throwable> submissionFailureHandler
   ) {
+    this(cancellationToken, executor, false, () -> {}, workerTask, submissionFailureHandler);
+  }
+
+  /**
+   * 创建一个在 executor 提交前完成受信运行初始化的单订阅事件出口。
+   *
+   * <p>初始化失败和 executor 拒绝都会经过 {@code submissionFailureHandler}，用于释放已创建的
+   * 外部治理租约或持久化资源。</p>
+   */
+  public SingleSubscriberAgentStreamPublisher(
+      AgentCancellationToken cancellationToken,
+      AgentExecutor executor,
+      boolean inlineExecution,
+      Runnable beforeSubmission,
+      Consumer<AgentStreamEventSink> workerTask,
+      Consumer<Throwable> submissionFailureHandler
+  ) {
     this.cancellationToken = Objects.requireNonNull(cancellationToken, "cancellationToken must not be null");
     this.executor = Objects.requireNonNull(executor, "executor must not be null");
+    this.inlineExecution = inlineExecution;
+    this.beforeSubmission = Objects.requireNonNull(beforeSubmission, "before submission task must not be null");
     this.workerTask = Objects.requireNonNull(workerTask, "workerTask must not be null");
     this.submissionFailureHandler = Objects.requireNonNull(
         submissionFailureHandler,
@@ -115,7 +136,12 @@ final class SingleSubscriberAgentStreamPublisher
 
   private void startWorker() {
     try {
-      executor.execute(this::runWorker);
+      beforeSubmission.run();
+      if (inlineExecution) {
+        runWorker();
+      } else {
+        executor.execute(this::runWorker);
+      }
     } catch (RejectedExecutionException rejected) {
       handleSubmissionFailure(toAgentException(rejected));
     } catch (RuntimeException submissionFailure) {

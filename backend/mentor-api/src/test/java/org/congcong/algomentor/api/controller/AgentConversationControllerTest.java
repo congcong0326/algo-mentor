@@ -2,6 +2,8 @@ package org.congcong.algomentor.api.controller;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -24,8 +26,10 @@ import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.agent.core.prompt.AgentPromptMetadataKeys;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockConstants;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockToken;
+import org.congcong.algomentor.agent.core.runlock.AgentRunLockOwnerProvider;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
+import org.congcong.algomentor.ai.governance.model.AiBusinessScenario;
 import org.congcong.algomentor.ai.governance.model.AiGovernanceMetadataKeys;
 import org.congcong.algomentor.ai.governance.model.AiPurpose;
 import org.congcong.algomentor.ai.governance.model.AiRunContext;
@@ -33,9 +37,17 @@ import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.ai.governance.model.AiRunStatus;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicy;
 import org.congcong.algomentor.api.service.AiActorResolver;
+import org.congcong.algomentor.api.service.LlmStreamSseMapper;
+import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.identity.model.AuthRole;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockRequest;
+import org.congcong.algomentor.agent.core.runlock.InMemoryAgentRunLockManager;
+import org.congcong.algomentor.agent.core.runlock.LocalAgentRunLockOwnerProvider;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
+import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest;
 import org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun;
@@ -43,6 +55,7 @@ import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRe
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
+import org.congcong.algomentor.agent.core.AgentRunResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
@@ -57,14 +70,18 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatu
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemDetail;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptConstants;
+import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
+import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -77,75 +94,33 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.SimpleTransactionStatus;
 
-@SpringBootTest(properties = "algo-mentor.practice.code-review.enabled=false")
+@WebMvcTest(controllers = AgentConversationController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@Import(AgentConversationControllerTest.TestConfig.class)
 class AgentConversationControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
 
   @Autowired
-  private StubAgentConversationRepository conversationRepository;
+  private StubAgentRuntime agentRuntime;
 
   @Autowired
-  private StubAgentLoopRunner agentLoopRunner;
-
-  @Autowired
-  private AgentRunLockManager lockManager;
-
-  @Autowired
-  private AiRunAdmissionService governance;
-
-  private AiRunContext lastGovernanceContext;
+  private PracticeMessageStreamService practiceMessageStreamService;
 
   @BeforeEach
-  void configureGovernance() {
+  void configureAuthentication() {
+    org.mockito.Mockito.reset(practiceMessageStreamService);
     SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
         "admin@example.com",
         "n/a",
         List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_ADMIN"))));
-    when(governance.admit(any(AiRunContext.class))).thenAnswer(invocation -> {
-      AiRunContext context = invocation.getArgument(0);
-      lastGovernanceContext = context;
-      AiPurposePolicy policy = new AiPurposePolicy(
-          true, 50, 1, 16384, 2048, 8, true, true, false, false,
-          null, null, "learning-chat-p0");
-      return new AiRunAdmission(
-          1L,
-          context.runId(),
-          context.actor().userId(),
-          context.purpose(),
-          context.source(),
-          AiRunStatus.ADMITTED,
-          "ALL",
-          new AgentRunLockToken("user:7:ai:all", "node-1", "ai-token", null),
-          policy,
-          Map.of(
-              AiGovernanceMetadataKeys.RUN_ID, context.runId(),
-              AiGovernanceMetadataKeys.PURPOSE, context.purpose().name(),
-              AiGovernanceMetadataKeys.SOURCE, context.source().name(),
-              AiGovernanceMetadataKeys.QUOTA_SCOPE, "ALL"),
-          java.time.Instant.now());
-    });
   }
 
   @AfterEach
-  void releaseCapturedLock() {
-    try {
-      if (agentLoopRunner.lastRequest == null) {
-        lastGovernanceContext = null;
-        return;
-      }
-      Object token = agentLoopRunner.lastRequest.metadata().get(AgentRunLockConstants.LOCK_TOKEN_METADATA_KEY);
-      if (token instanceof AgentRunLockToken lockToken) {
-        lockManager.release(lockToken);
-      }
-    } finally {
-      SecurityContextHolder.clearContext();
-      agentLoopRunner.lastRequest = null;
-      conversationRepository.lastRequest = null;
-      lastGovernanceContext = null;
-    }
+  void clearTestState() {
+    SecurityContextHolder.clearContext();
+    agentRuntime.lastInvocation = null;
   }
 
   @Test
@@ -168,16 +143,10 @@ class AgentConversationControllerTest {
         .andExpect(content().string(containsString("event:content_delta")))
         .andExpect(content().string(containsString("\"content\":\"ok\"")));
 
-    org.assertj.core.api.Assertions.assertThat(conversationRepository.lastRequest.idempotencyKey()).isEqualTo("idem-1");
-    org.assertj.core.api.Assertions.assertThat(conversationRepository.lastRequest.userId()).isEqualTo(7L);
-    org.assertj.core.api.Assertions.assertThat(conversationRepository.lastRequest.userMessage())
-        .isEqualTo("Explain two pointers.");
-    org.assertj.core.api.Assertions.assertThat(lastGovernanceContext.purpose()).isEqualTo(AiPurpose.LEARNING_CHAT);
-    org.assertj.core.api.Assertions.assertThat(lastGovernanceContext.source()).isEqualTo(AiRunSource.LEARNING_CHAT);
-    org.assertj.core.api.Assertions.assertThat(agentLoopRunner.lastRequest.runId()).isEqualTo("run-1");
-    org.assertj.core.api.Assertions.assertThat(agentLoopRunner.lastRequest.metadata())
-        .containsKey(AgentRunLockConstants.LOCK_TOKEN_METADATA_KEY)
-        .containsEntry(AiGovernanceMetadataKeys.PURPOSE, "LEARNING_CHAT");
+    org.assertj.core.api.Assertions.assertThat(agentRuntime.lastInvocation.agentKey().value())
+        .isEqualTo(AiBusinessScenario.MENTOR_CONVERSATION.code());
+    org.assertj.core.api.Assertions.assertThat(agentRuntime.lastInvocation.context().userId()).isEqualTo(7L);
+    org.assertj.core.api.Assertions.assertThat(agentRuntime.lastInvocation.context().idempotencyKey()).isEqualTo("idem-1");
   }
 
   @Test
@@ -192,12 +161,21 @@ class AgentConversationControllerTest {
 
     mockMvc.perform(asyncDispatch(result)).andExpect(status().isOk());
 
-    org.assertj.core.api.Assertions.assertThat(conversationRepository.lastRequest.userId()).isEqualTo(7L);
-    org.assertj.core.api.Assertions.assertThat(lastGovernanceContext.actor().userId()).isEqualTo(7L);
+    org.assertj.core.api.Assertions.assertThat(agentRuntime.lastInvocation.context().userId()).isEqualTo(7L);
+    org.assertj.core.api.Assertions.assertThat(agentRuntime.lastInvocation.input())
+        .asInstanceOf(org.assertj.core.api.InstanceOfAssertFactories.type(
+            org.congcong.algomentor.mentor.application.conversation.MentorConversationAgentInput.class))
+        .extracting(org.congcong.algomentor.mentor.application.conversation.MentorConversationAgentInput::userId)
+        .isEqualTo(7L);
   }
 
   @Test
   void streamPracticeConversationUsesPracticePromptMetadata() throws Exception {
+    String message = "直接给答案和 Java 代码";
+    when(practiceMessageStreamService.stream(
+        eq(7L), eq(50L), eq(message), eq("idem-practice"), eq("zh-CN"), anyInt()))
+        .thenReturn(practiceStreamPublisher());
+
     MvcResult result = mockMvc.perform(post("/api/agent/conversations/stream")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.TEXT_EVENT_STREAM)
@@ -206,9 +184,7 @@ class AgentConversationControllerTest {
                 {
                   "message": "直接给答案和 Java 代码",
                   "practice": {
-                    "planId": 12,
-                    "phaseIndex": 1,
-                    "problemSlug": "two-sum",
+                    "sessionId": 50,
                     "locale": "zh-CN"
                   }
                 }
@@ -218,67 +194,11 @@ class AgentConversationControllerTest {
 
     mockMvc.perform(asyncDispatch(result))
         .andExpect(status().isOk())
-        .andExpect(content().string(containsString("\"promptProfile\":\"PRACTICE_CHAT_V1\"")))
-        .andExpect(content().string(containsString("\"problemSlug\":\"two-sum\"")));
+        .andExpect(content().string(containsString("event:agent_run_start")));
 
-    org.assertj.core.api.Assertions.assertThat(conversationRepository.lastRequest.metadata())
-        .containsEntry(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO)
-        .containsEntry(PracticeChatPromptConstants.METADATA_PLAN_ID, 12L)
-        .containsEntry(PracticeChatPromptConstants.METADATA_PHASE_INDEX, 1)
-        .containsEntry(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, "two-sum");
-    org.assertj.core.api.Assertions.assertThat(agentLoopRunner.lastRequest.metadata())
-        .containsEntry(PracticeChatPromptConstants.METADATA_COACH_STYLE, "GUIDED");
-    @SuppressWarnings("unchecked")
-    Map<String, ?> promptSectionVersions =
-        (Map<String, ?>) agentLoopRunner.lastRequest.metadata().get(AgentPromptMetadataKeys.PROMPT_SECTION_VERSIONS);
-    org.assertj.core.api.Assertions.assertThat(promptSectionVersions)
-        .containsKeys(
-            PracticeChatPromptConstants.SECTION_BASE_INSTRUCTION,
-            PracticeChatPromptConstants.SECTION_COACH_STYLE,
-            PracticeChatPromptConstants.SECTION_RESPONSE_LANGUAGE,
-            PracticeChatPromptConstants.SECTION_SCENARIO_POLICY,
-            PracticeChatPromptConstants.SECTION_RUNTIME_CONTEXT,
-            PracticeChatPromptConstants.SECTION_CURRENT_USER_MESSAGE);
-    org.assertj.core.api.Assertions.assertThat(agentLoopRunner.lastRequest.messages())
-        .extracting(org.congcong.algomentor.llm.core.request.LlmMessage::role)
-        .startsWith(org.congcong.algomentor.llm.core.request.LlmMessage.Role.SYSTEM)
-        .endsWith(
-            org.congcong.algomentor.llm.core.request.LlmMessage.Role.USER);
-    String allText = agentLoopRunner.lastRequest.messages().stream()
-        .map(org.congcong.algomentor.llm.core.request.LlmMessage::text)
-        .reduce("", String::concat);
-    org.assertj.core.api.Assertions.assertThat(allText)
-        .contains("引导型教练")
-        .contains("Layered Hint Protocol")
-        .contains("Read the CURRENT user message directly")
-        .contains("直接给答案和 Java 代码");
-  }
-
-  @Test
-  void streamConversationReturnsConflictWhenTaskLockIsHeld() throws Exception {
-    AgentRunLockToken token = lockManager.tryAcquire(new AgentRunLockRequest(
-        AgentRunLockConstants.TASK_LOCK_KEY_PREFIX + 1,
-        "test-owner",
-        null,
-        Map.of("taskId", 1L))).token();
-
-    try {
-      mockMvc.perform(post("/api/agent/conversations/stream")
-              .contentType(MediaType.APPLICATION_JSON)
-              .accept(MediaType.TEXT_EVENT_STREAM)
-              .header("Idempotency-Key", "idem-2")
-              .content("{\"taskId\":1,\"message\":\"Explain sliding window.\"}"))
-          .andExpect(status().isConflict())
-          .andExpect(jsonPath("$.success").value(false))
-          .andExpect(jsonPath("$.error.code").value("AGENT_RUN_IN_PROGRESS"))
-          .andExpect(jsonPath("$.error.messageKey").value("api.error.AGENT_RUN_IN_PROGRESS"))
-          .andExpect(jsonPath("$.error.metadata.taskId").value(1));
-
-      org.assertj.core.api.Assertions.assertThat(agentLoopRunner.lastRequest).isNull();
-      org.assertj.core.api.Assertions.assertThat(conversationRepository.lastRequest).isNull();
-    } finally {
-      lockManager.release(token);
-    }
+    org.mockito.Mockito.verify(practiceMessageStreamService).stream(
+        7L, 50L, message, "idem-practice", "zh-CN", message.getBytes(java.nio.charset.StandardCharsets.UTF_8).length);
+    org.assertj.core.api.Assertions.assertThat(agentRuntime.lastInvocation).isNull();
   }
 
   @Test
@@ -293,22 +213,48 @@ class AgentConversationControllerTest {
         .andExpect(jsonPath("$.error.messageKey").value("api.error.VALIDATION_FAILED"))
         .andExpect(jsonPath("$.error.message").value("请求参数校验失败。"));
 
-    org.assertj.core.api.Assertions.assertThat(agentLoopRunner.lastRequest).isNull();
-    org.assertj.core.api.Assertions.assertThat(conversationRepository.lastRequest).isNull();
+    org.assertj.core.api.Assertions.assertThat(agentRuntime.lastInvocation).isNull();
   }
 
   @TestConfiguration(proxyBeanMethods = false)
   static class TestConfig {
 
     @Bean
-    StubAgentConversationRepository stubAgentConversationRepository() {
-      return new StubAgentConversationRepository();
+    ApiSseProperties apiSseProperties() {
+      return new ApiSseProperties();
+    }
+
+    @Bean
+    LlmStreamSseMapper llmStreamSseMapper() {
+      return new LlmStreamSseMapper();
+    }
+
+    @Bean
+    AgentConversationController agentConversationController(
+        StubAgentRuntime agentRuntime,
+        LlmStreamSseMapper sseMapper,
+        AiActorResolver actorResolver,
+        ObjectProvider<PracticeMessageStreamService> practiceMessageStreamService,
+        ApiSseProperties sseProperties
+    ) {
+      return new AgentConversationController(
+          agentRuntime,
+          sseMapper,
+          actorResolver,
+          practiceMessageStreamService,
+          sseProperties);
     }
 
     @Bean
     @Primary
-    StubAgentLoopRunner stubAgentLoopRunner() {
-      return new StubAgentLoopRunner();
+    PracticeMessageStreamService practiceMessageStreamService() {
+      return org.mockito.Mockito.mock(PracticeMessageStreamService.class);
+    }
+
+    @Bean
+    @Primary
+    StubAgentRuntime stubAgentRuntime() {
+      return new StubAgentRuntime();
     }
 
     @Bean
@@ -316,11 +262,6 @@ class AgentConversationControllerTest {
     AiActorResolver aiActorResolver() {
       return new AiActorResolver(() -> Optional.of(new org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal(
           7L, "user@example.com", "User", null, List.of(AuthRole.USER), null)));
-    }
-
-    @Bean
-    AiRunAdmissionService aiRunAdmissionService() {
-      return org.mockito.Mockito.mock(AiRunAdmissionService.class);
     }
 
     @Bean
@@ -390,24 +331,35 @@ class AgentConversationControllerTest {
     }
   }
 
-  static class StubAgentLoopRunner extends AgentLoopRunner {
-    private AgentRequest lastRequest;
+  private Flow.Publisher<AgentStreamEvent> practiceStreamPublisher() {
+    return subscriber -> {
+      SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
+      publisher.subscribe(subscriber);
+      publisher.submit(new AgentStreamEvent.AgentRunStart("practice-run", "task-100", 1, Map.of()));
+      publisher.submit(AgentStreamEvent.fromLlm(new LlmStreamEvent.ContentDelta("ok")));
+      publisher.close();
+    };
+  }
 
-    StubAgentLoopRunner() {
-      super(new UnusedLlmGateway(), "stub-model", AgentToolRegistry.empty(), 1);
+  static class StubAgentRuntime implements AgentRuntime {
+    private AgentInvocation<?> lastInvocation;
+
+    @Override
+    public AgentRunResult execute(AgentInvocation<?> invocation) {
+      throw new UnsupportedOperationException("execute not used");
     }
 
     @Override
-    public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
-      lastRequest = request;
+    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
+      lastInvocation = invocation;
       return subscriber -> {
         SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
         publisher.subscribe(subscriber);
-        publisher.submit(new AgentStreamEvent.AgentRunStart(
-            request.runId(),
-            request.displayTitle(),
-            1,
-            request.metadata()));
+        Map<String, Object> metadata = Map.of(
+            AgentRuntimeMetadataKeys.TASK_ID, 1L,
+            AgentRuntimeMetadataKeys.TURN_ID, 2L,
+            AgentRuntimeMetadataKeys.RUN_DB_ID, 3L);
+        publisher.submit(new AgentStreamEvent.AgentRunStart("run-1", "task-1", 1, metadata));
         publisher.submit(AgentStreamEvent.fromLlm(new LlmStreamEvent.ContentDelta("ok")));
         publisher.close();
       };

@@ -167,7 +167,7 @@ class PersistentAgentRunObserverTest {
   }
 
   @Test
-  void writesCanonicalAssistantChatMetadataForPracticeChat() {
+  void writesAssistantMessageMetadataProvidedByBusinessAdapter() {
     FakeRunMapper mapper = new FakeRunMapper();
     PersistentAgentRunObserver observer = new PersistentAgentRunObserver(mapper, new ObjectMapper(), fixedClock());
     AgentRequest request = new AgentRequest(
@@ -178,12 +178,13 @@ class PersistentAgentRunObserverTest {
             AgentRuntimeMetadataKeys.TASK_ID, 10L,
             AgentRuntimeMetadataKeys.TURN_ID, 20L,
             AgentRuntimeMetadataKeys.RUN_DB_ID, 30L,
-            "scenario", "PRACTICE_CHAT",
-            "messageType", "PROBLEM_STATEMENT",
-            "practiceSessionId", 100L,
-            "planId", 12L,
-            "phaseIndex", 1,
-            "problemSlug", "two-sum"));
+            AgentRuntimeMetadataKeys.ASSISTANT_MESSAGE_METADATA, Map.of(
+                "messageType", "CHAT",
+                "scenario", "PRACTICE_CHAT",
+                "practiceSessionId", 100L,
+                "planId", 12L,
+                "phaseIndex", 1,
+                "problemSlug", "two-sum")));
 
     AgentLoopContext context = new AgentLoopContext("run-1", request, 4, request.metadata(), null);
     observer.onRunStart(context);
@@ -192,8 +193,7 @@ class PersistentAgentRunObserverTest {
     assertThat(mapper.lastAssistantMetadata)
         .containsEntry("messageType", "CHAT")
         .containsEntry("scenario", "PRACTICE_CHAT")
-        .containsEntry("practiceSessionId", 100L)
-        .doesNotContainEntry("messageType", "PROBLEM_STATEMENT");
+        .containsEntry("practiceSessionId", 100L);
   }
 
   private AgentLoopContext context() {

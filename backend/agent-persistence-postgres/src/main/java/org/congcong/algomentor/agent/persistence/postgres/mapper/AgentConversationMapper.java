@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentRunRecord;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentRunInsert;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentTurnMessagesRow;
 
 @Mapper
@@ -45,19 +46,15 @@ public interface AgentConversationMapper {
       @Param("metadata") Map<String, Object> metadata
   );
 
-  long insertRun(
-      @Param("taskId") long taskId,
-      @Param("turnId") long turnId,
-      @Param("runUuid") String runUuid,
-      @Param("idempotencyKey") String idempotencyKey,
-      @Param("maxSteps") int maxSteps
-  );
+  long insertRun(AgentRunInsert run);
 
   int attachTurnUserMessageAndRun(
       @Param("turnId") long turnId,
       @Param("userMessageId") long userMessageId,
       @Param("runId") long runId
   );
+
+  int attachTurnRun(@Param("turnId") long turnId, @Param("runId") long runId);
 
   int attachTurnAssistantSeedMessage(
       @Param("turnId") long turnId,

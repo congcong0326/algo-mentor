@@ -16,10 +16,8 @@ import java.util.concurrent.Flow;
 import java.util.concurrent.TimeUnit;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.agent.core.AgentRequest;
-import org.congcong.algomentor.agent.core.AgentLoopDefaults;
-import org.congcong.algomentor.agent.core.AgentLoopRunner;
+import org.congcong.algomentor.agent.core.AgentLoopEngine;
 import org.congcong.algomentor.agent.core.AgentModelSelectorResolver;
-import org.congcong.algomentor.agent.core.AgentRunner;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.agent.core.execution.AgentExecutor;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionBehavior;
@@ -35,6 +33,8 @@ import org.congcong.algomentor.agent.core.permission.AgentToolPermissionResultFa
 import org.congcong.algomentor.agent.core.permission.InMemoryAgentToolPermissionCoordinator;
 import org.congcong.algomentor.agent.core.permission.NoopAgentToolPermissionMetrics;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
+import org.congcong.algomentor.agent.runtime.definition.AgentDefinitionRegistry;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
 import org.congcong.algomentor.agent.core.tool.CalculatorTool;
 import org.congcong.algomentor.api.problem.service.ProblemService;
@@ -45,6 +45,7 @@ import org.congcong.algomentor.api.problem.tool.ProblemAgentToolNames;
 import org.congcong.algomentor.api.problem.tool.SearchProblemsTool;
 import org.congcong.algomentor.mentor.api.autoconfigure.AgentConversationApiAutoConfiguration;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentDefinition;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentToolNames;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPermissionHook;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
@@ -128,14 +129,15 @@ class MentorAiConfigurationTest {
   }
 
   @Test
-  void usesFiftyAgentLoopStepsByDefault() {
-    contextRunner.run(context -> assertThat(ReflectionTestUtils.getField(
-        context.getBean(AgentLoopRunner.class),
-        "maxSteps")).isEqualTo(AgentLoopDefaults.DEFAULT_MAX_STEPS));
+  void doesNotRegisterLegacyRunnerBeans() {
+    contextRunner.run(context -> {
+      assertThat(context).doesNotHaveBean(org.congcong.algomentor.agent.core.AgentLoopRunner.class);
+      assertThat(context).doesNotHaveBean(org.congcong.algomentor.agent.core.AgentRunner.class);
+    });
   }
 
   @Test
-  void registersToolPermissionBeansAndPassesGuardToRunner() {
+  void registersToolPermissionBeansAndPassesGuardToLoopEngine() {
     contextRunner
         .withPropertyValues(
             "algo-mentor.agent.tool-permission.timeout=25ms",
@@ -155,7 +157,7 @@ class MentorAiConfigurationTest {
           assertThat(context.getBean(AgentToolPermissionProperties.class).getCleanupInterval())
               .isEqualTo(Duration.ofMillis(75));
           assertThat(ReflectionTestUtils.getField(
-              context.getBean(AgentLoopRunner.class),
+              context.getBean(AgentLoopEngine.class),
               "permissionGuard")).isSameAs(context.getBean(AgentToolPermissionGuard.class));
         });
   }
@@ -218,7 +220,7 @@ class MentorAiConfigurationTest {
   }
 
   @Test
-  void disabledToolPermissionKeepsRunnerGuardButIgnoresBusinessHooks() {
+  void disabledToolPermissionKeepsLoopEngineGuardButIgnoresBusinessHooks() {
     new ApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
         .withUserConfiguration(DenyPermissionHookConfig.class, MentorAiConfiguration.class)
@@ -230,7 +232,7 @@ class MentorAiConfigurationTest {
           assertThat(context.getBean(AgentToolPermissionCoordinator.class))
               .isNotInstanceOf(InMemoryAgentToolPermissionCoordinator.class);
           assertThat(ReflectionTestUtils.getField(
-              context.getBean(AgentLoopRunner.class),
+              context.getBean(AgentLoopEngine.class),
               "permissionGuard")).isSameAs(context.getBean(AgentToolPermissionGuard.class));
         });
   }
@@ -253,6 +255,9 @@ class MentorAiConfigurationTest {
               .contains(PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW);
           assertThat(hookChain.hooks())
               .anySatisfy(hook -> assertThat(hook).isInstanceOf(PracticeCodeReviewPermissionHook.class));
+          assertThat(context.getBean(AgentDefinitionRegistry.class)
+              .resolve(PracticeCodeReviewAgentDefinition.KEY))
+              .isSameAs(context.getBean(PracticeCodeReviewAgentDefinition.class));
         });
   }
 
@@ -402,6 +407,11 @@ class MentorAiConfigurationTest {
     @Bean
     QueuePublisher queuePublisher() {
       return (topic, key, payload) -> new QueueMessage(1L, topic, key, "{}", java.time.Instant.EPOCH);
+    }
+
+    @Bean
+    AgentRuntime agentRuntime() {
+      return mock(AgentRuntime.class);
     }
   }
 

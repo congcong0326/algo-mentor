@@ -11,18 +11,15 @@ import java.util.Objects;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.atomic.AtomicReference;
-import org.congcong.algomentor.agent.core.AgentExecutionOptions;
-import org.congcong.algomentor.agent.core.AgentLoopRunner;
-import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
-import org.congcong.algomentor.agent.core.AgentStructuredOutputOptions;
-import org.congcong.algomentor.agent.core.StructuredOutputStrategy;
 import org.congcong.algomentor.agent.core.work.AgentWorkStatusEvent;
 import org.congcong.algomentor.agent.core.work.AgentWorkStatusProfile;
 import org.congcong.algomentor.agent.core.work.AgentWorkStatusProjector;
-import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
-import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
@@ -46,8 +43,7 @@ public class LearningPlanDraftStreamService {
 
   private final LearningPlanDraftRepository draftRepository;
   private final LearningPlanDraftValidator validator;
-  private final AgentLoopRunner agentLoopRunner;
-  private final LearningPlanDraftPromptBuilder promptBuilder;
+  private final AgentRuntime agentRuntime;
   private final LearningPlanDraftStructuredOutputMapper outputMapper;
   private final LearningPlanLoadService loadService;
   private final ObjectMapper objectMapper;
@@ -56,8 +52,7 @@ public class LearningPlanDraftStreamService {
   public LearningPlanDraftStreamService(
       LearningPlanDraftRepository draftRepository,
       LearningPlanDraftValidator validator,
-      AgentLoopRunner agentLoopRunner,
-      LearningPlanDraftPromptBuilder promptBuilder,
+      AgentRuntime agentRuntime,
       ObjectMapper objectMapper,
       LearningPlanProblemCatalog problemCatalog,
       LearningPlanLoadService loadService,
@@ -65,8 +60,7 @@ public class LearningPlanDraftStreamService {
   ) {
     this.draftRepository = draftRepository;
     this.validator = validator;
-    this.agentLoopRunner = agentLoopRunner;
-    this.promptBuilder = promptBuilder;
+    this.agentRuntime = Objects.requireNonNull(agentRuntime, "agentRuntime");
     this.objectMapper = objectMapper;
     this.outputMapper = new LearningPlanDraftStructuredOutputMapper(objectMapper, problemCatalog);
     this.loadService = loadService;
@@ -86,18 +80,12 @@ public class LearningPlanDraftStreamService {
     }
     // 第一次写库：先落一条空草案，拿到稳定 draft id；通用 Agent 只负责生成，不直接持有学习计划仓储。
     LearningPlanDraft draft = createInitialDraft(userId, command);
-    AgentRequest request = new AgentRequest(
-        runId,
-        null,
-        promptBuilder.build(command, userId),
-        metadata,
-        executionOptions());
     return subscriber -> {
       SubmissionPublisher<LearningPlanDraftStreamEvent> publisher = new SubmissionPublisher<>();
       publisher.subscribe(subscriber);
       AgentWorkStatusProjector projector = new AgentWorkStatusProjector(learningPlanProfile(), clock);
       // 从这里进入通用 Agent loop；学习计划草案的解析和持久化由下面的 StreamSubscriber 接管。
-      agentLoopRunner.stream(request).subscribe(new StreamSubscriber(
+      agentRuntime.stream(invocation(userId, command, runId)).subscribe(new StreamSubscriber(
           publisher,
           projector,
           draft,
@@ -143,17 +131,21 @@ public class LearningPlanDraftStreamService {
         now));
   }
 
-  private AgentExecutionOptions executionOptions() {
-    return new AgentExecutionOptions(
-        LlmGenerationOptions.defaults(),
-        new LlmResponseFormat.JsonSchema(
-            LearningPlanStreamConstants.SCHEMA_NAME,
-            LearningPlanDraftJsonSchema.schema(),
-            true),
-        new AgentStructuredOutputOptions(
-            StructuredOutputStrategy.PROVIDER_NATIVE,
-            LearningPlanStreamConstants.SCHEMA_NAME,
-            LearningPlanStreamConstants.SCHEMA_VERSION,
+  private AgentInvocation<LearningPlanDraftAgentInput> invocation(
+      long userId,
+      LearningPlanDraftCommand command,
+      String idempotencyKey
+  ) {
+    return new AgentInvocation<>(
+        LearningPlanDraftAgentDefinition.KEY,
+        new LearningPlanDraftAgentInput(userId, command, idempotencyKey),
+        new AgentInvocationContext(
+            userId,
+            AgentInvocationMode.USER_ENTRY,
+            idempotencyKey,
+            null,
+            null,
+            requestSize(command),
             true));
   }
 
@@ -163,9 +155,8 @@ public class LearningPlanDraftStreamService {
         "开始生成学习计划",
         "正在规划",
         Map.of(
-            "list_problem_filters", "正在查询题库标签",
-            "search_problems", "正在搜索候选题",
-            "get_problem_statement", "正在读取题目信息"),
+            LearningPlanAgentToolNames.LIST_PROBLEM_FILTERS, "正在查询题库标签",
+            LearningPlanAgentToolNames.SEARCH_PROBLEMS, "正在搜索候选题"),
         24,
         Duration.ofMillis(500),
         true);
@@ -180,6 +171,22 @@ public class LearningPlanDraftStreamService {
       case "weeklyHours" -> "你每周大约可以投入几小时学习算法？";
       default -> "请补充一个最关键的信息，方便继续生成计划。";
     };
+  }
+
+  private int requestSize(LearningPlanDraftCommand command) {
+    int size = 0;
+    size += stringSize(command.intent() == null ? null : command.intent().name());
+    size += stringSize(command.goal());
+    size += stringSize(command.programmingLanguage());
+    size += stringSize(command.difficultyPreference() == null ? null : command.difficultyPreference().name());
+    if (command.topicPreferences() != null) {
+      size += command.topicPreferences().stream().mapToInt(this::stringSize).sum();
+    }
+    return size;
+  }
+
+  private int stringSize(String value) {
+    return value == null ? 0 : value.getBytes(java.nio.charset.StandardCharsets.UTF_8).length;
   }
 
   private final class StreamSubscriber implements Flow.Subscriber<AgentStreamEvent> {

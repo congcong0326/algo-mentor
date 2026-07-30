@@ -18,6 +18,7 @@ import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecision
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionPlan;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionType;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionRequest;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
@@ -35,7 +36,7 @@ class AgentOpsObserverTest {
 
   @Test
   void recordsRunLifecycleEvents() {
-    AgentLoopContext context = context(Map.of("aiSource", "LEARNING_PLAN_DRAFT"));
+    AgentLoopContext context = context(Map.of(AgentRuntimeMetadataKeys.AGENT_KEY, "learning-plan-draft"));
 
     observer.onRunStart(context);
     observer.onRunEnd(context, new AgentRunResult(1, LlmFinishReason.STOP, Map.of()));
@@ -51,7 +52,7 @@ class AgentOpsObserverTest {
   void logsAgentRunFailuresAndPermissionTimeouts() {
     RecordingStructuredOpsLogger opsLogger = new RecordingStructuredOpsLogger();
     AgentOpsObserver loggingObserver = new AgentOpsObserver(recorder, opsLogger);
-    AgentLoopContext context = context(Map.of("aiSource", "PRACTICE_CHAT"));
+    AgentLoopContext context = context(Map.of(AgentRuntimeMetadataKeys.AGENT_KEY, "practice-chat"));
     AgentToolPermissionRequest request = permissionRequest();
 
     loggingObserver.onError(context, new AgentException(AgentErrorCode.UNKNOWN, "failed"));
@@ -112,27 +113,27 @@ class AgentOpsObserverTest {
   }
 
   @Test
-  void mapsKnownRunSourcesAndFallsBackToAgentConversation() {
-    assertThat(observer.source(context(Map.of("aiSource", "PROBLEM_DETAIL"))))
+  void mapsRuntimeAgentKeysAndFallsBackToAgentConversation() {
+    assertThat(observer.source(context(Map.of(AgentRuntimeMetadataKeys.AGENT_KEY, "topic-explanation"))))
         .isEqualTo(AgentOpsSource.AI_EXPLANATION);
-    assertThat(observer.source(context(Map.of("aiSource", "PRACTICE_CHAT"))))
+    assertThat(observer.source(context(Map.of(AgentRuntimeMetadataKeys.AGENT_KEY, "practice-chat"))))
         .isEqualTo(AgentOpsSource.PRACTICE_MESSAGE);
-    assertThat(observer.source(context(Map.of("aiSource", "LEARNING_CHAT"))))
+    assertThat(observer.source(context(Map.of(AgentRuntimeMetadataKeys.AGENT_KEY, "mentor-conversation"))))
         .isEqualTo(AgentOpsSource.AGENT_CONVERSATION);
-    assertThat(observer.source(context(Map.of("aiSource", "new_high_cardinality_value"))))
+    assertThat(observer.source(context(Map.of(AgentRuntimeMetadataKeys.AGENT_KEY, "new-agent"))))
         .isEqualTo(AgentOpsSource.AGENT_CONVERSATION);
   }
 
   @Test
-  void sourceMappingFallsBackToRequestMetadata() {
+  void sourceMappingDoesNotTrustRequestMetadata() {
     AgentRequest request = new AgentRequest(
         "run-1",
         "request-1",
         List.of(LlmMessage.user("hello")),
-        Map.of("aiSource", "LEARNING_PLAN_DRAFT"));
+        Map.of(AgentRuntimeMetadataKeys.AGENT_KEY, "learning-plan-draft"));
     AgentLoopContext context = new AgentLoopContext("run-1", request, 4, Map.of());
 
-    assertThat(observer.source(context)).isEqualTo(AgentOpsSource.LEARNING_PLAN_DRAFT);
+    assertThat(observer.source(context)).isEqualTo(AgentOpsSource.AGENT_CONVERSATION);
   }
 
   @Test

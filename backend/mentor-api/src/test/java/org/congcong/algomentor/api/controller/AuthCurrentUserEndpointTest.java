@@ -6,20 +6,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 import java.util.Optional;
+import org.congcong.algomentor.auth.controller.CurrentUserController;
+import org.congcong.algomentor.auth.controller.CurrentUserResponseFactory;
 import org.congcong.algomentor.identity.model.AuthRole;
 import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
+import org.congcong.algomentor.auth.service.AuthPermissionService;
+import org.congcong.algomentor.common.api.ApiErrorMessageResolver;
+import org.congcong.algomentor.common.api.ApiErrorResponseFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(properties = "algo-mentor.practice.code-review.enabled=false")
+@WebMvcTest(controllers = CurrentUserController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@Import(AuthCurrentUserEndpointTest.TestConfig.class)
 class AuthCurrentUserEndpointTest {
 
   @jakarta.annotation.Resource
@@ -49,6 +56,25 @@ class AuthCurrentUserEndpointTest {
           "https://example.com/avatar.png",
           List.of(AuthRole.USER),
           AuthUserStatus.ACTIVE));
+    }
+
+    @Bean
+    ApiErrorResponseFactory apiErrorResponseFactory() {
+      return new ApiErrorResponseFactory(new ApiErrorMessageResolver());
+    }
+
+    @Bean
+    CurrentUserResponseFactory currentUserResponseFactory() {
+      return new CurrentUserResponseFactory(new AuthPermissionService());
+    }
+
+    @Bean
+    CurrentUserController currentUserController(
+        CurrentUserIdProvider currentUserIdProvider,
+        ApiErrorResponseFactory apiErrorResponseFactory,
+        CurrentUserResponseFactory currentUserResponseFactory
+    ) {
+      return new CurrentUserController(currentUserIdProvider, apiErrorResponseFactory, currentUserResponseFactory);
     }
   }
 }

@@ -11,6 +11,12 @@ public final class CodeReviewProfileConsumerConstants {
   public static final int MAX_DISTINCT_PROBLEMS = 10;
   public static final int MAX_STALE_RETRIES = 1;
   public static final String PROMPT_VERSION = "code-review-profile-v2";
+  public static final String SCHEMA_VERSION = "v1";
+  public static final String AGENT_TITLE = "code-review-profile-update";
+  public static final String BACKGROUND_IDEMPOTENCY_KEY_PREFIX = "code-review-profile:";
+  public static final String BACKGROUND_RETRY_IDEMPOTENCY_KEY_SEPARATOR = ":retry:";
+  public static final String METADATA_WINDOW_PROBLEM_COUNT = "codeReviewProfileWindowProblemCount";
+  public static final String METADATA_CANDIDATE_COUNT = "codeReviewProfileCandidateCount";
   public static final String QUOTA_SCOPE = "LEARNER_PROFILE_CODE_REVIEW";
   public static final AiPurpose AI_PURPOSE = AiPurpose.LEARNING_CHAT;
   public static final List<LearnerProfileDimension> GENERAL_DIMENSIONS = List.of(

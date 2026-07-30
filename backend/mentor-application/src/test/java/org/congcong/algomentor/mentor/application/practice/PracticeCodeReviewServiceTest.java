@@ -12,17 +12,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Flow;
+import org.congcong.algomentor.agent.core.AgentOutput;
+import org.congcong.algomentor.agent.core.AgentRunResult;
+import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
-import org.congcong.algomentor.llm.core.gateway.LlmGateway;
-import org.congcong.algomentor.llm.core.model.LlmModelId;
-import org.congcong.algomentor.llm.core.provider.LlmCapability;
-import org.congcong.algomentor.llm.core.provider.LlmProviderId;
-import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
-import org.congcong.algomentor.llm.core.request.LlmMessage;
-import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
-import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
-import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.congcong.algomentor.queue.model.QueueMessage;
 import org.congcong.algomentor.queue.publisher.QueuePublisher;
 import org.junit.jupiter.api.Test;
@@ -34,9 +31,9 @@ class PracticeCodeReviewServiceTest {
   @Test
   void savesCompleteSubmission() {
     FakeRepository repository = new FakeRepository();
-    FakeLlmGateway llmGateway = new FakeLlmGateway(structuredOutput(true, true, true));
+    FakeAgentRuntime runtime = new FakeAgentRuntime(structuredOutput(true, true, true));
     RecordingPracticeCodeReviewMetrics metrics = new RecordingPracticeCodeReviewMetrics();
-    PracticeCodeReviewService service = service(repository, llmGateway, metrics);
+    PracticeCodeReviewService service = service(repository, runtime, metrics);
 
     PracticeReviewResult result = service.review(context());
 
@@ -44,33 +41,28 @@ class PracticeCodeReviewServiceTest {
     assertThat(result.draft()).isEmpty();
     assertThat(repository.savedDrafts).hasSize(1);
     assertThat(repository.savedDrafts.get(0).rawCode()).contains("class Solution");
-    assertThat(llmGateway.completeCalls).isEqualTo(1);
-    assertThat(llmGateway.lastRequest.modelSelector().requiredCapabilities())
-        .contains(LlmCapability.JSON_SCHEMA_OUTPUT);
-    assertThat(llmGateway.lastRequest.responseFormat())
-        .isInstanceOfSatisfying(LlmResponseFormat.JsonSchema.class, schema -> {
-          assertThat(schema.name()).isEqualTo(PracticeCodeReviewConstants.SCHEMA_NAME);
-          assertThat(schema.strict()).isTrue();
-        });
-    assertThat(llmGateway.lastRequest.metadata())
-        .containsEntry(PracticeCodeReviewConstants.METADATA_REVIEW_CANDIDATE, true)
-        .containsEntry(PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, 50L)
-        .containsEntry(AgentRuntimeMetadataKeys.SCHEMA_VERSION, PracticeCodeReviewConstants.SCHEMA_VERSION);
+    assertThat(runtime.executeCalls).isEqualTo(1);
+    assertThat(runtime.lastInvocation).satisfies(invocation -> {
+      assertThat(invocation.agentKey()).isEqualTo(PracticeCodeReviewAgentDefinition.KEY);
+      assertThat(invocation.context().parentRunId()).isEqualTo("501");
+      assertThat(invocation.context().parentStepIndex()).isEqualTo(1);
+      assertThat(invocation.context().idempotencyKey()).isEqualTo("practice-code-review:50:701");
+    });
     assertThat(metrics.reviewStatuses).containsExactly(PracticeCodeReviewMetricStatus.COMPLETED);
   }
 
   @Test
   void nonCurrentProblemDoesNotPersistAFormalReview() {
     FakeRepository repository = new FakeRepository();
-    FakeLlmGateway llmGateway = new FakeLlmGateway(structuredOutput(true, false, true));
+    FakeAgentRuntime runtime = new FakeAgentRuntime(structuredOutput(true, false, true));
     RecordingPracticeCodeReviewMetrics metrics = new RecordingPracticeCodeReviewMetrics();
-    PracticeCodeReviewService service = service(repository, llmGateway, metrics);
+    PracticeCodeReviewService service = service(repository, runtime, metrics);
 
     PracticeReviewResult result = service.review(context());
 
     assertThat(result.status()).isEqualTo(PracticeReviewStatus.NOT_COMPLETE_SUBMISSION);
     assertThat(repository.savedDrafts).isEmpty();
-    assertThat(llmGateway.completeCalls).isEqualTo(1);
+    assertThat(runtime.executeCalls).isEqualTo(1);
     assertThat(metrics.reviewStatuses).containsExactly(PracticeCodeReviewMetricStatus.UNREVIEWABLE);
   }
 
@@ -78,8 +70,8 @@ class PracticeCodeReviewServiceTest {
   void replayReturnsExistingReviewWithoutCallingLlm() {
     FakeRepository repository = new FakeRepository();
     repository.existing = Optional.of(review());
-    FakeLlmGateway llmGateway = new FakeLlmGateway(structuredOutput(true, true, true));
-    PracticeCodeReviewService service = service(repository, llmGateway);
+    FakeAgentRuntime runtime = new FakeAgentRuntime(structuredOutput(true, true, true));
+    PracticeCodeReviewService service = service(repository, runtime);
 
     PracticeReviewResult result = service.review(context());
 
@@ -87,57 +79,57 @@ class PracticeCodeReviewServiceTest {
     assertThat(result.draft()).isEmpty();
     assertThat(result.metadata()).containsEntry("reviewId", 900L);
     assertThat(repository.savedDrafts).isEmpty();
-    assertThat(llmGateway.completeCalls).isZero();
+    assertThat(runtime.executeCalls).isZero();
   }
 
   @Test
   void replayMissingExistingReviewFailsWithoutCallingLlm() {
     FakeRepository repository = new FakeRepository();
-    FakeLlmGateway llmGateway = new FakeLlmGateway(structuredOutput(true, true, true));
+    FakeAgentRuntime runtime = new FakeAgentRuntime(structuredOutput(true, true, true));
     RecordingPracticeCodeReviewMetrics metrics = new RecordingPracticeCodeReviewMetrics();
-    PracticeCodeReviewService service = service(repository, llmGateway, metrics);
+    PracticeCodeReviewService service = service(repository, runtime, metrics);
 
     PracticeReviewResult result = service.replay(context());
 
     assertThat(result.status()).isEqualTo(PracticeReviewStatus.FAILED);
     assertThat(result.failureCode()).isEqualTo(PracticeCodeReviewService.FAILURE_CODE_REPLAY_REVIEW_MISSING);
     assertThat(repository.savedDrafts).isEmpty();
-    assertThat(llmGateway.completeCalls).isZero();
+    assertThat(runtime.executeCalls).isZero();
     assertThat(metrics.reviewStatuses).containsExactly(PracticeCodeReviewMetricStatus.FAILED);
   }
 
   @Test
   void llmFailureReturnsFailed() {
     FakeRepository repository = new FakeRepository();
-    FakeLlmGateway llmGateway = new FakeLlmGateway(structuredOutput(true, true, true));
-    llmGateway.failure = new RuntimeException("provider unavailable");
+    FakeAgentRuntime runtime = new FakeAgentRuntime(structuredOutput(true, true, true));
+    runtime.failure = new RuntimeException("provider unavailable");
     RecordingPracticeCodeReviewMetrics metrics = new RecordingPracticeCodeReviewMetrics();
-    PracticeCodeReviewService service = service(repository, llmGateway, metrics);
+    PracticeCodeReviewService service = service(repository, runtime, metrics);
 
     PracticeReviewResult result = service.review(context());
 
     assertThat(result.status()).isEqualTo(PracticeReviewStatus.FAILED);
     assertThat(result.failureCode()).isEqualTo(PracticeCodeReviewService.FAILURE_CODE_LLM_COMPLETION_FAILED);
     assertThat(repository.savedDrafts).isEmpty();
-    assertThat(llmGateway.completeCalls).isEqualTo(1);
+    assertThat(runtime.executeCalls).isEqualTo(1);
     assertThat(metrics.reviewStatuses).containsExactly(PracticeCodeReviewMetricStatus.FAILED);
   }
 
-  private PracticeCodeReviewService service(FakeRepository repository, FakeLlmGateway llmGateway) {
-    return service(repository, llmGateway, PracticeCodeReviewMetrics.NOOP);
+  private PracticeCodeReviewService service(FakeRepository repository, FakeAgentRuntime runtime) {
+    return service(repository, runtime, PracticeCodeReviewMetrics.NOOP);
   }
 
   private PracticeCodeReviewService service(
       FakeRepository repository,
-      FakeLlmGateway llmGateway,
+      FakeAgentRuntime runtime,
       PracticeCodeReviewMetrics metrics) {
     return new PracticeCodeReviewService(
         repository,
         commitService(repository),
-        llmGateway,
-        new PracticeCodeReviewPromptBuilder(),
+        runtime,
         new PracticeCodeReviewStructuredOutputMapper(),
-        metrics);
+        metrics,
+        org.congcong.algomentor.mentor.application.review.card.PracticeCodeReviewObserver.NOOP);
   }
 
   private PracticeCodeReviewCommitService commitService(PracticeCodeReviewRepository repository) {
@@ -300,36 +292,36 @@ class PracticeCodeReviewServiceTest {
     }
   }
 
-  private static final class FakeLlmGateway implements LlmGateway {
+  private static final class FakeAgentRuntime implements AgentRuntime {
     private final JsonNode output;
     private RuntimeException failure;
-    private int completeCalls;
-    private LlmCompletionRequest lastRequest;
+    private int executeCalls;
+    private AgentInvocation<?> lastInvocation;
 
-    private FakeLlmGateway(JsonNode output) {
+    private FakeAgentRuntime(JsonNode output) {
       this.output = output;
     }
 
     @Override
-    public LlmCompletionResult complete(LlmCompletionRequest request) {
-      completeCalls++;
-      lastRequest = request;
+    public AgentRunResult execute(AgentInvocation<?> invocation) {
+      executeCalls++;
+      lastInvocation = invocation;
       if (failure != null) {
         throw failure;
       }
-      return new LlmCompletionResult(
-          LlmMessage.assistant("{}"),
-          List.of(),
-          output,
+      return new AgentRunResult(
+          1,
           LlmFinishReason.STOP,
-          null,
-          new LlmProviderId("fake"),
-          new LlmModelId("fake-model"),
-          Map.of());
+          new AgentOutput("{}", output, PracticeCodeReviewConstants.SCHEMA_NAME,
+              PracticeCodeReviewConstants.SCHEMA_VERSION, Map.of()),
+          Map.of(
+              AgentRuntimeMetadataKeys.RUNTIME_PROVIDER, "review-provider",
+              AgentRuntimeMetadataKeys.RUNTIME_MODEL, "review-model",
+              AgentRuntimeMetadataKeys.RUNTIME_USAGE, new LlmUsage(11, 7, 0, 0, 18)));
     }
 
     @Override
-    public Flow.Publisher<LlmStreamEvent> stream(LlmCompletionRequest request) {
+    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
       throw new UnsupportedOperationException("stream not used");
     }
   }

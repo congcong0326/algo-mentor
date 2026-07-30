@@ -3,6 +3,7 @@ package org.congcong.algomentor.api.learningplan.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -59,7 +60,7 @@ class SseLearningPlanDraftStreamSubscriberOpsTest {
         "completed:learning_plan_draft");
     assertThat(learningRecorder.events).containsExactly("draft:completed");
     assertThat(subscription.cancelled).isTrue();
-    verify(lifecycleService).markCompleted(admission, AiUsage.zero(), null, null);
+    verifyNoInteractions(lifecycleService);
   }
 
   @Test
@@ -86,7 +87,7 @@ class SseLearningPlanDraftStreamSubscriberOpsTest {
         "clientDisconnected:learning_plan_draft");
     assertThat(learningRecorder.events).containsExactly("draft:completed");
     assertThat(subscription.cancelled).isTrue();
-    verify(lifecycleService).markCompleted(admission, AiUsage.zero(), null, null);
+    verifyNoInteractions(lifecycleService);
   }
 
   @Test
@@ -113,8 +114,7 @@ class SseLearningPlanDraftStreamSubscriberOpsTest {
         "failed:learning_plan_draft:upstream_error");
     assertThat(learningRecorder.events).containsExactly("draft:failed");
     assertThat(subscription.cancelled).isTrue();
-    verify(lifecycleService)
-        .markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
+    verifyNoInteractions(lifecycleService);
   }
 
   @Test
@@ -164,8 +164,7 @@ class SseLearningPlanDraftStreamSubscriberOpsTest {
         "failed:learning_plan_draft:send_failure");
     assertThat(learningRecorder.events).containsExactly("draft:failed");
     assertThat(subscription.cancelled).isTrue();
-    verify(lifecycleService)
-        .markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
+    verifyNoInteractions(lifecycleService);
   }
 
   @Test
@@ -192,8 +191,7 @@ class SseLearningPlanDraftStreamSubscriberOpsTest {
         "failed:learning_plan_draft:timeout");
     assertThat(learningRecorder.events).containsExactly("draft:failed");
     assertThat(subscription.cancelled).isTrue();
-    verify(lifecycleService)
-        .markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
+    verifyNoInteractions(lifecycleService);
   }
 
   private SseLearningPlanDraftStreamSubscriber subscriber(
@@ -205,8 +203,6 @@ class SseLearningPlanDraftStreamSubscriberOpsTest {
     return new SseLearningPlanDraftStreamSubscriber(
         emitter,
         new LearningPlanDraftStreamSseMapper(),
-        lifecycleService,
-        admission,
         SseStreamType.LEARNING_PLAN_DRAFT,
         sseRecorder,
         learningRecorder,
@@ -223,8 +219,6 @@ class SseLearningPlanDraftStreamSubscriberOpsTest {
     return new SseLearningPlanDraftStreamSubscriber(
         emitter,
         new LearningPlanDraftStreamSseMapper(),
-        lifecycleService,
-        admission,
         SseStreamType.LEARNING_PLAN_DRAFT,
         sseRecorder,
         learningRecorder,

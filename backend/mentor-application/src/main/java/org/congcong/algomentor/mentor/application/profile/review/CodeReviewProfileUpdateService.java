@@ -1,19 +1,22 @@
 package org.congcong.algomentor.mentor.application.profile.review;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.HexFormat;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionContext;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
-import org.congcong.algomentor.ai.governance.model.AiRunSource;
-import org.congcong.algomentor.llm.core.model.LlmModelSelector;
-import org.congcong.algomentor.llm.core.provider.LlmCapability;
-import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
-import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
-import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
+import org.congcong.algomentor.agent.core.AgentRunResult;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileEntryKind;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileIdentity;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileOriginType;
@@ -24,8 +27,6 @@ import org.congcong.algomentor.mentor.application.profile.ProfileUpdateApplyResu
 import org.congcong.algomentor.mentor.application.profile.ProfileUpdateApplyStatus;
 import org.congcong.algomentor.mentor.application.profile.ProfileUpdateCommand;
 import org.congcong.algomentor.mentor.application.profile.ProfileUpdateDecision;
-import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
-import org.congcong.algomentor.mentor.application.prompt.SystemPromptMetadataKeys;
 
 /** 事务外模型批量决策，事务内锁用户和 revision 复核；STALE 至多重算一次。 */
 public class CodeReviewProfileUpdateService {
@@ -33,8 +34,7 @@ public class CodeReviewProfileUpdateService {
   private final CodeReviewProfileFactRepository factRepository;
   private final LearnerProfileQueryService queryService;
   private final LearnerProfileUpdateService updateService;
-  private final AiCompletionGateway completionGateway;
-  private final CodeReviewProfilePromptBuilder promptBuilder;
+  private final AgentRuntime agentRuntime;
   private final CodeReviewProfileStructuredOutputMapper outputMapper;
   private final int maxStaleRetries;
   private final CodeReviewProfileMetrics metrics;
@@ -43,13 +43,12 @@ public class CodeReviewProfileUpdateService {
       CodeReviewProfileFactRepository factRepository,
       LearnerProfileQueryService queryService,
       LearnerProfileUpdateService updateService,
-      AiCompletionGateway completionGateway,
-      CodeReviewProfilePromptBuilder promptBuilder,
+      AgentRuntime agentRuntime,
       CodeReviewProfileStructuredOutputMapper outputMapper,
       int maxStaleRetries
   ) {
     this(
-        factRepository, queryService, updateService, completionGateway, promptBuilder, outputMapper,
+        factRepository, queryService, updateService, agentRuntime, outputMapper,
         maxStaleRetries, CodeReviewProfileMetrics.NOOP);
   }
 
@@ -57,8 +56,7 @@ public class CodeReviewProfileUpdateService {
       CodeReviewProfileFactRepository factRepository,
       LearnerProfileQueryService queryService,
       LearnerProfileUpdateService updateService,
-      AiCompletionGateway completionGateway,
-      CodeReviewProfilePromptBuilder promptBuilder,
+      AgentRuntime agentRuntime,
       CodeReviewProfileStructuredOutputMapper outputMapper,
       int maxStaleRetries,
       CodeReviewProfileMetrics metrics
@@ -69,8 +67,7 @@ public class CodeReviewProfileUpdateService {
     this.factRepository = factRepository;
     this.queryService = queryService;
     this.updateService = updateService;
-    this.completionGateway = completionGateway;
-    this.promptBuilder = promptBuilder;
+    this.agentRuntime = agentRuntime;
     this.outputMapper = outputMapper;
     this.maxStaleRetries = maxStaleRetries;
     this.metrics = Objects.requireNonNullElse(metrics, CodeReviewProfileMetrics.NOOP);
@@ -82,18 +79,26 @@ public class CodeReviewProfileUpdateService {
       if (window.isEmpty()) {
         return new CodeReviewProfileUpdateResult(CodeReviewProfileUpdateResult.Status.FAILED, 0, 0);
       }
+      String logicalIdempotencyKey = backgroundIdempotencyKey(userId, batchFacts);
+      Long retryOfRunId = null;
       for (int attempt = 0; attempt <= maxStaleRetries; attempt++) {
         List<CodeReviewProfilePromptBuilder.Candidate> candidates = candidates(userId, window);
-        DecisionRound round = decide(userId, window, candidates);
-        if (round == null) {
-          return new CodeReviewProfileUpdateResult(CodeReviewProfileUpdateResult.Status.FAILED, window.size(), 0);
-        }
+        DecisionRound round = decide(
+            userId,
+            window,
+            candidates,
+            attemptIdempotencyKey(logicalIdempotencyKey, attempt),
+            retryOfRunId);
         List<ProfileUpdateApplyResult> results = updateService.applyBatch(commands(candidates, round));
         if (results.size() != candidates.size()) {
           throw new IllegalStateException("Code review profile update returned an unexpected result count");
         }
         if (results.stream().anyMatch(result -> result.status() == ProfileUpdateApplyStatus.STALE)) {
           metrics.recordStaleRetry();
+          if (attempt == maxStaleRetries) {
+            return new CodeReviewProfileUpdateResult(CodeReviewProfileUpdateResult.Status.FAILED, window.size(), 0);
+          }
+          retryOfRunId = round.runDbId();
           continue;
         }
         int applied = (int) results.stream().filter(result -> result.status() == ProfileUpdateApplyStatus.APPLIED).count();
@@ -139,29 +144,23 @@ public class CodeReviewProfileUpdateService {
   private DecisionRound decide(
       long userId,
       List<CodeReviewProfileFact> facts,
-      List<CodeReviewProfilePromptBuilder.Candidate> candidates
+      List<CodeReviewProfilePromptBuilder.Candidate> candidates,
+      String idempotencyKey,
+      Long retryOfRunId
   ) {
-    AiCompletionContext context = AiCompletionContext.background(
-        userId,
-        CodeReviewProfileConsumerConstants.AI_PURPOSE,
-        AiRunSource.LEARNER_PROFILE_CODE_REVIEW_BATCH,
-        CodeReviewProfileConsumerConstants.QUOTA_SCOPE,
-        facts.size());
-    if (!completionGateway.isAllowed(context)) {
-      return null;
-    }
-    ResolvedSystemPromptSnapshot promptSnapshot = promptBuilder.snapshot(userId);
-    java.util.Map<String, Object> metadata = new java.util.LinkedHashMap<>();
-    metadata.put("promptVersion", CodeReviewProfileConsumerConstants.PROMPT_VERSION);
-    metadata.putAll(SystemPromptMetadataKeys.from(promptSnapshot));
-    LlmCompletionResult completion = completionGateway.complete(LlmCompletionRequest.builder()
-        .modelSelector(LlmModelSelector.requiring(Set.of(LlmCapability.JSON_SCHEMA_OUTPUT)))
-        .messages(promptBuilder.build(facts, candidates, promptSnapshot))
-        .responseFormat(new LlmResponseFormat.JsonSchema(
-            CodeReviewProfileJsonSchema.SCHEMA_NAME, CodeReviewProfileJsonSchema.schema(), true))
-        .metadata(java.util.Map.copyOf(metadata))
-        .build(), context);
-    JsonNode output = completion.structuredOutput();
+    AgentInvocation<CodeReviewProfileUpdateAgentInput> invocation = new AgentInvocation<>(
+        CodeReviewProfileUpdateAgentDefinition.KEY,
+        new CodeReviewProfileUpdateAgentInput(userId, facts, candidates, idempotencyKey, retryOfRunId),
+        new AgentInvocationContext(
+            userId,
+            AgentInvocationMode.BACKGROUND,
+            idempotencyKey,
+            null,
+            null,
+            facts.size(),
+            false));
+    AgentRunResult result = agentRuntime.execute(invocation);
+    JsonNode output = result.output() == null ? null : result.output().structured();
     List<ProfileUpdateDecision> decisions;
     try {
       decisions = outputMapper.map(output, candidates);
@@ -169,7 +168,60 @@ public class CodeReviewProfileUpdateService {
       metrics.recordInvalidOutput();
       throw exception;
     }
-    return new DecisionRound(decisions, completion.provider().value(), completion.model().value());
+    return new DecisionRound(
+        decisions,
+        metadataText(result.metadata(), AgentRuntimeMetadataKeys.RUNTIME_PROVIDER),
+        metadataText(result.metadata(), AgentRuntimeMetadataKeys.RUNTIME_MODEL),
+        requiredPositiveLong(result.metadata(), AgentRuntimeMetadataKeys.RUN_DB_ID));
+  }
+
+  static String backgroundIdempotencyKey(long userId, List<CodeReviewProfileFact> batchFacts) {
+    if (userId < 1 || batchFacts == null || batchFacts.isEmpty()) {
+      throw new IllegalArgumentException("Code review profile background batch must not be empty");
+    }
+    String reviewIds = batchFacts.stream()
+        .map(CodeReviewProfileFact::reviewId)
+        .sorted()
+        .map(String::valueOf)
+        .collect(java.util.stream.Collectors.joining(","));
+    return CodeReviewProfileConsumerConstants.BACKGROUND_IDEMPOTENCY_KEY_PREFIX
+        + sha256(userId + "\u001d" + reviewIds);
+  }
+
+  private static String attemptIdempotencyKey(String logicalIdempotencyKey, int attempt) {
+    if (attempt < 0) {
+      throw new IllegalArgumentException("Code review profile background attempt must not be negative");
+    }
+    return attempt == 0 ? logicalIdempotencyKey
+        : logicalIdempotencyKey + CodeReviewProfileConsumerConstants.BACKGROUND_RETRY_IDEMPOTENCY_KEY_SEPARATOR
+            + attempt;
+  }
+
+  private static String sha256(String value) {
+    try {
+      return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+          .digest(value.getBytes(StandardCharsets.UTF_8)));
+    } catch (NoSuchAlgorithmException exception) {
+      throw new IllegalStateException("SHA-256 must be available", exception);
+    }
+  }
+
+  private static String metadataText(Map<String, Object> metadata, String key) {
+    Object value = metadata.get(key);
+    return value == null ? "" : value.toString();
+  }
+
+  private static long requiredPositiveLong(Map<String, Object> metadata, String key) {
+    Object value = metadata.get(key);
+    try {
+      long parsed = value instanceof Number number ? number.longValue() : Long.parseLong(String.valueOf(value).trim());
+      if (parsed < 1) {
+        throw new IllegalArgumentException("Code review profile Runtime run id must be positive");
+      }
+      return parsed;
+    } catch (RuntimeException exception) {
+      throw new IllegalArgumentException("Code review profile Runtime result is missing run id", exception);
+    }
   }
 
   private List<ProfileUpdateCommand> commands(
@@ -186,6 +238,6 @@ public class CodeReviewProfileUpdateService {
     return List.copyOf(commands);
   }
 
-  private record DecisionRound(List<ProfileUpdateDecision> decisions, String provider, String model) {
+  private record DecisionRound(List<ProfileUpdateDecision> decisions, String provider, String model, long runDbId) {
   }
 }

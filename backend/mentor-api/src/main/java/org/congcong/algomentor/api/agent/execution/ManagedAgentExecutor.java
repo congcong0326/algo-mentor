@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 public final class ManagedAgentExecutor implements AgentExecutor {
 
   private static final Logger log = LoggerFactory.getLogger(ManagedAgentExecutor.class);
+  private static final ThreadLocal<Integer> EXECUTOR_DEPTH = new ThreadLocal<>();
 
   private final ThreadPoolExecutor executor;
   private final Duration shutdownTimeout;
@@ -57,7 +58,8 @@ public final class ManagedAgentExecutor implements AgentExecutor {
   public void execute(Runnable task) {
     Objects.requireNonNull(task, "task must not be null");
     try {
-      executor.execute(RequestTraceContext.wrap(task));
+      Runnable traceAwareTask = RequestTraceContext.wrap(task);
+      executor.execute(() -> runInExecutorThread(traceAwareTask));
     } catch (RejectedExecutionException rejected) {
       if (rejectedCounter != null) {
         rejectedCounter.increment();
@@ -81,6 +83,11 @@ public final class ManagedAgentExecutor implements AgentExecutor {
   @Override
   public boolean isShutdown() {
     return executor.isShutdown();
+  }
+
+  @Override
+  public boolean inExecutorThread() {
+    return EXECUTOR_DEPTH.get() != null;
   }
 
   /** 停止接收新任务，等待运行中任务结束，超时后中断剩余任务。 */
@@ -121,6 +128,20 @@ public final class ManagedAgentExecutor implements AgentExecutor {
     Gauge.builder(AgentExecutorMetrics.QUEUE_SIZE, executor, value -> value.getQueue().size())
         .description("Queued Agent executor tasks")
         .register(meterRegistry);
+  }
+
+  private static void runInExecutorThread(Runnable task) {
+    Integer depth = EXECUTOR_DEPTH.get();
+    EXECUTOR_DEPTH.set(depth == null ? 1 : depth + 1);
+    try {
+      task.run();
+    } finally {
+      if (depth == null) {
+        EXECUTOR_DEPTH.remove();
+      } else {
+        EXECUTOR_DEPTH.set(depth);
+      }
+    }
   }
 
   private static final class NamedThreadFactory implements ThreadFactory {

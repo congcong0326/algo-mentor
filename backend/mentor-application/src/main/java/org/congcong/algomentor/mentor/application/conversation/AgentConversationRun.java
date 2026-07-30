@@ -2,14 +2,40 @@ package org.congcong.algomentor.mentor.application.conversation;
 
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun;
 
 public record AgentConversationRun(
     long taskId,
     long turnId,
     long runId,
     String runUuid,
-    AgentRequest agentRequest
+    AgentRequest agentRequest,
+    PreparedAgentRun preparedRun
 ) {
+
+  public AgentConversationRun(
+      long taskId,
+      long turnId,
+      long runId,
+      String runUuid,
+      AgentRequest agentRequest
+  ) {
+    this(
+        taskId,
+        turnId,
+        runId,
+        runUuid,
+        agentRequest,
+        new PreparedAgentRun(
+            taskId,
+            turnId,
+            runId,
+            runUuid,
+            agentRequest.requestId(),
+            "",
+            null,
+            agentRequest.metadata()));
+  }
 
   public AgentConversationRun {
     if (taskId < 1 || turnId < 1 || runId < 1) {
@@ -20,6 +46,9 @@ public record AgentConversationRun(
     }
     if (agentRequest == null) {
       throw new IllegalArgumentException("Conversation agent request must not be null");
+    }
+    if (preparedRun == null) {
+      throw new IllegalArgumentException("Conversation prepared run must not be null");
     }
   }
 

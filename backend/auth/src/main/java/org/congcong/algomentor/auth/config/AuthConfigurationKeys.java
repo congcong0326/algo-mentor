@@ -13,6 +13,9 @@ public final class AuthConfigurationKeys {
   public static final String COOKIE_SECURE = AUTH_PREFIX + ".cookie-secure";
   public static final String COOKIE_SAME_SITE = AUTH_PREFIX + ".cookie-same-site";
   public static final String ADMIN_EMAILS = AUTH_PREFIX + ".admin-emails";
+  /** Google OAuth2 客户端凭据的环境变量。 */
+  public static final String GOOGLE_OAUTH2_CLIENT_ID_ENV = "GOOGLE_CLIENT_ID";
+  public static final String GOOGLE_OAUTH2_CLIENT_SECRET_ENV = "GOOGLE_CLIENT_SECRET";
 
   private AuthConfigurationKeys() {
   }

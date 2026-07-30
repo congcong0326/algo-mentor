@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -61,9 +62,7 @@ class SseLearningPlanProposalStreamSubscriberOpsTest {
         "completed:learning_plan_proposal");
     assertThat(learningRecorder.events).isEmpty();
     assertThat(subscription.cancelled).isTrue();
-    verify(lifecycleService).markCompleted(admission, AiUsage.zero(), null, null);
-    verify(lifecycleService, never())
-        .markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
+    verifyNoInteractions(lifecycleService);
   }
 
   @Test
@@ -89,9 +88,7 @@ class SseLearningPlanProposalStreamSubscriberOpsTest {
         "failed:learning_plan_proposal:send_failure");
     assertThat(learningRecorder.events).isEmpty();
     assertThat(subscription.cancelled).isTrue();
-    verify(lifecycleService, never()).markCompleted(admission, AiUsage.zero(), null, null);
-    verify(lifecycleService)
-        .markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
+    verifyNoInteractions(lifecycleService);
   }
 
   @Test
@@ -116,9 +113,7 @@ class SseLearningPlanProposalStreamSubscriberOpsTest {
         "failed:learning_plan_proposal:send_failure");
     assertThat(learningRecorder.events).isEmpty();
     assertThat(subscription.cancelled).isTrue();
-    verify(lifecycleService, never()).markCompleted(admission, AiUsage.zero(), null, null);
-    verify(lifecycleService)
-        .markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
+    verifyNoInteractions(lifecycleService);
   }
 
   private SseLearningPlanProposalStreamSubscriber subscriber(
@@ -131,8 +126,6 @@ class SseLearningPlanProposalStreamSubscriberOpsTest {
     return new SseLearningPlanProposalStreamSubscriber(
         emitter,
         new LearningPlanProposalStreamSseMapper(),
-        lifecycleService,
-        admission,
         SseStreamType.LEARNING_PLAN_PROPOSAL,
         sseRecorder,
         new StructuredOpsLogger());

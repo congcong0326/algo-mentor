@@ -14,6 +14,9 @@
 - `docs/agent-run-tool-result-compaction-design.md`：Agent run 内工具结果压缩设计，说明大结果预览、blob 引用、范围读取工具和 run-local 上下文预算。
 - `docs/agent-tool-permission-phase-one-design.md`：Agent Tool 人在回路权限阶段一设计，说明工具执行前门禁、权限 hook/coordinator、决策 API、SSE 和 Review 工具确认链路。
 - `docs/agent-tool-permission-phase-one-tasks/README.md`：Agent Tool 权限阶段一任务拆解与落地确认，记录 task 8-20 的完成备注、阶段一限制和验证命令。
+- `docs/unified-agent-foundation-refactoring-design.md`：统一 Agent 底座重构设计，梳理现有 AI 场景执行链路，定义统一 `AgentRuntime`、场景 Definition、run 级工具白名单和渐进迁移边界，当前不引入 Workflow。
+- `docs/unified-agent-foundation-refactoring-implementation-plan.md`：统一 Agent 底座 UAF-00 至 UAF-13 的连续实施计划，定义依赖波次、上下文接力、测试门禁、回滚和最终架构验收。
+- `docs/unified-agent-foundation-refactoring-tasks/`：统一 Agent 底座的 14 个渐进披露任务文件、状态板和 `CURRENT.md`；连续执行时只读取当前任务及其明确列出的代码。
 - `docs/cache-module-v1-design.md`：第一版缓存模块研发设计，规划独立 `backend/cache` Maven 模块、三类 Caffeine 缓存区域、旁路缓存与事务提交后失效、AI/认证首批接入及未来 Redis 迁移边界。
 - `docs/cache-business-data-decisions.md`：业务缓存数据与参数决策记录，固化 AI、认证、题库和学习计划模板的缓存类型、容量、TTL、失效入口及 PostgreSQL coherence 公共参数。
 - `docs/agent-runtime-refactoring-implementation-plan.md`：Agent 运行态模块拆分分阶段实施计划，说明模块边界、迁移步骤、验收标准和风险点。
@@ -83,12 +86,14 @@
 - `backend/auth/src/main/resources/db/migration/auth/V28__beta_access_and_password_reset.sql`：内测准入设置、邮箱白名单和密码凭据临时状态迁移，白名单默认关闭。
 - `backend/llm-core`：项目内 LLM 抽象契约，按职责拆分为 `gateway`、`provider`、`model`、`request`、`response`、`stream`、`tool`、`exception` 子包。
 - `backend/llm-openai`：OpenAI 动态 provider adapter 模块，隔离 `openai-java` SDK、严格 JSON 配置校验、provider 能力描述和请求/响应映射；不再从应用配置创建运行时连接。
-- `backend/agent-core`：Agent 核心编排模型，面向 `LlmGateway` 组织模型调用和后续工具执行流程；`runtime` 子包提供通用会话模型、上下文组装策略和 repository 端口。
+- `backend/agent-core`：Agent 核心 loop、运行准备模型和稳定 Runtime API 契约；`runtime/api` 定义 `AgentRuntime`，`runtime/definition` 定义类型化 `AgentDefinition`，不依赖业务场景或 Spring。
 - `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/permission`：Agent Tool 执行前权限核心包，包含 `AgentToolPermissionGuard`、hook chain、内存 coordinator、permission request/decision 模型、synthetic result factory 和 no-op metrics。
-- `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/AgentLoopRunner.java`：Agent 主循环，在真实工具执行前调用 lifecycle 权限门禁，并支持 synthetic permission result 回填模型上下文。
+- `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/AgentLoopEngine.java`：同步 Agent loop 状态机，按单次执行白名单、工具策略和步数上限调用模型与工具。
+- `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/AgentLoopRunner.java`：兼容性 stream facade；业务模块不再注入该类，正式场景统一经 `AgentRuntime`。
 - `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/execution`：Agent loop 执行器边界，固定任务提交、关停状态、拒绝原因和线程名称/metadata 公共契约。
 - `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/AgentLoopLifecycle.java`：Agent lifecycle 门面，发布 `tool_permission_request`、`tool_permission_decision`、`tool_permission_timeout` 事件并调用权限 guard。
 - `backend/agent-core/src/main/java/org/congcong/algomentor/agent/core/runtime/model/AgentRuntimeMetadataKeys.java`：Agent runtime 受信 metadata key，包含权限 owner 校验使用的 `USER_ID = "userId"` 和调用级台账关联所需的稳定 step index。
+- `backend/agent-runtime`：统一 Runtime 实现模块；`DefaultAgentRuntime` 协调审计准备、治理租约、同步/流式 loop 终态，`definition` 注册九个业务场景的类型化 Definition。
 - `backend/agent-persistence-postgres`：Agent 运行态 PostgreSQL/MyBatis 持久化模块，包含 MyBatis mapper interface/XML、JSONB type handler、repository、持久化 observer、trace snapshot observer 和 agent runtime Flyway migration。
 - `backend/mentor-application`：算法学习业务应用层，用 use case 组织 Agent 调用和领域对象；conversation 包只保留 mentor 场景命令、运行结果和业务编排服务。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/profile`：学习者画像的固定枚举、ACTIVE 查询、用户行锁版本切换和声明更新；批量更新在短事务内复核 snapshot revision，不在事务中调用模型。
@@ -114,7 +119,7 @@
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/AgentToolPermissionExceptionHandler.java`：权限决策异常到 HTTP 状态的映射，覆盖未登录、越权、不存在、已决策、过期和非法请求。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/agent/model`：权限决策 API 的 request/response DTO，只接收 `decision` 和 `reason`，不接收前端声明的 userId。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/AgentToolPermissionProperties.java`：权限配置属性，绑定 `algo-mentor.agent.tool-permission.enabled/timeout/cleanup-interval`。
-- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/MentorAiConfiguration.java`：装配权限 hook chain、coordinator、guard 和 API 层 Micrometer adapter；`enabled=false` 时清空业务 hooks 并使用默认 allow coordinator。
+- `backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/MentorAiConfiguration.java`：API composition root，装配 Runtime、Definition registry、run-local 工具 registry、权限 hook/coordinator、guard 和 Micrometer adapter；`enabled=false` 时清空业务 hooks 并使用默认 allow coordinator。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/service/LlmStreamSseMapper.java`：SSE mapper，负责把核心权限事件映射为前端可消费的 `tool_permission_request`、`tool_permission_decision`、`tool_permission_timeout`。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/mentor/api/autoconfigure/AgentConversationApiAutoConfiguration.java`：Agent conversation 自动配置，显式排在持久化、AI 治理、队列和可观测性自动配置之后。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/mentor/api/autoconfigure/PracticeCodeReviewConfiguration.java`：由默认开启的 `algo-mentor.practice.code-review.enabled` 控制的强依赖装配边界，完整注册 CommitService、ReviewService、AgentTool 与权限 hook；启用时任一核心依赖缺失都会阻止应用启动。
@@ -124,6 +129,7 @@
 - `backend/agent-persistence-postgres/src/main/resources/mapper/agent`：agent runtime MyBatis XML mapper 目录，SQL 只保存在 persistence 模块。
 - `backend/agent-persistence-postgres/src/main/resources/db/migration/agent`：agent runtime Flyway 迁移脚本目录，随 `classpath:db/migration` 被 API 应用递归扫描；这些目录共享同一个 Flyway 版本空间，新增 `V` 版本号需要跨模块唯一；`V3__agent_runtime_sequence_counters.sql` 使用数据库计数器/触发器分配 turn、message sequence 和 run attempt。
 - `backend/agent-persistence-postgres/src/main/resources/db/migration/agent/V31__agent_diagnostic_retention.sql`：为 Agent run 固定 30 天诊断保留期限并回填历史记录；新 run 在 mapper 插入时同步写入到期时间。
+- `backend/agent-persistence-postgres/src/main/resources/db/migration/agent/V45__agent_runtime_run_audit.sql`：为 Runtime run 审计增加 `agent_key`、父 run/step 关联、调用模式和 retry 来源约束。
 - `backend/ai-governance/src/main/resources/db/migration/ai/V29__ai_runtime_policy_and_model_price.sql`：提前固定后续阶段的动态 AI 策略、模型价格和调用级用量表，本阶段不暴露治理接口且不回填 legacy 调用台账。
 - `backend/ai-governance/src/main/resources/db/migration/ai/V32__ai_usage_accounting_hardening.sql`：为调用级 Token 台账追加非负约束、索引、provider 规范化约束，并从历史 run 聚合幂等回填 legacy 调用记录。
 - `backend/ai-governance/src/main/java/org/congcong/algomentor/ai/governance/policy/runtime`：动态全局 AI 设置、用户暂停/额度覆盖、有效策略计算和管理员审计写入服务。

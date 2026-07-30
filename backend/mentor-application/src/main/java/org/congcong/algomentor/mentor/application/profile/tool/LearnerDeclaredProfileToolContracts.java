@@ -21,6 +21,10 @@ public final class LearnerDeclaredProfileToolContracts {
 
   public static final String PROMPT_VERSION = "learner-declared-profile-update-v1";
   public static final String METADATA_DIMENSION_COUNT = "learnerProfileDimensionCount";
+  public static final String AGENT_TITLE = "learner-declared-profile-update";
+  public static final String CHILD_IDEMPOTENCY_KEY_PREFIX = "learner-declared-profile:";
+  public static final String CHILD_RETRY_IDEMPOTENCY_KEY_SEPARATOR = ":retry:";
+  public static final String SCHEMA_VERSION = "v1";
 
   public static final int MAX_STATEMENT_CHARS = 4_000;
 

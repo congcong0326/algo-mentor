@@ -10,18 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionContext;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionMode;
-import org.congcong.algomentor.ai.governance.model.AiPurpose;
-import org.congcong.algomentor.ai.governance.model.AiRunSource;
-import org.congcong.algomentor.llm.core.model.LlmModelId;
-import org.congcong.algomentor.llm.core.provider.LlmProviderId;
-import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
-import org.congcong.algomentor.llm.core.request.LlmMessage;
-import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
+import java.util.concurrent.Flow;
+import org.congcong.algomentor.agent.core.AgentOutput;
+import org.congcong.algomentor.agent.core.AgentRunResult;
+import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
-import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileQueryService;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileSnapshot;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileUpdateService;
@@ -36,17 +33,17 @@ class CodeReviewProfileUpdateServiceTest {
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Test
-  void appliesAllowedGeneralAndTagReplacementsWithBackgroundGovernance() throws Exception {
+  void appliesAllowedGeneralAndTagReplacementsWithBackgroundRuntime() throws Exception {
     RecordingFactRepository facts = new RecordingFactRepository(List.of(fact(1L, List.of(9L))));
     RecordingQueryService queryService = new RecordingQueryService();
     RecordingUpdateService updateService = new RecordingUpdateService(List.of(List.of(
         applied(ProfileUpdateApplyStatus.APPLIED),
         applied(ProfileUpdateApplyStatus.APPLIED),
         applied(ProfileUpdateApplyStatus.APPLIED))));
-    RecordingGateway gateway = new RecordingGateway(true, List.of(completion(output(
+    RecordingRuntime runtime = new RecordingRuntime(List.of(result(801L, output(
         "REPLACE", "优先构造解题计划", "REPLACE", "补充边界检查", 9L, "REPLACE", "数组处理稳定"))));
 
-    CodeReviewProfileUpdateResult result = service(facts, queryService, updateService, gateway, 1)
+    CodeReviewProfileUpdateResult result = service(facts, queryService, updateService, runtime, 1)
         .update(7L, List.of(fact(1L, List.of(9L))));
 
     assertThat(result.status()).isEqualTo(CodeReviewProfileUpdateResult.Status.UPDATED);
@@ -55,14 +52,16 @@ class CodeReviewProfileUpdateServiceTest {
     assertThat(updateService.calls).hasSize(1);
     assertThat(updateService.calls.get(0)).extracting(ProfileUpdateCommand::originType)
         .allMatch(origin -> origin == org.congcong.algomentor.mentor.application.profile.LearnerProfileOriginType.SYSTEM_DERIVED);
-    assertThat(gateway.contexts).singleElement().satisfies(context -> {
-      assertThat(context.mode()).isEqualTo(AiCompletionMode.BACKGROUND);
-      assertThat(context.purpose()).isEqualTo(AiPurpose.LEARNING_CHAT);
-      assertThat(context.source()).isEqualTo(AiRunSource.LEARNER_PROFILE_CODE_REVIEW_BATCH);
-      assertThat(context.requestSize()).isEqualTo(1);
+    assertThat(runtime.invocations).singleElement().satisfies(invocation -> {
+      assertThat(invocation.agentKey()).isEqualTo(CodeReviewProfileUpdateAgentDefinition.KEY);
+      assertThat(invocation.context().mode()).isEqualTo(AgentInvocationMode.BACKGROUND);
+      assertThat(invocation.context().parentRunId()).isNull();
+      assertThat(invocation.context().parentStepIndex()).isNull();
+      assertThat(invocation.context().requestSize()).isEqualTo(1);
+      assertThat(invocation.context().idempotencyKey()).doesNotContain("problem-");
     });
-    assertThat(gateway.requests).singleElement().satisfies(request ->
-        assertThat(request.responseFormat()).isInstanceOf(org.congcong.algomentor.llm.core.request.LlmResponseFormat.JsonSchema.class));
+    assertThat(updateService.calls.get(0).get(0).modelProvider()).isEqualTo("test-provider");
+    assertThat(updateService.calls.get(0).get(0).modelName()).isEqualTo("test-model");
   }
 
   @Test
@@ -70,10 +69,10 @@ class CodeReviewProfileUpdateServiceTest {
     RecordingFactRepository facts = new RecordingFactRepository(List.of(fact(1L, List.of())));
     RecordingUpdateService updateService = new RecordingUpdateService(List.of(List.of(
         applied(ProfileUpdateApplyStatus.NO_CHANGE), applied(ProfileUpdateApplyStatus.NO_CHANGE))));
-    RecordingGateway gateway = new RecordingGateway(true, List.of(completion(output(
+    RecordingRuntime runtime = new RecordingRuntime(List.of(result(801L, output(
         "NO_CHANGE", "", "NO_CHANGE", "", null, null, null))));
 
-    CodeReviewProfileUpdateResult result = service(facts, new RecordingQueryService(), updateService, gateway, 1)
+    CodeReviewProfileUpdateResult result = service(facts, new RecordingQueryService(), updateService, runtime, 1)
         .update(7L, List.of(fact(1L, List.of())));
 
     assertThat(result.status()).isEqualTo(CodeReviewProfileUpdateResult.Status.NO_CHANGE);
@@ -87,15 +86,15 @@ class CodeReviewProfileUpdateServiceTest {
   void rejectsOneOutOfScopeDecisionWithoutAnyProfileWrite() throws Exception {
     RecordingFactRepository facts = new RecordingFactRepository(List.of(fact(1L, List.of(9L))));
     RecordingUpdateService updateService = new RecordingUpdateService(List.of());
-    RecordingGateway gateway = new RecordingGateway(true, List.of(completion(output(
+    RecordingRuntime runtime = new RecordingRuntime(List.of(result(801L, output(
         "NO_CHANGE", "", "NO_CHANGE", "", 10L, "REPLACE", "not allowed"))));
 
-    CodeReviewProfileUpdateResult result = service(facts, new RecordingQueryService(), updateService, gateway, 1)
+    CodeReviewProfileUpdateResult result = service(facts, new RecordingQueryService(), updateService, runtime, 1)
         .update(7L, List.of(fact(1L, List.of(9L))));
 
     assertThat(result.status()).isEqualTo(CodeReviewProfileUpdateResult.Status.FAILED);
     assertThat(updateService.calls).isEmpty();
-    assertThat(gateway.requests).hasSize(1);
+    assertThat(runtime.invocations).hasSize(1);
   }
 
   @Test
@@ -105,37 +104,44 @@ class CodeReviewProfileUpdateServiceTest {
     RecordingUpdateService updateService = new RecordingUpdateService(List.of(
         List.of(applied(ProfileUpdateApplyStatus.STALE), applied(ProfileUpdateApplyStatus.STALE), applied(ProfileUpdateApplyStatus.STALE)),
         List.of(applied(ProfileUpdateApplyStatus.NO_CHANGE), applied(ProfileUpdateApplyStatus.NO_CHANGE), applied(ProfileUpdateApplyStatus.NO_CHANGE))));
-    RecordingGateway gateway = new RecordingGateway(true, List.of(
-        completion(output("NO_CHANGE", "", "NO_CHANGE", "", 9L, "NO_CHANGE", "")),
-        completion(output("NO_CHANGE", "", "NO_CHANGE", "", 9L, "NO_CHANGE", ""))));
+    RecordingRuntime runtime = new RecordingRuntime(List.of(
+        result(801L, output("NO_CHANGE", "", "NO_CHANGE", "", 9L, "NO_CHANGE", "")),
+        result(802L, output("NO_CHANGE", "", "NO_CHANGE", "", 9L, "NO_CHANGE", ""))));
 
-    CodeReviewProfileUpdateResult result = service(facts, queryService, updateService, gateway, 1)
+    CodeReviewProfileUpdateResult result = service(facts, queryService, updateService, runtime, 1)
         .update(7L, List.of(fact(1L, List.of(9L))));
 
     assertThat(result.status()).isEqualTo(CodeReviewProfileUpdateResult.Status.NO_CHANGE);
-    assertThat(gateway.requests).hasSize(2);
+    assertThat(runtime.invocations).hasSize(2);
     assertThat(updateService.calls).hasSize(2);
     assertThat(queryService.calls).isEqualTo(6);
+    assertThat(((CodeReviewProfileUpdateAgentInput) runtime.invocations.get(1).input()).retryOfRunId())
+        .isEqualTo(801L);
+    assertThat(runtime.invocations.get(1).context().idempotencyKey()).isEqualTo(
+        runtime.invocations.get(0).context().idempotencyKey()
+            + CodeReviewProfileConsumerConstants.BACKGROUND_RETRY_IDEMPOTENCY_KEY_SEPARATOR + "1");
   }
 
   @Test
-  void stopsAfterSecondStaleOrGovernanceDenialWithoutQueueRetrySignal() throws Exception {
+  void stopsAfterSecondStaleOrRuntimeFailureWithoutQueueRetrySignal() throws Exception {
     RecordingFactRepository facts = new RecordingFactRepository(List.of(fact(1L, List.of())));
     RecordingUpdateService staleUpdateService = new RecordingUpdateService(List.of(
         List.of(applied(ProfileUpdateApplyStatus.STALE), applied(ProfileUpdateApplyStatus.STALE)),
         List.of(applied(ProfileUpdateApplyStatus.STALE), applied(ProfileUpdateApplyStatus.STALE))));
-    RecordingGateway staleGateway = new RecordingGateway(true, List.of(
-        completion(output("NO_CHANGE", "", "NO_CHANGE", "", null, null, null)),
-        completion(output("NO_CHANGE", "", "NO_CHANGE", "", null, null, null))));
+    RecordingRuntime staleRuntime = new RecordingRuntime(List.of(
+        result(801L, output("NO_CHANGE", "", "NO_CHANGE", "", null, null, null)),
+        result(802L, output("NO_CHANGE", "", "NO_CHANGE", "", null, null, null))));
 
-    CodeReviewProfileUpdateResult stale = service(facts, new RecordingQueryService(), staleUpdateService, staleGateway, 1)
+    CodeReviewProfileUpdateResult stale = service(facts, new RecordingQueryService(), staleUpdateService, staleRuntime, 1)
         .update(7L, List.of(fact(1L, List.of())));
+    RecordingRuntime deniedRuntime = new RecordingRuntime(List.of());
+    deniedRuntime.failure = new IllegalStateException("route unavailable");
     CodeReviewProfileUpdateResult denied = service(facts, new RecordingQueryService(),
-        new RecordingUpdateService(List.of()), new RecordingGateway(false, List.of()), 1)
+        new RecordingUpdateService(List.of()), deniedRuntime, 1)
         .update(7L, List.of(fact(1L, List.of())));
 
     assertThat(stale.status()).isEqualTo(CodeReviewProfileUpdateResult.Status.FAILED);
-    assertThat(staleGateway.requests).hasSize(2);
+    assertThat(staleRuntime.invocations).hasSize(2);
     assertThat(denied.status()).isEqualTo(CodeReviewProfileUpdateResult.Status.FAILED);
   }
 
@@ -143,12 +149,11 @@ class CodeReviewProfileUpdateServiceTest {
       CodeReviewProfileFactRepository facts,
       LearnerProfileQueryService queryService,
       LearnerProfileUpdateService updateService,
-      AiCompletionGateway gateway,
+      AgentRuntime runtime,
       int maxStaleRetries
   ) {
     return new CodeReviewProfileUpdateService(
-        facts, queryService, updateService, gateway, new CodeReviewProfilePromptBuilder(),
-        new CodeReviewProfileStructuredOutputMapper(), maxStaleRetries);
+        facts, queryService, updateService, runtime, new CodeReviewProfileStructuredOutputMapper(), maxStaleRetries);
   }
 
   private JsonNode output(
@@ -173,10 +178,16 @@ class CodeReviewProfileUpdateServiceTest {
         List.of("deduction"), List.of("improvement"), tagIds, Instant.EPOCH);
   }
 
-  private static LlmCompletionResult completion(JsonNode output) {
-    return new LlmCompletionResult(
-        LlmMessage.assistant("{}"), List.of(), output, LlmFinishReason.STOP, LlmUsage.empty(),
-        LlmProviderId.of("test-provider"), LlmModelId.of("test-model"), Map.of());
+  private static AgentRunResult result(long runDbId, JsonNode output) {
+    return new AgentRunResult(
+        1,
+        LlmFinishReason.STOP,
+        new AgentOutput("", output, CodeReviewProfileJsonSchema.SCHEMA_NAME,
+            CodeReviewProfileConsumerConstants.SCHEMA_VERSION, Map.of()),
+        Map.of(
+            AgentRuntimeMetadataKeys.RUN_DB_ID, runDbId,
+            AgentRuntimeMetadataKeys.RUNTIME_PROVIDER, "test-provider",
+            AgentRuntimeMetadataKeys.RUNTIME_MODEL, "test-model"));
   }
 
   private static ProfileUpdateApplyResult applied(ProfileUpdateApplyStatus status) {
@@ -236,27 +247,27 @@ class CodeReviewProfileUpdateServiceTest {
     }
   }
 
-  private static final class RecordingGateway implements AiCompletionGateway {
-    private final boolean allowed;
-    private final List<LlmCompletionResult> completions;
-    private final List<LlmCompletionRequest> requests = new ArrayList<>();
-    private final List<AiCompletionContext> contexts = new ArrayList<>();
+  private static final class RecordingRuntime implements AgentRuntime {
+    private final List<AgentRunResult> results;
+    private final List<AgentInvocation<?>> invocations = new ArrayList<>();
+    private RuntimeException failure;
 
-    private RecordingGateway(boolean allowed, List<LlmCompletionResult> completions) {
-      this.allowed = allowed;
-      this.completions = List.copyOf(completions);
+    private RecordingRuntime(List<AgentRunResult> results) {
+      this.results = List.copyOf(results);
     }
 
     @Override
-    public boolean isAllowed(AiCompletionContext context) {
-      return allowed;
+    public AgentRunResult execute(AgentInvocation<?> invocation) {
+      invocations.add(invocation);
+      if (failure != null) {
+        throw failure;
+      }
+      return results.get(invocations.size() - 1);
     }
 
     @Override
-    public LlmCompletionResult complete(LlmCompletionRequest request, AiCompletionContext context) {
-      requests.add(request);
-      contexts.add(context);
-      return completions.get(requests.size() - 1);
+    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
+      throw new UnsupportedOperationException("stream not used");
     }
   }
 }

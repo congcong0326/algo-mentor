@@ -12,6 +12,12 @@
       <arg column="run_uuid" javaType="string"/>
       <arg column="idempotency_key" javaType="string"/>
       <arg column="system_prompt" javaType="string"/>
+      <arg column="agent_key" javaType="string"/>
+      <arg column="trigger_type" javaType="string"/>
+      <arg column="parent_run_id" javaType="java.lang.Long"/>
+      <arg column="parent_step_index" javaType="java.lang.Integer"/>
+      <arg column="retry_of_run_id" javaType="java.lang.Long"/>
+      <arg column="max_steps" javaType="_int"/>
     </constructor>
   </resultMap>
 
@@ -84,7 +90,13 @@
       r.turn_id,
       r.run_uuid,
       r.idempotency_key,
-      t.system_prompt
+      t.system_prompt,
+      r.agent_key,
+      r.trigger_type,
+      r.parent_run_id,
+      r.parent_step_index,
+      r.retry_of_run_id,
+      r.max_steps
     FROM agent_run r
     JOIN agent_task t ON t.id = r.task_id
     WHERE r.id = #{runId}
@@ -198,7 +210,11 @@
       run_uuid,
       attempt_no,
       idempotency_key,
+      agent_key,
       trigger_type,
+      parent_run_id,
+      parent_step_index,
+      retry_of_run_id,
       status,
       max_steps,
       started_at,
@@ -210,7 +226,11 @@
       #{runUuid},
       DEFAULT,
       #{idempotencyKey},
-      'user_request',
+      #{agentKey},
+      #{triggerType},
+      #{parentRunId},
+      #{parentStepIndex},
+      #{retryOfRunId},
       'running',
       #{maxSteps},
       NOW(),
@@ -223,6 +243,13 @@
     UPDATE agent_turn
     SET user_message_id = #{userMessageId},
         current_run_id = #{runId},
+        updated_at = NOW()
+    WHERE id = #{turnId}
+  </update>
+
+  <update id="attachTurnRun">
+    UPDATE agent_turn
+    SET current_run_id = #{runId},
         updated_at = NOW()
     WHERE id = #{turnId}
   </update>

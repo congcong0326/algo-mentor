@@ -15,9 +15,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
-import org.congcong.algomentor.agent.core.AgentLoopRunner;
-import org.congcong.algomentor.agent.core.AgentRequest;
+import org.congcong.algomentor.agent.core.AgentRunResult;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
@@ -67,7 +68,8 @@ class LearningPlanDraftStreamServiceTest {
 
   @Test
   void missingFieldsReturnsCollectingDraftWithoutAgentRun() {
-    LearningPlanDraftStreamService service = serviceWithAgent("{}");
+    FakeAgentRuntime runtime = new FakeAgentRuntime("{}");
+    LearningPlanDraftStreamService service = serviceWithRuntime(runtime);
 
     List<LearningPlanDraftStreamEvent> events = collect(service.stream(7L, new LearningPlanDraftCommand(
         null,
@@ -85,15 +87,18 @@ class LearningPlanDraftStreamServiceTest {
         ((LearningPlanDraftStreamEvent.Draft) events.get(0)).event();
     assertThat(ready.draft().status()).isEqualTo(LearningPlanDraftStatus.COLLECTING);
     assertThat(ready.draft().missingFields()).contains("intent", "goal");
+    assertThat(runtime.streamCalls).isZero();
   }
 
   private LearningPlanDraftStreamService serviceWithAgent(String content) {
-    AgentLoopRunner runner = new FakeAgentLoopRunner(content);
+    return serviceWithRuntime(new FakeAgentRuntime(content));
+  }
+
+  private LearningPlanDraftStreamService serviceWithRuntime(AgentRuntime runtime) {
     return new LearningPlanDraftStreamService(
         draftRepository,
         new LearningPlanDraftValidator(),
-        runner,
-        new LearningPlanDraftPromptBuilder(),
+        runtime,
         new ObjectMapper(),
         problemCatalog,
         new LearningPlanLoadService(clock),
@@ -192,36 +197,31 @@ class LearningPlanDraftStreamServiceTest {
     return subscriber.events;
   }
 
-  private static class FakeAgentLoopRunner extends AgentLoopRunner {
+  private static class FakeAgentRuntime implements AgentRuntime {
     private final String content;
+    private int streamCalls;
 
-    FakeAgentLoopRunner(String content) {
-      super(new org.congcong.algomentor.llm.core.gateway.LlmGateway() {
-        @Override
-        public org.congcong.algomentor.llm.core.response.LlmCompletionResult complete(
-            org.congcong.algomentor.llm.core.request.LlmCompletionRequest request) {
-          throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public Flow.Publisher<LlmStreamEvent> stream(
-            org.congcong.algomentor.llm.core.request.LlmCompletionRequest request) {
-          throw new UnsupportedOperationException();
-        }
-      }, "test-model", org.congcong.algomentor.agent.core.AgentToolRegistry.empty(), 1);
+    FakeAgentRuntime(String content) {
       this.content = content;
     }
 
     @Override
-    public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
+    public AgentRunResult execute(AgentInvocation<?> invocation) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
+      streamCalls++;
       return subscriber -> {
         SubmissionPublisher<AgentStreamEvent> publisher = new SubmissionPublisher<>();
         publisher.subscribe(subscriber);
-        publisher.submit(new AgentStreamEvent.AgentRunStart(request.runId(), "learning_plan", 4));
-        publisher.submit(new AgentStreamEvent.AgentStepStart(request.runId(), 1));
+        String runId = invocation.context().idempotencyKey();
+        publisher.submit(new AgentStreamEvent.AgentRunStart(runId, "learning_plan", 4));
+        publisher.submit(new AgentStreamEvent.AgentStepStart(runId, 1));
         publisher.submit(AgentStreamEvent.fromLlm(new LlmStreamEvent.ContentDelta(content)));
-        publisher.submit(new AgentStreamEvent.AgentStepEnd(request.runId(), 1, LlmFinishReason.STOP, 0));
-        publisher.submit(new AgentStreamEvent.AgentRunEnd(request.runId(), 1, LlmFinishReason.STOP, Map.of()));
+        publisher.submit(new AgentStreamEvent.AgentStepEnd(runId, 1, LlmFinishReason.STOP, 0));
+        publisher.submit(new AgentStreamEvent.AgentRunEnd(runId, 1, LlmFinishReason.STOP, Map.of()));
         publisher.close();
       };
     }

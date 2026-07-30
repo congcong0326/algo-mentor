@@ -11,9 +11,6 @@ import java.util.Objects;
 import org.congcong.algomentor.agent.core.AgentExecutionContext;
 import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionContext;
-import org.congcong.algomentor.ai.governance.model.AiPurpose;
-import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptConstants;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileContract;
@@ -60,18 +57,15 @@ public final class UpdateLearnerDeclaredProfileAgentTool implements AgentTool {
         return failed(request);
       }
       Long userId = positiveLong(context.requestMetadata(), AgentRuntimeMetadataKeys.USER_ID);
-      if (userId == null) {
+      Long parentRunDbId = positiveLong(context.requestMetadata(), AgentRuntimeMetadataKeys.RUN_DB_ID);
+      if (userId == null || parentRunDbId == null) {
         return failed(request);
       }
       return updateService.update(
           userId,
           request,
-          AiCompletionContext.parentRun(
-              userId,
-              context.runId(),
-              AiPurpose.LEARNING_CHAT,
-              AiRunSource.LEARNER_PROFILE_DECLARED_UPDATE,
-              context.stepIndex()))
+          parentRunDbId,
+          context.stepIndex())
           .toJson(objectMapper);
     } catch (RuntimeException exception) {
       return DeclaredProfileUpdateResult.failed(List.of()).toJson(objectMapper);

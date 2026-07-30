@@ -3,31 +3,27 @@ package org.congcong.algomentor.api.controller;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
-import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
-import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
-import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.ai.governance.model.AiActor;
-import org.congcong.algomentor.ai.governance.model.AiPurpose;
-import org.congcong.algomentor.ai.governance.model.AiRunContext;
-import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.api.service.SseLlmStreamSubscriber;
-import org.congcong.algomentor.mentor.application.conversation.AgentConversationCommand;
-import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunCoordinator;
-import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptConstants;
-import org.congcong.algomentor.mentor.application.practice.PracticeChatReference;
+import org.congcong.algomentor.mentor.application.conversation.MentorConversationAgentDefinition;
+import org.congcong.algomentor.mentor.application.conversation.MentorConversationAgentInput;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
 import org.congcong.algomentor.ops.observability.NoopOpsRecorders;
 import org.congcong.algomentor.ops.observability.SseOpsRecorder;
@@ -49,38 +45,38 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 @Validated
 @RestController
 @RequestMapping(ApiContractConstants.AGENT_CONVERSATIONS_BASE_PATH)
-@ConditionalOnBean(AgentConversationRunCoordinator.class)
+@ConditionalOnBean(AgentRuntime.class)
 public class AgentConversationController {
 
-  private final AgentConversationRunCoordinator runCoordinator;
+  private final AgentRuntime agentRuntime;
   private final LlmStreamSseMapper sseMapper;
   private final AiActorResolver actorResolver;
-  private final AiRunAdmissionService admissionService;
+  private final ObjectProvider<PracticeMessageStreamService> practiceMessageStreamService;
   private final ApiSseProperties sseProperties;
   private final SseOpsRecorder sseOpsRecorder;
   private final LearningOpsRecorder learningOpsRecorder;
   private final StructuredOpsLogger opsLogger;
 
   public AgentConversationController(
-      AgentConversationRunCoordinator runCoordinator,
+      AgentRuntime agentRuntime,
       LlmStreamSseMapper sseMapper,
       AiActorResolver actorResolver,
-      AiRunAdmissionService admissionService
+      ObjectProvider<PracticeMessageStreamService> practiceMessageStreamService
   ) {
-    this(runCoordinator, sseMapper, actorResolver, admissionService, new ApiSseProperties());
+    this(agentRuntime, sseMapper, actorResolver, practiceMessageStreamService, new ApiSseProperties());
   }
 
   public AgentConversationController(
-      AgentConversationRunCoordinator runCoordinator,
+      AgentRuntime agentRuntime,
       LlmStreamSseMapper sseMapper,
       AiActorResolver actorResolver,
-      AiRunAdmissionService admissionService,
+      ObjectProvider<PracticeMessageStreamService> practiceMessageStreamService,
       ApiSseProperties sseProperties
   ) {
-    this.runCoordinator = runCoordinator;
+    this.agentRuntime = agentRuntime;
     this.sseMapper = sseMapper;
     this.actorResolver = actorResolver;
-    this.admissionService = admissionService;
+    this.practiceMessageStreamService = practiceMessageStreamService;
     this.sseProperties = Objects.requireNonNull(sseProperties, "sseProperties must not be null");
     this.sseOpsRecorder = NoopOpsRecorders.sse();
     this.learningOpsRecorder = NoopOpsRecorders.learning();
@@ -89,18 +85,18 @@ public class AgentConversationController {
 
   @Autowired
   public AgentConversationController(
-      AgentConversationRunCoordinator runCoordinator,
+      AgentRuntime agentRuntime,
       LlmStreamSseMapper sseMapper,
       AiActorResolver actorResolver,
-      AiRunAdmissionService admissionService,
+      ObjectProvider<PracticeMessageStreamService> practiceMessageStreamService,
       ObjectProvider<SseOpsRecorder> sseOpsRecorder,
       ObjectProvider<LearningOpsRecorder> learningOpsRecorder,
       ApiSseProperties sseProperties
   ) {
-    this.runCoordinator = runCoordinator;
+    this.agentRuntime = agentRuntime;
     this.sseMapper = sseMapper;
     this.actorResolver = actorResolver;
-    this.admissionService = admissionService;
+    this.practiceMessageStreamService = practiceMessageStreamService;
     this.sseProperties = Objects.requireNonNull(sseProperties, "sseProperties must not be null");
     this.sseOpsRecorder = sseOpsRecorder.getIfAvailable(NoopOpsRecorders::sse);
     this.learningOpsRecorder = learningOpsRecorder.getIfAvailable(NoopOpsRecorders::learning);
@@ -117,58 +113,39 @@ public class AgentConversationController {
         ? UUID.randomUUID().toString()
         : idempotencyKey;
     AiActor actor = actorResolver.currentActor();
-    Map<String, Object> requestMetadata = new HashMap<>();
-    if (request.taskId() != null) {
-      requestMetadata.put(AgentRuntimeMetadataKeys.TASK_ID, request.taskId());
+    int requestSize = request.message().getBytes(StandardCharsets.UTF_8).length;
+    Flow.Publisher<AgentStreamEvent> publisher;
+    if (request.practice() == null) {
+      publisher = agentRuntime.stream(new AgentInvocation<>(
+          MentorConversationAgentDefinition.KEY,
+          new MentorConversationAgentInput(
+              request.taskId(),
+              actor.userId(),
+              request.message(),
+              effectiveKey,
+              requestSize),
+          new AgentInvocationContext(
+              actor.userId(),
+              AgentInvocationMode.USER_ENTRY,
+              effectiveKey,
+              null,
+              null,
+              requestSize,
+              true)));
+    } else {
+      PracticeChatRequest practice = request.practice();
+      publisher = requiredPracticeMessageStreamService().stream(
+          actor.userId(),
+          practice.sessionId(),
+          request.message(),
+          effectiveKey,
+          practice.locale(),
+          requestSize);
     }
-    PracticeChatReference practiceReference = request.practiceReference();
-    if (practiceReference != null) {
-      /*
-       * PracticeChatWorkbench 复用通用 AgentConversation SSE 入口。
-       * 这里把前端传来的题目训练定位信息同步写入治理 metadata：
-       * - scenario 标记本次 run 属于题目训练聊天，后续会使用 PRACTICE_CHAT_V1 profile；
-       * - planId 用于按当前用户恢复学习计划；
-       * - phaseIndex/problemSlug/locale 用于定位阶段、题目和题面语言。
-       *
-       * 真正组装模型上下文时，application 层仍会使用 practiceReference
-       * 校验并加载学习计划、阶段和题面详情。
-       */
-      requestMetadata.put(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO);
-      requestMetadata.put(PracticeChatPromptConstants.METADATA_PLAN_ID, practiceReference.planId());
-      requestMetadata.put(PracticeChatPromptConstants.METADATA_PHASE_INDEX, practiceReference.phaseIndex());
-      requestMetadata.put(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, practiceReference.problemSlug());
-      requestMetadata.put(PracticeChatPromptConstants.METADATA_LOCALE, practiceReference.locale());
-    }
-    /*
-     * 进入 Agent run 前先经过 AI 治理准入：
-     * - 校验功能开关、登录态、权限、请求大小、每日额度和用户级并发锁；
-     * - 写入准入/拒绝审计记录；
-     * - 返回需要继续下传的治理 metadata，例如 admissionId、策略版本和锁 token。
-     *
-     * admission.metadata() 会合并进 AgentConversationCommand，后续 Agent run/trace
-     * 依赖这些字段做观测关联和终态锁释放。
-     */
-    AiRunAdmission admission = admissionService.admit(new AiRunContext(
-        UUID.randomUUID().toString(),
-        actor,
-        AiPurpose.LEARNING_CHAT,
-        AiRunSource.LEARNING_CHAT,
-        effectiveKey,
-        request.message().getBytes(StandardCharsets.UTF_8).length,
-        true,
-        requestMetadata,
-        Instant.now()));
-    Flow.Publisher<AgentStreamEvent> publisher = runCoordinator.stream(new AgentConversationCommand(
-        request.taskId(),
-        actor.userId(),
-        request.message(),
-        effectiveKey,
-        admission.metadata(),
-        practiceReference));
     /*
      * 本接口使用 Spring MVC 的 SseEmitter 把 Agent 的异步事件流桥接成 HTTP SSE：
      *
-     * 1. runCoordinator.stream(...) 返回 Flow.Publisher<AgentStreamEvent>。Publisher 是“事件源”，
+     * 1. Agent Runtime 或 Practice application service 返回 Flow.Publisher<AgentStreamEvent>。Publisher 是“事件源”，
      *    它背后会启动 Agent loop，并陆续发布 run start、LLM token、工具调用、run end/error 等事件。
      * 2. SseEmitter 是 Spring MVC 提供的“长连接响应句柄”。Controller 返回它以后，HTTP 响应不会立刻结束，
      *    后续可以在其他线程中持续调用 emitter.send(...) 向浏览器写入 text/event-stream 数据。
@@ -217,25 +194,20 @@ public class AgentConversationController {
       @Valid
       PracticeChatRequest practice
   ) {
-
-    PracticeChatReference practiceReference() {
-      if (practice == null) {
-        return null;
-      }
-      return new PracticeChatReference(
-          practice.planId(),
-          practice.phaseIndex(),
-          practice.problemSlug(),
-          practice.locale());
-    }
   }
 
   @JsonIgnoreProperties(ignoreUnknown = true)
   public record PracticeChatRequest(
-      @Positive long planId,
-      @Positive int phaseIndex,
-      @NotBlank String problemSlug,
+      @NotNull @Positive Long sessionId,
       String locale
   ) {
+  }
+
+  private PracticeMessageStreamService requiredPracticeMessageStreamService() {
+    return practiceMessageStreamService.getIfAvailable(() -> {
+      throw new LearningPlanException(
+          "PRACTICE_MESSAGE_STREAM_UNAVAILABLE",
+          "题目训练消息流服务不可用。");
+    });
   }
 }

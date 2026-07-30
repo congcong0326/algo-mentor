@@ -2,16 +2,15 @@ package org.congcong.algomentor.mentor.api.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
-import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.prompt.DefaultPromptAssembler;
 import org.congcong.algomentor.agent.core.prompt.PromptAssembler;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockOwnerProvider;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssemblyPolicy;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
 import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.config.CodeReviewProfileConsumerProperties;
 import org.congcong.algomentor.api.config.LearnerProfileAgentProperties;
@@ -20,7 +19,6 @@ import org.congcong.algomentor.api.config.PracticeCodeReviewProperties;
 import org.congcong.algomentor.api.config.PracticeChatPromptProperties;
 import org.congcong.algomentor.agent.persistence.postgres.config.AgentPostgresPersistenceConfiguration;
 import org.congcong.algomentor.ai.governance.autoconfigure.AiGovernanceAutoConfiguration;
-import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
 import org.congcong.algomentor.api.controller.AgentConversationController;
 import org.congcong.algomentor.api.controller.practice.PracticeSessionController;
 import org.congcong.algomentor.api.problem.mapper.ProblemTagMapper;
@@ -30,18 +28,22 @@ import org.congcong.algomentor.api.profile.repository.MyBatisCodeReviewProfileFa
 import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
-import org.congcong.algomentor.mentor.application.conversation.AgentConversationRunCoordinator;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
+import org.congcong.algomentor.mentor.application.conversation.MentorConversationAgentDefinition;
+import org.congcong.algomentor.mentor.application.conversation.MentorConversationRunAdapter;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceService;
 import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatAgentDefinition;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatRunAdapter;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptProfileResolver;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptSectionProvider;
 import org.congcong.algomentor.mentor.application.practice.PracticeCompletionGate;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetricStatus;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
@@ -58,9 +60,11 @@ import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfi
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileMetrics;
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfilePromptBuilder;
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileStructuredOutputMapper;
+import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileUpdateAgentDefinition;
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileUpdateService;
 import org.congcong.algomentor.mentor.application.profile.review.MicrometerCodeReviewProfileMetrics;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdatePromptBuilder;
+import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateAgentDefinition;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateService;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
@@ -77,6 +81,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 @AutoConfiguration(after = {
@@ -206,6 +211,18 @@ public class AgentConversationApiAutoConfiguration {
   }
 
   @Bean
+  @ConditionalOnProperty(
+      prefix = CodeReviewProfileConsumerProperties.PREFIX,
+      name = "enabled",
+      havingValue = "true")
+  @ConditionalOnMissingBean
+  public CodeReviewProfileUpdateAgentDefinition codeReviewProfileUpdateAgentDefinition(
+      CodeReviewProfilePromptBuilder promptBuilder
+  ) {
+    return new CodeReviewProfileUpdateAgentDefinition(promptBuilder);
+  }
+
+  @Bean
   @ConditionalOnMissingBean
   public CodeReviewProfileStructuredOutputMapper codeReviewProfileStructuredOutputMapper() {
     return new CodeReviewProfileStructuredOutputMapper();
@@ -223,7 +240,8 @@ public class AgentConversationApiAutoConfiguration {
       CodeReviewProfileFactRepository.class,
       LearnerProfileQueryService.class,
       LearnerProfileUpdateService.class,
-      AiCompletionGateway.class
+      AgentRuntime.class,
+      CodeReviewProfileUpdateAgentDefinition.class
   })
   @ConditionalOnProperty(
       prefix = CodeReviewProfileConsumerProperties.PREFIX,
@@ -234,8 +252,7 @@ public class AgentConversationApiAutoConfiguration {
       CodeReviewProfileFactRepository factRepository,
       LearnerProfileQueryService queryService,
       LearnerProfileUpdateService updateService,
-      AiCompletionGateway completionGateway,
-      CodeReviewProfilePromptBuilder promptBuilder,
+      @Lazy AgentRuntime agentRuntime,
       CodeReviewProfileStructuredOutputMapper outputMapper,
       CodeReviewProfileMetrics metrics,
       CodeReviewProfileConsumerProperties properties
@@ -244,8 +261,7 @@ public class AgentConversationApiAutoConfiguration {
         factRepository,
         queryService,
         updateService,
-        completionGateway,
-        promptBuilder,
+        agentRuntime,
         outputMapper,
         properties.getMaxStaleRetries(),
         metrics);
@@ -255,6 +271,7 @@ public class AgentConversationApiAutoConfiguration {
   @ConditionalOnBean({
       ObjectMapper.class,
       CodeReviewProfileFactRepository.class,
+      CodeReviewProfileUpdateAgentDefinition.class,
       CodeReviewProfileUpdateService.class
   })
   @ConditionalOnProperty(
@@ -274,44 +291,63 @@ public class AgentConversationApiAutoConfiguration {
   @Bean
   @ConditionalOnBean({
       AgentConversationService.class,
-      AgentLoopRunner.class,
       AgentRunLockManager.class,
       AgentRunLockOwnerProvider.class
   })
   @ConditionalOnMissingBean
-  public AgentConversationRunCoordinator agentConversationRunCoordinator(
+  public MentorConversationAgentDefinition mentorConversationAgentDefinition(
       AgentConversationService conversationService,
-      AgentLoopRunner agentLoopRunner,
       AgentRunLockManager lockManager,
       AgentRunLockOwnerProvider lockOwnerProvider
   ) {
-    return new AgentConversationRunCoordinator(
+    return new MentorConversationAgentDefinition(new MentorConversationRunAdapter(
         conversationService,
-        agentLoopRunner,
         lockManager,
-        lockOwnerProvider);
+        lockOwnerProvider));
   }
 
   @Bean
   @ConditionalOnBean({
-      AgentConversationRunCoordinator.class,
+      AgentConversationService.class,
+      PracticeSessionRepository.class,
+      AgentRunLockManager.class,
+      AgentRunLockOwnerProvider.class
+  })
+  @ConditionalOnMissingBean
+  public PracticeChatAgentDefinition practiceChatAgentDefinition(
+      AgentConversationService conversationService,
+      AgentRunLockManager lockManager,
+      AgentRunLockOwnerProvider lockOwnerProvider,
+      ObjectProvider<PracticeCodeReviewAgentTool> practiceCodeReviewTool,
+      ObjectProvider<UpdateLearnerDeclaredProfileAgentTool> declaredProfileTool
+  ) {
+    java.util.List<String> toolNames = new java.util.ArrayList<>();
+    practiceCodeReviewTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
+    declaredProfileTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
+    return new PracticeChatAgentDefinition(
+        new PracticeChatRunAdapter(conversationService, lockManager, lockOwnerProvider),
+        toolNames);
+  }
+
+  @Bean
+  @ConditionalOnBean({
+      AgentRuntime.class,
       LlmStreamSseMapper.class,
-      AiActorResolver.class,
-      AiRunAdmissionService.class
+      AiActorResolver.class
   })
   @ConditionalOnMissingBean
   public AgentConversationController agentConversationController(
-      AgentConversationRunCoordinator runCoordinator,
+      AgentRuntime agentRuntime,
       LlmStreamSseMapper sseMapper,
       AiActorResolver actorResolver,
-      AiRunAdmissionService admissionService,
+      ObjectProvider<PracticeMessageStreamService> practiceMessageStreamService,
       ApiSseProperties sseProperties
   ) {
     return new AgentConversationController(
-        runCoordinator,
+        agentRuntime,
         sseMapper,
         actorResolver,
-        admissionService,
+        practiceMessageStreamService,
         sseProperties);
   }
 
@@ -379,10 +415,23 @@ public class AgentConversationApiAutoConfiguration {
   }
 
   @Bean
+  @ConditionalOnProperty(
+      prefix = LearnerProfileAgentProperties.PREFIX,
+      name = "enabled",
+      havingValue = "true")
+  @ConditionalOnMissingBean
+  public DeclaredProfileUpdateAgentDefinition declaredProfileUpdateAgentDefinition(
+      DeclaredProfileUpdatePromptBuilder promptBuilder
+  ) {
+    return new DeclaredProfileUpdateAgentDefinition(promptBuilder);
+  }
+
+  @Bean
   @ConditionalOnBean({
       LearnerProfileQueryService.class,
       LearnerProfileUpdateService.class,
-      AiCompletionGateway.class
+      AgentRuntime.class,
+      DeclaredProfileUpdateAgentDefinition.class
   })
   @ConditionalOnProperty(
       prefix = LearnerProfileAgentProperties.PREFIX,
@@ -392,21 +441,25 @@ public class AgentConversationApiAutoConfiguration {
   public DeclaredProfileUpdateService declaredProfileUpdateService(
       LearnerProfileQueryService queryService,
       LearnerProfileUpdateService updateService,
-      AiCompletionGateway completionGateway,
+      @Lazy AgentRuntime agentRuntime,
       DeclaredProfileUpdatePromptBuilder promptBuilder,
       LearnerProfileAgentProperties properties
   ) {
     return new DeclaredProfileUpdateService(
         queryService,
         updateService,
-        completionGateway,
+        agentRuntime,
         promptBuilder,
         properties.getMaxStaleRetries(),
         properties.getResultSummaryMaxChars());
   }
 
   @Bean
-  @ConditionalOnBean({DeclaredProfileUpdateService.class, ObjectMapper.class})
+  @ConditionalOnBean({
+      DeclaredProfileUpdateService.class,
+      DeclaredProfileUpdateAgentDefinition.class,
+      ObjectMapper.class
+  })
   @ConditionalOnMissingBean
   public UpdateLearnerDeclaredProfileAgentTool updateLearnerDeclaredProfileAgentTool(
       DeclaredProfileUpdateService updateService,
@@ -416,18 +469,12 @@ public class AgentConversationApiAutoConfiguration {
   }
 
   @Bean
-  @ConditionalOnBean({
-      PracticeSessionRepository.class,
-      AgentConversationRunCoordinator.class
-  })
+  @ConditionalOnBean({AgentRuntime.class, PracticeChatAgentDefinition.class})
   @ConditionalOnMissingBean
   public PracticeTurnOrchestrator practiceTurnOrchestrator(
-      PracticeSessionRepository practiceSessionRepository,
-      AgentConversationRunCoordinator runCoordinator
+      AgentRuntime agentRuntime
   ) {
-    return new PracticeTurnOrchestrator(
-        practiceSessionRepository,
-        runCoordinator);
+    return new PracticeTurnOrchestrator(agentRuntime);
   }
 
   @Bean
@@ -498,8 +545,6 @@ public class AgentConversationApiAutoConfiguration {
       ObjectProvider<PracticeSessionService> practiceSessionService,
       ObjectProvider<PracticeMessageStreamService> streamService,
       CurrentUserIdProvider currentUserIdProvider,
-      ObjectProvider<AiActorResolver> actorResolver,
-      ObjectProvider<AiRunAdmissionService> admissionService,
       ObjectProvider<LlmStreamSseMapper> sseMapper,
       ApiSseProperties sseProperties
   ) {
@@ -507,8 +552,6 @@ public class AgentConversationApiAutoConfiguration {
         practiceSessionService,
         streamService,
         currentUserIdProvider,
-        actorResolver,
-        admissionService,
         sseMapper,
         sseProperties);
   }

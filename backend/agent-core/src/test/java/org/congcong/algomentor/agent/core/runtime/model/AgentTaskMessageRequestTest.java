@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
 import org.junit.jupiter.api.Test;
 
 class AgentTaskMessageRequestTest {
@@ -119,5 +120,45 @@ class AgentTaskMessageRequestTest {
         Map.of("run", true));
 
     assertThat(request.userMessageMetadata()).isEmpty();
+  }
+
+  @Test
+  void validatesAndKeepsRuntimeAuditFieldsOnPreparationRequest() {
+    AgentRunPreparationRequest request = new AgentRunPreparationRequest(
+        null,
+        42L,
+        "hello",
+        "idem-runtime",
+        "system",
+        Map.of(),
+        Map.of(),
+        "topic.explanation",
+        AgentInvocationMode.CHILD,
+        7L,
+        2,
+        null,
+        3);
+
+    assertThat(request.agentKey()).isEqualTo("topic.explanation");
+    assertThat(request.mode()).isEqualTo(AgentInvocationMode.CHILD);
+    assertThat(request.parentRunId()).isEqualTo(7L);
+    assertThat(request.parentStepIndex()).isEqualTo(2);
+    assertThat(request.maxSteps()).isEqualTo(3);
+    assertThatThrownBy(() -> new AgentRunPreparationRequest(
+        null,
+        42L,
+        "hello",
+        "idem-invalid-parent",
+        "system",
+        Map.of(),
+        Map.of(),
+        "topic.explanation",
+        AgentInvocationMode.CHILD,
+        7L,
+        null,
+        null,
+        3))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessage("Agent parent run and step index must be provided together");
   }
 }

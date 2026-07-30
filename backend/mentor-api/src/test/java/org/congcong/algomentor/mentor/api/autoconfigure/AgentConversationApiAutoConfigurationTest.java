@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -12,9 +14,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Flow;
-import org.congcong.algomentor.agent.core.AgentLoopRunner;
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.AgentExecutionContext;
+import org.congcong.algomentor.agent.core.AgentTool;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessageRequest;
@@ -28,15 +32,19 @@ import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.InMemoryAgentRunLockManager;
 import org.congcong.algomentor.agent.core.runlock.LocalAgentRunLockOwnerProvider;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
-import org.congcong.algomentor.ai.governance.completion.AiPassthroughCompletionGateway;
+import org.congcong.algomentor.agent.runtime.definition.AgentDefinitionRegistry;
+import org.congcong.algomentor.api.config.MentorAiConfiguration;
 import org.congcong.algomentor.api.problem.mapper.ProblemTagMapper;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
+import org.congcong.algomentor.mentor.application.conversation.MentorConversationAgentDefinition;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeCompletionGate;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentDefinition;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatAgentDefinition;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatRunAdapter;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetricStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPermissionHook;
@@ -52,11 +60,20 @@ import org.congcong.algomentor.mentor.application.practice.PracticeTurnOrchestra
 import org.congcong.algomentor.mentor.application.practice.TrustedProblemTagCatalog;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileQueryService;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileRepository;
+import org.congcong.algomentor.mentor.application.profile.LearnerProfileUpdateService;
+import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateAgentDefinition;
+import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateService;
 import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfileRecallService;
+import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileBatchConsumer;
+import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileFactRepository;
+import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileUpdateAgentDefinition;
+import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileUpdateService;
+import org.congcong.algomentor.mentor.application.profile.tool.UpdateLearnerDeclaredProfileAgentTool;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
 import org.congcong.algomentor.ops.observability.OpsStatus;
 import org.congcong.algomentor.ops.observability.autoconfigure.OpsObservabilityAutoConfiguration;
@@ -71,6 +88,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 class AgentConversationApiAutoConfigurationTest {
+
+  private static final String TEST_PRACTICE_TOOL_NAME = "test_practice_tool";
 
   private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
       .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
@@ -100,12 +119,118 @@ class AgentConversationApiAutoConfigurationTest {
   }
 
   @Test
+  void registersMentorConversationDefinitionInTheRuntimeRegistry() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(
+            JacksonAutoConfiguration.class,
+            AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeStreamWithoutReviewDependencies.class, MentorAiConfiguration.class)
+        .run(context -> {
+          assertThat(context).hasSingleBean(MentorConversationAgentDefinition.class);
+          assertThat(context.getBean(AgentDefinitionRegistry.class)
+              .resolve(MentorConversationAgentDefinition.KEY))
+              .isSameAs(context.getBean(MentorConversationAgentDefinition.class));
+        });
+  }
+
+  @Test
+  void registersEnabledDeclaredProfileCapabilityInTheRuntimeRegistry() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(
+            JacksonAutoConfiguration.class,
+            AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeStreamWithoutReviewDependencies.class, MentorAiConfiguration.class)
+        .withBean(LearnerProfileQueryService.class, () -> mock(LearnerProfileQueryService.class))
+        .withBean(LearnerProfileUpdateService.class, () -> mock(LearnerProfileUpdateService.class))
+        .withPropertyValues("algo-mentor.learner-profile.declared-update.enabled=true")
+        .run(context -> {
+          assertThat(context).hasSingleBean(DeclaredProfileUpdateAgentDefinition.class);
+          assertThat(context).hasSingleBean(DeclaredProfileUpdateService.class);
+          assertThat(context).hasSingleBean(UpdateLearnerDeclaredProfileAgentTool.class);
+          assertThat(context.getBean(AgentDefinitionRegistry.class)
+              .resolve(DeclaredProfileUpdateAgentDefinition.KEY))
+              .isSameAs(context.getBean(DeclaredProfileUpdateAgentDefinition.class));
+        });
+  }
+
+  @Test
+  void doesNotRegisterDeclaredProfileToolWhenRuntimeIsUnavailable() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(
+            JacksonAutoConfiguration.class,
+            AgentConversationApiAutoConfiguration.class))
+        .withBean(LearnerProfileQueryService.class, () -> mock(LearnerProfileQueryService.class))
+        .withBean(LearnerProfileUpdateService.class, () -> mock(LearnerProfileUpdateService.class))
+        .withPropertyValues("algo-mentor.learner-profile.declared-update.enabled=true")
+        .run(context -> {
+          assertThat(context).hasSingleBean(DeclaredProfileUpdateAgentDefinition.class);
+          assertThat(context).doesNotHaveBean(DeclaredProfileUpdateService.class);
+          assertThat(context).doesNotHaveBean(UpdateLearnerDeclaredProfileAgentTool.class);
+        });
+  }
+
+  @Test
+  void doesNotRegisterDeclaredProfileToolWhenDefinitionIsDisabled() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(
+            JacksonAutoConfiguration.class,
+            AgentConversationApiAutoConfiguration.class))
+        .withBean(AgentRuntime.class, () -> mock(AgentRuntime.class))
+        .withBean(LearnerProfileQueryService.class, () -> mock(LearnerProfileQueryService.class))
+        .withBean(LearnerProfileUpdateService.class, () -> mock(LearnerProfileUpdateService.class))
+        .run(context -> {
+          assertThat(context).doesNotHaveBean(DeclaredProfileUpdateAgentDefinition.class);
+          assertThat(context).doesNotHaveBean(DeclaredProfileUpdateService.class);
+          assertThat(context).doesNotHaveBean(UpdateLearnerDeclaredProfileAgentTool.class);
+        });
+  }
+
+  @Test
+  void registersEnabledCodeReviewProfileCapabilityInTheRuntimeRegistry() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(
+            JacksonAutoConfiguration.class,
+            AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeStreamWithoutReviewDependencies.class, MentorAiConfiguration.class)
+        .withBean(CodeReviewProfileFactRepository.class, () -> mock(CodeReviewProfileFactRepository.class))
+        .withBean(LearnerProfileQueryService.class, () -> mock(LearnerProfileQueryService.class))
+        .withBean(LearnerProfileUpdateService.class, () -> mock(LearnerProfileUpdateService.class))
+        .withPropertyValues("algo-mentor.learner-profile.code-review-consumer.enabled=true")
+        .run(context -> {
+          assertThat(context).hasSingleBean(CodeReviewProfileUpdateAgentDefinition.class);
+          assertThat(context).hasSingleBean(CodeReviewProfileUpdateService.class);
+          assertThat(context).hasSingleBean(CodeReviewProfileBatchConsumer.class);
+          assertThat(context.getBean(AgentDefinitionRegistry.class)
+              .resolve(CodeReviewProfileUpdateAgentDefinition.KEY))
+              .isSameAs(context.getBean(CodeReviewProfileUpdateAgentDefinition.class));
+        });
+  }
+
+  @Test
+  void doesNotRegisterCodeReviewProfileConsumerWhenRuntimeIsUnavailable() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(
+            JacksonAutoConfiguration.class,
+            AgentConversationApiAutoConfiguration.class))
+        .withBean(CodeReviewProfileFactRepository.class, () -> mock(CodeReviewProfileFactRepository.class))
+        .withBean(LearnerProfileQueryService.class, () -> mock(LearnerProfileQueryService.class))
+        .withBean(LearnerProfileUpdateService.class, () -> mock(LearnerProfileUpdateService.class))
+        .withPropertyValues("algo-mentor.learner-profile.code-review-consumer.enabled=true")
+        .run(context -> {
+          assertThat(context).hasSingleBean(CodeReviewProfileUpdateAgentDefinition.class);
+          assertThat(context).doesNotHaveBean(CodeReviewProfileUpdateService.class);
+          assertThat(context).doesNotHaveBean(CodeReviewProfileBatchConsumer.class);
+        });
+  }
+
+  @Test
   void registersCompletePracticeCodeReviewCapabilityFromRealQueueAutoConfiguration() {
     new ApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(
             JacksonAutoConfiguration.class,
             PersistentQueueAutoConfiguration.class,
-            AgentConversationApiAutoConfiguration.class))
+            AgentConversationApiAutoConfiguration.class,
+            MentorAiConfiguration.class))
         .withUserConfiguration(
             PracticeReviewToolDependencies.class,
             PersistentQueueStorageDependencies.class)
@@ -115,6 +240,9 @@ class AgentConversationApiAutoConfigurationTest {
           assertThat(context).hasSingleBean(PracticeCodeReviewService.class);
           assertThat(context).hasSingleBean(PracticeCodeReviewAgentTool.class);
           assertThat(context).hasSingleBean(PracticeCodeReviewPermissionHook.class);
+          assertThat(context.getBean(AgentDefinitionRegistry.class)
+              .resolve(PracticeCodeReviewAgentDefinition.KEY))
+              .isSameAs(context.getBean(PracticeCodeReviewAgentDefinition.class));
         });
   }
 
@@ -296,8 +424,8 @@ class AgentConversationApiAutoConfigurationTest {
     }
 
     @Bean
-    AgentLoopRunner agentLoopRunner() {
-      return new EmptyAgentLoopRunner();
+    AgentRuntime agentRuntime() {
+      return mock(AgentRuntime.class);
     }
 
     @Bean
@@ -314,6 +442,38 @@ class AgentConversationApiAutoConfigurationTest {
     PracticeChatProblemCatalog practiceChatProblemCatalog() {
       return (slug, locale) -> Optional.empty();
     }
+
+    @Bean
+    PracticeChatAgentDefinition practiceChatAgentDefinition(
+        org.congcong.algomentor.mentor.application.conversation.AgentConversationService conversationService,
+        AgentRunLockManager lockManager,
+        LocalAgentRunLockOwnerProvider lockOwnerProvider
+    ) {
+      return new PracticeChatAgentDefinition(
+          new PracticeChatRunAdapter(conversationService, lockManager, lockOwnerProvider),
+          List.of(TEST_PRACTICE_TOOL_NAME));
+    }
+
+    @Bean
+    AgentTool testPracticeAgentTool() {
+      return new AgentTool() {
+        private final LlmToolSpec spec = new LlmToolSpec(
+            TEST_PRACTICE_TOOL_NAME,
+            "test practice tool",
+            JsonNodeFactory.instance.objectNode(),
+            true);
+
+        @Override
+        public LlmToolSpec spec() {
+          return spec;
+        }
+
+        @Override
+        public JsonNode execute(JsonNode arguments, AgentExecutionContext context) {
+          throw new UnsupportedOperationException("test tool is not executed");
+        }
+      };
+    }
   }
 
   @Configuration(proxyBeanMethods = false)
@@ -329,10 +489,6 @@ class AgentConversationApiAutoConfigurationTest {
       return new EmptyLlmGateway();
     }
 
-    @Bean
-    AiCompletionGateway aiCompletionGateway(LlmGateway llmGateway) {
-      return new AiPassthroughCompletionGateway(llmGateway);
-    }
   }
 
   @Configuration(proxyBeanMethods = false)
@@ -510,17 +666,6 @@ class AgentConversationApiAutoConfigurationTest {
     @Override
     public List<AgentMessage> recentMessages(long taskId, int messageLimit) {
       return List.of();
-    }
-  }
-
-  private static final class EmptyAgentLoopRunner extends AgentLoopRunner {
-    private EmptyAgentLoopRunner() {
-      super(new EmptyLlmGateway(), "stub-model", AgentToolRegistry.empty(), 1);
-    }
-
-    @Override
-    public Flow.Publisher<AgentStreamEvent> stream(AgentRequest request) {
-      throw new UnsupportedOperationException("agent stream not used");
     }
   }
 

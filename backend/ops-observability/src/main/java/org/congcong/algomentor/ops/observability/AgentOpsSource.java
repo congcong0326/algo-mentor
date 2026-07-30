@@ -17,4 +17,17 @@ public enum AgentOpsSource {
     return tagValue;
   }
 
+  /** 将 Runtime 注入的稳定 Agent key 收敛为低基数指标来源。 */
+  public static AgentOpsSource fromAgentKey(Object agentKey) {
+    if (!(agentKey instanceof String key) || key.isBlank()) {
+      return AGENT_CONVERSATION;
+    }
+    return switch (key) {
+      case "topic-explanation" -> AI_EXPLANATION;
+      case "learning-plan-draft", "learning-plan-revision", "learning-plan-extension" -> LEARNING_PLAN_DRAFT;
+      case "practice-chat" -> PRACTICE_MESSAGE;
+      default -> AGENT_CONVERSATION;
+    };
+  }
+
 }

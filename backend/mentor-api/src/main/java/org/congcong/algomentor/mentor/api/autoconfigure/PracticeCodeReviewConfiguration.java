@@ -1,10 +1,11 @@
 package org.congcong.algomentor.mentor.api.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
 import org.congcong.algomentor.api.config.PracticeCodeReviewProperties;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentDefinition;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCommitService;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewMetrics;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 /** Practice Code Review 的强依赖装配边界。 */
 @Configuration(proxyBeanMethods = false)
@@ -45,6 +47,13 @@ public class PracticeCodeReviewConfiguration {
   }
 
   @Bean
+  public PracticeCodeReviewAgentDefinition practiceCodeReviewAgentDefinition(
+      PracticeCodeReviewPromptBuilder promptBuilder
+  ) {
+    return new PracticeCodeReviewAgentDefinition(promptBuilder);
+  }
+
+  @Bean
   public PracticeCodeReviewCommitService practiceCodeReviewCommitService(
       PracticeCodeReviewRepository reviewRepository,
       QueuePublisher queuePublisher) {
@@ -55,16 +64,14 @@ public class PracticeCodeReviewConfiguration {
   public PracticeCodeReviewService practiceCodeReviewService(
       PracticeCodeReviewRepository reviewRepository,
       PracticeCodeReviewCommitService commitService,
-      AiCompletionGateway completionGateway,
-      PracticeCodeReviewPromptBuilder promptBuilder,
+      @Lazy AgentRuntime agentRuntime,
       PracticeCodeReviewStructuredOutputMapper outputMapper,
       ObjectProvider<PracticeCodeReviewMetrics> metrics,
       ObjectProvider<PracticeCodeReviewObserver> observer) {
     return new PracticeCodeReviewService(
         reviewRepository,
         commitService,
-        completionGateway,
-        promptBuilder,
+        agentRuntime,
         outputMapper,
         metrics.getIfAvailable(() -> PracticeCodeReviewMetrics.NOOP),
         observer.getIfAvailable(() -> PracticeCodeReviewObserver.NOOP));

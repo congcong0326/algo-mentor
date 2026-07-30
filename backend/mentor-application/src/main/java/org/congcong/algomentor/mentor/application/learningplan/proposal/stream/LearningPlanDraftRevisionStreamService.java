@@ -14,18 +14,14 @@ import java.util.concurrent.Flow;
 import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import org.congcong.algomentor.agent.core.AgentExecutionOptions;
-import org.congcong.algomentor.agent.core.AgentLoopRunner;
-import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
-import org.congcong.algomentor.agent.core.AgentStructuredOutputOptions;
-import org.congcong.algomentor.agent.core.StructuredOutputStrategy;
 import org.congcong.algomentor.agent.core.work.AgentWorkStatusProfile;
 import org.congcong.algomentor.agent.core.work.AgentWorkStatusProjector;
-import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
-import org.congcong.algomentor.llm.core.request.LlmMessage;
-import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
@@ -44,8 +40,7 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.Learning
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalRevisionStatus;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalTargetType;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalType;
-import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftJsonSchema;
-import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftPromptBuilder;
+import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanAgentToolNames;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStructuredOutputMapper;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanStreamConstants;
 import org.slf4j.Logger;
@@ -65,8 +60,7 @@ public class LearningPlanDraftRevisionStreamService {
   private final LearningPlanProposalRepository proposalRepository;
   private final LearningPlanProposalGroupService groupService;
   private final LearningPlanDraftValidator validator;
-  private final AgentLoopRunner agentLoopRunner;
-  private final LearningPlanDraftPromptBuilder promptBuilder;
+  private final AgentRuntime agentRuntime;
   private final LearningPlanDraftStructuredOutputMapper outputMapper;
   private final LearningPlanLoadService loadService;
   private final ObjectMapper objectMapper;
@@ -78,8 +72,7 @@ public class LearningPlanDraftRevisionStreamService {
       LearningPlanProposalRepository proposalRepository,
       LearningPlanProposalGroupService groupService,
       LearningPlanDraftValidator validator,
-      AgentLoopRunner agentLoopRunner,
-      LearningPlanDraftPromptBuilder promptBuilder,
+      AgentRuntime agentRuntime,
       ObjectMapper objectMapper,
       LearningPlanProblemCatalog problemCatalog,
       LearningPlanLoadService loadService,
@@ -90,8 +83,7 @@ public class LearningPlanDraftRevisionStreamService {
     this.proposalRepository = Objects.requireNonNull(proposalRepository, "proposalRepository");
     this.groupService = Objects.requireNonNull(groupService, "groupService");
     this.validator = Objects.requireNonNull(validator, "validator");
-    this.agentLoopRunner = Objects.requireNonNull(agentLoopRunner, "agentLoopRunner");
-    this.promptBuilder = Objects.requireNonNull(promptBuilder, "promptBuilder");
+    this.agentRuntime = Objects.requireNonNull(agentRuntime, "agentRuntime");
     this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper");
     this.outputMapper = new LearningPlanDraftStructuredOutputMapper(objectMapper, problemCatalog);
     this.loadService = Objects.requireNonNull(loadService, "loadService");
@@ -133,7 +125,7 @@ public class LearningPlanDraftRevisionStreamService {
             runId,
             metadata));
         AgentWorkStatusProjector projector = new AgentWorkStatusProjector(learningPlanProfile(), clock);
-        agentLoopRunner.stream(context.request()).subscribe(new StreamSubscriber(
+        agentRuntime.stream(context.invocation()).subscribe(new StreamSubscriber(
             publisher,
             projector,
             context.draft(),
@@ -207,13 +199,10 @@ public class LearningPlanDraftRevisionStreamService {
             draftId,
             instruction));
     LearningPlanDraftRevision revision = createGeneratingRevision(lockedDraft, group, instruction);
-    AgentRequest request = new AgentRequest(
-        runId,
-        null,
-        buildRevisionPrompt(lockedDraft, instruction),
-        metadata,
-        executionOptions());
-    return new SubscriptionRevisionContext(lockedDraft, revision, request);
+    return new SubscriptionRevisionContext(
+        lockedDraft,
+        revision,
+        invocation(lockedDraft, instruction, runId));
   }
 
   private void validateRevisionDraft(LearningPlanDraft draft) {
@@ -263,40 +252,22 @@ public class LearningPlanDraftRevisionStreamService {
         retryable);
   }
 
-  private List<LlmMessage> buildRevisionPrompt(LearningPlanDraft draft, String instruction) {
-    List<LlmMessage> messages = new ArrayList<>(promptBuilder.build(draft.command(), draft.userId()));
-    messages.add(LlmMessage.assistant("""
-        当前学习计划草案 JSON：
-        %s
-        """.formatted(toJson(draft.draftPlan()))));
-    messages.add(LlmMessage.user("""
-        请基于当前学习计划草案和用户修订要求，输出一份完整的新学习计划草案 JSON。
-
-        用户修订要求：
-        %s
-        """.formatted(instruction)));
-    return messages;
-  }
-
-  private String toJson(LearningPlanDraftPlan plan) {
-    try {
-      return objectMapper.writeValueAsString(plan);
-    } catch (JsonProcessingException exception) {
-      throw new LearningPlanException("LEARNING_PLAN_DRAFT_PLAN_INVALID", "学习计划草案内容无法序列化。");
-    }
-  }
-
-  private AgentExecutionOptions executionOptions() {
-    return new AgentExecutionOptions(
-        LlmGenerationOptions.defaults(),
-        new LlmResponseFormat.JsonSchema(
-            LearningPlanStreamConstants.SCHEMA_NAME,
-            LearningPlanDraftJsonSchema.schema(),
-            true),
-        new AgentStructuredOutputOptions(
-            StructuredOutputStrategy.PROVIDER_NATIVE,
-            LearningPlanStreamConstants.SCHEMA_NAME,
-            LearningPlanStreamConstants.SCHEMA_VERSION,
+  private AgentInvocation<LearningPlanDraftRevisionAgentInput> invocation(
+      LearningPlanDraft draft,
+      String instruction,
+      String idempotencyKey
+  ) {
+    return new AgentInvocation<>(
+        LearningPlanDraftRevisionAgentDefinition.KEY,
+        new LearningPlanDraftRevisionAgentInput(
+            draft.userId(), draft.id(), instruction, draft.command(), draft.draftPlan(), idempotencyKey),
+        new AgentInvocationContext(
+            draft.userId(),
+            AgentInvocationMode.USER_ENTRY,
+            idempotencyKey,
+            null,
+            null,
+            instruction.getBytes(java.nio.charset.StandardCharsets.UTF_8).length,
             true));
   }
 
@@ -306,9 +277,8 @@ public class LearningPlanDraftRevisionStreamService {
         "开始修订学习计划",
         "正在修订",
         Map.of(
-            "list_problem_filters", "正在查询题库标签",
-            "search_problems", "正在搜索候选题",
-            "get_problem_statement", "正在读取题目信息"),
+            LearningPlanAgentToolNames.LIST_PROBLEM_FILTERS, "正在查询题库标签",
+            LearningPlanAgentToolNames.SEARCH_PROBLEMS, "正在搜索候选题"),
         24,
         Duration.ofMillis(500),
         true);
@@ -317,7 +287,7 @@ public class LearningPlanDraftRevisionStreamService {
   private record SubscriptionRevisionContext(
       LearningPlanDraft draft,
       LearningPlanDraftRevision revision,
-      AgentRequest request
+      AgentInvocation<LearningPlanDraftRevisionAgentInput> invocation
   ) {
   }
 

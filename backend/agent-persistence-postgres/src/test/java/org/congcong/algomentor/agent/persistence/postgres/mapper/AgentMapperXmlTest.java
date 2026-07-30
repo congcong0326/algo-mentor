@@ -34,6 +34,7 @@ class AgentMapperXmlTest {
     String conversationNamespace =
         "org.congcong.algomentor.agent.persistence.postgres.mapper.AgentConversationMapper.";
     assertThat(configuration.hasStatement(conversationNamespace + "insertRun")).isTrue();
+    assertThat(configuration.hasStatement(conversationNamespace + "attachTurnRun")).isTrue();
     assertThat(configuration.hasStatement(conversationNamespace + "findTurnMessagesByRunId")).isTrue();
     assertThat(configuration.hasStatement(
         "org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunMapper.markRunFailed")).isTrue();
@@ -70,6 +71,17 @@ class AgentMapperXmlTest {
     assertThat(sql)
         .contains("diagnostic_retention_expires_at")
         .contains("NOW() + INTERVAL '30 days'");
+  }
+
+  @Test
+  void runInsertSqlPersistsRuntimeAuditFields() throws Exception {
+    String sql = normalizedResourceText("mapper/agent/AgentConversationMapper.xml");
+
+    assertThat(sql)
+        .contains("agent_key")
+        .contains("parent_step_index")
+        .contains("#{triggerType}")
+        .contains("#{retryOfRunId}");
   }
 
   private String normalizedResourceText(String resource) throws Exception {

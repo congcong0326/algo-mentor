@@ -2,17 +2,9 @@ package org.congcong.algomentor.api.controller.practice;
 
 import jakarta.validation.Valid;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentStreamEvent;
-import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
-import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
-import org.congcong.algomentor.ai.governance.model.AiActor;
-import org.congcong.algomentor.ai.governance.model.AiPurpose;
-import org.congcong.algomentor.ai.governance.model.AiRunContext;
-import org.congcong.algomentor.ai.governance.model.AiRunSource;
 import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.practice.model.PracticeCodeReviewDetailResponse;
@@ -24,14 +16,12 @@ import org.congcong.algomentor.api.practice.model.PracticeActiveRunResponse;
 import org.congcong.algomentor.api.practice.model.PracticeProgressStatusRequest;
 import org.congcong.algomentor.api.practice.model.PracticeSessionResponse;
 import org.congcong.algomentor.api.practice.model.PracticeSessionResponseMapper;
-import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.api.service.SseLlmStreamSubscriber;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.common.api.ApiErrorLocales;
 import org.congcong.algomentor.common.api.ApiResponse;
-import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptConstants;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatReference;
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
@@ -62,8 +52,6 @@ public class PracticeSessionController {
   private final ObjectProvider<PracticeSessionService> practiceSessionService;
   private final ObjectProvider<PracticeMessageStreamService> streamService;
   private final CurrentUserIdProvider currentUserIdProvider;
-  private final ObjectProvider<AiActorResolver> actorResolver;
-  private final ObjectProvider<AiRunAdmissionService> admissionService;
   private final ObjectProvider<LlmStreamSseMapper> sseMapper;
   private final ApiSseProperties sseProperties;
   private final SseOpsRecorder sseOpsRecorder;
@@ -74,16 +62,12 @@ public class PracticeSessionController {
       ObjectProvider<PracticeSessionService> practiceSessionService,
       ObjectProvider<PracticeMessageStreamService> streamService,
       CurrentUserIdProvider currentUserIdProvider,
-      ObjectProvider<AiActorResolver> actorResolver,
-      ObjectProvider<AiRunAdmissionService> admissionService,
       ObjectProvider<LlmStreamSseMapper> sseMapper,
       ApiSseProperties sseProperties
   ) {
     this.practiceSessionService = practiceSessionService;
     this.streamService = streamService;
     this.currentUserIdProvider = currentUserIdProvider;
-    this.actorResolver = actorResolver;
-    this.admissionService = admissionService;
     this.sseMapper = sseMapper;
     this.sseProperties = sseProperties;
     this.sseOpsRecorder = NoopOpsRecorders.sse();
@@ -96,8 +80,6 @@ public class PracticeSessionController {
       ObjectProvider<PracticeSessionService> practiceSessionService,
       ObjectProvider<PracticeMessageStreamService> streamService,
       CurrentUserIdProvider currentUserIdProvider,
-      ObjectProvider<AiActorResolver> actorResolver,
-      ObjectProvider<AiRunAdmissionService> admissionService,
       ObjectProvider<LlmStreamSseMapper> sseMapper,
       ApiSseProperties sseProperties,
       ObjectProvider<SseOpsRecorder> sseOpsRecorder,
@@ -106,8 +88,6 @@ public class PracticeSessionController {
     this.practiceSessionService = practiceSessionService;
     this.streamService = streamService;
     this.currentUserIdProvider = currentUserIdProvider;
-    this.actorResolver = actorResolver;
-    this.admissionService = admissionService;
     this.sseMapper = sseMapper;
     this.sseProperties = sseProperties;
     this.sseOpsRecorder = sseOpsRecorder.getIfAvailable(NoopOpsRecorders::sse);
@@ -201,19 +181,6 @@ public class PracticeSessionController {
     String effectiveKey = idempotencyKey == null || idempotencyKey.isBlank()
         ? UUID.randomUUID().toString()
         : idempotencyKey;
-    AiActor actor = requiredActorResolver().currentActor();
-    Map<String, Object> requestMetadata = Map.of(
-        PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, sessionId);
-    AiRunAdmission admission = requiredAdmissionService().admit(new AiRunContext(
-        UUID.randomUUID().toString(),
-        actor,
-        AiPurpose.LEARNING_CHAT,
-        AiRunSource.PRACTICE_CHAT,
-        effectiveKey,
-        requestSize(request),
-        true,
-        requestMetadata,
-        Instant.now()));
     PracticeMessageStreamService practiceMessageStreamService = streamService.getIfAvailable(() -> {
       throw new org.congcong.algomentor.mentor.application.learningplan.LearningPlanException(
           "PRACTICE_MESSAGE_STREAM_UNAVAILABLE",
@@ -225,7 +192,7 @@ public class PracticeSessionController {
         request.message(),
         effectiveKey,
         currentRequestLocale(acceptLanguage),
-        admission.metadata());
+        requestSize(request));
 
     SseEmitter emitter = new SseEmitter(sseProperties.practiceMessageTimeoutMillis());
     SseLlmStreamSubscriber subscriber = new SseLlmStreamSubscriber(
@@ -261,14 +228,6 @@ public class PracticeSessionController {
           "PRACTICE_SESSION_SERVICE_UNAVAILABLE",
           "题目训练会话服务不可用。");
     });
-  }
-
-  private AiActorResolver requiredActorResolver() {
-    return actorResolver.getIfAvailable(this::streamUnavailable);
-  }
-
-  private AiRunAdmissionService requiredAdmissionService() {
-    return admissionService.getIfAvailable(this::streamUnavailable);
   }
 
   private LlmStreamSseMapper requiredSseMapper() {

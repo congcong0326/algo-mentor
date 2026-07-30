@@ -5,13 +5,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Flow;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
-import org.congcong.algomentor.ai.governance.admission.AiRunLifecycleService;
-import org.congcong.algomentor.ai.governance.model.AiGovernanceErrorCode;
-import org.congcong.algomentor.ai.governance.model.AiUsage;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanProposalEvent;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanProposalStreamEvent;
-import org.congcong.algomentor.ops.observability.NoopOpsRecorders;
 import org.congcong.algomentor.ops.observability.OpsLogEventType;
 import org.congcong.algomentor.ops.observability.OpsLogFields;
 import org.congcong.algomentor.ops.observability.SseFailureType;
@@ -28,8 +23,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
 
   private final SseEmitter emitter;
   private final LearningPlanProposalStreamSseMapper mapper;
-  private final AiRunLifecycleService lifecycleService;
-  private final AiRunAdmission admission;
   private final SseStreamType streamType;
   private final SseOpsRecorder sseOpsRecorder;
   private final StructuredOpsLogger opsLogger;
@@ -42,32 +35,12 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
   public SseLearningPlanProposalStreamSubscriber(
       SseEmitter emitter,
       LearningPlanProposalStreamSseMapper mapper,
-      AiRunLifecycleService lifecycleService,
-      AiRunAdmission admission
-  ) {
-    this(
-        emitter,
-        mapper,
-        lifecycleService,
-        admission,
-        SseStreamType.LEARNING_PLAN_PROPOSAL,
-        NoopOpsRecorders.sse(),
-        new StructuredOpsLogger());
-  }
-
-  public SseLearningPlanProposalStreamSubscriber(
-      SseEmitter emitter,
-      LearningPlanProposalStreamSseMapper mapper,
-      AiRunLifecycleService lifecycleService,
-      AiRunAdmission admission,
       SseStreamType streamType,
       SseOpsRecorder sseOpsRecorder,
       StructuredOpsLogger opsLogger
   ) {
     this.emitter = Objects.requireNonNull(emitter, "emitter must not be null");
     this.mapper = Objects.requireNonNull(mapper, "mapper must not be null");
-    this.lifecycleService = Objects.requireNonNull(lifecycleService, "lifecycleService must not be null");
-    this.admission = Objects.requireNonNull(admission, "admission must not be null");
     this.streamType = Objects.requireNonNull(streamType, "streamType must not be null");
     this.sseOpsRecorder = Objects.requireNonNull(sseOpsRecorder, "sseOpsRecorder must not be null");
     this.opsLogger = Objects.requireNonNull(opsLogger, "opsLogger must not be null");
@@ -87,7 +60,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
     try {
       emitter.send(mapper.toSseEvent(event));
       if (terminalProposalEvent != null) {
-        markLifecycle(terminalProposalEvent);
         recordTerminalProposalEvent(terminalProposalEvent);
         terminal.set(true);
         emitter.complete();
@@ -97,7 +69,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
       subscription.request(1);
     } catch (IOException | RuntimeException exception) {
       if (terminal.compareAndSet(false, true)) {
-        lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
       }
       if (terminalProposalEvent != null) {
         recordClientDisconnected(exception);
@@ -111,7 +82,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
   @Override
   public void onError(Throwable throwable) {
     if (terminal.compareAndSet(false, true)) {
-      lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
       recordFailed(SseFailureType.UPSTREAM_ERROR, throwable);
       emitter.completeWithError(throwable);
     }
@@ -120,7 +90,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
   @Override
   public void onComplete() {
     if (terminal.compareAndSet(false, true)) {
-      lifecycleService.markCompleted(admission, AiUsage.zero(), null, null);
       recordCompleted();
       emitter.complete();
     }
@@ -128,7 +97,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
 
   public void timeout() {
     if (terminal.compareAndSet(false, true)) {
-      lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
     }
     if (timeoutRecorded.compareAndSet(false, true)) {
       sseOpsRecorder.timeout(streamType);
@@ -140,7 +108,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
 
   public void clientDisconnected(Throwable throwable) {
     if (terminal.compareAndSet(false, true)) {
-      lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
     }
     if (!sseTerminalRecorded.get()) {
       recordClientDisconnected(throwable);
@@ -166,15 +133,6 @@ public class SseLearningPlanProposalStreamSubscriber implements Flow.Subscriber<
       return proposal.event();
     }
     return null;
-  }
-
-  private void markLifecycle(LearningPlanProposalEvent event) {
-    if (event instanceof LearningPlanProposalEvent.DraftRevisionReady
-        || event instanceof LearningPlanProposalEvent.PlanExtensionReady) {
-      lifecycleService.markCompleted(admission, AiUsage.zero(), null, null);
-      return;
-    }
-    lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
   }
 
   private void recordTerminalProposalEvent(LearningPlanProposalEvent event) {

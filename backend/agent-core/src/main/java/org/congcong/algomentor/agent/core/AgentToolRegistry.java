@@ -1,6 +1,7 @@
 package org.congcong.algomentor.agent.core;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,12 +20,13 @@ public final class AgentToolRegistry {
       if (tool == null) {
         throw new IllegalArgumentException("Agent tool must not be null");
       }
-      String name = tool.spec().name();
+      LlmToolSpec spec = Objects.requireNonNull(tool.spec(), "Agent tool spec must not be null");
+      String name = spec.name();
       if (toolsByName.putIfAbsent(name, tool) != null) {
         throw new IllegalArgumentException("Duplicate agent tool: " + name);
       }
     }
-    this.toolsByName = Map.copyOf(toolsByName);
+    this.toolsByName = Collections.unmodifiableMap(new LinkedHashMap<>(toolsByName));
   }
 
   public static AgentToolRegistry empty() {
@@ -43,6 +45,29 @@ public final class AgentToolRegistry {
     return toolsByName.values().stream()
         .map(AgentTool::spec)
         .toList();
+  }
+
+  /**
+   * 创建只包含本次 run 明确允许工具的受限视图。
+   *
+   * <p>返回值复用当前 Registry 实现和工具实例，不创建第二套全局工具容器。</p>
+   */
+  public AgentToolRegistry select(Collection<String> toolNames) {
+    Objects.requireNonNull(toolNames, "agent tool names must not be null");
+    Map<String, AgentTool> selected = new LinkedHashMap<>();
+    for (String toolName : toolNames) {
+      if (toolName == null || toolName.isBlank()) {
+        throw new IllegalArgumentException("Agent tool name must not be blank");
+      }
+      String normalizedName = toolName.trim();
+      if (selected.containsKey(normalizedName)) {
+        throw new IllegalArgumentException("Duplicate selected agent tool: " + normalizedName);
+      }
+      AgentTool tool = find(normalizedName)
+          .orElseThrow(() -> new IllegalArgumentException("Unknown agent tool: " + normalizedName));
+      selected.put(normalizedName, tool);
+    }
+    return new AgentToolRegistry(selected.values());
   }
 
   public boolean isEmpty() {

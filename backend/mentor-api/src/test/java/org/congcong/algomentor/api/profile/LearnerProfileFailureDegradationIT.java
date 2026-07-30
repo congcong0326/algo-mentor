@@ -9,21 +9,20 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionContext;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
+import java.util.concurrent.Flow;
+import org.congcong.algomentor.agent.core.AgentOutput;
+import org.congcong.algomentor.agent.core.AgentRunResult;
+import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewRepository;
 import org.congcong.algomentor.api.profile.mapper.LearnerProfileMapper;
 import org.congcong.algomentor.api.profile.repository.MyBatisCodeReviewProfileFactRepository;
 import org.congcong.algomentor.api.profile.repository.MyBatisLearnerProfileRepository;
 import org.congcong.algomentor.api.support.PostgresIntegrationTestSupport;
-import org.congcong.algomentor.llm.core.model.LlmModelId;
-import org.congcong.algomentor.llm.core.provider.LlmProviderId;
-import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
-import org.congcong.algomentor.llm.core.request.LlmMessage;
-import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
-import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCommitService;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewDraft;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewScore;
@@ -34,7 +33,6 @@ import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfi
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileConsumerConstants;
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileFactRepository;
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileJsonSchema;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfilePromptBuilder;
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileQueueContracts;
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileStructuredOutputMapper;
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileUpdateService;
@@ -57,18 +55,18 @@ class LearnerProfileFailureDegradationIT extends PostgresIntegrationTestSupport 
     migrateLatest();
     Fixture fixture = fixture();
     publishReviews(fixture, CodeReviewProfileConsumerConstants.BATCH_SIZE);
-    FailingCompletionGateway gateway = new FailingCompletionGateway();
-    QueueDispatcher dispatcher = dispatcher(gateway, fixture.tagId());
+    FailingRuntime runtime = new FailingRuntime();
+    QueueDispatcher dispatcher = dispatcher(runtime, fixture.tagId());
 
     assertThat(dispatcher.dispatchRound(CodeReviewProfileQueueContracts.TOPIC))
         .containsExactly(QueueDispatchOutcome.DISPATCHED);
-    assertThat(gateway.calls).isEqualTo(1);
+    assertThat(runtime.calls).isEqualTo(1);
     assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE status = 'SUCCEEDED'")).isEqualTo(5L);
     assertThat(count("learner_profile_entry")).isZero();
 
     assertThat(dispatcher.dispatchRound(CodeReviewProfileQueueContracts.TOPIC))
         .containsExactly(QueueDispatchOutcome.NO_ELIGIBLE_KEY);
-    assertThat(gateway.calls).isEqualTo(1);
+    assertThat(runtime.calls).isEqualTo(1);
   }
 
   @Test
@@ -76,18 +74,18 @@ class LearnerProfileFailureDegradationIT extends PostgresIntegrationTestSupport 
     migrateLatest();
     Fixture fixture = fixture();
     publishReviews(fixture, CodeReviewProfileConsumerConstants.BATCH_SIZE - 1);
-    FixedCompletionGateway gateway = new FixedCompletionGateway(decisions(fixture.tagId()));
+    FixedRuntime runtime = new FixedRuntime(decisions(fixture.tagId()));
 
-    assertThat(dispatcher(gateway, fixture.tagId()).dispatchRound(CodeReviewProfileQueueContracts.TOPIC))
+    assertThat(dispatcher(runtime, fixture.tagId()).dispatchRound(CodeReviewProfileQueueContracts.TOPIC))
         .containsExactly(QueueDispatchOutcome.NO_ELIGIBLE_KEY);
     assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE status = 'PENDING'")).isEqualTo(4L);
-    assertThat(gateway.calls).isZero();
+    assertThat(runtime.calls).isZero();
 
     publishReviews(fixture, 1);
-    QueueDispatcher restartedDispatcher = dispatcher(gateway, fixture.tagId());
+    QueueDispatcher restartedDispatcher = dispatcher(runtime, fixture.tagId());
     assertThat(restartedDispatcher.dispatchRound(CodeReviewProfileQueueContracts.TOPIC))
         .containsExactly(QueueDispatchOutcome.DISPATCHED);
-    assertThat(gateway.calls).isEqualTo(1);
+    assertThat(runtime.calls).isEqualTo(1);
     assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE status = 'SUCCEEDED'")).isEqualTo(5L);
     assertThat(queryLong("SELECT COUNT(*) FROM learner_profile_entry WHERE status = 'ACTIVE'")).isEqualTo(3L);
   }
@@ -115,7 +113,7 @@ class LearnerProfileFailureDegradationIT extends PostgresIntegrationTestSupport 
         new PostgresQueuePublisher(objectMapper, queueRepository(), new PersistentQueueProperties()));
   }
 
-  private QueueDispatcher dispatcher(AiCompletionGateway gateway, long tagId) throws Exception {
+  private QueueDispatcher dispatcher(AgentRuntime runtime, long tagId) throws Exception {
     CodeReviewProfileFactRepository factRepository = new MyBatisCodeReviewProfileFactRepository(
         sqlSessionTemplate("mapper/practice/PracticeCodeReviewMapper.xml").getMapper(PracticeCodeReviewMapper.class),
         objectMapper);
@@ -128,8 +126,7 @@ class LearnerProfileFailureDegradationIT extends PostgresIntegrationTestSupport 
             factRepository,
             new LearnerProfileQueryService(profileRepository),
             new LearnerProfileUpdateService(profileRepository, new LearnerProfileContentPolicy(4000), transactionTemplate()),
-            gateway,
-            new CodeReviewProfilePromptBuilder(),
+            runtime,
             new CodeReviewProfileStructuredOutputMapper(),
             1));
     MyBatisQueueMessageRepository queueRepository = queueRepository();
@@ -178,40 +175,46 @@ class LearnerProfileFailureDegradationIT extends PostgresIntegrationTestSupport 
   private record Fixture(long userId, long tagId, long sessionId, PracticeCodeReviewCommitService commitService) {
   }
 
-  private static final class FailingCompletionGateway implements AiCompletionGateway {
+  private static final class FailingRuntime implements AgentRuntime {
     private int calls;
 
     @Override
-    public boolean isAllowed(AiCompletionContext context) {
-      return true;
-    }
-
-    @Override
-    public LlmCompletionResult complete(LlmCompletionRequest request, AiCompletionContext context) {
+    public AgentRunResult execute(AgentInvocation<?> invocation) {
       calls++;
       throw new IllegalStateException("test callback failure");
     }
+
+    @Override
+    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
+      throw new UnsupportedOperationException("stream not used");
+    }
   }
 
-  private static final class FixedCompletionGateway implements AiCompletionGateway {
+  private static final class FixedRuntime implements AgentRuntime {
     private final JsonNode output;
     private int calls;
 
-    private FixedCompletionGateway(JsonNode output) {
+    private FixedRuntime(JsonNode output) {
       this.output = output;
     }
 
     @Override
-    public boolean isAllowed(AiCompletionContext context) {
-      return true;
+    public AgentRunResult execute(AgentInvocation<?> invocation) {
+      calls++;
+      return new AgentRunResult(
+          1,
+          LlmFinishReason.STOP,
+          new AgentOutput("", output, CodeReviewProfileJsonSchema.SCHEMA_NAME,
+              CodeReviewProfileConsumerConstants.SCHEMA_VERSION, Map.of()),
+          Map.of(
+              AgentRuntimeMetadataKeys.RUN_DB_ID, (long) calls,
+              AgentRuntimeMetadataKeys.RUNTIME_PROVIDER, "test-provider",
+              AgentRuntimeMetadataKeys.RUNTIME_MODEL, "test-model"));
     }
 
     @Override
-    public LlmCompletionResult complete(LlmCompletionRequest request, AiCompletionContext context) {
-      calls++;
-      return new LlmCompletionResult(
-          LlmMessage.assistant("{}"), List.of(), output, LlmFinishReason.STOP, LlmUsage.empty(),
-          LlmProviderId.of("test-provider"), LlmModelId.of("test-model"), Map.of());
+    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
+      throw new UnsupportedOperationException("stream not used");
     }
   }
 }

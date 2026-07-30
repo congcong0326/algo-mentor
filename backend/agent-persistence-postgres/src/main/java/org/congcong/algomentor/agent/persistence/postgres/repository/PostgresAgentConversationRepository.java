@@ -3,9 +3,10 @@ package org.congcong.algomentor.agent.persistence.postgres.repository;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import org.congcong.algomentor.agent.core.AgentLoopDefaults;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
 import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessageRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
@@ -17,10 +18,13 @@ import org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentConversationMapper;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentRunInsert;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentRunRecord;
 import org.springframework.transaction.annotation.Transactional;
 
 public class PostgresAgentConversationRepository implements AgentConversationRepository, AgentTaskMessageRepository {
+
+  private static final String AUDIT_TASK_TITLE = "agent-run";
 
   private final AgentConversationMapper conversationMapper;
 
@@ -31,11 +35,16 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
   @Override
   @Transactional
   public PreparedAgentRun createOrReuseRun(AgentRunPreparationRequest request) {
+    Objects.requireNonNull(request, "agent run preparation request must not be null");
+    AgentRunRecord retrySource = retrySource(request);
     conversationMapper.lockIdempotencyKey(request.idempotencyKey());
 
     Long existingRunId = conversationMapper.findRunIdByIdempotencyKey(request.idempotencyKey());
     if (existingRunId != null) {
       return existingDraft(existingRunId);
+    }
+    if (retrySource != null) {
+      return createRetryRun(request, retrySource);
     }
 
     long taskId = request.taskId() == null ? createTask(request) : request.taskId();
@@ -47,23 +56,10 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
         estimateTokens(request.userMessage()),
         request.userMessageMetadata());
     String runUuid = UUID.randomUUID().toString();
-    long runId = conversationMapper.insertRun(
-        taskId,
-        turnId,
-        runUuid,
-        request.idempotencyKey(),
-        AgentLoopDefaults.DEFAULT_MAX_STEPS);
+    long runId = conversationMapper.insertRun(runInsert(request, taskId, turnId, runUuid, null, null));
     conversationMapper.attachTurnUserMessageAndRun(turnId, userMessageId, runId);
 
-    return new PreparedAgentRun(
-        taskId,
-        turnId,
-        runId,
-        runUuid,
-        request.idempotencyKey(),
-        request.systemPrompt(),
-        null,
-        request.metadata());
+    return preparedRun(request, taskId, turnId, runId, runUuid, request.systemPrompt(), null, null);
   }
 
   @Override
@@ -126,6 +122,9 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
 
   private PreparedAgentRun existingDraft(long runId) {
     AgentRunRecord record = conversationMapper.findRunRecord(runId);
+    if (record == null) {
+      throw new IllegalStateException("Agent run was not found: " + runId);
+    }
     return new PreparedAgentRun(
         record.taskId(),
         record.turnId(),
@@ -134,19 +133,141 @@ public class PostgresAgentConversationRepository implements AgentConversationRep
         record.idempotencyKey(),
         record.systemPrompt(),
         null,
-        Map.of(AgentRuntimeMetadataKeys.IDEMPOTENT_REPLAY, true));
+        Map.of(AgentRuntimeMetadataKeys.IDEMPOTENT_REPLAY, true),
+        record.agentKey(),
+        invocationMode(record.triggerType()),
+        record.parentRunId(),
+        record.parentStepIndex(),
+        record.retryOfRunId(),
+        record.maxSteps());
   }
 
   private long createTask(AgentRunPreparationRequest request) {
     return conversationMapper.insertTask(
         request.userId(),
-        title(request.userMessage()),
+        AUDIT_TASK_TITLE,
         request.systemPrompt(),
-        request.metadata());
+        Map.of());
   }
 
-  private String title(String userMessage) {
-    return userMessage.length() > 80 ? userMessage.substring(0, 80) : userMessage;
+  private AgentRunRecord retrySource(AgentRunPreparationRequest request) {
+    if (request.retryOfRunId() == null) {
+      return null;
+    }
+    AgentRunRecord source = conversationMapper.findRunRecord(request.retryOfRunId());
+    if (source == null) {
+      throw new IllegalArgumentException("Agent retry source run was not found: " + request.retryOfRunId());
+    }
+    if (request.idempotencyKey().equals(source.idempotencyKey())) {
+      throw new IllegalArgumentException("Agent retry requires a new idempotency key");
+    }
+    if (request.taskId() != null && request.taskId() != source.taskId()) {
+      throw new IllegalArgumentException("Agent retry task must match its source run");
+    }
+    return source;
+  }
+
+  private PreparedAgentRun createRetryRun(
+      AgentRunPreparationRequest request,
+      AgentRunRecord source
+  ) {
+    Long parentRunId = request.parentRunId() == null ? source.parentRunId() : request.parentRunId();
+    Integer parentStepIndex = request.parentStepIndex() == null
+        ? source.parentStepIndex()
+        : request.parentStepIndex();
+    String agentKey = request.agentKey() == null ? source.agentKey() : request.agentKey();
+    AgentInvocationMode mode = invocationMode(source.triggerType());
+    String runUuid = UUID.randomUUID().toString();
+    long runId = conversationMapper.insertRun(new AgentRunInsert(
+        source.taskId(),
+        source.turnId(),
+        runUuid,
+        request.idempotencyKey(),
+        request.maxSteps(),
+        agentKey,
+        mode.databaseValue(),
+        parentRunId,
+        parentStepIndex,
+        source.runId()));
+    conversationMapper.attachTurnRun(source.turnId(), runId);
+    return new PreparedAgentRun(
+        source.taskId(),
+        source.turnId(),
+        runId,
+        runUuid,
+        request.idempotencyKey(),
+        source.systemPrompt(),
+        null,
+        request.metadata(),
+        agentKey,
+        mode,
+        parentRunId,
+        parentStepIndex,
+        source.runId(),
+        request.maxSteps());
+  }
+
+  private AgentRunInsert runInsert(
+      AgentRunPreparationRequest request,
+      long taskId,
+      long turnId,
+      String runUuid,
+      Long retryOfRunId,
+      ParentLink parentLink
+  ) {
+    return new AgentRunInsert(
+        taskId,
+        turnId,
+        runUuid,
+        request.idempotencyKey(),
+        request.maxSteps(),
+        request.agentKey(),
+        request.mode().databaseValue(),
+        parentLink == null ? request.parentRunId() : parentLink.runId(),
+        parentLink == null ? request.parentStepIndex() : parentLink.stepIndex(),
+        retryOfRunId);
+  }
+
+  private PreparedAgentRun preparedRun(
+      AgentRunPreparationRequest request,
+      long taskId,
+      long turnId,
+      long runId,
+      String runUuid,
+      String systemPrompt,
+      Long retryOfRunId,
+      ParentLink parentLink
+  ) {
+    return new PreparedAgentRun(
+        taskId,
+        turnId,
+        runId,
+        runUuid,
+        request.idempotencyKey(),
+        systemPrompt,
+        null,
+        request.metadata(),
+        request.agentKey(),
+        request.mode(),
+        parentLink == null ? request.parentRunId() : parentLink.runId(),
+        parentLink == null ? request.parentStepIndex() : parentLink.stepIndex(),
+        retryOfRunId,
+        request.maxSteps());
+  }
+
+  private AgentInvocationMode invocationMode(String triggerType) {
+    if (triggerType == null || triggerType.isBlank()) {
+      return AgentInvocationMode.USER_ENTRY;
+    }
+    return AgentInvocationMode.valueOf(triggerType);
+  }
+
+  private record ParentLink(Long runId, Integer stepIndex) {
+    private ParentLink {
+      if ((runId == null) != (stepIndex == null)) {
+        throw new IllegalArgumentException("Agent parent run and step index must be provided together");
+      }
+    }
   }
 
   private int estimateTokens(String content) {

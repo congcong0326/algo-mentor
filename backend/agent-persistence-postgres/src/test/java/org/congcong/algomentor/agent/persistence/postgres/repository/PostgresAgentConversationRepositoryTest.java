@@ -11,7 +11,9 @@ import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest;
 import org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentConversationMapper;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentRunInsert;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentRunRecord;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.AgentTurnMessagesRow;
 import org.junit.jupiter.api.Test;
@@ -46,7 +48,7 @@ class PostgresAgentConversationRepositoryTest {
     assertThat(mapper.calls).containsExactly(
         "lockIdempotencyKey:idem-1",
         "findRunIdByIdempotencyKey:idem-1",
-        "insertTask:7:learn monotonic stack:system prompt",
+        "insertTask:7:agent-run:system prompt",
         "insertTurn:101",
         "insertUserMessage:101:201:learn monotonic stack:5",
         "insertRun:101:201:idem-1:50",
@@ -133,6 +135,159 @@ class PostgresAgentConversationRepositoryTest {
   }
 
   @Test
+  void persistsRuntimeAuditFieldsWithoutLeakingPromptIntoTaskMetadata() {
+    AgentRunPreparationRequest request = new AgentRunPreparationRequest(
+        null,
+        42L,
+        "review this solution",
+        "idem-audit",
+        "system prompt with internal instructions",
+        Map.of("prompt", "must not persist on task"),
+        Map.of(),
+        "practice.code-review",
+        AgentInvocationMode.CHILD,
+        401L,
+        2,
+        null,
+        3);
+
+    PreparedAgentRun run = repository.createOrReuseRun(request);
+
+    assertThat(mapper.lastTaskTitle).isEqualTo("agent-run");
+    assertThat(mapper.lastTaskMetadata).isEmpty();
+    assertThat(mapper.lastRunInsert)
+        .extracting(
+            AgentRunInsert::agentKey,
+            AgentRunInsert::triggerType,
+            AgentRunInsert::parentRunId,
+            AgentRunInsert::parentStepIndex,
+            AgentRunInsert::retryOfRunId,
+            AgentRunInsert::maxSteps)
+        .containsExactly("practice.code-review", "CHILD", 401L, 2, null, 3);
+    assertThat(run)
+        .extracting(
+            PreparedAgentRun::agentKey,
+            PreparedAgentRun::mode,
+            PreparedAgentRun::parentRunId,
+            PreparedAgentRun::parentStepIndex,
+            PreparedAgentRun::maxSteps)
+        .containsExactly("practice.code-review", AgentInvocationMode.CHILD, 401L, 2, 3);
+  }
+
+  @Test
+  void retryCreatesNewAttemptOnItsSourceTaskAndTurn() {
+    mapper.nextRunId = 402L;
+    mapper.existingRunRecord = new AgentRunRecord(
+        401L,
+        101L,
+        201L,
+        "run-uuid-401",
+        "idem-source",
+        "source system prompt",
+        "practice.code-review",
+        "CHILD",
+        50L,
+        3,
+        null,
+        4);
+    AgentRunPreparationRequest retry = new AgentRunPreparationRequest(
+        101L,
+        7L,
+        null,
+        "idem-retry-2",
+        "ignored for retry",
+        Map.of("retry", true),
+        Map.of(),
+        null,
+        AgentInvocationMode.USER_ENTRY,
+        null,
+        null,
+        401L,
+        4);
+
+    PreparedAgentRun run = repository.createOrReuseRun(retry);
+
+    assertThat(run.taskId()).isEqualTo(101L);
+    assertThat(run.turnId()).isEqualTo(201L);
+    assertThat(run.runId()).isEqualTo(402L);
+    assertThat(run.systemPrompt()).isEqualTo("source system prompt");
+    assertThat(run.agentKey()).isEqualTo("practice.code-review");
+    assertThat(run.mode()).isEqualTo(AgentInvocationMode.CHILD);
+    assertThat(run.parentRunId()).isEqualTo(50L);
+    assertThat(run.parentStepIndex()).isEqualTo(3);
+    assertThat(run.retryOfRunId()).isEqualTo(401L);
+    assertThat(mapper.lastRunInsert)
+        .extracting(
+            AgentRunInsert::taskId,
+            AgentRunInsert::turnId,
+            AgentRunInsert::agentKey,
+            AgentRunInsert::triggerType,
+            AgentRunInsert::parentRunId,
+            AgentRunInsert::parentStepIndex,
+            AgentRunInsert::retryOfRunId)
+        .containsExactly(101L, 201L, "practice.code-review", "CHILD", 50L, 3, 401L);
+    assertThat(mapper.calls).containsExactly(
+        "findRunRecord:401",
+        "lockIdempotencyKey:idem-retry-2",
+        "findRunIdByIdempotencyKey:idem-retry-2",
+        "insertRun:101:201:idem-retry-2:4",
+        "attachTurnRun:201:402");
+  }
+
+  @Test
+  void backgroundRetryCreatesNewAttemptOnItsSourceTaskAndTurnWithoutParent() {
+    mapper.nextRunId = 502L;
+    mapper.existingRunRecord = new AgentRunRecord(
+        501L,
+        111L,
+        211L,
+        "run-uuid-501",
+        "background-source",
+        "source system prompt",
+        "code-review-profile-update",
+        "BACKGROUND",
+        null,
+        null,
+        null,
+        1);
+    AgentRunPreparationRequest retry = new AgentRunPreparationRequest(
+        null,
+        7L,
+        null,
+        "code-review-profile:retry-1",
+        "ignored for retry",
+        Map.of("retry", true),
+        Map.of(),
+        null,
+        AgentInvocationMode.BACKGROUND,
+        null,
+        null,
+        501L,
+        1);
+
+    PreparedAgentRun run = repository.createOrReuseRun(retry);
+
+    assertThat(run.taskId()).isEqualTo(111L);
+    assertThat(run.turnId()).isEqualTo(211L);
+    assertThat(run.runId()).isEqualTo(502L);
+    assertThat(run.agentKey()).isEqualTo("code-review-profile-update");
+    assertThat(run.mode()).isEqualTo(AgentInvocationMode.BACKGROUND);
+    assertThat(run.parentRunId()).isNull();
+    assertThat(run.parentStepIndex()).isNull();
+    assertThat(run.retryOfRunId()).isEqualTo(501L);
+    assertThat(mapper.lastRunInsert)
+        .extracting(
+            AgentRunInsert::taskId,
+            AgentRunInsert::turnId,
+            AgentRunInsert::agentKey,
+            AgentRunInsert::triggerType,
+            AgentRunInsert::parentRunId,
+            AgentRunInsert::parentStepIndex,
+            AgentRunInsert::retryOfRunId)
+        .containsExactly(111L, 211L, "code-review-profile-update", "BACKGROUND", null, null, 501L);
+  }
+
+  @Test
   void createsAssistantSeedMessageWithMetadata() {
     FakeConversationMapper mapper = new FakeConversationMapper();
     PostgresAgentConversationRepository repository = new PostgresAgentConversationRepository(mapper);
@@ -189,6 +344,9 @@ class PostgresAgentConversationRepositoryTest {
     private List<AgentMessage> recentMessages = List.of();
     private Map<String, Object> lastUserMessageMetadata = Map.of();
     private Map<String, Object> lastSeedMetadata = Map.of();
+    private Map<String, Object> lastTaskMetadata = Map.of();
+    private String lastTaskTitle;
+    private AgentRunInsert lastRunInsert;
     private long nextTaskId = 1L;
     private long nextTurnId = 1L;
     private long nextMessageId = 1L;
@@ -221,6 +379,8 @@ class PostgresAgentConversationRepositoryTest {
     @Override
     public long insertTask(Long userId, String title, String systemPrompt, Map<String, Object> metadata) {
       calls.add("insertTask:" + userId + ":" + title + ":" + systemPrompt);
+      lastTaskTitle = title;
+      lastTaskMetadata = metadata;
       return nextTaskId;
     }
 
@@ -257,14 +417,22 @@ class PostgresAgentConversationRepositoryTest {
     }
 
     @Override
-    public long insertRun(long taskId, long turnId, String runUuid, String idempotencyKey, int maxSteps) {
-      calls.add("insertRun:" + taskId + ":" + turnId + ":" + idempotencyKey + ":" + maxSteps);
+    public long insertRun(AgentRunInsert run) {
+      calls.add("insertRun:" + run.taskId() + ":" + run.turnId() + ":"
+          + run.idempotencyKey() + ":" + run.maxSteps());
+      lastRunInsert = run;
       return nextRunId;
     }
 
     @Override
     public int attachTurnUserMessageAndRun(long turnId, long userMessageId, long runId) {
       calls.add("attachTurnUserMessageAndRun:" + turnId + ":" + userMessageId + ":" + runId);
+      return 1;
+    }
+
+    @Override
+    public int attachTurnRun(long turnId, long runId) {
+      calls.add("attachTurnRun:" + turnId + ":" + runId);
       return 1;
     }
 

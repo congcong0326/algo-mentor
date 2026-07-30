@@ -1,20 +1,23 @@
 package org.congcong.algomentor.mentor.application.profile.ai;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionContext;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
-import org.congcong.algomentor.llm.core.model.LlmModelSelector;
-import org.congcong.algomentor.llm.core.provider.LlmCapability;
-import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
-import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
-import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
+import org.congcong.algomentor.agent.core.AgentRunResult;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileEntryKind;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileIdentity;
 import org.congcong.algomentor.mentor.application.profile.LearnerProfileQueryService;
@@ -28,8 +31,6 @@ import org.congcong.algomentor.mentor.application.profile.ProfileUpdateDecision;
 import org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateRequest;
 import org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateResult;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredProfileToolContracts;
-import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
-import org.congcong.algomentor.mentor.application.prompt.SystemPromptMetadataKeys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +41,7 @@ public class DeclaredProfileUpdateService {
 
   private final LearnerProfileQueryService queryService;
   private final LearnerProfileUpdateService updateService;
-  private final AiCompletionGateway completionGateway;
+  private final AgentRuntime agentRuntime;
   private final DeclaredProfileUpdatePromptBuilder promptBuilder;
   private final int maxStaleRetries;
   private final int resultSummaryMaxChars;
@@ -48,14 +49,14 @@ public class DeclaredProfileUpdateService {
   public DeclaredProfileUpdateService(
       LearnerProfileQueryService queryService,
       LearnerProfileUpdateService updateService,
-      AiCompletionGateway completionGateway,
+      AgentRuntime agentRuntime,
       DeclaredProfileUpdatePromptBuilder promptBuilder,
       int maxStaleRetries,
       int resultSummaryMaxChars
   ) {
     this.queryService = Objects.requireNonNull(queryService, "queryService must not be null");
     this.updateService = Objects.requireNonNull(updateService, "updateService must not be null");
-    this.completionGateway = Objects.requireNonNull(completionGateway, "completionGateway must not be null");
+    this.agentRuntime = Objects.requireNonNull(agentRuntime, "Agent runtime must not be null");
     this.promptBuilder = Objects.requireNonNull(promptBuilder, "promptBuilder must not be null");
     if (maxStaleRetries < 0 || maxStaleRetries > 1 || resultSummaryMaxChars < 1) {
       throw new IllegalArgumentException("Invalid declared profile update properties");
@@ -67,17 +68,25 @@ public class DeclaredProfileUpdateService {
   public DeclaredProfileUpdateResult update(
       long userId,
       DeclaredProfileUpdateRequest request,
-      AiCompletionContext completionContext
+      long parentRunDbId,
+      int parentStepIndex
   ) {
     Objects.requireNonNull(request, "request must not be null");
-    Objects.requireNonNull(completionContext, "completionContext must not be null");
-    if (userId < 1) {
+    if (userId < 1 || parentRunDbId < 1 || parentStepIndex < 1) {
       return failed(request);
     }
     try {
       List<CandidateState> candidates = loadCandidates(userId, request);
+      String logicalIdempotencyKey = childIdempotencyKey(parentRunDbId, parentStepIndex, request);
+      Long retryOfRunId = null;
       for (int attempt = 0; attempt <= maxStaleRetries; attempt++) {
-        DecisionRound round = decide(userId, candidates, completionContext);
+        DecisionRound round = decide(
+            userId,
+            candidates,
+            parentRunDbId,
+            parentStepIndex,
+            attemptIdempotencyKey(logicalIdempotencyKey, attempt),
+            retryOfRunId);
         List<ProfileUpdateApplyResult> applied = updateService.applyBatch(commands(candidates, round));
         if (applied.size() != candidates.size()) {
           throw new IllegalStateException("Declared profile update returned an unexpected result count");
@@ -88,6 +97,7 @@ public class DeclaredProfileUpdateService {
           if (attempt == maxStaleRetries) {
             return failed(request);
           }
+          retryOfRunId = round.runDbId();
           candidates = loadCandidates(userId, request);
           continue;
         }
@@ -110,32 +120,107 @@ public class DeclaredProfileUpdateService {
     }).toList();
   }
 
-  private DecisionRound decide(long userId, List<CandidateState> candidates, AiCompletionContext completionContext) {
-    ResolvedSystemPromptSnapshot promptSnapshot = promptBuilder.snapshot(userId);
-    Map<String, Object> metadata = new HashMap<>();
-    metadata.put(LearnerDeclaredProfileToolContracts.METADATA_DIMENSION_COUNT, candidates.size());
-    metadata.putAll(SystemPromptMetadataKeys.from(promptSnapshot));
-    LlmCompletionRequest request = LlmCompletionRequest.builder()
-        .modelSelector(LlmModelSelector.requiring(Set.of(LlmCapability.JSON_SCHEMA_OUTPUT)))
-        .messages(promptBuilder.build(candidates.stream().map(candidate -> new DeclaredProfileUpdatePromptBuilder.Candidate(
-            candidate.update().dimension(),
-            candidate.update().statement(),
-            candidate.update().intent(),
-            candidate.currentContent())).toList(), promptSnapshot))
-        .responseFormat(new LlmResponseFormat.JsonSchema(
-            DeclaredProfileUpdateJsonSchema.SCHEMA_NAME,
-            DeclaredProfileUpdateJsonSchema.schema(),
-            true))
-        .metadata(Map.copyOf(metadata))
-        .build();
-    log.info("Declared profile AI decision started. dimensions={} stepIndex={}",
-        candidates.size(), completionContext.stepIndex());
-    LlmCompletionResult completion = completionGateway.complete(request, completionContext);
-    List<ProfileUpdateDecision> decisions = parseDecisions(completion.structuredOutput(), candidates);
-    log.info("Declared profile AI decision completed. dimensions={} provider={} model={} actions={}",
-        candidates.size(), completion.provider().value(), completion.model().value(),
+  private DecisionRound decide(
+      long userId,
+      List<CandidateState> candidates,
+      long parentRunDbId,
+      int parentStepIndex,
+      String idempotencyKey,
+      Long retryOfRunId
+  ) {
+    AgentInvocation<DeclaredProfileUpdateAgentInput> invocation = new AgentInvocation<>(
+        DeclaredProfileUpdateAgentDefinition.KEY,
+        new DeclaredProfileUpdateAgentInput(
+            userId,
+            candidates.stream().map(candidate -> new DeclaredProfileUpdateAgentInput.Candidate(
+                candidate.update().dimension(),
+                candidate.update().statement(),
+                candidate.update().intent(),
+                candidate.currentContent())).toList(),
+            idempotencyKey,
+            retryOfRunId),
+        new AgentInvocationContext(
+            userId,
+            AgentInvocationMode.CHILD,
+            idempotencyKey,
+            Long.toString(parentRunDbId),
+            parentStepIndex,
+            requestSize(candidates),
+            false));
+    log.info("Declared profile child Agent request started. dimensions={} parentRunDbId={} parentStepIndex={} retry={}",
+        candidates.size(), parentRunDbId, parentStepIndex, retryOfRunId != null);
+    AgentRunResult result = agentRuntime.execute(invocation);
+    List<ProfileUpdateDecision> decisions = parseDecisions(
+        result.output() == null ? null : result.output().structured(), candidates);
+    String provider = metadataText(result.metadata(), AgentRuntimeMetadataKeys.RUNTIME_PROVIDER);
+    String model = metadataText(result.metadata(), AgentRuntimeMetadataKeys.RUNTIME_MODEL);
+    long runDbId = requiredPositiveLong(result.metadata(), AgentRuntimeMetadataKeys.RUN_DB_ID);
+    log.info("Declared profile child Agent request completed. dimensions={} parentRunDbId={} parentStepIndex={} runDbId={} provider={} model={} actions={}",
+        candidates.size(), parentRunDbId, parentStepIndex, runDbId, provider, model,
         decisions.stream().map(decision -> decision.action().name()).toList());
-    return new DecisionRound(decisions, completion.provider().value(), completion.model().value());
+    return new DecisionRound(decisions, provider, model, runDbId);
+  }
+
+  static String childIdempotencyKey(
+      long parentRunDbId,
+      int parentStepIndex,
+      DeclaredProfileUpdateRequest request
+  ) {
+    if (parentRunDbId < 1 || parentStepIndex < 1) {
+      throw new IllegalArgumentException("Declared profile child parent run and step must be positive");
+    }
+    DeclaredProfileUpdateRequest candidate = Objects.requireNonNull(request, "request must not be null");
+    String summary = candidate.updates().stream()
+        .sorted(java.util.Comparator.comparing(item -> item.dimension().name()))
+        .map(item -> item.dimension().name() + '\u001f' + item.intent().name() + '\u001f'
+            + normalizeStatement(item.statement()))
+        .collect(java.util.stream.Collectors.joining("\u001e"));
+    return LearnerDeclaredProfileToolContracts.CHILD_IDEMPOTENCY_KEY_PREFIX
+        + sha256(parentRunDbId + "\u001d" + parentStepIndex + "\u001d"
+            + LearnerDeclaredProfileToolContracts.TOOL_NAME + "\u001d" + summary);
+  }
+
+  private static String attemptIdempotencyKey(String logicalIdempotencyKey, int attempt) {
+    if (attempt < 0) {
+      throw new IllegalArgumentException("Declared profile child attempt must not be negative");
+    }
+    return attempt == 0 ? logicalIdempotencyKey
+        : logicalIdempotencyKey + LearnerDeclaredProfileToolContracts.CHILD_RETRY_IDEMPOTENCY_KEY_SEPARATOR + attempt;
+  }
+
+  private static String normalizeStatement(String statement) {
+    return statement.trim().replaceAll("\\s+", " ");
+  }
+
+  private static String sha256(String value) {
+    try {
+      return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+          .digest(value.getBytes(StandardCharsets.UTF_8)));
+    } catch (NoSuchAlgorithmException exception) {
+      throw new IllegalStateException("SHA-256 must be available", exception);
+    }
+  }
+
+  private static int requestSize(List<CandidateState> candidates) {
+    return candidates.stream().mapToInt(candidate -> candidate.update().statement().length()).sum();
+  }
+
+  private static String metadataText(Map<String, Object> metadata, String key) {
+    Object value = metadata.get(key);
+    return value == null ? "" : value.toString();
+  }
+
+  private static long requiredPositiveLong(Map<String, Object> metadata, String key) {
+    Object value = metadata.get(key);
+    try {
+      long parsed = value instanceof Number number ? number.longValue() : Long.parseLong(String.valueOf(value).trim());
+      if (parsed < 1) {
+        throw new IllegalArgumentException("Declared profile Runtime run id must be positive");
+      }
+      return parsed;
+    } catch (RuntimeException exception) {
+      throw new IllegalArgumentException("Declared profile Runtime result is missing run id", exception);
+    }
   }
 
   private List<ProfileUpdateDecision> parseDecisions(JsonNode structuredOutput, List<CandidateState> candidates) {
@@ -256,6 +341,6 @@ public class DeclaredProfileUpdateService {
   ) {
   }
 
-  private record DecisionRound(List<ProfileUpdateDecision> decisions, String provider, String model) {
+  private record DecisionRound(List<ProfileUpdateDecision> decisions, String provider, String model, long runDbId) {
   }
 }

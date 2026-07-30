@@ -9,8 +9,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionContext;
-import org.congcong.algomentor.ai.governance.completion.AiCompletionGateway;
+import java.util.concurrent.Flow;
+import org.congcong.algomentor.agent.core.AgentOutput;
+import org.congcong.algomentor.agent.core.AgentRunResult;
+import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewRepository;
 import org.congcong.algomentor.api.practice.service.MyBatisTrustedProblemTagCatalog;
@@ -19,13 +24,7 @@ import org.congcong.algomentor.api.profile.mapper.LearnerProfileMapper;
 import org.congcong.algomentor.api.profile.repository.MyBatisCodeReviewProfileFactRepository;
 import org.congcong.algomentor.api.profile.repository.MyBatisLearnerProfileRepository;
 import org.congcong.algomentor.api.support.PostgresIntegrationTestSupport;
-import org.congcong.algomentor.llm.core.model.LlmModelId;
-import org.congcong.algomentor.llm.core.provider.LlmProviderId;
-import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
-import org.congcong.algomentor.llm.core.request.LlmMessage;
-import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
-import org.congcong.algomentor.llm.core.response.LlmUsage;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCommitResult;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCommitService;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewDraft;
@@ -41,7 +40,6 @@ import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfi
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileConsumerConstants;
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileFactRepository;
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileJsonSchema;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfilePromptBuilder;
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileQueueContracts;
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileStructuredOutputMapper;
 import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileUpdateService;
@@ -82,12 +80,12 @@ class LearnerProfileEndToEndIT extends PostgresIntegrationTestSupport {
     assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE topic = ? AND status = 'PENDING'",
         CodeReviewProfileQueueContracts.TOPIC)).isEqualTo(5L);
 
-    FixedCompletionGateway gateway = new FixedCompletionGateway(decisions(tagId));
-    QueueDispatcher dispatcher = dispatcher(gateway);
+    FixedRuntime runtime = new FixedRuntime(decisions(tagId));
+    QueueDispatcher dispatcher = dispatcher(runtime);
     assertThat(dispatcher.dispatchRound(CodeReviewProfileQueueContracts.TOPIC))
         .containsExactly(QueueDispatchOutcome.DISPATCHED);
 
-    assertThat(gateway.calls).isEqualTo(1);
+    assertThat(runtime.calls).isEqualTo(1);
     assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE topic = ? AND status = 'SUCCEEDED'",
         CodeReviewProfileQueueContracts.TOPIC)).isEqualTo(5L);
     assertThat(queryLong("SELECT COUNT(*) FROM learner_profile_entry WHERE status = 'ACTIVE'")).isEqualTo(3L);
@@ -112,7 +110,7 @@ class LearnerProfileEndToEndIT extends PostgresIntegrationTestSupport {
         new PostgresQueuePublisher(objectMapper, queueRepository(), new PersistentQueueProperties()));
   }
 
-  private QueueDispatcher dispatcher(FixedCompletionGateway gateway) throws Exception {
+  private QueueDispatcher dispatcher(AgentRuntime runtime) throws Exception {
     CodeReviewProfileFactRepository factRepository = factRepository();
     MyBatisLearnerProfileRepository profileRepository = new MyBatisLearnerProfileRepository(
         sqlSessionTemplate("mapper/profile/LearnerProfileMapper.xml").getMapper(LearnerProfileMapper.class));
@@ -120,8 +118,7 @@ class LearnerProfileEndToEndIT extends PostgresIntegrationTestSupport {
         factRepository,
         new LearnerProfileQueryService(profileRepository),
         new LearnerProfileUpdateService(profileRepository, new LearnerProfileContentPolicy(4000), transactionTemplate()),
-        gateway,
-        new CodeReviewProfilePromptBuilder(),
+        runtime,
         new CodeReviewProfileStructuredOutputMapper(),
         1);
     CodeReviewProfileBatchConsumer consumer = new CodeReviewProfileBatchConsumer(objectMapper, factRepository, updateService);
@@ -185,25 +182,31 @@ class LearnerProfileEndToEndIT extends PostgresIntegrationTestSupport {
     return root;
   }
 
-  private static final class FixedCompletionGateway implements AiCompletionGateway {
+  private static final class FixedRuntime implements AgentRuntime {
     private final JsonNode output;
     private int calls;
 
-    private FixedCompletionGateway(JsonNode output) {
+    private FixedRuntime(JsonNode output) {
       this.output = output;
     }
 
     @Override
-    public boolean isAllowed(AiCompletionContext context) {
-      return true;
+    public AgentRunResult execute(AgentInvocation<?> invocation) {
+      calls++;
+      return new AgentRunResult(
+          1,
+          LlmFinishReason.STOP,
+          new AgentOutput("", output, CodeReviewProfileJsonSchema.SCHEMA_NAME,
+              CodeReviewProfileConsumerConstants.SCHEMA_VERSION, Map.of()),
+          Map.of(
+              AgentRuntimeMetadataKeys.RUN_DB_ID, (long) calls,
+              AgentRuntimeMetadataKeys.RUNTIME_PROVIDER, "test-provider",
+              AgentRuntimeMetadataKeys.RUNTIME_MODEL, "test-model"));
     }
 
     @Override
-    public LlmCompletionResult complete(LlmCompletionRequest request, AiCompletionContext context) {
-      calls++;
-      return new LlmCompletionResult(
-          LlmMessage.assistant("{}"), List.of(), output, LlmFinishReason.STOP, LlmUsage.empty(),
-          LlmProviderId.of("test-provider"), LlmModelId.of("test-model"), Map.of());
+    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
+      throw new UnsupportedOperationException("stream not used");
     }
   }
 }

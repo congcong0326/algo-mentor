@@ -11,12 +11,14 @@ import org.congcong.algomentor.agent.core.runlock.AgentRunLockOwnerProvider;
 import org.congcong.algomentor.agent.core.runlock.InMemoryAgentRunLockManager;
 import org.congcong.algomentor.ai.governance.admission.AiRunAdmissionService;
 import org.congcong.algomentor.ai.governance.admission.AiRunLifecycleService;
+import org.congcong.algomentor.ai.governance.execution.AiRunGovernanceService;
 import org.congcong.algomentor.ai.governance.metrics.AiRunGovernanceObserver;
 import org.congcong.algomentor.ai.governance.metrics.AiRunMetricsObserver;
 import org.congcong.algomentor.ai.governance.model.AiUsage;
 import org.congcong.algomentor.ai.governance.policy.AiGovernanceProperties;
 import org.congcong.algomentor.ai.governance.policy.AiPurposePolicyResolver;
 import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimeCache;
+import org.congcong.algomentor.ai.governance.policy.runtime.AiRuntimePolicyService;
 import org.congcong.algomentor.ai.governance.repository.mybatis.AiDailyUsageMapper;
 import org.congcong.algomentor.ai.governance.repository.mybatis.AiRunAdmissionMapper;
 import org.congcong.algomentor.ai.governance.repository.mybatis.model.AiDailyUsageRow;
@@ -60,11 +62,13 @@ class AiGovernanceAutoConfigurationTest {
         .withBean(AiRunAdmissionMapper.class, FakeAiRunAdmissionMapper::new)
         .withBean(AgentRunLockManager.class, InMemoryAgentRunLockManager::new)
         .withBean(AgentRunLockOwnerProvider.class, () -> () -> "node-1")
+        .withBean(AiRuntimePolicyService.class, () -> new AiRuntimePolicyService(null, null, null))
         .withBean(MeterRegistry.class, SimpleMeterRegistry::new)
         .run(context -> {
           assertThat(context).hasSingleBean(AiDailyUsageStore.class);
           assertThat(context).hasSingleBean(AiRunAdmissionService.class);
           assertThat(context).hasSingleBean(AiRunLifecycleService.class);
+          assertThat(context).hasSingleBean(AiRunGovernanceService.class);
           assertThat(context).hasSingleBean(AiRunGovernanceObserver.class);
           assertThat(context).hasSingleBean(AiRunMetricsObserver.class);
         });

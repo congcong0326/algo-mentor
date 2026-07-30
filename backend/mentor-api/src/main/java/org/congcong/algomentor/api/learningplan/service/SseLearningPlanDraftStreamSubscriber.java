@@ -5,14 +5,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Flow;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.congcong.algomentor.ai.governance.admission.AiRunAdmission;
-import org.congcong.algomentor.ai.governance.admission.AiRunLifecycleService;
-import org.congcong.algomentor.ai.governance.model.AiGovernanceErrorCode;
-import org.congcong.algomentor.ai.governance.model.AiUsage;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftEvent;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftStreamEvent;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
-import org.congcong.algomentor.ops.observability.NoopOpsRecorders;
 import org.congcong.algomentor.ops.observability.OpsLogEventType;
 import org.congcong.algomentor.ops.observability.OpsLogFields;
 import org.congcong.algomentor.ops.observability.OpsStatus;
@@ -30,8 +25,6 @@ public class SseLearningPlanDraftStreamSubscriber implements Flow.Subscriber<Lea
 
   private final SseEmitter emitter;
   private final LearningPlanDraftStreamSseMapper mapper;
-  private final AiRunLifecycleService lifecycleService;
-  private final AiRunAdmission admission;
   private final SseStreamType streamType;
   private final SseOpsRecorder sseOpsRecorder;
   private final LearningOpsRecorder learningOpsRecorder;
@@ -46,25 +39,6 @@ public class SseLearningPlanDraftStreamSubscriber implements Flow.Subscriber<Lea
   public SseLearningPlanDraftStreamSubscriber(
       SseEmitter emitter,
       LearningPlanDraftStreamSseMapper mapper,
-      AiRunLifecycleService lifecycleService,
-      AiRunAdmission admission
-  ) {
-    this(
-        emitter,
-        mapper,
-        lifecycleService,
-        admission,
-        SseStreamType.LEARNING_PLAN_DRAFT,
-        NoopOpsRecorders.sse(),
-        NoopOpsRecorders.learning(),
-        new StructuredOpsLogger());
-  }
-
-  public SseLearningPlanDraftStreamSubscriber(
-      SseEmitter emitter,
-      LearningPlanDraftStreamSseMapper mapper,
-      AiRunLifecycleService lifecycleService,
-      AiRunAdmission admission,
       SseStreamType streamType,
       SseOpsRecorder sseOpsRecorder,
       LearningOpsRecorder learningOpsRecorder,
@@ -72,8 +46,6 @@ public class SseLearningPlanDraftStreamSubscriber implements Flow.Subscriber<Lea
   ) {
     this.emitter = Objects.requireNonNull(emitter, "emitter must not be null");
     this.mapper = Objects.requireNonNull(mapper, "mapper must not be null");
-    this.lifecycleService = Objects.requireNonNull(lifecycleService, "lifecycleService must not be null");
-    this.admission = Objects.requireNonNull(admission, "admission must not be null");
     this.streamType = Objects.requireNonNull(streamType, "streamType must not be null");
     this.sseOpsRecorder = Objects.requireNonNull(sseOpsRecorder, "sseOpsRecorder must not be null");
     this.learningOpsRecorder = Objects.requireNonNull(learningOpsRecorder, "learningOpsRecorder must not be null");
@@ -92,7 +64,6 @@ public class SseLearningPlanDraftStreamSubscriber implements Flow.Subscriber<Lea
   public void onNext(LearningPlanDraftStreamEvent event) {
     LearningPlanDraftEvent terminalDraftEvent = terminalDraftEvent(event);
     if (terminalDraftEvent != null) {
-      markLifecycle(terminalDraftEvent);
       recordTerminalDraftEvent(terminalDraftEvent);
       terminal.set(true);
     }
@@ -118,7 +89,6 @@ public class SseLearningPlanDraftStreamSubscriber implements Flow.Subscriber<Lea
   @Override
   public void onError(Throwable throwable) {
     if (terminal.compareAndSet(false, true)) {
-      lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
       recordFailed(SseFailureType.UPSTREAM_ERROR, throwable);
       emitter.completeWithError(throwable);
     }
@@ -127,7 +97,6 @@ public class SseLearningPlanDraftStreamSubscriber implements Flow.Subscriber<Lea
   @Override
   public void onComplete() {
     if (terminal.compareAndSet(false, true)) {
-      lifecycleService.markCompleted(admission, AiUsage.zero(), null, null);
       recordCompleted();
       emitter.complete();
     }
@@ -135,7 +104,6 @@ public class SseLearningPlanDraftStreamSubscriber implements Flow.Subscriber<Lea
 
   public void timeout() {
     if (terminal.compareAndSet(false, true)) {
-      lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
       recordBusinessStatus(OpsStatus.FAILED, SseFailureType.TIMEOUT, null);
     }
     if (timeoutRecorded.compareAndSet(false, true)) {
@@ -152,7 +120,6 @@ public class SseLearningPlanDraftStreamSubscriber implements Flow.Subscriber<Lea
 
   public void clientDisconnected(Throwable throwable) {
     if (terminal.compareAndSet(false, true)) {
-      lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
       recordBusinessStatus(OpsStatus.FAILED, SseFailureType.SEND_FAILURE, throwable);
     }
     if (!sseTerminalRecorded.get()) {
@@ -177,14 +144,6 @@ public class SseLearningPlanDraftStreamSubscriber implements Flow.Subscriber<Lea
       return draft.event();
     }
     return null;
-  }
-
-  private void markLifecycle(LearningPlanDraftEvent event) {
-    if (event instanceof LearningPlanDraftEvent.DraftReady) {
-      lifecycleService.markCompleted(admission, AiUsage.zero(), null, null);
-      return;
-    }
-    lifecycleService.markFailed(admission, AiGovernanceErrorCode.AI_UNKNOWN, AiUsage.zero(), null, null);
   }
 
   private void recordTerminalDraftEvent(LearningPlanDraftEvent event) {

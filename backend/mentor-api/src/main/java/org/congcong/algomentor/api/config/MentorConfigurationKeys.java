@@ -23,6 +23,9 @@ public final class MentorConfigurationKeys {
   /** Agent loop 专用执行线程池配置前缀。 */
   public static final String AGENT_EXECUTOR_PREFIX = "algo-mentor.agent.executor";
 
+  /** 统一 Agent Runtime 装配开关配置前缀。 */
+  public static final String AGENT_RUNTIME_PREFIX = "algo-mentor.agent.runtime";
+
   /**
    * API SSE 连接配置前缀。
    */
@@ -72,6 +75,9 @@ public final class MentorConfigurationKeys {
    * 开关型配置的字段名。
    */
   public static final String ENABLED = "enabled";
+
+  /** 统一 Agent Runtime 装配开关 key。 */
+  public static final String AGENT_RUNTIME_ENABLED = AGENT_RUNTIME_PREFIX + "." + ENABLED;
 
   /**
    * 开关型配置启用值。
