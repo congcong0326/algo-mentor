@@ -53,7 +53,9 @@ public class MicrometerUserPasswordMetrics implements UserPasswordMetrics {
       case AUTH_CURRENT_PASSWORD_REQUIRED, AUTH_CURRENT_PASSWORD_INVALID -> "current_password";
       case AUTH_PASSWORD_CHANGED_CONCURRENTLY -> "concurrent";
       case AUTH_PASSWORD_UPDATE_FAILED -> "storage";
-      case AUTH_PASSWORD_CHANGE_REQUIRED, AUTH_PASSWORD_UPDATE_NOT_ALLOWED -> "not_allowed";
+      case AUTH_PASSWORD_LOGIN_DISABLED,
+          AUTH_PASSWORD_CHANGE_REQUIRED,
+          AUTH_PASSWORD_UPDATE_NOT_ALLOWED -> "not_allowed";
     };
   }
 }

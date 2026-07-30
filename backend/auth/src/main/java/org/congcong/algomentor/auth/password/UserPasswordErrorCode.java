@@ -4,6 +4,7 @@ package org.congcong.algomentor.auth.password;
  * 用户主动管理登录密码接口使用的稳定错误码。
  */
 public enum UserPasswordErrorCode {
+  AUTH_PASSWORD_LOGIN_DISABLED,
   AUTH_PASSWORD_REQUEST_INVALID,
   AUTH_CURRENT_PASSWORD_REQUIRED,
   AUTH_CURRENT_PASSWORD_INVALID,

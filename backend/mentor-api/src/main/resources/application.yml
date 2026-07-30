@@ -64,6 +64,8 @@ algo-mentor:
     cookie-secure: ${AUTH_COOKIE_SECURE:false}
     cookie-same-site: ${AUTH_COOKIE_SAME_SITE:Lax}
     admin-emails: ${AUTH_ADMIN_EMAILS:}
+    password-login-enabled: ${AUTH_PASSWORD_LOGIN_ENABLED:false}
+    password-registration-enabled: ${AUTH_PASSWORD_REGISTRATION_ENABLED:false}
   agent:
     runtime:
       enabled: ${AGENT_RUNTIME_ENABLED:true}

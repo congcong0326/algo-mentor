@@ -40,6 +40,7 @@ import { useI18n } from './i18n/I18nProvider';
 import { captureFeedbackNavigationContext } from './feedback/feedbackSourceContext';
 import {
   ApiRequestError,
+  getAuthCapabilities,
   getCurrentUser,
   getAdminFeedbackThreads,
   getFeedbackThreads,
@@ -47,7 +48,13 @@ import {
   logout,
   registerWithPassword,
 } from './services/api';
-import type { AuthPermission, CurrentUser, PasswordLoginRequest, PasswordRegisterRequest } from './types/api';
+import type {
+  AuthCapabilities,
+  AuthPermission,
+  CurrentUser,
+  PasswordLoginRequest,
+  PasswordRegisterRequest,
+} from './types/api';
 
 const DEFAULT_AUTHENTICATED_ROUTE = APP_ROUTES.home;
 
@@ -302,6 +309,7 @@ export default function App() {
   const [pathname, setPathname] = useState(() => window.location.pathname);
   const [search, setSearch] = useState(() => window.location.search);
   const [currentUser, setCurrentUser] = useState<CurrentUser>();
+  const [authCapabilities, setAuthCapabilities] = useState<AuthCapabilities>();
   const [authChecked, setAuthChecked] = useState(false);
   const [authError, setAuthError] = useState(false);
   const [logoutError, setLogoutError] = useState('');
@@ -430,11 +438,13 @@ export default function App() {
 
     try {
       const user = await getCurrentUser();
+      const capabilities = user ? undefined : await getAuthCapabilities();
       if (!isActive()) {
         return;
       }
 
       setCurrentUser(user);
+      setAuthCapabilities(capabilities);
       setAuthChecked(true);
       setPasswordAuthError('');
       if (user) {
@@ -642,6 +652,8 @@ export default function App() {
         betaAccessDenied={new URLSearchParams(window.location.search).get('auth') === 'beta-access-denied'}
         onLogin={handlePasswordLogin}
         onRegister={handlePasswordRegister}
+        passwordLoginEnabled={authCapabilities?.passwordLoginEnabled ?? false}
+        passwordRegistrationEnabled={authCapabilities?.passwordRegistrationEnabled ?? false}
         onToggleTheme={handleToggleTheme}
         pending={passwordAuthPending}
         theme={theme}
@@ -670,6 +682,7 @@ export default function App() {
         logoutPending={logoutPending}
         onCurrentUserUpdated={setCurrentUser}
         onLogout={() => void handleLogout()}
+        passwordLoginEnabled={currentUser.passwordLoginEnabled ?? true}
       />
     )
     : activeView === 'problems' && hasPermission(currentUser, 'problem:read')

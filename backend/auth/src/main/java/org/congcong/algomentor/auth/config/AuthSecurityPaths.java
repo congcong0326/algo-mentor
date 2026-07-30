@@ -14,6 +14,7 @@ public final class AuthSecurityPaths {
   public static final String OAUTH2_SESSION_POLICY_FAILURE_URL = "/login?auth=session-policy-unavailable";
   public static final String AUTH_REGISTER_PATH = "/api/auth/register";
   public static final String AUTH_LOGIN_PATH = "/api/auth/login";
+  public static final String AUTH_CAPABILITIES_PATH = "/api/auth/capabilities";
   public static final String AUTH_ME_PATH = "/api/auth/me";
   public static final String AUTH_COMPLETE_RESET_PATH = "/api/auth/password/complete-reset";
   public static final String AUTH_LOGOUT_PATH = "/api/auth/logout";

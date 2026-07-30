@@ -26,6 +26,11 @@ public final class AuthApiContractConstants {
   public static final String LOGIN_PATH = "/login";
 
   /**
+   * 当前部署启用的认证入口能力路径。
+   */
+  public static final String CAPABILITIES_PATH = "/capabilities";
+
+  /**
    * 使用临时密码登录后完成强制改密的路径。
    */
   public static final String COMPLETE_PASSWORD_RESET_PATH = "/password/complete-reset";

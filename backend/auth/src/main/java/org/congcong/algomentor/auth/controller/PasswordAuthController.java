@@ -2,6 +2,7 @@ package org.congcong.algomentor.auth.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.congcong.algomentor.auth.config.AuthProperties;
 import org.congcong.algomentor.auth.model.CurrentUserResponse;
 import org.congcong.algomentor.auth.model.CompletePasswordResetRequest;
 import org.congcong.algomentor.auth.model.PasswordLoginRequest;
@@ -49,6 +50,7 @@ public class PasswordAuthController {
   private final CurrentUserResponseFactory currentUserResponseFactory;
   private final PasswordResetService passwordResetService;
   private final AuthSessionPolicyLoginService sessionPolicyLoginService;
+  private final AuthProperties authProperties;
 
   public PasswordAuthController(
       PasswordUserService passwordUserService,
@@ -63,7 +65,8 @@ public class PasswordAuthController {
         new ApiErrorResponseFactory(new ApiErrorMessageResolver()),
         new CurrentUserResponseFactory(permissionService),
         null,
-        null);
+        null,
+        new AuthProperties());
   }
 
   public PasswordAuthController(
@@ -80,7 +83,8 @@ public class PasswordAuthController {
         responseFactory,
         new CurrentUserResponseFactory(permissionService),
         null,
-        null);
+        null,
+        new AuthProperties());
   }
 
   public PasswordAuthController(
@@ -98,7 +102,8 @@ public class PasswordAuthController {
         responseFactory,
         new CurrentUserResponseFactory(permissionService),
         passwordResetService,
-        null);
+        null,
+        new AuthProperties());
   }
 
   public PasswordAuthController(
@@ -117,7 +122,8 @@ public class PasswordAuthController {
         responseFactory,
         new CurrentUserResponseFactory(permissionService),
         passwordResetService,
-        sessionPolicyLoginService);
+        sessionPolicyLoginService,
+        new AuthProperties());
   }
 
   public PasswordAuthController(
@@ -129,6 +135,27 @@ public class PasswordAuthController {
       PasswordResetService passwordResetService,
       AuthSessionPolicyLoginService sessionPolicyLoginService
   ) {
+    this(
+        passwordUserService,
+        authenticationManager,
+        securityContextRepository,
+        responseFactory,
+        currentUserResponseFactory,
+        passwordResetService,
+        sessionPolicyLoginService,
+        new AuthProperties());
+  }
+
+  public PasswordAuthController(
+      PasswordUserService passwordUserService,
+      AuthenticationManager authenticationManager,
+      SecurityContextRepository securityContextRepository,
+      ApiErrorResponseFactory responseFactory,
+      CurrentUserResponseFactory currentUserResponseFactory,
+      PasswordResetService passwordResetService,
+      AuthSessionPolicyLoginService sessionPolicyLoginService,
+      AuthProperties authProperties
+  ) {
     this.passwordUserService = passwordUserService;
     this.authenticationManager = authenticationManager;
     this.securityContextRepository = securityContextRepository;
@@ -136,6 +163,7 @@ public class PasswordAuthController {
     this.currentUserResponseFactory = currentUserResponseFactory;
     this.passwordResetService = passwordResetService;
     this.sessionPolicyLoginService = sessionPolicyLoginService;
+    this.authProperties = authProperties;
   }
 
   @PostMapping(AuthApiContractConstants.REGISTER_PATH)
@@ -144,6 +172,12 @@ public class PasswordAuthController {
       HttpServletRequest servletRequest,
       HttpServletResponse servletResponse
   ) {
+    if (!authProperties.isPasswordLoginEnabled() || !authProperties.isPasswordRegistrationEnabled()) {
+      return passwordFeatureDisabled(
+          PasswordAuthErrorCode.AUTH_PASSWORD_REGISTRATION_DISABLED,
+          "当前未开放邮箱密码注册。",
+          servletRequest);
+    }
     try {
       AuthenticatedUserPrincipal principal = passwordUserService.register(
           request == null ? null : request.email(),
@@ -177,6 +211,12 @@ public class PasswordAuthController {
       HttpServletRequest servletRequest,
       HttpServletResponse servletResponse
   ) {
+    if (!authProperties.isPasswordLoginEnabled()) {
+      return passwordFeatureDisabled(
+          PasswordAuthErrorCode.AUTH_PASSWORD_LOGIN_DISABLED,
+          "当前未开放邮箱密码登录。",
+          servletRequest);
+    }
     try {
       Authentication authentication = authenticationManager.authenticate(
           UsernamePasswordAuthenticationToken.unauthenticated(
@@ -264,6 +304,14 @@ public class PasswordAuthController {
   ) {
     SecurityContextHolder.clearContext();
     return failure(HttpStatus.SERVICE_UNAVAILABLE, exception.code().name(), exception.getMessage(), request);
+  }
+
+  private ResponseEntity<ApiResponse<CurrentUserResponse>> passwordFeatureDisabled(
+      String code,
+      String fallbackMessage,
+      HttpServletRequest request
+  ) {
+    return failure(HttpStatus.FORBIDDEN, code, fallbackMessage, request);
   }
 
   private CurrentUserResponse toResponse(AuthenticatedUserPrincipal principal) {

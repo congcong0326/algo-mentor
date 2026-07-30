@@ -13,6 +13,10 @@ public final class AuthConfigurationKeys {
   public static final String COOKIE_SECURE = AUTH_PREFIX + ".cookie-secure";
   public static final String COOKIE_SAME_SITE = AUTH_PREFIX + ".cookie-same-site";
   public static final String ADMIN_EMAILS = AUTH_PREFIX + ".admin-emails";
+  /** 是否允许邮箱密码登录。关闭后同时禁止用户设置或修改密码。 */
+  public static final String PASSWORD_LOGIN_ENABLED = AUTH_PREFIX + ".password-login-enabled";
+  /** 是否允许通过邮箱密码自助注册。 */
+  public static final String PASSWORD_REGISTRATION_ENABLED = AUTH_PREFIX + ".password-registration-enabled";
   /** Google OAuth2 客户端凭据的环境变量。 */
   public static final String GOOGLE_OAUTH2_CLIENT_ID_ENV = "GOOGLE_CLIENT_ID";
   public static final String GOOGLE_OAUTH2_CLIENT_SECRET_ENV = "GOOGLE_CLIENT_SECRET";

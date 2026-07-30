@@ -52,6 +52,22 @@ describe('LoginPage', () => {
     expect(googleLogin).toHaveAttribute('aria-disabled', 'true');
   });
 
+  it('hides password controls when both password entry points are disabled', () => {
+    render(
+      <LoginPage
+        authError="当前邮箱不在内测准入名单中。"
+        passwordLoginEnabled={false}
+        passwordRegistrationEnabled={false}
+      />,
+    );
+
+    expect(screen.queryByRole('heading', { name: '邮箱密码登录' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '邮箱登录' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '创建邮箱账号' })).not.toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('当前邮箱不在内测准入名单中。');
+    expect(screen.getByRole('link', { name: '使用 Google 登录' })).toBeInTheDocument();
+  });
+
   it('submits password login credentials', async () => {
     const onLogin = vi.fn(() => Promise.resolve());
     render(<LoginPage onLogin={onLogin} />);

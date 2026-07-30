@@ -13,6 +13,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
+import org.congcong.algomentor.auth.config.AuthProperties;
 import org.congcong.algomentor.auth.model.CompletePasswordResetRequest;
 import org.congcong.algomentor.auth.model.PasswordLoginRequest;
 import org.congcong.algomentor.auth.model.PasswordRegisterRequest;
@@ -55,6 +56,7 @@ class PasswordAuthControllerTest {
   private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
   private MockMvc mockMvc;
   private PasswordResetService passwordResetService;
+  private AuthProperties authProperties;
 
   @BeforeEach
   void setUp() {
@@ -73,13 +75,16 @@ class PasswordAuthControllerTest {
         adminEmailRoleService);
     HttpSessionSecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
     passwordResetService = mock(PasswordResetService.class);
+    authProperties = new AuthProperties();
     PasswordAuthController controller = new PasswordAuthController(
         passwordUserService,
         new ProviderManager(new AuthenticatedDaoAuthenticationProvider(passwordEncoder, userDetailsService)),
         securityContextRepository,
         new ApiErrorResponseFactory(new ApiErrorMessageResolver()),
-        new AuthPermissionService(),
-        passwordResetService);
+        new CurrentUserResponseFactory(new AuthPermissionService()),
+        passwordResetService,
+        null,
+        authProperties);
 
     mockMvc = MockMvcBuilders
         .standaloneSetup(controller)
@@ -153,6 +158,49 @@ class PasswordAuthControllerTest {
         .andExpect(status().isUnauthorized())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.error.code").value("AUTH_INVALID_CREDENTIALS"));
+  }
+
+  @Test
+  void rejectsPasswordLoginBeforeAuthenticationWhenFeatureIsDisabled() throws Exception {
+    authProperties.setPasswordLoginEnabled(false);
+
+    mockMvc.perform(post("/api/auth/login")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsBytes(new PasswordLoginRequest(
+                "user@example.com",
+                "password-123"))))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.error.code").value("AUTH_PASSWORD_LOGIN_DISABLED"));
+  }
+
+  @Test
+  void rejectsPasswordRegistrationBeforeUserCreationWhenFeatureIsDisabled() throws Exception {
+    authProperties.setPasswordRegistrationEnabled(false);
+
+    mockMvc.perform(post("/api/auth/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsBytes(new PasswordRegisterRequest(
+                "user@example.com",
+                "password-123",
+                "User Name"))))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.error.code").value("AUTH_PASSWORD_REGISTRATION_DISABLED"));
+  }
+
+  @Test
+  void rejectsPasswordRegistrationWhenPasswordLoginIsDisabled() throws Exception {
+    authProperties.setPasswordLoginEnabled(false);
+
+    mockMvc.perform(post("/api/auth/register")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsBytes(new PasswordRegisterRequest(
+                "user@example.com",
+                "password-123",
+                "User Name"))))
+        .andExpect(status().isForbidden())
+        .andExpect(jsonPath("$.error.code").value("AUTH_PASSWORD_REGISTRATION_DISABLED"));
   }
 
   @Test

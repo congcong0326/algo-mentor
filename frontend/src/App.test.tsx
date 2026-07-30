@@ -195,6 +195,9 @@ describe('App', () => {
       if (url === '/api/auth/me') {
         return Promise.resolve(unauthenticatedResponse());
       }
+      if (url === '/api/auth/capabilities') {
+        return Promise.resolve(authCapabilitiesResponse());
+      }
       if (url === '/api/auth/login') {
         expect(init?.method).toBe('POST');
         expect(new Headers(init?.headers).get('X-XSRF-TOKEN')).toBe('csrf-token');
@@ -232,6 +235,9 @@ describe('App', () => {
     const fetchMock = vi.fn((url: string) => {
       if (url === '/api/auth/me') {
         return Promise.resolve(unauthenticatedResponse());
+      }
+      if (url === '/api/auth/capabilities') {
+        return Promise.resolve(authCapabilitiesResponse());
       }
       if (url === '/api/auth/login') {
         return Promise.resolve(jsonResponse({
@@ -2519,6 +2525,17 @@ function unauthenticatedResponse(): Response {
   }, 401);
 }
 
+function authCapabilitiesResponse(): Response {
+  return jsonResponse({
+    success: true,
+    data: {
+      passwordLoginEnabled: true,
+      passwordRegistrationEnabled: true,
+    },
+    timestamp: '2026-07-30T00:00:00Z',
+  });
+}
+
 function authenticatedUserResponse(): Response {
   return authenticatedUserResponseWithPermissions([
     'learning-plan:read:own',
@@ -2570,6 +2587,9 @@ function mockUnauthenticatedFetch() {
   return vi.fn((url: string) => {
     if (url === '/api/auth/me') {
       return Promise.resolve(unauthenticatedResponse());
+    }
+    if (url === '/api/auth/capabilities') {
+      return Promise.resolve(authCapabilitiesResponse());
     }
     return Promise.reject(new Error(`Unexpected URL: ${url}`));
   });

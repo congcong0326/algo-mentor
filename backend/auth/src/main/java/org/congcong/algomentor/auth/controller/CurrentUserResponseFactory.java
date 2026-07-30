@@ -1,6 +1,7 @@
 package org.congcong.algomentor.auth.controller;
 
 import org.congcong.algomentor.auth.model.CurrentUserResponse;
+import org.congcong.algomentor.auth.config.AuthProperties;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.security.AuthSessionAuthenticationMethod;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
@@ -15,19 +16,30 @@ public class CurrentUserResponseFactory {
   private final AuthUserRepository authUserRepository;
   private final CurrentAuthenticationContextResolver authenticationContextResolver;
   private final AuthPermissionService permissionService;
+  private final AuthProperties authProperties;
+
+  public CurrentUserResponseFactory(
+      AuthUserRepository authUserRepository,
+      CurrentAuthenticationContextResolver authenticationContextResolver,
+      AuthPermissionService permissionService,
+      AuthProperties authProperties
+  ) {
+    this.authUserRepository = authUserRepository;
+    this.authenticationContextResolver = authenticationContextResolver;
+    this.permissionService = permissionService;
+    this.authProperties = authProperties;
+  }
 
   public CurrentUserResponseFactory(
       AuthUserRepository authUserRepository,
       CurrentAuthenticationContextResolver authenticationContextResolver,
       AuthPermissionService permissionService
   ) {
-    this.authUserRepository = authUserRepository;
-    this.authenticationContextResolver = authenticationContextResolver;
-    this.permissionService = permissionService;
+    this(authUserRepository, authenticationContextResolver, permissionService, new AuthProperties());
   }
 
   public CurrentUserResponseFactory(AuthPermissionService permissionService) {
-    this(null, null, permissionService);
+    this(null, null, permissionService, new AuthProperties());
   }
 
   public CurrentUserResponse create(AuthenticatedUserPrincipal principal) {
@@ -49,6 +61,7 @@ public class CurrentUserResponseFactory {
         principal.status(),
         principal.passwordChangeRequired(),
         passwordConfigured,
-        method);
+        method,
+        authProperties.isPasswordLoginEnabled());
   }
 }

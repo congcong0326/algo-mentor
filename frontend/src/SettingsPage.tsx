@@ -40,6 +40,7 @@ interface SettingsPageProps {
   logoutPending?: boolean;
   onCurrentUserUpdated?: (user: CurrentUser) => void;
   onLogout: () => void;
+  passwordLoginEnabled?: boolean;
 }
 
 interface ReviewSettingHelpProps {
@@ -74,6 +75,7 @@ export default function SettingsPage({
   logoutPending = false,
   onCurrentUserUpdated,
   onLogout,
+  passwordLoginEnabled = true,
 }: SettingsPageProps) {
   const { resources } = useI18n();
   const [aiPreference, setAiPreference] = useState<UserAiPreference>();
@@ -97,7 +99,8 @@ export default function SettingsPage({
   const [passwordSuccess, setPasswordSuccess] = useState('');
   const userLabel = currentUser.displayName || currentUser.email || resources.app.unknownUser(currentUser.id);
   const passwordSession = currentUser.sessionAuthenticationMethod === 'PASSWORD';
-  const passwordManagementAvailable = passwordSession || currentUser.sessionAuthenticationMethod === 'OIDC';
+  const passwordManagementAvailable = passwordLoginEnabled
+    && (passwordSession || currentUser.sessionAuthenticationMethod === 'OIDC');
   const passwordEmailAvailable = Boolean(currentUser.email?.trim());
 
   useEffect(() => {
@@ -206,6 +209,9 @@ export default function SettingsPage({
   }
 
   function openPasswordDialog() {
+    if (!passwordLoginEnabled) {
+      return;
+    }
     setCurrentPassword('');
     setNewPassword('');
     setConfirmPassword('');
@@ -223,7 +229,7 @@ export default function SettingsPage({
 
   async function savePassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (passwordSaving) {
+    if (!passwordLoginEnabled || passwordSaving) {
       return;
     }
     setPasswordError('');
@@ -465,28 +471,30 @@ export default function SettingsPage({
               <span>{logoutPending ? resources.app.loggingOut : resources.app.logout}</span>
             </button>
           </div>
-          <div className="account-settings-row password-settings-row">
-            <div>
-              <span>{resources.settingsPage.passwordTitle}</span>
-              <strong>{currentUser.passwordConfigured
-                ? resources.settingsPage.passwordConfigured
-                : !passwordEmailAvailable
-                  ? resources.settingsPage.passwordEmailUnavailable
-                  : resources.settingsPage.passwordNotConfigured}</strong>
-              {passwordSuccess ? <small aria-live="polite">{passwordSuccess}</small> : null}
+          {passwordLoginEnabled ? (
+            <div className="account-settings-row password-settings-row">
+              <div>
+                <span>{resources.settingsPage.passwordTitle}</span>
+                <strong>{currentUser.passwordConfigured
+                  ? resources.settingsPage.passwordConfigured
+                  : !passwordEmailAvailable
+                    ? resources.settingsPage.passwordEmailUnavailable
+                    : resources.settingsPage.passwordNotConfigured}</strong>
+                {passwordSuccess ? <small aria-live="polite">{passwordSuccess}</small> : null}
+              </div>
+              {passwordManagementAvailable && (currentUser.passwordConfigured || passwordEmailAvailable) ? (
+                <button className="secondary-button compact" onClick={openPasswordDialog} type="button">
+                  <KeyRound aria-hidden="true" />
+                  <span>{currentUser.passwordConfigured
+                    ? resources.settingsPage.changePassword
+                    : resources.settingsPage.setPassword}</span>
+                </button>
+              ) : null}
             </div>
-            {passwordManagementAvailable && (currentUser.passwordConfigured || passwordEmailAvailable) ? (
-              <button className="secondary-button compact" onClick={openPasswordDialog} type="button">
-                <KeyRound aria-hidden="true" />
-                <span>{currentUser.passwordConfigured
-                  ? resources.settingsPage.changePassword
-                  : resources.settingsPage.setPassword}</span>
-              </button>
-            ) : null}
-          </div>
+          ) : null}
         </div>
       </section>
-      {passwordDialogOpen ? (
+      {passwordLoginEnabled && passwordDialogOpen ? (
         <div className="password-dialog-backdrop" onMouseDown={(event) => {
           if (event.target === event.currentTarget) {
             closePasswordDialog();

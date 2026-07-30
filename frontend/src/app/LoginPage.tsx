@@ -1,5 +1,5 @@
 import { LogIn, Moon, Sun, UserPlus } from 'lucide-react';
-import { FormEvent, MouseEvent, useState } from 'react';
+import { FormEvent, MouseEvent, useEffect, useState } from 'react';
 import LanguageSelector from '../i18n/LanguageSelector';
 import { useI18n } from '../i18n/I18nProvider';
 import HeaderActionTooltip from './HeaderActionTooltip';
@@ -13,6 +13,8 @@ export interface LoginPageProps {
   pending?: boolean;
   onLogin?: (request: PasswordLoginRequest) => Promise<void>;
   onRegister?: (request: PasswordRegisterRequest) => Promise<void>;
+  passwordLoginEnabled?: boolean;
+  passwordRegistrationEnabled?: boolean;
   onToggleTheme?: () => void;
   theme?: AppTheme;
 }
@@ -26,6 +28,8 @@ export default function LoginPage({
   pending = false,
   onLogin,
   onRegister,
+  passwordLoginEnabled = true,
+  passwordRegistrationEnabled = true,
   onToggleTheme,
   theme = 'light',
 }: LoginPageProps) {
@@ -36,12 +40,23 @@ export default function LoginPage({
   const [displayName, setDisplayName] = useState('');
   const [validationError, setValidationError] = useState('');
   const [googleLoginPending, setGoogleLoginPending] = useState(false);
-  const isRegisterMode = mode === 'register';
+  const passwordLoginAvailable = passwordLoginEnabled;
+  const passwordRegistrationAvailable = passwordRegistrationEnabled;
+  const passwordAuthAvailable = passwordLoginAvailable || passwordRegistrationAvailable;
+  const isRegisterMode = mode === 'register' || (!passwordLoginAvailable && passwordRegistrationAvailable);
   const ThemeIcon = theme === 'light' ? Moon : Sun;
   const themeLabel = theme === 'light' ? resources.app.switchToDarkMode : resources.app.switchToLightMode;
   const [brandLead, ...brandRestParts] = resources.app.brandName.split(' ');
   const brandRest = brandRestParts.length > 0 ? ` ${brandRestParts.join(' ')}` : '';
   const googleLoginDisabled = pending || googleLoginPending;
+
+  useEffect(() => {
+    if (!passwordLoginAvailable && passwordRegistrationAvailable) {
+      setMode('register');
+    } else if (passwordLoginAvailable && !passwordRegistrationAvailable) {
+      setMode('login');
+    }
+  }, [passwordLoginAvailable, passwordRegistrationAvailable]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -55,6 +70,9 @@ export default function LoginPage({
       return;
     }
     if (isRegisterMode) {
+      if (!passwordRegistrationAvailable) {
+        return;
+      }
       if (!displayName.trim()) {
         setValidationError(resources.auth.validationDisplayNameRequired);
         return;
@@ -64,6 +82,9 @@ export default function LoginPage({
         password,
         displayName: displayName.trim(),
       });
+      return;
+    }
+    if (!passwordLoginAvailable) {
       return;
     }
     await onLogin?.({ email: email.trim(), password });
@@ -104,58 +125,62 @@ export default function LoginPage({
           </h1>
           <p>{resources.auth.subtitle}</p>
         </div>
+        {errorText && <p className="error-text" role="alert">{errorText}</p>}
 
-        <form className="password-auth-form" onSubmit={(event) => void handleSubmit(event)}>
-          <div className="password-auth-heading">
-            <h2>{isRegisterMode ? resources.auth.registerModeTitle : resources.auth.loginModeTitle}</h2>
-            <p>{resources.auth.emailAuthDivider}</p>
-          </div>
-          {errorText && <p className="error-text" role="alert">{errorText}</p>}
-          <label>
-            <span className="visually-hidden">{resources.auth.emailLabel}</span>
-            <input
-              autoComplete="email"
-              disabled={pending}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder={resources.auth.emailPlaceholder}
-              type="email"
-              value={email}
-            />
-          </label>
-          <label>
-            <span className="visually-hidden">{resources.auth.passwordLabel}</span>
-            <input
-              autoComplete={isRegisterMode ? 'new-password' : 'current-password'}
-              disabled={pending}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder={resources.auth.passwordPlaceholder}
-              type="password"
-              value={password}
-            />
-          </label>
-          {isRegisterMode && (
-            <label>
-              <span className="visually-hidden">{resources.auth.displayNameLabel}</span>
-              <input
-                autoComplete="nickname"
-                disabled={pending}
-                onChange={(event) => setDisplayName(event.target.value)}
-                placeholder={resources.auth.displayNamePlaceholder}
-                type="text"
-                value={displayName}
-              />
-            </label>
-          )}
-          <button className="password-auth-submit" disabled={pending} type="submit">
-            {pending
-              ? isRegisterMode ? resources.auth.registering : resources.auth.loggingIn
-              : isRegisterMode ? resources.auth.passwordRegister : resources.auth.passwordLogin}
-          </button>
-        </form>
+        {passwordAuthAvailable ? (
+          <>
+            <form className="password-auth-form" onSubmit={(event) => void handleSubmit(event)}>
+              <div className="password-auth-heading">
+                <h2>{isRegisterMode ? resources.auth.registerModeTitle : resources.auth.loginModeTitle}</h2>
+                <p>{resources.auth.emailAuthDivider}</p>
+              </div>
+              <label>
+                <span className="visually-hidden">{resources.auth.emailLabel}</span>
+                <input
+                  autoComplete="email"
+                  disabled={pending}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder={resources.auth.emailPlaceholder}
+                  type="email"
+                  value={email}
+                />
+              </label>
+              <label>
+                <span className="visually-hidden">{resources.auth.passwordLabel}</span>
+                <input
+                  autoComplete={isRegisterMode ? 'new-password' : 'current-password'}
+                  disabled={pending}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder={resources.auth.passwordPlaceholder}
+                  type="password"
+                  value={password}
+                />
+              </label>
+              {isRegisterMode && (
+                <label>
+                  <span className="visually-hidden">{resources.auth.displayNameLabel}</span>
+                  <input
+                    autoComplete="nickname"
+                    disabled={pending}
+                    onChange={(event) => setDisplayName(event.target.value)}
+                    placeholder={resources.auth.displayNamePlaceholder}
+                    type="text"
+                    value={displayName}
+                  />
+                </label>
+              )}
+              <button className="password-auth-submit" disabled={pending} type="submit">
+                {pending
+                  ? isRegisterMode ? resources.auth.registering : resources.auth.loggingIn
+                  : isRegisterMode ? resources.auth.passwordRegister : resources.auth.passwordLogin}
+              </button>
+            </form>
 
-        <div className="login-auth-divider">
-          <span>{resources.auth.socialAuthDivider}</span>
-        </div>
+            <div className="login-auth-divider">
+              <span>{resources.auth.socialAuthDivider}</span>
+            </div>
+          </>
+        ) : null}
         <div className="login-social-grid">
           <a
             aria-disabled={googleLoginDisabled}
@@ -166,18 +191,20 @@ export default function LoginPage({
             <span className="login-google-mark" aria-hidden="true">G</span>
             <span>{resources.auth.googleLogin}</span>
           </a>
-          <button
-            className="login-social-button"
-            disabled={pending}
-            onClick={() => {
-              setMode(isRegisterMode ? 'login' : 'register');
-              setValidationError('');
-            }}
-            type="button"
-          >
-            {isRegisterMode ? <LogIn aria-hidden="true" /> : <UserPlus aria-hidden="true" />}
-            <span>{isRegisterMode ? resources.auth.showLogin : resources.auth.showRegister}</span>
-          </button>
+          {passwordLoginAvailable && passwordRegistrationAvailable ? (
+            <button
+              className="login-social-button"
+              disabled={pending}
+              onClick={() => {
+                setMode(isRegisterMode ? 'login' : 'register');
+                setValidationError('');
+              }}
+              type="button"
+            >
+              {isRegisterMode ? <LogIn aria-hidden="true" /> : <UserPlus aria-hidden="true" />}
+              <span>{isRegisterMode ? resources.auth.showLogin : resources.auth.showRegister}</span>
+            </button>
+          ) : null}
         </div>
 
         <div className="login-support">

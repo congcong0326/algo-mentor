@@ -16,6 +16,7 @@ import org.congcong.algomentor.auth.cache.AuthCacheProperties;
 import org.congcong.algomentor.auth.cache.BetaAccessCache;
 import org.congcong.algomentor.auth.cache.IdentityUserAccessCacheInvalidationListener;
 import org.congcong.algomentor.auth.config.AuthProperties;
+import org.congcong.algomentor.auth.controller.AuthCapabilitiesController;
 import org.congcong.algomentor.auth.controller.admin.BetaAccessController;
 import org.congcong.algomentor.auth.controller.admin.BetaAccessExceptionHandler;
 import org.congcong.algomentor.auth.controller.admin.AdminPasswordResetController;
@@ -127,12 +128,14 @@ public class AuthApiAutoConfiguration {
   public CurrentUserResponseFactory currentUserResponseFactory(
       ObjectProvider<AuthUserRepository> authUserRepositoryProvider,
       CurrentAuthenticationContextResolver authenticationContextResolver,
-      AuthPermissionService authPermissionService
+      AuthPermissionService authPermissionService,
+      AuthProperties properties
   ) {
     return new CurrentUserResponseFactory(
         authUserRepositoryProvider.getIfAvailable(),
         authenticationContextResolver,
-        authPermissionService);
+        authPermissionService,
+        properties);
   }
 
   @Bean
@@ -146,6 +149,12 @@ public class AuthApiAutoConfiguration {
     return responseFactory == null
         ? new CurrentUserController(currentUserIdProvider)
         : new CurrentUserController(currentUserIdProvider, responseFactory, currentUserResponseFactory);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public AuthCapabilitiesController authCapabilitiesController(AuthProperties properties) {
+    return new AuthCapabilitiesController(properties);
   }
 
   @Bean
@@ -433,10 +442,11 @@ public class AuthApiAutoConfiguration {
   @ConditionalOnMissingBean
   public UserPasswordController userPasswordController(
       UserPasswordService userPasswordService,
-      ObjectProvider<ApiErrorResponseFactory> responseFactoryProvider
+      ObjectProvider<ApiErrorResponseFactory> responseFactoryProvider,
+      AuthProperties properties
   ) {
     return new UserPasswordController(userPasswordService, responseFactoryProvider.getIfAvailable(
-        () -> new ApiErrorResponseFactory(new ApiErrorMessageResolver())));
+        () -> new ApiErrorResponseFactory(new ApiErrorMessageResolver())), properties);
   }
 
   @Bean
@@ -650,7 +660,8 @@ public class AuthApiAutoConfiguration {
       CurrentUserResponseFactory currentUserResponseFactory,
       ObjectProvider<PasswordResetService> passwordResetServiceProvider,
       ObjectProvider<ApiErrorResponseFactory> apiErrorResponseFactoryProvider,
-      AuthSessionPolicyLoginService authSessionPolicyLoginService
+      AuthSessionPolicyLoginService authSessionPolicyLoginService,
+      AuthProperties properties
   ) {
     ApiErrorResponseFactory responseFactory = apiErrorResponseFactoryProvider.getIfAvailable();
     return new PasswordAuthController(
@@ -662,7 +673,8 @@ public class AuthApiAutoConfiguration {
             : responseFactory,
         currentUserResponseFactory,
         passwordResetServiceProvider.getIfAvailable(),
-        authSessionPolicyLoginService);
+        authSessionPolicyLoginService,
+        properties);
   }
 
   @Bean

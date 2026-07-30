@@ -54,7 +54,13 @@ export interface CurrentUser {
   status: AuthUserStatus;
   passwordChangeRequired: boolean;
   passwordConfigured: boolean;
+  passwordLoginEnabled?: boolean;
   sessionAuthenticationMethod: AuthSessionAuthenticationMethod | null;
+}
+
+export interface AuthCapabilities {
+  passwordLoginEnabled: boolean;
+  passwordRegistrationEnabled: boolean;
 }
 
 export interface AdminUserSummary {

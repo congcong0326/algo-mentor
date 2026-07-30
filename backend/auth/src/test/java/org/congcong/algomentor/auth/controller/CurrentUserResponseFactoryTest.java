@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import org.congcong.algomentor.auth.config.AuthProperties;
 import org.congcong.algomentor.auth.model.PasswordCredential;
 import org.congcong.algomentor.auth.repository.AuthUserRepository;
 import org.congcong.algomentor.auth.security.AuthSessionAuthenticationMethod;
@@ -45,5 +46,26 @@ class CurrentUserResponseFactoryTest {
 
     assertThat(response.passwordConfigured()).isTrue();
     assertThat(response.sessionAuthenticationMethod()).isEqualTo(AuthSessionAuthenticationMethod.OIDC);
+  }
+
+  @Test
+  void reportsPasswordLoginAvailabilityForSettingsPage() {
+    AuthProperties properties = new AuthProperties();
+    properties.setPasswordLoginEnabled(false);
+    AuthenticatedUserPrincipal principal = new AuthenticatedUserPrincipal(
+        42L,
+        "member@example.com",
+        "Member",
+        null,
+        List.of(AuthRole.USER),
+        AuthUserStatus.ACTIVE);
+
+    var response = new CurrentUserResponseFactory(
+        null,
+        null,
+        new AuthPermissionService(),
+        properties).create(principal);
+
+    assertThat(response.passwordLoginEnabled()).isFalse();
   }
 }

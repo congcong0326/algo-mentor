@@ -2,6 +2,7 @@ package org.congcong.algomentor.auth.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.congcong.algomentor.auth.config.AuthProperties;
 import org.congcong.algomentor.auth.model.UserPasswordUpdateRequest;
 import org.congcong.algomentor.auth.model.UserPasswordUpdateResponse;
 import org.congcong.algomentor.auth.password.UserPasswordErrorCode;
@@ -26,17 +27,27 @@ public class UserPasswordController {
 
   private final UserPasswordService userPasswordService;
   private final ApiErrorResponseFactory responseFactory;
+  private final AuthProperties authProperties;
 
   public UserPasswordController(UserPasswordService userPasswordService) {
-    this(userPasswordService, new ApiErrorResponseFactory(new ApiErrorMessageResolver()));
+    this(userPasswordService, new ApiErrorResponseFactory(new ApiErrorMessageResolver()), new AuthProperties());
   }
 
   public UserPasswordController(
       UserPasswordService userPasswordService,
       ApiErrorResponseFactory responseFactory
   ) {
+    this(userPasswordService, responseFactory, new AuthProperties());
+  }
+
+  public UserPasswordController(
+      UserPasswordService userPasswordService,
+      ApiErrorResponseFactory responseFactory,
+      AuthProperties authProperties
+  ) {
     this.userPasswordService = userPasswordService;
     this.responseFactory = responseFactory;
+    this.authProperties = authProperties;
   }
 
   @PutMapping(AuthApiContractConstants.PASSWORD_PATH)
@@ -44,6 +55,12 @@ public class UserPasswordController {
       @RequestBody(required = false) UserPasswordUpdateRequest request,
       HttpServletRequest servletRequest
   ) {
+    if (!authProperties.isPasswordLoginEnabled()) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseFactory.failure(
+          UserPasswordErrorCode.AUTH_PASSWORD_LOGIN_DISABLED.name(),
+          "当前未开放邮箱密码登录。",
+          ApiErrorLocales.parse(servletRequest.getHeader("Accept-Language"))));
+    }
     try {
       HttpSession session = servletRequest.getSession(false);
       UserPasswordUpdateResult result = userPasswordService.updatePassword(new UserPasswordUpdateCommand(
@@ -66,7 +83,8 @@ public class UserPasswordController {
   private static HttpStatus statusFor(UserPasswordErrorCode code) {
     return switch (code) {
       case AUTH_PASSWORD_REQUEST_INVALID, AUTH_CURRENT_PASSWORD_REQUIRED -> HttpStatus.BAD_REQUEST;
-      case AUTH_CURRENT_PASSWORD_INVALID,
+      case AUTH_PASSWORD_LOGIN_DISABLED,
+          AUTH_CURRENT_PASSWORD_INVALID,
           AUTH_PASSWORD_CHANGE_REQUIRED,
           AUTH_PASSWORD_UPDATE_NOT_ALLOWED -> HttpStatus.FORBIDDEN;
       case AUTH_PASSWORD_LOGIN_EMAIL_UNAVAILABLE,

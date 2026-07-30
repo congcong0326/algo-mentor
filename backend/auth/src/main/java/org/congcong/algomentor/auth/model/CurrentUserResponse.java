@@ -15,7 +15,8 @@ public record CurrentUserResponse(
     AuthUserStatus status,
     boolean passwordChangeRequired,
     boolean passwordConfigured,
-    AuthSessionAuthenticationMethod sessionAuthenticationMethod
+    AuthSessionAuthenticationMethod sessionAuthenticationMethod,
+    boolean passwordLoginEnabled
 ) {
 
   public CurrentUserResponse(
@@ -27,7 +28,7 @@ public record CurrentUserResponse(
       List<String> permissions,
       AuthUserStatus status
   ) {
-    this(id, email, displayName, avatarUrl, roles, permissions, status, false, false, null);
+    this(id, email, displayName, avatarUrl, roles, permissions, status, false, false, null, true);
   }
 
   public CurrentUserResponse(
@@ -40,7 +41,33 @@ public record CurrentUserResponse(
       AuthUserStatus status,
       boolean passwordChangeRequired
   ) {
-    this(id, email, displayName, avatarUrl, roles, permissions, status, passwordChangeRequired, false, null);
+    this(id, email, displayName, avatarUrl, roles, permissions, status, passwordChangeRequired, false, null, true);
+  }
+
+  public CurrentUserResponse(
+      Long id,
+      String email,
+      String displayName,
+      String avatarUrl,
+      List<AuthRole> roles,
+      List<String> permissions,
+      AuthUserStatus status,
+      boolean passwordChangeRequired,
+      boolean passwordConfigured,
+      AuthSessionAuthenticationMethod sessionAuthenticationMethod
+  ) {
+    this(
+        id,
+        email,
+        displayName,
+        avatarUrl,
+        roles,
+        permissions,
+        status,
+        passwordChangeRequired,
+        passwordConfigured,
+        sessionAuthenticationMethod,
+        true);
   }
 
   public CurrentUserResponse {

@@ -91,6 +91,15 @@ describe('SettingsPage', () => {
     expect(screen.queryByText(/AI 评价建议/)).not.toBeInTheDocument();
   });
 
+  it('hides password management and prevents its API call when password login is disabled', async () => {
+    renderPage(user, vi.fn(), false);
+
+    await screen.findByRole('heading', { name: '账户' });
+    expect(screen.queryByText('登录密码')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '设置密码' })).not.toBeInTheDocument();
+    expect(updateUserPassword).not.toHaveBeenCalled();
+  });
+
   it('shows the set-password flow without a current-password field for an OIDC session', async () => {
     renderPage();
 
@@ -157,13 +166,18 @@ describe('SettingsPage', () => {
   });
 });
 
-function renderPage(currentUser: Partial<CurrentUser> = user, onCurrentUserUpdated = vi.fn()) {
+function renderPage(
+  currentUser: Partial<CurrentUser> = user,
+  onCurrentUserUpdated = vi.fn(),
+  passwordLoginEnabled = true,
+) {
   render(
     <I18nProvider>
       <SettingsPage
         currentUser={{ ...user, ...currentUser }}
         onCurrentUserUpdated={onCurrentUserUpdated}
         onLogout={vi.fn()}
+        passwordLoginEnabled={passwordLoginEnabled}
       />
     </I18nProvider>,
   );

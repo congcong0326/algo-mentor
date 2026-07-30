@@ -49,6 +49,7 @@ import type {
   BetaAllowedEmailRemovalResponse,
   CompletePasswordResetRequest,
   ApiResponse,
+  AuthCapabilities,
   CurrentUser,
   DatabaseRestoreResponse,
   HealthStatus,
@@ -224,6 +225,19 @@ export async function getCurrentUser(): Promise<CurrentUser | undefined> {
 
   const body = await response.json() as ApiResponse<CurrentUser>;
   return body.data;
+}
+
+export async function getAuthCapabilities(): Promise<AuthCapabilities> {
+  const response = await apiFetch('/api/auth/capabilities', {
+    headers: jsonHeaders,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Authentication capabilities request failed');
+  }
+
+  const body = await response.json() as ApiResponse<AuthCapabilities>;
+  return requireApiData(body, 'Authentication capabilities request failed');
 }
 
 export async function loginWithPassword(request: PasswordLoginRequest): Promise<CurrentUser> {

@@ -14,6 +14,8 @@ public class AuthProperties {
   private boolean cookieSecure;
   private String cookieSameSite = "Lax";
   private List<String> adminEmails = List.of();
+  private boolean passwordLoginEnabled = true;
+  private boolean passwordRegistrationEnabled = true;
 
   public String getLoginSuccessUrl() {
     return loginSuccessUrl;
@@ -77,5 +79,21 @@ public class AuthProperties {
 
   public void setAdminEmails(List<String> adminEmails) {
     this.adminEmails = adminEmails == null ? List.of() : List.copyOf(adminEmails);
+  }
+
+  public boolean isPasswordLoginEnabled() {
+    return passwordLoginEnabled;
+  }
+
+  public void setPasswordLoginEnabled(boolean passwordLoginEnabled) {
+    this.passwordLoginEnabled = passwordLoginEnabled;
+  }
+
+  public boolean isPasswordRegistrationEnabled() {
+    return passwordRegistrationEnabled;
+  }
+
+  public void setPasswordRegistrationEnabled(boolean passwordRegistrationEnabled) {
+    this.passwordRegistrationEnabled = passwordRegistrationEnabled;
   }
 }

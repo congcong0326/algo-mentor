@@ -169,6 +169,7 @@ public class AuthSecurityAutoConfiguration {
             .requestMatchers(new AntPathRequestMatcher("/actuator/health/**")).permitAll()
             .requestMatchers(new AntPathRequestMatcher(AuthSecurityPaths.OAUTH2_AUTHORIZATION_PATTERN)).permitAll()
             .requestMatchers(new AntPathRequestMatcher(AuthSecurityPaths.OAUTH2_CALLBACK_PATTERN)).permitAll()
+            .requestMatchers(new AntPathRequestMatcher(AuthSecurityPaths.AUTH_CAPABILITIES_PATH)).permitAll()
             .requestMatchers(new AntPathRequestMatcher(AuthSecurityPaths.AUTH_REGISTER_PATH)).permitAll()
             .requestMatchers(new AntPathRequestMatcher(AuthSecurityPaths.AUTH_LOGIN_PATH)).permitAll()
             .requestMatchers(new AntPathRequestMatcher(
