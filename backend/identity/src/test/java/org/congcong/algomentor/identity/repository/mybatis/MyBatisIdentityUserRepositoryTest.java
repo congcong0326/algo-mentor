@@ -57,10 +57,24 @@ class MyBatisIdentityUserRepositoryTest {
         .hasMessageContaining("42");
   }
 
+  @Test
+  void updateProfileAndLastLoginAtPassesProviderProfileToMapper() {
+    repository.updateProfileAndLastLoginAt(42L, "Updated User", "updated-avatar", NOW);
+
+    assertThat(mapper.profileUserId).isEqualTo(42L);
+    assertThat(mapper.profileDisplayName).isEqualTo("Updated User");
+    assertThat(mapper.profileAvatarUrl).isEqualTo("updated-avatar");
+    assertThat(mapper.profileLastLoginAt).isEqualTo(NOW);
+  }
+
   private static final class FakeIdentityUserMapper implements IdentityUserMapper {
 
     private List<String> lastStatuses = List.of();
     private String lastKeyword;
+    private long profileUserId;
+    private String profileDisplayName;
+    private String profileAvatarUrl;
+    private Instant profileLastLoginAt;
     private int updatedRows = 1;
 
     @Override
@@ -91,6 +105,20 @@ class MyBatisIdentityUserRepositoryTest {
 
     @Override
     public int updateLastLoginAt(long userId, Instant lastLoginAt) {
+      return updatedRows;
+    }
+
+    @Override
+    public int updateProfileAndLastLoginAt(
+        long userId,
+        String displayName,
+        String avatarUrl,
+        Instant lastLoginAt
+    ) {
+      profileUserId = userId;
+      profileDisplayName = displayName;
+      profileAvatarUrl = avatarUrl;
+      profileLastLoginAt = lastLoginAt;
       return updatedRows;
     }
 

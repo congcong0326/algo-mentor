@@ -29,6 +29,19 @@ public interface IdentityUserRepository {
 
   AuthUser updateLastLoginAt(long userId, Instant lastLoginAt);
 
+  /**
+   * 在第三方登录成功时更新可由身份提供方维护的公开资料，并记录本次登录时间。
+   * 空资料字段表示身份提供方本次未返回，必须保留原有值。
+   */
+  default AuthUser updateProfileAndLastLoginAt(
+      long userId,
+      String displayName,
+      String avatarUrl,
+      Instant lastLoginAt
+  ) {
+    return updateLastLoginAt(userId, lastLoginAt);
+  }
+
   IdentityUserPage searchUsers(IdentityUserSearchQuery query);
 
   boolean updateUserStatus(long userId, AuthUserStatus expectedStatus, AuthUserStatus status, Instant updatedAt);

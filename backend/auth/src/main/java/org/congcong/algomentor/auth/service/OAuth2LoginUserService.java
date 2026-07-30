@@ -88,7 +88,11 @@ public class OAuth2LoginUserService {
     if (account.id() != null) {
       authRepository.updateOAuthAccountProfile(account.id(), email, displayName, avatarUrl, now);
     }
-    AuthUser updatedUser = identityRepository.updateLastLoginAt(user.id(), now);
+    AuthUser updatedUser = identityRepository.updateProfileAndLastLoginAt(
+        user.id(),
+        displayName,
+        avatarUrl,
+        now);
     ensureConfiguredAdminRole(updatedUser);
     List<AuthRole> roles = identityRepository.findRoles(updatedUser.id());
     List<AuthRole> effectiveRoles = roles.isEmpty() ? List.of(AuthRole.USER) : roles;

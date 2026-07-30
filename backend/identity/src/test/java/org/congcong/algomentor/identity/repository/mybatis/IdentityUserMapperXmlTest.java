@@ -23,6 +23,8 @@ class IdentityUserMapperXmlTest {
         .contains("id=\"insertUser\"")
         .contains("id=\"insertUserRole\"")
         .contains("id=\"findRoles\"")
+        .contains("id=\"updateProfileAndLastLoginAt\"")
+        .contains("avatar_url = coalesce(#{avatarUrl}, avatar_url)")
         .contains("id=\"updateUserStatus\"")
         .contains("id=\"softDeleteUser\"")
         .contains("or cast(id as text) = #{keyword}")

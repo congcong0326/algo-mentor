@@ -81,6 +81,22 @@ public class MyBatisIdentityUserRepository implements IdentityUserRepository {
   }
 
   @Override
+  public AuthUser updateProfileAndLastLoginAt(
+      long userId,
+      String displayName,
+      String avatarUrl,
+      Instant lastLoginAt
+  ) {
+    int updatedRows = mapper.updateProfileAndLastLoginAt(userId, displayName, avatarUrl, lastLoginAt);
+    if (updatedRows != 1) {
+      throw new IllegalStateException("Cannot update identity user profile and login time: " + userId);
+    }
+    return findUserById(userId)
+        .orElseThrow(() -> new IllegalStateException(
+            "Cannot load identity user after updating profile and login time: " + userId));
+  }
+
+  @Override
   public IdentityUserPage searchUsers(IdentityUserSearchQuery query) {
     List<String> statuses = query.effectiveStatuses()
         .stream()

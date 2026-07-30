@@ -106,6 +106,16 @@
       and status != 'DELETED'
   </update>
 
+  <update id="updateProfileAndLastLoginAt">
+    update auth_users
+    set display_name = coalesce(#{displayName}, display_name),
+        avatar_url = coalesce(#{avatarUrl}, avatar_url),
+        last_login_at = #{lastLoginAt},
+        updated_at = #{lastLoginAt}
+    where id = #{userId}
+      and status != 'DELETED'
+  </update>
+
   <select id="searchUsers" resultMap="AuthUserRowMap">
     select id, email, email_normalized, display_name, avatar_url, status,
            created_at, updated_at, last_login_at, deleted_at, deleted_by

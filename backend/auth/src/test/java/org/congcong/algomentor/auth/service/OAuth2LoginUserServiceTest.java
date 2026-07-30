@@ -96,7 +96,44 @@ public class OAuth2LoginUserServiceTest {
     assertThat(updatedAccount.emailAtProvider()).isEqualTo("new@example.com");
     assertThat(updatedAccount.displayNameAtProvider()).isEqualTo("New Name");
     assertThat(updatedAccount.avatarUrlAtProvider()).isEqualTo("new-avatar");
+    assertThat(principal.displayName()).isEqualTo("New Name");
+    assertThat(principal.avatarUrl()).isEqualTo("new-avatar");
+    assertThat(repository.users.get(user.id()).displayName()).isEqualTo("New Name");
+    assertThat(repository.users.get(user.id()).avatarUrl()).isEqualTo("new-avatar");
     assertThat(repository.users.get(user.id()).lastLoginAt()).isEqualTo(NOW);
+  }
+
+  @Test
+  void repeatGoogleLoginPreservesProfileWhenOptionalClaimsAreMissing() {
+    AuthUser user = repository.createUser(
+        "user@example.com",
+        "user@example.com",
+        "Existing Name",
+        "existing-avatar",
+        AuthUserStatus.ACTIVE,
+        NOW.minusSeconds(3600));
+    repository.addRole(user.id(), AuthRole.USER);
+    repository.createOAuthAccount(new OAuthAccount(
+        null,
+        user.id(),
+        OAuthProvider.GOOGLE,
+        "google-sub-1",
+        "user@example.com",
+        "Existing Name",
+        "existing-avatar",
+        NOW.minusSeconds(3600),
+        NOW.minusSeconds(3600)));
+
+    AuthenticatedUserPrincipal principal = service.syncGoogleUser(googleAttributes(
+        "google-sub-1",
+        "user@example.com",
+        null,
+        null));
+
+    assertThat(principal.displayName()).isEqualTo("Existing Name");
+    assertThat(principal.avatarUrl()).isEqualTo("existing-avatar");
+    assertThat(repository.users.get(user.id()).displayName()).isEqualTo("Existing Name");
+    assertThat(repository.users.get(user.id()).avatarUrl()).isEqualTo("existing-avatar");
   }
 
   @Test
@@ -427,6 +464,30 @@ public class OAuth2LoginUserServiceTest {
           user.emailNormalized(),
           user.displayName(),
           user.avatarUrl(),
+          user.status(),
+          user.createdAt(),
+          lastLoginAt,
+          lastLoginAt,
+          user.deletedAt(),
+          user.deletedBy());
+      users.put(userId, updated);
+      return updated;
+    }
+
+    @Override
+    public AuthUser updateProfileAndLastLoginAt(
+        long userId,
+        String displayName,
+        String avatarUrl,
+        Instant lastLoginAt
+    ) {
+      AuthUser user = users.get(userId);
+      AuthUser updated = new AuthUser(
+          user.id(),
+          user.email(),
+          user.emailNormalized(),
+          displayName == null ? user.displayName() : displayName,
+          avatarUrl == null ? user.avatarUrl() : avatarUrl,
           user.status(),
           user.createdAt(),
           lastLoginAt,

@@ -19,6 +19,12 @@ public interface IdentityUserMapper {
 
   int updateLastLoginAt(@Param("userId") long userId, @Param("lastLoginAt") Instant lastLoginAt);
 
+  int updateProfileAndLastLoginAt(
+      @Param("userId") long userId,
+      @Param("displayName") String displayName,
+      @Param("avatarUrl") String avatarUrl,
+      @Param("lastLoginAt") Instant lastLoginAt);
+
   List<AuthUserRow> searchUsers(
       @Param("keyword") String keyword,
       @Param("statuses") List<String> statuses,
