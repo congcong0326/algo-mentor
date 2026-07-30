@@ -111,6 +111,15 @@ describe('SettingsPage', () => {
     expect(screen.getByLabelText('确认新密码')).toHaveAttribute('autocomplete', 'new-password');
   });
 
+  it('shows the set-password flow without a current-password field for an OAuth2 session', async () => {
+    renderPage({ sessionAuthenticationMethod: 'OAUTH2' });
+
+    fireEvent.click(await screen.findByRole('button', { name: '设置密码' }));
+
+    expect(screen.getByRole('dialog', { name: '设置登录密码' })).toBeInTheDocument();
+    expect(screen.queryByLabelText('当前密码')).not.toBeInTheDocument();
+  });
+
   it('shows the current-password field when the current session was created by password sign-in', async () => {
     renderPage({ passwordConfigured: true, sessionAuthenticationMethod: 'PASSWORD' });
 

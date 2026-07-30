@@ -100,7 +100,9 @@ export default function SettingsPage({
   const userLabel = currentUser.displayName || currentUser.email || resources.app.unknownUser(currentUser.id);
   const passwordSession = currentUser.sessionAuthenticationMethod === 'PASSWORD';
   const passwordManagementAvailable = passwordLoginEnabled
-    && (passwordSession || currentUser.sessionAuthenticationMethod === 'OIDC');
+    && (passwordSession
+      || currentUser.sessionAuthenticationMethod === 'OIDC'
+      || currentUser.sessionAuthenticationMethod === 'OAUTH2');
   const passwordEmailAvailable = Boolean(currentUser.email?.trim());
 
   useEffect(() => {

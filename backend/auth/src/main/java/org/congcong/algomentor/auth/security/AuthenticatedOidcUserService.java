@@ -1,5 +1,6 @@
 package org.congcong.algomentor.auth.security;
 
+import org.congcong.algomentor.auth.model.OAuthProvider;
 import org.congcong.algomentor.auth.service.OAuth2LoginUserService;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
@@ -27,7 +28,12 @@ public class AuthenticatedOidcUserService implements OAuth2UserService<OidcUserR
   @Override
   public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
     OidcUser oidcUser = delegate.loadUser(userRequest);
-    AuthenticatedUserPrincipal principal = loginUserService.syncGoogleUser(oidcUser.getAttributes());
+    OAuthProvider provider = OAuthProvider.fromRegistrationId(
+            userRequest.getClientRegistration().getRegistrationId())
+        .orElseThrow(() -> new OAuth2AuthenticationException(
+            new org.springframework.security.oauth2.core.OAuth2Error(
+                AuthenticatedOAuth2UserService.UNSUPPORTED_PROVIDER_CODE)));
+    AuthenticatedUserPrincipal principal = loginUserService.syncOAuthUser(provider, oidcUser.getAttributes());
     return new AuthenticatedOidcUser(
         principal,
         oidcUser,

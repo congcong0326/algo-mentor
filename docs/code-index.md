@@ -69,7 +69,8 @@
 - `docs/admin-auth-session-monitoring-design.md`：管理员会话监控技术设计，定义有效/活跃会话语义、Spring Session 分页查询、单会话下线、当前会话保护、审计权限和前后端测试边界。
 - `docs/admin-database-backup-restore-design.md`：管理员全表数据备份与覆盖恢复技术设计，固定同版本 data-only 全表备份、断流运维前提、单事务清空导入、序列恢复、缓存清理和失败回滚边界。
 - `docs/auth-user-session-policy-design.md`：用户会话策略技术设计，定义基于通用策略的会话数量与绝对超时契约、登录时按创建时间淘汰、会话快照、硬截止过滤与首版并发和策略变更边界。
-- `docs/user-login-password-management-design.md`：用户登录密码管理研发设计，定义密码 Session 校验原密码、OIDC Session 直接新增或覆盖密码、统一改密 API、其他 Session 吊销和设置页交互边界。
+- `docs/user-login-password-management-design.md`：用户登录密码管理研发设计，定义密码 Session 校验原密码、OIDC/OAUTH2 Session 直接新增或覆盖密码、统一改密 API、其他 Session 吊销和设置页交互边界。
+- `docs/github-oauth-login-design.md`：GitHub OAuth2 登录研发设计，说明授权码流程、已验证主邮箱查询、账号合并、头像同步、配置和安全边界。
 - `docs/user-group-management-design.md`：用户组与管理员成员管理设计，定义 `identity` 模块中的用户组和多对多成员关系、有效期语义、管理员 API、用户组页面及用户详情中的手动添加与移除，不包含访问策略和支付订阅。
 - `docs/generic-policy-foundation-design.md`：通用策略底座研发设计，固定单表 JSONB、业务 Spring Bean 注册强类型内容、全部用户/用户/用户组范围、全局优先级单条命中、整类编译失败日志、按类型策略缓存和按用户关系缓存失效语义。
 

@@ -2,9 +2,12 @@ package org.congcong.algomentor.auth.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import org.congcong.algomentor.auth.betaaccess.service.BetaAccessPolicy;
 import org.congcong.algomentor.auth.cache.AuthAccessSnapshotCache;
+import org.congcong.algomentor.auth.github.GitHubOAuthConstants;
 import org.congcong.algomentor.auth.model.OAuthProvider;
 import org.congcong.algomentor.auth.security.ActiveIdentityUserFilter;
 import org.congcong.algomentor.auth.security.ApiAuthenticationEntryPoint;
@@ -100,21 +103,40 @@ public class AuthSecurityAutoConfiguration {
   }
 
   @Bean
-  @Conditional(GoogleOAuth2ClientConfiguredCondition.class)
+  @Conditional(OAuth2ClientConfiguredCondition.class)
   @ConditionalOnMissingBean(ClientRegistrationRepository.class)
-  public ClientRegistrationRepository googleOAuth2ClientRegistrationRepository(Environment environment) {
-    String clientId = requiredGoogleOAuth2Credential(
-        environment, AuthConfigurationKeys.GOOGLE_OAUTH2_CLIENT_ID_ENV);
-    String clientSecret = requiredGoogleOAuth2Credential(
-        environment, AuthConfigurationKeys.GOOGLE_OAUTH2_CLIENT_SECRET_ENV);
-    ClientRegistration google = CommonOAuth2Provider.GOOGLE
-        .getBuilder(OAuthProvider.GOOGLE.value())
-        .clientId(clientId)
-        .clientSecret(clientSecret)
-        .tokenUri(GOOGLE_TOKEN_URI)
-        .userInfoUri(GOOGLE_USER_INFO_URI)
-        .build();
-    return new InMemoryClientRegistrationRepository(google);
+  public ClientRegistrationRepository oauth2ClientRegistrationRepository(Environment environment) {
+    List<ClientRegistration> registrations = new ArrayList<>();
+    if (hasText(environment.getProperty(AuthConfigurationKeys.GOOGLE_OAUTH2_CLIENT_ID_ENV))) {
+      registrations.add(CommonOAuth2Provider.GOOGLE
+          .getBuilder(OAuthProvider.GOOGLE.value())
+          .clientId(requiredOAuth2Credential(
+              environment,
+              AuthConfigurationKeys.GOOGLE_OAUTH2_CLIENT_ID_ENV,
+              OAuthProvider.GOOGLE))
+          .clientSecret(requiredOAuth2Credential(
+              environment,
+              AuthConfigurationKeys.GOOGLE_OAUTH2_CLIENT_SECRET_ENV,
+              OAuthProvider.GOOGLE))
+          .tokenUri(GOOGLE_TOKEN_URI)
+          .userInfoUri(GOOGLE_USER_INFO_URI)
+          .build());
+    }
+    if (hasText(environment.getProperty(AuthConfigurationKeys.GITHUB_OAUTH2_CLIENT_ID_ENV))) {
+      registrations.add(CommonOAuth2Provider.GITHUB
+          .getBuilder(OAuthProvider.GITHUB.value())
+          .clientId(requiredOAuth2Credential(
+              environment,
+              AuthConfigurationKeys.GITHUB_OAUTH2_CLIENT_ID_ENV,
+              OAuthProvider.GITHUB))
+          .clientSecret(requiredOAuth2Credential(
+              environment,
+              AuthConfigurationKeys.GITHUB_OAUTH2_CLIENT_SECRET_ENV,
+              OAuthProvider.GITHUB))
+          .scope(GitHubOAuthConstants.READ_USER_SCOPE, GitHubOAuthConstants.USER_EMAIL_SCOPE)
+          .build());
+    }
+    return new InMemoryClientRegistrationRepository(registrations);
   }
 
   @Bean
@@ -148,7 +170,7 @@ public class AuthSecurityAutoConfiguration {
         properties.isCookieSecure(),
         properties.getCookieSameSite(),
         properties.getSessionTimeout());
-    logGoogleRegistration(registrations);
+    logOAuth2Registrations(registrations);
 
     http
         .csrf(csrf -> csrf
@@ -233,32 +255,42 @@ public class AuthSecurityAutoConfiguration {
     return http.build();
   }
 
-  private static void logGoogleRegistration(ClientRegistrationRepository registrations) {
+  private static void logOAuth2Registrations(ClientRegistrationRepository registrations) {
     if (registrations == null) {
-      log.info("Google OAuth2 registration diagnostics. repositoryPresent=false");
+      log.info("OAuth2 registration diagnostics. repositoryPresent=false");
       return;
     }
-    ClientRegistration google = registrations.findByRegistrationId("google");
-    if (google == null) {
-      log.info("Google OAuth2 registration diagnostics. registrationPresent=false");
+    for (OAuthProvider provider : OAuthProvider.values()) {
+      logOAuth2Registration(registrations.findByRegistrationId(provider.value()), provider);
+    }
+  }
+
+  private static void logOAuth2Registration(ClientRegistration registration, OAuthProvider provider) {
+    if (registration == null) {
+      log.info("OAuth2 registration diagnostics. provider={} registrationPresent=false", provider.value());
       return;
     }
     log.info(
-        "Google OAuth2 registration diagnostics. registrationPresent=true clientIdPresent={} redirectUri={} scopes={} authorizationUriPresent={} tokenUriPresent={} userInfoUriPresent={} jwkSetUriPresent={} jwkSetUri={}",
-        google.getClientId() != null && !google.getClientId().isBlank(),
-        google.getRedirectUri(),
-        google.getScopes(),
-        hasText(google.getProviderDetails().getAuthorizationUri()),
-        hasText(google.getProviderDetails().getTokenUri()),
-        hasText(google.getProviderDetails().getUserInfoEndpoint().getUri()),
-        hasText(google.getProviderDetails().getJwkSetUri()),
-        google.getProviderDetails().getJwkSetUri());
+        "OAuth2 registration diagnostics. provider={} registrationPresent=true clientIdPresent={} redirectUri={} scopes={} authorizationUriPresent={} tokenUriPresent={} userInfoUriPresent={} jwkSetUriPresent={}",
+        provider.value(),
+        registration.getClientId() != null && !registration.getClientId().isBlank(),
+        registration.getRedirectUri(),
+        registration.getScopes(),
+        hasText(registration.getProviderDetails().getAuthorizationUri()),
+        hasText(registration.getProviderDetails().getTokenUri()),
+        hasText(registration.getProviderDetails().getUserInfoEndpoint().getUri()),
+        hasText(registration.getProviderDetails().getJwkSetUri()));
   }
 
-  private static String requiredGoogleOAuth2Credential(Environment environment, String key) {
+  private static String requiredOAuth2Credential(
+      Environment environment,
+      String key,
+      OAuthProvider provider
+  ) {
     String value = environment.getProperty(key);
     if (!hasText(value)) {
-      throw new IllegalStateException(key + " must not be blank when Google OAuth2 is enabled.");
+      throw new IllegalStateException(
+          key + " must not be blank when " + provider.value() + " OAuth2 is enabled.");
     }
     return value;
   }

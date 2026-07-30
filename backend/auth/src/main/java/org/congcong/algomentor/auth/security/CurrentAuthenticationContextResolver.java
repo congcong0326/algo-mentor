@@ -28,6 +28,12 @@ public class CurrentAuthenticationContextResolver {
           oidcUser.authenticatedUserPrincipal(),
           AuthSessionAuthenticationMethod.OIDC));
     }
+    if (authentication instanceof OAuth2AuthenticationToken
+        && authentication.getPrincipal() instanceof AuthenticatedOAuth2User oauth2User) {
+      return Optional.of(new CurrentAuthenticationContext(
+          oauth2User.authenticatedUserPrincipal(),
+          AuthSessionAuthenticationMethod.OAUTH2));
+    }
     return Optional.empty();
   }
 }

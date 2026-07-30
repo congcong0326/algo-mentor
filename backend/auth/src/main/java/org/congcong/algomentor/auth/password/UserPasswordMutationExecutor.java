@@ -52,7 +52,7 @@ public class UserPasswordMutationExecutor {
     });
   }
 
-  public UserPasswordUpdateResult updateOidcSession(
+  public UserPasswordUpdateResult updateExternalSession(
       long userId,
       String newPasswordHash,
       String currentSessionId,

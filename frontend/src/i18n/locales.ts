@@ -60,6 +60,7 @@ export interface LocaleResources {
     failed: string;
     betaAccessDenied: string;
     googleLogin: string;
+    githubLogin: string;
     emailLabel: string;
     emailPlaceholder: string;
     passwordLabel: string;
@@ -74,6 +75,8 @@ export interface LocaleResources {
     showRegister: string;
     loginModeTitle: string;
     registerModeTitle: string;
+    oauthModeTitle: string;
+    oauthModeDescription: string;
     loginAction: string;
     validationEmailRequired: string;
     validationPasswordRequired: string;
@@ -1204,6 +1207,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       failed: '登录失败，请重新尝试。',
       betaAccessDenied: '当前邮箱不在内测准入名单中。',
       googleLogin: '使用 Google 登录',
+      githubLogin: '使用 GitHub 登录',
       emailLabel: '邮箱',
       emailPlaceholder: 'you@example.com',
       passwordLabel: '密码',
@@ -1218,6 +1222,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       showRegister: '创建邮箱账号',
       loginModeTitle: '邮箱密码登录',
       registerModeTitle: '注册邮箱账号',
+      oauthModeTitle: '选择登录方式',
+      oauthModeDescription: '选择已关联的账号继续',
       loginAction: '登录',
       validationEmailRequired: '请输入邮箱。',
       validationPasswordRequired: '请输入密码。',
@@ -1857,7 +1863,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       changePassword: '修改密码',
       passwordDialogSetTitle: '设置登录密码',
       passwordDialogChangeTitle: '修改登录密码',
-      passwordDialogSetDescription: '设置后可使用当前邮箱和此密码登录，OIDC 登录仍然有效。',
+      passwordDialogSetDescription: '设置后可使用当前邮箱和此密码登录，第三方登录仍然有效。',
       passwordDialogChangeDescription: '修改后，其他已登录的会话将退出。',
       currentPassword: '当前密码',
       newPassword: '新密码',
@@ -2476,6 +2482,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       failed: 'Sign-in failed. Please try again.',
       betaAccessDenied: 'This email is not currently allowed to access the private beta.',
       googleLogin: 'Sign in with Google',
+      githubLogin: 'Sign in with GitHub',
       emailLabel: 'Email',
       emailPlaceholder: 'you@example.com',
       passwordLabel: 'Password',
@@ -2490,6 +2497,8 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       showRegister: 'Create email account',
       loginModeTitle: 'Email sign-in',
       registerModeTitle: 'Create email account',
+      oauthModeTitle: 'Choose a sign-in method',
+      oauthModeDescription: 'Continue with a connected account',
       loginAction: 'Log in',
       validationEmailRequired: 'Enter your email.',
       validationPasswordRequired: 'Enter your password.',
@@ -3129,7 +3138,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       changePassword: 'Change password',
       passwordDialogSetTitle: 'Set sign-in password',
       passwordDialogChangeTitle: 'Change sign-in password',
-      passwordDialogSetDescription: 'You can then sign in with your current email and this password. OIDC sign-in remains available.',
+      passwordDialogSetDescription: 'You can then sign in with your current email and this password. Third-party sign-in remains available.',
       passwordDialogChangeDescription: 'Changing the password signs out your other active sessions.',
       currentPassword: 'Current password',
       newPassword: 'New password',

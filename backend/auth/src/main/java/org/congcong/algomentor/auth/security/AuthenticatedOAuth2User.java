@@ -2,6 +2,8 @@ package org.congcong.algomentor.auth.security;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,7 +23,9 @@ public class AuthenticatedOAuth2User implements OAuth2User, Serializable {
       Collection<? extends GrantedAuthority> authorities
   ) {
     this.authenticatedUserPrincipal = authenticatedUserPrincipal;
-    this.attributes = Map.copyOf(attributes);
+    Map<String, Object> sanitizedAttributes = new LinkedHashMap<>(attributes);
+    sanitizedAttributes.values().removeIf(java.util.Objects::isNull);
+    this.attributes = Collections.unmodifiableMap(sanitizedAttributes);
     this.authorities = List.copyOf(authorities);
   }
 

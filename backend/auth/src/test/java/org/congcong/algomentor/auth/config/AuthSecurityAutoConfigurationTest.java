@@ -82,7 +82,9 @@ import org.congcong.algomentor.identity.repository.IdentityUserRepository;
     classes = AuthSecurityAutoConfigurationTest.TestApplication.class,
     properties = {
         "GOOGLE_CLIENT_ID=test-client-id",
-        "GOOGLE_CLIENT_SECRET=test-client-secret"
+        "GOOGLE_CLIENT_SECRET=test-client-secret",
+        "GITHUB_CLIENT_ID=test-github-client-id",
+        "GITHUB_CLIENT_SECRET=test-github-client-secret"
     })
 @AutoConfigureMockMvc
 class AuthSecurityAutoConfigurationTest {
@@ -174,6 +176,22 @@ class AuthSecurityAutoConfigurationTest {
     mockMvc.perform(get("/oauth2/authorization/google"))
         .andExpect(status().is3xxRedirection())
         .andExpect(header().string("Location", startsWith("https://accounts.google.com/o/oauth2/v2/auth")));
+  }
+
+  @Test
+  void githubAuthorizationEndpointRedirectsWithEmailScope() throws Exception {
+    mockMvc.perform(get("/oauth2/authorization/github"))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(header().string("Location", startsWith("https://github.com/login/oauth/authorize")))
+        .andExpect(header().string("Location", org.hamcrest.Matchers.containsString("user:email")));
+  }
+
+  @Test
+  void authCapabilitiesReportConfiguredOAuthProviders() throws Exception {
+    mockMvc.perform(get("/api/auth/capabilities"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.oauthProviders[0]").value("google"))
+        .andExpect(jsonPath("$.data.oauthProviders[1]").value("github"));
   }
 
   @Test

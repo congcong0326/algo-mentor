@@ -512,7 +512,17 @@ export default function App() {
       setActiveView('home');
       setPathname(APP_ROUTES.home);
       setSearch('');
+      setAuthChecked(false);
       window.history.replaceState({}, '', APP_ROUTES.home);
+      try {
+        setAuthCapabilities(await getAuthCapabilities());
+        setAuthError(false);
+      } catch {
+        setAuthCapabilities(undefined);
+        setAuthError(true);
+      } finally {
+        setAuthChecked(true);
+      }
     } catch (error) {
       setLogoutError(error instanceof Error ? error.message : resources.app.logoutFailed);
     } finally {
@@ -654,6 +664,7 @@ export default function App() {
         onRegister={handlePasswordRegister}
         passwordLoginEnabled={authCapabilities?.passwordLoginEnabled ?? false}
         passwordRegistrationEnabled={authCapabilities?.passwordRegistrationEnabled ?? false}
+        oauthProviders={authCapabilities?.oauthProviders ?? []}
         onToggleTheme={handleToggleTheme}
         pending={passwordAuthPending}
         theme={theme}

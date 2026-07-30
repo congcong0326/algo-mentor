@@ -68,18 +68,29 @@ public class OAuth2LoginUserService {
 
   @Transactional
   public AuthenticatedUserPrincipal syncGoogleUser(Map<String, Object> attributes) {
-    String subject = requiredString(attributes, "sub", MISSING_SUBJECT_CODE);
-    String email = stringAttribute(attributes, "email");
+    return syncOAuthUser(OAuthProvider.GOOGLE, attributes);
+  }
+
+  @Transactional
+  public AuthenticatedUserPrincipal syncOAuthUser(
+      OAuthProvider provider,
+      Map<String, Object> attributes
+  ) {
+    String subject = requiredAttribute(attributes, provider.subjectAttribute(), MISSING_SUBJECT_CODE);
+    String email = stringAttribute(attributes, provider.emailAttribute());
     String emailNormalized = normalizeEmail(email);
-    String displayName = stringAttribute(attributes, "name");
-    String avatarUrl = stringAttribute(attributes, "picture");
+    String displayName = firstNonBlank(
+        stringAttribute(attributes, provider.displayNameAttribute()),
+        stringAttribute(attributes, provider.fallbackDisplayNameAttribute()));
+    String avatarUrl = stringAttribute(attributes, provider.avatarUrlAttribute());
     Instant now = Instant.now(clock);
 
-    Optional<OAuthAccount> existingAccount = authRepository.findOAuthAccount(OAuthProvider.GOOGLE, subject);
+    Optional<OAuthAccount> existingAccount = authRepository.findOAuthAccount(provider, subject);
     requireBetaAccess(email, existingAccount);
     boolean createdAccount = existingAccount.isEmpty();
     OAuthAccount account = existingAccount
-        .orElseGet(() -> createGoogleAccount(subject, email, emailNormalized, displayName, avatarUrl, now));
+        .orElseGet(() -> createOAuthAccount(
+            provider, subject, email, emailNormalized, displayName, avatarUrl, now));
 
     AuthUser user = identityRepository.findUserById(account.userId())
         .orElseThrow(() -> authenticationException("auth_user_missing", "Authenticated user does not exist."));
@@ -97,7 +108,8 @@ public class OAuth2LoginUserService {
     List<AuthRole> roles = identityRepository.findRoles(updatedUser.id());
     List<AuthRole> effectiveRoles = roles.isEmpty() ? List.of(AuthRole.USER) : roles;
     log.info(
-        "Google OAuth user synchronized. userId={} createdAccount={} emailPresent={} displayNamePresent={} avatarPresent={} roles={}",
+        "OAuth user synchronized. provider={} userId={} createdAccount={} emailPresent={} displayNamePresent={} avatarPresent={} roles={}",
+        provider.value(),
         updatedUser.id(),
         createdAccount,
         email != null,
@@ -135,7 +147,8 @@ public class OAuth2LoginUserService {
     }
   }
 
-  private OAuthAccount createGoogleAccount(
+  private OAuthAccount createOAuthAccount(
+      OAuthProvider provider,
       String subject,
       String email,
       String emailNormalized,
@@ -143,7 +156,9 @@ public class OAuth2LoginUserService {
       String avatarUrl,
       Instant now
   ) {
-    Optional<AuthUser> userByEmail = identityRepository.findUserByEmailNormalized(emailNormalized);
+    Optional<AuthUser> userByEmail = emailNormalized == null
+        ? Optional.empty()
+        : identityRepository.findUserByEmailNormalized(emailNormalized);
     AuthUser user = userByEmail
         .orElseGet(() -> identityRepository.createUser(
             email,
@@ -159,7 +174,7 @@ public class OAuth2LoginUserService {
     return authRepository.createOAuthAccount(new OAuthAccount(
         null,
         user.id(),
-        OAuthProvider.GOOGLE,
+        provider,
         subject,
         email,
         displayName,
@@ -184,8 +199,8 @@ public class OAuth2LoginUserService {
     }
   }
 
-  private static String requiredString(Map<String, Object> attributes, String key, String errorCode) {
-    String value = stringAttribute(attributes, key);
+  private static String requiredAttribute(Map<String, Object> attributes, String key, String errorCode) {
+    String value = attributeAsString(attributes, key);
     if (value == null || value.isBlank()) {
       throw authenticationException(errorCode, "OAuth2 provider response is missing required subject.");
     }
@@ -193,8 +208,23 @@ public class OAuth2LoginUserService {
   }
 
   private static String stringAttribute(Map<String, Object> attributes, String key) {
+    if (key == null) {
+      return null;
+    }
     Object value = attributes.get(key);
     return value instanceof String text && !text.isBlank() ? text : null;
+  }
+
+  private static String attributeAsString(Map<String, Object> attributes, String key) {
+    Object value = attributes.get(key);
+    if (value instanceof String text && !text.isBlank()) {
+      return text;
+    }
+    return value instanceof Number number ? number.toString() : null;
+  }
+
+  private static String firstNonBlank(String first, String second) {
+    return first == null || first.isBlank() ? second : first;
   }
 
   private static String normalizeEmail(String email) {

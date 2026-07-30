@@ -112,15 +112,31 @@ class UserPasswordServiceTest {
     when(authUserRepository.findPasswordCredentialByUserId(42L)).thenReturn(Optional.empty());
     when(identityUserRepository.findUserById(42L)).thenReturn(Optional.of(user()));
     when(passwordEncoder.encode("new-password")).thenReturn("new-hash");
-    when(mutationExecutor.updateOidcSession(42L, "new-hash", CURRENT_SESSION_ID, NOW))
+    when(mutationExecutor.updateExternalSession(42L, "new-hash", CURRENT_SESSION_ID, NOW))
         .thenReturn(new UserPasswordUpdateResult(true, UserPasswordUpdateOperation.CREATED, 0));
 
     UserPasswordUpdateResult result = service.updatePassword(command("ignored-current-password"));
 
     assertThat(result.operation()).isEqualTo(UserPasswordUpdateOperation.CREATED);
     verify(passwordEncoder, never()).matches(any(), any());
-    verify(mutationExecutor).updateOidcSession(42L, "new-hash", CURRENT_SESSION_ID, NOW);
+    verify(mutationExecutor).updateExternalSession(42L, "new-hash", CURRENT_SESSION_ID, NOW);
     verify(metrics).recordSuccess(AuthSessionAuthenticationMethod.OIDC, UserPasswordUpdateOperation.CREATED);
+  }
+
+  @Test
+  void oauth2SessionCreatesPasswordWithoutCurrentPassword() {
+    when(contextResolver.resolve()).thenReturn(Optional.of(context(AuthSessionAuthenticationMethod.OAUTH2, false)));
+    when(authUserRepository.findPasswordCredentialByUserId(42L)).thenReturn(Optional.empty());
+    when(identityUserRepository.findUserById(42L)).thenReturn(Optional.of(user()));
+    when(passwordEncoder.encode("new-password")).thenReturn("new-hash");
+    when(mutationExecutor.updateExternalSession(42L, "new-hash", CURRENT_SESSION_ID, NOW))
+        .thenReturn(new UserPasswordUpdateResult(true, UserPasswordUpdateOperation.CREATED, 0));
+
+    UserPasswordUpdateResult result = service.updatePassword(command(null));
+
+    assertThat(result.operation()).isEqualTo(UserPasswordUpdateOperation.CREATED);
+    verify(mutationExecutor).updateExternalSession(42L, "new-hash", CURRENT_SESSION_ID, NOW);
+    verify(metrics).recordSuccess(AuthSessionAuthenticationMethod.OAUTH2, UserPasswordUpdateOperation.CREATED);
   }
 
   @Test
@@ -128,7 +144,7 @@ class UserPasswordServiceTest {
     when(contextResolver.resolve()).thenReturn(Optional.of(context(AuthSessionAuthenticationMethod.OIDC, false)));
     when(authUserRepository.findPasswordCredentialByUserId(42L)).thenReturn(Optional.of(credential("old-hash")));
     when(passwordEncoder.encode("new-password")).thenReturn("new-hash");
-    when(mutationExecutor.updateOidcSession(42L, "new-hash", CURRENT_SESSION_ID, NOW))
+    when(mutationExecutor.updateExternalSession(42L, "new-hash", CURRENT_SESSION_ID, NOW))
         .thenReturn(new UserPasswordUpdateResult(true, UserPasswordUpdateOperation.UPDATED, 1));
 
     UserPasswordUpdateResult result = service.updatePassword(command(null));
@@ -150,7 +166,7 @@ class UserPasswordServiceTest {
         .isInstanceOf(UserPasswordException.class)
         .extracting(exception -> ((UserPasswordException) exception).code())
         .isEqualTo(UserPasswordErrorCode.AUTH_PASSWORD_LOGIN_EMAIL_UNAVAILABLE);
-    verify(mutationExecutor, never()).updateOidcSession(any(Long.class), any(), any(), any());
+    verify(mutationExecutor, never()).updateExternalSession(any(Long.class), any(), any(), any());
   }
 
   @Test

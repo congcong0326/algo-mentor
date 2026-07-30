@@ -1,10 +1,10 @@
-import { LogIn, Moon, Sun, UserPlus } from 'lucide-react';
+import { GitFork, LogIn, Moon, Sun, UserPlus } from 'lucide-react';
 import { FormEvent, MouseEvent, useEffect, useState } from 'react';
 import LanguageSelector from '../i18n/LanguageSelector';
 import { useI18n } from '../i18n/I18nProvider';
 import HeaderActionTooltip from './HeaderActionTooltip';
 import type { AppTheme } from './theme';
-import type { PasswordLoginRequest, PasswordRegisterRequest } from '../types/api';
+import type { OAuthProvider, PasswordLoginRequest, PasswordRegisterRequest } from '../types/api';
 
 export interface LoginPageProps {
   authFailed?: boolean;
@@ -15,6 +15,7 @@ export interface LoginPageProps {
   onRegister?: (request: PasswordRegisterRequest) => Promise<void>;
   passwordLoginEnabled?: boolean;
   passwordRegistrationEnabled?: boolean;
+  oauthProviders?: OAuthProvider[];
   onToggleTheme?: () => void;
   theme?: AppTheme;
 }
@@ -30,6 +31,7 @@ export default function LoginPage({
   onRegister,
   passwordLoginEnabled = true,
   passwordRegistrationEnabled = true,
+  oauthProviders = ['google', 'github'],
   onToggleTheme,
   theme = 'light',
 }: LoginPageProps) {
@@ -39,7 +41,7 @@ export default function LoginPage({
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [validationError, setValidationError] = useState('');
-  const [googleLoginPending, setGoogleLoginPending] = useState(false);
+  const [oauthLoginPending, setOAuthLoginPending] = useState<OAuthProvider>();
   const passwordLoginAvailable = passwordLoginEnabled;
   const passwordRegistrationAvailable = passwordRegistrationEnabled;
   const passwordAuthAvailable = passwordLoginAvailable || passwordRegistrationAvailable;
@@ -48,7 +50,10 @@ export default function LoginPage({
   const themeLabel = theme === 'light' ? resources.app.switchToDarkMode : resources.app.switchToLightMode;
   const [brandLead, ...brandRestParts] = resources.app.brandName.split(' ');
   const brandRest = brandRestParts.length > 0 ? ` ${brandRestParts.join(' ')}` : '';
-  const googleLoginDisabled = pending || googleLoginPending;
+  const oauthLoginDisabled = pending || oauthLoginPending !== undefined;
+  const authModeSwitchAvailable = passwordLoginAvailable && passwordRegistrationAvailable;
+  const socialActionsAvailable = oauthProviders.length > 0 || authModeSwitchAvailable;
+  const oauthOnly = !passwordAuthAvailable && oauthProviders.length > 0;
 
   useEffect(() => {
     if (!passwordLoginAvailable && passwordRegistrationAvailable) {
@@ -90,12 +95,12 @@ export default function LoginPage({
     await onLogin?.({ email: email.trim(), password });
   }
 
-  function handleGoogleLoginClick(event: MouseEvent<HTMLAnchorElement>) {
-    if (googleLoginDisabled) {
+  function handleOAuthLoginClick(provider: OAuthProvider, event: MouseEvent<HTMLAnchorElement>) {
+    if (oauthLoginDisabled) {
       event.preventDefault();
       return;
     }
-    setGoogleLoginPending(true);
+    setOAuthLoginPending(provider);
   }
 
   const errorText = validationError
@@ -118,7 +123,10 @@ export default function LoginPage({
           </button>
         </HeaderActionTooltip>
       )}
-      <section className="login-panel" aria-label={resources.auth.loginModeTitle}>
+      <section
+        className={`login-panel${oauthOnly ? ' login-panel--oauth-only' : ''}`}
+        aria-label={oauthOnly ? resources.auth.oauthModeTitle : resources.auth.loginModeTitle}
+      >
         <div className="login-brand-lockup" aria-label={resources.app.brandName}>
           <h1 id="login-title">
             <span>{brandLead}</span>{brandRest}
@@ -176,36 +184,50 @@ export default function LoginPage({
               </button>
             </form>
 
-            <div className="login-auth-divider">
-              <span>{resources.auth.socialAuthDivider}</span>
-            </div>
+            {socialActionsAvailable ? (
+              <div className="login-auth-divider">
+                <span>{resources.auth.socialAuthDivider}</span>
+              </div>
+            ) : null}
           </>
         ) : null}
-        <div className="login-social-grid">
-          <a
-            aria-disabled={googleLoginDisabled}
-            className="login-social-button"
-            href="/oauth2/authorization/google"
-            onClick={handleGoogleLoginClick}
-          >
-            <span className="login-google-mark" aria-hidden="true">G</span>
-            <span>{resources.auth.googleLogin}</span>
-          </a>
-          {passwordLoginAvailable && passwordRegistrationAvailable ? (
-            <button
-              className="login-social-button"
-              disabled={pending}
-              onClick={() => {
-                setMode(isRegisterMode ? 'login' : 'register');
-                setValidationError('');
-              }}
-              type="button"
-            >
-              {isRegisterMode ? <LogIn aria-hidden="true" /> : <UserPlus aria-hidden="true" />}
-              <span>{isRegisterMode ? resources.auth.showLogin : resources.auth.showRegister}</span>
-            </button>
-          ) : null}
-        </div>
+        {oauthOnly ? (
+          <div className="oauth-auth-section">
+            <div className="oauth-auth-heading">
+              <h2>{resources.auth.oauthModeTitle}</h2>
+              <p>{resources.auth.oauthModeDescription}</p>
+            </div>
+            <div className="login-social-grid login-social-grid--oauth-only">
+              <OAuthProviderLinks
+                disabled={oauthLoginDisabled}
+                onLogin={handleOAuthLoginClick}
+                providers={oauthProviders}
+              />
+            </div>
+          </div>
+        ) : socialActionsAvailable ? (
+          <div className="login-social-grid">
+            <OAuthProviderLinks
+              disabled={oauthLoginDisabled}
+              onLogin={handleOAuthLoginClick}
+              providers={oauthProviders}
+            />
+            {authModeSwitchAvailable ? (
+              <button
+                className="login-social-button"
+                disabled={pending}
+                onClick={() => {
+                  setMode(isRegisterMode ? 'login' : 'register');
+                  setValidationError('');
+                }}
+                type="button"
+              >
+                {isRegisterMode ? <LogIn aria-hidden="true" /> : <UserPlus aria-hidden="true" />}
+                <span>{isRegisterMode ? resources.auth.showLogin : resources.auth.showRegister}</span>
+              </button>
+            ) : null}
+          </div>
+        ) : null}
 
         <div className="login-support">
           <p>
@@ -225,5 +247,42 @@ export default function LoginPage({
         </div>
       </section>
     </main>
+  );
+}
+
+interface OAuthProviderLinksProps {
+  disabled: boolean;
+  onLogin: (provider: OAuthProvider, event: MouseEvent<HTMLAnchorElement>) => void;
+  providers: OAuthProvider[];
+}
+
+function OAuthProviderLinks({ disabled, onLogin, providers }: OAuthProviderLinksProps) {
+  const { resources } = useI18n();
+
+  return (
+    <>
+      {providers.includes('google') ? (
+        <a
+          aria-disabled={disabled}
+          className="login-social-button"
+          href="/oauth2/authorization/google"
+          onClick={(event) => onLogin('google', event)}
+        >
+          <span className="login-google-mark" aria-hidden="true">G</span>
+          <span>{resources.auth.googleLogin}</span>
+        </a>
+      ) : null}
+      {providers.includes('github') ? (
+        <a
+          aria-disabled={disabled}
+          className="login-social-button"
+          href="/oauth2/authorization/github"
+          onClick={(event) => onLogin('github', event)}
+        >
+          <GitFork aria-hidden="true" />
+          <span>{resources.auth.githubLogin}</span>
+        </a>
+      ) : null}
+    </>
   );
 }

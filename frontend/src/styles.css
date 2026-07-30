@@ -1934,6 +1934,10 @@ a {
   color: var(--login-accent);
 }
 
+.login-panel--oauth-only .login-brand-lockup {
+  margin-bottom: 4px;
+}
+
 .login-brand-lockup p,
 .password-auth-heading p {
   margin: 0;
@@ -1955,7 +1959,8 @@ a {
   margin-bottom: 4px;
 }
 
-.password-auth-form h2 {
+.password-auth-form h2,
+.oauth-auth-heading h2 {
   margin: 0;
   color: var(--login-text);
   font-size: 20px;
@@ -2033,6 +2038,52 @@ a {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+}
+
+.oauth-auth-section {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+  border: 1px solid var(--login-border);
+  border-radius: 8px;
+  background: var(--login-control-background);
+  box-shadow: 0 8px 24px rgb(25 25 24 / 6%);
+}
+
+:root[data-theme="dark"] .oauth-auth-section {
+  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+}
+
+.oauth-auth-heading {
+  display: grid;
+  gap: 7px;
+}
+
+.oauth-auth-heading p {
+  margin: 0;
+  color: var(--login-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.login-social-grid--oauth-only {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.login-social-grid--oauth-only .login-social-button {
+  min-height: 48px;
+  justify-content: flex-start;
+  padding: 0 18px;
+}
+
+.login-social-grid--oauth-only .login-social-button > :first-child {
+  flex: 0 0 20px;
+}
+
+.login-social-grid--oauth-only .login-social-button > span:last-child {
+  flex: 1;
+  padding-right: 30px;
+  text-align: center;
 }
 
 .login-social-button {

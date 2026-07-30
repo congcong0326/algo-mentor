@@ -25,7 +25,8 @@ export interface DatabaseRestoreResponse {
 
 export type AuthRole = 'USER' | 'ADMIN';
 export type AuthUserStatus = 'ACTIVE' | 'DISABLED' | 'DELETED';
-export type AuthSessionAuthenticationMethod = 'PASSWORD' | 'OIDC';
+export type AuthSessionAuthenticationMethod = 'PASSWORD' | 'OIDC' | 'OAUTH2';
+export type OAuthProvider = 'google' | 'github';
 export type UserGroupStatus = 'ACTIVE' | 'DISABLED';
 export type AuthPermission =
   | 'learning-plan:read:own'
@@ -61,6 +62,7 @@ export interface CurrentUser {
 export interface AuthCapabilities {
   passwordLoginEnabled: boolean;
   passwordRegistrationEnabled: boolean;
+  oauthProviders: OAuthProvider[];
 }
 
 export interface AdminUserSummary {

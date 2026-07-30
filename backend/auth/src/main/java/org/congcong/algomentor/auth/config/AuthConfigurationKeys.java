@@ -20,6 +20,9 @@ public final class AuthConfigurationKeys {
   /** Google OAuth2 客户端凭据的环境变量。 */
   public static final String GOOGLE_OAUTH2_CLIENT_ID_ENV = "GOOGLE_CLIENT_ID";
   public static final String GOOGLE_OAUTH2_CLIENT_SECRET_ENV = "GOOGLE_CLIENT_SECRET";
+  /** GitHub OAuth2 客户端凭据的环境变量。 */
+  public static final String GITHUB_OAUTH2_CLIENT_ID_ENV = "GITHUB_CLIENT_ID";
+  public static final String GITHUB_OAUTH2_CLIENT_SECRET_ENV = "GITHUB_CLIENT_SECRET";
 
   private AuthConfigurationKeys() {
   }

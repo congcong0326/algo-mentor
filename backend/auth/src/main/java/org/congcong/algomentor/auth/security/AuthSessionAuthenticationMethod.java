@@ -5,5 +5,6 @@ package org.congcong.algomentor.auth.security;
  */
 public enum AuthSessionAuthenticationMethod {
   PASSWORD,
-  OIDC
+  OIDC,
+  OAUTH2
 }

@@ -59,7 +59,7 @@ public class UserPasswordService {
       validateNewPassword(command);
       UserPasswordUpdateResult result = switch (context.method()) {
         case PASSWORD -> updateForPasswordSession(context, command);
-        case OIDC -> updateForOidcSession(context, command);
+        case OIDC, OAUTH2 -> updateForExternalSession(context, command);
       };
       metrics.recordSuccess(context.method(), result.operation());
       metrics.recordSessionRevocations(result.revokedSessionCount());
@@ -120,7 +120,7 @@ public class UserPasswordService {
         Instant.now(clock));
   }
 
-  private UserPasswordUpdateResult updateForOidcSession(
+  private UserPasswordUpdateResult updateForExternalSession(
       CurrentAuthenticationContext context,
       UserPasswordUpdateCommand command
   ) {
@@ -129,7 +129,7 @@ public class UserPasswordService {
       requirePasswordLoginEmail(userId);
     }
     String newPasswordHash = passwordEncoder.encode(command.newPassword());
-    return mutationExecutor.updateOidcSession(
+    return mutationExecutor.updateExternalSession(
         userId,
         newPasswordHash,
         command.currentSessionId(),

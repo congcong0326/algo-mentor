@@ -1026,6 +1026,9 @@ describe('App', () => {
         expect(new Headers(init?.headers).get('X-XSRF-TOKEN')).toBe('csrf-token');
         return Promise.resolve(jsonResponse({ success: true, timestamp: '2026-06-22T00:00:00Z' }));
       }
+      if (url === '/api/auth/capabilities') {
+        return Promise.resolve(authCapabilitiesResponse());
+      }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
     vi.stubGlobal('fetch', fetchMock);
@@ -1044,8 +1047,11 @@ describe('App', () => {
         credentials: 'same-origin',
       }),
     ));
-    expect(await screen.findByRole('button', { name: '登录' })).toBeInTheDocument();
+    const loginButton = await screen.findByRole('button', { name: '登录' });
     expect(window.location.pathname).toBe('/');
+    fireEvent.click(loginButton);
+    expect(await screen.findByRole('link', { name: '使用 Google 登录' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '使用 GitHub 登录' })).toBeInTheDocument();
   });
 
   it('disables logout while the request is pending', async () => {
@@ -1058,6 +1064,9 @@ describe('App', () => {
         return new Promise<Response>((resolve) => {
           resolveLogout = resolve;
         });
+      }
+      if (url === '/api/auth/capabilities') {
+        return Promise.resolve(authCapabilitiesResponse());
       }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
@@ -1092,6 +1101,9 @@ describe('App', () => {
       }
       if (url === '/api/auth/logout') {
         return Promise.resolve(jsonResponse({ success: true, timestamp: '2026-06-22T00:00:00Z' }));
+      }
+      if (url === '/api/auth/capabilities') {
+        return Promise.resolve(authCapabilitiesResponse());
       }
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
@@ -1268,6 +1280,9 @@ describe('App', () => {
         return new Promise<Response>((resolve) => {
           resolveLogout = resolve;
         });
+      }
+      if (url === '/api/auth/capabilities') {
+        return Promise.resolve(authCapabilitiesResponse());
       }
       capturedSignal = init?.signal ?? undefined;
       return new Promise<Response>(() => {});
@@ -2531,6 +2546,7 @@ function authCapabilitiesResponse(): Response {
     data: {
       passwordLoginEnabled: true,
       passwordRegistrationEnabled: true,
+      oauthProviders: ['google', 'github'],
     },
     timestamp: '2026-07-30T00:00:00Z',
   });

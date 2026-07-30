@@ -7,7 +7,7 @@ afterEach(() => {
 });
 
 describe('LoginPage', () => {
-  it('renders the welcome page with Google and email sign-in entries', () => {
+  it('renders the welcome page with configured OAuth and email sign-in entries', () => {
     render(<LoginPage />);
 
     expect(screen.getByRole('heading', { name: 'Leet Mentor' })).toBeInTheDocument();
@@ -17,6 +17,10 @@ describe('LoginPage', () => {
     expect(screen.getByRole('link', { name: '使用 Google 登录' })).toHaveAttribute(
       'href',
       '/oauth2/authorization/google',
+    );
+    expect(screen.getByRole('link', { name: '使用 GitHub 登录' })).toHaveAttribute(
+      'href',
+      '/oauth2/authorization/github',
     );
     expect(screen.getByRole('button', { name: '创建邮箱账号' })).toBeInTheDocument();
     expect(screen.getByText('support@leetmentor.local')).toBeInTheDocument();
@@ -50,6 +54,7 @@ describe('LoginPage', () => {
     expect(firstClick).toBe(true);
     expect(secondClick).toBe(false);
     expect(googleLogin).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('link', { name: '使用 GitHub 登录' })).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('hides password controls when both password entry points are disabled', () => {
@@ -65,7 +70,17 @@ describe('LoginPage', () => {
     expect(screen.queryByRole('button', { name: '邮箱登录' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '创建邮箱账号' })).not.toBeInTheDocument();
     expect(screen.getByRole('alert')).toHaveTextContent('当前邮箱不在内测准入名单中。');
+    expect(screen.getByRole('heading', { name: '选择登录方式' })).toBeInTheDocument();
+    expect(screen.getByText('选择已关联的账号继续')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '使用 Google 登录' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '使用 GitHub 登录' })).toBeInTheDocument();
+  });
+
+  it('only renders OAuth providers reported by the backend', () => {
+    render(<LoginPage oauthProviders={['github']} />);
+
+    expect(screen.queryByRole('link', { name: '使用 Google 登录' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '使用 GitHub 登录' })).toBeInTheDocument();
   });
 
   it('submits password login credentials', async () => {

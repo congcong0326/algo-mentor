@@ -8,6 +8,10 @@
 
 - [Spring Security 中的 SecurityContext、Authentication 与 JSESSIONID](Java后端/Spring%20Security中的SecurityContext、Authentication与JSESSIONID.md)
 
+### 认证与授权
+
+- [OAuth 2.0 授权模式与授权码流程](Java后端/认证与授权/OAuth2授权模式与授权码流程.md)
+
 ## AI 应用
 
 ### RAG

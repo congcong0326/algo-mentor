@@ -63,6 +63,23 @@ public class OAuth2LoginUserServiceTest {
   }
 
   @Test
+  void firstGitHubLoginUsesNumericIdLoginFallbackAndAvatar() {
+    Map<String, Object> attributes = new HashMap<>();
+    attributes.put("id", 123456L);
+    attributes.put("email", "github@example.com");
+    attributes.put("name", null);
+    attributes.put("login", "octocat");
+    attributes.put("avatar_url", "https://avatars.githubusercontent.com/u/123456?v=4");
+
+    AuthenticatedUserPrincipal principal = service.syncOAuthUser(OAuthProvider.GITHUB, attributes);
+
+    assertThat(principal.email()).isEqualTo("github@example.com");
+    assertThat(principal.displayName()).isEqualTo("octocat");
+    assertThat(principal.avatarUrl()).isEqualTo("https://avatars.githubusercontent.com/u/123456?v=4");
+    assertThat(repository.oauthAccountsByKey).containsKey("github:123456");
+  }
+
+  @Test
   void repeatGoogleLoginUpdatesProviderFieldsAndLastLoginAt() {
     AuthUser user = repository.createUser(
         "old@example.com",

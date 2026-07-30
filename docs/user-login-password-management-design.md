@@ -8,13 +8,13 @@
 
 ## 0. 已定决策
 
-1. 在设置页提供统一的“登录密码”管理功能，不单独建设面向 OIDC 用户的专用设置密码页面。
+1. 在设置页提供统一的“登录密码”管理功能，不单独建设面向第三方登录用户的专用设置密码页面。
 2. 当前通过邮箱密码登录时，修改密码必须提交并验证原密码。
-3. 当前通过 OIDC 登录时，允许不输入原密码，直接新增或覆盖当前用户的密码凭据。
-4. OIDC 免原密码能力只信任服务端 Spring Security 中的真实认证类型，不接收前端声明的登录方式。
+3. 当前通过受信第三方登录（Google OIDC 或 GitHub OAuth2）时，允许不输入原密码，直接新增或覆盖当前用户的密码凭据。
+4. 第三方登录免原密码能力只信任服务端 Spring Security 中的真实认证类型，不接收前端声明的登录方式。
 5. 没有密码凭据时，页面按钮显示“设置密码”；已有密码凭据时显示“修改密码”。
-6. OIDC 登录后不强制设置密码，不弹出阻塞式引导；用户在设置页主动操作。
-7. 首版不要求 OIDC 二次认证或“最近登录”校验。未来可以在不修改核心改密 API 的前提下增加近期认证门槛。
+6. 第三方登录后不强制设置密码，不弹出阻塞式引导；用户在设置页主动操作。
+7. 首版不要求第三方二次认证或“最近登录”校验。未来可以在不修改核心改密 API 的前提下增加近期认证门槛。
 8. 新增和修改统一使用 `PUT /api/auth/password`，请求体中的 `currentPassword` 按当前 Session 认证方式决定是否必填。
 9. 修改已有密码后保留当前 Session，吊销当前用户的其他 Session；首次新增密码不主动吊销其他 Session。
 10. 复用现有 `auth_password_credentials` 表及其 `user_id` 唯一约束，不新增数据库迁移。
@@ -24,12 +24,12 @@
 
 当前项目支持两类登录方式：
 
-- Google OIDC 登录；
+- Google OIDC、GitHub OAuth2 登录；
 - 邮箱密码注册和登录。
 
-两类登录方式最终都映射到同一个 `auth_users` 用户。OIDC 身份保存在 `auth_oauth_accounts`，密码凭据保存在 `auth_password_credentials`。密码表已经使用 `user_id` 唯一约束，因此一个用户最多只有一份当前有效密码凭据。
+这些登录方式最终都映射到同一个 `auth_users` 用户。第三方身份保存在 `auth_oauth_accounts`，密码凭据保存在 `auth_password_credentials`。密码表已经使用 `user_id` 唯一约束，因此一个用户最多只有一份当前有效密码凭据。
 
-现有密码注册只允许创建新用户。当 OIDC 用户已经拥有相同邮箱的 `auth_users` 记录时，再走密码注册会被识别为邮箱已注册，用户无法为已有账号补充密码凭据。设置页当前只展示用户身份和退出登录，也没有普通用户修改密码的入口。
+现有密码注册只允许创建新用户。当第三方登录用户已经拥有相同邮箱的 `auth_users` 记录时，再走密码注册会被识别为邮箱已注册，用户无法为已有账号补充密码凭据。设置页当前只展示用户身份和退出登录，也没有普通用户修改密码的入口。
 
 项目已经存在管理员临时密码重置和强制改密流程，但该流程面向管理员协助恢复账号，包含临时密码有效期、单次消费、强制修改和全量 Session 吊销，不适合承担普通用户主动管理登录密码的职责。
 
@@ -40,14 +40,14 @@
   |
   +-- 当前为密码 Session -> 验证原密码 -> 更新密码
   |
-  +-- 当前为 OIDC Session -> 无需原密码 -> 新增或更新密码
+  +-- 当前为 OIDC/OAUTH2 Session -> 无需原密码 -> 新增或更新密码
 ```
 
 ## 2. 目标与非目标
 
 ### 2.1 目标
 
-- 让 OIDC 用户可以为同一账号增加邮箱密码登录方式。
+- 让第三方登录用户可以为同一账号增加邮箱密码登录方式。
 - 让已有密码用户可以在设置页主动修改密码。
 - 根据当前 Session 的实际认证方式决定是否要求原密码。
 - 保证前端展示状态与后端密码凭据状态一致。
@@ -57,10 +57,10 @@
 
 ### 2.2 非目标
 
-- 不在 OIDC 登录完成后强制用户设置密码。
-- 不建设 OIDC 二次认证、近期认证时间窗口或 MFA 挑战。
+- 不在第三方登录完成后强制用户设置密码。
+- 不建设第三方二次认证、近期认证时间窗口或 MFA 挑战。
 - 不建设普通用户“忘记密码”邮件找回流程。
-- 不提供删除密码、关闭密码登录或解除 OIDC 绑定功能。
+- 不提供删除密码、关闭密码登录或解除第三方账号绑定功能。
 - 不允许前端选择或伪造本次改密所使用的认证方式。
 - 不修改密码注册、管理员临时密码重置和强制改密的既有业务入口。
 - 不新增密码历史表、密码重复使用限制或周期性强制改密策略。
@@ -74,14 +74,14 @@
 | 当前 Session 认证方式 | 是否已有密码凭据 | 页面行为 | 后端行为 |
 | --- | --- | --- | --- |
 | `PASSWORD` | 是 | 显示“修改密码”，展示原密码字段 | 必须验证原密码后更新 |
-| `OIDC` | 否 | 显示“设置密码”，不展示原密码字段 | 直接新增密码凭据 |
-| `OIDC` | 是 | 显示“修改密码”，不展示原密码字段 | 直接覆盖密码凭据 |
+| `OIDC` / `OAUTH2` | 否 | 显示“设置密码”，不展示原密码字段 | 直接新增密码凭据 |
+| `OIDC` / `OAUTH2` | 是 | 显示“修改密码”，不展示原密码字段 | 直接覆盖密码凭据 |
 | `PASSWORD` | 否 | 不应出现 | 拒绝请求并记录异常状态 |
 | 不支持的认证类型 | 任意 | 不提供操作入口 | 拒绝请求 |
 
-“已有 OIDC 绑定”不能单独作为免原密码依据。用户即使绑定过 Google，只要本次 Session 是通过密码登录建立的，就必须验证原密码。反过来，本次 Session 确实通过受信 OIDC 登录建立时，可以把该 OIDC 身份视为当前改密操作的身份凭证。
+“已有第三方账号绑定”不能单独作为免原密码依据。用户即使绑定过 Google 或 GitHub，只要本次 Session 是通过密码登录建立的，就必须验证原密码。反过来，本次 Session 确实通过受信第三方登录建立时，可以把该身份视为当前改密操作的身份凭证。
 
-首次新增密码还要求当前内部用户存在可用于密码登录的有效邮箱。OIDC 用户缺少内部邮箱时，不创建一个无法通过邮箱登录的孤立密码凭据；设置页应显示账号信息异常或暂不提供设置入口，后端同时执行最终校验。
+首次新增密码还要求当前内部用户存在可用于密码登录的有效邮箱。第三方登录用户缺少内部邮箱时，不创建一个无法通过邮箱登录的孤立密码凭据；设置页应显示账号信息异常或暂不提供设置入口，后端同时执行最终校验。
 
 ### 3.2 密码校验
 
@@ -105,7 +105,7 @@ POST /api/auth/password/complete-reset
 
 完成强制改密。通用 `PUT /api/auth/password` 不作为绕过强制改密页面的备用入口。过滤器和业务服务都应拒绝 `passwordChangeRequired=true` 的通用改密请求。
 
-OIDC Session 不携带临时密码强制状态。用户能够成功完成 OIDC 登录时，可以通过通用改密接口覆盖已有的临时密码状态，并将凭据恢复为普通密码；这与 OIDC 身份能够独立访问同一账号的现有语义一致。
+OIDC/OAUTH2 Session 不携带临时密码强制状态。用户能够成功完成第三方登录时，可以通过通用改密接口覆盖已有的临时密码状态，并将凭据恢复为普通密码；这与第三方身份能够独立访问同一账号的现有语义一致。
 
 ## 4. 认证上下文
 
@@ -116,7 +116,8 @@ OIDC Session 不携带临时密码强制状态。用户能够成功完成 OIDC �
 ```java
 public enum AuthSessionAuthenticationMethod {
   PASSWORD,
-  OIDC
+  OIDC,
+  OAUTH2
 }
 ```
 
@@ -135,6 +136,10 @@ OAuth2AuthenticationToken
   + principal 为 AuthenticatedOidcUser
   -> OIDC
 
+OAuth2AuthenticationToken
+  + principal 为 AuthenticatedOAuth2User
+  -> OAUTH2
+
 其他 Authentication 或 principal 类型
   -> unsupported
 ```
@@ -149,9 +154,9 @@ public record CurrentAuthenticationContext(
 }
 ```
 
-改密 Controller 不接受 `userId`、`authenticationMethod`、OIDC provider subject 或邮箱作为请求参数。目标用户只能来自当前认证上下文中的受信 `principal.userId()`。
+改密 Controller 不接受 `userId`、`authenticationMethod`、provider subject 或邮箱作为请求参数。目标用户只能来自当前认证上下文中的受信 `principal.userId()`。
 
-当前 Google OIDC 登录已经把 provider subject 映射到内部用户，并把 `AuthenticatedOidcUser` 保存到 SecurityContext。改密链路不再使用请求邮箱进行账号匹配，避免把“邮箱相同”错误地当成本次操作的授权依据。
+Google OIDC 和 GitHub OAuth2 登录都会把 provider subject 映射到内部用户，并分别把 `AuthenticatedOidcUser` 或 `AuthenticatedOAuth2User` 保存到 SecurityContext。改密链路不再使用请求邮箱进行账号匹配，避免把“邮箱相同”错误地当成本次操作的授权依据。
 
 ### 4.3 当前用户响应
 
@@ -160,7 +165,7 @@ public record CurrentAuthenticationContext(
 ```json
 {
   "passwordConfigured": true,
-  "sessionAuthenticationMethod": "OIDC"
+  "sessionAuthenticationMethod": "OAUTH2"
 }
 ```
 
@@ -169,7 +174,7 @@ public record CurrentAuthenticationContext(
 | 字段 | 说明 |
 | --- | --- |
 | `passwordConfigured` | 当前用户是否存在 `auth_password_credentials` 记录 |
-| `sessionAuthenticationMethod` | 当前浏览器 Session 是通过密码还是 OIDC 建立 |
+| `sessionAuthenticationMethod` | 当前浏览器 Session 是通过密码、OIDC 还是普通 OAuth2 建立 |
 
 建议新增统一的 `CurrentUserResponseFactory` 或等价 mapper，集中组装权限、密码状态和当前认证方式，替换 `CurrentUserController` 与 `PasswordAuthController` 中重复的响应构造逻辑。
 
@@ -195,7 +200,7 @@ X-XSRF-TOKEN: <token>
 
 字段规则：
 
-| 字段 | 密码 Session | OIDC Session |
+| 字段 | 密码 Session | OIDC/OAUTH2 Session |
 | --- | --- | --- |
 | `currentPassword` | 必填并验证 | 可省略，后端不依赖该字段 |
 | `newPassword` | 必填 | 必填 |
@@ -293,7 +298,7 @@ backend/auth/src/main/java/org/congcong/algomentor/auth/model
      - currentPassword 必填
      - PasswordEncoder.matches 校验原密码
      - 使用原 hash 作为 CAS 条件更新
-   OIDC:
+   OIDC/OAUTH2:
      - 不校验 currentPassword
      - 首次新增前校验当前用户存在可用登录邮箱
      - 先尝试按 user_id 插入，唯一键冲突后再覆盖已有凭据
@@ -324,7 +329,7 @@ WHERE user_id = :userId
 
 更新行数为 `0` 时不能静默重试，因为原密码校验所依据的凭据可能已经变化，应返回 `AUTH_PASSWORD_CHANGED_CONCURRENTLY`。
 
-OIDC Session 在同一事务内先尝试插入：
+OIDC/OAUTH2 Session 在同一事务内先尝试插入：
 
 ```sql
 INSERT INTO auth_password_credentials (
@@ -351,7 +356,7 @@ INSERT INTO auth_password_credentials (
 ON CONFLICT (user_id) DO NOTHING;
 ```
 
-插入行数为 `1` 时，本次操作为 `CREATED`。插入行数为 `0` 时，说明凭据已存在或被并发请求抢先创建，随后执行不校验旧 hash 的受信 OIDC 覆盖更新，本次操作为 `UPDATED`。这使 `CREATED/UPDATED`、是否吊销其他 Session 和并发行为都有确定结果，不能依赖前端提交的 `passwordConfigured` 或更新前的非锁定查询。
+插入行数为 `1` 时，本次操作为 `CREATED`。插入行数为 `0` 时，说明凭据已存在或被并发请求抢先创建，随后执行不校验旧 hash 的受信第三方登录覆盖更新，本次操作为 `UPDATED`。这使 `CREATED/UPDATED`、是否吊销其他 Session 和并发行为都有确定结果，不能依赖前端提交的 `passwordConfigured` 或更新前的非锁定查询。
 
 ### 6.4 Session 吊销
 
@@ -398,7 +403,7 @@ PASSWORD Session
   - 新密码
   - 确认新密码
 
-OIDC Session
+OIDC/OAUTH2 Session
   - 新密码
   - 确认新密码
 ```
@@ -410,7 +415,7 @@ OIDC Session
 - 提交期间禁用重复提交；
 - 前端执行长度和一致性校验，但后端始终重复校验；
 - 成功后关闭弹窗，将内存中的 `currentUser.passwordConfigured` 更新为 `true`；
-- OIDC 首次设置成功提示“以后可以使用当前邮箱和此密码登录，OIDC 登录仍然有效”；
+- 第三方登录首次设置成功提示“以后可以使用当前邮箱和此密码登录，第三方登录仍然有效”；
 - 修改成功时提示其他 Session 已退出，但不展示数量以外的会话信息；
 - 中英文文案统一维护在 `frontend/src/i18n/locales.ts`。
 
@@ -421,7 +426,7 @@ OIDC Session
 `frontend/src/types/api.ts` 增加：
 
 ```ts
-export type AuthSessionAuthenticationMethod = 'PASSWORD' | 'OIDC';
+export type AuthSessionAuthenticationMethod = 'PASSWORD' | 'OIDC' | 'OAUTH2';
 
 export interface UserPasswordUpdateRequest {
   currentPassword?: string;
@@ -447,7 +452,7 @@ export interface UserPasswordUpdateResponse {
 - 只允许当前已认证用户修改自己的密码。
 - 只信任服务端 Authentication 类型，不信任前端声明。
 - 密码 Session 必须验证原密码。
-- OIDC Session 必须是项目认证链创建的 `AuthenticatedOidcUser`，不能仅凭账号存在 OIDC 绑定免校验。
+- OIDC/OAUTH2 Session 必须是项目认证链创建的 `AuthenticatedOidcUser` 或 `AuthenticatedOAuth2User`，不能仅凭账号存在第三方绑定免校验。
 - 所有写请求执行 CSRF 校验。
 - 新密码使用现有 `PasswordEncoder` 编码。
 - 日志、指标、错误响应和审计不保存任何密码内容或 hash。
@@ -455,20 +460,20 @@ export interface UserPasswordUpdateResponse {
 
 ### 8.2 已接受风险
 
-首版允许一个仍然有效但建立时间较早的 OIDC Session 直接覆盖密码。如果该 Session 被窃取，攻击者可能借此建立长期密码登录方式。这不是跨用户授权漏洞，因为操作仍限定在当前 OIDC Session 对应的用户，但会放大被盗 Session 的持续访问能力。
+首版允许一个仍然有效但建立时间较早的第三方登录 Session 直接覆盖密码。如果该 Session 被窃取，攻击者可能借此建立长期密码登录方式。这不是跨用户授权漏洞，因为操作仍限定在当前 Session 对应的用户，但会放大被盗 Session 的持续访问能力。
 
 当前阶段接受该风险，原因是：
 
-- OIDC 本身是受信认证方式；
+- OIDC/OAUTH2 本身是受信认证方式；
 - 当前项目处于小规模封闭内测；
-- 强制 OIDC 二次认证会显著增加回调状态、前端跳转和失败恢复复杂度；
+- 强制第三方二次认证会显著增加回调状态、前端跳转和失败恢复复杂度；
 - 接口设计已经保留未来增加近期认证判断的空间。
 
-未来提高安全等级时，可以在 OIDC 分支增加以下任一门槛，而不改变 `PUT /api/auth/password` 的外部契约：
+未来提高安全等级时，可以在第三方登录分支增加以下任一门槛，而不改变 `PUT /api/auth/password` 的外部契约：
 
-- 当前 OIDC Session 的认证时间不超过固定窗口；
-- 改密前执行带 `prompt=login` 或等价参数的 OIDC 二次认证；
-- 要求用户输入现有密码，或在没有密码时执行 OIDC 二次认证。
+- 当前第三方登录 Session 的认证时间不超过固定窗口；
+- 改密前执行 provider 支持的强制重新认证；
+- 要求用户输入现有密码，或在没有密码时执行第三方二次认证。
 
 ## 9. 可观测性
 
@@ -476,7 +481,7 @@ export interface UserPasswordUpdateResponse {
 
 | 指标 | 标签 | 说明 |
 | --- | --- | --- |
-| `algo_mentor_auth_password_updates_total` | `method=PASSWORD/OIDC`、`operation=CREATED/UPDATED`、`outcome=success/failure` | 用户密码新增或修改次数 |
+| `algo_mentor_auth_password_updates_total` | `method=PASSWORD/OIDC/OAUTH2`、`operation=CREATED/UPDATED`、`outcome=success/failure` | 用户密码新增或修改次数 |
 | `algo_mentor_auth_password_update_failures_total` | `reason=invalid_request/current_password/concurrent/storage/session_revocation` | 失败分类 |
 | `algo_mentor_auth_password_session_revocations_total` | 无 | 改密后吊销的其他 Session 数量 |
 
@@ -488,7 +493,7 @@ export interface UserPasswordUpdateResponse {
 - 吊销 Session 数量；
 - 稳定错误码。
 
-日志不得记录邮箱、密码、密码长度、hash、Cookie、Authorization、完整 Session ID、OIDC token 或 provider 原始 claims。
+日志不得记录邮箱、密码、密码长度、hash、Cookie、Authorization、完整 Session ID、OAuth/OIDC token 或 provider 原始 claims。
 
 用户主动改密不复用管理员审计表，避免把普通用户行为混入管理员操作审计。后续如建设用户安全事件中心，应使用独立事件模型。
 
@@ -501,9 +506,9 @@ export interface UserPasswordUpdateResponse {
 - 密码 Session 提交正确原密码后更新成功；
 - 密码 Session 缺少原密码被拒绝；
 - 密码 Session 原密码错误被拒绝；
-- OIDC Session 无密码凭据时新增成功；
-- OIDC Session 已有密码凭据时覆盖成功；
-- OIDC 请求即使提交 `currentPassword` 也不依赖该字段授权；
+- OIDC/OAUTH2 Session 无密码凭据时新增成功；
+- OIDC/OAUTH2 Session 已有密码凭据时覆盖成功；
+- 第三方登录请求即使提交 `currentPassword` 也不依赖该字段授权；
 - 不支持的 Authentication 类型被拒绝；
 - 临时密码强制改密 Session 被拒绝；
 - 新密码过短或两次不一致被拒绝；
@@ -514,10 +519,10 @@ export interface UserPasswordUpdateResponse {
 
 ### 10.2 Repository 与集成测试
 
-- OIDC insert-or-replace 在无记录时插入普通密码凭据；
-- OIDC insert-or-replace 在有记录时更新同一行，不创建第二条记录；
-- 两条并发 OIDC 请求最终仍只有一个 `user_id` 凭据；
-- OIDC 首次设置且内部邮箱缺失时被拒绝；
+- 第三方登录 insert-or-replace 在无记录时插入普通密码凭据；
+- 第三方登录 insert-or-replace 在有记录时更新同一行，不创建第二条记录；
+- 两条并发第三方登录请求最终仍只有一个 `user_id` 凭据；
+- 第三方登录首次设置且内部邮箱缺失时被拒绝；
 - 密码 CAS SQL 只在 expected hash 匹配时更新；
 - 更新后清理临时密码和 `reset_by` 字段；
 - `password_changed_at` 与 `updated_at` 正确写入；
@@ -532,7 +537,7 @@ export interface UserPasswordUpdateResponse {
 - 无密码时显示“设置密码”；
 - 有密码时显示“修改密码”；
 - 密码 Session 弹窗显示原密码字段；
-- OIDC Session 弹窗不显示原密码字段；
+- OIDC/OAUTH2 Session 弹窗不显示原密码字段；
 - 两次新密码不一致时不发送请求；
 - 提交期间不能重复提交；
 - 成功后更新 `passwordConfigured` 并关闭弹窗；
@@ -549,7 +554,7 @@ npm --cache ./.npm --prefix frontend test -- SettingsPage
 ## 11. 实施顺序
 
 1. 提取统一密码约束，新增认证方式枚举与当前认证上下文解析器。
-2. 扩展密码 Repository，完成密码 CAS 更新与 OIDC insert-or-replace。
+2. 扩展密码 Repository，完成密码 CAS 更新与第三方登录 insert-or-replace。
 3. 扩展 Session 吊销端口，实现“保留当前、吊销其他”。
 4. 实现 `UserPasswordService`、事务执行器、错误码和单元测试。
 5. 增加 `PUT /api/auth/password` 及 Controller 安全测试。
@@ -563,7 +568,7 @@ npm --cache ./.npm --prefix frontend test -- SettingsPage
 
 发布后需要观察：
 
-- OIDC 新增密码成功率；
+- 第三方登录新增密码成功率；
 - 原密码错误比例；
 - 并发更新冲突；
 - Session 吊销失败；
@@ -574,9 +579,9 @@ npm --cache ./.npm --prefix frontend test -- SettingsPage
 ## 13. 验收标准
 
 - 密码登录用户可以使用原密码修改新密码。
-- OIDC 登录用户无论此前是否设置过密码，都可以不输入原密码直接设置新密码。
-- 前端无法通过伪造字段让密码 Session 走 OIDC 免原密码分支。
-- OIDC 首次设置后，可以使用同一用户邮箱和新密码完成密码登录，OIDC 登录仍然可用。
+- 第三方登录用户无论此前是否设置过密码，都可以不输入原密码直接设置新密码。
+- 前端无法通过伪造字段让密码 Session 走第三方登录免原密码分支。
+- 第三方登录首次设置后，可以使用同一用户邮箱和新密码完成密码登录，原第三方登录仍然可用。
 - 修改已有密码后，旧密码无法登录，当前 Session 保持可用，其他 Session 被吊销。
 - 临时密码强制改密流程不被通用改密接口绕过。
 - 数据库中同一用户始终最多只有一条密码凭据。

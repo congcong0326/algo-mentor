@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Map;
 import org.congcong.algomentor.identity.model.AuthRole;
 import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.junit.jupiter.api.AfterEach;
@@ -47,6 +48,23 @@ class CurrentAuthenticationContextResolverTest {
     assertThat(resolver.resolve()).isPresent().get()
         .extracting(CurrentAuthenticationContext::method)
         .isEqualTo(AuthSessionAuthenticationMethod.OIDC);
+  }
+
+  @Test
+  void resolvesOAuth2SessionFromAuthenticatedOAuth2User() {
+    AuthenticatedUserPrincipal principal = principal();
+    AuthenticatedOAuth2User oauth2User = new AuthenticatedOAuth2User(
+        principal,
+        Map.of("id", 123456L),
+        List.of());
+    SecurityContextHolder.getContext().setAuthentication(new OAuth2AuthenticationToken(
+        oauth2User,
+        List.of(),
+        "github"));
+
+    assertThat(resolver.resolve()).contains(new CurrentAuthenticationContext(
+        principal,
+        AuthSessionAuthenticationMethod.OAUTH2));
   }
 
   @Test

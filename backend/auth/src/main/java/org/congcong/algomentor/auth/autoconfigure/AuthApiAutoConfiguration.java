@@ -17,6 +17,8 @@ import org.congcong.algomentor.auth.cache.BetaAccessCache;
 import org.congcong.algomentor.auth.cache.IdentityUserAccessCacheInvalidationListener;
 import org.congcong.algomentor.auth.config.AuthProperties;
 import org.congcong.algomentor.auth.controller.AuthCapabilitiesController;
+import org.congcong.algomentor.auth.github.GitHubEmailClient;
+import org.congcong.algomentor.auth.github.RestClientGitHubEmailClient;
 import org.congcong.algomentor.auth.controller.admin.BetaAccessController;
 import org.congcong.algomentor.auth.controller.admin.BetaAccessExceptionHandler;
 import org.congcong.algomentor.auth.controller.admin.AdminPasswordResetController;
@@ -96,6 +98,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.session.FindByIndexNameSessionRepository;
@@ -153,8 +157,13 @@ public class AuthApiAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public AuthCapabilitiesController authCapabilitiesController(AuthProperties properties) {
-    return new AuthCapabilitiesController(properties);
+  public AuthCapabilitiesController authCapabilitiesController(
+      AuthProperties properties,
+      ObjectProvider<ClientRegistrationRepository> clientRegistrationRepositoryProvider
+  ) {
+    return new AuthCapabilitiesController(
+        properties,
+        clientRegistrationRepositoryProvider.getIfAvailable());
   }
 
   @Bean
@@ -646,6 +655,12 @@ public class AuthApiAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
+  public GitHubEmailClient gitHubEmailClient() {
+    return new RestClientGitHubEmailClient();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
@@ -681,9 +696,13 @@ public class AuthApiAutoConfiguration {
   @ConditionalOnBean(OAuth2LoginUserService.class)
   @ConditionalOnMissingBean
   public AuthenticatedOAuth2UserService authenticatedOAuth2UserService(
-      OAuth2LoginUserService oAuth2LoginUserService
+      OAuth2LoginUserService oAuth2LoginUserService,
+      GitHubEmailClient gitHubEmailClient
   ) {
-    return new AuthenticatedOAuth2UserService(oAuth2LoginUserService);
+    return new AuthenticatedOAuth2UserService(
+        oAuth2LoginUserService,
+        new DefaultOAuth2UserService(),
+        gitHubEmailClient);
   }
 
   @Bean
