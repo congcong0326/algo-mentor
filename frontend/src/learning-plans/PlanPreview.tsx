@@ -62,7 +62,9 @@ function ProblemRowContent({
             {formatProgressStatus(progressStatus, resources)}
           </span>
         ) : null}
-        {todayPack ? <span className="status-badge today-pack-match-badge">此题在今日题包中</span> : null}
+        {todayPack ? (
+          <span className="status-badge today-pack-match-badge">{resources.learningPlans.todayPackProblem}</span>
+        ) : null}
       </span>
     </>
   );

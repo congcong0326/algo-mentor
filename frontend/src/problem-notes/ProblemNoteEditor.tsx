@@ -1,5 +1,6 @@
 import { ChevronDown, Loader2, RefreshCw, Save } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { useI18n } from '../i18n/I18nProvider';
 import { ApiRequestError, getProblemNote, requireApiData, upsertProblemNote } from '../services/api';
 import type { ProblemSolutionOutlineV1, UserProblemNote } from '../types/api';
 import { emptyProblemSolutionOutline } from './problemNoteOptions';
@@ -21,6 +22,7 @@ export default function ProblemNoteEditor({
   onDirtyChange,
   problemSlug,
 }: ProblemNoteEditorProps) {
+  const { locale, resources } = useI18n();
   const [open, setOpen] = useState(false);
   const [freeNoteOpen, setFreeNoteOpen] = useState(false);
   const [note, setNote] = useState<UserProblemNote>();
@@ -52,7 +54,7 @@ export default function ProblemNoteEditor({
     onDirtyChange?.(false);
     void load(controller.signal);
     return () => controller.abort();
-  }, [onDirtyChange, problemSlug]);
+  }, [locale, onDirtyChange, problemSlug]);
 
   async function load(signal?: AbortSignal) {
     setLoading(true);
@@ -60,12 +62,12 @@ export default function ProblemNoteEditor({
     setConflict(false);
     try {
       const response = await getProblemNote(problemSlug, signal);
-      const loaded = requireApiData(response, '题目笔记加载失败');
+      const loaded = requireApiData(response, resources.problemNotes.loadFailed);
       setNote(loaded);
       setDraft({ noteMarkdown: loaded.noteMarkdown, outline: loaded.outline });
     } catch (loadError) {
       if (!(loadError instanceof DOMException && loadError.name === 'AbortError')) {
-        setError(loadError instanceof Error ? loadError.message : '题目笔记加载失败');
+        setError(loadError instanceof Error ? loadError.message : resources.problemNotes.loadFailed);
       }
     } finally {
       if (!signal?.aborted) {
@@ -87,26 +89,26 @@ export default function ProblemNoteEditor({
         noteMarkdown: draft.noteMarkdown,
         outline: draft.outline,
       });
-      const saved = requireApiData(response, '题目笔记保存失败');
+      const saved = requireApiData(response, resources.problemNotes.saveFailed);
       setNote(saved);
       setDraft({ noteMarkdown: saved.noteMarkdown, outline: saved.outline });
     } catch (saveError) {
       if (saveError instanceof ApiRequestError && saveError.code === 'PROBLEM_NOTE_REVISION_CONFLICT') {
         setConflict(true);
       }
-      setError(saveError instanceof Error ? saveError.message : '题目笔记保存失败');
+      setError(saveError instanceof Error ? saveError.message : resources.problemNotes.saveFailed);
     } finally {
       setSaving(false);
     }
   }
 
   const stateLabel = loading
-    ? '加载中'
+    ? resources.problemNotes.loading
     : dirty
-      ? '有未保存修改'
+      ? resources.problemNotes.unsaved
       : note?.hasContent
-        ? '已有笔记'
-        : '暂无笔记';
+        ? resources.problemNotes.existing
+        : resources.problemNotes.empty;
 
   return (
     <section className={`problem-note-editor ${open ? 'is-open' : ''} ${className}`.trim()}>
@@ -117,10 +119,10 @@ export default function ProblemNoteEditor({
         type="button"
       >
         <span>
-          <strong>我的题目笔记</strong>
+          <strong>{resources.problemNotes.title}</strong>
           <small>
             {stateLabel}
-            {note?.updatedAt ? ` · 更新于 ${formatUpdatedAt(note.updatedAt)}` : ''}
+            {note?.updatedAt ? resources.problemNotes.updatedAt(formatUpdatedAt(note.updatedAt, locale)) : ''}
           </small>
         </span>
         <ChevronDown aria-hidden="true" />
@@ -129,13 +131,15 @@ export default function ProblemNoteEditor({
       {open && (
         <div className="problem-note-editor-body">
           {loading ? (
-            <p className="problem-note-state" role="status"><Loader2 aria-hidden="true" />正在加载题目笔记...</p>
+            <p className="problem-note-state" role="status">
+              <Loader2 aria-hidden="true" />{resources.problemNotes.loadingDetail}
+            </p>
           ) : error && !note ? (
             <div className="problem-note-state error" role="alert">
               <span>{error}</span>
               <button className="secondary-button compact" onClick={() => void load()} type="button">
                 <RefreshCw aria-hidden="true" />
-                <span>重试</span>
+                <span>{resources.problemNotes.retry}</span>
               </button>
             </div>
           ) : note ? (
@@ -153,16 +157,16 @@ export default function ProblemNoteEditor({
                   type="button"
                 >
                   <span>
-                    <strong>自由笔记</strong>
-                    <small>{draft.noteMarkdown.trim() ? '已有内容' : '未填写'}</small>
+                    <strong>{resources.problemNotes.freeNote}</strong>
+                    <small>{draft.noteMarkdown.trim() ? resources.problemNotes.hasContent : resources.problemNotes.notFilled}</small>
                   </span>
                   <ChevronDown aria-hidden="true" />
                 </button>
                 {freeNoteOpen && (
                   <label className="problem-note-field problem-note-field-wide">
-                    <span>自由笔记内容</span>
+                    <span>{resources.problemNotes.freeNoteContent}</span>
                     <textarea
-                      aria-label="自由笔记内容"
+                      aria-label={resources.problemNotes.freeNoteContent}
                       disabled={saving}
                       maxLength={10000}
                       onChange={(event) => setDraft((current) => ({
@@ -178,19 +182,19 @@ export default function ProblemNoteEditor({
               </div>
               {(error || conflict) && (
                 <p className="problem-note-save-error" role="alert">
-                  {conflict ? '笔记已在其他页面更新，请重新加载后再编辑。' : error}
+                  {conflict ? resources.problemNotes.conflict : error}
                 </p>
               )}
               <div className="problem-note-actions">
                 {conflict && (
                   <button className="secondary-button compact" onClick={() => void load()} type="button">
                     <RefreshCw aria-hidden="true" />
-                    <span>重新加载</span>
+                    <span>{resources.problemNotes.reload}</span>
                   </button>
                 )}
                 <button className="primary-button compact" disabled={!dirty || saving} onClick={() => void save()} type="button">
                   {saving ? <Loader2 aria-hidden="true" /> : <Save aria-hidden="true" />}
-                  <span>{saving ? '保存中' : '保存笔记'}</span>
+                  <span>{saving ? resources.problemNotes.saving : resources.problemNotes.save}</span>
                 </button>
               </div>
             </>
@@ -201,7 +205,7 @@ export default function ProblemNoteEditor({
   );
 }
 
-function formatUpdatedAt(value: string) {
+function formatUpdatedAt(value: string, locale: string) {
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString('zh-CN', { hour12: false });
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString(locale, { hour12: false });
 }

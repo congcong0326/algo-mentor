@@ -4,6 +4,11 @@ import type {
   LearningPlanLevel,
   LearningPlanStatus,
   ProblemDifficulty,
+  ProblemAlgorithmKey,
+  ProblemComplexityKey,
+  ProblemDataStructureKey,
+  ReviewCardSource,
+  ReviewRating,
   AuthUserStatus,
 } from '../types/api';
 
@@ -115,6 +120,148 @@ export interface LocaleResources {
     expandSection: (label: string) => string;
     collapseSection: (label: string) => string;
     labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'databaseBackup' | 'sessions' | 'sessionPolicies' | 'systemPrompts' | 'ai' | 'aiPlatform' | 'operations' | 'modelResources' | 'costGovernance' | 'aiProviders' | 'aiRouting' | 'aiUsage' | 'aiPricing' | 'content' | 'feedback' | 'users' | 'userGroups' | 'betaAccess' | 'problems', string>;
+  };
+  adminFeedback: {
+    listLoadFailed: string;
+    detailLoadFailed: string;
+    markReadFailed: string;
+    replyFailed: string;
+    statusUpdateFailed: string;
+    requestFailed: string;
+    title: string;
+    refresh: string;
+    status: string;
+    allStatuses: string;
+    category: string;
+    allCategories: string;
+    unreadOnly: string;
+    unread: string;
+    user: string;
+    subject: string;
+    updatedAt: string;
+    untitled: string;
+    close: string;
+    reopen: string;
+    selectThread: string;
+  };
+  adminOverview: {
+    loadFailed: string;
+    loading: string;
+    title: string;
+    retry: string;
+    generatedMeta: (date: string, zone: string) => string;
+    refresh: string;
+    betaAccess: string;
+    enabled: string;
+    disabled: string;
+    betaSummary: (allowed: number, registered: number) => string;
+    aiRuntime: string;
+    aiRuntimeSummary: (limit: number) => string;
+    aiToday: string;
+    entryRequests: string;
+    success: string;
+    failed: string;
+    quotaRejected: string;
+    modelCalls: string;
+    estimatedCost: string;
+    unpricedCalls: (count: number) => string;
+    quotaRiskUsers: string;
+    userFallback: (id: number) => string;
+    noQuotaRisks: string;
+    feedbackTasks: string;
+    adminUnread: (count: number) => string;
+    recentFailedRuns: string;
+    failedRuns: (count: number) => string;
+    noRunQuery: string;
+    sectionUnavailable: string;
+  };
+  adminUserSupport: {
+    title: string;
+    allowlist: string;
+    unavailable: string;
+    allowed: (id?: number | null) => string;
+    notAllowed: string;
+    loading: string;
+    openFeedback: string;
+    feedbackCount: (count: number) => string;
+  };
+  adminSystemPrompts: {
+    loadCatalogFailed: string;
+    loadDetailFailed: string;
+    loadPoliciesFailed: string;
+    defaultPolicyName: (displayName: string) => string;
+    invalidSubjectId: string;
+    nameRequired: string;
+    subjectRequired: string;
+    saved: string;
+    saveFailed: string;
+    disabledSuccess: string;
+    enabledSuccess: string;
+    statusUpdateFailed: string;
+    deleted: string;
+    deleteFailed: string;
+    priorityUpdated: string;
+    priorityUpdateFailed: string;
+    invalidUserId: string;
+    simulationFailed: string;
+    ariaLabel: string;
+    title: string;
+    description: string;
+    createPolicy: string;
+    refresh: string;
+    searchTypes: string;
+    searchPlaceholder: string;
+    category: string;
+    allCategories: string;
+    typeNavigation: string;
+    policyCount: (count: number) => string;
+    codeDefault: string;
+    loading: string;
+    codeRevision: string;
+    snapshotScope: string;
+    policies: string;
+    priority: string;
+    name: string;
+    scope: string;
+    status: string;
+    actions: string;
+    enabled: string;
+    disabled: string;
+    moveUp: string;
+    moveDown: string;
+    edit: string;
+    delete: string;
+    emptyPolicies: string;
+    defaultSections: string;
+    editOverrides: string;
+    createOverrides: string;
+    cancel: string;
+    policyName: string;
+    policyDescription: string;
+    effectiveScope: string;
+    allUsers: string;
+    selectedSubjects: string;
+    subjectType: string;
+    user: string;
+    group: string;
+    subjectId: string;
+    add: string;
+    removeSubject: (type: string, id: number) => string;
+    subjectLabel: (type: string, id: number) => string;
+    overrideSection: string;
+    characterCount: (count: number, max: number) => string;
+    databaseOverride: string;
+    restoreDefault: string;
+    saving: string;
+    savePolicy: string;
+    simulateByUser: string;
+    userId: string;
+    simulate: string;
+    simulationSummary: (source: string, policy: string, matchSource?: string | null) => string;
+    simulationSectionSummary: (source: string, count: number) => string;
+    deleteTitle: string;
+    deleteDescription: (name: string) => string;
+    scopeSummary: (users: number, groups: number) => string;
   };
   feedback: {
     openDialog: string;
@@ -819,6 +966,181 @@ export interface LocaleResources {
     abilityLoadFailed: string;
     abilityEmpty: string;
   };
+  todayPack: {
+    homeLoadFailed: string;
+    reviewSummaryLoadFailed: string;
+    loadingStatus: string;
+    trainingStatusUnavailable: string;
+    reviewStatusLoading: string;
+    reviewStatusUnavailable: string;
+    reviewDue: (count: number) => string;
+    reviewUpcoming: (count: number, time: string) => string;
+    todayCompleted: string;
+    reviewStart: (count: number) => string;
+    reviewSchedule: string;
+    homeAriaLabel: string;
+    trainingEntryAriaLabel: string;
+    todayPack: string;
+    startTraining: string;
+    activePlanRhythm: (daily: number, daysPerWeek: number, remaining: number) => string;
+    noPlanGuidance: string;
+    startTodayTraining: string;
+    choosePlan: string;
+    reviewEntryAriaLabel: string;
+    reviewCenter: string;
+    reviewDescription: string;
+    diagnosisTitle: string;
+    diagnosisDescription: string;
+    viewFullProfile: string;
+    abilityUnavailable: string;
+    averageAbility: string;
+    currentStrength: string;
+    none: string;
+    strengthEvidence: (count: number) => string;
+    nextBreakthrough: string;
+    breakthroughFallback: string;
+    breakthroughAdvice: (label: string) => string;
+    weeklyRhythm: string;
+    dailyTraining: string;
+    weeklyTarget: string;
+    remainingProblems: string;
+    problemCount: (count: number) => string;
+    managePlan: string;
+    noActivePlan: string;
+    noActivePlanDescription: string;
+    viewPlans: string;
+    packLoadFailed: string;
+    resetConfirm: string;
+    packResetFailed: string;
+    loadingPack: string;
+    packAriaLabel: string;
+    activePackSummary: (title: string, startDate: string, daily: number, localDate: string) => string;
+    packIntroduction: string;
+    restart: string;
+    restartHelpAriaLabel: string;
+    restartHelp: string;
+    emptyPlanTitle: string;
+    emptyPlanDescription: string;
+    planCompletedTitle: string;
+    planCompletedDescription: string;
+    doneTodayTitle: string;
+    doneTodayDescription: string;
+    stopToday: string;
+    nextPack: string;
+    futurePack: (date: string) => string;
+    sectionProblemCount: (count: number) => string;
+    carryover: (days: number, date: string) => string;
+    scheduledDate: (date: string) => string;
+    emptyDay: string;
+    packTotal: (count: number) => string;
+    backToday: string;
+    statusNoActivePlan: string;
+    statusPlanCompleted: string;
+    statusDoneWithNext: (date: string) => string;
+    statusDone: string;
+    statusDue: (count: number) => string;
+    statusEmpty: string;
+  };
+  reviewCenter: {
+    sourceLabels: Record<ReviewCardSource, string>;
+    ratingLabels: Record<ReviewRating, string>;
+    ratingDescriptions: Record<ReviewRating, string>;
+    fsrsStateLabels: Record<'LEARNING' | 'REVIEW' | 'RELEARNING', string>;
+    loadTodayReview: string;
+    startTodayReview: (count: number) => string;
+    availableAt: (time: string) => string;
+    todayCompleted: string;
+    cardLoadFailed: string;
+    summaryLoadFailed: string;
+    archiveUpdateFailed: string;
+    detailLoadFailed: string;
+    title: string;
+    overviewAriaLabel: string;
+    remainingToday: string;
+    reviewProblems: string;
+    mistakes: string;
+    filtersAriaLabel: string;
+    searchPlaceholder: string;
+    mistakesOnly: string;
+    refreshCards: string;
+    loadingCards: string;
+    emptyCards: string;
+    lastRating: (rating: string) => string;
+    forgottenCount: (count: number) => string;
+    viewCardDetail: (title: string) => string;
+    viewDetail: string;
+    restoreReview: string;
+    removeFromReview: string;
+    closeDetail: string;
+    loadingDetail: string;
+    recentHistory: string;
+    intervalChange: (before: number, after: number) => string;
+    noHistory: string;
+    dueUnknown: string;
+    overdue: (days: number) => string;
+    dueToday: string;
+    reviewTomorrow: string;
+    reviewInDays: (days: number) => string;
+    queueLoadFailed: string;
+    ratingSubmitFailed: string;
+    discardNoteConfirm: string;
+    backToReviewCenter: string;
+    spacedReview: string;
+    unknownDifficulty: string;
+    preparingQueue: string;
+    queueCompleted: string;
+    loadingStatement: string;
+    fullStatementAriaLabel: string;
+    history: string;
+    recentCount: (count: number) => string;
+    historyAfterRating: string;
+    resultAriaLabel: string;
+    nextReview: (value: string) => string;
+    ratingAriaLabel: string;
+    nextProblem: string;
+    calculating: string;
+    minutesLater: (minutes: number) => string;
+    reviewLater: string;
+    ratingButtonAriaLabel: (label: string, description: string, interval: string) => string;
+  };
+  problemNotes: {
+    loadFailed: string;
+    saveFailed: string;
+    loading: string;
+    unsaved: string;
+    existing: string;
+    empty: string;
+    title: string;
+    updatedAt: (value: string) => string;
+    loadingDetail: string;
+    retry: string;
+    freeNote: string;
+    hasContent: string;
+    notFilled: string;
+    freeNoteContent: string;
+    conflict: string;
+    reload: string;
+    saving: string;
+    save: string;
+    coreIdea: string;
+    dataStructures: string;
+    customDataStructures: string;
+    dataStructureNotes: string;
+    dataStructureNotesPlaceholder: string;
+    algorithms: string;
+    customAlgorithms: string;
+    algorithmNotes: string;
+    algorithmNotesPlaceholder: string;
+    timeComplexity: string;
+    spaceComplexity: string;
+    edgeCases: string;
+    complexityEmpty: string;
+    customValueAriaLabel: (label: string) => string;
+    customValuePlaceholder: string;
+    dataStructureLabels: Record<ProblemDataStructureKey, string>;
+    algorithmLabels: Record<ProblemAlgorithmKey, string>;
+    complexityLabels: Record<ProblemComplexityKey, string>;
+  };
   problems: {
     ariaLabel: string;
     searchLabel: string;
@@ -864,6 +1186,13 @@ export interface LocaleResources {
     detailLoadFailed: string;
     deleteFailed: string;
     confirmDelete: string;
+    activateConfirm: string;
+    activateFailed: string;
+    currentActive: string;
+    todayPack: string;
+    activating: string;
+    activate: string;
+    todayPackProblem: string;
     loadingDetail: string;
     loadingPracticeChat: string;
     overviewTitle: string;
@@ -1099,6 +1428,7 @@ export interface LocaleResources {
     reviewContextSummary: string;
     completionGateFallback: string;
     completionRequiresPassedReview: string;
+    completionGateMessages: Record<'NO_REVIEW' | 'LATEST_REVIEW_FAILED' | 'PASSED' | 'ALREADY_COMPLETED', string>;
     practiceComposerPlaceholderReview: string;
     toolPermissionEyebrow: string;
     toolPermissionProblem: string;
@@ -1286,6 +1616,56 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         betaAccess: '内测准入',
         problems: '题库管理',
       },
+    },
+    adminFeedback: {
+      listLoadFailed: '反馈列表加载失败', detailLoadFailed: '反馈详情加载失败', markReadFailed: '标记已读失败',
+      replyFailed: '回复失败', statusUpdateFailed: '状态更新失败', requestFailed: '请求失败', title: '反馈管理',
+      refresh: '刷新', status: '状态', allStatuses: '全部状态', category: '分类', allCategories: '全部分类',
+      unreadOnly: '仅未读', unread: '未读', user: '用户', subject: '主题', updatedAt: '更新时间',
+      untitled: '未命名反馈', close: '关闭', reopen: '重新打开', selectThread: '选择一条反馈进行处理。',
+    },
+    adminOverview: {
+      loadFailed: '管理员概览加载失败', loading: '正在加载管理员概览...', title: '管理员概览', retry: '重试',
+      generatedMeta: (date, zone) => `数据时间：${date} · 配额时区：${zone}`, refresh: '刷新', betaAccess: '内测准入',
+      enabled: '已开启', disabled: '已关闭', betaSummary: (allowed, registered) => `${allowed} 人 / 已注册 ${registered} 人`,
+      aiRuntime: 'AI 运行策略', aiRuntimeSummary: (limit) => `默认 ${limit} 次`, aiToday: '今日 AI 使用',
+      entryRequests: '入口请求', success: '成功', failed: '失败', quotaRejected: '额度拒绝', modelCalls: '模型调用',
+      estimatedCost: '按当前价格估算', unpricedCalls: (count) => `${count} 次未定价调用`, quotaRiskUsers: '额度风险用户',
+      userFallback: (id) => `用户 ${id}`, noQuotaRisks: '暂无接近额度上限的用户。', feedbackTasks: '反馈待办',
+      adminUnread: (count) => `管理员未读 ${count}`, recentFailedRuns: '最近失败 run',
+      failedRuns: (count) => `${count} 个失败 run`, noRunQuery: '暂未提供 run 查询。', sectionUnavailable: '此区块暂不可用',
+    },
+    adminUserSupport: {
+      title: '内测准入与支持', allowlist: '白名单', unavailable: '暂不可用',
+      allowed: (id) => id ? `已在白名单（记录 ${id}）` : '已在白名单', notAllowed: '不在白名单',
+      loading: '正在加载...', openFeedback: 'OPEN 反馈', feedbackCount: (count) => `${count} 条`,
+    },
+    adminSystemPrompts: {
+      loadCatalogFailed: '无法加载系统提示词目录。', loadDetailFailed: '无法加载提示词详情。',
+      loadPoliciesFailed: '无法加载策略。', defaultPolicyName: (displayName) => `${displayName} 配置`,
+      invalidSubjectId: '请输入有效的用户或用户组 ID。', nameRequired: '策略名称不能为空。',
+      subjectRequired: '指定范围至少需要一个用户或用户组。', saved: '策略已保存。', saveFailed: '无法保存策略。',
+      disabledSuccess: '策略已禁用。', enabledSuccess: '策略已启用。', statusUpdateFailed: '无法更新策略状态。',
+      deleted: '策略已删除。', deleteFailed: '无法删除策略。', priorityUpdated: '策略优先级已更新。',
+      priorityUpdateFailed: '无法更新策略优先级。', invalidUserId: '请输入有效的用户 ID。', simulationFailed: '无法模拟策略命中。',
+      ariaLabel: '系统提示词', title: '系统提示词', description: '代码默认值始终可用，管理员策略仅保存 section 覆盖项。',
+      createPolicy: '新建策略', refresh: '刷新', searchTypes: '搜索提示词类型', searchPlaceholder: '搜索类型',
+      category: '分类', allCategories: '全部分类', typeNavigation: '提示词类型',
+      policyCount: (count) => `${count} 条策略`, codeDefault: '代码默认', loading: '加载中...',
+      codeRevision: '代码 revision', snapshotScope: '快照范围', policies: '管理员策略', priority: '优先级',
+      name: '名称', scope: '范围', status: '状态', actions: '操作', enabled: '启用', disabled: '禁用',
+      moveUp: '上移', moveDown: '下移', edit: '编辑', delete: '删除', emptyPolicies: '尚未配置，运行时使用代码默认值。',
+      defaultSections: '代码默认 section', editOverrides: '编辑策略覆盖', createOverrides: '新建策略覆盖', cancel: '取消',
+      policyName: '策略名称', policyDescription: '说明', effectiveScope: '生效范围', allUsers: '全部用户',
+      selectedSubjects: '指定用户或用户组', subjectType: '主体类型', user: '用户', group: '用户组', subjectId: '主体 ID', add: '添加',
+      removeSubject: (type, id) => `移除 ${type} ${id}`, subjectLabel: (type, id) => `${type} #${id}`,
+      overrideSection: '覆盖此 section', characterCount: (count, max) => `${count} / ${max} 字符`,
+      databaseOverride: '数据库覆盖', restoreDefault: '恢复代码默认', saving: '保存中...', savePolicy: '保存策略',
+      simulateByUser: '按用户模拟', userId: '用户 ID', simulate: '模拟',
+      simulationSummary: (source, policy, matchSource) => `来源：${source}；命中策略：${policy}${matchSource ? `（${matchSource}）` : ''}`,
+      simulationSectionSummary: (source, count) => `${source}，${count} 字符`, deleteTitle: '删除策略',
+      deleteDescription: (name) => `删除“${name}”后，受影响用户会重新匹配下一条策略或使用代码默认值。`,
+      scopeSummary: (users, groups) => `用户 ${users}，用户组 ${groups}`,
     },
     feedback: {
       openDialog: '打开反馈信箱',
@@ -2004,6 +2384,197 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       abilityLoadFailed: '能力画像加载失败',
       abilityEmpty: '暂无能力画像数据',
     },
+    todayPack: {
+      homeLoadFailed: '首页入口加载失败',
+      reviewSummaryLoadFailed: '复习摘要加载失败',
+      loadingStatus: '正在加载',
+      trainingStatusUnavailable: '暂时无法读取今日训练状态。',
+      reviewStatusLoading: '正在加载复习状态',
+      reviewStatusUnavailable: '复习状态暂不可用',
+      reviewDue: (count) => `今日待复习 ${count} 题`,
+      reviewUpcoming: (count, time) => `今日还有 ${count} 题，${time}可复习`,
+      todayCompleted: '今日已完成',
+      reviewStart: (count) => `开始今日复习 ${count} 题`,
+      reviewSchedule: '查看今日复习安排',
+      homeAriaLabel: '首页',
+      trainingEntryAriaLabel: '题包入口',
+      todayPack: '今日题包',
+      startTraining: '开始训练',
+      activePlanRhythm: (daily, daysPerWeek, remaining) => `${daily} 题/天 · 每周 ${daysPerWeek} 天 · 计划剩余 ${remaining} 题`,
+      noPlanGuidance: '先采用一份学习方案，首页会按节奏整理每天最该完成的训练。',
+      startTodayTraining: '开始今日训练',
+      choosePlan: '去方案页创建或采用一个',
+      reviewEntryAriaLabel: '复习中心入口',
+      reviewCenter: '复习中心',
+      reviewDescription: '先复述、再评级，让错题按遗忘风险回到今天，而不是堆成一份静态清单。',
+      diagnosisTitle: '学习诊断',
+      diagnosisDescription: '由练习与复盘持续更新。',
+      viewFullProfile: '查看完整画像',
+      abilityUnavailable: '能力画像暂不可用，今日训练入口不受影响。',
+      averageAbility: '平均能力',
+      currentStrength: '当前优势',
+      none: '暂无',
+      strengthEvidence: (count) => `基于 ${count} 道复盘题。`,
+      nextBreakthrough: '下一步突破',
+      breakthroughFallback: '继续积累复盘数据',
+      breakthroughAdvice: (label) => `今天优先补一题“${label}”基础练习。`,
+      weeklyRhythm: '本周节奏',
+      dailyTraining: '每日训练',
+      weeklyTarget: '每周目标',
+      remainingProblems: '剩余题目',
+      problemCount: (count) => `${count} 题`,
+      managePlan: '管理学习方案',
+      noActivePlan: '还没有进行中的学习方案',
+      noActivePlanDescription: '创建方案后，这里会显示每周训练节奏和剩余任务。',
+      viewPlans: '查看训练方案',
+      packLoadFailed: '今日题包加载失败',
+      resetConfirm: '今日题包将从今天重新排布，已完成和已跳过题目不会被删除。',
+      packResetFailed: '今日题包重置失败',
+      loadingPack: '正在加载今日题包',
+      packAriaLabel: '今日题包',
+      activePackSummary: (title, startDate, daily, localDate) => `${title} · 开始时间 ${startDate} · ${daily} 题/天 · 今日 ${localDate}`,
+      packIntroduction: '从一个推荐计划开始，之后可以在方案页自由切换。',
+      restart: '一键清账重新开始',
+      restartHelpAriaLabel: '一键清账重新开始说明',
+      restartHelp: '将题包起点重置为今天，清掉顺延积压；已完成和已跳过记录会保留。',
+      emptyPlanTitle: '还没有采用的训练方案',
+      emptyPlanDescription: '回到方案页创建或采用一个方案后，今日题包会按计划节奏生成。',
+      planCompletedTitle: '整条计划已清完',
+      planCompletedDescription: '已完成或跳过当前采用计划中的所有题目。你仍然可以在方案页浏览历史题目和继续对话。',
+      doneTodayTitle: '今天到此为止',
+      doneTodayDescription: '当前没有需要补做或今天安排的新题。',
+      stopToday: '到此为止',
+      nextPack: '再来一包',
+      futurePack: (date) => `${date} 的题包`,
+      sectionProblemCount: (count) => `${count} 题`,
+      carryover: (days, date) => `顺延 ${days} 天 · ${date}`,
+      scheduledDate: (date) => `安排日期 ${date}`,
+      emptyDay: '这一天没有安排题目',
+      packTotal: (count) => `本包共 ${count} 题`,
+      backToday: '回到今天',
+      statusNoActivePlan: '还没有采用的训练方案',
+      statusPlanCompleted: '整条计划已清完',
+      statusDoneWithNext: (date) => `今天已完成，下一包 ${date}`,
+      statusDone: '今天已完成',
+      statusDue: (count) => `今日待练 ${count} 题`,
+      statusEmpty: '今日暂无安排',
+    },
+    reviewCenter: {
+      sourceLabels: { REVIEW_FAILED: '错题', REVIEW_PASSED: '复习', USER_MARKED: '手动标记' },
+      ratingLabels: { AGAIN: '重来', HARD: '困难', GOOD: '良好', EASY: '简单' },
+      ratingDescriptions: {
+        AGAIN: '基本没有想起来',
+        HARD: '想起来了，但过程费力或不完整',
+        GOOD: '独立回忆出主要思路',
+        EASY: '快速、完整地回忆出来',
+      },
+      fsrsStateLabels: { LEARNING: '学习中', REVIEW: '复习中', RELEARNING: '重新学习' },
+      loadTodayReview: '加载今日复习...',
+      startTodayReview: (count) => `开始今日复习 ${count} 题`,
+      availableAt: (time) => `${time}可复习`,
+      todayCompleted: '今日已完成',
+      cardLoadFailed: '复习卡加载失败',
+      summaryLoadFailed: '复习摘要加载失败',
+      archiveUpdateFailed: '更新归档状态失败',
+      detailLoadFailed: '复习卡详情加载失败',
+      title: '复习中心',
+      overviewAriaLabel: '复习概览',
+      remainingToday: '今日剩余',
+      reviewProblems: '复习题',
+      mistakes: '错题',
+      filtersAriaLabel: '复习筛选',
+      searchPlaceholder: '搜索题目或笔记',
+      mistakesOnly: '仅看错题',
+      refreshCards: '刷新复习卡',
+      loadingCards: '正在加载复习卡...',
+      emptyCards: '暂无复习卡。',
+      lastRating: (rating) => `上次 ${rating}`,
+      forgottenCount: (count) => `忘记 ${count} 次`,
+      viewCardDetail: (title) => `查看复习卡详情 ${title}`,
+      viewDetail: '查看详情',
+      restoreReview: '恢复复习',
+      removeFromReview: '移出复习',
+      closeDetail: '关闭复习卡详情',
+      loadingDetail: '正在加载复习卡详情...',
+      recentHistory: '最近复习记录',
+      intervalChange: (before, after) => `间隔 ${before} 天 → ${after} 天`,
+      noHistory: '暂无复习记录。',
+      dueUnknown: '复习时间待确认',
+      overdue: (days) => `已逾期 ${days} 天`,
+      dueToday: '今日到期',
+      reviewTomorrow: '明天复习',
+      reviewInDays: (days) => `${days} 天后复习`,
+      queueLoadFailed: '复习队列加载失败',
+      ratingSubmitFailed: '复习评级提交失败',
+      discardNoteConfirm: '题目笔记还有未保存修改。点击“确定”放弃修改，点击“取消”返回保存。',
+      backToReviewCenter: '返回复习中心',
+      spacedReview: '间隔复习',
+      unknownDifficulty: '难度未知',
+      preparingQueue: '正在准备复习队列...',
+      queueCompleted: '今日待复习已完成',
+      loadingStatement: '正在加载完整题面...',
+      fullStatementAriaLabel: '完整题面',
+      history: '复习记录',
+      recentCount: (count) => `最近 ${count} 次`,
+      historyAfterRating: '完成本题评级后，记录会显示在这里。',
+      resultAriaLabel: '复习确认结果',
+      nextReview: (value) => `下次复习：${value}`,
+      ratingAriaLabel: '复习评级',
+      nextProblem: '下一题',
+      calculating: '计算中',
+      minutesLater: (minutes) => `${minutes} 分钟后`,
+      reviewLater: '稍后复习',
+      ratingButtonAriaLabel: (label, description, interval) => `${label}，${description}，${interval}`,
+    },
+    problemNotes: {
+      loadFailed: '题目笔记加载失败',
+      saveFailed: '题目笔记保存失败',
+      loading: '加载中',
+      unsaved: '有未保存修改',
+      existing: '已有笔记',
+      empty: '暂无笔记',
+      title: '我的题目笔记',
+      updatedAt: (value) => ` · 更新于 ${value}`,
+      loadingDetail: '正在加载题目笔记...',
+      retry: '重试',
+      freeNote: '自由笔记',
+      hasContent: '已有内容',
+      notFilled: '未填写',
+      freeNoteContent: '自由笔记内容',
+      conflict: '笔记已在其他页面更新，请重新加载后再编辑。',
+      reload: '重新加载',
+      saving: '保存中',
+      save: '保存笔记',
+      coreIdea: '核心思路',
+      dataStructures: '数据结构',
+      customDataStructures: '自定义数据结构',
+      dataStructureNotes: '数据结构说明',
+      dataStructureNotesPlaceholder: '记录这些数据结构在本题中的作用',
+      algorithms: '算法',
+      customAlgorithms: '自定义算法',
+      algorithmNotes: '算法说明',
+      algorithmNotesPlaceholder: '记录算法在本题中的使用方式或关键步骤',
+      timeComplexity: '时间复杂度',
+      spaceComplexity: '空间复杂度',
+      edgeCases: '边界与易错点',
+      complexityEmpty: '未填写',
+      customValueAriaLabel: (label) => `${label}自定义值`,
+      customValuePlaceholder: '例如 O(m+n)',
+      dataStructureLabels: {
+        ARRAY: '数组', HASH_MAP: '哈希表', LINKED_LIST: '链表', STACK: '栈', QUEUE: '队列',
+        HEAP: '堆', TREE: '树', GRAPH: '图', TRIE: '字典树', UNION_FIND: '并查集', OTHER: '其他',
+      },
+      algorithmLabels: {
+        TWO_POINTERS: '双指针', SLIDING_WINDOW: '滑动窗口', BINARY_SEARCH: '二分查找',
+        DFS: '深度优先搜索', BFS: '广度优先搜索', BACKTRACKING: '回溯', GREEDY: '贪心',
+        DYNAMIC_PROGRAMMING: '动态规划', PREFIX_SUM: '前缀和', SORTING: '排序',
+        MONOTONIC_STACK: '单调栈', DIJKSTRA: 'Dijkstra', OTHER: '其他',
+      },
+      complexityLabels: {
+        O_1: 'O(1)', O_LOG_N: 'O(log n)', O_N: 'O(n)', O_N_LOG_N: 'O(n log n)',
+        O_N2: 'O(n²)', O_N3: 'O(n³)', O_2N: 'O(2ⁿ)', OTHER: '其他',
+      },
+    },
     problems: {
       ariaLabel: '题库',
       searchLabel: '搜索题目',
@@ -2049,6 +2620,13 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       detailLoadFailed: '训练方案详情加载失败',
       deleteFailed: '训练方案删除失败',
       confirmDelete: '确认删除这个训练方案？',
+      activateConfirm: '今日题包将按新计划生成，原计划进度不会被删除。',
+      activateFailed: '学习计划切换失败',
+      currentActive: '当前采用',
+      todayPack: '今日题包',
+      activating: '切换中',
+      activate: '采用',
+      todayPackProblem: '此题在今日题包中',
       loadingDetail: '正在加载方案详情...',
       loadingPracticeChat: '正在加载题目聊天页...',
       overviewTitle: '训练方案',
@@ -2318,6 +2896,12 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       reviewContextSummary: '上下文摘要',
       completionGateFallback: '完成状态需要等待代码提交记录结果。',
       completionRequiresPassedReview: '完成前需要先粘贴完整代码生成一次代码提交记录，并且通过后才能标记完成。',
+      completionGateMessages: {
+        NO_REVIEW: '完成前需要先粘贴完整代码生成一次代码提交记录，并且通过后才能标记完成。',
+        LATEST_REVIEW_FAILED: '最近一次代码提交记录未通过，请修改后重新提交。',
+        PASSED: '最近一次代码提交记录已通过，可以标记完成。',
+        ALREADY_COMPLETED: '这道题已经完成。',
+      },
       practiceComposerPlaceholderReview: '粘贴完整代码、LeetCode 通过/失败反馈，或继续追问思路...',
       toolPermissionEyebrow: '限时确认',
       toolPermissionProblem: '题目',
@@ -2548,6 +3132,61 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         betaAccess: 'Beta Access',
         problems: 'Problem Library',
       },
+    },
+    adminFeedback: {
+      listLoadFailed: 'Failed to load feedback', detailLoadFailed: 'Failed to load feedback details',
+      markReadFailed: 'Failed to mark feedback as read', replyFailed: 'Failed to reply',
+      statusUpdateFailed: 'Failed to update status', requestFailed: 'Request failed', title: 'Feedback Management',
+      refresh: 'Refresh', status: 'Status', allStatuses: 'All statuses', category: 'Category', allCategories: 'All categories',
+      unreadOnly: 'Unread only', unread: 'Unread', user: 'User', subject: 'Subject', updatedAt: 'Updated',
+      untitled: 'Untitled feedback', close: 'Close', reopen: 'Reopen', selectThread: 'Select feedback to handle.',
+    },
+    adminOverview: {
+      loadFailed: 'Failed to load the admin overview', loading: 'Loading admin overview...', title: 'Admin Overview', retry: 'Retry',
+      generatedMeta: (date, zone) => `Data as of ${date} · Quota timezone: ${zone}`, refresh: 'Refresh', betaAccess: 'Beta Access',
+      enabled: 'Enabled', disabled: 'Disabled', betaSummary: (allowed, registered) => `${allowed} allowed / ${registered} registered`,
+      aiRuntime: 'AI Runtime Policy', aiRuntimeSummary: (limit) => `${limit} requests by default`, aiToday: 'AI Usage Today',
+      entryRequests: 'Entry Requests', success: 'Succeeded', failed: 'Failed', quotaRejected: 'Quota Rejected', modelCalls: 'Model Calls',
+      estimatedCost: 'Estimated at Current Pricing', unpricedCalls: (count) => `${count} unpriced ${count === 1 ? 'call' : 'calls'}`,
+      quotaRiskUsers: 'Users Near Quota', userFallback: (id) => `User ${id}`, noQuotaRisks: 'No users are near their quota limit.',
+      feedbackTasks: 'Feedback Tasks', adminUnread: (count) => `${count} unread for administrators`, recentFailedRuns: 'Recent Failed Runs',
+      failedRuns: (count) => `${count} failed ${count === 1 ? 'run' : 'runs'}`, noRunQuery: 'Run lookup is not available yet.',
+      sectionUnavailable: 'This section is temporarily unavailable',
+    },
+    adminUserSupport: {
+      title: 'Beta Access & Support', allowlist: 'Allowlist', unavailable: 'Unavailable',
+      allowed: (id) => id ? `Allowed (record ${id})` : 'Allowed', notAllowed: 'Not allowed', loading: 'Loading...',
+      openFeedback: 'Open Feedback', feedbackCount: (count) => `${count} ${count === 1 ? 'thread' : 'threads'}`,
+    },
+    adminSystemPrompts: {
+      loadCatalogFailed: 'Failed to load the system prompt catalog.', loadDetailFailed: 'Failed to load prompt details.',
+      loadPoliciesFailed: 'Failed to load policies.', defaultPolicyName: (displayName) => `${displayName} configuration`,
+      invalidSubjectId: 'Enter a valid user or group ID.', nameRequired: 'Policy name is required.',
+      subjectRequired: 'Add at least one user or group for a selected-subject policy.', saved: 'Policy saved.',
+      saveFailed: 'Failed to save the policy.', disabledSuccess: 'Policy disabled.', enabledSuccess: 'Policy enabled.',
+      statusUpdateFailed: 'Failed to update policy status.', deleted: 'Policy deleted.', deleteFailed: 'Failed to delete the policy.',
+      priorityUpdated: 'Policy priority updated.', priorityUpdateFailed: 'Failed to update policy priority.',
+      invalidUserId: 'Enter a valid user ID.', simulationFailed: 'Failed to simulate policy resolution.',
+      ariaLabel: 'System prompts', title: 'System Prompts',
+      description: 'Code defaults are always available. Administrator policies store section overrides only.',
+      createPolicy: 'New Policy', refresh: 'Refresh', searchTypes: 'Search prompt types', searchPlaceholder: 'Search types',
+      category: 'Category', allCategories: 'All categories', typeNavigation: 'Prompt types',
+      policyCount: (count) => `${count} ${count === 1 ? 'policy' : 'policies'}`, codeDefault: 'Code default', loading: 'Loading...',
+      codeRevision: 'Code revision', snapshotScope: 'Snapshot scope', policies: 'Administrator Policies', priority: 'Priority',
+      name: 'Name', scope: 'Scope', status: 'Status', actions: 'Actions', enabled: 'Enabled', disabled: 'Disabled',
+      moveUp: 'Move up', moveDown: 'Move down', edit: 'Edit', delete: 'Delete',
+      emptyPolicies: 'No policies configured. Runtime uses the code default.', defaultSections: 'Code Default Sections',
+      editOverrides: 'Edit Policy Overrides', createOverrides: 'Create Policy Overrides', cancel: 'Cancel',
+      policyName: 'Policy Name', policyDescription: 'Description', effectiveScope: 'Effective Scope', allUsers: 'All users',
+      selectedSubjects: 'Selected users or groups', subjectType: 'Subject type', user: 'User', group: 'Group', subjectId: 'Subject ID', add: 'Add',
+      removeSubject: (type, id) => `Remove ${type} ${id}`, subjectLabel: (type, id) => `${type} #${id}`,
+      overrideSection: 'Override this section', characterCount: (count, max) => `${count} / ${max} characters`,
+      databaseOverride: 'Database override', restoreDefault: 'Restore code default', saving: 'Saving...', savePolicy: 'Save Policy',
+      simulateByUser: 'Simulate by User', userId: 'User ID', simulate: 'Simulate',
+      simulationSummary: (source, policy, matchSource) => `Source: ${source}; matched policy: ${policy}${matchSource ? ` (${matchSource})` : ''}`,
+      simulationSectionSummary: (source, count) => `${source}, ${count} characters`, deleteTitle: 'Delete Policy',
+      deleteDescription: (name) => `After deleting “${name}”, affected users will match the next policy or use the code default.`,
+      scopeSummary: (users, groups) => `${users} ${users === 1 ? 'user' : 'users'}, ${groups} ${groups === 1 ? 'group' : 'groups'}`,
     },
     feedback: {
       openDialog: 'Open feedback inbox',
@@ -3268,6 +3907,197 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       abilityLoadFailed: 'Failed to load ability profile',
       abilityEmpty: 'No ability profile data',
     },
+    todayPack: {
+      homeLoadFailed: 'Failed to load the dashboard',
+      reviewSummaryLoadFailed: 'Failed to load the review summary',
+      loadingStatus: 'Loading',
+      trainingStatusUnavailable: 'Today\'s training status is temporarily unavailable.',
+      reviewStatusLoading: 'Loading review status',
+      reviewStatusUnavailable: 'Review status is temporarily unavailable',
+      reviewDue: (count) => `${count} ${count === 1 ? 'review' : 'reviews'} due today`,
+      reviewUpcoming: (count, time) => `${count} more ${count === 1 ? 'review' : 'reviews'} today, available ${time}`,
+      todayCompleted: 'Done for today',
+      reviewStart: (count) => `Start ${count} ${count === 1 ? 'review' : 'reviews'}`,
+      reviewSchedule: 'View today\'s review schedule',
+      homeAriaLabel: 'Dashboard',
+      trainingEntryAriaLabel: 'Today pack entry',
+      todayPack: 'Today Pack',
+      startTraining: 'Start Training',
+      activePlanRhythm: (daily, daysPerWeek, remaining) => `${daily}/day · ${daysPerWeek} days/week · ${remaining} remaining`,
+      noPlanGuidance: 'Activate a learning plan to have the dashboard organize the most useful training for each day.',
+      startTodayTraining: 'Start Today\'s Training',
+      choosePlan: 'Create or activate a plan',
+      reviewEntryAriaLabel: 'Review center entry',
+      reviewCenter: 'Review Center',
+      reviewDescription: 'Recall first, then rate your memory so missed problems return when they matter instead of becoming a static list.',
+      diagnosisTitle: 'Learning Diagnosis',
+      diagnosisDescription: 'Continuously updated from practice and review.',
+      viewFullProfile: 'View Full Profile',
+      abilityUnavailable: 'The ability profile is temporarily unavailable. Today\'s training remains accessible.',
+      averageAbility: 'Average Ability',
+      currentStrength: 'Current Strength',
+      none: 'None yet',
+      strengthEvidence: (count) => `Based on ${count} reviewed ${count === 1 ? 'problem' : 'problems'}.`,
+      nextBreakthrough: 'Next Breakthrough',
+      breakthroughFallback: 'Keep building review evidence',
+      breakthroughAdvice: (label) => `Prioritize one foundational ${label} problem today.`,
+      weeklyRhythm: 'This Week\'s Rhythm',
+      dailyTraining: 'Daily Training',
+      weeklyTarget: 'Weekly Target',
+      remainingProblems: 'Remaining',
+      problemCount: (count) => `${count} ${count === 1 ? 'problem' : 'problems'}`,
+      managePlan: 'Manage Learning Plan',
+      noActivePlan: 'No active learning plan',
+      noActivePlanDescription: 'Create a plan to see its weekly rhythm and remaining work here.',
+      viewPlans: 'View Training Plans',
+      packLoadFailed: 'Failed to load today\'s pack',
+      resetConfirm: 'Today\'s pack will restart from today. Completed and skipped problems will be kept.',
+      packResetFailed: 'Failed to reset today\'s pack',
+      loadingPack: 'Loading Today Pack',
+      packAriaLabel: 'Today Pack',
+      activePackSummary: (title, startDate, daily, localDate) => `${title} · Started ${startDate} · ${daily}/day · Today ${localDate}`,
+      packIntroduction: 'Start with a recommended plan, then switch plans freely from the plans page.',
+      restart: 'Restart From Today',
+      restartHelpAriaLabel: 'About restarting from today',
+      restartHelp: 'Reset the pack starting point to today and clear carried-over backlog. Completed and skipped records are kept.',
+      emptyPlanTitle: 'No active training plan',
+      emptyPlanDescription: 'Create or activate a plan to generate today\'s pack from its training rhythm.',
+      planCompletedTitle: 'Plan Complete',
+      planCompletedDescription: 'Every problem in the active plan is completed or skipped. You can still browse its history and continue conversations.',
+      doneTodayTitle: 'Done for Today',
+      doneTodayDescription: 'There are no carried-over or newly scheduled problems for today.',
+      stopToday: 'Finish for Today',
+      nextPack: 'Load Next Pack',
+      futurePack: (date) => `Pack for ${date}`,
+      sectionProblemCount: (count) => `${count} ${count === 1 ? 'problem' : 'problems'}`,
+      carryover: (days, date) => `Carried over ${days} ${days === 1 ? 'day' : 'days'} · ${date}`,
+      scheduledDate: (date) => `Scheduled ${date}`,
+      emptyDay: 'No problems scheduled for this day',
+      packTotal: (count) => `${count} ${count === 1 ? 'problem' : 'problems'} in this pack`,
+      backToday: 'Back to Today',
+      statusNoActivePlan: 'No active training plan',
+      statusPlanCompleted: 'The active plan is complete',
+      statusDoneWithNext: (date) => `Done for today, next pack ${date}`,
+      statusDone: 'Done for today',
+      statusDue: (count) => `${count} ${count === 1 ? 'problem' : 'problems'} to practice today`,
+      statusEmpty: 'Nothing scheduled today',
+    },
+    reviewCenter: {
+      sourceLabels: { REVIEW_FAILED: 'Mistake', REVIEW_PASSED: 'Review', USER_MARKED: 'Manually added' },
+      ratingLabels: { AGAIN: 'Again', HARD: 'Hard', GOOD: 'Good', EASY: 'Easy' },
+      ratingDescriptions: {
+        AGAIN: 'Could not recall the approach',
+        HARD: 'Recalled it with difficulty or gaps',
+        GOOD: 'Recalled the main approach independently',
+        EASY: 'Recalled it quickly and completely',
+      },
+      fsrsStateLabels: { LEARNING: 'Learning', REVIEW: 'Review', RELEARNING: 'Relearning' },
+      loadTodayReview: 'Loading today\'s reviews...',
+      startTodayReview: (count) => `Start ${count} ${count === 1 ? 'review' : 'reviews'}`,
+      availableAt: (time) => `Available ${time}`,
+      todayCompleted: 'Done for today',
+      cardLoadFailed: 'Failed to load review cards',
+      summaryLoadFailed: 'Failed to load the review summary',
+      archiveUpdateFailed: 'Failed to update review status',
+      detailLoadFailed: 'Failed to load review card details',
+      title: 'Review Center',
+      overviewAriaLabel: 'Review overview',
+      remainingToday: 'Remaining Today',
+      reviewProblems: 'Review Problems',
+      mistakes: 'Mistakes',
+      filtersAriaLabel: 'Review filters',
+      searchPlaceholder: 'Search problems or notes',
+      mistakesOnly: 'Mistakes only',
+      refreshCards: 'Refresh review cards',
+      loadingCards: 'Loading review cards...',
+      emptyCards: 'No review cards.',
+      lastRating: (rating) => `Last: ${rating}`,
+      forgottenCount: (count) => `Forgotten ${count} ${count === 1 ? 'time' : 'times'}`,
+      viewCardDetail: (title) => `View review card details for ${title}`,
+      viewDetail: 'View details',
+      restoreReview: 'Restore to reviews',
+      removeFromReview: 'Remove from reviews',
+      closeDetail: 'Close review card details',
+      loadingDetail: 'Loading review card details...',
+      recentHistory: 'Recent Review History',
+      intervalChange: (before, after) => `Interval ${before}d → ${after}d`,
+      noHistory: 'No review history.',
+      dueUnknown: 'Review time pending',
+      overdue: (days) => `${days} ${days === 1 ? 'day' : 'days'} overdue`,
+      dueToday: 'Due today',
+      reviewTomorrow: 'Review tomorrow',
+      reviewInDays: (days) => `Review in ${days} days`,
+      queueLoadFailed: 'Failed to load the review queue',
+      ratingSubmitFailed: 'Failed to submit the review rating',
+      discardNoteConfirm: 'The problem note has unsaved changes. Select OK to discard them or Cancel to return and save.',
+      backToReviewCenter: 'Back to Review Center',
+      spacedReview: 'Spaced Review',
+      unknownDifficulty: 'Unknown difficulty',
+      preparingQueue: 'Preparing the review queue...',
+      queueCompleted: 'Today\'s Reviews Are Complete',
+      loadingStatement: 'Loading the full problem statement...',
+      fullStatementAriaLabel: 'Full problem statement',
+      history: 'Review History',
+      recentCount: (count) => `${count} recent ${count === 1 ? 'attempt' : 'attempts'}`,
+      historyAfterRating: 'Your review history will appear here after rating this problem.',
+      resultAriaLabel: 'Review result',
+      nextReview: (value) => `Next review: ${value}`,
+      ratingAriaLabel: 'Review rating',
+      nextProblem: 'Next Problem',
+      calculating: 'Calculating',
+      minutesLater: (minutes) => `In ${minutes} minutes`,
+      reviewLater: 'Review later',
+      ratingButtonAriaLabel: (label, description, interval) => `${label}, ${description}, ${interval}`,
+    },
+    problemNotes: {
+      loadFailed: 'Failed to load problem notes',
+      saveFailed: 'Failed to save problem notes',
+      loading: 'Loading',
+      unsaved: 'Unsaved changes',
+      existing: 'Note saved',
+      empty: 'No note yet',
+      title: 'My Problem Notes',
+      updatedAt: (value) => ` · Updated ${value}`,
+      loadingDetail: 'Loading problem notes...',
+      retry: 'Retry',
+      freeNote: 'Free-form Note',
+      hasContent: 'Has content',
+      notFilled: 'Not filled in',
+      freeNoteContent: 'Free-form note content',
+      conflict: 'This note was updated elsewhere. Reload it before editing again.',
+      reload: 'Reload',
+      saving: 'Saving',
+      save: 'Save Note',
+      coreIdea: 'Core Idea',
+      dataStructures: 'Data Structures',
+      customDataStructures: 'Custom Data Structures',
+      dataStructureNotes: 'Data Structure Notes',
+      dataStructureNotesPlaceholder: 'Record how these data structures are used in this problem',
+      algorithms: 'Algorithms',
+      customAlgorithms: 'Custom Algorithms',
+      algorithmNotes: 'Algorithm Notes',
+      algorithmNotesPlaceholder: 'Record how the algorithm is used or its key steps',
+      timeComplexity: 'Time Complexity',
+      spaceComplexity: 'Space Complexity',
+      edgeCases: 'Edge Cases and Pitfalls',
+      complexityEmpty: 'Not filled in',
+      customValueAriaLabel: (label) => `Custom value for ${label}`,
+      customValuePlaceholder: 'For example, O(m+n)',
+      dataStructureLabels: {
+        ARRAY: 'Array', HASH_MAP: 'Hash Map', LINKED_LIST: 'Linked List', STACK: 'Stack', QUEUE: 'Queue',
+        HEAP: 'Heap', TREE: 'Tree', GRAPH: 'Graph', TRIE: 'Trie', UNION_FIND: 'Union Find', OTHER: 'Other',
+      },
+      algorithmLabels: {
+        TWO_POINTERS: 'Two Pointers', SLIDING_WINDOW: 'Sliding Window', BINARY_SEARCH: 'Binary Search',
+        DFS: 'Depth-First Search', BFS: 'Breadth-First Search', BACKTRACKING: 'Backtracking', GREEDY: 'Greedy',
+        DYNAMIC_PROGRAMMING: 'Dynamic Programming', PREFIX_SUM: 'Prefix Sum', SORTING: 'Sorting',
+        MONOTONIC_STACK: 'Monotonic Stack', DIJKSTRA: 'Dijkstra', OTHER: 'Other',
+      },
+      complexityLabels: {
+        O_1: 'O(1)', O_LOG_N: 'O(log n)', O_N: 'O(n)', O_N_LOG_N: 'O(n log n)',
+        O_N2: 'O(n²)', O_N3: 'O(n³)', O_2N: 'O(2ⁿ)', OTHER: 'Other',
+      },
+    },
     problems: {
       ariaLabel: 'Problems',
       searchLabel: 'Search problems',
@@ -3313,6 +4143,13 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       detailLoadFailed: 'Failed to load learning plan details',
       deleteFailed: 'Failed to delete learning plan',
       confirmDelete: 'Delete this learning plan?',
+      activateConfirm: 'Today\'s pack will be generated from the new plan. Progress in the previous plan will be kept.',
+      activateFailed: 'Failed to switch learning plans',
+      currentActive: 'Active',
+      todayPack: 'Today Pack',
+      activating: 'Switching...',
+      activate: 'Activate',
+      todayPackProblem: 'In Today Pack',
       loadingDetail: 'Loading plan details...',
       loadingPracticeChat: 'Loading problem chat...',
       overviewTitle: 'Learning Plans',
@@ -3590,6 +4427,12 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       reviewContextSummary: 'Context summary',
       completionGateFallback: 'Completion is waiting for a code submission result.',
       completionRequiresPassedReview: 'Paste complete code to generate a code submission record, then pass it before marking this practice complete.',
+      completionGateMessages: {
+        NO_REVIEW: 'Paste complete code to generate a code submission record, then pass it before marking this practice complete.',
+        LATEST_REVIEW_FAILED: 'The latest code submission did not pass. Revise it and submit again.',
+        PASSED: 'The latest code submission passed. This practice can be marked complete.',
+        ALREADY_COMPLETED: 'This practice is already complete.',
+      },
       practiceComposerPlaceholderReview: 'Paste complete code, LeetCode accepted/failed feedback, or continue asking...',
       toolPermissionEyebrow: 'Timed confirmation',
       toolPermissionProblem: 'Problem',

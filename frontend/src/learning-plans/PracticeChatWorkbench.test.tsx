@@ -894,7 +894,7 @@ describe('PracticeChatWorkbench review contracts', () => {
 
     const failedCompletionButton = await screen.findByRole('button', { name: '标记完成' });
     expect(failedCompletionButton).toBeDisabled();
-    expect(screen.getByRole('tooltip', { name: '新版 Review 未通过。' })).toBeInTheDocument();
+    expect(screen.getByRole('tooltip', { name: '最近一次代码提交记录未通过，请修改后重新提交。' })).toBeInTheDocument();
   });
 
   it('refreshes session and reviews when active run polling clears', async () => {
@@ -942,7 +942,7 @@ describe('PracticeChatWorkbench review contracts', () => {
     expect(getPracticeSessionReviews).toHaveBeenCalledWith(101, expect.any(AbortSignal));
   });
 
-  it('shows backend completion gate error', async () => {
+  it('localizes backend completion gate errors by reason code', async () => {
     createOrReusePracticeSession.mockResolvedValue(apiResponse(sessionFixture({
       completionGate: {
         canComplete: false,
@@ -957,7 +957,7 @@ describe('PracticeChatWorkbench review contracts', () => {
 
     const completionButton = await screen.findByRole('button', { name: '标记完成' });
     expect(completionButton).toBeDisabled();
-    expect(screen.getByRole('tooltip', { name: '最新 Review 未通过：边界条件不足。' })).toBeInTheDocument();
+    expect(screen.getByRole('tooltip', { name: '最近一次代码提交记录未通过，请修改后重新提交。' })).toBeInTheDocument();
   });
 
   it('enables completion when latest review passes', async () => {
@@ -991,7 +991,7 @@ describe('PracticeChatWorkbench review contracts', () => {
 
     const completionButton = await screen.findByRole('button', { name: '标记完成' });
     expect(completionButton).toBeDisabled();
-    expect(screen.getByRole('tooltip', { name: '最新 Review 分数不足，请先修复代码。' })).toBeInTheDocument();
+    expect(screen.getByRole('tooltip', { name: '最近一次代码提交记录未通过，请修改后重新提交。' })).toBeInTheDocument();
   });
 
   it('opens the standalone submission history route from the toolbar', async () => {

@@ -210,7 +210,7 @@ export default function LearningPlanDetail({
           <p>{plan.summary}</p>
         </div>
         {plan.active ? (
-          <span className="status-badge current-plan-badge">当前采用</span>
+          <span className="status-badge current-plan-badge">{resources.learningPlans.currentActive}</span>
         ) : null}
       </div>
       <PlanPhaseDetails

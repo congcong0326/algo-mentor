@@ -5,6 +5,7 @@ import type {
   ProblemDataStructureKey,
   ProblemSolutionOutlineV1,
 } from '../types/api';
+import { useI18n } from '../i18n/I18nProvider';
 import {
   problemAlgorithmOptions,
   problemComplexityOptions,
@@ -22,6 +23,8 @@ export default function ProblemSolutionOutlineForm({
   onChange,
   value,
 }: ProblemSolutionOutlineFormProps) {
+  const { locale, resources } = useI18n();
+
   function update(patch: Partial<ProblemSolutionOutlineV1>) {
     onChange({ ...value, ...patch });
   }
@@ -29,7 +32,7 @@ export default function ProblemSolutionOutlineForm({
   return (
     <div className="problem-note-outline-form">
       <label className="problem-note-field problem-note-field-wide">
-        <span>核心思路</span>
+        <span>{resources.problemNotes.coreIdea}</span>
         <textarea
           disabled={disabled}
           onChange={(event) => update({ coreIdea: event.target.value })}
@@ -40,7 +43,8 @@ export default function ProblemSolutionOutlineForm({
 
       <OptionChecklist<ProblemDataStructureKey>
         disabled={disabled}
-        label="数据结构"
+        label={resources.problemNotes.dataStructures}
+        labels={resources.problemNotes.dataStructureLabels}
         onChange={(dataStructures) => update({
           dataStructures,
           dataStructureNotes: dataStructures.length > 0 ? value.dataStructureNotes : '',
@@ -51,18 +55,19 @@ export default function ProblemSolutionOutlineForm({
       {value.dataStructures.includes('OTHER') && (
         <CommaListField
           disabled={disabled}
-          label="自定义数据结构"
+          delimiter={locale.startsWith('zh') ? '，' : ', '}
+          label={resources.problemNotes.customDataStructures}
           onChange={(customDataStructures) => update({ customDataStructures })}
           value={value.customDataStructures}
         />
       )}
       {value.dataStructures.length > 0 && (
         <label className="problem-note-field problem-note-field-wide">
-          <span>数据结构说明</span>
+          <span>{resources.problemNotes.dataStructureNotes}</span>
           <textarea
             disabled={disabled}
             onChange={(event) => update({ dataStructureNotes: event.target.value })}
-            placeholder="记录这些数据结构在本题中的作用"
+            placeholder={resources.problemNotes.dataStructureNotesPlaceholder}
             rows={3}
             value={value.dataStructureNotes}
           />
@@ -71,7 +76,8 @@ export default function ProblemSolutionOutlineForm({
 
       <OptionChecklist<ProblemAlgorithmKey>
         disabled={disabled}
-        label="算法"
+        label={resources.problemNotes.algorithms}
+        labels={resources.problemNotes.algorithmLabels}
         onChange={(algorithms) => update({
           algorithms,
           algorithmNotes: algorithms.length > 0 ? value.algorithmNotes : '',
@@ -82,18 +88,19 @@ export default function ProblemSolutionOutlineForm({
       {value.algorithms.includes('OTHER') && (
         <CommaListField
           disabled={disabled}
-          label="自定义算法"
+          delimiter={locale.startsWith('zh') ? '，' : ', '}
+          label={resources.problemNotes.customAlgorithms}
           onChange={(customAlgorithms) => update({ customAlgorithms })}
           value={value.customAlgorithms}
         />
       )}
       {value.algorithms.length > 0 && (
         <label className="problem-note-field problem-note-field-wide">
-          <span>算法说明</span>
+          <span>{resources.problemNotes.algorithmNotes}</span>
           <textarea
             disabled={disabled}
             onChange={(event) => update({ algorithmNotes: event.target.value })}
-            placeholder="记录算法在本题中的使用方式或关键步骤"
+            placeholder={resources.problemNotes.algorithmNotesPlaceholder}
             rows={3}
             value={value.algorithmNotes}
           />
@@ -102,19 +109,23 @@ export default function ProblemSolutionOutlineForm({
 
       <ComplexityField
         disabled={disabled}
-        label="时间复杂度"
+        emptyLabel={resources.problemNotes.complexityEmpty}
+        label={resources.problemNotes.timeComplexity}
+        labels={resources.problemNotes.complexityLabels}
         onChange={(timeComplexity) => update({ timeComplexity })}
         value={value.timeComplexity}
       />
       <ComplexityField
         disabled={disabled}
-        label="空间复杂度"
+        emptyLabel={resources.problemNotes.complexityEmpty}
+        label={resources.problemNotes.spaceComplexity}
+        labels={resources.problemNotes.complexityLabels}
         onChange={(spaceComplexity) => update({ spaceComplexity })}
         value={value.spaceComplexity}
       />
 
       <label className="problem-note-field problem-note-field-wide">
-        <span>边界与易错点</span>
+        <span>{resources.problemNotes.edgeCases}</span>
         <textarea
           disabled={disabled}
           onChange={(event) => update({ edgeCases: event.target.value })}
@@ -129,14 +140,16 @@ export default function ProblemSolutionOutlineForm({
 function OptionChecklist<T extends string>({
   disabled,
   label,
+  labels,
   onChange,
   options,
   value,
 }: {
   disabled: boolean;
   label: string;
+  labels: Record<T, string>;
   onChange: (value: T[]) => void;
-  options: Array<{ key: T; label: string }>;
+  options: T[];
   value: T[];
 }) {
   return (
@@ -144,16 +157,16 @@ function OptionChecklist<T extends string>({
       <legend>{label}</legend>
       <div className="problem-note-option-grid">
         {options.map((option) => (
-          <label key={option.key}>
+          <label key={option}>
             <input
-              checked={value.includes(option.key)}
+              checked={value.includes(option)}
               disabled={disabled}
               onChange={(event) => onChange(event.target.checked
-                ? [...value, option.key]
-                : value.filter((item) => item !== option.key))}
+                ? [...value, option]
+                : value.filter((item) => item !== option))}
               type="checkbox"
             />
-            <span>{option.label}</span>
+            <span>{labels[option]}</span>
           </label>
         ))}
       </div>
@@ -162,11 +175,13 @@ function OptionChecklist<T extends string>({
 }
 
 function CommaListField({
+  delimiter,
   disabled,
   label,
   onChange,
   value,
 }: {
+  delimiter: string;
   disabled: boolean;
   label: string;
   onChange: (value: string[]) => void;
@@ -181,7 +196,7 @@ function CommaListField({
           .split(/[,，]/)
           .map((item) => item.trim())
           .filter(Boolean))}
-        value={value.join('，')}
+        value={value.join(delimiter)}
       />
     </label>
   );
@@ -189,15 +204,21 @@ function CommaListField({
 
 function ComplexityField({
   disabled,
+  emptyLabel,
   label,
+  labels,
   onChange,
   value,
 }: {
   disabled: boolean;
+  emptyLabel: string;
   label: string;
+  labels: Record<ProblemComplexityKey, string>;
   onChange: (value: ProblemComplexityValue) => void;
   value: ProblemComplexityValue;
 }) {
+  const { resources } = useI18n();
+
   return (
     <label className="problem-note-field">
       <span>{label}</span>
@@ -209,17 +230,17 @@ function ComplexityField({
         }}
         value={value.key ?? ''}
       >
-        <option value="">未填写</option>
+        <option value="">{emptyLabel}</option>
         {problemComplexityOptions.map((option) => (
-          <option key={option.key} value={option.key}>{option.label}</option>
+          <option key={option} value={option}>{labels[option]}</option>
         ))}
       </select>
       {value.key === 'OTHER' && (
         <input
-          aria-label={`${label}自定义值`}
+          aria-label={resources.problemNotes.customValueAriaLabel(label)}
           disabled={disabled}
           onChange={(event) => onChange({ key: 'OTHER', customText: event.target.value })}
-          placeholder="例如 O(m+n)"
+          placeholder={resources.problemNotes.customValuePlaceholder}
           value={value.customText ?? ''}
         />
       )}

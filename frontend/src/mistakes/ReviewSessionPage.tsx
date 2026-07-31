@@ -10,6 +10,9 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { APP_ROUTES } from '../app/navigation';
 import MarkdownView from '../components/MarkdownView';
+import { formatDifficulty } from '../i18n/formatters';
+import { useI18n } from '../i18n/I18nProvider';
+import type { LocaleResources, SupportedLocale } from '../i18n/locales';
 import ProblemNoteEditor from '../problem-notes/ProblemNoteEditor';
 import {
   getReviewCardContext,
@@ -30,20 +33,6 @@ interface ReviewSessionPageProps {
   onNavigate: (path: string) => void;
 }
 
-const ratingLabels: Record<ReviewRating, string> = {
-  AGAIN: '重来',
-  HARD: '困难',
-  GOOD: '良好',
-  EASY: '简单',
-};
-
-const ratingDescriptions: Record<ReviewRating, string> = {
-  AGAIN: '基本没有想起来',
-  HARD: '想起来了，但过程费力或不完整',
-  GOOD: '独立回忆出主要思路',
-  EASY: '快速、完整地回忆出来',
-};
-
 const ratingKeys: Record<string, ReviewRating> = {
   '1': 'AGAIN',
   '2': 'HARD',
@@ -52,6 +41,7 @@ const ratingKeys: Record<string, ReviewRating> = {
 };
 
 export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps) {
+  const { locale, resources } = useI18n();
   const [queue, setQueue] = useState<ReviewCard[]>([]);
   const [index, setIndex] = useState(0);
   const [context, setContext] = useState<ReviewCardContext>();
@@ -73,7 +63,7 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
     const controller = new AbortController();
     void loadQueue(controller.signal);
     return () => controller.abort();
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     if (!current) {
@@ -83,7 +73,7 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
     const controller = new AbortController();
     void loadContext(current.id, controller.signal);
     return () => controller.abort();
-  }, [current?.id]);
+  }, [current?.id, locale]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -103,13 +93,13 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
     setError('');
     try {
       const response = await getReviewQueue(20, signal);
-      const data = requireApiData(response, '复习队列加载失败');
+      const data = requireApiData(response, resources.reviewCenter.queueLoadFailed);
       setQueue(data.items);
       setIndex(0);
     } catch (loadError) {
       if (!(loadError instanceof DOMException && loadError.name === 'AbortError')) {
         setQueue([]);
-        setError(loadError instanceof Error ? loadError.message : '复习队列加载失败');
+        setError(loadError instanceof Error ? loadError.message : resources.reviewCenter.queueLoadFailed);
       }
     } finally {
       if (!signal?.aborted) {
@@ -128,10 +118,10 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
     setError('');
     try {
       const response = await getReviewCardContext(cardId, signal);
-      setContext(requireApiData(response, '复习卡加载失败'));
+      setContext(requireApiData(response, resources.reviewCenter.cardLoadFailed));
     } catch (loadError) {
       if (!(loadError instanceof DOMException && loadError.name === 'AbortError')) {
-        setError(loadError instanceof Error ? loadError.message : '复习卡加载失败');
+        setError(loadError instanceof Error ? loadError.message : resources.reviewCenter.cardLoadFailed);
       }
     } finally {
       if (!signal?.aborted) {
@@ -148,9 +138,9 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
     setError('');
     try {
       const response = await submitReviewAttempt(current.id, clientAttemptId, rating);
-      setAttempt(requireApiData(response, '复习评级提交失败'));
+      setAttempt(requireApiData(response, resources.reviewCenter.ratingSubmitFailed));
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : '复习评级提交失败');
+      setError(submitError instanceof Error ? submitError.message : resources.reviewCenter.ratingSubmitFailed);
     } finally {
       setSubmittingRating(undefined);
     }
@@ -176,7 +166,7 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
   }
 
   function confirmDiscardNote() {
-    return !noteDirty || window.confirm('题目笔记还有未保存修改。点击“确定”放弃修改，点击“取消”返回保存。');
+    return !noteDirty || window.confirm(resources.reviewCenter.discardNoteConfirm);
   }
 
   function intervalFor(rating: ReviewRating) {
@@ -188,36 +178,40 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
       <header className="review-workbench-toolbar">
         <button className="secondary-button compact" onClick={handleBack} type="button">
           <ArrowLeft aria-hidden="true" />
-          <span>返回复习中心</span>
+          <span>{resources.reviewCenter.backToReviewCenter}</span>
         </button>
         <div className="review-workbench-heading">
-          <h1 id="review-session-title">{context?.problem.titleCn || current?.problemTitle || current?.problemSlug || '间隔复习'}</h1>
-          <span>{context?.problem.difficulty || current?.problemDifficulty || '难度未知'}</span>
+          <h1 id="review-session-title">{reviewProblemTitle(context, current, locale, resources.reviewCenter.spacedReview)}</h1>
+          <span>
+            {context?.problem.difficulty || current?.problemDifficulty
+              ? formatDifficulty(context?.problem.difficulty || current?.problemDifficulty, resources)
+              : resources.reviewCenter.unknownDifficulty}
+          </span>
         </div>
         <div className="review-workbench-status">
           <strong>{progressLabel}</strong>
-          <span>{context?.card.fsrsState || current?.fsrsState || 'LEARNING'}</span>
+          <span>{resources.reviewCenter.fsrsStateLabels[context?.card.fsrsState || current?.fsrsState || 'LEARNING']}</span>
         </div>
       </header>
 
       {error && <p className="error-text" role="alert">{error}</p>}
 
       {loading ? (
-        <div className="loading-panel">正在准备复习队列...</div>
+        <div className="loading-panel">{resources.reviewCenter.preparingQueue}</div>
       ) : finished ? (
         <div className="review-complete">
           <CheckCircle2 aria-hidden="true" />
-          <h2>今日待复习已完成</h2>
+          <h2>{resources.reviewCenter.queueCompleted}</h2>
           <button className="primary-button" onClick={() => onNavigate(APP_ROUTES.mistakes)} type="button">
-            返回复习中心
+            {resources.reviewCenter.backToReviewCenter}
           </button>
         </div>
       ) : contextLoading || !context ? (
-        <div className="loading-panel">正在加载完整题面...</div>
+        <div className="loading-panel">{resources.reviewCenter.loadingStatement}</div>
       ) : (
         <article className="review-card-workbench">
           <div className="review-card-scroll">
-            <section className="review-problem-content" aria-label="完整题面">
+            <section className="review-problem-content" aria-label={resources.reviewCenter.fullStatementAriaLabel}>
               <MarkdownView content={context.problem.contentMarkdown} />
             </section>
 
@@ -226,40 +220,51 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
             <details className="review-attempt-history">
               <summary>
                 <span>
-                  <strong>复习记录</strong>
-                  <small>{context.recentAttempts.length > 0 ? `最近 ${context.recentAttempts.length} 次` : '暂无记录'}</small>
+                  <strong>{resources.reviewCenter.history}</strong>
+                  <small>
+                    {context.recentAttempts.length > 0
+                      ? resources.reviewCenter.recentCount(context.recentAttempts.length)
+                      : resources.reviewCenter.noHistory}
+                  </small>
                 </span>
               </summary>
               {context.recentAttempts.length > 0 ? (
                 <ol>
                   {context.recentAttempts.map((history) => (
                     <li key={history.id}>
-                      <strong>{ratingLabels[history.rating]}</strong>
-                      <span>{formatDateTime(history.reviewedAt)}</span>
+                      <strong>{resources.reviewCenter.ratingLabels[history.rating]}</strong>
+                      <span>{formatDateTime(history.reviewedAt, locale)}</span>
                       <small>
-                        间隔 {history.schedulingBefore.intervalDays} 天 → {history.schedulingAfter.intervalDays} 天
+                        {resources.reviewCenter.intervalChange(
+                          history.schedulingBefore.intervalDays,
+                          history.schedulingAfter.intervalDays,
+                        )}
                       </small>
                     </li>
                   ))}
                 </ol>
               ) : (
-                <p>完成本题评级后，记录会显示在这里。</p>
+                <p>{resources.reviewCenter.historyAfterRating}</p>
               )}
             </details>
 
             {attempt && (
-              <section className="review-result" aria-label="复习确认结果">
-                <h3>{ratingLabels[attempt.rating]}</h3>
-                <p>下次复习：{formatDueLabel(attempt.schedulingAfter.dueAt, attempt.schedulingAfter.intervalDays)}</p>
+              <section className="review-result" aria-label={resources.reviewCenter.resultAriaLabel}>
+                <h3>{resources.reviewCenter.ratingLabels[attempt.rating]}</h3>
+                <p>{resources.reviewCenter.nextReview(formatDueLabel(
+                  attempt.schedulingAfter.dueAt,
+                  attempt.schedulingAfter.intervalDays,
+                  resources.reviewCenter,
+                ))}</p>
               </section>
             )}
           </div>
 
-          <footer className="review-rating-bar" aria-label="复习评级">
+          <footer className="review-rating-bar" aria-label={resources.reviewCenter.ratingAriaLabel}>
             <div className="review-rating-grid">
-              {(Object.keys(ratingLabels) as ReviewRating[]).map((rating, ratingIndex) => (
+              {(Object.keys(resources.reviewCenter.ratingLabels) as ReviewRating[]).map((rating, ratingIndex) => (
                 <RatingButton
-                  description={ratingDescriptions[rating]}
+                  description={resources.reviewCenter.ratingDescriptions[rating]}
                   interval={intervalFor(rating)}
                   key={rating}
                   loading={submittingRating === rating}
@@ -273,7 +278,7 @@ export default function ReviewSessionPage({ onNavigate }: ReviewSessionPageProps
             </div>
             <button className="secondary-button review-next-button" disabled={!attempt} onClick={nextCard} type="button">
               <ArrowRight aria-hidden="true" />
-              <span>下一题</span>
+              <span>{resources.reviewCenter.nextProblem}</span>
             </button>
           </footer>
         </article>
@@ -301,8 +306,11 @@ function RatingButton({
   shortcut: number;
   submitted: boolean;
 }) {
-  const label = ratingLabels[rating];
-  const intervalLabel = interval ? formatDueLabel(interval.dueAt, interval.intervalDays) : '计算中';
+  const { resources } = useI18n();
+  const label = resources.reviewCenter.ratingLabels[rating];
+  const intervalLabel = interval
+    ? formatDueLabel(interval.dueAt, interval.intervalDays, resources.reviewCenter)
+    : resources.reviewCenter.calculating;
   const Icon = rating === 'AGAIN'
     ? RefreshCw
     : rating === 'HARD'
@@ -314,7 +322,7 @@ function RatingButton({
   return (
     <button
       aria-keyshortcuts={String(shortcut)}
-      aria-label={`${label}，${description}，${intervalLabel}`}
+      aria-label={resources.reviewCenter.ratingButtonAriaLabel(label, description, intervalLabel)}
       className={`review-rating-button review-rating-button-${rating.toLowerCase()}${selected ? ' is-selected' : ''}`}
       disabled={submitted || loading}
       onClick={onClick}
@@ -329,18 +337,36 @@ function RatingButton({
   );
 }
 
-function formatDueLabel(dueAt: string, intervalDays: number) {
+function formatDueLabel(
+  dueAt: string,
+  intervalDays: number,
+  resources: LocaleResources['reviewCenter'],
+) {
   if (intervalDays <= 0) {
     const minutes = Math.max(1, Math.round((new Date(dueAt).getTime() - Date.now()) / 60_000));
-    return Number.isFinite(minutes) && minutes < 24 * 60 ? `${minutes} 分钟后` : '稍后复习';
+    return Number.isFinite(minutes) && minutes < 24 * 60
+      ? resources.minutesLater(minutes)
+      : resources.reviewLater;
   }
   if (intervalDays === 1) {
-    return '明天复习';
+    return resources.reviewTomorrow;
   }
-  return `${intervalDays} 天后复习`;
+  return resources.reviewInDays(intervalDays);
 }
 
-function formatDateTime(value: string) {
+function formatDateTime(value: string, locale: SupportedLocale) {
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleString('zh-CN', { hour12: false });
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString(locale, { hour12: false });
+}
+
+function reviewProblemTitle(
+  context: ReviewCardContext | undefined,
+  current: ReviewCard | undefined,
+  locale: SupportedLocale,
+  fallback: string,
+) {
+  if (locale === 'zh-CN') {
+    return context?.problem.titleCn || current?.problemTitle || current?.problemSlug || fallback;
+  }
+  return context?.problem.slug || current?.problemSlug || fallback;
 }

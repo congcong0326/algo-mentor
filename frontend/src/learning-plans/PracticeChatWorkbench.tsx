@@ -578,9 +578,9 @@ export default function PracticeChatWorkbench({
     || status === 'streaming'
     || hasActiveRun;
   const completionDisabledReason = completionGate && !completionGate.canComplete
-    ? completionGate.reasonCode === 'NO_REVIEW'
-      ? resources.learningPlans.completionRequiresPassedReview
-      : completionGate.message || resources.learningPlans.completionGateFallback
+    ? resources.learningPlans.completionGateMessages[completionGate.reasonCode]
+      || completionGate.message
+      || resources.learningPlans.completionGateFallback
     : undefined;
   const composerInputDisabled = !sessionId || status === 'loading' || hasActiveRun;
   const sendDisabled = !sessionId || status === 'loading' || status === 'streaming' || hasActiveRun || !composerValue.trim();

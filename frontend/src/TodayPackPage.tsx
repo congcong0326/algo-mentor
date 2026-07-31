@@ -21,6 +21,7 @@ import {
 import { APP_ROUTES, learningPlanPracticeChatPath, learningPlanTodayPackPath } from './app/navigation';
 import { formatDate, formatDifficulty, formatProblemTitle } from './i18n/formatters';
 import { useI18n } from './i18n/I18nProvider';
+import type { LocaleResources } from './i18n/locales';
 import {
   buildStandardRhythmReference,
   compareRhythmWeeks,
@@ -80,11 +81,11 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
     setError('');
     void getTodayPack(timezone, 0, controller.signal)
       .then((response) => {
-        setPack(requireApiData(response, '首页入口加载失败'));
+        setPack(requireApiData(response, resources.todayPack.homeLoadFailed));
       })
       .catch((nextError) => {
         if (!controller.signal.aborted) {
-          setError(nextError instanceof Error ? nextError.message : '首页入口加载失败');
+          setError(nextError instanceof Error ? nextError.message : resources.todayPack.homeLoadFailed);
         }
       })
       .finally(() => {
@@ -93,7 +94,7 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
         }
       });
     return () => controller.abort();
-  }, [timezone]);
+  }, [locale, resources.todayPack.homeLoadFailed, timezone]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -104,7 +105,7 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
     setReviewUnavailable(false);
     void getReviewSummary(controller.signal)
       .then((response) => {
-        const summary = requireApiData(response, '复习摘要加载失败');
+        const summary = requireApiData(response, resources.todayPack.reviewSummaryLoadFailed);
         setReviewSummary(summary);
         const nextDueTime = summary.nextDueAt ? new Date(summary.nextDueAt).getTime() : Number.NaN;
         if (summary.dueCount === 0
@@ -133,7 +134,7 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
         window.clearTimeout(refreshTimer);
       }
     };
-  }, [reviewRefreshVersion]);
+  }, [locale, resources.todayPack.reviewSummaryLoadFailed, reviewRefreshVersion]);
 
   useEffect(() => {
     if (reviewSummary?.dueCount !== 0 || !reviewSummary.nextDueAt) {
@@ -167,31 +168,34 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
 
   const activePlan = pack?.activePlan;
   const statusText = pack
-    ? todayPackStatusText(pack, totalProblems)
+    ? todayPackStatusText(pack, totalProblems, resources.todayPack)
     : loading
-      ? '正在加载'
-      : '暂时无法读取今日训练状态。';
+      ? resources.todayPack.loadingStatus
+      : resources.todayPack.trainingStatusUnavailable;
   const reviewDueCount = reviewSummary?.dueCount ?? 0;
   const remainingTodayCount = reviewSummary?.remainingTodayCount ?? reviewDueCount;
   const hasUpcomingReview = reviewDueCount === 0 && remainingTodayCount > 0;
   const reviewStatusText = reviewLoading
-    ? '正在加载复习状态'
+    ? resources.todayPack.reviewStatusLoading
     : reviewUnavailable
-      ? '复习状态暂不可用'
+      ? resources.todayPack.reviewStatusUnavailable
       : reviewDueCount > 0
-        ? `今日待复习 ${reviewDueCount} 题`
+        ? resources.todayPack.reviewDue(reviewDueCount)
         : hasUpcomingReview
-          ? `今日还有 ${remainingTodayCount} 题，${formatUpcomingReviewTime(reviewSummary?.nextDueAt, reviewClock)}可复习`
-          : '今日已完成';
+          ? resources.todayPack.reviewUpcoming(
+            remainingTodayCount,
+            formatUpcomingReviewTime(reviewSummary?.nextDueAt, reviewClock, locale),
+          )
+          : resources.todayPack.todayCompleted;
   const reviewActionLabel = reviewLoading
-    ? '正在加载复习状态'
+    ? resources.todayPack.reviewStatusLoading
     : reviewUnavailable
-      ? '复习状态暂不可用'
+      ? resources.todayPack.reviewStatusUnavailable
       : reviewDueCount > 0
-        ? `开始今日复习 ${reviewDueCount} 题`
+        ? resources.todayPack.reviewStart(reviewDueCount)
         : hasUpcomingReview
-          ? '查看今日复习安排'
-          : '今日已完成';
+          ? resources.todayPack.reviewSchedule
+          : resources.todayPack.todayCompleted;
   const reviewActionDisabled = reviewLoading || reviewUnavailable || remainingTodayCount === 0;
   const abilitySummary = summarizeAbilityProfile(abilityProfile);
   const breakthroughTag = findBreakthroughTag(abilityProfile, abilitySummary.strongestTag);
@@ -203,7 +207,7 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
   const weeklyTarget = activePlan ? activePlan.dailyProblemCount * activePlan.trainingDaysPerWeek : 0;
 
   return (
-    <article className="today-pack-home" aria-label="首页">
+    <article className="today-pack-home" aria-label={resources.todayPack.homeAriaLabel}>
       <header className="home-dashboard-heading">
         <div>
           <h1>{resources.home.workspaceTitle}</h1>
@@ -217,17 +221,21 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
       {error && <p className="error-text" role="alert">{error}</p>}
 
       <div className="home-focus-grid">
-        <section className="home-focus-panel training" aria-label="题包入口">
+        <section className="home-focus-panel training" aria-label={resources.todayPack.trainingEntryAriaLabel}>
           <div className="home-focus-panel-topline">
-            <span><Target aria-hidden="true" />{activePlan ? '今日题包' : '开始训练'}</span>
+            <span><Target aria-hidden="true" />{activePlan ? resources.todayPack.todayPack : resources.todayPack.startTraining}</span>
             {activePlan ? <small>{activePlan.title}</small> : null}
           </div>
           <div className="home-focus-copy">
             <strong>{statusText}</strong>
             <p>
               {activePlan
-                ? `${activePlan.dailyProblemCount} 题/天 · 每周 ${activePlan.trainingDaysPerWeek} 天 · 计划剩余 ${activePlan.remainingProblemCount} 题`
-                : '先采用一份学习方案，首页会按节奏整理每天最该完成的训练。'}
+                ? resources.todayPack.activePlanRhythm(
+                  activePlan.dailyProblemCount,
+                  activePlan.trainingDaysPerWeek,
+                  activePlan.remainingProblemCount,
+                )
+                : resources.todayPack.noPlanGuidance}
             </p>
           </div>
           {activePlan ? (
@@ -236,7 +244,7 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
               onClick={() => onNavigate(learningPlanTodayPackPath(activePlan.planId))}
               type="button"
             >
-              <span>开始今日训练</span>
+              <span>{resources.todayPack.startTodayTraining}</span>
               <ArrowRight aria-hidden="true" />
             </button>
           ) : (
@@ -245,19 +253,19 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
               onClick={() => onNavigate(APP_ROUTES.learningPlans)}
               type="button"
             >
-              <span>去方案页创建或采用一个</span>
+              <span>{resources.todayPack.choosePlan}</span>
               <ArrowRight aria-hidden="true" />
             </button>
           )}
         </section>
 
-        <section className="home-focus-panel review" aria-busy={reviewLoading} aria-label="复习中心入口">
+        <section className="home-focus-panel review" aria-busy={reviewLoading} aria-label={resources.todayPack.reviewEntryAriaLabel}>
           <div className="home-focus-panel-topline">
-            <span><Activity aria-hidden="true" />复习中心</span>
+            <span><Activity aria-hidden="true" />{resources.todayPack.reviewCenter}</span>
           </div>
           <div className="home-focus-copy">
             <strong>{reviewStatusText}</strong>
-            <p>先复述、再评级，让错题按遗忘风险回到今天，而不是堆成一份静态清单。</p>
+            <p>{resources.todayPack.reviewDescription}</p>
           </div>
           <button
             className="secondary-button"
@@ -275,40 +283,40 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
         <section className="home-ability-panel" aria-labelledby="home-ability-title">
           <div className="home-panel-heading">
             <div>
-              <h2 id="home-ability-title">学习诊断</h2>
-              <p>由练习与复盘持续更新。</p>
+              <h2 id="home-ability-title">{resources.todayPack.diagnosisTitle}</h2>
+              <p>{resources.todayPack.diagnosisDescription}</p>
             </div>
             <button className="text-action-button" onClick={() => onNavigate(APP_ROUTES.my)} type="button">
-              <span>查看完整画像</span>
+              <span>{resources.todayPack.viewFullProfile}</span>
               <ArrowRight aria-hidden="true" />
             </button>
           </div>
           {abilityLoading ? (
             <div className="home-panel-state" role="status">{resources.home.abilityLoading}</div>
           ) : abilityUnavailable ? (
-            <div className="home-panel-state">能力画像暂不可用，今日训练入口不受影响。</div>
+            <div className="home-panel-state">{resources.todayPack.abilityUnavailable}</div>
           ) : abilityProfile && abilityProfile.tags.length > 0 ? (
             <div className="home-ability-insights">
               <div className="home-ability-stat-row">
                 <span>
                   <BrainCircuit aria-hidden="true" />
-                  平均能力
+                  {resources.todayPack.averageAbility}
                 </span>
                 <strong>{formatAbilityScore(abilitySummary.averageScore, locale)} / 10</strong>
               </div>
               <div className="home-insight-block strength">
-                <span><Trophy aria-hidden="true" />当前优势</span>
-                <strong>{abilitySummary.strongestTag?.label ?? '暂无'}</strong>
+                <span><Trophy aria-hidden="true" />{resources.todayPack.currentStrength}</span>
+                <strong>{abilitySummary.strongestTag?.label ?? resources.todayPack.none}</strong>
                 <p>
                   {abilitySummary.strongestTag
-                    ? `基于 ${abilitySummary.strongestTag.reviewedProblemCount} 道复盘题。`
+                    ? resources.todayPack.strengthEvidence(abilitySummary.strongestTag.reviewedProblemCount)
                     : resources.myPage.noTopAbilities}
                 </p>
               </div>
               <div className="home-insight-block next">
-                <span><Target aria-hidden="true" />下一步突破</span>
-                <strong>{breakthroughTag?.label ?? '继续积累复盘数据'}</strong>
-                <p>{breakthroughTag ? `今天优先补一题“${breakthroughTag.label}”基础练习。` : resources.myPage.noTopAbilities}</p>
+                <span><Target aria-hidden="true" />{resources.todayPack.nextBreakthrough}</span>
+                <strong>{breakthroughTag?.label ?? resources.todayPack.breakthroughFallback}</strong>
+                <p>{breakthroughTag ? resources.todayPack.breakthroughAdvice(breakthroughTag.label) : resources.myPage.noTopAbilities}</p>
               </div>
             </div>
           ) : (
@@ -319,7 +327,7 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
         <aside className="home-plan-panel" aria-labelledby="home-plan-title">
           <div className="home-panel-heading compact-heading">
             <div>
-              <h2 id="home-plan-title">本周节奏</h2>
+              <h2 id="home-plan-title">{resources.todayPack.weeklyRhythm}</h2>
             </div>
           </div>
           {activePlan ? (
@@ -327,29 +335,29 @@ export default function TodayPackPage({ onNavigate }: TodayPackPageProps) {
               <strong className="home-plan-title">{activePlan.title}</strong>
               <dl className="home-plan-metrics">
                 <div>
-                  <dt>每日训练</dt>
-                  <dd>{activePlan.dailyProblemCount} 题</dd>
+                  <dt>{resources.todayPack.dailyTraining}</dt>
+                  <dd>{resources.todayPack.problemCount(activePlan.dailyProblemCount)}</dd>
                 </div>
                 <div>
-                  <dt>每周目标</dt>
-                  <dd>{weeklyTarget} 题</dd>
+                  <dt>{resources.todayPack.weeklyTarget}</dt>
+                  <dd>{resources.todayPack.problemCount(weeklyTarget)}</dd>
                 </div>
                 <div>
-                  <dt>剩余题目</dt>
-                  <dd>{activePlan.remainingProblemCount} 题</dd>
+                  <dt>{resources.todayPack.remainingProblems}</dt>
+                  <dd>{resources.todayPack.problemCount(activePlan.remainingProblemCount)}</dd>
                 </div>
               </dl>
               <button className="secondary-button compact" onClick={() => onNavigate(APP_ROUTES.learningPlans)} type="button">
-                <span>管理学习方案</span>
+                <span>{resources.todayPack.managePlan}</span>
                 <ArrowRight aria-hidden="true" />
               </button>
             </>
           ) : (
             <div className="home-empty-plan">
-              <strong>{pack?.recommendedPlan?.title ?? '还没有进行中的学习方案'}</strong>
-              <p>{pack?.recommendedPlan?.summary ?? '创建方案后，这里会显示每周训练节奏和剩余任务。'}</p>
+              <strong>{pack?.recommendedPlan?.title ?? resources.todayPack.noActivePlan}</strong>
+              <p>{pack?.recommendedPlan?.summary ?? resources.todayPack.noActivePlanDescription}</p>
               <button className="secondary-button compact" onClick={() => onNavigate(APP_ROUTES.learningPlans)} type="button">
-                查看训练方案
+                {resources.todayPack.viewPlans}
               </button>
             </div>
           )}
@@ -404,11 +412,11 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
     setError('');
     void getTodayPack(timezone, packOffset, controller.signal)
       .then((response) => {
-        setPack(requireApiData(response, '今日题包加载失败'));
+        setPack(requireApiData(response, resources.todayPack.packLoadFailed));
       })
       .catch((nextError) => {
         if (!controller.signal.aborted) {
-          setError(nextError instanceof Error ? nextError.message : '今日题包加载失败');
+          setError(nextError instanceof Error ? nextError.message : resources.todayPack.packLoadFailed);
         }
       })
       .finally(() => {
@@ -417,22 +425,25 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
         }
       });
     return () => controller.abort();
-  }, [packOffset, timezone]);
+  }, [locale, packOffset, resources.todayPack.packLoadFailed, timezone]);
 
   async function restartActivePack() {
     if (!pack?.activePlan) {
       return;
     }
-    if (!window.confirm('今日题包将从今天重新排布，已完成和已跳过题目不会被删除。')) {
+    if (!window.confirm(resources.todayPack.resetConfirm)) {
       return;
     }
     setActionLoading(true);
     setError('');
     try {
-      setPack(requireApiData(await restartTodayPack(pack.activePlan.planId, timezone), '今日题包重置失败'));
+      setPack(requireApiData(
+        await restartTodayPack(pack.activePlan.planId, timezone),
+        resources.todayPack.packResetFailed,
+      ));
       setPackOffset(0);
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : '今日题包重置失败');
+      setError(nextError instanceof Error ? nextError.message : resources.todayPack.packResetFailed);
     } finally {
       setActionLoading(false);
     }
@@ -473,21 +484,26 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
     return (
       <article className="learning-panel today-pack-page" aria-busy="true">
         <p className="eyebrow">TODAY PACK</p>
-        <h2>正在加载今日题包</h2>
+        <h2>{resources.todayPack.loadingPack}</h2>
       </article>
     );
   }
 
   return (
-    <article className="learning-panel today-pack-page" aria-label="今日题包">
+    <article className="learning-panel today-pack-page" aria-label={resources.todayPack.packAriaLabel}>
       <div className="today-pack-heading">
         <div>
           <p className="eyebrow">TODAY PACK</p>
-          <h2>今日题包</h2>
+          <h2>{resources.todayPack.todayPack}</h2>
           <p>
             {pack?.activePlan
-              ? `${pack.activePlan.title} · 开始时间 ${formatDate(pack.activePlan.activatedAt, locale)} · ${pack.activePlan.dailyProblemCount} 题/天 · 今日 ${pack.localDate}`
-              : '从一个推荐计划开始，之后可以在方案页自由切换。'}
+              ? resources.todayPack.activePackSummary(
+                pack.activePlan.title,
+                formatDate(pack.activePlan.activatedAt, locale),
+                pack.activePlan.dailyProblemCount,
+                pack.localDate,
+              )
+              : resources.todayPack.packIntroduction}
           </p>
         </div>
         {pack?.activePlan && (
@@ -499,12 +515,12 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
               type="button"
             >
               <RotateCcw aria-hidden="true" />
-              <span>一键清账重新开始</span>
+              <span>{resources.todayPack.restart}</span>
             </button>
             <span className="toolbar-tooltip-wrap">
               <span
                 aria-describedby="today-pack-restart-tooltip"
-                aria-label="一键清账重新开始说明"
+                aria-label={resources.todayPack.restartHelpAriaLabel}
                 className="icon-button today-pack-restart-help"
                 role="img"
                 tabIndex={0}
@@ -512,7 +528,7 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
                 <CircleHelp aria-hidden="true" />
               </span>
               <span className="toolbar-tooltip today-pack-restart-tooltip" id="today-pack-restart-tooltip" role="tooltip">
-                将题包起点重置为今天，清掉顺延积压；已完成和已跳过记录会保留。
+                {resources.todayPack.restartHelp}
               </span>
             </span>
           </div>
@@ -603,8 +619,8 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
         <section className="today-pack-empty">
           <ClipboardList aria-hidden="true" />
           <div>
-            <h3>还没有采用的训练方案</h3>
-            <p>回到方案页创建或采用一个方案后，今日题包会按计划节奏生成。</p>
+            <h3>{resources.todayPack.emptyPlanTitle}</h3>
+            <p>{resources.todayPack.emptyPlanDescription}</p>
           </div>
         </section>
       ) : null}
@@ -612,23 +628,23 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
       {pack?.state === 'PLAN_COMPLETED' ? (
         <section className="today-pack-complete">
           <CheckCircle2 aria-hidden="true" />
-          <h3>整条计划已清完</h3>
-          <p>已完成或跳过当前采用计划中的所有题目。你仍然可以在方案页浏览历史题目和继续对话。</p>
+          <h3>{resources.todayPack.planCompletedTitle}</h3>
+          <p>{resources.todayPack.planCompletedDescription}</p>
         </section>
       ) : null}
 
       {pack?.state === 'DONE_TODAY' ? (
         <section className="today-pack-complete">
           <CheckCircle2 aria-hidden="true" />
-          <h3>今天到此为止</h3>
-          <p>当前没有需要补做或今天安排的新题。</p>
+          <h3>{resources.todayPack.doneTodayTitle}</h3>
+          <p>{resources.todayPack.doneTodayDescription}</p>
           <div className="today-pack-actions">
             <button className="secondary-button compact" type="button">
-              到此为止
+              {resources.todayPack.stopToday}
             </button>
             {pack.nextPackDate && (
               <button className="primary-button compact" onClick={() => setPackOffset((current) => current + 1)} type="button">
-                再来一包
+                {resources.todayPack.nextPack}
               </button>
             )}
           </div>
@@ -640,7 +656,7 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
       {pack && pack.packOffset > 0 && (
         <div className="today-pack-future-label">
           <CalendarDays aria-hidden="true" />
-          <span>{pack.sections[0]?.date ?? pack.nextPackDate ?? pack.localDate} 的题包</span>
+          <span>{resources.todayPack.futurePack(pack.sections[0]?.date ?? pack.nextPackDate ?? pack.localDate)}</span>
         </div>
       )}
 
@@ -648,7 +664,7 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
         <section className="today-pack-section" key={`${section.type}-${section.date ?? 'due'}`}>
           <div className="plan-subsection-heading">
             <h3>{section.title}</h3>
-            <span>{section.problems.length} 题</span>
+            <span>{resources.todayPack.sectionProblemCount(section.problems.length)}</span>
           </div>
           <div className="today-pack-problem-list">
             {section.problems.map((problem) => (
@@ -663,8 +679,8 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
                   <strong>{formatProblemTitle(problem, locale)}</strong>
                   <small>
                     {problem.carryoverDays > 0
-                      ? `顺延 ${problem.carryoverDays} 天 · ${problem.scheduledDate}`
-                      : `安排日期 ${problem.scheduledDate}`}
+                      ? resources.todayPack.carryover(problem.carryoverDays, problem.scheduledDate)
+                      : resources.todayPack.scheduledDate(problem.scheduledDate)}
                   </small>
                 </span>
                 <span className={`difficulty-badge ${String(problem.difficulty ?? '').toLowerCase()}`}>
@@ -680,20 +696,20 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
       {pack?.state === 'READY' && pack.sections.length === 0 && (
         <section className="today-pack-complete">
           <CalendarDays aria-hidden="true" />
-          <h3>这一天没有安排题目</h3>
+          <h3>{resources.todayPack.emptyDay}</h3>
           <button className="primary-button compact" onClick={() => setPackOffset((current) => current + 1)} type="button">
-            再来一包
+            {resources.todayPack.nextPack}
           </button>
         </section>
       )}
 
       {pack?.activePlan && (
         <footer className="today-pack-footer">
-          <span>本包共 {totalProblems} 题</span>
+          <span>{resources.todayPack.packTotal(totalProblems)}</span>
           <span>{pack.timezone}</span>
           {packOffset > 0 && (
             <button className="secondary-button compact" onClick={() => setPackOffset(0)} type="button">
-              回到今天
+              {resources.todayPack.backToday}
             </button>
           )}
         </footer>
@@ -798,20 +814,24 @@ export function TodayPackPanel({ contractFeedback, onNavigate, onPlanUpdated, pl
   );
 }
 
-function todayPackStatusText(pack: TodayPackResponse, totalProblems: number): string {
+function todayPackStatusText(
+  pack: TodayPackResponse,
+  totalProblems: number,
+  resources: LocaleResources['todayPack'],
+): string {
   if (pack.state === 'NO_ACTIVE_PLAN') {
-    return '还没有采用的训练方案';
+    return resources.statusNoActivePlan;
   }
   if (pack.state === 'PLAN_COMPLETED') {
-    return '整条计划已清完';
+    return resources.statusPlanCompleted;
   }
   if (pack.state === 'DONE_TODAY') {
-    return pack.nextPackDate ? `今天已完成，下一包 ${pack.nextPackDate}` : '今天已完成';
+    return pack.nextPackDate ? resources.statusDoneWithNext(pack.nextPackDate) : resources.statusDone;
   }
   if (totalProblems > 0) {
-    return `今日待练 ${totalProblems} 题`;
+    return resources.statusDue(totalProblems);
   }
-  return '今日暂无安排';
+  return resources.statusEmpty;
 }
 
 function clampNumber(value: number, min: number, max: number) {

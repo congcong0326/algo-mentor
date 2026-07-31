@@ -129,7 +129,9 @@ export default function LearningPlanListCard({
                       <div className="plan-row-content">
                         <div className="plan-title-line">
                           <strong>{plan.title}</strong>
-                          {isActivePlan && <span className="status-badge current-plan-badge">当前采用</span>}
+                          {isActivePlan && (
+                            <span className="status-badge current-plan-badge">{resources.learningPlans.currentActive}</span>
+                          )}
                           <span className="status-badge">{formatPlanStatus(plan.status, resources)}</span>
                         </div>
                         <div className="plan-meta-row" aria-label={resources.learningPlans.planParameters}>
@@ -149,7 +151,7 @@ export default function LearningPlanListCard({
                             type="button"
                           >
                             <CalendarDays aria-hidden="true" />
-                            <span>今日题包</span>
+                            <span>{resources.learningPlans.todayPack}</span>
                           </button>
                         )}
                         {onSelect && (
@@ -170,7 +172,7 @@ export default function LearningPlanListCard({
                             onClick={() => onActivate(plan.id)}
                             type="button"
                           >
-                            {isActivating ? '切换中' : '采用'}
+                            {isActivating ? resources.learningPlans.activating : resources.learningPlans.activate}
                           </button>
                         )}
                         <button

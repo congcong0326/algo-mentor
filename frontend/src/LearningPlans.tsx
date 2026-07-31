@@ -147,21 +147,21 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
   }
 
   async function activatePlan(planId: number) {
-    if (!window.confirm('今日题包将按新计划生成，原计划进度不会被删除。')) {
+    if (!window.confirm(resources.learningPlans.activateConfirm)) {
       return;
     }
 
     setActivatingPlanId(planId);
     setError('');
     try {
-      requireApiData(await activateLearningPlan(planId), '学习计划切换失败');
+      requireApiData(await activateLearningPlan(planId), resources.learningPlans.activateFailed);
       if (planDetail?.id === planId) {
         await refreshCurrentPlanDetail(planId);
       } else {
         await refreshPlans(page);
       }
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : '学习计划切换失败');
+      setError(nextError instanceof Error ? nextError.message : resources.learningPlans.activateFailed);
     } finally {
       setActivatingPlanId(undefined);
     }
