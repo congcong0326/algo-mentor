@@ -71,7 +71,7 @@ class ManagedSystemPromptDefinitionRegistryTest {
   }
 
   @Test
-  void codeReviewProfilePromptRequiresRecognizableCrossProblemObservations() {
+  void learnerMemoryCodeReviewPromptRequiresRecognizableCrossProblemObservations() {
     ManagedSystemPromptDefinition definition = ManagedSystemPromptDefinitions.CODE_REVIEW_PROFILE_UPDATE;
     String prompt = definition.sections().stream()
         .filter(section -> SystemPromptSectionKeys.CODE_REVIEW_PROFILE_UPDATE_BASE.equals(section.key()))

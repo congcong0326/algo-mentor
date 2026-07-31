@@ -1,6 +1,7 @@
 package org.congcong.algomentor.mentor.application.conversation;
 
 import org.congcong.algomentor.agent.core.AgentRequest;
+import org.congcong.algomentor.agent.core.runtime.definition.AgentRunResource;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.runtime.model.PreparedAgentRun;
 
@@ -10,7 +11,8 @@ public record AgentConversationRun(
     long runId,
     String runUuid,
     AgentRequest agentRequest,
-    PreparedAgentRun preparedRun
+    PreparedAgentRun preparedRun,
+    AgentRunResource runResource
 ) {
 
   public AgentConversationRun(
@@ -34,7 +36,8 @@ public record AgentConversationRun(
             agentRequest.requestId(),
             "",
             null,
-            agentRequest.metadata()));
+            agentRequest.metadata()),
+        AgentRunResource.none());
   }
 
   public AgentConversationRun {
@@ -50,6 +53,7 @@ public record AgentConversationRun(
     if (preparedRun == null) {
       throw new IllegalArgumentException("Conversation prepared run must not be null");
     }
+    runResource = runResource == null ? AgentRunResource.none() : runResource;
   }
 
   public boolean idempotentReplay() {

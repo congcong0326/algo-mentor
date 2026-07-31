@@ -4,9 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HexFormat;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -17,161 +20,178 @@ import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
+import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileEntryKind;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileIdentity;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileQueryService;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileSnapshot;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileUpdateService;
-import org.congcong.algomentor.mentor.application.profile.ProfileUpdateAction;
-import org.congcong.algomentor.mentor.application.profile.ProfileUpdateApplyResult;
-import org.congcong.algomentor.mentor.application.profile.ProfileUpdateApplyStatus;
-import org.congcong.algomentor.mentor.application.profile.ProfileUpdateCommand;
-import org.congcong.algomentor.mentor.application.profile.ProfileUpdateDecision;
+import org.congcong.algomentor.agent.core.runtime.model.AgentTurnMessages;
+import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
+import org.congcong.algomentor.mentor.application.profile.LearnerMemoryClaimDimensionCatalog;
+import org.congcong.algomentor.mentor.application.profile.LearnerMemoryClaimDimension;
+import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimContract;
+import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimRevision;
+import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimScope;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimQueryService;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimSnapshot;
+import org.congcong.algomentor.mentor.application.profile.evidence.model.LearnerMemoryClaimMessageEvidence;
+import org.congcong.algomentor.mentor.application.profile.evidence.model.LearnerMemoryEvidenceContract;
+import org.congcong.algomentor.mentor.application.profile.evidence.model.LearnerMemoryEvidenceReferences;
+import org.congcong.algomentor.mentor.application.profile.evidence.model.LearnerMemoryEvidenceValidationContext;
+import org.congcong.algomentor.mentor.application.profile.evidence.repository.LearnerMemoryEvidenceRepository;
+import org.congcong.algomentor.mentor.application.profile.operation.model.LearnerMemoryOperation;
+import org.congcong.algomentor.mentor.application.profile.operation.model.LearnerMemoryOperationBatch;
+import org.congcong.algomentor.mentor.application.profile.operation.service.LearnerMemoryAtomicApplyService;
+import org.congcong.algomentor.mentor.application.profile.operation.service.LearnerMemoryOperationFailure;
+import org.congcong.algomentor.mentor.application.profile.observability.LearnerMemoryMetrics;
+import org.congcong.algomentor.mentor.application.profile.run.model.LearnerMemoryRunContract;
+import org.congcong.algomentor.mentor.application.profile.run.model.LearnerMemoryUpdateRun;
+import org.congcong.algomentor.mentor.application.profile.run.model.LearnerMemoryUpdateRunDraft;
+import org.congcong.algomentor.mentor.application.profile.run.repository.LearnerMemoryUpdateRunRepository;
+import org.congcong.algomentor.mentor.application.profile.run.service.LearnerMemoryUpdateRunLifecycleService;
 import org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateRequest;
 import org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateResult;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredProfileToolContracts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** 事务外执行批量模型判定，随后调用画像短事务完成全有或全无更新。 */
-public class DeclaredProfileUpdateService {
+/** 受信消息驱动的用户自述 Claim 更新编排；模型调用始终发生在数据库事务外。 */
+public class DeclaredProfileUpdateService implements DeclaredProfileUpdateHandler {
 
   private static final Logger log = LoggerFactory.getLogger(DeclaredProfileUpdateService.class);
 
-  private final LearnerProfileQueryService queryService;
-  private final LearnerProfileUpdateService updateService;
+  private final LearnerMemoryClaimQueryService claimQueryService;
+  private final LearnerMemoryEvidenceRepository evidenceRepository;
+  private final LearnerMemoryUpdateRunRepository updateRunRepository;
+  private final LearnerMemoryAtomicApplyService atomicApplyService;
+  private final LearnerMemoryUpdateRunLifecycleService runLifecycleService;
+  private final AgentTurnMessageLookupRepository turnMessageLookupRepository;
   private final AgentRuntime agentRuntime;
   private final DeclaredProfileUpdatePromptBuilder promptBuilder;
   private final int maxStaleRetries;
   private final int resultSummaryMaxChars;
+  private final LearnerMemoryMetrics metrics;
 
   public DeclaredProfileUpdateService(
-      LearnerProfileQueryService queryService,
-      LearnerProfileUpdateService updateService,
+      LearnerMemoryClaimQueryService claimQueryService,
+      LearnerMemoryEvidenceRepository evidenceRepository,
+      LearnerMemoryUpdateRunRepository updateRunRepository,
+      LearnerMemoryAtomicApplyService atomicApplyService,
+      LearnerMemoryUpdateRunLifecycleService runLifecycleService,
+      AgentTurnMessageLookupRepository turnMessageLookupRepository,
       AgentRuntime agentRuntime,
       DeclaredProfileUpdatePromptBuilder promptBuilder,
       int maxStaleRetries,
-      int resultSummaryMaxChars
-  ) {
-    this.queryService = Objects.requireNonNull(queryService, "queryService must not be null");
-    this.updateService = Objects.requireNonNull(updateService, "updateService must not be null");
-    this.agentRuntime = Objects.requireNonNull(agentRuntime, "Agent runtime must not be null");
-    this.promptBuilder = Objects.requireNonNull(promptBuilder, "promptBuilder must not be null");
+      int resultSummaryMaxChars) {
+    this(
+        claimQueryService, evidenceRepository, updateRunRepository, atomicApplyService, runLifecycleService,
+        turnMessageLookupRepository, agentRuntime, promptBuilder, maxStaleRetries, resultSummaryMaxChars,
+        LearnerMemoryMetrics.NOOP);
+  }
+
+  public DeclaredProfileUpdateService(
+      LearnerMemoryClaimQueryService claimQueryService,
+      LearnerMemoryEvidenceRepository evidenceRepository,
+      LearnerMemoryUpdateRunRepository updateRunRepository,
+      LearnerMemoryAtomicApplyService atomicApplyService,
+      LearnerMemoryUpdateRunLifecycleService runLifecycleService,
+      AgentTurnMessageLookupRepository turnMessageLookupRepository,
+      AgentRuntime agentRuntime,
+      DeclaredProfileUpdatePromptBuilder promptBuilder,
+      int maxStaleRetries,
+      int resultSummaryMaxChars,
+      LearnerMemoryMetrics metrics) {
+    this.claimQueryService = Objects.requireNonNull(claimQueryService, "claimQueryService");
+    this.evidenceRepository = Objects.requireNonNull(evidenceRepository, "evidenceRepository");
+    this.updateRunRepository = Objects.requireNonNull(updateRunRepository, "updateRunRepository");
+    this.atomicApplyService = Objects.requireNonNull(atomicApplyService, "atomicApplyService");
+    this.runLifecycleService = Objects.requireNonNull(runLifecycleService, "runLifecycleService");
+    this.turnMessageLookupRepository = Objects.requireNonNull(turnMessageLookupRepository, "turnMessageLookupRepository");
+    this.agentRuntime = Objects.requireNonNull(agentRuntime, "agentRuntime");
+    this.promptBuilder = Objects.requireNonNull(promptBuilder, "promptBuilder");
     if (maxStaleRetries < 0 || maxStaleRetries > 1 || resultSummaryMaxChars < 1) {
       throw new IllegalArgumentException("Invalid declared profile update properties");
     }
     this.maxStaleRetries = maxStaleRetries;
     this.resultSummaryMaxChars = resultSummaryMaxChars;
+    this.metrics = metrics == null ? LearnerMemoryMetrics.NOOP : metrics;
   }
 
   public DeclaredProfileUpdateResult update(
       long userId,
       DeclaredProfileUpdateRequest request,
       long parentRunDbId,
-      int parentStepIndex
-  ) {
-    Objects.requireNonNull(request, "request must not be null");
+      int parentStepIndex) {
+    Objects.requireNonNull(request, "request");
     if (userId < 1 || parentRunDbId < 1 || parentStepIndex < 1) {
       return failed(request);
     }
+    LearnerMemoryUpdateRun updateRun = null;
     try {
-      List<CandidateState> candidates = loadCandidates(userId, request);
-      String logicalIdempotencyKey = childIdempotencyKey(parentRunDbId, parentStepIndex, request);
+      String idempotencyKey = childIdempotencyKey(parentRunDbId, parentStepIndex, request);
+      updateRun = findOrCreateRun(userId, request, idempotencyKey);
+      if (updateRun.status().isTerminal()) {
+        return terminalResult(request, updateRun.status());
+      }
+      TrustedMessage message = trustedCurrentMessage(userId, parentRunDbId);
+      LearnerMemoryClaimSnapshot snapshot = claimQueryService.snapshot(userId);
       Long retryOfRunId = null;
       for (int attempt = 0; attempt <= maxStaleRetries; attempt++) {
         DecisionRound round = decide(
+            userId, request, snapshot, message, parentRunDbId, parentStepIndex,
+            attemptIdempotencyKey(idempotencyKey, attempt), retryOfRunId);
+        updateRunRepository.bindAgentRun(updateRun.id(), round.agentRunId());
+        List<Decision> decisions = parseOperations(round.structuredOutput(), round.candidates());
+        PreparedBatch prepared = prepareBatch(
             userId,
-            candidates,
-            parentRunDbId,
-            parentStepIndex,
-            attemptIdempotencyKey(logicalIdempotencyKey, attempt),
-            retryOfRunId);
-        List<ProfileUpdateApplyResult> applied = updateService.applyBatch(commands(candidates, round));
-        if (applied.size() != candidates.size()) {
-          throw new IllegalStateException("Declared profile update returned an unexpected result count");
-        }
-        if (applied.stream().anyMatch(result -> result.status() == ProfileUpdateApplyStatus.STALE)) {
-          log.info("Declared profile update became stale. userId={} dimensions={} retryAttempt={}",
-              userId, candidates.size(), attempt);
+            updateRun.id(),
+            snapshot,
+            message,
+            decisions);
+        LearnerMemoryAtomicApplyService.ApplyResult result = atomicApplyService.apply(prepared.batch(), prepared.context());
+        if (result.status() == LearnerMemoryAtomicApplyService.ApplyStatus.STALE) {
           if (attempt == maxStaleRetries) {
+            runLifecycleService.markFailed(userId, updateRun.id(), 0, LearnerMemoryOperationFailure.Code.STALE_SNAPSHOT);
+            metrics.recordInvalidOutput("STALE");
+            metrics.recordUpdateRun(LearnerMemoryRunContract.Trigger.DECLARED_FACT, LearnerMemoryRunContract.Status.FAILED);
             return failed(request);
           }
-          retryOfRunId = round.runDbId();
-          candidates = loadCandidates(userId, request);
+          retryOfRunId = round.agentRunId();
+          snapshot = claimQueryService.snapshot(userId);
           continue;
         }
-        return result(request, applied);
+        metrics.recordUpdateRun(
+            LearnerMemoryRunContract.Trigger.DECLARED_FACT,
+            result.status() == LearnerMemoryAtomicApplyService.ApplyStatus.APPLIED
+                ? LearnerMemoryRunContract.Status.SUCCEEDED
+                : LearnerMemoryRunContract.Status.NO_CHANGE);
+        return result(request, decisions, result.status());
+      }
+    } catch (LearnerMemoryOperationFailure failure) {
+      metrics.recordInvalidOutput("VALIDATION");
+      log.info("Declared memory operation rejected. code={}", failure.code());
+      if (updateRun != null) {
+        runLifecycleService.markFailed(userId, updateRun.id(), 0, failure.code());
+        metrics.recordUpdateRun(LearnerMemoryRunContract.Trigger.DECLARED_FACT, LearnerMemoryRunContract.Status.FAILED);
       }
     } catch (RuntimeException exception) {
-      log.warn("Declared profile update failed. userId={} dimensions={} exceptionType={}",
-          userId, request.updates().size(), exception.getClass().getSimpleName());
+      log.warn("Declared memory update failed. exceptionType={}", exception.getClass().getSimpleName());
+      if (updateRun != null) {
+        runLifecycleService.markFailed(
+            userId, updateRun.id(), 0, LearnerMemoryOperationFailure.Code.AGENT_FAILURE);
+        metrics.recordInvalidOutput("TOOL_FAILURE");
+        metrics.recordUpdateRun(LearnerMemoryRunContract.Trigger.DECLARED_FACT, LearnerMemoryRunContract.Status.FAILED);
+      }
     }
     return failed(request);
-  }
-
-  private List<CandidateState> loadCandidates(long userId, DeclaredProfileUpdateRequest request) {
-    return request.updates().stream().map(update -> {
-      LearnerProfileIdentity identity = LearnerProfileIdentity.dimension(
-          userId, LearnerProfileEntryKind.DECLARED_FACT, update.dimension());
-      LearnerProfileSnapshot snapshot = queryService.snapshot(identity);
-      String currentContent = snapshot.currentEntry().map(entry -> entry.contentText()).orElse("");
-      return new CandidateState(update, snapshot, currentContent);
-    }).toList();
-  }
-
-  private DecisionRound decide(
-      long userId,
-      List<CandidateState> candidates,
-      long parentRunDbId,
-      int parentStepIndex,
-      String idempotencyKey,
-      Long retryOfRunId
-  ) {
-    AgentInvocation<DeclaredProfileUpdateAgentInput> invocation = new AgentInvocation<>(
-        DeclaredProfileUpdateAgentDefinition.KEY,
-        new DeclaredProfileUpdateAgentInput(
-            userId,
-            candidates.stream().map(candidate -> new DeclaredProfileUpdateAgentInput.Candidate(
-                candidate.update().dimension(),
-                candidate.update().statement(),
-                candidate.update().intent(),
-                candidate.currentContent())).toList(),
-            idempotencyKey,
-            retryOfRunId),
-        new AgentInvocationContext(
-            userId,
-            AgentInvocationMode.CHILD,
-            idempotencyKey,
-            Long.toString(parentRunDbId),
-            parentStepIndex,
-            requestSize(candidates),
-            false));
-    log.info("Declared profile child Agent request started. dimensions={} parentRunDbId={} parentStepIndex={} retry={}",
-        candidates.size(), parentRunDbId, parentStepIndex, retryOfRunId != null);
-    AgentRunResult result = agentRuntime.execute(invocation);
-    List<ProfileUpdateDecision> decisions = parseDecisions(
-        result.output() == null ? null : result.output().structured(), candidates);
-    String provider = metadataText(result.metadata(), AgentRuntimeMetadataKeys.RUNTIME_PROVIDER);
-    String model = metadataText(result.metadata(), AgentRuntimeMetadataKeys.RUNTIME_MODEL);
-    long runDbId = requiredPositiveLong(result.metadata(), AgentRuntimeMetadataKeys.RUN_DB_ID);
-    log.info("Declared profile child Agent request completed. dimensions={} parentRunDbId={} parentStepIndex={} runDbId={} provider={} model={} actions={}",
-        candidates.size(), parentRunDbId, parentStepIndex, runDbId, provider, model,
-        decisions.stream().map(decision -> decision.action().name()).toList());
-    return new DecisionRound(decisions, provider, model, runDbId);
   }
 
   static String childIdempotencyKey(
       long parentRunDbId,
       int parentStepIndex,
-      DeclaredProfileUpdateRequest request
-  ) {
+      DeclaredProfileUpdateRequest request) {
     if (parentRunDbId < 1 || parentStepIndex < 1) {
       throw new IllegalArgumentException("Declared profile child parent run and step must be positive");
     }
-    DeclaredProfileUpdateRequest candidate = Objects.requireNonNull(request, "request must not be null");
-    String summary = candidate.updates().stream()
-        .sorted(java.util.Comparator.comparing(item -> item.dimension().name()))
+    String summary = Objects.requireNonNull(request, "request").updates().stream()
+        .sorted(Comparator.comparing(item -> item.dimension().name()))
         .map(item -> item.dimension().name() + '\u001f' + item.intent().name() + '\u001f'
             + normalizeStatement(item.statement()))
         .collect(java.util.stream.Collectors.joining("\u001e"));
@@ -180,10 +200,345 @@ public class DeclaredProfileUpdateService {
             + LearnerDeclaredProfileToolContracts.TOOL_NAME + "\u001d" + summary);
   }
 
-  private static String attemptIdempotencyKey(String logicalIdempotencyKey, int attempt) {
-    if (attempt < 0) {
-      throw new IllegalArgumentException("Declared profile child attempt must not be negative");
+  private LearnerMemoryUpdateRun findOrCreateRun(
+      long userId,
+      DeclaredProfileUpdateRequest request,
+      String idempotencyKey) {
+    return updateRunRepository.findByIdempotencyKey(idempotencyKey).map(existing -> {
+      if (existing.userId() != userId || existing.trigger() != LearnerMemoryRunContract.Trigger.DECLARED_FACT) {
+        throw new IllegalStateException("Declared memory update run does not match trusted context");
+      }
+      return existing;
+    }).orElseGet(() -> updateRunRepository.create(new LearnerMemoryUpdateRunDraft(
+        userId,
+        LearnerMemoryRunContract.Trigger.DECLARED_FACT,
+        idempotencyKey,
+        LearnerDeclaredProfileToolContracts.PROMPT_VERSION,
+        LearnerDeclaredProfileToolContracts.SCHEMA_VERSION,
+        request.updates().size(),
+        Instant.now())));
+  }
+
+  private TrustedMessage trustedCurrentMessage(long userId, long parentRunDbId) {
+    AgentTurnMessages turn = turnMessageLookupRepository.findByRunId(parentRunDbId)
+        .filter(messages -> messages.runId() == parentRunDbId)
+        .orElseThrow(() -> new IllegalStateException("Declared memory current turn is unavailable"));
+    AgentMessage message = turn.userMessage();
+    if (!evidenceRepository.findOwnedMessageIds(userId, Set.of(message.id())).contains(message.id())) {
+      throw new IllegalStateException("Declared memory current message ownership is invalid");
     }
+    return new TrustedMessage(message.id(), message.content(), message.createdAt());
+  }
+
+  private DecisionRound decide(
+      long userId,
+      DeclaredProfileUpdateRequest request,
+      LearnerMemoryClaimSnapshot snapshot,
+      TrustedMessage message,
+      long parentRunDbId,
+      int parentStepIndex,
+      String idempotencyKey,
+      Long retryOfRunId) {
+    List<DeclaredProfileUpdateAgentInput.Candidate> candidates = candidates(request, snapshot, message.content());
+    AgentInvocation<DeclaredProfileUpdateAgentInput> invocation = new AgentInvocation<>(
+        DeclaredProfileUpdateAgentDefinition.KEY,
+        new DeclaredProfileUpdateAgentInput(userId, candidates, idempotencyKey, retryOfRunId),
+        new AgentInvocationContext(
+            userId, AgentInvocationMode.CHILD, idempotencyKey, Long.toString(parentRunDbId), parentStepIndex,
+            message.content().length(), false));
+    AgentRunResult result = agentRuntime.execute(invocation);
+    long agentRunId = requiredPositiveLong(result.metadata(), AgentRuntimeMetadataKeys.RUN_DB_ID);
+    return new DecisionRound(
+        candidates,
+        result.output() == null ? null : result.output().structured(),
+        agentRunId);
+  }
+
+  private List<DeclaredProfileUpdateAgentInput.Candidate> candidates(
+      DeclaredProfileUpdateRequest request,
+      LearnerMemoryClaimSnapshot snapshot,
+      String currentMessage) {
+    return request.updates().stream().map(item -> {
+      LearnerMemoryClaimContract.Dimension dimension = memoryDimension(item.dimension());
+      List<DeclaredProfileUpdateAgentInput.ActiveClaim> active = snapshot.activeClaims().stream()
+          .filter(claim -> claim.scope().kind() == LearnerMemoryClaimContract.Kind.DECLARED_FACT
+              && claim.scope().dimension() == dimension)
+          .map(claim -> new DeclaredProfileUpdateAgentInput.ActiveClaim(claim.id(), claim.claimText()))
+          .toList();
+      return new DeclaredProfileUpdateAgentInput.Candidate(
+          item.dimension(), currentMessage, item.intent(), active);
+    }).toList();
+  }
+
+  private PreparedBatch prepareBatch(
+      long userId,
+      long updateRunId,
+      LearnerMemoryClaimSnapshot snapshot,
+      TrustedMessage currentMessage,
+      List<Decision> decisions) {
+    Map<Long, LearnerMemoryClaimRevision> activeById = snapshot.activeClaims().stream()
+        .collect(java.util.stream.Collectors.toMap(LearnerMemoryClaimRevision::id, claim -> claim));
+    Set<Long> targetIds = decisions.stream().filter(TargetDecision.class::isInstance)
+        .map(TargetDecision.class::cast).map(TargetDecision::targetRevisionId).collect(java.util.stream.Collectors.toSet());
+    Map<Long, List<LearnerMemoryClaimMessageEvidence>> existing = evidenceRepository
+        .findMessageEvidenceByRevisionIds(userId, targetIds).stream()
+        .collect(java.util.stream.Collectors.groupingBy(LearnerMemoryClaimMessageEvidence::claimRevisionId));
+    Map<Long, LearnerMemoryEvidenceValidationContext.MessageSource> sources = new LinkedHashMap<>();
+    sources.put(currentMessage.id(), new LearnerMemoryEvidenceValidationContext.MessageSource(
+        currentMessage.id(), currentMessage.createdAt()));
+    List<LearnerMemoryOperation> operations = new ArrayList<>();
+    for (Decision decision : decisions) {
+      if (decision instanceof AddDecision add) {
+        operations.add(new LearnerMemoryOperation.Add(
+            declaredScope(add.dimension()), add.claimText(), declaration(currentMessage.id()), null));
+        continue;
+      }
+      TargetDecision target = (TargetDecision) decision;
+      LearnerMemoryClaimRevision current = activeById.get(target.targetRevisionId());
+      if (current == null || current.scope().kind() != LearnerMemoryClaimContract.Kind.DECLARED_FACT) {
+        throw new IllegalArgumentException("Declared memory target is not an active declared claim");
+      }
+      LearnerMemoryEvidenceReferences evidence = correction(
+          existing.getOrDefault(current.id(), List.of()), currentMessage, sources);
+      if (target instanceof ReviseDecision revise) {
+        operations.add(new LearnerMemoryOperation.Revise(current.id(), revise.claimText(), evidence, null));
+      } else {
+        operations.add(new LearnerMemoryOperation.Retire(current.id(), evidence, null));
+      }
+    }
+    return new PreparedBatch(
+        new LearnerMemoryOperationBatch(userId, updateRunId, snapshot.token(), 0, operations),
+        new LearnerMemoryEvidenceValidationContext(List.of(), List.copyOf(sources.values())));
+  }
+
+  private LearnerMemoryEvidenceReferences declaration(long messageId) {
+    return new LearnerMemoryEvidenceReferences(
+        LearnerMemoryEvidenceContract.Pattern.USER_DECLARATION,
+        List.of(),
+        List.of(new LearnerMemoryEvidenceReferences.MessageReference(
+            messageId, LearnerMemoryEvidenceContract.MessageRole.DECLARED)));
+  }
+
+  private LearnerMemoryEvidenceReferences correction(
+      List<LearnerMemoryClaimMessageEvidence> existing,
+      TrustedMessage currentMessage,
+      Map<Long, LearnerMemoryEvidenceValidationContext.MessageSource> sources) {
+    Map<Long, LearnerMemoryEvidenceContract.MessageRole> messages = new LinkedHashMap<>();
+    existing.stream().sorted(Comparator.comparingInt(LearnerMemoryClaimMessageEvidence::sequenceNo)
+        .thenComparingLong(LearnerMemoryClaimMessageEvidence::messageId)).forEach(value -> {
+          messages.put(value.messageId(), value.role());
+          sources.putIfAbsent(value.messageId(), new LearnerMemoryEvidenceValidationContext.MessageSource(
+              value.messageId(), value.createdAt()));
+        });
+    LearnerMemoryEvidenceContract.MessageRole previous = messages.put(currentMessage.id(),
+        LearnerMemoryEvidenceContract.MessageRole.CORRECTED);
+    if (previous != null && previous != LearnerMemoryEvidenceContract.MessageRole.CORRECTED) {
+      throw new IllegalArgumentException("Declared memory correction message role conflicts with existing evidence");
+    }
+    return new LearnerMemoryEvidenceReferences(
+        LearnerMemoryEvidenceContract.Pattern.USER_CORRECTION,
+        List.of(),
+        messages.entrySet().stream().map(entry -> new LearnerMemoryEvidenceReferences.MessageReference(
+            entry.getKey(), entry.getValue())).toList());
+  }
+
+  private List<Decision> parseOperations(
+      JsonNode structuredOutput,
+      List<DeclaredProfileUpdateAgentInput.Candidate> candidates) {
+    if (structuredOutput == null || !structuredOutput.isObject() || structuredOutput.size() != 1
+        || !structuredOutput.has(DeclaredProfileUpdateJsonSchema.OPERATIONS)) {
+      throw new IllegalArgumentException("Declared memory structured output is invalid");
+    }
+    JsonNode values = structuredOutput.path(DeclaredProfileUpdateJsonSchema.OPERATIONS);
+    if (!values.isArray() || values.size() > 10) {
+      throw new IllegalArgumentException("Declared memory operation count is invalid");
+    }
+    Map<LearnerMemoryClaimDimension, org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateIntent>
+        intentsByDimension = candidates.stream().collect(java.util.stream.Collectors.toMap(
+            DeclaredProfileUpdateAgentInput.Candidate::dimension,
+            DeclaredProfileUpdateAgentInput.Candidate::intent));
+    Map<Long, TargetPermission> targets = new HashMap<>();
+    candidates.forEach(candidate -> candidate.activeClaims().forEach(claim ->
+        targets.put(claim.revisionId(), new TargetPermission(candidate.dimension(), candidate.intent()))));
+    List<Decision> result = new ArrayList<>();
+    for (JsonNode value : values) {
+      String action = requiredText(value, DeclaredProfileUpdateJsonSchema.OPERATION_ACTION);
+      result.add(switch (action) {
+        case "ADD" -> parseAdd(value, intentsByDimension);
+        case "REVISE" -> parseRevise(value, targets);
+        case "RETIRE" -> parseRetire(value, targets);
+        default -> throw new IllegalArgumentException("Declared memory operation action is not allowed");
+      });
+    }
+    return List.copyOf(result);
+  }
+
+  private AddDecision parseAdd(
+      JsonNode value,
+      Map<LearnerMemoryClaimDimension, org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateIntent>
+          intents) {
+    requireFields(value, Set.of(
+        DeclaredProfileUpdateJsonSchema.OPERATION_ACTION,
+        DeclaredProfileUpdateJsonSchema.OPERATION_DIMENSION,
+        DeclaredProfileUpdateJsonSchema.OPERATION_CLAIM_TEXT));
+    LearnerMemoryClaimDimension dimension = enumValue(
+        value.path(DeclaredProfileUpdateJsonSchema.OPERATION_DIMENSION), LearnerMemoryClaimDimension.class);
+    if (intents.get(dimension) != org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateIntent.DECLARE
+        || !LearnerMemoryClaimDimensionCatalog.declaredDimensions().contains(dimension)) {
+      throw new IllegalArgumentException("Declared memory ADD dimension is not allowed");
+    }
+    return new AddDecision(dimension, requiredText(value, DeclaredProfileUpdateJsonSchema.OPERATION_CLAIM_TEXT));
+  }
+
+  private ReviseDecision parseRevise(JsonNode value, Map<Long, TargetPermission> targets) {
+    requireFields(value, Set.of(
+        DeclaredProfileUpdateJsonSchema.OPERATION_ACTION,
+        DeclaredProfileUpdateJsonSchema.OPERATION_TARGET_REVISION_ID,
+        DeclaredProfileUpdateJsonSchema.OPERATION_CLAIM_TEXT));
+    long target = requiredPositiveLong(value.path(DeclaredProfileUpdateJsonSchema.OPERATION_TARGET_REVISION_ID));
+    TargetPermission permission = targets.get(target);
+    if (permission == null
+        || permission.intent() != org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateIntent.CORRECT) {
+      throw new IllegalArgumentException("Declared memory REVISE target is not allowed");
+    }
+    return new ReviseDecision(
+        target,
+        permission.dimension(),
+        requiredText(value, DeclaredProfileUpdateJsonSchema.OPERATION_CLAIM_TEXT));
+  }
+
+  private RetireDecision parseRetire(JsonNode value, Map<Long, TargetPermission> targets) {
+    requireFields(value, Set.of(
+        DeclaredProfileUpdateJsonSchema.OPERATION_ACTION,
+        DeclaredProfileUpdateJsonSchema.OPERATION_TARGET_REVISION_ID));
+    long target = requiredPositiveLong(value.path(DeclaredProfileUpdateJsonSchema.OPERATION_TARGET_REVISION_ID));
+    TargetPermission permission = targets.get(target);
+    if (permission == null
+        || permission.intent() != org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateIntent.CORRECT) {
+      throw new IllegalArgumentException("Declared memory RETIRE target is not allowed");
+    }
+    return new RetireDecision(target, permission.dimension());
+  }
+
+  private static void requireFields(JsonNode value, Set<String> expected) {
+    if (!value.isObject() || value.size() != expected.size()) {
+      throw new IllegalArgumentException("Declared memory operation fields are invalid");
+    }
+    LinkedHashSet<String> actual = new LinkedHashSet<>();
+    value.fieldNames().forEachRemaining(actual::add);
+    if (!actual.equals(expected)) {
+      throw new IllegalArgumentException("Declared memory operation has unsupported fields");
+    }
+  }
+
+  private static String requiredText(JsonNode value, String field) {
+    JsonNode node = value.path(field);
+    if (!node.isTextual() || node.asText().isBlank()) {
+      throw new IllegalArgumentException("Declared memory operation text is invalid");
+    }
+    return node.asText().trim();
+  }
+
+  private static long requiredPositiveLong(JsonNode node) {
+    if (!node.isIntegralNumber() || !node.canConvertToLong() || node.asLong() <= 0) {
+      throw new IllegalArgumentException("Declared memory target revision is invalid");
+    }
+    return node.asLong();
+  }
+
+  private static long requiredPositiveLong(Map<String, Object> metadata, String key) {
+    Object value = metadata.get(key);
+    try {
+      long parsed = value instanceof Number number ? number.longValue() : Long.parseLong(String.valueOf(value).trim());
+      if (parsed <= 0) {
+        throw new IllegalArgumentException("Declared memory child run id is invalid");
+      }
+      return parsed;
+    } catch (RuntimeException exception) {
+      throw new IllegalArgumentException("Declared memory child run id is unavailable", exception);
+    }
+  }
+
+  private static <T extends Enum<T>> T enumValue(JsonNode node, Class<T> type) {
+    if (!node.isTextual()) {
+      throw new IllegalArgumentException("Declared memory operation enum is invalid");
+    }
+    try {
+      return Enum.valueOf(type, node.asText());
+    } catch (IllegalArgumentException exception) {
+      throw new IllegalArgumentException("Declared memory operation enum is not allowed", exception);
+    }
+  }
+
+  private DeclaredProfileUpdateResult result(
+      DeclaredProfileUpdateRequest request,
+      List<Decision> decisions,
+      LearnerMemoryAtomicApplyService.ApplyStatus status) {
+    boolean changed = status == LearnerMemoryAtomicApplyService.ApplyStatus.APPLIED;
+    Map<LearnerMemoryClaimDimension, String> summaries = new HashMap<>();
+    Set<LearnerMemoryClaimDimension> changedDimensions = new java.util.HashSet<>();
+    for (Decision decision : decisions) {
+      if (decision instanceof AddDecision add) {
+        changedDimensions.add(add.dimension());
+        summaries.put(add.dimension(), summarize(add.claimText()));
+      } else if (decision instanceof ReviseDecision revise) {
+        changedDimensions.add(revise.dimension());
+        summaries.put(revise.dimension(), summarize(revise.claimText()));
+      } else if (decision instanceof RetireDecision retire) {
+        changedDimensions.add(retire.dimension());
+      }
+    }
+    List<DeclaredProfileUpdateResult.Item> items = request.updates().stream().map(item ->
+        new DeclaredProfileUpdateResult.Item(
+            item.dimension(),
+            changed && changedDimensions.contains(item.dimension())
+                ? DeclaredProfileUpdateResult.ItemStatus.APPLIED
+                : DeclaredProfileUpdateResult.ItemStatus.NO_CHANGE,
+            summaries.getOrDefault(item.dimension(), ""))).toList();
+    return new DeclaredProfileUpdateResult(
+        changed ? DeclaredProfileUpdateResult.Status.UPDATED : DeclaredProfileUpdateResult.Status.NO_CHANGE,
+        changed ? LearnerDeclaredProfileToolContracts.MESSAGE_UPDATED : LearnerDeclaredProfileToolContracts.MESSAGE_NO_CHANGE,
+        items);
+  }
+
+  private DeclaredProfileUpdateResult terminalResult(
+      DeclaredProfileUpdateRequest request,
+      LearnerMemoryRunContract.Status status) {
+    if (status == LearnerMemoryRunContract.Status.FAILED) {
+      return failed(request);
+    }
+    boolean changed = status == LearnerMemoryRunContract.Status.SUCCEEDED;
+    List<DeclaredProfileUpdateResult.Item> items = request.updates().stream().map(item ->
+        new DeclaredProfileUpdateResult.Item(
+            item.dimension(),
+            changed ? DeclaredProfileUpdateResult.ItemStatus.APPLIED : DeclaredProfileUpdateResult.ItemStatus.NO_CHANGE,
+            "")).toList();
+    return new DeclaredProfileUpdateResult(
+        changed ? DeclaredProfileUpdateResult.Status.UPDATED : DeclaredProfileUpdateResult.Status.NO_CHANGE,
+        changed ? LearnerDeclaredProfileToolContracts.MESSAGE_UPDATED : LearnerDeclaredProfileToolContracts.MESSAGE_NO_CHANGE,
+        items);
+  }
+
+  private DeclaredProfileUpdateResult failed(DeclaredProfileUpdateRequest request) {
+    return DeclaredProfileUpdateResult.failed(request.updates().stream()
+        .map(DeclaredProfileUpdateRequest.Item::dimension).toList());
+  }
+
+  private String summarize(String text) {
+    String normalized = text == null ? "" : text.trim();
+    return normalized.length() <= resultSummaryMaxChars ? normalized : normalized.substring(0, resultSummaryMaxChars);
+  }
+
+  private static LearnerMemoryClaimScope declaredScope(LearnerMemoryClaimDimension dimension) {
+    return new LearnerMemoryClaimScope(
+        LearnerMemoryClaimContract.Kind.DECLARED_FACT, memoryDimension(dimension), null);
+  }
+
+  private static LearnerMemoryClaimContract.Dimension memoryDimension(LearnerMemoryClaimDimension dimension) {
+    return LearnerMemoryClaimContract.Dimension.valueOf(dimension.name());
+  }
+
+  private static String attemptIdempotencyKey(String logicalIdempotencyKey, int attempt) {
     return attempt == 0 ? logicalIdempotencyKey
         : logicalIdempotencyKey + LearnerDeclaredProfileToolContracts.CHILD_RETRY_IDEMPOTENCY_KEY_SEPARATOR + attempt;
   }
@@ -201,146 +556,43 @@ public class DeclaredProfileUpdateService {
     }
   }
 
-  private static int requestSize(List<CandidateState> candidates) {
-    return candidates.stream().mapToInt(candidate -> candidate.update().statement().length()).sum();
+  private sealed interface Decision permits AddDecision, TargetDecision {
   }
 
-  private static String metadataText(Map<String, Object> metadata, String key) {
-    Object value = metadata.get(key);
-    return value == null ? "" : value.toString();
+  private record AddDecision(LearnerMemoryClaimDimension dimension, String claimText) implements Decision {
   }
 
-  private static long requiredPositiveLong(Map<String, Object> metadata, String key) {
-    Object value = metadata.get(key);
-    try {
-      long parsed = value instanceof Number number ? number.longValue() : Long.parseLong(String.valueOf(value).trim());
-      if (parsed < 1) {
-        throw new IllegalArgumentException("Declared profile Runtime run id must be positive");
-      }
-      return parsed;
-    } catch (RuntimeException exception) {
-      throw new IllegalArgumentException("Declared profile Runtime result is missing run id", exception);
-    }
+  private sealed interface TargetDecision extends Decision permits ReviseDecision, RetireDecision {
+    long targetRevisionId();
+
+    LearnerMemoryClaimDimension dimension();
   }
 
-  private List<ProfileUpdateDecision> parseDecisions(JsonNode structuredOutput, List<CandidateState> candidates) {
-    if (structuredOutput == null || !structuredOutput.isObject() || structuredOutput.size() != 1
-        || !structuredOutput.has(DeclaredProfileUpdateJsonSchema.DECISIONS)) {
-      throw new IllegalArgumentException("Declared profile structured output is invalid");
-    }
-    JsonNode items = structuredOutput.path(DeclaredProfileUpdateJsonSchema.DECISIONS);
-    if (!items.isArray() || items.size() != candidates.size()) {
-      throw new IllegalArgumentException("Declared profile structured output has an invalid decision count");
-    }
-    Set<String> expectedFields = Set.of(
-        DeclaredProfileUpdateJsonSchema.DECISION_DIMENSION,
-        DeclaredProfileUpdateJsonSchema.DECISION_ACTION,
-        DeclaredProfileUpdateJsonSchema.DECISION_CONTENT);
-    Map<org.congcong.algomentor.mentor.application.profile.LearnerProfileDimension, ProfileUpdateDecision> byDimension =
-        new HashMap<>();
-    Set<org.congcong.algomentor.mentor.application.profile.LearnerProfileDimension> expectedDimensions = candidates.stream()
-        .map(candidate -> candidate.update().dimension()).collect(java.util.stream.Collectors.toSet());
-    for (JsonNode item : items) {
-      if (!item.isObject() || item.size() != expectedFields.size()) {
-        throw new IllegalArgumentException("Declared profile structured output item is invalid");
-      }
-      LinkedHashSet<String> fields = new LinkedHashSet<>();
-      item.fieldNames().forEachRemaining(fields::add);
-      if (!fields.equals(expectedFields)) {
-        throw new IllegalArgumentException("Declared profile structured output has unsupported fields");
-      }
-      org.congcong.algomentor.mentor.application.profile.LearnerProfileDimension dimension = enumValue(
-          item.path(DeclaredProfileUpdateJsonSchema.DECISION_DIMENSION),
-          org.congcong.algomentor.mentor.application.profile.LearnerProfileDimension.class);
-      ProfileUpdateAction action = enumValue(
-          item.path(DeclaredProfileUpdateJsonSchema.DECISION_ACTION), ProfileUpdateAction.class);
-      JsonNode contentNode = item.path(DeclaredProfileUpdateJsonSchema.DECISION_CONTENT);
-      if (!contentNode.isTextual() || !expectedDimensions.contains(dimension)) {
-        throw new IllegalArgumentException("Declared profile structured output content is invalid");
-      }
-      String content = contentNode.asText().trim();
-      if (action == ProfileUpdateAction.REPLACE && content.isBlank()) {
-        throw new IllegalArgumentException("Declared profile replacement content is blank");
-      }
-      if (byDimension.putIfAbsent(dimension, new ProfileUpdateDecision(action,
-          action == ProfileUpdateAction.REPLACE ? content : null,
-          "declared profile decision")) != null) {
-        throw new IllegalArgumentException("Declared profile structured output has duplicate dimensions");
-      }
-    }
-    if (byDimension.size() != candidates.size()) {
-      throw new IllegalArgumentException("Declared profile structured output has missing dimensions");
-    }
-    return candidates.stream().map(candidate -> byDimension.get(candidate.update().dimension())).toList();
+  private record ReviseDecision(
+      long targetRevisionId,
+      LearnerMemoryClaimDimension dimension,
+      String claimText) implements TargetDecision {
   }
 
-  private <T extends Enum<T>> T enumValue(JsonNode node, Class<T> type) {
-    if (!node.isTextual()) {
-      throw new IllegalArgumentException("Declared profile structured output enum is invalid");
-    }
-    try {
-      return Enum.valueOf(type, node.asText());
-    } catch (IllegalArgumentException exception) {
-      throw new IllegalArgumentException("Declared profile structured output enum is not allowed", exception);
-    }
+  private record RetireDecision(long targetRevisionId, LearnerMemoryClaimDimension dimension) implements TargetDecision {
   }
 
-  private List<ProfileUpdateCommand> commands(List<CandidateState> candidates, DecisionRound round) {
-    List<ProfileUpdateCommand> commands = new ArrayList<>();
-    for (int index = 0; index < candidates.size(); index++) {
-      CandidateState candidate = candidates.get(index);
-      commands.add(new ProfileUpdateCommand(
-          candidate.snapshot().identity(),
-          round.decisions().get(index),
-          candidate.snapshot().snapshotToken(),
-          candidate.update().intent().originType(),
-          round.provider(),
-          round.model(),
-          LearnerDeclaredProfileToolContracts.PROMPT_VERSION));
-    }
-    return List.copyOf(commands);
+  private record DecisionRound(
+      List<DeclaredProfileUpdateAgentInput.Candidate> candidates,
+      JsonNode structuredOutput,
+      long agentRunId) {
   }
 
-  private DeclaredProfileUpdateResult result(
-      DeclaredProfileUpdateRequest request,
-      List<ProfileUpdateApplyResult> applied
-  ) {
-    boolean changed = applied.stream().anyMatch(result -> result.status() == ProfileUpdateApplyStatus.APPLIED);
-    List<DeclaredProfileUpdateResult.Item> items = new ArrayList<>();
-    for (int index = 0; index < applied.size(); index++) {
-      ProfileUpdateApplyResult update = applied.get(index);
-      DeclaredProfileUpdateResult.ItemStatus status = update.status() == ProfileUpdateApplyStatus.APPLIED
-          ? DeclaredProfileUpdateResult.ItemStatus.APPLIED
-          : DeclaredProfileUpdateResult.ItemStatus.NO_CHANGE;
-      String summary = update.currentEntry().map(entry -> summarize(entry.contentText())).orElse("");
-      items.add(new DeclaredProfileUpdateResult.Item(request.updates().get(index).dimension(), status, summary));
-    }
-    return new DeclaredProfileUpdateResult(
-        changed ? DeclaredProfileUpdateResult.Status.UPDATED : DeclaredProfileUpdateResult.Status.NO_CHANGE,
-        changed ? LearnerDeclaredProfileToolContracts.MESSAGE_UPDATED : LearnerDeclaredProfileToolContracts.MESSAGE_NO_CHANGE,
-        items);
+  private record TrustedMessage(long id, String content, Instant createdAt) {
   }
 
-  private String summarize(String content) {
-    String normalized = content == null ? "" : content.trim();
-    if (normalized.length() <= resultSummaryMaxChars) {
-      return normalized;
-    }
-    return normalized.substring(0, resultSummaryMaxChars);
+  private record PreparedBatch(
+      LearnerMemoryOperationBatch batch,
+      LearnerMemoryEvidenceValidationContext context) {
   }
 
-  private DeclaredProfileUpdateResult failed(DeclaredProfileUpdateRequest request) {
-    return DeclaredProfileUpdateResult.failed(request.updates().stream()
-        .map(DeclaredProfileUpdateRequest.Item::dimension).toList());
-  }
-
-  private record CandidateState(
-      DeclaredProfileUpdateRequest.Item update,
-      LearnerProfileSnapshot snapshot,
-      String currentContent
-  ) {
-  }
-
-  private record DecisionRound(List<ProfileUpdateDecision> decisions, String provider, String model, long runDbId) {
+  private record TargetPermission(
+      LearnerMemoryClaimDimension dimension,
+      org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateIntent intent) {
   }
 }

@@ -1,0 +1,264 @@
+package org.congcong.algomentor.api.profile;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.Flow;
+import org.congcong.algomentor.agent.core.AgentOutput;
+import org.congcong.algomentor.agent.core.AgentRunResult;
+import org.congcong.algomentor.agent.core.AgentStreamEvent;
+import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
+import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
+import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
+import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewRepository;
+import org.congcong.algomentor.api.profile.mapper.LearnerMemoryMapper;
+import org.congcong.algomentor.api.profile.repository.MyBatisCodeReviewHistoryRepository;
+import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryCodeReviewFactRepository;
+import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryClaimRepository;
+import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryEvidenceRepository;
+import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryUpdateRunRepository;
+import org.congcong.algomentor.api.support.PostgresIntegrationTestSupport;
+import org.congcong.algomentor.llm.core.response.LlmFinishReason;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCommitResult;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCommitService;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewDraft;
+import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewScore;
+import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimContract;
+import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimScope;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimQueryService;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimSnapshotFactory;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimTextHasher;
+import org.congcong.algomentor.mentor.application.profile.evidence.service.LearnerMemoryEvidenceGradeCalculator;
+import org.congcong.algomentor.mentor.application.profile.evidence.service.LearnerMemoryEvidenceValidator;
+import org.congcong.algomentor.mentor.application.profile.operation.service.LearnerMemoryAtomicApplyService;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewBatchConsumer;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewConsumerConstants;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewFactRepository;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewJsonSchema;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewQueueContracts;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewStructuredOutputMapper;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateAgentInput;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateService;
+import org.congcong.algomentor.mentor.application.profile.review.history.CodeReviewHistoryRepository;
+import org.congcong.algomentor.mentor.application.profile.run.repository.LearnerMemoryUpdateRunRepository;
+import org.congcong.algomentor.mentor.application.profile.run.service.LearnerMemoryUpdateRunLifecycleService;
+import org.congcong.algomentor.queue.config.PersistentQueueProperties;
+import org.congcong.algomentor.queue.consumer.QueueConsumerRegistry;
+import org.congcong.algomentor.queue.dispatch.QueueDequeueService;
+import org.congcong.algomentor.queue.dispatch.QueueDispatchOutcome;
+import org.congcong.algomentor.queue.dispatch.QueueDispatcher;
+import org.congcong.algomentor.queue.postgres.MyBatisQueueMessageRepository;
+import org.congcong.algomentor.queue.postgres.QueueMessageMapper;
+import org.congcong.algomentor.queue.publisher.PostgresQueuePublisher;
+import org.junit.jupiter.api.Test;
+
+class LearnerMemoryEndToEndIT extends PostgresIntegrationTestSupport {
+
+  private final ObjectMapper objectMapper = new ObjectMapper();
+
+  @Test
+  void commitsFiveFormalReviewsThenWritesOneAtomicCodeReviewClaimBatch() throws Exception {
+    migrateLatest();
+    long userId = insertUser();
+    long tagId = insertCatalog("array", "Array", "数组", true);
+    insertProblem("two-sum", 1, List.of(), List.of(), List.of());
+    assignTag("two-sum", tagId, 0);
+    long sessionId = insertPracticeSession(userId, "two-sum");
+    PracticeCodeReviewCommitService commitService = commitService();
+
+    for (int index = 0; index < LearnerMemoryCodeReviewConsumerConstants.BATCH_SIZE; index++) {
+      long messageId = insertUserMessage(userId);
+      PracticeCodeReviewCommitResult result = transactionTemplate().execute(
+          status -> commitService.commit(draft(userId, sessionId, messageId, tagId)));
+      assertThat(result.created()).isTrue();
+      assertThat(result.queueMessageId()).isPositive();
+    }
+
+    long agentRunId = insertAgentRun(userId);
+    FixedRuntime runtime = new FixedRuntime(agentRunId);
+    assertThat(dispatcher(runtime).dispatchRound(LearnerMemoryCodeReviewQueueContracts.TOPIC))
+        .containsExactly(QueueDispatchOutcome.DISPATCHED);
+
+    assertThat(runtime.calls).isEqualTo(1);
+    assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE topic = ? AND status = 'SUCCEEDED'",
+        LearnerMemoryCodeReviewQueueContracts.TOPIC)).isEqualTo(5L);
+    assertThat(queryLong("SELECT COUNT(*) FROM learner_memory_update_run WHERE trigger_type = 'CODE_REVIEW_BATCH'"))
+        .isEqualTo(1L);
+    assertThat(queryLong(
+        "SELECT COUNT(*) FROM learner_memory_update_run WHERE agent_run_id = ?", agentRunId)).isEqualTo(1L);
+    assertThat(queryLong("SELECT COUNT(*) FROM learner_memory_update_run_review")).isEqualTo(5L);
+    assertThat(queryLong("SELECT COUNT(*) FROM learner_memory_claim_revision WHERE status = 'ACTIVE'"))
+        .isEqualTo(2L);
+    assertThat(queryString("SELECT to_regclass('learner_profile_entry')::text")).isNull();
+  }
+
+  private PracticeCodeReviewCommitService commitService() throws Exception {
+    return new PracticeCodeReviewCommitService(
+        new MyBatisPracticeCodeReviewRepository(
+            sqlSessionTemplate("mapper/practice/PracticeCodeReviewMapper.xml").getMapper(PracticeCodeReviewMapper.class),
+            objectMapper),
+        new PostgresQueuePublisher(objectMapper, queueRepository(), new PersistentQueueProperties()));
+  }
+
+  private QueueDispatcher dispatcher(AgentRuntime runtime) throws Exception {
+    LearnerMemoryCodeReviewFactRepository facts = new MyBatisLearnerMemoryCodeReviewFactRepository(
+        sqlSessionTemplate("mapper/practice/PracticeCodeReviewMapper.xml").getMapper(PracticeCodeReviewMapper.class),
+        objectMapper);
+    LearnerMemoryCodeReviewBatchConsumer consumer = new LearnerMemoryCodeReviewBatchConsumer(
+        objectMapper, facts, updateService(facts, runtime));
+    MyBatisQueueMessageRepository queueRepository = queueRepository();
+    return new QueueDispatcher(
+        new QueueConsumerRegistry(List.of(), List.of(consumer)),
+        queueRepository,
+        new QueueDequeueService(queueRepository, transactionTemplate()));
+  }
+
+  private LearnerMemoryCodeReviewUpdateService updateService(
+      LearnerMemoryCodeReviewFactRepository facts,
+      AgentRuntime runtime
+  ) throws Exception {
+    PracticeCodeReviewMapper practiceMapper = sqlSessionTemplate("mapper/practice/PracticeCodeReviewMapper.xml")
+        .getMapper(PracticeCodeReviewMapper.class);
+    LearnerMemoryMapper memoryMapper = sqlSessionTemplate("mapper/profile/LearnerMemoryMapper.xml")
+        .getMapper(LearnerMemoryMapper.class);
+    MyBatisLearnerMemoryClaimRepository claims = new MyBatisLearnerMemoryClaimRepository(memoryMapper);
+    MyBatisLearnerMemoryEvidenceRepository evidence = new MyBatisLearnerMemoryEvidenceRepository(memoryMapper);
+    LearnerMemoryUpdateRunRepository runs = new MyBatisLearnerMemoryUpdateRunRepository(memoryMapper);
+    LearnerMemoryClaimSnapshotFactory snapshots = new LearnerMemoryClaimSnapshotFactory();
+    LearnerMemoryUpdateRunLifecycleService lifecycle = new LearnerMemoryUpdateRunLifecycleService(runs, transactionTemplate());
+    LearnerMemoryAtomicApplyService atomicApply = new LearnerMemoryAtomicApplyService(
+        claims,
+        evidence,
+        runs,
+        new LearnerMemoryClaimTextHasher(),
+        snapshots,
+        new LearnerMemoryEvidenceValidator(),
+        new LearnerMemoryEvidenceGradeCalculator(),
+        lifecycle,
+        transactionTemplate());
+    CodeReviewHistoryRepository history = new MyBatisCodeReviewHistoryRepository(practiceMapper, objectMapper);
+    return new LearnerMemoryCodeReviewUpdateService(
+        facts,
+        history,
+        new LearnerMemoryClaimQueryService(claims, snapshots),
+        evidence,
+        runs,
+        atomicApply,
+        lifecycle,
+        runtime,
+        new LearnerMemoryCodeReviewStructuredOutputMapper(),
+        1);
+  }
+
+  private MyBatisQueueMessageRepository queueRepository() throws Exception {
+    return new MyBatisQueueMessageRepository(
+        sqlSessionTemplate("mapper/queue/QueueMessageMapper.xml").getMapper(QueueMessageMapper.class));
+  }
+
+  private PracticeCodeReviewDraft draft(long userId, long sessionId, long messageId, long tagId) {
+    return new PracticeCodeReviewDraft(
+        userId, 1, 1, "two-sum", sessionId, messageId, null, null,
+        "class Solution {}", "class Solution {}", "java", List.of(), "",
+        new PracticeCodeReviewScore(
+            new BigDecimal("4"), new BigDecimal("2"), new BigDecimal("2"), BigDecimal.ONE, BigDecimal.ONE,
+            new BigDecimal("10")),
+        true, List.of("边界条件遗漏"), List.of("补充边界测试"), "OK", List.of(tagId));
+  }
+
+  private long insertAgentRun(long userId) throws Exception {
+    long taskId = queryLong(
+        """
+        INSERT INTO agent_task (user_id, status, context_policy, metadata, created_at, updated_at)
+        VALUES (?, 'ACTIVE', '{}'::jsonb, '{}'::jsonb, NOW(), NOW())
+        RETURNING id
+        """,
+        userId);
+    long turnId = queryLong(
+        """
+        INSERT INTO agent_turn (task_id, sequence_no, status, created_at, updated_at)
+        VALUES (?, 1, 'COMPLETED', NOW(), NOW())
+        RETURNING id
+        """,
+        taskId);
+    return queryLong(
+        """
+        INSERT INTO agent_run (
+          task_id, turn_id, run_uuid, attempt_no, idempotency_key, trigger_type, status, max_steps,
+          usage, error, started_at, ended_at)
+        VALUES (?, ?, ?, 1, ?, 'BACKGROUND', 'COMPLETED', 1, '{}'::jsonb, '{}'::jsonb, NOW(), NOW())
+        RETURNING id
+        """,
+        taskId, turnId, UUID.randomUUID().toString(), "code-review-memory-" + UUID.randomUUID());
+  }
+
+  private JsonNode decisions(LearnerMemoryCodeReviewUpdateAgentInput input) {
+    long firstReviewId = input.scopeReviews().get(0).reviewId();
+    long lastReviewId = input.scopeReviews().get(input.scopeReviews().size() - 1).reviewId();
+    LearnerMemoryClaimScope tagScope = input.allowedScopes().stream()
+        .filter(scope -> scope.kind() == LearnerMemoryClaimContract.Kind.TAG_ASSESSMENT)
+        .findFirst().orElseThrow();
+    ObjectNode root = objectMapper.createObjectNode();
+    ArrayNode operations = root.putArray(LearnerMemoryCodeReviewJsonSchema.OPERATIONS);
+    ObjectNode general = operations.addObject();
+    general.put(LearnerMemoryCodeReviewJsonSchema.ACTION, "ADD");
+    general.putObject(LearnerMemoryCodeReviewJsonSchema.SCOPE)
+        .put(LearnerMemoryCodeReviewJsonSchema.KIND, "GENERAL_OBSERVATION")
+        .put(LearnerMemoryCodeReviewJsonSchema.DIMENSION, "PROBLEM_SOLVING_APPROACH");
+    general.put(LearnerMemoryCodeReviewJsonSchema.CLAIM_TEXT, "提交前需要系统检查边界条件。");
+    general.put(LearnerMemoryCodeReviewJsonSchema.PATTERN, "SAME_PROBLEM_PERSISTENCE");
+    general.put(LearnerMemoryCodeReviewJsonSchema.REASON, "同题多版 Review 持续记录边界遗漏。");
+    general.putArray(LearnerMemoryCodeReviewJsonSchema.REVIEW_EVIDENCE)
+        .addObject().put(LearnerMemoryCodeReviewJsonSchema.REVIEW_ID, firstReviewId)
+        .put(LearnerMemoryCodeReviewJsonSchema.ROLE, "OBSERVED");
+    general.withArray(LearnerMemoryCodeReviewJsonSchema.REVIEW_EVIDENCE)
+        .addObject().put(LearnerMemoryCodeReviewJsonSchema.REVIEW_ID, lastReviewId)
+        .put(LearnerMemoryCodeReviewJsonSchema.ROLE, "PERSISTED");
+    ObjectNode tag = operations.addObject();
+    tag.put(LearnerMemoryCodeReviewJsonSchema.ACTION, "ADD");
+    tag.putObject(LearnerMemoryCodeReviewJsonSchema.SCOPE)
+        .put(LearnerMemoryCodeReviewJsonSchema.KIND, "TAG_ASSESSMENT")
+        .put(LearnerMemoryCodeReviewJsonSchema.DIMENSION, "TAG_MASTERY")
+        .put(LearnerMemoryCodeReviewJsonSchema.TAG_ID, tagScope.tagId());
+    tag.put(LearnerMemoryCodeReviewJsonSchema.CLAIM_TEXT, "数组题的边界检查需要持续复盘。");
+    tag.put(LearnerMemoryCodeReviewJsonSchema.PATTERN, "SINGLE_REVIEW");
+    tag.put(LearnerMemoryCodeReviewJsonSchema.REASON, "当前 Review 包含数组标签和边界问题。");
+    tag.putArray(LearnerMemoryCodeReviewJsonSchema.REVIEW_EVIDENCE)
+        .addObject().put(LearnerMemoryCodeReviewJsonSchema.REVIEW_ID, lastReviewId)
+        .put(LearnerMemoryCodeReviewJsonSchema.ROLE, "OBSERVED");
+    return root;
+  }
+
+  private final class FixedRuntime implements AgentRuntime {
+    private final long agentRunId;
+    private int calls;
+
+    private FixedRuntime(long agentRunId) {
+      this.agentRunId = agentRunId;
+    }
+
+    @Override
+    public AgentRunResult execute(AgentInvocation<?> invocation) {
+      calls++;
+      JsonNode output = decisions((LearnerMemoryCodeReviewUpdateAgentInput) invocation.input());
+      return new AgentRunResult(
+          1,
+          LlmFinishReason.STOP,
+          new AgentOutput("", output, LearnerMemoryCodeReviewJsonSchema.SCHEMA_NAME,
+              LearnerMemoryCodeReviewConsumerConstants.SCHEMA_VERSION, Map.of()),
+          Map.of(AgentRuntimeMetadataKeys.RUN_DB_ID, agentRunId));
+    }
+
+    @Override
+    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
+      throw new UnsupportedOperationException("stream not used");
+    }
+  }
+}

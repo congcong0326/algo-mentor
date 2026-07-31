@@ -13,8 +13,8 @@ import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptConstants;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileContract;
-import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateService;
+import org.congcong.algomentor.mentor.application.profile.LearnerMemoryClaimDimensionCatalog;
+import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateHandler;
 
 /** 仅从受信 Agent 上下文读取身份的长期用户自述画像工具。 */
 public final class UpdateLearnerDeclaredProfileAgentTool implements AgentTool {
@@ -31,11 +31,11 @@ public final class UpdateLearnerDeclaredProfileAgentTool implements AgentTool {
       inputSchema(),
       true);
 
-  private final DeclaredProfileUpdateService updateService;
+  private final DeclaredProfileUpdateHandler updateService;
   private final ObjectMapper objectMapper;
 
   public UpdateLearnerDeclaredProfileAgentTool(
-      DeclaredProfileUpdateService updateService,
+      DeclaredProfileUpdateHandler updateService,
       ObjectMapper objectMapper
   ) {
     this.updateService = Objects.requireNonNull(updateService, "updateService must not be null");
@@ -108,7 +108,7 @@ public final class UpdateLearnerDeclaredProfileAgentTool implements AgentTool {
     item.put("additionalProperties", false);
     ObjectNode properties = item.putObject("properties");
     properties.set(LearnerDeclaredProfileToolContracts.UPDATE_DIMENSION, enumSchema(
-        LearnerProfileContract.declaredDimensions().stream().map(Enum::name).sorted().toList()));
+        LearnerMemoryClaimDimensionCatalog.declaredDimensions().stream().map(Enum::name).sorted().toList()));
     properties.set(LearnerDeclaredProfileToolContracts.UPDATE_STATEMENT, stringSchema());
     properties.set(LearnerDeclaredProfileToolContracts.UPDATE_INTENT, enumSchema(
         java.util.Arrays.stream(DeclaredProfileUpdateIntent.values()).map(Enum::name).toList()));

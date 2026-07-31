@@ -1816,6 +1816,37 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { level: 2, name: '1. 两数之和' })).toBeInTheDocument();
   });
 
+  it('keeps only valid profile review deep-link values on initial load and popstate', async () => {
+    Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: vi.fn(),
+    });
+    const fetchMock = mockLearningPlanFetch({ includePracticeReviews: true });
+    vi.stubGlobal('fetch', fetchMock);
+    window.history.replaceState(
+      {},
+      '',
+      '/learning-plans/900/phases/1/problems/two-sum/submissions?review=2&from=learner-profile&profileAnchor=learner-profile-statement-101&pack=today&return=https%3A%2F%2Fevil.test',
+    );
+
+    render(<App />);
+
+    const reviewTwo = await screen.findByRole('button', { name: /V2/ });
+    await waitFor(() => expect(reviewTwo).toHaveAttribute('aria-pressed', 'true'));
+    expect(window.location.search).toBe('?review=2&from=learner-profile&profileAnchor=learner-profile-statement-101&pack=today');
+    expect(screen.getByRole('button', { name: '返回学习画像' })).toBeInTheDocument();
+
+    window.history.pushState(
+      {},
+      '',
+      '/learning-plans/900/phases/1/problems/two-sum/submissions?review=0&from=https%3A%2F%2Fevil.test&profileAnchor=%23selector&pack=today',
+    );
+    fireEvent(window, new PopStateEvent('popstate'));
+
+    await waitFor(() => expect(window.location.search).toBe('?pack=today'));
+    expect(screen.getByRole('button', { name: '返回聊天' })).toBeInTheDocument();
+  });
+
   it('keeps the practice composer failed when the stream closes before agent_run_end', async () => {
     const practiceStream = controlledSseStream([
       sseEvent('content_delta', { content: '先检查边界。' }),

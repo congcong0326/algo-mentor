@@ -735,42 +735,112 @@ export interface AbilityProfileResponse {
   scope: AbilityProfileScope;
 }
 
-export type LearnerProfileDimension =
-  | 'LEARNER_BACKGROUND'
-  | 'GOALS_AND_INTENTS'
-  | 'TIME_AND_RESOURCE_CONSTRAINTS'
-  | 'LEARNING_AND_INTERACTION_PREFERENCES'
-  | 'SELF_ABILITY_ASSESSMENT'
-  | 'PROBLEM_SOLVING_APPROACH'
-  | 'IMPLEMENTATION_AND_ERROR_PATTERN'
-  | 'LEARNING_INTERACTION_AND_INDEPENDENCE'
-  | 'REVIEW_AND_GROWTH_PERFORMANCE'
-  | 'TAG_MASTERY';
+export type LearnerProfileDocumentBlock = LearnerProfileHeadingBlock | LearnerProfileParagraphBlock;
 
-export type LearnerProfileOriginType = 'USER_EXPLICIT' | 'USER_CORRECTION' | 'SYSTEM_DERIVED';
-
-export interface LearnerProfileTag {
-  id: number;
-  value: string;
-  labelEn: string;
-  labelZh: string;
+export interface LearnerProfileHeadingBlock {
+  type: 'HEADING';
+  spans: LearnerProfileDocumentSpan[];
 }
 
-export interface LearnerProfileEntry {
-  id: number;
-  dimension: LearnerProfileDimension;
-  revisionNo: number;
-  contentText: string;
-  originType: LearnerProfileOriginType;
-  updatedAt: string;
-  tag?: LearnerProfileTag | null;
+export interface LearnerProfileParagraphBlock {
+  type: 'PARAGRAPH';
+  spans: LearnerProfileDocumentSpan[];
 }
 
-export interface LearnerProfileResponse {
-  declaredFacts: LearnerProfileEntry[];
-  generalObservations: LearnerProfileEntry[];
-  tagAssessments: LearnerProfileEntry[];
+export type LearnerProfileDocumentSpan = LearnerProfileTextSpan | LearnerProfileSupportedTextSpan;
+
+export interface LearnerProfileTextSpan {
+  type: 'TEXT';
+  text: string;
+  citationDisplayNumber?: null;
+}
+
+export interface LearnerProfileSupportedTextSpan {
+  type: 'SUPPORTED_TEXT';
+  text: string;
+  citationDisplayNumber: number;
+}
+
+export type LearnerProfileEvidenceType = 'CODE_REVIEW' | 'USER_MESSAGE';
+
+export type LearnerProfileReviewRole =
+  | 'OBSERVED'
+  | 'PERSISTED'
+  | 'RESOLVED'
+  | 'REGRESSED'
+  | 'CONTRADICTS';
+
+export type LearnerProfileMessageRole = 'DECLARED' | 'CORRECTED';
+
+export interface LearnerProfileCodeReviewSource {
+  reviewId: number;
+  sessionId: number;
+  planId: number;
+  phaseIndex: number;
+  problemSlug: string;
+  versionNo: number;
+  totalScore: number;
+  passed: boolean;
+}
+
+export interface LearnerProfileUserMessageSource {
+  excerpt: string;
+}
+
+export interface LearnerProfileCodeReviewEvidence {
+  type: 'CODE_REVIEW';
+  sourceId: number;
+  occurredAt: string;
+  reviewRole: LearnerProfileReviewRole;
+  messageRole?: null;
+  codeReview: LearnerProfileCodeReviewSource;
+  userMessage?: null;
+}
+
+export interface LearnerProfileUserMessageEvidence {
+  type: 'USER_MESSAGE';
+  sourceId: number;
+  occurredAt: string;
+  reviewRole?: null;
+  messageRole: LearnerProfileMessageRole;
+  codeReview?: null;
+  userMessage: LearnerProfileUserMessageSource;
+}
+
+export type LearnerProfileEvidenceItem =
+  | LearnerProfileCodeReviewEvidence
+  | LearnerProfileUserMessageEvidence;
+
+export interface LearnerProfileCitation {
+  displayNumber: number;
+  statementRef: string;
+  claimRevisionId: number;
+  claimKey: string;
+  origin: 'USER_EXPLICIT' | 'USER_CORRECTION' | 'SYSTEM_DERIVED';
+  sourceSummary: string;
+  evidenceCount: number;
+  previewEvidence: LearnerProfileEvidenceItem[];
+}
+
+export interface LearnerProfileDocumentResponse {
+  format: 'MARKDOWN_DOCUMENT_V1';
+  projectorVersion: 'v1';
+  locale: 'zh-CN' | 'en-US';
+  documentRevision: string;
+  title: string;
+  blocks: LearnerProfileDocumentBlock[];
+  citationMap: Record<string, LearnerProfileCitation>;
   updatedAt?: string | null;
+}
+
+export interface LearnerProfileEvidencePage {
+  items: LearnerProfileEvidenceItem[];
+  nextCursor?: string | null;
+}
+
+export interface LearnerProfileEvidenceQuery {
+  cursor?: string | null;
+  limit?: number;
 }
 
 export type PracticeCoachStyle = 'GUIDED' | 'DIRECT';

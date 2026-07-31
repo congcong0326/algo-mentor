@@ -51,6 +51,13 @@ class AgentMapperXmlTest {
         .map(mapping -> mapping.getJavaType())
         .anyMatch(long.class::equals);
     assertThat(hasPrimitiveLongConstructorArg).isTrue();
+    boolean blobUsesPrimitiveByteArray = configuration.getResultMap(
+            "org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContentBlobMapper.ContentBlobMap")
+        .getConstructorResultMappings()
+        .stream()
+        .map(mapping -> mapping.getJavaType())
+        .anyMatch(byte[].class::equals);
+    assertThat(blobUsesPrimitiveByteArray).isTrue();
   }
 
   @Test

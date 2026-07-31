@@ -16,6 +16,7 @@ import {
   getLearningPlanTemplates,
   getLearningPlans,
   getLearnerProfile,
+  getLearnerProfileStatementEvidence,
   getReviewSummary,
   getUserAiPreference,
   listReviewCards,
@@ -141,9 +142,13 @@ describe('api service', () => {
     const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
       success: true,
       data: {
-        declaredFacts: [],
-        generalObservations: [],
-        tagAssessments: [],
+        format: 'MARKDOWN_DOCUMENT_V1',
+        projectorVersion: 'v1',
+        locale: 'en-US',
+        documentRevision: 'a'.repeat(64),
+        title: 'Learning profile',
+        blocks: [],
+        citationMap: {},
         updatedAt: null,
       },
       timestamp: '2026-07-20T00:00:00Z',
@@ -162,6 +167,23 @@ describe('api service', () => {
     const headers = requestHeaders(fetchMock);
     expect(headers.get('Accept')).toBe('application/json');
     expect(headers.get('Accept-Language')).toBe('en-US');
+  });
+
+  it('encodes statement refs and cursor values for bounded evidence requests', async () => {
+    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(jsonResponse({
+      success: true,
+      data: { items: [], nextCursor: null },
+      timestamp: '2026-07-20T00:00:00Z',
+    })));
+    vi.stubGlobal('fetch', fetchMock);
+
+    await getLearnerProfileStatementEvidence('statement/ref', { cursor: 'next/cursor', limit: 10 });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/me/learner-profile/statements/statement%2Fref/evidence?cursor=next%2Fcursor&limit=10',
+      expect.objectContaining({ credentials: 'same-origin', headers: expect.any(Headers) }),
+    );
+    await expect(getLearnerProfileStatementEvidence('statement-ref', { limit: 21 })).rejects.toThrow(RangeError);
   });
 
   it('loads user AI preferences with json and locale headers', async () => {

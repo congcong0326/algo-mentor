@@ -1,21 +1,19 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { I18nProvider } from './i18n/I18nProvider';
 import MyPage from './MyPage';
+import { learnerProfileDocument } from './learner-profile/testFixtures';
 import {
   getAbilityProfile,
   getLearnerProfile,
+  getLearnerProfileStatementEvidence,
 } from './services/api';
-import type {
-  AbilityProfileResponse,
-  ApiResponse,
-  LearnerProfileEntry,
-  LearnerProfileResponse,
-} from './types/api';
+import type { AbilityProfileResponse, ApiResponse } from './types/api';
 
 vi.mock('./services/api', () => ({
   getAbilityProfile: vi.fn(),
   getLearnerProfile: vi.fn(),
+  getLearnerProfileStatementEvidence: vi.fn(),
   requireApiData: <T,>(response: ApiResponse<T>, fallbackMessage: string): T => {
     if (response.success && response.data !== undefined) {
       return response.data;
@@ -27,7 +25,7 @@ vi.mock('./services/api', () => ({
 
 beforeEach(() => {
   vi.mocked(getAbilityProfile).mockResolvedValue(apiResponse(abilityProfile()));
-  vi.mocked(getLearnerProfile).mockResolvedValue(apiResponse(learnerProfile()));
+  vi.mocked(getLearnerProfile).mockResolvedValue(apiResponse(learnerProfileDocument()));
 });
 
 afterEach(() => {
@@ -36,56 +34,67 @@ afterEach(() => {
 });
 
 describe('MyPage learning memory', () => {
-  it('shows declared facts, observations, and tag assessments in separate tabs', async () => {
-    renderPage();
+  it('composes a continuous profile document without legacy category controls', async () => {
+    render(
+      <I18nProvider>
+        <MyPage />
+      </I18nProvider>,
+    );
 
-    expect(await screen.findByRole('heading', { name: '学习记忆' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: '学习画像' })).toBeInTheDocument();
     expect(getAbilityProfile).toHaveBeenCalledTimes(1);
     expect(getLearnerProfile).toHaveBeenCalledTimes(1);
     expect(screen.getByText('准备 Java 后端面试。')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('tab', { name: /AI 观察到的/ }));
     expect(screen.getByText('编码前会先拆解状态。')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('tab', { name: /专项能力判断/ }));
-    expect(screen.getByRole('heading', { name: '二分查找' })).toBeInTheDocument();
-    expect(screen.getByText('循环不变量仍需巩固。')).toBeInTheDocument();
+    expect(screen.getByText('[1]')).toBeInTheDocument();
+    expect(screen.queryByRole('tablist')).not.toBeInTheDocument();
+    expect(screen.queryByText('第 1 版')).not.toBeInTheDocument();
+    expect(getLearnerProfileStatementEvidence).not.toHaveBeenCalled();
   });
 
-  it('limits long categories to five entries until expanded', async () => {
-    vi.mocked(getLearnerProfile).mockResolvedValue(apiResponse({
-      declaredFacts: Array.from({ length: 6 }, (_, index) => memoryEntry(index + 1, `记忆内容 ${index + 1}`)),
-      generalObservations: [],
-      tagAssessments: [],
-      updatedAt: '2026-07-20T12:00:00Z',
-    }));
+  it('restores a valid profile sentence anchor after the document renders and clears the route state', async () => {
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: scrollIntoView,
+    });
+    const onProfileAnchorHandled = vi.fn();
 
-    renderPage();
+    render(
+      <I18nProvider>
+        <MyPage
+          onProfileAnchorHandled={onProfileAnchorHandled}
+          profileAnchor="learner-profile-statement-101"
+        />
+      </I18nProvider>,
+    );
 
-    expect(await screen.findByText('记忆内容 1')).toBeInTheDocument();
-    expect(screen.queryByText('记忆内容 6')).not.toBeInTheDocument();
+    const statement = await screen.findByRole('group', { name: /第 1 条判断/ });
+    await waitFor(() => expect(onProfileAnchorHandled).toHaveBeenCalledTimes(1));
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: 'center' });
+    expect(statement).toHaveFocus();
+  });
 
-    fireEvent.click(screen.getByRole('button', { name: /查看其余 1 条/ }));
+  it('clears a missing valid anchor without throwing', async () => {
+    const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
+    const onProfileAnchorHandled = vi.fn();
 
-    expect(screen.getByText('记忆内容 6')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /收起/ })).toBeInTheDocument();
+    render(
+      <I18nProvider>
+        <MyPage
+          onProfileAnchorHandled={onProfileAnchorHandled}
+          profileAnchor="learner-profile-statement-999"
+        />
+      </I18nProvider>,
+    );
+
+    await waitFor(() => expect(onProfileAnchorHandled).toHaveBeenCalledTimes(1));
+    expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'auto' });
   });
 });
 
-function renderPage() {
-  render(
-    <I18nProvider>
-      <MyPage />
-    </I18nProvider>,
-  );
-}
-
 function apiResponse<T>(data: T): ApiResponse<T> {
-  return {
-    success: true,
-    data,
-    timestamp: '2026-07-20T12:00:00Z',
-  };
+  return { success: true, data, timestamp: '2026-07-20T12:00:00Z' };
 }
 
 function abilityProfile(): AbilityProfileResponse {
@@ -97,39 +106,5 @@ function abilityProfile(): AbilityProfileResponse {
       latestReviewOnly: true,
       conservativeWeight: 4,
     },
-  };
-}
-
-function learnerProfile(): LearnerProfileResponse {
-  return {
-    declaredFacts: [memoryEntry(1, '准备 Java 后端面试。', 'GOALS_AND_INTENTS')],
-    generalObservations: [memoryEntry(2, '编码前会先拆解状态。', 'PROBLEM_SOLVING_APPROACH')],
-    tagAssessments: [{
-      ...memoryEntry(3, '循环不变量仍需巩固。', 'TAG_MASTERY'),
-      tag: {
-        id: 7,
-        value: 'binary-search',
-        labelEn: 'Binary Search',
-        labelZh: '二分查找',
-      },
-    }],
-    updatedAt: '2026-07-20T12:00:00Z',
-  };
-}
-
-function memoryEntry(
-  id: number,
-  contentText: string,
-  dimension: LearnerProfileEntry['dimension'] = 'LEARNER_BACKGROUND',
-): LearnerProfileEntry {
-  return {
-    id,
-    dimension,
-    revisionNo: 1,
-    contentText,
-    originType: dimension === 'LEARNER_BACKGROUND' || dimension === 'GOALS_AND_INTENTS'
-      ? 'USER_EXPLICIT'
-      : 'SYSTEM_DERIVED',
-    updatedAt: '2026-07-20T12:00:00Z',
   };
 }

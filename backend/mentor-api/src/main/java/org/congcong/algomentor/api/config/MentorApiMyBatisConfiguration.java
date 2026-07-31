@@ -16,8 +16,11 @@ import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
 import org.congcong.algomentor.api.practice.mapper.PracticeSessionMapper;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewRepository;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeSessionRepository;
-import org.congcong.algomentor.api.profile.mapper.LearnerProfileMapper;
-import org.congcong.algomentor.api.profile.repository.MyBatisLearnerProfileRepository;
+import org.congcong.algomentor.api.profile.mapper.LearnerMemoryMapper;
+import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryClaimRepository;
+import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryEvidenceRepository;
+import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryUpdateRunRepository;
+import org.congcong.algomentor.api.profile.repository.MyBatisLearnerProfileDocumentProjectionRepository;
 import org.congcong.algomentor.api.problem.mapper.ProblemMapper;
 import org.congcong.algomentor.api.problem.mapper.ProblemCompanyMapper;
 import org.congcong.algomentor.api.problem.mapper.ProblemTagMapper;
@@ -45,10 +48,22 @@ import org.congcong.algomentor.mentor.application.learningplan.template.Learning
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionRepository;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileContentPolicy;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileQueryService;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileRepository;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileUpdateService;
+import org.congcong.algomentor.mentor.application.profile.claim.repository.LearnerMemoryClaimRepository;
+import org.congcong.algomentor.mentor.application.profile.document.LearnerProfileDocumentProjectionRepository;
+import org.congcong.algomentor.mentor.application.profile.document.LearnerProfileDocumentProjector;
+import org.congcong.algomentor.mentor.application.profile.document.LearnerProfileDocumentService;
+import org.congcong.algomentor.mentor.application.profile.document.LearnerProfileStatementReferenceCodec;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemorySectionCatalog;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimQueryService;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimSnapshotFactory;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimTextHasher;
+import org.congcong.algomentor.mentor.application.profile.evidence.repository.LearnerMemoryEvidenceRepository;
+import org.congcong.algomentor.mentor.application.profile.evidence.service.LearnerMemoryEvidenceGradeCalculator;
+import org.congcong.algomentor.mentor.application.profile.evidence.service.LearnerMemoryEvidenceValidator;
+import org.congcong.algomentor.mentor.application.profile.operation.service.LearnerMemoryAtomicApplyService;
+import org.congcong.algomentor.mentor.application.profile.observability.LearnerMemoryMetrics;
+import org.congcong.algomentor.mentor.application.profile.run.repository.LearnerMemoryUpdateRunRepository;
+import org.congcong.algomentor.mentor.application.profile.run.service.LearnerMemoryUpdateRunLifecycleService;
 import org.congcong.algomentor.mentor.application.review.attempt.ReviewAttemptRepository;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardRepository;
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteRepository;
@@ -60,6 +75,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -70,7 +86,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @ConditionalOnProperty(name = "spring.datasource.url")
 @EnableTransactionManagement
 @EnableConfigurationProperties({
-    LearnerProfileProperties.class,
+    LearnerProfileDocumentProperties.class,
     ProblemCacheProperties.class,
     LearningPlanTemplateCacheProperties.class
 })
@@ -143,8 +159,8 @@ public class MentorApiMyBatisConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public LearnerProfileMapper learnerProfileMapper(SqlSessionTemplate sqlSessionTemplate) {
-    return sqlSessionTemplate.getMapper(LearnerProfileMapper.class);
+  public LearnerMemoryMapper learnerMemoryMapper(SqlSessionTemplate sqlSessionTemplate) {
+    return sqlSessionTemplate.getMapper(LearnerMemoryMapper.class);
   }
 
   @Bean
@@ -244,30 +260,121 @@ public class MentorApiMyBatisConfiguration {
   }
 
   @Bean
-  @ConditionalOnMissingBean(LearnerProfileRepository.class)
-  public LearnerProfileRepository learnerProfileRepository(LearnerProfileMapper mapper) {
-    return new MyBatisLearnerProfileRepository(mapper);
+  @ConditionalOnMissingBean(LearnerMemoryClaimRepository.class)
+  public LearnerMemoryClaimRepository learnerMemoryClaimRepository(LearnerMemoryMapper mapper) {
+    return new MyBatisLearnerMemoryClaimRepository(mapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(LearnerMemoryEvidenceRepository.class)
+  public LearnerMemoryEvidenceRepository learnerMemoryEvidenceRepository(LearnerMemoryMapper mapper) {
+    return new MyBatisLearnerMemoryEvidenceRepository(mapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(LearnerProfileDocumentProjectionRepository.class)
+  public LearnerProfileDocumentProjectionRepository learnerProfileDocumentProjectionRepository(
+      LearnerMemoryMapper mapper) {
+    return new MyBatisLearnerProfileDocumentProjectionRepository(mapper);
   }
 
   @Bean
   @ConditionalOnMissingBean
-  public LearnerProfileContentPolicy learnerProfileContentPolicy(LearnerProfileProperties properties) {
-    return new LearnerProfileContentPolicy(properties.getMaxChars());
+  public LearnerProfileDocumentProjector learnerProfileDocumentProjector() {
+    return new LearnerProfileDocumentProjector(new LearnerMemorySectionCatalog());
   }
 
   @Bean
   @ConditionalOnMissingBean
-  public LearnerProfileQueryService learnerProfileQueryService(LearnerProfileRepository repository) {
-    return new LearnerProfileQueryService(repository);
+  public LearnerProfileStatementReferenceCodec learnerProfileStatementReferenceCodec(
+      LearnerProfileDocumentProperties properties) {
+    return new LearnerProfileStatementReferenceCodec(properties.getStatementRefHmacSecret());
   }
 
   @Bean
   @ConditionalOnMissingBean
-  public LearnerProfileUpdateService learnerProfileUpdateService(
-      LearnerProfileRepository repository,
-      LearnerProfileContentPolicy contentPolicy,
+  public LearnerProfileDocumentService learnerProfileDocumentService(
+      LearnerProfileDocumentProjectionRepository repository,
+      LearnerProfileDocumentProjector projector,
+      LearnerProfileStatementReferenceCodec codec,
+      ObjectProvider<LearnerMemoryMetrics> metrics) {
+    return new LearnerProfileDocumentService(repository, projector, codec,
+        metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP));
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(LearnerMemoryUpdateRunRepository.class)
+  public LearnerMemoryUpdateRunRepository learnerMemoryUpdateRunRepository(LearnerMemoryMapper mapper) {
+    return new MyBatisLearnerMemoryUpdateRunRepository(mapper);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearnerMemoryClaimTextHasher learnerMemoryClaimTextHasher() {
+    return new LearnerMemoryClaimTextHasher();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearnerMemoryClaimSnapshotFactory learnerMemoryClaimSnapshotFactory() {
+    return new LearnerMemoryClaimSnapshotFactory();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearnerMemoryClaimQueryService learnerMemoryClaimQueryService(
+      LearnerMemoryClaimRepository repository,
+      LearnerMemoryClaimSnapshotFactory snapshotFactory,
+      ObjectProvider<LearnerMemoryMetrics> metrics) {
+    return new LearnerMemoryClaimQueryService(
+        repository, snapshotFactory, metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP));
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearnerMemoryEvidenceValidator learnerMemoryEvidenceValidator() {
+    return new LearnerMemoryEvidenceValidator();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearnerMemoryEvidenceGradeCalculator learnerMemoryEvidenceGradeCalculator() {
+    return new LearnerMemoryEvidenceGradeCalculator();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearnerMemoryUpdateRunLifecycleService learnerMemoryUpdateRunLifecycleService(
+      LearnerMemoryUpdateRunRepository repository,
       PlatformTransactionManager transactionManager) {
-    return new LearnerProfileUpdateService(repository, contentPolicy, new TransactionTemplate(transactionManager));
+    return new LearnerMemoryUpdateRunLifecycleService(repository, new TransactionTemplate(transactionManager));
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearnerMemoryAtomicApplyService learnerMemoryAtomicApplyService(
+      LearnerMemoryClaimRepository claimRepository,
+      LearnerMemoryEvidenceRepository evidenceRepository,
+      LearnerMemoryUpdateRunRepository updateRunRepository,
+      LearnerMemoryClaimTextHasher textHasher,
+      LearnerMemoryClaimSnapshotFactory snapshotFactory,
+      LearnerMemoryEvidenceValidator evidenceValidator,
+      LearnerMemoryEvidenceGradeCalculator gradeCalculator,
+      LearnerMemoryUpdateRunLifecycleService runLifecycleService,
+      PlatformTransactionManager transactionManager,
+      ObjectProvider<LearnerMemoryMetrics> metrics) {
+    return new LearnerMemoryAtomicApplyService(
+        claimRepository,
+        evidenceRepository,
+        updateRunRepository,
+        textHasher,
+        snapshotFactory,
+        evidenceValidator,
+        gradeCalculator,
+        runLifecycleService,
+        new TransactionTemplate(transactionManager),
+        java.time.Clock.systemUTC(),
+        metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP));
   }
 
   @Bean

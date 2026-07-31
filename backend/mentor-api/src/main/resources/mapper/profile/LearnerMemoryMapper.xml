@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.congcong.algomentor.api.profile.mapper.LearnerMemoryMapper">
+  <resultMap id="ClaimRevisionRowMap" type="org.congcong.algomentor.api.profile.mapper.model.LearnerMemoryClaimRevisionRow">
+    <constructor>
+      <arg column="id" javaType="_long"/><arg column="claim_key" javaType="string"/><arg column="user_id" javaType="_long"/>
+      <arg column="entry_kind" javaType="string"/><arg column="dimension" javaType="string"/><arg column="tag_id" javaType="java.lang.Long"/>
+      <arg column="revision_no" javaType="_int"/><arg column="status" javaType="string"/><arg column="claim_text" javaType="string"/>
+      <arg column="claim_text_hash" javaType="string"/><arg column="origin_type" javaType="string"/><arg column="evidence_pattern" javaType="string"/>
+      <arg column="evidence_grade" javaType="string"/><arg column="decision_reason" javaType="string"/><arg column="update_run_id" javaType="_long"/>
+      <arg column="supersedes_revision_id" javaType="java.lang.Long"/><arg column="valid_from" javaType="java.time.Instant"/>
+      <arg column="valid_to" javaType="java.time.Instant"/><arg column="created_at" javaType="java.time.Instant"/><arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+  <resultMap id="DocumentClaimRowMap" type="org.congcong.algomentor.api.profile.mapper.model.LearnerProfileDocumentClaimRow">
+    <constructor>
+      <arg column="id" javaType="_long"/><arg column="claim_key" javaType="string"/><arg column="user_id" javaType="_long"/>
+      <arg column="entry_kind" javaType="string"/><arg column="dimension" javaType="string"/><arg column="tag_id" javaType="java.lang.Long"/>
+      <arg column="revision_no" javaType="_int"/><arg column="status" javaType="string"/><arg column="claim_text" javaType="string"/>
+      <arg column="claim_text_hash" javaType="string"/><arg column="origin_type" javaType="string"/><arg column="evidence_pattern" javaType="string"/>
+      <arg column="evidence_grade" javaType="string"/><arg column="decision_reason" javaType="string"/><arg column="update_run_id" javaType="_long"/>
+      <arg column="supersedes_revision_id" javaType="java.lang.Long"/><arg column="valid_from" javaType="java.time.Instant"/>
+      <arg column="valid_to" javaType="java.time.Instant"/><arg column="created_at" javaType="java.time.Instant"/><arg column="updated_at" javaType="java.time.Instant"/>
+      <arg column="tag_label_en" javaType="string"/><arg column="tag_label_zh" javaType="string"/>
+    </constructor>
+  </resultMap>
+  <resultMap id="DocumentEvidenceRowMap" type="org.congcong.algomentor.api.profile.mapper.model.LearnerProfileDocumentEvidenceRow">
+    <constructor>
+      <arg column="claim_revision_id" javaType="_long"/><arg column="source_type" javaType="string"/><arg column="source_id" javaType="_long"/>
+      <arg column="occurred_at" javaType="java.time.Instant"/><arg column="review_role" javaType="string"/><arg column="message_role" javaType="string"/>
+      <arg column="review_session_id" javaType="java.lang.Long"/><arg column="plan_id" javaType="java.lang.Long"/><arg column="phase_index" javaType="java.lang.Integer"/>
+      <arg column="problem_slug" javaType="string"/><arg column="version_no" javaType="java.lang.Integer"/><arg column="total_score" javaType="java.math.BigDecimal"/>
+      <arg column="passed" javaType="java.lang.Boolean"/><arg column="message_excerpt" javaType="string"/>
+    </constructor>
+  </resultMap>
+  <resultMap id="ReviewEvidenceRowMap" type="org.congcong.algomentor.api.profile.mapper.model.LearnerMemoryReviewEvidenceRow">
+    <constructor>
+      <arg column="claim_revision_id" javaType="_long"/><arg column="review_id" javaType="_long"/><arg column="evidence_role" javaType="string"/>
+      <arg column="sequence_no" javaType="_int"/><arg column="created_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+  <resultMap id="MessageEvidenceRowMap" type="org.congcong.algomentor.api.profile.mapper.model.LearnerMemoryMessageEvidenceRow">
+    <constructor>
+      <arg column="claim_revision_id" javaType="_long"/><arg column="message_id" javaType="_long"/><arg column="evidence_role" javaType="string"/>
+      <arg column="sequence_no" javaType="_int"/><arg column="created_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+  <resultMap id="UpdateRunRowMap" type="org.congcong.algomentor.api.profile.mapper.model.LearnerMemoryUpdateRunRow">
+    <constructor>
+      <arg column="id" javaType="_long"/><arg column="user_id" javaType="_long"/><arg column="trigger_type" javaType="string"/>
+      <arg column="status" javaType="string"/><arg column="idempotency_key" javaType="string"/><arg column="agent_run_id" javaType="java.lang.Long"/>
+      <arg column="prompt_version" javaType="string"/><arg column="schema_version" javaType="string"/><arg column="input_count" javaType="_int"/>
+      <arg column="operation_count" javaType="_int"/><arg column="tool_call_count" javaType="_int"/><arg column="failure_code" javaType="string"/>
+      <arg column="started_at" javaType="java.time.Instant"/><arg column="completed_at" javaType="java.time.Instant"/><arg column="created_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+  <resultMap id="UpdateRunReviewRowMap" type="org.congcong.algomentor.api.profile.mapper.model.LearnerMemoryUpdateRunReviewRow">
+    <constructor><arg column="update_run_id" javaType="_long"/><arg column="review_id" javaType="_long"/><arg column="sequence_no" javaType="_int"/></constructor>
+  </resultMap>
+
+  <sql id="ClaimColumns">id, claim_key, user_id, entry_kind, dimension, tag_id, revision_no, status, claim_text, claim_text_hash, origin_type, evidence_pattern, evidence_grade, decision_reason, update_run_id, supersedes_revision_id, valid_from, valid_to, created_at, updated_at</sql>
+  <sql id="DocumentClaimColumns">
+    claim.id, claim.claim_key, claim.user_id, claim.entry_kind, claim.dimension, claim.tag_id,
+    claim.revision_no, claim.status, claim.claim_text, claim.claim_text_hash, claim.origin_type,
+    claim.evidence_pattern, claim.evidence_grade, claim.decision_reason, claim.update_run_id,
+    claim.supersedes_revision_id, claim.valid_from, claim.valid_to, claim.created_at, claim.updated_at
+  </sql>
+  <sql id="UpdateRunColumns">id, user_id, trigger_type, status, idempotency_key, agent_run_id, prompt_version, schema_version, input_count, operation_count, tool_call_count, failure_code, started_at, completed_at, created_at</sql>
+  <sql id="StableClaimOrder">
+    CASE entry_kind WHEN 'DECLARED_FACT' THEN 1 WHEN 'GENERAL_OBSERVATION' THEN 2 WHEN 'TAG_ASSESSMENT' THEN 3 ELSE 4 END,
+    CASE dimension
+      WHEN 'LEARNER_BACKGROUND' THEN 1 WHEN 'GOALS_AND_INTENTS' THEN 2 WHEN 'TIME_AND_RESOURCE_CONSTRAINTS' THEN 3
+      WHEN 'LEARNING_AND_INTERACTION_PREFERENCES' THEN 4 WHEN 'SELF_ABILITY_ASSESSMENT' THEN 5
+      WHEN 'PROBLEM_SOLVING_APPROACH' THEN 6 WHEN 'IMPLEMENTATION_AND_ERROR_PATTERN' THEN 7
+      WHEN 'LEARNING_INTERACTION_AND_INDEPENDENCE' THEN 8 WHEN 'REVIEW_AND_GROWTH_PERFORMANCE' THEN 9 WHEN 'TAG_MASTERY' THEN 10 ELSE 11 END,
+    tag_id ASC NULLS FIRST, updated_at DESC, id ASC
+  </sql>
+  <sql id="DocumentEvidenceUnion">
+    SELECT review_evidence.claim_revision_id,
+           'CODE_REVIEW' AS source_type,
+           review.id AS source_id,
+           review.created_at AS occurred_at,
+           review_evidence.evidence_role AS review_role,
+           NULL::VARCHAR AS message_role,
+           review.practice_session_id AS review_session_id,
+           review.plan_id,
+           review.phase_index,
+           review.problem_slug,
+           review.version_no,
+           review.total_score,
+           review.passed,
+           NULL::TEXT AS message_excerpt
+    FROM learner_memory_claim_review_evidence review_evidence
+    JOIN learner_memory_claim_revision claim ON claim.id = review_evidence.claim_revision_id
+    JOIN practice_code_review review ON review.id = review_evidence.review_id AND review.user_id = claim.user_id
+    WHERE claim.user_id = #{userId} AND claim.status = 'ACTIVE'
+    <if test="revisionIds != null">AND claim.id IN
+      <foreach collection="revisionIds" item="revisionId" open="(" separator="," close=")">#{revisionId}</foreach>
+    </if>
+    <if test="claimRevisionId != null">AND claim.id = #{claimRevisionId}</if>
+    UNION ALL
+    SELECT message_evidence.claim_revision_id,
+           'USER_MESSAGE' AS source_type,
+           message.id AS source_id,
+           message.created_at AS occurred_at,
+           NULL::VARCHAR AS review_role,
+           message_evidence.evidence_role AS message_role,
+           NULL::BIGINT AS review_session_id,
+           NULL::BIGINT AS plan_id,
+           NULL::INTEGER AS phase_index,
+           NULL::VARCHAR AS problem_slug,
+           NULL::INTEGER AS version_no,
+           NULL::NUMERIC AS total_score,
+           NULL::BOOLEAN AS passed,
+           LEFT(message.content, 240) AS message_excerpt
+    FROM learner_memory_claim_message_evidence message_evidence
+    JOIN learner_memory_claim_revision claim ON claim.id = message_evidence.claim_revision_id
+    JOIN agent_message message ON message.id = message_evidence.message_id
+    JOIN agent_task task ON task.id = message.task_id AND task.user_id = claim.user_id
+    WHERE claim.user_id = #{userId} AND claim.status = 'ACTIVE'
+    <if test="revisionIds != null">AND claim.id IN
+      <foreach collection="revisionIds" item="revisionId" open="(" separator="," close=")">#{revisionId}</foreach>
+    </if>
+    <if test="claimRevisionId != null">AND claim.id = #{claimRevisionId}</if>
+  </sql>
+
+  <select id="findActiveByUser" resultMap="ClaimRevisionRowMap">
+    SELECT <include refid="ClaimColumns"/> FROM learner_memory_claim_revision
+    WHERE user_id = #{userId} AND status = 'ACTIVE' ORDER BY <include refid="StableClaimOrder"/>
+  </select>
+  <select id="findActiveDocumentClaims" resultMap="DocumentClaimRowMap">
+    SELECT <include refid="DocumentClaimColumns"/>, tag.label_en AS tag_label_en, tag.label_zh AS tag_label_zh
+    FROM learner_memory_claim_revision claim
+    LEFT JOIN problem_tag tag ON tag.id = claim.tag_id
+    WHERE claim.user_id = #{userId} AND claim.status = 'ACTIVE'
+    ORDER BY <include refid="StableClaimOrder"/>
+  </select>
+  <select id="existsActiveDocumentClaim" resultType="boolean">
+    SELECT EXISTS(
+      SELECT 1 FROM learner_memory_claim_revision
+      WHERE user_id = #{userId} AND id = #{claimRevisionId} AND status = 'ACTIVE'
+    )
+  </select>
+  <select id="findDocumentEvidenceByRevisionIds" resultMap="DocumentEvidenceRowMap">
+    SELECT * FROM (<include refid="DocumentEvidenceUnion"/>) document_evidence
+    ORDER BY claim_revision_id ASC, occurred_at ASC, source_type ASC, source_id ASC
+  </select>
+  <select id="findActiveDocumentEvidencePage" resultMap="DocumentEvidenceRowMap">
+    SELECT * FROM (<include refid="DocumentEvidenceUnion"/>) document_evidence
+    <if test="cursorOccurredAt != null">
+      WHERE occurred_at &gt; #{cursorOccurredAt}
+        OR (occurred_at = #{cursorOccurredAt} AND source_type &gt; #{cursorSourceType})
+        OR (occurred_at = #{cursorOccurredAt} AND source_type = #{cursorSourceType} AND source_id &gt; #{cursorSourceId})
+    </if>
+    ORDER BY occurred_at ASC, source_type ASC, source_id ASC
+    LIMIT #{limit}
+  </select>
+  <select id="findActiveByScopes" resultMap="ClaimRevisionRowMap">
+    SELECT <include refid="ClaimColumns"/> FROM learner_memory_claim_revision
+    WHERE user_id = #{userId} AND status = 'ACTIVE' AND
+    <foreach collection="scopes" item="scope" open="(" separator=" OR " close=")">
+      (entry_kind = #{scope.kind} AND dimension = #{scope.dimension}
+      <choose><when test="scope.tagId == null">AND tag_id IS NULL</when><otherwise>AND tag_id = #{scope.tagId}</otherwise></choose>)
+    </foreach>
+    ORDER BY <include refid="StableClaimOrder"/>
+  </select>
+  <select id="findActiveByRevisionIds" resultMap="ClaimRevisionRowMap">
+    SELECT <include refid="ClaimColumns"/> FROM learner_memory_claim_revision
+    WHERE user_id = #{userId} AND status = 'ACTIVE' AND id IN
+    <foreach collection="revisionIds" item="revisionId" open="(" separator="," close=")">#{revisionId}</foreach>
+    ORDER BY <include refid="StableClaimOrder"/>
+  </select>
+  <select id="findActiveByUserForUpdate" resultMap="ClaimRevisionRowMap">
+    SELECT <include refid="ClaimColumns"/> FROM learner_memory_claim_revision
+    WHERE user_id = #{userId} AND status = 'ACTIVE' ORDER BY <include refid="StableClaimOrder"/> FOR UPDATE
+  </select>
+  <select id="findCurrent" resultMap="ClaimRevisionRowMap">
+    SELECT <include refid="ClaimColumns"/> FROM learner_memory_claim_revision
+    WHERE user_id = #{userId} AND claim_key = #{claimKey} AND status &lt;&gt; 'SUPERSEDED'
+  </select>
+  <select id="findHistory" resultMap="ClaimRevisionRowMap">
+    SELECT <include refid="ClaimColumns"/> FROM learner_memory_claim_revision
+    WHERE user_id = #{userId} AND claim_key = #{claimKey} ORDER BY revision_no DESC, id DESC
+  </select>
+  <select id="countActiveByUser" resultType="long">
+    SELECT COUNT(*) FROM learner_memory_claim_revision WHERE user_id = #{userId} AND status = 'ACTIVE'
+  </select>
+  <select id="countActiveByScope" resultType="long">
+    SELECT COUNT(*) FROM learner_memory_claim_revision
+    WHERE user_id = #{userId} AND status = 'ACTIVE' AND entry_kind = #{scope.kind} AND dimension = #{scope.dimension}
+    <choose><when test="scope.tagId == null">AND tag_id IS NULL</when><otherwise>AND tag_id = #{scope.tagId}</otherwise></choose>
+  </select>
+  <select id="lockUser" resultType="long">SELECT id FROM auth_users WHERE id = #{userId} FOR UPDATE</select>
+  <select id="insertClaim" resultMap="ClaimRevisionRowMap" affectData="true">
+    INSERT INTO learner_memory_claim_revision (
+      claim_key, user_id, entry_kind, dimension, tag_id, revision_no, status, claim_text, claim_text_hash,
+      origin_type, evidence_pattern, evidence_grade, decision_reason, update_run_id, supersedes_revision_id, valid_from, valid_to)
+    VALUES (
+      #{draft.claimKey}, #{draft.userId}, #{draft.scope.kind}, #{draft.scope.dimension}, #{draft.scope.tagId}, #{draft.revisionNo}, #{draft.status}, #{draft.claimText}, #{draft.claimTextHash.value},
+      #{draft.origin}, #{draft.evidencePattern}, #{draft.evidenceGrade}, #{draft.decisionReason}, #{draft.updateRunId}, #{draft.supersedesRevisionId}, #{draft.validFrom}, #{draft.validTo})
+    RETURNING <include refid="ClaimColumns"/>
+  </select>
+  <update id="markCurrentSuperseded">
+    UPDATE learner_memory_claim_revision SET status = 'SUPERSEDED', valid_to = #{validTo}, updated_at = NOW()
+    WHERE id = #{revisionId} AND status = 'ACTIVE'
+  </update>
+
+  <select id="findReviewEvidenceByRevisionIds" resultMap="ReviewEvidenceRowMap">
+    SELECT evidence.claim_revision_id, evidence.review_id, evidence.evidence_role, evidence.sequence_no, evidence.created_at
+    FROM learner_memory_claim_review_evidence evidence
+    JOIN learner_memory_claim_revision claim ON claim.id = evidence.claim_revision_id
+    JOIN practice_code_review review ON review.id = evidence.review_id
+    WHERE claim.user_id = #{userId} AND evidence.claim_revision_id IN
+    <foreach collection="revisionIds" item="revisionId" open="(" separator="," close=")">#{revisionId}</foreach>
+    ORDER BY evidence.claim_revision_id, review.created_at ASC, evidence.review_id ASC
+  </select>
+  <select id="findMessageEvidenceByRevisionIds" resultMap="MessageEvidenceRowMap">
+    SELECT evidence.claim_revision_id, evidence.message_id, evidence.evidence_role, evidence.sequence_no, evidence.created_at
+    FROM learner_memory_claim_message_evidence evidence
+    JOIN learner_memory_claim_revision claim ON claim.id = evidence.claim_revision_id
+    JOIN agent_message message ON message.id = evidence.message_id
+    WHERE claim.user_id = #{userId} AND evidence.claim_revision_id IN
+    <foreach collection="revisionIds" item="revisionId" open="(" separator="," close=")">#{revisionId}</foreach>
+    ORDER BY evidence.claim_revision_id, message.created_at ASC, evidence.message_id ASC
+  </select>
+  <select id="findOwnedReviewIds" resultType="long">
+    SELECT id FROM practice_code_review WHERE user_id = #{userId} AND id IN
+    <foreach collection="reviewIds" item="reviewId" open="(" separator="," close=")">#{reviewId}</foreach> ORDER BY id
+  </select>
+  <select id="findOwnedMessageIds" resultType="long">
+    SELECT message.id FROM agent_message message JOIN agent_task task ON task.id = message.task_id
+    WHERE task.user_id = #{userId} AND message.id IN
+    <foreach collection="messageIds" item="messageId" open="(" separator="," close=")">#{messageId}</foreach> ORDER BY message.id
+  </select>
+  <insert id="insertReviewEvidence">
+    INSERT INTO learner_memory_claim_review_evidence (claim_revision_id, review_id, evidence_role, sequence_no, created_at) VALUES
+    <foreach collection="evidence" item="item" separator=",">(#{item.claimRevisionId}, #{item.reviewId}, #{item.role}, #{item.sequenceNo}, #{item.createdAt})</foreach>
+  </insert>
+  <insert id="insertMessageEvidence">
+    INSERT INTO learner_memory_claim_message_evidence (claim_revision_id, message_id, evidence_role, sequence_no, created_at) VALUES
+    <foreach collection="evidence" item="item" separator=",">(#{item.claimRevisionId}, #{item.messageId}, #{item.role}, #{item.sequenceNo}, #{item.createdAt})</foreach>
+  </insert>
+
+  <select id="findUpdateRunByIdempotencyKey" resultMap="UpdateRunRowMap">
+    SELECT <include refid="UpdateRunColumns"/> FROM learner_memory_update_run WHERE idempotency_key = #{idempotencyKey}
+  </select>
+  <select id="findUpdateRunById" resultMap="UpdateRunRowMap">
+    SELECT <include refid="UpdateRunColumns"/> FROM learner_memory_update_run WHERE id = #{updateRunId}
+  </select>
+  <select id="insertUpdateRun" resultMap="UpdateRunRowMap" affectData="true">
+    INSERT INTO learner_memory_update_run (
+      user_id, trigger_type, status, idempotency_key, prompt_version, schema_version, input_count, started_at)
+    VALUES (#{draft.userId}, #{draft.trigger}, 'RUNNING', #{draft.idempotencyKey}, #{draft.promptVersion}, #{draft.schemaVersion}, #{draft.inputCount}, #{draft.startedAt})
+    RETURNING <include refid="UpdateRunColumns"/>
+  </select>
+  <insert id="insertUpdateRunReviews">
+    INSERT INTO learner_memory_update_run_review (update_run_id, review_id, sequence_no) VALUES
+    <foreach collection="reviews" item="item" separator=",">(#{item.updateRunId}, #{item.reviewId}, #{item.sequenceNo})</foreach>
+  </insert>
+  <select id="findUpdateRunReviews" resultMap="UpdateRunReviewRowMap">
+    SELECT update_run_id, review_id, sequence_no FROM learner_memory_update_run_review
+    WHERE update_run_id = #{updateRunId} ORDER BY sequence_no ASC, review_id ASC
+  </select>
+  <update id="bindAgentRun">
+    UPDATE learner_memory_update_run SET agent_run_id = #{agentRunId} WHERE id = #{updateRunId}
+  </update>
+  <update id="completeUpdateRun">
+    UPDATE learner_memory_update_run
+    SET status = #{status}, operation_count = #{operationCount}, tool_call_count = #{toolCallCount}, failure_code = #{failureCode}, completed_at = #{completedAt}
+    WHERE id = #{updateRunId} AND status = 'RUNNING'
+  </update>
+</mapper>

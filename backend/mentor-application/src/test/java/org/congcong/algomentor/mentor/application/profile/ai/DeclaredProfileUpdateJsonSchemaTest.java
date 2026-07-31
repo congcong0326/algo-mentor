@@ -14,8 +14,8 @@ class DeclaredProfileUpdateJsonSchemaTest {
     assertThat(schema.path("type").asText()).isEqualTo("object");
     assertThat(schema.path("additionalProperties").asBoolean()).isFalse();
     assertThat(schema.path("required")).extracting(JsonNode::asText)
-        .containsExactly(DeclaredProfileUpdateJsonSchema.DECISIONS);
-    assertThat(schema.path("properties").path(DeclaredProfileUpdateJsonSchema.DECISIONS).path("type").asText())
+        .containsExactly(DeclaredProfileUpdateJsonSchema.OPERATIONS);
+    assertThat(schema.path("properties").path(DeclaredProfileUpdateJsonSchema.OPERATIONS).path("type").asText())
         .isEqualTo("array");
   }
 }

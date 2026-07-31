@@ -20,6 +20,7 @@ import org.congcong.algomentor.agent.core.AgentExecutionContext;
 import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultReadGuard;
 import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessageRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
@@ -58,17 +59,29 @@ import org.congcong.algomentor.mentor.application.practice.PracticeSessionReposi
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
 import org.congcong.algomentor.mentor.application.practice.PracticeTurnOrchestrator;
 import org.congcong.algomentor.mentor.application.practice.TrustedProblemTagCatalog;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileQueryService;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileRepository;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileUpdateService;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateAgentDefinition;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateService;
-import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfileRecallService;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileBatchConsumer;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileFactRepository;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileUpdateAgentDefinition;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileUpdateService;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallPromptSectionProvider;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallService;
+import org.congcong.algomentor.mentor.application.profile.claim.repository.LearnerMemoryClaimRepository;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimQueryService;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimSnapshotFactory;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimTextHasher;
+import org.congcong.algomentor.mentor.application.profile.evidence.repository.LearnerMemoryEvidenceRepository;
+import org.congcong.algomentor.mentor.application.profile.evidence.service.LearnerMemoryEvidenceGradeCalculator;
+import org.congcong.algomentor.mentor.application.profile.evidence.service.LearnerMemoryEvidenceValidator;
+import org.congcong.algomentor.mentor.application.profile.operation.service.LearnerMemoryAtomicApplyService;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewBatchConsumer;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewFactRepository;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateAgentDefinition;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateService;
+import org.congcong.algomentor.mentor.application.profile.review.history.CodeReviewHistoryRepository;
+import org.congcong.algomentor.mentor.application.profile.run.repository.LearnerMemoryUpdateRunRepository;
+import org.congcong.algomentor.mentor.application.profile.run.service.LearnerMemoryUpdateRunLifecycleService;
 import org.congcong.algomentor.mentor.application.profile.tool.UpdateLearnerDeclaredProfileAgentTool;
+import org.congcong.algomentor.mentor.application.profile.tool.GetLearnerMemoryEvidenceAgentTool;
+import org.congcong.algomentor.mentor.application.profile.tool.ReadLearnerMemorySectionAgentTool;
+import org.congcong.algomentor.mentor.application.profile.tool.SearchLearnerMemoryAgentTool;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
@@ -79,6 +92,8 @@ import org.congcong.algomentor.ops.observability.OpsStatus;
 import org.congcong.algomentor.ops.observability.autoconfigure.OpsObservabilityAutoConfiguration;
 import org.congcong.algomentor.queue.config.PersistentQueueAutoConfiguration;
 import org.congcong.algomentor.queue.postgres.QueueMessageMapper;
+import org.congcong.algomentor.queue.repository.QueueMessageRepository;
+import org.congcong.algomentor.queue.runtime.PersistentQueueWorkerManager;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -86,6 +101,8 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 class AgentConversationApiAutoConfigurationTest {
 
@@ -139,10 +156,11 @@ class AgentConversationApiAutoConfigurationTest {
         .withConfiguration(AutoConfigurations.of(
             JacksonAutoConfiguration.class,
             AgentConversationApiAutoConfiguration.class))
-        .withUserConfiguration(PracticeStreamWithoutReviewDependencies.class, MentorAiConfiguration.class)
-        .withBean(LearnerProfileQueryService.class, () -> mock(LearnerProfileQueryService.class))
-        .withBean(LearnerProfileUpdateService.class, () -> mock(LearnerProfileUpdateService.class))
-        .withPropertyValues("algo-mentor.learner-profile.declared-update.enabled=true")
+        .withUserConfiguration(
+            PracticeStreamWithoutReviewDependencies.class,
+            MentorAiConfiguration.class,
+            LearnerMemoryUpdateDependencies.class)
+        .withPropertyValues("algo-mentor.learner-memory.declared-update.enabled=true")
         .run(context -> {
           assertThat(context).hasSingleBean(DeclaredProfileUpdateAgentDefinition.class);
           assertThat(context).hasSingleBean(DeclaredProfileUpdateService.class);
@@ -159,9 +177,7 @@ class AgentConversationApiAutoConfigurationTest {
         .withConfiguration(AutoConfigurations.of(
             JacksonAutoConfiguration.class,
             AgentConversationApiAutoConfiguration.class))
-        .withBean(LearnerProfileQueryService.class, () -> mock(LearnerProfileQueryService.class))
-        .withBean(LearnerProfileUpdateService.class, () -> mock(LearnerProfileUpdateService.class))
-        .withPropertyValues("algo-mentor.learner-profile.declared-update.enabled=true")
+        .withPropertyValues("algo-mentor.learner-memory.declared-update.enabled=true")
         .run(context -> {
           assertThat(context).hasSingleBean(DeclaredProfileUpdateAgentDefinition.class);
           assertThat(context).doesNotHaveBean(DeclaredProfileUpdateService.class);
@@ -176,8 +192,6 @@ class AgentConversationApiAutoConfigurationTest {
             JacksonAutoConfiguration.class,
             AgentConversationApiAutoConfiguration.class))
         .withBean(AgentRuntime.class, () -> mock(AgentRuntime.class))
-        .withBean(LearnerProfileQueryService.class, () -> mock(LearnerProfileQueryService.class))
-        .withBean(LearnerProfileUpdateService.class, () -> mock(LearnerProfileUpdateService.class))
         .run(context -> {
           assertThat(context).doesNotHaveBean(DeclaredProfileUpdateAgentDefinition.class);
           assertThat(context).doesNotHaveBean(DeclaredProfileUpdateService.class);
@@ -186,40 +200,59 @@ class AgentConversationApiAutoConfigurationTest {
   }
 
   @Test
-  void registersEnabledCodeReviewProfileCapabilityInTheRuntimeRegistry() {
+  void registersEnabledLearnerMemoryCodeReviewDefinitionButNotConsumerWithoutQueueWorker() {
     new ApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(
             JacksonAutoConfiguration.class,
             AgentConversationApiAutoConfiguration.class))
-        .withUserConfiguration(PracticeStreamWithoutReviewDependencies.class, MentorAiConfiguration.class)
-        .withBean(CodeReviewProfileFactRepository.class, () -> mock(CodeReviewProfileFactRepository.class))
-        .withBean(LearnerProfileQueryService.class, () -> mock(LearnerProfileQueryService.class))
-        .withBean(LearnerProfileUpdateService.class, () -> mock(LearnerProfileUpdateService.class))
-        .withPropertyValues("algo-mentor.learner-profile.code-review-consumer.enabled=true")
+        .withUserConfiguration(
+            PracticeStreamWithoutReviewDependencies.class,
+            MentorAiConfiguration.class,
+            LearnerMemoryUpdateDependencies.class)
+        .withBean(LearnerMemoryCodeReviewFactRepository.class, () -> mock(LearnerMemoryCodeReviewFactRepository.class))
+        .withBean(CodeReviewHistoryRepository.class, () -> mock(CodeReviewHistoryRepository.class))
+        .withPropertyValues("algo-mentor.learner-memory.code-review-consumer.enabled=true")
         .run(context -> {
-          assertThat(context).hasSingleBean(CodeReviewProfileUpdateAgentDefinition.class);
-          assertThat(context).hasSingleBean(CodeReviewProfileUpdateService.class);
-          assertThat(context).hasSingleBean(CodeReviewProfileBatchConsumer.class);
+          assertThat(context).hasSingleBean(LearnerMemoryCodeReviewUpdateAgentDefinition.class);
+          assertThat(context).hasSingleBean(LearnerMemoryCodeReviewUpdateService.class);
+          assertThat(context).doesNotHaveBean(LearnerMemoryCodeReviewBatchConsumer.class);
           assertThat(context.getBean(AgentDefinitionRegistry.class)
-              .resolve(CodeReviewProfileUpdateAgentDefinition.KEY))
-              .isSameAs(context.getBean(CodeReviewProfileUpdateAgentDefinition.class));
+              .resolve(LearnerMemoryCodeReviewUpdateAgentDefinition.KEY))
+              .isSameAs(context.getBean(LearnerMemoryCodeReviewUpdateAgentDefinition.class));
         });
   }
 
   @Test
-  void doesNotRegisterCodeReviewProfileConsumerWhenRuntimeIsUnavailable() {
+  void registersEnabledLearnerMemoryCodeReviewConsumerWhenQueueWorkerIsAvailable() {
     new ApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(
             JacksonAutoConfiguration.class,
             AgentConversationApiAutoConfiguration.class))
-        .withBean(CodeReviewProfileFactRepository.class, () -> mock(CodeReviewProfileFactRepository.class))
-        .withBean(LearnerProfileQueryService.class, () -> mock(LearnerProfileQueryService.class))
-        .withBean(LearnerProfileUpdateService.class, () -> mock(LearnerProfileUpdateService.class))
-        .withPropertyValues("algo-mentor.learner-profile.code-review-consumer.enabled=true")
+        .withUserConfiguration(
+            PracticeStreamWithoutReviewDependencies.class,
+            MentorAiConfiguration.class,
+            LearnerMemoryUpdateDependencies.class)
+        .withBean(LearnerMemoryCodeReviewFactRepository.class, () -> mock(LearnerMemoryCodeReviewFactRepository.class))
+        .withBean(CodeReviewHistoryRepository.class, () -> mock(CodeReviewHistoryRepository.class))
+        .withBean(QueueMessageRepository.class, () -> mock(QueueMessageRepository.class))
+        .withBean(PersistentQueueWorkerManager.class, () -> mock(PersistentQueueWorkerManager.class))
+        .withPropertyValues("algo-mentor.learner-memory.code-review-consumer.enabled=true")
+        .run(context -> assertThat(context).hasSingleBean(LearnerMemoryCodeReviewBatchConsumer.class));
+  }
+
+  @Test
+  void doesNotRegisterLearnerMemoryCodeReviewConsumerWhenRuntimeIsUnavailable() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(
+            JacksonAutoConfiguration.class,
+            AgentConversationApiAutoConfiguration.class))
+        .withBean(LearnerMemoryCodeReviewFactRepository.class, () -> mock(LearnerMemoryCodeReviewFactRepository.class))
+        .withBean(CodeReviewHistoryRepository.class, () -> mock(CodeReviewHistoryRepository.class))
+        .withPropertyValues("algo-mentor.learner-memory.code-review-consumer.enabled=true")
         .run(context -> {
-          assertThat(context).hasSingleBean(CodeReviewProfileUpdateAgentDefinition.class);
-          assertThat(context).doesNotHaveBean(CodeReviewProfileUpdateService.class);
-          assertThat(context).doesNotHaveBean(CodeReviewProfileBatchConsumer.class);
+          assertThat(context).hasSingleBean(LearnerMemoryCodeReviewUpdateAgentDefinition.class);
+          assertThat(context).doesNotHaveBean(LearnerMemoryCodeReviewUpdateService.class);
+          assertThat(context).doesNotHaveBean(LearnerMemoryCodeReviewBatchConsumer.class);
         });
   }
 
@@ -277,31 +310,48 @@ class AgentConversationApiAutoConfigurationTest {
   }
 
   @Test
-  void createsLearnerProfileRecallServiceWhenEnabledAndCatalogIsAutoConfigured() {
+  void createsLearnerMemoryRecallServiceWithClaimInfrastructureAndCatalog() {
     new ApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(LearnerMemoryUpdateDependencies.class)
         .withBean(ProblemTagMapper.class, () -> mock(ProblemTagMapper.class))
-        .withBean(LearnerProfileQueryService.class,
-            () -> new LearnerProfileQueryService(mock(LearnerProfileRepository.class)))
-        .withPropertyValues("algo-mentor.learner-profile.recall.practice-chat.enabled=true")
+        .withPropertyValues("algo-mentor.learner-memory.recall.practice-chat.enabled=true")
         .run(context -> {
           assertThat(context).hasNotFailed();
           assertThat(context).hasSingleBean(TrustedProblemTagCatalog.class);
-          assertThat(context).hasSingleBean(LearnerProfileRecallService.class);
+          assertThat(context).hasSingleBean(LearnerMemoryRecallService.class);
+          assertThat(context).hasSingleBean(LearnerMemoryRecallPromptSectionProvider.class);
+          assertThat(context).hasSingleBean(SearchLearnerMemoryAgentTool.class);
+          assertThat(context).hasSingleBean(ReadLearnerMemorySectionAgentTool.class);
+          assertThat(context).hasSingleBean(GetLearnerMemoryEvidenceAgentTool.class);
+          assertThat(context).hasSingleBean(ToolResultReadGuard.class);
         });
   }
 
   @Test
-  void failsStartupWhenLearnerProfileRecallIsEnabledWithoutTagCatalog() {
+  void keepsLearnerMemoryRecallAndItsToolsDisabledByDefault() {
     new ApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
-        .withBean(LearnerProfileQueryService.class,
-            () -> new LearnerProfileQueryService(mock(LearnerProfileRepository.class)))
-        .withPropertyValues("algo-mentor.learner-profile.recall.practice-chat.enabled=true")
+        .withUserConfiguration(LearnerMemoryUpdateDependencies.class)
         .run(context -> {
-          assertThat(context).hasFailed();
-          assertThat(context.getStartupFailure())
-              .hasMessageContaining(TrustedProblemTagCatalog.class.getName());
+          assertThat(context).hasNotFailed();
+          assertThat(context).doesNotHaveBean(LearnerMemoryRecallService.class);
+          assertThat(context).doesNotHaveBean(SearchLearnerMemoryAgentTool.class);
+          assertThat(context).doesNotHaveBean(ReadLearnerMemorySectionAgentTool.class);
+          assertThat(context).doesNotHaveBean(GetLearnerMemoryEvidenceAgentTool.class);
+        });
+  }
+
+  @Test
+  void createsLearnerMemoryRecallServiceWithoutTagCatalogUsingAnEmptyTrustedCatalog() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(LearnerMemoryUpdateDependencies.class)
+        .withPropertyValues("algo-mentor.learner-memory.recall.practice-chat.enabled=true")
+        .run(context -> {
+          assertThat(context).hasNotFailed();
+          assertThat(context).doesNotHaveBean(TrustedProblemTagCatalog.class);
+          assertThat(context).hasSingleBean(LearnerMemoryRecallService.class);
         });
   }
 
@@ -532,6 +582,70 @@ class AgentConversationApiAutoConfigurationTest {
       SqlSessionTemplate template = mock(SqlSessionTemplate.class);
       when(template.getMapper(QueueMessageMapper.class)).thenReturn(mock(QueueMessageMapper.class));
       return template;
+    }
+  }
+
+  @Configuration(proxyBeanMethods = false)
+  static class LearnerMemoryUpdateDependencies {
+
+    @Bean
+    LearnerMemoryClaimRepository learnerMemoryClaimRepository() {
+      return mock(LearnerMemoryClaimRepository.class);
+    }
+
+    @Bean
+    LearnerMemoryEvidenceRepository learnerMemoryEvidenceRepository() {
+      return mock(LearnerMemoryEvidenceRepository.class);
+    }
+
+    @Bean
+    LearnerMemoryUpdateRunRepository learnerMemoryUpdateRunRepository() {
+      return mock(LearnerMemoryUpdateRunRepository.class);
+    }
+
+    @Bean
+    TransactionTemplate learnerMemoryTransactionTemplate() {
+      return new TransactionTemplate(mock(PlatformTransactionManager.class));
+    }
+
+    @Bean
+    LearnerMemoryClaimQueryService learnerMemoryClaimQueryService(
+        LearnerMemoryClaimRepository claimRepository
+    ) {
+      return new LearnerMemoryClaimQueryService(claimRepository, new LearnerMemoryClaimSnapshotFactory());
+    }
+
+    @Bean
+    LearnerMemoryUpdateRunLifecycleService learnerMemoryUpdateRunLifecycleService(
+        LearnerMemoryUpdateRunRepository updateRunRepository,
+        TransactionTemplate learnerMemoryTransactionTemplate
+    ) {
+      return new LearnerMemoryUpdateRunLifecycleService(updateRunRepository, learnerMemoryTransactionTemplate);
+    }
+
+    @Bean
+    LearnerMemoryAtomicApplyService learnerMemoryAtomicApplyService(
+        LearnerMemoryClaimRepository claimRepository,
+        LearnerMemoryEvidenceRepository evidenceRepository,
+        LearnerMemoryUpdateRunRepository updateRunRepository,
+        LearnerMemoryUpdateRunLifecycleService runLifecycleService,
+        TransactionTemplate learnerMemoryTransactionTemplate
+    ) {
+      return new LearnerMemoryAtomicApplyService(
+          claimRepository,
+          evidenceRepository,
+          updateRunRepository,
+          new LearnerMemoryClaimTextHasher(),
+          new LearnerMemoryClaimSnapshotFactory(),
+          new LearnerMemoryEvidenceValidator(),
+          new LearnerMemoryEvidenceGradeCalculator(),
+          runLifecycleService,
+          learnerMemoryTransactionTemplate);
+    }
+
+    @Bean
+    AgentTurnMessageLookupRepository learnerMemoryTurnMessageLookupRepository() {
+      return mock(AgentTurnMessageLookupRepository.class);
     }
   }
 

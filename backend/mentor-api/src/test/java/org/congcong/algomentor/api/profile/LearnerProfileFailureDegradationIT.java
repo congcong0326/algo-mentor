@@ -2,13 +2,12 @@ package org.congcong.algomentor.api.profile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentOutput;
 import org.congcong.algomentor.agent.core.AgentRunResult;
@@ -18,24 +17,33 @@ import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
 import org.congcong.algomentor.api.practice.repository.MyBatisPracticeCodeReviewRepository;
-import org.congcong.algomentor.api.profile.mapper.LearnerProfileMapper;
-import org.congcong.algomentor.api.profile.repository.MyBatisCodeReviewProfileFactRepository;
-import org.congcong.algomentor.api.profile.repository.MyBatisLearnerProfileRepository;
+import org.congcong.algomentor.api.profile.mapper.LearnerMemoryMapper;
+import org.congcong.algomentor.api.profile.repository.MyBatisCodeReviewHistoryRepository;
+import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryCodeReviewFactRepository;
+import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryClaimRepository;
+import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryEvidenceRepository;
+import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryUpdateRunRepository;
 import org.congcong.algomentor.api.support.PostgresIntegrationTestSupport;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCommitService;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewDraft;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewScore;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileContentPolicy;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileQueryService;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileUpdateService;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileBatchConsumer;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileConsumerConstants;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileFactRepository;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileJsonSchema;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileQueueContracts;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileStructuredOutputMapper;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileUpdateService;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimQueryService;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimSnapshotFactory;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimTextHasher;
+import org.congcong.algomentor.mentor.application.profile.evidence.service.LearnerMemoryEvidenceGradeCalculator;
+import org.congcong.algomentor.mentor.application.profile.evidence.service.LearnerMemoryEvidenceValidator;
+import org.congcong.algomentor.mentor.application.profile.operation.service.LearnerMemoryAtomicApplyService;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewBatchConsumer;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewConsumerConstants;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewFactRepository;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewJsonSchema;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewQueueContracts;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewStructuredOutputMapper;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateService;
+import org.congcong.algomentor.mentor.application.profile.review.history.CodeReviewHistoryRepository;
+import org.congcong.algomentor.mentor.application.profile.run.repository.LearnerMemoryUpdateRunRepository;
+import org.congcong.algomentor.mentor.application.profile.run.service.LearnerMemoryUpdateRunLifecycleService;
 import org.congcong.algomentor.queue.config.PersistentQueueProperties;
 import org.congcong.algomentor.queue.consumer.QueueConsumerRegistry;
 import org.congcong.algomentor.queue.dispatch.QueueDequeueService;
@@ -51,20 +59,21 @@ class LearnerProfileFailureDegradationIT extends PostgresIntegrationTestSupport 
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Test
-  void marksTheBatchSucceededWhenTheProfileCallbackFailsAndNeverReplaysIt() throws Exception {
+  void marksTheQueueBatchSucceededWhenClaimCallbackFailsAndNeverReplaysIt() throws Exception {
     migrateLatest();
     Fixture fixture = fixture();
-    publishReviews(fixture, CodeReviewProfileConsumerConstants.BATCH_SIZE);
+    publishReviews(fixture, LearnerMemoryCodeReviewConsumerConstants.BATCH_SIZE);
     FailingRuntime runtime = new FailingRuntime();
-    QueueDispatcher dispatcher = dispatcher(runtime, fixture.tagId());
+    QueueDispatcher dispatcher = dispatcher(runtime);
 
-    assertThat(dispatcher.dispatchRound(CodeReviewProfileQueueContracts.TOPIC))
+    assertThat(dispatcher.dispatchRound(LearnerMemoryCodeReviewQueueContracts.TOPIC))
         .containsExactly(QueueDispatchOutcome.DISPATCHED);
     assertThat(runtime.calls).isEqualTo(1);
     assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE status = 'SUCCEEDED'")).isEqualTo(5L);
-    assertThat(count("learner_profile_entry")).isZero();
+    assertThat(queryLong("SELECT COUNT(*) FROM learner_memory_update_run WHERE status = 'FAILED'")).isEqualTo(1L);
+    assertThat(queryString("SELECT to_regclass('learner_profile_entry')::text")).isNull();
 
-    assertThat(dispatcher.dispatchRound(CodeReviewProfileQueueContracts.TOPIC))
+    assertThat(dispatcher.dispatchRound(LearnerMemoryCodeReviewQueueContracts.TOPIC))
         .containsExactly(QueueDispatchOutcome.NO_ELIGIBLE_KEY);
     assertThat(runtime.calls).isEqualTo(1);
   }
@@ -73,21 +82,20 @@ class LearnerProfileFailureDegradationIT extends PostgresIntegrationTestSupport 
   void retainsPendingMessagesUntilANewWorkerCanFinishTheFullBatch() throws Exception {
     migrateLatest();
     Fixture fixture = fixture();
-    publishReviews(fixture, CodeReviewProfileConsumerConstants.BATCH_SIZE - 1);
-    FixedRuntime runtime = new FixedRuntime(decisions(fixture.tagId()));
+    publishReviews(fixture, LearnerMemoryCodeReviewConsumerConstants.BATCH_SIZE - 1);
+    FixedRuntime runtime = new FixedRuntime(insertAgentRun(fixture.userId()));
 
-    assertThat(dispatcher(runtime, fixture.tagId()).dispatchRound(CodeReviewProfileQueueContracts.TOPIC))
+    assertThat(dispatcher(runtime).dispatchRound(LearnerMemoryCodeReviewQueueContracts.TOPIC))
         .containsExactly(QueueDispatchOutcome.NO_ELIGIBLE_KEY);
     assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE status = 'PENDING'")).isEqualTo(4L);
     assertThat(runtime.calls).isZero();
 
     publishReviews(fixture, 1);
-    QueueDispatcher restartedDispatcher = dispatcher(runtime, fixture.tagId());
-    assertThat(restartedDispatcher.dispatchRound(CodeReviewProfileQueueContracts.TOPIC))
+    assertThat(dispatcher(runtime).dispatchRound(LearnerMemoryCodeReviewQueueContracts.TOPIC))
         .containsExactly(QueueDispatchOutcome.DISPATCHED);
     assertThat(runtime.calls).isEqualTo(1);
     assertThat(queryLong("SELECT COUNT(*) FROM queue_message WHERE status = 'SUCCEEDED'")).isEqualTo(5L);
-    assertThat(queryLong("SELECT COUNT(*) FROM learner_profile_entry WHERE status = 'ACTIVE'")).isEqualTo(3L);
+    assertThat(queryLong("SELECT COUNT(*) FROM learner_memory_update_run WHERE status = 'NO_CHANGE'")).isEqualTo(1L);
   }
 
   private Fixture fixture() throws Exception {
@@ -113,27 +121,54 @@ class LearnerProfileFailureDegradationIT extends PostgresIntegrationTestSupport 
         new PostgresQueuePublisher(objectMapper, queueRepository(), new PersistentQueueProperties()));
   }
 
-  private QueueDispatcher dispatcher(AgentRuntime runtime, long tagId) throws Exception {
-    CodeReviewProfileFactRepository factRepository = new MyBatisCodeReviewProfileFactRepository(
+  private QueueDispatcher dispatcher(AgentRuntime runtime) throws Exception {
+    LearnerMemoryCodeReviewFactRepository facts = new MyBatisLearnerMemoryCodeReviewFactRepository(
         sqlSessionTemplate("mapper/practice/PracticeCodeReviewMapper.xml").getMapper(PracticeCodeReviewMapper.class),
         objectMapper);
-    MyBatisLearnerProfileRepository profileRepository = new MyBatisLearnerProfileRepository(
-        sqlSessionTemplate("mapper/profile/LearnerProfileMapper.xml").getMapper(LearnerProfileMapper.class));
-    CodeReviewProfileBatchConsumer consumer = new CodeReviewProfileBatchConsumer(
-        objectMapper,
-        factRepository,
-        new CodeReviewProfileUpdateService(
-            factRepository,
-            new LearnerProfileQueryService(profileRepository),
-            new LearnerProfileUpdateService(profileRepository, new LearnerProfileContentPolicy(4000), transactionTemplate()),
-            runtime,
-            new CodeReviewProfileStructuredOutputMapper(),
-            1));
+    LearnerMemoryCodeReviewBatchConsumer consumer = new LearnerMemoryCodeReviewBatchConsumer(
+        objectMapper, facts, updateService(facts, runtime));
     MyBatisQueueMessageRepository queueRepository = queueRepository();
     return new QueueDispatcher(
         new QueueConsumerRegistry(List.of(), List.of(consumer)),
         queueRepository,
         new QueueDequeueService(queueRepository, transactionTemplate()));
+  }
+
+  private LearnerMemoryCodeReviewUpdateService updateService(
+      LearnerMemoryCodeReviewFactRepository facts,
+      AgentRuntime runtime
+  ) throws Exception {
+    PracticeCodeReviewMapper practiceMapper = sqlSessionTemplate("mapper/practice/PracticeCodeReviewMapper.xml")
+        .getMapper(PracticeCodeReviewMapper.class);
+    LearnerMemoryMapper memoryMapper = sqlSessionTemplate("mapper/profile/LearnerMemoryMapper.xml")
+        .getMapper(LearnerMemoryMapper.class);
+    MyBatisLearnerMemoryClaimRepository claims = new MyBatisLearnerMemoryClaimRepository(memoryMapper);
+    MyBatisLearnerMemoryEvidenceRepository evidence = new MyBatisLearnerMemoryEvidenceRepository(memoryMapper);
+    LearnerMemoryUpdateRunRepository runs = new MyBatisLearnerMemoryUpdateRunRepository(memoryMapper);
+    LearnerMemoryClaimSnapshotFactory snapshots = new LearnerMemoryClaimSnapshotFactory();
+    LearnerMemoryUpdateRunLifecycleService lifecycle = new LearnerMemoryUpdateRunLifecycleService(runs, transactionTemplate());
+    LearnerMemoryAtomicApplyService atomicApply = new LearnerMemoryAtomicApplyService(
+        claims,
+        evidence,
+        runs,
+        new LearnerMemoryClaimTextHasher(),
+        snapshots,
+        new LearnerMemoryEvidenceValidator(),
+        new LearnerMemoryEvidenceGradeCalculator(),
+        lifecycle,
+        transactionTemplate());
+    CodeReviewHistoryRepository history = new MyBatisCodeReviewHistoryRepository(practiceMapper, objectMapper);
+    return new LearnerMemoryCodeReviewUpdateService(
+        facts,
+        history,
+        new LearnerMemoryClaimQueryService(claims, snapshots),
+        evidence,
+        runs,
+        atomicApply,
+        lifecycle,
+        runtime,
+        new LearnerMemoryCodeReviewStructuredOutputMapper(),
+        1);
   }
 
   private MyBatisQueueMessageRepository queueRepository() throws Exception {
@@ -151,25 +186,30 @@ class LearnerProfileFailureDegradationIT extends PostgresIntegrationTestSupport 
         true, List.of("边界条件遗漏"), List.of("补充边界测试"), "OK", List.of(tagId));
   }
 
-  private JsonNode decisions(long tagId) {
-    ObjectNode root = objectMapper.createObjectNode();
-    ArrayNode general = root.putArray(CodeReviewProfileJsonSchema.GENERAL_OBSERVATIONS);
-    general.addObject()
-        .put(CodeReviewProfileJsonSchema.DIMENSION, "PROBLEM_SOLVING_APPROACH")
-        .put(CodeReviewProfileJsonSchema.ACTION, "REPLACE")
-        .put(CodeReviewProfileJsonSchema.CONTENT, "先确认算法路径。")
-        .put(CodeReviewProfileJsonSchema.REASON, "Review 观察。");
-    general.addObject()
-        .put(CodeReviewProfileJsonSchema.DIMENSION, "IMPLEMENTATION_AND_ERROR_PATTERN")
-        .put(CodeReviewProfileJsonSchema.ACTION, "REPLACE")
-        .put(CodeReviewProfileJsonSchema.CONTENT, "提交前复核边界。")
-        .put(CodeReviewProfileJsonSchema.REASON, "Review 观察。");
-    root.putArray(CodeReviewProfileJsonSchema.TAG_ASSESSMENTS).addObject()
-        .put(CodeReviewProfileJsonSchema.TAG_ID, tagId)
-        .put(CodeReviewProfileJsonSchema.ACTION, "REPLACE")
-        .put(CodeReviewProfileJsonSchema.CONTENT, "数组边界仍需复核。")
-        .put(CodeReviewProfileJsonSchema.REASON, "Review 观察。");
-    return root;
+  private long insertAgentRun(long userId) throws Exception {
+    long taskId = queryLong(
+        """
+        INSERT INTO agent_task (user_id, status, context_policy, metadata, created_at, updated_at)
+        VALUES (?, 'ACTIVE', '{}'::jsonb, '{}'::jsonb, NOW(), NOW())
+        RETURNING id
+        """,
+        userId);
+    long turnId = queryLong(
+        """
+        INSERT INTO agent_turn (task_id, sequence_no, status, created_at, updated_at)
+        VALUES (?, 1, 'COMPLETED', NOW(), NOW())
+        RETURNING id
+        """,
+        taskId);
+    return queryLong(
+        """
+        INSERT INTO agent_run (
+          task_id, turn_id, run_uuid, attempt_no, idempotency_key, trigger_type, status, max_steps,
+          usage, error, started_at, ended_at)
+        VALUES (?, ?, ?, 1, ?, 'BACKGROUND', 'COMPLETED', 1, '{}'::jsonb, '{}'::jsonb, NOW(), NOW())
+        RETURNING id
+        """,
+        taskId, turnId, UUID.randomUUID().toString(), "failure-degradation-" + UUID.randomUUID());
   }
 
   private record Fixture(long userId, long tagId, long sessionId, PracticeCodeReviewCommitService commitService) {
@@ -190,26 +230,25 @@ class LearnerProfileFailureDegradationIT extends PostgresIntegrationTestSupport 
     }
   }
 
-  private static final class FixedRuntime implements AgentRuntime {
-    private final JsonNode output;
+  private final class FixedRuntime implements AgentRuntime {
+    private final long agentRunId;
     private int calls;
 
-    private FixedRuntime(JsonNode output) {
-      this.output = output;
+    private FixedRuntime(long agentRunId) {
+      this.agentRunId = agentRunId;
     }
 
     @Override
     public AgentRunResult execute(AgentInvocation<?> invocation) {
       calls++;
+      ObjectNode output = objectMapper.createObjectNode();
+      output.putArray(LearnerMemoryCodeReviewJsonSchema.OPERATIONS);
       return new AgentRunResult(
           1,
           LlmFinishReason.STOP,
-          new AgentOutput("", output, CodeReviewProfileJsonSchema.SCHEMA_NAME,
-              CodeReviewProfileConsumerConstants.SCHEMA_VERSION, Map.of()),
-          Map.of(
-              AgentRuntimeMetadataKeys.RUN_DB_ID, (long) calls,
-              AgentRuntimeMetadataKeys.RUNTIME_PROVIDER, "test-provider",
-              AgentRuntimeMetadataKeys.RUNTIME_MODEL, "test-model"));
+          new AgentOutput("", output, LearnerMemoryCodeReviewJsonSchema.SCHEMA_NAME,
+              LearnerMemoryCodeReviewConsumerConstants.SCHEMA_VERSION, Map.of()),
+          Map.of(AgentRuntimeMetadataKeys.RUN_DB_ID, agentRunId));
     }
 
     @Override

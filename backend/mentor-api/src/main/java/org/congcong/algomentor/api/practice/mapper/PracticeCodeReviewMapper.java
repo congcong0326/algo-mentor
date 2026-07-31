@@ -7,7 +7,10 @@ import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewInser
 import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewRow;
 import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewSessionLockRow;
 import org.congcong.algomentor.api.practice.mapper.model.PracticeCodeReviewSummaryRow;
-import org.congcong.algomentor.api.practice.mapper.model.CodeReviewProfileFactRow;
+import org.congcong.algomentor.api.practice.mapper.model.LearnerMemoryCodeReviewFactRow;
+import org.congcong.algomentor.api.practice.mapper.model.CodeReviewHistoryRow;
+import org.congcong.algomentor.api.practice.mapper.model.CodeReviewEvidenceDetailRow;
+import org.congcong.algomentor.api.practice.mapper.model.CodeReviewSubmissionVersionRow;
 
 @Mapper
 public interface PracticeCodeReviewMapper {
@@ -47,19 +50,40 @@ public interface PracticeCodeReviewMapper {
       @Param("userMessageId") long userMessageId
   );
 
-  List<CodeReviewProfileFactRow> findProfileFactsByReviewIds(
+  List<LearnerMemoryCodeReviewFactRow> findProfileFactsByReviewIds(
       @Param("userId") long userId,
       @Param("reviewIds") List<Long> reviewIds
   );
 
-  List<CodeReviewProfileFactRow> findLatestProfileFactsForProblemSlugs(
+  List<LearnerMemoryCodeReviewFactRow> findLatestProfileFactsForProblemSlugs(
       @Param("userId") long userId,
       @Param("problemSlugs") List<String> problemSlugs
   );
 
-  List<CodeReviewProfileFactRow> findRecentDistinctProfileFacts(
+  List<LearnerMemoryCodeReviewFactRow> findRecentDistinctProfileFacts(
       @Param("userId") long userId,
       @Param("excludedProblemSlugs") List<String> excludedProblemSlugs,
       @Param("limit") int limit
+  );
+
+  List<CodeReviewHistoryRow> findLatestHistoryForProblem(
+      @Param("userId") long userId,
+      @Param("problemSlug") String problemSlug,
+      @Param("limit") int limit
+  );
+
+  CodeReviewEvidenceDetailRow findEvidenceDetail(
+      @Param("userId") long userId,
+      @Param("reviewId") long reviewId
+  );
+
+  List<CodeReviewSubmissionVersionRow> findNormalizedSubmissionVersions(
+      @Param("userId") long userId,
+      @Param("reviewIds") List<Long> reviewIds
+  );
+
+  List<CodeReviewHistoryRow> verifyHistoryReviews(
+      @Param("userId") long userId,
+      @Param("reviewIds") List<Long> reviewIds
   );
 }

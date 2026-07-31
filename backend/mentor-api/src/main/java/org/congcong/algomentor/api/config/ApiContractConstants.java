@@ -46,6 +46,16 @@ public final class ApiContractConstants {
    */
   public static final String ME_LEARNER_PROFILE_PATH = "/api/me/learner-profile";
 
+  /** 当前用户画像 statement evidence 分页路径。 */
+  public static final String ME_LEARNER_PROFILE_STATEMENT_EVIDENCE_PATH =
+      ME_LEARNER_PROFILE_PATH + "/statements/{statementRef}/evidence";
+
+  /** 画像 evidence cursor 查询参数名。 */
+  public static final String LEARNER_PROFILE_EVIDENCE_CURSOR_PARAM = "cursor";
+
+  /** 画像 evidence page size 查询参数名。 */
+  public static final String LEARNER_PROFILE_EVIDENCE_LIMIT_PARAM = "limit";
+
   /**
    * 当前用户 AI 偏好设置路径。
    */

@@ -11,10 +11,13 @@ import org.congcong.algomentor.agent.core.runtime.context.ContextAssemblyPolicy;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTaskMessageRepository;
+import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
+import org.congcong.algomentor.agent.core.tool.ReadToolResultTool;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultReadGuard;
 import org.congcong.algomentor.api.config.ApiSseProperties;
-import org.congcong.algomentor.api.config.CodeReviewProfileConsumerProperties;
-import org.congcong.algomentor.api.config.LearnerProfileAgentProperties;
-import org.congcong.algomentor.api.config.LearnerProfileRecallProperties;
+import org.congcong.algomentor.api.config.LearnerMemoryCodeReviewConsumerProperties;
+import org.congcong.algomentor.api.config.LearnerMemoryRecallProperties;
+import org.congcong.algomentor.api.config.LearnerMemoryDeclaredUpdateProperties;
 import org.congcong.algomentor.api.config.PracticeCodeReviewProperties;
 import org.congcong.algomentor.api.config.PracticeChatPromptProperties;
 import org.congcong.algomentor.agent.persistence.postgres.config.AgentPostgresPersistenceConfiguration;
@@ -24,7 +27,8 @@ import org.congcong.algomentor.api.controller.practice.PracticeSessionController
 import org.congcong.algomentor.api.problem.mapper.ProblemTagMapper;
 import org.congcong.algomentor.api.practice.service.MyBatisTrustedProblemTagCatalog;
 import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
-import org.congcong.algomentor.api.profile.repository.MyBatisCodeReviewProfileFactRepository;
+import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryCodeReviewFactRepository;
+import org.congcong.algomentor.api.profile.repository.MyBatisCodeReviewHistoryRepository;
 import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
@@ -50,29 +54,48 @@ import org.congcong.algomentor.mentor.application.practice.PracticeSessionReposi
 import org.congcong.algomentor.mentor.application.practice.PracticeSessionService;
 import org.congcong.algomentor.mentor.application.practice.PracticeTurnOrchestrator;
 import org.congcong.algomentor.mentor.application.practice.TrustedProblemTagCatalog;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileQueryService;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileUpdateService;
-import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfilePolicyResolver;
-import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfilePromptSectionProvider;
-import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfileRecallService;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileBatchConsumer;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileFactRepository;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileMetrics;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfilePromptBuilder;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileStructuredOutputMapper;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileUpdateAgentDefinition;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileUpdateService;
-import org.congcong.algomentor.mentor.application.profile.review.MicrometerCodeReviewProfileMetrics;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimQueryService;
+import org.congcong.algomentor.mentor.application.profile.evidence.repository.LearnerMemoryEvidenceRepository;
+import org.congcong.algomentor.mentor.application.profile.operation.service.LearnerMemoryAtomicApplyService;
+import org.congcong.algomentor.mentor.application.profile.run.repository.LearnerMemoryUpdateRunRepository;
+import org.congcong.algomentor.mentor.application.profile.run.service.LearnerMemoryUpdateRunLifecycleService;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryDirectHitSelector;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallBootstrapBuilder;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallPromptSectionProvider;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallService;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemorySectionCatalog;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewBatchConsumer;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewFactRepository;
+import org.congcong.algomentor.mentor.application.profile.review.history.CodeReviewHistoryRepository;
+import org.congcong.algomentor.mentor.application.profile.review.history.ReviewTrajectoryService;
+import org.congcong.algomentor.mentor.application.profile.review.history.SubmissionVersionDiffService;
+import org.congcong.algomentor.mentor.application.profile.observability.LearnerMemoryMetrics;
+import org.congcong.algomentor.mentor.application.profile.observability.MicrometerLearnerMemoryMetrics;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewPromptBuilder;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewStructuredOutputMapper;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateAgentDefinition;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateService;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdatePromptBuilder;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateAgentDefinition;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateService;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
 import org.congcong.algomentor.mentor.application.profile.tool.UpdateLearnerDeclaredProfileAgentTool;
+import org.congcong.algomentor.mentor.application.profile.tool.CompareSubmissionVersionsAgentTool;
+import org.congcong.algomentor.mentor.application.profile.tool.GetCodeReviewEvidenceAgentTool;
+import org.congcong.algomentor.mentor.application.profile.tool.GetLearnerMemoryEvidenceAgentTool;
+import org.congcong.algomentor.mentor.application.profile.tool.GetProblemReviewTrajectoryAgentTool;
+import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryRunScopeRegistry;
+import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryToolResultReadGuard;
+import org.congcong.algomentor.mentor.application.profile.tool.ReadLearnerMemorySectionAgentTool;
+import org.congcong.algomentor.mentor.application.profile.tool.SearchLearnerMemoryAgentTool;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
 import org.congcong.algomentor.ops.observability.OpsStatus;
 import org.congcong.algomentor.ops.observability.autoconfigure.OpsObservabilityAutoConfiguration;
 import org.congcong.algomentor.queue.config.PersistentQueueAutoConfiguration;
+import org.congcong.algomentor.queue.config.PersistentQueueWorkerAutoConfiguration;
+import org.congcong.algomentor.queue.repository.QueueMessageRepository;
+import org.congcong.algomentor.queue.runtime.PersistentQueueWorkerManager;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -88,15 +111,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
     AgentPostgresPersistenceConfiguration.class,
     AiGovernanceAutoConfiguration.class,
     PersistentQueueAutoConfiguration.class,
+    PersistentQueueWorkerAutoConfiguration.class,
     OpsObservabilityAutoConfiguration.class
 })
 @Import(PracticeCodeReviewConfiguration.class)
 @EnableConfigurationProperties({
-    LearnerProfileAgentProperties.class,
-    LearnerProfileRecallProperties.class,
+    LearnerMemoryDeclaredUpdateProperties.class,
+    LearnerMemoryRecallProperties.class,
     PracticeCodeReviewProperties.class,
     PracticeChatPromptProperties.class,
-    CodeReviewProfileConsumerProperties.class
+    LearnerMemoryCodeReviewConsumerProperties.class
 })
 public class AgentConversationApiAutoConfiguration {
 
@@ -110,8 +134,8 @@ public class AgentConversationApiAutoConfiguration {
       ObjectProvider<PracticeChatProblemCatalog> practiceProblemCatalog,
       PracticeChatPromptProperties promptProperties,
       @Qualifier("practiceChatPromptAssembler") PromptAssembler practicePromptAssembler,
-      LearnerProfilePromptSectionProvider learnerProfilePromptSectionProvider,
-      ObjectProvider<LearnerProfileRecallService> learnerProfileRecallService,
+      LearnerMemoryRecallPromptSectionProvider learnerMemoryRecallPromptSectionProvider,
+      ObjectProvider<LearnerMemoryRecallService> learnerMemoryRecallService,
       ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
   ) {
     LearningPlanRepository planRepository = learningPlanRepository.getIfAvailable();
@@ -130,8 +154,8 @@ public class AgentConversationApiAutoConfiguration {
           planRepository,
           problemCatalog,
           practicePromptAssembler,
-          learnerProfileRecallService.getIfAvailable(),
-          learnerProfilePromptSectionProvider,
+          learnerMemoryRecallService.getIfAvailable(),
+          learnerMemoryRecallPromptSectionProvider,
           systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
     }
     return new AgentConversationService(
@@ -141,8 +165,8 @@ public class AgentConversationApiAutoConfiguration {
         null,
         null,
         practicePromptAssembler,
-        learnerProfileRecallService.getIfAvailable(),
-        learnerProfilePromptSectionProvider,
+        learnerMemoryRecallService.getIfAvailable(),
+        learnerMemoryRecallPromptSectionProvider,
         systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
   }
 
@@ -150,117 +174,274 @@ public class AgentConversationApiAutoConfiguration {
   @ConditionalOnMissingBean(name = "practiceChatPromptAssembler")
   public PromptAssembler practiceChatPromptAssembler(
       PracticeChatPromptProperties promptProperties,
-      LearnerProfilePromptSectionProvider learnerProfilePromptSectionProvider,
+      LearnerMemoryRecallPromptSectionProvider learnerMemoryRecallPromptSectionProvider,
       ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
   ) {
     return new DefaultPromptAssembler(
         new PracticeChatPromptProfileResolver(promptProperties.getTotalTokenBudget()),
         java.util.List.of(new PracticeChatPromptSectionProvider(
-            systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver)), learnerProfilePromptSectionProvider));
+            systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver)), learnerMemoryRecallPromptSectionProvider));
   }
 
   @Bean
   @ConditionalOnMissingBean
-  public LearnerProfilePromptSectionProvider learnerProfilePromptSectionProvider(
-      LearnerProfileRecallProperties properties,
-      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
-  ) {
-    return new LearnerProfilePromptSectionProvider(
-        properties.getMaxTokenBudget(), systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
+  public LearnerMemorySectionCatalog learnerMemorySectionCatalog() {
+    return new LearnerMemorySectionCatalog();
   }
 
   @Bean
   @ConditionalOnMissingBean
-  public LearnerProfilePolicyResolver learnerProfilePolicyResolver(
-      LearnerProfileRecallProperties properties
-  ) {
-    return new LearnerProfilePolicyResolver(properties.isEnabled(), properties.getMaxTokenBudget());
+  public LearnerMemoryDirectHitSelector learnerMemoryDirectHitSelector() {
+    return new LearnerMemoryDirectHitSelector();
   }
 
-  /** 开关开启后使用强依赖注入，避免条件评估顺序导致画像召回被静默跳过。 */
   @Bean
+  @ConditionalOnMissingBean
+  public LearnerMemoryRecallBootstrapBuilder learnerMemoryRecallBootstrapBuilder(
+      LearnerMemoryRecallProperties properties
+  ) {
+    return new LearnerMemoryRecallBootstrapBuilder(properties.getBootstrapTokenBudget());
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearnerMemoryRecallPromptSectionProvider learnerMemoryRecallPromptSectionProvider(
+      LearnerMemoryRecallBootstrapBuilder bootstrapBuilder,
+      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver,
+      ObjectProvider<LearnerMemoryMetrics> metrics
+  ) {
+    return new LearnerMemoryRecallPromptSectionProvider(
+        bootstrapBuilder,
+        systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver),
+        metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP));
+  }
+
+  @Bean
+  @ConditionalOnBean(LearnerMemoryClaimQueryService.class)
   @ConditionalOnProperty(
-      prefix = LearnerProfileRecallProperties.PREFIX,
+      prefix = LearnerMemoryRecallProperties.PREFIX,
       name = "enabled",
       havingValue = "true")
   @ConditionalOnMissingBean
-  public LearnerProfileRecallService learnerProfileRecallService(
-      LearnerProfilePolicyResolver policyResolver,
-      LearnerProfileQueryService queryService,
-      TrustedProblemTagCatalog trustedProblemTagCatalog
+  public LearnerMemoryRecallService learnerMemoryRecallService(
+      LearnerMemoryClaimQueryService claimQueryService,
+      ObjectProvider<TrustedProblemTagCatalog> trustedProblemTagCatalog,
+      LearnerMemorySectionCatalog sectionCatalog,
+      LearnerMemoryDirectHitSelector directHitSelector,
+      LearnerMemoryRunScopeRegistry scopeRegistry,
+      ObjectProvider<LearnerMemoryMetrics> metrics
   ) {
-    return new LearnerProfileRecallService(policyResolver, queryService, trustedProblemTagCatalog);
+    return new LearnerMemoryRecallService(
+        claimQueryService,
+        trustedProblemTagCatalog.getIfAvailable(TrustedProblemTagCatalog::empty),
+        sectionCatalog,
+        directHitSelector,
+        scopeRegistry,
+        metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP));
   }
 
   @Bean
   @ConditionalOnBean({PracticeCodeReviewMapper.class, ObjectMapper.class})
   @ConditionalOnMissingBean
-  public CodeReviewProfileFactRepository codeReviewProfileFactRepository(
+  public LearnerMemoryCodeReviewFactRepository learnerMemoryCodeReviewFactRepository(
       PracticeCodeReviewMapper mapper,
       ObjectMapper objectMapper
   ) {
-    return new MyBatisCodeReviewProfileFactRepository(mapper, objectMapper);
+    return new MyBatisLearnerMemoryCodeReviewFactRepository(mapper, objectMapper);
   }
 
   @Bean
+  @ConditionalOnBean({PracticeCodeReviewMapper.class, ObjectMapper.class})
   @ConditionalOnMissingBean
-  public CodeReviewProfilePromptBuilder codeReviewProfilePromptBuilder(
-      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
+  public CodeReviewHistoryRepository codeReviewHistoryRepository(
+      PracticeCodeReviewMapper mapper,
+      ObjectMapper objectMapper
   ) {
-    return new CodeReviewProfilePromptBuilder(systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
+    return new MyBatisCodeReviewHistoryRepository(mapper, objectMapper);
   }
 
   @Bean
-  @ConditionalOnProperty(
-      prefix = CodeReviewProfileConsumerProperties.PREFIX,
-      name = "enabled",
-      havingValue = "true")
   @ConditionalOnMissingBean
-  public CodeReviewProfileUpdateAgentDefinition codeReviewProfileUpdateAgentDefinition(
-      CodeReviewProfilePromptBuilder promptBuilder
+  public LearnerMemoryRunScopeRegistry learnerMemoryRunScopeRegistry() {
+    return new LearnerMemoryRunScopeRegistry();
+  }
+
+  @Bean
+  @ConditionalOnBean(LearnerMemoryRunScopeRegistry.class)
+  @ConditionalOnMissingBean(ToolResultReadGuard.class)
+  public ToolResultReadGuard learnerMemoryToolResultReadGuard(
+      LearnerMemoryRunScopeRegistry scopeRegistry,
+      ObjectProvider<LearnerMemoryMetrics> metrics) {
+    return new LearnerMemoryToolResultReadGuard(scopeRegistry, metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP));
+  }
+
+  @Bean
+  @ConditionalOnBean(LearnerMemoryRecallService.class)
+  @ConditionalOnMissingBean
+  public SearchLearnerMemoryAgentTool searchLearnerMemoryAgentTool(
+      LearnerMemoryRunScopeRegistry scopeRegistry,
+      ObjectProvider<LearnerMemoryMetrics> metrics) {
+    return new SearchLearnerMemoryAgentTool(scopeRegistry, metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP));
+  }
+
+  @Bean
+  @ConditionalOnBean(LearnerMemoryRecallService.class)
+  @ConditionalOnMissingBean
+  public ReadLearnerMemorySectionAgentTool readLearnerMemorySectionAgentTool(
+      LearnerMemoryRunScopeRegistry scopeRegistry,
+      ObjectProvider<LearnerMemoryMetrics> metrics
   ) {
-    return new CodeReviewProfileUpdateAgentDefinition(promptBuilder);
+    return new ReadLearnerMemorySectionAgentTool(scopeRegistry, metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP));
   }
 
   @Bean
+  @ConditionalOnBean({LearnerMemoryRecallService.class, LearnerMemoryEvidenceRepository.class})
   @ConditionalOnMissingBean
-  public CodeReviewProfileStructuredOutputMapper codeReviewProfileStructuredOutputMapper() {
-    return new CodeReviewProfileStructuredOutputMapper();
+  public GetLearnerMemoryEvidenceAgentTool getLearnerMemoryEvidenceAgentTool(
+      LearnerMemoryRunScopeRegistry scopeRegistry,
+      LearnerMemoryEvidenceRepository evidenceRepository,
+      ObjectProvider<LearnerMemoryMetrics> metrics
+  ) {
+    return new GetLearnerMemoryEvidenceAgentTool(
+        scopeRegistry, evidenceRepository, metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP));
   }
 
   @Bean
+  @ConditionalOnBean({LearnerMemoryRunScopeRegistry.class, CodeReviewHistoryRepository.class})
   @ConditionalOnMissingBean
-  public CodeReviewProfileMetrics codeReviewProfileMetrics(ObjectProvider<MeterRegistry> meterRegistry) {
-    MeterRegistry registry = meterRegistry.getIfAvailable();
-    return registry == null ? CodeReviewProfileMetrics.NOOP : new MicrometerCodeReviewProfileMetrics(registry);
+  public ReviewTrajectoryService reviewTrajectoryService() {
+    return new ReviewTrajectoryService();
   }
 
   @Bean
   @ConditionalOnBean({
-      CodeReviewProfileFactRepository.class,
-      LearnerProfileQueryService.class,
-      LearnerProfileUpdateService.class,
-      AgentRuntime.class,
-      CodeReviewProfileUpdateAgentDefinition.class
+      LearnerMemoryRunScopeRegistry.class,
+      CodeReviewHistoryRepository.class,
+      ReviewTrajectoryService.class
   })
+  @ConditionalOnMissingBean
+  public GetProblemReviewTrajectoryAgentTool getProblemReviewTrajectoryAgentTool(
+      LearnerMemoryRunScopeRegistry scopeRegistry,
+      CodeReviewHistoryRepository historyRepository,
+      ReviewTrajectoryService trajectoryService,
+      ObjectProvider<LearnerMemoryMetrics> metrics
+  ) {
+    return new GetProblemReviewTrajectoryAgentTool(
+        scopeRegistry, historyRepository, trajectoryService, metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP));
+  }
+
+  @Bean
+  @ConditionalOnBean({LearnerMemoryRunScopeRegistry.class, CodeReviewHistoryRepository.class})
+  @ConditionalOnMissingBean
+  public GetCodeReviewEvidenceAgentTool getCodeReviewEvidenceAgentTool(
+      LearnerMemoryRunScopeRegistry scopeRegistry,
+      CodeReviewHistoryRepository historyRepository,
+      ObjectProvider<LearnerMemoryMetrics> metrics
+  ) {
+    return new GetCodeReviewEvidenceAgentTool(
+        scopeRegistry, historyRepository, metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP));
+  }
+
+  @Bean
+  @ConditionalOnBean({LearnerMemoryRunScopeRegistry.class, CodeReviewHistoryRepository.class})
+  @ConditionalOnMissingBean
+  public SubmissionVersionDiffService submissionVersionDiffService() {
+    return new SubmissionVersionDiffService();
+  }
+
+  @Bean
+  @ConditionalOnBean({
+      LearnerMemoryRunScopeRegistry.class,
+      CodeReviewHistoryRepository.class,
+      SubmissionVersionDiffService.class,
+      ReviewTrajectoryService.class
+  })
+  @ConditionalOnMissingBean
+  public CompareSubmissionVersionsAgentTool compareSubmissionVersionsAgentTool(
+      LearnerMemoryRunScopeRegistry scopeRegistry,
+      CodeReviewHistoryRepository historyRepository,
+      SubmissionVersionDiffService diffService,
+      ReviewTrajectoryService trajectoryService,
+      ObjectProvider<LearnerMemoryMetrics> metrics
+  ) {
+    return new CompareSubmissionVersionsAgentTool(
+        scopeRegistry, historyRepository, diffService, trajectoryService,
+        metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP));
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearnerMemoryCodeReviewPromptBuilder learnerMemoryCodeReviewPromptBuilder(
+      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
+  ) {
+    return new LearnerMemoryCodeReviewPromptBuilder(systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
+  }
+
+  @Bean
+  @ConditionalOnBean(LearnerMemoryRunScopeRegistry.class)
   @ConditionalOnProperty(
-      prefix = CodeReviewProfileConsumerProperties.PREFIX,
+      prefix = LearnerMemoryCodeReviewConsumerProperties.PREFIX,
       name = "enabled",
       havingValue = "true")
   @ConditionalOnMissingBean
-  public CodeReviewProfileUpdateService codeReviewProfileUpdateService(
-      CodeReviewProfileFactRepository factRepository,
-      LearnerProfileQueryService queryService,
-      LearnerProfileUpdateService updateService,
-      @Lazy AgentRuntime agentRuntime,
-      CodeReviewProfileStructuredOutputMapper outputMapper,
-      CodeReviewProfileMetrics metrics,
-      CodeReviewProfileConsumerProperties properties
+  public LearnerMemoryCodeReviewUpdateAgentDefinition learnerMemoryCodeReviewUpdateAgentDefinition(
+      LearnerMemoryCodeReviewPromptBuilder promptBuilder,
+      LearnerMemoryRunScopeRegistry scopeRegistry
   ) {
-    return new CodeReviewProfileUpdateService(
+    return new LearnerMemoryCodeReviewUpdateAgentDefinition(promptBuilder, scopeRegistry);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearnerMemoryCodeReviewStructuredOutputMapper learnerMemoryCodeReviewStructuredOutputMapper() {
+    return new LearnerMemoryCodeReviewStructuredOutputMapper();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public LearnerMemoryMetrics learnerMemoryMetrics(ObjectProvider<MeterRegistry> meterRegistry) {
+    MeterRegistry registry = meterRegistry.getIfAvailable();
+    return registry == null ? LearnerMemoryMetrics.NOOP : new MicrometerLearnerMemoryMetrics(registry);
+  }
+
+  @Bean
+  @ConditionalOnBean({
+      LearnerMemoryCodeReviewFactRepository.class,
+      CodeReviewHistoryRepository.class,
+      LearnerMemoryClaimQueryService.class,
+      LearnerMemoryEvidenceRepository.class,
+      LearnerMemoryUpdateRunRepository.class,
+      LearnerMemoryAtomicApplyService.class,
+      LearnerMemoryUpdateRunLifecycleService.class,
+      AgentRuntime.class,
+      LearnerMemoryCodeReviewUpdateAgentDefinition.class
+  })
+  @ConditionalOnProperty(
+      prefix = LearnerMemoryCodeReviewConsumerProperties.PREFIX,
+      name = "enabled",
+      havingValue = "true")
+  @ConditionalOnMissingBean
+  public LearnerMemoryCodeReviewUpdateService learnerMemoryCodeReviewUpdateService(
+      LearnerMemoryCodeReviewFactRepository factRepository,
+      CodeReviewHistoryRepository historyRepository,
+      LearnerMemoryClaimQueryService claimQueryService,
+      LearnerMemoryEvidenceRepository evidenceRepository,
+      LearnerMemoryUpdateRunRepository updateRunRepository,
+      LearnerMemoryAtomicApplyService atomicApplyService,
+      LearnerMemoryUpdateRunLifecycleService runLifecycleService,
+      @Lazy AgentRuntime agentRuntime,
+      LearnerMemoryCodeReviewStructuredOutputMapper outputMapper,
+      LearnerMemoryMetrics metrics,
+      LearnerMemoryCodeReviewConsumerProperties properties
+  ) {
+    return new LearnerMemoryCodeReviewUpdateService(
         factRepository,
-        queryService,
-        updateService,
+        historyRepository,
+        claimQueryService,
+        evidenceRepository,
+        updateRunRepository,
+        atomicApplyService,
+        runLifecycleService,
         agentRuntime,
         outputMapper,
         properties.getMaxStaleRetries(),
@@ -270,22 +451,24 @@ public class AgentConversationApiAutoConfiguration {
   @Bean
   @ConditionalOnBean({
       ObjectMapper.class,
-      CodeReviewProfileFactRepository.class,
-      CodeReviewProfileUpdateAgentDefinition.class,
-      CodeReviewProfileUpdateService.class
+      LearnerMemoryCodeReviewFactRepository.class,
+      LearnerMemoryCodeReviewUpdateAgentDefinition.class,
+      LearnerMemoryCodeReviewUpdateService.class,
+      QueueMessageRepository.class,
+      PersistentQueueWorkerManager.class
   })
   @ConditionalOnProperty(
-      prefix = CodeReviewProfileConsumerProperties.PREFIX,
+      prefix = LearnerMemoryCodeReviewConsumerProperties.PREFIX,
       name = "enabled",
       havingValue = "true")
   @ConditionalOnMissingBean
-  public CodeReviewProfileBatchConsumer codeReviewProfileBatchConsumer(
+  public LearnerMemoryCodeReviewBatchConsumer learnerMemoryCodeReviewBatchConsumer(
       ObjectMapper objectMapper,
-      CodeReviewProfileFactRepository factRepository,
-      CodeReviewProfileUpdateService updateService,
-      CodeReviewProfileMetrics metrics
+      LearnerMemoryCodeReviewFactRepository factRepository,
+      LearnerMemoryCodeReviewUpdateService updateService,
+      LearnerMemoryMetrics metrics
   ) {
-    return new CodeReviewProfileBatchConsumer(objectMapper, factRepository, updateService, metrics);
+    return new LearnerMemoryCodeReviewBatchConsumer(objectMapper, factRepository, updateService, metrics);
   }
 
   @Bean
@@ -319,11 +502,19 @@ public class AgentConversationApiAutoConfiguration {
       AgentRunLockManager lockManager,
       AgentRunLockOwnerProvider lockOwnerProvider,
       ObjectProvider<PracticeCodeReviewAgentTool> practiceCodeReviewTool,
-      ObjectProvider<UpdateLearnerDeclaredProfileAgentTool> declaredProfileTool
+      ObjectProvider<UpdateLearnerDeclaredProfileAgentTool> declaredProfileTool,
+      ObjectProvider<SearchLearnerMemoryAgentTool> searchLearnerMemoryTool,
+      ObjectProvider<ReadLearnerMemorySectionAgentTool> readLearnerMemorySectionTool,
+      ObjectProvider<GetLearnerMemoryEvidenceAgentTool> learnerMemoryEvidenceTool,
+      ObjectProvider<ReadToolResultTool> readToolResultTool
   ) {
     java.util.List<String> toolNames = new java.util.ArrayList<>();
     practiceCodeReviewTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     declaredProfileTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
+    searchLearnerMemoryTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
+    readLearnerMemorySectionTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
+    learnerMemoryEvidenceTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
+    readToolResultTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     return new PracticeChatAgentDefinition(
         new PracticeChatRunAdapter(conversationService, lockManager, lockOwnerProvider),
         toolNames);
@@ -416,7 +607,7 @@ public class AgentConversationApiAutoConfiguration {
 
   @Bean
   @ConditionalOnProperty(
-      prefix = LearnerProfileAgentProperties.PREFIX,
+      prefix = LearnerMemoryDeclaredUpdateProperties.PREFIX,
       name = "enabled",
       havingValue = "true")
   @ConditionalOnMissingBean
@@ -428,30 +619,44 @@ public class AgentConversationApiAutoConfiguration {
 
   @Bean
   @ConditionalOnBean({
-      LearnerProfileQueryService.class,
-      LearnerProfileUpdateService.class,
+      LearnerMemoryClaimQueryService.class,
+      LearnerMemoryEvidenceRepository.class,
+      LearnerMemoryUpdateRunRepository.class,
+      LearnerMemoryAtomicApplyService.class,
+      LearnerMemoryUpdateRunLifecycleService.class,
+      AgentTurnMessageLookupRepository.class,
       AgentRuntime.class,
       DeclaredProfileUpdateAgentDefinition.class
   })
   @ConditionalOnProperty(
-      prefix = LearnerProfileAgentProperties.PREFIX,
+      prefix = LearnerMemoryDeclaredUpdateProperties.PREFIX,
       name = "enabled",
       havingValue = "true")
   @ConditionalOnMissingBean
   public DeclaredProfileUpdateService declaredProfileUpdateService(
-      LearnerProfileQueryService queryService,
-      LearnerProfileUpdateService updateService,
+      LearnerMemoryClaimQueryService claimQueryService,
+      LearnerMemoryEvidenceRepository evidenceRepository,
+      LearnerMemoryUpdateRunRepository updateRunRepository,
+      LearnerMemoryAtomicApplyService atomicApplyService,
+      LearnerMemoryUpdateRunLifecycleService runLifecycleService,
+      AgentTurnMessageLookupRepository turnMessageLookupRepository,
       @Lazy AgentRuntime agentRuntime,
       DeclaredProfileUpdatePromptBuilder promptBuilder,
-      LearnerProfileAgentProperties properties
+      LearnerMemoryDeclaredUpdateProperties properties,
+      ObjectProvider<LearnerMemoryMetrics> metrics
   ) {
     return new DeclaredProfileUpdateService(
-        queryService,
-        updateService,
+        claimQueryService,
+        evidenceRepository,
+        updateRunRepository,
+        atomicApplyService,
+        runLifecycleService,
+        turnMessageLookupRepository,
         agentRuntime,
         promptBuilder,
         properties.getMaxStaleRetries(),
-        properties.getResultSummaryMaxChars());
+        properties.getResultSummaryMaxChars(),
+        metrics.getIfAvailable(() -> LearnerMemoryMetrics.NOOP));
   }
 
   @Bean

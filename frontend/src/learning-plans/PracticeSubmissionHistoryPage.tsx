@@ -1,5 +1,5 @@
 import { ArrowLeft, ExternalLink } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { formatDifficulty, formatProblemTitle } from '../i18n/formatters';
 import { useI18n } from '../i18n/I18nProvider';
 import type { SupportedLocale } from '../i18n/locales';
@@ -57,15 +57,19 @@ function progressStatusLabel(status: PracticeProgressStatus | undefined, resourc
 }
 
 export default function PracticeSubmissionHistoryPage({
-  onBackToChat,
+  onBack,
   phaseIndex,
   plan,
   problemSlug,
+  requestedReviewId,
+  returnProfileAnchor,
 }: {
-  onBackToChat: () => void;
+  onBack: () => void;
   phaseIndex: number;
   plan: LearningPlanDetailResponse;
   problemSlug: string;
+  requestedReviewId?: number;
+  returnProfileAnchor?: string;
 }) {
   const { locale, resources } = useI18n();
   const phase = plan.phases.find((candidate) => candidate.phaseIndex === phaseIndex);
@@ -78,6 +82,7 @@ export default function PracticeSubmissionHistoryPage({
   const [pageStatus, setPageStatus] = useState<'loading' | 'idle' | 'error'>('loading');
   const [detailStatus, setDetailStatus] = useState<'idle' | 'loading' | 'error'>('idle');
   const [error, setError] = useState('');
+  const previousRequestedReviewId = useRef<number | undefined>(requestedReviewId);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -124,17 +129,23 @@ export default function PracticeSubmissionHistoryPage({
   ]);
 
   useEffect(() => {
+    if (previousRequestedReviewId.current !== requestedReviewId) {
+      previousRequestedReviewId.current = requestedReviewId;
+      setManualSelection(false);
+    }
+  }, [requestedReviewId]);
+
+  useEffect(() => {
     const firstReview = history?.latestReview ?? history?.reviews[0];
+    const requestedReview = requestedReviewId
+      ? history?.reviews.find((review) => review.id === requestedReviewId)
+      : undefined;
     setSelectedReviewId((current) => {
-      if (!firstReview) {
-        return undefined;
-      }
-      if (!manualSelection) {
-        return firstReview.id;
-      }
-      return history?.reviews.some((review) => review.id === current) ? current : firstReview.id;
+      if (manualSelection && history?.reviews.some((review) => review.id === current)) return current;
+      if (requestedReviewId) return requestedReview?.id;
+      return firstReview?.id;
     });
-  }, [history, manualSelection]);
+  }, [history, manualSelection, requestedReviewId]);
 
   useEffect(() => {
     if (!sessionResponse?.session.id || !selectedReviewId) {
@@ -173,14 +184,21 @@ export default function PracticeSubmissionHistoryPage({
   const progressStatus = sessionResponse?.session.progressStatus;
   const leetcodeUrl = localizedLeetCodeUrl(sessionProblem?.leetcodeUrl, locale);
   const reviews = history?.reviews ?? [];
+  const requestedReviewUnavailable = Boolean(
+    requestedReviewId && history && !manualSelection && !reviews.some((review) => review.id === requestedReviewId),
+  );
+  const returningToProfile = Boolean(returnProfileAnchor);
 
   return (
     <article className="practice-submissions-page" aria-labelledby="practice-submissions-title">
       <header className="practice-submissions-header">
         <div className="practice-toolbar-main">
-          <button className="secondary-button compact detail-back-button" onClick={onBackToChat} type="button">
+          <button className="secondary-button compact detail-back-button" onClick={onBack} type="button">
             <ArrowLeft aria-hidden="true" />
-            <span>{resources.learningPlans.backToPracticeChat}</span>
+            <span>{returningToProfile
+              ? resources.learningPlans.backToLearnerProfile
+              : resources.learningPlans.backToPracticeChat}
+            </span>
           </button>
           <div>
             <p className="eyebrow">{phase?.title ?? resources.learningPlans.phaseFallback(phaseIndex)}</p>
@@ -210,6 +228,9 @@ export default function PracticeSubmissionHistoryPage({
 
       {pageStatus === 'loading' && <p className="practice-submissions-status">{resources.learningPlans.reviewLoading}</p>}
       {pageStatus === 'error' && <p className="error-text practice-submissions-status" role="alert">{error}</p>}
+      {pageStatus === 'idle' && requestedReviewUnavailable && (
+        <p className="practice-submissions-status" role="status">{resources.learningPlans.requestedReviewUnavailable}</p>
+      )}
       {pageStatus === 'idle' && reviews.length === 0 && (
         <div className="review-empty-state">
           <h3>{resources.learningPlans.reviewEmptyTitle}</h3>
@@ -226,7 +247,9 @@ export default function PracticeSubmissionHistoryPage({
             passScore={history?.completionGate.passScore}
             resources={resources}
             reviews={reviews}
+            requestedReviewId={requestedReviewId}
             selectedReviewId={selectedReviewId}
+            sourceHighlighted={returningToProfile}
           />
           <div className="review-detail-region">
             {detailStatus === 'loading' && <p>{resources.learningPlans.reviewDetailLoading}</p>}

@@ -12,6 +12,8 @@ import org.congcong.algomentor.agent.core.AgentLoopContext;
 import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
 import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
 import org.congcong.algomentor.agent.core.toolresult.StoredToolResult;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultProvenance;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultReadGuard;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 import org.junit.jupiter.api.Test;
@@ -110,6 +112,33 @@ class ReadToolResultToolTest {
     assertThat(store.context.metadata()).containsEntry("runDbId", 31L);
   }
 
+  @Test
+  void invokesOptionalGuardWithProvenanceAndVisibleRangeLength() {
+    TrackingGuard guard = new TrackingGuard();
+    CapturingStore store = new CapturingStore(new StoredToolResult(
+        "tool-result:1",
+        "text/plain",
+        "abcdef",
+        "hash",
+        6,
+        1,
+        1L,
+        2L,
+        new ToolResultProvenance(3, "call_1", "memory_lookup")));
+    ReadToolResultTool tool = new ReadToolResultTool(store, policy(5), guard);
+
+    JsonNode result = tool.execute(
+        JsonNodeFactory.instance.objectNode()
+            .put("resultRef", "tool-result:1")
+            .put("offset", 0)
+            .put("limit", 5),
+        new AgentExecutionContext("run-id", 1, java.util.Map.of(), false));
+
+    assertThat(result.path("content").asText()).isEqualTo("ab");
+    assertThat(guard.provenance.toolName()).isEqualTo("memory_lookup");
+    assertThat(guard.visibleChars).isEqualTo(2);
+  }
+
   private static final class CapturingStore implements ToolResultStore {
     private final StoredToolResult result;
     private AgentLoopContext context;
@@ -135,6 +164,23 @@ class ReadToolResultToolTest {
     public Optional<StoredToolResult> findByResultRef(AgentLoopContext context, String resultRef) {
       this.context = context;
       return Optional.of(result);
+    }
+  }
+
+  private static final class TrackingGuard implements ToolResultReadGuard {
+    private ToolResultProvenance provenance;
+    private int visibleChars;
+
+    @Override
+    public ToolResultReadPermit beforeRead(
+        AgentExecutionContext context, ToolResultProvenance provenance, int requestedMaxChars) {
+      this.provenance = provenance;
+      return ToolResultReadPermit.track(2, "tracked");
+    }
+
+    @Override
+    public void afterRead(ToolResultReadPermit permit, int visibleChars) {
+      this.visibleChars = visibleChars;
     }
   }
 

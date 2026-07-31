@@ -8,7 +8,7 @@ import org.congcong.algomentor.agent.core.StructuredOutputStrategy;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileDimension;
+import org.congcong.algomentor.mentor.application.profile.LearnerMemoryClaimDimension;
 import org.congcong.algomentor.mentor.application.profile.tool.DeclaredProfileUpdateIntent;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredProfileToolContracts;
 import org.junit.jupiter.api.Test;
@@ -50,10 +50,10 @@ class DeclaredProfileUpdateAgentDefinitionTest {
     return new DeclaredProfileUpdateAgentInput(
         17L,
         List.of(new DeclaredProfileUpdateAgentInput.Candidate(
-            LearnerProfileDimension.GOALS_AND_INTENTS,
+            LearnerMemoryClaimDimension.GOALS_AND_INTENTS,
             "Prepare interview",
             DeclaredProfileUpdateIntent.DECLARE,
-            "")),
+            List.of(new DeclaredProfileUpdateAgentInput.ActiveClaim(42L, "Backend role")))),
         idempotencyKey,
         retryOfRunId);
   }

@@ -46,11 +46,8 @@ algo-mentor:
   practice:
     code-review:
       enabled: true
-  learner-profile:
+  learner-memory:
     code-review-consumer:
       enabled: true
     declared-update:
       enabled: true
-    recall:
-      practice-chat:
-        enabled: true

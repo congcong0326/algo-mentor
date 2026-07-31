@@ -12,6 +12,8 @@ import org.congcong.algomentor.ai.governance.model.AiBusinessScenario;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredProfileToolContracts;
+import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryRecallToolContracts;
+import org.congcong.algomentor.agent.core.tool.ReadToolResultTool;
 import org.junit.jupiter.api.Test;
 
 class PracticeChatAgentDefinitionTest {
@@ -20,13 +22,21 @@ class PracticeChatAgentDefinitionTest {
   void exposesOnlyTheEnabledPracticeToolsWithTheScenarioLoopPolicy() {
     PracticeChatAgentDefinition definition = definition(List.of(
         PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW,
-        LearnerDeclaredProfileToolContracts.TOOL_NAME));
+        LearnerDeclaredProfileToolContracts.TOOL_NAME,
+        LearnerMemoryRecallToolContracts.SEARCH_LEARNER_MEMORY,
+        LearnerMemoryRecallToolContracts.READ_LEARNER_MEMORY_SECTION,
+        LearnerMemoryRecallToolContracts.GET_LEARNER_MEMORY_EVIDENCE,
+        ReadToolResultTool.NAME));
 
     assertThat(definition.key().value()).isEqualTo(AiBusinessScenario.PRACTICE_CHAT.code());
     assertThat(definition.loopPolicy().maxSteps()).isEqualTo(PracticeChatAgentDefinition.MAX_STEPS);
     assertThat(definition.allowedToolNames()).containsExactly(
         PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW,
-        LearnerDeclaredProfileToolContracts.TOOL_NAME);
+        LearnerDeclaredProfileToolContracts.TOOL_NAME,
+        LearnerMemoryRecallToolContracts.SEARCH_LEARNER_MEMORY,
+        LearnerMemoryRecallToolContracts.READ_LEARNER_MEMORY_SECTION,
+        LearnerMemoryRecallToolContracts.GET_LEARNER_MEMORY_EVIDENCE,
+        ReadToolResultTool.NAME);
     assertThat(definition.outputContract().executionOptions().responseFormat())
         .isInstanceOf(LlmResponseFormat.Text.class);
     assertThat(definition.outputContract().executionOptions().structuredOutput().strategy())

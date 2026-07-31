@@ -1,11 +1,14 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import {
   APP_ROUTES,
+  LEARNER_PROFILE_REVIEW_ORIGIN,
+  learnerProfilePath,
   learningPlanDetailPath,
   learningPlanIdFromPath,
   learningPlanPracticeChatPath,
   learningPlanPracticeChatRouteFromPath,
   learningPlanPracticeSubmissionsPath,
+  learningPlanPracticeSubmissionsOptionsFromSearch,
   learningPlanPracticeSubmissionsRouteFromPath,
   learningPlanTodayPackPath,
 } from './app/navigation';
@@ -53,6 +56,7 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
   const [error, setError] = useState('');
   const practiceChatRoute = learningPlanPracticeChatRouteFromPath(pathname);
   const practiceSubmissionsRoute = learningPlanPracticeSubmissionsRouteFromPath(pathname);
+  const practiceSubmissionsOptions = learningPlanPracticeSubmissionsOptionsFromSearch(search);
   const isTodayPackMode = new URLSearchParams(search).get('pack') === 'today';
   const selectedPlanId = practiceChatRoute?.planId
     ?? practiceSubmissionsRoute?.planId
@@ -226,7 +230,14 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
             )}
             >
               <PracticeSubmissionHistoryPage
-                onBackToChat={() => {
+                onBack={() => {
+                  if (
+                    practiceSubmissionsOptions.from === LEARNER_PROFILE_REVIEW_ORIGIN
+                    && practiceSubmissionsOptions.profileAnchor
+                  ) {
+                    onNavigate(learnerProfilePath({ anchor: practiceSubmissionsOptions.profileAnchor }));
+                    return;
+                  }
                   const chatPath = learningPlanPracticeChatPath(
                     planDetail.id,
                     practiceSubmissionsRoute.phaseIndex,
@@ -237,6 +248,10 @@ export default function LearningPlans({ pathname, search, onNavigate }: Learning
                 phaseIndex={practiceSubmissionsRoute.phaseIndex}
                 plan={planDetail}
                 problemSlug={practiceSubmissionsRoute.problemSlug}
+                requestedReviewId={practiceSubmissionsOptions.reviewId}
+                returnProfileAnchor={practiceSubmissionsOptions.from === LEARNER_PROFILE_REVIEW_ORIGIN
+                  ? practiceSubmissionsOptions.profileAnchor
+                  : undefined}
               />
             </Suspense>
           ) : isTodayPackMode && planDetail.active ? (

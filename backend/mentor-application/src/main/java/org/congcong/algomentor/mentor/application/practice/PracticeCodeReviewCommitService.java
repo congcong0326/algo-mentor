@@ -1,8 +1,8 @@
 package org.congcong.algomentor.mentor.application.practice;
 
 import java.util.Objects;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileEvent;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileQueueContracts;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewEvent;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewQueueContracts;
 import org.congcong.algomentor.queue.model.QueueMessage;
 import org.congcong.algomentor.queue.publisher.QueuePublisher;
 import org.springframework.transaction.annotation.Propagation;
@@ -29,9 +29,9 @@ public class PracticeCodeReviewCommitService {
       return new PracticeCodeReviewCommitResult(saved.review(), false, null);
     }
     QueueMessage message = queuePublisher.publish(
-        CodeReviewProfileQueueContracts.TOPIC,
-        CodeReviewProfileQueueContracts.keyForUser(saved.review().userId()),
-        new CodeReviewProfileEvent(saved.review().id()));
+        LearnerMemoryCodeReviewQueueContracts.TOPIC,
+        LearnerMemoryCodeReviewQueueContracts.keyForUser(saved.review().userId()),
+        new LearnerMemoryCodeReviewEvent(saved.review().id()));
     return new PracticeCodeReviewCommitResult(saved.review(), true, message.messageId());
   }
 }

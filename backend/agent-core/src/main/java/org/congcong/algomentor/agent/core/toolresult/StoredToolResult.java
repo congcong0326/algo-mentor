@@ -8,7 +8,8 @@ public record StoredToolResult(
     int charCount,
     int lineCount,
     Long blobId,
-    Long toolCallDbId
+    Long toolCallDbId,
+    ToolResultProvenance provenance
 ) {
 
   public StoredToolResult {
@@ -28,5 +29,20 @@ public record StoredToolResult(
     if (lineCount < 0) {
       throw new IllegalArgumentException("lineCount must not be negative");
     }
+    provenance = provenance == null ? ToolResultProvenance.unknown() : provenance;
+  }
+
+  public StoredToolResult(
+      String resultRef,
+      String contentType,
+      String contentText,
+      String sha256,
+      int charCount,
+      int lineCount,
+      Long blobId,
+      Long toolCallDbId
+  ) {
+    this(resultRef, contentType, contentText, sha256, charCount, lineCount, blobId, toolCallDbId,
+        ToolResultProvenance.unknown());
   }
 }

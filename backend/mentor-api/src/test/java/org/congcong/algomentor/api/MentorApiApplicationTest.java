@@ -31,8 +31,10 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAge
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewCommitService;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateAgentInput;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileUpdateAgentInput;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateAgentInput;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredProfileToolContracts;
+import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryAgentToolContracts;
+import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryRecallToolContracts;
 import org.congcong.algomentor.mentor.application.topic.TopicExplanationAgentInput;
 import org.congcong.algomentor.queue.publisher.QueuePublisher;
 import org.junit.jupiter.api.Test;
@@ -47,8 +49,9 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
     "spring.datasource.url=jdbc:postgresql://localhost/algo_mentor_test",
     MentorConfigurationKeys.AGENT_RUNTIME_ENABLED + "=true",
     "algo-mentor.practice.code-review.enabled=true",
-    "algo-mentor.learner-profile.declared-update.enabled=true",
-    "algo-mentor.learner-profile.code-review-consumer.enabled=true"
+    "algo-mentor.learner-memory.declared-update.enabled=true",
+    "algo-mentor.learner-memory.code-review-consumer.enabled=true",
+    "algo-mentor.learner-memory.recall.practice-chat.enabled=true"
 })
 class MentorApiApplicationTest {
 
@@ -63,7 +66,10 @@ class MentorApiApplicationTest {
           8,
           List.of(
               PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW,
-              LearnerDeclaredProfileToolContracts.TOOL_NAME)),
+              LearnerDeclaredProfileToolContracts.TOOL_NAME,
+              LearnerMemoryRecallToolContracts.SEARCH_LEARNER_MEMORY,
+              LearnerMemoryRecallToolContracts.READ_LEARNER_MEMORY_SECTION,
+              LearnerMemoryRecallToolContracts.GET_LEARNER_MEMORY_EVIDENCE)),
       AiBusinessScenario.LEARNING_PLAN_DRAFT,
       new DefinitionExpectation(LearningPlanDraftAgentInput.class, 24, LearningPlanAgentToolNames.PLANNING_TOOLS),
       AiBusinessScenario.LEARNING_PLAN_REVISION,
@@ -75,7 +81,13 @@ class MentorApiApplicationTest {
       AiBusinessScenario.LEARNER_DECLARED_PROFILE_UPDATE,
       new DefinitionExpectation(DeclaredProfileUpdateAgentInput.class, 1, List.of()),
       AiBusinessScenario.CODE_REVIEW_PROFILE_UPDATE,
-      new DefinitionExpectation(CodeReviewProfileUpdateAgentInput.class, 1, List.of()));
+      new DefinitionExpectation(
+          LearnerMemoryCodeReviewUpdateAgentInput.class,
+          4,
+          List.of(
+              LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY,
+              LearnerMemoryAgentToolContracts.GET_CODE_REVIEW_EVIDENCE,
+              LearnerMemoryAgentToolContracts.COMPARE_SUBMISSION_VERSIONS)));
 
   @Autowired
   private ClientRegistrationRepository clientRegistrationRepository;
@@ -149,7 +161,6 @@ class MentorApiApplicationTest {
     assertOneShot(AiBusinessScenario.TOPIC_EXPLANATION, definitionsByKey);
     assertOneShot(AiBusinessScenario.PRACTICE_CODE_REVIEW, definitionsByKey);
     assertOneShot(AiBusinessScenario.LEARNER_DECLARED_PROFILE_UPDATE, definitionsByKey);
-    assertOneShot(AiBusinessScenario.CODE_REVIEW_PROFILE_UPDATE, definitionsByKey);
   }
 
   @Test

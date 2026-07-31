@@ -210,7 +210,7 @@ class DefaultAgentRuntimeTest {
   }
 
   @Test
-  void runsCodeReviewProfileBackgroundWithoutParentOrUserEntryResources() {
+  void runsLearnerMemoryCodeReviewBackgroundWithoutParentOrUserEntryResources() {
     Fixture fixture = new Fixture();
     fixture.gateway.responses.add(response("profile result"));
     DefaultAgentRuntime runtime = fixture.runtime(true, false,

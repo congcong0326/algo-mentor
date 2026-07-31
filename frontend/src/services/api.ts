@@ -67,7 +67,9 @@ import type {
   LearningPlanTemplateDetailResponse,
   LearningPlanTemplateDraftRequest,
   LearningPlanTemplateSummaryResponse,
-  LearnerProfileResponse,
+  LearnerProfileDocumentResponse,
+  LearnerProfileEvidencePage,
+  LearnerProfileEvidenceQuery,
   TodayPackResponse,
   PracticeMessageRequest,
   PracticeMessage,
@@ -573,7 +575,7 @@ export async function getAbilityProfile(signal?: AbortSignal): Promise<ApiRespon
   return response.json();
 }
 
-export async function getLearnerProfile(signal?: AbortSignal): Promise<ApiResponse<LearnerProfileResponse>> {
+export async function getLearnerProfile(signal?: AbortSignal): Promise<ApiResponse<LearnerProfileDocumentResponse>> {
   const response = await apiFetch('/api/me/learner-profile', {
     headers: jsonHeaders,
     signal,
@@ -581,6 +583,30 @@ export async function getLearnerProfile(signal?: AbortSignal): Promise<ApiRespon
 
   if (!response.ok) {
     throw await toApiRequestError(response, 'Learner profile request failed');
+  }
+
+  return response.json();
+}
+
+export async function getLearnerProfileStatementEvidence(
+  statementRef: string,
+  options: LearnerProfileEvidenceQuery = {},
+  signal?: AbortSignal,
+): Promise<ApiResponse<LearnerProfileEvidencePage>> {
+  const limit = options.limit ?? 20;
+  if (!Number.isInteger(limit) || limit < 1 || limit > 20) {
+    throw new RangeError('Learner profile evidence limit must be between 1 and 20.');
+  }
+
+  const path = `/api/me/learner-profile/statements/${encodeURIComponent(statementRef)}/evidence`
+    + toQueryString({ cursor: options.cursor, limit });
+  const response = await apiFetch(path, {
+    headers: jsonHeaders,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw await toApiRequestError(response, 'Learner profile evidence request failed');
   }
 
   return response.json();
@@ -1926,6 +1952,7 @@ type QueryParams =
   | UserGroupMemberListQuery
   | AdminAiUsageQuery
   | AdminAiUsageByUserQuery
+  | LearnerProfileEvidenceQuery
   | ReviewCardListQuery
   | TodayPackQuery
   | FeedbackListQuery

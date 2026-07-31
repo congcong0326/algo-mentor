@@ -15,7 +15,7 @@ import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 public final class InMemoryToolResultStore implements ToolResultStore {
 
   private final AtomicLong sequence = new AtomicLong();
-  private final Map<String, StoredToolResult> byRef = new ConcurrentHashMap<>();
+  private final Map<String, StoredEntry> byRef = new ConcurrentHashMap<>();
 
   @Override
   public StoredToolResult saveToolResult(
@@ -37,8 +37,9 @@ public final class InMemoryToolResultStore implements ToolResultStore {
         text.length(),
         lineCount(text),
         null,
-        null);
-    byRef.put(resultRef, stored);
+        null,
+        new ToolResultProvenance(stepIndex, toolCall.id(), toolCall.name()));
+    byRef.put(resultRef, new StoredEntry(context == null ? "" : context.runId(), stored));
     return stored;
   }
 
@@ -47,7 +48,14 @@ public final class InMemoryToolResultStore implements ToolResultStore {
     if (resultRef == null || resultRef.isBlank()) {
       return Optional.empty();
     }
-    return Optional.ofNullable(byRef.get(resultRef));
+    StoredEntry entry = byRef.get(resultRef);
+    if (entry == null || (context != null && !entry.runId().isBlank() && !entry.runId().equals(context.runId()))) {
+      return Optional.empty();
+    }
+    return Optional.of(entry.stored());
+  }
+
+  private record StoredEntry(String runId, StoredToolResult stored) {
   }
 
   private String sha256(String value) {

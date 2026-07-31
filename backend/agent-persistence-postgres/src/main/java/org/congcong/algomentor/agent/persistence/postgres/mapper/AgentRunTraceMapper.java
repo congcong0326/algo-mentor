@@ -10,6 +10,7 @@ import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallE
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallErrorUpdate;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallStorageUpdate;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallStartRow;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolResultProvenanceRow;
 
 @Mapper
 public interface AgentRunTraceMapper {
@@ -41,4 +42,6 @@ public interface AgentRunTraceMapper {
   int updateToolResultStorage(ToolCallStorageUpdate update);
 
   Long findRunIdByResultBlobId(@Param("blobId") long blobId);
+
+  ToolResultProvenanceRow findToolResultProvenanceByBlobId(@Param("blobId") long blobId);
 }

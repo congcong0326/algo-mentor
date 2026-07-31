@@ -12,6 +12,7 @@ import org.congcong.algomentor.agent.core.prompt.PromptAssemblyRequest;
 import org.congcong.algomentor.agent.core.runtime.context.AssembledContext;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssemblyPolicy;
+import org.congcong.algomentor.agent.core.runtime.definition.AgentRunResource;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRunPreparationRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
@@ -41,9 +42,10 @@ import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
 import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
 import org.congcong.algomentor.mentor.application.prompt.SystemPromptMetadataKeys;
 import org.congcong.algomentor.mentor.application.prompt.SystemPromptSectionKeys;
-import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfilePromptSectionProvider;
-import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfileRecallService;
-import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfileRecallSnapshot;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallContracts;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallPromptSectionProvider;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallService;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallSnapshot;
 
 public class AgentConversationService {
 
@@ -53,8 +55,8 @@ public class AgentConversationService {
   private final LearningPlanRepository learningPlanRepository;
   private final PracticeChatProblemCatalog practiceProblemCatalog;
   private final PromptAssembler practicePromptAssembler;
-  private final LearnerProfileRecallService learnerProfileRecallService;
-  private final LearnerProfilePromptSectionProvider learnerProfilePromptSectionProvider;
+  private final LearnerMemoryRecallService learnerMemoryRecallService;
+  private final LearnerMemoryRecallPromptSectionProvider learnerMemoryRecallPromptSectionProvider;
   private final ManagedSystemPromptResolver systemPromptResolver;
 
   public AgentConversationService(
@@ -109,7 +111,7 @@ public class AgentConversationService {
         practiceProblemCatalog,
         practicePromptAssembler,
         null,
-        new LearnerProfilePromptSectionProvider(LearnerProfilePromptSectionProvider.DEFAULT_MAX_TOKEN_BUDGET),
+        defaultLearnerMemoryRecallPromptSectionProvider(),
         ManagedSystemPrompts.defaultResolver());
   }
 
@@ -120,8 +122,8 @@ public class AgentConversationService {
       LearningPlanRepository learningPlanRepository,
       PracticeChatProblemCatalog practiceProblemCatalog,
       PromptAssembler practicePromptAssembler,
-      LearnerProfileRecallService learnerProfileRecallService,
-      LearnerProfilePromptSectionProvider learnerProfilePromptSectionProvider
+      LearnerMemoryRecallService learnerMemoryRecallService,
+      LearnerMemoryRecallPromptSectionProvider learnerMemoryRecallPromptSectionProvider
   ) {
     this(
         conversationRepository,
@@ -130,8 +132,8 @@ public class AgentConversationService {
         learningPlanRepository,
         practiceProblemCatalog,
         practicePromptAssembler,
-        learnerProfileRecallService,
-        learnerProfilePromptSectionProvider,
+        learnerMemoryRecallService,
+        learnerMemoryRecallPromptSectionProvider,
         ManagedSystemPrompts.defaultResolver());
   }
 
@@ -142,8 +144,8 @@ public class AgentConversationService {
       LearningPlanRepository learningPlanRepository,
       PracticeChatProblemCatalog practiceProblemCatalog,
       PromptAssembler practicePromptAssembler,
-      LearnerProfileRecallService learnerProfileRecallService,
-      LearnerProfilePromptSectionProvider learnerProfilePromptSectionProvider,
+      LearnerMemoryRecallService learnerMemoryRecallService,
+      LearnerMemoryRecallPromptSectionProvider learnerMemoryRecallPromptSectionProvider,
       ManagedSystemPromptResolver systemPromptResolver
   ) {
     this.conversationRepository = conversationRepository;
@@ -154,10 +156,10 @@ public class AgentConversationService {
     this.practicePromptAssembler = practicePromptAssembler == null
         ? defaultPracticePromptAssembler()
         : practicePromptAssembler;
-    this.learnerProfileRecallService = learnerProfileRecallService;
-    this.learnerProfilePromptSectionProvider = learnerProfilePromptSectionProvider == null
-        ? new LearnerProfilePromptSectionProvider(LearnerProfilePromptSectionProvider.DEFAULT_MAX_TOKEN_BUDGET)
-        : learnerProfilePromptSectionProvider;
+    this.learnerMemoryRecallService = learnerMemoryRecallService;
+    this.learnerMemoryRecallPromptSectionProvider = learnerMemoryRecallPromptSectionProvider == null
+        ? defaultLearnerMemoryRecallPromptSectionProvider()
+        : learnerMemoryRecallPromptSectionProvider;
     this.systemPromptResolver = systemPromptResolver == null
         ? ManagedSystemPrompts.defaultResolver()
         : systemPromptResolver;
@@ -215,8 +217,11 @@ public class AgentConversationService {
       AgentConversationCommand command,
       boolean includeTrustedUserId
   ) {
-    AssembledContext context = command.practiceChatEnabled()
+    PracticeChatContextAssembly practiceAssembly = command.practiceChatEnabled()
         ? assemblePracticeChatContext(draft, command)
+        : null;
+    AssembledContext context = practiceAssembly != null
+        ? practiceAssembly.context()
         : contextAssembler.assemble(
             draft.systemPrompt(),
             draft.activeSummary(),
@@ -241,7 +246,9 @@ public class AgentConversationService {
         draft.requestId(),
         context.messages(),
         metadata);
-    return new AgentConversationRun(draft.taskId(), draft.turnId(), draft.runId(), draft.runUuid(), request, draft);
+    AgentRunResource runResource = practiceAssembly == null ? AgentRunResource.none() : practiceAssembly.runResource();
+    return new AgentConversationRun(
+        draft.taskId(), draft.turnId(), draft.runId(), draft.runUuid(), request, draft, runResource);
   }
 
   private MentorConversationAgentInput requireMentorInput(MentorConversationAgentInput input) {
@@ -411,17 +418,30 @@ public class AgentConversationService {
     return Map.copyOf(metadata);
   }
 
-  private AssembledContext assemblePracticeChatContext(PreparedAgentRun draft, AgentConversationCommand command) {
+  private PracticeChatContextAssembly assemblePracticeChatContext(
+      PreparedAgentRun draft,
+      AgentConversationCommand command
+  ) {
+    AgentRunResource recallLease = AgentRunResource.none();
+    LearnerMemoryRecallSnapshot learnerMemorySnapshot = null;
+    try {
     PracticeChatContext practiceContext = practiceChatContext(command.practiceChat(), command.userId());
     List<AgentMessage> history = conversationRepository.recentMessages(draft.taskId(), contextPolicy.recentTurns() * 2);
     PracticeCoachStyle coachStyle = PracticeCoachStyle.from(
         command.governanceMetadata().get(PracticeChatPromptConstants.METADATA_COACH_STYLE));
     PracticeResponseLanguage responseLanguage = PracticeResponseLanguage.from(
         command.governanceMetadata().get(PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE));
-    LearnerProfileRecallSnapshot learnerProfileSnapshot = learnerProfileRecallService == null
-        ? LearnerProfileRecallSnapshot.empty()
-        : learnerProfileRecallService.recall(
-            command.userId(), PracticeChatPromptConstants.SCENARIO, command.practiceChat().problemSlug());
+    boolean idempotentReplay = Boolean.TRUE.equals(
+        draft.metadata().get(AgentRuntimeMetadataKeys.IDEMPOTENT_REPLAY));
+    if (!idempotentReplay && learnerMemoryRecallService != null) {
+      LearnerMemoryRecallService.OpenedSnapshot openedSnapshot = learnerMemoryRecallService.openSnapshot(
+          command.userId(),
+          command.userMessage(),
+          command.practiceChat().problemSlug(),
+          command.practiceChat().locale());
+      learnerMemorySnapshot = openedSnapshot.snapshot();
+      recallLease = openedSnapshot.lease();
+    }
     ResolvedSystemPromptSnapshot promptSnapshot = systemPromptResolver.resolve(
         ManagedSystemPromptDefinitions.PRACTICE_CHAT, command.userId());
     Map<String, Object> variables = new HashMap<>();
@@ -432,7 +452,9 @@ public class AgentConversationService {
     variables.put(PracticeChatPromptConstants.VARIABLE_CURRENT_USER_MESSAGE, command.userMessage());
     variables.put(PracticeChatPromptConstants.VARIABLE_COACH_STYLE, coachStyle);
     variables.put(PracticeChatPromptConstants.VARIABLE_RESPONSE_LANGUAGE, responseLanguage);
-    variables.put(PracticeChatPromptConstants.VARIABLE_LEARNER_PROFILE_SNAPSHOT, learnerProfileSnapshot);
+    if (learnerMemorySnapshot != null) {
+      variables.put(LearnerMemoryRecallContracts.VARIABLE_SNAPSHOT, learnerMemorySnapshot);
+    }
     variables.put(PracticeChatPromptConstants.VARIABLE_SYSTEM_PROMPT_SNAPSHOT, promptSnapshot);
     PromptAssembly assembly = practicePromptAssembler.assemble(new PromptAssemblyRequest(
         PracticeChatPromptConstants.SCENARIO,
@@ -449,8 +471,14 @@ public class AgentConversationService {
             PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, responseLanguage.name())));
     Map<String, Object> metadata = new HashMap<>(assembly.metadata());
     metadata.putAll(SystemPromptMetadataKeys.from(promptSnapshot));
-    metadata.putAll(learnerProfilePromptSectionProvider.metadata(learnerProfileSnapshot, assembly, promptSnapshot));
-    return new AssembledContext(assembly.canonicalMessages(), Map.copyOf(metadata), assembly.tokenEstimate());
+    metadata.putAll(learnerMemoryRecallPromptSectionProvider.metadata(
+        learnerMemorySnapshot, assembly, promptSnapshot));
+    return new PracticeChatContextAssembly(
+        new AssembledContext(assembly.canonicalMessages(), Map.copyOf(metadata), assembly.tokenEstimate()), recallLease);
+    } catch (RuntimeException failure) {
+      recallLease.release();
+      throw failure;
+    }
   }
 
   private PracticeChatContext practiceChatContext(PracticeChatReference reference, long userId) {
@@ -481,6 +509,16 @@ public class AgentConversationService {
         new PracticeChatPromptProfileResolver(),
         List.of(
             new PracticeChatPromptSectionProvider(),
-            new LearnerProfilePromptSectionProvider(LearnerProfilePromptSectionProvider.DEFAULT_MAX_TOKEN_BUDGET)));
+            defaultLearnerMemoryRecallPromptSectionProvider()));
+  }
+
+  private static LearnerMemoryRecallPromptSectionProvider defaultLearnerMemoryRecallPromptSectionProvider() {
+    return new LearnerMemoryRecallPromptSectionProvider(
+        new org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallBootstrapBuilder(
+            LearnerMemoryRecallContracts.DEFAULT_BOOTSTRAP_TOKEN_BUDGET),
+        ManagedSystemPrompts.defaultResolver());
+  }
+
+  private record PracticeChatContextAssembly(AssembledContext context, AgentRunResource runResource) {
   }
 }

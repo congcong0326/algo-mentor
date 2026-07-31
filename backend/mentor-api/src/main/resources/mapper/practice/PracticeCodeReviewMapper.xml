@@ -236,7 +236,7 @@
     SELECT tag_id FROM practice_code_review_tag WHERE review_id = #{reviewId} ORDER BY tag_id
   </select>
 
-  <sql id="CodeReviewProfileFactColumns">
+  <sql id="LearnerMemoryCodeReviewFactColumns">
     review.id AS review_id,
     review.problem_slug,
     review.version_no,
@@ -257,8 +257,8 @@
     review.created_at
   </sql>
 
-  <select id="findProfileFactsByReviewIds" resultType="org.congcong.algomentor.api.practice.mapper.model.CodeReviewProfileFactRow">
-    SELECT <include refid="CodeReviewProfileFactColumns"/>
+  <select id="findProfileFactsByReviewIds" resultType="org.congcong.algomentor.api.practice.mapper.model.LearnerMemoryCodeReviewFactRow">
+    SELECT <include refid="LearnerMemoryCodeReviewFactColumns"/>
     FROM practice_code_review review
     WHERE review.user_id = #{userId}
       AND review.id IN
@@ -266,7 +266,7 @@
     ORDER BY review.id ASC
   </select>
 
-  <select id="findLatestProfileFactsForProblemSlugs" resultType="org.congcong.algomentor.api.practice.mapper.model.CodeReviewProfileFactRow">
+  <select id="findLatestProfileFactsForProblemSlugs" resultType="org.congcong.algomentor.api.practice.mapper.model.LearnerMemoryCodeReviewFactRow">
     WITH latest AS (
       SELECT DISTINCT ON (review.problem_slug) review.id
       FROM practice_code_review review
@@ -275,13 +275,13 @@
         <foreach collection="problemSlugs" item="problemSlug" open="(" separator="," close=")">#{problemSlug}</foreach>
       ORDER BY review.problem_slug ASC, review.created_at DESC, review.id DESC
     )
-    SELECT <include refid="CodeReviewProfileFactColumns"/>
+    SELECT <include refid="LearnerMemoryCodeReviewFactColumns"/>
     FROM practice_code_review review
     JOIN latest ON latest.id = review.id
     ORDER BY review.created_at DESC, review.id DESC
   </select>
 
-  <select id="findRecentDistinctProfileFacts" resultType="org.congcong.algomentor.api.practice.mapper.model.CodeReviewProfileFactRow">
+  <select id="findRecentDistinctProfileFacts" resultType="org.congcong.algomentor.api.practice.mapper.model.LearnerMemoryCodeReviewFactRow">
     WITH latest AS (
       SELECT DISTINCT ON (review.problem_slug) review.id
       FROM practice_code_review review
@@ -292,10 +292,76 @@
       </if>
       ORDER BY review.problem_slug ASC, review.created_at DESC, review.id DESC
     )
-    SELECT <include refid="CodeReviewProfileFactColumns"/>
+    SELECT <include refid="LearnerMemoryCodeReviewFactColumns"/>
     FROM practice_code_review review
     JOIN latest ON latest.id = review.id
     ORDER BY review.created_at DESC, review.id DESC
     LIMIT #{limit}
+  </select>
+
+  <sql id="CodeReviewHistoryColumns">
+    review.id AS review_id,
+    review.problem_slug,
+    review.version_no,
+    review.total_score,
+    review.correctness_score,
+    review.complexity_score,
+    review.edge_case_score,
+    review.code_quality_score,
+    review.problem_fit_score,
+    review.passed,
+    review.deduction_reasons_json::TEXT AS deduction_reasons_json,
+    review.improvement_suggestions_json::TEXT AS improvement_suggestions_json,
+    COALESCE((
+      SELECT jsonb_agg(review_tag.tag_id ORDER BY review_tag.tag_id)::TEXT
+      FROM practice_code_review_tag review_tag
+      WHERE review_tag.review_id = review.id
+    ), '[]') AS affected_tag_ids_json,
+    review.created_at
+  </sql>
+
+  <select id="findLatestHistoryForProblem" resultType="org.congcong.algomentor.api.practice.mapper.model.CodeReviewHistoryRow">
+    SELECT *
+    FROM (
+      SELECT <include refid="CodeReviewHistoryColumns"/>
+      FROM practice_code_review review
+      WHERE review.user_id = #{userId}
+        AND review.problem_slug = #{problemSlug}
+      ORDER BY review.version_no DESC, review.id DESC
+      LIMIT LEAST(#{limit}, 5)
+    ) history
+    ORDER BY history.version_no ASC, history.review_id ASC
+  </select>
+
+  <select id="findEvidenceDetail" resultType="org.congcong.algomentor.api.practice.mapper.model.CodeReviewEvidenceDetailRow">
+    SELECT
+      <include refid="CodeReviewHistoryColumns"/>,
+      review.detection_evidence_json::TEXT AS detection_evidence_json,
+      review.context_summary
+    FROM practice_code_review review
+    WHERE review.user_id = #{userId}
+      AND review.id = #{reviewId}
+  </select>
+
+  <select id="findNormalizedSubmissionVersions" resultType="org.congcong.algomentor.api.practice.mapper.model.CodeReviewSubmissionVersionRow">
+    SELECT
+      review.id AS review_id,
+      review.problem_slug,
+      review.version_no,
+      review.normalized_code
+    FROM practice_code_review review
+    WHERE review.user_id = #{userId}
+      AND review.id IN
+      <foreach collection="reviewIds" item="reviewId" open="(" separator="," close=")">#{reviewId}</foreach>
+    ORDER BY review.version_no ASC, review.id ASC
+  </select>
+
+  <select id="verifyHistoryReviews" resultType="org.congcong.algomentor.api.practice.mapper.model.CodeReviewHistoryRow">
+    SELECT <include refid="CodeReviewHistoryColumns"/>
+    FROM practice_code_review review
+    WHERE review.user_id = #{userId}
+      AND review.id IN
+      <foreach collection="reviewIds" item="reviewId" open="(" separator="," close=")">#{reviewId}</foreach>
+    ORDER BY review.id ASC
   </select>
 </mapper>

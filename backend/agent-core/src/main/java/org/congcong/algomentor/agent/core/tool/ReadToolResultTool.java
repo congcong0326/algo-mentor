@@ -12,6 +12,8 @@ import org.congcong.algomentor.agent.core.compaction.ToolResultCompactionPolicy;
 import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultJsonKeys;
 import org.congcong.algomentor.agent.core.runtime.model.AgentToolResultTypes;
 import org.congcong.algomentor.agent.core.toolresult.StoredToolResult;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultProvenance;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultReadGuard;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.tool.LlmToolSpec;
@@ -31,10 +33,20 @@ public final class ReadToolResultTool implements AgentTool {
 
   private final ToolResultStore resultStore;
   private final ToolResultCompactionPolicy policy;
+  private final ToolResultReadGuard readGuard;
 
   public ReadToolResultTool(ToolResultStore resultStore, ToolResultCompactionPolicy policy) {
+    this(resultStore, policy, ToolResultReadGuard.NOOP);
+  }
+
+  public ReadToolResultTool(
+      ToolResultStore resultStore,
+      ToolResultCompactionPolicy policy,
+      ToolResultReadGuard readGuard
+  ) {
     this.resultStore = Objects.requireNonNull(resultStore, "resultStore must not be null");
     this.policy = policy == null ? ToolResultCompactionPolicy.defaults() : policy;
+    this.readGuard = readGuard == null ? ToolResultReadGuard.NOOP : readGuard;
   }
 
   @Override
@@ -62,16 +74,34 @@ public final class ReadToolResultTool implements AgentTool {
     String resultRef = requiredText(arguments, AgentToolResultJsonKeys.RESULT_REF);
     StoredToolResult stored = resultStore.findByResultRef(loopContext(context), resultRef)
         .orElseThrow(() -> new IllegalArgumentException("Tool result reference was not found or is not readable"));
-    if (has(arguments, AgentToolResultJsonKeys.LINE_START) || has(arguments, AgentToolResultJsonKeys.LINE_END)) {
-      return readLineRange(
-          stored,
-          intValue(arguments, AgentToolResultJsonKeys.LINE_START, 1),
-          intValue(arguments, AgentToolResultJsonKeys.LINE_END, 1));
+    ToolResultReadGuard.ToolResultReadPermit permit = readGuard.beforeRead(
+        context,
+        provenance(stored),
+        policy.rangeReadMaxChars());
+    if (!permit.allowed()) {
+      return deniedRead(resultRef, permit);
     }
-    return readOffsetRange(
-        stored,
-        intValue(arguments, AgentToolResultJsonKeys.OFFSET, 0),
-        intValue(arguments, AgentToolResultJsonKeys.LIMIT, policy.rangeReadMaxChars()));
+    int visibleChars = 0;
+    try {
+      JsonNode result;
+      if (has(arguments, AgentToolResultJsonKeys.LINE_START) || has(arguments, AgentToolResultJsonKeys.LINE_END)) {
+        result = readLineRange(
+            stored,
+            intValue(arguments, AgentToolResultJsonKeys.LINE_START, 1),
+            intValue(arguments, AgentToolResultJsonKeys.LINE_END, 1),
+            permit.maxVisibleChars());
+      } else {
+        result = readOffsetRange(
+            stored,
+            intValue(arguments, AgentToolResultJsonKeys.OFFSET, 0),
+            intValue(arguments, AgentToolResultJsonKeys.LIMIT, policy.rangeReadMaxChars()),
+            permit.maxVisibleChars());
+      }
+      visibleChars = result.path(AgentToolResultJsonKeys.CHAR_COUNT).asInt(0);
+      return result;
+    } finally {
+      readGuard.afterRead(permit, visibleChars);
+    }
   }
 
   private AgentLoopContext loopContext(AgentExecutionContext context) {
@@ -86,9 +116,9 @@ public final class ReadToolResultTool implements AgentTool {
     return new AgentLoopContext(context.runId(), request, context.stepIndex(), context.requestMetadata());
   }
 
-  private JsonNode readOffsetRange(StoredToolResult stored, int offset, int requestedLimit) {
+  private JsonNode readOffsetRange(StoredToolResult stored, int offset, int requestedLimit, int maxVisibleChars) {
     int start = Math.max(0, Math.min(offset, stored.contentText().length()));
-    int limit = Math.max(1, Math.min(requestedLimit, policy.rangeReadMaxChars()));
+    int limit = Math.max(1, Math.min(requestedLimit, Math.min(policy.rangeReadMaxChars(), maxVisibleChars)));
     int end = Math.min(stored.contentText().length(), start + limit);
     ObjectNode range = JsonNodeFactory.instance.objectNode();
     range.put(AgentToolResultJsonKeys.OFFSET, start);
@@ -96,7 +126,7 @@ public final class ReadToolResultTool implements AgentTool {
     return output(stored, range, stored.contentText().substring(start, end), start > 0, end < stored.contentText().length());
   }
 
-  private JsonNode readLineRange(StoredToolResult stored, int lineStart, int lineEnd) {
+  private JsonNode readLineRange(StoredToolResult stored, int lineStart, int lineEnd, int maxVisibleChars) {
     int fromLine = Math.max(1, lineStart);
     int toLine = Math.max(fromLine, lineEnd);
     String[] lines = stored.contentText().split("\\R", -1);
@@ -106,8 +136,8 @@ public final class ReadToolResultTool implements AgentTool {
         content.append('\n');
       }
       content.append(lines[line - 1]);
-      if (content.length() >= policy.rangeReadMaxChars()) {
-        content.setLength(policy.rangeReadMaxChars());
+      if (content.length() >= maxVisibleChars) {
+        content.setLength(maxVisibleChars);
         break;
       }
     }
@@ -133,6 +163,19 @@ public final class ReadToolResultTool implements AgentTool {
     output.put(AgentToolResultJsonKeys.CHAR_COUNT, content.length());
     output.put(AgentToolResultJsonKeys.HAS_MORE_BEFORE, hasMoreBefore);
     output.put(AgentToolResultJsonKeys.HAS_MORE_AFTER, hasMoreAfter);
+    return output;
+  }
+
+  private ToolResultProvenance provenance(StoredToolResult stored) {
+    return stored == null || stored.provenance() == null ? ToolResultProvenance.unknown() : stored.provenance();
+  }
+
+  private JsonNode deniedRead(String resultRef, ToolResultReadGuard.ToolResultReadPermit permit) {
+    ObjectNode output = JsonNodeFactory.instance.objectNode();
+    output.put(AgentToolResultJsonKeys.TYPE, permit.rejectionType());
+    output.put(AgentToolResultJsonKeys.RESULT_REF, resultRef);
+    output.put(AgentToolResultJsonKeys.MESSAGE, permit.rejectionMessage());
+    output.put(AgentToolResultJsonKeys.TRUNCATED, false);
     return output;
   }
 

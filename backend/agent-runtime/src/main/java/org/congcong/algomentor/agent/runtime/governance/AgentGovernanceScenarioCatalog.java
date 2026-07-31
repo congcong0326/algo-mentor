@@ -36,7 +36,7 @@ public final class AgentGovernanceScenarioCatalog {
     register(scenarios, AiBusinessScenario.LEARNING_PLAN_EXTENSION, AiRunSource.LEARNING_PLAN_EXTENSION_PROPOSAL, AiPurpose.LEARNING_PLAN);
     register(scenarios, AiBusinessScenario.PRACTICE_CODE_REVIEW, AiRunSource.PRACTICE_CODE_REVIEW, AiPurpose.LEARNING_CHAT);
     register(scenarios, AiBusinessScenario.LEARNER_DECLARED_PROFILE_UPDATE,
-        AiRunSource.LEARNER_PROFILE_DECLARED_UPDATE, AiPurpose.LEARNING_CHAT);
+        AiRunSource.LEARNER_MEMORY_DECLARED_UPDATE, AiPurpose.LEARNING_CHAT);
     register(scenarios, AiBusinessScenario.CODE_REVIEW_PROFILE_UPDATE,
         AiRunSource.LEARNER_PROFILE_CODE_REVIEW_BATCH, AiPurpose.LEARNING_CHAT);
     if (scenarios.size() != AiBusinessScenario.values().length) {

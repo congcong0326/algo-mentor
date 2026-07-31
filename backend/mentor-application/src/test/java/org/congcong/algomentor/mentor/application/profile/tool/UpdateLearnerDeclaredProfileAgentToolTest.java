@@ -6,19 +6,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Flow;
 import org.congcong.algomentor.agent.core.AgentExecutionContext;
-import org.congcong.algomentor.agent.core.AgentRunResult;
-import org.congcong.algomentor.agent.core.AgentStreamEvent;
-import org.congcong.algomentor.agent.core.runtime.api.AgentInvocation;
-import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptConstants;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileDimension;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileQueryService;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileUpdateService;
-import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdatePromptBuilder;
-import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateService;
+import org.congcong.algomentor.mentor.application.profile.LearnerMemoryClaimDimension;
+import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateHandler;
 import org.junit.jupiter.api.Test;
 
 class UpdateLearnerDeclaredProfileAgentToolTest {
@@ -28,7 +20,7 @@ class UpdateLearnerDeclaredProfileAgentToolTest {
   @Test
   void exposesOnlyBatchArgumentsAndBuildsTrustedChildParentContext() throws Exception {
     CapturingService service = new CapturingService(DeclaredProfileUpdateResult.failed(List.of(
-        LearnerProfileDimension.GOALS_AND_INTENTS)));
+        LearnerMemoryClaimDimension.GOALS_AND_INTENTS)));
     UpdateLearnerDeclaredProfileAgentTool tool = new UpdateLearnerDeclaredProfileAgentTool(service, objectMapper);
 
     JsonNode result = tool.execute(objectMapper.readTree("""
@@ -81,6 +73,24 @@ class UpdateLearnerDeclaredProfileAgentToolTest {
     assertThat(service.calls).isZero();
   }
 
+  @Test
+  void degradesHandlerFailuresToTheStableFailedToolResult() throws Exception {
+    DeclaredProfileUpdateHandler failingService = (userId, request, parentRunDbId, parentStepIndex) -> {
+      throw new IllegalStateException("test handler failure");
+    };
+    UpdateLearnerDeclaredProfileAgentTool tool = new UpdateLearnerDeclaredProfileAgentTool(failingService, objectMapper);
+
+    JsonNode result = tool.execute(objectMapper.readTree("""
+        {"updates":[{"dimension":"GOALS_AND_INTENTS","statement":"Prepare interview","intent":"DECLARE"}]}
+        """), context(42L));
+
+    assertThat(result.path(LearnerDeclaredProfileToolContracts.RESULT_FIELD_TYPE).asText())
+        .isEqualTo(LearnerDeclaredProfileToolContracts.RESULT_TYPE);
+    assertThat(result.path(LearnerDeclaredProfileToolContracts.RESULT_FIELD_STATUS).asText())
+        .isEqualTo(DeclaredProfileUpdateResult.Status.FAILED.name());
+    assertThat(result.path(LearnerDeclaredProfileToolContracts.RESULT_FIELD_ITEMS)).isEmpty();
+  }
+
   private AgentExecutionContext context(long userId) {
     return new AgentExecutionContext("run-42", 4, Map.of(
         AgentRuntimeMetadataKeys.USER_ID, userId,
@@ -88,7 +98,7 @@ class UpdateLearnerDeclaredProfileAgentToolTest {
         PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO), false);
   }
 
-  private static final class CapturingService extends DeclaredProfileUpdateService {
+  private static final class CapturingService implements DeclaredProfileUpdateHandler {
     private final DeclaredProfileUpdateResult result;
     private int calls;
     private long userId;
@@ -96,13 +106,6 @@ class UpdateLearnerDeclaredProfileAgentToolTest {
     private int parentStepIndex;
 
     private CapturingService(DeclaredProfileUpdateResult result) {
-      super(
-          new LearnerProfileQueryService(null),
-          new LearnerProfileUpdateService(null, null, null),
-          new NoopRuntime(),
-          new DeclaredProfileUpdatePromptBuilder(),
-          1,
-          300);
       this.result = result;
     }
 
@@ -118,18 +121,6 @@ class UpdateLearnerDeclaredProfileAgentToolTest {
       this.parentRunDbId = parentRunDbId;
       this.parentStepIndex = parentStepIndex;
       return result;
-    }
-  }
-
-  private static final class NoopRuntime implements AgentRuntime {
-    @Override
-    public AgentRunResult execute(AgentInvocation<?> invocation) {
-      throw new UnsupportedOperationException("runtime not used");
-    }
-
-    @Override
-    public Flow.Publisher<AgentStreamEvent> stream(AgentInvocation<?> invocation) {
-      throw new UnsupportedOperationException("stream not used");
     }
   }
 }

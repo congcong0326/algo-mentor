@@ -12,7 +12,7 @@
       <arg column="content_type" javaType="java.lang.String"/>
       <arg column="storage_mode" javaType="java.lang.String"/>
       <arg column="content_text" javaType="java.lang.String"/>
-      <arg column="content_bytes" javaType="byte[]"/>
+      <arg column="content_bytes" javaType="_byte[]"/>
       <arg column="uri" javaType="java.lang.String"/>
       <arg column="sha256" javaType="java.lang.String"/>
       <arg column="char_count" javaType="java.lang.Integer"/>

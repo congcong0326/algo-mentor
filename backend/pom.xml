@@ -43,6 +43,7 @@
     <maven.compiler.release>17</maven.compiler.release>
     <openai-java.version>4.39.1</openai-java.version>
     <fsrs.version>1.0.0</fsrs.version>
+    <java-diff-utils.version>4.15</java-diff-utils.version>
     <mybatis.version>3.5.19</mybatis.version>
     <mybatis-spring.version>3.0.5</mybatis-spring.version>
     <surefire.failIfNoSpecifiedTests>false</surefire.failIfNoSpecifiedTests>
@@ -69,6 +70,11 @@
         <groupId>io.github.open-spaced-repetition</groupId>
         <artifactId>fsrs</artifactId>
         <version>${fsrs.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.github.java-diff-utils</groupId>
+        <artifactId>java-diff-utils</artifactId>
+        <version>${java-diff-utils.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

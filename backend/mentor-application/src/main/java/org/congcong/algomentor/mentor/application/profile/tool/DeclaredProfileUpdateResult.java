@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileDimension;
+import org.congcong.algomentor.mentor.application.profile.LearnerMemoryClaimDimension;
 
 /** 用户自述画像工具返回给 Agent 的无内部错误细节结果。 */
 public record DeclaredProfileUpdateResult(Status status, String message, List<Item> items) {
@@ -17,8 +17,8 @@ public record DeclaredProfileUpdateResult(Status status, String message, List<It
     items = List.copyOf(items);
   }
 
-  public static DeclaredProfileUpdateResult failed(List<LearnerProfileDimension> dimensions) {
-    List<Item> items = (dimensions == null ? List.<LearnerProfileDimension>of() : dimensions).stream()
+  public static DeclaredProfileUpdateResult failed(List<LearnerMemoryClaimDimension> dimensions) {
+    List<Item> items = (dimensions == null ? List.<LearnerMemoryClaimDimension>of() : dimensions).stream()
         .map(dimension -> new Item(dimension, ItemStatus.FAILED, ""))
         .toList();
     return new DeclaredProfileUpdateResult(Status.FAILED, LearnerDeclaredProfileToolContracts.MESSAGE_FAILED, items);
@@ -51,7 +51,7 @@ public record DeclaredProfileUpdateResult(Status status, String message, List<It
     FAILED
   }
 
-  public record Item(LearnerProfileDimension dimension, ItemStatus status, String contentSummary) {
+  public record Item(LearnerMemoryClaimDimension dimension, ItemStatus status, String contentSummary) {
     public Item {
       if (dimension == null || status == null || contentSummary == null) {
         throw new IllegalArgumentException("Invalid declared profile update result item");

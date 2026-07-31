@@ -47,6 +47,7 @@ import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRe
 import org.congcong.algomentor.agent.core.tool.ReadToolResultTool;
 import org.congcong.algomentor.agent.core.tool.CalculatorTool;
 import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultReadGuard;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.agent.runtime.DefaultAgentRuntime;
 import org.congcong.algomentor.agent.runtime.definition.AgentDefinitionRegistry;
@@ -66,7 +67,7 @@ import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.L
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionAgentDefinition;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftAgentDefinition;
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateAgentDefinition;
-import org.congcong.algomentor.mentor.application.profile.review.CodeReviewProfileUpdateAgentDefinition;
+import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCodeReviewUpdateAgentDefinition;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentToolNames;
@@ -260,9 +261,10 @@ public class MentorAiConfiguration {
   @org.springframework.boot.autoconfigure.condition.ConditionalOnBean(ToolResultStore.class)
   public ReadToolResultTool readToolResultTool(
       ToolResultStore toolResultStore,
-      ToolResultCompactionPolicy policy
+      ToolResultCompactionPolicy policy,
+      ObjectProvider<ToolResultReadGuard> readGuard
   ) {
-    return new ReadToolResultTool(toolResultStore, policy);
+    return new ReadToolResultTool(toolResultStore, policy, readGuard.getIfAvailable(() -> ToolResultReadGuard.NOOP));
   }
 
   @Bean
@@ -356,7 +358,7 @@ public class MentorAiConfiguration {
       ObjectProvider<PracticeChatAgentDefinition> practiceDefinitionProvider,
       ObjectProvider<PracticeCodeReviewAgentDefinition> practiceCodeReviewDefinitionProvider,
       ObjectProvider<DeclaredProfileUpdateAgentDefinition> declaredProfileUpdateDefinitionProvider,
-      ObjectProvider<CodeReviewProfileUpdateAgentDefinition> codeReviewProfileUpdateDefinitionProvider,
+      ObjectProvider<LearnerMemoryCodeReviewUpdateAgentDefinition> learnerMemoryCodeReviewUpdateDefinitionProvider,
       ObjectProvider<LearningPlanDraftAgentDefinition> learningPlanDraftDefinitionProvider,
       ObjectProvider<LearningPlanDraftRevisionAgentDefinition> learningPlanRevisionDefinitionProvider,
       ObjectProvider<LearningPlanExtensionAgentDefinition> learningPlanExtensionDefinitionProvider,
@@ -368,7 +370,7 @@ public class MentorAiConfiguration {
     practiceDefinitionProvider.ifAvailable(definitions::add);
     practiceCodeReviewDefinitionProvider.ifAvailable(definitions::add);
     declaredProfileUpdateDefinitionProvider.ifAvailable(definitions::add);
-    codeReviewProfileUpdateDefinitionProvider.ifAvailable(definitions::add);
+    learnerMemoryCodeReviewUpdateDefinitionProvider.ifAvailable(definitions::add);
     learningPlanDraftDefinitionProvider.ifAvailable(definitions::add);
     learningPlanRevisionDefinitionProvider.ifAvailable(definitions::add);
     learningPlanExtensionDefinitionProvider.ifAvailable(definitions::add);

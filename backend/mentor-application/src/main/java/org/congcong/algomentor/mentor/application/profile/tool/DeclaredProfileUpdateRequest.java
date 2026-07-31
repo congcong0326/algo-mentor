@@ -6,8 +6,8 @@ import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileContract;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileDimension;
+import org.congcong.algomentor.mentor.application.profile.LearnerMemoryClaimDimensionCatalog;
+import org.congcong.algomentor.mentor.application.profile.LearnerMemoryClaimDimension;
 
 /** 已校验的用户自述批量更新参数；身份和画像类别只由服务端补全。 */
 public record DeclaredProfileUpdateRequest(List<Item> updates) {
@@ -22,7 +22,7 @@ public record DeclaredProfileUpdateRequest(List<Item> updates) {
       throw new IllegalArgumentException("Declared profile updates must not be empty");
     }
     updates = List.copyOf(updates);
-    Set<LearnerProfileDimension> dimensions = EnumSet.noneOf(LearnerProfileDimension.class);
+    Set<LearnerMemoryClaimDimension> dimensions = EnumSet.noneOf(LearnerMemoryClaimDimension.class);
     for (Item update : updates) {
       if (update == null || !dimensions.add(update.dimension())) {
         throw new IllegalArgumentException("Declared profile updates must use unique dimensions");
@@ -55,9 +55,9 @@ public record DeclaredProfileUpdateRequest(List<Item> updates) {
     if (!names.equals(ITEM_FIELDS)) {
       throw new IllegalArgumentException("Declared profile update item has unsupported fields");
     }
-    LearnerProfileDimension dimension = enumValue(
-        update.path(LearnerDeclaredProfileToolContracts.UPDATE_DIMENSION), LearnerProfileDimension.class);
-    if (!LearnerProfileContract.declaredDimensions().contains(dimension)) {
+    LearnerMemoryClaimDimension dimension = enumValue(
+        update.path(LearnerDeclaredProfileToolContracts.UPDATE_DIMENSION), LearnerMemoryClaimDimension.class);
+    if (!LearnerMemoryClaimDimensionCatalog.declaredDimensions().contains(dimension)) {
       throw new IllegalArgumentException("Declared profile dimension is not allowed");
     }
     String statement = requiredText(update, LearnerDeclaredProfileToolContracts.UPDATE_STATEMENT);
@@ -89,14 +89,14 @@ public record DeclaredProfileUpdateRequest(List<Item> updates) {
   }
 
   public record Item(
-      LearnerProfileDimension dimension,
+      LearnerMemoryClaimDimension dimension,
       String statement,
       DeclaredProfileUpdateIntent intent
   ) {
     public Item {
       if (dimension == null || statement == null || statement.isBlank() || intent == null
           || statement.trim().length() > LearnerDeclaredProfileToolContracts.MAX_STATEMENT_CHARS
-          || !LearnerProfileContract.declaredDimensions().contains(dimension)) {
+          || !LearnerMemoryClaimDimensionCatalog.declaredDimensions().contains(dimension)) {
         throw new IllegalArgumentException("Invalid declared profile update item");
       }
       statement = statement.trim();

@@ -33,7 +33,21 @@ import AppShell from './app/AppShell';
 import LoginPage from './app/LoginPage';
 import PasswordChangeRequiredPage from './app/PasswordChangeRequiredPage';
 import HeaderActionTooltip from './app/HeaderActionTooltip';
-import { adminUserGroupIdFromPath, APP_ROUTES, isAdminPath, LEGACY_DEBUG_ROUTE, LEGACY_FEEDBACK_ROUTE, pathForView, type AppView, viewFromPath } from './app/navigation';
+import {
+  adminUserGroupIdFromPath,
+  APP_ROUTES,
+  LEARNER_PROFILE_QUERY_KEYS,
+  LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS,
+  isAdminPath,
+  learnerProfileAnchorFromSearch,
+  learningPlanPracticeSubmissionsOptionsFromSearch,
+  learningPlanPracticeSubmissionsRouteFromPath,
+  LEGACY_DEBUG_ROUTE,
+  LEGACY_FEEDBACK_ROUTE,
+  pathForView,
+  type AppView,
+  viewFromPath,
+} from './app/navigation';
 import { applyTheme, nextTheme, readStoredTheme, storeTheme, type AppTheme } from './app/theme';
 import LanguageSelector from './i18n/LanguageSelector';
 import { useI18n } from './i18n/I18nProvider';
@@ -136,6 +150,28 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
 
 function normalizeAuthenticatedSearch(pathname: string, search: string): string {
   const params = new URLSearchParams(search);
+  if (learningPlanPracticeSubmissionsRouteFromPath(pathname)) {
+    const normalized = new URLSearchParams();
+    const submissionsOptions = learningPlanPracticeSubmissionsOptionsFromSearch(search);
+    if (submissionsOptions.reviewId) {
+      normalized.set(LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS.review, String(submissionsOptions.reviewId));
+    }
+    if (submissionsOptions.from) {
+      normalized.set(LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS.from, submissionsOptions.from);
+    }
+    if (submissionsOptions.profileAnchor) {
+      normalized.set(LEARNER_PROFILE_QUERY_KEYS.profileAnchor, submissionsOptions.profileAnchor);
+    }
+    if (params.get('pack') === 'today') {
+      normalized.set('pack', 'today');
+    }
+    const serialized = normalized.toString();
+    return serialized ? `?${serialized}` : '';
+  }
+  if (pathname === APP_ROUTES.my) {
+    const anchor = learnerProfileAnchorFromSearch(search);
+    return anchor ? `?${LEARNER_PROFILE_QUERY_KEYS.profileAnchor}=${encodeURIComponent(anchor)}` : '';
+  }
   if (/^\/learning-plans\/\d+/.test(pathname) && params.get('pack') === 'today') {
     return '?pack=today';
   }
@@ -685,7 +721,12 @@ export default function App() {
   const pageContent = activeView === 'home'
     ? <TodayPackPage onNavigate={navigateToPath} />
     : activeView === 'my'
-    ? <MyPage />
+    ? (
+      <MyPage
+        onProfileAnchorHandled={() => navigateToPath(APP_ROUTES.my, { replace: true })}
+        profileAnchor={learnerProfileAnchorFromSearch(search)}
+      />
+    )
     : activeView === 'settings'
     ? (
       <SettingsPage

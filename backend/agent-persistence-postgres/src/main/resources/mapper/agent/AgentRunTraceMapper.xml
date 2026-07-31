@@ -151,4 +151,11 @@
     FROM agent_tool_call
     WHERE result_blob_id = #{blobId}
   </select>
+
+  <select id="findToolResultProvenanceByBlobId"
+      resultType="org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolResultProvenanceRow">
+    SELECT step_index AS stepIndex, tool_call_id AS toolCallId, tool_name AS toolName
+    FROM agent_tool_call
+    WHERE result_blob_id = #{blobId}
+  </select>
 </mapper>

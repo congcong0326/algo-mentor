@@ -195,5 +195,11 @@ class PersistentAgentRunTraceObserverTest {
     public Long findRunIdByResultBlobId(long blobId) {
       return 31L;
     }
+
+    @Override
+    public org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolResultProvenanceRow
+        findToolResultProvenanceByBlobId(long blobId) {
+      return null;
+    }
   }
 }

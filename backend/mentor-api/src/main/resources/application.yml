@@ -122,20 +122,20 @@ algo-mentor:
     seed:
       enabled: ${LEARNING_PLAN_TEMPLATE_SEED_ENABLED:false}
       path: ${LEARNING_PLAN_TEMPLATE_SEED_PATH:data/learning-plan-template-seed}
-  learner-profile:
-    content:
-      max-chars: ${LEARNER_PROFILE_CONTENT_MAX_CHARS:4000}
+  learner-memory:
     declared-update:
-      enabled: ${LEARNER_PROFILE_DECLARED_UPDATE_ENABLED:false}
-      max-stale-retries: ${LEARNER_PROFILE_DECLARED_UPDATE_MAX_STALE_RETRIES:1}
-      result-summary-max-chars: ${LEARNER_PROFILE_DECLARED_UPDATE_RESULT_SUMMARY_MAX_CHARS:300}
+      enabled: ${LEARNER_MEMORY_DECLARED_UPDATE_ENABLED:false}
+      max-stale-retries: ${LEARNER_MEMORY_DECLARED_UPDATE_MAX_STALE_RETRIES:1}
+      result-summary-max-chars: ${LEARNER_MEMORY_DECLARED_UPDATE_RESULT_SUMMARY_MAX_CHARS:300}
+    profile-document:
+      statement-ref-hmac-secret: ${LEARNER_PROFILE_DOCUMENT_STATEMENT_REF_HMAC_SECRET:}
+    code-review-consumer:
+      enabled: ${LEARNER_MEMORY_CODE_REVIEW_CONSUMER_ENABLED:false}
+      max-stale-retries: ${LEARNER_MEMORY_CODE_REVIEW_CONSUMER_MAX_STALE_RETRIES:1}
     recall:
       practice-chat:
-        enabled: ${LEARNER_PROFILE_PRACTICE_RECALL_ENABLED:false}
-        max-token-budget: ${LEARNER_PROFILE_PROMPT_TOKEN_BUDGET:800}
-    code-review-consumer:
-      enabled: ${LEARNER_PROFILE_REVIEW_CONSUMER_ENABLED:false}
-      max-stale-retries: ${LEARNER_PROFILE_CODE_REVIEW_CONSUMER_MAX_STALE_RETRIES:1}
+        enabled: ${LEARNER_MEMORY_RECALL_PRACTICE_CHAT_ENABLED:false}
+        bootstrap-token-budget: ${LEARNER_MEMORY_RECALL_BOOTSTRAP_TOKEN_BUDGET:1000}
   practice-chat:
     prompt:
       total-token-budget: ${PRACTICE_CHAT_PROMPT_TOKEN_BUDGET:8000}

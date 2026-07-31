@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssembler;
 import org.congcong.algomentor.agent.core.runtime.context.ContextAssemblyPolicy;
 import org.congcong.algomentor.agent.core.prompt.DefaultPromptAssembler;
@@ -28,25 +29,29 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepos
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemDetail;
+import org.congcong.algomentor.mentor.application.practice.PracticeChatAgentInput;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptConstants;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatReference;
 import org.congcong.algomentor.mentor.application.practice.PracticeCoachStyle;
 import org.congcong.algomentor.mentor.application.practice.PracticeResponseLanguage;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptProfileResolver;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatPromptSectionProvider;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileDimension;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileEntry;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileEntryDraft;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileEntryKind;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileEntryStatus;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileIdentity;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileOriginType;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileQueryService;
-import org.congcong.algomentor.mentor.application.profile.LearnerProfileRepository;
-import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfilePolicyResolver;
-import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfilePromptSectionProvider;
-import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfileRecallService;
-import org.congcong.algomentor.mentor.application.profile.recall.LearnerProfileRecallSnapshot;
+import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimContract;
+import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimRevision;
+import org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimScope;
+import org.congcong.algomentor.mentor.application.profile.claim.repository.LearnerMemoryClaimRepository;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimQueryService;
+import org.congcong.algomentor.mentor.application.profile.claim.service.LearnerMemoryClaimSnapshotFactory;
+import org.congcong.algomentor.mentor.application.profile.evidence.model.LearnerMemoryEvidenceContract;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryDirectHitSelector;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryDocumentRevision;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallBootstrapBuilder;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallContracts;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallPromptSectionProvider;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallService;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallSnapshot;
+import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemorySectionCatalog;
+import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryRunScopeRegistry;
 import org.junit.jupiter.api.Test;
 
 class AgentConversationServiceTest {
@@ -232,10 +237,11 @@ class AgentConversationServiceTest {
   }
 
   @Test
-  void recallsLearnerProfileOnceBeforeAssemblyAndKeepsItInThisRunSnapshot() {
+  void opensLearnerMemorySnapshotOnceBeforeAssemblyAndKeepsClaimTextOutOfMetadata() {
     CapturingRepository repository = new CapturingRepository();
-    LearnerProfilePromptSectionProvider profileProvider = new LearnerProfilePromptSectionProvider(800);
-    CountingRecallService recallService = new CountingRecallService(snapshotEntry("immutable-profile"));
+    LearnerMemoryRecallPromptSectionProvider recallProvider = new LearnerMemoryRecallPromptSectionProvider(
+        new LearnerMemoryRecallBootstrapBuilder(1_000), null);
+    CountingRecallService recallService = new CountingRecallService(memoryClaim("immutable-memory"));
     AgentConversationService service = new AgentConversationService(
         repository,
         new ContextAssembler(),
@@ -244,9 +250,9 @@ class AgentConversationServiceTest {
         new FakePracticeProblemCatalog(),
         new DefaultPromptAssembler(
             new PracticeChatPromptProfileResolver(),
-            List.of(new PracticeChatPromptSectionProvider(), profileProvider)),
+            List.of(new PracticeChatPromptSectionProvider(), recallProvider)),
         recallService,
-        profileProvider);
+        recallProvider);
 
     AgentConversationRun run = service.prepareRun(new AgentConversationCommand(
         null,
@@ -258,11 +264,41 @@ class AgentConversationServiceTest {
 
     assertThat(recallService.calls).isEqualTo(1);
     assertThat(run.agentRequest().messages().stream().map(LlmMessage::text).reduce("", String::concat))
-        .contains("immutable-profile");
+        .contains("immutable-memory");
     assertThat(run.agentRequest().metadata())
-        .containsEntry(PracticeChatPromptConstants.METADATA_LEARNER_PROFILE_ENTRY_COUNT, 1)
-        .containsEntry(PracticeChatPromptConstants.METADATA_LEARNER_PROFILE_TRIMMED, false)
-        .doesNotContainKey("contentText");
+        .containsEntry(LearnerMemoryRecallContracts.METADATA_CLAIM_COUNT, 1)
+        .containsEntry(LearnerMemoryRecallContracts.METADATA_BOOTSTRAP_TRIMMED, false)
+        .containsKey(LearnerMemoryRecallContracts.METADATA_SCOPE_REF)
+        .doesNotContainValue("immutable-memory");
+  }
+
+  @Test
+  void doesNotOpenLearnerMemorySnapshotWhenFindingAnIdempotentPracticeReplay() {
+    CapturingRepository repository = new CapturingRepository();
+    CountingRecallService recallService = new CountingRecallService(memoryClaim("must-not-open"));
+    LearnerMemoryRecallPromptSectionProvider recallProvider = new LearnerMemoryRecallPromptSectionProvider(
+        new LearnerMemoryRecallBootstrapBuilder(1_000), null);
+    AgentConversationService service = new AgentConversationService(
+        repository,
+        new ContextAssembler(),
+        ContextAssemblyPolicy.defaultPolicy(),
+        new InMemoryPlanRepository(plan()),
+        new FakePracticeProblemCatalog(),
+        new DefaultPromptAssembler(
+            new PracticeChatPromptProfileResolver(),
+            List.of(new PracticeChatPromptSectionProvider(), recallProvider)),
+        recallService,
+        recallProvider);
+
+    AgentConversationRun replay = service.findPracticeRunByIdempotencyKey(new PracticeChatAgentInput(
+        7L, 8L, 11L, 12L, 1, "two-sum", "给我提示", "idem-replay", "zh-CN",
+        PracticeCoachStyle.GUIDED, PracticeResponseLanguage.ZH_CN, 24)).orElseThrow();
+
+    assertThat(replay.idempotentReplay()).isTrue();
+    assertThat(recallService.calls).isZero();
+    assertThat(replay.agentRequest().metadata())
+        .doesNotContainKey(LearnerMemoryRecallContracts.METADATA_SCOPE_REF)
+        .doesNotContainValue("must-not-open");
   }
 
   private static final class CapturingRepository implements AgentConversationRepository {
@@ -388,19 +424,25 @@ class AgentConversationServiceTest {
     }
   }
 
-  private static LearnerProfileEntry snapshotEntry(String content) {
+  private static LearnerMemoryClaimRevision memoryClaim(String content) {
     Instant now = Instant.parse("2026-01-01T00:00:00Z");
-    return new LearnerProfileEntry(
+    return new LearnerMemoryClaimRevision(
         1L,
-        LearnerProfileIdentity.dimension(7L, LearnerProfileEntryKind.DECLARED_FACT,
-            LearnerProfileDimension.GOALS_AND_INTENTS),
+        UUID.fromString("00000000-0000-0000-0000-000000000001"),
+        7L,
+        new LearnerMemoryClaimScope(
+            LearnerMemoryClaimContract.Kind.DECLARED_FACT,
+            LearnerMemoryClaimContract.Dimension.GOALS_AND_INTENTS,
+            null),
         1,
-        LearnerProfileEntryStatus.ACTIVE,
+        LearnerMemoryClaimContract.RevisionStatus.ACTIVE,
         content,
+        "a".repeat(64),
+        LearnerMemoryClaimContract.Origin.USER_EXPLICIT,
+        LearnerMemoryEvidenceContract.Pattern.USER_DECLARATION,
+        LearnerMemoryEvidenceContract.Grade.USER_AUTHORED,
         null,
-        LearnerProfileOriginType.USER_EXPLICIT,
-        null,
-        null,
+        1L,
         null,
         now,
         null,
@@ -408,29 +450,76 @@ class AgentConversationServiceTest {
         now);
   }
 
-  private static final class CountingRecallService extends LearnerProfileRecallService {
-    private final LearnerProfileRecallSnapshot snapshot;
+  private static final class CountingRecallService extends LearnerMemoryRecallService {
+    private final LearnerMemoryRunScopeRegistry.RecallScopeLease lease;
     private int calls;
 
-    private CountingRecallService(LearnerProfileEntry entry) {
+    private CountingRecallService(LearnerMemoryClaimRevision claim) {
       super(
-          new LearnerProfilePolicyResolver(false, 800),
-          new LearnerProfileQueryService(new NoOpProfileRepository()),
-          ignored -> List.of());
-      this.snapshot = new LearnerProfileRecallSnapshot(List.of(entry), List.of(), List.of());
+          new LearnerMemoryClaimQueryService(new EmptyClaimRepository(), new LearnerMemoryClaimSnapshotFactory()),
+          ignored -> List.of(),
+          new LearnerMemorySectionCatalog(),
+          new LearnerMemoryDirectHitSelector(),
+          new LearnerMemoryRunScopeRegistry());
+      LearnerMemoryRunScopeRegistry registry = new LearnerMemoryRunScopeRegistry();
+      this.lease = registry.openRecallScope(
+          7L,
+          LearnerMemoryDocumentRevision.calculate("zh-CN", List.of(claim)),
+          "zh-CN",
+          List.of(new LearnerMemoryRecallSnapshot.SectionInput(
+              "background-goals",
+              "学习背景与目标",
+              List.of(new LearnerMemoryRecallSnapshot.StatementInput(claim, "用户明确自述", false)))),
+          List.of(claim.id()));
     }
 
     @Override
-    public LearnerProfileRecallSnapshot recall(long userId, String scenario, String problemSlug) {
+    public OpenedSnapshot openSnapshot(long userId, String currentUserMessage, String problemSlug, String locale) {
       calls++;
-      return snapshot;
+      return new OpenedSnapshot(lease.snapshot(), lease);
     }
   }
 
-  private static final class NoOpProfileRepository implements LearnerProfileRepository {
+  private static final class EmptyClaimRepository implements LearnerMemoryClaimRepository {
     @Override
-    public Optional<LearnerProfileEntry> findCurrent(LearnerProfileIdentity identity) {
+    public List<LearnerMemoryClaimRevision> findActiveByUser(long userId) {
+      return List.of();
+    }
+
+    @Override
+    public List<LearnerMemoryClaimRevision> findActiveByScopes(long userId, java.util.Collection<LearnerMemoryClaimScope> scopes) {
+      return List.of();
+    }
+
+    @Override
+    public List<LearnerMemoryClaimRevision> findActiveByRevisionIds(
+        long userId, java.util.Collection<Long> revisionIds) {
+      return List.of();
+    }
+
+    @Override
+    public List<LearnerMemoryClaimRevision> findActiveByUserForUpdate(long userId) {
+      return List.of();
+    }
+
+    @Override
+    public Optional<LearnerMemoryClaimRevision> findCurrent(long userId, UUID claimKey) {
       return Optional.empty();
+    }
+
+    @Override
+    public List<LearnerMemoryClaimRevision> findHistory(long userId, UUID claimKey) {
+      return List.of();
+    }
+
+    @Override
+    public long countActiveByUser(long userId) {
+      return 0;
+    }
+
+    @Override
+    public long countActiveByScope(long userId, LearnerMemoryClaimScope scope) {
+      return 0;
     }
 
     @Override
@@ -439,41 +528,13 @@ class AgentConversationServiceTest {
     }
 
     @Override
-    public Optional<LearnerProfileEntry> findCurrentForUpdate(LearnerProfileIdentity identity) {
+    public LearnerMemoryClaimRevision insert(
+        org.congcong.algomentor.mentor.application.profile.claim.model.LearnerMemoryClaimRevisionDraft draft) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<LearnerProfileEntry> findHistory(LearnerProfileIdentity identity) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<LearnerProfileEntry> findCurrentByDimensions(
-        long userId,
-        LearnerProfileEntryKind entryKind,
-        java.util.Collection<LearnerProfileDimension> dimensions
-    ) {
-      return List.of();
-    }
-
-    @Override
-    public List<LearnerProfileEntry> findCurrentByTagIds(long userId, java.util.Collection<Long> tagIds) {
-      return List.of();
-    }
-
-    @Override
-    public LearnerProfileEntry insert(LearnerProfileEntryDraft draft) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void markInactive(long entryId, LearnerProfileEntryStatus status, Instant validTo) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void deleteIdentity(LearnerProfileIdentity identity) {
+    public void markCurrentSuperseded(long revisionId, Instant validTo) {
       throw new UnsupportedOperationException();
     }
   }

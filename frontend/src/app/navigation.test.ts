@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
+  LEARNER_PROFILE_REVIEW_ORIGIN,
+  learnerProfileAnchorFromSearch,
+  learnerProfilePath,
   learningPlanTodayPackPath,
   learningPlanPracticeSubmissionsPath,
+  learningPlanPracticeSubmissionsOptionsFromSearch,
   learningPlanPracticeSubmissionsRouteFromPath,
   pathForView,
   viewFromPath,
@@ -13,14 +17,48 @@ describe('learning plan practice submissions navigation', () => {
   });
 
   it('builds and parses the practice submissions route', () => {
-    const path = learningPlanPracticeSubmissionsPath(900, 1, 'two sum');
+    const path = learningPlanPracticeSubmissionsPath(900, 1, 'two sum', {
+      reviewId: 42,
+      from: LEARNER_PROFILE_REVIEW_ORIGIN,
+      profileAnchor: 'learner-profile-statement-100',
+    });
 
-    expect(path).toBe('/learning-plans/900/phases/1/problems/two%20sum/submissions');
-    expect(learningPlanPracticeSubmissionsRouteFromPath(path)).toEqual({
+    expect(path).toBe('/learning-plans/900/phases/1/problems/two%20sum/submissions?review=42&from=learner-profile&profileAnchor=learner-profile-statement-100');
+    expect(learningPlanPracticeSubmissionsRouteFromPath(new URL(path, 'https://app.test').pathname)).toEqual({
       planId: 900,
       phaseIndex: 1,
       problemSlug: 'two sum',
     });
+  });
+
+  it('normalizes deep link options and rejects arbitrary anchors', () => {
+    expect(learningPlanPracticeSubmissionsOptionsFromSearch(
+      '?review=42&from=learner-profile&profileAnchor=learner-profile-statement-100&unknown=discard',
+    )).toEqual({
+      reviewId: 42,
+      from: LEARNER_PROFILE_REVIEW_ORIGIN,
+      profileAnchor: 'learner-profile-statement-100',
+    });
+    expect(learningPlanPracticeSubmissionsPath(900, 1, 'two/sum', {
+      reviewId: 0,
+      from: 'untrusted' as typeof LEARNER_PROFILE_REVIEW_ORIGIN,
+      profileAnchor: 'https://example.test',
+    })).toBe('/learning-plans/900/phases/1/problems/two%2Fsum/submissions');
+    expect(learnerProfileAnchorFromSearch('?profileAnchor=learner-profile-statement-100')).toBe('learner-profile-statement-100');
+    expect(learnerProfileAnchorFromSearch('?profileAnchor=%23anything')).toBeUndefined();
+    expect(learnerProfileAnchorFromSearch('?profileAnchor=learner-profile-statement-%2Fselector')).toBeUndefined();
+    expect(learningPlanPracticeSubmissionsOptionsFromSearch('?review=1e3')).toEqual({
+      reviewId: undefined,
+      from: undefined,
+      profileAnchor: undefined,
+    });
+    expect(learnerProfileAnchorFromSearch(`?profileAnchor=learner-profile-statement-${'a'.repeat(200)}`)).toBeUndefined();
+  });
+
+  it('builds a learner profile return route only from a valid anchor', () => {
+    expect(learnerProfilePath({ anchor: 'learner-profile-statement-100' }))
+      .toBe('/me?profileAnchor=learner-profile-statement-100');
+    expect(learnerProfilePath({ anchor: 'https://example.test' })).toBe('/me');
   });
 
   it('keeps the submissions route inside the learning plans app view', () => {

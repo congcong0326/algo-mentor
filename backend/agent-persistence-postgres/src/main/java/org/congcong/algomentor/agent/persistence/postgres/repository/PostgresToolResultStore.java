@@ -12,12 +12,14 @@ import org.congcong.algomentor.agent.core.AgentLoopContext;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.agent.core.toolresult.StoredToolResult;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultRefs;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultProvenance;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentContentBlobMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.AgentRunTraceMapper;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ContentBlobInsertRow;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ContentBlobRow;
 import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolCallStorageUpdate;
+import org.congcong.algomentor.agent.persistence.postgres.mapper.model.ToolResultProvenanceRow;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
 
 public class PostgresToolResultStore implements ToolResultStore {
@@ -101,7 +103,8 @@ public class PostgresToolResultStore implements ToolResultStore {
         text.length(),
         lineCount(text),
         blobId,
-        toolCallDbId);
+        toolCallDbId,
+        new ToolResultProvenance(stepIndex, toolCall.id(), toolCall.name()));
     traceMapper.updateToolResultStorage(new ToolCallStorageUpdate(
         runDbId,
         stepIndex,
@@ -121,17 +124,22 @@ public class PostgresToolResultStore implements ToolResultStore {
     if (blobId == null) {
       return Optional.empty();
     }
-    if (context != null) {
-      Long expectedRunId = longMetadata(context, AgentRuntimeMetadataKeys.RUN_DB_ID);
-      Long actualRunId = traceMapper.findRunIdByResultBlobId(blobId);
-      if (expectedRunId != null && actualRunId != null && !expectedRunId.equals(actualRunId)) {
-        return Optional.empty();
-      }
+    Long expectedRunId = longMetadata(context, AgentRuntimeMetadataKeys.RUN_DB_ID);
+    if (expectedRunId == null) {
+      return Optional.empty();
     }
-    return blobMapper.findById(blobId).map(this::toStored);
+    Long actualRunId = traceMapper.findRunIdByResultBlobId(blobId);
+    if (!expectedRunId.equals(actualRunId)) {
+      return Optional.empty();
+    }
+    ToolResultProvenanceRow provenance = traceMapper.findToolResultProvenanceByBlobId(blobId);
+    if (provenance == null) {
+      return Optional.empty();
+    }
+    return blobMapper.findById(blobId).map(row -> toStored(row, provenance));
   }
 
-  private StoredToolResult toStored(ContentBlobRow row) {
+  private StoredToolResult toStored(ContentBlobRow row, ToolResultProvenanceRow provenance) {
     return new StoredToolResult(
         ToolResultRefs.PREFIX + row.id(),
         row.contentType(),
@@ -140,7 +148,8 @@ public class PostgresToolResultStore implements ToolResultStore {
         row.charCount() == null ? 0 : row.charCount(),
         row.lineCount() == null ? 0 : row.lineCount(),
         row.id(),
-        row.scopeId());
+        row.scopeId(),
+        new ToolResultProvenance(provenance.stepIndex(), provenance.toolCallId(), provenance.toolName()));
   }
 
   private StoredToolResult fallback(String serializedResult, String contentType) {
@@ -153,7 +162,8 @@ public class PostgresToolResultStore implements ToolResultStore {
         text.length(),
         lineCount(text),
         null,
-        null);
+        null,
+        ToolResultProvenance.unknown());
   }
 
   private Long parseBlobId(String resultRef) {

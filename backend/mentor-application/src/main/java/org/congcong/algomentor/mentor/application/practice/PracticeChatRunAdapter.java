@@ -62,7 +62,7 @@ public final class PracticeChatRunAdapter {
         release(lockToken);
         return preparedRequest(run, AgentRunResource.none());
       }
-      return preparedRequest(run, lockResource(lockToken));
+      return preparedRequest(run, combinedResource(lockResource(lockToken), run.runResource()));
     } catch (RuntimeException failure) {
       release(lockToken);
       throw failure;
@@ -99,6 +99,19 @@ public final class PracticeChatRunAdapter {
     return () -> {
       if (released.compareAndSet(false, true)) {
         lockManager.release(lockToken);
+      }
+    };
+  }
+
+  private AgentRunResource combinedResource(AgentRunResource first, AgentRunResource second) {
+    AtomicBoolean released = new AtomicBoolean();
+    return () -> {
+      if (released.compareAndSet(false, true)) {
+        try {
+          first.release();
+        } finally {
+          second.release();
+        }
       }
     };
   }

@@ -74,7 +74,10 @@ public final class DeclaredProfileUpdateAgentDefinition implements AgentDefiniti
     metadata.putAll(SystemPromptMetadataKeys.from(snapshot));
     return new AgentPreparedRequest(
         promptBuilder.build(candidate.candidates().stream().map(item -> new DeclaredProfileUpdatePromptBuilder.Candidate(
-            item.dimension(), item.statement(), item.intent(), item.currentContent())).toList(), snapshot),
+            item.dimension(), item.statement(), item.intent(), item.activeClaims().stream()
+                .map(claim -> new DeclaredProfileUpdatePromptBuilder.ActiveClaim(
+                    claim.revisionId(), claim.claimText()))
+                .toList())).toList(), snapshot),
         Map.copyOf(metadata),
         executionOptions(),
         null,

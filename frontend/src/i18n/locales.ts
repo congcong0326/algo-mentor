@@ -3,7 +3,6 @@ import type {
   LearningPlanIntent,
   LearningPlanLevel,
   LearningPlanStatus,
-  LearnerProfileDimension,
   ProblemDifficulty,
   AuthUserStatus,
 } from '../types/api';
@@ -737,18 +736,29 @@ export interface LocaleResources {
     memoryLoading: string;
     memoryLoadFailed: string;
     memoryEmpty: string;
-    memoryCategoryEmpty: string;
-    memoryTabs: {
-      declaredFacts: string;
-      generalObservations: string;
-      tagAssessments: string;
-    };
-    memoryTabLabel: (label: string, count: number) => string;
-    memoryDimensionLabels: Record<LearnerProfileDimension, string>;
     memoryUpdatedAt: (value: string) => string;
-    memoryRevision: (revision: number) => string;
-    memoryShowAll: (hiddenCount: number) => string;
-    memoryCollapse: string;
+    openCitation: (displayNumber: number) => string;
+    evidenceEyebrow: string;
+    evidenceDrawerTitle: (displayNumber: number) => string;
+    closeEvidenceDrawer: string;
+    evidenceLoading: string;
+    evidenceLoadFailed: string;
+    evidenceEmpty: string;
+    evidenceLoadMore: string;
+    evidenceLoadingMore: string;
+    evidenceEnd: string;
+    evidenceRoles: {
+      OBSERVED: string;
+      PERSISTED: string;
+      RESOLVED: string;
+      REGRESSED: string;
+      CONTRADICTS: string;
+      DECLARED: string;
+      CORRECTED: string;
+    };
+    reviewEvidenceSummary: (versionNo: number, score: number, passed: boolean) => string;
+    viewReviewSubmission: string;
+    messageEvidenceTitle: (role: 'DECLARED' | 'CORRECTED') => string;
   };
   home: {
     ariaLabel: string;
@@ -881,6 +891,7 @@ export interface LocaleResources {
     backToPlans: string;
     backToPlanDetail: string;
     backToPracticeChat: string;
+    backToLearnerProfile: string;
     learningPlanEyebrow: string;
     practiceChatEyebrow: string;
     generateStart: string;
@@ -1069,6 +1080,7 @@ export interface LocaleResources {
     reviewLoadFailed: string;
     reviewDetailLoading: string;
     reviewDetailLoadFailed: string;
+    requestedReviewUnavailable: string;
     reviewPassed: string;
     reviewFailed: string;
     reviewToolRunning: string;
@@ -1924,29 +1936,29 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       memoryLoading: '正在加载学习记忆...',
       memoryLoadFailed: '学习记忆加载失败',
       memoryEmpty: '还没有形成学习记忆。完成更多练习或在对话中告诉 AI 你的目标与偏好后，这里会逐步出现内容。',
-      memoryCategoryEmpty: '这一类暂时没有内容。',
-      memoryTabs: {
-        declaredFacts: '我告诉 AI 的',
-        generalObservations: 'AI 观察到的',
-        tagAssessments: '专项能力判断',
-      },
-      memoryTabLabel: (label, count) => `${label}，${count} 条`,
-      memoryDimensionLabels: {
-        LEARNER_BACKGROUND: '学习背景',
-        GOALS_AND_INTENTS: '目标与意图',
-        TIME_AND_RESOURCE_CONSTRAINTS: '时间与资源',
-        LEARNING_AND_INTERACTION_PREFERENCES: '学习与互动偏好',
-        SELF_ABILITY_ASSESSMENT: '自我能力判断',
-        PROBLEM_SOLVING_APPROACH: '解题方式',
-        IMPLEMENTATION_AND_ERROR_PATTERN: '实现与错误模式',
-        LEARNING_INTERACTION_AND_INDEPENDENCE: '互动与独立性',
-        REVIEW_AND_GROWTH_PERFORMANCE: '复盘与成长表现',
-        TAG_MASTERY: '专项能力',
-      },
       memoryUpdatedAt: (value) => `更新于 ${value}`,
-      memoryRevision: (revision) => `第 ${revision} 版`,
-      memoryShowAll: (hiddenCount) => `查看其余 ${hiddenCount} 条`,
-      memoryCollapse: '收起',
+      openCitation: (displayNumber) => `打开第 ${displayNumber} 条判断的依据`,
+      evidenceEyebrow: 'EVIDENCE',
+      evidenceDrawerTitle: (displayNumber) => `第 ${displayNumber} 条判断的依据`,
+      closeEvidenceDrawer: '关闭依据抽屉',
+      evidenceLoading: '正在加载依据...',
+      evidenceLoadFailed: '依据加载失败',
+      evidenceEmpty: '暂时没有可展示的依据。',
+      evidenceLoadMore: '加载更多',
+      evidenceLoadingMore: '正在加载...',
+      evidenceEnd: '已显示全部依据。',
+      evidenceRoles: {
+        OBSERVED: '观察到',
+        PERSISTED: '后续仍存在',
+        RESOLVED: '后续已修正',
+        REGRESSED: '再次出现',
+        CONTRADICTS: '相反记录',
+        DECLARED: '你的陈述',
+        CORRECTED: '你的纠正',
+      },
+      reviewEvidenceSummary: (versionNo, score, passed) => `第 ${versionNo} 版 · ${score} 分 · ${passed ? '已通过' : '未通过'}`,
+      viewReviewSubmission: '查看本次提交',
+      messageEvidenceTitle: (role) => role === 'DECLARED' ? '来自你在题目聊天中的陈述' : '来自你在题目聊天中的纠正',
     },
     home: {
       ariaLabel: '首页',
@@ -2079,6 +2091,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       backToPlans: '返回方案页',
       backToPlanDetail: '返回方案',
       backToPracticeChat: '返回聊天',
+      backToLearnerProfile: '返回学习画像',
       learningPlanEyebrow: 'Learning Plan',
       practiceChatEyebrow: 'Practice Chat',
       generateStart: '开始生成训练方案',
@@ -2301,6 +2314,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       reviewLoadFailed: '代码提交记录加载失败，请稍后重试。',
       reviewDetailLoading: '正在加载代码提交详情...',
       reviewDetailLoadFailed: '代码提交详情加载失败，请稍后重试。',
+      requestedReviewUnavailable: '该提交不可用。',
       reviewPassed: '已通过',
       reviewFailed: '未通过',
       reviewToolRunning: '正在生成代码提交记录...',
@@ -3199,29 +3213,31 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       memoryLoading: 'Loading learning memory...',
       memoryLoadFailed: 'Failed to load learning memory',
       memoryEmpty: 'No learning memory yet. More practice and conversations about your goals or preferences will add context here over time.',
-      memoryCategoryEmpty: 'Nothing in this category yet.',
-      memoryTabs: {
-        declaredFacts: 'What I told AI',
-        generalObservations: 'AI observations',
-        tagAssessments: 'Topic assessments',
-      },
-      memoryTabLabel: (label, count) => `${label}, ${count} ${count === 1 ? 'item' : 'items'}`,
-      memoryDimensionLabels: {
-        LEARNER_BACKGROUND: 'Learning background',
-        GOALS_AND_INTENTS: 'Goals and intent',
-        TIME_AND_RESOURCE_CONSTRAINTS: 'Time and resources',
-        LEARNING_AND_INTERACTION_PREFERENCES: 'Learning preferences',
-        SELF_ABILITY_ASSESSMENT: 'Self assessment',
-        PROBLEM_SOLVING_APPROACH: 'Problem-solving approach',
-        IMPLEMENTATION_AND_ERROR_PATTERN: 'Implementation and error patterns',
-        LEARNING_INTERACTION_AND_INDEPENDENCE: 'Interaction and independence',
-        REVIEW_AND_GROWTH_PERFORMANCE: 'Review and growth',
-        TAG_MASTERY: 'Topic ability',
-      },
       memoryUpdatedAt: (value) => `Updated ${value}`,
-      memoryRevision: (revision) => `Revision ${revision}`,
-      memoryShowAll: (hiddenCount) => `Show ${hiddenCount} more`,
-      memoryCollapse: 'Show less',
+      openCitation: (displayNumber) => `Open evidence for statement ${displayNumber}`,
+      evidenceEyebrow: 'EVIDENCE',
+      evidenceDrawerTitle: (displayNumber) => `Evidence for statement ${displayNumber}`,
+      closeEvidenceDrawer: 'Close evidence drawer',
+      evidenceLoading: 'Loading evidence...',
+      evidenceLoadFailed: 'Failed to load evidence',
+      evidenceEmpty: 'No displayable evidence yet.',
+      evidenceLoadMore: 'Load more',
+      evidenceLoadingMore: 'Loading...',
+      evidenceEnd: 'All evidence is shown.',
+      evidenceRoles: {
+        OBSERVED: 'Observed',
+        PERSISTED: 'Persisted later',
+        RESOLVED: 'Resolved later',
+        REGRESSED: 'Regressed later',
+        CONTRADICTS: 'Contradicting record',
+        DECLARED: 'Your statement',
+        CORRECTED: 'Your correction',
+      },
+      reviewEvidenceSummary: (versionNo, score, passed) => `Version ${versionNo} · ${score} points · ${passed ? 'Passed' : 'Not passed'}`,
+      viewReviewSubmission: 'View this submission',
+      messageEvidenceTitle: (role) => role === 'DECLARED'
+        ? 'From your statement in problem chat'
+        : 'From your correction in problem chat',
     },
     home: {
       ariaLabel: 'Dashboard',
@@ -3354,6 +3370,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       backToPlans: 'Back to Plans',
       backToPlanDetail: 'Back to Plan',
       backToPracticeChat: 'Back to Chat',
+      backToLearnerProfile: 'Back to Learning Profile',
       learningPlanEyebrow: 'Learning Plan',
       practiceChatEyebrow: 'Practice Chat',
       generateStart: 'Starting plan generation',
@@ -3584,6 +3601,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       reviewLoadFailed: 'Failed to load code submission history. Try again later.',
       reviewDetailLoading: 'Loading code submission details...',
       reviewDetailLoadFailed: 'Failed to load code submission details. Try again later.',
+      requestedReviewUnavailable: 'This submission is unavailable.',
       reviewPassed: 'Passed',
       reviewFailed: 'Failed',
       reviewToolRunning: 'Generating code submission record...',

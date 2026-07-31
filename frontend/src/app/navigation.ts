@@ -36,6 +36,22 @@ const LEARNING_PLAN_PRACTICE_CHAT_PATTERN = /^\/learning-plans\/(\d+)\/phases\/(
 const LEARNING_PLAN_PRACTICE_SUBMISSIONS_PATTERN = /^\/learning-plans\/(\d+)\/phases\/(\d+)\/problems\/([^/]+)\/submissions$/;
 const ADMIN_USER_GROUP_DETAIL_PATTERN = /^\/admin\/user-groups\/(\d+)$/;
 
+/** Query contract for a code review opened from an evidence citation. */
+export const LEARNER_PROFILE_REVIEW_ORIGIN = 'learner-profile';
+export const LEARNER_PROFILE_STATEMENT_ANCHOR_PREFIX = 'learner-profile-statement-';
+export const LEARNER_PROFILE_QUERY_KEYS = {
+  profileAnchor: 'profileAnchor',
+} as const;
+export const LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS = {
+  from: 'from',
+  review: 'review',
+} as const;
+
+const MAX_LEARNER_PROFILE_ANCHOR_LENGTH = 128;
+const LEARNER_PROFILE_STATEMENT_ANCHOR_PATTERN = new RegExp(
+  `^${LEARNER_PROFILE_STATEMENT_ANCHOR_PREFIX}[A-Za-z0-9_-]+$`,
+);
+
 export interface LearningPlanPracticeChatRoute {
   planId: number;
   phaseIndex: number;
@@ -46,6 +62,12 @@ export interface LearningPlanPracticeSubmissionsRoute {
   planId: number;
   phaseIndex: number;
   problemSlug: string;
+}
+
+export interface LearningPlanPracticeSubmissionsOptions {
+  reviewId?: number;
+  from?: typeof LEARNER_PROFILE_REVIEW_ORIGIN;
+  profileAnchor?: string;
 }
 
 export type AppView =
@@ -312,8 +334,79 @@ export function learningPlanPracticeChatPath(planId: number, phaseIndex: number,
   return `${learningPlanDetailPath(planId)}/phases/${phaseIndex}/problems/${encodeURIComponent(problemSlug)}/chat`;
 }
 
-export function learningPlanPracticeSubmissionsPath(planId: number, phaseIndex: number, problemSlug: string): string {
-  return `${learningPlanDetailPath(planId)}/phases/${phaseIndex}/problems/${encodeURIComponent(problemSlug)}/submissions`;
+export function learningPlanPracticeSubmissionsPath(
+  planId: number,
+  phaseIndex: number,
+  problemSlug: string,
+  options: LearningPlanPracticeSubmissionsOptions = {},
+): string {
+  const path = `${learningPlanDetailPath(planId)}/phases/${phaseIndex}/problems/${encodeURIComponent(problemSlug)}/submissions`;
+  const normalizedOptions = normalizeLearningPlanPracticeSubmissionsOptions(options);
+  const query = new URLSearchParams();
+  if (normalizedOptions.reviewId) {
+    query.set(LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS.review, String(normalizedOptions.reviewId));
+  }
+  if (normalizedOptions.from) {
+    query.set(LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS.from, normalizedOptions.from);
+  }
+  if (normalizedOptions.profileAnchor) {
+    query.set(LEARNER_PROFILE_QUERY_KEYS.profileAnchor, normalizedOptions.profileAnchor);
+  }
+  const search = query.toString();
+  return search ? `${path}?${search}` : path;
+}
+
+export function learnerProfilePath(options: { anchor?: string } = {}): string {
+  const anchor = learnerProfileAnchor(options.anchor);
+  return anchor
+    ? `${APP_ROUTES.my}?${LEARNER_PROFILE_QUERY_KEYS.profileAnchor}=${encodeURIComponent(anchor)}`
+    : APP_ROUTES.my;
+}
+
+export function learnerProfileStatementAnchorId(claimRevisionId: number): string {
+  return `${LEARNER_PROFILE_STATEMENT_ANCHOR_PREFIX}${claimRevisionId}`;
+}
+
+export function learnerProfileAnchor(searchValue: string | null | undefined): string | undefined {
+  if (!searchValue || searchValue.length > MAX_LEARNER_PROFILE_ANCHOR_LENGTH) {
+    return undefined;
+  }
+  return LEARNER_PROFILE_STATEMENT_ANCHOR_PATTERN.test(searchValue) ? searchValue : undefined;
+}
+
+export function learnerProfileAnchorFromSearch(search: string): string | undefined {
+  return learnerProfileAnchor(new URLSearchParams(search).get(LEARNER_PROFILE_QUERY_KEYS.profileAnchor));
+}
+
+export function learningPlanPracticeSubmissionsOptionsFromSearch(
+  search: string,
+): LearningPlanPracticeSubmissionsOptions {
+  const params = new URLSearchParams(search);
+  return normalizeLearningPlanPracticeSubmissionsOptions({
+    reviewId: positiveSafeInteger(params.get(LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS.review)),
+    from: params.get(LEARNING_PLAN_SUBMISSIONS_QUERY_KEYS.from) === LEARNER_PROFILE_REVIEW_ORIGIN
+      ? LEARNER_PROFILE_REVIEW_ORIGIN
+      : undefined,
+    profileAnchor: learnerProfileAnchor(params.get(LEARNER_PROFILE_QUERY_KEYS.profileAnchor)),
+  });
+}
+
+function normalizeLearningPlanPracticeSubmissionsOptions(
+  options: LearningPlanPracticeSubmissionsOptions,
+): LearningPlanPracticeSubmissionsOptions {
+  return {
+    reviewId: positiveSafeInteger(options.reviewId),
+    from: options.from === LEARNER_PROFILE_REVIEW_ORIGIN ? LEARNER_PROFILE_REVIEW_ORIGIN : undefined,
+    profileAnchor: learnerProfileAnchor(options.profileAnchor),
+  };
+}
+
+function positiveSafeInteger(value: number | string | null | undefined): number | undefined {
+  if (typeof value === 'string' && !/^[1-9]\d*$/.test(value)) {
+    return undefined;
+  }
+  const parsed = typeof value === 'number' ? value : Number(value);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : undefined;
 }
 
 export function learningPlanPracticeChatRouteFromPath(pathname: string): LearningPlanPracticeChatRoute | undefined {

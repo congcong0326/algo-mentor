@@ -26,6 +26,9 @@ public final class MentorConfigurationKeys {
   /** 统一 Agent Runtime 装配开关配置前缀。 */
   public static final String AGENT_RUNTIME_PREFIX = "algo-mentor.agent.runtime";
 
+  /** 学习画像文档与 statement ref 的配置前缀。 */
+  public static final String LEARNER_PROFILE_DOCUMENT_PREFIX = "algo-mentor.learner-memory.profile-document";
+
   /**
    * API SSE 连接配置前缀。
    */
