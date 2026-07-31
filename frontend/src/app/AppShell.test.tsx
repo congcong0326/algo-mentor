@@ -14,7 +14,6 @@ const user: CurrentUser = {
     'learning-plan:read:own',
     'learning-plan:write:own',
     'practice-session:write:own',
-    'debug:access',
   ],
   status: 'ACTIVE',
   passwordChangeRequired: false,
@@ -54,7 +53,6 @@ describe('AppShell', () => {
     expect(screen.getByRole('button', { name: '首页' })).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByRole('button', { name: '方案' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
     expect(within(screen.getByRole('navigation', { name: '主导航' })).getAllByRole('button')
       .map((button) => button.textContent)).toEqual(['首页', '方案', '复习中心']);
     fireEvent.click(screen.getByRole('button', { name: '打开反馈信箱' }));
@@ -70,23 +68,6 @@ describe('AppShell', () => {
     expect(screen.queryByRole('button', { name: '学习画像' })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '设置' }));
     expect(onNavigate).toHaveBeenCalledWith('settings');
-  });
-
-  it('hides debug navigation when the user lacks debug permission', () => {
-    render(
-      <AppShell
-        activeView="learningPlans"
-        currentUser={{ ...user, permissions: [] }}
-        onLogout={vi.fn()}
-        onNavigate={vi.fn()}
-        onToggleTheme={vi.fn()}
-        theme="light"
-      >
-        <div>Current page</div>
-      </AppShell>,
-    );
-
-    expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
   });
 
   it('renders an unread-dot feedback trigger for ordinary users without showing a number', () => {
@@ -274,7 +255,7 @@ describe('AppShell', () => {
   it('renders logout error without removing page content', () => {
     render(
       <AppShell
-        activeView="debug"
+        activeView="home"
         currentUser={user}
         logoutError="退出登录失败"
         onLogout={vi.fn()}
@@ -282,18 +263,18 @@ describe('AppShell', () => {
         onToggleTheme={vi.fn()}
         theme="light"
       >
-        <div>AI debug page</div>
+        <div>Current page</div>
       </AppShell>,
     );
 
     expect(screen.getByRole('alert')).toHaveTextContent('退出登录失败');
-    expect(screen.getByText('AI debug page')).toBeInTheDocument();
+    expect(screen.getByText('Current page')).toBeInTheDocument();
   });
 
   it('disables logout button while logout is pending', () => {
     render(
       <AppShell
-        activeView="debug"
+        activeView="home"
         currentUser={user}
         logoutPending
         onLogout={vi.fn()}
@@ -301,7 +282,7 @@ describe('AppShell', () => {
         onToggleTheme={vi.fn()}
         theme="light"
       >
-        <div>AI debug page</div>
+        <div>Current page</div>
       </AppShell>,
     );
 

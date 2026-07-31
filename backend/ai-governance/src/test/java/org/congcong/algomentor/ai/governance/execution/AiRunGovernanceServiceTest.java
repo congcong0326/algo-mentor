@@ -49,15 +49,15 @@ class AiRunGovernanceServiceTest {
     AiRunGovernanceLease lease = fixture.service.begin(request(
         AiRunGovernanceMode.USER_ENTRY,
         "run-user-1",
-        AiPurpose.PROBLEM_EXPLANATION,
-        AiRunSource.PROBLEM_DETAIL));
+        AiPurpose.LEARNING_CHAT,
+        AiRunSource.PRACTICE_CHAT));
 
     assertThat(fixture.usage.consumeCalls).isEqualTo(1);
     assertThat(fixture.locks.acquireCalls).isEqualTo(1);
-    assertThat(fixture.routes.lastScenario).isEqualTo(AiBusinessScenario.TOPIC_EXPLANATION);
+    assertThat(fixture.routes.lastScenario).isEqualTo(AiBusinessScenario.PRACTICE_CHAT);
     assertThat(lease.metadata())
         .containsEntry(AiGovernanceMetadataKeys.CALL_KIND, AiLlmCallKind.AGENT_STEP.name())
-        .containsEntry(AiGovernanceMetadataKeys.SCENARIO_CODE, "topic-explanation");
+        .containsEntry(AiGovernanceMetadataKeys.SCENARIO_CODE, "practice-chat");
     assertThat(fixture.targets.find("run-user-1")).contains(lease.invocationTarget());
 
     lease.complete(AiUsage.zero(), "openai", "gpt-test");

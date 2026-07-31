@@ -6,21 +6,6 @@ package org.congcong.algomentor.api.config;
 public final class ApiContractConstants {
 
   /**
-   * AI 调试/讲解接口根路径。
-   */
-  public static final String AI_API_BASE_PATH = "/api/ai";
-
-  /**
-   * 主题讲解 SSE 路径。
-   */
-  public static final String AI_EXPLANATIONS_STREAM_PATH = "/explanations/stream";
-
-  /**
-   * Agent conversation 接口根路径。
-   */
-  public static final String AGENT_CONVERSATIONS_BASE_PATH = "/api/agent/conversations";
-
-  /**
    * Agent 工具权限决策提交路径。
    */
   public static final String AGENT_TOOL_PERMISSION_DECISION_PATH =
@@ -235,11 +220,6 @@ public final class ApiContractConstants {
    * 复习会话接口根路径。
    */
   public static final String REVIEW_SESSIONS_BASE_PATH = "/api/review-sessions";
-
-  /**
-   * 主题讲解请求参数名。
-   */
-  public static final String TOPIC_PARAM = "topic";
 
   /**
    * 幂等请求头名。

@@ -1,9 +1,9 @@
 import type { LucideIcon } from 'lucide-react';
-import { Activity, Bot, LayoutDashboard, Library, ShieldCheck, Sparkles } from 'lucide-react';
+import { Activity, LayoutDashboard, Library, ShieldCheck, Sparkles } from 'lucide-react';
 import { APP_ROUTES } from '../../app/navigation';
 import type { AuthPermission } from '../../types/api';
 
-export type AdminModuleId = 'overview' | 'access' | 'aiPlatform' | 'content' | 'operations' | 'development';
+export type AdminModuleId = 'overview' | 'access' | 'aiPlatform' | 'content' | 'operations';
 export type AdminPageGroupId = 'modelResources' | 'costGovernance';
 export type AdminPageId =
   | 'overview'
@@ -20,15 +20,13 @@ export type AdminPageId =
   | 'problems'
   | 'monitoring'
   | 'databaseBackup'
-  | 'feedback'
-  | 'debug';
+  | 'feedback';
 export type AdminNavigationLabelKey =
   | 'overview'
   | 'access'
   | 'aiPlatform'
   | 'content'
   | 'operations'
-  | 'development'
   | 'users'
   | 'userGroups'
   | 'betaAccess'
@@ -44,8 +42,7 @@ export type AdminNavigationLabelKey =
   | 'problems'
   | 'systemStatus'
   | 'databaseBackup'
-  | 'feedback'
-  | 'debug';
+  | 'feedback';
 
 export interface AdminPageDefinition {
   id: AdminPageId;
@@ -154,12 +151,6 @@ export const ADMIN_MODULES: AdminModuleDefinition[] = [
       { id: 'databaseBackup', labelKey: 'databaseBackup', path: APP_ROUTES.adminDatabaseBackup, permission: 'database-backup:manage' },
       { id: 'feedback', labelKey: 'feedback', path: APP_ROUTES.adminFeedback, permission: 'feedback:manage' },
     ],
-  },
-  {
-    id: 'development',
-    labelKey: 'development',
-    icon: Bot,
-    items: [{ id: 'debug', labelKey: 'debug', path: APP_ROUTES.debug, permission: 'debug:access' }],
   },
 ];
 

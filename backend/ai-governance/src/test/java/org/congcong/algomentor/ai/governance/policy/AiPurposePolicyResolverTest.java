@@ -12,14 +12,13 @@ class AiPurposePolicyResolverTest {
     AiPurposePolicyResolver resolver = new AiPurposePolicyResolver(new AiGovernanceProperties());
 
     AiPurposePolicy learningPlan = resolver.resolve(AiPurpose.LEARNING_PLAN);
-    AiPurposePolicy explanation = resolver.resolve(AiPurpose.PROBLEM_EXPLANATION);
     AiPurposePolicy chat = resolver.resolve(AiPurpose.LEARNING_CHAT);
 
     assertThat(learningPlan.dailyRequestLimit()).isEqualTo(50);
     assertThat(learningPlan.maxConcurrentRunsPerUser()).isEqualTo(1);
     assertThat(learningPlan.toolsAllowed()).isTrue();
     assertThat(learningPlan.structuredOutputRequired()).isTrue();
-    assertThat(explanation.streamingAllowed()).isTrue();
+    assertThat(chat.streamingAllowed()).isTrue();
     assertThat(chat.systemPolicyVersion()).isEqualTo("learning-chat-p0");
   }
 

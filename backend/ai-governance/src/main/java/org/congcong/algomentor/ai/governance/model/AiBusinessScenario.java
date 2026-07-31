@@ -9,12 +9,6 @@ import java.util.Locale;
  * <p>场景 code 不携带系统提示词或模型路由策略的 schema 版本，供运行时路由、受管理提示词和管理端目录共同使用。</p>
  */
 public enum AiBusinessScenario {
-  MENTOR_CONVERSATION(
-      "mentor-conversation", "CONVERSATION", "普通导师会话", "Mentor conversation",
-      "普通导师会话使用的模型路由。", "Model routing for mentor conversations."),
-  TOPIC_EXPLANATION(
-      "topic-explanation", "CONVERSATION", "主题讲解", "Topic explanation",
-      "主题讲解使用的模型路由。", "Model routing for topic explanations."),
   PRACTICE_CHAT(
       "practice-chat", "PRACTICE", "题目训练聊天", "Practice chat",
       "题目训练聊天 Agent 使用的模型路由。", "Model routing for practice chat agents."),

@@ -59,7 +59,7 @@ class AiGovernedCompletionServiceTest {
     AiPurposePolicy policy = policy();
     LlmInvocationTarget target = target();
 
-    when(policyResolver.resolve(AiPurpose.PROBLEM_EXPLANATION)).thenReturn(policy);
+    when(policyResolver.resolve(AiPurpose.LEARNING_CHAT)).thenReturn(policy);
     when(runtimePolicyService.resolve(eq(policy), eq(7L))).thenReturn(enabledPolicy());
     when(admissionService.admit(any(AiRunContext.class))).thenAnswer(invocation -> {
       AiRunContext context = invocation.getArgument(0);
@@ -96,8 +96,8 @@ class AiGovernedCompletionServiceTest {
         AiCompletionContext.userEntry(
             7L,
             "run-1",
-            AiPurpose.PROBLEM_EXPLANATION,
-            AiRunSource.PROBLEM_DETAIL,
+            AiPurpose.LEARNING_CHAT,
+            AiRunSource.PRACTICE_CHAT,
             32));
 
     ArgumentCaptor<LlmCompletionRequest> request = ArgumentCaptor.forClass(LlmCompletionRequest.class);

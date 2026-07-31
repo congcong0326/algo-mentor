@@ -113,13 +113,9 @@ class AgentOpsObserverTest {
   }
 
   @Test
-  void mapsRuntimeAgentKeysAndFallsBackToAgentConversation() {
-    assertThat(observer.source(context(Map.of(AgentRuntimeMetadataKeys.AGENT_KEY, "topic-explanation"))))
-        .isEqualTo(AgentOpsSource.AI_EXPLANATION);
+  void mapsActiveRuntimeAgentKeysAndFallsBackToAgentConversation() {
     assertThat(observer.source(context(Map.of(AgentRuntimeMetadataKeys.AGENT_KEY, "practice-chat"))))
         .isEqualTo(AgentOpsSource.PRACTICE_MESSAGE);
-    assertThat(observer.source(context(Map.of(AgentRuntimeMetadataKeys.AGENT_KEY, "mentor-conversation"))))
-        .isEqualTo(AgentOpsSource.AGENT_CONVERSATION);
     assertThat(observer.source(context(Map.of(AgentRuntimeMetadataKeys.AGENT_KEY, "new-agent"))))
         .isEqualTo(AgentOpsSource.AGENT_CONVERSATION);
   }

@@ -12,20 +12,6 @@ public record AgentConversationCommand(
     PracticeChatReference practiceChat
 ) {
 
-  public AgentConversationCommand(Long taskId, Long userId, String userMessage, String idempotencyKey) {
-    this(taskId, userId, userMessage, idempotencyKey, Map.of(), null);
-  }
-
-  public AgentConversationCommand(
-      Long taskId,
-      Long userId,
-      String userMessage,
-      String idempotencyKey,
-      Map<String, Object> governanceMetadata
-  ) {
-    this(taskId, userId, userMessage, idempotencyKey, governanceMetadata, null);
-  }
-
   public AgentConversationCommand {
     if (userMessage == null || userMessage.isBlank()) {
       throw new IllegalArgumentException("Conversation user message must not be blank");
@@ -39,10 +25,9 @@ public record AgentConversationCommand(
     if (userId == null || userId < 1) {
       throw new IllegalArgumentException("Conversation user id must be positive");
     }
+    if (practiceChat == null) {
+      throw new IllegalArgumentException("Practice chat reference must not be null");
+    }
     governanceMetadata = governanceMetadata == null ? Map.of() : Map.copyOf(governanceMetadata);
-  }
-
-  public boolean practiceChatEnabled() {
-    return practiceChat != null;
   }
 }

@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 class AgentRunnerTest {
 
   @Test
-  void runsTopicExplanationThroughLlmGatewayContract() {
+  void runsAgentRequestThroughLlmGatewayContract() {
     FakeGateway gateway = new FakeGateway();
     AgentRunner runner = new AgentRunner(
         gateway,

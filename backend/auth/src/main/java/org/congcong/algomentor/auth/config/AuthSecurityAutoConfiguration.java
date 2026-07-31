@@ -198,7 +198,6 @@ public class AuthSecurityAutoConfiguration {
                 AuthSecurityPaths.AUTH_LOGOUT_PATH,
                 AuthSecurityPaths.LOGOUT_METHOD.name())).permitAll()
             .requestMatchers(new AntPathRequestMatcher(AuthSecurityPaths.ADMIN_API_PATTERN)).hasRole("ADMIN")
-            .requestMatchers(new AntPathRequestMatcher(AuthSecurityPaths.AGENT_CONVERSATIONS_API_PATTERN)).hasRole("ADMIN")
             .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
             .requestMatchers(new AntPathRequestMatcher("/index.html")).permitAll()
             .requestMatchers(new AntPathRequestMatcher("/assets/**")).permitAll()

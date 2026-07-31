@@ -37,7 +37,6 @@ import org.congcong.algomentor.agent.runtime.definition.AgentDefinitionRegistry;
 import org.congcong.algomentor.api.config.MentorAiConfiguration;
 import org.congcong.algomentor.api.problem.mapper.ProblemTagMapper;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
-import org.congcong.algomentor.mentor.application.conversation.MentorConversationAgentDefinition;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
@@ -132,21 +131,6 @@ class AgentConversationApiAutoConfigurationTest {
           assertThat(context).doesNotHaveBean(LlmGateway.class);
           assertThat(context).hasSingleBean(PracticeTurnOrchestrator.class);
           assertThat(context).hasSingleBean(PracticeMessageStreamService.class);
-        });
-  }
-
-  @Test
-  void registersMentorConversationDefinitionInTheRuntimeRegistry() {
-    new ApplicationContextRunner()
-        .withConfiguration(AutoConfigurations.of(
-            JacksonAutoConfiguration.class,
-            AgentConversationApiAutoConfiguration.class))
-        .withUserConfiguration(PracticeStreamWithoutReviewDependencies.class, MentorAiConfiguration.class)
-        .run(context -> {
-          assertThat(context).hasSingleBean(MentorConversationAgentDefinition.class);
-          assertThat(context.getBean(AgentDefinitionRegistry.class)
-              .resolve(MentorConversationAgentDefinition.KEY))
-              .isSameAs(context.getBean(MentorConversationAgentDefinition.class));
         });
   }
 

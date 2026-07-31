@@ -41,7 +41,7 @@ class DefaultLlmGatewayFactoryTest {
     LlmGateway gateway = factory.create(List.of(provider), new LlmGatewayOptions(OPENAI, GPT_TEST));
 
     LlmCompletionResult result = gateway.complete(LlmCompletionRequest.builder()
-        .modelSelector(new LlmModelSelector(null, null, Set.of(), "topic-explanation"))
+        .modelSelector(new LlmModelSelector(null, null, Set.of(), "practice-chat"))
         .messages(List.of(LlmMessage.user("hello")))
         .build());
 
@@ -49,7 +49,7 @@ class DefaultLlmGatewayFactoryTest {
     assertThat(result.model()).isEqualTo(GPT_TEST);
     assertThat(provider.lastRequest.modelSelector().providerId()).contains(OPENAI);
     assertThat(provider.lastRequest.modelSelector().modelId()).contains(GPT_TEST);
-    assertThat(provider.lastRequest.modelSelector().purpose()).isEqualTo("topic-explanation");
+    assertThat(provider.lastRequest.modelSelector().purpose()).isEqualTo("practice-chat");
   }
 
   @Test

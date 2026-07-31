@@ -12,7 +12,6 @@ interface AppShellProps {
   activeView: AppView;
   children: ReactNode;
   currentUser: CurrentUser;
-  debugStatus?: ReactNode;
   feedbackUnreadCount?: number;
   logoutError?: string;
   logoutPending?: boolean;
@@ -27,7 +26,6 @@ export default function AppShell({
   activeView,
   children,
   currentUser,
-  debugStatus,
   feedbackUnreadCount,
   logoutError,
   logoutPending = false,
@@ -51,7 +49,6 @@ export default function AppShell({
     : permissions.has('ai-governance:manage') ? 'adminAi'
     : permissions.has('problem:read') ? 'problems'
     : permissions.has('feedback:manage') ? 'adminFeedback'
-    : permissions.has('debug:access') ? 'debug'
     : undefined;
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
@@ -120,7 +117,6 @@ export default function AppShell({
           })}
         </nav>
         <div className="app-header-actions">
-          {debugStatus}
           {!isAdmin && onOpenFeedback ? (
             <HeaderActionTooltip id="feedback-trigger-tooltip" label={resources.feedback.openDialog}>
               <button

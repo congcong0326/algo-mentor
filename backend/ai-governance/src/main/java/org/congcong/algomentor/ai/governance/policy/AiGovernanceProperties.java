@@ -66,9 +66,6 @@ public class AiGovernanceProperties {
     defaults.put(AiPurpose.LEARNING_PLAN, new PurposeProperties(
         true, 50, 1, 32768, 4096, 12, false, true, true, false,
         null, null, "learning-plan-p0"));
-    defaults.put(AiPurpose.PROBLEM_EXPLANATION, new PurposeProperties(
-        true, 50, 1, 32768, 2048, 8, true, true, false, false,
-        null, null, "problem-explanation-p0"));
     defaults.put(AiPurpose.LEARNING_CHAT, new PurposeProperties(
         true, 50, 1, 16384, 2048, 8, true, true, false, false,
         null, null, "learning-chat-p0"));

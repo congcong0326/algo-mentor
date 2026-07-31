@@ -1,5 +1,4 @@
 import type {
-  AgentConversationStreamRequest,
   AgentToolPermissionDecisionRequest,
   AgentToolPermissionDecisionResponse,
   AbilityProfileResponse,
@@ -1970,39 +1969,6 @@ function toQueryString(query: QueryParams): string {
   return serialized ? `?${serialized}` : '';
 }
 
-export interface StreamAgentConversationOptions {
-  idempotencyKey: string;
-  signal?: AbortSignal;
-  onOpen?: () => void;
-  onEvent: (event: SseStreamEvent) => void;
-}
-
-export async function streamAgentConversation(
-  request: AgentConversationStreamRequest,
-  options: StreamAgentConversationOptions,
-): Promise<void> {
-  const response = await apiFetch('/api/agent/conversations/stream', {
-    method: 'POST',
-    headers: {
-      Accept: 'text/event-stream, application/json',
-      'Content-Type': 'application/json',
-      'Idempotency-Key': options.idempotencyKey,
-    },
-    body: JSON.stringify(compactRequest(request)),
-    signal: options.signal,
-  });
-
-  if (!response.ok) {
-    throw await toApiRequestError(response, 'Conversation stream failed');
-  }
-  if (!response.body) {
-    throw new Error('Conversation stream response does not include a readable body');
-  }
-
-  options.onOpen?.();
-  await readEventStream(response.body, options.onEvent);
-}
-
 export async function decideAgentToolPermission(
   permissionRequestId: string,
   request: AgentToolPermissionDecisionRequest,
@@ -2125,15 +2091,6 @@ function apiResponseToRequestError<T>(
     response.error?.messageKey,
     response.error?.metadata,
   );
-}
-
-function compactRequest(request: AgentConversationStreamRequest): AgentConversationStreamRequest {
-  return {
-    ...(request.taskId === undefined ? {} : { taskId: request.taskId }),
-    ...(request.userId === undefined ? {} : { userId: request.userId }),
-    message: request.message,
-    ...(request.practice === undefined ? {} : { practice: request.practice }),
-  };
 }
 
 async function readEventStream(

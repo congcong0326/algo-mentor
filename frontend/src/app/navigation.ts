@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Activity, Archive, Bot, ClipboardList, House, LayoutDashboard, Library, MessageSquare, NotebookTabs, Settings, ShieldCheck, SlidersHorizontal, UserRound, UsersRound } from 'lucide-react';
+import { Activity, Archive, ClipboardList, House, LayoutDashboard, Library, MessageSquare, NotebookTabs, Settings, ShieldCheck, SlidersHorizontal, UserRound, UsersRound } from 'lucide-react';
 import type { AuthPermission } from '../types/api';
 
 export const APP_ROUTES = {
@@ -24,12 +24,10 @@ export const APP_ROUTES = {
   adminOverview: '/admin',
   adminFeedback: '/admin/feedback',
   passwordChangeRequired: '/password/change-required',
-  debug: '/admin/debug',
 } as const;
 
 // Preserved only to normalize old bookmarks after the user inbox moved to a dialog.
 export const LEGACY_FEEDBACK_ROUTE = '/feedback';
-export const LEGACY_DEBUG_ROUTE = '/debug';
 
 const LEARNING_PLAN_DETAIL_PATTERN = /^\/learning-plans\/(\d+)$/;
 const LEARNING_PLAN_PRACTICE_CHAT_PATTERN = /^\/learning-plans\/(\d+)\/phases\/(\d+)\/problems\/([^/]+)\/chat$/;
@@ -88,8 +86,7 @@ export type AppView =
   | 'adminAi'
   | 'adminOverview'
   | 'adminFeedback'
-  | 'passwordChangeRequired'
-  | 'debug';
+  | 'passwordChangeRequired';
 
 type NavigationView = Exclude<AppView, 'passwordChangeRequired'>;
 
@@ -206,13 +203,6 @@ export const NAVIGATION_ITEMS: NavigationItem[] = [
     permission: 'feedback:manage',
   },
   {
-    view: 'debug',
-    labelKey: 'debug',
-    path: APP_ROUTES.debug,
-    icon: Bot,
-    permission: 'debug:access',
-  },
-  {
     view: 'my',
     labelKey: 'my',
     path: APP_ROUTES.my,
@@ -279,9 +269,6 @@ export function viewFromPath(pathname: string): AppView | undefined {
   }
   if (pathname === APP_ROUTES.passwordChangeRequired) {
     return 'passwordChangeRequired';
-  }
-  if (pathname === APP_ROUTES.debug) {
-    return 'debug';
   }
   if (
     pathname === APP_ROUTES.learningPlans

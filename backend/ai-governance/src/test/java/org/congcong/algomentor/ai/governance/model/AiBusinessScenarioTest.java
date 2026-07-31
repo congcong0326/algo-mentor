@@ -24,9 +24,9 @@ class AiBusinessScenarioTest {
   }
 
   @Test
-  void mapsLegacySourcesToBusinessScenariosExceptAiDebug() {
-    assertThat(AiRunSource.PROBLEM_DETAIL.businessScenario())
-        .contains(AiBusinessScenario.TOPIC_EXPLANATION);
+  void keepsRetiredSourcesOutOfTheActiveBusinessScenarioDirectory() {
+    assertThat(AiRunSource.PROBLEM_DETAIL.businessScenario()).isEmpty();
+    assertThat(AiRunSource.LEARNING_CHAT.businessScenario()).isEmpty();
     assertThat(AiRunSource.AI_DEBUG.businessScenario()).isEmpty();
   }
 

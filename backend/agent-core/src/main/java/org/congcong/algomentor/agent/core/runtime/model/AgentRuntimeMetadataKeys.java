@@ -43,7 +43,7 @@ public final class AgentRuntimeMetadataKeys {
   public static final String CONTEXT_POLICY_VERSION = "contextPolicyVersion";
 
   /**
-   * 业务适配器标识，用于区分 topic explanation、conversation 等入口。
+   * 业务适配器标识，用于区分不同 Agent 入口。
    */
   public static final String ADAPTER = "adapter";
 

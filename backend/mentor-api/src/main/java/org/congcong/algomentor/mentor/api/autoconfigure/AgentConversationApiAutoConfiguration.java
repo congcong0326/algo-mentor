@@ -22,19 +22,15 @@ import org.congcong.algomentor.api.config.PracticeCodeReviewProperties;
 import org.congcong.algomentor.api.config.PracticeChatPromptProperties;
 import org.congcong.algomentor.agent.persistence.postgres.config.AgentPostgresPersistenceConfiguration;
 import org.congcong.algomentor.ai.governance.autoconfigure.AiGovernanceAutoConfiguration;
-import org.congcong.algomentor.api.controller.AgentConversationController;
 import org.congcong.algomentor.api.controller.practice.PracticeSessionController;
 import org.congcong.algomentor.api.problem.mapper.ProblemTagMapper;
 import org.congcong.algomentor.api.practice.service.MyBatisTrustedProblemTagCatalog;
 import org.congcong.algomentor.api.practice.mapper.PracticeCodeReviewMapper;
 import org.congcong.algomentor.api.profile.repository.MyBatisLearnerMemoryCodeReviewFactRepository;
 import org.congcong.algomentor.api.profile.repository.MyBatisCodeReviewHistoryRepository;
-import org.congcong.algomentor.api.service.AiActorResolver;
 import org.congcong.algomentor.api.service.LlmStreamSseMapper;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
-import org.congcong.algomentor.mentor.application.conversation.MentorConversationAgentDefinition;
-import org.congcong.algomentor.mentor.application.conversation.MentorConversationRunAdapter;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceService;
@@ -474,24 +470,6 @@ public class AgentConversationApiAutoConfiguration {
   @Bean
   @ConditionalOnBean({
       AgentConversationService.class,
-      AgentRunLockManager.class,
-      AgentRunLockOwnerProvider.class
-  })
-  @ConditionalOnMissingBean
-  public MentorConversationAgentDefinition mentorConversationAgentDefinition(
-      AgentConversationService conversationService,
-      AgentRunLockManager lockManager,
-      AgentRunLockOwnerProvider lockOwnerProvider
-  ) {
-    return new MentorConversationAgentDefinition(new MentorConversationRunAdapter(
-        conversationService,
-        lockManager,
-        lockOwnerProvider));
-  }
-
-  @Bean
-  @ConditionalOnBean({
-      AgentConversationService.class,
       PracticeSessionRepository.class,
       AgentRunLockManager.class,
       AgentRunLockOwnerProvider.class
@@ -518,28 +496,6 @@ public class AgentConversationApiAutoConfiguration {
     return new PracticeChatAgentDefinition(
         new PracticeChatRunAdapter(conversationService, lockManager, lockOwnerProvider),
         toolNames);
-  }
-
-  @Bean
-  @ConditionalOnBean({
-      AgentRuntime.class,
-      LlmStreamSseMapper.class,
-      AiActorResolver.class
-  })
-  @ConditionalOnMissingBean
-  public AgentConversationController agentConversationController(
-      AgentRuntime agentRuntime,
-      LlmStreamSseMapper sseMapper,
-      AiActorResolver actorResolver,
-      ObjectProvider<PracticeMessageStreamService> practiceMessageStreamService,
-      ApiSseProperties sseProperties
-  ) {
-    return new AgentConversationController(
-        agentRuntime,
-        sseMapper,
-        actorResolver,
-        practiceMessageStreamService,
-        sseProperties);
   }
 
   @Bean

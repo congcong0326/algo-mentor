@@ -311,16 +311,6 @@ class AuthSecurityAutoConfigurationTest {
   }
 
   @Test
-  void agentConversationApiRequiresAdminRole() throws Exception {
-    mockMvc.perform(get("/api/agent/conversations/ping").with(authentication(authenticationToken(AuthRole.USER))))
-        .andExpect(status().isForbidden());
-
-    mockMvc.perform(get("/api/agent/conversations/ping").with(authentication(authenticationToken(AuthRole.ADMIN))))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status").value("agent"));
-  }
-
-  @Test
   void appliesSessionCookiePropertiesFromAuthConfiguration() throws Exception {
     MockServletContext servletContext = new MockServletContext();
 
@@ -485,10 +475,6 @@ class AuthSecurityAutoConfigurationTest {
       return new StatusResponse("problems");
     }
 
-    @GetMapping("/api/agent/conversations/ping")
-    public StatusResponse agentConversationPing() {
-      return new StatusResponse("agent");
-    }
   }
 
   record StatusResponse(String status) {

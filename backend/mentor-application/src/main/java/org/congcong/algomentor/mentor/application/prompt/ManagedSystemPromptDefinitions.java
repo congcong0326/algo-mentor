@@ -14,44 +14,6 @@ public final class ManagedSystemPromptDefinitions {
 
   private static final String BRAND_NAME = "Leet Mentor";
 
-  public static final ManagedSystemPromptDefinition MENTOR_CONVERSATION = definition(
-      AiBusinessScenario.MENTOR_CONVERSATION,
-      SystemPromptTypeCodes.MENTOR_CONVERSATION_V1,
-      "2026-07-30.2",
-      SystemPromptSnapshotScope.TASK,
-      descriptor("CONVERSATION", "普通导师会话", "Mentor conversation", "普通导师会话的系统指令。"),
-      section(SystemPromptSectionKeys.MENTOR_CONVERSATION_BASE, "导师基线", 10, true, """
-          你是 %s 中负责算法学习辅导的导师。
-
-          任务：围绕用户当前问题，提供正确、清晰且可执行的算法学习帮助。
-
-          回答要求：
-          1. 先回答核心问题；适合引导思考时，再提出一个聚焦问题，不要用连续追问代替回答。
-          2. 明确区分题目事实、推导结论和必要假设；信息不足时说明缺失内容，不得编造题目条件、代码或执行结果。
-          3. 涉及算法时说明核心思路，并在适用时给出时间复杂度和空间复杂度。
-          4. 需要代码示例时优先使用 Java，代码应完整、可读，并与讲解保持一致。
-          5. 默认使用用户当前使用的语言回复；代码、API 名称和其他固定技术标识保持原样。
-          """.formatted(BRAND_NAME).strip()));
-
-  public static final ManagedSystemPromptDefinition TOPIC_EXPLANATION = definition(
-      AiBusinessScenario.TOPIC_EXPLANATION,
-      SystemPromptTypeCodes.TOPIC_EXPLANATION_V1,
-      "2026-07-30.2",
-      SystemPromptSnapshotScope.TASK,
-      descriptor("CONVERSATION", "主题讲解", "Topic explanation", "主题讲解的固定系统指令。"),
-      section(SystemPromptSectionKeys.TOPIC_EXPLANATION_BASE, "主题讲解基线", 10, true, """
-          你是 %s 中负责算法主题讲解的学习导师。
-
-          任务：准确讲解给定主题，帮助算法学习者建立可以用于解题和复习的理解框架。
-
-          讲解要求：
-          1. 先用直观语言定义主题，再说明核心性质、适用场景和识别线索。
-          2. 使用由简到难、可以手工验证的例子；不得编造题目条件或执行结果。
-          3. 涉及算法时说明关键步骤、正确性依据、时间复杂度和空间复杂度。
-          4. 需要代码时优先使用 Java，并说明实现中的边界条件和常见错误。
-          5. 聚焦用户请求的主题，不扩展到无关内容；信息不足时明确说明必要假设。
-          """.formatted(BRAND_NAME).strip()));
-
   public static final ManagedSystemPromptDefinition PRACTICE_CHAT = definition(
       AiBusinessScenario.PRACTICE_CHAT,
       SystemPromptTypeCodes.PRACTICE_CHAT_V1,
@@ -316,8 +278,6 @@ public final class ManagedSystemPromptDefinitions {
           """.formatted(BRAND_NAME).strip()));
 
   private static final List<ManagedSystemPromptDefinition> ALL = List.of(
-      MENTOR_CONVERSATION,
-      TOPIC_EXPLANATION,
       PRACTICE_CHAT,
       LEARNING_PLAN_DRAFT,
       LEARNING_PLAN_REVISION,

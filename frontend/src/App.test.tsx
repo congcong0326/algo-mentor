@@ -1,6 +1,5 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { debugStatusLabel } from './ai-debug/AiDebugConsole';
 import App from './App';
 import { THEME_STORAGE_KEY } from './app/theme';
 import { I18nProvider } from './i18n/I18nProvider';
@@ -121,7 +120,6 @@ describe('App', () => {
     expect(screen.queryByRole('button', { name: '方案' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '我的' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '用户管理' })).not.toBeInTheDocument();
     expect(screen.queryByText('训练方案')).not.toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent('正在检查登录状态...');
@@ -141,7 +139,6 @@ describe('App', () => {
     expect(screen.getByRole('button', { name: '切换为深色模式' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '登录' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '开始使用' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
     expect(window.location.pathname).toBe('/');
   });
 
@@ -777,46 +774,6 @@ describe('App', () => {
     expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
   });
 
-  it('renders the conversation stream test client shell', async () => {
-    vi.stubGlobal('fetch', mockAuthenticatedDebugFetch());
-    window.history.replaceState({}, '', '/debug');
-    render(<App />);
-
-    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
-    expect(screen.getByText('User Name')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '开发工具' })).toHaveAttribute('aria-current', 'page');
-    expect(screen.queryByRole('button', { name: '题库' })).not.toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: 'Message' })).toHaveValue(
-      'Explain two pointers with a concrete example.',
-    );
-    expect(screen.getByRole('textbox', { name: 'Task ID' })).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: 'User ID' })).toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: 'Idempotency Key' })).toHaveValue('generated-key');
-    expect(screen.getByRole('button', { name: 'Start' })).toBeInTheDocument();
-    expect(screen.getByText('POST /api/agent/conversations/stream')).toBeInTheDocument();
-  });
-
-  it('hides and blocks debug route for users without debug permission', async () => {
-    const fetchMock = vi.fn((url: string) => {
-      if (url === '/api/auth/me') {
-        return Promise.resolve(userWithoutDebugPermissionResponse());
-      }
-      if (isTodayPackUrl(url)) {
-        return Promise.resolve(todayPackApiResponse());
-      }
-      return Promise.reject(new Error(`Unexpected URL: ${url}`));
-    });
-    vi.stubGlobal('fetch', fetchMock);
-    window.history.replaceState({}, '', '/debug');
-
-    render(<App />);
-
-    expect(await screen.findByText('User Name')).toBeInTheDocument();
-    expect(await screen.findByRole('article', { name: '首页' })).toHaveClass('today-pack-home');
-    expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
-    expect(window.location.pathname).toBe('/');
-  });
-
   it('redirects admin users route to home without user manage permission', async () => {
     vi.stubGlobal('fetch', mockAuthenticatedUserWithoutUserManageFetch());
     window.history.replaceState({}, '', '/admin/users');
@@ -932,7 +889,6 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { name: '用户管理' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '身份与访问' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('button', { name: '内容管理' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '开发工具' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '首页' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '方案' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '我的' })).not.toBeInTheDocument();
@@ -959,8 +915,8 @@ describe('App', () => {
     expect(window.location.pathname).toBe('/me');
   });
 
-  it('keeps problem library and debug routes available to admin users', async () => {
-    vi.stubGlobal('fetch', mockAdminProblemAndDebugFetch());
+  it('keeps the problem library available to admin users', async () => {
+    vi.stubGlobal('fetch', mockProblemFetch());
     window.history.replaceState({}, '', '/admin/problems');
 
     render(<App />);
@@ -969,33 +925,6 @@ describe('App', () => {
     expect(screen.getByRole('button', { name: '内容管理' })).toHaveAttribute('aria-current', 'page');
     expect(window.location.pathname).toBe('/admin/problems');
 
-    fireEvent.click(screen.getByRole('button', { name: '开发工具' }));
-
-    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '开发工具' })).toHaveAttribute('aria-current', 'page');
-    expect(window.location.pathname).toBe('/admin/debug');
-  });
-
-  it('exposes debug status labels for the app shell', () => {
-    expect(debugStatusLabel('idle')).toBe('idle');
-    expect(debugStatusLabel('connecting')).toBe('connecting');
-    expect(debugStatusLabel('open')).toBe('open');
-    expect(debugStatusLabel('blocked')).toBe('blocked');
-    expect(debugStatusLabel('stopped')).toBe('stopped');
-    expect(debugStatusLabel('error')).toBe('error');
-    expect(debugStatusLabel('done')).toBe('done');
-  });
-
-  it('renders when crypto.randomUUID is unavailable', async () => {
-    vi.stubGlobal('crypto', {});
-    vi.stubGlobal('fetch', mockAuthenticatedDebugFetch());
-    window.history.replaceState({}, '', '/debug');
-
-    render(<App />);
-
-    expect((await screen.findByRole<HTMLInputElement>('textbox', { name: 'Idempotency Key' })).value).toMatch(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-    );
   });
 
   it('loads authenticated user and logs out with csrf token', async () => {
@@ -1013,7 +942,6 @@ describe('App', () => {
               'learning-plan:read:own',
               'learning-plan:write:own',
               'practice-session:write:own',
-              'debug:access',
             ],
             status: 'ACTIVE',
           },
@@ -1032,7 +960,7 @@ describe('App', () => {
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
     vi.stubGlobal('fetch', fetchMock);
-    window.history.replaceState({}, '', '/debug');
+    window.history.replaceState({}, '', '/');
 
     render(<App />);
 
@@ -1071,7 +999,7 @@ describe('App', () => {
       return Promise.reject(new Error(`Unexpected URL: ${url}`));
     });
     vi.stubGlobal('fetch', fetchMock);
-    window.history.replaceState({}, '', '/debug');
+    window.history.replaceState({}, '', '/');
 
     render(<App />);
 
@@ -1114,303 +1042,12 @@ describe('App', () => {
 
     expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
-    fireEvent.click(screen.getByRole('button', { name: '管理后台' }));
-    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
     fireEvent.click(screen.getByRole('button', { name: '退出登录' }));
 
     expect(await screen.findByRole('button', { name: '登录' })).toBeInTheDocument();
     expect(window.location.pathname).toBe('/');
 
-    window.history.pushState({}, '', '/debug');
-    fireEvent(window, new PopStateEvent('popstate'));
-
-    await waitFor(() => expect(window.location.pathname).toBe('/'));
-    expect(screen.getByRole('button', { name: '登录' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'AI 调试' })).not.toBeInTheDocument();
   });
-
-  it('posts conversation stream request with body and idempotency key', async () => {
-    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
-      if (url === '/api/auth/me') {
-        return Promise.resolve(authenticatedUserResponse());
-      }
-      if (isLearningPlanListUrl(url)) {
-        return Promise.resolve(jsonResponse({
-          success: true,
-          data: learningPlanPage([]),
-          timestamp: '2026-06-22T00:00:00Z',
-        }));
-      }
-      if (url === '/api/agent/conversations/stream') {
-        expect(init?.credentials).toBe('same-origin');
-        expect(new Headers(init?.headers).get('X-XSRF-TOKEN')).toBe('csrf-token');
-        return Promise.resolve(new Response(sseStream([
-          sseEvent('agent_run_end', { runId: 'run_1' }),
-        ]), { status: 200 }));
-      }
-      return Promise.reject(new Error(`Unexpected URL: ${url}`));
-    });
-    vi.stubGlobal('fetch', fetchMock);
-    window.history.replaceState({}, '', '/debug');
-    render(<App />);
-
-    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
-    fireEvent.change(screen.getByRole('textbox', { name: 'Message' }), {
-      target: { value: 'Continue with boundary cases.' },
-    });
-    fireEvent.change(screen.getByRole('textbox', { name: 'Task ID' }), {
-      target: { value: '42' },
-    });
-    fireEvent.change(screen.getByRole('textbox', { name: 'User ID' }), {
-      target: { value: '7' },
-    });
-    fireEvent.change(screen.getByRole('textbox', { name: 'Idempotency Key' }), {
-      target: { value: 'idem-1' },
-    });
-    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
-
-    await waitFor(() => expect(fetchMock).toHaveBeenCalled());
-    const streamCall = fetchMock.mock.calls.find(([url]) => url === '/api/agent/conversations/stream');
-    expect(streamCall).toBeDefined();
-    const [, streamInit] = streamCall as [string, RequestInit];
-    const streamHeaders = new Headers(streamInit.headers);
-    expect(streamInit).toEqual(expect.objectContaining({
-      method: 'POST',
-      body: JSON.stringify({
-        taskId: 42,
-        userId: 7,
-        message: 'Continue with boundary cases.',
-      }),
-    }));
-    expect(streamHeaders.get('Accept')).toBe('text/event-stream, application/json');
-    expect(streamHeaders.get('Content-Type')).toBe('application/json');
-    expect(streamHeaders.get('Idempotency-Key')).toBe('idem-1');
-  });
-
-  it('merges consecutive content_delta logs into one event row', async () => {
-    vi.stubGlobal('fetch', mockStreamFetch([
-      sseEvent('content_delta', { content: 'Hello' }),
-      sseEvent('content_delta', { content: ' world' }),
-      sseEvent('agent_run_end', { runId: 'run_1' }),
-    ]));
-    window.history.replaceState({}, '', '/debug');
-    render(<App />);
-
-    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
-    const startButton = screen.getByRole('button', { name: 'Start' });
-    await act(async () => {
-      fireEvent.click(startButton);
-    });
-
-    expect(await screen.findByText('Hello world')).toBeInTheDocument();
-    expect(screen.getAllByText('content_delta')).toHaveLength(1);
-
-    const logPanel = screen.getByRole('heading', { name: '事件日志' }).closest('article');
-    expect(logPanel).not.toBeNull();
-    expect(within(logPanel as HTMLElement).getByText(/Hello world/)).toBeInTheDocument();
-  });
-
-  it('starts a new content_delta log after another event type', async () => {
-    vi.stubGlobal('fetch', mockStreamFetch([
-      sseEvent('content_delta', { content: 'first' }),
-      sseEvent('usage', { usage: { totalTokens: 3 } }),
-      sseEvent('content_delta', { content: 'second' }),
-      sseEvent('agent_run_end', { runId: 'run_1' }),
-    ]));
-    window.history.replaceState({}, '', '/debug');
-    render(<App />);
-
-    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
-    const startButton = screen.getByRole('button', { name: 'Start' });
-    await act(async () => {
-      fireEvent.click(startButton);
-    });
-
-    expect(screen.getAllByText('content_delta')).toHaveLength(2);
-    expect(screen.getByText('usage')).toBeInTheDocument();
-    expect(screen.getByText('firstsecond')).toBeInTheDocument();
-  });
-
-  it('aborts the current stream when stopped', async () => {
-    let capturedSignal: AbortSignal | undefined;
-    vi.stubGlobal('fetch', vi.fn((url: string, init?: RequestInit) => {
-      if (url === '/api/auth/me') {
-        return Promise.resolve(authenticatedUserResponse());
-      }
-      if (isLearningPlanListUrl(url)) {
-        return Promise.resolve(jsonResponse({
-          success: true,
-          data: learningPlanPage([]),
-          timestamp: '2026-06-22T00:00:00Z',
-        }));
-      }
-      capturedSignal = init?.signal ?? undefined;
-      return new Promise<Response>(() => {});
-    }));
-    window.history.replaceState({}, '', '/debug');
-    render(<App />);
-
-    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
-    await waitFor(() => expect(capturedSignal).toBeDefined());
-    fireEvent.click(screen.getByRole('button', { name: 'Stop' }));
-
-    expect(capturedSignal?.aborted).toBe(true);
-    expect(screen.getByText('stopped')).toBeInTheDocument();
-    expect(screen.getByText('connection_stopped')).toBeInTheDocument();
-  });
-
-  it('aborts the current stream when logging out', async () => {
-    let capturedSignal: AbortSignal | undefined;
-    let resolveLogout: ((response: Response) => void) | undefined;
-    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
-      if (url === '/api/auth/me') {
-        return Promise.resolve(authenticatedUserResponse());
-      }
-      if (isLearningPlanListUrl(url)) {
-        return Promise.resolve(jsonResponse({
-          success: true,
-          data: learningPlanPage([]),
-          timestamp: '2026-06-22T00:00:00Z',
-        }));
-      }
-      if (url === '/api/auth/logout') {
-        return new Promise<Response>((resolve) => {
-          resolveLogout = resolve;
-        });
-      }
-      if (url === '/api/auth/capabilities') {
-        return Promise.resolve(authCapabilitiesResponse());
-      }
-      capturedSignal = init?.signal ?? undefined;
-      return new Promise<Response>(() => {});
-    });
-    vi.stubGlobal('fetch', fetchMock);
-    window.history.replaceState({}, '', '/debug');
-    render(<App />);
-
-    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
-    await waitFor(() => expect(capturedSignal).toBeDefined());
-    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
-    fireEvent.click(screen.getByRole('button', { name: '退出登录' }));
-
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledWith(
-      '/api/auth/logout',
-      expect.objectContaining({ method: 'POST' }),
-    ));
-    expect(capturedSignal?.aborted).toBe(true);
-    resolveLogout?.(jsonResponse({ success: true, timestamp: '2026-06-22T00:00:00Z' }));
-    await screen.findByRole('button', { name: '登录' });
-    expect(screen.queryByRole('textbox', { name: 'Message' })).not.toBeInTheDocument();
-  });
-
-  it('aborts and resets debug status when navigating away from an active stream', async () => {
-    let capturedSignal: AbortSignal | undefined;
-    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
-      if (url === '/api/auth/me') {
-        return Promise.resolve(authenticatedUserResponse());
-      }
-      if (isLearningPlanListUrl(url)) {
-        return Promise.resolve(jsonResponse({
-          success: true,
-          data: learningPlanPage([]),
-          timestamp: '2026-06-22T00:00:00Z',
-        }));
-      }
-      if (url === '/api/agent/conversations/stream') {
-        capturedSignal = init?.signal ?? undefined;
-        return new Promise<Response>(() => {});
-      }
-      return Promise.reject(new Error(`Unexpected URL: ${url}`));
-    });
-    vi.stubGlobal('fetch', fetchMock);
-    window.history.replaceState({}, '', '/debug');
-    render(<App />);
-
-    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
-
-    await waitFor(() => expect(capturedSignal).toBeDefined());
-    expect(screen.getByText('connecting')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: '返回学习端' }));
-    fireEvent.click(screen.getByRole('button', { name: '方案' }));
-
-    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
-    expect(capturedSignal?.aborted).toBe(true);
-
-    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
-    fireEvent.click(screen.getByRole('button', { name: '管理后台' }));
-
-    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
-    expect(screen.getByText('idle')).toBeInTheDocument();
-    expect(screen.queryByText('connecting')).not.toBeInTheDocument();
-    expect(screen.getByRole('textbox', { name: 'Message' })).toBeEnabled();
-  });
-
-  it('resets terminal debug status when navigating away after stream completion', async () => {
-    vi.stubGlobal('fetch', mockStreamFetch([
-      sseEvent('agent_run_end', { runId: 'run_1' }),
-    ]));
-    window.history.replaceState({}, '', '/debug');
-    render(<App />);
-
-    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Start' }));
-    });
-
-    expect(await screen.findByText('done')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: '返回学习端' }));
-    fireEvent.click(screen.getByRole('button', { name: '方案' }));
-
-    expect(await screen.findByRole('button', { name: '新建方案' })).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'User Name' }));
-    fireEvent.click(screen.getByRole('button', { name: '管理后台' }));
-
-    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
-    expect(screen.getByText('idle')).toBeInTheDocument();
-    expect(screen.queryByText('done')).not.toBeInTheDocument();
-  });
-
-  it('keeps sending disabled when backend reports an active run', async () => {
-    vi.stubGlobal('fetch', vi.fn((url: string) => {
-      if (url === '/api/auth/me') {
-        return Promise.resolve(authenticatedUserResponse());
-      }
-      if (isLearningPlanListUrl(url)) {
-        return Promise.resolve(jsonResponse({
-          success: true,
-          data: learningPlanPage([]),
-          timestamp: '2026-06-22T00:00:00Z',
-        }));
-      }
-      return Promise.resolve(jsonResponse({
-        success: false,
-        error: {
-          code: 'AGENT_RUN_IN_PROGRESS',
-          message: '当前会话正在生成回答',
-          metadata: { taskId: 42 },
-        },
-        timestamp: '2026-06-19T00:00:00Z',
-      }, 409));
-    }));
-    window.history.replaceState({}, '', '/debug');
-    render(<App />);
-
-    expect(await screen.findByRole('textbox', { name: 'Message' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
-
-    expect(await screen.findByText('blocked')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Start' })).toBeDisabled();
-    expect(screen.getByText(/AGENT_RUN_IN_PROGRESS/)).toBeInTheDocument();
-  });
-
   it('loads problem list and detail in problem library view', async () => {
     const fetchMock = mockProblemFetch();
     vi.stubGlobal('fetch', fetchMock);
@@ -1733,7 +1370,6 @@ describe('App', () => {
     expectCsrfHeader(fetchMock, '/api/practice-sessions/50/progress-status', 'PATCH');
     const progressCall = fetchMock.mock.calls.find(([url]) => url === '/api/practice-sessions/50/progress-status');
     expect(progressCall?.[1]?.body).toBe(JSON.stringify({ status: 'COMPLETED' }));
-    expect(fetchMock.mock.calls.some(([url]) => url === '/api/agent/conversations/stream')).toBe(false);
   });
 
   it('returns from a today pack practice chat to the today pack detail query', async () => {
@@ -2588,7 +2224,6 @@ function authenticatedUserResponse(): Response {
     'learning-plan:read:own',
     'learning-plan:write:own',
     'practice-session:write:own',
-    'debug:access',
   ], ['USER']);
 }
 
@@ -2601,16 +2236,7 @@ function adminUserResponse(): Response {
     'problem:write',
     'user:manage',
     'beta-access:manage',
-    'debug:access',
   ], ['USER', 'ADMIN']);
-}
-
-function userWithoutDebugPermissionResponse(): Response {
-  return authenticatedUserResponseWithPermissions([
-    'learning-plan:read:own',
-    'learning-plan:write:own',
-    'practice-session:write:own',
-  ], ['USER']);
 }
 
 function authenticatedUserResponseWithPermissions(permissions: string[], roles: string[]): Response {
@@ -2706,15 +2332,6 @@ function mockAuthenticatedAppFetch() {
   });
 }
 
-function mockAuthenticatedDebugFetch() {
-  return vi.fn((url: string) => {
-    if (url === '/api/auth/me') {
-      return Promise.resolve(authenticatedUserResponse());
-    }
-    return Promise.reject(new Error(`Unexpected URL: ${url}`));
-  });
-}
-
 function mockAdminUserManagementFetch() {
   return vi.fn((url: string) => {
     if (url === '/api/auth/me') {
@@ -2780,44 +2397,6 @@ function mockAdminAiGovernanceFetch() {
         success: true,
         data: { items: [] },
         timestamp: '2026-07-27T00:00:00Z',
-      }));
-    }
-    return Promise.reject(new Error(`Unexpected URL: ${url}`));
-  });
-}
-
-function mockAdminProblemAndDebugFetch() {
-  return vi.fn((url: string) => {
-    if (url === '/api/auth/me') {
-      return Promise.resolve(adminUserResponse());
-    }
-    if (url.startsWith('/api/admin/problems/filters')) {
-      return Promise.resolve(jsonResponse({
-        success: true,
-        data: problemFilters(),
-        timestamp: '2026-06-17T00:00:00Z',
-      }));
-    }
-    if (url.startsWith('/api/admin/problems')) {
-      return Promise.resolve(jsonResponse({
-        success: true,
-        data: {
-          items: [{
-            slug: 'two-sum',
-            frontendId: 1,
-            frontendDisplayId: '1',
-            title: '两数之和',
-            difficulty: 'EASY',
-            tags: [{ value: 'array', label: '数组' }],
-            contentStatus: 'BILINGUAL',
-            companyFrequencyScore: null,
-            companySignalCount: 0,
-          }],
-          total: 1,
-          page: 1,
-          pageSize: 20,
-        },
-        timestamp: '2026-06-17T00:00:00Z',
       }));
     }
     return Promise.reject(new Error(`Unexpected URL: ${url}`));
@@ -3525,22 +3104,6 @@ function mockLearningPlanConfirmRefreshFailureFetch() {
     }
 
     return Promise.reject(new Error(`Unexpected URL: ${url}`));
-  });
-}
-
-function mockStreamFetch(chunks: string[]) {
-  return vi.fn((url: string) => {
-    if (url === '/api/auth/me') {
-      return Promise.resolve(authenticatedUserResponse());
-    }
-    if (isLearningPlanListUrl(url)) {
-      return Promise.resolve(jsonResponse({
-        success: true,
-        data: learningPlanPage([]),
-        timestamp: '2026-06-22T00:00:00Z',
-      }));
-    }
-    return Promise.resolve(new Response(sseStream(chunks), { status: 200 }));
   });
 }
 

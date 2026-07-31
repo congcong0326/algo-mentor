@@ -23,7 +23,6 @@ import {
   logout,
   requireApiData,
   setApiLocale,
-  streamAgentConversation,
   createLearningPlanDraftFromTemplate,
   streamLearningPlanDraftRevision,
   streamLearningPlanExtensionProposal,
@@ -655,56 +654,6 @@ describe('api request tracing', () => {
     const headers = requestHeaders(fetchMock);
     expect(headers.get('X-Request-Id')).toBe('0d0e0f101112');
     expect(headers.get('X-XSRF-TOKEN')).toBe('csrf-token');
-  });
-
-  it('adds request id to sse requests without changing idempotency key', async () => {
-    vi.stubGlobal('crypto', { getRandomValues: fixedRandomValues([0x13, 0x14, 0x15, 0x16, 0x17, 0x18]) });
-    const fetchMock: FetchMock = vi.fn(() => Promise.resolve(new Response(
-      [
-        'event:agent_run_end',
-        'data:{"runId":"run-1"}',
-        '',
-        'event:tool_permission_request',
-        'data:{"runId":"run-1","stepIndex":1,"toolCallId":"call-1","toolName":"practice_review","permissionRequestId":"permission-1","displayName":"Code review","reason":"Review submitted code","preview":{"language":"java"},"expiresAt":"2026-06-26T00:01:00Z"}',
-        '',
-        '',
-      ].join('\n'),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'text/event-stream',
-        },
-      },
-    )));
-    vi.stubGlobal('fetch', fetchMock);
-    const onEvent = vi.fn();
-
-    await streamAgentConversation(
-      { message: 'hello' },
-      { idempotencyKey: 'idem-1', onEvent },
-    );
-
-    const headers = requestHeaders(fetchMock);
-    expect(headers.get('X-Request-Id')).toBe('131415161718');
-    expect(headers.get('Idempotency-Key')).toBe('idem-1');
-    expect(onEvent).toHaveBeenCalledWith({
-      eventName: 'agent_run_end',
-      data: { runId: 'run-1' },
-    });
-    expect(onEvent).toHaveBeenCalledWith({
-      eventName: 'tool_permission_request',
-      data: {
-        runId: 'run-1',
-        stepIndex: 1,
-        toolCallId: 'call-1',
-        toolName: 'practice_review',
-        permissionRequestId: 'permission-1',
-        displayName: 'Code review',
-        reason: 'Review submitted code',
-        preview: { language: 'java' },
-        expiresAt: '2026-06-26T00:01:00Z',
-      },
-    });
   });
 
   it('posts agent tool permission decisions with json, csrf, and request id headers', async () => {

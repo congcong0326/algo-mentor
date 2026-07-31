@@ -100,7 +100,6 @@ export interface LocaleResources {
     feedback: string;
     adminOverview: string;
     adminFeedback: string;
-    debug: string;
     forbidden: string;
   };
   adminShell: {
@@ -115,7 +114,7 @@ export interface LocaleResources {
     pageNavigation: string;
     expandSection: (label: string) => string;
     collapseSection: (label: string) => string;
-    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'databaseBackup' | 'sessions' | 'sessionPolicies' | 'systemPrompts' | 'ai' | 'aiPlatform' | 'operations' | 'modelResources' | 'costGovernance' | 'aiProviders' | 'aiRouting' | 'aiUsage' | 'aiPricing' | 'content' | 'feedback' | 'development' | 'users' | 'userGroups' | 'betaAccess' | 'problems' | 'debug', string>;
+    labels: Record<'overview' | 'access' | 'monitoring' | 'systemStatus' | 'databaseBackup' | 'sessions' | 'sessionPolicies' | 'systemPrompts' | 'ai' | 'aiPlatform' | 'operations' | 'modelResources' | 'costGovernance' | 'aiProviders' | 'aiRouting' | 'aiUsage' | 'aiPricing' | 'content' | 'feedback' | 'users' | 'userGroups' | 'betaAccess' | 'problems', string>;
   };
   feedback: {
     openDialog: string;
@@ -1126,25 +1125,6 @@ export interface LocaleResources {
     generatingPlan: string;
     generationDone: string;
   };
-  debug: {
-    controls: string;
-    messagePlaceholder: string;
-    firstRoundOptional: string;
-    optional: string;
-    start: string;
-    stop: string;
-    clear: string;
-    key: string;
-    auto: string;
-    summary: string;
-    outputTitle: string;
-    outputEmpty: string;
-    logTitle: string;
-    logEmpty: string;
-    connectionOpened: string;
-    connectionStopped: string;
-    streamFailed: string;
-  };
   labels: {
     difficulties: Record<ProblemDifficulty | LearningPlanDifficultyPreference, string>;
     planStatus: Record<LearningPlanStatus, string>;
@@ -1260,7 +1240,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       feedback: '反馈',
       adminOverview: '概览',
       adminFeedback: '反馈',
-      debug: 'AI 调试',
       forbidden: '无权访问',
     },
     adminShell: {
@@ -1295,12 +1274,10 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         aiPricing: '模型定价',
         content: '内容管理',
         feedback: '反馈与支持',
-        development: '开发工具',
         users: '用户管理',
         userGroups: '用户组管理',
         betaAccess: '内测准入',
         problems: '题库管理',
-        debug: 'AI 调试',
       },
     },
     feedback: {
@@ -2360,25 +2337,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       generatingPlan: '正在生成训练方案',
       generationDone: '生成完成',
     },
-    debug: {
-      controls: 'SSE 请求控制',
-      messagePlaceholder: '输入本轮用户消息',
-      firstRoundOptional: '首轮可留空',
-      optional: '可选',
-      start: 'Start',
-      stop: 'Stop',
-      clear: 'Clear',
-      key: 'Key',
-      auto: 'auto',
-      summary: '流式请求摘要',
-      outputTitle: '模型输出',
-      outputEmpty: '等待 content_delta 事件...',
-      logTitle: '事件日志',
-      logEmpty: '等待 SSE 事件...',
-      connectionOpened: 'POST SSE connection opened.',
-      connectionStopped: 'Connection stopped by user.',
-      streamFailed: 'Conversation stream failed.',
-    },
     labels: {
       difficulties: {
         EASY: '简单',
@@ -2537,7 +2495,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       feedback: 'Feedback',
       adminOverview: 'Overview',
       adminFeedback: 'Feedback',
-      debug: 'AI Debug',
       forbidden: 'Not authorized',
     },
     adminShell: {
@@ -2572,12 +2529,10 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
         aiPricing: 'Model pricing',
         content: 'Content',
         feedback: 'Feedback & Support',
-        development: 'Developer Tools',
         users: 'Users',
         userGroups: 'User Groups',
         betaAccess: 'Beta Access',
         problems: 'Problem Library',
-        debug: 'AI Debug',
       },
     },
     feedback: {
@@ -3646,25 +3601,6 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       waitingGenerate: 'Waiting to generate',
       generatingPlan: 'Generating learning plan',
       generationDone: 'Generation complete',
-    },
-    debug: {
-      controls: 'SSE request controls',
-      messagePlaceholder: 'Enter this user message',
-      firstRoundOptional: 'Optional for first turn',
-      optional: 'Optional',
-      start: 'Start',
-      stop: 'Stop',
-      clear: 'Clear',
-      key: 'Key',
-      auto: 'auto',
-      summary: 'Streaming request summary',
-      outputTitle: 'Model Output',
-      outputEmpty: 'Waiting for content_delta events...',
-      logTitle: 'Event Log',
-      logEmpty: 'Waiting for SSE events...',
-      connectionOpened: 'POST SSE connection opened.',
-      connectionStopped: 'Connection stopped by user.',
-      streamFailed: 'Conversation stream failed.',
     },
     labels: {
       difficulties: {

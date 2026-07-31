@@ -165,43 +165,12 @@ public class AgentConversationService {
         : systemPromptResolver;
   }
 
-  public AgentConversationRun prepareRun(AgentConversationCommand command) {
-    PreparedAgentRun draft = conversationRepository.createOrReuseRun(toPreparationRequest(command));
-    return toConversationRun(draft, command, true);
-  }
-
-  /** 为统一 Runtime 准备普通 Mentor 会话的 task、turn、run 和完整上下文。 */
-  public AgentConversationRun prepareMentorRun(MentorConversationAgentInput input) {
-    MentorConversationAgentInput candidate = requireMentorInput(input);
-    AgentConversationCommand command = mentorCommand(candidate);
-    PreparedAgentRun draft = conversationRepository.createOrReuseRun(toMentorPreparationRequest(candidate));
-    return toConversationRun(draft, command, true);
-  }
-
   /** 为 Practice Chat 复用 session task，并准备新的 turn、run 与完整受信上下文。 */
   public AgentConversationRun preparePracticeRun(PracticeChatAgentInput input) {
     PracticeChatAgentInput candidate = requirePracticeInput(input);
     AgentConversationCommand command = practiceCommand(candidate);
     PreparedAgentRun draft = conversationRepository.createOrReuseRun(toPracticePreparationRequest(candidate));
-    return toConversationRun(draft, command, true);
-  }
-
-  public Optional<AgentConversationRun> findRunByIdempotencyKey(String idempotencyKey, String userMessage) {
-    return conversationRepository.findRunByIdempotencyKey(idempotencyKey)
-        .map(draft -> toConversationRun(draft, new AgentConversationCommand(null, 1L, userMessage, idempotencyKey), false));
-  }
-
-  public Optional<AgentConversationRun> findRunByIdempotencyKey(AgentConversationCommand command) {
-    return conversationRepository.findRunByIdempotencyKey(command.idempotencyKey())
-        .map(draft -> toConversationRun(draft, command, true));
-  }
-
-  /** 查询普通 Mentor 会话的幂等 replay，避免重复写入消息或再次执行模型。 */
-  public Optional<AgentConversationRun> findMentorRunByIdempotencyKey(MentorConversationAgentInput input) {
-    MentorConversationAgentInput candidate = requireMentorInput(input);
-    AgentConversationCommand command = mentorCommand(candidate);
-    return conversationRepository.findRunByIdempotencyKey(candidate.idempotencyKey())
-        .map(draft -> toConversationRun(draft, command, true));
+    return toConversationRun(draft, command);
   }
 
   /** 查询 Practice Chat 幂等 replay，避免重复写入 session 消息或再次执行模型。 */
@@ -209,25 +178,15 @@ public class AgentConversationService {
     PracticeChatAgentInput candidate = requirePracticeInput(input);
     AgentConversationCommand command = practiceCommand(candidate);
     return conversationRepository.findRunByIdempotencyKey(candidate.idempotencyKey())
-        .map(draft -> toConversationRun(draft, command, true));
+        .map(draft -> toConversationRun(draft, command));
   }
 
   private AgentConversationRun toConversationRun(
       PreparedAgentRun draft,
-      AgentConversationCommand command,
-      boolean includeTrustedUserId
+      AgentConversationCommand command
   ) {
-    PracticeChatContextAssembly practiceAssembly = command.practiceChatEnabled()
-        ? assemblePracticeChatContext(draft, command)
-        : null;
-    AssembledContext context = practiceAssembly != null
-        ? practiceAssembly.context()
-        : contextAssembler.assemble(
-            draft.systemPrompt(),
-            draft.activeSummary(),
-            conversationRepository.recentMessages(draft.taskId(), contextPolicy.recentTurns() * 2),
-            command.userMessage(),
-            contextPolicy);
+    PracticeChatContextAssembly practiceAssembly = assemblePracticeChatContext(draft, command);
+    AssembledContext context = practiceAssembly.context();
 
     Map<String, Object> metadata = new HashMap<>(draft.metadata());
     metadata.putAll(context.metadata());
@@ -236,9 +195,7 @@ public class AgentConversationService {
     metadata.put(AgentRuntimeMetadataKeys.TURN_ID, draft.turnId());
     metadata.put(AgentRuntimeMetadataKeys.RUN_DB_ID, draft.runId());
     metadata.put(AgentRuntimeMetadataKeys.AGENT_RUN_ID, draft.runUuid());
-    if (includeTrustedUserId) {
-      metadata.put(AgentRuntimeMetadataKeys.USER_ID, command.userId());
-    }
+    metadata.put(AgentRuntimeMetadataKeys.USER_ID, command.userId());
     metadata.put(AgentRuntimeMetadataKeys.TITLE, "task-" + draft.taskId());
 
     AgentRequest request = new AgentRequest(
@@ -246,16 +203,8 @@ public class AgentConversationService {
         draft.requestId(),
         context.messages(),
         metadata);
-    AgentRunResource runResource = practiceAssembly == null ? AgentRunResource.none() : practiceAssembly.runResource();
     return new AgentConversationRun(
-        draft.taskId(), draft.turnId(), draft.runId(), draft.runUuid(), request, draft, runResource);
-  }
-
-  private MentorConversationAgentInput requireMentorInput(MentorConversationAgentInput input) {
-    if (input == null) {
-      throw new IllegalArgumentException("Mentor conversation input must not be null");
-    }
-    return input;
+        draft.taskId(), draft.turnId(), draft.runId(), draft.runUuid(), request, draft, practiceAssembly.runResource());
   }
 
   private PracticeChatAgentInput requirePracticeInput(PracticeChatAgentInput input) {
@@ -263,14 +212,6 @@ public class AgentConversationService {
       throw new IllegalArgumentException("Practice chat input must not be null");
     }
     return input;
-  }
-
-  private AgentConversationCommand mentorCommand(MentorConversationAgentInput input) {
-    return new AgentConversationCommand(
-        input.taskId(),
-        input.userId(),
-        input.userMessage(),
-        input.idempotencyKey());
   }
 
   private AgentConversationCommand practiceCommand(PracticeChatAgentInput input) {
@@ -293,38 +234,6 @@ public class AgentConversationService {
         new PracticeChatReference(input.planId(), input.phaseIndex(), input.problemSlug(), input.locale()));
   }
 
-  private AgentRunPreparationRequest toPreparationRequest(AgentConversationCommand command) {
-    ResolvedSystemPromptSnapshot promptSnapshot = systemPromptResolver.resolve(
-        ManagedSystemPromptDefinitions.MENTOR_CONVERSATION, command.userId());
-    return new AgentRunPreparationRequest(
-        command.taskId(),
-        command.userId(),
-        command.userMessage(),
-        command.idempotencyKey(),
-        promptSnapshot.requireSection(SystemPromptSectionKeys.MENTOR_CONVERSATION_BASE).text(),
-        preparationMetadata(command, promptSnapshot),
-        userMessageMetadata(command));
-  }
-
-  private AgentRunPreparationRequest toMentorPreparationRequest(MentorConversationAgentInput input) {
-    ResolvedSystemPromptSnapshot promptSnapshot = systemPromptResolver.resolve(
-        ManagedSystemPromptDefinitions.MENTOR_CONVERSATION, input.userId());
-    return new AgentRunPreparationRequest(
-        input.taskId(),
-        input.userId(),
-        input.userMessage(),
-        input.idempotencyKey(),
-        promptSnapshot.requireSection(SystemPromptSectionKeys.MENTOR_CONVERSATION_BASE).text(),
-        mentorPreparationMetadata(promptSnapshot),
-        Map.of(),
-        MentorConversationAgentDefinition.KEY.value(),
-        AgentInvocationMode.USER_ENTRY,
-        null,
-        null,
-        null,
-        MentorConversationAgentDefinition.MAX_STEPS);
-  }
-
   private AgentRunPreparationRequest toPracticePreparationRequest(PracticeChatAgentInput input) {
     ResolvedSystemPromptSnapshot promptSnapshot = systemPromptResolver.resolve(
         ManagedSystemPromptDefinitions.PRACTICE_CHAT, input.userId());
@@ -342,13 +251,6 @@ public class AgentConversationService {
         null,
         null,
         PracticeChatAgentDefinition.MAX_STEPS);
-  }
-
-  private Map<String, Object> mentorPreparationMetadata(ResolvedSystemPromptSnapshot promptSnapshot) {
-    Map<String, Object> metadata = new HashMap<>();
-    metadata.put("triggerType", "user_request");
-    metadata.putAll(SystemPromptMetadataKeys.from(promptSnapshot));
-    return Map.copyOf(metadata);
   }
 
   private Map<String, Object> practicePreparationMetadata(
@@ -382,28 +284,6 @@ public class AgentConversationService {
     Map<String, Object> metadata = new HashMap<>();
     metadata.putAll(practiceReferenceMetadata(new PracticeChatReference(
         input.planId(), input.phaseIndex(), input.problemSlug(), input.locale())));
-    metadata.put(PracticeChatPromptConstants.MESSAGE_TYPE_METADATA_KEY, PracticeChatPromptConstants.MESSAGE_TYPE_CHAT);
-    return Map.copyOf(metadata);
-  }
-
-  private Map<String, Object> preparationMetadata(
-      AgentConversationCommand command,
-      ResolvedSystemPromptSnapshot promptSnapshot
-  ) {
-    Map<String, Object> metadata = new HashMap<>();
-    metadata.put("triggerType", "user_request");
-    metadata.putAll(SystemPromptMetadataKeys.from(promptSnapshot));
-    if (command.practiceChatEnabled()) {
-      metadata.putAll(practiceReferenceMetadata(command.practiceChat()));
-    }
-    return Map.copyOf(metadata);
-  }
-
-  private Map<String, Object> userMessageMetadata(AgentConversationCommand command) {
-    if (!command.practiceChatEnabled()) {
-      return Map.of();
-    }
-    Map<String, Object> metadata = new HashMap<>(practiceReferenceMetadata(command.practiceChat()));
     metadata.put(PracticeChatPromptConstants.MESSAGE_TYPE_METADATA_KEY, PracticeChatPromptConstants.MESSAGE_TYPE_CHAT);
     return Map.copyOf(metadata);
   }

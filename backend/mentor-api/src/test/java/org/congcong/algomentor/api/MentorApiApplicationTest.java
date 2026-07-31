@@ -19,7 +19,6 @@ import org.congcong.algomentor.agent.runtime.definition.AgentDefinitionRegistry;
 import org.congcong.algomentor.ai.governance.model.AiBusinessScenario;
 import org.congcong.algomentor.api.config.MentorConfigurationKeys;
 import org.congcong.algomentor.identity.controller.AdminUserController;
-import org.congcong.algomentor.mentor.application.conversation.MentorConversationAgentInput;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionAgentInput;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionAgentInput;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanAgentToolNames;
@@ -35,7 +34,6 @@ import org.congcong.algomentor.mentor.application.profile.review.LearnerMemoryCo
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredProfileToolContracts;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryAgentToolContracts;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryRecallToolContracts;
-import org.congcong.algomentor.mentor.application.topic.TopicExplanationAgentInput;
 import org.congcong.algomentor.queue.publisher.QueuePublisher;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,10 +54,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 class MentorApiApplicationTest {
 
   private static final Map<AiBusinessScenario, DefinitionExpectation> DEFINITION_EXPECTATIONS = Map.of(
-      AiBusinessScenario.MENTOR_CONVERSATION,
-      new DefinitionExpectation(MentorConversationAgentInput.class, 1, List.of()),
-      AiBusinessScenario.TOPIC_EXPLANATION,
-      new DefinitionExpectation(TopicExplanationAgentInput.class, 1, List.of()),
       AiBusinessScenario.PRACTICE_CHAT,
       new DefinitionExpectation(
           PracticeChatAgentInput.class,
@@ -158,7 +152,6 @@ class MentorApiApplicationTest {
           assertThat(agentToolRegistry.find(toolName)).as(scenario.name() + "/" + toolName).isPresent());
     });
 
-    assertOneShot(AiBusinessScenario.TOPIC_EXPLANATION, definitionsByKey);
     assertOneShot(AiBusinessScenario.PRACTICE_CODE_REVIEW, definitionsByKey);
     assertOneShot(AiBusinessScenario.LEARNER_DECLARED_PROFILE_UPDATE, definitionsByKey);
   }

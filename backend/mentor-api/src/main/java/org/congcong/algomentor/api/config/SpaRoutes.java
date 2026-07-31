@@ -25,8 +25,6 @@ public final class SpaRoutes {
       "/admin/problems",
       "/admin/users",
       "/admin/user-groups",
-      "/admin/debug",
-      "/debug"
   };
 
   /**

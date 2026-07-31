@@ -57,76 +57,6 @@ import org.junit.jupiter.api.Test;
 class AgentConversationServiceTest {
 
   @Test
-  void preparesRunWithMentorPromptAndRuntimeMetadata() {
-    CapturingRepository repository = new CapturingRepository();
-    repository.messages.add(new AgentMessage(
-        1,
-        11,
-        1,
-        AgentMessage.Role.USER,
-        "什么是双指针？",
-        Instant.parse("2026-01-01T00:00:00Z")));
-    repository.messages.add(new AgentMessage(
-        2,
-        11,
-        2,
-        AgentMessage.Role.ASSISTANT,
-        "双指针通常维护两个下标。",
-        Instant.parse("2026-01-01T00:00:01Z")));
-    AgentConversationService service = new AgentConversationService(repository, new ContextAssembler());
-
-    AgentConversationRun run = service.prepareRun(new AgentConversationCommand(
-        null,
-        7L,
-        "请讲滑动窗口",
-        "idem-1"));
-
-    assertThat(repository.lastRequest.userId()).isEqualTo(7L);
-    assertThat(repository.lastRequest.userMessage()).isEqualTo("请讲滑动窗口");
-    assertThat(repository.lastRequest.idempotencyKey()).isEqualTo("idem-1");
-    assertThat(repository.lastRequest.systemPrompt()).contains("Leet Mentor 中负责算法学习辅导的导师");
-    assertThat(repository.lastRequest.metadata()).containsEntry("triggerType", "user_request");
-
-    assertThat(run.taskId()).isEqualTo(11);
-    assertThat(run.turnId()).isEqualTo(21);
-    assertThat(run.runId()).isEqualTo(31);
-    assertThat(run.agentRequest().runId()).isEqualTo("run-uuid-31");
-    assertThat(run.agentRequest().requestId()).isEqualTo("idem-1");
-    assertThat(run.agentRequest().metadata())
-        .containsEntry(AgentRuntimeMetadataKeys.TASK_ID, 11L)
-        .containsEntry(AgentRuntimeMetadataKeys.TURN_ID, 21L)
-        .containsEntry(AgentRuntimeMetadataKeys.RUN_DB_ID, 31L)
-        .containsEntry(AgentRuntimeMetadataKeys.USER_ID, 7L)
-        .containsEntry(AgentRuntimeMetadataKeys.CONTEXT_POLICY, "sliding-window-with-active-summary")
-        .containsEntry(AgentRuntimeMetadataKeys.TOKEN_BUDGET, 8_000)
-        .containsEntry("title", "task-11");
-    assertThat(run.agentRequest().messages())
-        .extracting(LlmMessage::role)
-        .containsExactly(
-            LlmMessage.Role.SYSTEM,
-            LlmMessage.Role.USER,
-            LlmMessage.Role.ASSISTANT,
-            LlmMessage.Role.USER);
-  }
-
-  @Test
-  void findsExistingRunByIdempotencyKeyWithReplayMetadata() {
-    CapturingRepository repository = new CapturingRepository();
-    AgentConversationService service = new AgentConversationService(repository, new ContextAssembler());
-
-    AgentConversationRun run = service.findRunByIdempotencyKey("idem-1", "请讲滑动窗口").orElseThrow();
-
-    assertThat(run.idempotentReplay()).isTrue();
-    assertThat(run.taskId()).isEqualTo(11);
-    assertThat(run.agentRequest().metadata())
-        .containsEntry(AgentRuntimeMetadataKeys.TASK_ID, 11L)
-        .containsEntry(AgentRuntimeMetadataKeys.TURN_ID, 21L)
-        .containsEntry(AgentRuntimeMetadataKeys.RUN_DB_ID, 31L)
-        .containsEntry(AgentRuntimeMetadataKeys.IDEMPOTENT_REPLAY, true)
-        .doesNotContainKey(AgentRuntimeMetadataKeys.USER_ID);
-  }
-
-  @Test
   void preparesPracticeChatRunWithPromptAssemblyAndFiltersProblemStatementHistory() {
     CapturingRepository repository = new CapturingRepository();
     repository.messages.add(new AgentMessage(
@@ -153,13 +83,8 @@ class AgentConversationServiceTest {
         new InMemoryPlanRepository(plan()),
         new FakePracticeProblemCatalog());
 
-    AgentConversationRun run = service.prepareRun(new AgentConversationCommand(
-        null,
-        7L,
-        "直接给答案和 Java 代码",
-        "idem-practice",
-        Map.of("governance", true, AgentRuntimeMetadataKeys.USER_ID, 999L),
-        new PracticeChatReference(12L, 1, "two-sum", "zh-CN")));
+    AgentConversationRun run = service.preparePracticeRun(practiceInput(
+        "直接给答案和 Java 代码", "idem-practice", PracticeCoachStyle.GUIDED, PracticeResponseLanguage.ZH_CN));
 
     assertThat(repository.lastRequest.metadata())
         .containsEntry(PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO)
@@ -178,8 +103,7 @@ class AgentConversationServiceTest {
         .containsEntry(PracticeChatPromptConstants.METADATA_PLAN_ID, 12L)
         .containsEntry(PracticeChatPromptConstants.METADATA_PHASE_INDEX, 1)
         .containsEntry(PracticeChatPromptConstants.METADATA_PROBLEM_SLUG, "two-sum")
-        .containsEntry(PracticeChatPromptConstants.METADATA_LOCALE, "zh-CN")
-        .containsEntry("governance", true);
+        .containsEntry(PracticeChatPromptConstants.METADATA_LOCALE, "zh-CN");
     assertThat(run.agentRequest().messages())
         .extracting(LlmMessage::role)
         .containsExactly(
@@ -216,15 +140,8 @@ class AgentConversationServiceTest {
         new InMemoryPlanRepository(plan()),
         new FakePracticeProblemCatalog());
 
-    AgentConversationRun run = service.prepareRun(new AgentConversationCommand(
-        null,
-        7L,
-        "请模拟面试追问",
-        "idem-practice",
-        Map.of(
-            PracticeChatPromptConstants.METADATA_COACH_STYLE, PracticeCoachStyle.DIRECT.name(),
-            PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, PracticeResponseLanguage.EN_US.name()),
-        new PracticeChatReference(12L, 1, "two-sum", "zh-CN")));
+    AgentConversationRun run = service.preparePracticeRun(practiceInput(
+        "请模拟面试追问", "idem-practice", PracticeCoachStyle.DIRECT, PracticeResponseLanguage.EN_US));
 
     assertThat(run.agentRequest().metadata())
         .containsEntry(PracticeChatPromptConstants.METADATA_COACH_STYLE, "DIRECT")
@@ -254,13 +171,8 @@ class AgentConversationServiceTest {
         recallService,
         recallProvider);
 
-    AgentConversationRun run = service.prepareRun(new AgentConversationCommand(
-        null,
-        7L,
-        "给我一个提示",
-        "idem-profile-snapshot",
-        Map.of(),
-        new PracticeChatReference(12L, 1, "two-sum", "zh-CN")));
+    AgentConversationRun run = service.preparePracticeRun(practiceInput(
+        "给我一个提示", "idem-profile-snapshot", PracticeCoachStyle.GUIDED, PracticeResponseLanguage.ZH_CN));
 
     assertThat(recallService.calls).isEqualTo(1);
     assertThat(run.agentRequest().messages().stream().map(LlmMessage::text).reduce("", String::concat))
@@ -299,6 +211,27 @@ class AgentConversationServiceTest {
     assertThat(replay.agentRequest().metadata())
         .doesNotContainKey(LearnerMemoryRecallContracts.METADATA_SCOPE_REF)
         .doesNotContainValue("must-not-open");
+  }
+
+  private static PracticeChatAgentInput practiceInput(
+      String message,
+      String idempotencyKey,
+      PracticeCoachStyle coachStyle,
+      PracticeResponseLanguage responseLanguage
+  ) {
+    return new PracticeChatAgentInput(
+        7L,
+        8L,
+        11L,
+        12L,
+        1,
+        "two-sum",
+        message,
+        idempotencyKey,
+        "zh-CN",
+        coachStyle,
+        responseLanguage,
+        message.length());
   }
 
   private static final class CapturingRepository implements AgentConversationRepository {

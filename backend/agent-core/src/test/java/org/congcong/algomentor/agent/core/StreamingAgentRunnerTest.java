@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 class StreamingAgentRunnerTest {
 
   @Test
-  void streamsTopicExplanationThroughLlmGatewayContract() {
+  void streamsAgentRequestThroughLlmGatewayContract() {
     FakeGateway gateway = new FakeGateway();
     StreamingAgentRunner runner = new StreamingAgentRunner(
         gateway,

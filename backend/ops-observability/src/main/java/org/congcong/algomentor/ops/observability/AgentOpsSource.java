@@ -2,7 +2,6 @@ package org.congcong.algomentor.ops.observability;
 
 public enum AgentOpsSource {
 
-  AI_EXPLANATION("ai_explanation"),
   LEARNING_PLAN_DRAFT("learning_plan_draft"),
   PRACTICE_MESSAGE("practice_message"),
   AGENT_CONVERSATION("agent_conversation");
@@ -23,7 +22,6 @@ public enum AgentOpsSource {
       return AGENT_CONVERSATION;
     }
     return switch (key) {
-      case "topic-explanation" -> AI_EXPLANATION;
       case "learning-plan-draft", "learning-plan-revision", "learning-plan-extension" -> LEARNING_PLAN_DRAFT;
       case "practice-chat" -> PRACTICE_MESSAGE;
       default -> AGENT_CONVERSATION;

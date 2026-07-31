@@ -42,7 +42,6 @@ export type AuthPermission =
   | 'ai-governance:manage'
   | 'ai-run:read'
   | 'feedback:manage'
-  | 'debug:access'
   | 'database-backup:manage';
 
 export interface CurrentUser {
@@ -1503,20 +1502,6 @@ export type SseEventName =
   | 'draft_revision_error'
   | 'plan_extension_ready'
   | 'plan_extension_error';
-
-export interface AgentConversationStreamRequest {
-  taskId?: number;
-  userId?: number;
-  message: string;
-  practice?: PracticeChatRequest;
-}
-
-export interface PracticeChatRequest {
-  planId: number;
-  phaseIndex: number;
-  problemSlug: string;
-  locale?: string;
-}
 
 export const AGENT_RUN_IN_PROGRESS_CODE = 'AGENT_RUN_IN_PROGRESS';
 

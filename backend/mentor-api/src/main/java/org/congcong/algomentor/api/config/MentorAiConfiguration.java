@@ -61,8 +61,6 @@ import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.congcong.algomentor.api.problem.tool.GetProblemStatementTool;
 import org.congcong.algomentor.api.problem.tool.ListProblemFiltersTool;
 import org.congcong.algomentor.api.problem.tool.SearchProblemsTool;
-import org.congcong.algomentor.mentor.application.ExplainTopicUseCase;
-import org.congcong.algomentor.mentor.application.conversation.MentorConversationAgentDefinition;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanDraftRevisionAgentDefinition;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.stream.LearningPlanExtensionAgentDefinition;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftAgentDefinition;
@@ -73,7 +71,6 @@ import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentToolNames;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentDefinition;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatAgentDefinition;
-import org.congcong.algomentor.mentor.application.topic.TopicExplanationAgentDefinition;
 import org.congcong.algomentor.llm.core.exception.LlmErrorCode;
 import org.congcong.algomentor.llm.core.exception.LlmException;
 import org.congcong.algomentor.agent.core.AgentInvocationTargetResolver;
@@ -343,18 +340,7 @@ public class MentorAiConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public TopicExplanationAgentDefinition topicExplanationAgentDefinition(
-      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolverProvider
-  ) {
-    return new TopicExplanationAgentDefinition(
-        systemPromptResolverProvider.getIfAvailable(ManagedSystemPrompts::defaultResolver));
-  }
-
-  @Bean
-  @ConditionalOnMissingBean
   public AgentDefinitionRegistry agentDefinitionRegistry(
-      TopicExplanationAgentDefinition topicDefinition,
-      ObjectProvider<MentorConversationAgentDefinition> mentorDefinitionProvider,
       ObjectProvider<PracticeChatAgentDefinition> practiceDefinitionProvider,
       ObjectProvider<PracticeCodeReviewAgentDefinition> practiceCodeReviewDefinitionProvider,
       ObjectProvider<DeclaredProfileUpdateAgentDefinition> declaredProfileUpdateDefinitionProvider,
@@ -365,8 +351,7 @@ public class MentorAiConfiguration {
       AgentToolRegistry agentToolRegistry
   ) {
     List<org.congcong.algomentor.agent.core.runtime.definition.AgentDefinition<?>> definitions =
-        new java.util.ArrayList<>(List.of(topicDefinition));
-    mentorDefinitionProvider.ifAvailable(definitions::add);
+        new java.util.ArrayList<>();
     practiceDefinitionProvider.ifAvailable(definitions::add);
     practiceCodeReviewDefinitionProvider.ifAvailable(definitions::add);
     declaredProfileUpdateDefinitionProvider.ifAvailable(definitions::add);
@@ -427,15 +412,6 @@ public class MentorAiConfiguration {
   @ConditionalOnMissingBean
   public ContextAssembler contextAssembler() {
     return new ContextAssembler();
-  }
-
-  @Bean
-  @ConditionalOnBean(AgentRuntime.class)
-  @ConditionalOnMissingBean
-  public ExplainTopicUseCase explainTopicUseCase(
-      AgentRuntime agentRuntime
-  ) {
-    return new ExplainTopicUseCase(agentRuntime);
   }
 
   private static final class DefaultAllowAgentToolPermissionCoordinator implements AgentToolPermissionCoordinator {

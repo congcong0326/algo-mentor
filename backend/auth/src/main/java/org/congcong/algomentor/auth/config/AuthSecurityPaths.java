@@ -19,7 +19,6 @@ public final class AuthSecurityPaths {
   public static final String AUTH_COMPLETE_RESET_PATH = "/api/auth/password/complete-reset";
   public static final String AUTH_LOGOUT_PATH = "/api/auth/logout";
   public static final String ADMIN_API_PATTERN = "/api/admin/**";
-  public static final String AGENT_CONVERSATIONS_API_PATTERN = "/api/agent/conversations/**";
   public static final String SESSION_COOKIE_NAME = "JSESSIONID";
   public static final String[] ACTUATOR_HEALTH_PATTERNS = {
       "/actuator/health",

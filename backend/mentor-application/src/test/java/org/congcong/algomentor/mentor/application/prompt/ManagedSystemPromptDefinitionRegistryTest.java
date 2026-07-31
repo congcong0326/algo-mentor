@@ -62,10 +62,8 @@ class ManagedSystemPromptDefinitionRegistryTest {
             SystemPromptTypeCodes.LEARNING_PLAN_DRAFT_V1,
             SystemPromptTypeCodes.LEARNING_PLAN_EXTENSION_V1,
             SystemPromptTypeCodes.LEARNING_PLAN_REVISION_V1,
-            SystemPromptTypeCodes.MENTOR_CONVERSATION_V1,
             SystemPromptTypeCodes.PRACTICE_CHAT_V1,
-            SystemPromptTypeCodes.PRACTICE_CODE_REVIEW_V1,
-            SystemPromptTypeCodes.TOPIC_EXPLANATION_V1));
+            SystemPromptTypeCodes.PRACTICE_CODE_REVIEW_V1));
     assertThat(registry.definitions()).extracting(ManagedSystemPromptDefinition::scenario)
         .containsExactlyInAnyOrderElementsOf(List.of(AiBusinessScenario.values()));
   }
@@ -102,9 +100,6 @@ class ManagedSystemPromptDefinitionRegistryTest {
           .doesNotContain("algo-mentor");
     });
 
-    assertThat(prompt(ManagedSystemPromptDefinitions.MENTOR_CONVERSATION))
-        .contains("先回答核心问题")
-        .contains("不得编造题目条件、代码或执行结果");
     assertThat(prompt(ManagedSystemPromptDefinitions.PRACTICE_CHAT))
         .contains("服务端校验的题目和计划事实优先")
         .contains("每次回复只提供当前层级允许的内容")

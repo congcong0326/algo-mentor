@@ -125,15 +125,15 @@ class AiRunAdmissionServiceTest {
   }
 
   @Test
-  void admitsAndReturnsMetadataForAgentRequest() {
+  void admitsAndReturnsMetadataForPracticeAgentRequest() {
     Fixture fixture = new Fixture();
 
     AiRunAdmission admission = fixture.service.admit(
-        fixture.context(fixture.user(), AiPurpose.PROBLEM_EXPLANATION, 10));
+        fixture.context(fixture.user(), AiPurpose.LEARNING_CHAT, 10));
 
     assertThat(admission.metadata())
         .containsEntry(AiGovernanceMetadataKeys.RUN_ID, "run-1")
-        .containsEntry(AiGovernanceMetadataKeys.PURPOSE, "PROBLEM_EXPLANATION")
+        .containsEntry(AiGovernanceMetadataKeys.PURPOSE, "LEARNING_CHAT")
         .containsEntry(AiGovernanceMetadataKeys.QUOTA_SCOPE, "ALL");
     assertThat(admission.status()).isEqualTo(AiRunStatus.ADMITTED);
   }
@@ -160,7 +160,7 @@ class AiRunAdmissionServiceTest {
           "run-1",
           actor,
           purpose,
-          purpose == AiPurpose.LEARNING_CHAT ? AiRunSource.LEARNING_CHAT : AiRunSource.LEARNING_PLAN_DRAFT,
+          purpose == AiPurpose.LEARNING_CHAT ? AiRunSource.PRACTICE_CHAT : AiRunSource.LEARNING_PLAN_DRAFT,
           null,
           requestSize,
           false,

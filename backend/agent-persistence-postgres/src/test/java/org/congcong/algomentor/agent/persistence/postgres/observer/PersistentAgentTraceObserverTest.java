@@ -59,7 +59,7 @@ class PersistentAgentTraceObserverTest {
             LlmProviderId.of("openai"),
             LlmModelId.of("gpt-test"),
             Set.of(),
-            "topic-explanation"))
+            "practice-chat"))
         .messages(List.of(LlmMessage.user("question")))
         .build();
 
@@ -72,7 +72,7 @@ class PersistentAgentTraceObserverTest {
     assertThat(row.requestId()).isEqualTo("request-id");
     assertThat(row.provider()).isEqualTo("openai");
     assertThat(row.model()).isEqualTo("gpt-test");
-    assertThat(row.modelSelector()).isEqualTo("topic-explanation");
+    assertThat(row.modelSelector()).isEqualTo("practice-chat");
     assertThat(row.policyName()).isEqualTo("final-request-snapshot");
     assertThat(row.policyVersion()).isEqualTo("v1");
     assertThat(row.tokenBudget()).isEqualTo(8_000);

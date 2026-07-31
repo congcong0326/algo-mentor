@@ -90,7 +90,7 @@ import org.junit.jupiter.api.Test;
 class DefaultAgentRuntimeTest {
 
   private static final AgentKey<String> KEY = new AgentKey<>(
-      AiBusinessScenario.TOPIC_EXPLANATION.code(), String.class);
+      AiBusinessScenario.PRACTICE_CHAT.code(), String.class);
   private static final AgentKey<String> PRACTICE_REVIEW_KEY = new AgentKey<>(
       AiBusinessScenario.PRACTICE_CODE_REVIEW.code(), String.class);
   private static final AgentKey<String> CODE_REVIEW_PROFILE_KEY = new AgentKey<>(

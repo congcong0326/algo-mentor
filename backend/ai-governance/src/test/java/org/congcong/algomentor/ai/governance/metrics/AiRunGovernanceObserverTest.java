@@ -100,7 +100,7 @@ class AiRunGovernanceObserverTest {
         "run-1",
         7L,
         AiPurpose.LEARNING_CHAT,
-        AiRunSource.LEARNING_CHAT,
+        AiRunSource.PRACTICE_CHAT,
         AiRunStatus.ADMITTED,
         "ALL",
         new AgentRunLockToken("user:7:ai:all", "node-1", "token-1", null),

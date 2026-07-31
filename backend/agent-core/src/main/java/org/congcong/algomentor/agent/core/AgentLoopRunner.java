@@ -32,7 +32,7 @@ import org.congcong.algomentor.llm.core.tool.LlmToolChoice;
  */
 public class AgentLoopRunner {
 
-  private static final String DEFAULT_PURPOSE = "topic-explanation";
+  private static final String DEFAULT_PURPOSE = "practice-chat";
   private static final AgentExecutor UNCONFIGURED_EXECUTOR = new AgentExecutor() {
     @Override
     public void execute(Runnable task) {

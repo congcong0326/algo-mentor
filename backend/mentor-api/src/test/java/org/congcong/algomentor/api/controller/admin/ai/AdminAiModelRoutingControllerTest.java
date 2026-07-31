@@ -66,9 +66,8 @@ class AdminAiModelRoutingControllerTest {
     mockMvc.perform(get("/api/admin/ai/model-routing/scenarios"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data.items.length()").value(9))
-        .andExpect(jsonPath("$.data.items[0].scenarioCode").value("mentor-conversation"))
-        .andExpect(jsonPath("$.data.items[1].scenarioCode").value("topic-explanation"))
+        .andExpect(jsonPath("$.data.items.length()").value(7))
+        .andExpect(jsonPath("$.data.items[0].scenarioCode").value("practice-chat"))
         .andExpect(jsonPath("$.data.items[0].enabledPolicyCount").value(1))
         .andExpect(jsonPath("$.data.items[0].totalPolicyCount").value(2));
   }

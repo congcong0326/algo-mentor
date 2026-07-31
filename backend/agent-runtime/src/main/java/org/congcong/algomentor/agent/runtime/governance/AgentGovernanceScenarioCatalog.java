@@ -28,8 +28,6 @@ public final class AgentGovernanceScenarioCatalog {
 
   private static Map<AiBusinessScenario, AgentGovernanceScenario> createScenarios() {
     Map<AiBusinessScenario, AgentGovernanceScenario> scenarios = new EnumMap<>(AiBusinessScenario.class);
-    register(scenarios, AiBusinessScenario.MENTOR_CONVERSATION, AiRunSource.LEARNING_CHAT, AiPurpose.LEARNING_CHAT);
-    register(scenarios, AiBusinessScenario.TOPIC_EXPLANATION, AiRunSource.PROBLEM_DETAIL, AiPurpose.PROBLEM_EXPLANATION);
     register(scenarios, AiBusinessScenario.PRACTICE_CHAT, AiRunSource.PRACTICE_CHAT, AiPurpose.LEARNING_CHAT);
     register(scenarios, AiBusinessScenario.LEARNING_PLAN_DRAFT, AiRunSource.LEARNING_PLAN_DRAFT, AiPurpose.LEARNING_PLAN);
     register(scenarios, AiBusinessScenario.LEARNING_PLAN_REVISION, AiRunSource.LEARNING_PLAN_DRAFT_REVISION, AiPurpose.LEARNING_PLAN);

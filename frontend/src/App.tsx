@@ -1,5 +1,5 @@
-import { Moon, Radio, Sun } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Moon, Sun } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
 import HomeDashboard from './HomeDashboard';
 import LearningPlans from './LearningPlans';
 import MyPage from './MyPage';
@@ -8,11 +8,6 @@ import ProblemLibrary from './ProblemLibrary';
 import TodayPackPage from './TodayPackPage';
 import MistakeNotebookPage from './mistakes/MistakeNotebookPage';
 import ReviewSessionPage from './mistakes/ReviewSessionPage';
-import AiDebugConsole, {
-  debugStatusLabel,
-  type AiDebugConsoleHandle,
-  type ConnectionState,
-} from './ai-debug/AiDebugConsole';
 import UserManagementPage from './admin/UserManagementPage';
 import BetaAccessPage from './admin/BetaAccessPage';
 import AiGovernancePage from './admin/ai/AiGovernancePage';
@@ -42,7 +37,6 @@ import {
   learnerProfileAnchorFromSearch,
   learningPlanPracticeSubmissionsOptionsFromSearch,
   learningPlanPracticeSubmissionsRouteFromPath,
-  LEGACY_DEBUG_ROUTE,
   LEGACY_FEEDBACK_ROUTE,
   pathForView,
   type AppView,
@@ -99,14 +93,8 @@ function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): strin
   if (pathname === LEGACY_FEEDBACK_ROUTE) {
     return isAdminUser(user) ? defaultAuthenticatedRouteForUser(user) : APP_ROUTES.home;
   }
-  if (pathname === LEGACY_DEBUG_ROUTE) {
-    return hasPermission(user, 'debug:access') ? APP_ROUTES.debug : defaultAuthenticatedRouteForUser(user);
-  }
   const view = viewFromPath(pathname);
   if (!view) {
-    return defaultAuthenticatedRouteForUser(user);
-  }
-  if (view === 'debug' && !hasPermission(user, 'debug:access')) {
     return defaultAuthenticatedRouteForUser(user);
   }
   if (view === 'adminUsers' && !hasPermission(user, 'user:manage')) {
@@ -352,10 +340,8 @@ export default function App() {
   const [logoutPending, setLogoutPending] = useState(false);
   const [passwordAuthError, setPasswordAuthError] = useState('');
   const [passwordAuthPending, setPasswordAuthPending] = useState(false);
-  const [debugConnectionState, setDebugConnectionState] = useState<ConnectionState>('idle');
   const [feedbackUnreadCount, setFeedbackUnreadCount] = useState<number>();
   const [feedbackDialogOpen, setFeedbackDialogOpen] = useState(false);
-  const debugConsoleRef = useRef<AiDebugConsoleHandle | null>(null);
   const [theme, setTheme] = useState<AppTheme>(() => readStoredTheme());
 
   useEffect(() => {
@@ -538,9 +524,6 @@ export default function App() {
 
     setLogoutError('');
     setLogoutPending(true);
-    debugConsoleRef.current?.stopStreamForLogout();
-    setDebugConnectionState('idle');
-
     try {
       await logout();
       setCurrentUser(undefined);
@@ -769,9 +752,7 @@ export default function App() {
         : <MistakeNotebookPage onNavigate={navigateToPath} />
       : activeView === 'learningPlans'
       ? <LearningPlans onNavigate={navigateToPath} pathname={pathname} search={search} />
-      : hasPermission(currentUser, 'debug:access')
-        ? <AiDebugConsole ref={debugConsoleRef} onConnectionStateChange={setDebugConnectionState} />
-        : <HomeDashboard onNavigate={navigateToView} />;
+      : <HomeDashboard onNavigate={navigateToView} />;
 
   if (isAdminPath(pathname)) {
     return (
@@ -783,12 +764,6 @@ export default function App() {
         onLogout={() => void handleLogout()}
         onNavigate={navigateToPath}
         onToggleTheme={handleToggleTheme}
-        pageStatus={activeView === 'debug' ? (
-          <div className={`status-pill ${debugConnectionState}`}>
-            <Radio aria-hidden="true" />
-            <span>{debugStatusLabel(debugConnectionState)}</span>
-          </div>
-        ) : undefined}
         pathname={pathname}
         search={search}
         theme={theme}
@@ -803,12 +778,6 @@ export default function App() {
       <AppShell
         activeView={activeView}
         currentUser={currentUser}
-        debugStatus={activeView === 'debug' && hasPermission(currentUser, 'debug:access') ? (
-          <div className={`status-pill ${debugConnectionState}`}>
-            <Radio aria-hidden="true" />
-            <span>{debugStatusLabel(debugConnectionState)}</span>
-          </div>
-        ) : undefined}
         feedbackUnreadCount={feedbackUnreadCount}
         logoutError={logoutError}
         logoutPending={logoutPending}

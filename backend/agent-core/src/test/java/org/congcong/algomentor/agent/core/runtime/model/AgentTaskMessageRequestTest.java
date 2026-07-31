@@ -132,14 +132,14 @@ class AgentTaskMessageRequestTest {
         "system",
         Map.of(),
         Map.of(),
-        "topic.explanation",
+        "practice-chat",
         AgentInvocationMode.CHILD,
         7L,
         2,
         null,
         3);
 
-    assertThat(request.agentKey()).isEqualTo("topic.explanation");
+    assertThat(request.agentKey()).isEqualTo("practice-chat");
     assertThat(request.mode()).isEqualTo(AgentInvocationMode.CHILD);
     assertThat(request.parentRunId()).isEqualTo(7L);
     assertThat(request.parentStepIndex()).isEqualTo(2);
@@ -152,7 +152,7 @@ class AgentTaskMessageRequestTest {
         "system",
         Map.of(),
         Map.of(),
-        "topic.explanation",
+        "practice-chat",
         AgentInvocationMode.CHILD,
         7L,
         null,

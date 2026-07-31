@@ -12130,18 +12130,13 @@ a {
   .system-prompt-page,
   .ai-governance-page,
   .admin-feedback-page,
-  .problem-shell,
-  .admin-debug-page
+  .problem-shell
 ) {
   gap: 14px;
   margin: 0;
   max-width: none;
   min-width: 0;
   width: 100%;
-}
-
-.admin-debug-page {
-  display: grid;
 }
 
 .admin-workspace :is(
