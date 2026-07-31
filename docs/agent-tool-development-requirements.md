@@ -21,7 +21,7 @@
 | --- | --- | --- | --- |
 | P0 | 调整现有 Tool | 学习计划 Agent 可继续读取被压缩的工具结果 | 已完成 |
 | P0 | 调整现有 Tool | Practice Chat 可读取当前题目的正式 Review 轨迹 | 已完成 |
-| P1 | 新增 Tool | Practice Chat 可按需读取当前题目的学习状态 | 待研发 |
+| P1 | 新增 Tool | Practice Chat 可按需读取当前题目的学习状态 | 已完成 |
 | P2 | 新增 Tool | 用户可在 Practice Chat 中确认后追加题目笔记 | 待研发 |
 | 暂缓 | 新增 Tool | 全局学习进度快照 | 等待全局学习教练对话立项 |
 
@@ -49,7 +49,7 @@
 
 ### 5.1 当前题目学习状态
 
-计划新增 `get_current_problem_learning_state`，服务 Practice Chat。
+已完成：新增 `get_current_problem_learning_state`，服务 Practice Chat。
 
 业务需求：当用户询问题目完成状态、最近正式 Review、复习安排或既有题目笔记时，Agent 能读取当前题目的最新学习记录，而不是依赖聊天历史猜测。
 
@@ -59,6 +59,8 @@
 - 默认提供状态和笔记提纲；只有用户明确要求时才读取笔记正文。
 - 不读取源代码、完整聊天历史或其他与问题无关的用户数据。
 - 详细的多版本 Review 变化继续使用现有 `get_problem_review_trajectory`。
+
+落地结果：身份、session、plan、phase 和题目均来自服务端可信上下文；默认笔记摘要查询不读取 Markdown 正文，只有当前用户消息明确要求且工具参数同步开启时才读取正文。能力通过 `PRACTICE_CHAT_LEARNING_STATE_TOOL_ENABLED` 独立开关启停。
 
 ### 5.2 追加当前题目笔记
 
@@ -86,6 +88,6 @@
 ## 7. 推荐研发顺序
 
 1. 先补齐 `read_tool_result` 和 `get_problem_review_trajectory` 的现有场景接入。
-2. 再新增 `get_current_problem_learning_state`。
+2. 已完成 `get_current_problem_learning_state`。
 3. 最后新增需要用户确认的 `append_current_problem_note`。
 4. 全局学习进度快照保持暂缓，不继续展开其他候选 Tool。

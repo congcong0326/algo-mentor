@@ -5,9 +5,11 @@ import java.time.Instant;
 import java.util.Optional;
 import org.congcong.algomentor.api.review.mapper.UserProblemNoteMapper;
 import org.congcong.algomentor.api.review.mapper.model.UserProblemNoteRow;
+import org.congcong.algomentor.api.review.mapper.model.UserProblemNoteSummaryRow;
 import org.congcong.algomentor.mentor.application.review.note.ProblemSolutionOutlineV1;
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNote;
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteRepository;
+import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteSummary;
 
 public class MyBatisUserProblemNoteRepository implements UserProblemNoteRepository {
 
@@ -17,6 +19,11 @@ public class MyBatisUserProblemNoteRepository implements UserProblemNoteReposito
   public MyBatisUserProblemNoteRepository(UserProblemNoteMapper mapper, ObjectMapper objectMapper) {
     this.mapper = mapper;
     this.objectMapper = objectMapper;
+  }
+
+  @Override
+  public Optional<UserProblemNoteSummary> findSummary(long userId, String problemSlug) {
+    return Optional.ofNullable(mapper.findSummary(userId, problemSlug)).map(this::toSummary);
   }
 
   @Override
@@ -70,6 +77,18 @@ public class MyBatisUserProblemNoteRepository implements UserProblemNoteReposito
         row.problemSlug(),
         objectMapper.convertValue(row.outlineJson(), ProblemSolutionOutlineV1.class),
         row.noteMarkdown(),
+        row.revision(),
+        row.createdAt(),
+        row.updatedAt());
+  }
+
+  private UserProblemNoteSummary toSummary(UserProblemNoteSummaryRow row) {
+    return new UserProblemNoteSummary(
+        row.id(),
+        row.userId(),
+        row.problemSlug(),
+        objectMapper.convertValue(row.outlineJson(), ProblemSolutionOutlineV1.class),
+        row.hasNoteMarkdown(),
         row.revision(),
         row.createdAt(),
         row.updatedAt());

@@ -32,7 +32,7 @@ class ProblemReviewMapperXmlTest {
     assertStatements(configuration, ProblemReviewAttemptMapper.class,
         "findByUserAndClientAttemptId", "insertIfAbsent", "findRecent");
     assertStatements(configuration, UserProblemNoteMapper.class,
-        "find", "insert", "update", "delete");
+        "findSummary", "find", "insert", "update", "delete");
   }
 
   private void assertStatements(Configuration configuration, Class<?> mapper, String... statementIds) {

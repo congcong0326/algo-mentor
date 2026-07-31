@@ -3,6 +3,7 @@ package org.congcong.algomentor.mentor.application.prompt;
 import java.util.List;
 import org.congcong.algomentor.ai.governance.model.AiBusinessScenario;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentToolNames;
+import org.congcong.algomentor.mentor.application.practice.PracticeLearningStateAgentToolContracts;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredProfileToolContracts;
 
 /**
@@ -17,7 +18,7 @@ public final class ManagedSystemPromptDefinitions {
   public static final ManagedSystemPromptDefinition PRACTICE_CHAT = definition(
       AiBusinessScenario.PRACTICE_CHAT,
       SystemPromptTypeCodes.PRACTICE_CHAT_V1,
-      "2026-07-30.2",
+      "2026-07-31.1",
       SystemPromptSnapshotScope.RUN,
       descriptor("PRACTICE", "题目训练聊天", "Practice chat", "题目训练聊天的身份、教学、工具和记忆边界。"),
       section(SystemPromptSectionKeys.PRACTICE_TASK_BOOTSTRAP, "任务初始指令", 10, true,
@@ -96,6 +97,14 @@ public final class ManagedSystemPromptDefinitions {
           PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW,
           PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW,
           PracticeCodeReviewAgentToolNames.SUBMIT_PRACTICE_CODE_REVIEW).strip()),
+      section(SystemPromptSectionKeys.PRACTICE_LEARNING_STATE_TOOL_BOUNDARY, "当前题学习状态工具边界", 85, true, """
+          当前题学习状态工具边界：
+          1. 仅当当前回合提供 %s，且用户询问当前题的完成状态、最近正式 Review、复习安排或既有题目笔记时调用。
+          2. 默认传 includeNoteBody=false，以读取状态、最近正式 Review、复习安排和笔记提纲。
+          3. 只有当前用户消息明确要求查看笔记正文、全文或完整内容时，才传 includeNoteBody=true；只询问是否有笔记或查看提纲时必须传 false。
+          4. 需要比较多个正式 Review 版本的持续问题、已解决问题或分数变化时，继续使用 get_problem_review_trajectory。
+          5. 工具失败或笔记正文状态不是 INCLUDED 时，不得声称已读取对应内容。
+          """.formatted(PracticeLearningStateAgentToolContracts.TOOL_NAME).strip()),
       section(SystemPromptSectionKeys.PRACTICE_PROFILE_TOOL_BOUNDARY, "学习者画像工具边界", 90, true, """
           学习者自述画像工具边界：
           1. 仅当当前回合提供 %s 且用户明确表达长期、稳定、会影响后续学习辅导的背景、目标、时间约束、学习偏好或能力自评时，才可调用它。

@@ -19,6 +19,7 @@ import org.congcong.algomentor.api.config.LearnerMemoryCodeReviewConsumerPropert
 import org.congcong.algomentor.api.config.LearnerMemoryRecallProperties;
 import org.congcong.algomentor.api.config.LearnerMemoryDeclaredUpdateProperties;
 import org.congcong.algomentor.api.config.PracticeCodeReviewProperties;
+import org.congcong.algomentor.api.config.PracticeChatLearningStateProperties;
 import org.congcong.algomentor.api.config.PracticeChatPromptProperties;
 import org.congcong.algomentor.api.config.PracticeChatReviewTrajectoryProperties;
 import org.congcong.algomentor.agent.persistence.postgres.config.AgentPostgresPersistenceConfiguration;
@@ -36,6 +37,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepos
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceService;
 import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
+import org.congcong.algomentor.mentor.application.practice.GetCurrentProblemLearningStateAgentTool;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatAgentDefinition;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatRunAdapter;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
@@ -77,6 +79,8 @@ import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpda
 import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpdateService;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
+import org.congcong.algomentor.mentor.application.review.card.ReviewCardRepository;
+import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteRepository;
 import org.congcong.algomentor.mentor.application.profile.tool.UpdateLearnerDeclaredProfileAgentTool;
 import org.congcong.algomentor.mentor.application.profile.tool.CompareSubmissionVersionsAgentTool;
 import org.congcong.algomentor.mentor.application.profile.tool.GetCodeReviewEvidenceAgentTool;
@@ -117,6 +121,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
     LearnerMemoryDeclaredUpdateProperties.class,
     LearnerMemoryRecallProperties.class,
     PracticeCodeReviewProperties.class,
+    PracticeChatLearningStateProperties.class,
     PracticeChatPromptProperties.class,
     PracticeChatReviewTrajectoryProperties.class,
     LearnerMemoryCodeReviewConsumerProperties.class
@@ -280,6 +285,35 @@ public class AgentConversationApiAutoConfiguration {
       LearnerMemoryRunScopeRegistry scopeRegistry
   ) {
     return new PracticeChatReviewTrajectoryScopeService(scopeRegistry);
+  }
+
+  @Bean
+  @ConditionalOnBean({
+      PracticeSessionRepository.class,
+      AgentTurnMessageLookupRepository.class,
+      CodeReviewHistoryRepository.class,
+      ReviewCardRepository.class,
+      UserProblemNoteRepository.class
+  })
+  @ConditionalOnProperty(
+      prefix = PracticeChatLearningStateProperties.PREFIX,
+      name = "enabled",
+      havingValue = "true",
+      matchIfMissing = true)
+  @ConditionalOnMissingBean
+  public GetCurrentProblemLearningStateAgentTool getCurrentProblemLearningStateAgentTool(
+      PracticeSessionRepository sessionRepository,
+      AgentTurnMessageLookupRepository turnMessageLookupRepository,
+      CodeReviewHistoryRepository reviewHistoryRepository,
+      ReviewCardRepository reviewCardRepository,
+      UserProblemNoteRepository noteRepository
+  ) {
+    return new GetCurrentProblemLearningStateAgentTool(
+        sessionRepository,
+        turnMessageLookupRepository,
+        reviewHistoryRepository,
+        reviewCardRepository,
+        noteRepository);
   }
 
   @Bean
@@ -504,6 +538,7 @@ public class AgentConversationApiAutoConfiguration {
       ObjectProvider<SearchLearnerMemoryAgentTool> searchLearnerMemoryTool,
       ObjectProvider<ReadLearnerMemorySectionAgentTool> readLearnerMemorySectionTool,
       ObjectProvider<GetLearnerMemoryEvidenceAgentTool> learnerMemoryEvidenceTool,
+      ObjectProvider<GetCurrentProblemLearningStateAgentTool> learningStateTool,
       ObjectProvider<GetProblemReviewTrajectoryAgentTool> reviewTrajectoryTool,
       ObjectProvider<PracticeChatReviewTrajectoryScopeService> reviewTrajectoryScopeService,
       ObjectProvider<ReadToolResultTool> readToolResultTool
@@ -514,6 +549,7 @@ public class AgentConversationApiAutoConfiguration {
     searchLearnerMemoryTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     readLearnerMemorySectionTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     learnerMemoryEvidenceTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
+    learningStateTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     if (reviewTrajectoryScopeService.getIfAvailable() != null) {
       reviewTrajectoryTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     }

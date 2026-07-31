@@ -41,6 +41,7 @@ import org.congcong.algomentor.api.problem.mapper.ProblemTagMapper;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
+import org.congcong.algomentor.mentor.application.practice.GetCurrentProblemLearningStateAgentTool;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeCompletionGate;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
@@ -53,6 +54,7 @@ import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewPer
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewRepository;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewService;
 import org.congcong.algomentor.mentor.application.practice.PracticeMessageStreamService;
+import org.congcong.algomentor.mentor.application.practice.PracticeLearningStateAgentToolContracts;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgressStatus;
 import org.congcong.algomentor.mentor.application.practice.PracticeSession;
@@ -85,6 +87,8 @@ import org.congcong.algomentor.mentor.application.profile.tool.ReadLearnerMemory
 import org.congcong.algomentor.mentor.application.profile.tool.SearchLearnerMemoryAgentTool;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryAgentToolContracts;
 import org.congcong.algomentor.mentor.application.profile.tool.PracticeChatReviewTrajectoryScopeService;
+import org.congcong.algomentor.mentor.application.review.card.ReviewCardRepository;
+import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteRepository;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
@@ -153,6 +157,26 @@ class AgentConversationApiAutoConfigurationTest {
           assertThat(context.getBean(PracticeChatAgentDefinition.class).allowedToolNames())
               .containsExactly(LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY);
           assertThat(context).doesNotHaveBean(LearnerMemoryCodeReviewUpdateAgentDefinition.class);
+        });
+  }
+
+  @Test
+  void enablesCurrentProblemLearningStateInPracticeChatWhenAllReadDependenciesExist() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeTrajectoryDependencies.class)
+        .withBean(AgentTurnMessageLookupRepository.class, () -> mock(AgentTurnMessageLookupRepository.class))
+        .withBean(CodeReviewHistoryRepository.class, () -> mock(CodeReviewHistoryRepository.class))
+        .withBean(ReviewCardRepository.class, () -> mock(ReviewCardRepository.class))
+        .withBean(UserProblemNoteRepository.class, () -> mock(UserProblemNoteRepository.class))
+        .withPropertyValues(
+            "algo-mentor.practice-chat.learning-state.enabled=true",
+            "algo-mentor.practice-chat.review-trajectory.enabled=false")
+        .run(context -> {
+          assertThat(context).hasSingleBean(GetCurrentProblemLearningStateAgentTool.class);
+          assertThat(context).hasSingleBean(PracticeChatAgentDefinition.class);
+          assertThat(context.getBean(PracticeChatAgentDefinition.class).allowedToolNames())
+              .containsExactly(PracticeLearningStateAgentToolContracts.TOOL_NAME);
         });
   }
 

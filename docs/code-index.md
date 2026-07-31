@@ -150,11 +150,13 @@
 - `backend/mentor-api/src/main/resources/db/migration/V30__admin_audit_and_user_feedback.sql`：提前固定管理员审计和用户反馈表结构，本阶段只启用审计写入。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice`：题目训练会话应用层，包含 `PracticeSessionService`、`PracticeMessageStreamService`、prompt assembly 片段 provider、题面 catalog 端口和训练进度/消息领域模型。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewAgentTool.java`：`submit_practice_code_review` Agent 工具，从受信 metadata、practice session repository 和 run message lookup 读取上下文，不信任模型 arguments 中的用户/session/code。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/GetCurrentProblemLearningStateAgentTool.java`：`get_current_problem_learning_state` 只读工具，从受信 Practice Chat 上下文聚合当前题完成状态、最近正式 Review、复习安排和笔记提纲；笔记正文需当前消息显式请求。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewPermissionHook.java`：Review 工具业务权限 hook，命中 `ASK`，构造低敏 preview 并脱敏 authorization、cookie、API key、JWT/bearer/token 类内容。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewAgentToolNames.java`：Review Agent 工具名、参数名、preview 字段和 tool result 字段常量。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewToolResultMapper.java`：Review 工具结果映射，输出 `practice_code_review_submitted` 摘要给 Agent 主模型。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeChatPromptSectionProvider.java`：题目聊天 prompt 片段，包含 Review 工具调用边界和拒绝/超时后的回复约束。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/review`：题目复习应用层，按 `card`、`attempt`、`note`、`schedule`、`preference`、`catalog` 分包，分别负责复习卡、幂等评级流水、题目级长期笔记、FSRS、用户配置和题库读取。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/review/note/UserProblemNoteSummary.java`：不含 Markdown 正文的题目笔记提纲摘要，生产 MyBatis 查询只返回正文存在标记。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/review`：复习卡、复习队列和题目笔记 API，使用 `/api/review-cards`、`/api/review-sessions`、`/api/problems/{slug}/note` 契约。
 - `backend/mentor-api/src/main/resources/db/migration/V40__rebuild_problem_review_card.sql`：破坏性删除旧错题/复述表和 AI 建议字段，创建 `problem_review_card`、`problem_review_attempt`、`user_problem_note`。
 - `backend/mentor-api/src/main/resources/mapper/review`：三张新复习表的 MyBatis XML mapper，评级幂等键使用 PostgreSQL UUID。

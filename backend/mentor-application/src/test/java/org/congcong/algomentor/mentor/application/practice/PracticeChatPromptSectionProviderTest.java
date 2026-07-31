@@ -197,6 +197,11 @@ class PracticeChatPromptSectionProviderTest {
         .contains("如果用户拒绝确认或确认超时，可以继续普通点评代码")
         .contains("不要给出正式分数")
         .contains("不要声称已生成代码提交记录")
+        .contains("当前题学习状态工具边界")
+        .contains(PracticeLearningStateAgentToolContracts.TOOL_NAME)
+        .contains("默认传 includeNoteBody=false")
+        .contains("只有当前用户消息明确要求查看笔记正文、全文或完整内容时，才传 includeNoteBody=true")
+        .contains("继续使用 get_problem_review_trajectory")
         .contains("学习者自述画像工具边界")
         .contains("一次做题表现、临时情绪、短期困惑、猜测、未明确表达的偏好和模型自行推断都不得调用它")
         .doesNotContain("用户粘贴代码时，先定位关键问题和最小修改");

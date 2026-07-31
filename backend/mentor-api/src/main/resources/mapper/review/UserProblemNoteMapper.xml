@@ -19,6 +19,21 @@
     </constructor>
   </resultMap>
 
+  <resultMap id="UserProblemNoteSummaryRowMap"
+      type="org.congcong.algomentor.api.review.mapper.model.UserProblemNoteSummaryRow">
+    <constructor>
+      <arg column="id" javaType="java.lang.Long"/>
+      <arg column="user_id" javaType="_long"/>
+      <arg column="problem_slug" javaType="string"/>
+      <arg column="outline_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="has_note_markdown" javaType="_boolean"/>
+      <arg column="revision" javaType="_long"/>
+      <arg column="created_at" javaType="java.time.Instant"/>
+      <arg column="updated_at" javaType="java.time.Instant"/>
+    </constructor>
+  </resultMap>
+
   <sql id="UserProblemNoteColumns">
     id,
     user_id,
@@ -29,6 +44,20 @@
     created_at,
     updated_at
   </sql>
+
+  <select id="findSummary" resultMap="UserProblemNoteSummaryRowMap">
+    SELECT id,
+           user_id,
+           problem_slug,
+           outline_json,
+           char_length(note_markdown) > 0 AS has_note_markdown,
+           revision,
+           created_at,
+           updated_at
+    FROM user_problem_note
+    WHERE user_id = #{userId}
+      AND problem_slug = #{problemSlug}
+  </select>
 
   <select id="find" resultMap="UserProblemNoteRowMap">
     SELECT <include refid="UserProblemNoteColumns"/>

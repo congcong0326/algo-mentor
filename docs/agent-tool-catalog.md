@@ -18,7 +18,7 @@
 - 只存在于设计文档、尚未实现的规划工具。
 - 普通 Java `util`、前端工具栏和根目录 `tools/` 下的数据准备脚本。
 
-截至当前代码，生产代码共有 **13 个 `AgentTool` 实现**。需要特别区分两个概念：
+截至当前代码，生产代码共有 **14 个 `AgentTool` 实现**。需要特别区分两个概念：
 
 - **已注册**：Spring Bean 被收集进全局 `AgentToolRegistry`。
 - **可调用**：某个 `AgentDefinition.allowedToolNames()` 把工具加入当前 run 的白名单，模型才会看到并执行它。
@@ -27,7 +27,7 @@
 
 按 `application.yml` 默认值并假设 PostgreSQL 等完整依赖均已装配：
 
-- 默认实际暴露给业务 Agent 的工具有 5 个：`list_problem_filters`、`search_problems`、`read_tool_result`、`submit_practice_code_review`、`get_problem_review_trajectory`。
+- 默认实际暴露给业务 Agent 的工具有 6 个：`list_problem_filters`、`search_problems`、`read_tool_result`、`submit_practice_code_review`、`get_current_problem_learning_state`、`get_problem_review_trajectory`。
 - 通过可选能力开关可再暴露 7 个学习者记忆工具。
 - `calculator` 和 `get_problem_statement` 虽然默认注册，但当前没有任何统一 Runtime Definition 将其加入白名单。
 
@@ -62,7 +62,7 @@ Spring AgentTool Bean
 | 学习计划草案 `LEARNING_PLAN_DRAFT` | 24 | `list_problem_filters`、`search_problems`、`read_tool_result` | 开启 |
 | 学习计划修订 `LEARNING_PLAN_REVISION` | 24 | `list_problem_filters`、`search_problems`、`read_tool_result` | 开启 |
 | 学习计划扩展 `LEARNING_PLAN_EXTENSION` | 24 | `list_problem_filters`、`search_problems`、`read_tool_result` | 开启 |
-| 题目练习聊天 `PRACTICE_CHAT` | 8 | `submit_practice_code_review`、`read_tool_result`、`get_problem_review_trajectory`，以及按开关加入的自述画像和记忆召回工具 | 开启 |
+| 题目练习聊天 `PRACTICE_CHAT` | 8 | `submit_practice_code_review`、`get_current_problem_learning_state`、`read_tool_result`、`get_problem_review_trajectory`，以及按开关加入的自述画像和记忆召回工具 | 开启 |
 | Code Review 画像后台更新 `CODE_REVIEW_PROFILE_UPDATE` | 4 | `get_problem_review_trajectory`、`get_code_review_evidence`、`compare_submission_versions` | 默认关闭 |
 | Practice Code Review 子 Agent | 1 | 无 | 随 Review 能力开启 |
 | 学习者自述画像决策子 Agent | 1 | 无 | 默认关闭 |
@@ -140,7 +140,7 @@ Spring AgentTool Bean
 - 配置：`AGENT_PROBLEM_STATEMENT_TOOL_ENABLED`，默认 `true`。
 - Spring 默认会注册该工具，但当前没有 Agent Definition 将其加入白名单，因此没有统一 Runtime 业务场景可以调用它。
 
-## 5. 练习与长期自述写入工具
+## 5. Practice Chat 练习与状态工具
 
 ### 5.1 `submit_practice_code_review`
 
@@ -178,7 +178,39 @@ Spring AgentTool Bean
 - 用户拒绝、超时或取消时不会进入工具实现，也不会生成 Review 记录。
 - 配置：`PRACTICE_CODE_REVIEW_ENABLED`，默认 `true`；权限总开关 `AGENT_TOOL_PERMISSION_ENABLED` 默认 `true`。
 
-### 5.2 `update_learner_declared_profile`
+### 5.2 `get_current_problem_learning_state`
+
+**业务目的**
+
+当用户询问当前题的完成情况、最近正式 Review、复习安排或既有笔记时，读取当前题的最新学习事实，避免依赖聊天历史猜测。
+
+**输入与可信上下文**
+
+- 模型只可传严格布尔参数 `includeNoteBody`。
+- `userId`、practice session、plan、phase、题目 slug 和当前 run 全部来自服务端可信 metadata；工具会再次校验 session 与当前题上下文一致。
+- 不提供跨题、跨计划或任意 session 查询参数。
+
+**输出**
+
+- 当前 practice progress 状态，以及是否已完成或跳过。
+- 当前题最新一条正式 Review 摘要，包括版本、时间、总分、是否通过、扣分原因、改进建议和受影响标签；不返回代码或完整 Review Markdown。
+- 当前题复习卡的到期时间、最近复习时间、评级和有限调度状态；不返回内部来源详情。
+- 默认返回题目笔记是否存在、修订号和结构化提纲。
+
+**笔记正文边界**
+
+- 默认 `includeNoteBody=false`，生产查询不会选择 `note_markdown` 正文列。
+- 只有当前用户消息明确要求查看笔记正文、全文或完整内容，并且模型传入 `includeNoteBody=true` 时，才执行完整笔记查询。
+- 只询问是否有笔记或查看提纲时不读取正文；不满足显式请求时返回 `EXPLICIT_REQUEST_REQUIRED`，不返回 Markdown。
+- 工具只读取当前 turn 的用户消息来校验正文意图，不读取或返回完整聊天历史。
+
+**边界与开关**
+
+- 只读，无业务写副作用，不触发人在回路确认。
+- 多版本 Review 的持续、已解决和新增问题继续使用 `get_problem_review_trajectory`。
+- 配置：`PRACTICE_CHAT_LEARNING_STATE_TOOL_ENABLED`，默认 `true`。
+
+### 5.3 `update_learner_declared_profile`
 
 **业务目的**
 
@@ -332,6 +364,7 @@ Spring AgentTool Bean
 | `AGENT_PROBLEM_SEARCH_TOOL_ENABLED` | `true` | `search_problems` |
 | `AGENT_PROBLEM_STATEMENT_TOOL_ENABLED` | `true` | `get_problem_statement`，仅控制注册 |
 | `PRACTICE_CODE_REVIEW_ENABLED` | `true` | `submit_practice_code_review` 及 Review 子 Agent |
+| `PRACTICE_CHAT_LEARNING_STATE_TOOL_ENABLED` | `true` | Practice Chat 的 `get_current_problem_learning_state` |
 | `PRACTICE_CHAT_REVIEW_TRAJECTORY_TOOL_ENABLED` | `true` | Practice Chat 的当前题 `get_problem_review_trajectory` |
 | `LEARNER_MEMORY_DECLARED_UPDATE_ENABLED` | `false` | `update_learner_declared_profile` |
 | `LEARNER_MEMORY_RECALL_PRACTICE_CHAT_ENABLED` | `false` | 三个 Practice Chat 记忆召回工具 |
@@ -375,5 +408,6 @@ Practice Chat 已由后端确定性注入当前题面，因此不会通过统一
 - 场景白名单：各业务模块的 `*AgentDefinition.java`。
 - 全局 Tool 装配：`backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/MentorAiConfiguration.java`。
 - Practice Chat 与记忆装配：`backend/mentor-api/src/main/java/org/congcong/algomentor/mentor/api/autoconfigure/AgentConversationApiAutoConfiguration.java`。
+- 当前题学习状态工具：`backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/GetCurrentProblemLearningStateAgentTool.java`。
 - 正式 Review 装配：`backend/mentor-api/src/main/java/org/congcong/algomentor/mentor/api/autoconfigure/PracticeCodeReviewConfiguration.java`。
 - 默认配置：`backend/mentor-api/src/main/resources/application.yml`。

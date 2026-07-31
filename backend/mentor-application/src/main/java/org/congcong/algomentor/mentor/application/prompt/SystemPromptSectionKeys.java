@@ -11,6 +11,7 @@ public final class SystemPromptSectionKeys {
   public static final String PRACTICE_RESPONSE_LANGUAGE = "practice.strategy.response-language";
   public static final String PRACTICE_INTERACTION = "practice.strategy.interaction";
   public static final String PRACTICE_CODE_REVIEW_TOOL_BOUNDARY = "practice.strategy.code-review-tool-boundary";
+  public static final String PRACTICE_LEARNING_STATE_TOOL_BOUNDARY = "practice.strategy.learning-state-tool-boundary";
   public static final String PRACTICE_PROFILE_TOOL_BOUNDARY = "practice.strategy.profile-tool-boundary";
   public static final String PRACTICE_ACTIVE_SUMMARY_BOUNDARY = "practice.memory.active-summary-boundary";
   public static final String PRACTICE_LEARNER_PROFILE_BOUNDARY = "practice.memory.learner-profile-boundary";
