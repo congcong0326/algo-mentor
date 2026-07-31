@@ -137,6 +137,8 @@ algo-mentor:
         enabled: ${LEARNER_MEMORY_RECALL_PRACTICE_CHAT_ENABLED:false}
         bootstrap-token-budget: ${LEARNER_MEMORY_RECALL_BOOTSTRAP_TOKEN_BUDGET:1000}
   practice-chat:
+    review-trajectory:
+      enabled: ${PRACTICE_CHAT_REVIEW_TRAJECTORY_TOOL_ENABLED:true}
     prompt:
       total-token-budget: ${PRACTICE_CHAT_PROMPT_TOKEN_BUDGET:8000}
   practice:

@@ -13,11 +13,15 @@ final class LearnerMemoryReviewToolMetrics {
   }
 
   JsonNode record(String tool, JsonNode result) {
+    return record("REVIEW_UPDATE", tool, result);
+  }
+
+  JsonNode record(String purpose, String tool, JsonNode result) {
     String status = result == null ? LearnerMemoryAgentToolContracts.STATUS_FAILED
         : result.path(LearnerMemoryAgentToolContracts.RESULT_FIELD_STATUS).asText(
             LearnerMemoryAgentToolContracts.STATUS_FAILED);
     metrics.recordToolCall(
-        "REVIEW_UPDATE",
+        purpose,
         tool,
         LearnerMemoryAgentToolContracts.STATUS_OK.equals(status) ? "SUCCEEDED" : "FAILED");
     return result;

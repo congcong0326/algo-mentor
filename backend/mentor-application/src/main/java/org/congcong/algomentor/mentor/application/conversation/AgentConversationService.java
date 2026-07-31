@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.prompt.DefaultPromptAssembler;
 import org.congcong.algomentor.agent.core.prompt.PromptAssembler;
@@ -46,6 +47,7 @@ import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRe
 import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallPromptSectionProvider;
 import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallService;
 import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallSnapshot;
+import org.congcong.algomentor.mentor.application.profile.tool.PracticeChatReviewTrajectoryScopeService;
 
 public class AgentConversationService {
 
@@ -58,6 +60,7 @@ public class AgentConversationService {
   private final LearnerMemoryRecallService learnerMemoryRecallService;
   private final LearnerMemoryRecallPromptSectionProvider learnerMemoryRecallPromptSectionProvider;
   private final ManagedSystemPromptResolver systemPromptResolver;
+  private final PracticeChatReviewTrajectoryScopeService reviewTrajectoryScopeService;
 
   public AgentConversationService(
       AgentConversationRepository conversationRepository,
@@ -148,6 +151,31 @@ public class AgentConversationService {
       LearnerMemoryRecallPromptSectionProvider learnerMemoryRecallPromptSectionProvider,
       ManagedSystemPromptResolver systemPromptResolver
   ) {
+    this(
+        conversationRepository,
+        contextAssembler,
+        contextPolicy,
+        learningPlanRepository,
+        practiceProblemCatalog,
+        practicePromptAssembler,
+        learnerMemoryRecallService,
+        learnerMemoryRecallPromptSectionProvider,
+        systemPromptResolver,
+        null);
+  }
+
+  public AgentConversationService(
+      AgentConversationRepository conversationRepository,
+      ContextAssembler contextAssembler,
+      ContextAssemblyPolicy contextPolicy,
+      LearningPlanRepository learningPlanRepository,
+      PracticeChatProblemCatalog practiceProblemCatalog,
+      PromptAssembler practicePromptAssembler,
+      LearnerMemoryRecallService learnerMemoryRecallService,
+      LearnerMemoryRecallPromptSectionProvider learnerMemoryRecallPromptSectionProvider,
+      ManagedSystemPromptResolver systemPromptResolver,
+      PracticeChatReviewTrajectoryScopeService reviewTrajectoryScopeService
+  ) {
     this.conversationRepository = conversationRepository;
     this.contextAssembler = contextAssembler;
     this.contextPolicy = contextPolicy == null ? ContextAssemblyPolicy.defaultPolicy() : contextPolicy;
@@ -163,6 +191,7 @@ public class AgentConversationService {
     this.systemPromptResolver = systemPromptResolver == null
         ? ManagedSystemPrompts.defaultResolver()
         : systemPromptResolver;
+    this.reviewTrajectoryScopeService = reviewTrajectoryScopeService;
   }
 
   /** 为 Practice Chat 复用 session task，并准备新的 turn、run 与完整受信上下文。 */
@@ -303,6 +332,7 @@ public class AgentConversationService {
       AgentConversationCommand command
   ) {
     AgentRunResource recallLease = AgentRunResource.none();
+    AgentRunResource reviewTrajectoryLease = AgentRunResource.none();
     LearnerMemoryRecallSnapshot learnerMemorySnapshot = null;
     try {
     PracticeChatContext practiceContext = practiceChatContext(command.practiceChat(), command.userId());
@@ -321,6 +351,12 @@ public class AgentConversationService {
           command.practiceChat().locale());
       learnerMemorySnapshot = openedSnapshot.snapshot();
       recallLease = openedSnapshot.lease();
+    }
+    PracticeChatReviewTrajectoryScopeService.OpenedScope reviewTrajectoryScope = null;
+    if (!idempotentReplay && reviewTrajectoryScopeService != null) {
+      reviewTrajectoryScope = reviewTrajectoryScopeService.openScope(
+          command.userId(), command.practiceChat().problemSlug());
+      reviewTrajectoryLease = reviewTrajectoryScope.runResource();
     }
     ResolvedSystemPromptSnapshot promptSnapshot = systemPromptResolver.resolve(
         ManagedSystemPromptDefinitions.PRACTICE_CHAT, command.userId());
@@ -351,14 +387,32 @@ public class AgentConversationService {
             PracticeChatPromptConstants.METADATA_RESPONSE_LANGUAGE, responseLanguage.name())));
     Map<String, Object> metadata = new HashMap<>(assembly.metadata());
     metadata.putAll(SystemPromptMetadataKeys.from(promptSnapshot));
+    if (reviewTrajectoryScope != null) {
+      metadata.putAll(reviewTrajectoryScope.metadata());
+    }
     metadata.putAll(learnerMemoryRecallPromptSectionProvider.metadata(
         learnerMemorySnapshot, assembly, promptSnapshot));
     return new PracticeChatContextAssembly(
-        new AssembledContext(assembly.canonicalMessages(), Map.copyOf(metadata), assembly.tokenEstimate()), recallLease);
+        new AssembledContext(assembly.canonicalMessages(), Map.copyOf(metadata), assembly.tokenEstimate()),
+        combinedResource(recallLease, reviewTrajectoryLease));
     } catch (RuntimeException failure) {
       recallLease.release();
+      reviewTrajectoryLease.release();
       throw failure;
     }
+  }
+
+  private AgentRunResource combinedResource(AgentRunResource first, AgentRunResource second) {
+    AtomicBoolean released = new AtomicBoolean();
+    return () -> {
+      if (released.compareAndSet(false, true)) {
+        try {
+          first.release();
+        } finally {
+          second.release();
+        }
+      }
+    };
   }
 
   private PracticeChatContext practiceChatContext(PracticeChatReference reference, long userId) {

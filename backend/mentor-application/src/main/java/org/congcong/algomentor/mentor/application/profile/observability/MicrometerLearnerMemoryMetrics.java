@@ -13,7 +13,8 @@ import org.congcong.algomentor.mentor.application.profile.run.model.LearnerMemor
 public final class MicrometerLearnerMemoryMetrics implements LearnerMemoryMetrics {
 
   private static final String OTHER = "OTHER";
-  private static final Set<String> TOOL_PURPOSES = Set.of("DECLARED_UPDATE", "REVIEW_UPDATE", "RECALL");
+  private static final Set<String> TOOL_PURPOSES = Set.of(
+      "DECLARED_UPDATE", "REVIEW_UPDATE", "RECALL", "PRACTICE_CHAT");
   private static final Set<String> TOOL_STATUSES = Set.of("SUCCEEDED", "REJECTED", "FAILED");
   private static final Set<String> INVALID_OUTPUT_REASONS = Set.of("SCHEMA", "VALIDATION", "STALE", "TOOL_FAILURE");
   private static final Set<String> EVIDENCE_PATTERNS = Set.of(

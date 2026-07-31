@@ -111,6 +111,36 @@ class LearnerMemoryReviewToolTest {
     assertThat(repository.versionCalls).isZero();
   }
 
+  @Test
+  void readsPracticeChatTrajectoryOnlyForTheTrustedCurrentProblemAndUser() {
+    FakeHistoryRepository repository = new FakeHistoryRepository();
+    LearnerMemoryRunScopeRegistry registry = new LearnerMemoryRunScopeRegistry();
+    LearnerMemoryRunScopeRegistry.ScopeLease lease = registry.openPracticeChatTrajectoryScope(7, "two-sum");
+    SimpleMeterRegistry meterRegistry = new SimpleMeterRegistry();
+    GetProblemReviewTrajectoryAgentTool tool = new GetProblemReviewTrajectoryAgentTool(
+        registry, repository, new ReviewTrajectoryService(), new MicrometerLearnerMemoryMetrics(meterRegistry));
+    AgentExecutionContext context = context(registry, lease);
+
+    JsonNode forbidden = tool.execute(object(LearnerMemoryAgentToolContracts.ARGUMENT_PROBLEM_SLUG, "other"), context);
+    assertThat(forbidden.path(LearnerMemoryAgentToolContracts.RESULT_FIELD_FAILURE_CODE).asText())
+        .isEqualTo(LearnerMemoryAgentToolContracts.FAILURE_SCOPE_FORBIDDEN);
+    assertThat(repository.trajectoryCalls).isZero();
+
+    JsonNode result = tool.execute(object(LearnerMemoryAgentToolContracts.ARGUMENT_PROBLEM_SLUG, "two-sum"), context);
+    assertThat(result.path(LearnerMemoryAgentToolContracts.RESULT_FIELD_STATUS).asText())
+        .isEqualTo(LearnerMemoryAgentToolContracts.STATUS_OK);
+    assertThat(repository.lastTrajectoryUserId).isEqualTo(7L);
+    assertThat(repository.trajectoryCalls).isEqualTo(1);
+
+    JsonNode repeated = tool.execute(object(LearnerMemoryAgentToolContracts.ARGUMENT_PROBLEM_SLUG, "two-sum"), context);
+    assertThat(repeated.path(LearnerMemoryAgentToolContracts.RESULT_FIELD_FAILURE_CODE).asText())
+        .isEqualTo(LearnerMemoryAgentToolContracts.FAILURE_TOOL_ALREADY_USED);
+    assertThat(repository.trajectoryCalls).isEqualTo(1);
+    assertThat(meterRegistry.get("learner_memory_tool_call_total")
+        .tags("purpose", "PRACTICE_CHAT", "tool", LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY,
+            "status", "SUCCEEDED").counter().count()).isEqualTo(1D);
+  }
+
   private static AgentExecutionContext context(
       LearnerMemoryRunScopeRegistry registry,
       LearnerMemoryRunScopeRegistry.ScopeLease lease
@@ -149,9 +179,13 @@ class LearnerMemoryReviewToolTest {
         review(101, 1, List.of("nested loop")), review(102, 2, List.of("null case")));
     private int evidenceCalls;
     private int versionCalls;
+    private int trajectoryCalls;
+    private long lastTrajectoryUserId;
 
     @Override
     public List<CodeReviewHistory> findLatestForProblem(long userId, String problemSlug, int limit) {
+      trajectoryCalls++;
+      lastTrajectoryUserId = userId;
       return "two-sum".equals(problemSlug) ? history : List.of();
     }
 

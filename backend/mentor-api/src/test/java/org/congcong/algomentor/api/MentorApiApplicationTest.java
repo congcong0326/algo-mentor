@@ -14,6 +14,7 @@ import org.congcong.algomentor.agent.core.AgentLoopDefaults;
 import org.congcong.algomentor.agent.core.runtime.definition.AgentDefinition;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
+import org.congcong.algomentor.agent.core.tool.ReadToolResultTool;
 import org.congcong.algomentor.agent.runtime.DefaultAgentRuntime;
 import org.congcong.algomentor.agent.runtime.definition.AgentDefinitionRegistry;
 import org.congcong.algomentor.ai.governance.model.AiBusinessScenario;
@@ -63,7 +64,9 @@ class MentorApiApplicationTest {
               LearnerDeclaredProfileToolContracts.TOOL_NAME,
               LearnerMemoryRecallToolContracts.SEARCH_LEARNER_MEMORY,
               LearnerMemoryRecallToolContracts.READ_LEARNER_MEMORY_SECTION,
-              LearnerMemoryRecallToolContracts.GET_LEARNER_MEMORY_EVIDENCE)),
+              LearnerMemoryRecallToolContracts.GET_LEARNER_MEMORY_EVIDENCE,
+              LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY,
+              ReadToolResultTool.NAME)),
       AiBusinessScenario.LEARNING_PLAN_DRAFT,
       new DefinitionExpectation(LearningPlanDraftAgentInput.class, 24, LearningPlanAgentToolNames.PLANNING_TOOLS),
       AiBusinessScenario.LEARNING_PLAN_REVISION,

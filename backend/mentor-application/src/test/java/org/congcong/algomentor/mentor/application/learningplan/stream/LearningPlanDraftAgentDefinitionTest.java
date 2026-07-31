@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import java.util.List;
+import org.congcong.algomentor.agent.core.tool.ReadToolResultTool;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationContext;
 import org.congcong.algomentor.agent.core.runtime.api.AgentInvocationMode;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
@@ -31,7 +32,8 @@ class LearningPlanDraftAgentDefinitionTest {
     assertThat(definition.loopPolicy().maxSteps()).isEqualTo(LearningPlanDraftAgentDefinition.MAX_STEPS);
     assertThat(definition.allowedToolNames()).containsExactly(
         LearningPlanAgentToolNames.LIST_PROBLEM_FILTERS,
-        LearningPlanAgentToolNames.SEARCH_PROBLEMS);
+        LearningPlanAgentToolNames.SEARCH_PROBLEMS,
+        ReadToolResultTool.NAME);
     assertThat(prepared.messages()).extracting(LlmMessage::role)
         .containsExactly(LlmMessage.Role.SYSTEM, LlmMessage.Role.USER);
     assertThat(prepared.metadata())

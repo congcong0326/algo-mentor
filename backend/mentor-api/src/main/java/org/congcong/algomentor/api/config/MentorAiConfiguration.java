@@ -46,7 +46,6 @@ import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentConversationRepository;
 import org.congcong.algomentor.agent.core.tool.ReadToolResultTool;
 import org.congcong.algomentor.agent.core.tool.CalculatorTool;
-import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultReadGuard;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.agent.runtime.DefaultAgentRuntime;
@@ -255,7 +254,6 @@ public class MentorAiConfiguration {
 
   @Bean
   @ConditionalOnMissingBean(name = "readToolResultTool")
-  @org.springframework.boot.autoconfigure.condition.ConditionalOnBean(ToolResultStore.class)
   public ReadToolResultTool readToolResultTool(
       ToolResultStore toolResultStore,
       ToolResultCompactionPolicy policy,
@@ -319,14 +317,14 @@ public class MentorAiConfiguration {
       List<AgentLoopObserver> observers,
       List<AgentLoopInterceptor> interceptors,
       ToolResultCompactionPolicy toolResultPolicy,
-      ObjectProvider<ToolResultStore> toolResultStore,
+      ToolResultStore toolResultStore,
       ObjectMapper objectMapper,
       AgentToolPermissionGuard permissionGuard
   ) {
     ToolResultCompactor toolResultCompactor = new ToolResultCompactor(
         objectMapper,
         toolResultPolicy,
-        toolResultStore.getIfAvailable(InMemoryToolResultStore::new));
+        toolResultStore);
     return new AgentLoopEngine(
         llmGateway,
         requestFactory,

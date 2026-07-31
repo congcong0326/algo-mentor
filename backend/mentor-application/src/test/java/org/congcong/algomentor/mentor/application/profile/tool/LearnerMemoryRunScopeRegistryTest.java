@@ -64,6 +64,20 @@ class LearnerMemoryRunScopeRegistryTest {
   }
 
   @Test
+  void limitsPracticeChatTrajectoryScopeToItsCurrentProblemAndOneLookup() {
+    LearnerMemoryRunScopeRegistry registry = new LearnerMemoryRunScopeRegistry();
+    LearnerMemoryRunScopeRegistry.ScopeLease lease = registry.openPracticeChatTrajectoryScope(7, "two-sum");
+
+    assertThat(registry.reserveTrajectory(lease.scopeRef(), "other").status())
+        .isEqualTo(LearnerMemoryRunScopeRegistry.ScopeUseStatus.FORBIDDEN);
+    assertThat(registry.reserveTrajectory(lease.scopeRef(), "two-sum").scope().userId()).isEqualTo(7);
+    assertThat(registry.reserveTrajectory(lease.scopeRef(), "two-sum").status())
+        .isEqualTo(LearnerMemoryRunScopeRegistry.ScopeUseStatus.ALREADY_USED);
+    assertThat(registry.reserveEvidence(lease.scopeRef(), 101).status())
+        .isEqualTo(LearnerMemoryRunScopeRegistry.ScopeUseStatus.FORBIDDEN);
+  }
+
+  @Test
   void keepsRecallClaimsOnlyInsideAnOpaqueLeaseUntilRelease() {
     LearnerMemoryRunScopeRegistry registry = new LearnerMemoryRunScopeRegistry();
     LearnerMemoryClaimRevision claim = recallClaim();

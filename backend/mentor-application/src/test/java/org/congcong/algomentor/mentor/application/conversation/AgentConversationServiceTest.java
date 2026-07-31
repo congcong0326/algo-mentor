@@ -52,6 +52,8 @@ import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRe
 import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemoryRecallSnapshot;
 import org.congcong.algomentor.mentor.application.profile.recall.LearnerMemorySectionCatalog;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryRunScopeRegistry;
+import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryAgentToolContracts;
+import org.congcong.algomentor.mentor.application.profile.tool.PracticeChatReviewTrajectoryScopeService;
 import org.junit.jupiter.api.Test;
 
 class AgentConversationServiceTest {
@@ -211,6 +213,40 @@ class AgentConversationServiceTest {
     assertThat(replay.agentRequest().metadata())
         .doesNotContainKey(LearnerMemoryRecallContracts.METADATA_SCOPE_REF)
         .doesNotContainValue("must-not-open");
+  }
+
+  @Test
+  void opensAndReleasesCurrentProblemReviewTrajectoryScopeWithThePracticeRun() {
+    CapturingRepository repository = new CapturingRepository();
+    LearnerMemoryRunScopeRegistry registry = new LearnerMemoryRunScopeRegistry();
+    LearnerMemoryRecallPromptSectionProvider recallProvider = new LearnerMemoryRecallPromptSectionProvider(
+        new LearnerMemoryRecallBootstrapBuilder(1_000), null);
+    AgentConversationService service = new AgentConversationService(
+        repository,
+        new ContextAssembler(),
+        ContextAssemblyPolicy.defaultPolicy(),
+        new InMemoryPlanRepository(plan()),
+        new FakePracticeProblemCatalog(),
+        new DefaultPromptAssembler(
+            new PracticeChatPromptProfileResolver(),
+            List.of(new PracticeChatPromptSectionProvider(), recallProvider)),
+        null,
+        recallProvider,
+        null,
+        new PracticeChatReviewTrajectoryScopeService(registry));
+
+    AgentConversationRun run = service.preparePracticeRun(practiceInput(
+        "我这题有没有进步", "idem-review-trajectory", PracticeCoachStyle.GUIDED, PracticeResponseLanguage.ZH_CN));
+    String scopeRef = run.agentRequest().metadata()
+        .get(LearnerMemoryAgentToolContracts.METADATA_SCOPE_REF).toString();
+
+    assertThat(scopeRef).isNotEqualTo("7").hasSize(43);
+    assertThat(registry.reserveTrajectory(scopeRef, "other").status())
+        .isEqualTo(LearnerMemoryRunScopeRegistry.ScopeUseStatus.FORBIDDEN);
+
+    run.runResource().release();
+    assertThat(registry.reserveTrajectory(scopeRef, "two-sum").status())
+        .isEqualTo(LearnerMemoryRunScopeRegistry.ScopeUseStatus.SCOPE_UNAVAILABLE);
   }
 
   private static PracticeChatAgentInput practiceInput(

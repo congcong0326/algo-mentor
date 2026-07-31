@@ -20,6 +20,7 @@ import org.congcong.algomentor.api.config.LearnerMemoryRecallProperties;
 import org.congcong.algomentor.api.config.LearnerMemoryDeclaredUpdateProperties;
 import org.congcong.algomentor.api.config.PracticeCodeReviewProperties;
 import org.congcong.algomentor.api.config.PracticeChatPromptProperties;
+import org.congcong.algomentor.api.config.PracticeChatReviewTrajectoryProperties;
 import org.congcong.algomentor.agent.persistence.postgres.config.AgentPostgresPersistenceConfiguration;
 import org.congcong.algomentor.ai.governance.autoconfigure.AiGovernanceAutoConfiguration;
 import org.congcong.algomentor.api.controller.practice.PracticeSessionController;
@@ -83,6 +84,7 @@ import org.congcong.algomentor.mentor.application.profile.tool.GetLearnerMemoryE
 import org.congcong.algomentor.mentor.application.profile.tool.GetProblemReviewTrajectoryAgentTool;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryRunScopeRegistry;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryToolResultReadGuard;
+import org.congcong.algomentor.mentor.application.profile.tool.PracticeChatReviewTrajectoryScopeService;
 import org.congcong.algomentor.mentor.application.profile.tool.ReadLearnerMemorySectionAgentTool;
 import org.congcong.algomentor.mentor.application.profile.tool.SearchLearnerMemoryAgentTool;
 import org.congcong.algomentor.ops.observability.LearningOpsRecorder;
@@ -116,6 +118,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
     LearnerMemoryRecallProperties.class,
     PracticeCodeReviewProperties.class,
     PracticeChatPromptProperties.class,
+    PracticeChatReviewTrajectoryProperties.class,
     LearnerMemoryCodeReviewConsumerProperties.class
 })
 public class AgentConversationApiAutoConfiguration {
@@ -132,7 +135,8 @@ public class AgentConversationApiAutoConfiguration {
       @Qualifier("practiceChatPromptAssembler") PromptAssembler practicePromptAssembler,
       LearnerMemoryRecallPromptSectionProvider learnerMemoryRecallPromptSectionProvider,
       ObjectProvider<LearnerMemoryRecallService> learnerMemoryRecallService,
-      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver
+      ObjectProvider<ManagedSystemPromptResolver> systemPromptResolver,
+      ObjectProvider<PracticeChatReviewTrajectoryScopeService> reviewTrajectoryScopeService
   ) {
     LearningPlanRepository planRepository = learningPlanRepository.getIfAvailable();
     PracticeChatProblemCatalog problemCatalog = practiceProblemCatalog.getIfAvailable();
@@ -152,7 +156,8 @@ public class AgentConversationApiAutoConfiguration {
           practicePromptAssembler,
           learnerMemoryRecallService.getIfAvailable(),
           learnerMemoryRecallPromptSectionProvider,
-          systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
+          systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver),
+          reviewTrajectoryScopeService.getIfAvailable());
     }
     return new AgentConversationService(
         conversationRepository,
@@ -163,7 +168,8 @@ public class AgentConversationApiAutoConfiguration {
         practicePromptAssembler,
         learnerMemoryRecallService.getIfAvailable(),
         learnerMemoryRecallPromptSectionProvider,
-        systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver));
+        systemPromptResolver.getIfAvailable(ManagedSystemPrompts::defaultResolver),
+        reviewTrajectoryScopeService.getIfAvailable());
   }
 
   @Bean("practiceChatPromptAssembler")
@@ -260,6 +266,20 @@ public class AgentConversationApiAutoConfiguration {
   @ConditionalOnMissingBean
   public LearnerMemoryRunScopeRegistry learnerMemoryRunScopeRegistry() {
     return new LearnerMemoryRunScopeRegistry();
+  }
+
+  @Bean
+  @ConditionalOnBean({LearnerMemoryRunScopeRegistry.class, CodeReviewHistoryRepository.class})
+  @ConditionalOnProperty(
+      prefix = PracticeChatReviewTrajectoryProperties.PREFIX,
+      name = "enabled",
+      havingValue = "true",
+      matchIfMissing = true)
+  @ConditionalOnMissingBean
+  public PracticeChatReviewTrajectoryScopeService practiceChatReviewTrajectoryScopeService(
+      LearnerMemoryRunScopeRegistry scopeRegistry
+  ) {
+    return new PracticeChatReviewTrajectoryScopeService(scopeRegistry);
   }
 
   @Bean
@@ -484,6 +504,8 @@ public class AgentConversationApiAutoConfiguration {
       ObjectProvider<SearchLearnerMemoryAgentTool> searchLearnerMemoryTool,
       ObjectProvider<ReadLearnerMemorySectionAgentTool> readLearnerMemorySectionTool,
       ObjectProvider<GetLearnerMemoryEvidenceAgentTool> learnerMemoryEvidenceTool,
+      ObjectProvider<GetProblemReviewTrajectoryAgentTool> reviewTrajectoryTool,
+      ObjectProvider<PracticeChatReviewTrajectoryScopeService> reviewTrajectoryScopeService,
       ObjectProvider<ReadToolResultTool> readToolResultTool
   ) {
     java.util.List<String> toolNames = new java.util.ArrayList<>();
@@ -492,6 +514,9 @@ public class AgentConversationApiAutoConfiguration {
     searchLearnerMemoryTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     readLearnerMemorySectionTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     learnerMemoryEvidenceTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
+    if (reviewTrajectoryScopeService.getIfAvailable() != null) {
+      reviewTrajectoryTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
+    }
     readToolResultTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     return new PracticeChatAgentDefinition(
         new PracticeChatRunAdapter(conversationService, lockManager, lockOwnerProvider),

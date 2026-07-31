@@ -13,6 +13,8 @@
 - `docs/agent-structured-output-design.md`：Agent 结构化输出与最终结果捕获设计，说明执行配置、provider-native structured output、AgentOutput 和最终输出持久化边界。
 - `docs/agent-run-tool-result-compaction-design.md`：Agent run 内工具结果压缩设计，说明大结果预览、blob 引用、范围读取工具和 run-local 上下文预算。
 - `docs/agent-tool-permission-phase-one-design.md`：Agent Tool 人在回路权限阶段一设计，说明工具执行前门禁、权限 hook/coordinator、决策 API、SSE 和 Review 工具确认链路。
+- `docs/agent-tool-catalog.md`：当前生产 Agent Tool 的现状维护基线，记录实现清单、业务场景白名单、默认开关、读写副作用和权限预算；新增或调整 Tool 时必须同步更新。
+- `docs/agent-tool-development-requirements.md`：Agent Tool 后续研发需求，记录现有 Tool 接入调整、计划新增 Tool、优先级和暂缓项，不展开具体实现方案。
 - `docs/agent-tool-permission-phase-one-tasks/README.md`：Agent Tool 权限阶段一任务拆解与落地确认，记录 task 8-20 的完成备注、阶段一限制和验证命令。
 - `docs/unified-agent-foundation-refactoring-design.md`：统一 Agent 底座重构设计，梳理现有 AI 场景执行链路，定义统一 `AgentRuntime`、场景 Definition、run 级工具白名单和渐进迁移边界，当前不引入 Workflow。
 - `docs/unified-agent-foundation-refactoring-implementation-plan.md`：统一 Agent 底座 UAF-00 至 UAF-13 的连续实施计划，定义依赖波次、上下文接力、测试门禁、回滚和最终架构验收。

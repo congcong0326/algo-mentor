@@ -37,6 +37,9 @@ import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.runtime.definition.AgentDefinitionRegistry;
 import org.congcong.algomentor.agent.core.runtime.repository.AgentTurnMessageLookupRepository;
 import org.congcong.algomentor.agent.core.tool.CalculatorTool;
+import org.congcong.algomentor.agent.core.tool.ReadToolResultTool;
+import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.api.problem.service.ProblemService;
 import org.congcong.algomentor.api.agent.execution.ManagedAgentExecutor;
 import org.congcong.algomentor.api.problem.tool.GetProblemStatementTool;
@@ -86,6 +89,7 @@ class MentorAiConfigurationTest {
 
   private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
       .withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+      .withBean(ToolResultStore.class, InMemoryToolResultStore::new)
       .withUserConfiguration(MentorAiConfiguration.class);
 
   @Test
@@ -125,6 +129,22 @@ class MentorAiConfigurationTest {
 
       assertThat(context).hasSingleBean(CalculatorTool.class);
       assertThat(registry.specs()).extracting(spec -> spec.name()).contains("calculator");
+    });
+  }
+
+  @Test
+  void registersReadToolResultToolWithTheLoopEngineStore() {
+    contextRunner.run(context -> {
+      ToolResultStore toolResultStore = context.getBean(ToolResultStore.class);
+      ReadToolResultTool readToolResultTool = context.getBean(ReadToolResultTool.class);
+      AgentLoopEngine loopEngine = context.getBean(AgentLoopEngine.class);
+      Object toolResultCompactor = ReflectionTestUtils.getField(loopEngine, "toolResultCompactor");
+
+      assertThat(context.getBean(AgentToolRegistry.class).find(ReadToolResultTool.NAME)).isPresent();
+      assertThat(ReflectionTestUtils.getField(readToolResultTool, "resultStore"))
+          .isSameAs(toolResultStore);
+      assertThat(ReflectionTestUtils.getField(toolResultCompactor, "resultStore"))
+          .isSameAs(toolResultStore);
     });
   }
 
@@ -223,6 +243,7 @@ class MentorAiConfigurationTest {
   void disabledToolPermissionKeepsLoopEngineGuardButIgnoresBusinessHooks() {
     new ApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+        .withBean(ToolResultStore.class, InMemoryToolResultStore::new)
         .withUserConfiguration(DenyPermissionHookConfig.class, MentorAiConfiguration.class)
         .withPropertyValues("algo-mentor.agent.tool-permission.enabled=false")
         .run(context -> {
@@ -243,6 +264,7 @@ class MentorAiConfigurationTest {
         .withConfiguration(AutoConfigurations.of(
             JacksonAutoConfiguration.class,
             AgentConversationApiAutoConfiguration.class))
+        .withBean(ToolResultStore.class, InMemoryToolResultStore::new)
         .withUserConfiguration(PracticeReviewToolCollectionConfig.class, MentorAiConfiguration.class)
         .withPropertyValues("algo-mentor.practice.code-review.enabled=true")
         .run(context -> {
@@ -292,7 +314,8 @@ class MentorAiConfigurationTest {
           AgentToolRegistry registry = context.getBean(AgentToolRegistry.class);
 
           assertThat(context).doesNotHaveBean(CalculatorTool.class);
-          assertThat(registry.specs()).isEmpty();
+          assertThat(registry.specs()).extracting(spec -> spec.name())
+              .containsExactly(ReadToolResultTool.NAME);
         });
   }
 
@@ -332,6 +355,7 @@ class MentorAiConfigurationTest {
   private ApplicationContextRunner problemToolContextRunner() {
     return new ApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+        .withBean(ToolResultStore.class, InMemoryToolResultStore::new)
         .withUserConfiguration(FakeProblemToolConfig.class, MentorAiConfiguration.class);
   }
 

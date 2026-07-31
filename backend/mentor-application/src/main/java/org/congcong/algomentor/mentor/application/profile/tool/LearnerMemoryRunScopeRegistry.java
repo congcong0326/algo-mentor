@@ -75,7 +75,28 @@ public final class LearnerMemoryRunScopeRegistry {
     removeExpired();
     String scopeRef = nextScopeRef();
     Instant expiresAt = clock.instant().plus(ttl);
-    ScopeState state = new ScopeState(userId, Map.copyOf(reviewsById), toolBudget, expiresAt);
+    ScopeState state = new ScopeState(
+        userId, Map.copyOf(reviewsById), toolBudget, expiresAt, ScopePurpose.REVIEW_UPDATE);
+    while (scopes.putIfAbsent(scopeRef, state) != null) {
+      scopeRef = nextScopeRef();
+    }
+    return new ScopeLease(this, scopeRef, state);
+  }
+
+  /**
+   * 为 Practice Chat 开启只允许读取当前训练题目的正式 Review 轨迹 scope。
+   *
+   * <p>scope 不含可供证据或版本比对工具使用的 Review ID；因此复用同一工具时，模型只能在当前 run 内
+   * 对受信题目读取一次轨迹。</p>
+   */
+  public ScopeLease openPracticeChatTrajectoryScope(long userId, String problemSlug) {
+    if (userId < 1 || problemSlug == null || problemSlug.isBlank()) {
+      throw new IllegalArgumentException("Practice chat trajectory scope input is invalid");
+    }
+    removeExpired();
+    String scopeRef = nextScopeRef();
+    Instant expiresAt = clock.instant().plus(ttl);
+    ScopeState state = ScopeState.forPracticeChat(userId, problemSlug.trim(), expiresAt);
     while (scopes.putIfAbsent(scopeRef, state) != null) {
       scopeRef = nextScopeRef();
     }
@@ -220,7 +241,7 @@ public final class LearnerMemoryRunScopeRegistry {
       return scopeRef;
     }
 
-    /** 仅供更新编排记录低敏工具次数；release 后不会重新注册或扩大读取范围。 */
+    /** 仅供编排记录低敏工具次数；release 后不会重新注册或扩大读取范围。 */
     public int toolCallCount() {
       return state.toolCallCount();
     }
@@ -278,14 +299,17 @@ public final class LearnerMemoryRunScopeRegistry {
     }
   }
 
-  public record ScopeSnapshot(long userId, Map<Long, CodeReviewVerification> reviewsById, int toolCallsUsed) {
+  public record ScopeSnapshot(
+      long userId,
+      Map<Long, CodeReviewVerification> reviewsById,
+      int toolCallsUsed,
+      Set<String> allowedProblemSlugs,
+      ScopePurpose purpose
+  ) {
 
     public ScopeSnapshot {
       reviewsById = Map.copyOf(reviewsById);
-    }
-
-    public Set<String> allowedProblemSlugs() {
-      return reviewsById.values().stream().map(CodeReviewVerification::problemSlug).collect(java.util.stream.Collectors.toUnmodifiableSet());
+      allowedProblemSlugs = Set.copyOf(allowedProblemSlugs);
     }
   }
 
@@ -295,6 +319,22 @@ public final class LearnerMemoryRunScopeRegistry {
     FORBIDDEN,
     ALREADY_USED,
     BUDGET_EXHAUSTED
+  }
+
+  /** Scope 所属调用入口，用于保持 Review 工具可观测数据的业务归类。 */
+  public enum ScopePurpose {
+    REVIEW_UPDATE("REVIEW_UPDATE"),
+    PRACTICE_CHAT("PRACTICE_CHAT");
+
+    private final String metricValue;
+
+    ScopePurpose(String metricValue) {
+      this.metricValue = metricValue;
+    }
+
+    public String metricValue() {
+      return metricValue;
+    }
   }
 
   private enum RequestType {
@@ -325,6 +365,7 @@ public final class LearnerMemoryRunScopeRegistry {
     private final Set<String> allowedProblemSlugs;
     private final int toolBudget;
     private final Instant expiresAt;
+    private final ScopePurpose purpose;
     private final Set<String> trajectorySlugs = new java.util.HashSet<>();
     private boolean diffUsed;
     private int toolCallsUsed;
@@ -333,14 +374,31 @@ public final class LearnerMemoryRunScopeRegistry {
         long userId,
         Map<Long, CodeReviewVerification> reviewsById,
         int toolBudget,
-        Instant expiresAt
+        Instant expiresAt,
+        ScopePurpose purpose
+    ) {
+      this(userId, reviewsById, reviewsById.values().stream().map(CodeReviewVerification::problemSlug)
+          .collect(java.util.stream.Collectors.toUnmodifiableSet()), toolBudget, expiresAt, purpose);
+    }
+
+    private ScopeState(
+        long userId,
+        Map<Long, CodeReviewVerification> reviewsById,
+        Set<String> allowedProblemSlugs,
+        int toolBudget,
+        Instant expiresAt,
+        ScopePurpose purpose
     ) {
       this.userId = userId;
       this.reviewsById = reviewsById;
-      this.allowedProblemSlugs = reviewsById.values().stream().map(CodeReviewVerification::problemSlug)
-          .collect(java.util.stream.Collectors.toUnmodifiableSet());
+      this.allowedProblemSlugs = Set.copyOf(allowedProblemSlugs);
       this.toolBudget = toolBudget;
       this.expiresAt = expiresAt;
+      this.purpose = purpose;
+    }
+
+    private static ScopeState forPracticeChat(long userId, String problemSlug, Instant expiresAt) {
+      return new ScopeState(userId, Map.of(), Set.of(problemSlug), 1, expiresAt, ScopePurpose.PRACTICE_CHAT);
     }
 
     private boolean isExpired(Instant now) {
@@ -386,7 +444,7 @@ public final class LearnerMemoryRunScopeRegistry {
     }
 
     private ScopeSnapshot snapshot() {
-      return new ScopeSnapshot(userId, reviewsById, toolCallsUsed);
+      return new ScopeSnapshot(userId, reviewsById, toolCallsUsed, allowedProblemSlugs, purpose);
     }
 
     private synchronized int toolCallCount() {

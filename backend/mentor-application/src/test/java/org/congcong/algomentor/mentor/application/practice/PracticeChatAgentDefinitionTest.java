@@ -12,6 +12,7 @@ import org.congcong.algomentor.ai.governance.model.AiBusinessScenario;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.mentor.application.conversation.AgentConversationService;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredProfileToolContracts;
+import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryAgentToolContracts;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryRecallToolContracts;
 import org.congcong.algomentor.agent.core.tool.ReadToolResultTool;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,7 @@ class PracticeChatAgentDefinitionTest {
         LearnerMemoryRecallToolContracts.SEARCH_LEARNER_MEMORY,
         LearnerMemoryRecallToolContracts.READ_LEARNER_MEMORY_SECTION,
         LearnerMemoryRecallToolContracts.GET_LEARNER_MEMORY_EVIDENCE,
+        LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY,
         ReadToolResultTool.NAME));
 
     assertThat(definition.key().value()).isEqualTo(AiBusinessScenario.PRACTICE_CHAT.code());
@@ -36,6 +38,7 @@ class PracticeChatAgentDefinitionTest {
         LearnerMemoryRecallToolContracts.SEARCH_LEARNER_MEMORY,
         LearnerMemoryRecallToolContracts.READ_LEARNER_MEMORY_SECTION,
         LearnerMemoryRecallToolContracts.GET_LEARNER_MEMORY_EVIDENCE,
+        LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY,
         ReadToolResultTool.NAME);
     assertThat(definition.outputContract().executionOptions().responseFormat())
         .isInstanceOf(LlmResponseFormat.Text.class);

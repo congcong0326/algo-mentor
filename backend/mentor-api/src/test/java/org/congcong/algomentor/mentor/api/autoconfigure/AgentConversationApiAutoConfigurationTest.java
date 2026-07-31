@@ -21,6 +21,8 @@ import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.agent.core.AgentToolRegistry;
 import org.congcong.algomentor.agent.core.toolresult.ToolResultReadGuard;
+import org.congcong.algomentor.agent.core.toolresult.InMemoryToolResultStore;
+import org.congcong.algomentor.agent.core.toolresult.ToolResultStore;
 import org.congcong.algomentor.agent.core.runtime.model.AgentActiveRun;
 import org.congcong.algomentor.agent.core.runtime.model.AgentAssistantSeedMessageRequest;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
@@ -81,6 +83,8 @@ import org.congcong.algomentor.mentor.application.profile.tool.UpdateLearnerDecl
 import org.congcong.algomentor.mentor.application.profile.tool.GetLearnerMemoryEvidenceAgentTool;
 import org.congcong.algomentor.mentor.application.profile.tool.ReadLearnerMemorySectionAgentTool;
 import org.congcong.algomentor.mentor.application.profile.tool.SearchLearnerMemoryAgentTool;
+import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryAgentToolContracts;
+import org.congcong.algomentor.mentor.application.profile.tool.PracticeChatReviewTrajectoryScopeService;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
 import org.congcong.algomentor.llm.core.response.LlmCompletionResult;
@@ -135,6 +139,24 @@ class AgentConversationApiAutoConfigurationTest {
   }
 
   @Test
+  void enablesPracticeChatReviewTrajectoryIndependentlyOfTheProfileConsumer() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeTrajectoryDependencies.class)
+        .withBean(CodeReviewHistoryRepository.class, () -> mock(CodeReviewHistoryRepository.class))
+        .withPropertyValues(
+            "algo-mentor.practice-chat.review-trajectory.enabled=true",
+            "algo-mentor.learner-memory.code-review-consumer.enabled=false")
+        .run(context -> {
+          assertThat(context).hasSingleBean(PracticeChatReviewTrajectoryScopeService.class);
+          assertThat(context).hasSingleBean(PracticeChatAgentDefinition.class);
+          assertThat(context.getBean(PracticeChatAgentDefinition.class).allowedToolNames())
+              .containsExactly(LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY);
+          assertThat(context).doesNotHaveBean(LearnerMemoryCodeReviewUpdateAgentDefinition.class);
+        });
+  }
+
+  @Test
   void registersEnabledDeclaredProfileCapabilityInTheRuntimeRegistry() {
     new ApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(
@@ -144,6 +166,7 @@ class AgentConversationApiAutoConfigurationTest {
             PracticeStreamWithoutReviewDependencies.class,
             MentorAiConfiguration.class,
             LearnerMemoryUpdateDependencies.class)
+        .withBean(ToolResultStore.class, InMemoryToolResultStore::new)
         .withPropertyValues("algo-mentor.learner-memory.declared-update.enabled=true")
         .run(context -> {
           assertThat(context).hasSingleBean(DeclaredProfileUpdateAgentDefinition.class);
@@ -193,6 +216,7 @@ class AgentConversationApiAutoConfigurationTest {
             PracticeStreamWithoutReviewDependencies.class,
             MentorAiConfiguration.class,
             LearnerMemoryUpdateDependencies.class)
+        .withBean(ToolResultStore.class, InMemoryToolResultStore::new)
         .withBean(LearnerMemoryCodeReviewFactRepository.class, () -> mock(LearnerMemoryCodeReviewFactRepository.class))
         .withBean(CodeReviewHistoryRepository.class, () -> mock(CodeReviewHistoryRepository.class))
         .withPropertyValues("algo-mentor.learner-memory.code-review-consumer.enabled=true")
@@ -216,6 +240,7 @@ class AgentConversationApiAutoConfigurationTest {
             PracticeStreamWithoutReviewDependencies.class,
             MentorAiConfiguration.class,
             LearnerMemoryUpdateDependencies.class)
+        .withBean(ToolResultStore.class, InMemoryToolResultStore::new)
         .withBean(LearnerMemoryCodeReviewFactRepository.class, () -> mock(LearnerMemoryCodeReviewFactRepository.class))
         .withBean(CodeReviewHistoryRepository.class, () -> mock(CodeReviewHistoryRepository.class))
         .withBean(QueueMessageRepository.class, () -> mock(QueueMessageRepository.class))
@@ -251,6 +276,7 @@ class AgentConversationApiAutoConfigurationTest {
         .withUserConfiguration(
             PracticeReviewToolDependencies.class,
             PersistentQueueStorageDependencies.class)
+        .withBean(ToolResultStore.class, InMemoryToolResultStore::new)
         .withPropertyValues("algo-mentor.practice.code-review.enabled=true")
         .run(context -> {
           assertThat(context).hasSingleBean(org.congcong.algomentor.queue.publisher.QueuePublisher.class);
@@ -507,6 +533,35 @@ class AgentConversationApiAutoConfigurationTest {
           throw new UnsupportedOperationException("test tool is not executed");
         }
       };
+    }
+  }
+
+  @Configuration(proxyBeanMethods = false)
+  static class PracticeTrajectoryDependencies {
+
+    @Bean
+    PracticeSessionRepository practiceSessionRepository() {
+      return new EmptyPracticeSessionRepository();
+    }
+
+    @Bean
+    AgentConversationRepository agentConversationRepository() {
+      return new EmptyAgentConversationRepository();
+    }
+
+    @Bean
+    ContextAssembler contextAssembler() {
+      return new ContextAssembler();
+    }
+
+    @Bean
+    AgentRunLockManager agentRunLockManager() {
+      return new InMemoryAgentRunLockManager();
+    }
+
+    @Bean
+    LocalAgentRunLockOwnerProvider agentRunLockOwnerProvider() {
+      return new LocalAgentRunLockOwnerProvider("test-owner");
     }
   }
 

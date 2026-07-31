@@ -73,20 +73,21 @@ public final class GetProblemReviewTrajectoryAgentTool implements AgentTool {
           LearnerMemoryReviewToolSupport.failureForScopeUse(
               LearnerMemoryAgentToolContracts.RESULT_TYPE_REVIEW_TRAJECTORY, use.status()));
     }
+    String purpose = use.scope().purpose().metricValue();
     try {
       List<CodeReviewHistory> reviews = historyRepository.findLatestForProblem(
           use.scope().userId(), problemSlug, ReviewTrajectoryService.MAX_VERSIONS);
       if (reviews.isEmpty()) {
-        return observability.record(LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY,
+        return observability.record(purpose, LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY,
             LearnerMemoryReviewToolSupport.failure(
             LearnerMemoryAgentToolContracts.RESULT_TYPE_REVIEW_TRAJECTORY,
             LearnerMemoryAgentToolContracts.STATUS_FAILED,
             LearnerMemoryAgentToolContracts.FAILURE_REVIEW_NOT_FOUND));
       }
-      return observability.record(LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY,
+      return observability.record(purpose, LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY,
           render(trajectoryService.calculate(reviews)));
     } catch (RuntimeException exception) {
-      return observability.record(LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY,
+      return observability.record(purpose, LearnerMemoryAgentToolContracts.GET_PROBLEM_REVIEW_TRAJECTORY,
           LearnerMemoryReviewToolSupport.failure(
           LearnerMemoryAgentToolContracts.RESULT_TYPE_REVIEW_TRAJECTORY,
           LearnerMemoryAgentToolContracts.STATUS_FAILED,
