@@ -121,6 +121,7 @@ public class PracticeChatPromptSectionProvider implements PromptSectionProvider 
         promptSnapshot.requireSection(SystemPromptSectionKeys.PRACTICE_INTERACTION).text(),
         promptSnapshot.requireSection(SystemPromptSectionKeys.PRACTICE_CODE_REVIEW_TOOL_BOUNDARY).text(),
         promptSnapshot.requireSection(SystemPromptSectionKeys.PRACTICE_LEARNING_STATE_TOOL_BOUNDARY).text(),
+        promptSnapshot.requireSection(SystemPromptSectionKeys.PRACTICE_NOTE_APPEND_TOOL_BOUNDARY).text(),
         promptSnapshot.requireSection(SystemPromptSectionKeys.PRACTICE_PROFILE_TOOL_BOUNDARY).text());
     return ManagedSystemPromptSectionFactory.create(
         promptSnapshot,

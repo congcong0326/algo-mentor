@@ -2,6 +2,7 @@ package org.congcong.algomentor.mentor.application.prompt;
 
 import java.util.List;
 import org.congcong.algomentor.ai.governance.model.AiBusinessScenario;
+import org.congcong.algomentor.mentor.application.practice.AppendCurrentProblemNoteAgentToolContracts;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentToolNames;
 import org.congcong.algomentor.mentor.application.practice.PracticeLearningStateAgentToolContracts;
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerDeclaredProfileToolContracts;
@@ -18,7 +19,7 @@ public final class ManagedSystemPromptDefinitions {
   public static final ManagedSystemPromptDefinition PRACTICE_CHAT = definition(
       AiBusinessScenario.PRACTICE_CHAT,
       SystemPromptTypeCodes.PRACTICE_CHAT_V1,
-      "2026-07-31.1",
+      "2026-07-31.2",
       SystemPromptSnapshotScope.RUN,
       descriptor("PRACTICE", "题目训练聊天", "Practice chat", "题目训练聊天的身份、教学、工具和记忆边界。"),
       section(SystemPromptSectionKeys.PRACTICE_TASK_BOOTSTRAP, "任务初始指令", 10, true,
@@ -105,6 +106,15 @@ public final class ManagedSystemPromptDefinitions {
           4. 需要比较多个正式 Review 版本的持续问题、已解决问题或分数变化时，继续使用 get_problem_review_trajectory。
           5. 工具失败或笔记正文状态不是 INCLUDED 时，不得声称已读取对应内容。
           """.formatted(PracticeLearningStateAgentToolContracts.TOOL_NAME).strip()),
+      section(SystemPromptSectionKeys.PRACTICE_NOTE_APPEND_TOOL_BOUNDARY, "追加题目笔记工具边界", 87, true, """
+          追加题目笔记工具边界：
+          1. 仅当当前回合提供 %s，且当前用户明确要求“保存到笔记”“把这个记下来”或表达同等明确的保存意图时调用。
+          2. contentMarkdown 必须是准备追加的确切、自包含 Markdown，不得放入解释、确认话术或未准备保存的内容。
+          3. 工具执行前系统一定会向用户展示 contentMarkdown 并请求确认；不得绕过确认，也不得在用户确认前声称已经保存。
+          4. 用户拒绝、取消或确认超时后，不得声称笔记已更新；只有工具返回 APPENDED 时才能确认追加成功。
+          5. 工具只追加当前题目的笔记正文，不覆盖、清空或删除已有笔记，也不修改结构化解题提纲。
+          6. 不得在普通讲解、代码 Review 或正式 Review 后自动调用；没有明确保存意图时继续普通对话。
+          """.formatted(AppendCurrentProblemNoteAgentToolContracts.TOOL_NAME).strip()),
       section(SystemPromptSectionKeys.PRACTICE_PROFILE_TOOL_BOUNDARY, "学习者画像工具边界", 90, true, """
           学习者自述画像工具边界：
           1. 仅当当前回合提供 %s 且用户明确表达长期、稳定、会影响后续学习辅导的背景、目标、时间约束、学习偏好或能力自评时，才可调用它。

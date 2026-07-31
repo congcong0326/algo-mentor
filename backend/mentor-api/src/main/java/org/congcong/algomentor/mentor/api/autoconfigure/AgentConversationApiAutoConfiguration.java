@@ -2,6 +2,7 @@ package org.congcong.algomentor.mentor.api.autoconfigure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micrometer.core.instrument.MeterRegistry;
+import java.time.Clock;
 import org.congcong.algomentor.agent.core.prompt.DefaultPromptAssembler;
 import org.congcong.algomentor.agent.core.prompt.PromptAssembler;
 import org.congcong.algomentor.agent.core.runlock.AgentRunLockManager;
@@ -18,8 +19,10 @@ import org.congcong.algomentor.api.config.ApiSseProperties;
 import org.congcong.algomentor.api.config.LearnerMemoryCodeReviewConsumerProperties;
 import org.congcong.algomentor.api.config.LearnerMemoryRecallProperties;
 import org.congcong.algomentor.api.config.LearnerMemoryDeclaredUpdateProperties;
+import org.congcong.algomentor.api.config.MentorConfigurationKeys;
 import org.congcong.algomentor.api.config.PracticeCodeReviewProperties;
 import org.congcong.algomentor.api.config.PracticeChatLearningStateProperties;
+import org.congcong.algomentor.api.config.PracticeChatNoteAppendProperties;
 import org.congcong.algomentor.api.config.PracticeChatPromptProperties;
 import org.congcong.algomentor.api.config.PracticeChatReviewTrajectoryProperties;
 import org.congcong.algomentor.agent.persistence.postgres.config.AgentPostgresPersistenceConfiguration;
@@ -36,8 +39,10 @@ import org.congcong.algomentor.mentor.application.conversation.AgentConversation
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceRepository;
 import org.congcong.algomentor.mentor.application.preference.UserAiPreferenceService;
-import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
+import org.congcong.algomentor.mentor.application.practice.AppendCurrentProblemNoteAgentTool;
+import org.congcong.algomentor.mentor.application.practice.AppendCurrentProblemNotePermissionHook;
 import org.congcong.algomentor.mentor.application.practice.GetCurrentProblemLearningStateAgentTool;
+import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatAgentDefinition;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatRunAdapter;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
@@ -80,6 +85,7 @@ import org.congcong.algomentor.mentor.application.profile.ai.DeclaredProfileUpda
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptResolver;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPrompts;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardRepository;
+import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteAppendService;
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteRepository;
 import org.congcong.algomentor.mentor.application.profile.tool.UpdateLearnerDeclaredProfileAgentTool;
 import org.congcong.algomentor.mentor.application.profile.tool.CompareSubmissionVersionsAgentTool;
@@ -122,6 +128,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
     LearnerMemoryRecallProperties.class,
     PracticeCodeReviewProperties.class,
     PracticeChatLearningStateProperties.class,
+    PracticeChatNoteAppendProperties.class,
     PracticeChatPromptProperties.class,
     PracticeChatReviewTrajectoryProperties.class,
     LearnerMemoryCodeReviewConsumerProperties.class
@@ -314,6 +321,49 @@ public class AgentConversationApiAutoConfiguration {
         reviewHistoryRepository,
         reviewCardRepository,
         noteRepository);
+  }
+
+  @Bean
+  @ConditionalOnBean(UserProblemNoteRepository.class)
+  @ConditionalOnProperty(
+      prefix = PracticeChatNoteAppendProperties.PREFIX,
+      name = "enabled",
+      havingValue = "true",
+      matchIfMissing = true)
+  @ConditionalOnMissingBean
+  public UserProblemNoteAppendService userProblemNoteAppendService(
+      UserProblemNoteRepository noteRepository
+  ) {
+    return new UserProblemNoteAppendService(noteRepository, Clock.systemUTC());
+  }
+
+  @Bean
+  @ConditionalOnBean({PracticeSessionRepository.class, UserProblemNoteAppendService.class})
+  @ConditionalOnProperty(
+      prefix = PracticeChatNoteAppendProperties.PREFIX,
+      name = "enabled",
+      havingValue = "true",
+      matchIfMissing = true)
+  @ConditionalOnProperty(
+      prefix = MentorConfigurationKeys.AGENT_TOOL_PERMISSION_PREFIX,
+      name = MentorConfigurationKeys.ENABLED,
+      havingValue = MentorConfigurationKeys.TRUE,
+      matchIfMissing = true)
+  @ConditionalOnMissingBean
+  public AppendCurrentProblemNoteAgentTool appendCurrentProblemNoteAgentTool(
+      PracticeSessionRepository sessionRepository,
+      UserProblemNoteAppendService noteAppendService
+  ) {
+    return new AppendCurrentProblemNoteAgentTool(sessionRepository, noteAppendService);
+  }
+
+  @Bean
+  @ConditionalOnBean({PracticeSessionRepository.class, AppendCurrentProblemNoteAgentTool.class})
+  @ConditionalOnMissingBean
+  public AppendCurrentProblemNotePermissionHook appendCurrentProblemNotePermissionHook(
+      PracticeSessionRepository sessionRepository
+  ) {
+    return new AppendCurrentProblemNotePermissionHook(sessionRepository);
   }
 
   @Bean
@@ -539,6 +589,7 @@ public class AgentConversationApiAutoConfiguration {
       ObjectProvider<ReadLearnerMemorySectionAgentTool> readLearnerMemorySectionTool,
       ObjectProvider<GetLearnerMemoryEvidenceAgentTool> learnerMemoryEvidenceTool,
       ObjectProvider<GetCurrentProblemLearningStateAgentTool> learningStateTool,
+      ObjectProvider<AppendCurrentProblemNoteAgentTool> noteAppendTool,
       ObjectProvider<GetProblemReviewTrajectoryAgentTool> reviewTrajectoryTool,
       ObjectProvider<PracticeChatReviewTrajectoryScopeService> reviewTrajectoryScopeService,
       ObjectProvider<ReadToolResultTool> readToolResultTool
@@ -550,6 +601,7 @@ public class AgentConversationApiAutoConfiguration {
     readLearnerMemorySectionTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     learnerMemoryEvidenceTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     learningStateTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
+    noteAppendTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     if (reviewTrajectoryScopeService.getIfAvailable() != null) {
       reviewTrajectoryTool.ifAvailable(tool -> toolNames.add(tool.spec().name()));
     }

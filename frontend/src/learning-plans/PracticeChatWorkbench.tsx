@@ -48,6 +48,7 @@ const ACTIVE_RUN_POLL_INTERVAL_MS = 3000;
 const LEARNER_PROFILE_TOOL_RUNNING_MIN_VISIBLE_MS = 700;
 // 后端 SSE/tool result 公共契约，用于识别 Review tool 是否真实落库。
 const REVIEW_TOOL_NAME = 'submit_practice_code_review';
+const APPEND_NOTE_TOOL_NAME = 'append_current_problem_note';
 const REVIEW_SUBMITTED_RESULT_TYPE = 'practice_code_review_submitted';
 const TOOL_PERMISSION_DENIED_RESULT_TYPE = 'tool_permission_denied';
 const TOOL_PERMISSION_TIMEOUT_RESULT_TYPE = 'tool_permission_timeout';
@@ -58,6 +59,7 @@ interface PermissionPreview {
   problemSlug?: string;
   problemTitle?: string;
   codePreview?: string;
+  noteMarkdown?: string;
   contextAvailable?: boolean;
 }
 
@@ -163,6 +165,7 @@ function readPermissionPreview(data: unknown): PermissionPreview {
     problemSlug: readStringField(preview, 'problemSlug'),
     problemTitle: readStringField(preview, 'problemTitle'),
     codePreview: readStringField(preview, 'codePreview'),
+    noteMarkdown: readStringField(preview, 'noteMarkdown'),
     contextAvailable: readBooleanField(preview, 'contextAvailable'),
   };
 }
@@ -595,6 +598,7 @@ export default function PracticeChatWorkbench({
   const pendingPermissionProblem = pendingPermission
     ? permissionProblemLabel(pendingPermission.preview, sessionResponse, problem, locale)
     : undefined;
+  const noteAppendPermission = pendingPermission?.request.toolName === APPEND_NOTE_TOOL_NAME;
   const permissionSeconds = pendingPermission
     ? permissionRemainingSeconds(pendingPermission.request.expiresAt)
     : undefined;
@@ -986,7 +990,12 @@ export default function PracticeChatWorkbench({
 
             if (pendingPermissionIdRef.current === permissionRequestId) {
               pendingPermissionIdRef.current = undefined;
-              setPermissionNotice(resources.learningPlans.toolPermissionTimeoutNotice);
+              const timedOutToolName = typeof event.data === 'object' && event.data !== null
+                ? readStringField(event.data as Record<string, unknown>, 'toolName')
+                : undefined;
+              setPermissionNotice(timedOutToolName === APPEND_NOTE_TOOL_NAME
+                ? resources.learningPlans.toolPermissionNoteTimeoutNotice
+                : resources.learningPlans.toolPermissionTimeoutNotice);
               setPendingPermission(undefined);
             }
           }
@@ -1504,7 +1513,9 @@ export default function PracticeChatWorkbench({
             {permissionSeconds !== undefined && (
               <div
                 aria-label={permissionExpired
-                  ? `${resources.learningPlans.toolPermissionExpired}. ${resources.learningPlans.toolPermissionExpiredHint}`
+                  ? `${resources.learningPlans.toolPermissionExpired}. ${noteAppendPermission
+                    ? resources.learningPlans.toolPermissionNoteExpiredHint
+                    : resources.learningPlans.toolPermissionExpiredHint}`
                   : `${resources.learningPlans.toolPermissionCountdownLabel} ${formatPermissionCountdown(permissionSeconds)}. ${resources.learningPlans.toolPermissionCountdownHint}`}
                 className={`practice-permission-countdown ${permissionUrgent ? 'is-urgent' : ''} ${permissionExpired ? 'is-expired' : ''}`}
                 role="timer"
@@ -1520,7 +1531,9 @@ export default function PracticeChatWorkbench({
                     ? resources.learningPlans.toolPermissionExpired
                     : resources.learningPlans.toolPermissionCountdownLabel}</strong>
                   <span>{permissionExpired
-                    ? resources.learningPlans.toolPermissionExpiredHint
+                    ? noteAppendPermission
+                      ? resources.learningPlans.toolPermissionNoteExpiredHint
+                      : resources.learningPlans.toolPermissionExpiredHint
                     : resources.learningPlans.toolPermissionCountdownHint}</span>
                 </div>
               </div>
@@ -1536,7 +1549,9 @@ export default function PracticeChatWorkbench({
             {pendingPermission.preview.contextAvailable === false && (
               <div className="practice-permission-context-warning" role="note">
                 <AlertCircle aria-hidden="true" />
-                <span>{resources.learningPlans.toolPermissionContextWarning}</span>
+                <span>{noteAppendPermission
+                  ? resources.learningPlans.toolPermissionNoteContextWarning
+                  : resources.learningPlans.toolPermissionContextWarning}</span>
               </div>
             )}
 
@@ -1547,9 +1562,18 @@ export default function PracticeChatWorkbench({
               </div>
             )}
 
+            {pendingPermission.preview.noteMarkdown && (
+              <div className="practice-permission-code">
+                <strong>{resources.learningPlans.toolPermissionNotePreview}</strong>
+                <pre><code>{pendingPermission.preview.noteMarkdown}</code></pre>
+              </div>
+            )}
+
             <p className="practice-permission-effect">
               <CheckCircle2 aria-hidden="true" />
-              <span>{resources.learningPlans.toolPermissionEffectSummary}</span>
+              <span>{noteAppendPermission
+                ? resources.learningPlans.toolPermissionNoteEffectSummary
+                : resources.learningPlans.toolPermissionEffectSummary}</span>
             </p>
 
             {pendingPermission.error && (
@@ -1563,7 +1587,9 @@ export default function PracticeChatWorkbench({
                 onClick={() => void handlePermissionDecision('DENY')}
                 type="button"
               >
-                {resources.learningPlans.toolPermissionDeny}
+                {noteAppendPermission
+                  ? resources.learningPlans.toolPermissionNoteDeny
+                  : resources.learningPlans.toolPermissionDeny}
               </button>
               <button
                 className="primary-button compact"
@@ -1571,7 +1597,9 @@ export default function PracticeChatWorkbench({
                 onClick={() => void handlePermissionDecision('ALLOW')}
                 type="button"
               >
-                {resources.learningPlans.toolPermissionAllow}
+                {noteAppendPermission
+                  ? resources.learningPlans.toolPermissionNoteAllow
+                  : resources.learningPlans.toolPermissionAllow}
               </button>
             </div>
           </section>

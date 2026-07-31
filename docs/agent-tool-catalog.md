@@ -18,7 +18,7 @@
 - 只存在于设计文档、尚未实现的规划工具。
 - 普通 Java `util`、前端工具栏和根目录 `tools/` 下的数据准备脚本。
 
-截至当前代码，生产代码共有 **14 个 `AgentTool` 实现**。需要特别区分两个概念：
+截至当前代码，生产代码共有 **15 个 `AgentTool` 实现**。需要特别区分两个概念：
 
 - **已注册**：Spring Bean 被收集进全局 `AgentToolRegistry`。
 - **可调用**：某个 `AgentDefinition.allowedToolNames()` 把工具加入当前 run 的白名单，模型才会看到并执行它。
@@ -27,7 +27,7 @@
 
 按 `application.yml` 默认值并假设 PostgreSQL 等完整依赖均已装配：
 
-- 默认实际暴露给业务 Agent 的工具有 6 个：`list_problem_filters`、`search_problems`、`read_tool_result`、`submit_practice_code_review`、`get_current_problem_learning_state`、`get_problem_review_trajectory`。
+- 默认实际暴露给业务 Agent 的工具有 7 个：`list_problem_filters`、`search_problems`、`read_tool_result`、`submit_practice_code_review`、`get_current_problem_learning_state`、`append_current_problem_note`、`get_problem_review_trajectory`。
 - 通过可选能力开关可再暴露 7 个学习者记忆工具。
 - `calculator` 和 `get_problem_statement` 虽然默认注册，但当前没有任何统一 Runtime Definition 将其加入白名单。
 
@@ -62,7 +62,7 @@ Spring AgentTool Bean
 | 学习计划草案 `LEARNING_PLAN_DRAFT` | 24 | `list_problem_filters`、`search_problems`、`read_tool_result` | 开启 |
 | 学习计划修订 `LEARNING_PLAN_REVISION` | 24 | `list_problem_filters`、`search_problems`、`read_tool_result` | 开启 |
 | 学习计划扩展 `LEARNING_PLAN_EXTENSION` | 24 | `list_problem_filters`、`search_problems`、`read_tool_result` | 开启 |
-| 题目练习聊天 `PRACTICE_CHAT` | 8 | `submit_practice_code_review`、`get_current_problem_learning_state`、`read_tool_result`、`get_problem_review_trajectory`，以及按开关加入的自述画像和记忆召回工具 | 开启 |
+| 题目练习聊天 `PRACTICE_CHAT` | 8 | `submit_practice_code_review`、`get_current_problem_learning_state`、`append_current_problem_note`、`read_tool_result`、`get_problem_review_trajectory`，以及按开关加入的自述画像和记忆召回工具 | 开启 |
 | Code Review 画像后台更新 `CODE_REVIEW_PROFILE_UPDATE` | 4 | `get_problem_review_trajectory`、`get_code_review_evidence`、`compare_submission_versions` | 默认关闭 |
 | Practice Code Review 子 Agent | 1 | 无 | 随 Review 能力开启 |
 | 学习者自述画像决策子 Agent | 1 | 无 | 默认关闭 |
@@ -173,7 +173,7 @@ Spring AgentTool Bean
 
 **权限**
 
-- 当前唯一配置专用人在回路权限 Hook 的工具。
+- 当前配置专用人在回路权限 Hook 的写工具之一。
 - 模型请求调用后，前端会收到确认请求；只有用户允许后才执行真实 Review。
 - 用户拒绝、超时或取消时不会进入工具实现，也不会生成 Review 记录。
 - 配置：`PRACTICE_CODE_REVIEW_ENABLED`，默认 `true`；权限总开关 `AGENT_TOOL_PERMISSION_ENABLED` 默认 `true`。
@@ -210,7 +210,33 @@ Spring AgentTool Bean
 - 多版本 Review 的持续、已解决和新增问题继续使用 `get_problem_review_trajectory`。
 - 配置：`PRACTICE_CHAT_LEARNING_STATE_TOOL_ENABLED`，默认 `true`。
 
-### 5.3 `update_learner_declared_profile`
+### 5.3 `append_current_problem_note`
+
+**业务目的**
+
+当用户明确要求“保存到笔记”或“把这个记下来”时，把当前对话中已经整理好的内容追加到当前练习题目的用户笔记。
+
+**输入与可信上下文**
+
+- 模型只可传严格字符串参数 `contentMarkdown`，内容必须是准备追加的确切、自包含 Markdown。
+- `userId`、practice session、plan、phase 和题目 slug 全部来自服务端可信 metadata；工具执行前再次校验 session 与当前题上下文一致。
+- 不接受模型声明的用户、session、plan、phase、题目或预期修订号。
+
+**确认与写入语义**
+
+- 每次调用都由专用权限 Hook 返回 `ASK`，前端展示规范化后的确切 `contentMarkdown`；只有用户允许后才执行真实写入。
+- 用户拒绝、取消或确认超时不会进入工具实现，也不会更新题目笔记。
+- PostgreSQL 使用单条原子 upsert：首次追加以空提纲创建笔记；已有笔记只追加 `note_markdown` 并递增 `revision`，不修改 `outline_json`。
+- 非空已有正文与新内容之间使用两个换行符分隔；追加后仍受 10,000 字符总长度约束。
+
+**边界与开关**
+
+- 只允许追加，不覆盖、清空或删除已有笔记，不修改结构化解题提纲。
+- 只有用户明确表达保存意图时才调用；普通讲解、代码 Review 或正式 Review 后不得自动写入。
+- 工具返回 `APPENDED` 后才能声称保存成功；失败、拒绝或超时不得声称笔记已更新。
+- 配置：`PRACTICE_CHAT_NOTE_APPEND_TOOL_ENABLED`，默认 `true`；权限总开关 `AGENT_TOOL_PERMISSION_ENABLED` 默认 `true`。为保证每次写入都经过确认，权限总开关关闭时该工具不会注册或暴露给 Practice Chat。
+
+### 5.4 `update_learner_declared_profile`
 
 **业务目的**
 
@@ -365,11 +391,12 @@ Spring AgentTool Bean
 | `AGENT_PROBLEM_STATEMENT_TOOL_ENABLED` | `true` | `get_problem_statement`，仅控制注册 |
 | `PRACTICE_CODE_REVIEW_ENABLED` | `true` | `submit_practice_code_review` 及 Review 子 Agent |
 | `PRACTICE_CHAT_LEARNING_STATE_TOOL_ENABLED` | `true` | Practice Chat 的 `get_current_problem_learning_state` |
+| `PRACTICE_CHAT_NOTE_APPEND_TOOL_ENABLED` | `true` | Practice Chat 的 `append_current_problem_note` |
 | `PRACTICE_CHAT_REVIEW_TRAJECTORY_TOOL_ENABLED` | `true` | Practice Chat 的当前题 `get_problem_review_trajectory` |
 | `LEARNER_MEMORY_DECLARED_UPDATE_ENABLED` | `false` | `update_learner_declared_profile` |
 | `LEARNER_MEMORY_RECALL_PRACTICE_CHAT_ENABLED` | `false` | 三个 Practice Chat 记忆召回工具 |
 | `LEARNER_MEMORY_CODE_REVIEW_CONSUMER_ENABLED` | `false` | 三个 Code Review 画像后台工具的 Agent Definition |
-| `AGENT_TOOL_PERMISSION_ENABLED` | `true` | 工具执行前权限链，当前重点保护正式 Review 工具 |
+| `AGENT_TOOL_PERMISSION_ENABLED` | `true` | 工具执行前权限链，当前保护正式 Review 和题目笔记追加工具 |
 | `AGENT_TOOL_RESULT_INLINE_MAX_CHARS` | `12000` | 大结果转 preview/ref 的内联阈值 |
 | `AGENT_TOOL_RESULT_PREVIEW_MAX_CHARS` | `2000` | 大工具结果预览长度 |
 | `AGENT_TOOL_RESULT_RANGE_READ_MAX_CHARS` | `8000` | `read_tool_result` 单次通用读取上限 |
@@ -400,7 +427,7 @@ Practice Chat 已由后端确定性注入当前题面，因此不会通过统一
 
 ### 10.5 写工具的确认策略不同
 
-`submit_practice_code_review` 有明确的 `ASK` 权限流程；`update_learner_declared_profile` 没有独立确认弹窗，依赖“用户明确陈述长期事实”的 Prompt 契约和服务端可信消息校验。两者当前采用不同的产品授权语义。
+`submit_practice_code_review` 和 `append_current_problem_note` 都有明确的 `ASK` 权限流程，真实副作用只在用户允许后发生；`update_learner_declared_profile` 没有独立确认弹窗，依赖“用户明确陈述长期事实”的 Prompt 契约和服务端可信消息校验。三者当前采用两种不同的产品授权语义。
 
 ## 11. 主要代码依据
 
@@ -409,5 +436,6 @@ Practice Chat 已由后端确定性注入当前题面，因此不会通过统一
 - 全局 Tool 装配：`backend/mentor-api/src/main/java/org/congcong/algomentor/api/config/MentorAiConfiguration.java`。
 - Practice Chat 与记忆装配：`backend/mentor-api/src/main/java/org/congcong/algomentor/mentor/api/autoconfigure/AgentConversationApiAutoConfiguration.java`。
 - 当前题学习状态工具：`backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/GetCurrentProblemLearningStateAgentTool.java`。
+- 当前题笔记追加工具与确认 Hook：`backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/AppendCurrentProblemNoteAgentTool.java`、`AppendCurrentProblemNotePermissionHook.java`。
 - 正式 Review 装配：`backend/mentor-api/src/main/java/org/congcong/algomentor/mentor/api/autoconfigure/PracticeCodeReviewConfiguration.java`。
 - 默认配置：`backend/mentor-api/src/main/resources/application.yml`。

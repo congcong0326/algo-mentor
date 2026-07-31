@@ -40,8 +40,11 @@ import org.congcong.algomentor.api.config.MentorAiConfiguration;
 import org.congcong.algomentor.api.problem.mapper.ProblemTagMapper;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
-import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
+import org.congcong.algomentor.mentor.application.practice.AppendCurrentProblemNoteAgentTool;
+import org.congcong.algomentor.mentor.application.practice.AppendCurrentProblemNoteAgentToolContracts;
+import org.congcong.algomentor.mentor.application.practice.AppendCurrentProblemNotePermissionHook;
 import org.congcong.algomentor.mentor.application.practice.GetCurrentProblemLearningStateAgentTool;
+import org.congcong.algomentor.mentor.application.practice.MicrometerPracticeCodeReviewMetrics;
 import org.congcong.algomentor.mentor.application.practice.PracticeChatProblemCatalog;
 import org.congcong.algomentor.mentor.application.practice.PracticeCompletionGate;
 import org.congcong.algomentor.mentor.application.practice.PracticeCodeReviewAgentTool;
@@ -88,6 +91,7 @@ import org.congcong.algomentor.mentor.application.profile.tool.SearchLearnerMemo
 import org.congcong.algomentor.mentor.application.profile.tool.LearnerMemoryAgentToolContracts;
 import org.congcong.algomentor.mentor.application.profile.tool.PracticeChatReviewTrajectoryScopeService;
 import org.congcong.algomentor.mentor.application.review.card.ReviewCardRepository;
+import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteAppendService;
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteRepository;
 import org.congcong.algomentor.llm.core.gateway.LlmGateway;
 import org.congcong.algomentor.llm.core.request.LlmCompletionRequest;
@@ -171,9 +175,53 @@ class AgentConversationApiAutoConfigurationTest {
         .withBean(UserProblemNoteRepository.class, () -> mock(UserProblemNoteRepository.class))
         .withPropertyValues(
             "algo-mentor.practice-chat.learning-state.enabled=true",
+            "algo-mentor.practice-chat.note-append.enabled=false",
             "algo-mentor.practice-chat.review-trajectory.enabled=false")
         .run(context -> {
           assertThat(context).hasSingleBean(GetCurrentProblemLearningStateAgentTool.class);
+          assertThat(context).hasSingleBean(PracticeChatAgentDefinition.class);
+          assertThat(context.getBean(PracticeChatAgentDefinition.class).allowedToolNames())
+              .containsExactly(PracticeLearningStateAgentToolContracts.TOOL_NAME);
+        });
+  }
+
+  @Test
+  void enablesConfirmedCurrentProblemNoteAppendInPracticeChat() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeTrajectoryDependencies.class)
+        .withBean(UserProblemNoteRepository.class, () -> mock(UserProblemNoteRepository.class))
+        .withPropertyValues(
+            "algo-mentor.practice-chat.note-append.enabled=true",
+            "algo-mentor.practice-chat.learning-state.enabled=false",
+            "algo-mentor.practice-chat.review-trajectory.enabled=false")
+        .run(context -> {
+          assertThat(context).hasSingleBean(AppendCurrentProblemNoteAgentTool.class);
+          assertThat(context).hasSingleBean(AppendCurrentProblemNotePermissionHook.class);
+          assertThat(context).hasSingleBean(UserProblemNoteAppendService.class);
+          assertThat(context).hasSingleBean(PracticeChatAgentDefinition.class);
+          assertThat(context.getBean(PracticeChatAgentDefinition.class).allowedToolNames())
+              .containsExactly(AppendCurrentProblemNoteAgentToolContracts.TOOL_NAME);
+        });
+  }
+
+  @Test
+  void doesNotExposeCurrentProblemNoteAppendWhenToolPermissionIsDisabled() {
+    new ApplicationContextRunner()
+        .withConfiguration(AutoConfigurations.of(AgentConversationApiAutoConfiguration.class))
+        .withUserConfiguration(PracticeTrajectoryDependencies.class)
+        .withBean(AgentTurnMessageLookupRepository.class, () -> mock(AgentTurnMessageLookupRepository.class))
+        .withBean(CodeReviewHistoryRepository.class, () -> mock(CodeReviewHistoryRepository.class))
+        .withBean(ReviewCardRepository.class, () -> mock(ReviewCardRepository.class))
+        .withBean(UserProblemNoteRepository.class, () -> mock(UserProblemNoteRepository.class))
+        .withPropertyValues(
+            "algo-mentor.agent.tool-permission.enabled=false",
+            "algo-mentor.practice-chat.note-append.enabled=true",
+            "algo-mentor.practice-chat.learning-state.enabled=true",
+            "algo-mentor.practice-chat.review-trajectory.enabled=false")
+        .run(context -> {
+          assertThat(context).doesNotHaveBean(AppendCurrentProblemNoteAgentTool.class);
+          assertThat(context).doesNotHaveBean(AppendCurrentProblemNotePermissionHook.class);
           assertThat(context).hasSingleBean(PracticeChatAgentDefinition.class);
           assertThat(context.getBean(PracticeChatAgentDefinition.class).allowedToolNames())
               .containsExactly(PracticeLearningStateAgentToolContracts.TOOL_NAME);

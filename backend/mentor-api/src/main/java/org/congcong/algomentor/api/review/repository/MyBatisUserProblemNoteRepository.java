@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.congcong.algomentor.api.review.mapper.UserProblemNoteMapper;
 import org.congcong.algomentor.api.review.mapper.model.UserProblemNoteRow;
 import org.congcong.algomentor.api.review.mapper.model.UserProblemNoteSummaryRow;
+import org.congcong.algomentor.mentor.application.review.ReviewContractConstants;
 import org.congcong.algomentor.mentor.application.review.note.ProblemSolutionOutlineV1;
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNote;
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteRepository;
@@ -62,6 +63,24 @@ public class MyBatisUserProblemNoteRepository implements UserProblemNoteReposito
         objectMapper.valueToTree(outline),
         noteMarkdown,
         expectedRevision,
+        now)).map(this::toNote);
+  }
+
+  @Override
+  public Optional<UserProblemNote> append(
+      long userId,
+      String problemSlug,
+      ProblemSolutionOutlineV1 initialOutline,
+      String contentMarkdown,
+      Instant now
+  ) {
+    return Optional.ofNullable(mapper.append(
+        userId,
+        problemSlug,
+        objectMapper.valueToTree(initialOutline),
+        contentMarkdown,
+        ReviewContractConstants.NOTE_MARKDOWN_APPEND_SEPARATOR,
+        ReviewContractConstants.NOTE_MARKDOWN_MAX_CHARS,
         now)).map(this::toNote);
   }
 

@@ -3,6 +3,8 @@ package org.congcong.algomentor.mentor.application.review;
 public final class ReviewContractConstants {
 
   public static final int NOTE_MARKDOWN_MAX_CHARS = 10_000;
+  /** Agent 与编辑器追加笔记段落时使用的稳定 Markdown 分隔符。 */
+  public static final String NOTE_MARKDOWN_APPEND_SEPARATOR = "\n\n";
   public static final int STATEMENT_SUMMARY_MAX_CHARS = 200;
   public static final int RECENT_ATTEMPT_LIMIT = 10;
 

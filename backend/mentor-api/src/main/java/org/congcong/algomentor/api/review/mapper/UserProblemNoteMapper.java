@@ -37,5 +37,15 @@ public interface UserProblemNoteMapper {
       @Param("now") Instant now
   );
 
+  UserProblemNoteRow append(
+      @Param("userId") long userId,
+      @Param("problemSlug") String problemSlug,
+      @Param("initialOutlineJson") JsonNode initialOutlineJson,
+      @Param("contentMarkdown") String contentMarkdown,
+      @Param("separator") String separator,
+      @Param("maxMarkdownChars") int maxMarkdownChars,
+      @Param("now") Instant now
+  );
+
   int delete(@Param("userId") long userId, @Param("problemSlug") String problemSlug);
 }

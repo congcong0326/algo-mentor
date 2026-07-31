@@ -29,5 +29,16 @@ public interface UserProblemNoteRepository {
       Instant now
   );
 
+  /** 原子追加 Markdown 正文；已有结构化提纲必须保持不变。 */
+  default Optional<UserProblemNote> append(
+      long userId,
+      String problemSlug,
+      ProblemSolutionOutlineV1 initialOutline,
+      String contentMarkdown,
+      Instant now
+  ) {
+    throw new UnsupportedOperationException("Problem note append is not implemented");
+  }
+
   boolean delete(long userId, String problemSlug);
 }

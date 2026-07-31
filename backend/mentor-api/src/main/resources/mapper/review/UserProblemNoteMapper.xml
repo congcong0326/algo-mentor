@@ -100,6 +100,37 @@
     RETURNING <include refid="UserProblemNoteColumns"/>
   </select>
 
+  <select id="append" resultMap="UserProblemNoteRowMap" affectData="true">
+    INSERT INTO user_problem_note (
+      user_id,
+      problem_slug,
+      outline_json,
+      note_markdown,
+      revision,
+      created_at,
+      updated_at
+    ) VALUES (
+      #{userId},
+      #{problemSlug},
+      #{initialOutlineJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{contentMarkdown},
+      1,
+      #{now},
+      #{now}
+    )
+    ON CONFLICT (user_id, problem_slug) DO UPDATE
+    SET note_markdown = CASE
+          WHEN user_problem_note.note_markdown = '' THEN EXCLUDED.note_markdown
+          ELSE user_problem_note.note_markdown || #{separator} || EXCLUDED.note_markdown
+        END,
+        revision = user_problem_note.revision + 1,
+        updated_at = EXCLUDED.updated_at
+    WHERE char_length(user_problem_note.note_markdown)
+        + CASE WHEN user_problem_note.note_markdown = '' THEN 0 ELSE char_length(#{separator}) END
+        + char_length(EXCLUDED.note_markdown) &lt;= #{maxMarkdownChars}
+    RETURNING <include refid="UserProblemNoteColumns"/>
+  </select>
+
   <delete id="delete">
     DELETE FROM user_problem_note
     WHERE user_id = #{userId}

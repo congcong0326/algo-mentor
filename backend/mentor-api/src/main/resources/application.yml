@@ -139,6 +139,8 @@ algo-mentor:
   practice-chat:
     learning-state:
       enabled: ${PRACTICE_CHAT_LEARNING_STATE_TOOL_ENABLED:true}
+    note-append:
+      enabled: ${PRACTICE_CHAT_NOTE_APPEND_TOOL_ENABLED:true}
     review-trajectory:
       enabled: ${PRACTICE_CHAT_REVIEW_TRAJECTORY_TOOL_ENABLED:true}
     prompt:

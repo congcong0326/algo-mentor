@@ -202,6 +202,12 @@ class PracticeChatPromptSectionProviderTest {
         .contains("默认传 includeNoteBody=false")
         .contains("只有当前用户消息明确要求查看笔记正文、全文或完整内容时，才传 includeNoteBody=true")
         .contains("继续使用 get_problem_review_trajectory")
+        .contains("追加题目笔记工具边界")
+        .contains(AppendCurrentProblemNoteAgentToolContracts.TOOL_NAME)
+        .contains("contentMarkdown 必须是准备追加的确切、自包含 Markdown")
+        .contains("只有工具返回 APPENDED 时才能确认追加成功")
+        .contains("不覆盖、清空或删除已有笔记，也不修改结构化解题提纲")
+        .contains("不得在普通讲解、代码 Review 或正式 Review 后自动调用")
         .contains("学习者自述画像工具边界")
         .contains("一次做题表现、临时情绪、短期困惑、猜测、未明确表达的偏好和模型自行推断都不得调用它")
         .doesNotContain("用户粘贴代码时，先定位关键问题和最小修改");

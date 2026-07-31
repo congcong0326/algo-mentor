@@ -151,10 +151,13 @@
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice`：题目训练会话应用层，包含 `PracticeSessionService`、`PracticeMessageStreamService`、prompt assembly 片段 provider、题面 catalog 端口和训练进度/消息领域模型。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewAgentTool.java`：`submit_practice_code_review` Agent 工具，从受信 metadata、practice session repository 和 run message lookup 读取上下文，不信任模型 arguments 中的用户/session/code。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/GetCurrentProblemLearningStateAgentTool.java`：`get_current_problem_learning_state` 只读工具，从受信 Practice Chat 上下文聚合当前题完成状态、最近正式 Review、复习安排和笔记提纲；笔记正文需当前消息显式请求。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/AppendCurrentProblemNoteAgentTool.java`：`append_current_problem_note` 写工具，只接收待追加 Markdown，从受信 Practice Chat 上下文确定当前用户与题目，并通过题目笔记服务原子追加正文。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/AppendCurrentProblemNotePermissionHook.java`：题目笔记追加权限 Hook，执行前展示确切 Markdown 并进入 `ASK`，非法参数直接拒绝。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/review/note/UserProblemNoteAppendService.java`：面向受信当前题上下文的原子追加服务，规范化 Markdown、执行长度门禁并保持已有结构化提纲不变。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewPermissionHook.java`：Review 工具业务权限 hook，命中 `ASK`，构造低敏 preview 并脱敏 authorization、cookie、API key、JWT/bearer/token 类内容。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewAgentToolNames.java`：Review Agent 工具名、参数名、preview 字段和 tool result 字段常量。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeCodeReviewToolResultMapper.java`：Review 工具结果映射，输出 `practice_code_review_submitted` 摘要给 Agent 主模型。
-- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeChatPromptSectionProvider.java`：题目聊天 prompt 片段，包含 Review 工具调用边界和拒绝/超时后的回复约束。
+- `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/practice/PracticeChatPromptSectionProvider.java`：题目聊天 prompt 片段，包含 Review、学习状态和确认追加题目笔记的工具边界，以及拒绝/超时后的回复约束。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/review`：题目复习应用层，按 `card`、`attempt`、`note`、`schedule`、`preference`、`catalog` 分包，分别负责复习卡、幂等评级流水、题目级长期笔记、FSRS、用户配置和题库读取。
 - `backend/mentor-application/src/main/java/org/congcong/algomentor/mentor/application/review/note/UserProblemNoteSummary.java`：不含 Markdown 正文的题目笔记提纲摘要，生产 MyBatis 查询只返回正文存在标记。
 - `backend/mentor-api/src/main/java/org/congcong/algomentor/api/controller/review`：复习卡、复习队列和题目笔记 API，使用 `/api/review-cards`、`/api/review-sessions`、`/api/problems/{slug}/note` 契约。

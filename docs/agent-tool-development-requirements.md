@@ -22,7 +22,7 @@
 | P0 | 调整现有 Tool | 学习计划 Agent 可继续读取被压缩的工具结果 | 已完成 |
 | P0 | 调整现有 Tool | Practice Chat 可读取当前题目的正式 Review 轨迹 | 已完成 |
 | P1 | 新增 Tool | Practice Chat 可按需读取当前题目的学习状态 | 已完成 |
-| P2 | 新增 Tool | 用户可在 Practice Chat 中确认后追加题目笔记 | 待研发 |
+| P2 | 新增 Tool | 用户可在 Practice Chat 中确认后追加题目笔记 | 已完成 |
 | 暂缓 | 新增 Tool | 全局学习进度快照 | 等待全局学习教练对话立项 |
 
 ## 4. 调整现有 Tool
@@ -64,7 +64,7 @@
 
 ### 5.2 追加当前题目笔记
 
-计划新增 `append_current_problem_note`，服务 Practice Chat。
+已完成：新增 `append_current_problem_note`，服务 Practice Chat。
 
 业务需求：用户明确要求“保存到笔记”或“把这个记下来”时，Agent 能把本次对话中整理出的内容追加到当前题目的用户笔记。
 
@@ -74,6 +74,8 @@
 - 只允许追加，不覆盖、清空或删除用户已有笔记。
 - 不自动在每次讲解或正式 Review 后写入。
 - 第一阶段不修改结构化解题提纲。
+
+落地结果：模型只提交待追加的 `contentMarkdown`；身份、session、plan、phase 和题目来自服务端可信上下文。权限 Hook 会在执行前把规范化后的确切 Markdown 展示给用户，只有用户允许后才进入工具实现；全局工具权限机制关闭时该写工具不会注册。持久化使用 PostgreSQL 原子 upsert，只追加正文并递增修订号，已有结构化提纲保持不变；拒绝、超时、非法参数和长度超限均不会写入。能力通过 `PRACTICE_CHAT_NOTE_APPEND_TOOL_ENABLED` 独立开关启停。
 
 ## 6. 暂缓需求
 
@@ -89,5 +91,5 @@
 
 1. 先补齐 `read_tool_result` 和 `get_problem_review_trajectory` 的现有场景接入。
 2. 已完成 `get_current_problem_learning_state`。
-3. 最后新增需要用户确认的 `append_current_problem_note`。
+3. 已完成需要用户确认的 `append_current_problem_note`。
 4. 全局学习进度快照保持暂缓，不继续展开其他候选 Tool。

@@ -121,6 +121,39 @@ describe('PracticeChatWorkbench review contracts', () => {
     expect(within(dialog).queryByText('上下文')).not.toBeInTheDocument();
   });
 
+  it('shows the exact note content and append-only impact before confirmation', async () => {
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      options.onEvent?.({
+        eventName: 'tool_permission_request',
+        data: permissionRequestEvent({
+          toolName: 'append_current_problem_note',
+          displayName: '追加题目笔记',
+          reason: '模型请求把以下内容追加到当前题目的笔记。',
+          preview: {
+            codePreview: undefined,
+            noteMarkdown: '**关键点**：先查补数，再写入当前元素。',
+          },
+        }),
+      });
+      await new Promise<void>(() => undefined);
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '把这个记到题目笔记里。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+
+    const dialog = await screen.findByRole('dialog', { name: '追加题目笔记' });
+    expect(within(dialog).getByText('将追加的笔记')).toBeInTheDocument();
+    expect(within(dialog).getByText('**关键点**：先查补数，再写入当前元素。')).toBeInTheDocument();
+    expect(within(dialog).getByText('确认后只会追加到当前题目的笔记正文，不会覆盖已有笔记或修改解题提纲。'))
+      .toBeInTheDocument();
+    expect(within(dialog).getByRole('button', { name: '确认追加' })).toBeInTheDocument();
+    expect(within(dialog).getByRole('button', { name: '暂不追加' })).toBeInTheDocument();
+    expect(within(dialog).queryByText('将提交的代码')).not.toBeInTheDocument();
+  });
+
   it('shows the remaining confirmation time and disables decisions after expiry', async () => {
     let streamOptions: Parameters<typeof api.streamPracticeMessage>[2] | undefined;
     streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
@@ -521,6 +554,45 @@ describe('PracticeChatWorkbench review contracts', () => {
 
     await waitFor(() => expect(screen.queryByRole('dialog', { name: '提交代码记录' })).not.toBeInTheDocument());
     expect(screen.getByText('确认已超时，本次未生成代码提交记录。')).toHaveClass('practice-status-note');
+  });
+
+  it('shows note-specific not-written status when note confirmation times out', async () => {
+    let streamOptions: Parameters<typeof api.streamPracticeMessage>[2] | undefined;
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      streamOptions = options;
+      options.onEvent?.({
+        eventName: 'tool_permission_request',
+        data: permissionRequestEvent({
+          toolName: 'append_current_problem_note',
+          displayName: '追加题目笔记',
+          preview: { codePreview: undefined, noteMarkdown: '保存这个边界条件。' },
+        }),
+      });
+      await new Promise<void>(() => undefined);
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', { name: '输入你的思路、问题、代码或 LeetCode 反馈' }), {
+      target: { value: '把这个记下来。' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '发送' }));
+
+    expect(await screen.findByRole('dialog', { name: '追加题目笔记' })).toBeInTheDocument();
+
+    act(() => {
+      streamOptions?.onEvent({
+        eventName: 'tool_permission_timeout',
+        data: {
+          permissionRequestId: 'permission-1',
+          toolName: 'append_current_problem_note',
+          reason: 'expired',
+          expiredAt: '2026-06-26T00:01:00Z',
+        },
+      });
+    });
+
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: '追加题目笔记' })).not.toBeInTheDocument());
+    expect(screen.getByText('确认已超时，本次未追加题目笔记。')).toHaveClass('practice-status-note');
   });
 
   it('renders rounded guidance tooltip for generated problem statements', async () => {
@@ -1047,12 +1119,16 @@ function apiResponse<T>(data: T): ApiResponse<T> {
 
 function permissionRequestEvent(overrides: {
   expiresAt?: string;
+  toolName?: string;
+  displayName?: string;
+  reason?: string;
   preview?: Partial<{
     problemSlug: string;
     problemTitle: string;
     languageHint: string;
     codeLength: number;
     codePreview: string;
+    noteMarkdown: string;
     effects: string[];
     contextAvailable: boolean;
   }>;
@@ -1061,10 +1137,10 @@ function permissionRequestEvent(overrides: {
     runId: 'run-1',
     stepIndex: 1,
     toolCallId: 'call-1',
-    toolName: 'practice_code_review',
+    toolName: overrides.toolName ?? 'practice_code_review',
     permissionRequestId: 'permission-1',
-    displayName: '提交代码记录',
-    reason: '需要生成一次代码提交记录',
+    displayName: overrides.displayName ?? '提交代码记录',
+    reason: overrides.reason ?? '需要生成一次代码提交记录',
     preview: {
       problemSlug: 'two-sum',
       problemTitle: '两数之和',
