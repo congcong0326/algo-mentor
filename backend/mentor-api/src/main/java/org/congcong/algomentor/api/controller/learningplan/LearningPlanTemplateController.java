@@ -1,17 +1,21 @@
 package org.congcong.algomentor.api.controller.learningplan;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import org.congcong.algomentor.api.config.ApiContractConstants;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanTemplateDetailResponse;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanTemplateResponseMapper;
 import org.congcong.algomentor.api.learningplan.model.LearningPlanTemplateSummaryResponse;
 import org.congcong.algomentor.common.api.ApiResponse;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateDraftService;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,17 +35,34 @@ public class LearningPlanTemplateController {
   }
 
   @GetMapping
-  public ApiResponse<List<LearningPlanTemplateSummaryResponse>> listTemplates() {
+  public ApiResponse<List<LearningPlanTemplateSummaryResponse>> listTemplates(
+      @RequestHeader(name = ApiContractConstants.ACCEPT_LANGUAGE_HEADER, required = false) String acceptLanguage,
+      HttpServletResponse response
+  ) {
+    LearningPlanContentLocale requestedLocale = LearningPlanContentLocale.fromAcceptLanguage(acceptLanguage);
+    addLanguageVaryHeader(response);
     return ApiResponse.success(LearningPlanTemplateResponseMapper.toSummaryResponses(
-        requiredTemplateDraftService().listTemplates(),
-        loadService));
+        requiredTemplateDraftService().listTemplates(requestedLocale),
+        loadService,
+        requestedLocale));
   }
 
   @GetMapping("/{templateId}")
-  public ApiResponse<LearningPlanTemplateDetailResponse> getTemplate(@PathVariable String templateId) {
+  public ApiResponse<LearningPlanTemplateDetailResponse> getTemplate(
+      @PathVariable String templateId,
+      @RequestHeader(name = ApiContractConstants.ACCEPT_LANGUAGE_HEADER, required = false) String acceptLanguage,
+      HttpServletResponse response
+  ) {
+    LearningPlanContentLocale requestedLocale = LearningPlanContentLocale.fromAcceptLanguage(acceptLanguage);
+    addLanguageVaryHeader(response);
     return ApiResponse.success(LearningPlanTemplateResponseMapper.toDetailResponse(
-        requiredTemplateDraftService().getTemplate(templateId),
-        loadService));
+        requiredTemplateDraftService().getTemplate(templateId, requestedLocale),
+        loadService,
+        requestedLocale));
+  }
+
+  private void addLanguageVaryHeader(HttpServletResponse response) {
+    response.addHeader(HttpHeaders.VARY, ApiContractConstants.ACCEPT_LANGUAGE_HEADER);
   }
 
   private LearningPlanTemplateDraftService requiredTemplateDraftService() {

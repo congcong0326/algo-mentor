@@ -1,0 +1,66 @@
+{
+  "expectedOutcome": "Once completed, you can classify the reset tree in a ubiquitous manner, BST nature, path problems and construction/serialization.",
+  "goal": "Creates a stable solver capability for tree regression values, stratification and binary search.",
+  "notRecommendedFor": [
+    "Not mastered basic functions and regression",
+    "The main weakness is string window or dynamic programming"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Stables the descending/queue-over template with the pre-middle and rear, layer and depth topics.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Run through and sequence base"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Training in orderly restraint, an iterative device, LCA and re-establishing the boundaries of trees from a series of experiences.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "BST Nature and Structure"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Focus on path accumulation, public ancestors, maximum path and tree structure sequence.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 3,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Path, LCA and Sequencing"
+    }
+  ],
+  "prerequisites": [
+    "Understand Recursive Call Inn",
+    "Understand the diagonal node structure",
+    "Could write base DFS or BFS"
+  ],
+  "recommendedFor": [
+    "Trees are easily confused, BST or routing",
+    "We need to complete the high frequency of the binary tree before the interview.",
+    "I'd like to see it sorted out. Board"
+  ],
+  "summary": "3 The weekly system completes the tree and binary tree base, covering all-time, BST nature, path/LCA, structure and sequence.",
+  "targetAudience": "Basic arrays and recategorizations have been made, but the trees have been relegated to the border, return values or stratified learners.",
+  "templateId": "topic_tree_binary_tree_foundation",
+  "title": "Trees and binary trees."
+}

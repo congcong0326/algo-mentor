@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
 class LearningPlanDraftServiceTest {
@@ -74,8 +75,133 @@ class LearningPlanDraftServiceTest {
   }
 
   @Test
+  void continueDraftGeneratesEnglishContentForAnEnglishDraft() {
+    LearningPlanDraft collecting = saveDraft(7L, new LearningPlanDraftCommand(
+        LearningPlanIntent.INTERVIEW_SPRINT,
+        null,
+        2,
+        LearningPlanLevel.INTERMEDIATE,
+        6,
+        "Java",
+        LearningPlanDifficultyPreference.MEDIUM,
+        true,
+        List.of("Array"),
+        LearningPlanContentLocale.EN_US));
+
+    LearningPlanDraftResult generated = service.continueDraft(
+        7L,
+        collecting.id(),
+        "Prepare for Java backend interviews");
+
+    assertThat(generated.status()).isEqualTo(LearningPlanDraftStatus.GENERATED);
+    assertThat(generated.assistantMessage()).startsWith("All required information");
+    assertThat(generated.draftPlan().contentLocale()).isEqualTo(LearningPlanContentLocale.EN_US);
+    assertThat(generated.draftPlan().title()).isEqualTo("2-Week Java Interview Sprint Plan");
+    assertThat(generated.draftPlan().summary()).startsWith("Break Prepare for Java backend interviews");
+    assertThat(generated.draftPlan().profileSummary()).startsWith("Current level:");
+    assertThat(generated.draftPlan().phases())
+        .allSatisfy(phase -> {
+          assertThat(phase.title()).startsWith("Phase ");
+          assertThat(phase.objectives()).allMatch(objective -> !objective.matches(".*[\\u4e00-\\u9fff].*"));
+          assertThat(phase.acceptanceCriteria()).allMatch(criterion -> !criterion.matches(".*[\\u4e00-\\u9fff].*"));
+          assertThat(phase.reviewAdvice()).doesNotMatch(".*[\\u4e00-\\u9fff].*");
+          assertThat(phase.problems()).allSatisfy(problem -> assertThat(problem.reason())
+              .startsWith("Practice Array"));
+        });
+  }
+
+  @Test
+  void continueDraftHydratesBilingualProblemTitlesWithTheFrozenContentLocale() {
+    AtomicReference<String> requestedLocale = new AtomicReference<>();
+    LearningPlanProblemCatalog localizedCatalog = new LearningPlanProblemCatalog() {
+      @Override
+      public List<LearningPlanProblemCandidate> searchProblems(LearningPlanProblemSearch search) {
+        return List.of(new LearningPlanProblemCandidate(
+            "two-sum", 1, "本地化搜索标题", null, "EASY", List.of("Array")));
+      }
+
+      @Override
+      public Optional<LearningPlanProblemCandidate> findBySlug(String slug) {
+        return Optional.empty();
+      }
+
+      @Override
+      public Optional<LearningPlanProblemCandidate> findBySlug(String slug, String locale) {
+        requestedLocale.set(locale);
+        return Optional.of(new LearningPlanProblemCandidate(
+            slug, 1, "Two Sum", "两数之和", "EASY", List.of("Array")));
+      }
+    };
+    LearningPlanDraftService localizedService = new LearningPlanDraftService(
+        draftRepository,
+        planRepository,
+        new LearningPlanAgentService(localizedCatalog),
+        new LearningPlanDraftValidator(),
+        new LearningPlanLoadService(clock),
+        clock);
+    LearningPlanDraft collecting = saveDraft(7L, new LearningPlanDraftCommand(
+        LearningPlanIntent.INTERVIEW_SPRINT,
+        null,
+        2,
+        LearningPlanLevel.INTERMEDIATE,
+        6,
+        "Java",
+        LearningPlanDifficultyPreference.MEDIUM,
+        true,
+        List.of("Array"),
+        LearningPlanContentLocale.EN_US));
+
+    LearningPlanDraftResult generated = localizedService.continueDraft(
+        7L,
+        collecting.id(),
+        "Prepare for Java backend interviews");
+
+    assertThat(requestedLocale).hasValue("en-US");
+    assertThat(generated.draftPlan().phases())
+        .flatExtracting(LearningPlanPhaseDraft::problems)
+        .allSatisfy(problem -> {
+          assertThat(problem.title()).isEqualTo("Two Sum");
+          assertThat(problem.titleCn()).isEqualTo("两数之和");
+        });
+  }
+
+  @Test
+  void continueDraftRecognizesTheEnglishRegenerationPrefix() {
+    LearningPlanDraft original = saveGeneratedDraft(7L, new LearningPlanDraftCommand(
+        LearningPlanIntent.INTERVIEW_SPRINT,
+        "Prepare for Java interviews",
+        2,
+        LearningPlanLevel.INTERMEDIATE,
+        6,
+        "Java",
+        LearningPlanDifficultyPreference.MEDIUM,
+        true,
+        List.of("Array"),
+        LearningPlanContentLocale.EN_US));
+
+    LearningPlanDraftResult regenerated = service.continueDraft(
+        7L,
+        original.id(),
+        LearningPlanDraftMessagePrefixes.REGENERATE_EN_US + " Focus on dynamic programming");
+
+    assertThat(regenerated.draftPlan().goal()).isEqualTo("Focus on dynamic programming");
+    assertThat(regenerated.draftPlan().summary()).contains("Focus on dynamic programming");
+  }
+
+  @Test
   void confirmDraftIsIdempotent() {
-    LearningPlanDraft generated = saveGeneratedDraft(7L, completeCommand(8));
+    LearningPlanDraftCommand englishCommand = new LearningPlanDraftCommand(
+        LearningPlanIntent.INTERVIEW_SPRINT,
+        "Prepare for Java backend interviews",
+        8,
+        LearningPlanLevel.INTERMEDIATE,
+        6,
+        "Java",
+        LearningPlanDifficultyPreference.MEDIUM,
+        true,
+        List.of("Array", "Hash Table"),
+        LearningPlanContentLocale.EN_US);
+    LearningPlanDraft generated = saveGeneratedDraft(7L, englishCommand);
 
     LearningPlanConfirmResult first = service.confirmDraft(7L, generated.id());
     LearningPlanConfirmResult second = service.confirmDraft(7L, generated.id());
@@ -84,6 +210,8 @@ class LearningPlanDraftServiceTest {
     assertThat(first.status()).isEqualTo(LearningPlanStatus.ACTIVE);
     assertThat(draftRepository.findDraftByIdForUser(generated.id(), 7L).orElseThrow().status())
         .isEqualTo(LearningPlanDraftStatus.CONFIRMED);
+    assertThat(planRepository.findPlanByIdForUser(first.planId(), 7L).orElseThrow().plan().contentLocale())
+        .isEqualTo(LearningPlanContentLocale.EN_US);
   }
 
   @Test

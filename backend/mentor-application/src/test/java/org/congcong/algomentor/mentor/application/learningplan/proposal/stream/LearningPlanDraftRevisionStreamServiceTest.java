@@ -26,6 +26,7 @@ import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
@@ -106,6 +107,8 @@ class LearningPlanDraftRevisionStreamServiceTest {
     assertThat(proposalRepository.groups.get(group.id()).latestProposalId()).isEqualTo(ready.result().proposalId());
     assertThat(draftRepository.findDraftByIdForUser(draft.id(), draft.userId()).orElseThrow().draftPlan().title())
         .isEqualTo("修订后计划");
+    assertThat(draftRepository.findDraftByIdForUser(draft.id(), draft.userId()).orElseThrow()
+        .draftPlan().contentLocale()).isEqualTo(LearningPlanContentLocale.EN_US);
     assertThat(lockOrder()).containsExactly("draft:100", "draft:100", "group:10");
   }
 
@@ -407,7 +410,8 @@ class LearningPlanDraftRevisionStreamServiceTest {
         "Java",
         LearningPlanDifficultyPreference.MEDIUM,
         true,
-        List.of("Array"));
+        List.of("Array"),
+        LearningPlanContentLocale.EN_US);
   }
 
   private LearningPlanDraftPlan basePlan(String title) {

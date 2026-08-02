@@ -1,0 +1,66 @@
+{
+  "expectedOutcome": "Once completed, it is possible to demonstrate the correctness of greed by means of a ranking basis, an exchange of argument, coverage or an anti-censorship check.",
+  "goal": "(c) Establishing the capacity to prove greed for partial optimal selection, ranking basis and countercensorship.",
+  "notRecommendedFor": [
+    "I haven't mastered the array and sorted it.",
+    "The main weakness is the DP status definition"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Sorts the training with consolidation, insertion, deletion, number of arrows and chain selection.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Inter-sectional movement and coverage"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Local best borders are trained through coverage, resource allocation and transactional issues.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Jump, gas stations and distribution"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Focus on the greedy selection of dictionaries, deletions, rearrangers and rearrangers.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 3,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "String and sort greed"
+    }
+  ],
+  "prerequisites": [
+    "Getting to know arrays, sorting and basic topics",
+    "It's a simple complexity analysis.",
+    "Several Medium questions"
+  ],
+  "recommendedFor": [
+    "Intuitive intuitive intuitive intruding, jumping or string greed",
+    "Need to sort out the greed proof template before interview",
+    "Select a category after sorting"
+  ],
+  "summary": "3 Weekly coverage of inter-sectional movement, jump/fuel station, assignment/search zero and string sorting greed.",
+  "targetAudience": "A learner who can write about realization but who often cannot prove the choice of strategy or sequencing.",
+  "templateId": "topic_greedy_strategies",
+  "title": "Greedy strategy."
+}

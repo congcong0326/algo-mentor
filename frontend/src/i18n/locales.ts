@@ -867,6 +867,7 @@ export interface LocaleResources {
     minimumSelectionNotice: (min: number) => string;
     maximumSelectionNotice: (max: number) => string;
     removeSelectedTag: (label: string) => string;
+    abilityHeatmapEyebrow: string;
     abilityHeatmapTitle: string;
     abilityHeatmapHint: string;
     addHeatmapTag: (label: string) => string;
@@ -1431,6 +1432,10 @@ export interface LocaleResources {
     completionGateMessages: Record<'NO_REVIEW' | 'LATEST_REVIEW_FAILED' | 'PASSED' | 'ALREADY_COMPLETED', string>;
     practiceComposerPlaceholderReview: string;
     toolPermissionEyebrow: string;
+    toolPermissionReviewTitle: string;
+    toolPermissionReviewReason: string;
+    toolPermissionNoteTitle: string;
+    toolPermissionNoteReason: string;
     toolPermissionProblem: string;
     toolPermissionContextWarning: string;
     toolPermissionCodePreview: string;
@@ -2285,6 +2290,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       minimumSelectionNotice: (min) => `至少保留 ${min} 个 tag，让能力图谱保持有效。`,
       maximumSelectionNotice: (max) => `最多选择 ${max} 个 tag。`,
       removeSelectedTag: (label) => `移除 ${label}`,
+      abilityHeatmapEyebrow: '能力覆盖',
       abilityHeatmapTitle: '全量 tag 能力热力图',
       abilityHeatmapHint: '色块深浅按能力分展示',
       addHeatmapTag: (label) => `添加 ${label}`,
@@ -2904,6 +2910,10 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       },
       practiceComposerPlaceholderReview: '粘贴完整代码、LeetCode 通过/失败反馈，或继续追问思路...',
       toolPermissionEyebrow: '限时确认',
+      toolPermissionReviewTitle: '提交代码记录',
+      toolPermissionReviewReason: '模型请求生成一次代码提交记录。',
+      toolPermissionNoteTitle: '追加题目笔记',
+      toolPermissionNoteReason: '模型请求把以下内容追加到当前题目的笔记。',
       toolPermissionProblem: '题目',
       toolPermissionContextWarning: '暂时无法读取完整练习上下文，请确认代码和题目是否匹配。',
       toolPermissionCodePreview: '将提交的代码',
@@ -3806,6 +3816,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       minimumSelectionNotice: (min) => `Keep at least ${min} tags so the ability map remains useful.`,
       maximumSelectionNotice: (max) => `Select up to ${max} tags.`,
       removeSelectedTag: (label) => `Remove ${label}`,
+      abilityHeatmapEyebrow: 'ABILITY COVERAGE',
       abilityHeatmapTitle: 'All-tag Ability Heatmap',
       abilityHeatmapHint: 'Cell intensity follows ability score',
       addHeatmapTag: (label) => `Add ${label}`,
@@ -4435,6 +4446,10 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       },
       practiceComposerPlaceholderReview: 'Paste complete code, LeetCode accepted/failed feedback, or continue asking...',
       toolPermissionEyebrow: 'Timed confirmation',
+      toolPermissionReviewTitle: 'Submit code for review',
+      toolPermissionReviewReason: 'The model is requesting permission to create a code submission record.',
+      toolPermissionNoteTitle: 'Append to problem note',
+      toolPermissionNoteReason: "The model is requesting permission to append the following content to this problem's note.",
       toolPermissionProblem: 'Problem',
       toolPermissionContextWarning: 'The full practice context is temporarily unavailable. Confirm that the code matches this problem.',
       toolPermissionCodePreview: 'Code to submit',

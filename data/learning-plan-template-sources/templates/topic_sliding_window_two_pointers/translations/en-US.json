@@ -1,0 +1,50 @@
+{
+  "expectedOutcome": "When completed, you can distinguish between fixed windows, variable windows, phase pointers and slow pointers, and you can repeat windows without variables.",
+  "goal": "Increases the modelling and boundary maintenance capabilities of string and array windows.",
+  "notRecommendedFor": [
+    "I haven't mastered the base array yet.",
+    "The main weakness is graphic or DP"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Completes the pointer, the fast and slow pointer and rearranges it to reassemble.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Double pointer and sort weight"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Training window expansion/constriction conditions, counter maintenance and single-team queue windows.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Fixed & Variable Window"
+    }
+  ],
+  "prerequisites": [
+    "Get familiar with arrays, strings and Hash count",
+    "Can write basic sorting and two pointers loops"
+  ],
+  "recommendedFor": [
+    "Quick scale up of array/string interview correctness",
+    "Window constriction conditions and no logical instability"
+  ],
+  "summary": "2 Week covers fixed windows, variable windows, phase pointers, slow pointers and sorting to regroup.",
+  "targetAudience": "A learner whose string, array and window maintenance are prone to overtime or border error.",
+  "templateId": "topic_sliding_window_two_pointers",
+  "title": "Slide Window and two pointers Special Scheme"
+}

@@ -53,6 +53,41 @@ class PracticeCodeReviewStructuredOutputMapperTest {
         .isEqualTo("class Solution { public int climbStairs(int n) { return n; } }");
     assertThat(draft.userMessageId()).isEqualTo(701L);
     assertThat(draft.agentRunDbId()).isEqualTo(501L);
+    assertThat(draft.contentLocale()).isEqualTo("zh-CN");
+  }
+
+  @Test
+  void usesEnglishForServerNormalizedReviewCopy() {
+    ObjectNode output = (ObjectNode) structuredOutput("""
+        {
+          "isCodeSubmission": true,
+          "belongsToCurrentProblem": true,
+          "isCompleteLeetCodeSolution": true,
+          "language": "java",
+          "rawCode": "class Solution {}",
+          "normalizedCode": "class Solution {}",
+          "evidence": [],
+          "contextSummary": "The submission is incomplete.",
+          "scores": {"correctness": 4, "complexity": 2, "edgeCases": 2, "codeQuality": 1, "problemFit": 1, "total": 10},
+          "passed": true,
+          "deductionReasons": [],
+          "improvementSuggestions": ["Complete the implementation."],
+          "reviewMarkdown": "The implementation needs work.",
+          "affectedTagIds": []
+        }
+        """);
+    ObjectNode assessment = (ObjectNode) output.path(PracticeCodeReviewConstants.JSON_JUDGE_ASSESSMENT);
+    assessment.put(PracticeCodeReviewConstants.JSON_JUDGE_VERDICT, "TIME_LIMIT_EXCEEDED");
+    assessment.put(PracticeCodeReviewConstants.JSON_BLOCKING_ISSUE, true);
+    assessment.put(PracticeCodeReviewConstants.JSON_MEETS_EXPECTED_COMPLEXITY, false);
+
+    PracticeCodeReviewDraft draft = mapper.map(context("en-US"), output).draft().orElseThrow();
+
+    assertThat(draft.contentLocale()).isEqualTo("en-US");
+    assertThat(draft.deductionReasons().get(0))
+        .startsWith("Judge blocker:")
+        .contains("time limit");
+    assertThat(draft.deductionReasons()).noneMatch(reason -> reason.contains("评测阻断"));
   }
 
   @Test
@@ -349,6 +384,10 @@ class PracticeCodeReviewStructuredOutputMapperTest {
   }
 
   private PracticeTurnContext context() {
+    return context("zh-CN");
+  }
+
+  private PracticeTurnContext context(String locale) {
     return new PracticeTurnContext(
         7L,
         12L,
@@ -363,7 +402,7 @@ class PracticeCodeReviewStructuredOutputMapperTest {
         "class Solution { int climbStairs(int n) { return n; } }",
         "请 review 我的代码",
         "最近在讨论递推定义。",
-        "zh-CN");
+        locale);
   }
 
   private JsonNode structuredOutput(String json) {

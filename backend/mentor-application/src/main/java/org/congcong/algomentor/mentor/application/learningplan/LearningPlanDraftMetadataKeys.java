@@ -8,6 +8,7 @@ public final class LearningPlanDraftMetadataKeys {
   public static final String PROBLEM_RECOMMENDATION_INCOMPLETE = "problemRecommendationIncomplete";
   public static final String DRAFT_SOURCE = "draftSource";
   public static final String DRAFT_SOURCE_TEMPLATE = "TEMPLATE";
+  public static final String CONTENT_LOCALE = "contentLocale";
   public static final String DAILY_PROBLEM_COUNT = "dailyProblemCount";
   public static final String TRAINING_DAYS_PER_WEEK = "trainingDaysPerWeek";
   public static final String COVERAGE_POLICY = "coveragePolicy";

@@ -130,7 +130,8 @@
         NOW()
       )
       ON CONFLICT (user_id, plan_id, phase_index, problem_slug) DO UPDATE
-      SET updated_at = practice_session.updated_at
+      SET locale = EXCLUDED.locale,
+          updated_at = NOW()
       RETURNING *
     )
     SELECT

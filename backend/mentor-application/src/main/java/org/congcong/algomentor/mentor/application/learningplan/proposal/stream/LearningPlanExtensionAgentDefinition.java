@@ -18,6 +18,7 @@ import org.congcong.algomentor.ai.governance.model.AiBusinessScenario;
 import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanProposalPromptBuilder;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanAgentToolNames;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanStreamConstants;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinitions;
@@ -74,6 +75,9 @@ public final class LearningPlanExtensionAgentDefinition implements AgentDefiniti
         ManagedSystemPromptDefinitions.LEARNING_PLAN_EXTENSION, candidate.userId());
     Map<String, Object> metadata = new LinkedHashMap<>(SystemPromptMetadataKeys.from(snapshot));
     metadata.put(AgentRuntimeMetadataKeys.TITLE, LearningPlanStreamConstants.EXTENSION_AGENT_TITLE);
+    metadata.put(
+        LearningPlanDraftMetadataKeys.CONTENT_LOCALE,
+        candidate.plan().plan().contentLocale().languageTag());
     return new AgentPreparedRequest(
         candidate.previousExtension() == null
             ? promptBuilder.buildExtensionPrompt(

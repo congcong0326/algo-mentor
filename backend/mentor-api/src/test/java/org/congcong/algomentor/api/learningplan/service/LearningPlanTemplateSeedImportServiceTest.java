@@ -211,10 +211,36 @@ class LearningPlanTemplateSeedImportServiceTest {
   }
 
   @Test
+  void importSeedValidatesEveryEnglishBundleBeforeWritingAnything() throws Exception {
+    writeValidSeed(tempDir);
+    String validTemplate = Files.readString(
+        tempDir.resolve(LearningPlanTemplateSeedConstants.TEMPLATES_FILE)).strip();
+    String incompleteTemplate = validTemplate
+        .replace("neetcode_blind_75_interview_core", "incomplete_english_template")
+        .replace("\"recommendedOrder\":1", "\"recommendedOrder\":null")
+        .replace("\"summaryEn\":\"summary\"", "\"summaryEn\":\"   \"");
+    Files.writeString(
+        tempDir.resolve(LearningPlanTemplateSeedConstants.TEMPLATES_FILE),
+        validTemplate + System.lineSeparator() + incompleteTemplate + System.lineSeparator());
+    InMemoryTemplateRepository templateRepository = new InMemoryTemplateRepository();
+    LearningPlanTemplateSeedImportService service = new LearningPlanTemplateSeedImportService(
+        new StaticObjectProvider<>(templateRepository),
+        new StaticObjectProvider<>(new InMemoryProblemRepository(Set.of("two-sum"))),
+        new LearningPlanTemplateSeedReader(new ObjectMapper()),
+        new ObjectMapper());
+
+    assertThatThrownBy(() -> service.importSeed(tempDir))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("summaryEn");
+    assertThat(templateRepository.templates).isEmpty();
+    assertThat(templateRepository.importRuns).isEmpty();
+  }
+
+  @Test
   void importSeedRequiresPhaseDurationSumToMatchTemplateDuration() throws Exception {
     writeValidSeed(tempDir);
     Files.writeString(tempDir.resolve(LearningPlanTemplateSeedConstants.TEMPLATES_FILE), """
-        {"templateId":"neetcode_blind_75_interview_core","title":"Blind 75","summary":"summary","catalogCategory":"INTERVIEW_PREP","recommendedOrder":1,"intent":"INTERVIEW_SPRINT","goal":"goal","defaultDurationWeeks":4,"level":"INTERMEDIATE","defaultWeeklyHours":8,"programmingLanguage":"Java","difficultyPreference":"MEDIUM","interviewOriented":true,"topicPreferences":["Array"],"targetAudience":"audience","difficultyMix":{"Easy":{"count":1}},"prerequisites":["basic"],"recommendedFor":["interview"],"notRecommendedFor":["zero"],"expectedOutcome":"outcome","sourceName":"neetcode-gh/leetcode","sourceUrl":"https://github.com/neetcode-gh/leetcode","sourceCommit":"9907b7fed441fa55083c0751e208b7197101dbba","sourceDataPath":".problemSiteData.json","sourceDescription":"source","curationNotes":"notes","licenseNotice":"MIT metadata only","metadata":{},"phases":[{"phaseIndex":1,"title":"phase","durationWeeks":3,"focus":"focus","objectives":["objective"],"recommendedTags":["Array"],"acceptanceCriteria":["done"],"reviewAdvice":"review"}]}
+        {"templateId":"neetcode_blind_75_interview_core","title":"Blind 75","titleEn":"Blind 75","summary":"summary","summaryEn":"summary","catalogCategory":"INTERVIEW_PREP","recommendedOrder":1,"intent":"INTERVIEW_SPRINT","goal":"goal","goalEn":"goal","defaultDurationWeeks":4,"level":"INTERMEDIATE","defaultWeeklyHours":8,"programmingLanguage":"Java","difficultyPreference":"MEDIUM","interviewOriented":true,"topicPreferences":["Array"],"targetAudience":"audience","targetAudienceEn":"audience","difficultyMix":{"Easy":{"count":1}},"prerequisites":["basic"],"prerequisitesEn":["basic"],"recommendedFor":["interview"],"recommendedForEn":["interview"],"notRecommendedFor":["zero"],"notRecommendedForEn":["zero"],"expectedOutcome":"outcome","expectedOutcomeEn":"outcome","englishContentReady":true,"sourceName":"neetcode-gh/leetcode","sourceUrl":"https://github.com/neetcode-gh/leetcode","sourceCommit":"9907b7fed441fa55083c0751e208b7197101dbba","sourceDataPath":".problemSiteData.json","sourceDescription":"source","curationNotes":"notes","licenseNotice":"MIT metadata only","metadata":{},"phases":[{"phaseIndex":1,"title":"phase","titleEn":"phase","durationWeeks":3,"focus":"focus","focusEn":"focus","objectives":["objective"],"objectivesEn":["objective"],"recommendedTags":["Array"],"acceptanceCriteria":["done"],"acceptanceCriteriaEn":["done"],"reviewAdvice":"review","reviewAdviceEn":"review"}]}
         """);
     LearningPlanTemplateSeedImportService service = new LearningPlanTemplateSeedImportService(
         new StaticObjectProvider<>(new InMemoryTemplateRepository()),
@@ -246,7 +272,7 @@ class LearningPlanTemplateSeedImportServiceTest {
 
   private void writeValidSeed(Path dir) throws Exception {
     Files.writeString(dir.resolve(LearningPlanTemplateSeedConstants.TEMPLATES_FILE), """
-        {"templateId":"neetcode_blind_75_interview_core","title":"Blind 75","summary":"summary","catalogCategory":"INTERVIEW_PREP","recommendedOrder":1,"intent":"INTERVIEW_SPRINT","goal":"goal","defaultDurationWeeks":4,"level":"INTERMEDIATE","defaultWeeklyHours":8,"programmingLanguage":"Java","difficultyPreference":"MEDIUM","interviewOriented":true,"topicPreferences":["Array"],"targetAudience":"audience","difficultyMix":{"Easy":{"count":1}},"prerequisites":["basic"],"recommendedFor":["interview"],"notRecommendedFor":["zero"],"expectedOutcome":"outcome","sourceName":"neetcode-gh/leetcode","sourceUrl":"https://github.com/neetcode-gh/leetcode","sourceCommit":"9907b7fed441fa55083c0751e208b7197101dbba","sourceDataPath":".problemSiteData.json","sourceDescription":"source","curationNotes":"notes","licenseNotice":"MIT metadata only","metadata":{},"phases":[{"phaseIndex":1,"title":"phase","durationWeeks":4,"focus":"focus","objectives":["objective"],"recommendedTags":["Array"],"acceptanceCriteria":["done"],"reviewAdvice":"review"}]}
+        {"templateId":"neetcode_blind_75_interview_core","title":"Blind 75","titleEn":"Blind 75","summary":"summary","summaryEn":"summary","catalogCategory":"INTERVIEW_PREP","recommendedOrder":1,"intent":"INTERVIEW_SPRINT","goal":"goal","goalEn":"goal","defaultDurationWeeks":4,"level":"INTERMEDIATE","defaultWeeklyHours":8,"programmingLanguage":"Java","difficultyPreference":"MEDIUM","interviewOriented":true,"topicPreferences":["Array"],"targetAudience":"audience","targetAudienceEn":"audience","difficultyMix":{"Easy":{"count":1}},"prerequisites":["basic"],"prerequisitesEn":["basic"],"recommendedFor":["interview"],"recommendedForEn":["interview"],"notRecommendedFor":["zero"],"notRecommendedForEn":["zero"],"expectedOutcome":"outcome","expectedOutcomeEn":"outcome","englishContentReady":true,"sourceName":"neetcode-gh/leetcode","sourceUrl":"https://github.com/neetcode-gh/leetcode","sourceCommit":"9907b7fed441fa55083c0751e208b7197101dbba","sourceDataPath":".problemSiteData.json","sourceDescription":"source","curationNotes":"notes","licenseNotice":"MIT metadata only","metadata":{},"phases":[{"phaseIndex":1,"title":"phase","titleEn":"phase","durationWeeks":4,"focus":"focus","focusEn":"focus","objectives":["objective"],"objectivesEn":["objective"],"recommendedTags":["Array"],"acceptanceCriteria":["done"],"acceptanceCriteriaEn":["done"],"reviewAdvice":"review","reviewAdviceEn":"review"}]}
         """);
     Files.writeString(dir.resolve(LearningPlanTemplateSeedConstants.PROBLEM_REFS_FILE), """
         {"templateId":"neetcode_blind_75_interview_core","phaseIndex":1,"sortOrder":1,"sourceOrder":1,"problemSlug":"two-sum","sourceTitle":"Two Sum","sourceDifficulty":"Easy","pattern":"Arrays & Hashing","sourceUrl":"https://neetcode.io/problems/two-sum","metadata":{}}

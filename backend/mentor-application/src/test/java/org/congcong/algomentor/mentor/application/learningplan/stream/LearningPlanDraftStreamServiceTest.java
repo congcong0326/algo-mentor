@@ -22,6 +22,7 @@ import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftRepository;
@@ -60,6 +61,7 @@ class LearningPlanDraftStreamServiceTest {
         .containsExactly("two-sum");
     assertThat(ready.draft().draftPlan().metadata())
         .containsEntry("problemRecommendationIncomplete", true)
+        .containsEntry("contentLocale", "en-US")
         .containsKey("loadSummary")
         .containsKey("dailyProblemCount")
         .containsKey("trainingDaysPerWeek")
@@ -115,7 +117,8 @@ class LearningPlanDraftStreamServiceTest {
         "Java",
         LearningPlanDifficultyPreference.MEDIUM,
         true,
-        List.of("Array"));
+        List.of("Array"),
+        LearningPlanContentLocale.EN_US);
   }
 
   private String finalJson(String... slugs) {

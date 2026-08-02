@@ -138,7 +138,7 @@ public class ReviewCardService {
   private void enrichProblemDetail(String problemSlug, Map<String, Object> detail) {
     try {
       problemCatalog.findBySlug(problemSlug).ifPresent(snapshot -> {
-        putIfNotBlank(detail, ReviewContractConstants.METADATA_TITLE_CN, snapshot.titleCn());
+        putIfNotBlank(detail, ReviewContractConstants.METADATA_TITLE_CN, snapshot.title());
         putIfNotBlank(detail, ReviewContractConstants.METADATA_DIFFICULTY, snapshot.difficulty());
         putIfNotBlank(detail, ReviewContractConstants.METADATA_STATEMENT_SUMMARY, snapshot.statementSummary());
       });

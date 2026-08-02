@@ -9,6 +9,7 @@ describe('LearningPlanListCard', () => {
   const page: LearningPlanPageResponse = {
     items: [{
       id: 900,
+      contentLocale: 'zh-CN',
       title: '四周 Java 算法面试冲刺计划',
       intent: 'INTERVIEW_SPRINT',
       goal: '准备 Java 后端算法面试',
@@ -168,6 +169,7 @@ describe('LearningPlanListCard', () => {
             ...page.items,
             {
               id: 901,
+              contentLocale: 'zh-CN',
               title: '备用动态规划计划',
               intent: 'TOPIC_BREAKTHROUGH',
               goal: '补动态规划',

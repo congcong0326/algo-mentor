@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
@@ -51,16 +52,28 @@ public class LearningPlanTemplateDraftService {
   }
 
   public List<LearningPlanTemplate> listTemplates() {
-    return templateRepository.findAllTemplates();
+    return listTemplates(LearningPlanContentLocale.ZH_CN);
+  }
+
+  public List<LearningPlanTemplate> listTemplates(LearningPlanContentLocale locale) {
+    return templateRepository.findAllTemplates(locale);
   }
 
   public LearningPlanTemplate getTemplate(String templateId) {
-    return templateRepository.findByTemplateId(normalizeTemplateId(templateId))
+    return getTemplate(templateId, LearningPlanContentLocale.ZH_CN);
+  }
+
+  public LearningPlanTemplate getTemplate(String templateId, LearningPlanContentLocale locale) {
+    return templateRepository.findByTemplateId(normalizeTemplateId(templateId), locale)
         .orElseThrow(() -> new LearningPlanException("LEARNING_PLAN_TEMPLATE_NOT_FOUND", "学习计划模板不存在。"));
   }
 
   public LearningPlanDraftResult createDraft(long userId, LearningPlanTemplateDraftCommand command) {
-    LearningPlanTemplate template = getTemplate(command == null ? null : command.templateId());
+    LearningPlanContentLocale requestedLocale = command == null
+        ? LearningPlanContentLocale.ZH_CN
+        : command.contentLocale();
+    LearningPlanTemplate template = getTemplate(command == null ? null : command.templateId(), requestedLocale);
+    LearningPlanContentLocale contentLocale = template.resolveContentLocale(requestedLocale);
     LearningPlanRhythmSettings defaultRhythm = loadService.defaultRhythmSettings(template);
     int dailyProblemCount = command == null || command.dailyProblemCount() == null
         ? defaultRhythm.dailyProblemCount()
@@ -74,23 +87,21 @@ public class LearningPlanTemplateDraftService {
         : command.programmingLanguage();
     LearningPlanDraftCommand draftCommand = new LearningPlanDraftCommand(
         template.intent(),
-        template.goal(),
+        template.goal(contentLocale),
         template.defaultDurationWeeks(),
         template.level(),
         template.defaultWeeklyHours(),
         programmingLanguage,
         template.difficultyPreference(),
         template.interviewOriented(),
-        template.topicPreferences());
-    String recommendationReasonLocale = command == null
-        ? LearningPlanTemplateDraftCommand.DEFAULT_RECOMMENDATION_REASON_LOCALE
-        : command.recommendationReasonLocale();
+        template.topicPreferences(),
+        contentLocale);
     LearningPlanDraftPlan draftPlan = buildDraftPlan(
         template,
         draftCommand,
         dailyProblemCount,
         trainingDaysPerWeek,
-        recommendationReasonLocale);
+        contentLocale);
     validator.validateTemplatePlan(draftPlan);
 
     Instant now = clock.instant();
@@ -99,9 +110,13 @@ public class LearningPlanTemplateDraftService {
         userId,
         LearningPlanDraftStatus.GENERATED,
         draftCommand,
-        List.of("从学习计划模板生成草案：" + template.title()),
+        List.of(contentLocale == LearningPlanContentLocale.EN_US
+            ? "Generated from learning plan template: " + template.title(contentLocale)
+            : "从学习计划模板生成草案：" + template.title(contentLocale)),
         List.of(),
-        "已根据模板生成学习计划草案。",
+        contentLocale == LearningPlanContentLocale.EN_US
+            ? "The learning plan draft was generated from the selected template."
+            : "已根据模板生成学习计划草案。",
         draftPlan,
         null,
         now.plus(DRAFT_TTL_DAYS, ChronoUnit.DAYS),
@@ -115,7 +130,7 @@ public class LearningPlanTemplateDraftService {
       LearningPlanDraftCommand command,
       int dailyProblemCount,
       int trainingDaysPerWeek,
-      String recommendationReasonLocale
+      LearningPlanContentLocale contentLocale
   ) {
     if (template.phases().isEmpty()) {
       throw new LearningPlanException("LEARNING_PLAN_DRAFT_INVALID", "学习计划模板没有可用阶段。");
@@ -130,16 +145,16 @@ public class LearningPlanTemplateDraftService {
     for (int index = 0; index < template.phases().size(); index++) {
       LearningPlanTemplatePhase templatePhase = template.phases().get(index);
       List<LearningPlanTemplateProblemRef> refs = templatePhase.problemRefs();
-      List<LearningPlanProblemDraft> problems = selectProblems(refs, recommendationReasonLocale);
+      List<LearningPlanProblemDraft> problems = selectProblems(refs, contentLocale.languageTag());
       incomplete = incomplete || problems.size() < refs.size();
-      phases.add(toDraftPhase(index + 1, phaseWeeks.get(index), templatePhase, problems));
+      phases.add(toDraftPhase(index + 1, phaseWeeks.get(index), templatePhase, problems, contentLocale));
     }
 
     LearningPlanDraftPlan plan = new LearningPlanDraftPlan(
-        template.title(),
-        template.summary(),
+        template.title(contentLocale),
+        template.summary(contentLocale),
         template.intent(),
-        template.goal(),
+        template.goal(contentLocale),
         command.durationWeeks(),
         template.level(),
         command.weeklyHours(),
@@ -147,9 +162,9 @@ public class LearningPlanTemplateDraftService {
         template.difficultyPreference(),
         template.interviewOriented(),
         template.topicPreferences(),
-        profileSummary(template, command),
+        profileSummary(template, command, contentLocale),
         phases,
-        draftMetadata(template, incomplete));
+        draftMetadata(template, incomplete, contentLocale));
     return loadService.withRhythmMetadata(plan, dailyProblemCount, trainingDaysPerWeek);
   }
 
@@ -186,17 +201,18 @@ public class LearningPlanTemplateDraftService {
       int phaseIndex,
       int durationWeeks,
       LearningPlanTemplatePhase templatePhase,
-      List<LearningPlanProblemDraft> problems
+      List<LearningPlanProblemDraft> problems,
+      LearningPlanContentLocale contentLocale
   ) {
     return new LearningPlanPhaseDraft(
         phaseIndex,
-        templatePhase.title(),
+        templatePhase.title(contentLocale),
         durationWeeks,
-        templatePhase.focus(),
-        templatePhase.objectives(),
+        templatePhase.focus(contentLocale),
+        templatePhase.objectives(contentLocale),
         templatePhase.recommendedTags(),
-        templatePhase.acceptanceCriteria(),
-        templatePhase.reviewAdvice(),
+        templatePhase.acceptanceCriteria(contentLocale),
+        templatePhase.reviewAdvice(contentLocale),
         problems);
   }
 
@@ -210,10 +226,15 @@ public class LearningPlanTemplateDraftService {
     return weeks;
   }
 
-  private Map<String, Object> draftMetadata(LearningPlanTemplate template, boolean incomplete) {
+  private Map<String, Object> draftMetadata(
+      LearningPlanTemplate template,
+      boolean incomplete,
+      LearningPlanContentLocale contentLocale
+  ) {
     Map<String, Object> metadata = new LinkedHashMap<>();
     metadata.put(LearningPlanDraftMetadataKeys.PROBLEM_RECOMMENDATION_INCOMPLETE, incomplete);
     metadata.put(LearningPlanDraftMetadataKeys.DRAFT_SOURCE, LearningPlanDraftMetadataKeys.DRAFT_SOURCE_TEMPLATE);
+    metadata.put(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, contentLocale.languageTag());
     Map<String, Object> templateMetadata = new LinkedHashMap<>();
     templateMetadata.put(LearningPlanDraftMetadataKeys.TEMPLATE_ID, template.templateId());
     templateMetadata.put(LearningPlanDraftMetadataKeys.SOURCE_NAME, template.sourceName());
@@ -247,8 +268,18 @@ public class LearningPlanTemplateDraftService {
         .toList();
   }
 
-  private String profileSummary(LearningPlanTemplate template, LearningPlanDraftCommand command) {
-    return template.targetAudience()
+  private String profileSummary(
+      LearningPlanTemplate template,
+      LearningPlanDraftCommand command,
+      LearningPlanContentLocale contentLocale
+  ) {
+    if (contentLocale == LearningPlanContentLocale.EN_US) {
+      return template.targetAudience(contentLocale)
+          + " Template level: " + template.level()
+          + "; recommended weekly study time: " + command.weeklyHours() + " hours"
+          + (command.programmingLanguage() == null ? "" : "; language: " + command.programmingLanguage());
+    }
+    return template.targetAudience(contentLocale)
         + " 当前模板级别：" + template.level()
         + "，建议每周 " + command.weeklyHours() + " 小时"
         + (command.programmingLanguage() == null ? "" : "，语言：" + command.programmingLanguage());

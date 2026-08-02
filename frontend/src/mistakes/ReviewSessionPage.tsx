@@ -365,8 +365,8 @@ function reviewProblemTitle(
   locale: SupportedLocale,
   fallback: string,
 ) {
-  if (locale === 'zh-CN') {
-    return context?.problem.titleCn || current?.problemTitle || current?.problemSlug || fallback;
-  }
-  return context?.problem.slug || current?.problemSlug || fallback;
+  return context?.problem.title
+    || (locale === 'zh-CN' ? current?.problemTitle : undefined)
+    || current?.problemSlug
+    || fallback;
 }

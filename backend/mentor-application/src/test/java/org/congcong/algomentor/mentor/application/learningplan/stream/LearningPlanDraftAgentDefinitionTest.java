@@ -11,7 +11,9 @@ import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys
 import org.congcong.algomentor.ai.governance.model.AiBusinessScenario;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
@@ -38,6 +40,7 @@ class LearningPlanDraftAgentDefinitionTest {
         .containsExactly(LlmMessage.Role.SYSTEM, LlmMessage.Role.USER);
     assertThat(prepared.metadata())
         .containsEntry(AgentRuntimeMetadataKeys.TITLE, LearningPlanStreamConstants.DRAFT_AGENT_TITLE)
+        .containsEntry(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US")
         .containsKey(SystemPromptMetadataKeys.TYPE_CODE);
     assertThat(prepared.executionOptions().structuredOutput().schemaName())
         .isEqualTo(LearningPlanStreamConstants.SCHEMA_NAME);
@@ -71,7 +74,8 @@ class LearningPlanDraftAgentDefinitionTest {
         "Java",
         LearningPlanDifficultyPreference.MEDIUM,
         true,
-        List.of("Array"));
+        List.of("Array"),
+        LearningPlanContentLocale.EN_US);
   }
 
   private AgentInvocationContext context(long userId, String idempotencyKey) {

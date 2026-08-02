@@ -1,0 +1,52 @@
+{
+  "expectedOutcome": "Once done, you can select Trie, KMP/hash or dynamic programming by prefixing structure, mode matching, text splitting and editing status.",
+  "goal": "Creates a complete knowledge route between prefix structures, model matching and string dynamic programming.",
+  "notRecommendedFor": [
+    "No arrays and strings mastered yet",
+    "The main weakness is graphic or numerical algorithm"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Can independently achieve insertion, complete matching and prefix matching",
+        "Can select group subnodes or hash subnodes by character set and data size"
+      ],
+      "focus": "Gradually expand from the base Trie API to match search, prefix aggregation, board search and flow matching.",
+      "objectives": [
+        "Master Trie Node, Terminator and Character Map Design",
+        "Understand Trie's combination with DFS, sorting, Hash and data stream"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Repeats the number of nodes, termination conditions and search branches for each item, focusing on empty strings and repetition of words.",
+      "title": "Trie Build, Search and Prefix Application"
+    },
+    {
+      "acceptanceCriteria": [
+        "Can explain how string matching algorithms avoid double comparisons",
+        "Can independently write a reply or edit a distance class shift"
+      ],
+      "focus": "Train KMP/Scroll Hash thinking, and develop dynamic programming with a message and edit distance string.",
+      "objectives": [
+        "Reuse status after understanding prefix functions, rolling Hash and matching failed",
+        "Get the status definition of the return extension, cut and edit distance"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Writes the status meaning of the matching algorithm and the subscript definition of the DP before the code, and then pushes it manually with a short string.",
+      "title": "String Match, Reply and Edit Status"
+    }
+  ],
+  "prerequisites": [
+    "Get familiar with string and hash watch",
+    "Understand Recursive or DFS",
+    "Access to basic dynamic programming"
+  ],
+  "recommendedFor": [
+    "Trie Node design and search for border instability",
+    "String matching only violent count",
+    "Wish to connect correspondence and edit distance class DP"
+  ],
+  "summary": "2 Weeks of Trie build distance from search, prefix application, string matching, reply and editing.",
+  "targetAudience": "Learners who do basic string questions but lack a systematic approach to prefixing, multi-model matching and reply/editing.",
+  "templateId": "topic_trie_and_string_advanced",
+  "title": "Dictionary Tree & String Progress"
+}

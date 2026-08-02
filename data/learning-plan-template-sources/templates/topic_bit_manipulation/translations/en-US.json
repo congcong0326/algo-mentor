@@ -1,0 +1,52 @@
+{
+  "expectedOutcome": "Once completed, you can classify the subject of the disc by place test, bit clearing, variant or grouping, mask count and state compression.",
+  "goal": "Knowledge of common-place operations, variations or properties, bitmask state indications, and a listing boundary.",
+  "notRecommendedFor": [
+    "No binary at all.",
+    "The main weakness is a tree or string window"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Single Number, bit count and siding to stabilize common bits.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Base bit operation and differential or technique"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Training subset generation, position and range, variable or Trie, and state compression search.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Bitmask, subset count and step state"
+    }
+  ],
+  "prerequisites": [
+    "Understand binary expression",
+    "You'll write arrays through history and Hash count.",
+    "Knows to be or not to be or base operations"
+  ],
+  "recommendedFor": [
+    "Single Number, Counting Bits or Mask often relies on memory",
+    "Short-cycle matching of computing interviews Topic",
+    "Trying to lay the groundwork for DP pressure."
+  ],
+  "summary": "2 Weekly coverage of basic bit operations, differentials or techniques, subset count, bitmask and grade chart status.",
+  "targetAudience": "A learner who does not have a systematic understanding of difference or mask count and state compression by bit algorithms.",
+  "templateId": "topic_bit_manipulation",
+  "title": "Bit Operations Special"
+}

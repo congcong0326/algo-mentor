@@ -7,11 +7,16 @@ public record LearningPlanTemplatePhaseRow(
     Long templateDbId,
     Integer phaseIndex,
     String title,
+    String titleEn,
     Integer durationWeeks,
     String focus,
+    String focusEn,
     JsonNode objectivesJson,
+    JsonNode objectivesEnJson,
     JsonNode recommendedTagsJson,
     JsonNode acceptanceCriteriaJson,
-    String reviewAdvice
+    JsonNode acceptanceCriteriaEnJson,
+    String reviewAdvice,
+    String reviewAdviceEn
 ) {
 }

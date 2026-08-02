@@ -1,5 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { I18nProvider } from '../i18n/I18nProvider';
+import LanguageSelector from '../i18n/LanguageSelector';
 import LearningPlanCreatePage from './LearningPlanCreatePage';
 import {
   confirmLearningPlanDraft,
@@ -7,6 +9,7 @@ import {
   getLearningPlanTemplate,
   getLearningPlanTemplates,
   sendLearningPlanDraftMessage,
+  setApiLocale,
   streamLearningPlanDraft,
   streamLearningPlanDraftRevision,
 } from '../services/api';
@@ -27,6 +30,7 @@ vi.mock('../services/api', () => ({
     }
     throw new Error(response.error?.message ?? fallbackMessage);
   },
+  setApiLocale: vi.fn(),
   sendLearningPlanDraftMessage: vi.fn(),
   streamLearningPlanDraft: vi.fn(),
   streamLearningPlanDraftRevision: vi.fn(),
@@ -39,6 +43,7 @@ const streamLearningPlanDraftMock = vi.mocked(streamLearningPlanDraft);
 const streamLearningPlanDraftRevisionMock = vi.mocked(streamLearningPlanDraftRevision);
 const sendLearningPlanDraftMessageMock = vi.mocked(sendLearningPlanDraftMessage);
 const confirmLearningPlanDraftMock = vi.mocked(confirmLearningPlanDraft);
+const setApiLocaleMock = vi.mocked(setApiLocale);
 
 beforeEach(() => {
   getLearningPlanTemplatesMock.mockResolvedValue(apiResponse(templateSummaries()));
@@ -175,6 +180,7 @@ describe('LearningPlanCreatePage', () => {
     await screen.findByRole('heading', { name: '训练方案' });
     expect(createLearningPlanDraftFromTemplateMock).toHaveBeenCalledWith({
       templateId: 'leetcode_75_core_sprint',
+      contentLocale: 'zh-CN',
       dailyProblemCount: 3,
       trainingDaysPerWeek: 4,
       programmingLanguage: 'Python3',
@@ -208,6 +214,7 @@ describe('LearningPlanCreatePage', () => {
 
     await waitFor(() => expect(createLearningPlanDraftFromTemplateMock).toHaveBeenCalledWith({
       templateId: 'leetcode_75_core_sprint',
+      contentLocale: 'zh-CN',
       dailyProblemCount: 5,
       trainingDaysPerWeek: 6,
       programmingLanguage: 'Java',
@@ -251,6 +258,32 @@ describe('LearningPlanCreatePage', () => {
 
     expect(getLearningPlanTemplateMock).not.toHaveBeenCalled();
   });
+
+  it('reloads localized templates and preserves the selected template across UI locale changes', async () => {
+    getLearningPlanTemplatesMock
+      .mockResolvedValueOnce(apiResponse(templateSummaries()))
+      .mockResolvedValueOnce(apiResponse(templateSummaries('en-US')));
+
+    render(
+      <I18nProvider>
+        <LanguageSelector />
+        <LearningPlanCreatePage onBackToPlans={vi.fn()} onSaved={vi.fn()} />
+      </I18nProvider>,
+    );
+
+    fireEvent.click(await screen.findByRole('button', { name: /NeetCode 150/ }));
+    expect(screen.getByRole('button', { name: /NeetCode 150/ })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(screen.getByRole('combobox', { name: '语言' }));
+    fireEvent.click(screen.getByRole('option', { name: 'English' }));
+
+    expect(await screen.findByText('LeetCode 75 English')).toBeInTheDocument();
+    expect(getLearningPlanTemplatesMock).toHaveBeenCalledTimes(2);
+    const englishLocaleCallIndex = setApiLocaleMock.mock.calls.findIndex(([nextLocale]) => nextLocale === 'en-US');
+    expect(englishLocaleCallIndex).toBeGreaterThanOrEqual(0);
+    expect(setApiLocaleMock.mock.invocationCallOrder[englishLocaleCallIndex])
+      .toBeLessThan(getLearningPlanTemplatesMock.mock.invocationCallOrder[1]);
+    expect(screen.getByRole('button', { name: /NeetCode 150 English/ })).toHaveAttribute('aria-pressed', 'true');
+  });
 });
 
 function apiResponse<T>(data: T): ApiResponse<T> {
@@ -261,10 +294,11 @@ function apiResponse<T>(data: T): ApiResponse<T> {
   };
 }
 
-function templateSummaries(): LearningPlanTemplateSummaryResponse[] {
-  return [
+function templateSummaries(contentLocale: 'zh-CN' | 'en-US' = 'zh-CN'): LearningPlanTemplateSummaryResponse[] {
+  const templates: LearningPlanTemplateSummaryResponse[] = [
     {
       templateId: 'leetcode_75_core_sprint',
+      contentLocale,
       title: 'LeetCode 75',
       summary: '面试高频基础模板',
       catalogCategory: 'INTERVIEW_PREP',
@@ -285,6 +319,7 @@ function templateSummaries(): LearningPlanTemplateSummaryResponse[] {
     },
     {
       templateId: 'neetcode_150_systematic_interview',
+      contentLocale,
       title: 'NeetCode 150',
       summary: '覆盖更多专题的面试模板',
       catalogCategory: 'INTERVIEW_PREP',
@@ -305,6 +340,7 @@ function templateSummaries(): LearningPlanTemplateSummaryResponse[] {
     },
     ...additionalTemplateDefinitions.map((definition, index): LearningPlanTemplateSummaryResponse => ({
       templateId: definition.templateId,
+      contentLocale,
       title: definition.title,
       summary: `${definition.title}摘要`,
       catalogCategory: definition.catalogCategory,
@@ -326,6 +362,16 @@ function templateSummaries(): LearningPlanTemplateSummaryResponse[] {
       defaultRhythmSettings: rhythmSettings(1, 5, 20 + index),
     })),
   ];
+  if (contentLocale === 'zh-CN') {
+    return templates;
+  }
+  return templates.map((template) => ({
+    ...template,
+    title: `${template.title} English`,
+    summary: `${template.title} English summary`,
+    targetAudience: 'Learners',
+    expectedOutcome: 'Complete the route',
+  }));
 }
 
 const additionalTemplateDefinitions: Array<{
@@ -415,6 +461,7 @@ function generatedDraft(overrides: Partial<LearningPlanDraftResponse> = {}): Lea
 
 function learningPlanDraftPlan(overrides: Partial<NonNullable<LearningPlanDraftResponse['draftPlan']>> = {}) {
   return {
+    contentLocale: 'zh-CN',
     title: '四周 Java 算法面试冲刺计划',
     summary: '围绕数组和哈希表建立高频题型能力。',
     intent: 'INTERVIEW_SPRINT',

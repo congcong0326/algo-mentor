@@ -1,4 +1,5 @@
 {
+  "englishContentReadyTemplateCount": 35,
   "files": {
     "learning_plan_template_problem_refs.jsonl": {
       "bytes": 1111897,
@@ -6,30 +7,30 @@
       "sha256": "ba0ea38c6951617373c656f126dd4963d2ff7750bdf504e0a0943d9d862022f0"
     },
     "learning_plan_template_seed_manifest.json": {
-      "bytes": 30322,
+      "bytes": 33521,
       "hashInput": "manifest payload before self file stat insertion",
       "path": "learning_plan_template_seed_manifest.json",
-      "sha256": "45c30e423ccf524c5f3dc32d680421782744bca66abcb87d877d89be31587ae6"
+      "sha256": "d9f9c13bc3321b4bb906a3dfb31cd5e840c87f1d29749e1daaf4f36ba2f3a984"
     },
     "learning_plan_template_seed_metadata.md": {
-      "bytes": 18233,
+      "bytes": 21125,
       "path": "learning_plan_template_seed_metadata.md",
-      "sha256": "813b9c0981f503a39900a5523e2758b05e5bbfa8167f1474401f45c9c60336c8"
+      "sha256": "7eea21cc3b301e72b619d12cefa3029b8e572433db7171a550ec242fced72dae"
     },
     "learning_plan_templates.jsonl": {
-      "bytes": 197646,
+      "bytes": 356627,
       "path": "learning_plan_templates.jsonl",
-      "sha256": "b8a03c4258ab2762ea1ba749b0c7d3e5e444176861211012c5ebecc188605796"
+      "sha256": "a70c205b8c212889b6c8746776f3ee2391b5622deb3def7064c458eee26d81e6"
     }
   },
   "generatedAt": "2026-07-28T00:00:00+00:00",
   "matchedProblemCount": 1699,
   "missingProblemCount": 39,
   "problemRefCount": 1738,
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "source": {
-    "commit": "all-compatible-templates-2026-07-28",
-    "dataPath": "data/learning-plan-template-sources/templates/*/{template.json,problem_refs.jsonl}",
+    "commit": "bilingual-templates-2026-08-02",
+    "dataPath": "data/learning-plan-template-sources/templates/*/{template.json,translations/en-US.json,problem_refs.jsonl}",
     "name": "algo-mentor learning-plan-template-sources",
     "url": "data/learning-plan-template-sources"
   },
@@ -227,13 +228,15 @@
           "ratio": 0.5833
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 144,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 11,
       "problemCount": 144,
       "recommendedOrder": 3,
-      "title": "代码随想录完整刷题路线"
+      "title": "代码随想录完整刷题路线",
+      "titleEn": "Coding Thoughts Complete Algorithm Roadmap"
     },
     "cn_algorithm_foundation_12weeks": {
       "catalogCategory": "SYSTEMATIC_LEARNING",
@@ -251,13 +254,15 @@
           "ratio": 0.5217
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 46,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 9,
       "problemCount": 46,
       "recommendedOrder": 2,
-      "title": "中文系统刷题入门计划"
+      "title": "中文系统刷题入门计划",
+      "titleEn": "12-Week Algorithm Foundations Plan"
     },
     "cracking_coding_interview_classic": {
       "catalogCategory": "INTERVIEW_PREP",
@@ -275,13 +280,15 @@
           "ratio": 0.5596
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 109,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 10,
       "problemCount": 109,
       "recommendedOrder": null,
-      "title": "程序员面试金典系统训练计划"
+      "title": "程序员面试金典系统训练计划",
+      "titleEn": "Programmer interview Kimberly system training programme"
     },
     "labuladong_algo_thinking": {
       "catalogCategory": "SYSTEMATIC_LEARNING",
@@ -299,13 +306,15 @@
           "ratio": 0.6406
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 64,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 8,
       "problemCount": 64,
       "recommendedOrder": 5,
-      "title": "labuladong 核心算法框架训练计划"
+      "title": "labuladong 核心算法框架训练计划",
+      "titleEn": "labuladong Core Algorithm Framework Plan"
     },
     "leetcode_75_core_sprint": {
       "catalogCategory": "INTERVIEW_PREP",
@@ -323,13 +332,15 @@
           "ratio": 0.7067
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 75,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 6,
       "problemCount": 75,
       "recommendedOrder": 1,
-      "title": "LeetCode 75 核心冲刺计划"
+      "title": "LeetCode 75 核心冲刺计划",
+      "titleEn": "LeetCode 75 Core Sprint Plan"
     },
     "leetcode_javascript_30_days": {
       "catalogCategory": "LANGUAGE_AND_ROLE",
@@ -347,13 +358,15 @@
           "ratio": 0.3333
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 30,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 5,
       "problemCount": 30,
       "recommendedOrder": null,
-      "title": "LeetCode JavaScript 30 天训练计划"
+      "title": "LeetCode JavaScript 30 天训练计划",
+      "titleEn": "LeetCode JavaScript 30-day training programme"
     },
     "leetcode_pandas_30_days": {
       "catalogCategory": "LANGUAGE_AND_ROLE",
@@ -371,6 +384,7 @@
           "ratio": 0.2424
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 28,
       "missingProblemCount": 5,
       "missingProblemExamples": [
@@ -383,7 +397,8 @@
       "phaseCount": 5,
       "problemCount": 33,
       "recommendedOrder": null,
-      "title": "LeetCode Pandas 30 天进阶计划"
+      "title": "LeetCode Pandas 30 天进阶计划",
+      "titleEn": "LeetCode Pandas 30-day progress plan"
     },
     "leetcode_pandas_introduction": {
       "catalogCategory": "LANGUAGE_AND_ROLE",
@@ -401,13 +416,15 @@
           "ratio": 0.0
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 15,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 4,
       "problemCount": 15,
       "recommendedOrder": null,
-      "title": "LeetCode Pandas 入门训练计划"
+      "title": "LeetCode Pandas 入门训练计划",
+      "titleEn": "LeetCode Pandas Initial Training Program"
     },
     "leetcode_patterns_beginner_roadmap": {
       "catalogCategory": "SYSTEMATIC_LEARNING",
@@ -425,6 +442,7 @@
           "ratio": 0.5441
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 64,
       "missingProblemCount": 4,
       "missingProblemExamples": [
@@ -436,7 +454,8 @@
       "phaseCount": 10,
       "problemCount": 68,
       "recommendedOrder": null,
-      "title": "算法模式入门训练计划"
+      "title": "算法模式入门训练计划",
+      "titleEn": "Computer mode induction training programme"
     },
     "leetcode_sql_50": {
       "catalogCategory": "LANGUAGE_AND_ROLE",
@@ -454,13 +473,15 @@
           "ratio": 0.34
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 50,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 7,
       "problemCount": 50,
       "recommendedOrder": null,
-      "title": "LeetCode SQL 50 系统训练计划"
+      "title": "LeetCode SQL 50 系统训练计划",
+      "titleEn": "LeetCode SQL 50 System Training Scheme"
     },
     "leetcode_top_100_liked_revision": {
       "catalogCategory": "INTERVIEW_PREP",
@@ -478,6 +499,7 @@
           "ratio": 0.63
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 99,
       "missingProblemCount": 1,
       "missingProblemExamples": [
@@ -486,7 +508,8 @@
       "phaseCount": 10,
       "problemCount": 100,
       "recommendedOrder": null,
-      "title": "LeetCode 热题 100"
+      "title": "LeetCode 热题 100",
+      "titleEn": "LeetCode 100"
     },
     "leetcode_top_interview_150": {
       "catalogCategory": "INTERVIEW_PREP",
@@ -504,13 +527,15 @@
           "ratio": 0.62
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 150,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 10,
       "problemCount": 150,
       "recommendedOrder": 4,
-      "title": "LeetCode 面试经典 150 题计划"
+      "title": "LeetCode 面试经典 150 题计划",
+      "titleEn": "LeetCode Top Interview 150 Plan"
     },
     "neetcode_150_systematic_interview": {
       "catalogCategory": "INTERVIEW_PREP",
@@ -528,6 +553,7 @@
           "ratio": 0.6733
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 143,
       "missingProblemCount": 7,
       "missingProblemExamples": [
@@ -542,7 +568,8 @@
       "phaseCount": 12,
       "problemCount": 150,
       "recommendedOrder": null,
-      "title": "NeetCode 150 系统面试计划"
+      "title": "NeetCode 150 系统面试计划",
+      "titleEn": "NetCode 150 System Interview Scheme"
     },
     "neetcode_blind_75_interview_core": {
       "catalogCategory": "INTERVIEW_PREP",
@@ -560,6 +587,7 @@
           "ratio": 0.6533
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 69,
       "missingProblemCount": 6,
       "missingProblemExamples": [
@@ -573,7 +601,8 @@
       "phaseCount": 4,
       "problemCount": 75,
       "recommendedOrder": null,
-      "title": "NeetCode Blind 75 面试核心计划"
+      "title": "NeetCode Blind 75 面试核心计划",
+      "titleEn": "NetCode Blind 75 Core interview plan"
     },
     "programming_skills_implementation_foundation": {
       "catalogCategory": "SYSTEMATIC_LEARNING",
@@ -591,13 +620,15 @@
           "ratio": 0.0882
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 34,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 4,
       "problemCount": 34,
       "recommendedOrder": null,
-      "title": "编程基础与实现力计划"
+      "title": "编程基础与实现力计划",
+      "titleEn": "Programming base and realization plan"
     },
     "sword_offer_classic": {
       "catalogCategory": "INTERVIEW_PREP",
@@ -615,13 +646,15 @@
           "ratio": 0.3867
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 75,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 8,
       "problemCount": 75,
       "recommendedOrder": null,
-      "title": "剑指 Offer 经典面试计划"
+      "title": "剑指 Offer 经典面试计划",
+      "titleEn": "Sword finger, Offer, classic interview plan."
     },
     "tih_algorithm_essentials": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -639,6 +672,7 @@
           "ratio": 0.6555
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 110,
       "missingProblemCount": 9,
       "missingProblemExamples": [
@@ -655,7 +689,8 @@
       "phaseCount": 6,
       "problemCount": 119,
       "recommendedOrder": null,
-      "title": "算法面试核心专题计划"
+      "title": "算法面试核心专题计划",
+      "titleEn": "Computer interview core thematic plan"
     },
     "tih_best_practice_50_5weeks": {
       "catalogCategory": "INTERVIEW_PREP",
@@ -673,6 +708,7 @@
           "ratio": 0.6393
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 55,
       "missingProblemCount": 6,
       "missingProblemExamples": [
@@ -686,7 +722,8 @@
       "phaseCount": 5,
       "problemCount": 61,
       "recommendedOrder": null,
-      "title": "5 周面试冲刺计划"
+      "title": "5 周面试冲刺计划",
+      "titleEn": "5 Weekly interview sprinting programme"
     },
     "topic_backtracking_foundation": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -704,13 +741,15 @@
           "ratio": 0.75
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 20,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 3,
       "problemCount": 20,
       "recommendedOrder": null,
-      "title": "回溯专项突破"
+      "title": "回溯专项突破",
+      "titleEn": "Retrace special breakthroughs."
     },
     "topic_binary_search_boundaries": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -728,13 +767,15 @@
           "ratio": 0.5556
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 18,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 2,
       "problemCount": 18,
       "recommendedOrder": null,
-      "title": "二分与边界专项计划"
+      "title": "二分与边界专项计划",
+      "titleEn": "Two-part border plan"
     },
     "topic_bit_manipulation": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -752,13 +793,15 @@
           "ratio": 0.6111
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 18,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 2,
       "problemCount": 18,
       "recommendedOrder": null,
-      "title": "位运算专项"
+      "title": "位运算专项",
+      "titleEn": "Bit Operations Special"
     },
     "topic_data_structure_design": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -776,13 +819,15 @@
           "ratio": 0.7222
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 18,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 2,
       "problemCount": 18,
       "recommendedOrder": null,
-      "title": "数据结构设计专项"
+      "title": "数据结构设计专项",
+      "titleEn": "Data structure design special"
     },
     "topic_dp_advanced": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -800,13 +845,15 @@
           "ratio": 0.3871
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 31,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 4,
       "problemCount": 31,
       "recommendedOrder": null,
-      "title": "动态规划进阶专项计划"
+      "title": "动态规划进阶专项计划",
+      "titleEn": "A dynamic programming progression plan"
     },
     "topic_dynamic_programming_foundation": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -824,13 +871,15 @@
           "ratio": 0.7826
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 23,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 4,
       "problemCount": 23,
       "recommendedOrder": 6,
-      "title": "动态规划专项突破计划"
+      "title": "动态规划专项突破计划",
+      "titleEn": "Dynamic Programming Foundations Plan"
     },
     "topic_graph_bfs_dfs": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -848,6 +897,7 @@
           "ratio": 1.0
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 19,
       "missingProblemCount": 1,
       "missingProblemExamples": [
@@ -856,7 +906,8 @@
       "phaseCount": 4,
       "problemCount": 20,
       "recommendedOrder": null,
-      "title": "图论专项突破计划"
+      "title": "图论专项突破计划",
+      "titleEn": "A graphic breakthrough plan."
     },
     "topic_greedy_strategies": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -874,13 +925,15 @@
           "ratio": 0.7083
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 24,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 3,
       "problemCount": 24,
       "recommendedOrder": null,
-      "title": "贪心策略专项"
+      "title": "贪心策略专项",
+      "titleEn": "Greedy strategy."
     },
     "topic_heap_priority_queue": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -898,13 +951,15 @@
           "ratio": 0.5556
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 18,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 2,
       "problemCount": 18,
       "recommendedOrder": null,
-      "title": "堆与优先队列专项"
+      "title": "堆与优先队列专项",
+      "titleEn": "Stack & priority queue Special"
     },
     "topic_intervals_scheduling": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -922,13 +977,15 @@
           "ratio": 0.7778
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 18,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 2,
       "problemCount": 18,
       "recommendedOrder": null,
-      "title": "区间与调度专项"
+      "title": "区间与调度专项",
+      "titleEn": "Inter-district and movement control special"
     },
     "topic_linked_list": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -946,13 +1003,15 @@
           "ratio": 0.6111
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 18,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 2,
       "problemCount": 18,
       "recommendedOrder": null,
-      "title": "链表专项"
+      "title": "链表专项",
+      "titleEn": "Chain Specific"
     },
     "topic_prefix_sum_difference": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -970,13 +1029,15 @@
           "ratio": 0.7222
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 18,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 2,
       "problemCount": 18,
       "recommendedOrder": null,
-      "title": "前缀和与差分专项"
+      "title": "前缀和与差分专项",
+      "titleEn": "Prefixes and differentials specifically"
     },
     "topic_sliding_window_two_pointers": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -994,13 +1055,15 @@
           "ratio": 0.5333
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 15,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 2,
       "problemCount": 15,
       "recommendedOrder": null,
-      "title": "滑动窗口与双指针专项计划"
+      "title": "滑动窗口与双指针专项计划",
+      "titleEn": "Slide Window and two pointers Special Scheme"
     },
     "topic_stack_monotonic": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -1018,13 +1081,15 @@
           "ratio": 0.4444
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 18,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 2,
       "problemCount": 18,
       "recommendedOrder": null,
-      "title": "栈与单调栈专项"
+      "title": "栈与单调栈专项",
+      "titleEn": "Inn & Monoton Special"
     },
     "topic_tree_binary_tree_foundation": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -1042,13 +1107,15 @@
           "ratio": 0.5417
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 24,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 3,
       "problemCount": 24,
       "recommendedOrder": null,
-      "title": "树与二叉树专项"
+      "title": "树与二叉树专项",
+      "titleEn": "Trees and binary trees."
     },
     "topic_trie_and_string_advanced": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -1066,13 +1133,15 @@
           "ratio": 0.6111
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 18,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 2,
       "problemCount": 18,
       "recommendedOrder": null,
-      "title": "字典树与字符串进阶"
+      "title": "字典树与字符串进阶",
+      "titleEn": "Dictionary Tree & String Progress"
     },
     "topic_union_find_and_advanced_graph": {
       "catalogCategory": "TOPIC_BREAKTHROUGH",
@@ -1090,13 +1159,15 @@
           "ratio": 0.7143
         }
       },
+      "englishContentReady": true,
       "matchedProblemCount": 21,
       "missingProblemCount": 0,
       "missingProblemExamples": [],
       "phaseCount": 3,
       "problemCount": 21,
       "recommendedOrder": null,
-      "title": "并查集与进阶图论专项"
+      "title": "并查集与进阶图论专项",
+      "titleEn": "And find out what's special about the map."
     }
   }
 }

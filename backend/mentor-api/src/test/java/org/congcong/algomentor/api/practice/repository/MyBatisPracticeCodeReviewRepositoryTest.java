@@ -38,6 +38,7 @@ class MyBatisPracticeCodeReviewRepositoryTest {
     assertThat(review.evidence()).contains(new PracticeCodeReviewEvidence("ENTRY_FUNCTION", "twoSum"));
     assertThat(review.deductionReasons()).containsExactly("边界条件不足");
     assertThat(review.score().total()).isEqualByComparingTo("7.0");
+    assertThat(review.contentLocale()).isEqualTo("en-US");
   }
 
   @Test
@@ -62,6 +63,7 @@ class MyBatisPracticeCodeReviewRepositoryTest {
             && row.phaseIndex() == 1
             && row.problemSlug().equals("two-sum")
             && row.agentRunDbId().equals(101L)
+            && row.contentLocale().equals("en-US")
             && row.detectionEvidenceJson().equals(objectMapper.valueToTree(List.of(
                 new PracticeCodeReviewEvidence("ENTRY_FUNCTION", "twoSum")))))))
         .thenReturn(fullRow());
@@ -129,7 +131,9 @@ class MyBatisPracticeCodeReviewRepositoryTest {
         true,
         List.of("边界条件不足"),
         List.of("补充空数组用例"),
-        "整体可通过。");
+        "Overall acceptable.",
+        List.of(),
+        "en-US");
   }
 
   private PracticeCodeReviewDraft nullableTextDraft() {
@@ -173,6 +177,7 @@ class MyBatisPracticeCodeReviewRepositoryTest {
         "class Solution {}",
         "class Solution {}",
         "java",
+        "en-US",
         objectMapper.valueToTree(List.of(new PracticeCodeReviewEvidence("ENTRY_FUNCTION", "twoSum"))),
         "使用哈希表。",
         new BigDecimal("7.0"),

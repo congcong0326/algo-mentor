@@ -19,6 +19,7 @@ import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.mentor.application.prompt.ResolvedSystemPromptSnapshot;
 import org.congcong.algomentor.mentor.application.prompt.SystemPromptMetadataKeys;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
 
 /** 使用受管理 Prompt 和题库工具的学习计划草案 Definition。 */
 public final class LearningPlanDraftAgentDefinition implements AgentDefinition<LearningPlanDraftAgentInput> {
@@ -69,6 +70,9 @@ public final class LearningPlanDraftAgentDefinition implements AgentDefinition<L
     ResolvedSystemPromptSnapshot snapshot = promptBuilder.snapshot(candidate.userId());
     Map<String, Object> metadata = new LinkedHashMap<>(SystemPromptMetadataKeys.from(snapshot));
     metadata.put(AgentRuntimeMetadataKeys.TITLE, LearningPlanStreamConstants.DRAFT_AGENT_TITLE);
+    metadata.put(
+        LearningPlanDraftMetadataKeys.CONTENT_LOCALE,
+        candidate.command().contentLocale().languageTag());
     return new AgentPreparedRequest(
         promptBuilder.build(candidate.command(), snapshot),
         Map.copyOf(metadata),

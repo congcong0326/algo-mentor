@@ -35,7 +35,8 @@ class ReviewCardServiceTest {
         new ReviewSeedPolicy(ReviewSchedulerProperties.defaults()),
         new ObjectMapper(),
         ReviewMetrics.NOOP,
-        slug -> Optional.of(new ReviewProblemSnapshot(slug, "两数之和", "EASY", "题面摘要", "完整题面")),
+        (slug, locale) -> Optional.of(
+            new ReviewProblemSnapshot(slug, "两数之和", "EASY", "题面摘要", "完整题面")),
         Clock.fixed(NOW, ZoneOffset.UTC));
 
     service.ingestFromReview(review());

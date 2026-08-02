@@ -10,7 +10,7 @@ class PracticeCodeReviewPromptBuilderTest {
 
   @Test
   void requiresJudgeFirstHardGatesAndSuboptimalScoreCap() {
-    List<LlmMessage> messages = new PracticeCodeReviewPromptBuilder().build(context());
+    List<LlmMessage> messages = new PracticeCodeReviewPromptBuilder().build(context("zh-CN"));
 
     assertThat(messages).hasSize(2);
     assertThat(messages.get(1).text())
@@ -22,7 +22,18 @@ class PracticeCodeReviewPromptBuilderTest {
         .contains("expectedTimeComplexity");
   }
 
-  private PracticeTurnContext context() {
+  @Test
+  void injectsEnglishOutputLocaleForUserVisibleReviewFields() {
+    List<LlmMessage> messages = new PracticeCodeReviewPromptBuilder().build(context("en-US"));
+
+    assertThat(messages.get(1).text())
+        .contains("outputLocale: en-US")
+        .contains("必须使用 outputLocale 对应的语言")
+        .doesNotContain("deductionReasons 和 improvementSuggestions 使用中文短句")
+        .doesNotContain("reviewMarkdown 使用中文");
+  }
+
+  private PracticeTurnContext context(String locale) {
     return new PracticeTurnContext(
         7L,
         12L,
@@ -37,6 +48,6 @@ class PracticeCodeReviewPromptBuilderTest {
         "class Solution {}",
         "请 Review",
         "",
-        "zh-CN");
+        locale);
   }
 }

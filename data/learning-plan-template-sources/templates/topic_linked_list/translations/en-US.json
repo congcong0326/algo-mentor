@@ -1,0 +1,52 @@
+{
+  "expectedOutcome": "Once completed, you can draw the process of change of the pointer and group the reset table by base, two pointers, consolidation and complex structure.",
+  "goal": "Establishment of a stable solution to the problem of rewriting, slow and slow guidelines and complex nodes.",
+  "notRecommendedFor": [
+    "Not yet mastered variables, cycles and functions",
+    "The main weakness is graphic or dynamic programming"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "To be able to independently complete basic reverse, merge and slow pointers",
+        "Description of the boundary issues resolved by virtual headpoints and empties"
+      ],
+      "focus": "Border processing when training chains are running, local reverses, slow pointers and nodes are removed.",
+      "objectives": [
+        "Can track changes on paper prev, current, next",
+        "Knowledge of ring tests, midpoints, N-minus nodes and intersectional judgements"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "When you repeat the disc, draw a local linked list before and after the pointer moves, focusing on the head, end and empty linked lists.",
+      "title": "Basic Operations, Reverse and two pointers"
+    },
+    {
+      "acceptanceCriteria": [
+        "Can independently complete inter-district inversion, sorting and K-routing",
+        "Explains the complexity of the node relationship between random finger copy and LRU degrees"
+      ],
+      "focus": "Process inter-temporal reverses, rearranges, grouping, random pointer and two-way chain design.",
+      "objectives": [
+        "Separating, consolidating and reconnecting chains",
+        "Understand the design trade-offs between the Hash watch and the two-way linked list combination"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Dismantling complex topics into positioning, chaining and re-linking three steps to verify independently the non-variant of each step.",
+      "title": "Merge Sorting and Complex Linked List Structure"
+    }
+  ],
+  "prerequisites": [
+    "Understand quotes and nodal structure",
+    "Can write loops and basic regressions",
+    "Understanding time and space complexity"
+  ],
+  "recommendedFor": [
+    "Inverted, ring-detected or slow pointer unstable",
+    "HF questions need to be completed prior to interview",
+    "I'd like to understand LRU et al."
+  ],
+  "summary": "2 Week-by-week system completion chain base operation, two pointers, consolidation sequencing and complex structure design.",
+  "targetAudience": "Basic arrays are used, but learners with broken chains, rings, reverses and nodes are prone to error.",
+  "templateId": "topic_linked_list",
+  "title": "Chain Specific"
+}

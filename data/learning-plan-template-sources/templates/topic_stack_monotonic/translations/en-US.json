@@ -1,0 +1,52 @@
+{
+  "expectedOutcome": "When completed, you can repeat the meaning of the status of the stack and write nonvariant and timing of settlement for the monotony.",
+  "goal": "Masters the intubation/outtrenchment variables of the stack state maintenance, expression resolution and monotonous structure.",
+  "notRecommendedFor": [
+    "No basic data structure available.",
+    "The main objective is SQL or system design"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Stabilizes the match between brackets, the minimum stack, the path resolution and the expression.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Base stack, brackets and expressions"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Trains the next larger element, column chart, rainwater harvesting and window queues not variable.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Single Inn & Queue"
+    }
+  ],
+  "prerequisites": [
+    "Understanding arrays and strings",
+    "Use stacks or double-end queues",
+    "Can write base parenthesis matching"
+  ],
+  "recommendedFor": [
+    "Unstable conditions in and out of a single inn.",
+    "Unique template for expression and brackets",
+    "Wants to complete the window max and column classics"
+  ],
+  "summary": "2 Weekly completion of basic stacks, expression for value, monotony and monotronized window topics.",
+  "targetAudience": "Brackets, expressions, next larger element or column diagrams are easy to cross borders learners.",
+  "templateId": "topic_stack_monotonic",
+  "title": "Inn & Monoton Special"
+}

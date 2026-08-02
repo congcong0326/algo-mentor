@@ -149,6 +149,7 @@ public class MyBatisPracticeCodeReviewRepository implements PracticeCodeReviewRe
         draft.rawCode(),
         draft.normalizedCode(),
         draft.language(),
+        draft.contentLocale(),
         json(draft.evidence()),
         defaultText(draft.contextSummary()),
         draft.score().total(),
@@ -196,7 +197,8 @@ public class MyBatisPracticeCodeReviewRepository implements PracticeCodeReviewRe
         read(row.improvementSuggestionsJson(), STRING_LIST),
         row.reviewMarkdown(),
         row.createdAt(),
-        mapper.findAffectedTagIds(row.id()));
+        mapper.findAffectedTagIds(row.id()),
+        row.contentLocale());
   }
 
   private PracticeCodeReviewSummary toSummary(PracticeCodeReviewSummaryRow row) {
@@ -206,7 +208,8 @@ public class MyBatisPracticeCodeReviewRepository implements PracticeCodeReviewRe
         row.language(),
         row.totalScore(),
         row.passed(),
-        row.createdAt());
+        row.createdAt(),
+        row.contentLocale());
   }
 
   private JsonNode json(Object value) {

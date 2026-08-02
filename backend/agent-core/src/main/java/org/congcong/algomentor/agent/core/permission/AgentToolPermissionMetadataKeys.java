@@ -55,6 +55,11 @@ public final class AgentToolPermissionMetadataKeys {
    */
   public static final String PERMISSION_OWNER_USER_ID = "permissionOwnerUserId";
 
+  /**
+   * 客户端用于选择本地化权限文案的稳定编码。
+   */
+  public static final String COPY_CODE = "copyCode";
+
   private AgentToolPermissionMetadataKeys() {
   }
 }

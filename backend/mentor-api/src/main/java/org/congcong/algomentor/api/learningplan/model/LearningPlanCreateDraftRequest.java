@@ -2,6 +2,7 @@ package org.congcong.algomentor.api.learningplan.model;
 
 import java.util.List;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
@@ -19,6 +20,10 @@ public record LearningPlanCreateDraftRequest(
 ) {
 
   public LearningPlanDraftCommand toCommand() {
+    return toCommand(LearningPlanContentLocale.ZH_CN);
+  }
+
+  public LearningPlanDraftCommand toCommand(LearningPlanContentLocale contentLocale) {
     return new LearningPlanDraftCommand(
         intent,
         goal,
@@ -28,6 +33,7 @@ public record LearningPlanCreateDraftRequest(
         programmingLanguage,
         difficultyPreference,
         interviewOriented,
-        topicPreferences);
+        topicPreferences,
+        contentLocale);
   }
 }

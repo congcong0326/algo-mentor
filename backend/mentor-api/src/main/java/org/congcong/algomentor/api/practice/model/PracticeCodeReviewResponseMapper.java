@@ -35,6 +35,7 @@ public final class PracticeCodeReviewResponseMapper {
         review.rawCode(),
         review.normalizedCode(),
         review.language(),
+        review.contentLocale(),
         review.evidence().stream()
             .map(PracticeCodeReviewResponseMapper::toEvidenceResponse)
             .toList(),
@@ -55,6 +56,7 @@ public final class PracticeCodeReviewResponseMapper {
         summary.id(),
         summary.versionNo(),
         summary.language(),
+        summary.contentLocale(),
         summary.totalScore(),
         summary.passed(),
         summary.createdAt());

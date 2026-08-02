@@ -86,6 +86,7 @@ class InMemoryAgentToolPermissionCoordinatorTest {
     assertThat(resolved).isInstanceOf(AgentToolPermissionAuthorization.Allowed.class);
     assertThat(result.accepted()).isTrue();
     assertThat(result.request().permissionRequestId()).isEqualTo("perm-1");
+    assertThat(result.request().copyCode()).isEqualTo("PRACTICE_CODE_REVIEW_REQUESTED");
     assertThat(events.records).containsExactly("request:perm-1", "decision:ALLOW:user_confirmed");
     assertThat(coordinator.pendingRequestCount()).isZero();
     assertThat(metrics.records)
@@ -303,7 +304,8 @@ class InMemoryAgentToolPermissionCoordinatorTest {
         "提交代码 Review",
         "模型请求执行正式 Review",
         Map.of("effect", "save_review"),
-        "test-policy");
+        "test-policy",
+        Map.of(AgentToolPermissionMetadataKeys.COPY_CODE, "PRACTICE_CODE_REVIEW_REQUESTED"));
   }
 
   private static AgentToolPermissionCheck check(long userId) {

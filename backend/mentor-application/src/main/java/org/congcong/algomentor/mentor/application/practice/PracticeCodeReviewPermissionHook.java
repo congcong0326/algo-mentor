@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionCheck;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionPlan;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHook;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionMetadataKeys;
 import org.congcong.algomentor.agent.core.permission.ToolNamePermissionHook;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
@@ -61,7 +62,10 @@ public final class PracticeCodeReviewPermissionHook implements AgentToolPermissi
         DISPLAY_NAME,
         REASON,
         previewFromTrustedContext(check.trustedMetadata()),
-        POLICY_SOURCE);
+        POLICY_SOURCE,
+        Map.of(
+            AgentToolPermissionMetadataKeys.COPY_CODE,
+            PracticeAgentToolPermissionCopyCodes.PRACTICE_CODE_REVIEW_REQUESTED));
   }
 
   private Map<String, Object> previewFromTrustedContext(Map<String, Object> trustedMetadata) {

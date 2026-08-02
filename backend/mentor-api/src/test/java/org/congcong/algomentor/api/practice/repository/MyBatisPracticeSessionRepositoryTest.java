@@ -62,6 +62,13 @@ class MyBatisPracticeSessionRepositoryTest {
   }
 
   @Test
+  void reusedSessionUpdatesPersistedLocale() throws Exception {
+    assertThat(practiceSessionMapperXml())
+        .contains("SET locale = EXCLUDED.locale,")
+        .contains("updated_at = NOW()");
+  }
+
+  @Test
   void mapsSessionRowToDomainWithPersistedLocale() {
     PracticeSessionMapper mapper = mock(PracticeSessionMapper.class);
     when(mapper.upsertSession(7, 12, 1, "two-sum", "en-US")).thenReturn(sessionRow("en-US"));

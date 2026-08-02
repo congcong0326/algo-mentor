@@ -16,6 +16,7 @@ import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanTemplat
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanTemplateProblemRefRow;
 import org.congcong.algomentor.api.learningplan.mapper.model.LearningPlanTemplateRow;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
@@ -27,6 +28,8 @@ import org.congcong.algomentor.mentor.application.learningplan.template.Learning
 import org.congcong.algomentor.mentor.application.learningplan.template.LearningPlanTemplateRepository;
 import org.congcong.algomentor.cache.api.LocalBoundedCacheRegion;
 import org.congcong.algomentor.cache.factory.LocalCacheRegionFactory;
+import org.congcong.algomentor.cache.invalidation.CacheInvalidationExecutor;
+import org.congcong.algomentor.cache.invalidation.SpringCacheInvalidationExecutor;
 import org.congcong.algomentor.cache.spec.CacheRegionName;
 import org.congcong.algomentor.cache.spec.LocalBoundedCacheSpec;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,18 +40,18 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
   };
   private static final TypeReference<Map<String, Object>> OBJECT_MAP = new TypeReference<>() {
   };
-  private static final String CATALOG_KEY = "singleton";
   private static final CacheRegionName CATALOG_CACHE_NAME = new CacheRegionName("learning-plan-template-catalog");
 
   private final LearningPlanTemplateMapper mapper;
   private final ObjectMapper objectMapper;
-  private final LocalBoundedCacheRegion<String, LearningPlanTemplateCatalog> catalogCache;
+  private final LocalBoundedCacheRegion<LearningPlanContentLocale, LearningPlanTemplateCatalog> catalogCache;
+  private final CacheInvalidationExecutor invalidationExecutor;
 
   public MyBatisLearningPlanTemplateRepository(
       LearningPlanTemplateMapper mapper,
       ObjectMapper objectMapper
   ) {
-    this(mapper, objectMapper, null, null);
+    this(mapper, objectMapper, null, null, new SpringCacheInvalidationExecutor());
   }
 
   public MyBatisLearningPlanTemplateRepository(
@@ -57,26 +60,47 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
       LocalCacheRegionFactory cacheFactory,
       LearningPlanTemplateCacheProperties cacheProperties
   ) {
+    this(mapper, objectMapper, cacheFactory, cacheProperties, new SpringCacheInvalidationExecutor());
+  }
+
+  public MyBatisLearningPlanTemplateRepository(
+      LearningPlanTemplateMapper mapper,
+      ObjectMapper objectMapper,
+      LocalCacheRegionFactory cacheFactory,
+      LearningPlanTemplateCacheProperties cacheProperties,
+      CacheInvalidationExecutor invalidationExecutor
+  ) {
     this.mapper = mapper;
     this.objectMapper = objectMapper;
     catalogCache = cacheFactory == null || cacheProperties == null
         ? null
         : cacheFactory.createBounded(new LocalBoundedCacheSpec(
             CATALOG_CACHE_NAME, cacheProperties.getCatalogMaximumSize()));
+    this.invalidationExecutor = invalidationExecutor;
   }
 
   @Override
   public List<LearningPlanTemplate> findAllTemplates() {
+    return findAllTemplates(LearningPlanContentLocale.ZH_CN);
+  }
+
+  @Override
+  public List<LearningPlanTemplate> findAllTemplates(LearningPlanContentLocale locale) {
     if (catalogCache == null) {
       return mapper.findAllTemplates().stream().map(row -> toTemplate(row, List.of())).toList();
     }
-    return catalog().orderedTemplates();
+    return catalog(locale).orderedTemplates();
   }
 
   @Override
   public Optional<LearningPlanTemplate> findByTemplateId(String templateId) {
+    return findByTemplateId(templateId, LearningPlanContentLocale.ZH_CN);
+  }
+
+  @Override
+  public Optional<LearningPlanTemplate> findByTemplateId(String templateId, LearningPlanContentLocale locale) {
     if (catalogCache != null) {
-      return Optional.ofNullable(catalog().templatesById().get(templateId));
+      return Optional.ofNullable(catalog(locale).templatesById().get(templateId));
     }
     return Optional.ofNullable(mapper.findByTemplateId(templateId))
         .map(row -> toTemplate(row, true));
@@ -94,7 +118,9 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
         mapper.insertProblemRef(toProblemRefRow(templateDbId, phaseDbId, ref));
       }
     }
-    return toTemplate(mapper.findByTemplateId(template.templateId()), true);
+    LearningPlanTemplate saved = toTemplate(mapper.findByTemplateId(template.templateId()), true);
+    scheduleCatalogCacheInvalidation();
+    return saved;
   }
 
   @Override
@@ -123,11 +149,14 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
         row.id(),
         row.templateId(),
         row.title(),
+        row.titleEn(),
         row.summary(),
+        row.summaryEn(),
         LearningPlanTemplateCatalogCategory.valueOf(row.catalogCategory()),
         row.recommendedOrder(),
         LearningPlanIntent.valueOf(row.intent()),
         row.goal(),
+        row.goalEn(),
         value(row.defaultDurationWeeks()),
         LearningPlanLevel.valueOf(row.level()),
         value(row.defaultWeeklyHours()),
@@ -136,11 +165,17 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
         Boolean.TRUE.equals(row.interviewOriented()),
         read(row.topicPreferencesJson(), STRING_LIST),
         row.targetAudience(),
+        row.targetAudienceEn(),
         read(row.difficultyMixJson(), OBJECT_MAP),
         read(row.prerequisitesJson(), STRING_LIST),
+        readNullableList(row.prerequisitesEnJson()),
         read(row.recommendedForJson(), STRING_LIST),
+        readNullableList(row.recommendedForEnJson()),
         read(row.notRecommendedForJson(), STRING_LIST),
+        readNullableList(row.notRecommendedForEnJson()),
         row.expectedOutcome(),
+        row.expectedOutcomeEn(),
+        Boolean.TRUE.equals(row.englishContentReady()),
         row.sourceName(),
         row.sourceUrl(),
         row.sourceCommit(),
@@ -175,8 +210,9 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
         .toList();
   }
 
-  private LearningPlanTemplateCatalog catalog() {
-    return catalogCache.get(CATALOG_KEY, ignored -> loadCatalog());
+  private LearningPlanTemplateCatalog catalog(LearningPlanContentLocale locale) {
+    LearningPlanContentLocale cacheLocale = locale == null ? LearningPlanContentLocale.ZH_CN : locale;
+    return catalogCache.get(cacheLocale, ignored -> loadCatalog());
   }
 
   private LearningPlanTemplateCatalog loadCatalog() {
@@ -206,6 +242,12 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
     return new LearningPlanTemplateCatalog(templates, byId);
   }
 
+  void scheduleCatalogCacheInvalidation() {
+    if (catalogCache != null) {
+      invalidationExecutor.afterCommit(catalogCache::invalidateAll);
+    }
+  }
+
   private LearningPlanTemplatePhase toPhase(
       LearningPlanTemplatePhaseRow row,
       List<LearningPlanTemplateProblemRef> refs
@@ -214,12 +256,17 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
         row.id(),
         value(row.phaseIndex()),
         row.title(),
+        row.titleEn(),
         value(row.durationWeeks()),
         row.focus(),
+        row.focusEn(),
         read(row.objectivesJson(), STRING_LIST),
+        readNullableList(row.objectivesEnJson()),
         read(row.recommendedTagsJson(), STRING_LIST),
         read(row.acceptanceCriteriaJson(), STRING_LIST),
+        readNullableList(row.acceptanceCriteriaEnJson()),
         row.reviewAdvice(),
+        row.reviewAdviceEn(),
         refs);
   }
 
@@ -243,11 +290,14 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
         template.id(),
         template.templateId(),
         template.title(),
+        template.titleEn(),
         template.summary(),
+        template.summaryEn(),
         template.catalogCategory().name(),
         template.recommendedOrder(),
         template.intent().name(),
         template.goal(),
+        template.goalEn(),
         template.defaultDurationWeeks(),
         template.level().name(),
         template.defaultWeeklyHours(),
@@ -256,11 +306,17 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
         template.interviewOriented(),
         json(template.topicPreferences()),
         template.targetAudience(),
+        template.targetAudienceEn(),
         json(template.difficultyMix()),
         json(template.prerequisites()),
+        json(template.prerequisitesEn()),
         json(template.recommendedFor()),
+        json(template.recommendedForEn()),
         json(template.notRecommendedFor()),
+        json(template.notRecommendedForEn()),
         template.expectedOutcome(),
+        template.expectedOutcomeEn(),
+        template.englishContentReady(),
         template.sourceName(),
         template.sourceUrl(),
         template.sourceCommit(),
@@ -282,12 +338,17 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
         templateDbId,
         phase.phaseIndex(),
         phase.title(),
+        phase.titleEn(),
         phase.durationWeeks(),
         phase.focus(),
+        phase.focusEn(),
         json(phase.objectives()),
+        json(phase.objectivesEn()),
         json(phase.recommendedTags()),
         json(phase.acceptanceCriteria()),
-        phase.reviewAdvice());
+        json(phase.acceptanceCriteriaEn()),
+        phase.reviewAdvice(),
+        phase.reviewAdviceEn());
   }
 
   private LearningPlanTemplateProblemRefRow toProblemRefRow(
@@ -321,6 +382,10 @@ public class MyBatisLearningPlanTemplateRepository implements LearningPlanTempla
     } catch (IOException exception) {
       throw new LearningPlanException("LEARNING_PLAN_TEMPLATE_JSON_INVALID", "学习计划模板 JSON 解析失败。");
     }
+  }
+
+  private List<String> readNullableList(JsonNode node) {
+    return node == null || node.isNull() ? List.of() : read(node, STRING_LIST);
   }
 
   private int value(Integer value) {

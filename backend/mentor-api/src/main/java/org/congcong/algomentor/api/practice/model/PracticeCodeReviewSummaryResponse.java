@@ -7,6 +7,7 @@ public record PracticeCodeReviewSummaryResponse(
     long id,
     int versionNo,
     String language,
+    String contentLocale,
     BigDecimal totalScore,
     boolean passed,
     Instant createdAt) {

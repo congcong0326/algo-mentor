@@ -69,6 +69,7 @@ import org.congcong.algomentor.mentor.application.review.card.ReviewCardReposito
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteRepository;
 import org.congcong.algomentor.mentor.application.review.preference.ReviewPreferenceRepository;
 import org.congcong.algomentor.cache.factory.LocalCacheRegionFactory;
+import org.congcong.algomentor.cache.invalidation.CacheInvalidationExecutor;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -231,9 +232,14 @@ public class MentorApiMyBatisConfiguration {
       LearningPlanTemplateMapper learningPlanTemplateMapper,
       ObjectMapper objectMapper,
       LocalCacheRegionFactory cacheFactory,
-      LearningPlanTemplateCacheProperties cacheProperties) {
+      LearningPlanTemplateCacheProperties cacheProperties,
+      CacheInvalidationExecutor cacheInvalidationExecutor) {
     return new MyBatisLearningPlanTemplateRepository(
-        learningPlanTemplateMapper, objectMapper, cacheFactory, cacheProperties);
+        learningPlanTemplateMapper,
+        objectMapper,
+        cacheFactory,
+        cacheProperties,
+        cacheInvalidationExecutor);
   }
 
   @Bean

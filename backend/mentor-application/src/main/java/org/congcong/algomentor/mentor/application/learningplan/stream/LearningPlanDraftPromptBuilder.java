@@ -75,6 +75,12 @@ public class LearningPlanDraftPromptBuilder {
         difficultyPreference: %s
         interviewOriented: %s
         topicPreferences: %s
+        outputLocale: %s
+        problemToolLocale: %s
+
+        All free-text plan fields and recommendation reasons must use outputLocale.
+        Every list_problem_filters and search_problems call must use problemToolLocale.
+        Persist tag values exactly as returned in each tool result's value field; never persist localized label fields.
         """.formatted(
         command.intent(),
         command.goal(),
@@ -88,7 +94,9 @@ public class LearningPlanDraftPromptBuilder {
         command.programmingLanguage(),
         command.difficultyPreference(),
         command.interviewOriented(),
-        command.topicPreferences());
+        command.topicPreferences(),
+        command.contentLocale().languageTag(),
+        command.contentLocale().languageTag());
   }
 
   private double totalCapacityPoints(LearningPlanDraftCommand command) {

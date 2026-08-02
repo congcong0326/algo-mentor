@@ -1,0 +1,79 @@
+{
+  "expectedOutcome": "Once completed, it distinguishes between DFS/BFS/Top-up/ and collects the applicable scenes, and can write the history and viewed rules.",
+  "goal": "Build capacity to search for modelling, run through and connect.",
+  "notRecommendedFor": [
+    "I haven't mastered the base tree yet.",
+    "I just want to practice one-dimensional array techniques."
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Complete the basics of the diagrams and grids with clear vision, boundaries and layers.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "DFS/BFS Through Base"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Training grid links, border infections and regional integration.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Island and regional variants"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Training in entry, queue and dependency maps through the curriculum and dictionary sequences.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 3,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Scale and Dependency"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "The toolbox is organized using connectivity, redundancies and short-circuit questions.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 4,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "And check and weighted the end."
+    }
+  ],
+  "prerequisites": [
+    "Understand Queue, Barn and Recursive",
+    "Can read and write an adjacent table or a grid through.",
+    "Completed tree DFS/ BFS Foundation"
+  ],
+  "recommendedFor": [
+    "Island issues, curricula, and checking for frequent errors",
+    "Need to focus on the topic by graphic"
+  ],
+  "summary": "4 Weekly coverage of DFS/BFS, island grids, sprawl sequencing, mapping and minimum road base, suitable for supplementing the graphs weakness.",
+  "targetAudience": "Search maps, expand relationships or identify unstable mid-level learners.",
+  "templateId": "topic_graph_bfs_dfs",
+  "title": "A graphic breakthrough plan."
+}

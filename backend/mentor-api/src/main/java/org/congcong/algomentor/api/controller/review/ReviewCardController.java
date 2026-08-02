@@ -1,5 +1,6 @@
 package org.congcong.algomentor.api.controller.review;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Locale;
@@ -13,6 +14,7 @@ import org.congcong.algomentor.api.review.model.ReviewResponseMapper;
 import org.congcong.algomentor.api.review.model.SubmitReviewAttemptRequest;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
+import org.congcong.algomentor.common.api.ApiErrorLocales;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.review.ReviewException;
 import org.congcong.algomentor.mentor.application.review.attempt.ReviewAttemptService;
@@ -21,11 +23,13 @@ import org.congcong.algomentor.mentor.application.review.card.ReviewCardSource;
 import org.congcong.algomentor.mentor.application.review.card.ReviewQueueService;
 import org.congcong.algomentor.mentor.application.review.schedule.ReviewRating;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -82,9 +86,17 @@ public class ReviewCardController {
   }
 
   @GetMapping(ApiContractConstants.REVIEW_CARDS_BASE_PATH + "/{cardId}/context")
-  public ApiResponse<ReviewCardContextResponse> context(@PathVariable long cardId) {
+  public ApiResponse<ReviewCardContextResponse> context(
+      @PathVariable long cardId,
+      @RequestHeader(name = ApiContractConstants.ACCEPT_LANGUAGE_HEADER, required = false) String acceptLanguage,
+      HttpServletResponse response
+  ) {
+    response.addHeader(HttpHeaders.VARY, ApiContractConstants.ACCEPT_LANGUAGE_HEADER);
     return ApiResponse.success(ReviewResponseMapper.toContextResponse(
-        requiredQueueService().context(requireCurrentUserId(), cardId)));
+        requiredQueueService().context(
+            requireCurrentUserId(),
+            cardId,
+            ApiErrorLocales.parse(acceptLanguage).toLanguageTag())));
   }
 
   @PostMapping(ApiContractConstants.REVIEW_CARDS_BASE_PATH + "/{cardId}/attempts")

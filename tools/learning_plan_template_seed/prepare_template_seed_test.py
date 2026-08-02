@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -18,6 +19,16 @@ class PrepareTemplateSeedTest(unittest.TestCase):
         self.assertEqual(len(expected_template_ids), len(templates))
         self.assertEqual(set(expected_template_ids), {template["templateId"] for template in templates})
         self.assertEqual(len(expected_template_ids), report["templateCount"])
+        self.assertEqual(35, report["englishContentReadyTemplateCount"])
+        self.assertEqual(1738, report["problemRefCount"])
+        self.assertEqual(1699, report["matchedProblemCount"])
+        self.assertEqual(39, report["missingProblemCount"])
+        self.assertEqual(178, sum(len(template["phases"]) for template in templates))
+        self.assertEqual(
+            problem_ref_contract(read_jsonl(seed.DEFAULT_OUTPUT_DIR / seed.PROBLEM_REFS_FILE)),
+            problem_ref_contract(refs),
+            "English translation merging must not change problem order or matching",
+        )
         self.assertIn("sources", report)
         self.assertGreaterEqual(len(report["sources"]), 5)
         self.assertGreater(report["matchedProblemCount"], 0)
@@ -51,6 +62,15 @@ class PrepareTemplateSeedTest(unittest.TestCase):
             self.assertTrue(template["sourceDescription"])
             self.assertTrue(template["curationNotes"])
             self.assertTrue(template["licenseNotice"])
+            self.assertTrue(template["englishContentReady"])
+            for english_field in seed.TEMPLATE_ENGLISH_FIELD_MAP.values():
+                self.assertTrue(template[english_field], f"{template['templateId']}.{english_field}")
+            for phase in template["phases"]:
+                for english_field in seed.PHASE_ENGLISH_FIELD_MAP.values():
+                    self.assertTrue(
+                        phase[english_field],
+                        f"{template['templateId']}#{phase['phaseIndex']}.{english_field}",
+                    )
             self.assertEqual(
                 template["defaultDurationWeeks"],
                 sum(phase["durationWeeks"] for phase in template["phases"]),
@@ -72,6 +92,25 @@ class PrepareTemplateSeedTest(unittest.TestCase):
             template_dir = seed.DEFAULT_TEMPLATE_SOURCE_DIR / template_id
             self.assertTrue((template_dir / seed.TEMPLATE_SOURCE_TEMPLATE_FILE).exists(), template_id)
             self.assertTrue((template_dir / seed.TEMPLATE_SOURCE_PROBLEM_REFS_FILE).exists(), template_id)
+            self.assertTrue((template_dir / seed.TEMPLATE_SOURCE_EN_TRANSLATION_FILE).exists(), template_id)
+
+    def test_merge_english_translation_rejects_missing_or_incomplete_files(self) -> None:
+        source = json.loads(
+            (seed.DEFAULT_TEMPLATE_SOURCE_DIR / "leetcode_75_core_sprint" / "template.json")
+            .read_text(encoding="utf-8")
+        )
+
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            translation_path = Path(temporary_dir) / "en-US.json"
+            with self.assertRaisesRegex(ValueError, "missing template English translation"):
+                seed.merge_english_translation(source, translation_path)
+
+            translation_path.write_text(
+                json.dumps({"templateId": source["templateId"], "phases": []}),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "unexpected template English translation fields"):
+                seed.merge_english_translation(source, translation_path)
 
     def test_p1_a_batch_one_templates_meet_topic_breakthrough_thresholds(self) -> None:
         templates, refs, _ = seed.build_seed(
@@ -288,6 +327,7 @@ class PrepareTemplateSeedTest(unittest.TestCase):
             self.assertEqual(len(expected_template_ids), len(read_jsonl(left_dir / seed.TEMPLATES_FILE)))
             metadata = (left_dir / seed.METADATA_FILE).read_text(encoding="utf-8")
             self.assertIn("学习计划模板 Seed 元数据", metadata)
+            self.assertIn("英文内容完整模板：`35`", metadata)
             self.assertIn("草稿默认包含所有本地匹配题", metadata)
             self.assertNotIn("草稿每阶段最多推荐 5 道", metadata)
             manifest = (left_dir / seed.MANIFEST_FILE).read_text(encoding="utf-8")
@@ -406,6 +446,20 @@ def known_missing_slugs() -> set[str]:
         "ads-performance",
         "accepted-candidates-from-the-interviews",
     }
+
+
+def problem_ref_contract(refs: list[dict]) -> list[tuple]:
+    return [
+        (
+            ref["templateId"],
+            ref["phaseIndex"],
+            ref["sortOrder"],
+            ref["sourceOrder"],
+            ref["problemSlug"],
+            ref["metadata"]["matchedLocalProblem"],
+        )
+        for ref in refs
+    ]
 
 
 def row(

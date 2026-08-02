@@ -128,12 +128,14 @@ class AgentToolPermissionModelTest {
         "submit_practice_code_review",
         "提交代码 Review",
         "会保存正式 Review",
+        "PRACTICE_CODE_REVIEW_REQUESTED",
         preview,
         createdAt,
         createdAt.plusSeconds(60));
     preview.put("tool", "changed");
 
     assertThat(request.preview()).containsEntry("tool", "review");
+    assertThat(request.copyCode()).isEqualTo("PRACTICE_CODE_REVIEW_REQUESTED");
     assertThatThrownBy(() -> request.preview().put("x", "y"))
         .isInstanceOf(UnsupportedOperationException.class);
     assertThatThrownBy(() -> new AgentToolPermissionRequest(

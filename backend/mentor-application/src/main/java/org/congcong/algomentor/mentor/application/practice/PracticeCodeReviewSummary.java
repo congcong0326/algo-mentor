@@ -9,8 +9,21 @@ public record PracticeCodeReviewSummary(
     String language,
     BigDecimal totalScore,
     boolean passed,
-    Instant createdAt
+    Instant createdAt,
+    String contentLocale
 ) {
+
+  public PracticeCodeReviewSummary(
+      long id,
+      int versionNo,
+      String language,
+      BigDecimal totalScore,
+      boolean passed,
+      Instant createdAt
+  ) {
+    this(id, versionNo, language, totalScore, passed, createdAt,
+        PracticeResponseLanguage.defaultLanguage().languageTag());
+  }
 
   public PracticeCodeReviewSummary {
     if (id < 1) {
@@ -29,5 +42,6 @@ public record PracticeCodeReviewSummary(
       throw new IllegalArgumentException("Practice code review created time must not be null");
     }
     language = language.trim();
+    contentLocale = PracticeResponseLanguage.fromLocale(contentLocale).languageTag();
   }
 }

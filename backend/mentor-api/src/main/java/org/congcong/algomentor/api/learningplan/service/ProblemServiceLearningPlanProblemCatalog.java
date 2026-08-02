@@ -6,6 +6,7 @@ import org.congcong.algomentor.api.problem.model.ProblemDetail;
 import org.congcong.algomentor.api.problem.model.ProblemListItem;
 import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.api.problem.model.ProblemListRequest;
+import org.congcong.algomentor.api.problem.model.ProblemFilterOption;
 import org.congcong.algomentor.api.problem.model.ProblemTag;
 import org.congcong.algomentor.api.problem.model.ProblemSort;
 import org.congcong.algomentor.api.problem.service.ProblemService;
@@ -50,8 +51,18 @@ public class ProblemServiceLearningPlanProblemCatalog implements LearningPlanPro
 
   @Override
   public Optional<LearningPlanProblemCandidate> findBySlug(String slug, String locale) {
-    return problemService.findProblemBySlug(slug, ProblemLocale.parse(locale))
-        .map(this::toCandidate);
+    ProblemLocale requestedLocale = ProblemLocale.parse(locale);
+    Optional<ProblemDetail> requested = problemService.findProblemBySlug(slug, requestedLocale);
+    if (requested.isEmpty()) {
+      return Optional.empty();
+    }
+    Optional<ProblemDetail> english = requestedLocale == ProblemLocale.EN_US
+        ? requested
+        : problemService.findProblemBySlug(slug, ProblemLocale.EN_US);
+    Optional<ProblemDetail> chinese = requestedLocale == ProblemLocale.ZH_CN
+        ? requested
+        : problemService.findProblemBySlug(slug, ProblemLocale.ZH_CN);
+    return Optional.of(toCandidate(requested.orElseThrow(), english.orElse(null), chinese.orElse(null)));
   }
 
   private LearningPlanProblemCandidate toCandidate(ProblemListItem problem) {
@@ -61,23 +72,39 @@ public class ProblemServiceLearningPlanProblemCatalog implements LearningPlanPro
         problem.title(),
         null,
         problem.difficulty() == null ? null : problem.difficulty().name(),
-        tagLabels(problem.tags()));
+        tagValues(problem.tags()));
   }
 
-  private LearningPlanProblemCandidate toCandidate(ProblemDetail problem) {
+  private LearningPlanProblemCandidate toCandidate(
+      ProblemDetail requested,
+      ProblemDetail english,
+      ProblemDetail chinese
+  ) {
     return new LearningPlanProblemCandidate(
-        problem.slug(),
-        problem.frontendId(),
-        problem.title(),
-        null,
-        problem.difficulty() == null ? null : problem.difficulty().name(),
-        tagLabels(problem.tags()),
-        problem.recommendationReason());
+        requested.slug(),
+        requested.frontendId(),
+        english == null ? requested.title() : english.title(),
+        chinese == null ? null : chinese.title(),
+        requested.difficulty() == null ? null : requested.difficulty().name(),
+        tagValues(requested.tags()),
+        requested.recommendationReason());
   }
 
-  private List<String> tagLabels(List<ProblemTag> tags) {
+  @Override
+  public Optional<String> findCanonicalTagValue(String tag, String locale) {
+    if (tag == null || tag.isBlank()) {
+      return Optional.empty();
+    }
+    String candidate = tag.trim();
+    return problemService.findProblemFilters(ProblemLocale.parse(locale)).tags().stream()
+        .filter(option -> candidate.equals(option.value()) || candidate.equals(option.label()))
+        .map(ProblemFilterOption::value)
+        .findFirst();
+  }
+
+  private List<String> tagValues(List<ProblemTag> tags) {
     return tags.stream()
-        .map(ProblemTag::label)
+        .map(ProblemTag::value)
         .toList();
   }
 }

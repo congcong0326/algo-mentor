@@ -139,6 +139,7 @@ class LlmStreamSseMapperTest {
             "review.list_notes",
             "读取复盘笔记",
             "需要读取最近的复盘笔记生成练习建议。",
+            "REVIEW_NOTES_READ_REQUESTED",
             Map.of("scope", "recent_notes", "limit", 3),
             Instant.parse("2026-06-26T10:15:30Z")));
 
@@ -151,6 +152,7 @@ class LlmStreamSseMapperTest {
         .contains("\"permissionRequestId\":\"perm_1\"")
         .contains("\"displayName\":\"读取复盘笔记\"")
         .contains("\"reason\":\"需要读取最近的复盘笔记生成练习建议。\"")
+        .contains("\"copyCode\":\"REVIEW_NOTES_READ_REQUESTED\"")
         .contains("\"preview\":", "\"scope\":\"recent_notes\"", "\"limit\":3")
         .contains("\"expiresAt\":\"2026-06-26T10:15:30Z\"")
         .doesNotContain("metadata", "trustedMetadata", "arguments", "userId", "ownerUserId");

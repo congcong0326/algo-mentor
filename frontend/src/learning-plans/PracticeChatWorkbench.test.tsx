@@ -38,8 +38,14 @@ const getPracticeSessionReviews = vi.mocked(api.getPracticeSessionReviews);
 const streamPracticeMessage = vi.mocked(api.streamPracticeMessage);
 const updatePracticeProgressStatus = vi.mocked(api.updatePracticeProgressStatus);
 
+function setBrowserLocale(locale: string) {
+  Object.defineProperty(window.navigator, 'language', { configurable: true, value: locale });
+  Object.defineProperty(window.navigator, 'languages', { configurable: true, value: [locale] });
+}
+
 describe('PracticeChatWorkbench review contracts', () => {
   beforeEach(() => {
+    setBrowserLocale('zh-CN');
     createOrReusePracticeSession.mockResolvedValue(apiResponse(sessionFixture({
       completionGate: {
         canComplete: false,
@@ -98,7 +104,11 @@ describe('PracticeChatWorkbench review contracts', () => {
     streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
       options.onEvent?.({
         eventName: 'tool_permission_request',
-        data: permissionRequestEvent(),
+        data: permissionRequestEvent({
+          toolName: 'renamed_review_tool',
+          copyCode: 'PRACTICE_CODE_REVIEW_REQUESTED',
+          reason: '模型请求生成一次代码提交记录。',
+        }),
       });
       await new Promise<void>(() => undefined);
     });
@@ -110,7 +120,7 @@ describe('PracticeChatWorkbench review contracts', () => {
     fireEvent.click(screen.getByRole('button', { name: '发送' }));
 
     const dialog = await screen.findByRole('dialog', { name: '提交代码记录' });
-    expect(within(dialog).getByText('需要生成一次代码提交记录')).toBeInTheDocument();
+    expect(within(dialog).getByText('模型请求生成一次代码提交记录。')).toBeInTheDocument();
     expect(within(dialog).getByText('两数之和 (two-sum)')).toBeInTheDocument();
     expect(within(dialog).getByText('class Solution { return; }')).toBeInTheDocument();
     expect(within(dialog).getByText('确认后将生成代码提交记录，并可能影响题目完成状态。')).toBeInTheDocument();
@@ -121,12 +131,39 @@ describe('PracticeChatWorkbench review contracts', () => {
     expect(within(dialog).queryByText('上下文')).not.toBeInTheDocument();
   });
 
+  it('localizes review permission copy from the current UI locale', async () => {
+    setBrowserLocale('en-US');
+    streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
+      options.onEvent?.({
+        eventName: 'tool_permission_request',
+        data: permissionRequestEvent({ reason: '模型请求生成一次代码提交记录。' }),
+      });
+      await new Promise<void>(() => undefined);
+    });
+    renderWorkbench();
+
+    fireEvent.change(await screen.findByRole('textbox', {
+      name: 'Enter your approach, question, code, or LeetCode feedback',
+    }), {
+      target: { value: 'Please review this code.' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+
+    const dialog = await screen.findByRole('dialog', { name: 'Submit code for review' });
+    expect(within(dialog).getByText(
+      'The model is requesting permission to create a code submission record.',
+    )).toBeInTheDocument();
+    expect(within(dialog).queryByText('提交代码记录')).not.toBeInTheDocument();
+    expect(within(dialog).queryByText('模型请求生成一次代码提交记录。')).not.toBeInTheDocument();
+  });
+
   it('shows the exact note content and append-only impact before confirmation', async () => {
     streamPracticeMessage.mockImplementation(async (_sessionId, _request, options) => {
       options.onEvent?.({
         eventName: 'tool_permission_request',
         data: permissionRequestEvent({
-          toolName: 'append_current_problem_note',
+          toolName: 'renamed_append_note_tool',
+          copyCode: 'APPEND_CURRENT_PROBLEM_NOTE_REQUESTED',
           displayName: '追加题目笔记',
           reason: '模型请求把以下内容追加到当前题目的笔记。',
           preview: {
@@ -1120,6 +1157,7 @@ function apiResponse<T>(data: T): ApiResponse<T> {
 function permissionRequestEvent(overrides: {
   expiresAt?: string;
   toolName?: string;
+  copyCode?: string;
   displayName?: string;
   reason?: string;
   preview?: Partial<{
@@ -1133,14 +1171,18 @@ function permissionRequestEvent(overrides: {
     contextAvailable: boolean;
   }>;
 } = {}) {
+  const toolName = overrides.toolName ?? 'submit_practice_code_review';
   return {
     runId: 'run-1',
     stepIndex: 1,
     toolCallId: 'call-1',
-    toolName: overrides.toolName ?? 'practice_code_review',
+    toolName,
     permissionRequestId: 'permission-1',
     displayName: overrides.displayName ?? '提交代码记录',
     reason: overrides.reason ?? '需要生成一次代码提交记录',
+    copyCode: overrides.copyCode ?? (toolName === 'append_current_problem_note'
+      ? 'APPEND_CURRENT_PROBLEM_NOTE_REQUESTED'
+      : 'PRACTICE_CODE_REVIEW_REQUESTED'),
     preview: {
       problemSlug: 'two-sum',
       problemTitle: '两数之和',
@@ -1254,11 +1296,14 @@ function sessionFixture(overrides: Partial<PracticeSessionResponse> = {}): Pract
   };
 }
 
-function reviewSummaryFixture(overrides: Partial<PracticeCodeReviewHistoryResponse['reviews'][number]> = {}) {
+function reviewSummaryFixture(
+  overrides: Partial<PracticeCodeReviewHistoryResponse['reviews'][number]> = {},
+): PracticeCodeReviewHistoryResponse['reviews'][number] {
   return {
     id: 42,
     versionNo: 2,
     language: 'java',
+    contentLocale: 'zh-CN',
     totalScore: 92,
     passed: true,
     createdAt: '2026-06-25T00:10:00Z',
@@ -1287,6 +1332,7 @@ function reviewDetailFixture(overrides: Partial<PracticeCodeReviewDetail> = {}):
     sessionId: 101,
     versionNo: 2,
     language: 'java',
+    contentLocale: 'zh-CN',
     submittedCode: 'class Solution { version2(); }',
     reviewMarkdown: '## 整体评价\n通过了边界条件。',
     passed: true,
@@ -1316,6 +1362,7 @@ function scoreFixture(overrides: Partial<PracticeCodeReviewDetail['scores']> = {
 
 const planFixture: LearningPlanDetailResponse = {
   id: 7,
+  contentLocale: 'zh-CN',
   status: 'ACTIVE',
   active: true,
   createdAt: '2026-06-25T00:00:00Z',

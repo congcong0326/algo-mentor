@@ -1,0 +1,50 @@
+{
+  "expectedOutcome": "Upon completion, you will be able to describe the clearance/semi-open-space template and will be able to identify the difference between the two-point range and the two-point index.",
+  "goal": "Knowledge of the two-point search template, boundary contraction and answer space modelling.",
+  "notRecommendedFor": [
+    "I haven't mastered the array yet.",
+    "I want to learn all the data structures systematically."
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "The basis of stability is divided into two parts, the place of insertion, the opening and the writing of the left and right borders.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Base template and boundary"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Process the space for rotational arrays, matrix searches and the volume/velocity class answers.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Rotation, Matrix and Answers"
+    }
+  ],
+  "prerequisites": [
+    "Understanding orderly arrays and basic cycles",
+    "You can write the basic two-point search."
+  ],
+  "recommendedFor": [
+    "A short period of time is required to increase the stability of the border.",
+    "Rotate array, matrix search, or answer half error"
+  ],
+  "summary": "2 Weekly training on basic two-point, rotational arrays, left-and-right boundary, answer binary and matrix variants.",
+  "targetAudience": "The dichotomy is often stuck to learners who influence boundaries, circular conditions or answer space.",
+  "templateId": "topic_binary_search_boundaries",
+  "title": "Two-part border plan"
+}

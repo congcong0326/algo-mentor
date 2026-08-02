@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "algo-mentor.learning-plan-template.cache")
 public class LearningPlanTemplateCacheProperties {
 
-  private long catalogMaximumSize = 1;
+  private long catalogMaximumSize = 2;
 
   public long getCatalogMaximumSize() {
     return catalogMaximumSize;

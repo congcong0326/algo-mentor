@@ -36,6 +36,7 @@ public final class LearningPlanResponseMapper {
     LearningPlanDraftPlan snapshot = plan.plan();
     return new LearningPlanSummaryResponse(
         plan.id(),
+        snapshot.contentLocale(),
         snapshot.title(),
         snapshot.intent(),
         snapshot.goal(),
@@ -103,6 +104,7 @@ public final class LearningPlanResponseMapper {
     Map<ProgressKey, PracticeProgressStatus> progressByProblem = progressByProblem(progress);
     return new LearningPlanDetailResponse(
         plan.id(),
+        snapshot.contentLocale(),
         snapshot.title(),
         snapshot.summary(),
         snapshot.intent(),
@@ -173,6 +175,7 @@ public final class LearningPlanResponseMapper {
     return new LearningPlanDraftPlanResponse(
         plan.title(),
         plan.summary(),
+        plan.contentLocale(),
         plan.intent(),
         plan.goal(),
         plan.durationWeeks(),

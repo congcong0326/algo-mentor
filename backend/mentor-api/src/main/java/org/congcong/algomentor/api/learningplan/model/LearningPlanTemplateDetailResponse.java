@@ -1,6 +1,7 @@
 package org.congcong.algomentor.api.learningplan.model;
 
 import java.util.List;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
@@ -10,6 +11,7 @@ import org.congcong.algomentor.mentor.application.learningplan.template.Learning
 
 public record LearningPlanTemplateDetailResponse(
     String templateId,
+    LearningPlanContentLocale contentLocale,
     String title,
     String summary,
     LearningPlanTemplateCatalogCategory catalogCategory,

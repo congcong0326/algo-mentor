@@ -1,0 +1,78 @@
+{
+  "expectedOutcome": "Once completed, it will be able to identify the mainstream interview profile and independently reset the demolition template and border conditions for the core high frequency questions.",
+  "goal": "Creates an algorithm to cover the core question type of interviews with the Blend 75 questionnaire.",
+  "notRecommendedFor": [
+    "There is no data structure at all.",
+    "Learners who want the system to cover the full range of 150 or more"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": "Completed complete Blind 75 training in arrays, Hash, two pointers, sliding windows, bars and chains.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "Numeric, Hash and linear structures"
+    },
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": "Complete Blind 75 training in 2nd, 6th, and Trie.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "2nd Part, Intersection and Tree"
+    },
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": "Complete Blind 75 training related to mapping, backtracking and stacking.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 3,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "Figure, backtracking and stacking"
+    },
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": "Complete Blind 75 training in dynamic programming, greed, biting and mathematical geometry.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 4,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "Dynamic programming, greed and consolidation"
+    }
+  ],
+  "prerequisites": [
+    "Can read and write a dominant language.",
+    "Understanding basic concepts of arrays, hash watches, chains, trees"
+  ],
+  "recommendedFor": [
+    "Interview time is closer, HF core theme route required",
+    "There's limited experience in brushing but hopes to quickly create a thematic map"
+  ],
+  "summary": "Priority coverage of high-frequency data structures, mapping searches and dynamic programming bases is provided using the 75-track line at the core of four weekly run interviews.",
+  "targetAudience": "Basic programming skills are in place to prepare for the interview of sprinters for about a month.",
+  "templateId": "neetcode_blind_75_interview_core",
+  "title": "NetCode Blind 75 Core interview plan"
+}

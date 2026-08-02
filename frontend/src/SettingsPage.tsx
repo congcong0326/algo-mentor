@@ -303,7 +303,7 @@ export default function SettingsPage({
                 <BrainCircuit aria-hidden="true" />
                 <div>
                   <span>{resources.settingsPage.currentCoach}</span>
-                  <strong>{aiPreference.coachStyleLabel}</strong>
+                  <strong>{resources.aiPreference.coachStyleLabels[aiPreference.coachStyle]}</strong>
                 </div>
               </div>
               <fieldset className="preference-control-group">

@@ -45,6 +45,7 @@ describe('LearningPlanExtensionPanel', () => {
 
     render(
       <LearningPlanExtensionPanel
+        contentLocale="zh-CN"
         loading={false}
         onApply={vi.fn(() => Promise.resolve())}
         onDiscard={vi.fn(() => Promise.resolve())}
@@ -64,6 +65,7 @@ describe('LearningPlanExtensionPanel', () => {
   it('renders pending extension phases and problems', () => {
     render(
       <LearningPlanExtensionPanel
+        contentLocale="zh-CN"
         extension={extension}
         loading={false}
         onApply={vi.fn(() => Promise.resolve())}
@@ -79,11 +81,31 @@ describe('LearningPlanExtensionPanel', () => {
     expect(screen.getByText('用低门槛题目恢复状态转移。')).toBeInTheDocument();
   });
 
+  it('keeps extension problem titles in the plan content locale while UI labels follow the UI locale', () => {
+    render(
+      <LearningPlanExtensionPanel
+        contentLocale="en-US"
+        extension={extension}
+        loading={false}
+        onApply={vi.fn(() => Promise.resolve())}
+        onDiscard={vi.fn(() => Promise.resolve())}
+        onGenerate={vi.fn(() => Promise.resolve(false))}
+        onRevise={vi.fn(() => Promise.resolve(false))}
+      />,
+    );
+
+    expect(screen.getByText('Climbing Stairs')).toBeInTheDocument();
+    expect(screen.queryByText('爬楼梯')).not.toBeInTheDocument();
+    expect(screen.getByText('动态规划')).toBeInTheDocument();
+    expect(screen.getByText('简单')).toBeInTheDocument();
+  });
+
   it('calls onRevise with proposalGroupId and trimmed instruction', () => {
     const onRevise = vi.fn(() => Promise.resolve(false));
 
     render(
       <LearningPlanExtensionPanel
+        contentLocale="zh-CN"
         extension={extension}
         loading={false}
         onApply={vi.fn(() => Promise.resolve())}
@@ -106,6 +128,7 @@ describe('LearningPlanExtensionPanel', () => {
 
     render(
       <LearningPlanExtensionPanel
+        contentLocale="zh-CN"
         extension={extension}
         loading={false}
         onApply={vi.fn(() => Promise.resolve())}
@@ -125,6 +148,7 @@ describe('LearningPlanExtensionPanel', () => {
 
     render(
       <LearningPlanExtensionPanel
+        contentLocale="zh-CN"
         extension={extension}
         loading={false}
         onApply={onApply}
@@ -142,6 +166,7 @@ describe('LearningPlanExtensionPanel', () => {
   it('clears generate instruction after successful generation', async () => {
     render(
       <LearningPlanExtensionPanel
+        contentLocale="zh-CN"
         loading={false}
         onApply={vi.fn(() => Promise.resolve())}
         onDiscard={vi.fn(() => Promise.resolve())}
@@ -164,6 +189,7 @@ describe('LearningPlanExtensionPanel', () => {
 
     render(
       <LearningPlanExtensionPanel
+        contentLocale="zh-CN"
         extension={extension}
         loading={false}
         onApply={vi.fn(() => Promise.resolve())}

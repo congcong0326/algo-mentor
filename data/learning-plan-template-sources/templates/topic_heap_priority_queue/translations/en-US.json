@@ -1,0 +1,52 @@
+{
+  "expectedOutcome": "Once completed, it will be possible to determine when stacks are used, which fields are stacked, when double stacks are required, or when deletion is delayed.",
+  "goal": "Capturing a stack of sorting perspectives, online maintenance and multiple-road consolidation modelling.",
+  "notRecommendedFor": [
+    "No basic arrays or sorting yet.",
+    "The main weakness is tree regression or backtracking."
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Stabilization of stack sorting models using static arrays, matrices, chains and multiple list headings.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "TopK, number K, merge with multiple roads"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Training dynamic maintenance, tasking, double-stack balance and online updates.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Movement control, data flow and double stacks"
+    }
+  ],
+  "prerequisites": [
+    "Understanding arrays and sorting",
+    "Know minimum stack/maximum stack basic operation",
+    "Analyse O(log n) Insert Delete"
+  ],
+  "recommendedFor": [
+    "TopK, Merge Linked List or Data Flow Unstable",
+    "Quick completion of priority interviews Topic",
+    "I'd like to train a stack of elements to design and lazyly remove consciousness."
+  ],
+  "summary": "2 Focused weekly training on TopK, K, Main, Multiroad Merger, Movement Control and Double Middle.",
+  "targetAudience": "Learner who knows the stack structure but does not know the design of the stack elements in TopK, data stream or schedule.",
+  "templateId": "topic_heap_priority_queue",
+  "title": "Stack & priority queue Special"
+}

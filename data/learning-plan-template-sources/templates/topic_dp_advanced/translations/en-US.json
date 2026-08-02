@@ -1,0 +1,78 @@
+{
+  "expectedOutcome": "Upon completion, you can identify the status dimensions of the four-grade DP, independently designed to transfer and reset time and space complexity.",
+  "goal": "Establish state-of-the-art design, transfer optimization and problem classification capabilities for complex dynamic programming.",
+  "notRecommendedFor": [
+    "The underlying theme of dynamic programming has not yet been completed",
+    "All we need is an esy level grammar exercise."
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main theme of \"inter-district dynamic programming\"",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "The design of the training is based on an inter-sectional length, a left and right end point and a final operation.",
+      "objectives": [
+        "Complete all local matching questions at the `inter-district dynamic programming' stage and document the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Inter-district dynamic programming"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main theme of Tree dynamic programming",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Solves the best on the tree through subtree return values, opting for or not choosing the state and changing root techniques.",
+      "objectives": [
+        "Complete all local matching questions at the Tree dynamic programming stage and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Tree dynamic programming"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main type of `porture and subset dynamic programming'",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "A bit mask is used to express the assembly state and to control the quantity of the state, the order of transfer and the memory boundary.",
+      "objectives": [
+        "Complete all local matching questions in the phase of `porture and subset dynamic programming' and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 3,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Form pressure and subset dynamic programming"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions for the main \"digital, numerical and game dynamic programming\"",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "A combination of high-level bindings, counting states and state shifts at the best option of both parties.",
+      "objectives": [
+        "Complete all local matching questions at the \"Digital, Counting and Game dynamic programming\" stage and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 4,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Digital, Count and Game dynamic programming"
+    }
+  ],
+  "prerequisites": [
+    "Availability of status definitions, transfer equations and initialization",
+    "Get familiar with retrogression, memory search, tree history and bit calculations"
+  ],
+  "recommendedFor": [
+    "Base DP understood but Hard does not have a classification framework",
+    "Need to break through, tree, form pressure, or digits"
+  ],
+  "summary": "4 Weekbreak interval, tree shape, form pressure, digital and gaming dynamic programming to complete the basic DP step model.",
+  "targetAudience": "Learners who have completed the dynamic programming base theme and are able to write the usual one-dimensional, knapsack and sub-series DP independently.",
+  "templateId": "topic_dp_advanced",
+  "title": "A dynamic programming progression plan"
+}

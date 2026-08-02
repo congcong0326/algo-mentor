@@ -1,0 +1,66 @@
+{
+  "expectedOutcome": "Upon completion, backtracking can be split into five types of doubledisc items: selection, restraint, termination, deweighting and cutting.",
+  "goal": "masters the expression of the selection list, the path state, the withdrawal selection and the cut conditions.",
+  "notRecommendedFor": [
+    "I can't write it back on my own.",
+    "Just want to practice SQL or realize the basics"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Stable selection of trees, heavy borders and collection of results.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Subset, Grouping and Arrange"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Discrepancies are judged through chessboards, brackets, IPs and correspondence cutting exercises.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Chess Board and String Cut"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Training in the sequencing of cuttings, state compression prefixes and search space control using high-constrained subjects.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 3,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Cut and limit search"
+    }
+  ],
+  "prerequisites": [
+    "Understanding Recursive Group/string Calendar",
+    "Could explain the basis of the DFS end condition",
+    "Do at least 20 Easy/Medium questions"
+  ],
+  "recommendedFor": [
+    "Grouping, arranging, sub-clusters can easily be mismodeled Board",
+    "There is no system reset for board search or string cutting",
+    "Need to focus on the search before interviews"
+  ],
+  "summary": "3 Weekbreak backtracking, by subset/assembly/arrange, board and string cutting, cutting and binding search.",
+  "targetAudience": "A learner who can write back, but can easily miss back-trace the condition of revocation, weighting or cutting.",
+  "templateId": "topic_backtracking_foundation",
+  "title": "Retrace special breakthroughs."
+}

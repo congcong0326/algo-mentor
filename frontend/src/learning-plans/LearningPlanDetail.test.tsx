@@ -251,6 +251,7 @@ function extensionReadyEventFixture(): LearningPlanExtensionReadyEvent {
 
 const planFixture: LearningPlanDetailResponse = {
   id: 88,
+  contentLocale: 'zh-CN',
   status: 'ACTIVE',
   active: true,
   createdAt: '2026-06-25T00:00:00Z',

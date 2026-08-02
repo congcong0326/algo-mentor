@@ -68,7 +68,7 @@ public final class SearchProblemsTool implements AgentTool {
   @Override
   public JsonNode execute(JsonNode arguments, AgentExecutionContext context) {
     try {
-      ProblemListRequest request = request(arguments);
+      ProblemListRequest request = request(arguments, context);
       validateTag(request.tag(), request.locale());
       ProblemPage<ProblemListItem> page = problemService.findProblems(request);
       return output(page, request);
@@ -81,7 +81,7 @@ public final class SearchProblemsTool implements AgentTool {
     }
   }
 
-  private ProblemListRequest request(JsonNode arguments) {
+  private ProblemListRequest request(JsonNode arguments, AgentExecutionContext context) {
     String keyword = ProblemAgentToolSupport.optionalText(arguments, KEYWORD, SEARCH_PROBLEMS);
     ProblemDifficulty difficulty = difficulty(ProblemAgentToolSupport.optionalText(
         arguments,
@@ -102,7 +102,7 @@ public final class SearchProblemsTool implements AgentTool {
         PAGE_SIZE,
         ProblemListRequest.DEFAULT_PAGE_SIZE,
         SEARCH_PROBLEMS);
-    ProblemLocale locale = locale(arguments);
+    ProblemLocale locale = locale(arguments, context);
     return new ProblemListRequest(keyword, difficulty, tag, null, company, role, recencyBucket, sort, page, pageSize, locale);
   }
 
@@ -134,9 +134,12 @@ public final class SearchProblemsTool implements AgentTool {
     }
   }
 
-  private ProblemLocale locale(JsonNode arguments) {
+  private ProblemLocale locale(JsonNode arguments, AgentExecutionContext context) {
     try {
-      return ProblemLocale.parse(ProblemAgentToolSupport.optionalText(arguments, LOCALE, SEARCH_PROBLEMS));
+      String trustedLocale = ProblemAgentToolSupport.trustedContentLocale(context);
+      return ProblemLocale.parse(trustedLocale == null
+          ? ProblemAgentToolSupport.optionalText(arguments, LOCALE, SEARCH_PROBLEMS)
+          : trustedLocale);
     } catch (ProblemLocale.UnsupportedProblemLocaleException exception) {
       throw ProblemAgentToolSupport.toolFailure(SEARCH_PROBLEMS, exception.getMessage(), exception);
     }

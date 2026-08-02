@@ -2,9 +2,14 @@ import { Check, Send, X } from 'lucide-react';
 import { useState } from 'react';
 import { formatDifficulty, formatProblemTitle, formatTopicTag } from '../i18n/formatters';
 import { useI18n } from '../i18n/I18nProvider';
-import type { LearningPlanExtensionReadyEvent, LearningPlanPhaseDraft } from '../types/api';
+import type {
+  LearningPlanContentLocale,
+  LearningPlanExtensionReadyEvent,
+  LearningPlanPhaseDraft,
+} from '../types/api';
 
 interface LearningPlanExtensionPanelProps {
+  contentLocale: LearningPlanContentLocale;
   loading: boolean;
   extension?: LearningPlanExtensionReadyEvent;
   onGenerate: (instruction: string) => Promise<boolean>;
@@ -13,8 +18,14 @@ interface LearningPlanExtensionPanelProps {
   onDiscard: (proposalGroupId: number) => Promise<void>;
 }
 
-function ExtensionPhaseBlock({ phase }: { phase: LearningPlanPhaseDraft }) {
-  const { locale, resources } = useI18n();
+function ExtensionPhaseBlock({
+  contentLocale,
+  phase,
+}: {
+  contentLocale: LearningPlanContentLocale;
+  phase: LearningPlanPhaseDraft;
+}) {
+  const { resources } = useI18n();
 
   return (
     <section className="phase-block" key={phase.phaseIndex}>
@@ -32,7 +43,7 @@ function ExtensionPhaseBlock({ phase }: { phase: LearningPlanPhaseDraft }) {
           <div className="problem-row" key={problem.slug}>
             <span className="problem-id">{problem.frontendId ?? '-'}</span>
             <span className="problem-title">
-              <strong>{formatProblemTitle(problem, locale)}</strong>
+              <strong>{formatProblemTitle(problem, contentLocale)}</strong>
               <small>{problem.reason}</small>
             </span>
             <span className={`difficulty-badge ${String(problem.difficulty ?? '').toLowerCase()}`}>
@@ -46,6 +57,7 @@ function ExtensionPhaseBlock({ phase }: { phase: LearningPlanPhaseDraft }) {
 }
 
 export default function LearningPlanExtensionPanel({
+  contentLocale,
   loading,
   extension,
   onGenerate,
@@ -103,7 +115,11 @@ export default function LearningPlanExtensionPanel({
           )}
           <div className="plan-preview">
             {extension.extensionDraft.newPhases.map((phase) => (
-              <ExtensionPhaseBlock key={phase.phaseIndex} phase={phase} />
+              <ExtensionPhaseBlock
+                contentLocale={contentLocale}
+                key={phase.phaseIndex}
+                phase={phase}
+              />
             ))}
           </div>
           <div className="draft-revision-panel extension-revision-panel">

@@ -8,11 +8,14 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.congcong.algomentor.mentor.application.review.ReviewException;
 import org.congcong.algomentor.mentor.application.review.attempt.ProblemReviewAttempt;
 import org.congcong.algomentor.mentor.application.review.attempt.ReviewAttemptRepository;
+import org.congcong.algomentor.mentor.application.review.catalog.ReviewProblemCatalog;
+import org.congcong.algomentor.mentor.application.review.catalog.ReviewProblemSnapshot;
 import org.congcong.algomentor.mentor.application.review.note.ProblemSolutionOutlineV1;
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNote;
 import org.congcong.algomentor.mentor.application.review.note.UserProblemNoteRepository;
@@ -56,18 +59,55 @@ class ReviewQueueServiceTest {
             .isEqualTo("REVIEW_TIMEZONE_INVALID"));
   }
 
+  @Test
+  void contextPassesTheRequestedLocaleToTheProblemCatalog() {
+    ProblemReviewCard card = card();
+    RecordingProblemCatalog catalog = new RecordingProblemCatalog();
+
+    ReviewCardContext context = service(
+        new SummaryRepository(0, 0, null, card),
+        catalog).context(USER_ID, card.id(), "en-US");
+
+    assertThat(catalog.slug).isEqualTo("two-sum");
+    assertThat(catalog.locale).isEqualTo("en-US");
+    assertThat(context.problem().title()).isEqualTo("Two Sum");
+  }
+
   private ReviewQueueService service(ReviewCardRepository repository) {
+    return service(repository, (slug, locale) -> Optional.empty());
+  }
+
+  private ReviewQueueService service(
+      ReviewCardRepository repository,
+      ReviewProblemCatalog problemCatalog
+  ) {
     ReviewSchedulerProperties properties = ReviewSchedulerProperties.defaults();
     Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
     return new ReviewQueueService(
         repository,
         emptyAttemptRepository(),
         emptyNoteRepository(),
-        slug -> Optional.empty(),
+        problemCatalog,
         new FsrsReviewSchedulerService(properties),
         new ReviewPreferenceService(ReviewPreferenceRepository.empty(), properties, clock),
         properties,
         clock);
+  }
+
+  private ProblemReviewCard card() {
+    return new ProblemReviewCard(
+        88L,
+        USER_ID,
+        "two-sum",
+        ReviewCardSource.REVIEW_FAILED,
+        Map.of(),
+        SchedulingState.initial(),
+        NOW,
+        null,
+        null,
+        false,
+        NOW,
+        NOW);
   }
 
   private ReviewAttemptRepository emptyAttemptRepository() {
@@ -130,14 +170,25 @@ class ReviewQueueServiceTest {
     private final int dueCount;
     private final int remainingTodayCount;
     private final Instant nextDueAt;
+    private final ProblemReviewCard card;
     private Instant dueNow;
     private Instant summaryEnd;
     private Instant nextDueAfter;
 
     private SummaryRepository(int dueCount, int remainingTodayCount, Instant nextDueAt) {
+      this(dueCount, remainingTodayCount, nextDueAt, null);
+    }
+
+    private SummaryRepository(
+        int dueCount,
+        int remainingTodayCount,
+        Instant nextDueAt,
+        ProblemReviewCard card
+    ) {
       this.dueCount = dueCount;
       this.remainingTodayCount = remainingTodayCount;
       this.nextDueAt = nextDueAt;
+      this.card = card;
     }
 
     @Override
@@ -162,11 +213,30 @@ class ReviewQueueServiceTest {
     @Override public ProblemReviewCard upsertForReview(long userId, String slug, ReviewCardSource source, JsonNode detail, ReviewSeed seed) { throw new UnsupportedOperationException(); }
     @Override public ProblemReviewCard mark(long userId, String slug, ReviewCardSource source, JsonNode detail, Instant now) { throw new UnsupportedOperationException(); }
     @Override public Optional<ProblemReviewCard> findByUserAndSlug(long userId, String slug) { return Optional.empty(); }
-    @Override public Optional<ProblemReviewCard> findForUser(long userId, long cardId) { return Optional.empty(); }
+    @Override public Optional<ProblemReviewCard> findForUser(long userId, long cardId) {
+      return card != null && card.userId() == userId && card.id() == cardId ? Optional.of(card) : Optional.empty();
+    }
     @Override public Optional<ProblemReviewCard> findForUpdate(long userId, long cardId) { return Optional.empty(); }
     @Override public List<ProblemReviewCard> findDue(long userId, Instant now, int limit) { return List.of(); }
     @Override public List<ProblemReviewCard> list(long userId, ReviewCardSource source, boolean mistakeOnly, String keyword, int limit, int offset) { return List.of(); }
     @Override public ProblemReviewCard updateArchived(long userId, long cardId, boolean archived, Instant now) { throw new UnsupportedOperationException(); }
     @Override public ProblemReviewCard updateScheduling(long userId, long cardId, SchedulingState state, Instant dueAt, ReviewRating rating, Instant reviewedAt) { throw new UnsupportedOperationException(); }
+  }
+
+  private static final class RecordingProblemCatalog implements ReviewProblemCatalog {
+    private String slug;
+    private String locale;
+
+    @Override
+    public Optional<ReviewProblemSnapshot> findBySlug(String slug, String locale) {
+      this.slug = slug;
+      this.locale = locale;
+      return Optional.of(new ReviewProblemSnapshot(
+          slug,
+          "Two Sum",
+          "EASY",
+          "English statement.",
+          "# Two Sum\n\nEnglish statement."));
+    }
   }
 }

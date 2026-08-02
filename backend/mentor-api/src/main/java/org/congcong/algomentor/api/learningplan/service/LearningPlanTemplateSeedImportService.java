@@ -114,23 +114,31 @@ public class LearningPlanTemplateSeedImportService {
             null,
             phase.phaseIndex(),
             phase.title(),
+            phase.titleEn(),
             phase.durationWeeks(),
             phase.focus(),
+            phase.focusEn(),
             phase.objectives(),
+            phase.objectivesEn(),
             phase.recommendedTags(),
             phase.acceptanceCriteria(),
+            phase.acceptanceCriteriaEn(),
             phase.reviewAdvice(),
+            phase.reviewAdviceEn(),
             refsByPhase.getOrDefault(phase.phaseIndex(), List.of())))
         .toList();
     return new LearningPlanTemplate(
         null,
         record.templateId(),
         record.title(),
+        record.titleEn(),
         record.summary(),
+        record.summaryEn(),
         record.catalogCategory(),
         record.recommendedOrder(),
         record.intent(),
         record.goal(),
+        record.goalEn(),
         record.defaultDurationWeeks(),
         record.level(),
         record.defaultWeeklyHours(),
@@ -139,11 +147,17 @@ public class LearningPlanTemplateSeedImportService {
         record.interviewOriented(),
         record.topicPreferences(),
         record.targetAudience(),
+        record.targetAudienceEn(),
         record.difficultyMix(),
         record.prerequisites(),
+        record.prerequisitesEn(),
         record.recommendedFor(),
+        record.recommendedForEn(),
         record.notRecommendedFor(),
+        record.notRecommendedForEn(),
         record.expectedOutcome(),
+        record.expectedOutcomeEn(),
+        record.englishContentReady(),
         record.sourceName(),
         record.sourceUrl(),
         record.sourceCommit(),
@@ -263,6 +277,18 @@ public class LearningPlanTemplateSeedImportService {
     requireNonEmpty(template.recommendedFor(), "recommendedFor");
     requireNonEmpty(template.notRecommendedFor(), "notRecommendedFor");
     requireNonBlank(template.expectedOutcome(), "expectedOutcome");
+    if (!template.englishContentReady()) {
+      throw new IllegalArgumentException("Learning plan template English content must be complete: "
+          + template.templateId());
+    }
+    requireNonBlank(template.titleEn(), "titleEn");
+    requireNonBlank(template.summaryEn(), "summaryEn");
+    requireNonBlank(template.goalEn(), "goalEn");
+    requireNonBlank(template.targetAudienceEn(), "targetAudienceEn");
+    requireNonEmpty(template.prerequisitesEn(), "prerequisitesEn");
+    requireNonEmpty(template.recommendedForEn(), "recommendedForEn");
+    requireNonEmpty(template.notRecommendedForEn(), "notRecommendedForEn");
+    requireNonBlank(template.expectedOutcomeEn(), "expectedOutcomeEn");
     requireNonBlank(template.sourceName(), "sourceName");
     requireNonBlank(template.sourceUrl(), "sourceUrl");
     requireNonBlank(template.sourceCommit(), "sourceCommit");
@@ -305,6 +331,11 @@ public class LearningPlanTemplateSeedImportService {
       requireNonEmpty(phase.recommendedTags(), "phase.recommendedTags");
       requireNonEmpty(phase.acceptanceCriteria(), "phase.acceptanceCriteria");
       requireNonBlank(phase.reviewAdvice(), "phase.reviewAdvice");
+      requireNonBlank(phase.titleEn(), "phase.titleEn");
+      requireNonBlank(phase.focusEn(), "phase.focusEn");
+      requireNonEmpty(phase.objectivesEn(), "phase.objectivesEn");
+      requireNonEmpty(phase.acceptanceCriteriaEn(), "phase.acceptanceCriteriaEn");
+      requireNonBlank(phase.reviewAdviceEn(), "phase.reviewAdviceEn");
     }
     if (durationWeeks != template.defaultDurationWeeks()) {
       throw new IllegalArgumentException("Learning plan template phase duration sum does not match default duration: "

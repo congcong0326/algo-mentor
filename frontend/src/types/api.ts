@@ -1014,6 +1014,7 @@ export interface PracticeCodeReviewSummary {
   id: number;
   versionNo: number;
   language: string;
+  contentLocale: 'zh-CN' | 'en-US';
   totalScore: number;
   passed: boolean;
   createdAt: string;
@@ -1047,6 +1048,7 @@ export interface PracticeCodeReviewDetail {
   normalizedCode?: string;
   submittedCode?: string;
   language: string;
+  contentLocale: 'zh-CN' | 'en-US';
   evidence: PracticeCodeReviewEvidence[];
   contextSummary: string;
   scores: PracticeCodeReviewScore;
@@ -1085,6 +1087,7 @@ export type LearningPlanIntent =
   | 'LONG_TERM_LEARNING';
 
 export type LearningPlanLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+export type LearningPlanContentLocale = 'zh-CN' | 'en-US';
 export type LearningPlanTemplateCatalogCategory =
   | 'SYSTEMATIC_LEARNING'
   | 'INTERVIEW_PREP'
@@ -1207,6 +1210,7 @@ export interface LearningPlanLivingContractSummary {
 
 export interface LearningPlanTemplateSummaryResponse {
   templateId: string;
+  contentLocale: LearningPlanContentLocale;
   title: string;
   summary: string;
   catalogCategory: LearningPlanTemplateCatalogCategory;
@@ -1251,6 +1255,7 @@ export interface LearningPlanTemplateDetailResponse extends LearningPlanTemplate
 
 export interface LearningPlanTemplateDraftRequest {
   templateId: string;
+  contentLocale: LearningPlanContentLocale;
   programmingLanguage?: string;
   dailyProblemCount?: number;
   trainingDaysPerWeek?: number;
@@ -1301,6 +1306,7 @@ export interface LearningPlanDetailPhaseResponse extends Omit<LearningPlanPhaseD
 }
 
 export interface LearningPlanDraftPlan {
+  contentLocale: LearningPlanContentLocale;
   title: string;
   summary: string;
   intent: LearningPlanIntent;
@@ -1342,6 +1348,7 @@ export interface LearningPlanActivationResponse {
 
 export interface LearningPlanSummaryResponse {
   id: number;
+  contentLocale: LearningPlanContentLocale;
   title: string;
   intent: LearningPlanIntent;
   goal: string;
@@ -1520,6 +1527,7 @@ export interface AgentToolPermissionRequestEvent {
   permissionRequestId: string;
   displayName: string;
   reason: string;
+  copyCode?: string;
   preview: Record<string, unknown>;
   expiresAt: string;
 }
@@ -1655,7 +1663,7 @@ export interface ReviewCard {
 
 export interface ReviewProblem {
   slug: string;
-  titleCn: string;
+  title: string;
   difficulty: string;
   contentMarkdown: string;
 }

@@ -105,9 +105,25 @@ public sealed interface AgentStreamEvent
       String toolName,
       String displayName,
       String reason,
+      String copyCode,
       Map<String, Object> preview,
       Instant expiresAt
   ) implements AgentStreamEvent {
+
+    public ToolPermissionRequest(
+        String permissionRequestId,
+        String runId,
+        int stepIndex,
+        String toolCallId,
+        String toolName,
+        String displayName,
+        String reason,
+        Map<String, Object> preview,
+        Instant expiresAt
+    ) {
+      this(permissionRequestId, runId, stepIndex, toolCallId, toolName, displayName, reason, null,
+          preview, expiresAt);
+    }
 
     public ToolPermissionRequest {
       validatePermissionRequestId(permissionRequestId);
@@ -116,6 +132,7 @@ public sealed interface AgentStreamEvent
       validateToolCall(toolCallId, toolName);
       requireText(displayName, "Agent tool permission display name must not be blank");
       requireText(reason, "Agent tool permission reason must not be blank");
+      copyCode = copyCode == null || copyCode.isBlank() ? null : copyCode.trim();
       preview = preview == null ? Map.of() : Map.copyOf(preview);
       if (preview.isEmpty()) {
         throw new IllegalArgumentException("Agent tool permission preview must not be empty");
@@ -134,6 +151,7 @@ public sealed interface AgentStreamEvent
           request.toolName(),
           request.displayName(),
           request.reason(),
+          request.copyCode(),
           request.preview(),
           request.expiresAt());
     }

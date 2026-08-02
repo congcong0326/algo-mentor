@@ -136,6 +136,7 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
             ERROR_PRACTICE_SESSION_NOT_FOUND,
             errorIds,
             null));
+    String locale = reviewLocale(metadata, session);
     AgentTurnMessages turnMessages = turnMessageLookupRepository.findByRunId(runDbId)
         .orElseThrow(() -> failure(
             "Practice run messages were not found",
@@ -153,12 +154,12 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
         userMessage.id(),
         turnMessages.assistantMessage().map(AgentMessage::id).orElse(null),
         runDbId,
-        problemFacts(session),
+        problemFacts(session, locale),
         "",
         userMessage.content(),
         userMessage.content(),
         "",
-        session.locale(),
+        locale,
         trustedProblemTagCatalog.findByProblemSlug(session.problemSlug()));
 
     PracticeReviewResult reviewResult;
@@ -175,11 +176,17 @@ public final class PracticeCodeReviewAgentTool implements AgentTool {
     }
   }
 
-  private String problemFacts(PracticeSession session) {
-    return problemCatalog.findProblemBySlug(session.problemSlug(), session.locale())
+  private String problemFacts(PracticeSession session, String locale) {
+    return problemCatalog.findProblemBySlug(session.problemSlug(), locale)
         .map(this::renderProblemFacts)
         .orElseGet(() -> "problemSlug: %s\n题面详情不可用，不能仅凭题名断言复杂度要求。"
             .formatted(session.problemSlug()));
+  }
+
+  private String reviewLocale(Map<String, Object> metadata, PracticeSession session) {
+    Object requestedLocale = metadata.get(PracticeChatPromptConstants.METADATA_LOCALE);
+    String locale = requestedLocale == null ? session.locale() : requestedLocale.toString();
+    return PracticeResponseLanguage.fromLocale(locale).languageTag();
   }
 
   private String renderProblemFacts(PracticeChatProblemDetail detail) {

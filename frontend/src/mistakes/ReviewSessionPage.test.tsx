@@ -15,6 +15,7 @@ import type {
   ReviewCardContext,
   UserProblemNote,
 } from '../types/api';
+import { I18nProvider } from '../i18n/I18nProvider';
 import { emptyProblemSolutionOutline } from '../problem-notes/problemNoteOptions';
 import ReviewSessionPage from './ReviewSessionPage';
 
@@ -42,6 +43,7 @@ afterEach(() => {
   cleanup();
   vi.clearAllMocks();
   vi.restoreAllMocks();
+  setBrowserLocales('zh-CN');
 });
 
 describe('ReviewSessionPage', () => {
@@ -58,6 +60,23 @@ describe('ReviewSessionPage', () => {
     const noteDisclosure = await screen.findByRole('button', { name: /我的题目笔记/ });
     expect(noteDisclosure).toHaveAttribute('aria-expanded', 'false');
     expect(screen.queryByText('这段私有笔记不能出现在折叠标题中。')).not.toBeInTheDocument();
+  });
+
+  it('shows the localized English problem title returned by the context API', async () => {
+    setBrowserLocales('en-US');
+    vi.mocked(getReviewCardContext).mockResolvedValue(apiResponse(reviewContext({
+      title: 'Two Sum',
+      contentMarkdown: '# Full statement\n\nReturn the two matching indices.',
+    })));
+
+    render(
+      <I18nProvider>
+        <ReviewSessionPage onNavigate={vi.fn()} />
+      </I18nProvider>,
+    );
+
+    expect(await screen.findByRole('heading', { name: 'Two Sum' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'two-sum' })).not.toBeInTheDocument();
   });
 
   it('keeps unsaved note edits while collapsed and guards navigation', async () => {
@@ -165,6 +184,11 @@ function apiResponse<T>(data: T): ApiResponse<T> {
   return { success: true, data, timestamp: '2026-07-24T00:00:00Z' };
 }
 
+function setBrowserLocales(language: string) {
+  Object.defineProperty(window.navigator, 'language', { configurable: true, value: language });
+  Object.defineProperty(window.navigator, 'languages', { configurable: true, value: [language] });
+}
+
 function reviewCard(overrides: Partial<ReviewCard> = {}): ReviewCard {
   return {
     id: 88,
@@ -209,14 +233,15 @@ function problemNote(overrides: Partial<UserProblemNote> = {}): UserProblemNote 
   };
 }
 
-function reviewContext(): ReviewCardContext {
+function reviewContext(problemOverrides: Partial<ReviewCardContext['problem']> = {}): ReviewCardContext {
   return {
     card: reviewCard(),
     problem: {
       slug: 'two-sum',
-      titleCn: '两数之和',
+      title: '两数之和',
       difficulty: 'EASY',
       contentMarkdown: '# 完整题面\n\n给定整数数组和目标值，返回两个数的下标。',
+      ...problemOverrides,
     },
     note: problemNote(),
     recentAttempts: [],

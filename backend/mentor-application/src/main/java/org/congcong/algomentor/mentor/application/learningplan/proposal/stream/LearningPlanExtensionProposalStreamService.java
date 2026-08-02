@@ -26,6 +26,7 @@ import org.congcong.algomentor.agent.core.runtime.api.AgentRuntime;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhaseDraft;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanProblemCatalog;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanStatus;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionDraft;
@@ -77,6 +78,7 @@ public class LearningPlanExtensionProposalStreamService {
       LearningPlanExtensionValidator validator,
       AgentRuntime agentRuntime,
       ObjectMapper objectMapper,
+      LearningPlanProblemCatalog problemCatalog,
       TransactionOperations transactionOperations,
       Clock clock
   ) {
@@ -87,7 +89,7 @@ public class LearningPlanExtensionProposalStreamService {
     this.validator = Objects.requireNonNull(validator, "validator");
     this.agentRuntime = Objects.requireNonNull(agentRuntime, "agentRuntime");
     this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper");
-    this.outputMapper = new LearningPlanExtensionStructuredOutputMapper(objectMapper);
+    this.outputMapper = new LearningPlanExtensionStructuredOutputMapper(objectMapper, problemCatalog);
     this.transactionOperations = Objects.requireNonNull(transactionOperations, "transactionOperations");
     this.clock = Objects.requireNonNull(clock, "clock");
   }
@@ -466,7 +468,9 @@ public class LearningPlanExtensionProposalStreamService {
         if (finalContent == null || finalContent.isBlank()) {
           throw new LearningPlanException("LEARNING_PLAN_EXTENSION_FINAL_OUTPUT_MISSING", "模型未返回扩展提案。");
         }
-        LearningPlanExtensionDraft extension = outputMapper.map(objectMapper.readTree(finalContent));
+        LearningPlanExtensionDraft extension = outputMapper.map(
+            objectMapper.readTree(finalContent),
+            revision.basePlan().contentLocale());
         emitTerminalEvent(transactionOperations.execute(status -> completeReadyTransition(extension)));
       } catch (JsonProcessingException exception) {
         failRevisionAndEmit("LEARNING_PLAN_EXTENSION_STRUCTURED_OUTPUT_INVALID", "扩展提案结构化结果解析失败。", true, exception);

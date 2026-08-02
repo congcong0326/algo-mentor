@@ -22,8 +22,13 @@ public class ProblemServiceReviewProblemCatalog implements ReviewProblemCatalog 
 
   @Override
   public Optional<ReviewProblemSnapshot> findBySlug(String slug) {
+    return findBySlug(slug, ProblemLocale.DEFAULT.value());
+  }
+
+  @Override
+  public Optional<ReviewProblemSnapshot> findBySlug(String slug, String locale) {
     try {
-      return problemService.findProblemBySlug(slug, ProblemLocale.ZH_CN)
+      return problemService.findProblemBySlug(slug, ProblemLocale.parse(locale))
           .map(problem -> new ReviewProblemSnapshot(
               problem.slug(),
               problem.title(),

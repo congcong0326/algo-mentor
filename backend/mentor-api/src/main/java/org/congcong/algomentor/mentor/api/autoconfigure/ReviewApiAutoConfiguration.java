@@ -87,7 +87,7 @@ public class ReviewApiAutoConfiguration {
   @Bean
   @ConditionalOnMissingBean
   public ReviewProblemCatalog noopReviewProblemCatalog() {
-    return slug -> java.util.Optional.empty();
+    return (slug, locale) -> java.util.Optional.empty();
   }
 
   @Bean

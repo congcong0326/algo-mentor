@@ -1,5 +1,5 @@
 import { Info, Layers, Sparkles } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   getLearningPlanTemplates,
   requireApiData,
@@ -41,7 +41,7 @@ export default function LearningPlanTemplateCreatePanel({
   onCancel,
   onSubmit,
 }: LearningPlanTemplateCreatePanelProps) {
-  const { resources } = useI18n();
+  const { locale, resources } = useI18n();
   const [templates, setTemplates] = useState<LearningPlanTemplateSummaryResponse[]>([]);
   const [catalogView, setCatalogView] = useState<TemplateCatalogView>('RECOMMENDED');
   const [selectedTemplateId, setSelectedTemplateId] = useState('');
@@ -51,6 +51,7 @@ export default function LearningPlanTemplateCreatePanel({
   const [listLoading, setListLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
   const [validationError, setValidationError] = useState('');
+  const selectedTemplateIdRef = useRef('');
 
   const selectedTemplate = useMemo(
     () => templates.find((template) => template.templateId === selectedTemplateId),
@@ -84,10 +85,16 @@ export default function LearningPlanTemplateCreatePanel({
       .then((response) => {
         const nextTemplates = requireApiData(response, resources.learningPlans.templateLoadFailed);
         setTemplates(nextTemplates);
+        const preservedTemplate = nextTemplates.find(
+          (template) => template.templateId === selectedTemplateIdRef.current,
+        );
         const [firstTemplate] = filterTemplates(nextTemplates, 'RECOMMENDED');
-        if (firstTemplate) {
-          setSelectedTemplateId(firstTemplate.templateId);
-          applyTemplateDefaults(firstTemplate);
+        const nextSelectedTemplate = preservedTemplate ?? firstTemplate;
+        const nextSelectedTemplateId = nextSelectedTemplate?.templateId ?? '';
+        selectedTemplateIdRef.current = nextSelectedTemplateId;
+        setSelectedTemplateId(nextSelectedTemplateId);
+        if (!preservedTemplate && nextSelectedTemplate) {
+          applyTemplateDefaults(nextSelectedTemplate);
         }
       })
       .catch((nextError) => {
@@ -103,13 +110,14 @@ export default function LearningPlanTemplateCreatePanel({
       });
 
     return () => controller.abort();
-  }, [resources.learningPlans.templateLoadFailed]);
+  }, [locale, resources.learningPlans.templateLoadFailed]);
 
   function selectTemplate(template: LearningPlanTemplateSummaryResponse) {
     if (loading || listLoading) {
       return;
     }
     setValidationError('');
+    selectedTemplateIdRef.current = template.templateId;
     setSelectedTemplateId(template.templateId);
     applyTemplateDefaults(template);
   }
@@ -123,7 +131,9 @@ export default function LearningPlanTemplateCreatePanel({
     const nextTemplates = filterTemplates(templates, view);
     if (!nextTemplates.some((template) => template.templateId === selectedTemplateId)) {
       const [firstTemplate] = nextTemplates;
-      setSelectedTemplateId(firstTemplate?.templateId ?? '');
+      const nextTemplateId = firstTemplate?.templateId ?? '';
+      selectedTemplateIdRef.current = nextTemplateId;
+      setSelectedTemplateId(nextTemplateId);
       if (firstTemplate) {
         applyTemplateDefaults(firstTemplate);
       }
@@ -138,6 +148,7 @@ export default function LearningPlanTemplateCreatePanel({
     setValidationError('');
     onSubmit({
       templateId: selectedTemplate.templateId,
+      contentLocale: selectedTemplate.contentLocale,
       dailyProblemCount,
       trainingDaysPerWeek,
       programmingLanguage: programmingLanguage.trim() || undefined,

@@ -11,10 +11,27 @@ public record AgentToolPermissionRequest(
     String toolName,
     String displayName,
     String reason,
+    String copyCode,
     Map<String, Object> preview,
     Instant createdAt,
     Instant expiresAt
 ) {
+
+  public AgentToolPermissionRequest(
+      String permissionRequestId,
+      String runId,
+      int stepIndex,
+      String toolCallId,
+      String toolName,
+      String displayName,
+      String reason,
+      Map<String, Object> preview,
+      Instant createdAt,
+      Instant expiresAt
+  ) {
+    this(permissionRequestId, runId, stepIndex, toolCallId, toolName, displayName, reason, null,
+        preview, createdAt, expiresAt);
+  }
 
   public AgentToolPermissionRequest {
     requireText(permissionRequestId, "Agent tool permission request id must not be blank");
@@ -26,6 +43,7 @@ public record AgentToolPermissionRequest(
     requireText(toolName, "Agent tool permission tool name must not be blank");
     requireText(displayName, "Agent tool permission request display name must not be blank");
     requireText(reason, "Agent tool permission request reason must not be blank");
+    copyCode = copyCode == null || copyCode.isBlank() ? null : copyCode.trim();
     preview = preview == null ? Map.of() : Map.copyOf(preview);
     if (preview.isEmpty()) {
       throw new IllegalArgumentException("Agent tool permission request preview must not be empty");

@@ -1,0 +1,122 @@
+{
+  "expectedOutcome": "Upon completion, you can independently write common queries, connections, aggregates, sub-Query and string processing SQLs and repeat typical errors.",
+  "goal": "The most common SQL query mode in systematic data analysis and back-end interviews.",
+  "notRecommendedFor": [
+    "All we need is training in algorithm data structure.",
+    "Database design or transport course required",
+    "I've mastered complex SQLs."
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main \"basic query\" type",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Access to SELECT, filtering, weighting and basic condition expression.",
+      "objectives": [
+        "Complete all local matching questions at the Basic Query stage and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Basic queries"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main \"basic connection\" theme",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "In-training connections, external connections and multi-table linkages.",
+      "objectives": [
+        "Complete all local matching questions for the Basic Connection phase and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Basic connection"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that are independent in describing the main theme of the fusion function",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Master COUNT, SUM, AVG and Convergence.",
+      "objectives": [
+        "Complete all local matching questions at the Syndication Function stage and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 3,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Aggregation Functions"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main \"sorting and grouping\" theme",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Stable processing GROUP BY, HAVING, Sorting and Grouping Statistics.",
+      "objectives": [
+        "Complete all local matching questions for sorting and grouping and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 4,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Sort and Group"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main Query & Connection type",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Training conditions connection, window pre-thinking and complex results cluster.",
+      "objectives": [
+        "Complete all local matching questions at the Step Query and Connect and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 5,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Progress Query & Connect"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main sub-Query type",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Have access to relevant sub-inquiries, collective judgement and layered queries.",
+      "objectives": [
+        "All local matching questions for completion of the SubQuery phase and recording the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 6,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "SubQuery"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main theme type of String and Advanced Substatement",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Completed a combination of string functions, regulars and advanced filtering.",
+      "objectives": [
+        "Finish all local matching questions in the String and Advanced Substatement phase and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 7,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Strings and Advanced Sub sentences"
+    }
+  ],
+  "prerequisites": [
+    "Basic concepts for understanding relationship databases and tables",
+    "Can read simple SELECT statements"
+  ],
+  "recommendedFor": [
+    "Prepare SQL interviews",
+    "Need to complete query, connection and aggregation base",
+    "I hope you'll follow the official route."
+  ],
+  "summary": "ReetCode SQL 50 is completed in 7 weeks, moving from basic queries to connections, aggregates, sub-inquiries and string processing.",
+  "targetAudience": "Learners wishing to study SQL systematically for queries, data preparation or back-end job interviews.",
+  "templateId": "leetcode_sql_50",
+  "title": "LeetCode SQL 50 System Training Scheme"
+}

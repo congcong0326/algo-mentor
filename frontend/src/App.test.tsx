@@ -1859,7 +1859,7 @@ describe('App', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'View 四周 Java 算法面试冲刺计划' }));
     expect(await screen.findByRole('heading', { name: '四周 Java 算法面试冲刺计划' })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /Two Sum/ }));
+    fireEvent.click(screen.getByRole('button', { name: /两数之和/ }));
 
     expect(window.location.pathname).toBe('/learning-plans/900/phases/1/problems/two-sum/chat');
     expect(await screen.findByRole('heading', { level: 2, name: '1. Two Sum' })).toBeInTheDocument();
@@ -3295,6 +3295,7 @@ function baseLearningPlanPage(items: ReturnType<typeof learningPlanSummary>[]) {
 function baseLearningPlanSummary() {
   return {
     id: 900,
+    contentLocale: 'zh-CN',
     title: '四周 Java 算法面试冲刺计划',
     intent: 'INTERVIEW_SPRINT',
     goal: '准备 Java 后端算法面试',
@@ -3459,6 +3460,7 @@ function practiceReviewSummary(overrides: Partial<PracticeCodeReviewSummary> = {
     id: 70,
     versionNo: 1,
     language: 'java',
+    contentLocale: 'zh-CN',
     totalScore: 92,
     passed: true,
     createdAt: '2026-06-22T00:02:00Z',
@@ -3472,6 +3474,7 @@ function practiceReviewDetail(overrides: Partial<PracticeCodeReviewDetail> = {})
     sessionId: 50,
     versionNo: 1,
     language: 'java',
+    contentLocale: 'zh-CN',
     submittedCode: 'class Solution { version1(); }',
     reviewMarkdown: '## 整体评价\n提交记录详情。',
     passed: true,
@@ -3495,6 +3498,7 @@ function practiceReviewDetail(overrides: Partial<PracticeCodeReviewDetail> = {})
 function baseLearningPlanDetail() {
   return {
     id: 900,
+    contentLocale: 'zh-CN',
     title: '四周 Java 算法面试冲刺计划',
     summary: '围绕数组和哈希表建立高频题型能力。',
     intent: 'INTERVIEW_SPRINT',

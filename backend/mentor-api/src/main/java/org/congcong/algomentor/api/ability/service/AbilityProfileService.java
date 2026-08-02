@@ -9,6 +9,7 @@ import org.congcong.algomentor.api.ability.mapper.model.AbilityTagScoreRow;
 import org.congcong.algomentor.api.ability.model.AbilityProfileResponse;
 import org.congcong.algomentor.api.ability.model.AbilityProfileScopeResponse;
 import org.congcong.algomentor.api.ability.model.AbilityTagScoreResponse;
+import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,8 +33,12 @@ public class AbilityProfileService {
   }
 
   public AbilityProfileResponse getProfile(long userId) {
+    return getProfile(userId, ProblemLocale.DEFAULT);
+  }
+
+  public AbilityProfileResponse getProfile(long userId, ProblemLocale locale) {
     List<AbilityTagScoreResponse> tags = mapper()
-        .findCommonTagScores(userId, AbilityProfileConstants.MIN_PROBLEM_COUNT)
+        .findCommonTagScores(userId, AbilityProfileConstants.MIN_PROBLEM_COUNT, locale.value())
         .stream()
         .map(this::toResponse)
         .toList();

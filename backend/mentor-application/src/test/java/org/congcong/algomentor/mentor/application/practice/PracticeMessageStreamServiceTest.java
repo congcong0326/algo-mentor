@@ -49,9 +49,9 @@ class PracticeMessageStreamServiceTest {
             12L,
             1,
             "two-sum",
-            "zh-CN",
+            "en-US",
             PracticeCoachStyle.DIRECT,
-            PracticeResponseLanguage.ZH_CN,
+            PracticeResponseLanguage.EN_US,
             24);
     assertThat(sessions.touchedSessionIds).containsExactly(50L);
   }

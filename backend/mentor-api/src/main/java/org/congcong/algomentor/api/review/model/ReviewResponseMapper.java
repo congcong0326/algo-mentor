@@ -59,7 +59,7 @@ public final class ReviewResponseMapper {
     ReviewCardResponse localizedCard = new ReviewCardResponse(
         card.id(),
         card.problemSlug(),
-        problem.titleCn(),
+        problem.title(),
         problem.difficulty(),
         card.source(),
         card.sourceDetail(),
@@ -80,7 +80,7 @@ public final class ReviewResponseMapper {
         localizedCard,
         new ReviewProblemResponse(
             problem.slug(),
-            problem.titleCn(),
+            problem.title(),
             problem.difficulty(),
             problem.fullStatementMarkdown()),
         toNoteResponse(context.note()),

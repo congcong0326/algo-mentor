@@ -16,6 +16,7 @@ public record PracticeCodeReviewDetailResponse(
     String rawCode,
     String normalizedCode,
     String language,
+    String contentLocale,
     List<PracticeCodeReviewEvidenceResponse> evidence,
     String contextSummary,
     PracticeCodeReviewScoreResponse scores,

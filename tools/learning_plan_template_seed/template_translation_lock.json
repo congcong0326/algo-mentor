@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "engine": {
+    "name": "Argos Translate",
+    "pythonPackage": "argostranslate",
+    "version": "1.11.0",
+    "wheelSha256": "a89b42d82f40843900338f9ac60d4c82fda590b6898247f5d0c15d46731ca7df"
+  },
+  "model": {
+    "fromCode": "zh",
+    "toCode": "en",
+    "packageVersion": "1.9",
+    "argosVersion": "1.9.0",
+    "source": "https://argos-net.com/v1/translate-zh_en-1_9.argosmodel",
+    "sha256": "62e7af5a3a48b530e47b7b3e5c78c2de79073ecd815750d2bf3ab35b4a67da2d",
+    "sizeBytes": 74481402
+  },
+  "decoding": {
+    "deviceType": "cpu",
+    "interThreads": 1,
+    "intraThreads": 1,
+    "batchSize": 1,
+    "beamSize": 4,
+    "computeType": "float32"
+  },
+  "sourceStructureSha256": "a0518063bd4c04f5da49a9ae5d801f4a9e9fa54208203c635f6e1652353cffcd"
+}

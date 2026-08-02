@@ -7,6 +7,7 @@ afterEach(cleanup);
 
 describe('LearningPlanDraftPanel', () => {
   const draftPlan: NonNullable<LearningPlanDraftResponse['draftPlan']> = {
+    contentLocale: 'zh-CN',
     title: '四周 Java 算法面试冲刺计划',
     summary: '围绕数组和哈希表建立高频题型能力。',
     intent: 'INTERVIEW_SPRINT',

@@ -221,6 +221,7 @@ export default function LearningPlanDetail({
         <AgentWorkIndicator active={extensionLoading} event={extensionWorkEvent} error={extensionError} />
       )}
       <LearningPlanExtensionPanel
+        contentLocale={plan.contentLocale}
         extension={extension}
         loading={extensionLoading}
         onApply={applyExtension}

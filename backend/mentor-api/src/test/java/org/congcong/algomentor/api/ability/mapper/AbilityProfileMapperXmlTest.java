@@ -46,6 +46,8 @@ class AbilityProfileMapperXmlTest {
         .contains("WHERE pt.active = TRUE")
         .doesNotContain("unnest(", "p.tag_values");
     assertThat(normalizedMapperXml).contains("LEFT JOIN tag_review_scores");
+    assertThat(normalizedMapperXml)
+        .contains("CASE WHEN #{locale} = 'en-US' THEN pt.label_en ELSE pt.label_zh END AS label");
     assertThat(normalizedMapperXml).contains("HAVING COUNT(*) >= #{minProblemCount}");
     assertThat(normalizedMapperXml).contains("ORDER BY tc.problem_count DESC, tc.tag ASC");
   }

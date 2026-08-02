@@ -843,6 +843,7 @@ describe('learning plan template api', () => {
 
     const response = await createLearningPlanDraftFromTemplate({
       templateId: 'neetcode_blind_75_interview_core',
+      contentLocale: 'zh-CN',
       dailyProblemCount: 3,
       trainingDaysPerWeek: 5,
       programmingLanguage: 'Java',
@@ -856,6 +857,7 @@ describe('learning plan template api', () => {
         headers: expect.any(Headers),
         body: JSON.stringify({
           templateId: 'neetcode_blind_75_interview_core',
+          contentLocale: 'zh-CN',
           dailyProblemCount: 3,
           trainingDaysPerWeek: 5,
           programmingLanguage: 'Java',
@@ -882,6 +884,7 @@ describe('learning plan template api', () => {
 
     await expect(createLearningPlanDraftFromTemplate({
       templateId: 'missing',
+      contentLocale: 'zh-CN',
       dailyProblemCount: 3,
       trainingDaysPerWeek: 5,
       programmingLanguage: 'Java',

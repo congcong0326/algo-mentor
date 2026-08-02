@@ -1,0 +1,165 @@
+{
+  "expectedOutcome": "Upon completion, the high frequency interview model will be identified by chapter and a complete redisposal of materials covering infrastructure, back-to-back search and integrated design issues will be developed.",
+  "goal": "Establish systematic interview capacity in order of interview chapters, from basic data structure to integrated challenges.",
+  "notRecommendedFor": [
+    "There is no programming base at all.",
+    "There's only one week left for the maximum.",
+    "All we need is a single subject."
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main \" string and array \" .",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Training in string determination, matrix operation, character count and basic simulation.",
+      "objectives": [
+        "Finish all local matching questions at String and Cluster stage and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Strings and arrays"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main theme of the \"Clock, stack and queue\"",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Centralized chain rewrites, rings and intersections, and the status design of the queue.",
+      "objectives": [
+        "Complete all local matching questions at the \" Chain, Bark and Queue \" stage and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Watches, stacks and queues"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main theme of Trees and Charts",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Covers tree trails, binary search trees, public ancestors, paths and maps.",
+      "objectives": [
+        "Complete all local matching questions for the Tree and Chart phase and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 3,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Trees and Maps"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main theme of the “bit basis and regression”",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Dot operations are completed and then re-entry, subset, sequencing and basic dynamic programming are carried out.",
+      "objectives": [
+        "Complete all local matching questions at the \"bit calculation and regression base\" stage and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 4,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Bit Operations and Recursive Basis"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main \"retroactive, dynamic programming and sequencing search\"",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Completes the second half of the chapter in descending order with a sequential sorting, split and matrix search.",
+      "objectives": [
+        "Complete all local matching questions at the backtracking, dynamic programming and sorting phase and record status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 5,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Backtracking, dynamic programming and sorting search"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signal and core solution for the main theme “Medium: values, arrays and geometry”",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Training in the design of numerical boundaries, array statistics, geometry and not using additional operators.",
+      "objectives": [
+        "Complete all local matching questions at the `Medium: numeric, array and geometry' stage and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 6,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Medium question: Values, arrays and geometry"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signal and core solution for the main theme \" Intermediate: string, search and design \"",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Overwrites string matching, grid search, cache, expression and synthesis simulation.",
+      "objectives": [
+        "Complete all local matching questions in the String, Search and Design phase and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 7,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Medium: String, Search and Design"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions for the main theme “Counter issues: bit calculations, statistics and maps”",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Training in entry difficulties using high-level calculations, counting, mapping and dynamic programming.",
+      "objectives": [
+        "Completion of all local matching questions for the \"Having issues: bit calculations, statistics and graphs\" phase and recording of status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 8,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Difficult questions: bit calculations, statistics and maps"
+    },
+    {
+      "acceptanceCriteria": [
+        "An independent description of the identification signal and core solution for the main \" difficult questions: search, string and window \"",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Trains Top K, Dictionary Tree, Multi-Model Search and Shortest Window type questions.",
+      "objectives": [
+        "Complete all local matching questions at the \" Difficult questions: search, string and window \" stage and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 9,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Difficulties: Search, string and window"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions for the main theme “Counter issues: stacks, matrices and integrated design”",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "End of route with continuous median, matrix dynamic programming, graph search and integrated design.",
+      "objectives": [
+        "Completion of all local matching questions for the Pocket, Matrix and Integrated Design phase and documentation of status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 10,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Difficulties: stacking, matrix and integrated design"
+    }
+  ],
+  "prerequisites": [
+    "Mastering a major programming language",
+    "Understanding arrays, chains, trees, maps and regression base",
+    "Can do common Easy and part Medium questions independently"
+  ],
+  "recommendedFor": [
+    "Preparation of Chinese technical interview",
+    "I want to train on classic chapter system.",
+    "Need to cover basic and complex issues"
+  ],
+  "summary": "Using a 10-week interview of programmers on the gold menu 109, covering string, chain, tree map, biting, regression and complex dilemmas.",
+  "targetAudience": "There is a data-structured basis for systematic training of learners on classic programmers interviews and progressing towards integrated challenges.",
+  "templateId": "cracking_coding_interview_classic",
+  "title": "Programmer interview Kimberly system training programme"
+}

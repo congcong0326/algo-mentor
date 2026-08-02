@@ -30,6 +30,7 @@ vi.mock('./services/api', () => ({
 }));
 
 beforeEach(() => {
+  setBrowserLocale('zh-CN');
   vi.mocked(getUserAiPreference).mockResolvedValue(apiResponse(userAiPreference()));
   vi.mocked(getReviewPreference).mockResolvedValue(apiResponse(reviewPreference()));
   vi.mocked(updateUserPassword).mockResolvedValue(apiResponse({
@@ -42,9 +43,31 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
+  setBrowserLocale('zh-CN');
 });
 
 describe('SettingsPage', () => {
+  it.each([
+    ['GUIDED', '引导型教练', 'Guided Coach'],
+    ['DIRECT', '直给型教练', 'Direct Explainer'],
+  ] as const)('localizes the current %s coach label independently from the API response', async (
+    coachStyle,
+    apiLabel,
+    localizedLabel,
+  ) => {
+    setBrowserLocale('en-US');
+    vi.mocked(getUserAiPreference).mockResolvedValueOnce(apiResponse({
+      coachStyle,
+      coachStyleLabel: apiLabel,
+    }));
+
+    renderPage();
+
+    await waitFor(() => expect(document.querySelector('.current-coach-strip strong'))
+      .toHaveTextContent(localizedLabel));
+    expect(screen.queryByText(apiLabel)).not.toBeInTheDocument();
+  });
+
   it('associates every review setting help icon with its accessible tooltip', async () => {
     renderPage();
 
@@ -190,6 +213,11 @@ function renderPage(
       />
     </I18nProvider>,
   );
+}
+
+function setBrowserLocale(locale: string) {
+  Object.defineProperty(window.navigator, 'language', { configurable: true, value: locale });
+  Object.defineProperty(window.navigator, 'languages', { configurable: true, value: [locale] });
 }
 
 function apiResponse<T>(data: T): ApiResponse<T> {

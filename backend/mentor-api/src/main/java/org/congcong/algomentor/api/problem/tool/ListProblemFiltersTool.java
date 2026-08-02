@@ -59,7 +59,7 @@ public final class ListProblemFiltersTool implements AgentTool {
           INCLUDE_COUNTS,
           true,
           LIST_PROBLEM_FILTERS);
-      ProblemLocale locale = locale(arguments);
+      ProblemLocale locale = locale(arguments, context);
       ProblemFilters filters = problemService.findProblemFilters(locale);
       return output(filters, includeCounts);
     } catch (AgentException exception) {
@@ -146,9 +146,12 @@ public final class ListProblemFiltersTool implements AgentTool {
     return schema;
   }
 
-  private ProblemLocale locale(JsonNode arguments) {
+  private ProblemLocale locale(JsonNode arguments, AgentExecutionContext context) {
     try {
-      return ProblemLocale.parse(ProblemAgentToolSupport.optionalText(arguments, LOCALE, LIST_PROBLEM_FILTERS));
+      String trustedLocale = ProblemAgentToolSupport.trustedContentLocale(context);
+      return ProblemLocale.parse(trustedLocale == null
+          ? ProblemAgentToolSupport.optionalText(arguments, LOCALE, LIST_PROBLEM_FILTERS)
+          : trustedLocale);
     } catch (ProblemLocale.UnsupportedProblemLocaleException exception) {
       throw ProblemAgentToolSupport.toolFailure(LIST_PROBLEM_FILTERS, exception.getMessage(), exception);
     }

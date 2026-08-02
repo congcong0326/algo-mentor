@@ -20,6 +20,7 @@
       <arg column="raw_code" javaType="string"/>
       <arg column="normalized_code" javaType="string"/>
       <arg column="language" javaType="string"/>
+      <arg column="content_locale" javaType="string"/>
       <arg column="detection_evidence_json" javaType="com.fasterxml.jackson.databind.JsonNode"
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
       <arg column="context_summary" javaType="string"/>
@@ -45,6 +46,7 @@
       <arg column="id" javaType="_long"/>
       <arg column="version_no" javaType="_int"/>
       <arg column="language" javaType="string"/>
+      <arg column="content_locale" javaType="string"/>
       <arg column="total_score" javaType="java.math.BigDecimal"/>
       <arg column="passed" javaType="_boolean"/>
       <arg column="created_at" javaType="java.time.Instant"/>
@@ -75,6 +77,7 @@
     raw_code,
     normalized_code,
     language,
+    content_locale,
     detection_evidence_json,
     context_summary,
     total_score,
@@ -94,6 +97,7 @@
     id,
     version_no,
     language,
+    content_locale,
     total_score,
     passed,
     created_at
@@ -131,6 +135,7 @@
       raw_code,
       normalized_code,
       language,
+      content_locale,
       detection_evidence_json,
       context_summary,
       total_score,
@@ -157,6 +162,7 @@
       #{rawCode},
       #{normalizedCode},
       #{language},
+      #{contentLocale},
       #{detectionEvidenceJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{contextSummary},
       #{totalScore},

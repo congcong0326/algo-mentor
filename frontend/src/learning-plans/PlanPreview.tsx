@@ -5,6 +5,7 @@ import {
 } from '../i18n/formatters';
 import { useI18n } from '../i18n/I18nProvider';
 import type {
+  LearningPlanContentLocale,
   LearningPlanDetailProblemResponse,
   LearningPlanDraftPlan,
   PracticeProgressStatus,
@@ -37,20 +38,22 @@ function formatProgressStatus(status: PracticeProgressStatus, resources: ReturnT
 }
 
 function ProblemRowContent({
+  contentLocale,
   problem,
   todayPack,
 }: {
+  contentLocale: LearningPlanContentLocale;
   problem: PlanPreviewProblem;
   todayPack?: boolean;
 }) {
-  const { locale, resources } = useI18n();
+  const { resources } = useI18n();
   const progressStatus = hasProgressStatus(problem) ? problem.progressStatus : undefined;
 
   return (
     <>
       <span className="problem-id">{problem.frontendId ?? '-'}</span>
       <span className="problem-title">
-        <strong>{formatProblemTitle(problem, locale)}</strong>
+        <strong>{formatProblemTitle(problem, contentLocale)}</strong>
         <small>{problem.reason}</small>
       </span>
       <span className="problem-badge-group">
@@ -86,11 +89,13 @@ function buildProblemIndex(plan: LearningPlanDraftPlan) {
 }
 
 function ProblemRow({
+  contentLocale,
   onProblemSelect,
   phaseIndex,
   problem,
   todayPack,
 }: {
+  contentLocale: LearningPlanContentLocale;
   onProblemSelect?: (phaseIndex: number, problemSlug: string) => void;
   phaseIndex: number;
   problem: PlanPreviewProblem;
@@ -102,18 +107,20 @@ function ProblemRow({
       onClick={() => onProblemSelect(phaseIndex, problem.slug)}
       type="button"
     >
-      <ProblemRowContent problem={problem} todayPack={todayPack} />
+      <ProblemRowContent contentLocale={contentLocale} problem={problem} todayPack={todayPack} />
     </button>
   ) : (
     <div className="problem-row">
-      <ProblemRowContent problem={problem} todayPack={todayPack} />
+      <ProblemRowContent contentLocale={contentLocale} problem={problem} todayPack={todayPack} />
     </div>
   );
 }
 
 function MissingProblemRow({
+  contentLocale,
   slug,
 }: {
+  contentLocale: LearningPlanContentLocale;
   slug: string;
 }) {
   const { resources } = useI18n();
@@ -126,7 +133,7 @@ function MissingProblemRow({
   };
   return (
     <div className="problem-row unresolved-problem-row">
-      <ProblemRowContent problem={fallbackProblem} />
+      <ProblemRowContent contentLocale={contentLocale} problem={fallbackProblem} />
     </div>
   );
 }
@@ -182,6 +189,7 @@ export function PlanPackageOverview({
                   const indexedProblem = problemIndex.get(slug);
                   return indexedProblem ? (
                     <ProblemRow
+                      contentLocale={plan.contentLocale}
                       key={`${slug}-${index}`}
                       onProblemSelect={onProblemSelect}
                       phaseIndex={indexedProblem.phaseIndex}
@@ -189,7 +197,11 @@ export function PlanPackageOverview({
                       todayPack={todayPackProblemKeys?.has(problemKey(plan, indexedProblem.phaseIndex, slug))}
                     />
                   ) : (
-                    <MissingProblemRow key={`${slug}-${index}`} slug={slug} />
+                    <MissingProblemRow
+                      contentLocale={plan.contentLocale}
+                      key={`${slug}-${index}`}
+                      slug={slug}
+                    />
                   );
                 })}
               </div>
@@ -227,6 +239,7 @@ export function PlanPhaseDetails({
           <div className="problem-list compact-problems">
             {phase.problems.map((problem) => (
               <ProblemRow
+                contentLocale={plan.contentLocale}
                 key={problem.slug}
                 onProblemSelect={onProblemSelect}
                 phaseIndex={phase.phaseIndex}

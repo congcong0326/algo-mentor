@@ -21,7 +21,8 @@ public record PracticeCodeReviewDraft(
     List<String> deductionReasons,
     List<String> improvementSuggestions,
     String reviewMarkdown,
-    List<Long> affectedTagIds
+    List<Long> affectedTagIds,
+    String contentLocale
 ) {
 
   public PracticeCodeReviewDraft(
@@ -31,7 +32,19 @@ public record PracticeCodeReviewDraft(
       List<String> deductionReasons, List<String> improvementSuggestions, String reviewMarkdown) {
     this(userId, planId, phaseIndex, problemSlug, sessionId, userMessageId, assistantMessageId, agentRunDbId,
         rawCode, normalizedCode, language, evidence, contextSummary, score, passed, deductionReasons,
-        improvementSuggestions, reviewMarkdown, List.of());
+        improvementSuggestions, reviewMarkdown, List.of(), PracticeResponseLanguage.defaultLanguage().languageTag());
+  }
+
+  public PracticeCodeReviewDraft(
+      long userId, long planId, int phaseIndex, String problemSlug, long sessionId, long userMessageId,
+      Long assistantMessageId, Long agentRunDbId, String rawCode, String normalizedCode, String language,
+      List<PracticeCodeReviewEvidence> evidence, String contextSummary, PracticeCodeReviewScore score, boolean passed,
+      List<String> deductionReasons, List<String> improvementSuggestions, String reviewMarkdown,
+      List<Long> affectedTagIds) {
+    this(userId, planId, phaseIndex, problemSlug, sessionId, userMessageId, assistantMessageId, agentRunDbId,
+        rawCode, normalizedCode, language, evidence, contextSummary, score, passed, deductionReasons,
+        improvementSuggestions, reviewMarkdown, affectedTagIds,
+        PracticeResponseLanguage.defaultLanguage().languageTag());
   }
 
   public PracticeCodeReviewDraft {
@@ -67,6 +80,7 @@ public record PracticeCodeReviewDraft(
     reviewMarkdown = blankToNull(reviewMarkdown);
     affectedTagIds = affectedTagIds == null ? List.of() : affectedTagIds.stream()
         .filter(tagId -> tagId != null && tagId > 0).distinct().toList();
+    contentLocale = PracticeResponseLanguage.fromLocale(contentLocale).languageTag();
   }
 
   private static void requirePositive(long value, String fieldName) {

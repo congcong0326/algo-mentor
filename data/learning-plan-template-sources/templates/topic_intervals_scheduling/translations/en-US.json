@@ -1,0 +1,52 @@
+{
+  "expectedOutcome": "Once completed, you can select sorting, greed, stacking, split or scan lines based on merging, selecting, querying or counting the target.",
+  "goal": "A uniform modelling approach for the ranking of areas, overlapping determinations and scanning events.",
+  "notRecommendedFor": [
+    "Sorting of arrays not mastered",
+    "The main weakness is tree regression or linked list."
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Can independently complete consolidation, insertion, deletion and intersection",
+        "You can explain the status of stacks and diagonals in the query type between questions."
+      ],
+      "focus": "Training in consolidation, insertion, deletion, overwhelming and query after sorting by starting or ending point.",
+      "objectives": [
+        "Master the overlapping determination and sorting key selection",
+        "Understand the differences between greedy endpoints, semi-research and maintenance candidates"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Each is preceded by an agreement to clear the sorting keys and the closed zone, and then verify that the three types of boundary are adjacent, covered and completely separated.",
+      "title": "Merge, Overwrite and Query"
+    },
+    {
+      "acceptanceCriteria": [
+        "Unique, dual and multiple calendar overlaps achieved independently",
+        "Could solve inter-temporal statistical problems with event points or stacks"
+      ],
+      "focus": "Number of overlaps and on-line movements with orderly collections, differential events, prefixes and stacks.",
+      "objectives": [
+        "Mastery of calendar conflict detection and maximum simultaneous operation maintenance",
+        "Understanding scanned incident sequencing, differential recovery and inter-activity maintenance"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Lists the rules for the sorting of starting and ending events separately, and uses the time axis to check and calculate changes.",
+      "title": "Calendar schedule and scanner"
+    }
+  ],
+  "prerequisites": [
+    "Know arrays and sorting",
+    "Understand the two-point search and priority queue base",
+    "It can handle the boundaries between closed zones."
+  ],
+  "recommendedFor": [
+    "Frequent error of sorting keys and overlapping conditions",
+    "Unstable meeting schedule, calendar or event scanning",
+    "Need to complete scanning lines and prefix event models"
+  ],
+  "summary": "2 Week covered inter-area consolidation, coverage deletion, calendar scheduling, scanning lines and event statistics.",
+  "targetAudience": "Inter-problems can be sorted, but learners who do not have a uniform model in case of overlay, query, calendar conflict or scanning lines.",
+  "templateId": "topic_intervals_scheduling",
+  "title": "Inter-district and movement control special"
+}

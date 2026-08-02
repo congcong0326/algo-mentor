@@ -113,6 +113,7 @@ class PracticeCodeReviewAgentToolTest {
       assertThat(context.userMessageId()).isEqualTo(USER_MESSAGE_ID);
       assertThat(context.assistantMessageId()).isEqualTo(ASSISTANT_MESSAGE_ID);
       assertThat(context.agentRunDbId()).isEqualTo(RUN_DB_ID);
+      assertThat(context.locale()).isEqualTo("en-US");
       assertThat(context.originalMessage()).isEqualTo(USER_MESSAGE_CONTENT);
       assertThat(context.extractedCode()).isEqualTo(USER_MESSAGE_CONTENT);
       assertThat(context.problemFacts())
@@ -334,6 +335,7 @@ class PracticeCodeReviewAgentToolTest {
         PracticeChatPromptConstants.METADATA_SCENARIO, PracticeChatPromptConstants.SCENARIO,
         AgentRuntimeMetadataKeys.USER_ID, USER_ID,
         PracticeChatPromptConstants.METADATA_PRACTICE_SESSION_ID, SESSION_ID,
+        PracticeChatPromptConstants.METADATA_LOCALE, "en-US",
         AgentRuntimeMetadataKeys.RUN_DB_ID, RUN_DB_ID,
         AgentRuntimeMetadataKeys.TASK_ID, 100L,
         AgentRuntimeMetadataKeys.TURN_ID, 200L);

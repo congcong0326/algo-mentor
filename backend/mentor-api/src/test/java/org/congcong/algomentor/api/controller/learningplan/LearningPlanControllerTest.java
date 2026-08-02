@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,7 +39,9 @@ import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanConfirmResult;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
@@ -184,6 +187,7 @@ class LearningPlanControllerTest {
     MvcResult result = mockMvc.perform(post("/api/learning-plans/drafts/stream")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.TEXT_EVENT_STREAM)
+            .header("Accept-Language", "en-US,en;q=0.9")
             .content("""
                 {
                   "intent": "INTERVIEW_SPRINT",
@@ -201,10 +205,14 @@ class LearningPlanControllerTest {
 
     mockMvc.perform(asyncDispatch(result))
         .andExpect(status().isOk())
+        .andExpect(header().string("Vary", "Accept-Language"))
         .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.content()
             .string(org.hamcrest.Matchers.containsString("event:draft_ready")));
 
-    verify(draftStreamService).stream(eq(42L), any(), any(), eq(Map.of()));
+    ArgumentCaptor<LearningPlanDraftCommand> commandCaptor = ArgumentCaptor.forClass(LearningPlanDraftCommand.class);
+    verify(draftStreamService).stream(eq(42L), commandCaptor.capture(), any(), eq(Map.of()));
+    org.assertj.core.api.Assertions.assertThat(commandCaptor.getValue().contentLocale())
+        .isEqualTo(LearningPlanContentLocale.EN_US);
     verifyNoInteractions(admissionService, lifecycleService);
     verify(sseProperties).learningPlanDraftTimeoutMillis();
   }
@@ -363,6 +371,7 @@ class LearningPlanControllerTest {
                 }
                 """))
         .andExpect(status().isOk())
+        .andExpect(header().string("Vary", "Accept-Language"))
         .andExpect(jsonPath("$.data.draftId").value(101))
         .andExpect(jsonPath("$.data.status").value("GENERATED"))
         .andExpect(jsonPath("$.data.draftPlan.title").value("四周 Java 算法面试冲刺计划"))

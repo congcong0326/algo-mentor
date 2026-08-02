@@ -41,8 +41,11 @@ public class PracticeCodeReviewPromptBuilder {
   }
 
   private String userPrompt(PracticeTurnContext context) {
+    String outputLocale = PracticeResponseLanguage.fromLocale(context.locale()).languageTag();
     return """
         请根据以下事实完成一次练习代码 Review：
+
+        outputLocale: %s
 
         当前题目：
         problemSlug: %s
@@ -100,9 +103,10 @@ public class PracticeCodeReviewPromptBuilder {
         - evidence 使用短类型和值说明关键证据，例如 ENTRY_FUNCTION、PROBLEM_FIT、MISSING_EDGE_CASE。
         - judgeAssessment.timeComplexity 和 spaceComplexity 给出最坏复杂度；expectedTimeComplexity 给出题目目标复杂度，无法判断时填写 UNKNOWN。
         - judgeAssessment.constraintAnalysis 必须结合题目最大约束解释为什么预计通过、超时、超内存或无法确认，不能只写“复杂度较高”。
-        - deductionReasons 和 improvementSuggestions 使用中文短句。
-        - reviewMarkdown 使用中文，面向学习者解释主要扣分点和下一步改进。
+        - contextSummary、evidence.value、judgeAssessment.constraintAnalysis、deductionReasons、improvementSuggestions 和 reviewMarkdown 都是面向学习者的内容，必须使用 outputLocale 对应的语言。
+        - 编程语言名称、API、复杂度表达式、错误名称、代码和稳定标识符保持原样。
         """.formatted(
+        outputLocale,
         context.problemSlug(),
         context.problemFacts(),
         context.planId(),

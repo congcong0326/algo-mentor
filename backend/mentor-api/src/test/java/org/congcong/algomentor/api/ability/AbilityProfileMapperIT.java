@@ -48,7 +48,7 @@ class AbilityProfileMapperIT extends PostgresIntegrationTestSupport {
     insertReview(7L, "array-1", 6, "NOW()", 2);
     AbilityProfileMapper mapper = mapper();
 
-    List<AbilityTagScoreRow> rows = mapper.findCommonTagScores(7L, 20);
+    List<AbilityTagScoreRow> rows = mapper.findCommonTagScores(7L, 20, "zh-CN");
 
     assertThat(rows)
         .extracting(row -> List.of(row.tag(), row.label(), row.problemCount(), row.reviewedProblemCount()))
@@ -57,6 +57,14 @@ class AbilityProfileMapperIT extends PostgresIntegrationTestSupport {
             List.of("matrix", "矩阵", 20L, 0L));
     assertThat(rows.get(0).rawAverageScore()).isEqualByComparingTo(new BigDecimal("7"));
     assertThat(rows.get(1).rawAverageScore()).isNull();
+
+    List<AbilityTagScoreRow> englishRows = mapper.findCommonTagScores(7L, 20, "en-US");
+
+    assertThat(englishRows)
+        .extracting(row -> List.of(row.tag(), row.label()))
+        .containsExactly(
+            List.of("array", "Array"),
+            List.of("matrix", "Matrix"));
   }
 
   private AbilityProfileMapper mapper() throws Exception {

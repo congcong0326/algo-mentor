@@ -19,7 +19,7 @@ class UserProblemNoteServiceTest {
 
   private static final Instant NOW = Instant.parse("2026-07-24T08:00:00Z");
   private final InMemoryRepository repository = new InMemoryRepository();
-  private final ReviewProblemCatalog catalog = slug -> "two-sum".equals(slug)
+  private final ReviewProblemCatalog catalog = (slug, locale) -> "two-sum".equals(slug)
       ? Optional.of(new ReviewProblemSnapshot(slug, "两数之和", "EASY", "", ""))
       : Optional.empty();
   private final UserProblemNoteService service = new UserProblemNoteService(

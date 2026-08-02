@@ -1,0 +1,92 @@
+{
+  "expectedOutcome": "Once completed, it will be possible to reset the core question type on a weekly basis and to compile a list of solvency templates, complexities and errors that can be expressed through interviews.",
+  "goal": "A round of high-value core punches was completed in the countdown of interviews.",
+  "notRecommendedFor": [
+    "I just started learning how to program.",
+    "Learners who need more than 12 weeks of system support base"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Main data structure for fast judgement array/string",
+        "Optional questions only as retries"
+      ],
+      "focus": "The heat is done using arrays, strings, Hash and base area.",
+      "objectives": [
+        "Complete core Easy/Medium sequence Topic",
+        "Collapse a double disk template for hash count, two pointers and inter-section consolidation"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Distinguishing the lower mark, the hash count and the inter-zone boundary by type of error.",
+      "title": "Week 1: Sequence base"
+    },
+    {
+      "acceptanceCriteria": [
+        "Explains the order in which the thread table is moved.",
+        "Description of the BFS/DFS modified rules"
+      ],
+      "focus": "Focus on the chain, window, chart search and reply/string status.",
+      "objectives": [
+        "Completion of linked list pointer, window and base map search",
+        "Duplicate pointer rewrite and window shrink conditions"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Splits the list, the window, the chart search error.",
+      "title": "Week 2: Basic data structure"
+    },
+    {
+      "acceptanceCriteria": [
+        "Can write a definition of a binary tree regression value",
+        "It's an example of an extended model."
+      ],
+      "focus": "Completion of high frequency interviews in trees, maps, stacks and compartments.",
+      "objectives": [
+        "Finish the tree retrieving, pounce and stacking core Topic",
+        "Repeated Recursive Return Value and priority queue Use Conditions"
+      ],
+      "phaseIndex": 3,
+      "reviewAdvice": "Priority is given to reverting tree to export and chart dependency.",
+      "title": "Week 3: Non-linear structures"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independently describe Trie Node Structure",
+        "Can describe stacks and validate applicable conditions"
+      ],
+      "focus": "Completing Trie, streaming data structure, and mapping and inter-temporal variants.",
+      "objectives": [
+        "Trie, data stream, inter-field insertion and connectivity completed Topic",
+        "Specify missing processing and alternative discs for premium/optional"
+      ],
+      "phaseIndex": 4,
+      "reviewAdvice": "Extending the issue of option/premium as a single model without blocking the main route.",
+      "title": "Week 4: Progress structure"
+    },
+    {
+      "acceptanceCriteria": [
+        "Can explain the state meaning and order of transfer of each DP question",
+        "Capable to mark initialization and boundary in a double disk"
+      ],
+      "focus": "The end of the sprint with a one-dimensional, knapsack, sequence and path DP.",
+      "objectives": [
+        "Finish DP core and record status definition",
+        "Categorize errors by 1D, path, string and selection group"
+      ],
+      "phaseIndex": 5,
+      "reviewAdvice": "The same topic is added to the topic of unclear definition of priority duplicate status.",
+      "title": "Week 5: Dynamic programming"
+    }
+  ],
+  "prerequisites": [
+    "Easy/Medium Foundation completed Topic",
+    "Common terms for understanding arrays, chains, trees, maps and dynamic programming"
+  ],
+  "recommendedFor": [
+    "4-6 weeks of interview countdown",
+    "Need to clarify the weekly plaque and the repeat pace"
+  ],
+  "summary": "Five weeks to complete the Tech Interview Handbook Best Practice core route, advance by sequence, data structure, tree map, progression structure and DP-weekly.",
+  "targetAudience": "Learners with basic experience who wish to use five weeks of pre-interview high-density study.",
+  "templateId": "tih_best_practice_50_5weeks",
+  "title": "5 Weekly interview sprinting programme"
+}

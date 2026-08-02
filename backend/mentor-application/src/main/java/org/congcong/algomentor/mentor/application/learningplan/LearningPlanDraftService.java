@@ -7,8 +7,6 @@ import java.util.List;
 
 public class LearningPlanDraftService {
 
-  private static final String REGENERATE_WITH_GOAL_PREFIX = "请按新的目标摘要重新生成学习计划：";
-
   private final LearningPlanDraftRepository draftRepository;
   private final LearningPlanRepository planRepository;
   private final LearningPlanAgentService agentService;
@@ -63,7 +61,7 @@ public class LearningPlanDraftService {
       throw new LearningPlanException("LEARNING_PLAN_DRAFT_NOT_GENERATED", "只有已生成的学习计划草案可以确认保存。");
     }
     LearningPlanDraftPlan confirmablePlan = loadService.withLoadMetadata(
-        draft.draftPlan(),
+        draft.draftPlan().withContentLocale(draft.command().contentLocale()),
         null);
     validator.validateConfirmablePlan(confirmablePlan);
     Instant now = clock.instant();
@@ -112,10 +110,12 @@ public class LearningPlanDraftService {
   }
 
   private String extractRegeneratedGoal(String normalizedMessage) {
-    if (!normalizedMessage.startsWith(REGENERATE_WITH_GOAL_PREFIX)) {
-      return null;
+    for (String prefix : LearningPlanDraftMessagePrefixes.REGENERATE_PREFIXES) {
+      if (normalizedMessage.startsWith(prefix)) {
+        String regeneratedGoal = normalizedMessage.substring(prefix.length()).trim();
+        return regeneratedGoal.isEmpty() ? null : regeneratedGoal;
+      }
     }
-    String regeneratedGoal = normalizedMessage.substring(REGENERATE_WITH_GOAL_PREFIX.length()).trim();
-    return regeneratedGoal.isEmpty() ? null : regeneratedGoal;
+    return null;
   }
 }

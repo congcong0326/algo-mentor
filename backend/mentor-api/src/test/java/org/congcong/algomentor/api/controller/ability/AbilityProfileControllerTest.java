@@ -16,6 +16,7 @@ import org.congcong.algomentor.api.ability.model.AbilityProfileScopeResponse;
 import org.congcong.algomentor.api.ability.model.AbilityTagScoreResponse;
 import org.congcong.algomentor.api.ability.service.AbilityProfileService;
 import org.congcong.algomentor.api.controller.LocalizedApiExceptionHandler;
+import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.identity.model.AuthUserStatus;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
@@ -48,9 +49,9 @@ class AbilityProfileControllerTest {
   @Test
   void profileUsesCurrentUserAndIgnoresRequestUserId() throws Exception {
     when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
-    when(abilityProfileService.getProfile(42L)).thenReturn(profile());
+    when(abilityProfileService.getProfile(42L, ProblemLocale.ZH_CN)).thenReturn(profile());
 
-    mockMvc.perform(get("/api/abilities/profile?userId=99"))
+    mockMvc.perform(get("/api/abilities/profile?userId=99").header("Accept-Language", "zh-CN"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.tags[0].tag").value("dynamic-programming"))
@@ -64,7 +65,18 @@ class AbilityProfileControllerTest {
         .andExpect(jsonPath("$.data.scope.latestReviewOnly").value(true))
         .andExpect(jsonPath("$.data.scope.conservativeWeight").value(4));
 
-    verify(abilityProfileService).getProfile(42L);
+    verify(abilityProfileService).getProfile(42L, ProblemLocale.ZH_CN);
+  }
+
+  @Test
+  void profileUsesRequestLanguageForAbilityTagLabels() throws Exception {
+    when(currentUserIdProvider.currentUser()).thenReturn(Optional.of(currentUser()));
+    when(abilityProfileService.getProfile(42L, ProblemLocale.EN_US)).thenReturn(profile());
+
+    mockMvc.perform(get("/api/abilities/profile").header("Accept-Language", "en-US"))
+        .andExpect(status().isOk());
+
+    verify(abilityProfileService).getProfile(42L, ProblemLocale.EN_US);
   }
 
   @Test

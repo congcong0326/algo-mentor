@@ -212,6 +212,7 @@ public class LearningPlanConfiguration {
       LearningPlanExtensionValidator validator,
       AgentRuntime agentRuntime,
       ObjectMapper objectMapper,
+      LearningPlanProblemCatalog problemCatalog,
       TransactionOperations transactionOperations,
       Clock learningPlanClock) {
     return new LearningPlanExtensionProposalStreamService(
@@ -222,6 +223,7 @@ public class LearningPlanConfiguration {
         validator,
         agentRuntime,
         objectMapper,
+        problemCatalog,
         transactionOperations,
         learningPlanClock);
   }

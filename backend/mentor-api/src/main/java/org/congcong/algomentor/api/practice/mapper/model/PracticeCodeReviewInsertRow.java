@@ -15,6 +15,7 @@ public record PracticeCodeReviewInsertRow(
     String rawCode,
     String normalizedCode,
     String language,
+    String contentLocale,
     JsonNode detectionEvidenceJson,
     String contextSummary,
     BigDecimal totalScore,

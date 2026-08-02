@@ -52,6 +52,7 @@ public class LlmStreamSseMapper {
               request.permissionRequestId(),
               request.displayName(),
               request.reason(),
+              request.copyCode(),
               request.preview(),
               request.expiresAt()));
     }
@@ -186,6 +187,7 @@ public class LlmStreamSseMapper {
       String permissionRequestId,
       String displayName,
       String reason,
+      String copyCode,
       Map<String, Object> preview,
       Instant expiresAt
   ) {

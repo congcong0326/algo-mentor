@@ -28,6 +28,8 @@ import org.congcong.algomentor.llm.core.response.LlmFinishReason;
 import org.congcong.algomentor.llm.core.stream.LlmStreamEvent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
@@ -101,6 +103,10 @@ class LearningPlanExtensionProposalStreamServiceTest {
         .containsEntry("total", 1)
         .containsEntry("completed", 1L);
     assertThat(runner.invocation.get().agentKey()).isEqualTo(LearningPlanExtensionAgentDefinition.KEY);
+    LearningPlanExtensionAgentInput input = (LearningPlanExtensionAgentInput) runner.invocation.get().input();
+    assertThat(input.plan().plan().contentLocale()).isEqualTo(LearningPlanContentLocale.EN_US);
+    assertThat(result.extensionDraft().metadata())
+        .containsEntry(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US");
     assertThat(lockOrder()).containsExactly("plan:12", "plan:12", "group:" + result.proposalGroupId());
   }
 
@@ -370,6 +376,7 @@ class LearningPlanExtensionProposalStreamServiceTest {
         new LearningPlanExtensionValidator(problemCatalog),
         runtime,
         new ObjectMapper(),
+        problemCatalog,
         transactionOperations,
         clock);
   }
@@ -426,7 +433,9 @@ class LearningPlanExtensionProposalStreamServiceTest {
                 List.of("Array"),
                 "匹配数组训练目标。",
                 1)))),
-        Map.of("problemRecommendationIncomplete", false));
+        Map.of(
+            "problemRecommendationIncomplete", false,
+            LearningPlanDraftMetadataKeys.CONTENT_LOCALE, "en-US"));
   }
 
   private LearningPlanExtensionDraft extensionDraft(String summary, String slug) {

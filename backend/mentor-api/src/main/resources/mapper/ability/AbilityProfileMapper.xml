@@ -20,7 +20,7 @@
       SELECT
         p.slug,
         pt.value AS tag,
-        pt.label_zh AS label
+        CASE WHEN #{locale} = 'en-US' THEN pt.label_en ELSE pt.label_zh END AS label
       FROM problem p
       JOIN problem_tag_assignment assignment ON assignment.problem_id = p.id
       JOIN problem_tag pt ON pt.id = assignment.tag_id

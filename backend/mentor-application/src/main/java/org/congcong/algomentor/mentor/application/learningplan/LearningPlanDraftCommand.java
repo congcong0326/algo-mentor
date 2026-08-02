@@ -11,7 +11,8 @@ public record LearningPlanDraftCommand(
     String programmingLanguage,
     LearningPlanDifficultyPreference difficultyPreference,
     Boolean interviewOriented,
-    List<String> topicPreferences
+    List<String> topicPreferences,
+    LearningPlanContentLocale contentLocale
 ) {
 
   public LearningPlanDraftCommand {
@@ -19,6 +20,31 @@ public record LearningPlanDraftCommand(
     programmingLanguage = normalize(programmingLanguage);
     interviewOriented = interviewOriented == null ? false : interviewOriented;
     topicPreferences = normalizeList(topicPreferences);
+    contentLocale = contentLocale == null ? LearningPlanContentLocale.ZH_CN : contentLocale;
+  }
+
+  public LearningPlanDraftCommand(
+      LearningPlanIntent intent,
+      String goal,
+      Integer durationWeeks,
+      LearningPlanLevel level,
+      Integer weeklyHours,
+      String programmingLanguage,
+      LearningPlanDifficultyPreference difficultyPreference,
+      Boolean interviewOriented,
+      List<String> topicPreferences
+  ) {
+    this(
+        intent,
+        goal,
+        durationWeeks,
+        level,
+        weeklyHours,
+        programmingLanguage,
+        difficultyPreference,
+        interviewOriented,
+        topicPreferences,
+        LearningPlanContentLocale.ZH_CN);
   }
 
   LearningPlanDraftCommand withGoal(String nextGoal) {
@@ -31,7 +57,8 @@ public record LearningPlanDraftCommand(
         programmingLanguage,
         difficultyPreference,
         interviewOriented,
-        topicPreferences);
+        topicPreferences,
+        contentLocale);
   }
 
   private static String normalize(String value) {

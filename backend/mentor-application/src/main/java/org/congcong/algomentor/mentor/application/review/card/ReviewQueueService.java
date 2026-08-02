@@ -82,10 +82,10 @@ public class ReviewQueueService {
     return new ReviewSummary(dueCount, remainingTodayCount, nextDueAt.orElse(null));
   }
 
-  public ReviewCardContext context(long userId, long cardId) {
+  public ReviewCardContext context(long userId, long cardId, String locale) {
     ProblemReviewCard card = cardRepository.findForUser(userId, cardId)
         .orElseThrow(() -> new ReviewException("REVIEW_CARD_NOT_FOUND", "复习卡不存在。"));
-    var problem = problemCatalog.findBySlug(card.problemSlug())
+    var problem = problemCatalog.findBySlug(card.problemSlug(), locale)
         .orElseThrow(() -> new ReviewException("REVIEW_PROBLEM_NOT_FOUND", "未找到题目原文。"));
     UserProblemNote note = noteRepository.find(userId, card.problemSlug())
         .orElseGet(() -> UserProblemNote.empty(userId, card.problemSlug()));

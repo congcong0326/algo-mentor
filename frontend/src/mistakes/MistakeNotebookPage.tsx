@@ -249,7 +249,9 @@ export default function MistakeNotebookPage({ onNavigate }: MistakeNotebookPageP
             <div className="modal-heading">
               <div>
                 <p className="eyebrow">Review Card</p>
-                <h2 id="review-card-detail-title">{reviewCardTitle(detailCard, locale)}</h2>
+                <h2 id="review-card-detail-title">
+                  {context?.problem.title || reviewCardTitle(detailCard, locale)}
+                </h2>
               </div>
               <button aria-label={resources.reviewCenter.closeDetail} className="icon-button" onClick={closeDetail} ref={detailCloseButtonRef} type="button">
                 <X aria-hidden="true" />

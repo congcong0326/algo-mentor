@@ -14,6 +14,7 @@ import org.congcong.algomentor.agent.core.AgentRequest;
 import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionBehavior;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionCheck;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionMetadataKeys;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.tool.LlmToolCall;
@@ -37,6 +38,9 @@ class AppendCurrentProblemNotePermissionHookTest {
     assertThat(plan.behavior()).isEqualTo(AgentToolPermissionBehavior.ASK);
     assertThat(plan.displayName()).isEqualTo(AppendCurrentProblemNotePermissionHook.DISPLAY_NAME);
     assertThat(plan.reason()).isEqualTo(AppendCurrentProblemNotePermissionHook.REASON);
+    assertThat(plan.metadata()).containsEntry(
+        AgentToolPermissionMetadataKeys.COPY_CODE,
+        PracticeAgentToolPermissionCopyCodes.APPEND_CURRENT_PROBLEM_NOTE_REQUESTED);
     assertThat(plan.preview())
         .containsEntry(AppendCurrentProblemNoteAgentToolContracts.PREVIEW_NOTE_MARKDOWN, "**关键点**：先查补数。")
         .containsEntry(AppendCurrentProblemNoteAgentToolContracts.PREVIEW_PROBLEM_SLUG, PROBLEM_SLUG)

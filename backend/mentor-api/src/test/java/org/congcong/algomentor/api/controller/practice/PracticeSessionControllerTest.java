@@ -162,6 +162,7 @@ class PracticeSessionControllerTest {
     mockMvc.perform(get("/api/practice-sessions/50/reviews"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.latestReview.totalScore").value(7.0))
+        .andExpect(jsonPath("$.data.latestReview.contentLocale").value("zh-CN"))
         .andExpect(jsonPath("$.data.reviews[0].versionNo").value(2))
         .andExpect(jsonPath("$.data.completionGate.reasonCode").value("PASSED"));
 
@@ -177,6 +178,7 @@ class PracticeSessionControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.id").value(1002))
         .andExpect(jsonPath("$.data.scores.correctness").value(3.0))
+        .andExpect(jsonPath("$.data.contentLocale").value("zh-CN"))
         .andExpect(jsonPath("$.data.evidence[0].type").value("FENCED_CODE_BLOCK"))
         .andExpect(jsonPath("$.data.reviewMarkdown").value("整体思路正确，注意边界。"));
 

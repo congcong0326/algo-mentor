@@ -17,7 +17,7 @@ class AbilityProfileServiceTest {
   @Test
   void returnsZeroScoresWhenTagHasNoReviews() {
     AbilityProfileMapper mapper = mock(AbilityProfileMapper.class);
-    when(mapper.findCommonTagScores(42L, 20)).thenReturn(List.of(
+    when(mapper.findCommonTagScores(42L, 20, "zh-CN")).thenReturn(List.of(
         row("array", "数组", 120L, 0L, null)));
     AbilityProfileService service = new AbilityProfileService(mapper);
 
@@ -81,7 +81,7 @@ class AbilityProfileServiceTest {
 
   private AbilityProfileResponse profileFor(AbilityTagScoreRow row) {
     AbilityProfileMapper mapper = mock(AbilityProfileMapper.class);
-    when(mapper.findCommonTagScores(42L, 20)).thenReturn(List.of(row));
+    when(mapper.findCommonTagScores(42L, 20, "zh-CN")).thenReturn(List.of(row));
     return new AbilityProfileService(mapper).getProfile(42L);
   }
 

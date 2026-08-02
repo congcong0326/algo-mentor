@@ -68,12 +68,13 @@ public class LearningPlanDraftStructuredOutputMapper {
           phase.durationWeeks(),
           phase.focus(),
           phase.objectives(),
-          phase.recommendedTags(),
+          canonicalTags(phase.recommendedTags(), command.contentLocale().languageTag()),
           phase.acceptanceCriteria(),
           phase.reviewAdvice(),
           problems));
     }
     Map<String, Object> metadata = new LinkedHashMap<>(rawPlan.metadata());
+    metadata.put(LearningPlanDraftMetadataKeys.CONTENT_LOCALE, command.contentLocale().languageTag());
     if (incomplete) {
       metadata.put(LearningPlanDraftMetadataKeys.PROBLEM_RECOMMENDATION_INCOMPLETE, true);
     }
@@ -92,5 +93,15 @@ public class LearningPlanDraftStructuredOutputMapper {
         rawPlan.profileSummary(),
         phases,
         metadata);
+  }
+
+  private List<String> canonicalTags(List<String> tags, String locale) {
+    if (tags == null) {
+      return List.of();
+    }
+    return tags.stream()
+        .flatMap(tag -> problemCatalog.findCanonicalTagValue(tag, locale).stream())
+        .distinct()
+        .toList();
   }
 }

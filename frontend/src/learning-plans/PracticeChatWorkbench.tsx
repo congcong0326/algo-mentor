@@ -49,6 +49,8 @@ const LEARNER_PROFILE_TOOL_RUNNING_MIN_VISIBLE_MS = 700;
 // 后端 SSE/tool result 公共契约，用于识别 Review tool 是否真实落库。
 const REVIEW_TOOL_NAME = 'submit_practice_code_review';
 const APPEND_NOTE_TOOL_NAME = 'append_current_problem_note';
+const REVIEW_PERMISSION_COPY_CODE = 'PRACTICE_CODE_REVIEW_REQUESTED';
+const APPEND_NOTE_PERMISSION_COPY_CODE = 'APPEND_CURRENT_PROBLEM_NOTE_REQUESTED';
 const REVIEW_SUBMITTED_RESULT_TYPE = 'practice_code_review_submitted';
 const TOOL_PERMISSION_DENIED_RESULT_TYPE = 'tool_permission_denied';
 const TOOL_PERMISSION_TIMEOUT_RESULT_TYPE = 'tool_permission_timeout';
@@ -131,6 +133,33 @@ function progressStatusLabel(status: PracticeProgressStatus | undefined, resourc
   return labels[status ?? 'NOT_STARTED'];
 }
 
+function permissionRequestCopy(
+  request: AgentToolPermissionRequestEvent,
+  resources: LocaleResources,
+): { title: string; reason: string } {
+  if (isReviewPermissionRequest(request)) {
+    return {
+      title: resources.learningPlans.toolPermissionReviewTitle,
+      reason: resources.learningPlans.toolPermissionReviewReason,
+    };
+  }
+  if (isNotePermissionRequest(request)) {
+    return {
+      title: resources.learningPlans.toolPermissionNoteTitle,
+      reason: resources.learningPlans.toolPermissionNoteReason,
+    };
+  }
+  return { title: request.displayName, reason: request.reason };
+}
+
+function isReviewPermissionRequest(request: AgentToolPermissionRequestEvent): boolean {
+  return request.copyCode === REVIEW_PERMISSION_COPY_CODE || request.toolName === REVIEW_TOOL_NAME;
+}
+
+function isNotePermissionRequest(request: AgentToolPermissionRequestEvent): boolean {
+  return request.copyCode === APPEND_NOTE_PERMISSION_COPY_CODE || request.toolName === APPEND_NOTE_TOOL_NAME;
+}
+
 function readContentDelta(data: unknown): string {
   if (typeof data !== 'object' || data === null || !('content' in data)) {
     return '';
@@ -183,6 +212,7 @@ function readPermissionRequestEvent(data: unknown): AgentToolPermissionRequestEv
   const permissionRequestId = readStringField(event, 'permissionRequestId');
   const displayName = readStringField(event, 'displayName');
   const reason = readStringField(event, 'reason');
+  const copyCode = readStringField(event, 'copyCode');
   const expiresAt = readStringField(event, 'expiresAt');
   const preview = event.preview;
 
@@ -207,6 +237,7 @@ function readPermissionRequestEvent(data: unknown): AgentToolPermissionRequestEv
     permissionRequestId,
     displayName,
     reason,
+    copyCode,
     preview: preview as Record<string, unknown>,
     expiresAt,
   };
@@ -598,7 +629,10 @@ export default function PracticeChatWorkbench({
   const pendingPermissionProblem = pendingPermission
     ? permissionProblemLabel(pendingPermission.preview, sessionResponse, problem, locale)
     : undefined;
-  const noteAppendPermission = pendingPermission?.request.toolName === APPEND_NOTE_TOOL_NAME;
+  const noteAppendPermission = pendingPermission ? isNotePermissionRequest(pendingPermission.request) : false;
+  const permissionCopy = pendingPermission
+    ? permissionRequestCopy(pendingPermission.request, resources)
+    : undefined;
   const permissionSeconds = pendingPermission
     ? permissionRemainingSeconds(pendingPermission.request.expiresAt)
     : undefined;
@@ -1506,8 +1540,8 @@ export default function PracticeChatWorkbench({
           >
             <div className="practice-permission-heading">
               <p className="eyebrow">{resources.learningPlans.toolPermissionEyebrow}</p>
-              <h3 id="practice-permission-title">{pendingPermission.request.displayName}</h3>
-              <p>{pendingPermission.request.reason}</p>
+              <h3 id="practice-permission-title">{permissionCopy?.title}</h3>
+              <p>{permissionCopy?.reason}</p>
             </div>
 
             {permissionSeconds !== undefined && (

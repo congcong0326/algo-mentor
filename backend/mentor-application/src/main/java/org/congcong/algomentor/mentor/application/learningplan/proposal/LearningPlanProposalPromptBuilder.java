@@ -11,6 +11,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.practice.PracticeProgress;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemMessageFactory;
 import org.congcong.algomentor.mentor.application.prompt.ManagedSystemPromptDefinition;
@@ -66,9 +67,17 @@ public class LearningPlanProposalPromptBuilder {
             原始生成命令 JSON：
             %s
 
+            outputLocale: %s
+            problemToolLocale: %s
+
             当前学习计划草案 JSON：
             %s
-            """.formatted(instruction, toJson(command), toJson(currentPlan))));
+            """.formatted(
+            instruction,
+            toJson(command),
+            command.contentLocale().languageTag(),
+            command.contentLocale().languageTag(),
+            toJson(currentPlan))));
   }
 
   public List<LlmMessage> buildExtensionPrompt(
@@ -85,6 +94,7 @@ public class LearningPlanProposalPromptBuilder {
       List<PracticeProgress> progress,
       long userId
   ) {
+    LearningPlanContentLocale contentLocale = currentPlan.plan().contentLocale();
     return List.of(
         ManagedSystemMessageFactory.system(snapshot(ManagedSystemPromptDefinitions.LEARNING_PLAN_EXTENSION, userId),
             SystemPromptSectionKeys.LEARNING_PLAN_EXTENSION_BASE),
@@ -94,12 +104,20 @@ public class LearningPlanProposalPromptBuilder {
             用户扩展要求：
             %s
 
+            outputLocale: %s
+            problemToolLocale: %s
+
             当前学习计划 JSON：
             %s
 
             练习进度 JSON：
             %s
-            """.formatted(instruction, toJson(currentPlan.plan()), toJson(progressSummary(progress)))));
+            """.formatted(
+            instruction,
+            contentLocale.languageTag(),
+            contentLocale.languageTag(),
+            toJson(currentPlan.plan()),
+            toJson(progressSummary(progress)))));
   }
 
   public List<LlmMessage> buildExtensionRevisionPrompt(
@@ -118,6 +136,7 @@ public class LearningPlanProposalPromptBuilder {
       LearningPlanExtensionDraft previousExtension,
       long userId
   ) {
+    LearningPlanContentLocale contentLocale = currentPlan.plan().contentLocale();
     return List.of(
         ManagedSystemMessageFactory.system(snapshot(ManagedSystemPromptDefinitions.LEARNING_PLAN_EXTENSION, userId),
             SystemPromptSectionKeys.LEARNING_PLAN_EXTENSION_BASE),
@@ -131,12 +150,20 @@ public class LearningPlanProposalPromptBuilder {
             用户修订要求：
             %s
 
+            outputLocale: %s
+            problemToolLocale: %s
+
             当前学习计划 JSON：
             %s
 
             练习进度 JSON：
             %s
-            """.formatted(instruction, toJson(currentPlan.plan()), toJson(progressSummary(progress)))));
+            """.formatted(
+            instruction,
+            contentLocale.languageTag(),
+            contentLocale.languageTag(),
+            toJson(currentPlan.plan()),
+            toJson(progressSummary(progress)))));
   }
 
   public ResolvedSystemPromptSnapshot snapshot(ManagedSystemPromptDefinition definition, long userId) {

@@ -14,6 +14,7 @@ public class PracticeCodeReviewStructuredOutputMapper {
       return invalid();
     }
     try {
+      PracticeResponseLanguage responseLanguage = PracticeResponseLanguage.fromLocale(context.locale());
       if (!requiredBoolean(structuredOutput, "isCodeSubmission")) {
         return PracticeReviewResult.notCodeLike();
       }
@@ -62,7 +63,7 @@ public class PracticeCodeReviewStructuredOutputMapper {
       if (judgeBlocking) {
         evidence.add(new PracticeCodeReviewEvidence(
             PracticeCodeReviewConstants.EVIDENCE_JUDGE_BLOCKING_CAP,
-            "judge verdict %s caps correctness at %s and total score at %s".formatted(
+            judgeBlockingCapEvidence(responseLanguage).formatted(
                 judgeAssessment.verdict().name(),
                 PracticeCodeReviewConstants.BLOCKING_CORRECTNESS_CAP.toPlainString(),
                 PracticeCodeReviewConstants.BLOCKING_TOTAL_CAP.toPlainString())));
@@ -71,14 +72,14 @@ public class PracticeCodeReviewStructuredOutputMapper {
         total = PracticeCodeReviewConstants.BLOCKING_TOTAL_CAP;
         evidence.add(new PracticeCodeReviewEvidence(
             PracticeCodeReviewConstants.EVIDENCE_CORRECTNESS_BLOCKING_CAP,
-            "correctness <= 2 caps total score at 5.0"));
+            correctnessBlockingCapEvidence(responseLanguage)));
       } else if (!judgeAssessment.meetsExpectedComplexity()) {
         if (total.compareTo(PracticeCodeReviewConstants.SUBOPTIMAL_TOTAL_CAP) > 0) {
           total = PracticeCodeReviewConstants.SUBOPTIMAL_TOTAL_CAP;
         }
         evidence.add(new PracticeCodeReviewEvidence(
             PracticeCodeReviewConstants.EVIDENCE_SUBOPTIMAL_COMPLEXITY_CAP,
-            "missing expected complexity caps complexity at 1.0 and total score at 8.0"));
+            suboptimalComplexityCapEvidence(responseLanguage)));
       }
 
       boolean passed = !judgeBlocking
@@ -107,10 +108,12 @@ public class PracticeCodeReviewStructuredOutputMapper {
           textValue(structuredOutput, "contextSummary"),
           normalizedScore,
           passed,
-          deductionReasons(structuredOutput.path("deductionReasons"), judgeAssessment, judgeBlocking),
+          deductionReasons(
+              structuredOutput.path("deductionReasons"), judgeAssessment, judgeBlocking, responseLanguage),
           stringList(structuredOutput.path("improvementSuggestions")),
           textValue(structuredOutput, "reviewMarkdown"),
-          affectedTagIds(context, structuredOutput.path(PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS)));
+          affectedTagIds(context, structuredOutput.path(PracticeCodeReviewConstants.JSON_AFFECTED_TAG_IDS)),
+          responseLanguage.languageTag());
       return PracticeReviewResult.reviewed(draft);
     } catch (IllegalArgumentException exception) {
       return invalid();
@@ -190,22 +193,51 @@ public class PracticeCodeReviewStructuredOutputMapper {
   private List<String> deductionReasons(
       JsonNode node,
       JudgeAssessment judgeAssessment,
-      boolean judgeBlocking
+      boolean judgeBlocking,
+      PracticeResponseLanguage responseLanguage
   ) {
     List<String> values = new ArrayList<>(stringList(node));
     String normalizedReason = null;
     if (judgeBlocking) {
       String description = judgeAssessment.verdict().allowsPassing()
-          ? "结构化评审标记了影响通过的阻断问题"
-          : judgeAssessment.verdict().descriptionZh();
-      normalizedReason = "评测阻断：" + description + "。";
+          ? blockingIssueDescription(responseLanguage)
+          : judgeAssessment.verdict().description(responseLanguage);
+      normalizedReason = responseLanguage == PracticeResponseLanguage.EN_US
+          ? "Judge blocker: " + description + "."
+          : "评测阻断：" + description + "。";
     } else if (!judgeAssessment.meetsExpectedComplexity()) {
-      normalizedReason = "复杂度未达到题目预期，复杂度分最高为 1.0，总分最高为 8.0。";
+      normalizedReason = responseLanguage == PracticeResponseLanguage.EN_US
+          ? "The solution misses the expected complexity, so the complexity score is capped at 1.0 and the total score at 8.0."
+          : "复杂度未达到题目预期，复杂度分最高为 1.0，总分最高为 8.0。";
     }
     if (normalizedReason != null && !values.contains(normalizedReason)) {
       values.add(0, normalizedReason);
     }
     return List.copyOf(values);
+  }
+
+  private String blockingIssueDescription(PracticeResponseLanguage responseLanguage) {
+    return responseLanguage == PracticeResponseLanguage.EN_US
+        ? "the structured review identified a blocking issue that prevents acceptance"
+        : "结构化评审标记了影响通过的阻断问题";
+  }
+
+  private String judgeBlockingCapEvidence(PracticeResponseLanguage responseLanguage) {
+    return responseLanguage == PracticeResponseLanguage.EN_US
+        ? "judge verdict %s caps correctness at %s and total score at %s"
+        : "评测结论 %s 将正确性分限制为最高 %s，并将总分限制为最高 %s";
+  }
+
+  private String correctnessBlockingCapEvidence(PracticeResponseLanguage responseLanguage) {
+    return responseLanguage == PracticeResponseLanguage.EN_US
+        ? "correctness <= 2 caps total score at 5.0"
+        : "正确性分不高于 2 时，总分最高为 5.0";
+  }
+
+  private String suboptimalComplexityCapEvidence(PracticeResponseLanguage responseLanguage) {
+    return responseLanguage == PracticeResponseLanguage.EN_US
+        ? "missing expected complexity caps complexity at 1.0 and total score at 8.0"
+        : "未达到预期复杂度时，复杂度分最高为 1.0，总分最高为 8.0";
   }
 
   private PracticeReviewResult invalid() {

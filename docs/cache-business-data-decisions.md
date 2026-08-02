@@ -228,12 +228,12 @@ public record ProblemStaticSnapshot(
 | 缓存数据 | 包含完整模板、阶段和题目引用的 `LearningPlanTemplateCatalog` |
 | 缓存类型 | `LocalBoundedCacheRegion` |
 | cache name | `learning-plan-template-catalog` |
-| key | `singleton` |
-| `maximum-size` | `1` |
+| key | `LearningPlanContentLocale`（`zh-CN` / `en-US`） |
+| `maximum-size` | `2` |
 | TTL | 无 |
 | 加载方式 | 首次访问时一次性加载完整模板目录 |
 | loader 异常 | 不缓存异常 |
-| 失效方式 | 服务进程重启 |
+| 失效方式 | 模板写入事务提交后清空全部 locale key；发布替换仍会自然清空本地缓存 |
 
 建议的目录结构：
 
@@ -251,7 +251,7 @@ public record LearningPlanTemplateCatalog(
 - 模板不存在直接由目录 map 判断，不建立单独的负缓存 region。
 - 完整目录采用懒加载；当前 16 个模板和 631 条题目引用总体较小，不需要按模板拆分缓存。
 - 全量加载应分别批量查询模板、阶段和题目引用，再在内存中组装，目标约为 3 次 SQL；避免按模板逐个查询阶段和引用形成 N+1。
-- 学习计划模板 seed 重新导入后，必须重启或滚动替换全部服务节点。未来支持在线模板编辑时，需要重新评估缓存类型和失效机制。
+- 两个 locale 必须独立缓存，避免语言切换复用错误的目录视图；模板 seed 导入完成后，在事务提交后清空本进程全部 locale key。
 
 ### 2.8 代码内置 prompt 和固定映射
 
@@ -462,7 +462,7 @@ algo-mentor:
 | `auth-beta-email-membership` | Shared TTL | `500` | `1m` | 规范化邮箱，事件 token 使用 SHA-256 |
 | `problem-static-snapshot` | Local bounded | `4000` | 无 | `problemSlug` |
 | `problem-filters` | Local bounded | `2` | 无 | `ProblemLocale` |
-| `learning-plan-template-catalog` | Local bounded | `1` | 无 | `singleton` |
+| `learning-plan-template-catalog` | Local bounded | `2` | 无 | `LearningPlanContentLocale` |
 
 Shared region 的 namespace 与 cache name 保持相同，首版 schema version 均为代码常量 `1`，不允许通过环境变量随意修改。容量和 TTL 由所属业务模块的类型化配置属性管理。
 
@@ -472,7 +472,7 @@ Shared region 的 namespace 与 cache name 保持相同，首版 schema version 
 2. 接入 AI 全局设置和用户覆盖策略两个 Shared region。
 3. 接入认证访问快照、内测准入设置和邮箱成员关系三个 Shared region。
 4. 接入题目静态快照和题库筛选两个 Local bounded region。
-5. 实现学习计划模板全量批量查询和单例目录缓存。
+5. 实现学习计划模板全量批量查询和按正文语言隔离的目录缓存。
 6. 补齐各业务写路径的同事务失效事件、提交后本地失效、指标和测试。
 
 ## 六、最终结论

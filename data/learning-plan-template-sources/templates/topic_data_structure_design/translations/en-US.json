@@ -1,0 +1,52 @@
+{
+  "expectedOutcome": "After completion, select a combination of arrays, Hash, linked list, stack, Trie or orderly structure from the interface operation and complexity binding.",
+  "goal": "Building design capacity to reverse operational complexity from bottom-up structures and portfolio data structures.",
+  "notRecommendedFor": [
+    "No basic collection type yet available",
+    "The main objective is pure mathematics or dynamic programming."
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Can independently achieve cycle queues, cycle double-end queues and minimum stacks",
+        "Explains the organization and complexity of LRU, LFU and All O(1) degrees"
+      ],
+      "focus": "Transition from base packagings to circular structures, LRU/LFU and multiposition queues.",
+      "objectives": [
+        "Select an array, queue, stack or two-way chain according to interface operation",
+        "hash watch plus two-way watch maintenance O(1) query and update"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Establish operational complexity tables for each interface and draw nodes for insertion, deletion, phase-out.",
+      "title": "Inner queue, two-way chain and cache"
+    },
+    {
+      "acceptanceCriteria": [
+        "Can independently design random collections and inert iteratives",
+        "Query index indicating time keys, snapshot arrays and online systems"
+      ],
+      "focus": "Training arrays plus hash randomization, iterative status, Trie, time index and event aggregation.",
+      "objectives": [
+        "master O(1) exchange deletion in random collection",
+        "Understanding the inertity of the iterative, time index and online event status"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Draws the minimum state that must be saved in reverse from the sequence from the interface, and identifies no variables for each field.",
+      "title": "Random assembly, iterative and time series design"
+    }
+  ],
+  "prerequisites": [
+    "Get familiar with arrays, hash watches, chains, bars and queues.",
+    "Basic design for understanding interfaces and classes",
+    "Can analyze single operation complexity"
+  ],
+  "recommendedFor": [
+    "LRU/LFU or random grouping does not work",
+    "Instability of iterative, time series and online data structure",
+    "Need for pre-interview training data structure capacity"
+  ],
+  "summary": "2 A week-covered queue design, cache structure, random assembly, iterative, Trie and time series structure.",
+  "targetAudience": "A common collection is used, but learners who lack design ideas in the face of O(1) operational constraints, cache phase-out or multistructure combinations.",
+  "templateId": "topic_data_structure_design",
+  "title": "Data structure design special"
+}

@@ -1,0 +1,192 @@
+{
+  "expectedOutcome": "This will enable the development of a problem-solving strategy on a problem-by-problem basis and the development of interview redisposals covering arrays, trees, maps, dynamic programming and synthesis.",
+  "goal": "The main algorithm interview type is covered by NetCode 150.",
+  "notRecommendedFor": [
+    "One to two weeks of interview preparation.",
+    "All I want is a single weak subject break."
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": "Completion of NetCode 150 medium array and hash topics and establishment of frequency, weight and grouping models.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "Group and Hash"
+    },
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": "Completion of dual-guided and window-glie topics, training in window maintenance, border control and contraction conditions.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "two pointers and Slide Window"
+    },
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": "Completion of inn and semi-titles, training in monotony structure, brackets and border searches.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 3,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "Bark and Half Search"
+    },
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": "Completion of chain and inter-sector topics, training in the rewriting, consolidation, insertion and movement of guidelines.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 4,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "Chain and interval"
+    },
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": "Completion of tree titles, training in DFS/BFS, regression values, serialization and binary search for tree properties.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 5,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "Trees and Recursives"
+    },
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": "Finish Trie and stacking, training prefix modeling, Top K and priority scheduling.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 6,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "Trie and stack"
+    },
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": "Retrospect, training in tree selection, cutting and recovery.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 7,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "Backtracking"
+    },
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": "Completion of graph search topics, training in connectivity blocks, poking relationships, BFS/DFS and grid modelling.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 8,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "Figure Search"
+    },
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": ":: Completion of the road map and the topic of greed, training in the shortest possible routes, mapping and local proof of excellence.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 9,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "Progress map and greed"
+    },
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": "Completion of one-dimensional dynamic programming topics, training status definition, transfer sequence and rolling optimization.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 10,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "One-dimensional dynamic programming"
+    },
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": "Completion of 2D dynamic programming topics, training grid, inter-dimensional and multi-dimensional design.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 11,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "Two-dimensional dynamic programming"
+    },
+    {
+      "acceptanceCriteria": [
+        "To be able to explain independently the main solution and complexity of the recommendations at this stage degrees",
+        "Revert border conditions and status definition in a mischaracter"
+      ],
+      "focus": "Completion of field computing, mathematical geometry and integrated winding-up topics, and preparation of the complete rediscovery of the route.",
+      "objectives": [
+        "Completion of the core training cycle at this stage",
+        "Record at least 1 resolvable solver template for each category"
+      ],
+      "phaseIndex": 12,
+      "reviewAdvice": "Collapse bugs by type, and reset the border under the same pattern first.",
+      "title": "Bitwork, Math and Combined End"
+    }
+  ],
+  "prerequisites": [
+    "Basic grammar of a dominant language",
+    "Understanding common data structure and time complexity",
+    "A steady input of over 8 hours per week"
+  ],
+  "recommendedFor": [
+    "Preparation of mid-sized technical interviews",
+    "Wishing to brush the system by the theme mode",
+    "Scratched a few questions but missing a full route."
+  ],
+  "summary": "12 weeks of coverage of NetCode 150 mainstream algorithm interview mode, suitable for medium-term system readiness.",
+  "targetAudience": "There are 2 to 3 month preparation cycles for learners who want system coverage on trial algorithms.",
+  "templateId": "neetcode_150_systematic_interview",
+  "title": "NetCode 150 System Interview Scheme"
+}

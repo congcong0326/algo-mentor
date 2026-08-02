@@ -3,9 +3,11 @@ package org.congcong.algomentor.api.controller.ability;
 import org.congcong.algomentor.api.ability.model.AbilityProfileResponse;
 import org.congcong.algomentor.api.ability.service.AbilityProfileService;
 import org.congcong.algomentor.api.config.ApiContractConstants;
+import org.congcong.algomentor.api.problem.model.ProblemLocale;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
 import org.congcong.algomentor.common.api.ApiResponse;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +28,11 @@ public class AbilityProfileController {
   @GetMapping(ApiContractConstants.ABILITIES_PROFILE_PATH)
   public ApiResponse<AbilityProfileResponse> profile() {
     long userId = requireCurrentUserId();
-    return ApiResponse.success(abilityProfileService.getProfile(userId));
+    return ApiResponse.success(abilityProfileService.getProfile(userId, requestLocale()));
+  }
+
+  private ProblemLocale requestLocale() {
+    return ProblemLocale.parse(LocaleContextHolder.getLocale().toLanguageTag());
   }
 
   private long requireCurrentUserId() {

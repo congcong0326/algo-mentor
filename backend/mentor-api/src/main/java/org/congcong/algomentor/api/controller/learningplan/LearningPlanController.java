@@ -1,5 +1,6 @@
 package org.congcong.algomentor.api.controller.learningplan;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,6 @@ import org.congcong.algomentor.api.learningplan.service.SseLearningPlanDraftStre
 import org.congcong.algomentor.api.learningplan.service.SseLearningPlanProposalStreamSubscriber;
 import org.congcong.algomentor.auth.security.AuthenticatedUserPrincipal;
 import org.congcong.algomentor.auth.security.CurrentUserIdProvider;
-import org.congcong.algomentor.common.api.ApiErrorLocales;
 import org.congcong.algomentor.common.api.ApiResponse;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftResult;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanActivation;
@@ -38,6 +38,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContr
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContractStateRepository;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLoadService;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanService;
 import org.congcong.algomentor.mentor.application.learningplan.proposal.LearningPlanExtensionApplyService;
@@ -55,6 +56,7 @@ import org.congcong.algomentor.ops.observability.SseOpsRecorder;
 import org.congcong.algomentor.ops.observability.SseStreamType;
 import org.congcong.algomentor.ops.observability.StructuredOpsLogger;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -136,7 +138,12 @@ public class LearningPlanController {
 
   @PostMapping(value = ApiContractConstants.LEARNING_PLAN_DRAFTS_STREAM_PATH,
       produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-  public SseEmitter streamDraft(@RequestBody LearningPlanCreateDraftRequest request) {
+  public SseEmitter streamDraft(
+      @RequestHeader(name = ApiContractConstants.ACCEPT_LANGUAGE_HEADER, required = false) String acceptLanguage,
+      @RequestBody LearningPlanCreateDraftRequest request,
+      HttpServletResponse response
+  ) {
+    addLanguageVaryHeader(response);
     long userId = requireCurrentUserId();
     String runId = UUID.randomUUID().toString();
     SseEmitter emitter = new SseEmitter(sseProperties.learningPlanDraftTimeoutMillis());
@@ -153,7 +160,11 @@ public class LearningPlanController {
 
     try {
       requiredDraftStreamService()
-          .stream(userId, request.toCommand(), runId, Map.of())
+          .stream(
+              userId,
+              request.toCommand(LearningPlanContentLocale.fromAcceptLanguage(acceptLanguage)),
+              runId,
+              Map.of())
           .subscribe(subscriber);
     } catch (RuntimeException exception) {
       subscriber.onError(exception);
@@ -209,12 +220,18 @@ public class LearningPlanController {
   @PostMapping(ApiContractConstants.LEARNING_PLAN_DRAFT_FROM_TEMPLATE_PATH)
   public ApiResponse<LearningPlanDraftResponse> createDraftFromTemplate(
       @RequestHeader(name = ApiContractConstants.ACCEPT_LANGUAGE_HEADER, required = false) String acceptLanguage,
-      @RequestBody LearningPlanTemplateDraftRequest request) {
+      @RequestBody LearningPlanTemplateDraftRequest request,
+      HttpServletResponse response) {
+    addLanguageVaryHeader(response);
     long userId = requireCurrentUserId();
     LearningPlanDraftResult result = requiredTemplateDraftService().createDraft(
         userId,
-        request.toCommand(ApiErrorLocales.parse(acceptLanguage).toLanguageTag()));
+        request.toCommand(LearningPlanContentLocale.fromAcceptLanguage(acceptLanguage)));
     return ApiResponse.success(LearningPlanResponseMapper.toDraftResponse(result));
+  }
+
+  private void addLanguageVaryHeader(HttpServletResponse response) {
+    response.addHeader(HttpHeaders.VARY, ApiContractConstants.ACCEPT_LANGUAGE_HEADER);
   }
 
   @PostMapping(ApiContractConstants.LEARNING_PLAN_DRAFTS_PATH

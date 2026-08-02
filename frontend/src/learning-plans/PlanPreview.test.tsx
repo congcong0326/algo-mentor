@@ -1,5 +1,7 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
+import { I18nProvider } from '../i18n/I18nProvider';
+import LanguageSelector from '../i18n/LanguageSelector';
 import type { LearningPlanDetailResponse, LearningPlanDraftPlan } from '../types/api';
 import PlanPreview, { PlanPhaseDetails } from './PlanPreview';
 
@@ -50,9 +52,34 @@ describe('PlanPreview', () => {
     expect(screen.queryByRole('heading', { name: '下一次训练包' })).not.toBeInTheDocument();
     expect(screen.queryByText('新题 1 道 · 预计 60 分钟')).not.toBeInTheDocument();
   });
+
+  it('keeps confirmed plan body in its frozen content locale when the UI locale changes', async () => {
+    render(
+      <I18nProvider>
+        <LanguageSelector />
+        <PlanPreview plan={englishDetailPlan} />
+      </I18nProvider>,
+    );
+
+    expect(screen.getByText('Foundation Phase')).toBeInTheDocument();
+    expect(screen.getAllByText('Two Sum').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('数组').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('简单').length).toBeGreaterThan(0);
+    expect(screen.queryByText('两数之和')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('combobox', { name: '语言' }));
+    fireEvent.click(screen.getByRole('option', { name: 'English' }));
+
+    expect(await screen.findByRole('heading', { name: 'Phase Details' })).toBeInTheDocument();
+    expect(screen.getByText('Foundation Phase')).toBeInTheDocument();
+    expect(screen.getAllByText('Two Sum').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Array').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Easy').length).toBeGreaterThan(0);
+    expect(screen.queryByText('两数之和')).not.toBeInTheDocument();
+  });
 });
 
 const draftPlan: LearningPlanDraftPlan = {
+  contentLocale: 'zh-CN',
   title: '数组训练',
   summary: '练习数组和哈希表。',
   intent: 'PRACTICE_GOAL',
@@ -179,4 +206,25 @@ const weeklyEdgePlan: LearningPlanDraftPlan = {
       priorityProblemSlugs: ['unknown-slug'],
     },
   },
+};
+
+const englishDetailPlan: LearningPlanDetailResponse = {
+  ...detailPlan,
+  contentLocale: 'en-US',
+  title: 'Array Practice',
+  summary: 'Practice arrays and hash tables.',
+  goal: 'Build reliable array problem-solving skills',
+  profileSummary: 'Beginner, 5 hours per week.',
+  phases: [{
+    ...detailPlan.phases[0],
+    title: 'Foundation Phase',
+    focus: 'Array fundamentals',
+    objectives: ['Understand hash-table lookup'],
+    acceptanceCriteria: ['Complete Two Sum'],
+    reviewAdvice: 'Review boundary cases.',
+    problems: [{
+      ...detailPlan.phases[0].problems[0],
+      reason: 'Build a reliable lookup pattern.',
+    }],
+  }],
 };

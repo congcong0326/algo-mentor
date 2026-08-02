@@ -1,13 +1,13 @@
 package org.congcong.algomentor.mentor.application.learningplan.template;
 
-import java.util.Locale;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 
 public record LearningPlanTemplateDraftCommand(
     String templateId,
     String programmingLanguage,
     Integer dailyProblemCount,
     Integer trainingDaysPerWeek,
-    String recommendationReasonLocale
+    LearningPlanContentLocale contentLocale
 ) {
 
   /** 默认使用中文题库推荐理由。 */
@@ -20,16 +20,36 @@ public record LearningPlanTemplateDraftCommand(
       String templateId,
       String programmingLanguage,
       Integer dailyProblemCount,
+      Integer trainingDaysPerWeek,
+      String contentLocale
+  ) {
+    this(
+        templateId,
+        programmingLanguage,
+        dailyProblemCount,
+        trainingDaysPerWeek,
+        LearningPlanContentLocale.fromValue(contentLocale));
+  }
+
+  public LearningPlanTemplateDraftCommand(
+      String templateId,
+      String programmingLanguage,
+      Integer dailyProblemCount,
       Integer trainingDaysPerWeek
   ) {
-    this(templateId, programmingLanguage, dailyProblemCount, trainingDaysPerWeek, null);
+    this(
+        templateId,
+        programmingLanguage,
+        dailyProblemCount,
+        trainingDaysPerWeek,
+        LearningPlanContentLocale.ZH_CN);
   }
 
   public LearningPlanTemplateDraftCommand(
       String templateId,
       String programmingLanguage
   ) {
-    this(templateId, programmingLanguage, null, null, null);
+    this(templateId, programmingLanguage, null, null, LearningPlanContentLocale.ZH_CN);
   }
 
   public LearningPlanTemplateDraftCommand {
@@ -37,15 +57,10 @@ public record LearningPlanTemplateDraftCommand(
     programmingLanguage = programmingLanguage == null || programmingLanguage.isBlank()
         ? null
         : programmingLanguage.trim();
-    recommendationReasonLocale = normalizeRecommendationReasonLocale(recommendationReasonLocale);
+    contentLocale = contentLocale == null ? LearningPlanContentLocale.ZH_CN : contentLocale;
   }
 
-  private static String normalizeRecommendationReasonLocale(String locale) {
-    if (locale == null || locale.isBlank()) {
-      return DEFAULT_RECOMMENDATION_REASON_LOCALE;
-    }
-    return locale.trim().toLowerCase(Locale.ROOT).startsWith("en")
-        ? ENGLISH_RECOMMENDATION_REASON_LOCALE
-        : DEFAULT_RECOMMENDATION_REASON_LOCALE;
+  public String recommendationReasonLocale() {
+    return contentLocale.languageTag();
   }
 }

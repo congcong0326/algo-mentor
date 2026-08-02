@@ -15,4 +15,9 @@ public interface LearningPlanProblemCatalog {
   default Optional<LearningPlanProblemCandidate> findBySlug(String slug, String locale) {
     return findBySlug(slug);
   }
+
+  /** 把展示标签或稳定值规范化为可持久化的题库标签 value。 */
+  default Optional<String> findCanonicalTagValue(String tag, String locale) {
+    return tag == null || tag.isBlank() ? Optional.empty() : Optional.of(tag.trim());
+  }
 }

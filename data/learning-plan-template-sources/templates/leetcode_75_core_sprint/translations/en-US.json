@@ -1,0 +1,108 @@
+{
+  "expectedOutcome": "After completing the plan, learners can recognize 22 core problem families and apply stable solution patterns to common data-structure, graph-search, and dynamic-programming problems.",
+  "goal": "Build broad interview-topic coverage and a reliable completion rhythm with a focused official roadmap.",
+  "notRecommendedFor": [
+    "There is no data structure at all.",
+    "It's all under control, LeetCode 75.",
+    "All we need is a single thematic breakthrough."
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Identification signal and core solution for the main \"array, two pointers and window\"",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Start with arrays and strings, practicing two pointers, sliding windows, and prefix sums.",
+      "objectives": [
+        "Complete all local matching questions for the array, two pointers and window phase and record status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Arrays, Two Pointers, and Sliding Windows"
+    },
+    {
+      "acceptanceCriteria": [
+        "An independent description of the identification signal and core solution for the main \"hash, queue and chain\"",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Build reliable patterns for hash maps, stack/queue state, and linked-list pointer rewrites.",
+      "objectives": [
+        "Complete all local matching questions for the hash, Bark and Chain phases and record status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Hashing, Stacks, Queues, and Linked Lists"
+    },
+    {
+      "acceptanceCriteria": [
+        "An independent description of the identification signal and the core solution for the main choreography of the binary tree and the search tree",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Practice tree DFS, BFS, and binary search tree properties.",
+      "objectives": [
+        "Complete all local matching questions during the \"Dixon Tree and Search Tree\" phase and record status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 3,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Binary Trees and Binary Search Trees"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main \"charts, stacks, splits and backt\".",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Cover graph search, priority queues, boundary-aware binary search, and basic backtracking.",
+      "objectives": [
+        "Complete all local matching questions for the \"charts, stacks, splits and backtracking \" phase and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 4,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Graphs, Heaps, Binary Search, and Backtracking"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main `one-dimensional and multidimensional dynamic programming'",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Complete the dynamic-programming core through one-dimensional and multidimensional state design, then reinforce bit manipulation.",
+      "objectives": [
+        "Complete all local matching questions at the one-dimensional and multi-dimensional dynamic programming stage and document the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 5,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "One-Dimensional and Multidimensional Dynamic Programming"
+    },
+    {
+      "acceptanceCriteria": [
+        "An independent description of the identification signal and core solution for the main theme “Trie, inter-tempo and monotony”",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Finish the roadmap with tries, intervals, monotonic stacks, and a complete review.",
+      "objectives": [
+        "Complete all local matches for the \"Trie, inter-dot and single-dot close\" phase and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 6,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Tries, Intervals, and Monotonic Stacks"
+    }
+  ],
+  "prerequisites": [
+    "Mastering a major programming language",
+    "Understanding the underlying concepts of arrays, chains, trees and maps"
+  ],
+  "recommendedFor": [
+    "Need short- and medium-term interviews for sprinting.",
+    "Wishing to use the official 75 route",
+    "I don't want to go straight to 150."
+  ],
+  "summary": "Complete the official LeetCode 75 roadmap in six weeks, covering 22 core interview topics.",
+  "targetAudience": "Learners with basic data-structure knowledge who want to complete a high-quality core interview roadmap in one to two months.",
+  "templateId": "leetcode_75_core_sprint",
+  "title": "LeetCode 75 Core Sprint Plan"
+}

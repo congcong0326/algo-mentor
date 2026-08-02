@@ -18,6 +18,7 @@ public record PracticeCodeReviewRow(
     String rawCode,
     String normalizedCode,
     String language,
+    String contentLocale,
     JsonNode detectionEvidenceJson,
     String contextSummary,
     BigDecimal totalScore,

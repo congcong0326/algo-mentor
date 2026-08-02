@@ -1,6 +1,6 @@
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { I18nProvider } from './i18n/I18nProvider';
+import { I18nProvider, useI18n } from './i18n/I18nProvider';
 import MyPage from './MyPage';
 import { learnerProfileDocument } from './learner-profile/testFixtures';
 import {
@@ -91,7 +91,32 @@ describe('MyPage learning memory', () => {
     await waitFor(() => expect(onProfileAnchorHandled).toHaveBeenCalledTimes(1));
     expect(scrollTo).toHaveBeenCalledWith({ top: 0, behavior: 'auto' });
   });
+
+  it('reloads ability labels when the application language changes', async () => {
+    vi.mocked(getAbilityProfile)
+      .mockResolvedValueOnce(apiResponse(abilityProfileWithLabel('动态规划')))
+      .mockResolvedValueOnce(apiResponse(abilityProfileWithLabel('Dynamic Programming')));
+
+    render(
+      <I18nProvider>
+        <LocaleSwitch />
+        <MyPage />
+      </I18nProvider>,
+    );
+
+    expect((await screen.findAllByText('动态规划')).length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole('button', { name: 'English' }));
+
+    expect((await screen.findAllByText('Dynamic Programming')).length).toBeGreaterThan(0);
+    expect(screen.getByText('ABILITY COVERAGE')).toBeInTheDocument();
+    expect(getAbilityProfile).toHaveBeenCalledTimes(2);
+  });
 });
+
+function LocaleSwitch() {
+  const { setLocale } = useI18n();
+  return <button onClick={() => setLocale('en-US')} type="button">English</button>;
+}
 
 function apiResponse<T>(data: T): ApiResponse<T> {
   return { success: true, data, timestamp: '2026-07-20T12:00:00Z' };
@@ -106,5 +131,19 @@ function abilityProfile(): AbilityProfileResponse {
       latestReviewOnly: true,
       conservativeWeight: 4,
     },
+  };
+}
+
+function abilityProfileWithLabel(label: string): AbilityProfileResponse {
+  return {
+    ...abilityProfile(),
+    tags: [{
+      tag: 'dynamic-programming',
+      label,
+      problemCount: 240,
+      reviewedProblemCount: 3,
+      rawAverageScore: 8,
+      abilityScore: 3.4,
+    }],
   };
 }

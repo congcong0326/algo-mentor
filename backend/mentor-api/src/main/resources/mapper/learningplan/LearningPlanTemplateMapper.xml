@@ -10,11 +10,14 @@
       <arg column="id" javaType="java.lang.Long"/>
       <arg column="template_id" javaType="string"/>
       <arg column="title" javaType="string"/>
+      <arg column="title_en" javaType="string"/>
       <arg column="summary" javaType="string"/>
+      <arg column="summary_en" javaType="string"/>
       <arg column="catalog_category" javaType="string"/>
       <arg column="recommended_order" javaType="java.lang.Integer"/>
       <arg column="intent" javaType="string"/>
       <arg column="goal" javaType="string"/>
+      <arg column="goal_en" javaType="string"/>
       <arg column="default_duration_weeks" javaType="java.lang.Integer"/>
       <arg column="level" javaType="string"/>
       <arg column="default_weekly_hours" javaType="java.lang.Integer"/>
@@ -24,15 +27,24 @@
       <arg column="topic_preferences_json" javaType="com.fasterxml.jackson.databind.JsonNode"
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
       <arg column="target_audience" javaType="string"/>
+      <arg column="target_audience_en" javaType="string"/>
       <arg column="difficulty_mix_json" javaType="com.fasterxml.jackson.databind.JsonNode"
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
       <arg column="prerequisites_json" javaType="com.fasterxml.jackson.databind.JsonNode"
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="prerequisites_en_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
       <arg column="recommended_for_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="recommended_for_en_json" javaType="com.fasterxml.jackson.databind.JsonNode"
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
       <arg column="not_recommended_for_json" javaType="com.fasterxml.jackson.databind.JsonNode"
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="not_recommended_for_en_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
       <arg column="expected_outcome" javaType="string"/>
+      <arg column="expected_outcome_en" javaType="string"/>
+      <arg column="english_content_ready" javaType="java.lang.Boolean"/>
       <arg column="source_name" javaType="string"/>
       <arg column="source_url" javaType="string"/>
       <arg column="source_commit" javaType="string"/>
@@ -57,15 +69,22 @@
       <arg column="template_id" javaType="java.lang.Long"/>
       <arg column="phase_index" javaType="java.lang.Integer"/>
       <arg column="title" javaType="string"/>
+      <arg column="title_en" javaType="string"/>
       <arg column="duration_weeks" javaType="java.lang.Integer"/>
       <arg column="focus" javaType="string"/>
+      <arg column="focus_en" javaType="string"/>
       <arg column="objectives_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="objectives_en_json" javaType="com.fasterxml.jackson.databind.JsonNode"
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
       <arg column="recommended_tags_json" javaType="com.fasterxml.jackson.databind.JsonNode"
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
       <arg column="acceptance_criteria_json" javaType="com.fasterxml.jackson.databind.JsonNode"
           typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
+      <arg column="acceptance_criteria_en_json" javaType="com.fasterxml.jackson.databind.JsonNode"
+          typeHandler="org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler"/>
       <arg column="review_advice" javaType="string"/>
+      <arg column="review_advice_en" javaType="string"/>
     </constructor>
   </resultMap>
 
@@ -93,11 +112,14 @@
     INSERT INTO learning_plan_template (
       template_id,
       title,
+      title_en,
       summary,
+      summary_en,
       catalog_category,
       recommended_order,
       intent,
       goal,
+      goal_en,
       default_duration_weeks,
       level,
       default_weekly_hours,
@@ -106,11 +128,17 @@
       interview_oriented,
       topic_preferences_json,
       target_audience,
+      target_audience_en,
       difficulty_mix_json,
       prerequisites_json,
+      prerequisites_en_json,
       recommended_for_json,
+      recommended_for_en_json,
       not_recommended_for_json,
+      not_recommended_for_en_json,
       expected_outcome,
+      expected_outcome_en,
+      english_content_ready,
       source_name,
       source_url,
       source_commit,
@@ -128,11 +156,14 @@
     VALUES (
       #{templateId},
       #{title},
+      #{titleEn},
       #{summary},
+      #{summaryEn},
       #{catalogCategory},
       #{recommendedOrder},
       #{intent},
       #{goal},
+      #{goalEn},
       #{defaultDurationWeeks},
       #{level},
       #{defaultWeeklyHours},
@@ -141,11 +172,17 @@
       #{interviewOriented},
       #{topicPreferencesJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{targetAudience},
+      #{targetAudienceEn},
       #{difficultyMixJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{prerequisitesJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{prerequisitesEnJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{recommendedForJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{recommendedForEnJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{notRecommendedForJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{notRecommendedForEnJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{expectedOutcome},
+      #{expectedOutcomeEn},
+      #{englishContentReady},
       #{sourceName},
       #{sourceUrl},
       #{sourceCommit},
@@ -162,11 +199,14 @@
     )
     ON CONFLICT (template_id) DO UPDATE
     SET title = EXCLUDED.title,
+        title_en = EXCLUDED.title_en,
         summary = EXCLUDED.summary,
+        summary_en = EXCLUDED.summary_en,
         catalog_category = EXCLUDED.catalog_category,
         recommended_order = EXCLUDED.recommended_order,
         intent = EXCLUDED.intent,
         goal = EXCLUDED.goal,
+        goal_en = EXCLUDED.goal_en,
         default_duration_weeks = EXCLUDED.default_duration_weeks,
         level = EXCLUDED.level,
         default_weekly_hours = EXCLUDED.default_weekly_hours,
@@ -175,11 +215,17 @@
         interview_oriented = EXCLUDED.interview_oriented,
         topic_preferences_json = EXCLUDED.topic_preferences_json,
         target_audience = EXCLUDED.target_audience,
+        target_audience_en = EXCLUDED.target_audience_en,
         difficulty_mix_json = EXCLUDED.difficulty_mix_json,
         prerequisites_json = EXCLUDED.prerequisites_json,
+        prerequisites_en_json = EXCLUDED.prerequisites_en_json,
         recommended_for_json = EXCLUDED.recommended_for_json,
+        recommended_for_en_json = EXCLUDED.recommended_for_en_json,
         not_recommended_for_json = EXCLUDED.not_recommended_for_json,
+        not_recommended_for_en_json = EXCLUDED.not_recommended_for_en_json,
         expected_outcome = EXCLUDED.expected_outcome,
+        expected_outcome_en = EXCLUDED.expected_outcome_en,
+        english_content_ready = EXCLUDED.english_content_ready,
         source_name = EXCLUDED.source_name,
         source_url = EXCLUDED.source_url,
         source_commit = EXCLUDED.source_commit,
@@ -210,12 +256,17 @@
       template_id,
       phase_index,
       title,
+      title_en,
       duration_weeks,
       focus,
+      focus_en,
       objectives_json,
+      objectives_en_json,
       recommended_tags_json,
       acceptance_criteria_json,
+      acceptance_criteria_en_json,
       review_advice,
+      review_advice_en,
       created_at,
       updated_at
     )
@@ -223,12 +274,17 @@
       #{templateDbId},
       #{phaseIndex},
       #{title},
+      #{titleEn},
       #{durationWeeks},
       #{focus},
+      #{focusEn},
       #{objectivesJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{objectivesEnJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{recommendedTagsJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{acceptanceCriteriaJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
+      #{acceptanceCriteriaEnJson, typeHandler=org.congcong.algomentor.agent.persistence.postgres.json.JsonbTypeHandler},
       #{reviewAdvice},
+      #{reviewAdviceEn},
       NOW(),
       NOW()
     )
@@ -275,11 +331,14 @@
       id,
       template_id,
       title,
+      title_en,
       summary,
+      summary_en,
       catalog_category,
       recommended_order,
       intent,
       goal,
+      goal_en,
       default_duration_weeks,
       level,
       default_weekly_hours,
@@ -288,11 +347,17 @@
       interview_oriented,
       topic_preferences_json,
       target_audience,
+      target_audience_en,
       difficulty_mix_json,
       prerequisites_json,
+      prerequisites_en_json,
       recommended_for_json,
+      recommended_for_en_json,
       not_recommended_for_json,
+      not_recommended_for_en_json,
       expected_outcome,
+      expected_outcome_en,
+      english_content_ready,
       source_name,
       source_url,
       source_commit,
@@ -319,11 +384,14 @@
       id,
       template_id,
       title,
+      title_en,
       summary,
+      summary_en,
       catalog_category,
       recommended_order,
       intent,
       goal,
+      goal_en,
       default_duration_weeks,
       level,
       default_weekly_hours,
@@ -332,11 +400,17 @@
       interview_oriented,
       topic_preferences_json,
       target_audience,
+      target_audience_en,
       difficulty_mix_json,
       prerequisites_json,
+      prerequisites_en_json,
       recommended_for_json,
+      recommended_for_en_json,
       not_recommended_for_json,
+      not_recommended_for_en_json,
       expected_outcome,
+      expected_outcome_en,
+      english_content_ready,
       source_name,
       source_url,
       source_commit,
@@ -360,12 +434,17 @@
       template_id,
       phase_index,
       title,
+      title_en,
       duration_weeks,
       focus,
+      focus_en,
       objectives_json,
+      objectives_en_json,
       recommended_tags_json,
       acceptance_criteria_json,
-      review_advice
+      acceptance_criteria_en_json,
+      review_advice,
+      review_advice_en
     FROM learning_plan_template_phase
     WHERE template_id = #{templateDbId}
     ORDER BY phase_index ASC
@@ -377,12 +456,17 @@
       template_id,
       phase_index,
       title,
+      title_en,
       duration_weeks,
       focus,
+      focus_en,
       objectives_json,
+      objectives_en_json,
       recommended_tags_json,
       acceptance_criteria_json,
-      review_advice
+      acceptance_criteria_en_json,
+      review_advice,
+      review_advice_en
     FROM learning_plan_template_phase
     ORDER BY template_id ASC, phase_index ASC
   </select>

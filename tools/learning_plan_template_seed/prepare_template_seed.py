@@ -32,6 +32,24 @@ MANIFEST_FILE = "learning_plan_template_seed_manifest.json"
 METADATA_FILE = "learning_plan_template_seed_metadata.md"
 TEMPLATE_SOURCE_TEMPLATE_FILE = "template.json"
 TEMPLATE_SOURCE_PROBLEM_REFS_FILE = "problem_refs.jsonl"
+TEMPLATE_SOURCE_EN_TRANSLATION_FILE = Path("translations/en-US.json")
+TEMPLATE_ENGLISH_FIELD_MAP = {
+    "title": "titleEn",
+    "summary": "summaryEn",
+    "goal": "goalEn",
+    "targetAudience": "targetAudienceEn",
+    "prerequisites": "prerequisitesEn",
+    "recommendedFor": "recommendedForEn",
+    "notRecommendedFor": "notRecommendedForEn",
+    "expectedOutcome": "expectedOutcomeEn",
+}
+PHASE_ENGLISH_FIELD_MAP = {
+    "title": "titleEn",
+    "focus": "focusEn",
+    "objectives": "objectivesEn",
+    "acceptanceCriteria": "acceptanceCriteriaEn",
+    "reviewAdvice": "reviewAdviceEn",
+}
 DERIVED_TEMPLATE_METADATA_KEYS = {
     "matchedProblemCount",
     "missingProblemCount",
@@ -120,8 +138,8 @@ DOOCS_SOURCE = {
 ROOT_SOURCE = {
     "name": "algo-mentor learning-plan-template-sources",
     "url": "data/learning-plan-template-sources",
-    "commit": "all-compatible-templates-2026-07-28",
-    "dataPath": "data/learning-plan-template-sources/templates/*/{template.json,problem_refs.jsonl}",
+    "commit": "bilingual-templates-2026-08-02",
+    "dataPath": "data/learning-plan-template-sources/templates/*/{template.json,translations/en-US.json,problem_refs.jsonl}",
 }
 SOURCE_DEFINITIONS = [
     NEETCODE_SOURCE,
@@ -1084,6 +1102,7 @@ def build_seed_from_template_sources(
         template_dir = template_source_dir / template_id
         template_path = template_dir / TEMPLATE_SOURCE_TEMPLATE_FILE
         refs_path = template_dir / TEMPLATE_SOURCE_PROBLEM_REFS_FILE
+        translation_path = template_dir / TEMPLATE_SOURCE_EN_TRANSLATION_FILE
         if not template_path.exists():
             raise ValueError(f"missing template source file: {template_path}")
         if not refs_path.exists():
@@ -1092,6 +1111,7 @@ def build_seed_from_template_sources(
         source_template_id = clean_text(source_template.get("templateId"))
         if source_template_id != template_id:
             raise ValueError(f"template directory and templateId differ: {template_id} != {source_template_id}")
+        source_template = merge_english_translation(source_template, translation_path)
         refs = [
             build_source_ref(template_id, source_ref, problem_index)
             for source_ref in read_jsonl(refs_path)
@@ -1104,6 +1124,69 @@ def build_seed_from_template_sources(
         for ref in sorted(refs_by_template[template_id], key=lambda item: (item["phaseIndex"], item["sortOrder"], item["sourceOrder"]))
     ]
     return templates, refs
+
+
+def merge_english_translation(
+    source_template: dict[str, Any],
+    translation_path: Path,
+) -> dict[str, Any]:
+    if not translation_path.exists():
+        raise ValueError(f"missing template English translation file: {translation_path}")
+    try:
+        translation = json.loads(translation_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exception:
+        raise ValueError(f"invalid template English translation JSON: {translation_path}") from exception
+    template_id = clean_text(source_template.get("templateId"))
+    if clean_text(translation.get("templateId")) != template_id:
+        raise ValueError(f"template English translation templateId differs: {template_id}")
+    expected_keys = {"templateId", "phases", *TEMPLATE_ENGLISH_FIELD_MAP}
+    if set(translation) != expected_keys:
+        raise ValueError(f"unexpected template English translation fields: {template_id}")
+
+    merged = dict(source_template)
+    for source_field, english_field in TEMPLATE_ENGLISH_FIELD_MAP.items():
+        validate_translation_shape(source_template.get(source_field), translation.get(source_field), english_field)
+        merged[english_field] = translation[source_field]
+
+    source_phases = source_template.get("phases")
+    translated_phases = translation.get("phases")
+    if not isinstance(source_phases, list) or not isinstance(translated_phases, list):
+        raise ValueError(f"template English translation phases must be lists: {template_id}")
+    if len(source_phases) != len(translated_phases):
+        raise ValueError(f"template English translation phase count differs: {template_id}")
+    expected_phase_keys = {"phaseIndex", *PHASE_ENGLISH_FIELD_MAP}
+    merged_phases: list[dict[str, Any]] = []
+    for source_phase, translated_phase in zip(source_phases, translated_phases, strict=True):
+        if not isinstance(source_phase, dict) or not isinstance(translated_phase, dict):
+            raise ValueError(f"template English translation phase must be an object: {template_id}")
+        if set(translated_phase) != expected_phase_keys:
+            raise ValueError(f"unexpected template English phase fields: {template_id}")
+        phase_index = int(source_phase.get("phaseIndex", 0))
+        if translated_phase.get("phaseIndex") != phase_index:
+            raise ValueError(f"template English translation phaseIndex differs: {template_id}#{phase_index}")
+        merged_phase = dict(source_phase)
+        for source_field, english_field in PHASE_ENGLISH_FIELD_MAP.items():
+            validate_translation_shape(
+                source_phase.get(source_field),
+                translated_phase.get(source_field),
+                f"phase.{english_field}",
+            )
+            merged_phase[english_field] = translated_phase[source_field]
+        merged_phases.append(merged_phase)
+    merged["phases"] = merged_phases
+    merged["englishContentReady"] = True
+    return merged
+
+
+def validate_translation_shape(source: Any, translated: Any, field: str) -> None:
+    if isinstance(source, list):
+        if not isinstance(translated, list) or len(source) != len(translated) or not translated:
+            raise ValueError(f"invalid template English translation field: {field}")
+        if any(not isinstance(item, str) or not item.strip() for item in translated):
+            raise ValueError(f"blank template English translation list item: {field}")
+        return
+    if not isinstance(source, str) or not isinstance(translated, str) or not translated.strip():
+        raise ValueError(f"invalid template English translation field: {field}")
 
 
 def load_template_order(template_source_dir: Path, template_order_path: Path | None = None) -> list[str]:
@@ -1600,7 +1683,7 @@ def build_report(
         else:
             source_missing_counts[source_key] += 1
     return {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "generatedAt": generated_at,
         "source": ROOT_SOURCE,
         "sources": [
@@ -1622,6 +1705,7 @@ def build_report(
         "problemRefCount": len(refs),
         "matchedProblemCount": sum(1 for ref in refs if ref["metadata"]["matchedLocalProblem"]),
         "missingProblemCount": sum(1 for ref in refs if not ref["metadata"]["matchedLocalProblem"]),
+        "englishContentReadyTemplateCount": sum(1 for template in templates if template.get("englishContentReady")),
         "templates": template_reports,
     }
 
@@ -1648,6 +1732,8 @@ def template_report(template: dict[str, Any], refs: list[dict[str, Any]]) -> dic
     ]
     return {
         "title": template["title"],
+        "titleEn": template.get("titleEn"),
+        "englishContentReady": bool(template.get("englishContentReady")),
         "catalogCategory": template["catalogCategory"],
         "recommendedOrder": template.get("recommendedOrder"),
         "phaseCount": len(template["phases"]),
@@ -1760,6 +1846,13 @@ def validate_template(template: dict[str, Any]) -> None:
     for field in ["difficultyMix", "prerequisites", "recommendedFor", "notRecommendedFor", "phases"]:
         if not template.get(field):
             raise ValueError(f"missing required template field: {field}")
+    english_ready = template.get("englishContentReady") is True
+    english_fields_present = any(field in template for field in TEMPLATE_ENGLISH_FIELD_MAP.values())
+    if english_ready:
+        for source_field, english_field in TEMPLATE_ENGLISH_FIELD_MAP.items():
+            validate_translation_shape(template.get(source_field), template.get(english_field), english_field)
+    elif english_fields_present:
+        raise ValueError(f"partial template English content is not allowed: {template.get('templateId')}")
     if int(template.get("defaultDurationWeeks", 0)) < 1 or int(template.get("defaultWeeklyHours", 0)) < 1:
         raise ValueError(f"invalid template duration or weekly hours: {template.get('templateId')}")
     phase_indexes: list[int] = []
@@ -1770,6 +1863,12 @@ def validate_template(template: dict[str, Any]) -> None:
         for field in ["title", "focus", "objectives", "recommendedTags", "acceptanceCriteria", "reviewAdvice"]:
             if not phase.get(field):
                 raise ValueError(f"missing required phase field: {field}")
+        phase_english_present = any(field in phase for field in PHASE_ENGLISH_FIELD_MAP.values())
+        if english_ready:
+            for source_field, english_field in PHASE_ENGLISH_FIELD_MAP.items():
+                validate_translation_shape(phase.get(source_field), phase.get(english_field), f"phase.{english_field}")
+        elif phase_english_present:
+            raise ValueError(f"partial phase English content is not allowed: {template.get('templateId')}")
     if phase_indexes != list(range(1, len(phase_indexes) + 1)):
         raise ValueError(f"phaseIndex must be contiguous: {template.get('templateId')}")
     if duration_weeks != int(template["defaultDurationWeeks"]):
@@ -1824,6 +1923,7 @@ def metadata_markdown_text(report: dict[str, Any]) -> str:
         f"- 题目引用数：`{report['problemRefCount']}`",
         f"- 本地题库匹配：`{report['matchedProblemCount']}`",
         f"- 本地题库缺失：`{report['missingProblemCount']}`",
+        f"- 英文内容完整模板：`{report['englishContentReadyTemplateCount']}`",
         "",
         "## 来源归因",
         "",
@@ -1846,6 +1946,8 @@ def metadata_markdown_text(report: dict[str, Any]) -> str:
             f"### {template_id}",
             "",
             f"- 标题：{item['title']}",
+            f"- 英文标题：{item['titleEn']}",
+            f"- 英文内容完整：`{str(item['englishContentReady']).lower()}`",
             f"- 题目数：`{item['problemCount']}`",
             f"- 阶段数：`{item['phaseCount']}`",
             f"- 匹配题：`{item['matchedProblemCount']}`",

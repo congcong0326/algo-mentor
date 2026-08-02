@@ -82,11 +82,11 @@ public class PracticeMessageStreamService {
   }
 
   private String effectiveLocale(String sessionLocale, String requestedLocale) {
-    if (sessionLocale != null && !sessionLocale.isBlank()) {
-      return sessionLocale.trim();
-    }
     if (requestedLocale != null && !requestedLocale.isBlank()) {
       return requestedLocale.trim();
+    }
+    if (sessionLocale != null && !sessionLocale.isBlank()) {
+      return sessionLocale.trim();
     }
     return DEFAULT_LOCALE;
   }

@@ -7,6 +7,7 @@ import java.util.Objects;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionCheck;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionPlan;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionHook;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionMetadataKeys;
 import org.congcong.algomentor.agent.core.permission.ToolNamePermissionHook;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
 
@@ -53,7 +54,10 @@ public final class AppendCurrentProblemNotePermissionHook implements AgentToolPe
         DISPLAY_NAME,
         REASON,
         preview(contentMarkdown, check.trustedMetadata()),
-        POLICY_SOURCE);
+        POLICY_SOURCE,
+        Map.of(
+            AgentToolPermissionMetadataKeys.COPY_CODE,
+            PracticeAgentToolPermissionCopyCodes.APPEND_CURRENT_PROBLEM_NOTE_REQUESTED));
   }
 
   private Map<String, Object> preview(String contentMarkdown, Map<String, Object> trustedMetadata) {

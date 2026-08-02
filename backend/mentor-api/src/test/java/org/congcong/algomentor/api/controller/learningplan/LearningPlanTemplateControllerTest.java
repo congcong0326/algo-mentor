@@ -2,11 +2,13 @@ package org.congcong.algomentor.api.controller.learningplan;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
 import java.util.Map;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
@@ -34,11 +36,13 @@ class LearningPlanTemplateControllerTest {
 
   @Test
   void listTemplatesReturnsSummaries() throws Exception {
-    when(templateDraftService.listTemplates()).thenReturn(List.of(template()));
+    when(templateDraftService.listTemplates(LearningPlanContentLocale.ZH_CN)).thenReturn(List.of(template()));
 
     mockMvc.perform(get("/api/learning-plan-templates"))
         .andExpect(status().isOk())
+        .andExpect(header().string("Vary", "Accept-Language"))
         .andExpect(jsonPath("$.data[0].templateId").value("neetcode_blind_75_interview_core"))
+        .andExpect(jsonPath("$.data[0].contentLocale").value("zh-CN"))
         .andExpect(jsonPath("$.data[0].catalogCategory").value("INTERVIEW_PREP"))
         .andExpect(jsonPath("$.data[0].recommendedOrder").value(1))
         .andExpect(jsonPath("$.data[0].programmingLanguage").value("Java"))
@@ -56,11 +60,15 @@ class LearningPlanTemplateControllerTest {
 
   @Test
   void getTemplateReturnsPhaseAndProblemRefs() throws Exception {
-    when(templateDraftService.getTemplate("neetcode_blind_75_interview_core")).thenReturn(template());
+    when(templateDraftService.getTemplate(
+        "neetcode_blind_75_interview_core",
+        LearningPlanContentLocale.ZH_CN)).thenReturn(template());
 
     mockMvc.perform(get("/api/learning-plan-templates/neetcode_blind_75_interview_core"))
         .andExpect(status().isOk())
+        .andExpect(header().string("Vary", "Accept-Language"))
         .andExpect(jsonPath("$.data.templateId").value("neetcode_blind_75_interview_core"))
+        .andExpect(jsonPath("$.data.contentLocale").value("zh-CN"))
         .andExpect(jsonPath("$.data.sourceName").value("neetcode-gh/leetcode"))
         .andExpect(jsonPath("$.data.plannedProblemCount").value(69))
         .andExpect(jsonPath("$.data.sourceCommit").doesNotExist())
@@ -75,6 +83,63 @@ class LearningPlanTemplateControllerTest {
         .andExpect(jsonPath("$.data.phases[0].phaseIndex").value(1))
         .andExpect(jsonPath("$.data.phases[0].plannedProblemCount").value(1))
         .andExpect(jsonPath("$.data.phases[0].problemRefs").doesNotExist());
+  }
+
+  @Test
+  void getTemplateReturnsOneCompleteEnglishBundle() throws Exception {
+    when(templateDraftService.getTemplate(
+        "neetcode_blind_75_interview_core",
+        LearningPlanContentLocale.EN_US)).thenReturn(bilingualTemplate(true));
+
+    mockMvc.perform(get("/api/learning-plan-templates/neetcode_blind_75_interview_core")
+            .header("Accept-Language", "en-US,en;q=0.9"))
+        .andExpect(status().isOk())
+        .andExpect(header().string("Vary", "Accept-Language"))
+        .andExpect(jsonPath("$.data.contentLocale").value("en-US"))
+        .andExpect(jsonPath("$.data.title").value("Blind 75 English"))
+        .andExpect(jsonPath("$.data.summary").value("English summary"))
+        .andExpect(jsonPath("$.data.goal").value("English goal"))
+        .andExpect(jsonPath("$.data.targetAudience").value("English audience"))
+        .andExpect(jsonPath("$.data.prerequisites[0]").value("English prerequisite"))
+        .andExpect(jsonPath("$.data.recommendedFor[0]").value("English recommendation"))
+        .andExpect(jsonPath("$.data.notRecommendedFor[0]").value("English exclusion"))
+        .andExpect(jsonPath("$.data.expectedOutcome").value("English outcome"))
+        .andExpect(jsonPath("$.data.phases[0].title").value("English phase"))
+        .andExpect(jsonPath("$.data.phases[0].focus").value("English focus"))
+        .andExpect(jsonPath("$.data.phases[0].objectives[0]").value("English objective"))
+        .andExpect(jsonPath("$.data.phases[0].acceptanceCriteria[0]").value("English criterion"))
+        .andExpect(jsonPath("$.data.phases[0].reviewAdvice").value("English review"));
+  }
+
+  @Test
+  void englishRequestFallsBackToOneCompleteChineseBundleWhenEnglishIsNotReady() throws Exception {
+    when(templateDraftService.getTemplate(
+        "neetcode_blind_75_interview_core",
+        LearningPlanContentLocale.EN_US)).thenReturn(bilingualTemplate(false));
+
+    mockMvc.perform(get("/api/learning-plan-templates/neetcode_blind_75_interview_core")
+            .header("Accept-Language", "en-US"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.contentLocale").value("zh-CN"))
+        .andExpect(jsonPath("$.data.title").value("Blind 75 中文"))
+        .andExpect(jsonPath("$.data.summary").value("中文摘要"))
+        .andExpect(jsonPath("$.data.goal").value("中文目标"))
+        .andExpect(jsonPath("$.data.phases[0].title").value("中文阶段"))
+        .andExpect(jsonPath("$.data.phases[0].focus").value("中文重点"))
+        .andExpect(jsonPath("$.data.phases[0].objectives[0]").value("中文目标项"))
+        .andExpect(jsonPath("$.data.phases[0].acceptanceCriteria[0]").value("中文验收"))
+        .andExpect(jsonPath("$.data.phases[0].reviewAdvice").value("中文复盘"));
+  }
+
+  @Test
+  void unknownAcceptLanguageUsesChineseCatalog() throws Exception {
+    when(templateDraftService.listTemplates(LearningPlanContentLocale.ZH_CN))
+        .thenReturn(List.of(bilingualTemplate(true)));
+
+    mockMvc.perform(get("/api/learning-plan-templates").header("Accept-Language", "fr-FR"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data[0].contentLocale").value("zh-CN"))
+        .andExpect(jsonPath("$.data[0].title").value("Blind 75 中文"));
   }
 
   private LearningPlanTemplate template() {
@@ -121,6 +186,78 @@ class LearningPlanTemplateControllerTest {
             List.of("Array"),
             List.of("done"),
             "review",
+            List.of(new LearningPlanTemplateProblemRef(
+                100L,
+                1,
+                1,
+                1,
+                "two-sum",
+                "Two Sum",
+                "Easy",
+                "Arrays & Hashing",
+                "https://neetcode.io/problems/two-sum",
+                true,
+                Map.of())))));
+  }
+
+  private LearningPlanTemplate bilingualTemplate(boolean englishContentReady) {
+    return new LearningPlanTemplate(
+        1L,
+        "neetcode_blind_75_interview_core",
+        "Blind 75 中文",
+        "Blind 75 English",
+        "中文摘要",
+        "English summary",
+        LearningPlanTemplateCatalogCategory.INTERVIEW_PREP,
+        1,
+        LearningPlanIntent.INTERVIEW_SPRINT,
+        "中文目标",
+        "English goal",
+        4,
+        LearningPlanLevel.INTERMEDIATE,
+        8,
+        "Java",
+        LearningPlanDifficultyPreference.MEDIUM,
+        true,
+        List.of("Array"),
+        "中文受众",
+        "English audience",
+        Map.of("Easy", Map.of("count", 1)),
+        List.of("中文前置"),
+        List.of("English prerequisite"),
+        List.of("中文推荐"),
+        List.of("English recommendation"),
+        List.of("中文不推荐"),
+        List.of("English exclusion"),
+        "中文结果",
+        "English outcome",
+        englishContentReady,
+        "neetcode-gh/leetcode",
+        "https://github.com/neetcode-gh/leetcode",
+        "9907b7fed441fa55083c0751e208b7197101dbba",
+        ".problemSiteData.json",
+        "source",
+        "notes",
+        "MIT metadata only",
+        75,
+        69,
+        6,
+        Map.of(),
+        List.of(new LearningPlanTemplatePhase(
+            10L,
+            1,
+            "中文阶段",
+            "English phase",
+            1,
+            "中文重点",
+            "English focus",
+            List.of("中文目标项"),
+            List.of("English objective"),
+            List.of("Array"),
+            List.of("中文验收"),
+            List.of("English criterion"),
+            "中文复盘",
+            "English review",
             List.of(new LearningPlanTemplateProblemRef(
                 100L,
                 1,

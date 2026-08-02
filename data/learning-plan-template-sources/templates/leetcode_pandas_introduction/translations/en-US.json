@@ -1,0 +1,80 @@
+{
+  "expectedOutcome": "After completion, it is possible to create, inspect, select, clean and reshape the common DataFrame independently.",
+  "goal": "Establish basic capability to read, select, cleanse and recreate table data using Pandas.",
+  "notRecommendedFor": [
+    "All we need is training in algorithm data structure.",
+    "Pandas already used",
+    "We need machines to learn modelling."
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Identification signal and core solution for the \"DataFrame Create and Check\" main theme",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "masters DataFrame creation, shape checking and basic data preview.",
+      "objectives": [
+        "Complete all local matching questions at the \"DataFrame Create and Check\" stage and record status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "DataFrame Create and Check"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the “data selection” main theme",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Train in column selection, condition filtering and indexing.",
+      "objectives": [
+        "Complete all local matching questions at Data Selection stage and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Data Selection"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main theme of “data cleansing”",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Processes missing values, duplicate values, type conversions and column modifications.",
+      "objectives": [
+        "Complete the \"data cleansing\" phase of all local matching questions and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 3,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Data Cleaning"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main table structure change",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Mastering collage, visualization, melting and chain call.",
+      "objectives": [
+        "Complete the table structure transformation phase with all local matching questions and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 4,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Table structure change"
+    }
+  ],
+  "prerequisites": [
+    "Master Python Basic Syntax:",
+    "Know lists, dictionaries and functions"
+  ],
+  "recommendedFor": [
+    "Pandas beginner",
+    "Need data cleansing base",
+    "Preparation of basic job training for data analysis"
+  ],
+  "summary": "4 weeks to complete the Pandas entry official route, covering DataFrame, selection, cleaning and table structure changes.",
+  "targetAudience": "Learners who have the Python base and wish to start the table data processing and analysis.",
+  "templateId": "leetcode_pandas_introduction",
+  "title": "LeetCode Pandas Initial Training Program"
+}

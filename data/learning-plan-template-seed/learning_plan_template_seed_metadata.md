@@ -6,6 +6,7 @@
 - 题目引用数：`1738`
 - 本地题库匹配：`1699`
 - 本地题库缺失：`39`
+- 英文内容完整模板：`35`
 
 ## 来源归因
 
@@ -95,6 +96,8 @@
 ### neetcode_150_systematic_interview
 
 - 标题：NeetCode 150 系统面试计划
+- 英文标题：NetCode 150 System Interview Scheme
+- 英文内容完整：`true`
 - 题目数：`150`
 - 阶段数：`12`
 - 匹配题：`143`
@@ -105,6 +108,8 @@
 ### neetcode_blind_75_interview_core
 
 - 标题：NeetCode Blind 75 面试核心计划
+- 英文标题：NetCode Blind 75 Core interview plan
+- 英文内容完整：`true`
 - 题目数：`75`
 - 阶段数：`4`
 - 匹配题：`69`
@@ -115,6 +120,8 @@
 ### tih_best_practice_50_5weeks
 
 - 标题：5 周面试冲刺计划
+- 英文标题：5 Weekly interview sprinting programme
+- 英文内容完整：`true`
 - 题目数：`61`
 - 阶段数：`5`
 - 匹配题：`55`
@@ -125,6 +132,8 @@
 ### tih_algorithm_essentials
 
 - 标题：算法面试核心专题计划
+- 英文标题：Computer interview core thematic plan
+- 英文内容完整：`true`
 - 题目数：`119`
 - 阶段数：`6`
 - 匹配题：`110`
@@ -135,6 +144,8 @@
 ### sword_offer_classic
 
 - 标题：剑指 Offer 经典面试计划
+- 英文标题：Sword finger, Offer, classic interview plan.
+- 英文内容完整：`true`
 - 题目数：`75`
 - 阶段数：`8`
 - 匹配题：`75`
@@ -145,6 +156,8 @@
 ### cracking_coding_interview_classic
 
 - 标题：程序员面试金典系统训练计划
+- 英文标题：Programmer interview Kimberly system training programme
+- 英文内容完整：`true`
 - 题目数：`109`
 - 阶段数：`10`
 - 匹配题：`109`
@@ -155,6 +168,8 @@
 ### leetcode_75_core_sprint
 
 - 标题：LeetCode 75 核心冲刺计划
+- 英文标题：LeetCode 75 Core Sprint Plan
+- 英文内容完整：`true`
 - 题目数：`75`
 - 阶段数：`6`
 - 匹配题：`75`
@@ -165,6 +180,8 @@
 ### leetcode_top_interview_150
 
 - 标题：LeetCode 面试经典 150 题计划
+- 英文标题：LeetCode Top Interview 150 Plan
+- 英文内容完整：`true`
 - 题目数：`150`
 - 阶段数：`10`
 - 匹配题：`150`
@@ -175,6 +192,8 @@
 ### cn_algorithm_foundation_12weeks
 
 - 标题：中文系统刷题入门计划
+- 英文标题：12-Week Algorithm Foundations Plan
+- 英文内容完整：`true`
 - 题目数：`46`
 - 阶段数：`9`
 - 匹配题：`46`
@@ -185,6 +204,8 @@
 ### carl_algorithm_roadmap_full
 
 - 标题：代码随想录完整刷题路线
+- 英文标题：Coding Thoughts Complete Algorithm Roadmap
+- 英文内容完整：`true`
 - 题目数：`144`
 - 阶段数：`11`
 - 匹配题：`144`
@@ -195,6 +216,8 @@
 ### leetcode_patterns_beginner_roadmap
 
 - 标题：算法模式入门训练计划
+- 英文标题：Computer mode induction training programme
+- 英文内容完整：`true`
 - 题目数：`68`
 - 阶段数：`10`
 - 匹配题：`64`
@@ -205,6 +228,8 @@
 ### labuladong_algo_thinking
 
 - 标题：labuladong 核心算法框架训练计划
+- 英文标题：labuladong Core Algorithm Framework Plan
+- 英文内容完整：`true`
 - 题目数：`64`
 - 阶段数：`8`
 - 匹配题：`64`
@@ -215,6 +240,8 @@
 ### topic_dynamic_programming_foundation
 
 - 标题：动态规划专项突破计划
+- 英文标题：Dynamic Programming Foundations Plan
+- 英文内容完整：`true`
 - 题目数：`23`
 - 阶段数：`4`
 - 匹配题：`23`
@@ -225,6 +252,8 @@
 ### topic_dp_advanced
 
 - 标题：动态规划进阶专项计划
+- 英文标题：A dynamic programming progression plan
+- 英文内容完整：`true`
 - 题目数：`31`
 - 阶段数：`4`
 - 匹配题：`31`
@@ -235,6 +264,8 @@
 ### topic_graph_bfs_dfs
 
 - 标题：图论专项突破计划
+- 英文标题：A graphic breakthrough plan.
+- 英文内容完整：`true`
 - 题目数：`20`
 - 阶段数：`4`
 - 匹配题：`19`
@@ -245,6 +276,8 @@
 ### topic_binary_search_boundaries
 
 - 标题：二分与边界专项计划
+- 英文标题：Two-part border plan
+- 英文内容完整：`true`
 - 题目数：`18`
 - 阶段数：`2`
 - 匹配题：`18`
@@ -255,6 +288,8 @@
 ### topic_sliding_window_two_pointers
 
 - 标题：滑动窗口与双指针专项计划
+- 英文标题：Slide Window and two pointers Special Scheme
+- 英文内容完整：`true`
 - 题目数：`15`
 - 阶段数：`2`
 - 匹配题：`15`
@@ -265,6 +300,8 @@
 ### topic_tree_binary_tree_foundation
 
 - 标题：树与二叉树专项
+- 英文标题：Trees and binary trees.
+- 英文内容完整：`true`
 - 题目数：`24`
 - 阶段数：`3`
 - 匹配题：`24`
@@ -275,6 +312,8 @@
 ### topic_backtracking_foundation
 
 - 标题：回溯专项突破
+- 英文标题：Retrace special breakthroughs.
+- 英文内容完整：`true`
 - 题目数：`20`
 - 阶段数：`3`
 - 匹配题：`20`
@@ -285,6 +324,8 @@
 ### topic_heap_priority_queue
 
 - 标题：堆与优先队列专项
+- 英文标题：Stack & priority queue Special
+- 英文内容完整：`true`
 - 题目数：`18`
 - 阶段数：`2`
 - 匹配题：`18`
@@ -295,6 +336,8 @@
 ### topic_greedy_strategies
 
 - 标题：贪心策略专项
+- 英文标题：Greedy strategy.
+- 英文内容完整：`true`
 - 题目数：`24`
 - 阶段数：`3`
 - 匹配题：`24`
@@ -305,6 +348,8 @@
 ### topic_stack_monotonic
 
 - 标题：栈与单调栈专项
+- 英文标题：Inn & Monoton Special
+- 英文内容完整：`true`
 - 题目数：`18`
 - 阶段数：`2`
 - 匹配题：`18`
@@ -315,6 +360,8 @@
 ### topic_bit_manipulation
 
 - 标题：位运算专项
+- 英文标题：Bit Operations Special
+- 英文内容完整：`true`
 - 题目数：`18`
 - 阶段数：`2`
 - 匹配题：`18`
@@ -325,6 +372,8 @@
 ### topic_linked_list
 
 - 标题：链表专项
+- 英文标题：Chain Specific
+- 英文内容完整：`true`
 - 题目数：`18`
 - 阶段数：`2`
 - 匹配题：`18`
@@ -335,6 +384,8 @@
 ### topic_union_find_and_advanced_graph
 
 - 标题：并查集与进阶图论专项
+- 英文标题：And find out what's special about the map.
+- 英文内容完整：`true`
 - 题目数：`21`
 - 阶段数：`3`
 - 匹配题：`21`
@@ -345,6 +396,8 @@
 ### topic_prefix_sum_difference
 
 - 标题：前缀和与差分专项
+- 英文标题：Prefixes and differentials specifically
+- 英文内容完整：`true`
 - 题目数：`18`
 - 阶段数：`2`
 - 匹配题：`18`
@@ -355,6 +408,8 @@
 ### topic_trie_and_string_advanced
 
 - 标题：字典树与字符串进阶
+- 英文标题：Dictionary Tree & String Progress
+- 英文内容完整：`true`
 - 题目数：`18`
 - 阶段数：`2`
 - 匹配题：`18`
@@ -365,6 +420,8 @@
 ### topic_intervals_scheduling
 
 - 标题：区间与调度专项
+- 英文标题：Inter-district and movement control special
+- 英文内容完整：`true`
 - 题目数：`18`
 - 阶段数：`2`
 - 匹配题：`18`
@@ -375,6 +432,8 @@
 ### topic_data_structure_design
 
 - 标题：数据结构设计专项
+- 英文标题：Data structure design special
+- 英文内容完整：`true`
 - 题目数：`18`
 - 阶段数：`2`
 - 匹配题：`18`
@@ -385,6 +444,8 @@
 ### leetcode_top_100_liked_revision
 
 - 标题：LeetCode 热题 100
+- 英文标题：LeetCode 100
+- 英文内容完整：`true`
 - 题目数：`100`
 - 阶段数：`10`
 - 匹配题：`99`
@@ -395,6 +456,8 @@
 ### programming_skills_implementation_foundation
 
 - 标题：编程基础与实现力计划
+- 英文标题：Programming base and realization plan
+- 英文内容完整：`true`
 - 题目数：`34`
 - 阶段数：`4`
 - 匹配题：`34`
@@ -405,6 +468,8 @@
 ### leetcode_sql_50
 
 - 标题：LeetCode SQL 50 系统训练计划
+- 英文标题：LeetCode SQL 50 System Training Scheme
+- 英文内容完整：`true`
 - 题目数：`50`
 - 阶段数：`7`
 - 匹配题：`50`
@@ -415,6 +480,8 @@
 ### leetcode_javascript_30_days
 
 - 标题：LeetCode JavaScript 30 天训练计划
+- 英文标题：LeetCode JavaScript 30-day training programme
+- 英文内容完整：`true`
 - 题目数：`30`
 - 阶段数：`5`
 - 匹配题：`30`
@@ -425,6 +492,8 @@
 ### leetcode_pandas_introduction
 
 - 标题：LeetCode Pandas 入门训练计划
+- 英文标题：LeetCode Pandas Initial Training Program
+- 英文内容完整：`true`
 - 题目数：`15`
 - 阶段数：`4`
 - 匹配题：`15`
@@ -435,6 +504,8 @@
 ### leetcode_pandas_30_days
 
 - 标题：LeetCode Pandas 30 天进阶计划
+- 英文标题：LeetCode Pandas 30-day progress plan
+- 英文内容完整：`true`
 - 题目数：`33`
 - 阶段数：`5`
 - 匹配题：`28`

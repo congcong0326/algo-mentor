@@ -10,6 +10,7 @@ public interface AbilityProfileMapper {
 
   List<AbilityTagScoreRow> findCommonTagScores(
       @Param("userId") long userId,
-      @Param("minProblemCount") int minProblemCount
+      @Param("minProblemCount") int minProblemCount,
+      @Param("locale") String locale
   );
 }

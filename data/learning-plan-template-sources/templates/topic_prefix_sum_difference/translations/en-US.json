@@ -1,0 +1,52 @@
+{
+  "expectedOutcome": "Upon completion, the use of prefixes and differentials can be judged by inter-temporal queries, target margin and batch updates.",
+  "goal": "Translating duplicate inter-zone statistics and batch-level updates into stable pre-processing or differential models.",
+  "notRecommendedFor": [
+    "No array history yet.",
+    "The main objective is dedicated to trees, maps or chains"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "To be able to independently complete the interdependencies and prefixes and the Jahash",
+        "Can you explain whether to ask first or to update hash's count first?"
+      ],
+      "focus": "Transition from an inter-temporal query to a prefixed status margin and use the Hash table to measure the sub-numerics that meet the conditions.",
+      "objectives": [
+        "Subscript and interlocking formula for prefix groups",
+        "Can convert target sub-arrays to a relationship between two prefix states"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Harmonizes to use prefix arrays of n+1 lengths to think about boundaries and to record the semantics of the hash table keys and values.",
+      "title": "One-dimensional prefix and count with Hash."
+    },
+    {
+      "acceptanceCriteria": [
+        "Can independently complete the 2D area and target matrix count",
+        "The starting point of the difference, the after-end and the reduction process"
+      ],
+      "focus": "Training matrix regional statistics, one-dimensional differential events and volume zone increases and decreases.",
+      "objectives": [
+        "Mastering the two-dimensional prefix formula",
+        "Could use differential arrays to express inter-area increments and scan events"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Four areas of rebuff were drawn for the two-dimensional issue; the difference was restored on a case-by-case basis to check whether one of the end points crossed the border.",
+      "title": "2D prefix and difference update"
+    }
+  ],
+  "prerequisites": [
+    "Get familiar with the arrays and the hash watch.",
+    "Understanding of sub-points and inter-zone boundaries",
+    "It analyses the complexity of the double cycle."
+  ],
+  "recommendedFor": [
+    "The prefix status could not be identified for sub-array array arrays",
+    "A 2D area or a differential update is easy to write the wrong border",
+    "Hope to complete high frequency array optimization techniques"
+  ],
+  "summary": "2 High-frequency models of 1-dimensional prefixes and 2-dimensional prefixes, prefixes and Jahashis, as well as differentials, are available weekly.",
+  "targetAudience": "Inter- and intra-temporal, sub-temporal or batch-level updates still depend on violent learners.",
+  "templateId": "topic_prefix_sum_difference",
+  "title": "Prefixes and differentials specifically"
+}

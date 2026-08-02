@@ -22,6 +22,7 @@ import org.congcong.algomentor.llm.core.request.LlmGenerationOptions;
 import org.congcong.algomentor.llm.core.request.LlmMessage;
 import org.congcong.algomentor.llm.core.request.LlmResponseFormat;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanException;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanAgentToolNames;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftJsonSchema;
 import org.congcong.algomentor.mentor.application.learningplan.stream.LearningPlanDraftPromptBuilder;
@@ -84,6 +85,9 @@ public final class LearningPlanDraftRevisionAgentDefinition
     ResolvedSystemPromptSnapshot snapshot = promptBuilder.snapshot(candidate.userId());
     Map<String, Object> metadata = new LinkedHashMap<>(SystemPromptMetadataKeys.from(snapshot));
     metadata.put(AgentRuntimeMetadataKeys.TITLE, LearningPlanStreamConstants.DRAFT_REVISION_AGENT_TITLE);
+    metadata.put(
+        LearningPlanDraftMetadataKeys.CONTENT_LOCALE,
+        candidate.command().contentLocale().languageTag());
     return new AgentPreparedRequest(messages(candidate, snapshot), Map.copyOf(metadata), executionOptions());
   }
 

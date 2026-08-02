@@ -6,15 +6,21 @@ import java.util.Locale;
  * 题目聊天回复语言白名单，用于在 prompt 中动态约束输出语言。
  */
 public enum PracticeResponseLanguage {
-  ZH_CN("简体中文", "简体中文"),
-  EN_US("English", "英语");
+  ZH_CN("zh-CN", "简体中文", "简体中文"),
+  EN_US("en-US", "English", "英语");
 
+  private final String languageTag;
   private final String label;
   private final String promptLabel;
 
-  PracticeResponseLanguage(String label, String promptLabel) {
+  PracticeResponseLanguage(String languageTag, String label, String promptLabel) {
+    this.languageTag = languageTag;
     this.label = label;
     this.promptLabel = promptLabel;
+  }
+
+  public String languageTag() {
+    return languageTag;
   }
 
   public String label() {

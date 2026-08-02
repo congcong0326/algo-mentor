@@ -2,6 +2,7 @@ package org.congcong.algomentor.api.learningplan.model;
 
 import java.util.List;
 import java.util.Map;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanIntent;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanLevel;
@@ -13,6 +14,7 @@ import org.congcong.algomentor.mentor.application.learningplan.LearningPlanPhase
 public record LearningPlanDraftPlanResponse(
     String title,
     String summary,
+    LearningPlanContentLocale contentLocale,
     LearningPlanIntent intent,
     String goal,
     int durationWeeks,

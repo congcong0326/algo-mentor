@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { setApiLocale } from '../services/api';
 import { localeResources, SUPPORTED_LOCALES, type LocaleResources, type SupportedLocale } from './locales';
@@ -63,6 +63,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     setApiLocale(nextLocale);
     return nextLocale;
   });
+  const setLocale = useCallback((nextLocale: SupportedLocale) => {
+    setApiLocale(nextLocale);
+    setLocaleState(nextLocale);
+  }, []);
 
   useEffect(() => {
     document.documentElement.lang = locale;
@@ -79,8 +83,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const value = useMemo<I18nContextValue>(() => ({
     locale,
     resources: localeResources[locale],
-    setLocale: setLocaleState,
-  }), [locale]);
+    setLocale,
+  }), [locale, setLocale]);
 
   return (
     <I18nContext.Provider value={value}>

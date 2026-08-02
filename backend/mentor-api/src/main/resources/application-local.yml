@@ -39,7 +39,7 @@ algo-mentor:
       filters-maximum-size: ${PROBLEM_FILTERS_CACHE_MAXIMUM_SIZE:2}
   learning-plan-template:
     cache:
-      catalog-maximum-size: ${LEARNING_PLAN_TEMPLATE_CATALOG_CACHE_MAXIMUM_SIZE:1}
+      catalog-maximum-size: ${LEARNING_PLAN_TEMPLATE_CATALOG_CACHE_MAXIMUM_SIZE:2}
   queue:
     consumer:
       enabled: true

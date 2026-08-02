@@ -411,9 +411,21 @@ public final class InMemoryAgentToolPermissionCoordinator implements AgentToolPe
         check.toolCall().name(),
         plan.displayName(),
         plan.reason(),
+        stringMetadata(plan.metadata(), AgentToolPermissionMetadataKeys.COPY_CODE),
         plan.preview(),
         createdAt,
         createdAt.plus(timeout));
+  }
+
+  private String stringMetadata(Map<String, Object> metadata, String key) {
+    if (metadata == null) {
+      return null;
+    }
+    Object value = metadata.get(key);
+    if (value instanceof CharSequence text && !text.toString().isBlank()) {
+      return text.toString().trim();
+    }
+    return null;
   }
 
   private String nextRequestId() {

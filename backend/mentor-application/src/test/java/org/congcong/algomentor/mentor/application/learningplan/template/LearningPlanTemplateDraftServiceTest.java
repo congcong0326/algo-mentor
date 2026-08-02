@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlan;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanConfirmResult;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanContentLocale;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDifficultyPreference;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraft;
 import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftCommand;
@@ -235,7 +236,7 @@ class LearningPlanTemplateDraftServiceTest {
 
   @org.junit.jupiter.api.Test
   void templateDraftSnapshotsProblemRecommendationReasonsInTheRequestedLanguage() {
-    templateRepository.saveTemplate(blind75Template());
+    templateRepository.saveTemplate(withEnglishContent(blind75Template()));
 
     LearningPlanDraftResult chineseDraft = templateDraftService.createDraft(
         7L,
@@ -247,10 +248,11 @@ class LearningPlanTemplateDraftServiceTest {
             null,
             null,
             null,
-            "en-US"));
+            LearningPlanContentLocale.EN_US));
 
     assertThat(problemReasons(chineseDraft)).contains("中文推荐：two-sum");
     assertThat(problemReasons(englishDraft)).contains("English recommendation: two-sum");
+    assertThat(englishDraft.draftPlan().contentLocale()).isEqualTo(LearningPlanContentLocale.EN_US);
     assertThat(problemReasons(chineseDraft))
         .noneMatch(reason -> reason.contains("来自模板") || reason.contains("围绕"));
     assertThat(problemReasons(englishDraft))
@@ -349,6 +351,70 @@ class LearningPlanTemplateDraftServiceTest {
         phase(3, "图", List.of("number-of-islands", "missing-problem")),
         phase(4, "动态规划", List.of("climbing-stairs", "coin-change")));
     return template("neetcode_blind_75_interview_core", 4, 10, 9, 1, phases);
+  }
+
+  private LearningPlanTemplate withEnglishContent(LearningPlanTemplate template) {
+    List<LearningPlanTemplatePhase> phases = template.phases().stream()
+        .map(phase -> new LearningPlanTemplatePhase(
+            phase.id(),
+            phase.phaseIndex(),
+            phase.title(),
+            "English " + phase.title(),
+            phase.durationWeeks(),
+            phase.focus(),
+            "English " + phase.focus(),
+            phase.objectives(),
+            List.of("English objective"),
+            phase.recommendedTags(),
+            phase.acceptanceCriteria(),
+            List.of("English acceptance criterion"),
+            phase.reviewAdvice(),
+            "Review mistakes.",
+            phase.problemRefs()))
+        .toList();
+    return new LearningPlanTemplate(
+        template.id(),
+        template.templateId(),
+        template.title(),
+        "English template title",
+        template.summary(),
+        "English template summary",
+        template.catalogCategory(),
+        template.recommendedOrder(),
+        template.intent(),
+        template.goal(),
+        "Prepare for algorithm interviews",
+        template.defaultDurationWeeks(),
+        template.level(),
+        template.defaultWeeklyHours(),
+        template.programmingLanguage(),
+        template.difficultyPreference(),
+        template.interviewOriented(),
+        template.topicPreferences(),
+        template.targetAudience(),
+        "Algorithm interview candidates",
+        template.difficultyMix(),
+        template.prerequisites(),
+        List.of("Basic data structures"),
+        template.recommendedFor(),
+        List.of("Interview preparation"),
+        template.notRecommendedFor(),
+        List.of("Complete beginners"),
+        template.expectedOutcome(),
+        "Review core problem patterns",
+        true,
+        template.sourceName(),
+        template.sourceUrl(),
+        template.sourceCommit(),
+        template.sourceDataPath(),
+        template.sourceDescription(),
+        template.curationNotes(),
+        template.licenseNotice(),
+        template.problemCount(),
+        template.matchedProblemCount(),
+        template.missingProblemCount(),
+        template.metadata(),
+        phases);
   }
 
   private LearningPlanTemplate generatedTemplate(

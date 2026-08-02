@@ -6,8 +6,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Map;
 import org.congcong.algomentor.agent.core.AgentErrorCode;
+import org.congcong.algomentor.agent.core.AgentExecutionContext;
 import org.congcong.algomentor.agent.core.AgentException;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
+import org.congcong.algomentor.mentor.application.learningplan.LearningPlanDraftMetadataKeys;
 
 final class ProblemAgentToolSupport {
 
@@ -140,6 +142,17 @@ final class ProblemAgentToolSupport {
       return;
     }
     node.put(fieldName, value);
+  }
+
+  static String trustedContentLocale(AgentExecutionContext context) {
+    if (context == null) {
+      return null;
+    }
+    Object value = context.requestMetadata().get(LearningPlanDraftMetadataKeys.CONTENT_LOCALE);
+    if (!(value instanceof String locale) || locale.isBlank()) {
+      return null;
+    }
+    return locale.trim();
   }
 
   static AgentException toolFailure(String toolName, String message, Throwable cause) {

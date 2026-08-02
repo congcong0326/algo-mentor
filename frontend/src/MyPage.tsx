@@ -48,7 +48,7 @@ export default function MyPage({
     const controller = new AbortController();
     void loadAbilityProfile(controller.signal);
     return () => controller.abort();
-  }, []);
+  }, [locale]);
 
   async function loadAbilityProfile(signal?: AbortSignal) {
     setAbilityLoading(true);
@@ -57,7 +57,11 @@ export default function MyPage({
       const response = await getAbilityProfile(signal);
       const profile = requireApiData(response, resources.home.abilityLoadFailed);
       setAbilityProfile(profile);
-      setSelectedAbilityTags(defaultAbilityTagKeys(profile));
+      setSelectedAbilityTags((currentTags) => {
+        const availableTags = new Set(profile.tags.map((tag) => tag.tag));
+        const retainedTags = currentTags.filter((tag) => availableTags.has(tag));
+        return retainedTags.length >= minAbilityBubbleCount ? retainedTags : defaultAbilityTagKeys(profile);
+      });
       setAbilitySelectionNotice('');
     } catch (error) {
       if (signal?.aborted) {
@@ -153,7 +157,7 @@ export default function MyPage({
       >
         <div className="ability-heatmap-heading">
           <div>
-            <p className="my-section-eyebrow">ABILITY COVERAGE</p>
+            <p className="my-section-eyebrow">{resources.myPage.abilityHeatmapEyebrow}</p>
             <h2 id={titleId}>{resources.myPage.abilityHeatmapTitle}</h2>
           </div>
           <span>{resources.myPage.abilityHeatmapHint}</span>

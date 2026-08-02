@@ -1,0 +1,79 @@
+{
+  "expectedOutcome": "Once completed, it will stabilize the achievement of basic arrays, strings, matrices, stacks and simple design questions, laying the bottom line for subsequent interviews.",
+  "goal": "Encoding stability in case of weakness is achieved by upgrading the local Easy/Medium repository to change language or base.",
+  "notRecommendedFor": [
+    "It's stable, Medium/Hard, and it's just a challenge to high-level algorithms.",
+    "The main objective is database or front-end dedicated"
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Stables the cycle, the branch of condition, the count and the simple array back with a short question.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Syntax warm-up and simple simulation"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "The training string runs through history, collages, map relationships and digitizing.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "String and Hash Foundation"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Exercises a combination of bottom-up moves, arrays, in situ changes and basic sorting.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 3,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Numeric, matrix and boundary"
+    },
+    {
+      "acceptanceCriteria": [
+        "Independent restatement of the conditions applicable to each topic at this stage",
+        "Border conditions, complexity and transportable templates to write errors"
+      ],
+      "focus": "Completion of inn, queue, HashMap and simple design, consolidation of class and state maintenance.",
+      "objectives": [
+        "Completion of the current phase of recommendations and documentation of the core modelling of each issue",
+        "Collapse at least 2 high frequency errors and double-disk policy at this stage"
+      ],
+      "phaseIndex": 4,
+      "reviewAdvice": "Checks whether the template is actually mastered using the same subject.",
+      "title": "Basic data structure achieved"
+    }
+  ],
+  "prerequisites": [
+    "Can write variables, loops, functions and base array operations",
+    "I'm willing to practice it in the same language."
+  ],
+  "recommendedFor": [
+    "I want to upgrade the code first.",
+    "Easy often comes from grammar or borders. Wrong.",
+    "Get ready to start before you go into the system."
+  ],
+  "summary": "4 Weekly completion of base realization capability covering simulations, strings, arrays, matrices, basic data structure and simple design issues.",
+  "targetAudience": "Learners who have just changed their language, whose basic grammar is unstable or whose details are often wrong.",
+  "templateId": "programming_skills_implementation_foundation",
+  "title": "Programming base and realization plan"
+}

@@ -143,7 +143,7 @@ function reviewContext(): ReviewCardContext {
     card,
     problem: {
       slug: 'two-sum',
-      titleCn: '两数之和',
+      title: '两数之和',
       difficulty: 'EASY',
       contentMarkdown: '完整题面正文。',
     },

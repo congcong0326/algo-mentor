@@ -18,6 +18,7 @@ import org.congcong.algomentor.agent.core.AgentTool;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionBehavior;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionCheck;
 import org.congcong.algomentor.agent.core.permission.AgentToolPermissionDecisionPlan;
+import org.congcong.algomentor.agent.core.permission.AgentToolPermissionMetadataKeys;
 import org.congcong.algomentor.agent.core.permission.ToolNamePermissionHook;
 import org.congcong.algomentor.agent.core.runtime.model.AgentMessage;
 import org.congcong.algomentor.agent.core.runtime.model.AgentRuntimeMetadataKeys;
@@ -68,7 +69,9 @@ class PracticeCodeReviewPermissionHookTest {
     assertThat(plan.displayName()).isEqualTo(PracticeCodeReviewPermissionHook.DISPLAY_NAME);
     assertThat(plan.reason()).isEqualTo(PracticeCodeReviewPermissionHook.REASON);
     assertThat(plan.policySource()).isEqualTo(PracticeCodeReviewPermissionHook.POLICY_SOURCE);
-    assertThat(plan.metadata()).isEmpty();
+    assertThat(plan.metadata()).containsEntry(
+        AgentToolPermissionMetadataKeys.COPY_CODE,
+        PracticeAgentToolPermissionCopyCodes.PRACTICE_CODE_REVIEW_REQUESTED);
     assertThat(plan.preview())
         .containsEntry(PracticeCodeReviewAgentToolNames.PREVIEW_PROBLEM_SLUG, PROBLEM_SLUG)
         .containsEntry(PracticeCodeReviewAgentToolNames.PREVIEW_PROBLEM_TITLE, PROBLEM_SLUG)
@@ -152,6 +155,9 @@ class PracticeCodeReviewPermissionHookTest {
     assertThat(plan.displayName()).isEqualTo(PracticeCodeReviewPermissionHook.DISPLAY_NAME);
     assertThat(plan.reason()).isEqualTo(PracticeCodeReviewPermissionHook.REASON);
     assertThat(plan.policySource()).isEqualTo(PracticeCodeReviewPermissionHook.POLICY_SOURCE);
+    assertThat(plan.metadata()).containsEntry(
+        AgentToolPermissionMetadataKeys.COPY_CODE,
+        PracticeAgentToolPermissionCopyCodes.PRACTICE_CODE_REVIEW_REQUESTED);
     assertThat(plan.preview())
         .containsEntry(PracticeCodeReviewAgentToolNames.PREVIEW_CONTEXT_AVAILABLE, false)
         .containsKey(PracticeCodeReviewAgentToolNames.PREVIEW_EFFECTS);

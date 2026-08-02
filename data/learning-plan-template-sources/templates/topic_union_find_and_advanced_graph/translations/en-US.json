@@ -1,0 +1,66 @@
+{
+  "expectedOutcome": "Once completed, they are able to select and locate, expand and sort, minimize or MST according to connectivity, dependencies or marginal targets.",
+  "goal": "Establish connectivity maintenance, systematic problem solving capacity to rely on sequencing and rights-based map paths.",
+  "notRecommendedFor": [
+    "No basic map yet available",
+    "All you have to do is start a series of exercises."
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "You can explain the effect of the path compression and coding.",
+        "Can map the problem entity independently and check the nodes"
+      ],
+      "focus": "The combination of connector blocks, redundant edges and multiple pools is handled by path compression and by agglomeration.",
+      "objectives": [
+        "Stable find, union and connect block counting templates",
+        "Identification of 2-D coordinates, string accounts and multi-role sides and check for cluster maps"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "The definition of nodes, the number of initial connectors and the number of counting changes when an union succeeds.",
+      "title": "And check basic and connectivity applications."
+    },
+    {
+      "acceptanceCriteria": [
+        "To independently determine if there's a loop or not and to generate an extended sequence.",
+        "Could handle the shift of status on group dependence and scaling up"
+      ],
+      "focus": "Training input BFS, DFS dyeing, group dependence and dynamic programming on DAG.",
+      "objectives": [
+        "Two types of achievement are available for mapping, ring detection and safety nodes",
+        "Understanding the integration of DG dynamic programming"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Also record the state meaning of the input and DFS dye methods and check isolated points and repeat sides.",
+      "title": "Scaled up and dependent"
+    },
+    {
+      "acceptanceCriteria": [
+        "You can write stacks to optimize Dijkstra and describe the process of the expired state",
+        "Can distinguish the shortest path from the smallest tree."
+      ],
+      "focus": "Comparison of Dijkstra, loose limit edges, minimum bottleneck path and Kruskal/Prim applicable conditions.",
+      "objectives": [
+        "Select path algorithms based on negative weights, margin limits and minimum bottlenecks",
+        "Knowledge of the selection process and critical margin judgement for the smallest tree generation"
+      ],
+      "phaseIndex": 3,
+      "reviewAdvice": "Creates an algorithm selection table by the direction, margin, target function and status dimension of the chart, and repeats the complexity.",
+      "title": "Shortest road and smallest tree generation"
+    }
+  ],
+  "prerequisites": [
+    "It's the next-door chart.",
+    "Mastering BFS and DFS",
+    "Understand basic stack operation and complexity analysis"
+  ],
+  "recommendedFor": [
+    "And check that templates and path compressions are not skilled",
+    "Courses rely on or expand the sort of issues that often leak borders",
+    "Need to complete Dijkstra, Bellman-Ford and MST"
+  ],
+  "summary": "3 Week covered and collected, sprawl sequenced, minimum path and minimum tree generation evolutionary models.",
+  "targetAudience": "BFS/DFS are already available, but learners who experience dynamic connectivity and lack stabilization models when they have access to dependencies or rights maps.",
+  "templateId": "topic_union_find_and_advanced_graph",
+  "title": "And find out what's special about the map."
+}

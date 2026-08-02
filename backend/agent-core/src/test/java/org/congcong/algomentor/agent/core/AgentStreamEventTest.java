@@ -30,6 +30,7 @@ class AgentStreamEventTest {
     assertThat(event.stepIndex()).isEqualTo(2);
     assertThat(event.toolCallId()).isEqualTo("call-1");
     assertThat(event.toolName()).isEqualTo("submit_practice_code_review");
+    assertThat(event.copyCode()).isEqualTo("PRACTICE_CODE_REVIEW_REQUESTED");
     assertThat(event.preview()).containsEntry("effect", "save_review");
     assertThat(event.expiresAt()).isEqualTo(Instant.parse("2026-06-26T00:01:00Z"));
   }
@@ -112,6 +113,7 @@ class AgentStreamEventTest {
         "submit_practice_code_review",
         "提交代码 Review",
         "模型请求执行正式 Review",
+        "PRACTICE_CODE_REVIEW_REQUESTED",
         Map.of("effect", "save_review"),
         Instant.parse("2026-06-26T00:00:00Z"),
         Instant.parse("2026-06-26T00:01:00Z"));

@@ -1,0 +1,135 @@
+{
+  "expectedOutcome": "Once completed, it will be able to deal independently with the main issues of the Offer and to develop a solution, complexity and border reset suitable for the Chinese interview expression.",
+  "goal": "Create a stable Chinese algorithm for interviewing knowledge links and duplicate materials in classic order.",
+  "notRecommendedFor": [
+    "There is no programming base at all.",
+    "Just short-term breakthroughs on a single topic."
+  ],
+  "phases": [
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main `data structure and search entry' theme",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Starting with arrays, chains, tree reconstruction, queues and basic searches, a classic touch is created.",
+      "objectives": [
+        "Complete all local matching questions at the Data Structure and Search Into Phase and record status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 1,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Data structure and search entry"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core decomposition that provide an independent description of the main \"regressive, numerical and boundary\" type",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Training in disaggregation, dynamic programming, biting and numerical boundary processing.",
+      "objectives": [
+        "Complete all local matching questions at the \"Regression, Values and Boundaries\" stage and record status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 2,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Recursive, numerical and boundary"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main theme of the \"Clock, Trees and Inn queue\"",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Focus on the rewriting of the pointer, tree structure judgement, matrix simulation and data structure with maximum value.",
+      "objectives": [
+        "Completion of all local matching questions for the \" Linked List, Tree & Stack Queue \" phase and recording status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 3,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Chain watch, tree and inn queue"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main theme of \"Treasure, copy and trace\"",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Completes the stratification and depth of the tree, copying of complex chains, sequenced and arranged searches.",
+      "objectives": [
+        "Complete all local matching questions at the Tree Walking, Copying and Backtracking phase and record status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 4,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Tree through, copying and backtracking"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main theme of \"Integer statistics, stacks and continuum\"",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Trains most elements, Top K, data stream medians, continuous arrays and numerical patterns.",
+      "objectives": [
+        "Completion of all local matching questions for the \"array statistics, stacks and continuum \" phase and recording status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 5,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Numerical statistics, stacks and continuum"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main `dynamic programming, `hash and merge'",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Covers grids DP, slided windows, Hash count, reverse-ordering and chain intersections.",
+      "objectives": [
+        "Complete all local matching questions at the dynamic programming, Hash and integration stages and document the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 6,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Dynamic programming, Hash and integration"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main \"tree, bitwork and window combination\"",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "Completes the BST, tree depth, bit count, two pointers, string and one-way queue.",
+      "objectives": [
+        "Complete all local matching questions at the Tree, Bitwork and Window Integration phase and record the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 7,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Tree, bitwork and window integration"
+    },
+    {
+      "acceptanceCriteria": [
+        "Identification signals and core solutions that provide an independent description of the main \"Probability, Mathematics and Comprehensive Ending\" theme",
+        "Can review the complexity, boundary conditions, and one representative mistake"
+      ],
+      "focus": "The end of the course is done with probability, Joseph Ring, stocks DP, bit calculations and recent public ancestors.",
+      "objectives": [
+        "Complete all local matching questions at the Probability, Mathematics and Integrated Ending stage and document the status or data structure selection basis",
+        "Collapse at least 2 error-prone borders and reusable solver templates"
+      ],
+      "phaseIndex": 8,
+      "reviewAdvice": "Qualitatively mischaracterized, recapitulating modelling and state, and rewriting key boundaries.",
+      "title": "Probability, mathematics and consolidation"
+    }
+  ],
+  "prerequisites": [
+    "Knowledge of a programming language",
+    "Understanding arrays, chains, trees, queues and basic dynamic programming"
+  ],
+  "recommendedFor": [
+    "Preparation of Chinese technical interview",
+    "Wishing to fill a gap in the classic sequence system",
+    "Require 6 to 8 weeks of complete route"
+  ],
+  "summary": "Using 8 weeks to complete the Offer classics, systematic training in data structure, algorithms and border processing in Chinese interviews.",
+  "targetAudience": "A preference is given to Chinese-language readers who wish to review the system for classic school and social algorithms.",
+  "templateId": "sword_offer_classic",
+  "title": "Sword finger, Offer, classic interview plan."
+}

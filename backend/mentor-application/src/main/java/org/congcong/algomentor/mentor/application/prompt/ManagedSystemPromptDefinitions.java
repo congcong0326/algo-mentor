@@ -135,7 +135,7 @@ public final class ManagedSystemPromptDefinitions {
   public static final ManagedSystemPromptDefinition LEARNING_PLAN_DRAFT = definition(
       AiBusinessScenario.LEARNING_PLAN_DRAFT,
       SystemPromptTypeCodes.LEARNING_PLAN_DRAFT_V1,
-      "2026-07-30.1",
+      "2026-08-02.1",
       SystemPromptSnapshotScope.RUN,
       descriptor("LEARNING_PLAN", "学习计划草案", "Learning plan draft", "学习计划草案生成的固定系统规则。"),
       section(SystemPromptSectionKeys.LEARNING_PLAN_DRAFT_BASE, "草案生成规则", 10, true, """
@@ -153,16 +153,17 @@ public final class ManagedSystemPromptDefinitions {
           5. 各阶段 durationWeeks 之和必须等于总周期；每阶段最多 5 道题。
           6. 计划总负载应优先落在 targetLoadRange 内，不得为了凑题量明显超过 totalCapacityPoints。
           7. 阶段安排应体现合理的前置关系和难度递进，并与用户目标、水平和偏好一致。
-          8. 计划阶段、目标、验收标准和复盘建议使用中文。
+          8. 计划正文和推荐理由严格使用服务端提供的 outputLocale；题库工具调用严格使用 problemToolLocale。
+          9. recommendedTags 和题目 tags 只使用题库工具返回的稳定 value，不使用本地化 label。
 
           输出要求：
-          9. 最终只输出符合 JSON Schema 的完整结构化 JSON，不要输出 Markdown、解释文本或 Schema 之外的字段。
+          10. 最终只输出符合 JSON Schema 的完整结构化 JSON，不要输出 Markdown、解释文本或 Schema 之外的字段。
           """.formatted(BRAND_NAME).strip()));
 
   public static final ManagedSystemPromptDefinition LEARNING_PLAN_REVISION = definition(
       AiBusinessScenario.LEARNING_PLAN_REVISION,
       SystemPromptTypeCodes.LEARNING_PLAN_REVISION_V1,
-      "2026-07-30.1",
+      "2026-08-02.1",
       SystemPromptSnapshotScope.RUN,
       descriptor("LEARNING_PLAN", "学习计划修订", "Learning plan revision", "学习计划草案修订的固定系统规则。"),
       section(SystemPromptSectionKeys.LEARNING_PLAN_REVISION_BASE, "草案修订规则", 10, true, """
@@ -176,14 +177,15 @@ public final class ManagedSystemPromptDefinitions {
           3. 新增或替换推荐题时，必须先使用本地题库工具确认候选，不得编造题目事实。
           4. 各阶段 durationWeeks 之和必须等于总周期；每阶段最多 5 道题，并保持合理的前置关系和难度递进。
           5. 返回完整替换版草案，不要只返回差异、补丁或局部阶段。
-          6. 计划阶段、目标、验收标准和复盘建议使用中文。
-          7. 最终只输出符合 JSON Schema 的完整结构化 JSON，不要输出 Markdown、解释文本或额外字段。
+          6. 计划正文和推荐理由严格继承原始命令中的 outputLocale；题库工具调用使用相同的 problemToolLocale。
+          7. recommendedTags 和题目 tags 只使用题库工具返回的稳定 value，不使用本地化 label。
+          8. 最终只输出符合 JSON Schema 的完整结构化 JSON，不要输出 Markdown、解释文本或额外字段。
           """.formatted(BRAND_NAME).strip()));
 
   public static final ManagedSystemPromptDefinition LEARNING_PLAN_EXTENSION = definition(
       AiBusinessScenario.LEARNING_PLAN_EXTENSION,
       SystemPromptTypeCodes.LEARNING_PLAN_EXTENSION_V1,
-      "2026-07-30.1",
+      "2026-08-02.1",
       SystemPromptSnapshotScope.RUN,
       descriptor("LEARNING_PLAN", "学习计划扩展", "Learning plan extension", "学习计划扩展草案的固定系统规则。"),
       section(SystemPromptSectionKeys.LEARNING_PLAN_EXTENSION_BASE, "扩展生成规则", 10, true, """
@@ -202,16 +204,17 @@ public final class ManagedSystemPromptDefinitions {
           6. 新阶段应结合现有进度补足能力边界，并保持合理的前置关系和难度递进。
           7. 每个新增阶段最多 5 道题；候选不足时可以少推荐，并在 metadata.problemRecommendationIncomplete 标记 true。
           8. 如果提供了上一版扩展草案，只把它作为待修订草案；仍以当前计划、当前进度、本次用户要求和以上约束为准。
-          9. 阶段、目标、验收标准、复盘建议和 summary 使用中文。
+          9. 阶段正文、推荐理由和 summary 严格继承当前计划的 outputLocale；题库工具调用使用相同的 problemToolLocale。
+          10. recommendedTags 和题目 tags 只使用题库工具返回的稳定 value，不使用本地化 label。
 
           输出要求：
-          10. 最终只输出符合 JSON Schema 的扩展草案 JSON，不要输出完整替换版计划、Markdown、解释文本或额外字段。
+          11. 最终只输出符合 JSON Schema 的扩展草案 JSON，不要输出完整替换版计划、Markdown、解释文本或额外字段。
           """.formatted(BRAND_NAME).strip()));
 
   public static final ManagedSystemPromptDefinition PRACTICE_CODE_REVIEW = definition(
       AiBusinessScenario.PRACTICE_CODE_REVIEW,
       SystemPromptTypeCodes.PRACTICE_CODE_REVIEW_V1,
-      "2026-07-30.1",
+      "2026-08-02.1",
       SystemPromptSnapshotScope.RUN,
       descriptor("PRACTICE", "练习代码 Review", "Practice code review", "正式练习代码 Review 的固定评测和安全规则。"),
       section(SystemPromptSectionKeys.PRACTICE_CODE_REVIEW_BASE, "Review 规则", 10, true, """
@@ -229,11 +232,12 @@ public final class ManagedSystemPromptDefinitions {
 
           安全与隐私规则：
           7. 不要在输出中复述、暴露或推断 API key、访问令牌、Authorization 头、数据库密码或其他密钥。
-          8. 如果用户消息里包含疑似密钥，只评价算法代码本身，并在 reviewMarkdown 中用概括性中文提醒移除敏感信息。
+          8. 如果用户消息里包含疑似密钥，只评价算法代码本身，并在 reviewMarkdown 中使用请求提供的 outputLocale 对应语言，概括提醒移除敏感信息。
           9. affectedTagIds 只能从服务端提供的受信标签候选中选择；不确定或无关时返回空数组。
 
           输出要求：
-          10. 最终只输出符合 JSON Schema 的结构化 JSON，不要输出 Markdown 包裹、解释文本或额外字段。
+          10. 所有面向学习者的文本字段必须使用请求提供的 outputLocale 对应语言；代码、稳定标识符和固定枚举值保持原样。
+          11. 最终只输出符合 JSON Schema 的结构化 JSON，不要输出 Markdown 包裹、解释文本或额外字段。
           """.formatted(BRAND_NAME).strip()));
 
   public static final ManagedSystemPromptDefinition DECLARED_PROFILE_UPDATE = definition(

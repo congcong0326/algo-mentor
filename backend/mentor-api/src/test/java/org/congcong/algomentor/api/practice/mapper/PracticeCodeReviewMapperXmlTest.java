@@ -42,6 +42,19 @@ class PracticeCodeReviewMapperXmlTest {
   }
 
   @Test
+  void persistsAndSelectsReviewContentLocale() throws Exception {
+    String mapperXml;
+    try (Reader reader = Resources.getResourceAsReader("mapper/practice/PracticeCodeReviewMapper.xml");
+        BufferedReader bufferedReader = new BufferedReader(reader)) {
+      mapperXml = bufferedReader.lines().collect(Collectors.joining("\n"));
+    }
+
+    assertThat(mapperXml)
+        .contains("<arg column=\"content_locale\" javaType=\"string\"/>")
+        .contains("#{contentLocale}");
+  }
+
+  @Test
   void usesSeparateSessionLockBeforeInsertVersionCalculation() throws Exception {
     String mapperXml;
     try (Reader reader = Resources.getResourceAsReader("mapper/practice/PracticeCodeReviewMapper.xml");
