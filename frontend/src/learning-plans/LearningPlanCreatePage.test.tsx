@@ -122,6 +122,8 @@ describe('LearningPlanCreatePage', () => {
 
     expect(screen.getByRole('heading', { name: '新建方案' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '返回方案页' })).toHaveClass('icon-button', 'learning-create-back');
+    expect(screen.getByRole('button', { name: '返回方案页' }).closest('.learning-create-content'))
+      .not.toHaveClass('learning-create-content--preview');
     expect(Array.from(document.querySelectorAll('.create-mode-switch > button')).map((button) => button.textContent))
       .toEqual(['从模板创建', 'AI 个性化生成']);
     expect(screen.getByRole('button', { name: '从模板创建' })).toHaveAttribute('aria-pressed', 'true');
@@ -178,6 +180,8 @@ describe('LearningPlanCreatePage', () => {
     fireEvent.click(screen.getByRole('button', { name: '按模板生成草案' }));
 
     await screen.findByRole('heading', { name: '训练方案' });
+    expect(screen.getByRole('button', { name: '返回方案页' }).closest('.learning-create-content'))
+      .toHaveClass('learning-create-content--preview');
     expect(createLearningPlanDraftFromTemplateMock).toHaveBeenCalledWith({
       templateId: 'leetcode_75_core_sprint',
       contentLocale: 'zh-CN',

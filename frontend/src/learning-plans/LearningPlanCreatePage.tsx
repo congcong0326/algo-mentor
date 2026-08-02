@@ -197,87 +197,89 @@ export default function LearningPlanCreatePage({ onBackToPlans, onSaved }: Learn
 
   return (
     <section className="learning-shell learning-create-shell" aria-label={resources.learningPlans.createAriaLabel}>
-      <div className="learning-create-heading">
-        <button
-          aria-label={resources.learningPlans.backToPlans}
-          className="icon-button learning-create-back"
-          disabled={flowState === 'generating' || flowState === 'confirming'}
-          onClick={onBackToPlans}
-          type="button"
-        >
-          <ArrowLeft aria-hidden="true" />
-        </button>
-        <h1>{resources.learningPlans.newPlan}</h1>
-      </div>
+      <div className={`learning-create-content${draft ? ' learning-create-content--preview' : ''}`}>
+        <div className="learning-create-heading">
+          <button
+            aria-label={resources.learningPlans.backToPlans}
+            className="icon-button learning-create-back"
+            disabled={flowState === 'generating' || flowState === 'confirming'}
+            onClick={onBackToPlans}
+            type="button"
+          >
+            <ArrowLeft aria-hidden="true" />
+          </button>
+          <h1>{resources.learningPlans.newPlan}</h1>
+        </div>
 
-      {draft ? (
-        <>
-          {error && <p className="error-text">{error}</p>}
-          <LearningPlanDraftPanel
-            draft={draft}
-            loading={flowState === 'generating' || flowState === 'confirming'}
-            workEvent={flowState === 'generating' ? workEvent : undefined}
-            onConfirm={confirmDraft}
-            onRetryCreate={retryCreateDraft}
-            onReviseDraft={reviseDraft}
-            onSendFollowUp={sendFollowUp}
-          />
-        </>
-      ) : (
-        <article className="learning-panel create-plan-page-panel">
-          <section className="question-block">
-            <strong>{resources.learningPlans.createMode}</strong>
-            <div className="segmented-grid create-mode-switch">
-              <button
-                aria-pressed={createMode === 'template'}
-                className={createMode === 'template' ? 'selected' : ''}
-                disabled={flowState === 'generating'}
-                onClick={() => {
-                  setCreateMode('template');
-                  setError('');
-                }}
-                type="button"
-              >
-                <LayoutTemplate aria-hidden="true" />
-                <span>{resources.learningPlans.createFromTemplate}</span>
-              </button>
-              <button
-                aria-pressed={createMode === 'ai'}
-                className={createMode === 'ai' ? 'selected' : ''}
-                disabled={flowState === 'generating'}
-                onClick={() => {
-                  setCreateMode('ai');
-                  setError('');
-                }}
-                type="button"
-              >
-                <Sparkles aria-hidden="true" />
-                <span>{resources.learningPlans.createWithAi}</span>
-              </button>
-            </div>
-          </section>
-          {flowState === 'generating' && (
-            <AgentWorkIndicator active event={workEvent} error={error} />
-          )}
-          {createMode === 'ai' ? (
-            <LearningPlanCreateForm
-              error={error}
-              key={formKey}
-              loading={flowState === 'generating'}
-              onCancel={onBackToPlans}
-              onSubmit={submitDraft}
-              submitLabel={resources.learningPlans.generatePlan}
+        {draft ? (
+          <>
+            {error && <p className="error-text">{error}</p>}
+            <LearningPlanDraftPanel
+              draft={draft}
+              loading={flowState === 'generating' || flowState === 'confirming'}
+              workEvent={flowState === 'generating' ? workEvent : undefined}
+              onConfirm={confirmDraft}
+              onRetryCreate={retryCreateDraft}
+              onReviseDraft={reviseDraft}
+              onSendFollowUp={sendFollowUp}
             />
-          ) : (
-            <LearningPlanTemplateCreatePanel
-              error={error}
-              loading={flowState === 'generating'}
-              onCancel={onBackToPlans}
-              onSubmit={submitTemplateDraft}
-            />
-          )}
-        </article>
-      )}
+          </>
+        ) : (
+          <article className="learning-panel create-plan-page-panel">
+            <section className="question-block">
+              <strong>{resources.learningPlans.createMode}</strong>
+              <div className="segmented-grid create-mode-switch">
+                <button
+                  aria-pressed={createMode === 'template'}
+                  className={createMode === 'template' ? 'selected' : ''}
+                  disabled={flowState === 'generating'}
+                  onClick={() => {
+                    setCreateMode('template');
+                    setError('');
+                  }}
+                  type="button"
+                >
+                  <LayoutTemplate aria-hidden="true" />
+                  <span>{resources.learningPlans.createFromTemplate}</span>
+                </button>
+                <button
+                  aria-pressed={createMode === 'ai'}
+                  className={createMode === 'ai' ? 'selected' : ''}
+                  disabled={flowState === 'generating'}
+                  onClick={() => {
+                    setCreateMode('ai');
+                    setError('');
+                  }}
+                  type="button"
+                >
+                  <Sparkles aria-hidden="true" />
+                  <span>{resources.learningPlans.createWithAi}</span>
+                </button>
+              </div>
+            </section>
+            {flowState === 'generating' && (
+              <AgentWorkIndicator active event={workEvent} error={error} />
+            )}
+            {createMode === 'ai' ? (
+              <LearningPlanCreateForm
+                error={error}
+                key={formKey}
+                loading={flowState === 'generating'}
+                onCancel={onBackToPlans}
+                onSubmit={submitDraft}
+                submitLabel={resources.learningPlans.generatePlan}
+              />
+            ) : (
+              <LearningPlanTemplateCreatePanel
+                error={error}
+                loading={flowState === 'generating'}
+                onCancel={onBackToPlans}
+                onSubmit={submitTemplateDraft}
+              />
+            )}
+          </article>
+        )}
+      </div>
     </section>
   );
 }

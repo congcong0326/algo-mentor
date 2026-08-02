@@ -101,6 +101,8 @@ describe('LeetReviewer-inspired visual system', () => {
   });
 
   it('uses one icon-control vocabulary on the plan creation page', () => {
+    expect(styles).toMatch(/\.learning-create-content \{[^}]*gap: 22px;[^}]*width: min\(900px, 100%\);[^}]*justify-self: center;/);
+    expect(styles).toMatch(/\.learning-create-content--preview \{[^}]*width: 100%;/);
     expect(styles).toMatch(/\.learning-create-back \{[^}]*width: 34px;[^}]*height: 34px;[^}]*border-radius: 7px;/);
     expect(styles).toMatch(/\.create-mode-switch button svg \{[^}]*width: 16px;[^}]*height: 16px;/);
     expect(styles).toMatch(/\.template-card-icon \{[^}]*width: 28px;[^}]*height: 28px;[^}]*border-radius: 6px;/);

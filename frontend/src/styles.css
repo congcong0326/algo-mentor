@@ -4145,13 +4145,22 @@ a {
   align-content: start;
 }
 
+.learning-create-content {
+  display: grid;
+  gap: 22px;
+  width: min(900px, 100%);
+  justify-self: center;
+}
+
+.learning-create-content--preview {
+  width: 100%;
+}
+
 .learning-create-heading {
   display: flex;
   align-items: center;
   gap: 12px;
   justify-content: flex-start;
-  width: min(900px, 100%);
-  justify-self: center;
 }
 
 .learning-create-heading h1 {
@@ -4179,8 +4188,7 @@ a {
 }
 
 .create-plan-page-panel {
-  width: min(900px, 100%);
-  justify-self: center;
+  width: 100%;
 }
 
 .modal-backdrop {
