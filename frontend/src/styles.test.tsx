@@ -168,6 +168,23 @@ describe('LeetReviewer-inspired visual system', () => {
     expect(styles).toContain('.review-problem-full .markdown-view > :last-child {\n  margin-bottom: 0;');
   });
 
+  it('collapses source newlines and keeps code review Markdown compact', () => {
+    expect(styles).toMatch(/\.review-detail-panel \.markdown-view \{[^}]*min-height: 0;[^}]*line-height: 1\.6;[^}]*white-space: normal;/);
+    expect(styles).toMatch(/\.review-detail-panel \.markdown-view p,[\s\S]*?\.review-detail-panel \.markdown-view table \{[^}]*margin-top: 0;[^}]*margin-bottom: 8px;/);
+    expect(styles).toMatch(/\.review-detail-panel \.markdown-view h1,[\s\S]*?\.review-detail-panel \.markdown-view h3 \{[^}]*margin-top: 14px;[^}]*margin-bottom: 4px;/);
+    expect(styles).toMatch(/\.review-detail-panel \.markdown-view p:has\(> strong:only-child\) \{[^}]*margin-top: 12px;[^}]*margin-bottom: 4px;/);
+    expect(styles).toMatch(/\.review-detail-panel \.markdown-view > :first-child \{[^}]*margin-top: 0;/);
+    expect(styles).toMatch(/\.review-detail-panel \.markdown-view li \{[^}]*margin: 3px 0;/);
+    expect(styles).toMatch(/\.review-detail-panel \.markdown-view > :last-child \{[^}]*margin-bottom: 0;/);
+  });
+
+  it('keeps fixed review suggestion lists close to their headings', () => {
+    expect(styles).toMatch(/\.review-detail-section \{[^}]*gap: 6px;/);
+    expect(styles).toMatch(/\.review-detail-section h4 \{[^}]*margin: 0;[^}]*font-size: 13px;/);
+    expect(styles).toMatch(/\.review-detail-section > ul \{[^}]*margin: 0;[^}]*padding-left: 20px;/);
+    expect(styles).toMatch(/\.review-detail-section > ul li \{[^}]*margin: 2px 0;[^}]*line-height: 1\.55;/);
+  });
+
   it('defines dedicated review rating button states', () => {
     expect(styles).toContain('.review-rating-button {\n  --rating-color: var(--text-secondary);');
     expect(styles).toContain('.review-rating-label {\n  font-size: 14px;');

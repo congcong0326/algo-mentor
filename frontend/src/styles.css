@@ -6612,16 +6612,103 @@ a {
 
 .review-detail-panel .markdown-view {
   min-width: 0;
+  min-height: 0;
+  line-height: 1.6;
+  white-space: normal;
+}
+
+.review-detail-panel .markdown-view h1,
+.review-detail-panel .markdown-view h2,
+.review-detail-panel .markdown-view h3,
+.review-detail-panel .markdown-view p,
+.review-detail-panel .markdown-view ul,
+.review-detail-panel .markdown-view ol,
+.review-detail-panel .markdown-view pre,
+.review-detail-panel .markdown-view blockquote,
+.review-detail-panel .markdown-view table {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.review-detail-panel .markdown-view h1,
+.review-detail-panel .markdown-view h2,
+.review-detail-panel .markdown-view h3 {
+  margin-top: 14px;
+  margin-bottom: 4px;
+  line-height: 1.35;
+}
+
+.review-detail-panel .markdown-view p:has(> strong:only-child) {
+  margin-top: 12px;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+
+.review-detail-panel .markdown-view > :first-child {
+  margin-top: 0;
+}
+
+.review-detail-panel .markdown-view h1 {
+  font-size: 18px;
+}
+
+.review-detail-panel .markdown-view h2 {
+  font-size: 16px;
+}
+
+.review-detail-panel .markdown-view h3 {
+  font-size: 14px;
+}
+
+.review-detail-panel .markdown-view p,
+.review-detail-panel .markdown-view li {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.review-detail-panel .markdown-view ul,
+.review-detail-panel .markdown-view ol {
+  padding-left: 22px;
+}
+
+.review-detail-panel .markdown-view li {
+  margin: 3px 0;
+}
+
+.review-detail-panel .markdown-view li > p {
+  display: inline;
+  margin: 0;
+}
+
+.review-detail-panel .markdown-view li > p + p {
+  display: block;
+  margin-top: 6px;
+}
+
+.review-detail-panel .markdown-view > :last-child {
+  margin-bottom: 0;
 }
 
 .review-detail-section {
   display: grid;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
 }
 
 .review-detail-section h4 {
+  margin: 0;
   font-size: 13px;
+}
+
+.review-detail-section > ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text-secondary);
+}
+
+.review-detail-section > ul li {
+  margin: 2px 0;
+  line-height: 1.55;
 }
 
 .review-detail-section pre {
