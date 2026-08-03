@@ -3,6 +3,7 @@ import { FormEvent, MouseEvent, useEffect, useState } from 'react';
 import LanguageSelector from '../i18n/LanguageSelector';
 import { useI18n } from '../i18n/I18nProvider';
 import HeaderActionTooltip from './HeaderActionTooltip';
+import { APP_ROUTES } from './navigation';
 import type { AppTheme } from './theme';
 import type { OAuthProvider, PasswordLoginRequest, PasswordRegisterRequest } from '../types/api';
 
@@ -230,15 +231,12 @@ export default function LoginPage({
         ) : null}
 
         <div className="login-support">
-          <p>
-            {resources.auth.needHelpPrefix}
-            <a href={`mailto:${resources.auth.supportEmail}`}>{resources.auth.supportEmail}</a>
-          </p>
+          <p>{resources.auth.supportContact}</p>
           <p>
             {resources.auth.termsPrefix}
-            <a href="/terms">{resources.auth.termsLabel}</a>
+            <a href={APP_ROUTES.terms}>{resources.auth.termsLabel}</a>
             {resources.auth.termsConnector}
-            <a href="/privacy">{resources.auth.privacyLabel}</a>
+            <a href={APP_ROUTES.privacy}>{resources.auth.privacyLabel}</a>
           </p>
         </div>
 

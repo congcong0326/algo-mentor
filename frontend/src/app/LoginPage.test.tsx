@@ -23,7 +23,9 @@ describe('LoginPage', () => {
       '/oauth2/authorization/github',
     );
     expect(screen.getByRole('button', { name: '创建邮箱账号' })).toBeInTheDocument();
-    expect(screen.getByText('support@leetmentor.local')).toBeInTheDocument();
+    expect(screen.getByText('内测期间如需帮助，请联系邀请人或项目部署方。')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '服务条款' })).toHaveAttribute('href', '/terms');
+    expect(screen.getByRole('link', { name: '隐私政策' })).toHaveAttribute('href', '/privacy');
   });
 
   it('uses the rounded custom tooltip for the theme toggle', () => {

@@ -55,8 +55,7 @@ export interface LocaleResources {
     }>;
     emailAuthDivider: string;
     socialAuthDivider: string;
-    needHelpPrefix: string;
-    supportEmail: string;
+    supportContact: string;
     termsPrefix: string;
     termsLabel: string;
     termsConnector: string;
@@ -1532,8 +1531,7 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       ],
       emailAuthDivider: '或使用邮箱继续',
       socialAuthDivider: '或继续使用',
-      needHelpPrefix: '需要帮助？联系 ',
-      supportEmail: 'support@leetmentor.local',
+      supportContact: '内测期间如需帮助，请联系邀请人或项目部署方。',
       termsPrefix: '继续即表示你理解并同意',
       termsLabel: '服务条款',
       termsConnector: ' 和 ',
@@ -3053,10 +3051,9 @@ export const localeResources: Record<SupportedLocale, LocaleResources> = {
       ],
       emailAuthDivider: 'Or continue with email',
       socialAuthDivider: 'or continue with',
-      needHelpPrefix: 'Need help? Contact ',
-      supportEmail: 'support@leetmentor.local',
+      supportContact: 'During beta, contact the person who invited you or the operator of this deployment for help.',
       termsPrefix: 'By continuing, you acknowledge and agree to the ',
-      termsLabel: 'Terms & Conditions',
+      termsLabel: 'Terms of Service',
       termsConnector: ' and ',
       privacyLabel: 'Privacy Policy',
       failed: 'Sign-in failed. Please try again.',

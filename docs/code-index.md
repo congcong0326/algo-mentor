@@ -178,6 +178,7 @@
 - `frontend/src/admin/monitoring/SystemMonitoringPage.tsx`：`/admin/monitoring` 运行状态页，基于 `/api/health` 展示 API 服务健康状态，支持手动与每分钟自动刷新；与 `/admin/ai` 同属系统监控分类。
 - `frontend/src/admin/ai`：`/admin/ai` 治理工作区，提供全局 AI 止损、provider/model 维护、模型路由目录与用户命中模拟、按用户/模型/场景的 Token 与当前价格成本观测和模型价格编辑。
 - `frontend/src/app/PasswordChangeRequiredPage.tsx`：临时密码登录后的独占改密页，成功后恢复普通 Session 路由。
+- `frontend/src/legal`：`/terms` 服务条款和 `/privacy` 隐私政策公共页面，包含中英文简版正文和共用阅读布局。
 - `frontend/src/learning-plans/PracticeChatWorkbench.tsx`：题目训练聊天工作台，使用 practice session 专用 API 渲染题面 seed、流式 AI 回复、Review 入口、LeetCode 外链和题目完成状态。
 - `frontend/src/problem-notes`：可复用的题目笔记折叠编辑器、结构化纲要表单和固定选项，按 `problemSlug` 读写同一份长期笔记并处理 revision 冲突。
 - `frontend/src/mistakes/MistakeNotebookPage.tsx`：复习中心列表和详情弹窗，展示到期状态、完整题面、折叠笔记与不可变评级历史。

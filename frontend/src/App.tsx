@@ -28,6 +28,8 @@ import AppShell from './app/AppShell';
 import LoginPage from './app/LoginPage';
 import PasswordChangeRequiredPage from './app/PasswordChangeRequiredPage';
 import HeaderActionTooltip from './app/HeaderActionTooltip';
+import LegalDocumentPage from './legal/LegalDocumentPage';
+import type { LegalDocumentKind } from './legal/legalDocuments';
 import {
   adminUserGroupIdFromPath,
   APP_ROUTES,
@@ -84,6 +86,9 @@ function normalizeAuthenticatedView(pathname: string, user?: CurrentUser): AppVi
 }
 
 function normalizeAuthenticatedPath(pathname: string, user?: CurrentUser): string {
+  if (isLegalRoute(pathname)) {
+    return pathname;
+  }
   if (user?.passwordChangeRequired) {
     return APP_ROUTES.passwordChangeRequired;
   }
@@ -229,6 +234,20 @@ function isLoginRoute(pathname: string): boolean {
   return pathname === APP_ROUTES.login;
 }
 
+function legalDocumentFromPath(pathname: string): LegalDocumentKind | undefined {
+  if (pathname === APP_ROUTES.privacy) {
+    return 'privacy';
+  }
+  if (pathname === APP_ROUTES.terms) {
+    return 'terms';
+  }
+  return undefined;
+}
+
+function isLegalRoute(pathname: string): boolean {
+  return legalDocumentFromPath(pathname) !== undefined;
+}
+
 function hasAuthFailedQuery(search: string): boolean {
   const authStatus = new URLSearchParams(search).get('auth');
   return authStatus === 'failed' || authStatus === 'beta-access-denied';
@@ -237,6 +256,9 @@ function hasAuthFailedQuery(search: string): boolean {
 function normalizePublicLocation(pathname: string, search: string): string {
   if (isLoginRoute(pathname) || hasAuthFailedQuery(search)) {
     return `${APP_ROUTES.login}${search}`;
+  }
+  if (isLegalRoute(pathname)) {
+    return pathname;
   }
   return APP_ROUTES.home;
 }
@@ -290,6 +312,10 @@ function PublicHomeShell({
       <section className="app-content public-home-content">
         <HomeDashboard onPrimaryAction={onLogin} primaryActionLabel={resources.home.startUsing} />
       </section>
+      <footer className="public-home-footer">
+        <a href={APP_ROUTES.terms}>{resources.auth.termsLabel}</a>
+        <a href={APP_ROUTES.privacy}>{resources.auth.privacyLabel}</a>
+      </footer>
     </main>
   );
 }
@@ -406,9 +432,10 @@ export default function App() {
 
     function handlePopState() {
       const normalizedLocation = normalizePublicLocation(window.location.pathname, window.location.search);
+      const normalizedUrl = new URL(normalizedLocation, window.location.origin);
       setActiveView('home');
-      setPathname(normalizedLocation.startsWith(APP_ROUTES.login) ? APP_ROUTES.login : APP_ROUTES.home);
-      setSearch(normalizedLocation.startsWith(APP_ROUTES.login) ? window.location.search : '');
+      setPathname(normalizedUrl.pathname);
+      setSearch(normalizedUrl.search);
       if (`${window.location.pathname}${window.location.search}` !== normalizedLocation) {
         window.history.replaceState({}, '', normalizedLocation);
       }
@@ -484,9 +511,10 @@ export default function App() {
         }
       } else {
         const normalizedLocation = normalizePublicLocation(window.location.pathname, window.location.search);
+        const normalizedUrl = new URL(normalizedLocation, window.location.origin);
         setActiveView('home');
-        setPathname(normalizedLocation.startsWith(APP_ROUTES.login) ? APP_ROUTES.login : APP_ROUTES.home);
-        setSearch(normalizedLocation.startsWith(APP_ROUTES.login) ? window.location.search : '');
+        setPathname(normalizedUrl.pathname);
+        setSearch(normalizedUrl.search);
         if (`${window.location.pathname}${window.location.search}` !== normalizedLocation) {
           window.history.replaceState({}, '', normalizedLocation);
         }
@@ -499,6 +527,16 @@ export default function App() {
       if (caught instanceof ApiRequestError
           && caught.status === 403
           && caught.code === 'AUTH_BETA_ACCESS_DENIED') {
+        if (isLegalRoute(window.location.pathname)) {
+          setCurrentUser(undefined);
+          setAuthChecked(true);
+          setAuthError(false);
+          setPasswordAuthError('');
+          setActiveView('home');
+          setPathname(window.location.pathname);
+          setSearch('');
+          return;
+        }
         setCurrentUser(undefined);
         setAuthChecked(true);
         setAuthError(false);
@@ -629,6 +667,17 @@ export default function App() {
     captureFeedbackNavigationContext();
     setFeedbackDialogOpen(true);
   }, []);
+
+  const legalDocumentKind = legalDocumentFromPath(pathname);
+  if (legalDocumentKind) {
+    return (
+      <LegalDocumentPage
+        kind={legalDocumentKind}
+        onToggleTheme={handleToggleTheme}
+        theme={theme}
+      />
+    );
+  }
 
   if (!authChecked) {
     if (!isLoginRoute(window.location.pathname)) {

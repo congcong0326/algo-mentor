@@ -4,6 +4,8 @@ import type { AuthPermission } from '../types/api';
 
 export const APP_ROUTES = {
   login: '/login',
+  privacy: '/privacy',
+  terms: '/terms',
   home: '/',
   my: '/me',
   settings: '/settings',
